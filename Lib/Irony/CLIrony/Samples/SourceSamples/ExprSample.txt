@@ -1,0 +1,4 @@
+#Simple calculation
+x = 3 + 5
+y = 3
+x / 2.0 + y * 2 - 2.5 #result= 7.5

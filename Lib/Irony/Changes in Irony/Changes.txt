@@ -1,0 +1,73 @@
+﻿
+Parsing\CompilerContext.cs
+sones.Lib.Frameworks.Irony.Parsing.CompilerContext
+
+Line 37:
+	/* Added by sones developers */
+    // EDIT: PandoraListOfReferences added, 22.07.2009, Holds the list of known References "FROM User U" -> would hold ATypeNode for U
+    public List<object> PandoraListOfReferences;
+    /* Added by sones developers */
+    
+Line 130:
+	/* Added by sones developers */
+	// Added some Ctors with additional 'Exception' parameter
+	/* Added by sones developers */
+
+Line 144:
+    /* Changed by sones developers */
+    // Added 'Exception' to the method and pass the Exception to the SyntaxError ctor
+    /* Changed by sones developers */
+
+
+Parsing\Parser\CoreParser.cs
+sones.Lib.Frameworks.Irony.Parsing.CoreParser
+Line 220
+      /* Added by sones developers */
+      newNode.LastChild = Stack[Stack.Count - 1]; //remember last child;
+      /* Added by sones developers */
+Line 279
+    /* Changed by sones developers */
+    // Pass the 'Exception' to 'ReportError' method
+    _context.ReportError(parseNode.Span.Start, "Failed to create AST node for non-terminal [{0}], error: " + ex.Message, ex, parseNode.Term.Name);
+    /* Changed by sones developers */
+
+
+sones.Lib.Frameworks.Irony.Parsing.SyntaxError
+Parsing\Parser\SyntaxError.cs
+Line 26
+    /* Added by sones developers */
+    // Ctor and Property added to take a 'Exeption'
+    /* Added by sones developers */
+    
+sones.Lib.Frameworks.Irony.Parsing
+Parsing\CompilerContext.cs
+Line 58
+	/* Added by sones developers */
+	// Added a variable _Token, need to parse settings
+	/* Added by sones developers */
+Line 70
+	/* Added by sones developers */
+	//added a ctor which includes the current session token CompilerContext(Compiler compiler, SessionToken mySession)
+	/* Added by sones developers */
+	
+sones.Lib.Frameworks.Irony.Parsing
+Parsing\Compiler.cs
+Line 51
+		/* Added by sones developers */
+		//added the session token as parameter to the function parse
+		/* Added by sones developers */
+
+sones.Lib.Frameworks.Irony.Parsing
+Parsing\Grammar\BnfTerm.cs
+Line 83
+		/* Added by sones developers */
+		//added an public attribute string Description
+		//needed for documentation tool
+		/* Added by sones developers */
+
+sones.Lib.Frameworks.Irony.Parsing
+Parsing\Parser\ParseTreeNode.cs
+Line 46 -> added
+    /* Added by sones developers */
+    public ParseTreeNode LastChild;
+    /* Added by sones developers */

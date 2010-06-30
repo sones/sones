@@ -1,0 +1,97 @@
+﻿definition
+
+dbquery 'FROM %type% SELECT path(%type%.%edge%, %type%.%attribute% = %value%, %maximum Depth%, %maximum path length%, %only shortest%, %find all%) where %type%.%attribute% = %value%'
+
+##############################
+####					 #####
+#### type SimpsonProfile #####
+####					 #####
+##############################
+
+//shortest path between Homer and Marge using edge "Freunde" up to maxdepth and maxpath length 10
+dbquery 'FROM SimpsonProfile S SELECT path(S.Freunde, S.Name = ''Marge Simpson'', 10, 10, ''true'', ''false'') where S.Name = ''Homer Simpson'''
+
+//shortest path between Homer and Bart using edge "Freunde" up to maxdepth and maxpath length 10
+dbquery 'FROM SimpsonProfile S SELECT path(S.Freunde, S.Name = ''Bart Simpson'', 10, 10, ''true'', ''false'') where S.Name = ''Homer Simpson'''
+
+//all shortest paths between Homer and Marge using edge "Freunde" up to maxdepth and maxpath length 10
+dbquery 'FROM SimpsonProfile S SELECT path(S.Freunde, S.Name = ''Bart Simpson'', 10, 10, ''true'', ''true'') where S.Name = ''Homer Simpson'''
+
+//all paths between Homer and Marge using edge "Freunde" up to maxdepth and maxpath length 6
+dbquery 'FROM SimpsonProfile S SELECT path(S.Freunde, S.Name = ''Bart Simpson'', 6, 6, ''false'', ''true'') where S.Name = ''Homer Simpson'''
+
+
+#####################################
+####						    #####
+#### type Numbers (Numbers.gql) #####
+####						    #####
+#####################################
+
+//all paths with maxLength 10 up to depth 10
+dbquery 'FROM Number N SELECT path(N.Friends, N.Name = 2, 10, 10, ''false'', ''false'') where N.Name = 1'
+-> 
+(1, 5, 2)
+(1, 6, 2)
+(1, 8, 37, 30, 2)
+(1, 7, 8, 37, 30, 2) 
+(1, 6, 34, 39, 30, 2) 
+(1, 3, 11, 13, 14, 2) 
+(1, 5, 11, 13, 14, 2) 
+(1, 3, 11, 27, 29, 2)
+(1, 5, 11, 27, 29, 2) 
+(1, 8, 37, 30, 32, 2) 
+(1, 7, 8, 37, 30, 32, 2) 
+(1, 6, 34, 39, 30, 32, 2)
+
+//shortest path
+dbquery 'FROM Number N SELECT path(N.Friends, N.Name = 2, 10, 3, ''true'', ''false'') where N.Name = 1' 
+-> 
+(1, 5, 2)
+
+//all shortest
+dbquery 'FROM Number N SELECT path(N.Friends, N.Name = 2, 10, 3, ''true'', ''true'') where N.Name = 1'
+->
+(1, 5, 2)
+(1, 6, 2)
+
+####################################
+####						   #####
+#### type Users (675Users.gql) #####
+####						   #####
+####################################
+
+//find shortest path between AA and DD with maxDepth 6 and maxPathLength 6
+dbquery 'FROM User U SELECT path(U.Friends, U.Name=''DD'', 6, 6, ''true'', ''false'') where U.Name =''AA'''
+->
+(AA, VU, DD)
+
+//find all paths between AA and DD with maxDepth 6 and maxPathLength 4
+dbquery 'FROM User U SELECT path(U.Friends, U.Name=''DD'', 6, 4, ''false'', ''true'') where U.Name =''AA'''
+->
+(AA, VU, DD) 
+(AA, GX, UI, DD)
+(AA, XJ, UI, DD) 
+(AA, GX, CV, DD) 
+(AA, OP, CV, DD) 
+(AA, IT, MQ, DD) 
+(AA, OP, MQ, DD) 
+(AA, LO, MQ, DD) 
+(AA, LK, SV, DD) 
+(AA, TF, SV, DD) 
+(AA, DI, VS, DD) 
+(AA, ZY, NH, DD) 
+(AA, GD, ZP, DD) 
+(AA, ZI, JE, DD) 
+(AA, QG, JE, DD) 
+(AA, ZI, VX, DD) 
+(AA, MP, VX, DD) 
+(AA, WK, SH, DD) 
+(AA, MX, GE, DD) 
+(AA, GH, OE, DD) 
+(AA, GH, CB, DD) 
+(AA, GH, ZK, DD) 
+(AA, JG, PU, DD) 
+
+//find shortest path between AA and ZZ with maxDepth 4 and maxPathLength 4
+dbquery 'FROM User U SELECT path(U.Friends, U.Name = ''ZZ'', 4, 4, ''true'', ''false'') where U.Name = ''AA'''
+AA -> GX -> KI -> ZZ

@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{CDD9C45F-F285-4A80-B39F-3B1B8B7B5214}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Irony</RootNamespace>
+    <AssemblyName>Irony</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CLIrony\Common.cs" />
+    <Compile Include="CLIrony\Compiler\AST\AnonFunctionNode.cs" />
+    <Compile Include="CLIrony\Compiler\AST\AssigmentNode.cs" />
+    <Compile Include="CLIrony\Compiler\AST\BinExprNode.cs" />
+    <Compile Include="CLIrony\Compiler\AST\CondClauseNode.cs" />
+    <Compile Include="CLIrony\Compiler\AST\CondFormNode.cs" />
+    <Compile Include="CLIrony\Compiler\AST\FunctionCallNode.cs" />
+    <Compile Include="CLIrony\Compiler\AST\IfNode.cs" />
+    <Compile Include="CLIrony\Compiler\AST\StatementListNode.cs" />
+    <Compile Include="CLIrony\Compiler\AST\UnExprNode.cs" />
+    <Compile Include="CLIrony\Compiler\AST\VarRefNode.cs" />
+    <Compile Include="CLIrony\Compiler\AST\_AstNode.cs" />
+    <Compile Include="CLIrony\Compiler\CodeAnalysis.cs" />
+    <Compile Include="CLIrony\Compiler\CompilerContext.cs" />
+    <Compile Include="CLIrony\Compiler\Enums.cs" />
+    <Compile Include="CLIrony\Compiler\EventArgs.cs" />
+    <Compile Include="CLIrony\Compiler\Grammar\BnfExpression.cs" />
+    <Compile Include="CLIrony\Compiler\Grammar\BnfTerm.cs" />
+    <Compile Include="CLIrony\Compiler\Grammar\Grammar.cs" />
+    <Compile Include="CLIrony\Compiler\Grammar\GrammarHint.cs" />
+    <Compile Include="CLIrony\Compiler\Grammar\LanguageAttribute.cs" />
+    <Compile Include="CLIrony\Compiler\Grammar\NonTerminal.cs" />
+    <Compile Include="CLIrony\Compiler\Grammar\NonTerminalData.cs" />
+    <Compile Include="CLIrony\Compiler\Grammar\Terminal.cs" />
+    <Compile Include="CLIrony\Compiler\Interfaces.cs" />
+    <Compile Include="CLIrony\Compiler\LALR\Parser.cs" />
+    <Compile Include="CLIrony\Compiler\LALR\ParserControlData.cs" />
+    <Compile Include="CLIrony\Compiler\LALR\ParserControlDataBuilder.cs" />
+    <Compile Include="CLIrony\Compiler\LALR\ParserReturn.cs" />
+    <Compile Include="CLIrony\Compiler\LALR\ParserStack.cs" />
+    <Compile Include="CLIrony\Compiler\LanguageCompiler.cs" />
+    <Compile Include="CLIrony\Compiler\NLALR\ParserControlData.cs" />
+    <Compile Include="CLIrony\Compiler\NLALR\ParserStack.cs" />
+    <Compile Include="CLIrony\Compiler\Scanner\Scanner.cs" />
+    <Compile Include="CLIrony\Compiler\Scanner\ScannerControlData.cs" />
+    <Compile Include="CLIrony\Compiler\Scanner\SourceFile.cs" />
+    <Compile Include="CLIrony\Compiler\Scanner\Token.cs" />
+    <Compile Include="CLIrony\Compiler\Scanner\TokenEditorInfo.cs" />
+    <Compile Include="CLIrony\Compiler\Scope.cs" />
+    <Compile Include="CLIrony\Compiler\SyntaxError.cs" />
+    <Compile Include="CLIrony\Compiler\Terminals\CommentTerminal.cs" />
+    <Compile Include="CLIrony\Compiler\Terminals\CompoundTerminalBase.cs" />
+    <Compile Include="CLIrony\Compiler\Terminals\ConstantTerminal.cs" />
+    <Compile Include="CLIrony\Compiler\Terminals\CustomTerminal.cs" />
+    <Compile Include="CLIrony\Compiler\Terminals\IdentifierTerminal.cs" />
+    <Compile Include="CLIrony\Compiler\Terminals\NewLineTerminal.cs" />
+    <Compile Include="CLIrony\Compiler\Terminals\NumberLiteral.cs" />
+    <Compile Include="CLIrony\Compiler\Terminals\RegExBasedTerminal.cs" />
+    <Compile Include="CLIrony\Compiler\Terminals\StringLiteral.cs" />
+    <Compile Include="CLIrony\Compiler\Terminals\SymbolTerminal.cs" />
+    <Compile Include="CLIrony\Compiler\Terminals\TerminalFactory.cs" />
+    <Compile Include="CLIrony\Compiler\TokenFilters\BraceMatchFilter.cs" />
+    <Compile Include="CLIrony\Compiler\TokenFilters\CodeOutlineFilter.cs" />
+    <Compile Include="CLIrony\Compiler\TokenFilters\TokenFilter.cs" />
+    <Compile Include="CLIrony\EditorServices\EditorAdapter.cs" />
+    <Compile Include="CLIrony\EditorServices\EditorUtilities.cs" />
+    <Compile Include="CLIrony\EditorServices\EditorViewAdapter.cs" />
+    <Compile Include="CLIrony\Exceptions.cs" />
+    <Compile Include="CLIrony\Microsoft\BigInteger.cs" />
+    <Compile Include="CLIrony\Microsoft\Complex64.cs" />
+    <Compile Include="CLIrony\Microsoft\MathResources.Designer.cs">
+      <DependentUpon>MathResources.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="CLIrony\Runtime\CallDispatch.cs" />
+    <Compile Include="CLIrony\Runtime\Closure.cs" />
+    <Compile Include="CLIrony\Runtime\EvaluationContext.cs" />
+    <Compile Include="CLIrony\Runtime\Frame.cs" />
+    <Compile Include="CLIrony\Runtime\FunctionBindingInfo.cs" />
+    <Compile Include="CLIrony\Runtime\LanguageRuntime.cs" />
+    <Compile Include="CLIrony\Runtime\LanguageRuntimeInit.cs" />
+    <Compile Include="CLIrony\Runtime\RuntimeException.cs" />
+    <None Include="CLIrony\Runtime\SlimLock.cs" />
+    <Compile Include="CLIrony\Runtime\StackTrace.cs" />
+    <Compile Include="CLIrony\Runtime\Unassigned.cs" />
+    <Compile Include="CLIrony\Samples\CSharp\CSharpGrammar.cs" />
+    <Compile Include="CLIrony\Samples\ExpressionEvaluator\ExpressionEvaluatorGrammar.cs" />
+    <Compile Include="CLIrony\Samples\Json\JsonGrammar.cs" />
+    <None Include="CLIrony\Samples\OtherGrammars\GrammarEx434.cs" />
+    <None Include="CLIrony\Samples\OtherGrammars\GrammarEx446.cs" />
+    <None Include="CLIrony\Samples\OtherGrammars\GrammarExL514.cs" />
+    <Compile Include="CLIrony\Samples\OtherGrammars\GwBasicGrammar.cs" />
+    <None Include="CLIrony\Samples\Python\PythonGrammar.cs" />
+    <None Include="CLIrony\Samples\Ruby\RubyGrammar.cs" />
+    <Compile Include="CLIrony\Samples\Scheme\SchemeGrammar.cs" />
+    <Compile Include="CLIrony\Samples\Scheme\SchemeRuntime.cs" />
+    <Compile Include="CLIrony\Samples\Script.NET\ScriptDotNetGrammar.cs" />
+    <None Include="CLIrony\Samples\SourceSamples\c#\bottles-v11-long.cs" />
+    <None Include="CLIrony\Samples\SourceSamples\c#\bottles-v11-short.cs" />
+    <None Include="CLIrony\Samples\SourceSamples\c#\bottles-v20.cs" />
+    <None Include="CLIrony\Samples\SourceSamples\c#\bottles-v30.cs" />
+    <None Include="CLIrony\Samples\SourceSamples\c#\escapes_in_IDs.cs" />
+    <None Include="CLIrony\Samples\SourceSamples\c#\ParserControlDataBuilder.cs" />
+    <Compile Include="CLIrony\Samples\SQL\SqlGrammar.cs" />
+    <Compile Include="CLIrony\TextUtils.cs" />
+    <Compile Include="Irony\Diagnostics\DiagnosticUtils.cs" />
+    <Compile Include="Irony\Diagnostics\ParserTraceEntry.cs" />
+    <Compile Include="Irony\EditorServices\EditorAdapter.cs" />
+    <Compile Include="Irony\EditorServices\EditorViewAdapter.cs" />
+    <Compile Include="Irony\Parsing\AstInterfaces.cs" />
+    <Compile Include="Irony\Parsing\Compiler.cs" />
+    <Compile Include="Irony\Parsing\CompilerContext.cs" />
+    <Compile Include="Irony\Parsing\Construction\GrammarDataBuilder.cs" />
+    <Compile Include="Irony\Parsing\Construction\LanguageDataBuilder.cs" />
+    <Compile Include="Irony\Parsing\Construction\ParserDataBuilder.cs" />
+    <Compile Include="Irony\Parsing\Construction\ParserDataBuilder_HelperClasses.cs" />
+    <Compile Include="Irony\Parsing\Construction\ParserDataBuilder_NonCanonical.cs" />
+    <Compile Include="Irony\Parsing\Construction\ScannerDataBuilder.cs" />
+    <Compile Include="Irony\Parsing\Grammar\BnfExpression.cs" />
+    <Compile Include="Irony\Parsing\Grammar\BnfTerm.cs" />
+    <Compile Include="Irony\Parsing\Grammar\Grammar.cs" />
+    <Compile Include="Irony\Parsing\Grammar\GrammarData.cs" />
+    <Compile Include="Irony\Parsing\Grammar\GrammarError.cs" />
+    <Compile Include="Irony\Parsing\Grammar\GrammarHint.cs" />
+    <Compile Include="Irony\Parsing\Grammar\LanguageAttribute.cs" />
+    <Compile Include="Irony\Parsing\Grammar\NonTerminal.cs" />
+    <Compile Include="Irony\Parsing\LanguageData.cs" />
+    <Compile Include="Irony\Parsing\Parser\CoreParser.cs" />
+    <Compile Include="Irony\Parsing\Parser\CoreParser_ErrorHandling.cs" />
+    <Compile Include="Irony\Parsing\Parser\Parser.cs" />
+    <Compile Include="Irony\Parsing\Parser\ParserData.cs" />
+    <Compile Include="Irony\Parsing\Parser\ParserStack.cs" />
+    <Compile Include="Irony\Parsing\Parser\ParseTree.cs" />
+    <Compile Include="Irony\Parsing\Parser\ParseTreeExtensions.cs" />
+    <Compile Include="Irony\Parsing\Parser\ParseTreeNode.cs" />
+    <Compile Include="Irony\Parsing\Parser\SyntaxError.cs" />
+    <Compile Include="Irony\Parsing\Scanner\Scanner.cs" />
+    <Compile Include="Irony\Parsing\Scanner\ScannerData.cs" />
+    <Compile Include="Irony\Parsing\Scanner\SourceLocation.cs" />
+    <Compile Include="Irony\Parsing\Scanner\SourceStream.cs" />
+    <Compile Include="Irony\Parsing\Scanner\Token.cs" />
+    <Compile Include="Irony\Parsing\Scanner\TokenEditorInfo.cs" />
+    <Compile Include="Irony\Parsing\StringHelpers.cs" />
+    <Compile Include="Irony\Parsing\Terminals\CommentTerminal.cs" />
+    <Compile Include="Irony\Parsing\Terminals\CompoundTerminalBase.cs" />
+    <Compile Include="Irony\Parsing\Terminals\ConstantTerminal.cs" />
+    <Compile Include="Irony\Parsing\Terminals\CustomTerminal.cs" />
+    <Compile Include="Irony\Parsing\Terminals\IdentifierTerminal.cs" />
+    <Compile Include="Irony\Parsing\Terminals\NewLineTerminal.cs" />
+    <Compile Include="Irony\Parsing\Terminals\NumberLiteral.cs" />
+    <Compile Include="Irony\Parsing\Terminals\RegExBasedTerminal.cs" />
+    <Compile Include="Irony\Parsing\Terminals\StringLiteral.cs" />
+    <Compile Include="Irony\Parsing\Terminals\SymbolTerminal.cs" />
+    <Compile Include="Irony\Parsing\Terminals\TerminalFactory.cs" />
+    <Compile Include="Irony\Parsing\Terminals\_Terminal.cs" />
+    <Compile Include="Irony\Parsing\TokenFilters\BraceMatchFilter.cs" />
+    <Compile Include="Irony\Parsing\TokenFilters\CodeOutlineFilter.cs" />
+    <Compile Include="Irony\Parsing\TokenFilters\TokenFilter.cs" />
+    <Compile Include="Irony\Scripting\AST\AnonFunctionNode.cs" />
+    <Compile Include="Irony\Scripting\AST\AssigmentNode.cs" />
+    <Compile Include="Irony\Scripting\AST\BinExprNode.cs" />
+    <Compile Include="Irony\Scripting\AST\CondClauseNode.cs" />
+    <Compile Include="Irony\Scripting\AST\CondFormNode.cs" />
+    <Compile Include="Irony\Scripting\AST\FunctionCallNode.cs" />
+    <Compile Include="Irony\Scripting\AST\IfNode.cs" />
+    <Compile Include="Irony\Scripting\AST\StatementListNode.cs" />
+    <Compile Include="Irony\Scripting\AST\UnExprNode.cs" />
+    <Compile Include="Irony\Scripting\AST\VarRefNode.cs" />
+    <Compile Include="Irony\Scripting\AST\_AstNode.cs" />
+    <Compile Include="Irony\Scripting\CodeAnalysis.cs" />
+    <Compile Include="Irony\Scripting\Runtime\CallDispatch.cs" />
+    <Compile Include="Irony\Scripting\Runtime\Closure.cs" />
+    <Compile Include="Irony\Scripting\Runtime\EvaluationContext.cs" />
+    <Compile Include="Irony\Scripting\Runtime\Frame.cs" />
+    <Compile Include="Irony\Scripting\Runtime\FunctionBindingInfo.cs" />
+    <Compile Include="Irony\Scripting\Runtime\LanguageRuntime.cs" />
+    <Compile Include="Irony\Scripting\Runtime\LanguageRuntime_Init.cs" />
+    <Compile Include="Irony\Scripting\Runtime\RuntimeException.cs" />
+    <Compile Include="Irony\Scripting\Runtime\SlimLock.cs" />
+    <Compile Include="Irony\Scripting\Runtime\StackTrace.cs" />
+    <Compile Include="Irony\Scripting\Scope.cs" />
+    <Compile Include="Irony\Scripting\ScriptEngine.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="CLIrony\Samples\SourceSamples\99 bottles with Errors.rb" />
+    <None Include="CLIrony\Samples\SourceSamples\99 bottles.py" />
+    <None Include="CLIrony\Samples\SourceSamples\99 bottles.rb" />
+    <None Include="CLIrony\Samples\SourceSamples\JSON\Sample1.json" />
+    <None Include="CLIrony\Samples\SourceSamples\JSON\Sample2.json" />
+    <None Include="CLIrony\Samples\SourceSamples\JSON\Sample3.json" />
+    <None Include="CLIrony\Samples\SourceSamples\Scheme\99 bottles simple.scm" />
+    <None Include="CLIrony\Samples\SourceSamples\Scheme\99 bottles.scm" />
+    <None Include="CLIrony\Samples\SourceSamples\Scheme\cadr.scm" />
+    <None Include="CLIrony\Samples\SourceSamples\Scheme\Fib.scm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Changes in Irony\Changes.txt" />
+    <Content Include="CLIrony\Compiler\NLALR\about_NLALR.txt" />
+    <Content Include="License.txt" />
+    <Content Include="CLIrony\Samples\CSharp\Notes.txt" />
+    <Content Include="CLIrony\Samples\Ruby\Ruby_auth.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\ExprSample.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\Script.NET\Arithmetic.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\Script.NET\ArraysGenerics.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\Script.NET\bubblesort.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\Script.NET\Contracts.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\Script.NET\EmbeddedObject.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\Script.NET\Forms.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\Script.NET\GCD.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\Script.NET\Graphs.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\Script.NET\metafeatures.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\Script.NET\metafeatures_ast.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\Script.NET\Mutant.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\Script.NET\QuickSort.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\Script.NET\Recursion.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\Script.NET\RSS.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\Script.NET\UIAutomation_FW3.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\Script.NET\WinForms.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\SQL\sql_sample1.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\SQL\sql_sample2.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\SQL\sql_sample3.txt" />
+    <Content Include="CLIrony\Samples\SourceSamples\_about.txt" />
+    <Content Include="CLIrony\Samples\SQL\Sql89-GoldParser.txt" />
+    <None Include="CLIrony\Samples\Python\Python_auth_svn.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CLIrony\Microsoft\MathResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MathResources.Designer.cs</LastGenOutput>
+      <CustomToolNamespace>Microsoft.Scripting.Math</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CLIrony\Microsoft\MS-PubLicense.Rtf" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Lib\Lib.csproj">
+      <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
+      <Name>Lib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

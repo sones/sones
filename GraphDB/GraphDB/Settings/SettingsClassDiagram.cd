@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="sones.Pandora.Database.Settings.ADBSettingsBase" Collapsed="true">
+    <Position X="0.5" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAgiBQAAABAIAQAACBAAgEAAQAiAAAAABA=</HashCode>
+      <FileName>Settings\ADBSettingsBase.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="sones.Pandora.Database.Settings.ADBExtractSetting" Collapsed="true">
+    <Position X="2.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEIAAEAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>Settings\ExtractSettings\ADBExtractSetting.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Pandora.Database.Settings.ADBAttributeSetting" Collapsed="true">
+    <Position X="2.5" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Settings\AttrSettings\ADBAttributeSetting.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Pandora.Database.Settings.SettingObjectName" Collapsed="true">
+    <Position X="4.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgIQAEAAAAAAAACBAAgAAAAAgIAAAABA=</HashCode>
+      <FileName>Settings\ExtractSettings\SettingObjectName.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Pandora.Database.Settings.SettingObjectPath" Collapsed="true">
+    <Position X="6.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgIQAEAAAAAAAACBAAgAAAAAgIAAAABA=</HashCode>
+      <FileName>Settings\ExtractSettings\SettingObjectPath.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Pandora.Database.Settings.SettingUUID" Collapsed="true">
+    <Position X="8.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAgAAAAAAgIQAEAAAAAAAACBAAgAAAAAgIAAAABA=</HashCode>
+      <FileName>Settings\ExtractSettings\SettingUUID.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Pandora.Database.Settings.SettingUUIDEncoding" Collapsed="true">
+    <Position X="4.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAQAEAAAAAAAACBAAgAAAAAgAAAAABA=</HashCode>
+      <FileName>Settings\AttrSettings\SettingUUIDEncoding.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Pandora.Database.Settings.SettingTypeDirBlocksize" Collapsed="true">
+    <Position X="10.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAQAEAAAAAAAACBAAgAAAAAgAAAAABA=</HashCode>
+      <FileName>Settings\AttrSettings\SettingTypeDirBlocksize.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Pandora.Database.Settings.SettingSelectTimeOut" Collapsed="true">
+    <Position X="8.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAQAEAAAAAAAACBAAgAAAAAgAAAAABA=</HashCode>
+      <FileName>Settings\AttrSettings\SettingSelectTimeOut.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Pandora.Database.Settings.SettingMaxCacheItems" Collapsed="true">
+    <Position X="4.5" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAQAEAAAAAAAACBAAgAAAAAgAAAAABA=</HashCode>
+      <FileName>Settings\AttrSettings\SettingMaxCacheItems.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Pandora.Database.Settings.SettingLogging" Collapsed="true">
+    <Position X="6.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAQAEAAAAAAAACBAAgAAAAAgAAAAABA=</HashCode>
+      <FileName>Settings\AttrSettings\SettingLogging.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Pandora.Database.Settings.SettingInvalidReferenceHandling" Collapsed="true">
+    <Position X="4.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAQAEAAAAAAAACBAAgAAAAAgAAAAABA=</HashCode>
+      <FileName>Settings\AttrSettings\SettingInvalidReferenceHandling.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Pandora.Database.Settings.SettingDepth" Collapsed="true">
+    <Position X="10.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAQAEAAAAAAAACBAAgAAAAAgAAAAABA=</HashCode>
+      <FileName>Settings\AttrSettings\SettingDepth.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Pandora.Database.Settings.SettingDefaultsOnMandatory" Collapsed="true">
+    <Position X="6.5" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAQAEAAAAAAAACBAAgAAAAAgAAAAABA=</HashCode>
+      <FileName>Settings\AttrSettings\SettingDefaultsOnMandatory.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Pandora.Database.Settings.SettingCulture" Collapsed="true">
+    <Position X="8.5" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAQAEAAAAAAAACBAAgAAAAAgAAAAABA=</HashCode>
+      <FileName>Settings\AttrSettings\SettingCulture.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.Pandora.Database.Settings.SettingBufferSize" Collapsed="true">
+    <Position X="6.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAQAEAAAAAAAACBAAgAAAAAgAAAAABA=</HashCode>
+      <FileName>Settings\AttrSettings\SettingBufferSize.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

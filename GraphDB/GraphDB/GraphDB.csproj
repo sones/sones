@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{32A56958-2C05-44C6-B661-2A2C6610E073}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>sones.GraphDB</RootNamespace>
+    <AssemblyName>GraphDB</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Applications\Administration\DBAdministrationServiceClient.cs" />
+    <Compile Include="Applications\Administration\DBAdministrationServiceHost.cs" />
+    <Compile Include="DBConstants.cs" />
+    <Compile Include="DBExtensions.cs" />
+    <Compile Include="Errors\AggregateErrors\GraphDBAggregateError.cs" />
+    <Compile Include="Errors\AttributeAssignmentErrors\GraphDBAttributeAssignmentError.cs" />
+    <Compile Include="Errors\BackwardEdegeErrors\GraphDBBackwardEdgeError.cs" />
+    <Compile Include="Errors\DBObjectErrors\GraphDBObjectError.cs" />
+    <Compile Include="Errors\DBOperatorErrors\GraphDBOperatorError.cs" />
+    <Compile Include="Errors\DumpErrors\GraphDBDumpError.cs" />
+    <Compile Include="Errors\EdgeErrors\Error_TooManyElementsForEdge.cs" />
+    <Compile Include="Errors\AggregateErrors\Error_AggregateParameterCountMismatch.cs" />
+    <Compile Include="Errors\EdgeErrors\GraphDBEdgeError.cs" />
+    <Compile Include="Errors\FunctionErrors\GraphDBFunctionError.cs" />
+    <Compile Include="Errors\GraphDBTypeErrors\GraphDBTypeError.cs" />
+    <Compile Include="Errors\IndexErrors\GraphDBIndexError.cs" />
+    <Compile Include="Errors\SelectErrors\GraphDBSelectError.cs" />
+    <Compile Include="Errors\SettingErrors\Error_CouldNotRemoveSetting.cs" />
+    <Compile Include="Errors\SettingErrors\Error_CouldNotSetSetting.cs" />
+    <Compile Include="Errors\SettingErrors\Error_CouldNotGetSetting.cs" />
+    <Compile Include="Errors\Error_ArgumentException.cs" />
+    <Compile Include="Errors\AggregateErrors\Error_AggregateNotAllowed.cs" />
+    <Compile Include="Errors\SettingErrors\GraphDBSettingError.cs" />
+    <Compile Include="Errors\TransactionErrors\Error_InvalidTransactionIsolationLevel.cs" />
+    <Compile Include="Errors\TransactionErrors\Error_StatementExpectsWriteTransaction.cs" />
+    <Compile Include="Errors\TransactionErrors\GraphDBTransactionError.cs" />
+    <Compile Include="Errors\TransactionErrors\Error_ExistingNestedTransaction.cs" />
+    <Compile Include="Errors\FunctionErrors\Error_InvalidFunctionBase.cs" />
+    <Compile Include="Errors\IndexErrors\Error_IndexIsNotPersistent.cs" />
+    <Compile Include="Errors\AttributeAssignmentErrors\Error_InvalidAttrDefaultValueAssignment.cs" />
+    <Compile Include="Errors\DBOperatorErrors\InRange\Error_InvalidInRangeInterval.cs" />
+    <Compile Include="Errors\DBOperatorErrors\InRange\Error_InvalidInRangeOperation.cs" />
+    <Compile Include="Errors\GraphDBTypeErrors\Error_InvalidType.cs" />
+    <Compile Include="Errors\IndexErrors\Error_InvalidIndexReference.cs" />
+    <Compile Include="Errors\TransactionErrors\Error_NoTransaction.cs" />
+    <Compile Include="Errors\TransactionErrors\Error_ParallelTransactionsNotAllowed.cs" />
+    <Compile Include="Errors\TypeAttributeErrors\GraphDBAttributeError.cs" />
+    <Compile Include="Indices\DBIndexManager.cs" />
+    <Compile Include="Managers\DBTransactionManager.cs" />
+    <Compile Include="Plugin\DBPluginManager.cs" />
+    <Compile Include="Errors\TypeAttributeErrors\Error_DropOfAttributeNotAllowed.cs" />
+    <Compile Include="Errors\IndexErrors\Error_IndexKeyCreationError.cs" />
+    <Compile Include="Errors\IndexErrors\Error_IndexRebuildError.cs" />
+    <Compile Include="Errors\DumpErrors\Error_InvalidDumpFormat.cs" />
+    <Compile Include="Errors\DumpErrors\Error_InvalidDumpType.cs" />
+    <Compile Include="Errors\IndexErrors\Error_InvalidIndexOperation.cs" />
+    <Compile Include="Errors\TypeAttributeErrors\Error_InvalidUndefinedAttributes.cs" />
+    <Compile Include="Errors\DumpErrors\Error_NotADumpableGrammar.cs" />
+    <Compile Include="Errors\IndexErrors\Error_RebuildIndexFailed.cs" />
+    <Compile Include="Errors\Error_ReadOnlyViolation.cs" />
+    <Compile Include="Errors\AggregateErrors\Error_AggregateIsNotValidOnThisAttribute.cs" />
+    <Compile Include="Errors\AggregateErrors\Error_AggregateOnMultiAttributesNotAllowed.cs" />
+    <Compile Include="Errors\AggregateErrors\Error_AggregateOrFunctionDoesNotExist.cs" />
+    <Compile Include="Errors\Error_ArgumentNullOrEmpty.cs" />
+    <Compile Include="Errors\TypeAttributeErrors\Error_AttributeAlreadyExists.cs" />
+    <Compile Include="Errors\TypeAttributeErrors\Error_AttributeDoesNotExists.cs" />
+    <Compile Include="Errors\TypeAttributeErrors\Error_AttributeExistsInSupertype.cs" />
+    <Compile Include="Errors\BackwardEdegeErrors\Error_BackwardEdgeAlreadyExist.cs" />
+    <Compile Include="Errors\BackwardEdegeErrors\Error_BackwardEdgeDestinationIsInvalid.cs" />
+    <Compile Include="Errors\BackwardEdegeErrors\Error_BackwardEdgesForNotReferenceAttributeTypesAreNotAllowed.cs" />
+    <Compile Include="Errors\BackwardEdegeErrors\Error_CouldNotLoadBackwardEdge.cs" />
+    <Compile Include="Errors\Error_DatabaseNotFound.cs" />
+    <Compile Include="Errors\Error_DataTypeDoesNotMatch.cs" />
+    <Compile Include="Errors\DBObjectErrors\Error_DBObjectCollision.cs" />
+    <Compile Include="Errors\DBObjectErrors\Error_DBObjectDoesNotExistInIndex.cs" />
+    <Compile Include="Errors\DBObjectErrors\Error_DBObjectDoesNotHaveAttribute.cs" />
+    <Compile Include="Errors\TypeAttributeErrors\Error_DropOfDerivedAttributeIsNotAllowed.cs" />
+    <Compile Include="Errors\SelectErrors\Error_DuplicateAttributeSelection.cs" />
+    <Compile Include="Errors\Error_DuplicateReferenceOccurence.cs" />
+    <Compile Include="Errors\EdgeErrors\Error_EdgeTypeDoesNotExist.cs" />
+    <Compile Include="Errors\Error_ExpressionGraphInternal.cs" />
+    <Compile Include="Errors\Error_FileNotFound.cs" />
+    <Compile Include="Errors\DBObjectErrors\Error_FlushObject.cs" />
+    <Compile Include="Errors\FunctionErrors\Error_FunctionDoesNotExist.cs" />
+    <Compile Include="Errors\FunctionErrors\Error_FunctionParameterCountMismatch.cs" />
+    <Compile Include="Errors\FunctionErrors\Error_FunctionParameterInvalidReference.cs" />
+    <Compile Include="Errors\FunctionErrors\Error_FunctionParameterTypeMismatch.cs" />
+    <Compile Include="Errors\Error_GqlSyntax.cs" />
+    <Compile Include="Errors\SelectErrors\Error_GroupedAttributeIsNotSelected.cs" />
+    <Compile Include="Errors\IndexErrors\Error_IndexAlreadyExist.cs" />
+    <Compile Include="Errors\IndexErrors\Error_IndexAttributeDoesNotExist.cs" />
+    <Compile Include="Errors\IndexErrors\Error_IndexCreationError.cs" />
+    <Compile Include="Errors\IndexErrors\Error_IndexDoesNotExist.cs" />
+    <Compile Include="Errors\IndexErrors\Error_IndexTypeDoesNotExist.cs" />
+    <Compile Include="Errors\IndexErrors\Error_IndexTypesOverlap.cs" />
+    <Compile Include="Errors\AttributeAssignmentErrors\Error_InvalidAssignOfSet.cs" />
+    <Compile Include="Errors\TypeAttributeErrors\Error_InvalidAttribute.cs" />
+    <Compile Include="Errors\TypeAttributeErrors\Error_InvalidAttributeKind.cs" />
+    <Compile Include="Errors\TypeAttributeErrors\Error_InvalidAttributeName.cs" />
+    <Compile Include="Errors\TypeAttributeErrors\Error_InvalidAttributeSelection.cs" />
+    <Compile Include="Errors\TypeAttributeErrors\Error_InvalidAttributeValue.cs" />
+    <Compile Include="Errors\GraphDBTypeErrors\Error_InvalidBaseType.cs" />
+    <Compile Include="Errors\Error_InvalidBinaryExpression.cs" />
+    <Compile Include="Errors\GraphDBTypeErrors\Error_InvalidDerive.cs" />
+    <Compile Include="Errors\EdgeErrors\Error_InvalidEdgeType.cs" />
+    <Compile Include="Errors\FunctionErrors\Error_InvalidFunctionParameter.cs" />
+    <Compile Include="Errors\Error_InvalidIDNode.cs" />
+    <Compile Include="Errors\Error_InvalidLevelKeyOperation.cs" />
+    <Compile Include="Errors\AttributeAssignmentErrors\Error_InvalidReferenceAssignmentOfUndefAttr.cs" />
+    <Compile Include="Errors\Error_InvalidTuple.cs" />
+    <Compile Include="Errors\TypeAttributeErrors\Error_InvalidUndefinedAttributeName.cs" />
+    <Compile Include="Errors\Error_IronyCompiler.cs" />
+    <Compile Include="Errors\GraphDBTypeErrors\Error_ListAttributeNotAllowed.cs" />
+    <Compile Include="Errors\DBObjectErrors\Error_LoadObject.cs" />
+    <Compile Include="Errors\Error_Logic.cs" />
+    <Compile Include="Errors\Error_MandatoryConstraintViolation.cs" />
+    <Compile Include="Errors\SelectErrors\Error_MultipleResults.cs" />
+    <Compile Include="Errors\SelectErrors\Error_NoGroupingArgument.cs" />
+    <Compile Include="Errors\Error_NotImpementedExpressionNode.cs" />
+    <Compile Include="Errors\Error_NotImplemented.cs" />
+    <Compile Include="Errors\AggregateErrors\Error_NotImplementedAggregateTarget.cs" />
+    <Compile Include="Errors\DBOperatorErrors\Error_OperatorDoesNotExist.cs" />
+    <Compile Include="Errors\GraphDBTypeErrors\Error_ParentTypeDoesNotExist.cs" />
+    <Compile Include="Errors\GraphDBTypeErrors\Error_RemoveGraphDBType.cs" />
+    <Compile Include="Errors\TypeAttributeErrors\Error_RemoveTypeAttribute.cs" />
+    <Compile Include="Errors\AttributeAssignmentErrors\Error_ReferenceAssignment.cs" />
+    <Compile Include="Errors\AttributeAssignmentErrors\Error_ReferenceAssignmentExpected.cs" />
+    <Compile Include="Errors\AttributeAssignmentErrors\Error_ReferenceAssignment_EmptyValue.cs" />
+    <Compile Include="Errors\SettingErrors\Error_SettingCouldNotBeSet.cs" />
+    <Compile Include="Errors\SettingErrors\Error_SettingDoesNotExist.cs" />
+    <Compile Include="Errors\SettingErrors\Error_SettingIsInactive.cs" />
+    <Compile Include="Errors\SettingErrors\Error_SettingsObjectDoesNotExist.cs" />
+    <Compile Include="Errors\SelectErrors\Error_SelectTimeOut.cs" />
+    <Compile Include="Errors\Error_TruncateNotAllowedOnInheritedType.cs" />
+    <Compile Include="Errors\GraphDBTypeErrors\Error_TypeAlreadyExist.cs" />
+    <Compile Include="Errors\GraphDBTypeErrors\Error_TypeDoesNotExist.cs" />
+    <Compile Include="Errors\GraphDBTypeErrors\Error_TypeDoesNotMatch.cs" />
+    <Compile Include="Errors\Error_UniqueConstrainViolation.cs" />
+    <Compile Include="Errors\Error_UnknownDBError.cs" />
+    <Compile Include="Errors\TypeAttributeErrors\Error_UpdateAttributeValue.cs" />
+    <Compile Include="Errors\TypeAttributeErrors\Error_UpdateListAttributeNoElements.cs" />
+    <Compile Include="Errors\GraphDBError.cs" />
+    <Compile Include="Exceptions\Exceptions.cs" />
+    <Compile Include="Indices\IndexKeyDefinition.cs" />
+    <Compile Include="Indices\IndexKey.cs" />
+    <Compile Include="Licensing\FeatureIDs.cs" />
+    <Compile Include="Licensing\FeatureLicenseProcessor.cs" />
+    <Compile Include="Licensing\LicensedFeatures.cs" />
+    <Compile Include="Managers\ObjectManipulationManager.cs" />
+    <Compile Include="Indices\AttributeIndex.cs" />
+    <Compile Include="ObjectManagement\BackwardEdgeStream.cs" />
+    <Compile Include="ObjectManagement\DBObjectCache\DBObjectCache.cs" />
+    <Compile Include="ObjectManagement\DBObjectGroup.cs" />
+    <Compile Include="ObjectManagement\DBObjectStream.cs" />
+    <Compile Include="ObjectManagement\EdgeKey.cs" />
+    <Compile Include="ObjectManagement\MapAndReduce\DBObjectMR.cs" />
+    <Compile Include="ObjectManagement\DBObjectManager.cs" />
+    <Compile Include="ObjectManagement\UndefinedAttributesStream.cs" />
+    <Compile Include="GraphDB2.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryLanguage\Enums\KindOfDelimiter.cs" />
+    <Compile Include="QueryLanguage\Enums\TypesOfOperators.cs" />
+    <Compile Include="QueryLanguage\Enums\TypesOfStatements.cs" />
+    <Compile Include="QueryLanguage\Enums\TypesOfAlterCmd.cs" />
+    <Compile Include="QueryLanguage\Enums\TypesOfAssociativity.cs" />
+    <Compile Include="QueryLanguage\Enums\TypesOfAtrributeValues.cs" />
+    <Compile Include="QueryLanguage\Enums\TypesOfAType.cs" />
+    <Compile Include="QueryLanguage\Enums\TypesOfBinaryExpression.cs" />
+    <Compile Include="QueryLanguage\Enums\TypesOfColumnSource.cs" />
+    <Compile Include="QueryLanguage\Enums\TypesOfOperatorResult.cs" />
+    <Compile Include="QueryLanguage\Enums\TypesOfPandoraType.cs" />
+    <Compile Include="QueryLanguage\Enums\TypesOfSettingOperation.cs" />
+    <Compile Include="QueryLanguage\Enums\TypesOfSettingScope.cs" />
+    <Compile Include="QueryLanguage\Enums\TypesOfUpdate.cs" />
+    <Compile Include="QueryLanguage\ExpressionGraph\AExpressionGraph.cs" />
+    <Compile Include="QueryLanguage\ExpressionGraph\CommonUsageGraph.cs" />
+    <Compile Include="QueryLanguage\ExpressionGraph\ExpressionEdge.cs" />
+    <Compile Include="QueryLanguage\ExpressionGraph\ExpressionLevel.cs" />
+    <Compile Include="QueryLanguage\ExpressionGraph\ExpressionLevelEntry.cs" />
+    <Compile Include="QueryLanguage\ExpressionGraph\ExpressionNode.cs" />
+    <Compile Include="QueryLanguage\ExpressionGraph\GraphPerformanceCriteria.cs" />
+    <Compile Include="QueryLanguage\ExpressionGraph\IExpressionEdge.cs" />
+    <Compile Include="QueryLanguage\ExpressionGraph\IExpressionGraph.cs" />
+    <Compile Include="QueryLanguage\ExpressionGraph\IExpressionLevel.cs" />
+    <Compile Include="QueryLanguage\ExpressionGraph\IExpressionLevelEntry.cs" />
+    <Compile Include="QueryLanguage\ExpressionGraph\IExpressionNode.cs" />
+    <Compile Include="QueryLanguage\ExpressionGraph\LevelKey.cs" />
+    <Compile Include="QueryLanguage\GQLDumpBuilder.cs" />
+    <Compile Include="QueryLanguage\IDumpable.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Aggregates\ABaseAggregate.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Aggregates\AggregateType.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Aggregates\AvgAggregate.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Aggregates\CountAggregate.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Aggregates\MaxAggregate.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Aggregates\MinAggregate.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Aggregates\SumAggregate.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\ABaseFunction.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\ConcatFunc.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\CountFunc.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\CurrentDateFunc.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\InsertFunc.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\MaxWeightFunc.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\SimplePathFunc.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\SubstringFunc.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\TopFunc.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\ToUpperFunc.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\AlterType\AlterTypeNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\AStatement.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\AttributeDefinition.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Create\CreateIndexNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Create\CreateTypesNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Delete\DeleteNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Describe\DescribeNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Drop\DropIndexNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Drop\DropTypeNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Dump\DumpFormatNode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Dump\DumpNode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Dump\DumpTypeNode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\InsertOrReplace\InsertOrReplaceNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\InsertOrUpdate\InsertOrUpdateNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Insert\InsertNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\RebuildIndices\RebuildIndicesNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Replace\ReplaceNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Select\ChainData.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Select\InterestingAttributes.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Select\SelectionElement.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Select\SelectNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Select\SelectResultGenerator.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Select\SelectResultGraphGenerator.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Select\SelectResultManager.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Select\SelectSettingCache.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Setting\SettingNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Transaction\BeginTransactionNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Transaction\CommitRollbackTransactionNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Truncate\TruncateNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Update\UpdateNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\AddToListAttrUpdateNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\ADescrNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\AggregateNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\AlterCmdNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\AStructureNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\AttrDefaultValueNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\AttributeAssignNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\AttributeDefinitionNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\AttrRemoveNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\AttrUpdateOrAssignListNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\ATypeNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\BackwardEdgeNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\BackwardEdgesNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\BinaryExpressionNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\BulkTypeListMemberNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\BulkTypeNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\CollectionOfDBObjectsNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\AddToListAttrUpdateAddToNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\AddToListAttrUpdateOperatorNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\RemoveFromListAttrUpdateAddToOperatorNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\RemoveFromListAttrUpdateAddToRemoveFromNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\EdgeInformationNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\EdgeTraversalNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\SelectionDelimiterNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\CreateIndexAttributeListNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\CreateIndexAttributeNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DefaultValueDefNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrAggrNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrAggrsNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrEdgeNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrEdgesNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrFuncNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrFunctionsNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrIdxNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrIdxsNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrObjNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrSettingsItemsNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrSettingsNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrSettItemNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrSettNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrTypeNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrTypesNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\EdgeTypeDefNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\EdgeTypeParamNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\EdgeTypeParamsNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\EdgeType_SortedNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\EditionOptNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\ExpressionNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\ExpressionOfAListNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\FuncCallNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\HavingExpressionNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\Helper\AttributeUpdateOrAssign.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\Helper\DescrAggrsOutput.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\Helper\DescrEdgesOutput.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\Helper\DescrFuncOutput.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\Helper\DescrIdxOutput.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\Helper\DescrTypesOutput.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\Helper\GuidEqualityComparer.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\Helper\PandoraTypeInformation.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\Helper\TupleElement.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\IDNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\IndexNameOptNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\IndexOptOnCreateTypeMemberNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\IndexTypeOptNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\LimitNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\ListPropertyAssign_WeightedNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\MandatoryOptNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\OffsetNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\OrderByNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\GraphDBTypeNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\ParametersNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\PartialSelectStmtNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\RemoveFromListAttrUpdateNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\SelectionListElementNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\SelectOutputOptNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\SetRefNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\SettingAttrNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\SettingContentNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\SettingOperationNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\SettingScopeNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\SettingTypeNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\SingleEdgeTypeDefNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\TupleNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\TupleSingleNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\UnaryExprNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\UniqueAttributesOptNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\uniqueOptNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\WhereExpressionNode.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\ABinaryOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\OperationValues\AtomValue.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\ABinaryBaseOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\ABinaryCompareOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\AdditionOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\AndOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\InRangeOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\DivisionOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\EqualsOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\GreaterEqualsOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\GreaterThanOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\InOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\LessEqualsOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\LessThanOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\MultiplicationOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\NotEqualsOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\NotInOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\OrOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BaseOperators\SubtractionOperator.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\BinaryOperatorTypes.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\OperationValues\IOperationValue.cs" />
+    <Compile Include="QueryLanguage\Operator\BinaryOperator\OperationValues\TupleValue.cs" />
+    <Compile Include="QueryLanguage\GraphQL.cs" />
+    <Compile Include="QueryLanguage\Result\AObject.cs" />
+    <Compile Include="QueryLanguage\Result\DBObjectReadout.cs" />
+    <Compile Include="QueryLanguage\Result\DBObjectReadoutGroup.cs" />
+    <Compile Include="QueryLanguage\Result\DBWeightedObjectReadout.cs" />
+    <Compile Include="QueryLanguage\Result\Edge.cs" />
+    <Compile Include="QueryLanguage\Result\OutputDictionary.cs" />
+    <Compile Include="QueryLanguage\Result\OutputList.cs" />
+    <Compile Include="QueryLanguage\Result\QueryResult.cs" />
+    <Compile Include="QueryLanguage\Result\QueryResultQuantityEnum.cs" />
+    <Compile Include="QueryLanguage\Result\SelectionResultSet.cs" />
+    <Compile Include="QueryLanguage\Result\SimpleResult.cs" />
+    <Compile Include="QueryLanguage\Result\TEXTRepresentation.cs" />
+    <Compile Include="Query\Helpers\Timeout.cs" />
+    <Compile Include="Query\Helpers\TimeoutGeneric.cs" />
+    <Compile Include="Query\QueryManager.cs" />
+    <Compile Include="Session\DBSessionSettings.cs" />
+    <Compile Include="Session\DBSessionInfo.cs" />
+    <Compile Include="Settings\APersistentSetting.cs" />
+    <Compile Include="Settings\ANonPersistentSetting.cs" />
+    <Compile Include="Settings\ShowSettings\SettingShowCREATIONTIME.cs" />
+    <Compile Include="Settings\ShowSettings\SettingShowDELETIONTIME.cs" />
+    <Compile Include="Settings\ShowSettings\SettingShowEDITION.cs" />
+    <Compile Include="Settings\ShowSettings\SettingShowEDITIONS.cs" />
+    <Compile Include="Settings\ShowSettings\SettingShowLASTACCESSTIME.cs" />
+    <Compile Include="Settings\ShowSettings\SettingShowLASTMODIFICATIONTIME.cs" />
+    <Compile Include="Structures\EdgeTypes\ASetBaseEdgeType.cs" />
+    <Compile Include="Structures\EdgeTypes\EdgeTypeSetOfBaseObjects.cs" />
+    <Compile Include="Structures\EdgeTypes\IBaseEdge.cs" />
+    <Compile Include="Transactions\DBTransaction.cs" />
+    <Compile Include="Session\GraphDBSession.cs" />
+    <Compile Include="Session\IGraphDBSession.cs" />
+    <Compile Include="Settings\ADBSettingsBase.cs" />
+    <Compile Include="Settings\AttrSettings\IDBAttributeSetting.cs" />
+    <Compile Include="Settings\AttrSettings\SettingDefaultsOnMandatory.cs" />
+    <Compile Include="Settings\AttrSettings\SettingDepth.cs" />
+    <Compile Include="Settings\AttrSettings\SettingInvalidReferenceHandling.cs" />
+    <Compile Include="Settings\AttrSettings\SettingMaxCacheItems.cs" />
+    <Compile Include="Settings\AttrSettings\SettingSelectTimeOut.cs" />
+    <Compile Include="Settings\AttrSettings\SettingTypeDirBlocksize.cs" />
+    <Compile Include="Settings\DatabaseSettings\IDBDatabaseOnlySetting.cs" />
+    <Compile Include="Settings\DatabaseSettings\SettingReadonly.cs" />
+    <Compile Include="Errors\SettingErrors\Error_CouldNotWriteSettings.cs" />
+    <Compile Include="Errors\SettingErrors\Error_SettingsNotFound.cs" />
+    <Compile Include="Settings\ShowSettings\IDBShowSetting.cs" />
+    <Compile Include="Settings\ShowSettings\SettingShowREVISION.cs" />
+    <Compile Include="Settings\ShowSettings\SettingShowUUID.cs" />
+    <Compile Include="Settings\InstanceSettings.cs" />
+    <Compile Include="Settings\DBInstanceSettingsManager.cs" />
+    <Compile Include="Settings\DBSettingsManager.cs" />
+    <Compile Include="Settings\SettingUUID.cs" />
+    <Compile Include="Structures\DBIndexTypes.cs" />
+    <Compile Include="Structures\EdgeTypes\AEdgeType.cs" />
+    <Compile Include="Structures\EdgeTypes\AListBaseEdgeType.cs" />
+    <Compile Include="Structures\EdgeTypes\AListEdgeType.cs" />
+    <Compile Include="Structures\EdgeTypes\ASetReferenceEdgeType.cs" />
+    <Compile Include="Structures\EdgeTypes\ASingleReferenceEdgeType.cs" />
+    <Compile Include="Structures\EdgeTypes\IReferenceEdge.cs" />
+    <Compile Include="Structures\EdgeTypes\EdgeTypeCounted.cs" />
+    <Compile Include="Structures\EdgeTypes\EdgeTypeListOfBaseObjects.cs" />
+    <Compile Include="Structures\EdgeTypes\EdgeTypePath.cs" />
+    <Compile Include="Structures\EdgeTypes\EdgeTypeSetOfReferences.cs" />
+    <Compile Include="Structures\EdgeTypes\EdgeTypeSingleReference.cs" />
+    <Compile Include="Structures\EdgeTypes\EdgeTypeUUID.cs" />
+    <Compile Include="Structures\EdgeTypes\EdgeTypeWeightedList.cs" />
+    <Compile Include="Structures\SpecializedSet\SortDescendencyComparer.cs" />
+    <Compile Include="Structures\SpecializedSet\WeightedSet.cs" />
+    <Compile Include="TypeManagement\AttributeUUID.cs" />
+    <Compile Include="TypeManagement\DBTypeManager.cs" />
+    <Compile Include="TypeManagement\GraphDBType.cs" />
+    <Compile Include="TypeManagement\GraphDBTypeDefinition.cs" />
+    <Compile Include="TypeManagement\PandoraTypeMapper.cs" />
+    <Compile Include="TypeManagement\PandoraTypes\ADBBaseObject.cs" />
+    <Compile Include="TypeManagement\PandoraTypes\DBBackwardEdgeType.cs" />
+    <Compile Include="TypeManagement\PandoraTypes\DBBaseObject.cs" />
+    <Compile Include="TypeManagement\PandoraTypes\DBBoolean.cs" />
+    <Compile Include="TypeManagement\PandoraTypes\DBDateTime.cs" />
+    <Compile Include="TypeManagement\PandoraTypes\DBDouble.cs" />
+    <Compile Include="TypeManagement\PandoraTypes\DBInt32.cs" />
+    <Compile Include="TypeManagement\PandoraTypes\DBInt64.cs" />
+    <Compile Include="TypeManagement\PandoraTypes\DBEdge.cs" />
+    <Compile Include="TypeManagement\PandoraTypes\DBNumber.cs" />
+    <Compile Include="TypeManagement\PandoraTypes\DBReference.cs" />
+    <Compile Include="TypeManagement\PandoraTypes\DBString.cs" />
+    <Compile Include="TypeManagement\PandoraTypes\DBType.cs" />
+    <Compile Include="TypeManagement\PandoraTypes\DBTypeAttribute.cs" />
+    <Compile Include="TypeManagement\PandoraTypes\DBUInt64.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\ASpecialTypeAttribute.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_DELETIONTIME.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_CREATIONTIME.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_EDITION.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_EDITIONS.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_LASTACCESSTIME.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_LASTMODIFICATIONTIME.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_REVISION.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_TYPE.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_UUID.cs" />
+    <Compile Include="TypeManagement\TypeAttribute.cs" />
+    <Compile Include="TypeManagement\TypeCharacteristics.cs" />
+    <Compile Include="DBContext.cs" />
+    <Compile Include="TypeManagement\TypeUUID.cs" />
+    <Compile Include="Version.cs" />
+    <Compile Include="Warnings\Warning_NothingInserted.cs" />
+    <Compile Include="Warnings\Warning_NoFSTransaction.cs" />
+    <Compile Include="Warnings\Warning_NoObjectsToReplace.cs" />
+    <Compile Include="Warnings\Warning_CouldNotLoadDBObject.cs" />
+    <Compile Include="Warnings\GraphDBWarning.cs" />
+    <Compile Include="Warnings\GraphDBWarningException.cs" />
+    <Compile Include="Warnings\Warning_EdgeToNonExistingNode.cs" />
+    <Compile Include="Warnings\Warning_NoObjectsToDelete.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NLog.config" />
+    <None Include="Settings\SettingsClassDiagram.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="QueryLanguage\Operator\OperatorContext\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\GraphFS\GraphFSInterface\GraphFSInterface.csproj">
+      <Project>{B23FDA3D-8229-4CDD-91FD-9AFD7301D315}</Project>
+      <Name>GraphFSInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Libraries\Newtonsoft.Json\Newtonsoft.Json.csproj">
+      <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
+      <Name>Newtonsoft.Json</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lib\Irony\Irony.csproj">
+      <Project>{CDD9C45F-F285-4A80-B39F-3B1B8B7B5214}</Project>
+      <Name>Irony</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lib\Lib\Lib.csproj">
+      <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
+      <Name>Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lib\sonesCLI\sonesCLI.csproj">
+      <Project>{5EB964C0-FF26-4B37-99A6-C1D40644E33C}</Project>
+      <Name>sonesCLI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Notifications\Notifications\Notifications.csproj">
+      <Project>{81E75577-B787-4537-B191-F3326C6E5865}</Project>
+      <Name>Notifications</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GraphDBInterface\GraphDBInterface.csproj">
+      <Project>{72319FF7-E9D9-4AE9-AA0B-2E006442B1ED}</Project>
+      <Name>GraphDBInterface</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AdditionalLicenses.txt" />
+    <Content Include="license.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

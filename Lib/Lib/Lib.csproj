@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{56277965-A00C-4219-BD4E-6E030D37343F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Lib</RootNamespace>
+    <AssemblyName>Lib</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Bit-Manipulation\BitHelperException.cs" />
+    <Compile Include="Bit-Manipulation\BitManipulation.cs" />
+    <Compile Include="BufferHelper.cs" />
+    <Compile Include="ByteArrayHelper.cs" />
+    <Compile Include="Caches\ACacheEntry.cs" />
+    <Compile Include="Caches\ASimpleCache.cs" />
+    <Compile Include="Caches\CacheExceptions.cs" />
+    <Compile Include="Caches\CacheSettings.cs" />
+    <Compile Include="Caches\ExpirationTypes.cs" />
+    <Compile Include="Caches\SimpleCache.cs" />
+    <Compile Include="Caches\SimpleCacheItem.cs" />
+    <Compile Include="Cryptography\CryptographyExceptions.cs" />
+    <Compile Include="Cryptography\IntegrityCheck\IIntegrityCheck.cs" />
+    <Compile Include="Cryptography\IntegrityCheck\IntegrityCheckFactory.cs" />
+    <Compile Include="Cryptography\IntegrityCheck\IntegrityCheckTypes.cs" />
+    <Compile Include="Cryptography\IntegrityCheck\MD5.cs" />
+    <Compile Include="Cryptography\IntegrityCheck\NULLAlgorithm.cs" />
+    <Compile Include="Cryptography\IntegrityCheck\SHA1.cs" />
+    <Compile Include="Cryptography\SymmetricEncryption\AES.cs" />
+    <Compile Include="Cryptography\SymmetricEncryption\ISymmetricEncryption.cs" />
+    <Compile Include="Cryptography\SymmetricEncryption\NULLAlgorithm.cs" />
+    <Compile Include="Cryptography\SymmetricEncryption\SymmetricEncryptionFactory.cs" />
+    <Compile Include="Cryptography\SymmetricEncryption\SymmetricEncryptionTypes.cs" />
+    <Compile Include="DataStructures\Big\BigDictionary.cs" />
+    <Compile Include="DataStructures\Big\BigHashSet.cs" />
+    <Compile Include="DataStructures\Big\BigList.cs" />
+    <Compile Include="DataStructures\BPlusTree\BPlusTree.cs" />
+    <Compile Include="DataStructures\BPlusTree\IBPlusTree.cs" />
+    <Compile Include="DataStructures\BPlusTree\InnerNode.cs" />
+    <Compile Include="DataStructures\BPlusTree\LeafNode.cs" />
+    <Compile Include="DataStructures\BPlusTree\MVCC_poc\BPlusTree_MVCC.cs" />
+    <Compile Include="DataStructures\BPlusTree\MVCC_poc\InnerNode_MVCC.cs" />
+    <Compile Include="DataStructures\BPlusTree\MVCC_poc\LeafNode_MVCC.cs" />
+    <Compile Include="DataStructures\BPlusTree\MVCC_poc\Node_MVCC.cs" />
+    <Compile Include="DataStructures\BPlusTree\MVCC_poc\VersionedBPlusTree_MVCC.cs" />
+    <Compile Include="DataStructures\BPlusTree\Node.cs" />
+    <Compile Include="DataStructures\BPlusTree\Versioned\VersionedBPlusTree.cs" />
+    <Compile Include="DataStructures\BPlusTree\Versioned\IVersionedBPlusTree.cs" />
+    <Compile Include="DataStructures\BPlusTree\Versioned\VersionedInnerNode.cs" />
+    <Compile Include="DataStructures\BPlusTree\Versioned\VersionedNode.cs" />
+    <Compile Include="DataStructures\BPlusTree\Versioned\VersionedLeafNode.cs" />
+    <Compile Include="DataStructures\BST\BST.cs" />
+    <Compile Include="DataStructures\BST\BSTException.cs" />
+    <Compile Include="DataStructures\BST\BSTTreeNode.cs" />
+    <Compile Include="DataStructures\BST\data structure\BSTreeElement.cs" />
+    <Compile Include="DataStructures\BST\data structure\TreeNode.cs" />
+    <Compile Include="DataStructures\BST\data structure\TreeNodeList.cs" />
+    <Compile Include="DataStructures\BST\TraversalMethod.cs" />
+    <Compile Include="DataStructures\Indices\IVersionedRangeIndexInterface.cs" />
+    <Compile Include="DataStructures\Mono_ConcurrentDictionary\MonoConcurrentDictionary.cs" />
+    <Compile Include="DataStructures\Dictionaries\IDictionaryInterface.cs" />
+    <Compile Include="DataStructures\Dictionaries\IDictionaryExtensions.cs" />
+    <Compile Include="DataStructures\Dictionaries\IVersionedDictionaryInterface.cs" />
+    <Compile Include="DataStructures\Dictionaries\IVersionedDictionaryExtensions.cs" />
+    <Compile Include="DataStructures\Dictionaries\ValueHistory\DictionaryValueHistory.cs" />
+    <Compile Include="DataStructures\Entity\EntityUUID.cs" />
+    <Compile Include="DataStructures\FSPathConstants.cs" />
+    <Compile Include="DataStructures\Indices\IIndexInterface.cs" />
+    <Compile Include="DataStructures\Indices\IIndexExtensions.cs" />
+    <Compile Include="DataStructures\Indices\IndexSetStrategy.cs" />
+    <Compile Include="DataStructures\Indices\IVersionedIndexInterface.cs" />
+    <Compile Include="DataStructures\Indices\IVersionedIndexExtensions.cs" />
+    <Compile Include="DataStructures\Indices\ValueHistory\IndexValue.cs" />
+    <Compile Include="DataStructures\Indices\ValueHistory\IndexValueHistory.cs" />
+    <Compile Include="DataStructures\Indices\ValueHistory\IndexValueHistoryList.cs" />
+    <Compile Include="DataStructures\IPandoraDictionary.cs" />
+    <Compile Include="DataStructures\PasswordHash\PasswordHash.cs" />
+    <Compile Include="DataStructures\PublicKey\PublicKey.cs" />
+    <Compile Include="DataStructures\RangeSet.cs" />
+    <Compile Include="DataStructures\SortDirection.cs" />
+    <Compile Include="DataStructures\StefanTuple.cs" />
+    <Compile Include="DataStructures\Timestamp\TimestampNonce.cs" />
+    <Compile Include="DataStructures\Timestamp\TimestampValuePair.cs" />
+    <Compile Include="DataStructures\Trinary\Trinary.cs" />
+    <Compile Include="DataStructures\Trinary\TrinaryExtensionMethods.cs" />
+    <Compile Include="DataStructures\UUID\ASurrogateUUID.cs" />
+    <Compile Include="DataStructures\UUID\UUID.cs" />
+    <Compile Include="DataStructures\WeakReference\WeakReference.cs" />
+    <Compile Include="DataStructures\WeightedSet\WeightedSet.cs" />
+    <Compile Include="DDate\DiscordianDate.cs" />
+    <Compile Include="DDate\DiscordianDateStructure.cs" />
+    <Compile Include="ErrorHandling\ExceptionalExtensions.cs" />
+    <Compile Include="ErrorHandling\ExceptionalConversionError.cs" />
+    <Compile Include="ErrorHandling\ExceptionalError.cs" />
+    <Compile Include="ErrorHandling\Enums\ErrorCodeEnum.cs" />
+    <Compile Include="ErrorHandling\Exceptional.cs" />
+    <Compile Include="ErrorHandling\GraphError.cs" />
+    <Compile Include="ErrorHandling\IError.cs" />
+    <Compile Include="ErrorHandling\IExceptional.cs" />
+    <Compile Include="ErrorHandling\IWarning.cs" />
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="FastSerializer\FastReflectionSerializer.cs" />
+    <Compile Include="FastSerializer\FastReflectionSerializerExceptions.cs" />
+    <Compile Include="FastSerializer\FastSerializer.cs" />
+    <Compile Include="FastSerializer\FillFastSerialTypeSurrogateList.cs" />
+    <Compile Include="FastSerializer\IFastSerializeExtensions.cs" />
+    <Compile Include="FastSerializer\IFastSerializer.cs" />
+    <Compile Include="GenericEnum.cs" />
+    <Compile Include="Hashing\Filter\AFilter.cs" />
+    <Compile Include="Hashing\Filter\MultiHashBloomFilter.cs" />
+    <Compile Include="Hashing\Filter\SingleHashBloomFilter.cs" />
+    <Compile Include="Hashing\Functions\MD5Hash.cs" />
+    <Compile Include="Hashing\Functions\MurmurHash2.cs" />
+    <Compile Include="Hashing\Functions\SHA1Hash.cs" />
+    <Compile Include="Hashing\IHashFunction.cs" />
+    <Compile Include="IContext.cs" />
+    <Compile Include="KeyValuePairSerializer\KeyValuePairSerializer.cs" />
+    <Compile Include="MIMEType\MIMEType.cs" />
+    <Compile Include="MinMaxDictionary.cs" />
+    <Compile Include="Multithreading\PandoraThreadPool\PandoraThreadPool.cs" />
+    <Compile Include="Multithreading\SpecialTimer.cs" />
+    <Compile Include="NewFastSerializer\IFastSerializationTypeSurrogate.cs" />
+    <Compile Include="NewFastSerializer\IOwnedDataSerializable.cs" />
+    <Compile Include="NewFastSerializer\IOwnedDataSerializableAndRecreatable.cs" />
+    <Compile Include="NewFastSerializer\OptimizationException.cs" />
+    <Compile Include="NewFastSerializer\SerializationReader.cs" />
+    <Compile Include="NewFastSerializer\SerializationWriter.cs" />
+    <Compile Include="NewFastSerializer\SerializedType.cs" />
+    <Compile Include="NewFastSerializer\UniqueStringList.cs" />
+    <Compile Include="NRandom.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reflection\AutoDiscovery.cs" />
+    <Compile Include="Reflection\AutoDiscoveryError.cs" />
+    <Compile Include="RessourceLock.cs" />
+    <Compile Include="Result\Enum\ResultTypeEnum.cs" />
+    <Compile Include="SeperatorTypes.cs" />
+    <Compile Include="Session\ISessionInfo.cs" />
+    <Compile Include="Session\SessionSettings.cs" />
+    <Compile Include="Session\SessionToken.cs" />
+    <Compile Include="Session\SessionUUID.cs" />
+    <Compile Include="Settings\ISettings.cs" />
+    <Compile Include="SimpleLogger\ConsoleOutputLogger.cs" />
+    <Compile Include="Singleton\Singleton.cs" />
+    <Compile Include="UnitTestHelper.cs" />
+    <Compile Include="Version.cs" />
+    <Compile Include="XML\IXMLExport.cs" />
+    <Compile Include="XML\PandoraXMLValidation.cs" />
+    <Compile Include="XML\XMLValidationTypes.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AdditionalLicenses.txt" />
+    <Content Include="license.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DataStructures\Exceptional\" />
+    <Folder Include="DataStructures\TimestampNonce\" />
+    <Folder Include="DataStructures\TimestampValuePair\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

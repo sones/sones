@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B23FDA3D-8229-4CDD-91FD-9AFD7301D315}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GraphFSInterface</RootNamespace>
+    <AssemblyName>GraphFSInterface</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel.Web">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Datastructures\INode\INode.cs" />
+    <Compile Include="Datastructures\UUIDs\CacheUUID.cs" />
+    <Compile Include="Datastructures\UUIDs\ObjectUUID.cs" />
+    <Compile Include="Datastructures\UUIDs\TransactionUUID.cs" />
+    <Compile Include="Datastructures\UUIDs\UUIDEqualityComparer.cs" />
+    <Compile Include="Directory\IDirectoryListing.cs" />
+    <Compile Include="Errors\Transactions\GraphFSError_TransactionAlreadyRunning.cs" />
+    <Compile Include="Errors\Transactions\GraphFSError_CouldNotRolleBackNestedTransaction.cs" />
+    <Compile Include="Errors\Transactions\GraphFSError_CouldNotCommitNestedTransaction.cs" />
+    <Compile Include="Errors\Transactions\GraphFSError_TransactionCurrentlyRollingBack.cs" />
+    <Compile Include="Errors\Transactions\GraphFSError_TransactionCurrentlyCommitting.cs" />
+    <Compile Include="Errors\Transactions\GraphFSError_Transactions.cs" />
+    <Compile Include="Errors\Transactions\GraphFSError_TransactionAlreadyCommited.cs" />
+    <Compile Include="Errors\Transactions\GraphFSError_TransactionAlreadyRolledback.cs" />
+    <Compile Include="Errors\General\GraphFSError_CouldNotGetObjectLocator.cs" />
+    <Compile Include="Errors\Directory\GraphFSError_DirectoryIsNotEmpty.cs" />
+    <Compile Include="Errors\Directory\GraphFSError_CouldNotRemoveDirectoryObject.cs" />
+    <Compile Include="Errors\Directory\GraphFSError_CouldNotGetDirectoryListing.cs" />
+    <Compile Include="Errors\General\GraphFSError_CouldNotDeserialize.cs" />
+    <Compile Include="Errors\Metadata\GraphFSError_MetadataObjectNotFound.cs" />
+    <Compile Include="Errors\General\GraphFSError_CouldNotStoreObject.cs" />
+    <Compile Include="Errors\Metadata\GraphFSError_CouldNotSetMetadata.cs" />
+    <Compile Include="Errors\General\GraphFSError_CouldNotGetObjectStreams.cs" />
+    <Compile Include="Errors\Directory\GraphFSError_DirectoryListingFailed.cs" />
+    <Compile Include="Errors\Directory\GraphFSError_CreateDirectoryFailed.cs" />
+    <Compile Include="Errors\Directory\GraphFSError_DirectoryObjectNotFound.cs" />
+    <Compile Include="Errors\General\GraphFSError_CouldNotOverwriteRevision.cs" />
+    <Compile Include="Errors\General\GraphFSError_ObjectLocatorNotFound.cs" />
+    <Compile Include="Errors\General\GraphFSError_INodeCouldNotBeLoaded.cs" />
+    <Compile Include="Errors\General\GraphFSError_AllObjectCopiesFailed.cs" />
+    <Compile Include="Errors\General\GraphFSError_ObjectStreamNotFound.cs" />
+    <Compile Include="Errors\General\GraphFSError_NoObjectEditionsFound.cs" />
+    <Compile Include="Errors\General\GraphFSError_ObjectEditionNotFound.cs" />
+    <Compile Include="Errors\General\GraphFSError_NoObjectRevisionsFound.cs" />
+    <Compile Include="Errors\GraphFSError.cs" />
+    <Compile Include="Errors\General\GraphFSError_NoINodePositionsForReading.cs" />
+    <Compile Include="Errors\General\GraphFSError_ObjectNotFound.cs" />
+    <Compile Include="Datastructures\FSConstants.cs" />
+    <Compile Include="FSExtensions.cs" />
+    <Compile Include="InternalObjects\AccessControlObject\AccessControlObject.cs" />
+    <Compile Include="InternalObjects\AccessControlObject\DefaultRuleTypes.cs" />
+    <Compile Include="InternalObjects\AccessControlObject\NHAccessControlObject.cs" />
+    <Compile Include="InternalObjects\BlockIntegrityObject\BlockIntegrityObject.cs" />
+    <Compile Include="InternalObjects\DirectoryObject\DirectoryObject.cs" />
+    <Compile Include="InternalObjects\DirectoryObject\SimpleDirectoryEntryInformation.cs" />
+    <Compile Include="InternalObjects\EntitiesObject\ContactTypes.cs" />
+    <Compile Include="InternalObjects\EntitiesObject\EntitiesObject.cs" />
+    <Compile Include="InternalObjects\EntitiesObject\Entity.cs" />
+    <Compile Include="InternalObjects\EntitiesObject\EntityStatus.cs" />
+    <Compile Include="InternalObjects\MetadataObject\MetadataObject.cs" />
+    <Compile Include="InternalObjects\RightsObject\Right.cs" />
+    <Compile Include="InternalObjects\RightsObject\RightsObject.cs" />
+    <Compile Include="InternalObjects\RightsObject\RightUUID.cs" />
+    <Compile Include="Notifications\NObjectStored.cs" />
+    <Compile Include="Objects\AObjectHeader.cs" />
+    <Compile Include="Objects\AFSObject.cs" />
+    <Compile Include="Objects\AObjectOntology.cs" />
+    <Compile Include="Datastructures\AccessModeTypes.cs" />
+    <Compile Include="Datastructures\AFSStructure.cs" />
+    <Compile Include="Datastructures\ObjectLocator\Helper\AccessRight.cs" />
+    <Compile Include="Datastructures\ObjectLocator\Helper\ObjectCompression.cs" />
+    <Compile Include="Datastructures\ObjectLocator\Helper\ObjectFEC.cs" />
+    <Compile Include="Datastructures\ObjectLocator\Helper\ObjectRedundancy.cs" />
+    <Compile Include="Datastructures\ObjectLocator\ObjectDatastream.cs" />
+    <Compile Include="Datastructures\ObjectLocator\ObjectEdition.cs" />
+    <Compile Include="Datastructures\ObjectLocator\ObjectLocator.cs" />
+    <Compile Include="Datastructures\ObjectLocator\ObjectRevision.cs" />
+    <Compile Include="Datastructures\ObjectLocator\ObjectStream.cs" />
+    <Compile Include="Datastructures\ObjectLocator\TypeDefs\CompressionTypes.cs" />
+    <Compile Include="Datastructures\ObjectLocator\TypeDefs\ForwardErrorCorrectionTypes.cs" />
+    <Compile Include="Datastructures\ObjectLocator\TypeDefs\RedundancyTypes.cs" />
+    <Compile Include="Datastructures\TypeDefs\AccessFlagsType.cs" />
+    <Compile Include="Datastructures\TypeDefs\Flags.cs" />
+    <Compile Include="Datastructures\TypeDefs\PandoraFSResult.cs" />
+    <Compile Include="Datastructures\ObjectCacheSettings.cs" />
+    <Compile Include="Datastructures\ResolveTypes.cs" />
+    <Compile Include="Datastructures\UUIDs\FileSystemUUID.cs" />
+    <Compile Include="Datastructures\UUIDs\ForestUUID.cs" />
+    <Compile Include="Datastructures\UUIDs\ObjectUUIDSubtypes.cs" />
+    <Compile Include="Directory\DirectoryEntry.cs" />
+    <Compile Include="Directory\DirectoryEntryInformation.cs" />
+    <Compile Include="Directory\DirectoryHelper.cs" />
+    <Compile Include="Directory\IDirectoryObject.cs" />
+    <Compile Include="IGraphFS.cs" />
+    <Compile Include="Objects\IndexObject\AIndexObject.cs" />
+    <Compile Include="Objects\IndexObject\AVersionedIndexObject.cs" />
+    <Compile Include="Objects\IndexObject\Implementation\BPlusTreeIndexObject.cs" />
+    <Compile Include="Objects\IndexObject\Implementation\HashIndexObject.cs" />
+    <Compile Include="Objects\IndexObject\Implementation\VersionedBPlusTreeIndexObject.cs" />
+    <Compile Include="Objects\IndexObject\Implementation\VersionedHashIndexObject.cs" />
+    <Compile Include="Objects\IObjectHeader.cs" />
+    <Compile Include="Objects\IObjectLocation.cs" />
+    <Compile Include="Objects\IObjectOntology.cs" />
+    <Compile Include="Objects\ListOfStringsObject\ListOfStringsObject.cs" />
+    <Compile Include="Datastructures\ObjectLocator\ObjectLocation.cs" />
+    <Compile Include="Session\IGraphFSSession.cs" />
+    <Compile Include="IGraphFSStream.cs" />
+    <Compile Include="Directory\NHIDirectoryObject.cs" />
+    <Compile Include="Notifications\AccessControl\NAccessControl.cs" />
+    <Compile Include="Notifications\AccessControl\NAccessControl_AllowACL_EntityAdded.cs" />
+    <Compile Include="Notifications\AccessControl\NAccessControl_AllowACL_EntityRemoved.cs" />
+    <Compile Include="Notifications\AccessControl\NAccessControl_DefaultRuleChanged.cs" />
+    <Compile Include="Notifications\AccessControl\NAccessControl_DenyACL_EntityAdded.cs" />
+    <Compile Include="Notifications\AccessControl\NAccessControl_DenyACL_EntityRemoved.cs" />
+    <Compile Include="Notifications\Exception\NException.cs" />
+    <Compile Include="Notifications\Exception\NException_UnhandledExceptionInsideAThread.cs" />
+    <Compile Include="Notifications\FileSystem\NFileSystem.cs" />
+    <Compile Include="Notifications\FileSystem\NFileSystem_IntegrityCheckFailed.cs" />
+    <Compile Include="Notifications\FileSystem\NFileSystem_NumberOfRevisionsReached.cs" />
+    <Compile Include="Notifications\FileSystem\NFileSystem_PandoraObjectChanged.cs" />
+    <Compile Include="Notifications\ObjectCache\NObjectCache.cs" />
+    <Compile Include="Notifications\ObjectCache\NObjectCache_FlushCacheItems.cs" />
+    <Compile Include="Notifications\ObjectCache\NObjectCache_MissingCacheItem.cs" />
+    <Compile Include="Notifications\ObjectCache\NObjectCache_NewCacheItem.cs" />
+    <Compile Include="Datastructures\ObjectLocator\ObjectLocatorStates.cs" />
+    <Compile Include="ObjectLocks.cs" />
+    <Compile Include="ObjectLockTypes.cs" />
+    <Compile Include="Datastructures\UUIDs\GraphFSStreamUUID.cs" />
+    <Compile Include="Errors\PandoraFSExceptions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Datastructures\RevisionID.cs" />
+    <Compile Include="Objects\DictionaryObject\Implementation\ADictionaryObject.cs" />
+    <Compile Include="Objects\DictionaryObject\Implementation\AVersionedDictionaryObject.cs" />
+    <Compile Include="Objects\DictionaryObject\Implementation\DictionaryObject.cs" />
+    <Compile Include="Objects\DictionaryObject\Implementation\VersionedDictionaryObject.cs" />
+    <Compile Include="Objects\DictionaryObject\Interfaces\IDictionaryObject.cs" />
+    <Compile Include="Objects\DictionaryObject\Interfaces\IVersionedDictionaryObject.cs" />
+    <Compile Include="Objects\FileObject\AFileObject.cs" />
+    <Compile Include="Objects\FileObject\FileObject.cs" />
+    <Compile Include="Objects\HashSetObject\HashSetObject.cs" />
+    <Compile Include="Objects\IndexObject\IndexObjectTypes.cs" />
+    <Compile Include="Objects\IndexObject\Interfaces\IIndexObject.cs" />
+    <Compile Include="Objects\IndexObject\Interfaces\IVersionedIndexObject.cs" />
+    <Compile Include="Objects\ListObject\ListObject.cs" />
+    <Compile Include="Objects\MetadataObject\IMetadataObject.cs" />
+    <Compile Include="Objects\MetadataObject\NHIMetadataObject.cs" />
+    <Compile Include="Objects\QueueObject\QueueObject.cs" />
+    <Compile Include="Objects\TypedMetadataObject\TypedMetadataKey.cs" />
+    <Compile Include="Session\FSSessionInfo.cs" />
+    <Compile Include="Session\FSSessionSettings.cs" />
+    <Compile Include="GraphFSFactory.cs" />
+    <Compile Include="Transactions\ATransaction.cs" />
+    <Compile Include="Transactions\FSTransaction.cs" />
+    <Compile Include="Transactions\IsolationLevel.cs" />
+    <Compile Include="Transactions\TransactionExtensions.cs" />
+    <Compile Include="Transactions\TransactionState.cs" />
+    <Compile Include="Transaction\FSTransaction.cs" />
+    <Compile Include="Transaction\Transaction.cs" />
+    <Compile Include="Transaction\TransactionDetail.cs" />
+    <Compile Include="Transactions\TransactionDisposedEventArgs.cs" />
+    <Compile Include="Transactions\TransactionDisposedHandler.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Lib\Lib\Lib.csproj">
+      <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
+      <Name>Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Notifications\Notifications\Notifications.csproj">
+      <Project>{81E75577-B787-4537-B191-F3326C6E5865}</Project>
+      <Name>Notifications</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\StorageEngines\StorageEnginesInterface\StorageEnginesInterface.csproj">
+      <Project>{F3BF32FF-7113-4DE6-801B-BB234A76539B}</Project>
+      <Name>StorageEnginesInterface</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Datastructures\ObjectLocator\ObjectLocator.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Session\UUIDs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AdditionalLicenses.txt" />
+    <Content Include="license.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

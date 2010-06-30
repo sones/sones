@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{81E75577-B787-4537-B191-F3326C6E5865}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Notifications</RootNamespace>
+    <AssemblyName>Notifications</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Autodiscovery\Announcer.cs" />
+    <Compile Include="Autodiscovery\DiscoverableServiceTypes.cs" />
+    <Compile Include="Autodiscovery\DiscoveredService.cs" />
+    <Compile Include="Autodiscovery\Discovery.cs" />
+    <Compile Include="Autodiscovery\Events\KnownServices\KnownServicesChangedAction.cs" />
+    <Compile Include="Autodiscovery\Events\KnownServices\KnownServicesChangedArgs.cs" />
+    <Compile Include="Autodiscovery\NotificationTypes\Database\NSD_Database.cs" />
+    <Compile Include="Autodiscovery\NotificationTypes\Database\NServiceDiscovery_Database.cs" />
+    <Compile Include="Autodiscovery\NotificationTypes\Filesystem\NSD_Filesystem.cs" />
+    <Compile Include="Autodiscovery\NotificationTypes\Filesystem\NServiceDiscovery_Filesystem.cs" />
+    <Compile Include="Autodiscovery\NotificationTypes\StorageEngine\NSD_StorageEngine.cs" />
+    <Compile Include="Autodiscovery\NotificationTypes\StorageEngine\NServiceDiscovery_StorageEngine.cs" />
+    <Compile Include="Client.cs" />
+    <Compile Include="Exceptions\NotificationException_BridgeAlreadyConnected.cs" />
+    <Compile Include="Exceptions\NotificationException_InvalidMulticastHeader.cs" />
+    <Compile Include="Exceptions\NotificationException_InvalidMulticastIP.cs" />
+    <Compile Include="Exceptions\NotificationException_InvalidMulticastPort.cs" />
+    <Compile Include="Exceptions\NotificationException_InvalidNotificationPayload.cs" />
+    <Compile Include="Exceptions\NotificationException_InvalidNotificationType.cs" />
+    <Compile Include="Exceptions\NotificationException_MessageTooLarge.cs" />
+    <Compile Include="INotification.cs" />
+    <Compile Include="INotificationArguments.cs" />
+    <Compile Include="Messages\NotificationMessage.cs" />
+    <Compile Include="Messages\PriorityTypes.cs" />
+    <Compile Include="Messages\SenderInfo.cs" />
+    <Compile Include="NotificationBridge.cs" />
+    <Compile Include="NotificationBridgeConnection.cs" />
+    <Compile Include="NotificationDispatcher.cs" />
+    <Compile Include="NotificationSettings.cs" />
+    <Compile Include="NotificationTypes\ANotificationType.cs" />
+    <Compile Include="NotificationTypes\NEmptyType.cs" />
+    <Compile Include="NotificationTypes\NEmptyType_SubType.cs" />
+    <Compile Include="NotificationTypes\NEmptyType_Sub_SubType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Subscription.cs" />
+    <Compile Include="SubscriptionDispatcher.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AdditionalLicenses.txt" />
+    <Content Include="license.txt" />
+    <Content Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Lib\Lib\Lib.csproj">
+      <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
+      <Name>Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lib\Networking\Networking.csproj">
+      <Project>{DDC48D4C-6885-462C-B57A-216658EB94AE}</Project>
+      <Name>Networking</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

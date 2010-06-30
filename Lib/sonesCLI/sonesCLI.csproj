@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5EB964C0-FF26-4B37-99A6-C1D40644E33C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>sonesCLI</RootNamespace>
+    <AssemblyName>sonesCLI</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AcInformation.cs" />
+    <Compile Include="CLIAutocompletion\AllCLIAutocompletions.cs" />
+    <Compile Include="CLIAutocompletion\InBuildAutocompletions\InBuildAutocompletions.cs" />
+    <Compile Include="CLIAutocompletion\InBuildAutocompletions\StringLiteral_ExternalEntry.cs" />
+    <Compile Include="CLICommands\AbstractCLIOption.cs" />
+    <Compile Include="CLICommands\AllCLICommands.cs" />
+    <Compile Include="CLICommands\InBuildCommands\AllInBuildCLICommands.cs" />
+    <Compile Include="CLICommands\InBuildCommands\CLI_EXIT.cs" />
+    <Compile Include="CLICommands\InBuildCommands\CLI_PANIC.cs" />
+    <Compile Include="CLICommands\InBuildCommands\CLI_QUIT.cs" />
+    <Compile Include="CLICommands\InBuildCommands\CLI_SAVEHISTORY.cs" />
+    <Compile Include="CLICommands\InBuildCommands\CLI_USEHISTORY.cs" />
+    <Compile Include="CLITelnetDaemon.cs" />
+    <Compile Include="CLIVersion.cs" />
+    <Compile Include="sonesCLI.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Irony\Irony.csproj">
+      <Project>{CDD9C45F-F285-4A80-B39F-3B1B8B7B5214}</Project>
+      <Name>Irony</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Lib\Lib.csproj">
+      <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
+      <Name>Lib</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AdditionalLicenses.txt" />
+    <Content Include="license.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

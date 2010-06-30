@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="sones.GraphFS.DataStructures.ObjectLocator">
+    <Position X="0.5" Y="0.75" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <InheritanceLine Type="sones.GraphFS.DataStructures.APandoraStructure" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="1.812" Y="4.75" />
+        <Point X="1.812" Y="4.04" />
+      </Path>
+    </InheritanceLine>
+    <AssociationLine Name="Values" Type="sones.GraphFS.DataStructures.ObjectStream" FixedFromPoint="true">
+      <Path>
+        <Point X="2.25" Y="1.812" />
+        <Point X="3.25" Y="1.812" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>QAIgQAAAAAAEABgECoAApAeABGRiABIkAwAhAABQIBQ=</HashCode>
+      <FileName>Datastructures\ObjectLocator\ObjectLocator.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Values" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="sones.GraphFS.DataStructures.ObjectStream">
+    <Position X="3.25" Y="0.75" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="Values" Type="sones.GraphFS.DataStructures.ObjectEdition" FixedFromPoint="true">
+      <Path>
+        <Point X="5" Y="1.812" />
+        <Point X="6" Y="1.812" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>QAIgQAAAAAAEQBCEGoBApAeABUQiCBMkAwQlAABQABQ=</HashCode>
+      <FileName>Datastructures\ObjectLocator\ObjectStream.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Values" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="sones.GraphFS.DataStructures.ObjectEdition">
+    <Position X="6" Y="0.75" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="Values" Type="sones.GraphFS.DataStructures.ObjectRevision" FixedFromPoint="true">
+      <Path>
+        <Point X="8" Y="1.812" />
+        <Point X="9" Y="1.812" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>SAMwQAQgIwCEERGEKojMpI+DFMQiERc2AwAhQAhYIAQ=</HashCode>
+      <FileName>Datastructures\ObjectLocator\ObjectEdition.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="Values" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="sones.GraphFS.DataStructures.ObjectRevision">
+    <Position X="9" Y="0.75" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="this[System.Int32]" Type="sones.GraphFS.DataStructures.ObjectDatastream" FixedFromPoint="true">
+      <Path>
+        <Point X="10.75" Y="1.813" />
+        <Point X="11.75" Y="1.813" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>SAIkQBAAAAAABBCECoBAoAfABEwiARMkVwwBAABEAIQ=</HashCode>
+      <FileName>Datastructures\ObjectLocator\ObjectRevision.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="this[System.Int32]" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="sones.GraphFS.DataStructures.ObjectDatastream">
+    <Position X="11.75" Y="0.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>QAIiYAAKoAAAABCIDqBArAeghEwiIRsmAwgBCARAACQ=</HashCode>
+      <FileName>Datastructures\ObjectLocator\ObjectDatastream.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="sones.StorageEngines.ObjectExtentsList">
+    <Position X="13.75" Y="0.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="sones.GraphFS.DataStructures.APandoraStructure">
+    <Position X="0.5" Y="4.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACBAAAAAAAAAAAAAABA=</HashCode>
+      <FileName>Datastructures\APandoraStructure.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="sones.GraphFS.Objects.AObjectHeader">
+    <Position X="3.25" Y="5.5" Width="1.75" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAABQAACABABAQCGAoQAAEEQhEAAGAkCAAECYAJAAAE=</HashCode>
+      <FileName>Objects\AObjectHeader.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
