@@ -174,6 +174,9 @@ namespace sones.GraphDB
             else if (theObject is AListBaseEdgeType)
                 return (theObject as AListBaseEdgeType).GetReadoutValues();
 
+            else if (theObject is ASetBaseEdgeType)
+                return (theObject as ASetBaseEdgeType).GetReadoutValues();
+
             else
                 throw new GraphDBException(new Errors.Error_NotImplemented(new System.Diagnostics.StackTrace(true), theObject.GetType().ToString()));
         }

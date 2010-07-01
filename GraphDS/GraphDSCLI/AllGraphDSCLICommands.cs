@@ -26,12 +26,16 @@
 #region Usings
 
 using System;
-using System.Text;
+
+using sones.GraphDB;
+using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures;
+
 using sones.Lib.CLI;
 
 #endregion
 
-namespace sones.GraphFS.Connectors.GraphFSCLI
+namespace sones.GraphFS.Connectors.GraphDSCLI
 {
 
     /// <summary>
@@ -39,6 +43,34 @@ namespace sones.GraphFS.Connectors.GraphFSCLI
     /// command line interface.
     /// </summary>
     public abstract class AllGraphDSCLICommands : AllCLICommands
-    { }
+    {
+
+        #region QueryDB(myQueryString, IGraphDBSession, myWithOutput = true)
+
+        protected QueryResult QueryDB(String myQueryString, IGraphDBSession myIGraphDBSession, Boolean myWithOutput = true)
+        {
+
+            if (myWithOutput)
+                Write(myQueryString + " => ");
+
+            var _QueryResult = myIGraphDBSession.Query(myQueryString);
+
+            if (myWithOutput)
+                WriteLine(_QueryResult.ResultType.ToString());
+
+            if (_QueryResult == null)
+                WriteLine("The QueryResult is invalid!\n\n");
+
+            else if (_QueryResult.ResultType != ResultType.Successful)
+                foreach (var aError in _QueryResult.Errors)
+                    WriteLine(aError.GetType().ToString() + ": " + aError.ToString() + "\n\n");
+
+            return _QueryResult;
+
+        }
+
+        #endregion
+    
+    }
 
 }

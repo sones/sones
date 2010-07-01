@@ -325,14 +325,14 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Select
                     Int64 start = 0;
                     if (_OffsetNode != null)
                     {
-                        start = (Int64)_OffsetNode.Count;
+                        start = (Int64)_OffsetNode.Count.Value;
                     }
 
                     //Int64 count = dbObjectReadouts.Count() - start;
                     if (_LimitNode != null)
                     {
                         //count = Math.Min((Int64)_LimitNode.Count, dbObjectReadouts.Count() - start);
-                        dbObjectReadouts = dbObjectReadouts.Skip((Int32)start).Take((Int32)_LimitNode.Count);
+                        dbObjectReadouts = dbObjectReadouts.Skip((Int32)start).Take((Int32)_LimitNode.Count.Value);
                     }
                     else
                     {

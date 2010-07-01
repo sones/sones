@@ -25,13 +25,18 @@
 #region Usings
 
 using System;
-using sones.GraphDB.QueryLanguage.Result;
 using Newtonsoft.Json.Linq;
+using sones.GraphDB.QueryLanguage.Result;
 
 #endregion
 
 namespace sones.GraphDS.API.CSharp
 {
+
+    /// <summary>
+    /// Extension methods to transform a QueryResult and a DBObjectReadout into an
+    /// application/json representation an vice versa.
+    /// </summary>
 
     public static class JSON_IO_Extensions
     {

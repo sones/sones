@@ -25,14 +25,15 @@
 #region Usings
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mime;
 using System.Xml.Linq;
+using System.Collections.Generic;
 
-using sones.GraphDB.QueryLanguage.Result;
-using sones.Lib;
 using sones.GraphDB.TypeManagement;
+using sones.GraphDB.QueryLanguage.Result;
+
+using sones.Lib;
 
 #endregion
 
@@ -40,8 +41,10 @@ namespace sones.GraphDS.API.CSharp
 {
 
     /// <summary>
-    /// GraphDS I/O class for writing and reading XML
+    /// Transforms a QueryResult and a DBObjectReadout into an application/xml
+    /// representation and vice versa.
     /// </summary>
+
     public class XML_IO : IDBExport, IDBImport
     {
 
@@ -129,23 +132,34 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
+
+        #region Export(myDBObjectReadout)
+
+        public Object Export(DBObjectReadout myDBObjectReadout)
+        {
+            return Export(myDBObjectReadout, false);
+        }
+
+        #endregion
+
         #region Export(myDBObjectReadout, myRecursion = false)
 
-        public Object Export(DBObjectReadout myDBObjectReadout, Boolean myRecursion = false)
+        public Object Export(DBObjectReadout myDBObjectReadout, Boolean myRecursion)
         {
 
-            Type _AttributeType = null;
-            var _AttributeTypeString = "";
-            var _DBObject = new XElement("DBObject");
+            Type _AttributeType         = null;
+            var  _AttributeTypeString   = "";
+            var  _DBObject              = new XElement("DBObject");
 
-            DBObjectReadoutGroup _GroupedDBObjects = null;
-            DBWeightedObjectReadout _WeightedDBObject = null;
-            IEnumerable<DBObjectReadout> _DBObjects = null;
-            IEnumerable<Object> _AttributeValueList = null;
+            DBObjectReadoutGroup         _GroupedDBObjects   = null;
+            DBWeightedObjectReadout      _WeightedDBObject   = null;
+            IEnumerable<DBObjectReadout> _DBObjects          = null;
+            IEnumerable<Object>          _AttributeValueList = null;
 
             #region DBWeightedObjectReadout
 
             var _WeightedDBObject1 = myDBObjectReadout as DBWeightedObjectReadout;
+
             if (_WeightedDBObject1 != null)
             {
                 _DBObject.Add(new XElement("edgelabel", new XElement("attribute", new XAttribute("name", "weight"), new XAttribute("type", _WeightedDBObject1.Weight.Type.ToString()), _WeightedDBObject1.Weight)));

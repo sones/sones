@@ -42,10 +42,20 @@ namespace sones.GraphDS.API.CSharp.Reflection
 {
 
     /// <summary>
-    /// The DBObject class
+    /// The DBObject class for user-defined graph data base types
     /// </summary>
+
     public class DBObject : DynamicObject, IEquatable<DBObject>
     {
+
+        #region Data
+
+        /// <summary>
+        /// This dictionary will hold undefined attributes 
+        /// </summary>
+        private Dictionary<String, Object> _UndefinedAttributes;
+
+        #endregion
 
         #region Properties
 
@@ -92,27 +102,60 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #endregion
 
-        #region Data
+        #region Constructors
 
-        /// <summary>
-        /// This dictionary will hold undefined attributes 
-        /// </summary>
-        private Dictionary<String, Object> _UndefinedAttributes;
-
-        #endregion
-
-        #region Constructor
+        #region DBObject()
 
         public DBObject()
         {
-            UUID                = new ObjectUUID();
-            Edition             = "";
-            RevisionID          = new RevisionID(0);
-            _UndefinedAttributes   = new Dictionary<String, Object>();
+            UUID                    = null;
+            Edition                 = null;
+            RevisionID              = null;
+            _UndefinedAttributes    = new Dictionary<String, Object>();
         }
 
         #endregion
 
+        #endregion
+
+
+        #region GetInsertValues(mySeperator)
+
+        public String GetInsertValues(String mySeperator)
+        {
+
+            var _StringBuilder = new StringBuilder();
+            Object _PropertyValue = null;
+
+            var _AllProperties = this.GetType().GetProperties();
+
+            if (_AllProperties.Length > 0)
+            {
+
+                foreach (var _PropertyInfo in _AllProperties)
+                {
+
+                    if (_PropertyInfo.CanRead && _PropertyInfo.CanWrite)
+                    {
+
+                        _PropertyValue = _PropertyInfo.GetValue(this, null);
+
+                        if (_PropertyValue != null)
+                            _StringBuilder.Append(_PropertyInfo.Name).Append(" = '").Append(_PropertyInfo.GetValue(this, null)).Append("'").Append(mySeperator);
+
+                    }
+
+                }
+
+                _StringBuilder.Length = _StringBuilder.Length - mySeperator.Length;
+
+            }
+
+            return _StringBuilder.ToString();
+
+        }
+
+        #endregion
 
         #region ReflectMyself()
 
@@ -219,6 +262,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
                                 #endregion
 
                             }
+
                         }
 
                         #endregion
@@ -325,6 +369,8 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #endregion
 
+        #region GetEdge(myEdgeName)
+
         public IEnumerable<DBObject> GetEdge(String myEdgeName)
         {
 
@@ -349,6 +395,8 @@ namespace sones.GraphDS.API.CSharp.Reflection
             return retVal;
 
         }
+
+        #endregion
 
 
         #region Members of DynamicObject
@@ -395,6 +443,85 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #endregion
 
+        #region Operator overloading
+
+        #region Operator == (myDBObject1, myDBObject2)
+
+        public static Boolean operator == (DBObject myDBObject1, DBObject myDBObject2)
+        {
+
+            // If both are null, or both are same instance, return true.
+            if (Object.ReferenceEquals(myDBObject1, myDBObject2))
+                return true;
+
+            // If one is null, but not both, return false.
+            if (((Object) myDBObject1 == null) || ((Object) myDBObject2 == null))
+                return false;
+
+            return myDBObject1.Equals(myDBObject2);
+
+        }
+
+        #endregion
+
+        #region Operator != (myDBObject1, myDBObject2)
+
+        public static Boolean operator != (DBObject myDBObject1, DBObject myDBObject2)
+        {
+            return !(myDBObject1 == myDBObject2);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region IEquatable<DBObject> Members
+
+        #region Equals(myObject)
+
+        public override Boolean Equals(Object myObject)
+        {
+
+            if (myObject == null)
+                return false;
+
+            var _Object = myObject as DBObject;
+            if (_Object == null)
+                return (Equals(_Object));
+
+            return false;
+
+        }
+
+        #endregion
+
+        #region Equals(myDBObject)
+
+        public Boolean Equals(DBObject myDBObject)
+        {
+
+            if ((object) myDBObject == null)
+            {
+                return false;
+            }
+
+            //TODO: Here it might be good to check all attributes of the UNIQUE constraint!
+            return (this.UUID == myDBObject.UUID);
+
+        }
+
+        #endregion
+
+        #endregion
+
+        #region GetHashCode()
+
+        public override Int32 GetHashCode()
+        {
+            return UUID.GetHashCode();
+        }
+
+        #endregion
 
         #region ToString()
 
@@ -410,62 +537,6 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #endregion
 
-        #region equals overrides
-
-        public override bool Equals(object obj)
-        {
-            if (obj == null)
-            {
-                return false;
-            }
-
-            if (obj is DBObject)
-            {
-                return (Equals((DBObject)obj));
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public Boolean Equals(DBObject dbo)
-        {
-            if ((object)dbo == null)
-            {
-                return false;
-            }
-
-            return (this.UUID == dbo.UUID);
-        }
-
-        public static Boolean operator ==(DBObject a, DBObject b)
-        {
-            if (System.Object.ReferenceEquals(a, b))
-            {
-                return true;
-            }
-
-            if (((object)a == null) || ((object)b == null))
-            {
-                return false;
-            }
-
-            return a.Equals(b);
-        }
-
-        public static Boolean operator !=(DBObject a, DBObject b)
-        {
-            return !(a == b);
-
-        }
-
-        public override int GetHashCode()
-        {
-            return this.UUID.GetHashCode();
-        }
-
-        #endregion
 
     }
 

@@ -46,6 +46,7 @@ using sones.GraphFS.Objects;
 using sones.GraphDB.Indices;
 using sones.Lib.DataStructures.Indices;
 using sones.Lib.ErrorHandling;
+using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Imports;
 
 namespace sones.GraphDB.Plugin
 {
@@ -98,6 +99,12 @@ namespace sones.GraphDB.Plugin
             set { _Indices = value; }
         }
 
+        private Dictionary<string, AGraphDBImport> _GraphDBImporter;
+        public Dictionary<string, AGraphDBImport> GraphDBImporter
+        {
+            get { return _GraphDBImporter; }
+            set { _GraphDBImporter = value; }
+        }
         public DBPluginManager(EntityUUID myUserID)
         {            
             _Functions  = new Dictionary<string, ABaseFunction>();
@@ -106,6 +113,7 @@ namespace sones.GraphDB.Plugin
             _Settings   = new Dictionary<string, ADBSettingsBase>();
             _EdgeTypes  = new Dictionary<string, AEdgeType>();
             _Indices    = new Dictionary<string, IVersionedIndexObject<IndexKey, ObjectUUID>>();
+            _GraphDBImporter = new Dictionary<string, AGraphDBImport>();
             _UserID     = myUserID;
 
             FindAndFillReflections();
@@ -157,6 +165,7 @@ namespace sones.GraphDB.Plugin
                                      || basetype == typeof(ADBSettingsBase)
                                      || basetype == typeof(AEdgeType)
                                      || (basetype == typeof(AFSObject) && type.GetInterface(typeof(IVersionedIndexObject<IndexKey, ObjectUUID>).Name) != null)
+                                     || basetype == typeof(AGraphDBImport)
                                         )
                                         correctbase = true;
                                     else
@@ -171,6 +180,7 @@ namespace sones.GraphDB.Plugin
                                 // if this type has the correct base type
                                 if (correctbase)
                                 {
+                                    #region ABaseFunction
 
                                     if (basetype == typeof(ABaseFunction))
                                     {
@@ -185,7 +195,12 @@ namespace sones.GraphDB.Plugin
                                             //NLOG: temporarily commented
                                             //Logger.Warn("Function with Name '" + newABaseFunc.FunctionName + "' already added!");
                                         }
-                                    }
+                                    } 
+
+                                    #endregion
+
+                                    #region ABaseAggregate
+
                                     else if (basetype == typeof(ABaseAggregate))
                                     {
                                         ABaseAggregate newABaseAggregate = (ABaseAggregate)Activator.CreateInstance(type);
@@ -200,6 +215,11 @@ namespace sones.GraphDB.Plugin
                                             //Logger.Warn("Aggregate with Name '" + newABaseAggregate.FunctionName + "' already added!");
                                         }
                                     }
+
+                                    #endregion
+
+                                    #region ABinaryOperator
+
                                     else if (basetype == typeof(ABinaryOperator))
                                     {
                                         ABinaryOperator newBinaryOperator = (ABinaryOperator)Activator.CreateInstance(type);
@@ -218,6 +238,11 @@ namespace sones.GraphDB.Plugin
                                             }
                                         }
                                     }
+                                        
+                                    #endregion
+
+                                    #region ADBSettingsBase
+
                                     else if (basetype == typeof(ADBSettingsBase))
                                     {
                                         ADBSettingsBase newSetting = (ADBSettingsBase)Activator.CreateInstance(type);
@@ -234,6 +259,11 @@ namespace sones.GraphDB.Plugin
                                             //Logger.Warn("Setting with name '" + newSetting.Name + "' already added!");
                                         }
                                     }
+
+                                    #endregion
+
+                                    #region AEdgeType
+                                    
                                     else if (basetype == typeof(AEdgeType))
                                     {
                                         AEdgeType newAEdgeType = (AEdgeType)Activator.CreateInstance(type);
@@ -248,6 +278,28 @@ namespace sones.GraphDB.Plugin
                                             //Logger.Warn("EdgeType with Name '" + newAEdgeType.EdgeTypeName + "' already added!");
                                         }
                                     }
+
+                                    #endregion
+
+                                    #region AGraphDBImport
+
+                                    else if (basetype == typeof(AGraphDBImport))
+                                    {
+                                        try
+                                        {
+                                            var importer = (AGraphDBImport)Activator.CreateInstance(type);
+                                            if (!_GraphDBImporter.ContainsKey(importer.ImportFormat.ToUpper()))
+                                            {
+                                                _GraphDBImporter.Add(importer.ImportFormat.ToUpper(), importer);
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Debug.WriteLine("[DBPluginmanager] Failed to create instance of type {0}: {1}", type.Name, ex.Message);
+                                        }
+                                    }
+
+                                    #endregion
 
                                     #region Check the interface
 
@@ -585,6 +637,25 @@ namespace sones.GraphDB.Plugin
 
         #endregion
 
+        #region Importer
+
+        internal bool HasGraphDBImporter(string importFormat)
+        {
+
+            return _GraphDBImporter.ContainsKey(importFormat.ToUpper());
+
+        }
+
+        internal AGraphDBImport GetGraphDBImporter(string importFormat)
+        {
+
+            return _GraphDBImporter[importFormat.ToUpper()];
+        
+        }
+
         #endregion
+
+        #endregion
+
     }
 }

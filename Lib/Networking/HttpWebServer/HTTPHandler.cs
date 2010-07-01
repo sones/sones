@@ -382,6 +382,9 @@ namespace sones.Networking.HTTP
                                     responseBodyBytes = Encoding.UTF8.GetBytes("Authentication other than Basic currently not provided");
                                     responseHeader = new HTTPHeader() { HttpStatusCode = HTTPStatusCodes.InternalServerError, ContentLength = responseBodyBytes.ULongLength() };
                                     responseHeaderBytes = responseHeader.ToBytes();
+
+                                    Debug.WriteLine("------------------------------------------------------------");
+                                    Debug.WriteLine("!!!Authentication other than Basic currently not provided!!!");
                                 }
 
                                 #endregion
@@ -398,6 +401,9 @@ namespace sones.Networking.HTTP
                                 responseHeaderBytes = responseHeader.ToBytes();
 
                                 #endregion
+
+                                Debug.WriteLine("---------------------------------------------");
+                                Debug.WriteLine("!!!Authentication not provided from server!!!");
 
                             }
 

@@ -470,7 +470,7 @@ namespace sones.GraphDS.Connectors.REST
                     else if (_ContentType.MediaType == _TEXT.MediaType)
                     {
 
-                        var _StringBuilder = new StringBuilder(_QueryResult.toTEXT(CLI_Output.Short));
+                        var _StringBuilder = new StringBuilder(_QueryResult.ToTEXT());
                         _StringBuilder.Append("\nDuration: " + _StopWatch.ElapsedMilliseconds + " ms");
 
                         var content = Encoding.UTF8.GetBytes(_StringBuilder.ToString());
@@ -795,8 +795,7 @@ namespace sones.GraphDS.Connectors.REST
             else if (_ContentType.MediaType == _TEXT.MediaType)
             {
 
-                var _StringBuilder = new StringBuilder(_QueryResult.toTEXT(CLI_Output.Short));
-                _StringBuilder.Append("\nDuration: " + _StopWatch.ElapsedMilliseconds + " ms");
+                var _StringBuilder = new StringBuilder(_QueryResult.ToTEXT());
 
                 var content = Encoding.UTF8.GetBytes(_StringBuilder.ToString());
                 var _Header = HTTPServer.HTTPContext.ResponseHeader;

@@ -33,7 +33,6 @@ using sones.Lib.Frameworks.Irony.Parsing;
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Dump
 {
 
-    [Flags]
     public enum DumpFormats
     {
         GQL = 1,

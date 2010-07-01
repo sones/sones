@@ -35,6 +35,7 @@ using sones.Lib.DataStructures.UUID;
 using sones.Lib.ErrorHandling;
 using sones.Lib.Session;
 using sones.Notifications;
+using sones.GraphDB.Query;
 
 
 #endregion
@@ -50,6 +51,7 @@ namespace sones.GraphDB
         private GraphDB2     _GraphDB;
         private SessionToken _SessionToken;
         private DBContext    _DBContext = null;
+        private QueryManager _QueryManager = null;
 
         #endregion
 
@@ -63,7 +65,9 @@ namespace sones.GraphDB
             _SessionToken   = new SessionToken(new DBSessionInfo(myUsername));
 
             //TODO: remove true for rebuild indices as soon as they are really persistent
-            _DBContext      = new DBContext(myGraphDB.GraphFSSession, _GraphDB.DatabaseRootPath, null, _GraphDB.DBSettings, false, new DBSessionSettings(_SessionToken.SessionSettings));
+            _DBContext = new DBContext(myGraphDB.GraphFSSession, _GraphDB.DatabaseRootPath, null, _GraphDB.DBSettings, false, new DBSessionSettings(_SessionToken.SessionSettings));
+
+            _QueryManager = new QueryManager(_DBContext.DBPluginManager);
         }
 
         #endregion
@@ -122,7 +126,7 @@ namespace sones.GraphDB
         {
             //TODO: for existing transactions use the context or create a new one
 
-            return _GraphDB.Query(QueryScript, this);
+            return _GraphDB.Query(QueryScript, this, _QueryManager);
         }
 
         #endregion
@@ -131,8 +135,8 @@ namespace sones.GraphDB
 
         public QueryResult ActionQuery(Action<QueryResult> myAction, String QueryScript)
         {
-            
-            var _QueryResult = _GraphDB.Query(QueryScript, this);
+
+            var _QueryResult = _GraphDB.Query(QueryScript, this, _QueryManager);
 
             if (myAction != null)
                 myAction(_QueryResult);

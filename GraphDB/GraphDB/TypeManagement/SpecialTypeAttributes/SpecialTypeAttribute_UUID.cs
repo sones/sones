@@ -31,6 +31,7 @@ using sones.Lib.Session;
 using sones.GraphFS.DataStructures;
 using sones.Lib;
 using sones.Lib.ErrorHandling;
+using sones.GraphDB.QueryLanguage.Result;
 
 namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 {
@@ -69,11 +70,11 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 
         #region Extract
 
-        public override Exceptional<ADBBaseObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
+        public override Exceptional<AObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
         {
 
             //return new Exceptional<ADBBaseObject>(new DBString(dbObjectStream.ObjectUUID.ToString()));
-            return new Exceptional<ADBBaseObject>(new DBReference(dbObjectStream.ObjectUUID));
+            return new Exceptional<AObject>(new DBReference(dbObjectStream.ObjectUUID));
 
             //String settingEncoding = (String)graphDBType.GetSettingValue(DBConstants.SettingUUIDEncoding, dbContext.SessionSettings, dbContext.DBTypeManager).Value.Value;
 

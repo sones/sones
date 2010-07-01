@@ -257,6 +257,20 @@ namespace sones.Lib
 
             return _StringBuilder.ToString();
 
+        }
+
+        public static IEnumerable<T> TakeULong<T>(this IEnumerable<T> myEnumerable, UInt64 count)
+        {
+
+            return myEnumerable.Take((int)count);
+
+        }
+
+        public static IEnumerable<T> SkipULong<T>(this IEnumerable<T> myEnumerable, UInt64 count)
+        {
+
+            return myEnumerable.Skip((int)count);
+
         } 
 
         #endregion
@@ -765,6 +779,27 @@ namespace sones.Lib
                 stringbuilder.Remove(stringbuilder.Length - delimiter.Length, 2);
             }
         }
+        #endregion
+
+        #region Exception
+
+        public static String ToString(this Exception exception, Boolean includeInnerExceptions)
+        {
+            StringBuilder ret = new StringBuilder(exception.Message);
+            ret.AppendLine("Stacktrace: " + exception.StackTrace);
+
+            Exception innerException = exception.InnerException;
+            while (innerException != null && includeInnerExceptions)
+            {
+                ret.AppendLine("InnerException: " + innerException.Message);
+                ret.AppendLine("Stacktrace: " + exception.StackTrace);
+                ret.AppendLine("");
+                innerException = exception.InnerException;
+            }
+
+            return ret.ToString();
+        }
+
         #endregion
 
     }

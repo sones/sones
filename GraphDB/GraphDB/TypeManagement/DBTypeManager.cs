@@ -277,6 +277,20 @@ namespace sones.GraphDB.TypeManagement
 
             #endregion
 
+            #region REVISIONS special Attribute
+
+            var specialTypeAttribute_REVISIONS = new SpecialTypeAttribute_REVISIONS() { DBTypeUUID = DBString.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            typeDBReference.AddAttribute(specialTypeAttribute_REVISIONS.UUID, specialTypeAttribute_REVISIONS);
+
+            #endregion
+
+            #region STREAMS special Attribute
+
+            var specialTypeAttribute_STREAMS = new SpecialTypeAttribute_STREAMS() { DBTypeUUID = DBString.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            typeDBReference.AddAttribute(specialTypeAttribute_STREAMS.UUID, specialTypeAttribute_STREAMS);
+
+            #endregion
+
             _SystemTypes.Add(typeDBReference.UUID, typeDBReference);
 
             #endregion

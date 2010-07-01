@@ -33,6 +33,10 @@ using sones.GraphDB.QueryLanguage.Result;
 namespace sones.GraphDS.API.CSharp
 {
 
+    /// <summary>
+    /// An interface to import data into the database
+    /// </summary>
+
     public interface IDBImport
     {
 

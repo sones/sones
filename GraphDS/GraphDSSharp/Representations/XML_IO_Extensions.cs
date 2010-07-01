@@ -40,6 +40,11 @@ using System.Text;
 namespace sones.GraphDS.API.CSharp
 {
 
+    /// <summary>
+    /// Extension methods to transform a QueryResult and a DBObjectReadout into an
+    /// application/xml representation an vice versa.
+    /// </summary>
+
     public static class XML_IO_Extensions
     {
 

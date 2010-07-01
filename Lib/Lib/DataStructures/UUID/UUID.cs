@@ -396,7 +396,9 @@ namespace sones.Lib.DataStructures.UUID
 
         #endregion
 
-        #region IEquatable Members
+        #region IEquatable<DBObject> Members
+
+        #region Equals(myObject)
 
         public override Boolean Equals(Object myObject)
         {
@@ -407,7 +409,7 @@ namespace sones.Lib.DataStructures.UUID
 
             // Check if myObject can be cast to UUID
             var myUUID = myObject as UUID;
-            if ( (Object) myUUID == null)
+            if ((Object) myUUID == null)
                 throw new ArgumentException("Parameter myObject could not be casted to type UUID!");
 
             return this.Equals(myUUID);
@@ -416,7 +418,7 @@ namespace sones.Lib.DataStructures.UUID
 
         #endregion
 
-        #region IEquatable<UUID>
+        #region Equals(myUUID)
 
         public Boolean Equals(UUID myUUID)
         {
@@ -439,6 +441,8 @@ namespace sones.Lib.DataStructures.UUID
             return true;
 
         }
+
+        #endregion
 
         #endregion
 

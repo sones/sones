@@ -26,11 +26,11 @@
 #region Usings
 
 using System;
-using System.Text;
 using System.Collections.Generic;
 
 using sones.GraphFS.Session;
-using sones.GraphFS.Connectors.GraphFSCLI;
+using sones.GraphFS.Connectors.GraphDSCLI;
+
 using sones.Lib.CLI;
 
 #endregion
@@ -41,7 +41,6 @@ namespace sones.GraphDS.Connectors.CLI
     /// <summary>
     /// Information on this GraphDS instance
     /// </summary>
-
     public class DSCLI_DSINFO : AllGraphDSCLICommands
     {
 

@@ -1,6 +1,6 @@
 ﻿/* 
  * HTML_IO
- * (c) Achim Friedland, 2010
+ * Achim 'ahzf' Friedland, 2009-2010
  */
 
 #region Usings
@@ -8,18 +8,22 @@
 using System;
 using System.Text;
 using System.Linq;
+using System.Net.Mime;
 using System.Collections.Generic;
 
+using sones.GraphDB.TypeManagement;
 using sones.GraphDB.QueryLanguage.Result;
 
 using sones.Lib;
-using System.Net.Mime;
-using sones.GraphDB.TypeManagement;
 
 #endregion
 
 namespace sones.GraphDS.API.CSharp
 {
+
+    /// <summary>
+    /// Transforms a QueryResult and a DBObjectReadout into a text/html representation
+    /// </summary>
 
     public class HTML_IO : IDBExport
     {
@@ -27,7 +31,6 @@ namespace sones.GraphDS.API.CSharp
         #region Data
 
         private readonly ContentType _ExportContentType;
-        private readonly ContentType _ImportContentType;
 
         #endregion
 
@@ -36,7 +39,6 @@ namespace sones.GraphDS.API.CSharp
         public HTML_IO()
         {
             _ExportContentType = new ContentType("text/html") { CharSet = "UTF-8" };
-            _ImportContentType = new ContentType("text/html");
         }
 
         #endregion
@@ -55,6 +57,7 @@ namespace sones.GraphDS.API.CSharp
         }
 
         #endregion
+
 
         #region Export(myQueryResult)
 
@@ -113,28 +116,28 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
-        #region Export(myDBObjectReadout, myRecursion = false)
-
-        public Object Export(DBObjectReadout myDBObjectReadout, Boolean myRecursion = false)
-        {
-            throw new NotImplementedException("");
-        }
-
-        #endregion
-
-        #region ExportString(myQueryResult)
-
-        public String ExportString(QueryResult myQueryResult)
-        {
-            throw new NotImplementedException("");
-        }
-
-        #endregion
-
 
         #region Export(myDBObjectReadout)
 
-        public object Export(DBObjectReadout myDBObjectReadout, StringBuilder myStringBuilder)
+        public Object Export(DBObjectReadout myDBObjectReadout)
+        {
+            return Export(myDBObjectReadout, false);
+        }
+
+        #endregion
+
+        #region Export(myDBObjectReadout, myRecursion = false)
+
+        public Object Export(DBObjectReadout myDBObjectReadout, Boolean myRecursion)
+        {
+            return Export(myDBObjectReadout, new StringBuilder(), myRecursion);
+        }
+
+        #endregion
+
+        #region Export(myDBObjectReadout, myStringBuilder, myRecursion = false)
+
+        public object Export(DBObjectReadout myDBObjectReadout, StringBuilder myStringBuilder, Boolean myRecursion = false)
         {
 
             var    _TypeObject  = myDBObjectReadout["TYPE"] as GraphDBType;
@@ -257,6 +260,22 @@ namespace sones.GraphDS.API.CSharp
             myStringBuilder.AppendLine("</table>");
 
             return "";
+
+        }
+
+        #endregion
+
+
+        #region ExportString(myQueryResult)
+
+        public String ExportString(QueryResult myQueryResult)
+        {
+            
+            var _StringBuilder = new StringBuilder();
+            
+            Export(myQueryResult, _StringBuilder);
+
+            return _StringBuilder.ToString();
 
         }
 

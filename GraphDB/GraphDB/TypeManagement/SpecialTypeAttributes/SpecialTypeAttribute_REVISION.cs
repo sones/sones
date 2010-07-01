@@ -26,6 +26,7 @@ using sones.GraphDB.ObjectManagement;
 using sones.GraphFS.Session;
 using sones.Lib.Session;
 using sones.Lib.ErrorHandling;
+using sones.GraphDB.QueryLanguage.Result;
 
 namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 {
@@ -62,9 +63,9 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
             _UUID = AttributeUUID;
         }
 
-        public override Exceptional<ADBBaseObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
+        public override Exceptional<AObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
         {
-            return new Exceptional<ADBBaseObject>(new DBString(dbObjectStream.ObjectRevision.ToString()));
+            return new Exceptional<AObject>(new DBString(dbObjectStream.ObjectRevision.ToString()));
         }
 
         public override Exceptional ApplyTo(DBObjectStream myNewDBObject, object myValue, params object[] myOptionalParameters)

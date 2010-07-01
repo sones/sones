@@ -17,7 +17,6 @@
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 /*
  * Achim Friedland, 2008-2009
  * Henning Rauch, 2009

@@ -34,6 +34,7 @@ using sones.GraphDS.API.CSharp.Reflection;
 using sones.GraphDB.QueryLanguage.Result;
 using sones.GraphDB.Transactions;
 using sones.GraphFS.Transactions;
+using sones.GraphDB.Structures;
 
 #endregion
 
@@ -302,7 +303,23 @@ namespace sones.GraphDS.API.CSharp
 
         public QueryResult Insert(Action<QueryResult> myAction, params DBObject[] myDBObjects)
         {
-            return new QueryResult();
+
+            QueryResult _QueryResult = null;
+
+            foreach (var _DBObject in myDBObjects)
+            {
+
+                _QueryResult = ActionQuery(myAction, "INSERT INTO " + _DBObject.GetType().Name + " VALUES (" + _DBObject.GetInsertValues(", ") + ")");
+
+                if (_QueryResult.ResultType == ResultType.Failed)
+                {
+                    return _QueryResult;
+                }
+
+            }
+
+            return _QueryResult;
+
         }
 
         #endregion

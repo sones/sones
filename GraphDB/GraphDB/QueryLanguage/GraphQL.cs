@@ -53,6 +53,7 @@ using sones.Lib;
 using sones.Lib.ErrorHandling;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.Lib.Frameworks.Irony.Scripting.Ast;
+using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Import;
 
 #endregion
 
@@ -88,644 +89,183 @@ namespace sones.GraphDB.QueryLanguage
 
         #region Properties
 
-        private SymbolTerminal _S_CREATE;
-        public SymbolTerminal   S_CREATE
-        {
-            get { return _S_CREATE; }
-        }
-
-        private SymbolTerminal _S_comma;
-        public SymbolTerminal   S_comma
-        {
-            get { return _S_comma; }
-        }
-
-        private SymbolTerminal _S_dot;
-        public SymbolTerminal   S_dot
-        {
-            get { return _S_dot; }
-        }
-        private SymbolTerminal _S_colon;
-        public SymbolTerminal   S_colon
-        {
-            get { return _S_colon; }
-        }
+        public SymbolTerminal S_CREATE  { get; private set; }
+        public SymbolTerminal S_comma   { get; private set; }
+        public SymbolTerminal S_dot     { get; private set; }
+        public SymbolTerminal S_colon   { get; private set; }
 
         #region Brackets
 
-        private SymbolTerminal _S_BRACKET_LEFT;
-        public SymbolTerminal S_BRACKET_LEFT
-        {
-            get { return _S_BRACKET_LEFT; }
-        }
-        private SymbolTerminal _S_BRACKET_RIGHT;
-        public SymbolTerminal S_BRACKET_RIGHT
-        {
-            get { return _S_BRACKET_RIGHT; }
-        }
-        private SymbolTerminal _S_TUPLE_BRACKET_LEFT;
-        public SymbolTerminal S_TUPLE_BRACKET_LEFT
-        {
-            get { return _S_TUPLE_BRACKET_LEFT; }
-        }
-        private SymbolTerminal _S_TUPLE_BRACKET_RIGHT;
-        public SymbolTerminal S_TUPLE_BRACKET_RIGHT
-        {
-            get { return _S_TUPLE_BRACKET_RIGHT; }
-        }
+        public SymbolTerminal S_BRACKET_LEFT        { get; private set; }
+        public SymbolTerminal S_BRACKET_RIGHT       { get; private set; }
+        public SymbolTerminal S_TUPLE_BRACKET_LEFT  { get; private set; }
+        public SymbolTerminal S_TUPLE_BRACKET_RIGHT { get; private set; }
         public SymbolTerminal S_TUPLE_BRACKET_LEFT_EXCLUSIVE
         {
-            get { return _S_BRACKET_LEFT; }
+            get { return S_BRACKET_LEFT; }
         }
         public SymbolTerminal S_TUPLE_BRACKET_RIGHT_EXCLUSIVE
         {
-            get { return _S_BRACKET_RIGHT; }
+            get { return S_BRACKET_RIGHT; }
         }
 
         #endregion
 
-        private SymbolTerminal _S_edgeInformationDelimiterSymbol;
-        public SymbolTerminal   S_edgeInformationDelimiterSymbol
-        {
-            get { return _S_edgeInformationDelimiterSymbol; }
-        }
-        private SymbolTerminal _S_edgeTraversalDelimiter;
-        public SymbolTerminal   S_edgeTraversalDelimiter
-        {
-            get { return _S_edgeTraversalDelimiter; }
-        }
-        private SymbolTerminal _S_NULL;
-        public SymbolTerminal   S_NULL
-        {
-            get { return _S_NULL; }
-        }
-        private SymbolTerminal _S_NOT;
-        public SymbolTerminal   S_NOT
-        {
-            get { return _S_NOT; }
-        }
-        private SymbolTerminal _S_UNIQUE;
-        public SymbolTerminal   S_UNIQUE
-        {
-            get { return _S_UNIQUE; }
-        }
-        private SymbolTerminal _S_WITH;
-        public SymbolTerminal   S_WITH
-        {
-            get { return _S_WITH; }
-        }
-        private SymbolTerminal _S_TABLE;
-        public SymbolTerminal   S_TABLE
-        {
-            get { return _S_TABLE; }
-        }
-        private SymbolTerminal _S_ALTER;
-        public SymbolTerminal   S_ALTER
-        {
-            get { return _S_ALTER; }
-        }
-        private SymbolTerminal _S_ADD;
-        public SymbolTerminal   S_ADD
-        {
-            get { return _S_ADD; }
-        }
-        private SymbolTerminal _S_TO;
-        public SymbolTerminal   S_TO
-        {
-            get { return _S_TO; }
-        }
-        private SymbolTerminal _S_COLUMN;
-        public SymbolTerminal   S_COLUMN
-        {
-            get { return _S_COLUMN; }
-        }
-        private SymbolTerminal _S_DROP;
-        public SymbolTerminal   S_DROP
-        {
-            get { return _S_DROP; }
-        }
-        private SymbolTerminal _S_RENAME;
-        public SymbolTerminal   S_RENAME
-        {
-            get { return _S_RENAME; }
-        }
-        private SymbolTerminal _S_CONSTRAINT;
-        public SymbolTerminal   S_CONSTRAINT
-        {
-            get { return _S_CONSTRAINT; }
-        }
-        private SymbolTerminal _S_INDEX;
-        public SymbolTerminal   S_INDEX
-        {
-            get { return _S_INDEX; }
-        }
-        private SymbolTerminal _S_INDICES;
-        public SymbolTerminal   S_INDICES
-        {
-            get { return _S_INDICES; }
-        }
-        private SymbolTerminal _S_ON;
-        public SymbolTerminal   S_ON
-        {
-            get { return _S_ON; }
-        }
-        private SymbolTerminal _S_KEY;
-        public SymbolTerminal   S_KEY
-        {
-            get { return _S_KEY; }
-        }
-        private SymbolTerminal _S_PRIMARY;
-        public SymbolTerminal   S_PRIMARY
-        {
-            get { return _S_PRIMARY; }
-        }
-        private SymbolTerminal _S_INSERT;
-        public SymbolTerminal   S_INSERT
-        {
-            get { return _S_INSERT; }
-        }
-        private SymbolTerminal _S_INTO;
-        public SymbolTerminal   S_INTO
-        {
-            get { return _S_INTO; }
-        }
-        private SymbolTerminal _S_UPDATE;
-        public SymbolTerminal   S_UPDATE
-        {
-            get { return _S_UPDATE; }
-        }
-        private SymbolTerminal _S_INSERTORUPDATE;
-        public SymbolTerminal   S_INSERTORUPDATE
-        {
-            get { return _S_INSERTORUPDATE; }
-        }
-        private SymbolTerminal _S_INSERTORREPLACE;
-        public SymbolTerminal   S_INSERTORREPLACE
-        {
-            get { return _S_INSERTORREPLACE; }
-        }
-        private SymbolTerminal _S_INSERTIFNOTEXIST;
-        public SymbolTerminal S_INSERTIFNOTEXIST
-        {
-            get { return _S_INSERTIFNOTEXIST; }
-        }
-        private SymbolTerminal _S_REPLACE;
-        public SymbolTerminal   S_REPLACE
-        {
-            get { return _S_REPLACE; }
-        }
-        private SymbolTerminal _S_SET;
-        public SymbolTerminal   S_SET
-        {
-            get { return _S_SET; }
-        }
-        private SymbolTerminal _S_REMOVE;
-        public SymbolTerminal   S_REMOVE
-        {
-            get { return _S_REMOVE; }
-        }
-        private SymbolTerminal _S_VALUES;
-        public SymbolTerminal   S_VALUES
-        {
-            get { return _S_VALUES; }
-        }
-        private SymbolTerminal _S_DELETE;
-        public SymbolTerminal   S_DELETE
-        {
-            get { return _S_DELETE; }
-        }
-        private SymbolTerminal _S_SELECT;
-        public SymbolTerminal   S_SELECT
-        {
-            get { return _S_SELECT; }
-        }
-        private SymbolTerminal _S_FROM;
-        public SymbolTerminal   S_FROM
-        {
-            get { return _S_FROM; }
-        }
-        private SymbolTerminal _S_AS;
-        public SymbolTerminal   S_AS
-        {
-            get { return _S_AS; }
-        }
-        private SymbolTerminal _S_COUNT;
-        public SymbolTerminal   S_COUNT
-        {
-            get { return _S_COUNT; }
-        }
-        private SymbolTerminal _S_JOIN;
-        public SymbolTerminal   S_JOIN
-        {
-            get { return _S_JOIN; }
-        }
-        private SymbolTerminal _S_BY;
-        public SymbolTerminal   S_BY
-        {
-            get { return _S_BY; }
-        }
-        private SymbolTerminal _S_WHERE;
-        public SymbolTerminal   S_WHERE
-        {
-            get { return _S_WHERE; }
-        }
-        private SymbolTerminal _S_TYPE;
-        public SymbolTerminal   S_TYPE
-        {
-            get { return _S_TYPE; }
-        }
-        private SymbolTerminal _S_TYPES;
-        public SymbolTerminal   S_TYPES
-        {
-            get { return _S_TYPES; }
-        }
-        private SymbolTerminal _S_EDITION;
-        public SymbolTerminal   S_EDITION
-        {
-            get { return _S_EDITION; }
-        }
-        private SymbolTerminal _S_INDEXTYPE;
-        public SymbolTerminal   S_INDEXTYPE
-        {
-            get { return _S_INDEXTYPE; }
-        }
-        private SymbolTerminal _S_LIST;
-        public SymbolTerminal   S_LIST
-        {
-            get { return _S_LIST; }
-        }
-        private SymbolTerminal _S_ListTypePrefix;
-        public SymbolTerminal   S_ListTypePrefix
-        {
-            get { return _S_ListTypePrefix; }
-        }
-        private SymbolTerminal _S_ListTypePostfix;
-        public SymbolTerminal   S_ListTypePostfix
-        {
-            get { return _S_ListTypePostfix; }
-        }
-        private SymbolTerminal _S_EXTENDS;
-        public SymbolTerminal   S_EXTENDS
-        {
-            get { return _S_EXTENDS; }
-        }
-        private SymbolTerminal _S_ATTRIBUTES;
-        public SymbolTerminal   S_ATTRIBUTES
-        {
-            get { return _S_ATTRIBUTES; }
-        }
-        private SymbolTerminal _S_MATCHES;
-        public SymbolTerminal   S_MATCHES
-        {
-            get { return _S_MATCHES; }
-        }
-        private SymbolTerminal _S_LIMIT;
-        public SymbolTerminal   S_LIMIT
-        {
-            get { return _S_LIMIT; }
-        }
-        private SymbolTerminal _S_DEPTH;
-        public SymbolTerminal   S_DEPTH
-        {
-            get { return _S_DEPTH; }
-        }
+        public SymbolTerminal S_edgeInformationDelimiterSymbol { get; private set; }
+        public SymbolTerminal S_edgeTraversalDelimiter { get; private set; }
+        public SymbolTerminal S_NULL            { get; private set; }
+        public SymbolTerminal S_NOT             { get; private set; }
+        public SymbolTerminal S_UNIQUE          { get; private set; }
+        public SymbolTerminal S_WITH            { get; private set; }
+        public SymbolTerminal S_TABLE           { get; private set; }
+        public SymbolTerminal S_ALTER           { get; private set; }
+        public SymbolTerminal S_ADD             { get; private set; }
+        public SymbolTerminal S_TO              { get; private set; }
+        public SymbolTerminal S_COLUMN          { get; private set; }
+        public SymbolTerminal S_DROP            { get; private set; }
+        public SymbolTerminal S_RENAME          { get; private set; }
+        public SymbolTerminal S_CONSTRAINT      { get; private set; }
+        public SymbolTerminal S_INDEX           { get; private set; }
+        public SymbolTerminal S_INDICES         { get; private set; }
+        public SymbolTerminal S_ON              { get; private set; }
+        public SymbolTerminal S_KEY             { get; private set; }
+        public SymbolTerminal S_PRIMARY         { get; private set; }
+        public SymbolTerminal S_INSERT          { get; private set; }
+        public SymbolTerminal S_INTO            { get; private set; }
+        public SymbolTerminal S_UPDATE          { get; private set; }
+        public SymbolTerminal S_INSERTORUPDATE  { get; private set; }
+        public SymbolTerminal S_INSERTORREPLACE { get; private set; }
+        public SymbolTerminal S_INSERTIFNOTEXIST { get; private set; }
+        public SymbolTerminal S_REPLACE         { get; private set; }
+        public SymbolTerminal S_SET             { get; private set; }
+        public SymbolTerminal S_REMOVE          { get; private set; }
+        public SymbolTerminal S_VALUES          { get; private set; }
+        public SymbolTerminal S_DELETE          { get; private set; }
+        public SymbolTerminal S_SELECT          { get; private set; }
+        public SymbolTerminal S_FROM            { get; private set; }
+        public SymbolTerminal S_AS              { get; private set; }
+        public SymbolTerminal S_COUNT           { get; private set; }
+        public SymbolTerminal S_JOIN            { get; private set; }
+        public SymbolTerminal S_BY              { get; private set; }
+        public SymbolTerminal S_WHERE           { get; private set; }
+        public SymbolTerminal S_TYPE            { get; private set; }
+        public SymbolTerminal S_TYPES           { get; private set; }
+        public SymbolTerminal S_EDITION         { get; private set; }
+        public SymbolTerminal S_INDEXTYPE       { get; private set; }
+        public SymbolTerminal S_LIST            { get; private set; }
+        public SymbolTerminal S_ListTypePrefix  { get; private set; }
+        public SymbolTerminal S_ListTypePostfix { get; private set; }
+        public SymbolTerminal S_EXTENDS         { get; private set; }
+        public SymbolTerminal S_ATTRIBUTES      { get; private set; }
+        public SymbolTerminal S_MATCHES         { get; private set; }
+        public SymbolTerminal S_LIMIT           { get; private set; }
+        public SymbolTerminal S_DEPTH           { get; private set; }
 
         #region REFERENCE former SETREF
 
-        private SymbolTerminal _S_REFERENCE;
-        public SymbolTerminal S_REFERENCE
-        {
-            get { return _S_REFERENCE; }
-        }
-        private SymbolTerminal _S_REF;
-        public SymbolTerminal S_REF
-        {
-            get { return _S_REF; }
-        }
+        public SymbolTerminal S_REFERENCE { get; private set; }
+        public SymbolTerminal S_REF { get; private set; }
 
         #endregion
 
         #region REFERENCEUUID
 
-        private SymbolTerminal _S_REFUUID;
-        public SymbolTerminal S_REFUUID
-        {
-            get { return _S_REFUUID; }
-        }
-
-        private SymbolTerminal _S_REFERENCEUUID;
-        public SymbolTerminal S_REFERENCEUUID
-        {
-            get { return _S_REFERENCEUUID; }
-        }
+        public SymbolTerminal S_REFUUID { get; private set; }
+        public SymbolTerminal S_REFERENCEUUID { get; private set; }
 
         #endregion
 
         #region LISTOF/SETOF/SETOFUUIDS
 
-        private SymbolTerminal _S_LISTOF;
-        public SymbolTerminal S_LISTOF
-        {
-            get { return _S_LISTOF; }
-        }
-        private SymbolTerminal _S_SETOF;
-        public SymbolTerminal S_SETOF
-        {
-            get { return _S_SETOF; }
-        }
-        private SymbolTerminal _S_SETOFUUIDS;
-        public SymbolTerminal S_SETOFUUIDS
-        {
-            get { return _S_SETOFUUIDS; }
-        } 
+        public SymbolTerminal S_LISTOF          { get; private set; }
+        public SymbolTerminal S_SETOF           { get; private set; }
+        public SymbolTerminal S_SETOFUUIDS      { get; private set; }
+       
         #endregion
 
-        private SymbolTerminal _S_UUID;
-        public SymbolTerminal   S_UUID
-        {
-            get { return _S_UUID; }
-        }
-        private SymbolTerminal _S_OFFSET;
-        public SymbolTerminal   S_OFFSET
-        {
-            get { return _S_OFFSET; }
-        }
-        private SymbolTerminal _S_TRUNCATE;
-        public SymbolTerminal   S_TRUNCATE
-        {
-            get { return _S_TRUNCATE; }
-        }
-        private SymbolTerminal _S_TRUE;
-        public SymbolTerminal   S_TRUE
-        {
-            get { return _S_TRUE; }
-        }
-        private SymbolTerminal _S_FALSE;
-        public SymbolTerminal   S_FALSE
-        {
-            get { return _S_FALSE; }
-        }
-        private SymbolTerminal _S_SORTED;
-        public SymbolTerminal   S_SORTED
-        {
-            get { return _S_SORTED; }
-        }
-        private SymbolTerminal _S_ASC;
-        public SymbolTerminal   S_ASC
-        {
-            get { return _S_ASC; }
-        }
-        private SymbolTerminal _S_DESC;
+        public SymbolTerminal S_UUID            { get; private set; }
+        public SymbolTerminal S_OFFSET          { get; private set; }
+        public SymbolTerminal S_TRUNCATE        { get; private set; }
+        public SymbolTerminal S_TRUE            { get; private set; }
+        public SymbolTerminal S_FALSE           { get; private set; }
+        public SymbolTerminal S_SORTED          { get; private set; }
+        public SymbolTerminal S_ASC             { get; private set; }
 
-        public SymbolTerminal   S_DESC
-        {
-            get { return _S_DESC; }
-        }
-        private SymbolTerminal _S_QUEUESIZE;
-        public SymbolTerminal   S_QUEUESIZE
-        {
-            get { return _S_QUEUESIZE; }
-        }
-        private SymbolTerminal _S_WEIGHTED;
-        public SymbolTerminal   S_WEIGHTED
-        {
-            get { return _S_WEIGHTED; }
-        }
-        private SymbolTerminal _S_SETTING;
-        public SymbolTerminal   S_SETTING
-        {
-            get { return _S_SETTING; }
-        }
-        private SymbolTerminal _S_GET;
-        public SymbolTerminal   S_GET
-        {
-            get { return _S_GET; }
-        }
-        private SymbolTerminal _S_DB;
-        public SymbolTerminal   S_DB
-        {
-            get { return _S_DB; }
-        }
-        private SymbolTerminal _S_SESSION;
-        public SymbolTerminal   S_SESSION
-        {
-            get { return _S_SESSION; }
-        }
-        private SymbolTerminal _S_ATTRIBUTE;
-        public SymbolTerminal   S_ATTRIBUTE
-        {
-            get { return _S_ATTRIBUTE; }
-        }
-        private SymbolTerminal _S_DEFAULT;
-        public SymbolTerminal   S_DEFAULT
-        {
-            get { return _S_DEFAULT; }
-        }
-        private SymbolTerminal _S_BACKWARDEDGES;
+        public SymbolTerminal S_DESC            { get; private set; }
+        public SymbolTerminal S_QUEUESIZE       { get; private set; }
+        public SymbolTerminal S_WEIGHTED        { get; private set; }
+        public SymbolTerminal S_SETTING         { get; private set; }
+        public SymbolTerminal S_GET             { get; private set; }
+        public SymbolTerminal S_DB              { get; private set; }
+        public SymbolTerminal S_SESSION         { get; private set; }
+        public SymbolTerminal S_ATTRIBUTE       { get; private set; }
+        public SymbolTerminal S_DEFAULT         { get; private set; }
 
-        public SymbolTerminal   S_BACKWARDEDGES
-        {
-            get { return _S_BACKWARDEDGES; }
-        }
-        private SymbolTerminal _S_BACKWARDEDGE;
-        public SymbolTerminal   S_BACKWARDEDGE
-        {
-            get { return _S_BACKWARDEDGE; }
-        }
-        private SymbolTerminal _S_DESCRIBE;
-        public SymbolTerminal   S_DESCRIBE
-        {
-            get { return _S_DESCRIBE; }
-        }
-        private SymbolTerminal _S_DESCFUNC;
-        public SymbolTerminal   S_DESCFUNC
-        {
-            get { return _S_DESCFUNC; }
-        }
-        private SymbolTerminal _S_DESCAGGR;
-        public SymbolTerminal   S_DESCAGGR
-        {
-            get { return _S_DESCAGGR; }
-        }
-        private SymbolTerminal _S_DESCAGGRS;
-        public SymbolTerminal   S_DESCAGGRS
-        {
-            get { return _S_DESCAGGRS; }
-        }
-        private SymbolTerminal _S_DESCSETT;
-        public SymbolTerminal   S_DESCSETT
-        {
-            get { return _S_DESCSETT; }
-        }
-        private SymbolTerminal _S_DESCSETTINGS;
-        public SymbolTerminal   S_DESCSETTINGS
-        {
-            get { return _S_DESCSETTINGS; }
-        }
-        private SymbolTerminal _S_DESCTYPE;
-        public SymbolTerminal   S_DESCTYPE
-        {
-            get { return _S_DESCTYPE; }
-        }
-        private SymbolTerminal _S_DESCTYPES;
-        public SymbolTerminal   S_DESCTYPES
-        {
-            get { return _S_DESCTYPES; }
-        }
-        private SymbolTerminal _S_DESCFUNCTIONS;
-        public SymbolTerminal   S_DESCFUNCTIONS
-        {
-            get { return _S_DESCFUNCTIONS; }
-        }
-        private SymbolTerminal _S_DESCIDX;
-        public SymbolTerminal   S_DESCIDX
-        {
-            get { return _S_DESCIDX; }
-        }
-        private SymbolTerminal _S_DESCIDXS;
-        public SymbolTerminal   S_DESCIDXS
-        {
-            get { return _S_DESCIDXS; }
-        }
-        private SymbolTerminal _S_DESCEDGE;
-        public SymbolTerminal   S_DESCEDGE
-        {
-            get { return _S_DESCEDGE; }
-        }
-        private SymbolTerminal _S_DESCEDGES;
-        public SymbolTerminal   S_DESCEDGES
-        {
-            get { return _S_DESCEDGES; }
-        }
-        private SymbolTerminal _S_MANDATORY;
-        public SymbolTerminal   S_MANDATORY
-        {
-            get { return _S_MANDATORY; }
-        }
-        private SymbolTerminal _S_ABSTRACT;
-        public SymbolTerminal   S_ABSTRACT
-        {
-            get { return _S_ABSTRACT; }
-        }
+        public SymbolTerminal S_BACKWARDEDGES   { get; private set; }
+        public SymbolTerminal S_BACKWARDEDGE    { get; private set; }
+        public SymbolTerminal S_DESCRIBE        { get; private set; }
+        public SymbolTerminal S_DESCFUNC        { get; private set; }
+        public SymbolTerminal S_DESCAGGR        { get; private set; }
+        public SymbolTerminal S_DESCAGGRS       { get; private set; }
+        public SymbolTerminal S_DESCSETT        { get; private set; }
+        public SymbolTerminal S_DESCSETTINGS    { get; private set; }
+        public SymbolTerminal S_DESCTYPE        { get; private set; }
+        public SymbolTerminal S_DESCTYPES       { get; private set; }
+        public SymbolTerminal S_DESCFUNCTIONS   { get; private set; }
+        public SymbolTerminal S_DESCIDX         { get; private set; }
+        public SymbolTerminal S_DESCIDXS        { get; private set; }
+        public SymbolTerminal S_DESCEDGE        { get; private set; }
+        public SymbolTerminal S_DESCEDGES       { get; private set; }
+        public SymbolTerminal S_MANDATORY       { get; private set; }
+        public SymbolTerminal S_ABSTRACT        { get; private set; }
 
         #region Transactions
 
-        private SymbolTerminal _S_TRANSACTBEGIN;
-        public SymbolTerminal S_TRANSACTBEGIN
-        {
-            get { return _S_TRANSACTBEGIN; }
-        }
-        private SymbolTerminal _S_TRANSACT;
-        public SymbolTerminal S_TRANSACT
-        {
-            get { return _S_TRANSACT; }
-        }
-        private SymbolTerminal _S_TRANSACTDISTRIBUTED;
-        public SymbolTerminal S_TRANSACTDISTRIBUTED
-        {
-            get { return _S_TRANSACTDISTRIBUTED; }
-        }
-        private SymbolTerminal _S_TRANSACTLONGRUNNING;
-        public SymbolTerminal S_TRANSACTLONGRUNNING
-        {
-            get { return _S_TRANSACTLONGRUNNING; }
-        }
-        private SymbolTerminal _S_TRANSACTISOLATION;
-        public SymbolTerminal S_TRANSACTISOLATION
-        {
-            get { return _S_TRANSACTISOLATION; }
-        }
-        private SymbolTerminal _S_TRANSACTNAME;
-        public SymbolTerminal S_TRANSACTNAME
-        {
-            get { return S_TRANSACTNAME; }
-        }
-        private SymbolTerminal _S_TRANSACTTIMESTAMP;
-        public SymbolTerminal S_TRANSACTTIMESTAMP
-        {
-            get { return _S_TRANSACTTIMESTAMP; }
-        }
-        private SymbolTerminal _S_TRANSACTCOMMIT;
-        public SymbolTerminal S_TRANSACTCOMMIT
-        {
-            get { return _S_TRANSACTCOMMIT; }
-        }
-        private SymbolTerminal _S_TRANSACTROLLBACK;
-        public SymbolTerminal S_TRANSACTROLLBACK
-        {
-            get { return _S_TRANSACTROLLBACK; }
-        }
-        private SymbolTerminal _S_TRANSACTCOMROLLASYNC;
-        public SymbolTerminal S_TRANSACTCOMROLLASYNC
-        {
-            get { return _S_TRANSACTCOMROLLASYNC; }
-        } 
+        public SymbolTerminal S_TRANSACTBEGIN           { get; private set; }
+        public SymbolTerminal S_TRANSACT                { get; private set; }
+        public SymbolTerminal S_TRANSACTDISTRIBUTED     { get; private set; }
+        public SymbolTerminal S_TRANSACTLONGRUNNING     { get; private set; }
+        public SymbolTerminal S_TRANSACTISOLATION       { get; private set; }
+        public SymbolTerminal S_TRANSACTNAME            { get; private set; }
+        public SymbolTerminal S_TRANSACTTIMESTAMP       { get; private set; }
+        public SymbolTerminal S_TRANSACTCOMMIT          { get; private set; }
+        public SymbolTerminal S_TRANSACTROLLBACK        { get; private set; }
+        public SymbolTerminal S_TRANSACTCOMROLLASYNC    { get; private set; }
 
         #endregion
 
-        private SymbolTerminal _S_REMOVEFROMLIST;
-        public SymbolTerminal S_REMOVEFROMLIST
-        {
-            get { return _S_REMOVEFROMLIST; }
-        }
-        private SymbolTerminal _S_ADDTOLIST;
-        public SymbolTerminal S_ADDTOLIST
-        {
-            get { return _S_ADDTOLIST; }
-        }
-        private SymbolTerminal _S_COMMENT;
-        public SymbolTerminal S_COMMENT
-        {
-            get { return _S_COMMENT; }
-        }
-        private SymbolTerminal _S_REBUILD;
-        public SymbolTerminal S_REBUILD
-        {
-            get { return _S_REBUILD; }
-        }
+        public SymbolTerminal S_REMOVEFROMLIST  { get; private set; }
+        public SymbolTerminal S_ADDTOLIST       { get; private set; }
+        public SymbolTerminal S_COMMENT         { get; private set; }
+        public SymbolTerminal S_REBUILD         { get; private set; }
+
+        #region IMPORT
+
+        public SymbolTerminal S_IMPORT          { get; private set; }
+        public SymbolTerminal S_COMMENTS        { get; private set; }
+        public SymbolTerminal S_PARALLELTASKS   { get; private set; }
+        public SymbolTerminal S_VERBOSITY       { get; private set; }
+        public SymbolTerminal S_FORMAT          { get; private set; }
+
+        #endregion
 
         #region DUMP
 
-        private SymbolTerminal _S_DUMP;
-        public SymbolTerminal S_DUMP
-        {
-            get { return _S_DUMP; }
-        }
-
-
-        private SymbolTerminal _S_DUMP_TYPE_ALL;
-        public SymbolTerminal S_DUMP_TYPE_ALL
-        {
-            get { return _S_DUMP_TYPE_ALL; }
-        }
-
-        private SymbolTerminal _S_DUMP_TYPE_GDDL;
-        public SymbolTerminal S_DUMP_TYPE_GDDL
-        {
-            get { return _S_DUMP_TYPE_GDDL; }
-        }
-
-        private SymbolTerminal _S_DUMP_TYPE_GDML;
-        public SymbolTerminal S_DUMP_TYPE_GDML
-        {
-            get { return _S_DUMP_TYPE_GDML; }
-        }
-
-
-        private SymbolTerminal _S_DUMP_FORMAT_GQL;
-        public SymbolTerminal S_DUMP_FORMAT_GQL
-        {
-            get { return _S_DUMP_FORMAT_GQL; }
-        }
-
-        private SymbolTerminal _S_DUMP_FORMAT_CSV;
-        public SymbolTerminal S_DUMP_FORMAT_CSV
-        {
-            get { return _S_DUMP_FORMAT_CSV; }
-        }        
+        public SymbolTerminal S_DUMP            { get; private set; }
+        public SymbolTerminal S_DUMP_TYPE_ALL   { get; private set; }
+        public SymbolTerminal S_DUMP_TYPE_GDDL  { get; private set; }
+        public SymbolTerminal S_DUMP_TYPE_GDML  { get; private set; }
+        public SymbolTerminal S_DUMP_FORMAT_GQL { get; private set; }
+        public SymbolTerminal S_DUMP_FORMAT_CSV { get; private set; }
 
         #endregion
 
+        #endregion
+
+        #region Grammarhooks - replace by interface
+
+        public NonTerminal BNF_ImportFormat { get; set; }
+        
         #endregion
 
         #region Constructor and definitions
@@ -779,123 +319,133 @@ namespace sones.GraphDB.QueryLanguage
 
             #region Symbols
 
-            _S_CREATE                          = Symbol("CREATE");
-            _S_comma                           = Symbol(",");
-            _S_dot                             = Symbol(".");
-            _S_colon                           = Symbol(":");
-            _S_BRACKET_LEFT                    = Symbol(TERMINAL_BRACKET_LEFT);
-            _S_BRACKET_RIGHT                   = Symbol(TERMINAL_BRACKET_RIGHT);
-            _S_TUPLE_BRACKET_LEFT              = Symbol("[");
-            _S_TUPLE_BRACKET_RIGHT             = Symbol("]");
-            _S_edgeInformationDelimiterSymbol  = Symbol(DBConstants.EdgeInformationDelimiterSymbol);
-            _S_edgeTraversalDelimiter          = Symbol(DBConstants.EdgeTraversalDelimiterSymbol);
-            _S_NULL                            = Symbol("NULL");
-            _S_NOT                             = Symbol("NOT");
-            _S_UNIQUE                          = Symbol("UNIQUE");
-            _S_WITH                            = Symbol("WITH");
-            _S_TABLE                           = Symbol("TABLE");
-            _S_ALTER                           = Symbol("ALTER");
-            _S_ADD                             = Symbol("ADD");
-            _S_TO                              = Symbol("TO");
-            _S_COLUMN                          = Symbol("COLUMN");
-            _S_DROP                            = Symbol("DROP");
-            _S_RENAME                          = Symbol("RENAME");
-            _S_CONSTRAINT                      = Symbol("CONSTRAINT");
-            _S_INDEX                           = Symbol("INDEX");
-            _S_INDICES                         = Symbol("INDICES");
-            _S_ON                              = Symbol("ON");
-            _S_KEY                             = Symbol("KEY");
-            _S_PRIMARY                         = Symbol("PRIMARY");
-            _S_INSERT                          = Symbol("INSERT");
-            _S_INTO                            = Symbol("INTO");
-            _S_UPDATE                          = Symbol("UPDATE");
-            _S_INSERTORUPDATE                  = Symbol("INSERTORUPDATE");
-            _S_INSERTORREPLACE                 = Symbol("INSERTORREPLACE");
-            _S_INSERTIFNOTEXIST                = Symbol("INSERTIFNOTEXIST");
-            _S_REPLACE                         = Symbol("REPLACE");
-            _S_SET                             = Symbol(TERMINAL_SET);
-            _S_REMOVE                          = Symbol("REMOVE");
-            _S_VALUES                          = Symbol("VALUES");
-            _S_DELETE                          = Symbol("DELETE");
-            _S_SELECT                          = Symbol("SELECT");
-            _S_FROM                            = Symbol("FROM");
-            _S_AS                              = Symbol("AS");
-            _S_COUNT                           = Symbol("COUNT");
-            _S_JOIN                            = Symbol("JOIN");
-            _S_BY                              = Symbol("BY");
-            _S_WHERE                           = Symbol("WHERE");
-            _S_TYPE                            = Symbol("TYPE");
-            _S_TYPES                           = Symbol("TYPES");
-            _S_EDITION                         = Symbol("EDITION");
-            _S_INDEXTYPE                       = Symbol("INDEXTYPE");
-            _S_LIST                            = Symbol(TERMINAL_LIST);
-            _S_ListTypePrefix                  = Symbol(TERMINAL_LT);
-            _S_ListTypePostfix                 = Symbol(TERMINAL_GT);
-            _S_EXTENDS                         = Symbol("EXTENDS");
-            _S_ATTRIBUTES                      = Symbol("ATTRIBUTES");
-            _S_MATCHES                         = Symbol("MATCHES");
-            _S_LIMIT                           = Symbol("LIMIT");
-            _S_DEPTH                           = Symbol("DEPTH");
-            _S_REFERENCE                       = Symbol("REFERENCE");
-            _S_REF                             = Symbol("REF");
-            _S_REFUUID                         = Symbol("REFUUID");
-            _S_REFERENCEUUID                   = Symbol("REFERENCEUUID");
-            _S_LISTOF                          = Symbol(DBConstants.LISTOF);
-            _S_SETOF                           = Symbol(DBConstants.SETOF);
-            _S_SETOFUUIDS                      = Symbol(DBConstants.SETOFUUIDS);
-            _S_UUID                            = Symbol("UUID");
-            _S_OFFSET                          = Symbol("OFFSET");
-            _S_TRUNCATE                        = Symbol("TRUNCATE");
-            _S_TRUE                            = Symbol(TERMINAL_TRUE);
-            _S_FALSE                           = Symbol(TERMINAL_FALSE);
-            _S_SORTED                          = Symbol(TERMINAL_SORTED);
-            _S_ASC                             = Symbol(TERMINAL_ASC);
-            _S_DESC                            = Symbol(TERMINAL_DESC);
-            _S_QUEUESIZE                       = Symbol(TERMINAL_QUEUESIZE);
-            _S_WEIGHTED                        = Symbol(TERMINAL_WEIGHTED);
-            _S_SETTING                         = Symbol("SETTING");
-            _S_GET                             = Symbol("GET");
-            _S_DB                              = Symbol("DB");
-            _S_SESSION                         = Symbol("SESSION");
-            _S_ATTRIBUTE                       = Symbol("ATTRIBUTE");
-            _S_DEFAULT                         = Symbol("DEFAULT");
-            _S_BACKWARDEDGES                   = Symbol("BACKWARDEDGES");
-            _S_BACKWARDEDGE                    = Symbol("BACKWARDEDGE");
-            _S_DESCRIBE                        = Symbol("DESCRIBE");
-            _S_DESCFUNC                        = Symbol("FUNCTION");
-            _S_DESCAGGR                        = Symbol("AGGREGATE");
-            _S_DESCAGGRS                       = Symbol("AGGREGATES");
-            _S_DESCSETT                        = Symbol("SETTING");
-            _S_DESCSETTINGS                    = Symbol("SETTINGS");
-            _S_DESCTYPE                        = Symbol("TYPE");
-            _S_DESCTYPES                       = Symbol("TYPES");
-            _S_DESCFUNCTIONS                   = Symbol("FUNCTIONS");
-            _S_DESCIDX                         = Symbol("INDEX");
-            _S_DESCIDXS                        = Symbol("INDICES");
-            _S_DESCEDGE                        = Symbol("EDGE");
-            _S_DESCEDGES                       = Symbol("EDGES");
-            _S_MANDATORY                       = Symbol("MANDATORY");
-            _S_ABSTRACT                        = Symbol("ABSTRACT");
-            _S_TRANSACTBEGIN                   = Symbol("BEGIN");
-            _S_TRANSACT                        = Symbol("TRANSACTION");
-            _S_TRANSACTDISTRIBUTED             = Symbol(DBConstants.TRANSACTION_DISTRIBUTED);
-            _S_TRANSACTLONGRUNNING             = Symbol(DBConstants.TRANSACTION_LONGRUNNING);
-            _S_TRANSACTISOLATION               = Symbol(DBConstants.TRANSACTION_ISOLATION);
-            _S_TRANSACTNAME                    = Symbol(DBConstants.TRANSACTION_NAME);
-            _S_TRANSACTTIMESTAMP               = Symbol(DBConstants.TRANSACTION_TIMESTAMP);
-            _S_TRANSACTROLLBACK                = Symbol(DBConstants.TRANSACTION_ROLLBACK);
-            _S_TRANSACTCOMMIT                  = Symbol(DBConstants.TRANSACTION_COMMIT);
-            _S_TRANSACTCOMROLLASYNC            = Symbol(DBConstants.TRANSACTION_COMROLLASYNC);
-            _S_ADDTOLIST                       = Symbol("+=");
-            _S_REMOVEFROMLIST                  = Symbol("-=");
-            _S_DUMP                            = Symbol("DUMP");
-            _S_DUMP_TYPE_ALL                   = Symbol("ALL");
-            _S_DUMP_TYPE_GDDL                  = Symbol("GDDL");
-            _S_DUMP_TYPE_GDML                  = Symbol("GDML");
-            _S_DUMP_FORMAT_GQL                 = Symbol("GQL");
-            _S_DUMP_FORMAT_CSV                 = Symbol("CSV");
-            _S_COMMENT                         = Symbol("COMMENT");
-            _S_REBUILD                         = Symbol("REBUILD");
+            S_CREATE                          = Symbol("CREATE");
+            S_comma                           = Symbol(",");
+            S_dot                             = Symbol(".");
+            S_colon                           = Symbol(":");
+            S_BRACKET_LEFT                    = Symbol(TERMINAL_BRACKET_LEFT);
+            S_BRACKET_RIGHT                   = Symbol(TERMINAL_BRACKET_RIGHT);
+            S_TUPLE_BRACKET_LEFT              = Symbol("[");
+            S_TUPLE_BRACKET_RIGHT             = Symbol("]");
+            S_edgeInformationDelimiterSymbol  = Symbol(DBConstants.EdgeInformationDelimiterSymbol);
+            S_edgeTraversalDelimiter          = Symbol(DBConstants.EdgeTraversalDelimiterSymbol);
+            S_NULL                            = Symbol("NULL");
+            S_NOT                             = Symbol("NOT");
+            S_UNIQUE                          = Symbol("UNIQUE");
+            S_WITH                            = Symbol("WITH");
+            S_TABLE                           = Symbol("TABLE");
+            S_ALTER                           = Symbol("ALTER");
+            S_ADD                             = Symbol("ADD");
+            S_TO                              = Symbol("TO");
+            S_COLUMN                          = Symbol("COLUMN");
+            S_DROP                            = Symbol("DROP");
+            S_RENAME                          = Symbol("RENAME");
+            S_CONSTRAINT                      = Symbol("CONSTRAINT");
+            S_INDEX                           = Symbol("INDEX");
+            S_INDICES                         = Symbol("INDICES");
+            S_ON                              = Symbol("ON");
+            S_KEY                             = Symbol("KEY");
+            S_PRIMARY                         = Symbol("PRIMARY");
+            S_INSERT                          = Symbol("INSERT");
+            S_INTO                            = Symbol("INTO");
+            S_UPDATE                          = Symbol("UPDATE");
+            S_INSERTORUPDATE                  = Symbol("INSERTORUPDATE");
+            S_INSERTORREPLACE                 = Symbol("INSERTORREPLACE");
+            S_INSERTIFNOTEXIST                = Symbol("INSERTIFNOTEXIST");
+            S_REPLACE                         = Symbol("REPLACE");
+            S_SET                             = Symbol(TERMINAL_SET);
+            S_REMOVE                          = Symbol("REMOVE");
+            S_VALUES                          = Symbol("VALUES");
+            S_DELETE                          = Symbol("DELETE");
+            S_SELECT                          = Symbol("SELECT");
+            S_FROM                            = Symbol("FROM");
+            S_AS                              = Symbol("AS");
+            S_COUNT                           = Symbol("COUNT");
+            S_JOIN                            = Symbol("JOIN");
+            S_BY                              = Symbol("BY");
+            S_WHERE                           = Symbol("WHERE");
+            S_TYPE                            = Symbol("TYPE");
+            S_TYPES                           = Symbol("TYPES");
+            S_EDITION                         = Symbol("EDITION");
+            S_INDEXTYPE                       = Symbol("INDEXTYPE");
+            S_LIST                            = Symbol(TERMINAL_LIST);
+            S_ListTypePrefix                  = Symbol(TERMINAL_LT);
+            S_ListTypePostfix                 = Symbol(TERMINAL_GT);
+            S_EXTENDS                         = Symbol("EXTENDS");
+            S_ATTRIBUTES                      = Symbol("ATTRIBUTES");
+            S_MATCHES                         = Symbol("MATCHES");
+            S_LIMIT                           = Symbol("LIMIT");
+            S_DEPTH                           = Symbol("DEPTH");
+            S_REFERENCE                       = Symbol("REFERENCE");
+            S_REF                             = Symbol("REF");
+            S_REFUUID                         = Symbol("REFUUID");
+            S_REFERENCEUUID                   = Symbol("REFERENCEUUID");
+            S_LISTOF                          = Symbol(DBConstants.LISTOF);
+            S_SETOF                           = Symbol(DBConstants.SETOF);
+            S_SETOFUUIDS                      = Symbol(DBConstants.SETOFUUIDS);
+            S_UUID                            = Symbol("UUID");
+            S_OFFSET                          = Symbol("OFFSET");
+            S_TRUNCATE                        = Symbol("TRUNCATE");
+            S_TRUE                            = Symbol(TERMINAL_TRUE);
+            S_FALSE                           = Symbol(TERMINAL_FALSE);
+            S_SORTED                          = Symbol(TERMINAL_SORTED);
+            S_ASC                             = Symbol(TERMINAL_ASC);
+            S_DESC                            = Symbol(TERMINAL_DESC);
+            S_QUEUESIZE                       = Symbol(TERMINAL_QUEUESIZE);
+            S_WEIGHTED                        = Symbol(TERMINAL_WEIGHTED);
+            S_SETTING                         = Symbol("SETTING");
+            S_GET                             = Symbol("GET");
+            S_DB                              = Symbol("DB");
+            S_SESSION                         = Symbol("SESSION");
+            S_ATTRIBUTE                       = Symbol("ATTRIBUTE");
+            S_DEFAULT                         = Symbol("DEFAULT");
+            S_BACKWARDEDGES                   = Symbol("BACKWARDEDGES");
+            S_BACKWARDEDGE                    = Symbol("BACKWARDEDGE");
+            S_DESCRIBE                        = Symbol("DESCRIBE");
+            S_DESCFUNC                        = Symbol("FUNCTION");
+            S_DESCAGGR                        = Symbol("AGGREGATE");
+            S_DESCAGGRS                       = Symbol("AGGREGATES");
+            S_DESCSETT                        = Symbol("SETTING");
+            S_DESCSETTINGS                    = Symbol("SETTINGS");
+            S_DESCTYPE                        = Symbol("TYPE");
+            S_DESCTYPES                       = Symbol("TYPES");
+            S_DESCFUNCTIONS                   = Symbol("FUNCTIONS");
+            S_DESCIDX                         = Symbol("INDEX");
+            S_DESCIDXS                        = Symbol("INDICES");
+            S_DESCEDGE                        = Symbol("EDGE");
+            S_DESCEDGES                       = Symbol("EDGES");
+            S_MANDATORY                       = Symbol("MANDATORY");
+            S_ABSTRACT                        = Symbol("ABSTRACT");
+            S_TRANSACTBEGIN                   = Symbol("BEGIN");
+            S_TRANSACT                        = Symbol("TRANSACTION");
+            S_TRANSACTDISTRIBUTED             = Symbol(DBConstants.TRANSACTION_DISTRIBUTED);
+            S_TRANSACTLONGRUNNING             = Symbol(DBConstants.TRANSACTION_LONGRUNNING);
+            S_TRANSACTISOLATION               = Symbol(DBConstants.TRANSACTION_ISOLATION);
+            S_TRANSACTNAME                    = Symbol(DBConstants.TRANSACTION_NAME);
+            S_TRANSACTTIMESTAMP               = Symbol(DBConstants.TRANSACTION_TIMESTAMP);
+            S_TRANSACTROLLBACK                = Symbol(DBConstants.TRANSACTION_ROLLBACK);
+            S_TRANSACTCOMMIT                  = Symbol(DBConstants.TRANSACTION_COMMIT);
+            S_TRANSACTCOMROLLASYNC            = Symbol(DBConstants.TRANSACTION_COMROLLASYNC);
+            S_ADDTOLIST                       = Symbol("+=");
+            S_REMOVEFROMLIST                  = Symbol("-=");
+            S_DUMP                            = Symbol("DUMP");
+            S_DUMP_TYPE_ALL                   = Symbol("ALL");
+            S_DUMP_TYPE_GDDL                  = Symbol("GDDL");
+            S_DUMP_TYPE_GDML                  = Symbol("GDML");
+            S_DUMP_FORMAT_GQL                 = Symbol("GQL");
+            S_DUMP_FORMAT_CSV                 = Symbol("CSV");
+            S_COMMENT                         = Symbol("COMMENT");
+            S_REBUILD                         = Symbol("REBUILD");
+
+            #region IMPORT
+
+            S_IMPORT                          = Symbol("IMPORT");
+            S_COMMENTS                        = Symbol("COMMENTS");
+            S_PARALLELTASKS                   = Symbol("PARALLELTASKS");
+            S_VERBOSITY                       = Symbol("VERBOSITY");
+            S_FORMAT                          = Symbol("FORMAT");
+
+            #endregion
 
             #endregion
 
@@ -1053,7 +603,7 @@ namespace sones.GraphDB.QueryLanguage
 
             
 
-            var Reference                   = new NonTerminal(_S_REFERENCE.Symbol, typeof(SetRefNode));
+            var Reference                   = new NonTerminal(S_REFERENCE.Symbol, typeof(SetRefNode));
             var offsetOpt                   = new NonTerminal("offsetOpt", typeof(OffsetNode));
             var resolutionDepthOpt          = new NonTerminal("resolutionDepthOpt");
             var limitOpt                    = new NonTerminal("limitOpt", typeof(LimitNode));
@@ -1165,6 +715,16 @@ namespace sones.GraphDB.QueryLanguage
 
             #endregion
 
+            #region Import
+
+            var importStmt          = new NonTerminal("import", CreateImportNode);
+            var paramParallelTasks  = new NonTerminal("parallelTasks", CreateParallelTaskNode);
+            var paramComments       = new NonTerminal("comments", CreateCommentsNode);
+            var verbosity           = new NonTerminal("verbosity", CreateVerbosityNode);
+            var verbosityTypes      = new NonTerminal("verbosityTypes");
+
+            #endregion
+
             #endregion
 
             #region Statements
@@ -1192,7 +752,8 @@ namespace sones.GraphDB.QueryLanguage
                             | dumpStmt
                             | transactStmt
                             | commitRollBackTransactStmt
-                            | rebuildIndicesStmt;
+                            | rebuildIndicesStmt
+                            | importStmt;
                             
 
             #endregion
@@ -1214,10 +775,10 @@ namespace sones.GraphDB.QueryLanguage
             //Id.Rule = MakePlusRule(Id, dotWrapper, Id_simple);
 
             Id.Description = "an id is composed by an identifier a dot and a second identifier -  or a list of them an id could be ‘U.Name’ or ‘U.Friends.Age’\n";
-            idlist.Rule = MakePlusRule(idlist, _S_comma, Id);
-            id_simpleList.Rule = MakePlusRule(id_simpleList, _S_comma, Id_simple);
-            id_simpleDotList.Rule = MakePlusRule(id_simpleDotList, _S_dot, Id_simple);
-            id_typeAndAttribute.Rule = TypeWrapper + _S_dot + Id;
+            idlist.Rule = MakePlusRule(idlist, S_comma, Id);
+            id_simpleList.Rule = MakePlusRule(id_simpleList, S_comma, Id_simple);
+            id_simpleDotList.Rule = MakePlusRule(id_simpleDotList, S_dot, Id_simple);
+            id_typeAndAttribute.Rule = TypeWrapper + S_dot + Id;
 
             #endregion
 
@@ -1226,9 +787,9 @@ namespace sones.GraphDB.QueryLanguage
             IdOrFunc.Rule =     name 
                             |   funcCall;
 
-            dotWrapper.Rule = _S_edgeTraversalDelimiter;
+            dotWrapper.Rule = S_edgeTraversalDelimiter;
 
-            edgeAccessorWrapper.Rule = _S_edgeInformationDelimiterSymbol;
+            edgeAccessorWrapper.Rule = S_edgeInformationDelimiterSymbol;
 
             IDOrFuncDelimiter.Rule =        dotWrapper
                                         |   edgeAccessorWrapper;
@@ -1251,7 +812,7 @@ namespace sones.GraphDB.QueryLanguage
 
             #region typeList
 
-            TypeList.Rule = MakePlusRule(TypeList, _S_comma, AType);
+            TypeList.Rule = MakePlusRule(TypeList, S_comma, AType);
             TypeList.Description = "specify the type object to be selected for example a type list could be ‘User U’, ‘Car C’, …\n";
 
             AType.Rule = Id_simple + Id_simple
@@ -1266,7 +827,7 @@ namespace sones.GraphDB.QueryLanguage
 
             #region CreateIndexAttribute
 
-            IndexAttributeList.Rule = MakePlusRule(IndexAttributeList, _S_comma, IndexAttributeMember);
+            IndexAttributeList.Rule = MakePlusRule(IndexAttributeList, S_comma, IndexAttributeMember);
 
             IndexAttributeMember.Rule = IndexAttributeType;// + AttributeOrderDirectionOpt;
 
@@ -1277,14 +838,14 @@ namespace sones.GraphDB.QueryLanguage
             #region OrderDirections
 
             AttributeOrderDirectionOpt.Rule = Empty
-                                                | _S_ASC
-                                                | _S_DESC;
+                                                | S_ASC
+                                                | S_DESC;
 
             #endregion
 
             #region Boolean
 
-            BooleanVal.Rule = _S_TRUE | _S_FALSE;
+            BooleanVal.Rule = S_TRUE | S_FALSE;
 
             #endregion
 
@@ -1292,30 +853,30 @@ namespace sones.GraphDB.QueryLanguage
 
             Value.Rule = string_literal | number | BooleanVal;
 
-            ValueList.Rule = MakeStarRule(ValueList, _S_comma, Value);
+            ValueList.Rule = MakeStarRule(ValueList, S_comma, Value);
 
             #endregion
 
             #region ListType
 
-            ListType.Rule = _S_LIST;
+            ListType.Rule = S_LIST;
 
             ListParametersForExpression.Rule = Empty
-                                         | _S_colon + _S_BRACKET_LEFT + ValueList + _S_BRACKET_RIGHT;
+                                         | S_colon + S_BRACKET_LEFT + ValueList + S_BRACKET_RIGHT;
 
-            EdgeType_SortedMember.Rule = _S_ASC | _S_DESC;
-            EdgeType_Sorted.Rule = _S_SORTED + "=" + EdgeType_SortedMember;
+            EdgeType_SortedMember.Rule = S_ASC | S_DESC;
+            EdgeType_Sorted.Rule = S_SORTED + "=" + EdgeType_SortedMember;
 
             #endregion
 
             #region PandoraType
 
             //                 SET<                   WEIGHTED  (Double, DEFAULT=2, SORTED=DESC)<   [idsimple]  >>
-            EdgeTypeDef.Rule = _S_SET + _S_ListTypePrefix + Id_simple + _S_BRACKET_LEFT + EdgeTypeParams + _S_BRACKET_RIGHT + _S_ListTypePrefix + Id_simple + _S_ListTypePostfix + _S_ListTypePostfix;
+            EdgeTypeDef.Rule = S_SET + S_ListTypePrefix + Id_simple + S_BRACKET_LEFT + EdgeTypeParams + S_BRACKET_RIGHT + S_ListTypePrefix + Id_simple + S_ListTypePostfix + S_ListTypePostfix;
             //                       COUNTED        (Integer, DEFAULT=2)                   <   [idsimple]  >
-            SingleEdgeTypeDef.Rule = Id_simple + _S_BRACKET_LEFT + EdgeTypeParams + _S_BRACKET_RIGHT + _S_ListTypePrefix + Id_simple + _S_ListTypePostfix;
+            SingleEdgeTypeDef.Rule = Id_simple + S_BRACKET_LEFT + EdgeTypeParams + S_BRACKET_RIGHT + S_ListTypePrefix + Id_simple + S_ListTypePostfix;
 
-            EdgeTypeParams.Rule = MakeStarRule(EdgeTypeParams, _S_comma, EdgeTypeParam);
+            EdgeTypeParams.Rule = MakeStarRule(EdgeTypeParams, S_comma, EdgeTypeParam);
             EdgeTypeParam.Rule = Id_simple
                                | DefaultValueDef
                                | EdgeType_Sorted
@@ -1323,12 +884,12 @@ namespace sones.GraphDB.QueryLanguage
 
             EdgeTypeParam.SetOption(TermOptions.IsTransient, false);
 
-            DefaultValueDef.Rule = _S_DEFAULT + "=" + Value;
+            DefaultValueDef.Rule = S_DEFAULT + "=" + Value;
 
             GraphDBType.Rule = Id_simple
                                    // LIST<[idsimple]>
-                                   | _S_LIST + _S_ListTypePrefix + Id_simple + _S_ListTypePostfix
-                                   | _S_SET + _S_ListTypePrefix + Id_simple + _S_ListTypePostfix
+                                   | S_LIST + S_ListTypePrefix + Id_simple + S_ListTypePostfix
+                                   | S_SET + S_ListTypePrefix + Id_simple + S_ListTypePostfix
                                    | EdgeTypeDef
                                    | SingleEdgeTypeDef;
 
@@ -1336,7 +897,7 @@ namespace sones.GraphDB.QueryLanguage
 
             #region AttributeList
 
-            AttributeList.Rule = MakePlusRule(AttributeList, _S_comma, AttrDefinition);
+            AttributeList.Rule = MakePlusRule(AttributeList, S_comma, AttrDefinition);
 
             AttrDefinition.Rule = GraphDBType + Id_simple + AttrDefaultOpValue;
 
@@ -1344,25 +905,25 @@ namespace sones.GraphDB.QueryLanguage
 
             #region BackwardEdgesList
 
-            BackwardEdgesList.Rule = MakePlusRule(BackwardEdgesList, _S_comma, BackwardEdgesSingleDef);
+            BackwardEdgesList.Rule = MakePlusRule(BackwardEdgesList, S_comma, BackwardEdgesSingleDef);
 
-            BackwardEdgesSingleDef.Rule = Id_simple + _S_dot + Id_simple + Id_simple;
-                                            //| Id_simple + _S_dot + Id_simple + _S_ListTypePrefix + Id_simple + _S_BRACKET_LEFT + EdgeTypeParams + _S_BRACKET_RIGHT + _S_ListTypePostfix + Id_simple;
+            BackwardEdgesSingleDef.Rule = Id_simple + S_dot + Id_simple + Id_simple;
+                                            //| Id_simple + S_dot + Id_simple + S_ListTypePrefix + Id_simple + S_BRACKET_LEFT + EdgeTypeParams + S_BRACKET_RIGHT + S_ListTypePostfix + Id_simple;
 
             #endregion
 
             #region id_simple list
 
-            SimpleIdList.Rule = MakePlusRule(SimpleIdList, _S_comma, Id_simple);
+            SimpleIdList.Rule = MakePlusRule(SimpleIdList, S_comma, Id_simple);
 
             #endregion
 
             #region expression
 
             //Expression
-            exprList.Rule = MakeStarRule(exprList, _S_comma, expression);
+            exprList.Rule = MakeStarRule(exprList, S_comma, expression);
 
-            exprListOfAList.Rule = MakePlusRule(exprListOfAList, _S_comma, expressionOfAList);
+            exprListOfAList.Rule = MakePlusRule(exprListOfAList, S_comma, expressionOfAList);
 
             expression.Rule =       term
                                 |   unExpr
@@ -1378,23 +939,23 @@ namespace sones.GraphDB.QueryLanguage
                             |   aggregate           //COUNT ( SelectStatement )
                             |   tuple               //(d.Name, 'Henning', (SelectStatement))
                             |   parSelectStmt      //(FROM User u Select u.Name)
-                            | _S_TRUE
-                            | _S_FALSE;
+                            | S_TRUE
+                            | S_FALSE;
 
             #region Tuple
 
             tuple.Rule = bracketLeft + exprList + bracketRight;
 
-            bracketLeft.Rule = _S_BRACKET_LEFT | _S_TUPLE_BRACKET_LEFT;
-            bracketRight.Rule = _S_BRACKET_RIGHT | _S_TUPLE_BRACKET_RIGHT;
+            bracketLeft.Rule = S_BRACKET_LEFT | S_TUPLE_BRACKET_LEFT;
+            bracketRight.Rule = S_BRACKET_RIGHT | S_TUPLE_BRACKET_RIGHT;
 
             #endregion
 
-            parSelectStmt.Rule = _S_BRACKET_LEFT + SelectStmtPandora + _S_BRACKET_RIGHT;
+            parSelectStmt.Rule = S_BRACKET_LEFT + SelectStmtPandora + S_BRACKET_RIGHT;
 
             unExpr.Rule = unOp + term;
 
-            unOp.Rule =         _S_NOT 
+            unOp.Rule =         S_NOT 
                             |   "+" 
                             |   "-" 
                             |   "~";
@@ -1421,20 +982,20 @@ namespace sones.GraphDB.QueryLanguage
                             |   "AND" 
                             |   "OR" 
                             |   "LIKE"
-                            |   _S_NOT + "LIKE" 
+                            |   S_NOT + "LIKE" 
                             |   "IN" 
                             |   "NOTIN" | "NOT_IN" | "NIN" | "!IN"
                             |   "INRANGE";
 
             notOpt.Rule =       Empty
-                            |   _S_NOT;
+                            |   S_NOT;
 
             #endregion
 
             #region Functions
 
             //funcCall covers some psedo-operators and special forms like ANY(...), SOME(...), ALL(...), EXISTS(...), IN(...)
-            funcCall.Rule = name + _S_BRACKET_LEFT + funArgs + _S_BRACKET_RIGHT;
+            funcCall.Rule = name + S_BRACKET_LEFT + funArgs + S_BRACKET_RIGHT;
 
             funArgs.Rule =      SelectStmtPandora 
                             |   exprList;
@@ -1456,9 +1017,9 @@ namespace sones.GraphDB.QueryLanguage
 
             #region prefixOperation
 
-            PrefixOperation.Rule =      Id_simple + _S_BRACKET_LEFT + ParameterList + _S_BRACKET_RIGHT;
+            PrefixOperation.Rule =      Id_simple + S_BRACKET_LEFT + ParameterList + S_BRACKET_RIGHT;
 
-            ParameterList.Rule =        ParameterList + _S_comma + expression
+            ParameterList.Rule =        ParameterList + S_comma + expression
                                     |   expression;
 
             #endregion
@@ -1467,14 +1028,14 @@ namespace sones.GraphDB.QueryLanguage
 
             #region CREATE INDEX
 
-            createIndexStmt.Rule = _S_CREATE + _S_INDEX + indexNameOpt + editionOpt + _S_ON + TypeWrapper + _S_BRACKET_LEFT + IndexAttributeList + _S_BRACKET_RIGHT + indexTypeOpt;
-            uniqueOpt.Rule = Empty | _S_UNIQUE;
+            createIndexStmt.Rule = S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + TypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + indexTypeOpt;
+            uniqueOpt.Rule = Empty | S_UNIQUE;
 
             editionOpt.Rule =       Empty
-                                | _S_EDITION + Id_simple;
+                                | S_EDITION + Id_simple;
 
             indexTypeOpt.Rule =     Empty
-                                | _S_INDEXTYPE + Id_simple;
+                                | S_INDEXTYPE + Id_simple;
 
             indexNameOpt.Rule = Empty
                                 |   Id_simple;
@@ -1483,93 +1044,93 @@ namespace sones.GraphDB.QueryLanguage
 
             #region CREATE TYPE(S)
 
-            createTypesStmt.Rule    = _S_CREATE + _S_TYPES + bulkTypeList
-                                    | _S_CREATE +  abstractOpt + _S_TYPE + bulkType;
+            createTypesStmt.Rule    = S_CREATE + S_TYPES + bulkTypeList
+                                    | S_CREATE +  abstractOpt + S_TYPE + bulkType;
 
-            bulkTypeList.Rule       = MakePlusRule(bulkTypeList, _S_comma, bulkTypeListMember);
+            bulkTypeList.Rule       = MakePlusRule(bulkTypeList, S_comma, bulkTypeListMember);
 
             bulkTypeListMember.Rule = abstractOpt + bulkType;
 
             bulkType.Rule           = Id_simple + extendsOpt + attributesOpt + backwardEdgesOpt + uniquenessOpt + mandatoryOpt + indexOptOnCreateType + commentOpt;
 
             commentOpt.Rule         =   Empty
-                                    |   _S_COMMENT + "=" + string_literal; 
+                                    |   S_COMMENT + "=" + string_literal; 
 
             abstractOpt.Rule        = Empty
-                                    | _S_ABSTRACT; 
+                                    | S_ABSTRACT; 
 
             extendsOpt.Rule         = Empty
-                                    | _S_EXTENDS + Id_simple;
+                                    | S_EXTENDS + Id_simple;
 
             attributesOpt.Rule      = Empty
-                                    | _S_ATTRIBUTES + _S_BRACKET_LEFT + AttributeList + _S_BRACKET_RIGHT;
+                                    | S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT;
 
             backwardEdgesOpt.Rule   = Empty
-                                    | _S_BACKWARDEDGES + _S_BRACKET_LEFT + BackwardEdgesList + _S_BRACKET_RIGHT;
+                                    | S_BACKWARDEDGES + S_BRACKET_LEFT + BackwardEdgesList + S_BRACKET_RIGHT;
 
             uniquenessOpt.Rule = Empty
-                                    | _S_UNIQUE + _S_BRACKET_LEFT + id_simpleList + _S_BRACKET_RIGHT;
+                                    | S_UNIQUE + S_BRACKET_LEFT + id_simpleList + S_BRACKET_RIGHT;
 
             mandatoryOpt.Rule = Empty
-                                    | _S_MANDATORY + _S_BRACKET_LEFT + id_simpleList + _S_BRACKET_RIGHT;
+                                    | S_MANDATORY + S_BRACKET_LEFT + id_simpleList + S_BRACKET_RIGHT;
 
             indexOptOnCreateType.Rule = Empty
-                                    | _S_INDICES + _S_BRACKET_LEFT + IndexOptOnCreateTypeMemberList + _S_BRACKET_RIGHT
-                                    | _S_INDICES + IndexOptOnCreateTypeMember;
+                                    | S_INDICES + S_BRACKET_LEFT + IndexOptOnCreateTypeMemberList + S_BRACKET_RIGHT
+                                    | S_INDICES + IndexOptOnCreateTypeMember;
 
-            IndexOptOnCreateTypeMemberList.Rule = MakePlusRule(IndexOptOnCreateTypeMemberList, _S_comma, IndexOptOnCreateTypeMember);
+            IndexOptOnCreateTypeMemberList.Rule = MakePlusRule(IndexOptOnCreateTypeMemberList, S_comma, IndexOptOnCreateTypeMember);
 
-            IndexOptOnCreateTypeMember.Rule = _S_BRACKET_LEFT + indexNameOpt + editionOpt + indexTypeOpt + _S_ON + IndexAttributeList + _S_BRACKET_RIGHT
-                                            | _S_BRACKET_LEFT + IndexAttributeList + _S_BRACKET_RIGHT;
+            IndexOptOnCreateTypeMember.Rule = S_BRACKET_LEFT + indexNameOpt + editionOpt + indexTypeOpt + S_ON + IndexAttributeList + S_BRACKET_RIGHT
+                                            | S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT;
 
             AttrDefaultOpValue.Rule = Empty
                                     | "=" + Value
-                                    | "=" + _S_LISTOF + _S_BRACKET_LEFT + ValueList + _S_BRACKET_RIGHT
-                                    | "=" + _S_SETOF + _S_BRACKET_LEFT + ValueList + _S_BRACKET_RIGHT;
+                                    | "=" + S_LISTOF + S_BRACKET_LEFT + ValueList + S_BRACKET_RIGHT
+                                    | "=" + S_SETOF + S_BRACKET_LEFT + ValueList + S_BRACKET_RIGHT;
             #endregion
 
             #region ALTER TYPE
 
-            alterStmt.Rule = _S_ALTER + _S_TYPE + Id_simple + alterCmd + uniquenessOpt + mandatoryOpt;
+            alterStmt.Rule = S_ALTER + S_TYPE + Id_simple + alterCmd + uniquenessOpt + mandatoryOpt;
 
             alterCmd.Rule = Empty
-                            | _S_ADD + _S_ATTRIBUTES + _S_BRACKET_LEFT + AttributeList + _S_BRACKET_RIGHT
-                            | _S_DROP + _S_ATTRIBUTES + _S_BRACKET_LEFT + SimpleIdList + _S_BRACKET_RIGHT
-                            | _S_ADD + _S_BACKWARDEDGES + _S_BRACKET_LEFT + BackwardEdgesList + _S_BRACKET_RIGHT
-                            | _S_DROP + _S_BACKWARDEDGES + _S_BRACKET_LEFT + SimpleIdList + _S_BRACKET_RIGHT
-                            | _S_RENAME + _S_ATTRIBUTE + Id_simple + _S_TO + Id_simple
-                            | _S_RENAME + _S_BACKWARDEDGE + Id_simple + _S_TO + Id_simple
-                            | _S_RENAME + _S_TO + Id_simple
-                            | _S_DROP + _S_UNIQUE
-                            | _S_DROP + _S_MANDATORY
-                            | _S_COMMENT + "=" + string_literal;
+                            | S_ADD + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
+                            | S_DROP + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
+                            | S_ADD + S_BACKWARDEDGES + S_BRACKET_LEFT + BackwardEdgesList + S_BRACKET_RIGHT
+                            | S_DROP + S_BACKWARDEDGES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
+                            | S_RENAME + S_ATTRIBUTE + Id_simple + S_TO + Id_simple
+                            | S_RENAME + S_BACKWARDEDGE + Id_simple + S_TO + Id_simple
+                            | S_RENAME + S_TO + Id_simple
+                            | S_DROP + S_UNIQUE
+                            | S_DROP + S_MANDATORY
+                            | S_COMMENT + "=" + string_literal;
             #endregion
 
             #region SELECT
 
-            SelectStmtPandora.Rule = _S_FROM + TypeList + _S_SELECT + selList + whereClauseOpt + groupClauseOpt + havingClauseOpt + orderClauseOpt + MatchingClause + offsetOpt + limitOpt + resolutionDepthOpt + selectOutputOpt;
+            SelectStmtPandora.Rule = S_FROM + TypeList + S_SELECT + selList + whereClauseOpt + groupClauseOpt + havingClauseOpt + orderClauseOpt + MatchingClause + offsetOpt + limitOpt + resolutionDepthOpt + selectOutputOpt;
             SelectStmtPandora.Description = "The select statement is used to query the database and retrieve one or more types of objects in the database.\n";
 
             MatchingClause.Rule =       Empty
                                     |   MatchingClause + Matching;
 
-            Matching.Rule =             _S_MATCHES + _S_BRACKET_LEFT + number + _S_BRACKET_RIGHT + PrefixOperation;
+            Matching.Rule =             S_MATCHES + S_BRACKET_LEFT + number + S_BRACKET_RIGHT + PrefixOperation;
 
             resolutionDepthOpt.Rule =       Empty
-                                        |   _S_DEPTH + number;
+                                        |   S_DEPTH + number;
 
             selectOutputOpt.Rule    =       Empty
                                         |   "OUTPUT" + name;
 
             offsetOpt.Rule =       Empty
-                            |   _S_OFFSET + number;
+                            |   S_OFFSET + number;
 
             limitOpt.Rule =     Empty
-                            |   _S_LIMIT + number;
+                            |   S_LIMIT + number;
 
             selList.Rule =      selectionList;
 
-            selectionList.Rule = MakePlusRule(selectionList, _S_comma, selectionListElement);            
+            selectionList.Rule = MakePlusRule(selectionList, S_comma, selectionListElement);            
 
             selectionListElement.Rule =     "*"
                                         |   selectionSource + aliasOpt; 
@@ -1577,7 +1138,7 @@ namespace sones.GraphDB.QueryLanguage
             aliasOptName.Rule = Id_simple | string_literal;
 
             aliasOpt.Rule =     Empty
-                            |   _S_AS + aliasOptName;
+                            |   S_AS + aliasOptName;
 
             selectionSource.Rule = aggregate
                 //|   funcCall
@@ -1586,12 +1147,12 @@ namespace sones.GraphDB.QueryLanguage
 
             #region Aggregate
 
-            aggregate.Rule = aggregateName + _S_BRACKET_LEFT + aggregateArg + _S_BRACKET_RIGHT;
+            aggregate.Rule = aggregateName + S_BRACKET_LEFT + aggregateArg + S_BRACKET_RIGHT;
 
             aggregateArg.Rule =     Id
                                 |   "*";
 
-            aggregateName.Rule =        _S_COUNT 
+            aggregateName.Rule =        S_COUNT 
                                     |   "AVG" 
                                     |   "MIN" 
                                     |   "MAX" 
@@ -1605,17 +1166,17 @@ namespace sones.GraphDB.QueryLanguage
 
             #region Functions
 
-            //function.Rule           = functionName + _S_BRACKET_LEFT + term + _S_BRACKET_RIGHT;
+            //function.Rule           = functionName + S_BRACKET_LEFT + term + S_BRACKET_RIGHT;
 
             //functionName.Rule       = FUNC_WEIGHT;
 
             #endregion
 
             whereClauseOpt.Rule =       Empty 
-                                    |   _S_WHERE + expression;
+                                    |   S_WHERE + expression;
 
             groupClauseOpt.Rule =       Empty 
-                                    |   "GROUP" + _S_BY + idlist;
+                                    |   "GROUP" + S_BY + idlist;
 
             havingClauseOpt.Rule =      Empty 
                                     |   "HAVING" + expression;
@@ -1624,57 +1185,57 @@ namespace sones.GraphDB.QueryLanguage
             orderByAttributeListMember.Rule =       Id
                                                 |   string_literal;
 
-            orderByAttributeList.Rule = MakePlusRule(orderByAttributeList, _S_comma, orderByAttributeListMember);
+            orderByAttributeList.Rule = MakePlusRule(orderByAttributeList, S_comma, orderByAttributeListMember);
 
             orderClauseOpt.Rule =       Empty 
-                                    |   "ORDER" + _S_BY + orderByAttributeList + AttributeOrderDirectionOpt;
+                                    |   "ORDER" + S_BY + orderByAttributeList + AttributeOrderDirectionOpt;
 
             #endregion
 
             #region INSERT
 
-            InsertStmt.Rule = _S_INSERT + _S_INTO + TypeWrapper + insertValuesOpt;
+            InsertStmt.Rule = S_INSERT + S_INTO + TypeWrapper + insertValuesOpt;
 
             insertValuesOpt.Rule =      Empty
-                                    |   _S_VALUES + _S_BRACKET_LEFT + AttrAssignList + _S_BRACKET_RIGHT;
+                                    |   S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT;
 
-            AttrAssignList.Rule = MakePlusRule(AttrAssignList, _S_comma, AttrAssign);
+            AttrAssignList.Rule = MakePlusRule(AttrAssignList, S_comma, AttrAssign);
 
             AttrAssign.Rule =       Id + "=" + expression
                                 |   Id + "=" + Reference
                                 |   Id + "=" + CollectionOfDBObjects;
 
-            CollectionOfDBObjects.Rule = _S_SETOF + CollectionTuple
-                                            | _S_LISTOF + CollectionTuple
-                                            | _S_SETOFUUIDS + CollectionTuple
-                                            | _S_SETOF + "()";
+            CollectionOfDBObjects.Rule = S_SETOF + CollectionTuple
+                                            | S_LISTOF + CollectionTuple
+                                            | S_SETOFUUIDS + CollectionTuple
+                                            | S_SETOF + "()";
 
-            CollectionTuple.Rule = _S_BRACKET_LEFT + ExtendedExpressionList + _S_BRACKET_RIGHT;
+            CollectionTuple.Rule = S_BRACKET_LEFT + ExtendedExpressionList + S_BRACKET_RIGHT;
 
-            ExtendedExpressionList.Rule = MakePlusRule(ExtendedExpressionList, _S_comma, ExtendedExpression);
+            ExtendedExpressionList.Rule = MakePlusRule(ExtendedExpressionList, S_comma, ExtendedExpression);
 
             ExtendedExpression.Rule = expression + ListParametersForExpression;
 
-            Reference.Rule = _S_REFERENCE + tuple + ListParametersForExpression
-                           | _S_REF + tuple + ListParametersForExpression
-                           | _S_REFUUID + tuple + ListParametersForExpression
-                           | _S_REFERENCEUUID + tuple + ListParametersForExpression;
+            Reference.Rule = S_REFERENCE + tuple + ListParametersForExpression
+                           | S_REF + tuple + ListParametersForExpression
+                           | S_REFUUID + tuple + ListParametersForExpression
+                           | S_REFERENCEUUID + tuple + ListParametersForExpression;
 
-                //| _S_SETREF + tupleRangeSet + ListParametersForExpression;
+                //| S_SETREF + tupleRangeSet + ListParametersForExpression;
 
             #endregion
 
             #region UPDATE
 
-            updateStmt.Rule = _S_UPDATE + TypeWrapper + _S_SET + _S_BRACKET_LEFT + AttrUpdateList + _S_BRACKET_RIGHT + whereClauseOpt;
+            updateStmt.Rule = S_UPDATE + TypeWrapper + S_SET + S_BRACKET_LEFT + AttrUpdateList + S_BRACKET_RIGHT + whereClauseOpt;
 
-            AttrUpdateList.Rule = MakePlusRule(AttrUpdateList, _S_comma, AttrUpdateOrAssign);
+            AttrUpdateList.Rule = MakePlusRule(AttrUpdateList, S_comma, AttrUpdateOrAssign);
 
             AttrUpdateOrAssign.Rule =       AttrAssign
                                         |   AttrRemove
                                         |   ListAttrUpdate;
 
-            AttrRemove.Rule = _S_REMOVE + _S_ATTRIBUTES + _S_BRACKET_LEFT + id_simpleList + _S_BRACKET_RIGHT;
+            AttrRemove.Rule = S_REMOVE + S_ATTRIBUTES + S_BRACKET_LEFT + id_simpleList + S_BRACKET_RIGHT;
 
             ListAttrUpdate.Rule =       AddToListAttrUpdate
                                     |   RemoveFromListAttrUpdate;
@@ -1682,131 +1243,131 @@ namespace sones.GraphDB.QueryLanguage
             AddToListAttrUpdate.Rule =      AddToListAttrUpdateAddTo
                                         |   AddToListAttrUpdateOperator;
 
-            AddToListAttrUpdateAddTo.Rule = _S_ADD + _S_TO + Id + CollectionOfDBObjects;
-            AddToListAttrUpdateOperator.Rule = Id + _S_ADDTOLIST + CollectionOfDBObjects;
+            AddToListAttrUpdateAddTo.Rule = S_ADD + S_TO + Id + CollectionOfDBObjects;
+            AddToListAttrUpdateOperator.Rule = Id + S_ADDTOLIST + CollectionOfDBObjects;
 
             RemoveFromListAttrUpdate.Rule =         RemoveFromListAttrUpdateAddToRemoveFrom
                                             |       RemoveFromListAttrUpdateAddToOperator;
 
-            RemoveFromListAttrUpdateAddToRemoveFrom.Rule = _S_REMOVE + _S_FROM + Id + tuple;
-            RemoveFromListAttrUpdateAddToOperator.Rule = Id + _S_REMOVEFROMLIST + tuple;
+            RemoveFromListAttrUpdateAddToRemoveFrom.Rule = S_REMOVE + S_FROM + Id + tuple;
+            RemoveFromListAttrUpdateAddToOperator.Rule = Id + S_REMOVEFROMLIST + tuple;
 
 
             #endregion
 
             #region DROP TYPE
 
-            dropTypeStmt.Rule = _S_DROP + _S_TYPE + Id_simple;
+            dropTypeStmt.Rule = S_DROP + S_TYPE + Id_simple;
 
             #endregion
 
             #region DROP INDEX
 
-            dropIndexStmt.Rule = _S_FROM + TypeWrapper + _S_DROP + _S_INDEX + Id_simple + editionOpt;
+            dropIndexStmt.Rule = S_FROM + TypeWrapper + S_DROP + S_INDEX + Id_simple + editionOpt;
 
             #endregion
 
             #region TRUNCATE
 
-            truncateStmt.Rule = _S_TRUNCATE + Id_simple;
+            truncateStmt.Rule = S_TRUNCATE + Id_simple;
 
             #endregion
 
             #region DELETE
 
             deleteStmtMember.Rule = Empty | idlist;
-            deleteStmt.Rule = _S_FROM + TypeList + _S_DELETE + deleteStmtMember + whereClauseOpt;
+            deleteStmt.Rule = S_FROM + TypeList + S_DELETE + deleteStmtMember + whereClauseOpt;
 
             #endregion
 
             #region SETTING
 
-            SettingsStatement.Rule = _S_SETTING + SettingScope + SettingOperation;
+            SettingsStatement.Rule = S_SETTING + SettingScope + SettingOperation;
 
-            SettingScope.Rule = _S_DB | _S_SESSION | SettingTypeNode | SettingAttrNode;
+            SettingScope.Rule = S_DB | S_SESSION | SettingTypeNode | SettingAttrNode;
 
-            SettingTypeNode.Rule = _S_TYPE + SettingTypeStmLst;
+            SettingTypeNode.Rule = S_TYPE + SettingTypeStmLst;
 
-            SettingTypeStmLst.Rule = MakePlusRule(SettingTypeStmLst, _S_comma, TypeWrapper);
+            SettingTypeStmLst.Rule = MakePlusRule(SettingTypeStmLst, S_comma, TypeWrapper);
 
-            SettingAttrNode.Rule = _S_ATTRIBUTE + SettingAttrStmLst;
+            SettingAttrNode.Rule = S_ATTRIBUTE + SettingAttrStmLst;
 
-            SettingAttrStmLst.Rule = MakePlusRule(SettingAttrStmLst, _S_comma, id_typeAndAttribute);
+            SettingAttrStmLst.Rule = MakePlusRule(SettingAttrStmLst, S_comma, id_typeAndAttribute);
 
             SettingOperation.Rule = SettingOpSet | SettingOpGet | SettingOpRemove;
 
-            SettingOpSet.Rule = _S_SET + _S_BRACKET_LEFT + SettingItemSetLst + _S_BRACKET_RIGHT;
+            SettingOpSet.Rule = S_SET + S_BRACKET_LEFT + SettingItemSetLst + S_BRACKET_RIGHT;
 
             SettingItemsSet.Rule = string_literal + "=" + SettingItemSetVal;
 
-            SettingItemSetLst.Rule = MakePlusRule(SettingItemSetLst, _S_comma, SettingItemsSet);
+            SettingItemSetLst.Rule = MakePlusRule(SettingItemSetLst, S_comma, SettingItemsSet);
 
             SettingItemSetVal.Rule =        number 
-                                        |   _S_DEFAULT
+                                        |   S_DEFAULT
                                         |   string_literal;
 
-            SettingOpGet.Rule = _S_GET + _S_BRACKET_LEFT + SettingItems + _S_BRACKET_RIGHT;
+            SettingOpGet.Rule = S_GET + S_BRACKET_LEFT + SettingItems + S_BRACKET_RIGHT;
 
-            SettingOpRemove.Rule = _S_REMOVE + _S_BRACKET_LEFT + SettingItems + _S_BRACKET_RIGHT;
+            SettingOpRemove.Rule = S_REMOVE + S_BRACKET_LEFT + SettingItems + S_BRACKET_RIGHT;
 
-            SettingItems.Rule = MakePlusRule(SettingItems, _S_comma, string_literal);
+            SettingItems.Rule = MakePlusRule(SettingItems, S_comma, string_literal);
 
             #endregion
 
             #region DESCRIBE
 
-            DescrInfoStmt.Rule = _S_DESCRIBE + DescrArgument;
+            DescrInfoStmt.Rule = S_DESCRIBE + DescrArgument;
             DescrInfoStmt.Description = "This statement gives you all information about an type, a function, an index, an setting, an object, an edge or an aggregate.\n";
 
             DescrArgument.Rule = DescrAggrStmt | DescrAggrsStmt | DescrEdgeStmt | DescrEdgesStmt | DescrTypeStmt | DescrTypesStmt | DescrFuncStmt | DescrFunctionsStmt | DescrSettStmt | DescrSettingsStmt | DescrIdxStmt | DescrIdxsStmt;
 
-            DescrAggrStmt.Rule = _S_DESCAGGR + Id_simple;
+            DescrAggrStmt.Rule = S_DESCAGGR + Id_simple;
 
-            DescrAggrsStmt.Rule = _S_DESCAGGRS;
+            DescrAggrsStmt.Rule = S_DESCAGGRS;
 
-            DescrEdgeStmt.Rule = _S_DESCEDGE + Id_simple;
+            DescrEdgeStmt.Rule = S_DESCEDGE + Id_simple;
 
-            DescrEdgesStmt.Rule = _S_DESCEDGES;
+            DescrEdgesStmt.Rule = S_DESCEDGES;
 
-            DescrTypeStmt.Rule = _S_DESCTYPE + Id_simple;
+            DescrTypeStmt.Rule = S_DESCTYPE + Id_simple;
 
-            DescrTypesStmt.Rule = _S_DESCTYPES;
+            DescrTypesStmt.Rule = S_DESCTYPES;
 
-            DescrFuncStmt.Rule = _S_DESCFUNC + Id_simple;
+            DescrFuncStmt.Rule = S_DESCFUNC + Id_simple;
 
-            DescrFunctionsStmt.Rule = _S_DESCFUNCTIONS;
+            DescrFunctionsStmt.Rule = S_DESCFUNCTIONS;
 
-            DescrSettStmt.Rule = _S_DESCSETT + DescrSettItem | _S_DESCSETTINGS + DescrSettingsItems;
+            DescrSettStmt.Rule = S_DESCSETT + DescrSettItem | S_DESCSETTINGS + DescrSettingsItems;
 
-            DescrSettItem.Rule = Id_simple + Empty | Id_simple + _S_ON + _S_TYPE + AType | Id_simple + _S_ON + _S_ATTRIBUTE + id_typeAndAttribute | Id_simple + _S_ON + _S_DB | Id_simple + _S_ON + _S_SESSION;
+            DescrSettItem.Rule = Id_simple + Empty | Id_simple + S_ON + S_TYPE + AType | Id_simple + S_ON + S_ATTRIBUTE + id_typeAndAttribute | Id_simple + S_ON + S_DB | Id_simple + S_ON + S_SESSION;
 
-            DescrSettingsItems.Rule = _S_ON + _S_TYPE + TypeList | _S_ON + _S_ATTRIBUTE + id_typeAndAttribute | _S_ON + _S_DB | _S_ON + _S_SESSION;
+            DescrSettingsItems.Rule = S_ON + S_TYPE + TypeList | S_ON + S_ATTRIBUTE + id_typeAndAttribute | S_ON + S_DB | S_ON + S_SESSION;
 
-            DescrSettingsStmt.Rule = _S_DESCSETTINGS;
+            DescrSettingsStmt.Rule = S_DESCSETTINGS;
 
-            DescrIdxStmt.Rule = _S_DESCIDX + id_simpleDotList + DescrIdxEdtStmt;
+            DescrIdxStmt.Rule = S_DESCIDX + id_simpleDotList + DescrIdxEdtStmt;
 
             DescrIdxEdtStmt.Rule = Empty | Id_simple;
 
-            DescrIdxsStmt.Rule = _S_DESCIDXS;
+            DescrIdxsStmt.Rule = S_DESCIDXS;
             
             #endregion
 
             #region INSERTORUPDATE
 
-            insertorupdateStmt.Rule = _S_INSERTORUPDATE + TypeWrapper + _S_VALUES + _S_BRACKET_LEFT + AttrAssignList + _S_BRACKET_RIGHT + whereClauseOpt;
+            insertorupdateStmt.Rule = S_INSERTORUPDATE + TypeWrapper + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + whereClauseOpt;
 
             #endregion
 
             #region INSERTORREPLACE
 
-            insertorreplaceStmt.Rule = _S_INSERTORREPLACE + TypeWrapper + _S_VALUES + _S_BRACKET_LEFT + AttrAssignList + _S_BRACKET_RIGHT + whereClauseOpt;
+            insertorreplaceStmt.Rule = S_INSERTORREPLACE + TypeWrapper + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + whereClauseOpt;
 
             #endregion
 
             #region REPLACE
 
-            replaceStmt.Rule = _S_REPLACE + TypeWrapper + _S_VALUES + _S_BRACKET_LEFT + AttrAssignList + _S_BRACKET_RIGHT + _S_WHERE + expression;
+            replaceStmt.Rule = S_REPLACE + TypeWrapper + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + S_WHERE + expression;
 
             #endregion
 
@@ -1815,10 +1376,10 @@ namespace sones.GraphDB.QueryLanguage
             var dumpType   = new NonTerminal("dumpType",   CreateDumpTypeNode);
             var dumpFormat = new NonTerminal("dumpFormat", CreateDumpFormatNode);
 
-            dumpType.Rule   = _S_DUMP_TYPE_ALL | _S_DUMP_TYPE_GDDL | _S_DUMP_TYPE_GDML | Empty;     // If empty => create both
-            dumpFormat.Rule = _S_AS + _S_DUMP_FORMAT_GQL | _S_AS + _S_DUMP_FORMAT_CSV | Empty;      // if empty => create GQL
-            //dumpFormat.Rule = _S_AS + MakePlusRule(_S_DUMP_FORMAT_GQL, _S_DUMP_FORMAT_CSV) | Empty;      // if empty => create GQL
-            dumpStmt.Rule   = _S_DUMP + dumpType + dumpFormat;
+            dumpType.Rule   = S_DUMP_TYPE_ALL | S_DUMP_TYPE_GDDL | S_DUMP_TYPE_GDML | Empty;     // If empty => create both
+            dumpFormat.Rule = S_AS + S_DUMP_FORMAT_GQL | S_AS + S_DUMP_FORMAT_CSV | Empty;      // if empty => create GQL
+            //dumpFormat.Rule = S_AS + MakePlusRule(_S_DUMP_FORMAT_GQL, S_DUMP_FORMAT_CSV) | Empty;      // if empty => create GQL
+            dumpStmt.Rule   = S_DUMP + dumpType + dumpFormat;
 
             #endregion
 
@@ -1827,12 +1388,12 @@ namespace sones.GraphDB.QueryLanguage
 
             #region BeginTransAction
 
-            transactStmt.Rule = _S_TRANSACTBEGIN + TransactOptions + _S_TRANSACT + TransactAttributes;
+            transactStmt.Rule = S_TRANSACTBEGIN + TransactOptions + S_TRANSACT + TransactAttributes;
 
             TransactOptions.Rule = Empty |
-                                _S_TRANSACTDISTRIBUTED + _S_TRANSACTLONGRUNNING |
-                                _S_TRANSACTDISTRIBUTED |
-                                _S_TRANSACTLONGRUNNING;
+                                S_TRANSACTDISTRIBUTED + S_TRANSACTLONGRUNNING |
+                                S_TRANSACTDISTRIBUTED |
+                                S_TRANSACTLONGRUNNING;
 
             TransactAttributes.Rule = Empty |
                                 TransactIsolation |
@@ -1843,24 +1404,24 @@ namespace sones.GraphDB.QueryLanguage
                                 TransactName + TransactTimestamp |
                                 TransactIsolation + TransactName + TransactTimestamp;
 
-            TransactIsolation.Rule = _S_TRANSACTISOLATION + "=" + string_literal;
+            TransactIsolation.Rule = S_TRANSACTISOLATION + "=" + string_literal;
 
-            TransactName.Rule = _S_TRANSACTNAME + "=" + string_literal;
+            TransactName.Rule = S_TRANSACTNAME + "=" + string_literal;
 
-            TransactTimestamp.Rule = _S_TRANSACTTIMESTAMP + "=" + string_literal;
+            TransactTimestamp.Rule = S_TRANSACTTIMESTAMP + "=" + string_literal;
 
             #endregion
 
             #region CommitRollbackTransAction            
             
-            commitRollBackTransactStmt.Rule = TransactCommitRollbackType + _S_TRANSACT + TransactCommitRollbackOpt;
+            commitRollBackTransactStmt.Rule = TransactCommitRollbackType + S_TRANSACT + TransactCommitRollbackOpt;
 
-            TransactCommitRollbackType.Rule = _S_TRANSACTCOMMIT | _S_TRANSACTROLLBACK;
+            TransactCommitRollbackType.Rule = S_TRANSACTCOMMIT | S_TRANSACTROLLBACK;
             
             TransactCommitRollbackOpt.Rule = Empty |
                                         TransactName |
-                                        _S_TRANSACTCOMROLLASYNC |
-                                        TransactName + _S_TRANSACTCOMROLLASYNC;
+                                        S_TRANSACTCOMROLLASYNC |
+                                        TransactName + S_TRANSACTCOMROLLASYNC;
 
             #endregion            
 
@@ -1868,9 +1429,23 @@ namespace sones.GraphDB.QueryLanguage
 
             #region Rebuild Indices
 
-            rebuildIndicesStmt.Rule = _S_REBUILD + _S_INDICES + rebuildIndicesTypes;
+            rebuildIndicesStmt.Rule = S_REBUILD + S_INDICES + rebuildIndicesTypes;
 
             rebuildIndicesTypes.Rule = Empty | TypeList;
+
+            #endregion
+
+            #region IMPORT
+
+            paramComments.Rule      = S_COMMENTS + tuple | Empty;
+            paramParallelTasks.Rule = S_PARALLELTASKS + "(" + number + ")" | Empty;
+            verbosityTypes.Rule     = Symbol(VerbosityTypes.Silent.ToString()) | Symbol(VerbosityTypes.Errors.ToString()) | Symbol(VerbosityTypes.Full.ToString());
+            verbosity.Rule          = S_VERBOSITY + verbosityTypes | Empty;
+
+            BNF_ImportFormat        = new NonTerminal("importformat");
+            //BNF_ImportFormat.Rule = Empty;
+
+            importStmt.Rule = S_IMPORT + S_FROM + string_literal + S_FORMAT + BNF_ImportFormat + paramParallelTasks + paramComments + offsetOpt + limitOpt + verbosity;
 
             #endregion
 
@@ -1888,14 +1463,14 @@ namespace sones.GraphDB.QueryLanguage
 
             #region punctuation
 
-            RegisterPunctuation(",", _S_BRACKET_LEFT.Symbol, _S_BRACKET_RIGHT.Symbol, "[", "]");
-            //RegisterPunctuation(",", _S_BRACKET_LEFT.Symbol, _S_BRACKET_RIGHT.Symbol, _S_TUPLE_BRACKET_LEFT.Symbol, _S_TUPLE_BRACKET_RIGHT.Symbol);
+            RegisterPunctuation(",", S_BRACKET_LEFT.Symbol, S_BRACKET_RIGHT.Symbol, "[", "]");
+            //RegisterPunctuation(",", S_BRACKET_LEFT.Symbol, S_BRACKET_RIGHT.Symbol, S_TUPLE_BRACKET_LEFT.Symbol, S_TUPLE_BRACKET_RIGHT.Symbol);
             //RegisterPunctuation(",");
-            //RegisterBracePair(_S_BRACKET_LEFT.Symbol, _S_BRACKET_RIGHT.Symbol);
-            //RegisterBracePair(_S_TUPLE_BRACKET_LEFT.Symbol, _S_TUPLE_BRACKET_RIGHT.Symbol);
-            //RegisterBracePair(_S_TUPLE_BRACKET_LEFT_EXCLUSIVE.Symbol, _S_TUPLE_BRACKET_RIGHT.Symbol);
-            //RegisterBracePair(_S_TUPLE_BRACKET_LEFT.Symbol, _S_TUPLE_BRACKET_RIGHT_EXCLUSIVE.Symbol);
-            //RegisterBracePair(_S_TUPLE_BRACKET_LEFT_EXCLUSIVE.Symbol, _S_TUPLE_BRACKET_RIGHT_EXCLUSIVE.Symbol);
+            //RegisterBracePair(_S_BRACKET_LEFT.Symbol, S_BRACKET_RIGHT.Symbol);
+            //RegisterBracePair(_S_TUPLE_BRACKET_LEFT.Symbol, S_TUPLE_BRACKET_RIGHT.Symbol);
+            //RegisterBracePair(_S_TUPLE_BRACKET_LEFT_EXCLUSIVE.Symbol, S_TUPLE_BRACKET_RIGHT.Symbol);
+            //RegisterBracePair(_S_TUPLE_BRACKET_LEFT.Symbol, S_TUPLE_BRACKET_RIGHT_EXCLUSIVE.Symbol);
+            //RegisterBracePair(_S_TUPLE_BRACKET_LEFT_EXCLUSIVE.Symbol, S_TUPLE_BRACKET_RIGHT_EXCLUSIVE.Symbol);
 
             #endregion
 
@@ -1908,7 +1483,8 @@ namespace sones.GraphDB.QueryLanguage
                 TypeWrapper //is used as a wrapper for AType
                 , IdOrFunc //, IdOrFuncList
                 , exprList, aggregateArg,
-                ExtendedExpressionList
+                ExtendedExpressionList,
+                BNF_ImportFormat, verbosityTypes
                 );
 
             #endregion
@@ -2521,6 +2097,46 @@ namespace sones.GraphDB.QueryLanguage
         }
         #endregion
 
+        #region Import
+
+        private void CreateImportNode(CompilerContext context, ParseTreeNode parseNode)
+        {
+            var importNode = new ImportNode();
+
+            importNode.GetContent(context, parseNode);
+
+            parseNode.AstNode = importNode;
+        }
+
+        private void CreateParallelTaskNode(CompilerContext context, ParseTreeNode parseNode)
+        {
+            var parallelTaskNode = new ParallelTasksNode();
+
+            parallelTaskNode.GetContent(context, parseNode);
+
+            parseNode.AstNode = parallelTaskNode;
+        }
+
+        private void CreateCommentsNode(CompilerContext context, ParseTreeNode parseNode)
+        {
+            var commentsNode = new CommentsNode();
+
+            commentsNode.GetContent(context, parseNode);
+
+            parseNode.AstNode = commentsNode;
+        }
+
+        private void CreateVerbosityNode(CompilerContext context, ParseTreeNode parseNode)
+        {
+            var verbosityNode = new VerbosityNode();
+
+            verbosityNode.GetContent(context, parseNode);
+
+            parseNode.AstNode = verbosityNode;
+        }
+
+        #endregion
+
         #endregion
 
 
@@ -2556,13 +2172,13 @@ namespace sones.GraphDB.QueryLanguage
             if (myGraphDBType.ParentTypeUUID != null)
             {
 
-                _StringBuilder.AppendFormat("{0} {1} ", _S_EXTENDS.ToUpperString(), myGraphDBType.GetParentType(myDBContext.DBTypeManager).Name);//builder.AppendLine();
+                _StringBuilder.AppendFormat("{0} {1} ", S_EXTENDS.ToUpperString(), myGraphDBType.GetParentType(myDBContext.DBTypeManager).Name);//builder.AppendLine();
 
                 #region Not backwardEdge attributes
 
                 if (myGraphDBType.GetSpecificAttributes(ta => !ta.IsBackwardEdge).CountIsGreater(0))
                 {
-                    _StringBuilder.Append(_S_ATTRIBUTES.ToUpperString() + _S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfAttributes(myDumpFormat, myGraphDBType.GetSpecificAttributes(ta => !ta.IsBackwardEdge), myDBContext) + _S_BRACKET_RIGHT.ToUpperString() + " ");
+                    _StringBuilder.Append(S_ATTRIBUTES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfAttributes(myDumpFormat, myGraphDBType.GetSpecificAttributes(ta => !ta.IsBackwardEdge), myDBContext) + S_BRACKET_RIGHT.ToUpperString() + " ");
                 }
 
                 #endregion
@@ -2571,7 +2187,7 @@ namespace sones.GraphDB.QueryLanguage
 
                 if (myGraphDBType.GetSpecificAttributes(ta => ta.IsBackwardEdge).CountIsGreater(0))
                 {
-                    _StringBuilder.Append(_S_BACKWARDEDGES.ToUpperString() + _S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfBackwardEdges(myDumpFormat, myGraphDBType.GetSpecificAttributes(ta => ta.IsBackwardEdge), myDBContext) + _S_BRACKET_RIGHT.ToUpperString() + " ");
+                    _StringBuilder.Append(S_BACKWARDEDGES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfBackwardEdges(myDumpFormat, myGraphDBType.GetSpecificAttributes(ta => ta.IsBackwardEdge), myDBContext) + S_BRACKET_RIGHT.ToUpperString() + " ");
                 }
 
                 #endregion
@@ -2580,7 +2196,7 @@ namespace sones.GraphDB.QueryLanguage
 
                 if (myGraphDBType.GetUniqueAttributes().CountIsGreater(0))
                 {
-                    _StringBuilder.Append(_S_UNIQUE.ToUpperString() + _S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myDumpFormat, myGraphDBType.GetUniqueAttributes(), myGraphDBType) + _S_BRACKET_RIGHT.Symbol + " ");
+                    _StringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myDumpFormat, myGraphDBType.GetUniqueAttributes(), myGraphDBType) + S_BRACKET_RIGHT.Symbol + " ");
                 }
 
                 #endregion
@@ -2589,7 +2205,7 @@ namespace sones.GraphDB.QueryLanguage
 
                 if (myGraphDBType.GetMandatoryAttributes().CountIsGreater(0))
                 {
-                    _StringBuilder.Append(_S_MANDATORY.ToUpperString() + _S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myDumpFormat, myGraphDBType.GetMandatoryAttributes(), myGraphDBType) + _S_BRACKET_RIGHT.Symbol + " ");
+                    _StringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myDumpFormat, myGraphDBType.GetMandatoryAttributes(), myGraphDBType) + S_BRACKET_RIGHT.Symbol + " ");
                 }
 
                 #endregion
@@ -2598,7 +2214,7 @@ namespace sones.GraphDB.QueryLanguage
 
                 if (myGraphDBType.GetAllAttributeIndices(false).CountIsGreater(0))
                 {
-                    _StringBuilder.Append(_S_INDICES.ToUpperString() + _S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myDumpFormat, myGraphDBType.GetAllAttributeIndices(false), myGraphDBType) + _S_BRACKET_RIGHT.Symbol + " ");
+                    _StringBuilder.Append(S_INDICES.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myDumpFormat, myGraphDBType.GetAllAttributeIndices(false), myGraphDBType) + S_BRACKET_RIGHT.Symbol + " ");
                 }
 
                 #endregion
@@ -2706,17 +2322,17 @@ namespace sones.GraphDB.QueryLanguage
                 if (_AttributeIndex.IsUuidIndex || _AttributeIndex.IndexEdition == DBConstants.UNIQUEATTRIBUTESINDEX)
                     continue;
 
-                _StringBuilder.Append(String.Concat(_S_BRACKET_LEFT, _AttributeIndex.IndexName));
+                _StringBuilder.Append(String.Concat(S_BRACKET_LEFT, _AttributeIndex.IndexName));
 
                 if (_AttributeIndex.IsUniqueIndex)
-                    _StringBuilder.Append(String.Concat(" ", _S_UNIQUE.ToUpperString()));
+                    _StringBuilder.Append(String.Concat(" ", S_UNIQUE.ToUpperString()));
 
-                _StringBuilder.Append(String.Concat(" ", _S_EDITION.ToUpperString(), " ", _AttributeIndex.IndexEdition));
+                _StringBuilder.Append(String.Concat(" ", S_EDITION.ToUpperString(), " ", _AttributeIndex.IndexEdition));
 
-                _StringBuilder.Append(String.Concat(" ", _S_INDEXTYPE.ToUpperString(), " ", _AttributeIndex.IndexType.ToString()));
-                _StringBuilder.Append(String.Concat(" ", _S_ON.ToUpperString(), " ", CreateGraphDDLOfAttributeUUIDs(myDumpFormat, _AttributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs, myGraphDBType)));
+                _StringBuilder.Append(String.Concat(" ", S_INDEXTYPE.ToUpperString(), " ", _AttributeIndex.IndexType.ToString()));
+                _StringBuilder.Append(String.Concat(" ", S_ON.ToUpperString(), " ", CreateGraphDDLOfAttributeUUIDs(myDumpFormat, _AttributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs, myGraphDBType)));
 
-                _StringBuilder.Append(_S_BRACKET_RIGHT);
+                _StringBuilder.Append(S_BRACKET_RIGHT);
 
                 _StringBuilder.Append(delimiter);
 
@@ -2821,8 +2437,8 @@ namespace sones.GraphDB.QueryLanguage
             var _StringBuilder = new StringBuilder();
             var delimiter = ", ";
 
-            _StringBuilder.Append(String.Concat(_S_INSERT.ToUpperString(), " ", _S_INTO.ToUpperString(), " ", myGraphDBType.Name, " ", _S_VALUES.ToUpperString(), " ", _S_BRACKET_LEFT));
-            _StringBuilder.Append(String.Concat(_S_UUID.ToUpperString(), " = '", myDBObjectStream.ObjectUUID.ToString(), "'", delimiter));
+            _StringBuilder.Append(String.Concat(S_INSERT.ToUpperString(), " ", S_INTO.ToUpperString(), " ", myGraphDBType.Name, " ", S_VALUES.ToUpperString(), " ", S_BRACKET_LEFT));
+            _StringBuilder.Append(String.Concat(S_UUID.ToUpperString(), " = '", myDBObjectStream.ObjectUUID.ToString(), "'", delimiter));
 
             #region CreateGraphDMLforDBODefinedAttributes
 
@@ -2840,7 +2456,7 @@ namespace sones.GraphDB.QueryLanguage
             if (edges.Length > 0)
             {
                 edges.RemoveEnding(delimiter);
-                myEdges.Add(String.Concat(_S_UPDATE.ToUpperString(), " ", myGraphDBType.Name, " ", _S_SET.ToUpperString(), " ", _S_BRACKET_LEFT, edges.ToString(), _S_BRACKET_RIGHT, " ", _S_WHERE.ToUpperString(), " ", _S_UUID.ToUpperString(), " = '", myDBObjectStream.ObjectUUID.ToString(), "'"));
+                myEdges.Add(String.Concat(S_UPDATE.ToUpperString(), " ", myGraphDBType.Name, " ", S_SET.ToUpperString(), " ", S_BRACKET_LEFT, edges.ToString(), S_BRACKET_RIGHT, " ", S_WHERE.ToUpperString(), " ", S_UUID.ToUpperString(), " = '", myDBObjectStream.ObjectUUID.ToString(), "'"));
             }
 
             #endregion
@@ -2869,7 +2485,7 @@ namespace sones.GraphDB.QueryLanguage
             #endregion
 
             _StringBuilder.RemoveEnding(delimiter);
-            _StringBuilder.Append(_S_BRACKET_RIGHT);
+            _StringBuilder.Append(S_BRACKET_RIGHT);
 
             return new Exceptional<String>(_StringBuilder.ToString());
 
@@ -2900,7 +2516,7 @@ namespace sones.GraphDB.QueryLanguage
 
                         #region Create edge GDML
 
-                        myEdgeBuilder.Append(String.Concat(typeAttribute.Name, " = ", _S_SETOF.ToUpperString(), " ", _S_BRACKET_LEFT));
+                        myEdgeBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_SETOF.ToUpperString(), " ", S_BRACKET_LEFT));
 
                         #region Create an assignment content - if edge does not contain any elements create an empty one
 
@@ -2911,10 +2527,10 @@ namespace sones.GraphDB.QueryLanguage
 
                             foreach (var val in (_Attribute.Value as ASetReferenceEdgeType).GetEdges())
                             {
-                                myEdgeBuilder.Append(String.Concat(_S_UUID.ToUpperString(), " = '", val.Item1.ToString(), "'"));
+                                myEdgeBuilder.Append(String.Concat(S_UUID.ToUpperString(), " = '", val.Item1.ToString(), "'"));
                                 if (val.Item2 != null)
                                 {
-                                    myEdgeBuilder.Append(String.Concat(_S_colon, _S_BRACKET_LEFT, CreateGraphDMLforADBBaseObject(myDumpFormat, val.Item2), _S_BRACKET_RIGHT));
+                                    myEdgeBuilder.Append(String.Concat(S_colon, S_BRACKET_LEFT, CreateGraphDMLforADBBaseObject(myDumpFormat, val.Item2), S_BRACKET_RIGHT));
                                 }
                                 myEdgeBuilder.Append(delimiter);
                             }
@@ -2926,7 +2542,7 @@ namespace sones.GraphDB.QueryLanguage
 
                         #endregion
 
-                        myEdgeBuilder.Append(_S_BRACKET_RIGHT);
+                        myEdgeBuilder.Append(S_BRACKET_RIGHT);
 
                         #endregion
 
@@ -2938,9 +2554,9 @@ namespace sones.GraphDB.QueryLanguage
 
                     else if (typeAttribute.KindOfType == KindsOfType.SingleReference)
                     {
-                        myEdgeBuilder.Append(String.Concat(typeAttribute.Name, " = ", _S_REFERENCE.ToUpperString(), " ", _S_BRACKET_LEFT));
-                        myEdgeBuilder.Append(String.Concat(_S_UUID.ToUpperString(), " = '", (_Attribute.Value as ASingleReferenceEdgeType).GetUUID().ToString(), "'"));
-                        myEdgeBuilder.Append(_S_BRACKET_RIGHT);
+                        myEdgeBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_REFERENCE.ToUpperString(), " ", S_BRACKET_LEFT));
+                        myEdgeBuilder.Append(String.Concat(S_UUID.ToUpperString(), " = '", (_Attribute.Value as ASingleReferenceEdgeType).GetUUID().ToString(), "'"));
+                        myEdgeBuilder.Append(S_BRACKET_RIGHT);
                     }
 
                     #endregion
@@ -2965,13 +2581,13 @@ namespace sones.GraphDB.QueryLanguage
 
                     if (typeAttribute.KindOfType == KindsOfType.ListOfNoneReferences)
                     {
-                        _StringBuilder.Append(String.Concat(typeAttribute.Name, " = ", _S_LISTOF.ToUpperString(), " ", _S_BRACKET_LEFT));
+                        _StringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_LISTOF.ToUpperString(), " ", S_BRACKET_LEFT));
                         foreach (var val in (_Attribute.Value as AListBaseEdgeType))
                         {
                             _StringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
                         }
                         _StringBuilder.RemoveEnding(delimiter);
-                        _StringBuilder.Append(_S_BRACKET_RIGHT);
+                        _StringBuilder.Append(S_BRACKET_RIGHT);
                     }
 
                     #endregion
@@ -2980,13 +2596,13 @@ namespace sones.GraphDB.QueryLanguage
 
                     else if (typeAttribute.KindOfType == KindsOfType.SetOfNoneReferences)
                     {
-                        _StringBuilder.Append(String.Concat(typeAttribute.Name, " = ", _S_SETOF.ToUpperString(), " ", _S_BRACKET_LEFT));
+                        _StringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_SETOF.ToUpperString(), " ", S_BRACKET_LEFT));
                         foreach (var val in (_Attribute.Value as AListBaseEdgeType))
                         {
                             _StringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
                         }
                         _StringBuilder.RemoveEnding(delimiter);
-                        _StringBuilder.Append(_S_BRACKET_RIGHT);
+                        _StringBuilder.Append(S_BRACKET_RIGHT);
 
                     }
 
@@ -3043,13 +2659,13 @@ namespace sones.GraphDB.QueryLanguage
                 else if (_Attribute.Value is AListBaseEdgeType)
                 {
 
-                    _StringBuilder.Append(String.Concat(_Attribute.Key, " = ", _S_LISTOF.ToUpperString(), " ", _S_BRACKET_LEFT));
+                    _StringBuilder.Append(String.Concat(_Attribute.Key, " = ", S_LISTOF.ToUpperString(), " ", S_BRACKET_LEFT));
 
                     foreach (var val in (_Attribute.Value as AListBaseEdgeType))
                         _StringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
 
                     _StringBuilder.RemoveEnding(delimiter);
-                    _StringBuilder.Append(_S_BRACKET_RIGHT);
+                    _StringBuilder.Append(S_BRACKET_RIGHT);
 
                 }
 

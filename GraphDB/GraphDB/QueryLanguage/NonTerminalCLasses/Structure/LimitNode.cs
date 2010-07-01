@@ -28,11 +28,12 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 {
     public class LimitNode : AStructureNode, IAstNodeInit
     {
+        
+        public UInt64? Count { get; private set; }
 
-        private UInt64 _Count = 0;
-        public UInt64 Count
+        public LimitNode()
         {
-            get { return _Count; }
+            Count = null;
         }
 
         private void GetContent(CompilerContext context, ParseTreeNode parseNode)
@@ -41,7 +42,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             {
                 if (parseNode.ChildNodes[1] != null)
                 {
-                    _Count = Convert.ToUInt64(parseNode.ChildNodes[1].Token.Value);
+                    Count = Convert.ToUInt64(parseNode.ChildNodes[1].Token.Value);
                 }
             }
         }

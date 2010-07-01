@@ -56,6 +56,11 @@
     <Compile Include="Errors\EdgeErrors\GraphDBEdgeError.cs" />
     <Compile Include="Errors\FunctionErrors\GraphDBFunctionError.cs" />
     <Compile Include="Errors\GraphDBTypeErrors\GraphDBTypeError.cs" />
+    <Compile Include="Errors\ImportErrors\Error_ImportFailed.cs" />
+    <Compile Include="Errors\ImportErrors\Error_ImportLocationDoesNotExist.cs" />
+    <Compile Include="Errors\ImportErrors\Error_InvalidImportLocation.cs" />
+    <Compile Include="Errors\ImportErrors\Error_ImporterDoesNotExist.cs" />
+    <Compile Include="Errors\ImportErrors\GraphDBImportError.cs" />
     <Compile Include="Errors\IndexErrors\GraphDBIndexError.cs" />
     <Compile Include="Errors\SelectErrors\GraphDBSelectError.cs" />
     <Compile Include="Errors\SettingErrors\Error_CouldNotRemoveSetting.cs" />
@@ -237,6 +242,8 @@
     <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\SubstringFunc.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\TopFunc.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\ToUpperFunc.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Imports\GraphDBImport_GQL.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Imports\AGraphDBImport.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\AlterType\AlterTypeNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\AStatement.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\AttributeDefinition.cs" />
@@ -255,6 +262,11 @@
     <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Dump\DumpTypeNode.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Import\CommentsNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Import\VerbosityNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Import\ImportNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Import\ParallelTasksNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Import\VerbosityTypes.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\InsertOrReplace\InsertOrReplaceNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\InsertOrUpdate\InsertOrUpdateNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Insert\InsertNode.cs" />
@@ -395,7 +407,6 @@
     <Compile Include="QueryLanguage\Result\QueryResultQuantityEnum.cs" />
     <Compile Include="QueryLanguage\Result\SelectionResultSet.cs" />
     <Compile Include="QueryLanguage\Result\SimpleResult.cs" />
-    <Compile Include="QueryLanguage\Result\TEXTRepresentation.cs" />
     <Compile Include="Query\Helpers\Timeout.cs" />
     <Compile Include="Query\Helpers\TimeoutGeneric.cs" />
     <Compile Include="Query\QueryManager.cs" />
@@ -478,6 +489,8 @@
     <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_LASTACCESSTIME.cs" />
     <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_LASTMODIFICATIONTIME.cs" />
     <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_REVISION.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_REVISIONS.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_STREAMS.cs" />
     <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_TYPE.cs" />
     <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_UUID.cs" />
     <Compile Include="TypeManagement\TypeAttribute.cs" />

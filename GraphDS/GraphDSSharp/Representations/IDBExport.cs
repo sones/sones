@@ -33,13 +33,17 @@ using sones.GraphDB.QueryLanguage.Result;
 namespace sones.GraphDS.API.CSharp
 {
 
+    /// <summary>
+    /// An interface to export data from the database
+    /// </summary>
+
     public interface IDBExport
     {
 
         ContentType ExportContentType { get; }
 
         Object Export(QueryResult myQueryResult);
-        Object Export(DBObjectReadout myDBObjectReadout, Boolean myRecursion = false);
+        Object Export(DBObjectReadout myDBObjectReadout);
 
         String ExportString(QueryResult myQueryResult);
 

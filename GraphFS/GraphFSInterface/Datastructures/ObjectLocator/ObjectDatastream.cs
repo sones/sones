@@ -70,6 +70,27 @@ namespace sones.GraphFS.DataStructures
 
         #region Properties
 
+        #region StorageUUIDs
+
+        private List<StorageUUID> _StorageUUIDs;
+
+        public List<StorageUUID> StorageUUIDs
+        {
+
+            get
+            {
+                return _StorageUUIDs;
+            }
+
+            set
+            {
+                _StorageUUIDs = value;
+            }
+
+        }
+
+        #endregion
+
         #region AvailableStorageUUIDs
 
         private List<StorageUUID> _AvailableStorageUUIDs;

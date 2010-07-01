@@ -24,15 +24,16 @@
 
 #region Usings
 
-using System.Collections.Generic;
-using System.Linq;
-
-using sones.GraphDB.QueryLanguage.Result;
-using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 using System.Net.Mime;
+using System.Collections.Generic;
+
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 using sones.GraphDB.TypeManagement;
+using sones.GraphDB.QueryLanguage.Result;
 
 #endregion
 
@@ -40,8 +41,10 @@ namespace sones.GraphDS.API.CSharp
 {
 
     /// <summary>
-    /// GraphDS I/O class for writing and reading JSON
+    /// Transforms a QueryResult and a DBObjectReadout into an application/json
+    /// representation and vice versa.
     /// </summary>
+
     public class JSON_IO : IDBExport, IDBImport
     {
 
@@ -126,9 +129,19 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
+
+        #region Export(myDBObjectReadout)
+
+        public Object Export(DBObjectReadout myDBObjectReadout)
+        {
+            return Export(myDBObjectReadout, false);
+        }
+
+        #endregion
+
         #region Export(myDBObjectReadout, myRecursion = false)
 
-        public Object Export(DBObjectReadout myDBObjectReadout, Boolean myRecursion = false)
+        public Object Export(DBObjectReadout myDBObjectReadout, Boolean myRecursion)
         {
 
             var _DBObject = new JObject();

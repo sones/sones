@@ -182,7 +182,7 @@ namespace sones.GraphDB
             _DBSettingsManager  = new DBSettingsManager(_DBPluginManager.Settings, myDBSettings, graphFSSession, new ObjectLocation(myDatabaseRootPath.Name, DBConstants.DBSettingsLocation));
             _DBObjectManager    = new DBObjectManager(this, graphFSSession);
             _DBIndexManager     = new DBIndexManager(graphFSSession, this);
-            _SessionSettings = sessionSettings;
+            _SessionSettings    = sessionSettings;
             _DBObjectCache      = _DBObjectManager.GetSimpleDBObjectCache(this);
             _IGraphFSSession    = graphFSSession;
 

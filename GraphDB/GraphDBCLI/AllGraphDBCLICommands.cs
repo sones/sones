@@ -26,7 +26,7 @@
  * <developer>Achim Friedland</developer>
  * <developer>Henning Rauch</developer>
  */
-
+ 
 #region Usings
 
 using System;
@@ -56,14 +56,9 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
     {
 
 
-        #region QueryDB(myQueryString, myIPandoraDBSession, ...)
+        #region QueryDB(myQueryString, myIPandoraDBSession, myWithOutput = true)
 
-        protected QueryResult QueryDB(String myQueryString, IGraphDBSession myIPandoraDBSession)
-        {
-            return QueryDB(myQueryString, myIPandoraDBSession, true);
-        }
-
-        protected QueryResult QueryDB(String myQueryString, IGraphDBSession myIPandoraDBSession, Boolean myWithOutput)
+        protected QueryResult QueryDB(String myQueryString, IGraphDBSession myIPandoraDBSession, Boolean myWithOutput = true)
         {
 
             if (myWithOutput)

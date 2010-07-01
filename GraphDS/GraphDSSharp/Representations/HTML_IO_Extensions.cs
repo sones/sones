@@ -1,19 +1,23 @@
 ﻿/* 
  * HTML_IO_Extensions
- * (c) Achim Friedland, 2009 - 2010
+ * Achim 'ahzf' Friedland, 2009-2010
  */
 
 #region Usings
 
 using System;
-using sones.GraphDB.QueryLanguage.Result;
-using Newtonsoft.Json.Linq;
 using System.Text;
+
+using sones.GraphDB.QueryLanguage.Result;
 
 #endregion
 
 namespace sones.GraphDS.API.CSharp
 {
+
+    /// <summary>
+    /// Extension methods to transform a QueryResult and a DBObjectReadout into a text/html representation
+    /// </summary>
 
     public static class HTML_IO_Extensions
     {
@@ -22,16 +26,35 @@ namespace sones.GraphDS.API.CSharp
 
         public static String ToHTML(this QueryResult myQueryResult)
         {
-            return new HTML_IO().Export(myQueryResult) as String;
+            return (new HTML_IO().Export(myQueryResult) as StringBuilder).ToString();
         }
 
         #endregion
 
+        #region ToHTML(this myQueryResult, myStringBuilder)
+
+        public static String ToHTML(this QueryResult myQueryResult, StringBuilder myStringBuilder)
+        {
+            return new HTML_IO().Export(myQueryResult, myStringBuilder).ToString();
+        }
+
+        #endregion
+
+
         #region ToHTML(this myDBObjectReadout)
 
-        private static String ToHTML(this DBObjectReadout myDBObjectReadout, Boolean myRecursion = false)
+        private static String ToHTML(this DBObjectReadout myDBObjectReadout)
         {
             return new HTML_IO().Export(myDBObjectReadout) as String;
+        }
+
+        #endregion
+
+        #region ToHTML(this myDBObjectReadout, myStringBuilder)
+
+        private static String ToHTML(this DBObjectReadout myDBObjectReadout, StringBuilder myStringBuilder)
+        {
+            return new HTML_IO().Export(myDBObjectReadout, myStringBuilder) as String;
         }
 
         #endregion
@@ -71,7 +94,6 @@ namespace sones.GraphDS.API.CSharp
         }
 
         #endregion
-
 
     }
 

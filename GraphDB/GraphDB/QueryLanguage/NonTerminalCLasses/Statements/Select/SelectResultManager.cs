@@ -1378,7 +1378,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Select
             foreach (var reference in (attrValue.Value as IReferenceEdge).GetAllUUIDs())
             {
                 var specialAttributes = new Dictionary<string, object>();
-                specialAttributes.Add(SpecialTypeAttribute_UUID.AttributeName, reference.ToString());
+                specialAttributes.Add(SpecialTypeAttribute_UUID.AttributeName, reference);
                 specialAttributes.Add(SpecialTypeAttribute_TYPE.AttributeName, typeName);
 
                 readouts.Add(new DBObjectReadout(specialAttributes));

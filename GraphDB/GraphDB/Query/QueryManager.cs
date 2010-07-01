@@ -54,6 +54,7 @@ using sones.GraphDB.Settings;
 using sones.GraphDB.Transactions;
 using sones.Lib;
 using GraphFSInterface.Transactions;
+using sones.GraphDB.Plugin;
 
 #endregion
 
@@ -82,11 +83,36 @@ namespace sones.GraphDB.Query
 
         #region constructor
 
-        public QueryManager()
+        public QueryManager(DBPluginManager pluginManager)
         {
 
             //get grammar
-            Grammar pandoraQL = new QueryLanguage.GraphQL();
+            var pandoraQL = new QueryLanguage.GraphQL();
+
+
+            #region Add all plugins to the grammar - Move to interface of grammar
+
+            if (pluginManager.GraphDBImporter.IsNullOrEmpty())
+            {
+                /// empty is not the best solution, Maybe: remove complete import rule if no importer exist
+                pandoraQL.BNF_ImportFormat.Rule = pandoraQL.Empty;
+            }
+            else
+            {
+                foreach (var importer in pluginManager.GraphDBImporter)
+                {
+                    if (pandoraQL.BNF_ImportFormat.Rule == null)
+                    {
+                        pandoraQL.BNF_ImportFormat.Rule = pandoraQL.Symbol(importer.Key);
+                    }
+                    else
+                    {
+                        pandoraQL.BNF_ImportFormat.Rule |= pandoraQL.Symbol(importer.Key);
+                    }
+                }
+            }
+
+            #endregion
 
             //build compiler
             this._IronyCompiler = new Compiler(pandoraQL);
@@ -96,6 +122,7 @@ namespace sones.GraphDB.Query
             {
                 throw new GraphDBException(new Error_IronyCompiler(this._IronyCompiler.Language.Errors));
             }
+
         }
 
         #endregion

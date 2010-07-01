@@ -427,6 +427,84 @@ namespace sones.GraphFS.Objects
 
         #endregion
 
+        #region MinRevisionDelta
+
+        /// <summary>
+        /// Minimal timespan between to revisions.
+        /// If the timespan between two revisions is smaller both revisions will
+        /// be combined to the later revision.
+        /// </summary>
+        public UInt64 MinRevisionDelta
+        {
+
+            get
+            {
+
+                if (ObjectLocatorReference != null)
+                    if (ObjectLocatorReference.ContainsKey(_ObjectStream))
+                        if (ObjectLocatorReference[_ObjectStream].ContainsKey(_ObjectEdition))
+                            // This will mark the ObjectLocator dirty!
+                            return ObjectLocatorReference[_ObjectStream][_ObjectEdition].MinRevisionDelta;
+
+                throw new ArgumentException("Could not get MinRevisionDelta!");
+
+            }
+
+            set
+            {
+
+                if (ObjectLocatorReference != null)
+                    if (ObjectLocatorReference.ContainsKey(_ObjectStream))
+                        if (ObjectLocatorReference[_ObjectStream].ContainsKey(_ObjectEdition))
+                            ObjectLocatorReference[_ObjectStream][_ObjectEdition].MinRevisionDelta = value;
+
+                throw new ArgumentException("Could not set MinRevisionDelta!");
+
+            }
+
+        }
+
+        #endregion
+
+        #region MaxRevisionAge
+
+        /// <summary>
+        /// Maximal age of an object revision. Older revisions will be
+        /// deleted automatically if they also satify the MaxNumberOfRevisions
+        /// criterium.
+        /// </summary>
+        public UInt64 MaxRevisionAge
+        {
+
+            get
+            {
+
+                if (ObjectLocatorReference != null)
+                    if (ObjectLocatorReference.ContainsKey(_ObjectStream))
+                        if (ObjectLocatorReference[_ObjectStream].ContainsKey(_ObjectEdition))
+                            // This will mark the ObjectLocator dirty!
+                            return ObjectLocatorReference[_ObjectStream][_ObjectEdition].MaxRevisionAge;
+
+                throw new ArgumentException("Could not get MaxRevisionAge!");
+
+            }
+
+            set
+            {
+
+                if (ObjectLocatorReference != null)
+                    if (ObjectLocatorReference.ContainsKey(_ObjectStream))
+                        if (ObjectLocatorReference[_ObjectStream].ContainsKey(_ObjectEdition))
+                            ObjectLocatorReference[_ObjectStream][_ObjectEdition].MaxRevisionAge = value;
+
+                throw new ArgumentException("Could not set MaxRevisionAge!");
+
+            }
+
+        }
+
+        #endregion
+
         #region ObjectRevision
 
         [NonSerialized]

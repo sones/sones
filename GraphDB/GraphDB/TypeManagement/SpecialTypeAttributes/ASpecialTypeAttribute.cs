@@ -26,6 +26,7 @@ using sones.GraphDB.ObjectManagement;
 using sones.GraphFS.Session;
 using sones.Lib.Session;
 using sones.Lib.ErrorHandling;
+using sones.GraphDB.QueryLanguage.Result;
 
 namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 {
@@ -52,6 +53,6 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
         /// <param name="graphDBType"></param>
         /// <param name="sessionInfos"></param>
         /// <returns>The extracted value</returns>
-        public abstract Exceptional<ADBBaseObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext);
+        public abstract Exceptional<AObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext);
     }
 }

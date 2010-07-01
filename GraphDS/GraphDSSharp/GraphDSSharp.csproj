@@ -84,6 +84,8 @@
     <Compile Include="Reflection\DBObject.cs" />
     <Compile Include="Reflection\Set.cs" />
     <Compile Include="Representations\HTML_IO_Extensions.cs" />
+    <Compile Include="Representations\TEXT_IO.cs" />
+    <Compile Include="Representations\TEXT_IO_Extensions.cs" />
     <Compile Include="Representations\XML_IO.cs" />
     <Compile Include="Representations\IDBImport.cs" />
     <Compile Include="Representations\JSON_IO.cs" />

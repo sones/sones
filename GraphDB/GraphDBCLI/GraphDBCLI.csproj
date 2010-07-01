@@ -118,7 +118,6 @@
     <Compile Include="BasicDBCLICommands\BasicDBCLICommands.cs" />
     <Compile Include="BasicDBCLICommands\DBCLI_LOCALE.cs" />
     <Compile Include="BasicDBCLICommands\DBCLI_CREATE.cs" />
-    <Compile Include="BasicDBCLICommands\DBCLI_DBQUERY.cs" />
     <Compile Include="BasicDBCLICommands\DBCLI_EXECDBSCRIPT.cs" />
     <Compile Include="BasicDBCLICommands\DBCLI_INSERT.cs" />
     <Compile Include="BasicDBCLICommands\DBCLI_PANDORADB.cs" />

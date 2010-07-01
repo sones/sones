@@ -414,8 +414,10 @@ namespace sones.GraphDS.API.CSharp
                     return Convert.ToDouble(value);
                 case "DateTime":
                     return Convert.ToDateTime(value);
+                case "GraphDBType":
+                    return Convert.ToString(value);
                 default:
-                    throw new NotImplementedException("ConvertValue of type " + elemType);
+                    throw new NotImplementedException("ConvertValue of type " + elemType + " value: " + value.ToString());
             }
         }
 

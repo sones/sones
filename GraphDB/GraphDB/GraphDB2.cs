@@ -56,6 +56,7 @@ using sones.GraphDB.Transactions;
 using sones.GraphFS.Transactions;
 using GraphFSInterface.Transactions;
 using sones.GraphDB.Managers;
+using sones.GraphDB.Plugin;
 
 
 #endregion
@@ -71,18 +72,13 @@ namespace sones.GraphDB
         #region Data
 
         private DBInstanceSettingsManager<InstanceSettings> _InstanceSettingsManager = null;
-        //private ListOfStringsObject _ListOfObjectSchemes = null;
 
-        //private DBContext _DBContext = null;
-        private ObjectLocation _DatabaseRootPath = null;
+        private ObjectLocation  _DatabaseRootPath = null;
         private IGraphFSSession _IGraphFSSession = null;
 
-        private UUID _internalDatabaseUUID = null;
-        private QueryManager _QueryManager = null;
-        private EntityUUID _internalUserID = null;
+        private UUID            _InternalDatabaseUUID = null;
+        private EntityUUID      _InternalUserID = null;
         private Dictionary<string, ADBSettingsBase> _DBSettings = null;
-
-        DBTransactionManager _DBTransactionManager;
 
         #endregion
 
@@ -109,6 +105,8 @@ namespace sones.GraphDB
         }
         #endregion
 
+        #region Ctors
+
         public GraphDB2(UUID myDatabaseInstanceUUID, ObjectLocation myDatabaseRootPath, IGraphFSSession myPandoraFS, Boolean myCreateNewIfNotExisting)
             : this(myDatabaseInstanceUUID, myDatabaseRootPath, myPandoraFS, myCreateNewIfNotExisting, true)
         {
@@ -128,9 +126,9 @@ namespace sones.GraphDB
 
             this._DatabaseRootPath = myDatabaseRootPath;
             this._IGraphFSSession = myPandoraFS;
-            this._internalDatabaseUUID = myDatabaseInstanceUUID;
-            this._internalUserID = new EntityUUID();
-            this._internalUserID.Generate();
+            this._InternalDatabaseUUID = myDatabaseInstanceUUID;
+            this._InternalUserID = new EntityUUID();
+            this._InternalUserID.Generate();
 
             #endregion
 
@@ -161,18 +159,8 @@ namespace sones.GraphDB
 
             #region Read the Database Instance Metadata
 
-            _DBSettings                 = new Dictionary<string, ADBSettingsBase>();
-            _InstanceSettingsManager    = new DBInstanceSettingsManager<InstanceSettings>(_DatabaseRootPath, _IGraphFSSession, myCreateNewIfNotExisting);
-            //var listOfExceptions            = _IGraphFSSession.GetOrCreateObject<ListOfStringsObject>(new ObjectLocation(myDatabaseRootPath, DBConstants.DBTypeLocations), FSConstants.LISTOF_STRINGS, null, null, 0, false);
-
-            //if (listOfExceptions.Failed)
-            //    throw new GraphDBException(listOfExceptions.Errors);
-
-            //_ListOfObjectSchemes        = listOfExceptions.Value;
-            
-            //_DBContext                = new DBContext(_IGraphFSSession, _DatabaseRootPath, _ListOfObjectSchemes, _internalUserID, _DBSettings, myRebuildIndices);
-
-            _QueryManager               = new QueryManager();
+            _DBSettings = new Dictionary<string, ADBSettingsBase>();
+            _InstanceSettingsManager = new DBInstanceSettingsManager<InstanceSettings>(_DatabaseRootPath, _IGraphFSSession, myCreateNewIfNotExisting);
 
             #endregion
 
@@ -183,21 +171,9 @@ namespace sones.GraphDB
 
             #endregion
 
-            _DBTransactionManager = new DBTransactionManager();
         }
 
-        /// <summary>
-        /// Initiates the Shutdown of this Database Instance Manager
-        /// </summary>
-        public void Shutdown(SessionToken mySessionToken)
-        {
-
-            // Shutdown the notification dispatcher
-            if (_NotificationDispatcher != null)
-                _NotificationDispatcher.Dispose();
-
-        }
-
+        #endregion
 
         #region Public Methods
 
@@ -209,7 +185,7 @@ namespace sones.GraphDB
         /// <param name="QueryScript"></param>
         /// <param name="graphDBSession">Needed for BeginTransaction inside any AStatementNode</param>
         /// <returns></returns>
-        public QueryResult Query(String QueryScript, GraphDBSession graphDBSession)
+        public QueryResult Query(String QueryScript, GraphDBSession graphDBSession, QueryManager queryManager)
         {
 
             #region Data
@@ -222,7 +198,7 @@ namespace sones.GraphDB
             /// But currently, we need to start a transaction for each query - but NOT for transaction related queries.
             if (isNonTransactionalQuery(QueryScript))
             {
-                _QueryResult = this._QueryManager.ExecuteQuery(QueryScript, graphDBSession.GetDBContext(), graphDBSession);
+                _QueryResult = queryManager.ExecuteQuery(QueryScript, graphDBSession.GetDBContext(), graphDBSession);
             }
             else
             {
@@ -241,7 +217,7 @@ namespace sones.GraphDB
                     var existingTransaction = graphDBSession.GetLatestTransaction();
                     using (var transaction = graphDBSession.BeginTransaction(existingTransaction.Distributed, existingTransaction.LongRunning, existingTransaction.IsolationLevel))
                     {
-                        _QueryResult = this._QueryManager.ExecuteQuery(QueryScript, transaction.GetDBContext(), graphDBSession);
+                        _QueryResult = queryManager.ExecuteQuery(QueryScript, transaction.GetDBContext(), graphDBSession);
                         _QueryResult.AddErrorsAndWarnings(transaction.Commit());
                     }
 
@@ -252,7 +228,7 @@ namespace sones.GraphDB
                 {
                     using (var transaction = graphDBSession.BeginTransaction(myIsolationLevel: IsolationLevel.Serializable))
                     {
-                        _QueryResult = this._QueryManager.ExecuteQuery(QueryScript, transaction.GetDBContext(), graphDBSession);
+                        _QueryResult = queryManager.ExecuteQuery(QueryScript, transaction.GetDBContext(), graphDBSession);
                         _QueryResult.AddErrorsAndWarnings(transaction.Commit());
                     }
                 }
@@ -280,12 +256,12 @@ namespace sones.GraphDB
 
         public UUID GetDatabaseUniqueID()
         {
-            return this._internalDatabaseUUID;
+            return this._InternalDatabaseUUID;
         }
 
         public EntityUUID GetDatabaseUserID()
         {
-            return this._internalUserID;
+            return this._InternalUserID;
         }
 
         #region MapAndReduce(myDBTypeName, myMap, myReduce)
@@ -413,6 +389,18 @@ namespace sones.GraphDB
         }
 
         #endregion
+
+        /// <summary>
+        /// Initiates the Shutdown of this Database Instance Manager
+        /// </summary>
+        public void Shutdown(SessionToken mySessionToken)
+        {
+
+            // Shutdown the notification dispatcher
+            if (_NotificationDispatcher != null)
+                _NotificationDispatcher.Dispose();
+
+        }
 
         #endregion
 
@@ -555,70 +543,6 @@ namespace sones.GraphDB
         #endregion
 
         #endregion
-
-
-        #region IFastSerialize Members
-
-        public bool isDirty
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public DateTime ModificationTime
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public byte[] Serialize()
-        {
-
-            var _SerializationWriter = new SerializationWriter();
-
-            _SerializationWriter.WriteObject((UInt32)_DBSettings.Count);
-            foreach (var pSetting in _DBSettings)
-                _SerializationWriter.WriteObject(pSetting.Value);
-
-            return _SerializationWriter.ToArray();
-
-        }
-
-        public void Deserialize(byte[] mySerializedData)
-        {
-
-            var _SerializationReader = new SerializationReader(mySerializedData);
-            UInt32 _Capacity;
-
-            _Capacity = (UInt32)_SerializationReader.ReadObject();
-            if(_DBSettings != null)
-                _DBSettings.Clear();
-
-            for (UInt32 i = 0; i < _Capacity; i++)
-            {
-                 var pSetting = (ADBSettingsBase)Activator.CreateInstance(typeof(ADBSettingsBase), new Object[1] { (Byte[])_SerializationReader.ReadObject() });
-                _DBSettings.Add(pSetting.Name, pSetting);
-            }
-
-        }
-
-        public void Serialize(ref SerializationWriter mySerializationWriter)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Deserialize(ref SerializationReader mySerializationReader)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
 
     }
 }

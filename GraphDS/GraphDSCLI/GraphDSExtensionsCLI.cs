@@ -26,13 +26,12 @@
 #region Usings
 
 using System;
-using System.Linq;
-using System.Text;
-using System.Collections.Generic;
 
 using sones.GraphDS.API.CSharp;
-using sones.GraphFS.Connectors.GraphFSCLI;
 using sones.GraphDB.Connectors.GraphDBCLI;
+using sones.GraphFS.Connectors.GraphFSCLI;
+using sones.GraphFS.Connectors.GraphDSCLI;
+
 using sones.Lib.CLI;
 
 #endregion
@@ -40,6 +39,9 @@ using sones.Lib.CLI;
 namespace sones.GraphDS.Connectors.CLI
 {
 
+    /// <summary>
+    /// Extension methods to start a GraphDS CLI
+    /// </summary>
     public static class GraphDSExtensionsCLI
     {
 
