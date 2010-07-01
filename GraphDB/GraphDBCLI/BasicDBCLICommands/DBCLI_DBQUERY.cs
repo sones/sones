@@ -18,10 +18,8 @@
 */
 
 
-/* StudiVZ Database Demo - DBCLI_DBQUERY
+/* DBCLI_DBQUERY
  * Achim Friedland, 2009
- * 
- * StudiVZ Database Demo
  * 
  * Lead programmer:
  *      Achim Friedland
@@ -74,26 +72,46 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
         #region Execute Command
 
-        public override void Execute(ref object myIGraphFS2Session, ref object myIPandoraDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
+        public override void Execute(ref Object myIGraphFS2Session, ref Object myIPandoraDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
         {
 
             _CancelCommand = false;
-            //IGraphFSSession _IGraphFS2Session = myIGraphFS2Session as IGraphFSSession;
-            var _IPandoraDBSession = myIPandoraDBSession as IGraphDBSession;
+            var _IGraphDBSession = myIPandoraDBSession as IGraphDBSession;
+
             QueryResult _QueryResult;
 
-            if (_IPandoraDBSession == null)
+            if (_IGraphDBSession == null)
             {
                 WriteLine("No database instance started...");
                 return;
             }
 
-            if (CLI_Output == CLI_Output.Standard)
-                _QueryResult = QueryDB(myOptions.ElementAt(1).Value[0].Option, _IPandoraDBSession);
-            else
-                _QueryResult = QueryDB(myOptions.ElementAt(1).Value[0].Option, _IPandoraDBSession, false);
+            var _OutputFormat = "TEXT";
 
-            Write(_QueryResult.toTEXT(CLI_Output));
+            if (myOptions.Count > 2)
+                _OutputFormat = myOptions.ElementAt(2).Value[0].Option;
+
+            if (CLI_Output == CLI_Output.Standard)
+                _QueryResult = QueryDB(myOptions.ElementAt(1).Value[0].Option, _IGraphDBSession);
+            else
+                _QueryResult = QueryDB(myOptions.ElementAt(1).Value[0].Option, _IGraphDBSession, false);
+
+            switch (_OutputFormat)
+            {
+                
+                case "TEXT" :
+                    Write(_QueryResult.toTEXT(CLI_Output));
+                    break;
+
+                //case "XML" :
+                //    Write(_QueryResult.toXML());
+                //    break;
+
+                default :
+                    Write(_QueryResult.toTEXT(CLI_Output));
+                    break;
+
+                }
 
             if (CLI_Output == CLI_Output.Standard)
                 WriteLine();

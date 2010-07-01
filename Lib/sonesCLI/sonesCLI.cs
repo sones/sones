@@ -18,12 +18,9 @@
 */
 
 
-/* Pandora CLI
+/*
  * Achim Friedland, 2008-2009
- * (c) Henning Rauch, 2009
- *
- * System.Environment.Version
- *
+ * Henning Rauch, 2009
  */
 
 #region Usings
@@ -65,7 +62,7 @@ namespace sones.Lib.CLI
 
         int                                     MaximumHistoryEntryLength = 1000;
 
-        object                                  mountedVFS              = null;
+        object                                  _GraphFS              = null;
         
         ConsoleColor                            default_color;
 
@@ -90,7 +87,7 @@ namespace sones.Lib.CLI
         Dictionary<String, List<AbstractCLIOption>>.Enumerator      ParameterEnum;
         String                                  ActualHistoricCommand   = "";
 
-        object                                  DB                      = null;
+        object                                  _GraphDB                      = null;
 
         Dictionary<String, List<AbstractCLIOption>>    Parameters       = new Dictionary<string, List<AbstractCLIOption>>();
         Dictionary<String, AllCLICommands>        Commands;
@@ -210,7 +207,7 @@ namespace sones.Lib.CLI
             : this()
         {
 
-            mountedVFS  = myPandoraVFS;
+            _GraphFS  = myPandoraVFS;
             CurrentPath = myPath;
             ShutDownOnExit = false;
             PrintStartupInformation();
@@ -230,7 +227,7 @@ namespace sones.Lib.CLI
         public sonesCLI(object myPandoraVFS, String myPath, params Type[] myCommandTypes) 
         {
 
-            mountedVFS  = myPandoraVFS;
+            _GraphFS  = myPandoraVFS;
             CurrentPath = myPath;
 
             initCli(myCommandTypes);
@@ -253,9 +250,9 @@ namespace sones.Lib.CLI
         public sonesCLI(object myDatabase, object myPandoraVFS, String myDatabasePath)
             : this()
         {
-            mountedVFS = myPandoraVFS;
+            _GraphFS = myPandoraVFS;
             CurrentPath = myDatabasePath;
-            DB = myDatabase;
+            _GraphDB = myDatabase;
             ShutDownOnExit = false;
 
             PrintStartupInformation();
@@ -275,9 +272,9 @@ namespace sones.Lib.CLI
         /// <param name="myCommandTypes"></param>The requested command types
         public sonesCLI(object myDatabase, object myPandoraVFS, String myDatabasePath, params Type[] myCommandTypes) 
         {
-            mountedVFS = myPandoraVFS;
+            _GraphFS = myPandoraVFS;
             CurrentPath = myDatabasePath;
-            DB = myDatabase;
+            _GraphDB = myDatabase;
 
             initCli(myCommandTypes);
         }
@@ -285,9 +282,9 @@ namespace sones.Lib.CLI
 
         public sonesCLI(object myDatabase, object myPandoraVFS, String myDatabasePath, Stream myStream, CLI_Output myCLI_Output, params Type[] myCommandTypes)
         {
-            mountedVFS = myPandoraVFS;
+            _GraphFS = myPandoraVFS;
             CurrentPath = myDatabasePath;
-            DB = myDatabase;
+            _GraphDB = myDatabase;
             _StreamWriter = new StreamWriter(myStream);
             _StreamReader = new StreamReader(myStream);
             _CLI_Output = myCLI_Output;
@@ -1431,7 +1428,7 @@ namespace sones.Lib.CLI
 
             if (AutoCompletions.ContainsKey(AcMetadata.name.ToLower()))
             {
-                return new AcInformation(AutoCompletions[AcMetadata.name.ToLower()].Complete(ref mountedVFS, ref DB, ref CurrentPath, toBeACed), AcMetadata, toBeACed, lastIndexOfDelimitter);
+                return new AcInformation(AutoCompletions[AcMetadata.name.ToLower()].Complete(ref _GraphFS, ref _GraphDB, ref CurrentPath, toBeACed), AcMetadata, toBeACed, lastIndexOfDelimitter);
 
             }//is this AC available?
             else
@@ -1675,6 +1672,7 @@ namespace sones.Lib.CLI
 
                 while (!IsQuit) // replaced True with !IsQuit because telnet send a quit silently
                 {
+
                     int NumberOfCharsPre = Console.CursorLeft;
 
                     #region Get Input
@@ -2011,7 +2009,7 @@ namespace sones.Lib.CLI
 
                 ReadAndExecuteCommand(InputString);
 
-            }//while
+            }
 
 
             #region Shutdown
@@ -2029,15 +2027,15 @@ namespace sones.Lib.CLI
             if (ShutDownOnExit)
             {
                 object tempNull = null;
-                if (DB != null && Commands.ContainsKey("SHUTDOWNDB"))
+                if (_GraphDB != null && Commands.ContainsKey("SHUTDOWNDB"))
                 {
-                    object temp = (object)DB;
+                    object temp = (object)_GraphDB;
 
                     Commands["SHUTDOWNDB"].Execute(ref tempNull, ref temp, ref CurrentPath, null, null);
                 }
-                if (mountedVFS != null && Commands.ContainsKey("UNMOUNTALL"))
+                if (_GraphFS != null && Commands.ContainsKey("UNMOUNTALL"))
                 {
-                    object temp = (object)mountedVFS;
+                    object temp = (object)_GraphFS;
                     Commands["UNMOUNTALL"].Execute(ref temp, ref tempNull, ref CurrentPath, null, null);
                 }
             }
@@ -2052,171 +2050,173 @@ namespace sones.Lib.CLI
         public void ReadAndExecuteCommand(String InputString)
         {
 
-                #region Read and execute commend
+            // Read and execute commend
 
-                #region Check if valid command
-                //has to be done via split, because irony doesn't recognize whitespaces,
-                //so "dfgfkgdfgkfd" could be detected as the command "df" with an 
-                //strange parameter
+            #region Check if valid command
+            //has to be done via split, because irony doesn't recognize whitespaces,
+            //so "dfgfkgdfgkfd" could be detected as the command "df" with an 
+            //strange parameter
 
-                if (!IsQuit && ValidCommandFromInputString(InputString))
+            if (!IsQuit && ValidCommandFromInputString(InputString))
+            {
+
+            #endregion
+
+                #region Prepare Command Execution
+
+                _Scanner = PandoraCLICompiler.Scanner;
+
+                _CompilerContext = new CompilerContext(PandoraCLICompiler);
+
+                _SourceFile = new SourceFile(InputString, "Source");
+
+                _Scanner.Prepare(_CompilerContext, _SourceFile);
+
+                _CompilerContext.Tokens.Clear();
+
+                _TokenStream = _Scanner.BeginNonDetermisticScan();
+
+                AstNode ExecutionTree = null;
+
+                ExecutionTree = PandoraCLICompiler.Parser.ParseNonDeterministic(_CompilerContext, _TokenStream);
+
+                #region Checkt if valid command is complete
+
+                if (ExecutionTree == null)
                 {
+                    MarkWrongOption(InputString, PandoraCLICompiler.Parser.GetCorrectElements(_CompilerContext, _TokenStream));
+                }
+                else
+                {
+                    //Carry on, the command is valid and complete
+                #endregion
+
+                    ExtractOptionsFromTree(ExecutionTree);
 
                 #endregion
 
-                    #region Prepare Command Execution
+                    if (Commands[CurrentCommand].CLI_Output == CLI_Output.Standard)
+                        WriteLine();
 
-                    _Scanner = PandoraCLICompiler.Scanner;
+                    #region Handle Command Execution
 
-                    _CompilerContext = new CompilerContext(PandoraCLICompiler);
+                    //try
+                    //{
 
-                    _SourceFile = new SourceFile(InputString, "Source");
+                        Stopwatch sw = new Stopwatch();
+                        sw.Start();
 
-                    _Scanner.Prepare(_CompilerContext, _SourceFile);
-
-                    _CompilerContext.Tokens.Clear();
-
-                    _TokenStream = _Scanner.BeginNonDetermisticScan();
-
-                    AstNode ExecutionTree = null;
-
-                    ExecutionTree = PandoraCLICompiler.Parser.ParseNonDeterministic(_CompilerContext, _TokenStream);
-
-                    #region Checkt if valid command is complete
-
-                    if (ExecutionTree == null)
-                    {
-                        MarkWrongOption(InputString, PandoraCLICompiler.Parser.GetCorrectElements(_CompilerContext, _TokenStream));
-                    }
-                    else
-                    {
-                        //Carry on, the command is valid and complete
-                    #endregion
-
-                        ExtractOptionsFromTree(ExecutionTree);
-
-                    #endregion
-
-                        if (Commands[CurrentCommand].CLI_Output == CLI_Output.Standard)
-                            WriteLine();
-
-                        #region Handle Command Execution
-
-                        //try
+                        // TODO: what's this doing here? 
+                        //if (Parameters.Count > 0)
                         //{
+                        #region Execute command...
 
-                            Stopwatch sw = new Stopwatch();
-                            sw.Start();
+                        if (_GraphFS != null || CurrentCommand.Equals("MKFS") || CurrentCommand.Equals("MOUNT") || CurrentCommand.Equals("QUIT") || CurrentCommand.Equals("EXIT") || CurrentCommand.Equals("USEHISTORY") || CurrentCommand.Equals("SAVEHISTORY"))
+                        {
 
-                            // TODO: what's this doing here? 
-                            //if (Parameters.Count > 0)
-                            //{
-                            #region Execute command...
-
-                            if (mountedVFS != null || CurrentCommand.Equals("MKFS") || CurrentCommand.Equals("MOUNT") || CurrentCommand.Equals("QUIT") || CurrentCommand.Equals("EXIT") || CurrentCommand.Equals("USEHISTORY") || CurrentCommand.Equals("SAVEHISTORY"))
-                            {
-
-                                object tempFS = (object)mountedVFS;
-                                object tempDB = (object)DB;
+                            var _TmpFS = (Object) _GraphFS;
+                            var _TmpDB = (Object) _GraphDB;
                                 
-                                Commands[CurrentCommand].Execute(ref tempFS, ref tempDB, ref CurrentPath, Parameters, InputString);
+                            Commands[CurrentCommand].Execute(ref _TmpFS, ref _TmpDB, ref CurrentPath, Parameters, InputString);
 
-                                mountedVFS = tempFS;
-                                DB = tempDB;
+                            _GraphFS = _TmpFS;
+                            _GraphDB = _TmpDB;
 
-                                //if (CommandCategory.Equals(CLICommandCategory.CLIStandardCommand))
-                                //{
+                            //if (CommandCategory.Equals(CLICommandCategory.CLIStandardCommand))
+                            //{
 
-                                    #region Handle Quit and History
+                                #region Handle Quit and History
 
-                                    switch (CurrentCommand.ToUpper())
-                                    {
+                                switch (CurrentCommand.ToUpper())
+                                {
 
-                                        case "QUIT":
-                                            IsQuit = true;
-                                            break;
+                                    case "QUIT":
+                                        IsQuit = true;
+                                        break;
 
-                                        case "EXIT":
-                                            IsQuit = true;
-                                            break;
+                                    case "EXIT":
+                                        IsQuit = true;
+                                        break;
 
-                                        case "USEHISTORY":
-                                            //lets move to the right parameter
-                                            ParameterEnum = Parameters.GetEnumerator();
-                                            ParameterEnum.MoveNext();
-                                            ParameterEnum.MoveNext();
+                                    case "USEHISTORY":
+                                        //lets move to the right parameter
+                                        ParameterEnum = Parameters.GetEnumerator();
+                                        ParameterEnum.MoveNext();
+                                        ParameterEnum.MoveNext();
 
-                                            switch (ParameterEnum.Current.Key)
-                                            {
-                                                case "default":
-                                                    LoadStandardHistory = true;
+                                        switch (ParameterEnum.Current.Key)
+                                        {
+                                            case "default":
+                                                LoadStandardHistory = true;
 
-                                                    if (!HistoryFileName.Length.Equals(0))
-                                                        SaveHistory(HistoryFileName, SthMountedList);
+                                                if (!HistoryFileName.Length.Equals(0))
+                                                    SaveHistory(HistoryFileName, SthMountedList);
 
-                                                    break;
+                                                break;
 
-                                                default:
-                                                    LoadStandardHistory = false;
+                                            default:
+                                                LoadStandardHistory = false;
 
-                                                    HistoryFileName = ParameterEnum.Current.Key;
+                                                HistoryFileName = ParameterEnum.Current.Key;
 
-                                                    LoadHistoryFrom(HistoryFileName);
+                                                LoadHistoryFrom(HistoryFileName);
 
-                                                    break;
+                                                break;
 
-                                            }
+                                        }
 
-                                            break;
+                                        break;
 
-                                        case "SAVEHISTORY":
-                                            //lets move to the right parameter
-                                            ParameterEnum = Parameters.GetEnumerator();
-                                            ParameterEnum.MoveNext();
-                                            ParameterEnum.MoveNext();
+                                    case "SAVEHISTORY":
+                                        //lets move to the right parameter
+                                        ParameterEnum = Parameters.GetEnumerator();
+                                        ParameterEnum.MoveNext();
+                                        ParameterEnum.MoveNext();
 
-                                            if (LoadStandardHistory)
-                                                SaveHistory(ParameterEnum.Current.Key, NothingMountedList);
-                                            else
-                                                SaveHistory(ParameterEnum.Current.Key, SthMountedList);
+                                        if (LoadStandardHistory)
+                                            SaveHistory(ParameterEnum.Current.Key, NothingMountedList);
+                                        else
+                                            SaveHistory(ParameterEnum.Current.Key, SthMountedList);
 
-                                            break;
+                                        break;
 
-                                    }
+                                }
 
-                                    #endregion
+                                #endregion
 
-                                //}
+                            //}
 
-                            }
-                            else
-                                WriteLine("Nothing mounted...");
-                            #endregion
-                            //}//CommandArray.Length > 0 ?
+                        }
 
-                            sw.Stop();
-
-                            if (Parameters.Count > 0 && Commands[CurrentCommand].CLI_Output != CLI_Output.Short)
-                            {
-                                WriteLine("Command took {0}ms, {1:0.0} MB RAM, {2:0.0}% CPU", sw.ElapsedMilliseconds, _RAMCounter.NextValue()/1024/1024, _CPUCounter.NextValue());
-                            }
-
-                        //}
-                        //catch (Exception e)
-                        //{
-                        //    WriteLine("Uuups... " + e.Message);
-                        //    WriteLine("StackTrace... " + e.StackTrace);
-                        //}
-
-                        Reset();
+                        else
+                            WriteLine("Nothing mounted...");
 
                         #endregion
+                        //}//CommandArray.Length > 0 ?
 
-                    }//complete command?
+                        sw.Stop();
 
-                }//valid command?
+                        if (Parameters.Count > 0 && Commands[CurrentCommand].CLI_Output != CLI_Output.Short)
+                        {
+                            WriteLine("Command took {0}ms, {1:0.0} MB RAM, {2:0.0}% CPU", sw.ElapsedMilliseconds, _RAMCounter.NextValue()/1024/1024, _CPUCounter.NextValue());
+                        }
 
-                #endregion
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    WriteLine("Uuups... " + e.Message);
+                    //    WriteLine("StackTrace... " + e.StackTrace);
+                    //}
+
+                    Reset();
+
+                    #endregion
+
+                }
+
+            }
+
+                
 
         }
 
