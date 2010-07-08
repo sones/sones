@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region Usings
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +10,8 @@ using sones.GraphDB.QueryLanguage.Result;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement.PandoraTypes;
+
+#endregion
 
 namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 {

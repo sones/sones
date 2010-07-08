@@ -24,21 +24,17 @@
 #region Usings
 
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
+using sones.GraphDB.Errors;
+using sones.GraphDB.Exceptions;
 using sones.GraphFS.Errors;
 using sones.GraphFS.Exceptions;
 using sones.GraphFS.Transactions;
-using sones.Lib.ErrorHandling;
-using sones.GraphDB.TypeManagement;
-using sones.GraphDB.Exceptions;
-using sones.GraphDB.Errors;
-using System.Threading;
-using sones.Lib.Session;
-using System.Collections.Concurrent;
-using GraphFSInterface.Transactions;
-using Lib.DataStructures.ConcurrentDictionary_Mono;
 
+using sones.Lib.ErrorHandling;
+using sones.Lib.Session;
+using sones.Lib.DataStructures.ConcurrentDictionary_Mono;
 #endregion
 
 namespace sones.GraphDB.Transactions

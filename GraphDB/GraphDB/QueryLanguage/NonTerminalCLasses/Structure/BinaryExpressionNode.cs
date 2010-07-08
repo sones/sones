@@ -870,7 +870,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
             if (myDBObjectReadoutGroup.Attributes.ContainsKey(attributeName))
             {
-                ADBBaseObject objectValue = PandoraTypeMapper.GetPandoraObjectFromTypeName(graphDBType.Name, myDBObjectReadoutGroup.Attributes[attributeName]);
+                ADBBaseObject objectValue = GraphDBTypeMapper.GetPandoraObjectFromTypeName(graphDBType.Name, myDBObjectReadoutGroup.Attributes[attributeName]);
                 simpleValue = new AtomValue(objectValue);
                 return new Exceptional<bool>(true);
             }
@@ -1703,7 +1703,61 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         private object GetAtomValue(IDNode iDNode, DBObjectStream aDBObject, DBContext dbContext)
         {
-            return new AtomValue(PandoraTypeMapper.ConvertPandora2CSharp(iDNode.LastAttribute.GetDBType(dbContext.DBTypeManager).Name), aDBObject.GetAttribute(iDNode.LastAttribute.UUID, iDNode.LastType, dbContext));
+            return new AtomValue(GraphDBTypeMapper.ConvertPandora2CSharp(iDNode.LastAttribute.GetDBType(dbContext.DBTypeManager).Name), aDBObject.GetAttribute(iDNode.LastAttribute.UUID, iDNode.LastType, dbContext));
+        }
+
+        /// <summary>
+        /// Validate all idnodes of this binaryExpressionNode
+        /// </summary>
+        /// <param name="dbContext"></param>
+        /// <param name="typeList"></param>
+        /// <returns></returns>
+        internal Exceptional Validate(DBContext dbContext, params GraphDBType[] typeList)
+        {
+
+            var retVal = new Exceptional();
+
+            #region Validate where expression
+
+            foreach (var idNode in ContainingIDNodes)
+            {
+                if (!idNode.IsValidated)
+                {
+                    var errors = new List<IError>();
+
+                    #region Try to validate now
+
+                    foreach (var type in typeList)
+                    {
+                        var result = idNode.ValidateMe(type, dbContext);
+                        if (result.Success)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            retVal.AddErrorsAndWarnings(result);
+                        }
+                    }
+
+                    #endregion
+
+                    #region If idnode is still not validate we have an invalid where expression and must break
+
+                    if (!idNode.IsValidated)
+                    {
+                        return retVal;
+                    }
+
+                    #endregion
+
+                }
+            }
+
+            #endregion
+
+            return retVal;
+
         }
 
     }//class

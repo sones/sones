@@ -43,7 +43,7 @@ namespace sones.GraphDS.API.CSharp
 
         #region Data
 
-        protected AGraphDSSharp _DBWrapper      = null;
+        internal  AGraphDSSharp _DBWrapper      = null;
         protected StringBuilder _CommandString  = null;
 
         #endregion

@@ -664,6 +664,34 @@ namespace sones.GraphFS.Objects
 
         #endregion
 
+        #region ParentRevisionIDs
+
+        /// <summary>
+        /// return the parent revision id's
+        /// </summary>
+        [NotIFastSerialized]
+        public HashSet<RevisionID> ParentRevisionIDs
+        {
+            get
+            {
+                if (ObjectLocatorReference != null)
+                {
+                    if (ObjectLocatorReference.ContainsKey(_ObjectStream))
+                    { 
+                        if(ObjectLocatorReference[_ObjectStream].ContainsKey(_ObjectEdition))
+                        {
+                            if (ObjectLocatorReference[_ObjectStream][_ObjectEdition].ContainsKey(_ObjectRevisionID))
+                                return ObjectLocatorReference[_ObjectStream][_ObjectEdition][_ObjectRevisionID].ParentRevisionIDs;
+                        }
+                    }
+                }
+
+                throw new ArgumentException("Could not get ParentRevisionIDs!");
+            }
+        }
+
+        #endregion
+
         #region ObjectCopies
 
         /// <summary>

@@ -79,7 +79,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         private List<String> _CreateIndicesQueries;
 
-        internal List<String> CreateIndicesQueries
+        public List<String> CreateIndicesQueries
         {
             get
             {
@@ -108,7 +108,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         public DBObject()
         {
-            UUID                    = null;
+            UUID                    = new ObjectUUID();
             Edition                 = null;
             RevisionID              = null;
             _UndefinedAttributes    = new Dictionary<String, Object>();
@@ -141,7 +141,9 @@ namespace sones.GraphDS.API.CSharp.Reflection
                         _PropertyValue = _PropertyInfo.GetValue(this, null);
 
                         if (_PropertyValue != null)
+                        {
                             _StringBuilder.Append(_PropertyInfo.Name).Append(" = '").Append(_PropertyInfo.GetValue(this, null)).Append("'").Append(mySeperator);
+                        }
 
                     }
 
@@ -170,6 +172,13 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
             _Command.Append("CREATE TYPE " + this.GetType().Name);
             _Command.Append(" EXTENDS " + this.GetType().BaseType.Name);
+
+            #endregion
+
+            #region Init CreateIndicesQueries
+
+            if(_CreateIndicesQueries == null)
+                _CreateIndicesQueries = new List<String>();
 
             #endregion
 
@@ -316,12 +325,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
                             if (!_CreateAttributeIndex.Equals(""))
                             {
-
-                                if (_CreateIndicesQueries == null)
-                                    _CreateIndicesQueries = new List<String>();
-
                                 _CreateIndicesQueries.Add(_CreateAttributeIndex);
-
                             }
 
                             #endregion

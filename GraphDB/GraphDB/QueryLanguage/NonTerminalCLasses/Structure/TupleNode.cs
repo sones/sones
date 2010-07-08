@@ -143,15 +143,15 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
                 else
                 {
                     typeOfExpression = aExpressionNode.Term.GetType();
-                    _Tuple.Add(new TupleElement(PandoraTypeMapper.ConvertPandora2CSharp(typeOfExpression.Name), aExpressionNode.Token.Value));
+                    _Tuple.Add(new TupleElement(GraphDBTypeMapper.ConvertPandora2CSharp(typeOfExpression.Name), aExpressionNode.Token.Value));
                     continue;
                 }
 
                 #endregion
 
-                var aTypeOfOperatorResult = PandoraTypeMapper.ConvertPandora2CSharp(typeOfExpression.Name);
+                var aTypeOfOperatorResult = GraphDBTypeMapper.ConvertPandora2CSharp(typeOfExpression.Name);
 
-                if (PandoraTypeMapper.ConvertPandora2CSharp(typeOfExpression.Name) == TypesOfOperatorResult.NotABasicType)
+                if (GraphDBTypeMapper.ConvertPandora2CSharp(typeOfExpression.Name) == TypesOfOperatorResult.NotABasicType)
                 {
                     #region NotABasicType
 
@@ -209,7 +209,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
                                             var dbTypeOfAttribute = curAttr.GetDBType(DBcontext.DBTypeManager);
 
-                                            aTypeOfOperatorResult = PandoraTypeMapper.ConvertPandora2CSharp(dbTypeOfAttribute.Name);
+                                            aTypeOfOperatorResult = GraphDBTypeMapper.ConvertPandora2CSharp(dbTypeOfAttribute.Name);
 
                                             foreach (DBObjectReadout dbo in aSelResult.Objects)
                                             {
@@ -245,11 +245,22 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
                     #region Basis type
 
                     if (aExpressionNode.AstNode is ExpressionNode)
+                    {
                         aElement = new TupleElement(aTypeOfOperatorResult, ((ExpressionNode)aExpressionNode.AstNode).ParseTreeNode.Token.Value);
+                    }
                     else if (aExpressionNode.AstNode is ExpressionOfAListNode)
+                    {
                         aElement = new TupleElement(aTypeOfOperatorResult, ((ExpressionOfAListNode)aExpressionNode.AstNode).ParseTreeNode.Token.Value);
+
+                        if (((ExpressionOfAListNode)aExpressionNode.AstNode).ParametersNode != null)
+                        {
+                            aElement.Parameters = ((ExpressionOfAListNode)aExpressionNode.AstNode).ParametersNode.ParameterValues;
+                        }
+                    }
                     else
+                    {
                         throw new NotImplementedException();
+                    }
                     _Tuple.Add(aElement);
 
                     #endregion
@@ -306,7 +317,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
         public Exceptional<TupleValue> GetAsTupleValue(DBContext dbContext, TypeAttribute attr)
         {
             var graphDBType = attr.GetDBType(dbContext.DBTypeManager);
-            var tupleBaseType = PandoraTypeMapper.GetPandoraObjectFromTypeName(graphDBType.Name);
+            var tupleBaseType = GraphDBTypeMapper.GetPandoraObjectFromTypeName(graphDBType.Name);
             if (tupleBaseType == null)
             {
                 return new Exceptional<TupleValue>(new Error_InvalidTuple("invalid type " + graphDBType.Name));
@@ -344,7 +355,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
                 }
             }
 
-            return new Exceptional<TupleValue>(new TupleValue(PandoraTypeMapper.ConvertPandora2CSharp(graphDBType.Name), edge, graphDBType, KindOfTuple));
+            return new Exceptional<TupleValue>(new TupleValue(GraphDBTypeMapper.ConvertPandora2CSharp(graphDBType.Name), edge, graphDBType, KindOfTuple));
         }
 
         #region IAstNodeInit Members
@@ -356,9 +367,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         #endregion
 
-        internal Exceptional<ASetReferenceEdgeType> GetAsUUIDEdge(DBContext dbContext, GraphDBType graphDBType)
+        internal Exceptional<ASetReferenceEdgeType> GetAsUUIDEdge(DBContext dbContext, TypeAttribute attr)
         {
-            var edge = new EdgeTypeSetOfReferences();
+            var edge = attr.EdgeType.GetNewInstance() as ASetReferenceEdgeType;
 
             foreach (TupleElement aTupleElement in _Tuple)
             {
@@ -385,9 +396,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
             return new Exceptional<ASetReferenceEdgeType>(edge);
         }
 
-        internal Exceptional<ASingleReferenceEdgeType> GetAsUUIDSingleEdge(DBContext dbContext, GraphDBType graphDBType)
+        internal Exceptional<ASingleReferenceEdgeType> GetAsUUIDSingleEdge(DBContext dbContext, TypeAttribute attr)
         {
-            var edge = new EdgeTypeSingleReference();
+            var edge = attr.EdgeType.GetNewInstance() as ASingleReferenceEdgeType;
             if (_Tuple.Count > 1)
             {
                 return new Exceptional<ASingleReferenceEdgeType>(new Error_TooManyElementsForEdge(edge, (UInt64)_Tuple.Count));

@@ -363,7 +363,7 @@ namespace sones.GraphDB.Indices
                     {
                         //create default adbbaseobject
 
-                        var defaultADBBAseObject = PandoraTypeMapper.GetADBBaseObjectFromUUID(currentAttribute.DBTypeUUID);
+                        var defaultADBBAseObject = GraphDBTypeMapper.GetADBBaseObjectFromUUID(currentAttribute.DBTypeUUID);
                         defaultADBBAseObject.SetValue(DBObjectInitializeType.Default);
 
                         payload.Add(aUnique, defaultADBBAseObject);

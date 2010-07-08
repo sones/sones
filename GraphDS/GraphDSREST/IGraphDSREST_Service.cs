@@ -59,6 +59,15 @@ namespace sones.GraphDS.Connectors.REST
 
 
         /// <summary>
+        /// Get favicon.ico
+        /// </summary>
+        /// <returns>Some HTML and JavaScript</returns>
+        [OperationContract, NoAuthentication]
+        [WebGet(UriTemplate = "/favicon.ico")]
+        void GetFavicon();
+
+
+        /// <summary>
         /// Invoke a javascript shell
         /// </summary>
         /// <returns>Some HTML and JavaScript</returns>

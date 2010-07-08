@@ -291,6 +291,62 @@ namespace sones.GraphDB.TypeManagement
 
             #endregion
 
+            #region NUMBER OF REVISIONS Attribute
+
+            var specialTypeAttribute_NUMBEROFREVISIONS = new SpecialTypeAttribute_NUMBEROFREVISIONS() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            typeDBReference.AddAttribute(specialTypeAttribute_NUMBEROFREVISIONS.UUID, specialTypeAttribute_NUMBEROFREVISIONS);
+
+            #endregion
+
+            #region NUMBER OF COPIES
+
+            var specialTypeAttribute_NUMBEROFCOPIES = new SpecialTypeAttribute_NUMBEROFCOPIES() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            typeDBReference.AddAttribute(specialTypeAttribute_NUMBEROFCOPIES.UUID, specialTypeAttribute_NUMBEROFCOPIES);
+
+            #endregion
+
+            #region PARENT REVISION IDs
+
+            var specialTypeAttribute_PARENTREVISIONIDs = new SpecialTypeAttribute_PARENTREVISIONS() { DBTypeUUID = DBString.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            typeDBReference.AddAttribute(specialTypeAttribute_PARENTREVISIONIDs.UUID, specialTypeAttribute_PARENTREVISIONIDs);
+
+            #endregion
+
+            #region MAX REVISION AGE
+
+            var specialTypeAttribute_MAXREVISIONAGE = new SpecialTypeAttribute_MAXREVISIONAGE() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            typeDBReference.AddAttribute(specialTypeAttribute_MAXREVISIONAGE.UUID, specialTypeAttribute_MAXREVISIONAGE);
+
+            #endregion
+
+            #region MIN NUMBER OF REVISIONS
+
+            var specialTypeAttribute_MINNUMBEROFREVISIONS = new SpecialTypeAttribute_MINNUMBEROFREVISIONS() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            typeDBReference.AddAttribute(specialTypeAttribute_MINNUMBEROFREVISIONS.UUID, specialTypeAttribute_MINNUMBEROFREVISIONS);
+
+            #endregion
+            
+            #region MAX NUMBER OF REVISIONS
+
+            var specialTypeAttribute_MAXNUMBEROFREVISIONS = new SpecialTypeAttribute_MAXNUMBEROFREVISIONS() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            typeDBReference.AddAttribute(specialTypeAttribute_MAXNUMBEROFREVISIONS.UUID, specialTypeAttribute_MAXNUMBEROFREVISIONS);
+
+            #endregion
+
+            #region MAX NUMBER OF COPIES
+
+            var specialTypeAttribute_MAXNUMBEROFCOPIES = new SpecialTypeAttribute_MAXNUMBEROFCOPIES() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            typeDBReference.AddAttribute(specialTypeAttribute_MAXNUMBEROFCOPIES.UUID, specialTypeAttribute_MAXNUMBEROFCOPIES);
+
+            #endregion
+
+            #region MIN NUMBER OF COPIES
+
+            var specialTypeAttribute_MINNUMBEROFCOPIES = new SpecialTypeAttribute_MINNUMBEROFCOPIES() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            typeDBReference.AddAttribute(specialTypeAttribute_MINNUMBEROFCOPIES.UUID, specialTypeAttribute_MINNUMBEROFCOPIES);
+
+            #endregion
+
             _SystemTypes.Add(typeDBReference.UUID, typeDBReference);
 
             #endregion
@@ -1197,8 +1253,19 @@ namespace sones.GraphDB.TypeManagement
 
                     if (!aTypeDef.Indices.IsNullOrEmpty())
                     {
-                        foreach (var index in aTypeDef.Indices)
+                        foreach (var indexExceptional in aTypeDef.Indices)
                         {
+
+                            if (indexExceptional.Failed)
+                            {
+                                return new Exceptional<QueryResult>(indexExceptional);
+                            }
+                            if (!indexExceptional.Success)
+                            {
+                                result.AddWarnings(indexExceptional.Warnings);
+                            }
+                            var index = indexExceptional.Value;
+
                             if (!index.IndexAttributeNames.All(node => aType.GetTypeAttributeByName(node.IndexAttribute) != null))
                             {
                                 RemoveRecentlyAddedTypes(addedTypes);
@@ -1263,7 +1330,7 @@ namespace sones.GraphDB.TypeManagement
                 }
 
                 selResult = new SelectionResultSet(readOutList);
-                result = new QueryResult(new List<SelectionResultSet>() { selResult });
+                result.AddResult(selResult);
                 
 
                 #endregion

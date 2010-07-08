@@ -22,11 +22,10 @@
 #region Usings
 
 using System;
-using sones.GraphFS.Transactions;
 
 #endregion
 
-namespace GraphFSInterface.Transactions
+namespace sones.GraphFS.Transactions
 {
 
     /// <summary>
@@ -85,6 +84,7 @@ namespace GraphFSInterface.Transactions
 
 
         #endregion
+
     }
 
 }

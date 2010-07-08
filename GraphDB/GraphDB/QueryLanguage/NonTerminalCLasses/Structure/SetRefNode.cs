@@ -113,7 +113,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
             if (_IsREFUUID)
             {
-                return _tupleNode.GetAsUUIDSingleEdge(dbContext, validationType);
+                return _tupleNode.GetAsUUIDSingleEdge(dbContext, typeAttribute);
             }
             else
             {

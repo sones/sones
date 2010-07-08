@@ -36,6 +36,7 @@ using sones.GraphDB.Exceptions;
 using sones.GraphDB.TypeManagement;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
@@ -55,7 +56,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
         private Boolean _IsAbstract = false;
         private Dictionary<TypeAttribute, String> _Attributes = new Dictionary<TypeAttribute, String>(); //the dictionayry of attribute definitions
         private List<BackwardEdgeNode> _BackwardEdgeInformation;
-        private List<IndexOptOnCreateTypeMemberNode> _Indices;
+        private List<Exceptional<IndexOptOnCreateTypeMemberNode>> _Indices;
 
         #endregion
 
@@ -132,7 +133,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
         public Boolean IsAbstract { get { return _IsAbstract; } }
         public Dictionary<TypeAttribute, String> Attributes { get { return _Attributes; } }
         public List<BackwardEdgeNode> BackwardEdges { get { return _BackwardEdgeInformation; } }
-        public List<IndexOptOnCreateTypeMemberNode> Indices { get { return _Indices; } }
+        public List<Exceptional<IndexOptOnCreateTypeMemberNode>> Indices { get { return _Indices; } }
 
         #endregion
     }//class

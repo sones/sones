@@ -25,11 +25,15 @@ using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
 using sones.GraphDB.TypeManagement;
 using sones.GraphFS.Objects;
+using sones.Lib.ErrorHandling;
+using sones.Lib;
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 {
-    public class IndexOptOnCreateTypeMemberNode : AStructureNode, IAstNodeInit
+    public class IndexOptOnCreateTypeMemberNode : AStructureNode
     {
+
+        #region Properties
 
         private String _IndexName;
         public String IndexName
@@ -49,15 +53,20 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             get { return _IndexType; }
         }
 
-        private List<CreateIndexAttributeNode> _IndexAttributeNames;
-        public List<CreateIndexAttributeNode> IndexAttributeNames
+        private List<IndexAttributeNode> _IndexAttributeNames;
+        public List<IndexAttributeNode> IndexAttributeNames
         {
             get { return _IndexAttributeNames; }
             set { _IndexAttributeNames = value; }
         }
 
-        public void GetContent(CompilerContext context, ParseTreeNode parseNode)
+        #endregion
+
+        public Exceptional GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
+
+            var grammar = GetGraphQLGrammar(context);
+
             if (parseNode.ChildNodes.Count < 1)
                 throw new ArgumentException("No index definitions found!");
 
@@ -77,12 +86,13 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
                     {
                         _IndexType = (child.AstNode as IndexTypeOptNode).IndexType;
                     }
-                    else if (child.AstNode is CreateIndexAttributeListNode)
+                    else if (child.AstNode is IndexAttributeListNode)
                     {
-                        _IndexAttributeNames = (child.AstNode as CreateIndexAttributeListNode).IndexAttributes;
+                        _IndexAttributeNames = (child.AstNode as IndexAttributeListNode).IndexAttributes;
                     }
                 }
             }
+
 
             #region Validation
 
@@ -97,6 +107,20 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             }
 
             #endregion
+
+            #region Check for obsolete GQL parts and return warning
+
+            // only for a detailed definition
+            if (parseNode.ChildNodes.Count > 3 && (parseNode.ChildNodes[4].Token == null || parseNode.ChildNodes[4].Token.AsSymbol != grammar.S_ATTRIBUTES))
+            {
+                return new Exceptional(new Warnings.Warning_ObsoleteGQL(
+                    String.Format("{0} {1}", grammar.S_ON.ToUpperString(), _IndexAttributeNames.ToContentString()),
+                    String.Format("{0} {1} {2}", grammar.S_ON.ToUpperString(), grammar.S_ATTRIBUTES.ToUpperString(), _IndexAttributeNames.ToContentString())));
+            }
+
+            #endregion
+
+            return Exceptional.OK;
 
         }
 

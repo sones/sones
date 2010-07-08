@@ -30,8 +30,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text;
-
 using sones.GraphDB.Exceptions;
+using sones.GraphDB.ImportExport;
 using sones.GraphDB.Indices;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.QueryLanguage.Enums;
@@ -39,6 +39,7 @@ using sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Dump;
+using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Import;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.InsertOrReplace;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Replace;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Select;
@@ -53,7 +54,6 @@ using sones.Lib;
 using sones.Lib.ErrorHandling;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.Lib.Frameworks.Irony.Scripting.Ast;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Import;
 
 #endregion
 
@@ -63,43 +63,43 @@ namespace sones.GraphDB.QueryLanguage
     /// <summary>
     /// This class defines the GraphQueryLanguage.
     /// </summary>
-    public class GraphQL : Grammar, IDumpable
+    public class GraphQL : Grammar, IDumpable, IExtendableGrammar
     {
 
         #region Consts
 
-        public const String DOT = ".";
-        public const String TERMINAL_BRACKET_LEFT = "(";
-        public const String TERMINAL_BRACKET_RIGHT = ")";
-        public const String TERMINAL_QUEUESIZE  = "QUEUESIZE";
-        public const String TERMINAL_WEIGHTED   = "WEIGHTED";
-        public const String TERMINAL_UNIQUE     = "UNIQUE";
-        public const String TERMINAL_MANDATORY  = "MANDATORY";
-        public const String TERMINAL_SORTED     = "SORTED";        
-        public const String TERMINAL_ASC        = "ASC";
-        public const String TERMINAL_DESC       = "DESC";
-        public const String TERMINAL_TRUE       = "TRUE";
-        public const String TERMINAL_FALSE      = "FALSE";
-        public const String TERMINAL_LIST       = "LIST";
-        public const String TERMINAL_SET        = "SET";
-        public const String TERMINAL_LT         = "<";
-        public const String TERMINAL_GT         = ">";
+        public const String DOT                     = ".";
+        public const String TERMINAL_BRACKET_LEFT   = "(";
+        public const String TERMINAL_BRACKET_RIGHT  = ")";
+        public const String TERMINAL_QUEUESIZE      = "QUEUESIZE";
+        public const String TERMINAL_WEIGHTED       = "WEIGHTED";
+        public const String TERMINAL_UNIQUE         = "UNIQUE";
+        public const String TERMINAL_MANDATORY      = "MANDATORY";
+        public const String TERMINAL_SORTED         = "SORTED";        
+        public const String TERMINAL_ASC            = "ASC";
+        public const String TERMINAL_DESC           = "DESC";
+        public const String TERMINAL_TRUE           = "TRUE";
+        public const String TERMINAL_FALSE          = "FALSE";
+        public const String TERMINAL_LIST           = "LIST";
+        public const String TERMINAL_SET            = "SET";
+        public const String TERMINAL_LT             = "<";
+        public const String TERMINAL_GT             = ">";
         
         #endregion
 
         #region Properties
 
-        public SymbolTerminal S_CREATE  { get; private set; }
-        public SymbolTerminal S_comma   { get; private set; }
-        public SymbolTerminal S_dot     { get; private set; }
-        public SymbolTerminal S_colon   { get; private set; }
+        public SymbolTerminal S_CREATE                          { get; private set; }
+        public SymbolTerminal S_comma                           { get; private set; }
+        public SymbolTerminal S_dot                             { get; private set; }
+        public SymbolTerminal S_colon                           { get; private set; }
 
         #region Brackets
 
-        public SymbolTerminal S_BRACKET_LEFT        { get; private set; }
-        public SymbolTerminal S_BRACKET_RIGHT       { get; private set; }
-        public SymbolTerminal S_TUPLE_BRACKET_LEFT  { get; private set; }
-        public SymbolTerminal S_TUPLE_BRACKET_RIGHT { get; private set; }
+        public SymbolTerminal S_BRACKET_LEFT                    { get; private set; }
+        public SymbolTerminal S_BRACKET_RIGHT                   { get; private set; }
+        public SymbolTerminal S_TUPLE_BRACKET_LEFT              { get; private set; }
+        public SymbolTerminal S_TUPLE_BRACKET_RIGHT             { get; private set; }
         public SymbolTerminal S_TUPLE_BRACKET_LEFT_EXCLUSIVE
         {
             get { return S_BRACKET_LEFT; }
@@ -111,18 +111,18 @@ namespace sones.GraphDB.QueryLanguage
 
         #endregion
 
-        public SymbolTerminal S_edgeInformationDelimiterSymbol { get; private set; }
-        public SymbolTerminal S_edgeTraversalDelimiter { get; private set; }
-        public SymbolTerminal S_NULL            { get; private set; }
-        public SymbolTerminal S_NOT             { get; private set; }
-        public SymbolTerminal S_UNIQUE          { get; private set; }
-        public SymbolTerminal S_WITH            { get; private set; }
-        public SymbolTerminal S_TABLE           { get; private set; }
-        public SymbolTerminal S_ALTER           { get; private set; }
-        public SymbolTerminal S_ADD             { get; private set; }
-        public SymbolTerminal S_TO              { get; private set; }
-        public SymbolTerminal S_COLUMN          { get; private set; }
-        public SymbolTerminal S_DROP            { get; private set; }
+        public SymbolTerminal S_edgeInformationDelimiterSymbol  { get; private set; }
+        public SymbolTerminal S_edgeTraversalDelimiter          { get; private set; }
+        public SymbolTerminal S_NULL                            { get; private set; }
+        public SymbolTerminal S_NOT                             { get; private set; }
+        public SymbolTerminal S_UNIQUE                          { get; private set; }
+        public SymbolTerminal S_WITH                            { get; private set; }
+        public SymbolTerminal S_TABLE                           { get; private set; }
+        public SymbolTerminal S_ALTER                           { get; private set; }
+        public SymbolTerminal S_ADD                             { get; private set; }
+        public SymbolTerminal S_TO                              { get; private set; }
+        public SymbolTerminal S_COLUMN                          { get; private set; }
+        public SymbolTerminal S_DROP                            { get; private set; }
         public SymbolTerminal S_RENAME          { get; private set; }
         public SymbolTerminal S_CONSTRAINT      { get; private set; }
         public SymbolTerminal S_INDEX           { get; private set; }
@@ -135,7 +135,6 @@ namespace sones.GraphDB.QueryLanguage
         public SymbolTerminal S_UPDATE          { get; private set; }
         public SymbolTerminal S_INSERTORUPDATE  { get; private set; }
         public SymbolTerminal S_INSERTORREPLACE { get; private set; }
-        public SymbolTerminal S_INSERTIFNOTEXIST { get; private set; }
         public SymbolTerminal S_REPLACE         { get; private set; }
         public SymbolTerminal S_SET             { get; private set; }
         public SymbolTerminal S_REMOVE          { get; private set; }
@@ -161,17 +160,12 @@ namespace sones.GraphDB.QueryLanguage
         public SymbolTerminal S_LIMIT           { get; private set; }
         public SymbolTerminal S_DEPTH           { get; private set; }
 
-        #region REFERENCE former SETREF
+        #region REF/REFUUID/...
 
-        public SymbolTerminal S_REFERENCE { get; private set; }
-        public SymbolTerminal S_REF { get; private set; }
-
-        #endregion
-
-        #region REFERENCEUUID
-
-        public SymbolTerminal S_REFUUID { get; private set; }
-        public SymbolTerminal S_REFERENCEUUID { get; private set; }
+        public SymbolTerminal S_REF             { get; private set; }
+        public SymbolTerminal S_REFERENCE       { get; private set; }
+        public SymbolTerminal S_REFUUID         { get; private set; }
+        public SymbolTerminal S_REFERENCEUUID   { get; private set; }
 
         #endregion
 
@@ -190,8 +184,9 @@ namespace sones.GraphDB.QueryLanguage
         public SymbolTerminal S_FALSE           { get; private set; }
         public SymbolTerminal S_SORTED          { get; private set; }
         public SymbolTerminal S_ASC             { get; private set; }
-
         public SymbolTerminal S_DESC            { get; private set; }
+
+        public SymbolTerminal S_DESCRIBE        { get; private set; }
         public SymbolTerminal S_QUEUESIZE       { get; private set; }
         public SymbolTerminal S_WEIGHTED        { get; private set; }
         public SymbolTerminal S_SETTING         { get; private set; }
@@ -203,26 +198,20 @@ namespace sones.GraphDB.QueryLanguage
 
         public SymbolTerminal S_BACKWARDEDGES   { get; private set; }
         public SymbolTerminal S_BACKWARDEDGE    { get; private set; }
-        public SymbolTerminal S_DESCRIBE        { get; private set; }
-        public SymbolTerminal S_DESCFUNC        { get; private set; }
-        public SymbolTerminal S_DESCAGGR        { get; private set; }
-        public SymbolTerminal S_DESCAGGRS       { get; private set; }
-        public SymbolTerminal S_DESCSETT        { get; private set; }
-        public SymbolTerminal S_DESCSETTINGS    { get; private set; }
-        public SymbolTerminal S_DESCTYPE        { get; private set; }
-        public SymbolTerminal S_DESCTYPES       { get; private set; }
-        public SymbolTerminal S_DESCFUNCTIONS   { get; private set; }
-        public SymbolTerminal S_DESCIDX         { get; private set; }
-        public SymbolTerminal S_DESCIDXS        { get; private set; }
-        public SymbolTerminal S_DESCEDGE        { get; private set; }
-        public SymbolTerminal S_DESCEDGES       { get; private set; }
+        public SymbolTerminal S_FUNCTION        { get; private set; }
+        public SymbolTerminal S_AGGREGATE       { get; private set; }
+        public SymbolTerminal S_AGGREGATES      { get; private set; }
+        public SymbolTerminal S_SETTINGS        { get; private set; }
+        public SymbolTerminal S_FUNCTIONS       { get; private set; }
+        public SymbolTerminal S_EDGE            { get; private set; }
+        public SymbolTerminal S_EDGES           { get; private set; }
         public SymbolTerminal S_MANDATORY       { get; private set; }
         public SymbolTerminal S_ABSTRACT        { get; private set; }
 
         #region Transactions
 
-        public SymbolTerminal S_TRANSACTBEGIN           { get; private set; }
-        public SymbolTerminal S_TRANSACT                { get; private set; }
+        public SymbolTerminal S_BEGIN                   { get; private set; }
+        public SymbolTerminal S_TRANSACTION             { get; private set; }
         public SymbolTerminal S_TRANSACTDISTRIBUTED     { get; private set; }
         public SymbolTerminal S_TRANSACTLONGRUNNING     { get; private set; }
         public SymbolTerminal S_TRANSACTISOLATION       { get; private set; }
@@ -234,43 +223,53 @@ namespace sones.GraphDB.QueryLanguage
 
         #endregion
 
-        public SymbolTerminal S_REMOVEFROMLIST  { get; private set; }
-        public SymbolTerminal S_ADDTOLIST       { get; private set; }
-        public SymbolTerminal S_COMMENT         { get; private set; }
-        public SymbolTerminal S_REBUILD         { get; private set; }
+        public SymbolTerminal S_REMOVEFROMLIST          { get; private set; }
+        public SymbolTerminal S_ADDTOLIST               { get; private set; }
+        public SymbolTerminal S_COMMENT                 { get; private set; }
+        public SymbolTerminal S_REBUILD                 { get; private set; }
 
         #region IMPORT
 
-        public SymbolTerminal S_IMPORT          { get; private set; }
-        public SymbolTerminal S_COMMENTS        { get; private set; }
-        public SymbolTerminal S_PARALLELTASKS   { get; private set; }
-        public SymbolTerminal S_VERBOSITY       { get; private set; }
-        public SymbolTerminal S_FORMAT          { get; private set; }
+        public SymbolTerminal S_IMPORT                  { get; private set; }
+        public SymbolTerminal S_COMMENTS                { get; private set; }
+        public SymbolTerminal S_PARALLELTASKS           { get; private set; }
+        public SymbolTerminal S_VERBOSITY               { get; private set; }
+        public SymbolTerminal S_FORMAT                  { get; private set; }
 
         #endregion
 
         #region DUMP
 
         public SymbolTerminal S_DUMP            { get; private set; }
-        public SymbolTerminal S_DUMP_TYPE_ALL   { get; private set; }
-        public SymbolTerminal S_DUMP_TYPE_GDDL  { get; private set; }
-        public SymbolTerminal S_DUMP_TYPE_GDML  { get; private set; }
-        public SymbolTerminal S_DUMP_FORMAT_GQL { get; private set; }
-        public SymbolTerminal S_DUMP_FORMAT_CSV { get; private set; }
+        public SymbolTerminal S_EXPORT          { get; private set; }
+        public SymbolTerminal S_ALL             { get; private set; }
+        public SymbolTerminal S_GDDL            { get; private set; }
+        public SymbolTerminal S_GDML            { get; private set; }
+        public SymbolTerminal S_GQL             { get; private set; }
+        public SymbolTerminal S_CSV             { get; private set; }
 
         #endregion
 
         #endregion
 
-        #region Grammarhooks - replace by interface
+        #region class scope NonTerminal - need for IExtendableGrammar
 
-        public NonTerminal BNF_ImportFormat { get; set; }
+        private NonTerminal BNF_ImportStmt;     //If no import format is found from plugin the statement must be removed
+        private NonTerminal BNF_ImportFormat;
+
+        private NonTerminal BNF_FuncCall;
+        private NonTerminal BNF_FunArgs;
+
+        private NonTerminal BNF_Aggregate;
+        private NonTerminal BNF_AggregateArg;
+
+        private NonTerminal selectionSource;    // If no aggregates where found we must remove them from selectionSource;
+
+        private NonTerminal BNF_IndexTypeOpt;
         
         #endregion
 
-        #region Constructor and definitions
-
-        #region GraphQL() and definitions
+        #region Constructor and Definitions
 
         public GraphQL(DBContext doNotUseMe)
             : this()
@@ -310,6 +309,8 @@ namespace sones.GraphDB.QueryLanguage
             var number              = new NumberLiteral("number", NumberFlags.AllowSign | NumberFlags.DisableQuickParse);
             number.DefaultIntTypes  = new TypeCode[] { TypeCode.UInt64, TypeCode.Int64, NumberLiteral.TypeCodeBigInt };
             var string_literal      = new StringLiteral("string", "'", StringFlags.AllowsDoubledQuote | StringFlags.AllowsLineBreak);
+            var location_literal    = new StringLiteral("file", "'", StringFlags.AllowsDoubledQuote | StringFlags.AllowsLineBreak | StringFlags.NoEscapes);
+            
             var name                = new IdentifierTerminal("name", "ÄÖÜäöüß0123456789_", "ÄÖÜäöü0123456789$_");
 
 
@@ -351,7 +352,6 @@ namespace sones.GraphDB.QueryLanguage
             S_UPDATE                          = Symbol("UPDATE");
             S_INSERTORUPDATE                  = Symbol("INSERTORUPDATE");
             S_INSERTORREPLACE                 = Symbol("INSERTORREPLACE");
-            S_INSERTIFNOTEXIST                = Symbol("INSERTIFNOTEXIST");
             S_REPLACE                         = Symbol("REPLACE");
             S_SET                             = Symbol(TERMINAL_SET);
             S_REMOVE                          = Symbol("REMOVE");
@@ -393,31 +393,27 @@ namespace sones.GraphDB.QueryLanguage
             S_DESC                            = Symbol(TERMINAL_DESC);
             S_QUEUESIZE                       = Symbol(TERMINAL_QUEUESIZE);
             S_WEIGHTED                        = Symbol(TERMINAL_WEIGHTED);
-            S_SETTING                         = Symbol("SETTING");
             S_GET                             = Symbol("GET");
             S_DB                              = Symbol("DB");
             S_SESSION                         = Symbol("SESSION");
             S_ATTRIBUTE                       = Symbol("ATTRIBUTE");
             S_DEFAULT                         = Symbol("DEFAULT");
-            S_BACKWARDEDGES                   = Symbol("BACKWARDEDGES");
             S_BACKWARDEDGE                    = Symbol("BACKWARDEDGE");
+            S_BACKWARDEDGES                   = Symbol("BACKWARDEDGES");
             S_DESCRIBE                        = Symbol("DESCRIBE");
-            S_DESCFUNC                        = Symbol("FUNCTION");
-            S_DESCAGGR                        = Symbol("AGGREGATE");
-            S_DESCAGGRS                       = Symbol("AGGREGATES");
-            S_DESCSETT                        = Symbol("SETTING");
-            S_DESCSETTINGS                    = Symbol("SETTINGS");
-            S_DESCTYPE                        = Symbol("TYPE");
-            S_DESCTYPES                       = Symbol("TYPES");
-            S_DESCFUNCTIONS                   = Symbol("FUNCTIONS");
-            S_DESCIDX                         = Symbol("INDEX");
-            S_DESCIDXS                        = Symbol("INDICES");
-            S_DESCEDGE                        = Symbol("EDGE");
-            S_DESCEDGES                       = Symbol("EDGES");
+            S_FUNCTION                        = Symbol("FUNCTION");
+            S_FUNCTIONS                       = Symbol("FUNCTIONS");
+            S_AGGREGATE                       = Symbol("AGGREGATE");
+            S_AGGREGATES                      = Symbol("AGGREGATES");
+            S_SETTING                         = Symbol("SETTING");
+            S_SETTINGS                        = Symbol("SETTINGS");
+            S_INDICES                         = Symbol("INDICES");
+            S_EDGE                            = Symbol("EDGE");
+            S_EDGES                           = Symbol("EDGES");
             S_MANDATORY                       = Symbol("MANDATORY");
             S_ABSTRACT                        = Symbol("ABSTRACT");
-            S_TRANSACTBEGIN                   = Symbol("BEGIN");
-            S_TRANSACT                        = Symbol("TRANSACTION");
+            S_BEGIN                           = Symbol("BEGIN");
+            S_TRANSACTION                     = Symbol("TRANSACTION");
             S_TRANSACTDISTRIBUTED             = Symbol(DBConstants.TRANSACTION_DISTRIBUTED);
             S_TRANSACTLONGRUNNING             = Symbol(DBConstants.TRANSACTION_LONGRUNNING);
             S_TRANSACTISOLATION               = Symbol(DBConstants.TRANSACTION_ISOLATION);
@@ -429,11 +425,12 @@ namespace sones.GraphDB.QueryLanguage
             S_ADDTOLIST                       = Symbol("+=");
             S_REMOVEFROMLIST                  = Symbol("-=");
             S_DUMP                            = Symbol("DUMP");
-            S_DUMP_TYPE_ALL                   = Symbol("ALL");
-            S_DUMP_TYPE_GDDL                  = Symbol("GDDL");
-            S_DUMP_TYPE_GDML                  = Symbol("GDML");
-            S_DUMP_FORMAT_GQL                 = Symbol("GQL");
-            S_DUMP_FORMAT_CSV                 = Symbol("CSV");
+            S_EXPORT                          = Symbol("EXPORT");
+            S_ALL                             = Symbol("ALL");
+            S_GDDL                            = Symbol("GDDL");
+            S_GDML                            = Symbol("GDML");
+            S_GQL                             = Symbol("GQL");
+            S_CSV                             = Symbol("CSV");
             S_COMMENT                         = Symbol("COMMENT");
             S_REBUILD                         = Symbol("REBUILD");
 
@@ -496,21 +493,21 @@ namespace sones.GraphDB.QueryLanguage
             #endregion
 
             var deleteStmtMember            = new NonTerminal("deleteStmtMember");
-            var uniqueOpt                   = new NonTerminal("uniqueOpt", typeof(uniqueOptNode));
-            var IndexAttributeList          = new NonTerminal("IndexAttributeList", typeof(CreateIndexAttributeListNode));
-            var IndexAttributeMember        = new NonTerminal("IndexAttributeMember", typeof(CreateIndexAttributeNode));
+            var uniqueOpt                   = new NonTerminal("uniqueOpt",              typeof(uniqueOptNode));
+            var IndexAttributeList          = new NonTerminal("IndexAttributeList",     typeof(IndexAttributeListNode));
+            var IndexAttributeMember        = new NonTerminal("IndexAttributeMember",   typeof(IndexAttributeNode));
             var IndexAttributeType          = new NonTerminal("IndexAttributeType");
             var orderByAttributeList        = new NonTerminal("orderByAttributeList");
             var orderByAttributeListMember  = new NonTerminal("orderByAttributeListMember");
             var AttributeOrderDirectionOpt  = new NonTerminal("AttributeOrderDirectionOpt");
-            var indexTypeOpt                = new NonTerminal("indexTypeOpt", typeof(IndexTypeOptNode));
-            var indexNameOpt                = new NonTerminal("indextNameOpt", typeof(IndexNameOptNode));
-            var editionOpt                  = new NonTerminal("editionOpt", typeof(EditionOptNode));
-            var alterCmd                    = new NonTerminal("alterCmd", typeof(AlterCommandNode));
+            BNF_IndexTypeOpt                = new NonTerminal("indexTypeOpt",           typeof(IndexTypeOptNode));
+            var indexNameOpt                = new NonTerminal("indextNameOpt",          typeof(IndexNameOptNode));
+            var editionOpt                  = new NonTerminal("editionOpt",             typeof(EditionOptNode));
+            var alterCmd                    = new NonTerminal("alterCmd",               typeof(AlterCommandNode));
             var insertData                  = new NonTerminal("insertData");
             var intoOpt                     = new NonTerminal("intoOpt");
             var assignList                  = new NonTerminal("assignList");
-            var whereClauseOpt              = new NonTerminal("whereClauseOpt", CreateWhereExpressionNode);
+            var whereClauseOpt              = new NonTerminal("whereClauseOpt",         CreateWhereExpressionNode);
             var extendsOpt                  = new NonTerminal("extendsOpt");
             var abstractOpt                 = new NonTerminal("abstractOpt");
             var commentOpt                  = new NonTerminal("CommentOpt");
@@ -519,10 +516,10 @@ namespace sones.GraphDB.QueryLanguage
             var insertValuesOpt             = new NonTerminal("insertValuesOpt");
 
             #region Expression
-
-            var expression                  = new NonTerminal("expression", typeof(ExpressionNode));
+             
+            var BNF_Expression              = new NonTerminal("expression", typeof(ExpressionNode));
             var expressionOfAList           = new NonTerminal("expressionOfAList", typeof(ExpressionOfAListNode));
-            var exprList                    = new NonTerminal("exprList");
+            var BNF_ExprList                = new NonTerminal("exprList");
             var exprListOfAList             = new NonTerminal("exprListOfAList");
             var unExpr                      = new NonTerminal("unExpr", CreateUnExpressionNode);
             var unOp                        = new NonTerminal("unOp");
@@ -541,7 +538,7 @@ namespace sones.GraphDB.QueryLanguage
             var orderClauseOpt              = new NonTerminal("orderClauseOpt", typeof(OrderByNode));
             var selectionList               = new NonTerminal("selectionList");
             var selectionListElement        = new NonTerminal("selectionListElement", typeof(SelectionListElementNode));
-            var selectionSource             = new NonTerminal("selectionSource");
+            selectionSource             = new NonTerminal("selectionSource");
             var asOpt                       = new NonTerminal("asOpt");
             var aliasOpt                    = new NonTerminal("aliasOpt");
             var aliasOptName                = new NonTerminal("aliasOptName");
@@ -551,11 +548,12 @@ namespace sones.GraphDB.QueryLanguage
 
             #region Aggregates & Functions
 
-            var aggregate                   = new NonTerminal("aggregate", CreateAggregateNode);
-            var aggregateArg                = new NonTerminal("aggregateArg");
-            var aggregateName               = new NonTerminal("aggregateName");
+            BNF_Aggregate                   = new NonTerminal("aggregate", CreateAggregateNode);
+            BNF_AggregateArg                = new NonTerminal("aggregateArg");
             var function                    = new NonTerminal("function", CreateFunctionCallNode);
             var functionName                = new NonTerminal("functionName");
+            BNF_FunArgs                     = new NonTerminal("funArgs");
+            BNF_FuncCall                    = new NonTerminal("funCall", CreateFunctionCallNode);
 
             #endregion
 
@@ -570,11 +568,10 @@ namespace sones.GraphDB.QueryLanguage
 
             var term                        = new NonTerminal("term");
             var notOpt                      = new NonTerminal("notOpt");
-            var funcCall                    = new NonTerminal("funCall", CreateFunctionCallNode);
-            var funArgs                     = new NonTerminal("funArgs");
+
             var GraphDBType                 = new NonTerminal(DBConstants.GraphDBType, CreateGraphDBTypeNode);
             var AttributeList               = new NonTerminal("AttributeList");
-            var AttrDefinition              = new NonTerminal("AttrDefinition", CreateAttributeDefinitionNode);
+            var AttrDefinition              = new NonTerminal("AttrDefinition",     CreateAttributeDefinitionNode);
             var ResultObject                = new NonTerminal("ResultObject");
             var ResultList                  = new NonTerminal("ResultList");
             var MatchingClause              = new NonTerminal("MatchingClause");
@@ -582,8 +579,11 @@ namespace sones.GraphDB.QueryLanguage
             var PrefixOperation             = new NonTerminal("PrefixOperation");
             var ParameterList               = new NonTerminal("ParameterList");
             var TypeList                    = new NonTerminal("TypeList");
-            var AType                       = new NonTerminal("AType", CreateATypeNode);
+            var AType                       = new NonTerminal("AType",              CreateATypeNode);
             var TypeWrapper                 = new NonTerminal("TypeWrapper");
+
+            #region Attribute changes
+
             var AttrAssignList              = new NonTerminal("AttrAssignList");
             var AttrUpdateList              = new NonTerminal("AttrUpdateList", typeof(AttrUpdateOrAssignListNode));
             var AttrAssign                  = new NonTerminal("AttrAssign", typeof(AttributeAssignNode));
@@ -601,26 +601,31 @@ namespace sones.GraphDB.QueryLanguage
             var ExtendedExpressionList = new NonTerminal("ExtendedExpressionList");
             var ExtendedExpression = new NonTerminal("ExtendedExpression", typeof(ExpressionOfAListNode));
 
-            
+            #endregion
 
-            var Reference                   = new NonTerminal(S_REFERENCE.Symbol, typeof(SetRefNode));
-            var offsetOpt                   = new NonTerminal("offsetOpt", typeof(OffsetNode));
+            var Reference                   = new NonTerminal(S_REFERENCE.Symbol,   typeof(SetRefNode));
+            var offsetOpt                   = new NonTerminal("offsetOpt",          typeof(OffsetNode));
             var resolutionDepthOpt          = new NonTerminal("resolutionDepthOpt");
-            var limitOpt                    = new NonTerminal("limitOpt", typeof(LimitNode));
+            var limitOpt                    = new NonTerminal("limitOpt",           typeof(LimitNode));
             var SimpleIdList                = new NonTerminal("SimpleIdList");
             var bulkTypeListMember          = new NonTerminal("bulkTypeListMember", CreateBulkTypeListMemberNode);
-            var bulkType                    = new NonTerminal("bulkType", CreateBulkTypeNode);
-            var truncateStmt                = new NonTerminal("truncateStmt", CreateTruncateStmNode);
-            var uniquenessOpt               = new NonTerminal("UniquenessOpt", typeof(UniqueAttributesOptNode));
-            var mandatoryOpt                = new NonTerminal("MandatoryOpt", typeof(MandatoryOptNode));
+            var bulkType                    = new NonTerminal("bulkType",           CreateBulkTypeNode);
+            var truncateStmt                = new NonTerminal("truncateStmt",       CreateTruncateStmNode);
+            var uniquenessOpt               = new NonTerminal("UniquenessOpt",      typeof(UniqueAttributesOptNode));
+            var mandatoryOpt                = new NonTerminal("MandatoryOpt",       typeof(MandatoryOptNode));
+
+            #region Transactions
+
             var TransactOptions             = new NonTerminal("TransactOptions");
             var TransactAttributes          = new NonTerminal("TransactAttributes");
             var TransactIsolation           = new NonTerminal("TransactIsolation");
             var TransactName                = new NonTerminal("TransactName");
             var TransactTimestamp           = new NonTerminal("TransactTimestamp");
             var TransactCommitRollbackOpt   = new NonTerminal("TransactCommitRollbackOpt");
-            var TransactCommitRollbackType  = new NonTerminal("TransactCommitRollbackType");            
-            
+            var TransactCommitRollbackType  = new NonTerminal("TransactCommitRollbackType");
+
+            #endregion
+
             var Value                       = new NonTerminal("Value");
             var ValueList                   = new NonTerminal("ValueList");
             var BooleanVal                  = new NonTerminal("BooleanVal");            
@@ -673,38 +678,42 @@ namespace sones.GraphDB.QueryLanguage
 
             #region Index
 
-            var indexOptOnCreateType        = new NonTerminal("IndexOptOnCreateType");
-            var IndexOptOnCreateTypeMember = new NonTerminal("IndexOptOnCreateTypeMember", typeof(IndexOptOnCreateTypeMemberNode));
-            var IndexOptOnCreateTypeMemberList = new NonTerminal("IndexOptOnCreateTypeMemberList");
+            var indexOptOnCreateType            = new NonTerminal("IndexOptOnCreateType");
+            var IndexOptOnCreateTypeMember      = new NonTerminal("IndexOptOnCreateTypeMember", CreateIndexOptOnCreateTypeMemberNode);
+            var IndexOptOnCreateTypeMemberList  = new NonTerminal("IndexOptOnCreateTypeMemberList");
 
             #endregion
 
-            #region Dump
+            #region Dump/Export
 
             var dumpStmt                        = new NonTerminal("Dump", CreateDumpNode);
+            var dumpType                        = new NonTerminal("dumpType",   CreateDumpTypeNode);
+            var dumpFormat                      = new NonTerminal("dumpFormat", CreateDumpFormatNode);
+            var typeOptionalList                = new NonTerminal("typeOptionalList", CreateTypeListNode);
+            var dumpDestination                 = new NonTerminal("dumpDestination");
 
             #endregion
 
             #region Describe
 
-            var DescrInfoStmt               = new NonTerminal("DescrInfoStmt", CreateDescribeNode);
+            var DescrInfoStmt               = new NonTerminal("DescrInfoStmt",      CreateDescribeNode);
             var DescrArgument               = new NonTerminal("DescrArgument");
-            var DescrFuncStmt               = new NonTerminal("DescrFuncStmt", CreateDescrFunc);
+            var DescrFuncStmt               = new NonTerminal("DescrFuncStmt",      CreateDescrFunc);
             var DescrFunctionsStmt          = new NonTerminal("DescrFunctionsStmt", CreateDescrFunctions);
-            var DescrAggrStmt               = new NonTerminal("DescrAggrStmt", CreateDescrAggr);
-            var DescrAggrsStmt              = new NonTerminal("DescrAggrsStmt", CreateDescrAggrs);
-            var DescrSettStmt               = new NonTerminal("DescrSettStmt", CreateDescrSett);
-            var DescrSettItem               = new NonTerminal("DescrSettItem", CreateDescrSettItem);
+            var DescrAggrStmt               = new NonTerminal("DescrAggrStmt",      CreateDescrAggr);
+            var DescrAggrsStmt              = new NonTerminal("DescrAggrsStmt",     CreateDescrAggrs);
+            var DescrSettStmt               = new NonTerminal("DescrSettStmt",      CreateDescrSett);
+            var DescrSettItem               = new NonTerminal("DescrSettItem",      CreateDescrSettItem);
             var DescrSettingsItems          = new NonTerminal("DescrSettingsItems", CreateDescrSettingsItems); 
-            var DescrSettingsStmt           = new NonTerminal("DescrSettingsStmt", CreateDescrSettings);
-            var DescrObjStmt                = new NonTerminal("DescrObjStmt", CreateDescrObj);
-            var DescrTypeStmt               = new NonTerminal("DescrTypeStmt", CreateDescrType);
-            var DescrTypesStmt              = new NonTerminal("DescrTypesStmt", CreateDescrTypes);
-            var DescrIdxStmt                = new NonTerminal("DescrIdxStmt", CreateDescrIdx);
-            var DescrIdxsStmt               = new NonTerminal("DescrIdxsStmt", CreateDescrIdxs);
+            var DescrSettingsStmt           = new NonTerminal("DescrSettingsStmt",  CreateDescrSettings);
+            var DescrObjStmt                = new NonTerminal("DescrObjStmt",       CreateDescrObj);
+            var DescrTypeStmt               = new NonTerminal("DescrTypeStmt",      CreateDescrType);
+            var DescrTypesStmt              = new NonTerminal("DescrTypesStmt",     CreateDescrTypes);
+            var DescrIdxStmt                = new NonTerminal("DescrIdxStmt",       CreateDescrIdx);
+            var DescrIdxsStmt               = new NonTerminal("DescrIdxsStmt",      CreateDescrIdxs);
             var DescrIdxEdtStmt             = new NonTerminal("DescrIdxEdtStmt");
-            var DescrEdgeStmt               = new NonTerminal("DescrEdgeStmt", CreateDescrEdge);
-            var DescrEdgesStmt              = new NonTerminal("DescrEdgesStmt", CreateDescrEdges);
+            var DescrEdgeStmt               = new NonTerminal("DescrEdgeStmt",      CreateDescrEdge);
+            var DescrEdgesStmt              = new NonTerminal("DescrEdgesStmt",     CreateDescrEdges);
 
             #endregion
 
@@ -717,7 +726,8 @@ namespace sones.GraphDB.QueryLanguage
 
             #region Import
 
-            var importStmt          = new NonTerminal("import", CreateImportNode);
+            BNF_ImportFormat        = new NonTerminal("importFormat");
+            BNF_ImportStmt          = new NonTerminal("import", CreateImportNode);
             var paramParallelTasks  = new NonTerminal("parallelTasks", CreateParallelTaskNode);
             var paramComments       = new NonTerminal("comments", CreateCommentsNode);
             var verbosity           = new NonTerminal("verbosity", CreateVerbosityNode);
@@ -729,7 +739,7 @@ namespace sones.GraphDB.QueryLanguage
 
             #region Statements
 
-            #region root
+            #region GQL root
 
             //BNF Rules
             this.Root = singlestmt;
@@ -753,7 +763,7 @@ namespace sones.GraphDB.QueryLanguage
                             | transactStmt
                             | commitRollBackTransactStmt
                             | rebuildIndicesStmt
-                            | importStmt;
+                            | BNF_ImportStmt;
                             
 
             #endregion
@@ -785,7 +795,7 @@ namespace sones.GraphDB.QueryLanguage
             #region ID_or_Func
 
             IdOrFunc.Rule =     name 
-                            |   funcCall;
+                            |   BNF_FuncCall;
 
             dotWrapper.Rule = S_edgeTraversalDelimiter;
 
@@ -921,22 +931,22 @@ namespace sones.GraphDB.QueryLanguage
             #region expression
 
             //Expression
-            exprList.Rule = MakeStarRule(exprList, S_comma, expression);
+            BNF_ExprList.Rule = MakeStarRule(BNF_ExprList, S_comma, BNF_Expression);
 
             exprListOfAList.Rule = MakePlusRule(exprListOfAList, S_comma, expressionOfAList);
 
-            expression.Rule =       term
+            BNF_Expression.Rule =       term
                                 |   unExpr
                                 |   binExpr;
 
-            expressionOfAList.Rule = expression + ListParametersForExpression;
+            expressionOfAList.Rule = BNF_Expression + ListParametersForExpression;
 
 
             term.Rule =         IdOrFuncList                  //d.Name 
                             |   string_literal      //'lala'
                             |   number              //10
                             //|   funcCall            //EXISTS ( SelectStatement )
-                            |   aggregate           //COUNT ( SelectStatement )
+                            |   BNF_Aggregate           //COUNT ( SelectStatement )
                             |   tuple               //(d.Name, 'Henning', (SelectStatement))
                             |   parSelectStmt      //(FROM User u Select u.Name)
                             | S_TRUE
@@ -944,7 +954,7 @@ namespace sones.GraphDB.QueryLanguage
 
             #region Tuple
 
-            tuple.Rule = bracketLeft + exprList + bracketRight;
+            tuple.Rule = bracketLeft + BNF_ExprList + bracketRight;
 
             bracketLeft.Rule = S_BRACKET_LEFT | S_TUPLE_BRACKET_LEFT;
             bracketRight.Rule = S_BRACKET_RIGHT | S_TUPLE_BRACKET_RIGHT;
@@ -960,7 +970,7 @@ namespace sones.GraphDB.QueryLanguage
                             |   "-" 
                             |   "~";
 
-            binExpr.Rule = expression + binOp + expression;
+            binExpr.Rule = BNF_Expression + binOp + BNF_Expression;
 
             binOp.Rule =        Symbol("+") 
                             |   "-" 
@@ -992,13 +1002,18 @@ namespace sones.GraphDB.QueryLanguage
 
             #endregion
 
-            #region Functions
+            #region Functions & Aggregates
 
             //funcCall covers some psedo-operators and special forms like ANY(...), SOME(...), ALL(...), EXISTS(...), IN(...)
-            funcCall.Rule = name + S_BRACKET_LEFT + funArgs + S_BRACKET_RIGHT;
+            //funcCall.Rule = BNF_FuncCallName + S_BRACKET_LEFT + funArgs + S_BRACKET_RIGHT;
 
-            funArgs.Rule =      SelectStmtPandora 
-                            |   exprList;
+            // The grammar will be created by IExtendableGrammer methods
+            //BNF_Aggregate.Rule = Empty;
+            //BNF_FuncCall.Rule = Empty;
+
+
+            BNF_FunArgs.Rule =      SelectStmtPandora 
+                            |   BNF_ExprList;
 
             #endregion
 
@@ -1013,14 +1028,23 @@ namespace sones.GraphDB.QueryLanguage
             RegisterOperators(5, "AND");
             RegisterOperators(4, "OR", "LIKE", "IN", "NOTIN", "NOT_IN", "NIN", "!IN");
 
+            #region operators
+            // Why this definition was twice in the GraphQL???
+            //RegisterOperators(1, Associativity.Neutral, "AND", "OR");
+            //RegisterOperators(2, Associativity.Neutral, "=", "!=", ">", ">=", "<", "<=", "<>", "!<", "!>", "IN", "NOTIN", "INRANGE");
+            //RegisterOperators(3, "+", "-");
+            //RegisterOperators(4, "*", "/");
+            RegisterOperators(5, Associativity.Right, "**");
+            #endregion
+
             #endregion
 
             #region prefixOperation
 
             PrefixOperation.Rule =      Id_simple + S_BRACKET_LEFT + ParameterList + S_BRACKET_RIGHT;
 
-            ParameterList.Rule =        ParameterList + S_comma + expression
-                                    |   expression;
+            ParameterList.Rule =        ParameterList + S_comma + BNF_Expression
+                                    |   BNF_Expression;
 
             #endregion
 
@@ -1028,17 +1052,27 @@ namespace sones.GraphDB.QueryLanguage
 
             #region CREATE INDEX
 
-            createIndexStmt.Rule = S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + TypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + indexTypeOpt;
+            createIndexStmt.Rule = S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + S_TYPE + TypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt
+                | S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + TypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt; // due to compatibility the  + S_TYPE is optional
+
             uniqueOpt.Rule = Empty | S_UNIQUE;
 
             editionOpt.Rule =       Empty
                                 | S_EDITION + Id_simple;
 
-            indexTypeOpt.Rule =     Empty
+            BNF_IndexTypeOpt.Rule =     Empty
                                 | S_INDEXTYPE + Id_simple;
 
             indexNameOpt.Rule = Empty
                                 |   Id_simple;
+
+            #endregion
+
+            #region REBUILD INDICES
+
+            rebuildIndicesStmt.Rule = S_REBUILD + S_INDICES + rebuildIndicesTypes;
+
+            rebuildIndicesTypes.Rule = Empty | TypeList;
 
             #endregion
 
@@ -1080,13 +1114,15 @@ namespace sones.GraphDB.QueryLanguage
 
             IndexOptOnCreateTypeMemberList.Rule = MakePlusRule(IndexOptOnCreateTypeMemberList, S_comma, IndexOptOnCreateTypeMember);
 
-            IndexOptOnCreateTypeMember.Rule = S_BRACKET_LEFT + indexNameOpt + editionOpt + indexTypeOpt + S_ON + IndexAttributeList + S_BRACKET_RIGHT
+            IndexOptOnCreateTypeMember.Rule = S_BRACKET_LEFT + indexNameOpt + editionOpt + BNF_IndexTypeOpt + S_ON + S_ATTRIBUTES + IndexAttributeList + S_BRACKET_RIGHT
+                                            | S_BRACKET_LEFT + indexNameOpt + editionOpt + BNF_IndexTypeOpt + S_ON + IndexAttributeList + S_BRACKET_RIGHT // due to compatibility the  + S_ATTRIBUTES is optional
                                             | S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT;
 
             AttrDefaultOpValue.Rule = Empty
                                     | "=" + Value
                                     | "=" + S_LISTOF + S_BRACKET_LEFT + ValueList + S_BRACKET_RIGHT
-                                    | "=" + S_SETOF + S_BRACKET_LEFT + ValueList + S_BRACKET_RIGHT;
+                                    | "=" + S_SETOF  + S_BRACKET_LEFT + ValueList + S_BRACKET_RIGHT;
+
             #endregion
 
             #region ALTER TYPE
@@ -1094,16 +1130,17 @@ namespace sones.GraphDB.QueryLanguage
             alterStmt.Rule = S_ALTER + S_TYPE + Id_simple + alterCmd + uniquenessOpt + mandatoryOpt;
 
             alterCmd.Rule = Empty
-                            | S_ADD + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
-                            | S_DROP + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
-                            | S_ADD + S_BACKWARDEDGES + S_BRACKET_LEFT + BackwardEdgesList + S_BRACKET_RIGHT
-                            | S_DROP + S_BACKWARDEDGES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
-                            | S_RENAME + S_ATTRIBUTE + Id_simple + S_TO + Id_simple
-                            | S_RENAME + S_BACKWARDEDGE + Id_simple + S_TO + Id_simple
-                            | S_RENAME + S_TO + Id_simple
-                            | S_DROP + S_UNIQUE
-                            | S_DROP + S_MANDATORY
+                            | S_ADD     + S_ATTRIBUTES    + S_BRACKET_LEFT + AttributeList     + S_BRACKET_RIGHT
+                            | S_DROP    + S_ATTRIBUTES    + S_BRACKET_LEFT + SimpleIdList      + S_BRACKET_RIGHT
+                            | S_ADD     + S_BACKWARDEDGES + S_BRACKET_LEFT + BackwardEdgesList + S_BRACKET_RIGHT
+                            | S_DROP    + S_BACKWARDEDGES + S_BRACKET_LEFT + SimpleIdList      + S_BRACKET_RIGHT
+                            | S_RENAME  + S_ATTRIBUTE     + Id_simple + S_TO + Id_simple
+                            | S_RENAME  + S_BACKWARDEDGE  + Id_simple + S_TO + Id_simple
+                            | S_RENAME  + S_TO + Id_simple
+                            | S_DROP    + S_UNIQUE
+                            | S_DROP    + S_MANDATORY
                             | S_COMMENT + "=" + string_literal;
+
             #endregion
 
             #region SELECT
@@ -1140,18 +1177,18 @@ namespace sones.GraphDB.QueryLanguage
             aliasOpt.Rule =     Empty
                             |   S_AS + aliasOptName;
 
-            selectionSource.Rule = aggregate
+            selectionSource.Rule = BNF_Aggregate | IdOrFuncList;
                 //|   funcCall
                 //|   Id;
-                                | IdOrFuncList;
+                                
 
             #region Aggregate
 
-            aggregate.Rule = aggregateName + S_BRACKET_LEFT + aggregateArg + S_BRACKET_RIGHT;
+            //BNF_Aggregate.Rule = BNF_AggregateName + S_BRACKET_LEFT + name + S_BRACKET_RIGHT;
 
-            aggregateArg.Rule =     Id
+            BNF_AggregateArg.Rule =     Id
                                 |   "*";
-
+            /*
             aggregateName.Rule =        S_COUNT 
                                     |   "AVG" 
                                     |   "MIN" 
@@ -1161,7 +1198,7 @@ namespace sones.GraphDB.QueryLanguage
                                     |   "SUM" 
                                     |   "VAR" 
                                     |   "VARP";
-
+            */
             #endregion
 
             #region Functions
@@ -1173,13 +1210,13 @@ namespace sones.GraphDB.QueryLanguage
             #endregion
 
             whereClauseOpt.Rule =       Empty 
-                                    |   S_WHERE + expression;
+                                    |   S_WHERE + BNF_Expression;
 
             groupClauseOpt.Rule =       Empty 
                                     |   "GROUP" + S_BY + idlist;
 
             havingClauseOpt.Rule =      Empty 
-                                    |   "HAVING" + expression;
+                                    |   "HAVING" + BNF_Expression;
 
 
             orderByAttributeListMember.Rule =       Id
@@ -1201,20 +1238,21 @@ namespace sones.GraphDB.QueryLanguage
 
             AttrAssignList.Rule = MakePlusRule(AttrAssignList, S_comma, AttrAssign);
 
-            AttrAssign.Rule =       Id + "=" + expression
+            AttrAssign.Rule =       Id + "=" + BNF_Expression
                                 |   Id + "=" + Reference
                                 |   Id + "=" + CollectionOfDBObjects;
 
             CollectionOfDBObjects.Rule = S_SETOF + CollectionTuple
                                             | S_LISTOF + CollectionTuple
                                             | S_SETOFUUIDS + CollectionTuple
+                                            | S_SETOFUUIDS + "()"
                                             | S_SETOF + "()";
 
             CollectionTuple.Rule = S_BRACKET_LEFT + ExtendedExpressionList + S_BRACKET_RIGHT;
 
             ExtendedExpressionList.Rule = MakePlusRule(ExtendedExpressionList, S_comma, ExtendedExpression);
 
-            ExtendedExpression.Rule = expression + ListParametersForExpression;
+            ExtendedExpression.Rule = BNF_Expression + ListParametersForExpression;
 
             Reference.Rule = S_REFERENCE + tuple + ListParametersForExpression
                            | S_REF + tuple + ListParametersForExpression
@@ -1269,7 +1307,8 @@ namespace sones.GraphDB.QueryLanguage
 
             #region TRUNCATE
 
-            truncateStmt.Rule = S_TRUNCATE + Id_simple;
+            truncateStmt.Rule = S_TRUNCATE + S_TYPE + Id_simple
+                              | S_TRUNCATE + Id_simple; // Due to compatibility the  + S_TYPE is optional
 
             #endregion
 
@@ -1317,39 +1356,40 @@ namespace sones.GraphDB.QueryLanguage
             #region DESCRIBE
 
             DescrInfoStmt.Rule = S_DESCRIBE + DescrArgument;
+
             DescrInfoStmt.Description = "This statement gives you all information about an type, a function, an index, an setting, an object, an edge or an aggregate.\n";
 
             DescrArgument.Rule = DescrAggrStmt | DescrAggrsStmt | DescrEdgeStmt | DescrEdgesStmt | DescrTypeStmt | DescrTypesStmt | DescrFuncStmt | DescrFunctionsStmt | DescrSettStmt | DescrSettingsStmt | DescrIdxStmt | DescrIdxsStmt;
 
-            DescrAggrStmt.Rule = S_DESCAGGR + Id_simple;
+            DescrAggrStmt.Rule = S_AGGREGATE + Id_simple;
 
-            DescrAggrsStmt.Rule = S_DESCAGGRS;
+            DescrAggrsStmt.Rule = S_AGGREGATES;
 
-            DescrEdgeStmt.Rule = S_DESCEDGE + Id_simple;
+            DescrEdgeStmt.Rule = S_EDGE + Id_simple;
 
-            DescrEdgesStmt.Rule = S_DESCEDGES;
+            DescrEdgesStmt.Rule = S_EDGES;
 
-            DescrTypeStmt.Rule = S_DESCTYPE + Id_simple;
+            DescrTypeStmt.Rule = S_TYPE + Id_simple;
 
-            DescrTypesStmt.Rule = S_DESCTYPES;
+            DescrTypesStmt.Rule = S_TYPES;
 
-            DescrFuncStmt.Rule = S_DESCFUNC + Id_simple;
+            DescrFuncStmt.Rule = S_FUNCTION + Id_simple;
 
-            DescrFunctionsStmt.Rule = S_DESCFUNCTIONS;
+            DescrFunctionsStmt.Rule = S_FUNCTIONS;
 
-            DescrSettStmt.Rule = S_DESCSETT + DescrSettItem | S_DESCSETTINGS + DescrSettingsItems;
+            DescrSettStmt.Rule = S_SETTING + DescrSettItem | S_SETTINGS + DescrSettingsItems;
 
             DescrSettItem.Rule = Id_simple + Empty | Id_simple + S_ON + S_TYPE + AType | Id_simple + S_ON + S_ATTRIBUTE + id_typeAndAttribute | Id_simple + S_ON + S_DB | Id_simple + S_ON + S_SESSION;
 
             DescrSettingsItems.Rule = S_ON + S_TYPE + TypeList | S_ON + S_ATTRIBUTE + id_typeAndAttribute | S_ON + S_DB | S_ON + S_SESSION;
 
-            DescrSettingsStmt.Rule = S_DESCSETTINGS;
+            DescrSettingsStmt.Rule = S_SETTINGS;
 
-            DescrIdxStmt.Rule = S_DESCIDX + id_simpleDotList + DescrIdxEdtStmt;
+            DescrIdxStmt.Rule = S_INDEX + id_simpleDotList + DescrIdxEdtStmt;
 
             DescrIdxEdtStmt.Rule = Empty | Id_simple;
 
-            DescrIdxsStmt.Rule = S_DESCIDXS;
+            DescrIdxsStmt.Rule = S_INDICES;
             
             #endregion
 
@@ -1367,19 +1407,7 @@ namespace sones.GraphDB.QueryLanguage
 
             #region REPLACE
 
-            replaceStmt.Rule = S_REPLACE + TypeWrapper + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + S_WHERE + expression;
-
-            #endregion
-
-            #region DUMP
-
-            var dumpType   = new NonTerminal("dumpType",   CreateDumpTypeNode);
-            var dumpFormat = new NonTerminal("dumpFormat", CreateDumpFormatNode);
-
-            dumpType.Rule   = S_DUMP_TYPE_ALL | S_DUMP_TYPE_GDDL | S_DUMP_TYPE_GDML | Empty;     // If empty => create both
-            dumpFormat.Rule = S_AS + S_DUMP_FORMAT_GQL | S_AS + S_DUMP_FORMAT_CSV | Empty;      // if empty => create GQL
-            //dumpFormat.Rule = S_AS + MakePlusRule(_S_DUMP_FORMAT_GQL, S_DUMP_FORMAT_CSV) | Empty;      // if empty => create GQL
-            dumpStmt.Rule   = S_DUMP + dumpType + dumpFormat;
+            replaceStmt.Rule = S_REPLACE + TypeWrapper + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + S_WHERE + BNF_Expression;
 
             #endregion
 
@@ -1388,7 +1416,7 @@ namespace sones.GraphDB.QueryLanguage
 
             #region BeginTransAction
 
-            transactStmt.Rule = S_TRANSACTBEGIN + TransactOptions + S_TRANSACT + TransactAttributes;
+            transactStmt.Rule = S_BEGIN + TransactOptions + S_TRANSACTION + TransactAttributes;
 
             TransactOptions.Rule = Empty |
                                 S_TRANSACTDISTRIBUTED + S_TRANSACTLONGRUNNING |
@@ -1414,7 +1442,7 @@ namespace sones.GraphDB.QueryLanguage
 
             #region CommitRollbackTransAction            
             
-            commitRollBackTransactStmt.Rule = TransactCommitRollbackType + S_TRANSACT + TransactCommitRollbackOpt;
+            commitRollBackTransactStmt.Rule = TransactCommitRollbackType + S_TRANSACTION + TransactCommitRollbackOpt;
 
             TransactCommitRollbackType.Rule = S_TRANSACTCOMMIT | S_TRANSACTROLLBACK;
             
@@ -1427,11 +1455,16 @@ namespace sones.GraphDB.QueryLanguage
 
             #endregion
 
-            #region Rebuild Indices
+            #region EXPORT/DUMP
 
-            rebuildIndicesStmt.Rule = S_REBUILD + S_INDICES + rebuildIndicesTypes;
+            dumpType.Rule           = Empty | S_ALL | S_GDDL | S_GDML;      // If empty => create both
+            dumpFormat.Rule         = Empty | S_AS + S_GQL;                 // If empty => create GQL
+            typeOptionalList.Rule   = Empty | S_TYPES + TypeList;
 
-            rebuildIndicesTypes.Rule = Empty | TypeList;
+            dumpDestination.Rule    = Empty | S_INTO + location_literal | S_TO + location_literal;
+
+            dumpStmt.Rule           = S_DUMP   + typeOptionalList + dumpType + dumpFormat + dumpDestination
+                                    | S_EXPORT + typeOptionalList + dumpType + dumpFormat + dumpDestination;
 
             #endregion
 
@@ -1442,24 +1475,15 @@ namespace sones.GraphDB.QueryLanguage
             verbosityTypes.Rule     = Symbol(VerbosityTypes.Silent.ToString()) | Symbol(VerbosityTypes.Errors.ToString()) | Symbol(VerbosityTypes.Full.ToString());
             verbosity.Rule          = S_VERBOSITY + verbosityTypes | Empty;
 
-            BNF_ImportFormat        = new NonTerminal("importformat");
             //BNF_ImportFormat.Rule = Empty;
 
-            importStmt.Rule = S_IMPORT + S_FROM + string_literal + S_FORMAT + BNF_ImportFormat + paramParallelTasks + paramComments + offsetOpt + limitOpt + verbosity;
+            BNF_ImportStmt.Rule = S_IMPORT + S_FROM + location_literal + S_FORMAT + BNF_ImportFormat + paramParallelTasks + paramComments + offsetOpt + limitOpt + verbosity;
 
             #endregion
 
             #endregion
 
-            #region misc
-
-            #region operators
-            RegisterOperators(1, Associativity.Neutral, "AND", "OR");
-            RegisterOperators(2, Associativity.Neutral, "=", "!=", ">", ">=", "<", "<=", "<>", "!<", "!>", "IN", "NOTIN", "INRANGE");
-            RegisterOperators(3, "+", "-");
-            RegisterOperators(4, "*", "/");
-            RegisterOperators(5, Associativity.Right, "**");
-            #endregion
+            #region Misc
 
             #region punctuation
 
@@ -1475,28 +1499,32 @@ namespace sones.GraphDB.QueryLanguage
             #endregion
 
             base.MarkTransient(
-                singlestmt, Id_simple, selList, selectionSource, aggregateName, expression, term, funArgs
+                singlestmt, Id_simple, selList, selectionSource, BNF_Expression, term, BNF_FunArgs
                 , unOp, binOp, aliasOpt, aliasOptName, orderByAttributeListMember
                 , Value
                 //, EdgeTypeParam
                 , EdgeType_SortedMember, AttrUpdateOrAssign, ListAttrUpdate, SettingItemSetVal, DescrArgument,
                 TypeWrapper //is used as a wrapper for AType
                 , IdOrFunc //, IdOrFuncList
-                , exprList, aggregateArg,
+                , BNF_ExprList, BNF_AggregateArg,
                 ExtendedExpressionList,
-                BNF_ImportFormat, verbosityTypes
+                BNF_ImportFormat, BNF_FuncCall, BNF_Aggregate, verbosityTypes
                 );
 
             #endregion
         
         }
 
-
-        #endregion
-
         #endregion
 
         #region Node Delegates
+
+
+        private void CreateIndexOptOnCreateTypeMemberNode(CompilerContext context, ParseTreeNode parseNode)
+        {
+            var node = new IndexOptOnCreateTypeMemberNode();
+            parseNode.AstNode = new Exceptional<IndexOptOnCreateTypeMemberNode>(node).Push(node.GetContent(context, parseNode));
+        }
 
         private void CreateUnExpressionNode(CompilerContext context, ParseTreeNode parseNode)
         {
@@ -1732,6 +1760,18 @@ namespace sones.GraphDB.QueryLanguage
             parseNode.AstNode = (object)aAggregateNode;
         }
 
+        private void CreateTypeListNode(CompilerContext context, ParseTreeNode parseNode)
+        {
+            TypeListNode aNode = new TypeListNode();
+
+            aNode.GetContent(context, parseNode);
+
+            parseNode.AstNode = (object)aNode;
+
+        }
+
+        #region Functions
+
         private void CreateFunctionCallNode(CompilerContext context, ParseTreeNode parseNode)
         {
             FuncCallNode functionCallNode = new FuncCallNode();
@@ -1740,6 +1780,8 @@ namespace sones.GraphDB.QueryLanguage
 
             parseNode.AstNode = (object)functionCallNode;
         }
+        
+        #endregion
 
         private void CreateDropTypeStmNode(CompilerContext context, ParseTreeNode parseNode)
         {
@@ -2144,41 +2186,44 @@ namespace sones.GraphDB.QueryLanguage
 
         #region Export GraphDDL
 
-        public Exceptional<List<String>> ExportGraphDDL(DumpFormats myDumpFormat, DBContext myDBContext)
+        public Exceptional<List<String>> ExportGraphDDL(DumpFormats myDumpFormat, DBContext myDBContext, IEnumerable<GraphDBType> myTypesToDump)
         {
 
-            var _StringBuilder = new StringBuilder(String.Concat(S_CREATE.ToUpperString(), " ", S_TYPES.ToUpperString(), " "));
-            var _List = new StringBuilder(String.Concat(S_CREATE.ToUpperString(), " ", S_TYPES.ToUpperString(), " "));
+            var stringBuilder = new StringBuilder(String.Concat(S_CREATE.ToUpperString(), " ", S_TYPES.ToUpperString(), " "));
             var delimiter = ", ";
 
-            foreach (var _GraphDBType in myDBContext.DBTypeManager.GetAllTypes(false))
-                _StringBuilder.Append(String.Concat(CreateGraphDDL(myDumpFormat, _GraphDBType, myDBContext), delimiter));
+            foreach (var _GraphDBType in myTypesToDump)
+            {
+                stringBuilder.Append(String.Concat(CreateGraphDDL(myDumpFormat, _GraphDBType, myDBContext), delimiter));
+            }
 
-            var _String = _StringBuilder.ToString();
+            var retString = stringBuilder.ToString();
 
-            if (_String.EndsWith(delimiter))
-                _String = _String.Substring(0, _String.Length - delimiter.Length);
+            if (retString.EndsWith(delimiter))
+            {
+                retString = retString.Substring(0, retString.Length - delimiter.Length);
+            }
 
-            return new Exceptional<List<String>>(new List<String>() { _String });
+            return new Exceptional<List<String>>(new List<String>() { retString });
 
         }
 
         private String CreateGraphDDL(DumpFormats myDumpFormat, GraphDBType myGraphDBType, DBContext myDBContext)
         {
 
-            var _StringBuilder = new StringBuilder();
-            _StringBuilder.AppendFormat("{0} ", myGraphDBType.Name);
+            var stringBuilder = new StringBuilder();
+            stringBuilder.AppendFormat("{0} ", myGraphDBType.Name);
 
             if (myGraphDBType.ParentTypeUUID != null)
             {
 
-                _StringBuilder.AppendFormat("{0} {1} ", S_EXTENDS.ToUpperString(), myGraphDBType.GetParentType(myDBContext.DBTypeManager).Name);//builder.AppendLine();
+                stringBuilder.AppendFormat("{0} {1} ", S_EXTENDS.ToUpperString(), myGraphDBType.GetParentType(myDBContext.DBTypeManager).Name);//builder.AppendLine();
 
                 #region Not backwardEdge attributes
 
                 if (myGraphDBType.GetSpecificAttributes(ta => !ta.IsBackwardEdge).CountIsGreater(0))
                 {
-                    _StringBuilder.Append(S_ATTRIBUTES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfAttributes(myDumpFormat, myGraphDBType.GetSpecificAttributes(ta => !ta.IsBackwardEdge), myDBContext) + S_BRACKET_RIGHT.ToUpperString() + " ");
+                    stringBuilder.Append(S_ATTRIBUTES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfAttributes(myDumpFormat, myGraphDBType.GetSpecificAttributes(ta => !ta.IsBackwardEdge), myDBContext) + S_BRACKET_RIGHT.ToUpperString() + " ");
                 }
 
                 #endregion
@@ -2187,7 +2232,7 @@ namespace sones.GraphDB.QueryLanguage
 
                 if (myGraphDBType.GetSpecificAttributes(ta => ta.IsBackwardEdge).CountIsGreater(0))
                 {
-                    _StringBuilder.Append(S_BACKWARDEDGES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfBackwardEdges(myDumpFormat, myGraphDBType.GetSpecificAttributes(ta => ta.IsBackwardEdge), myDBContext) + S_BRACKET_RIGHT.ToUpperString() + " ");
+                    stringBuilder.Append(S_BACKWARDEDGES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfBackwardEdges(myDumpFormat, myGraphDBType.GetSpecificAttributes(ta => ta.IsBackwardEdge), myDBContext) + S_BRACKET_RIGHT.ToUpperString() + " ");
                 }
 
                 #endregion
@@ -2196,7 +2241,7 @@ namespace sones.GraphDB.QueryLanguage
 
                 if (myGraphDBType.GetUniqueAttributes().CountIsGreater(0))
                 {
-                    _StringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myDumpFormat, myGraphDBType.GetUniqueAttributes(), myGraphDBType) + S_BRACKET_RIGHT.Symbol + " ");
+                    stringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myDumpFormat, myGraphDBType.GetUniqueAttributes(), myGraphDBType) + S_BRACKET_RIGHT.Symbol + " ");
                 }
 
                 #endregion
@@ -2205,7 +2250,7 @@ namespace sones.GraphDB.QueryLanguage
 
                 if (myGraphDBType.GetMandatoryAttributes().CountIsGreater(0))
                 {
-                    _StringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myDumpFormat, myGraphDBType.GetMandatoryAttributes(), myGraphDBType) + S_BRACKET_RIGHT.Symbol + " ");
+                    stringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myDumpFormat, myGraphDBType.GetMandatoryAttributes(), myGraphDBType) + S_BRACKET_RIGHT.Symbol + " ");
                 }
 
                 #endregion
@@ -2214,33 +2259,35 @@ namespace sones.GraphDB.QueryLanguage
 
                 if (myGraphDBType.GetAllAttributeIndices(false).CountIsGreater(0))
                 {
-                    _StringBuilder.Append(S_INDICES.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myDumpFormat, myGraphDBType.GetAllAttributeIndices(false), myGraphDBType) + S_BRACKET_RIGHT.Symbol + " ");
+                    stringBuilder.Append(S_INDICES.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myDumpFormat, myGraphDBType.GetAllAttributeIndices(false), myGraphDBType) + S_BRACKET_RIGHT.Symbol + " ");
                 }
 
                 #endregion
 
             }
 
-            return _StringBuilder.ToString();
+            return stringBuilder.ToString();
 
         }
 
         private String CreateGraphDDLOfAttributes(DumpFormats myDumpFormat, IEnumerable<TypeAttribute> myTypeAttributes, DBContext myDBContext)
         {
 
-            var _StringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
             foreach (var _Attribute in myTypeAttributes)
             {
-                _StringBuilder.Append(CreateGraphDDLOfAttributeDefinition(myDumpFormat, _Attribute, myDBContext));
-                _StringBuilder.Append(delimiter);
+                stringBuilder.Append(CreateGraphDDLOfAttributeDefinition(myDumpFormat, _Attribute, myDBContext));
+                stringBuilder.Append(delimiter);
             }
 
-            if (_StringBuilder.Length > delimiter.Length)
-                _StringBuilder.Remove(_StringBuilder.Length - delimiter.Length, 2);
+            if (stringBuilder.Length > delimiter.Length)
+            {
+                stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
+            }
 
-            return _StringBuilder.ToString();
+            return stringBuilder.ToString();
 
         }
 
@@ -2248,30 +2295,35 @@ namespace sones.GraphDB.QueryLanguage
         {
 
             if (myTypeAttribute.EdgeType != null)
+            {
                 return String.Concat(myTypeAttribute.EdgeType.GetGDDL(myTypeAttribute.GetDBType(myDBContext.DBTypeManager)), " ", myTypeAttribute.Name);
-
+            }
             else
+            {
                 return String.Concat(myTypeAttribute.GetDBType(myDBContext.DBTypeManager).Name, " ", myTypeAttribute.Name);
+            }
 
         }
 
         private String CreateGraphDDLOfBackwardEdges(DumpFormats myDumpFormat, IEnumerable<TypeAttribute> myTypeAttributes, DBContext myDBContext)
         {
 
-            var _StringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
             foreach (var _Attribute in myTypeAttributes)
             {
                 var typeAttrInfos = _Attribute.BackwardEdgeDefinition.GetTypeAndAttributeInformation(myDBContext);
-                _StringBuilder.Append(String.Concat(typeAttrInfos.Item1.Name, ".", typeAttrInfos.Item2.Name, " ", _Attribute.Name));
-                _StringBuilder.Append(delimiter);
+                stringBuilder.Append(String.Concat(typeAttrInfos.Item1.Name, ".", typeAttrInfos.Item2.Name, " ", _Attribute.Name));
+                stringBuilder.Append(delimiter);
             }
 
-            if (_StringBuilder.Length > delimiter.Length)
-                _StringBuilder.Remove(_StringBuilder.Length - delimiter.Length, 2);
+            if (stringBuilder.Length > delimiter.Length)
+            {
+                stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
+            }
 
-            return _StringBuilder.ToString();
+            return stringBuilder.ToString();
 
         }
 
@@ -2286,19 +2338,21 @@ namespace sones.GraphDB.QueryLanguage
         private String CreateGraphDDLOfAttributeUUIDs(DumpFormats myDumpFormat, IEnumerable<AttributeUUID> myAttributes, GraphDBType myGraphDBType)
         {
 
-            var _StringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
             foreach (var _Attribute in myAttributes)
             {
-                _StringBuilder.Append(myGraphDBType.GetTypeAttributeByUUID(_Attribute).Name);
-                _StringBuilder.Append(delimiter);
+                stringBuilder.Append(myGraphDBType.GetTypeAttributeByUUID(_Attribute).Name);
+                stringBuilder.Append(delimiter);
             }
 
-            if (_StringBuilder.Length > delimiter.Length)
-                _StringBuilder.Remove(_StringBuilder.Length - delimiter.Length, 2);
+            if (stringBuilder.Length > delimiter.Length)
+            {
+                stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
+            }
 
-            return _StringBuilder.ToString();
+            return stringBuilder.ToString();
 
         }
 
@@ -2314,7 +2368,7 @@ namespace sones.GraphDB.QueryLanguage
         {
 
             var _StringBuilder = new StringBuilder();
-            var delimiter = ", ";
+            var _Delimiter     = ", ";
 
             foreach (var _AttributeIndex in myAttributeIndices)
             {
@@ -2325,21 +2379,25 @@ namespace sones.GraphDB.QueryLanguage
                 _StringBuilder.Append(String.Concat(S_BRACKET_LEFT, _AttributeIndex.IndexName));
 
                 if (_AttributeIndex.IsUniqueIndex)
+                {
                     _StringBuilder.Append(String.Concat(" ", S_UNIQUE.ToUpperString()));
+                }
 
                 _StringBuilder.Append(String.Concat(" ", S_EDITION.ToUpperString(), " ", _AttributeIndex.IndexEdition));
 
                 _StringBuilder.Append(String.Concat(" ", S_INDEXTYPE.ToUpperString(), " ", _AttributeIndex.IndexType.ToString()));
-                _StringBuilder.Append(String.Concat(" ", S_ON.ToUpperString(), " ", CreateGraphDDLOfAttributeUUIDs(myDumpFormat, _AttributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs, myGraphDBType)));
+                _StringBuilder.Append(String.Concat(" ", S_ON.ToUpperString(), " " + S_ATTRIBUTES.ToUpperString(), " ", CreateGraphDDLOfAttributeUUIDs(myDumpFormat, _AttributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs, myGraphDBType)));
 
                 _StringBuilder.Append(S_BRACKET_RIGHT);
 
-                _StringBuilder.Append(delimiter);
+                _StringBuilder.Append(_Delimiter);
 
             }
 
-            if (_StringBuilder.Length > delimiter.Length)
-                _StringBuilder.Remove(_StringBuilder.Length - delimiter.Length, 2);
+            if (_StringBuilder.Length > _Delimiter.Length)
+            {
+                _StringBuilder.Remove(_StringBuilder.Length - _Delimiter.Length, 2);
+            }
 
             return _StringBuilder.ToString();
 
@@ -2356,50 +2414,52 @@ namespace sones.GraphDB.QueryLanguage
         /// <param name="myDBContext"></param>
         /// <param name="objectManager"></param>
         /// <returns></returns>
-        public Exceptional<List<String>> ExportGraphDML(DumpFormats myDumpFormat, DBContext myDBContext)
+        public Exceptional<List<String>> ExportGraphDML(DumpFormats myDumpFormat, DBContext myDBContext, IEnumerable<GraphDBType> myTypesToDump)
         {
 
             //var _StringBuilder  = new StringBuilder();
-            var _List           = new List<String>();
-            var _Exceptional    = new Exceptional<List<String>>();
-            var _DBObject_Edges = new List<String>();
+            var queries           = new List<String>();
+            var exceptional       = new Exceptional<List<String>>();
 
             #region Go through each type
 
-            foreach (var _GraphDBType in myDBContext.DBTypeManager.GetAllTypes(false))
+            foreach (var graphDBType in myTypesToDump)
             {
 
-                var _IndexReference = _GraphDBType.GetUUIDIndex(myDBContext.DBTypeManager).GetIndexReference(myDBContext.DBIndexManager);
+                var indexReference = graphDBType.GetUUIDIndex(myDBContext.DBTypeManager).GetIndexReference(myDBContext.DBIndexManager);
 
-                if (!_IndexReference.Success)
-                    return new Exceptional<List<String>>(_IndexReference);
+                if (!indexReference.Success)
+                    return new Exceptional<List<String>>(indexReference);
 
                 #region Take UUID index
 
-                foreach (var _IndexEntry in _IndexReference.Value)
+                foreach (var indexEntry in indexReference.Value)
                 {
 
                     #region Load DBObject and create GraphDML
 
-                    foreach (var _DBObject in _IndexEntry.Value)
+                    foreach (var dbObject in indexEntry.Value)
                     {
 
-                        var _DBObjectStream = myDBContext.DBObjectManager.LoadDBObject(_GraphDBType, _DBObject);
+                        var dbObjectStream = myDBContext.DBObjectManager.LoadDBObject(graphDBType, dbObject);
 
-                        if (!_DBObjectStream.Success)
-                            _Exceptional.AddErrorsAndWarnings(_DBObjectStream);
-
+                        if (!dbObjectStream.Success)
+                        {
+                            exceptional.AddErrorsAndWarnings(dbObjectStream);
+                        }
                         else
                         {
 
-                            var _GDMLExceptional = CreateGraphDMLforDBObject(myDumpFormat, myDBContext, _GraphDBType, _DBObjectStream.Value, _DBObject_Edges);
+                            var gdmlExceptional = CreateGraphDMLforDBObject(myDumpFormat, myDBContext, graphDBType, dbObjectStream.Value);
 
-                            if (!_GDMLExceptional.Success)
-                                _Exceptional.AddErrorsAndWarnings(_DBObjectStream);
-
+                            if (!gdmlExceptional.Success)
+                            {
+                                exceptional.AddErrorsAndWarnings(dbObjectStream);
+                            }
                             else
-                                //_StringBuilder.AppendLine(_GDMLExceptional.Value);
-                                _List.Add(_GDMLExceptional.Value);
+                            {
+                                queries.Add(gdmlExceptional.Value);
+                            }
 
                         }
 
@@ -2415,52 +2475,33 @@ namespace sones.GraphDB.QueryLanguage
 
             #endregion
 
-            #region Append all edges as UPDATE GQL
-
-            // after dumping all objects we will add the edges
-            if (_DBObject_Edges.Count > 0)
-                //_StringBuilder.AppendLine(_DBObject_Edges.ToString());
-                _List.AddRange(_DBObject_Edges);
-
-            #endregion
-
             //_Exceptional.Value = _StringBuilder.ToString();
-            _Exceptional.Value = _List;
+            exceptional.Value = queries;
 
-            return _Exceptional;
+            return exceptional;
 
         }
 
-        private Exceptional<String> CreateGraphDMLforDBObject(DumpFormats myDumpFormat, DBContext myDBContext, GraphDBType myGraphDBType, DBObjectStream myDBObjectStream, List<String> myEdges)
+        private Exceptional<String> CreateGraphDMLforDBObject(DumpFormats myDumpFormat, DBContext myDBContext, GraphDBType myGraphDBType, DBObjectStream myDBObjectStream)
         {
 
-            var _StringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
-            _StringBuilder.Append(String.Concat(S_INSERT.ToUpperString(), " ", S_INTO.ToUpperString(), " ", myGraphDBType.Name, " ", S_VALUES.ToUpperString(), " ", S_BRACKET_LEFT));
-            _StringBuilder.Append(String.Concat(S_UUID.ToUpperString(), " = '", myDBObjectStream.ObjectUUID.ToString(), "'", delimiter));
+            stringBuilder.Append(String.Concat(S_INSERT.ToUpperString(), " ", S_INTO.ToUpperString(), " ", myGraphDBType.Name, " ", S_VALUES.ToUpperString(), " ", S_BRACKET_LEFT));
+            stringBuilder.Append(String.Concat(S_UUID.ToUpperString(), " = '", myDBObjectStream.ObjectUUID.ToString(), "'", delimiter));
 
             #region CreateGraphDMLforDBODefinedAttributes
 
-            var edges = new StringBuilder();
-
-            var defAttrsDML = CreateGraphDMLforDBObjectDefinedAttributes(myDumpFormat, myDBObjectStream.GetAttributes(), myGraphDBType, myDBObjectStream, edges, myDBContext);
+            var defAttrsDML = CreateGraphDMLforDBObjectDefinedAttributes(myDumpFormat, myDBObjectStream.GetAttributes(), myGraphDBType, myDBObjectStream, myDBContext);
 
             if (!defAttrsDML.Success)
-                return defAttrsDML;
-
-            _StringBuilder.Append(defAttrsDML.Value);
-
-            #region For edges create UPDATE command
-
-            if (edges.Length > 0)
             {
-                edges.RemoveEnding(delimiter);
-                myEdges.Add(String.Concat(S_UPDATE.ToUpperString(), " ", myGraphDBType.Name, " ", S_SET.ToUpperString(), " ", S_BRACKET_LEFT, edges.ToString(), S_BRACKET_RIGHT, " ", S_WHERE.ToUpperString(), " ", S_UUID.ToUpperString(), " = '", myDBObjectStream.ObjectUUID.ToString(), "'"));
+                return defAttrsDML;
             }
 
-            #endregion
-
+            stringBuilder.Append(defAttrsDML.Value);
+            
             #endregion
 
             #region CreateGDMLforDBOUnDefinedAttributes
@@ -2468,42 +2509,48 @@ namespace sones.GraphDB.QueryLanguage
             var undefAttrs = myDBObjectStream.GetUndefinedAttributes(myDBContext.DBObjectManager);
 
             if (!undefAttrs.Success)
+            {
                 return new Exceptional<String>(undefAttrs);
+            }
 
             if (undefAttrs.Value.Count > 0)
             {
 
                 Exceptional<String> undefAttrsDML = CreateGraphDMLforDBObjectUndefinedAttributes(myDumpFormat, undefAttrs.Value, myGraphDBType, myDBObjectStream);
-                
-                if (!undefAttrsDML.Success)
-                    return undefAttrsDML;
 
-                _StringBuilder.Append(undefAttrsDML.Value);
+                if (!undefAttrsDML.Success)
+                {
+                    return undefAttrsDML;
+                }
+
+                stringBuilder.Append(undefAttrsDML.Value);
 
             }
 
             #endregion
 
-            _StringBuilder.RemoveEnding(delimiter);
-            _StringBuilder.Append(S_BRACKET_RIGHT);
+            stringBuilder.RemoveEnding(delimiter);
+            stringBuilder.Append(S_BRACKET_RIGHT);
 
-            return new Exceptional<String>(_StringBuilder.ToString());
+            return new Exceptional<String>(stringBuilder.ToString());
 
         }
 
-        private Exceptional<String> CreateGraphDMLforDBObjectDefinedAttributes(DumpFormats myDumpFormat, IDictionary<AttributeUUID, AObject> myAttributes, GraphDBType myGraphDBType, DBObjectStream myDBObjectStream, StringBuilder myEdgeBuilder, DBContext myDBContext)
+        private Exceptional<String> CreateGraphDMLforDBObjectDefinedAttributes(DumpFormats myDumpFormat, IDictionary<AttributeUUID, AObject> myAttributes, GraphDBType myGraphDBType, DBObjectStream myDBObjectStream, DBContext myDBContext)
         {
 
-            var _StringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
-            foreach (var _Attribute in myAttributes)
+            foreach (var attribute in myAttributes)
             {
 
-                if (_Attribute.Value == null)
+                if (attribute.Value == null)
+                {
                     continue;
+                }
 
-                var typeAttribute = myGraphDBType.GetTypeAttributeByUUID(_Attribute.Key);
+                var typeAttribute = myGraphDBType.GetTypeAttributeByUUID(attribute.Key);
 
                 #region Reference attributes
 
@@ -2511,30 +2558,32 @@ namespace sones.GraphDB.QueryLanguage
                 {
 
                     #region SetOfReferences
-                    if (_Attribute.Value is ASetReferenceEdgeType)
+                    if (attribute.Value is ASetReferenceEdgeType)
                     {
 
                         #region Create edge GDML
 
-                        myEdgeBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_SETOF.ToUpperString(), " ", S_BRACKET_LEFT));
+                        stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_SETOFUUIDS.ToUpperString(), " ", S_BRACKET_LEFT));
+
+                        //myEdgeBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_SETOF.ToUpperString(), " ", S_BRACKET_LEFT));
 
                         #region Create an assignment content - if edge does not contain any elements create an empty one
 
-                        if ((_Attribute.Value as ASetReferenceEdgeType).GetEdges().CountIsGreater(0))
+                        if ((attribute.Value as ASetReferenceEdgeType).GetEdges().CountIsGreater(0))
                         {
 
                             #region Create attribute assignments
 
-                            foreach (var val in (_Attribute.Value as ASetReferenceEdgeType).GetEdges())
+                            foreach (var val in (attribute.Value as ASetReferenceEdgeType).GetEdges())
                             {
-                                myEdgeBuilder.Append(String.Concat(S_UUID.ToUpperString(), " = '", val.Item1.ToString(), "'"));
+                                stringBuilder.Append(String.Concat("'", val.Item1.ToString(), "'"));
                                 if (val.Item2 != null)
                                 {
-                                    myEdgeBuilder.Append(String.Concat(S_colon, S_BRACKET_LEFT, CreateGraphDMLforADBBaseObject(myDumpFormat, val.Item2), S_BRACKET_RIGHT));
+                                    stringBuilder.Append(String.Concat(S_colon, S_BRACKET_LEFT, CreateGraphDMLforADBBaseObject(myDumpFormat, val.Item2), S_BRACKET_RIGHT));
                                 }
-                                myEdgeBuilder.Append(delimiter);
+                                stringBuilder.Append(delimiter);
                             }
-                            myEdgeBuilder.RemoveEnding(delimiter);
+                            stringBuilder.RemoveEnding(delimiter);
 
                             #endregion
 
@@ -2542,7 +2591,7 @@ namespace sones.GraphDB.QueryLanguage
 
                         #endregion
 
-                        myEdgeBuilder.Append(S_BRACKET_RIGHT);
+                        stringBuilder.Append(S_BRACKET_RIGHT);
 
                         #endregion
 
@@ -2554,9 +2603,9 @@ namespace sones.GraphDB.QueryLanguage
 
                     else if (typeAttribute.KindOfType == KindsOfType.SingleReference)
                     {
-                        myEdgeBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_REFERENCE.ToUpperString(), " ", S_BRACKET_LEFT));
-                        myEdgeBuilder.Append(String.Concat(S_UUID.ToUpperString(), " = '", (_Attribute.Value as ASingleReferenceEdgeType).GetUUID().ToString(), "'"));
-                        myEdgeBuilder.Append(S_BRACKET_RIGHT);
+                        stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_REFUUID.ToUpperString(), " ", S_BRACKET_LEFT));
+                        stringBuilder.Append(String.Concat("'", (attribute.Value as ASingleReferenceEdgeType).GetUUID().ToString(), "'"));
+                        stringBuilder.Append(S_BRACKET_RIGHT);
                     }
 
                     #endregion
@@ -2566,7 +2615,7 @@ namespace sones.GraphDB.QueryLanguage
                         return new Exceptional<String>(new Errors.Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                     }
 
-                    myEdgeBuilder.Append(delimiter);
+                    stringBuilder.Append(delimiter);
 
                 }
 
@@ -2581,13 +2630,13 @@ namespace sones.GraphDB.QueryLanguage
 
                     if (typeAttribute.KindOfType == KindsOfType.ListOfNoneReferences)
                     {
-                        _StringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_LISTOF.ToUpperString(), " ", S_BRACKET_LEFT));
-                        foreach (var val in (_Attribute.Value as AListBaseEdgeType))
+                        stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_LISTOF.ToUpperString(), " ", S_BRACKET_LEFT));
+                        foreach (var val in (attribute.Value as AListBaseEdgeType))
                         {
-                            _StringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
+                            stringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
                         }
-                        _StringBuilder.RemoveEnding(delimiter);
-                        _StringBuilder.Append(S_BRACKET_RIGHT);
+                        stringBuilder.RemoveEnding(delimiter);
+                        stringBuilder.Append(S_BRACKET_RIGHT);
                     }
 
                     #endregion
@@ -2596,13 +2645,13 @@ namespace sones.GraphDB.QueryLanguage
 
                     else if (typeAttribute.KindOfType == KindsOfType.SetOfNoneReferences)
                     {
-                        _StringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_SETOF.ToUpperString(), " ", S_BRACKET_LEFT));
-                        foreach (var val in (_Attribute.Value as AListBaseEdgeType))
+                        stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_SETOF.ToUpperString(), " ", S_BRACKET_LEFT));
+                        foreach (var val in (attribute.Value as AListBaseEdgeType))
                         {
-                            _StringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
+                            stringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
                         }
-                        _StringBuilder.RemoveEnding(delimiter);
-                        _StringBuilder.Append(S_BRACKET_RIGHT);
+                        stringBuilder.RemoveEnding(delimiter);
+                        stringBuilder.Append(S_BRACKET_RIGHT);
 
                     }
 
@@ -2621,12 +2670,12 @@ namespace sones.GraphDB.QueryLanguage
 
                     else
                     {
-                        _StringBuilder.Append(String.Concat(typeAttribute.Name, " = ", CreateGraphDMLforADBBaseObject(myDumpFormat, _Attribute.Value as ADBBaseObject)));
+                        stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", CreateGraphDMLforADBBaseObject(myDumpFormat, attribute.Value as ADBBaseObject)));
                     }
 
                     #endregion
 
-                    _StringBuilder.Append(delimiter);
+                    stringBuilder.Append(delimiter);
 
                 }
 
@@ -2634,61 +2683,67 @@ namespace sones.GraphDB.QueryLanguage
 
             }
 
-            return new Exceptional<String>(_StringBuilder.ToString());
+            return new Exceptional<String>(stringBuilder.ToString());
 
         }
 
         private Exceptional<String> CreateGraphDMLforDBObjectUndefinedAttributes(DumpFormats myDumpFormat, IDictionary<String, AObject> myAttributes, GraphDBType myGraphDBType, DBObjectStream myDBObjectStream)
         {
 
-            var _StringBuilder = new StringBuilder();
+            var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
-            foreach (var _Attribute in myAttributes)
+            foreach (var attribute in myAttributes)
             {
 
                 #region A single value...
 
-                if (_Attribute.Value is ADBBaseObject)
-                    _StringBuilder.Append(String.Concat(_Attribute.Key, " = ", CreateGraphDMLforADBBaseObject(myDumpFormat, _Attribute.Value as ADBBaseObject)));
+                if (attribute.Value is ADBBaseObject)
+                {
+                    stringBuilder.Append(String.Concat(attribute.Key, " = ", CreateGraphDMLforADBBaseObject(myDumpFormat, attribute.Value as ADBBaseObject)));
+                }
 
                 #endregion
 
                 #region ..or, it is a List or Set, since the Set constraint was already verified we can use a list
 
-                else if (_Attribute.Value is AListBaseEdgeType)
+                else if (attribute.Value is AListBaseEdgeType)
                 {
 
-                    _StringBuilder.Append(String.Concat(_Attribute.Key, " = ", S_LISTOF.ToUpperString(), " ", S_BRACKET_LEFT));
+                    stringBuilder.Append(String.Concat(attribute.Key, " = ", S_LISTOF.ToUpperString(), " ", S_BRACKET_LEFT));
 
-                    foreach (var val in (_Attribute.Value as AListBaseEdgeType))
-                        _StringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
+                    foreach (var val in (attribute.Value as AListBaseEdgeType))
+                    {
+                        stringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
+                    }
 
-                    _StringBuilder.RemoveEnding(delimiter);
-                    _StringBuilder.Append(S_BRACKET_RIGHT);
+                    stringBuilder.RemoveEnding(delimiter);
+                    stringBuilder.Append(S_BRACKET_RIGHT);
 
                 }
 
                 #endregion
 
                 else
+                {
                     return new Exceptional<String>(new Errors.Error_NotImplemented(new StackTrace(true)));
+                }
 
-                _StringBuilder.Append(delimiter);
+                stringBuilder.Append(delimiter);
 
             }
 
-            return new Exceptional<String>(_StringBuilder.ToString());
+            return new Exceptional<String>(stringBuilder.ToString());
 
         }
 
         private String CreateGraphDMLforADBBaseObject(DumpFormats myDumpFormat, ADBBaseObject myADBBaseObject)
         {
 
-            var _DBNumber = myADBBaseObject as DBNumber;
+            var dbNumber = myADBBaseObject as DBNumber;
 
-            if (_DBNumber != null)
-                return _DBNumber.ToString(new CultureInfo("en-US"));
+            if (dbNumber != null)
+                return dbNumber.ToString(new CultureInfo("en-US"));
 
             return String.Concat("'", myADBBaseObject.ToString(new CultureInfo("en-US")), "'");
 
@@ -2697,6 +2752,216 @@ namespace sones.GraphDB.QueryLanguage
         #endregion
 
         #endregion   
+    
+        #region IExtendableGrammar Members
+
+        public void SetAggregates(IEnumerable<NonTerminalCLasses.Aggregates.ABaseAggregate> aggregates)
+        {
+            
+            #region Add all plugins to the grammar
+
+            if (aggregates.IsNullOrEmpty())
+            {
+                /// empty is not the best solution, Maybe: remove complete rule if no importer exist
+                BNF_Aggregate.Rule = Empty;
+            }
+            else
+            {
+                foreach (var aggr in aggregates)
+                {
+                    //BNF_AggregateName + S_BRACKET_LEFT + aggregateArg + S_BRACKET_RIGHT;
+
+                    var aggrRule = new NonTerminal("aggr_" + aggr.FunctionName, CreateAggregateNode);
+                    aggrRule.Rule = aggr.FunctionName + S_BRACKET_LEFT + BNF_AggregateArg + S_BRACKET_RIGHT;
+
+                    if (BNF_Aggregate.Rule == null)
+                    {
+                        BNF_Aggregate.Rule = aggrRule;
+                    }
+                    else
+                    {
+                        BNF_Aggregate.Rule |= aggrRule;
+                    }
+                }
+            }
+
+            #endregion
+
+        }
+
+        public void SetFunctions(IEnumerable<NonTerminalCLasses.Functions.ABaseFunction> functions)
+        {
+
+            #region Add all plugins to the grammar
+
+            if (functions.IsNullOrEmpty())
+            {
+                /// empty is not the best solution, Maybe: remove complete rule if no importer exist
+                BNF_FuncCall.Rule = Empty;
+            }
+            else
+            {
+                foreach (var func in functions)
+                {
+
+                    #region Create funcNonTerminal
+
+                    var funcNonTerminal = new NonTerminal("func" + func.FunctionName, CreateFunctionCallNode);
+
+                    var funcParams = func.GetParameters();
+                    if (funcParams.IsNullOrEmpty())
+                    {
+                        funcNonTerminal.Rule = func.FunctionName + S_BRACKET_LEFT + S_BRACKET_RIGHT;
+                        
+                    }
+                    else
+                    {
+
+                        #region Do not add the arguments to the grammar - currently there is an mystic NT1 child for INSERT func
+
+                        /* Do not add the arguments to the grammar - currently there is an mystic NT1 child for INSERT func
+                        var funcArgsNonTerminal = new NonTerminal("funcArgs" + func.FunctionName);
+                        funcArgsNonTerminal.Rule = BNF_ExprList;
+                        foreach (var param in funcParams.SkipULong(1))
+                        {
+                            if (param.VariableNumOfParams)
+                            {
+                                funcArgsNonTerminal.Rule = BNF_ExprList;
+                            }
+                            else
+                            {
+                                funcArgsNonTerminal.Rule += S_comma + BNF_Expression;
+                            }
+                        }
+                        funcArgsNonTerminal.SetOption(TermOptions.IsTransient);
+                        */
+
+                        #endregion
+
+                        funcNonTerminal.Rule = func.FunctionName + S_BRACKET_LEFT + BNF_FunArgs + S_BRACKET_RIGHT;
+                    }
+
+                    #endregion
+
+                    #region Add funcNonTerminal to the BNF_FuncCall
+
+                    if (BNF_FuncCall.Rule == null)
+                    {
+                        BNF_FuncCall.Rule = funcNonTerminal;
+                    }
+                    else
+                    {
+                        BNF_FuncCall.Rule |= funcNonTerminal;
+                    }
+                    
+                    #endregion
+
+                }
+            }
+
+            #endregion
+
+        }
+
+        public void SetOperators(IEnumerable<Operators.ABinaryOperator> operators)
+        {
+            /* At first, the enums must be removed from operators - lot of impacts....
+            #region Add all plugins to the grammar
+
+            if (operators.IsNullOrEmpty())
+            {
+                /// empty is not the best solution, Maybe: remove complete import rule if no importer exist
+                BNF_IndexTypeOpt.Rule = Empty;
+            }
+            else
+            {
+                foreach (var op in operators)
+                {
+                    if (BNF_IndexTypeOpt.Rule == null)
+                    {
+                        BNF_IndexTypeOpt.Rule = S_INDEXTYPE + Symbol(op.IndexName);
+                    }
+                    else
+                    {
+                        BNF_IndexTypeOpt.Rule |= S_INDEXTYPE + Symbol(op.IndexName);
+                    }
+                }
+            }
+
+            #endregion
+            */
+        }
+
+        public void SetSettings(IEnumerable<Settings.ADBSettingsBase> settings)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetEdges(IEnumerable<AEdgeType> edges)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetIndices(IEnumerable<GraphFS.Objects.IVersionedIndexObject<IndexKey, GraphFS.DataStructures.ObjectUUID>> indices)
+        {
+
+            #region Add all plugins to the grammar
+
+            if (indices.IsNullOrEmpty())
+            {
+                /// empty is not the best solution, Maybe: remove complete import rule if no importer exist
+                BNF_IndexTypeOpt.Rule = Empty;
+            }
+            else
+            {
+                foreach (var idx in indices)
+                {
+                    if (BNF_IndexTypeOpt.Rule == null)
+                    {
+                        BNF_IndexTypeOpt.Rule = S_INDEXTYPE + Symbol(idx.IndexName);
+                    }
+                    else
+                    {
+                        BNF_IndexTypeOpt.Rule |= S_INDEXTYPE + Symbol(idx.IndexName);
+                    }
+                }
+            }
+
+            #endregion
+
+        }
+
+        public void SetGraphDBImporter(IEnumerable<AGraphDBImport> graphDBImporter)
+        {
+
+            #region Add all plugins to the grammar
+
+            if (graphDBImporter.IsNullOrEmpty())
+            {
+                /// empty is not the best solution, Maybe: remove complete import rule if no importer exist
+                BNF_ImportFormat.Rule = Empty;
+                BNF_ImportStmt.Rule = Empty;
+            }
+            else
+            {
+                foreach (var importer in graphDBImporter)
+                {
+                    if (BNF_ImportFormat.Rule == null)
+                    {
+                        BNF_ImportFormat.Rule = Symbol(importer.ImportFormat);
+                    }
+                    else
+                    {
+                        BNF_ImportFormat.Rule |= Symbol(importer.ImportFormat);
+                    }
+                }
+            }
+
+            #endregion
+
+        }
+
+        #endregion
 
     }
 

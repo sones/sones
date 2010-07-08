@@ -111,7 +111,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
                     if (aElement.Type != TypesOfOperatorResult.Unknown)
                         throw new GraphDBException(new Error_DataTypeDoesNotMatch(_typeOfValue.ToString(), _typeOfValue.ToString()));
 
-                    ADBBaseObject newElement = PandoraTypeMapper.GetPandoraObjectFromType(_typeOfValue, aElement.Value);
+                    ADBBaseObject newElement = GraphDBTypeMapper.GetPandoraObjectFromType(_typeOfValue, aElement.Value);
                     if (newElement.CompareTo(aElement) != 0) // the value changed after type convertion
                         throw new GraphDBException(new Error_DataTypeDoesNotMatch(_typeOfValue.ToString(), _typeOfValue.ToString()));
                     aElement = newElement;
@@ -160,7 +160,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
         {
             for (int i = 0; i < _values.Count; i++)
             {
-                _values[i] = PandoraTypeMapper.GetADBBaseObjectFromUUID(typeAttribute.DBTypeUUID, _values[i]);
+                _values[i] = GraphDBTypeMapper.GetADBBaseObjectFromUUID(typeAttribute.DBTypeUUID, _values[i]);
             }
         }
     }

@@ -44,6 +44,7 @@ using sones.GraphFS.Objects;
 using sones.Lib.DataStructures;
 using sones.Lib.DataStructures.Indices;
 using sones.Lib.ErrorHandling;
+using System.Linq;
 
 #endregion
 
@@ -87,6 +88,12 @@ namespace sones.GraphDB.Indices
         public String IndexEdition { get { return _IndexEdition; } }
 
         #endregion
+
+        /// <summary>
+        /// This is a special handling for indices on list or set of baseobjects cause we can't use the standard indexOperation on this type of index
+        /// </summary>
+        private Boolean _IsListOfBaseObjectsIndex;
+        public Boolean IsListOfBaseObjectsIndex { get { return _IsListOfBaseObjectsIndex; } }
 
         /// <summary>
         /// Determines whether this index is an unique index
@@ -203,6 +210,31 @@ namespace sones.GraphDB.Indices
                 _IndexType = indexType;
             }
 
+            #region Workaround for current IndexOperation of InOperator - just follow the IsListOfBaseObjectsIndex property
+
+            // better approach, use a special index key for a set of base objects
+            if (idxKey.IndexKeyAttributeUUIDs.Any(a =>
+            {
+                var typeAttr = correspondingType.GetTypeAttributeByUUID(a);
+                if (typeAttr != null && (typeAttr.EdgeType is AListBaseEdgeType || typeAttr.EdgeType is ASetBaseEdgeType))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }))
+            {
+                _IsListOfBaseObjectsIndex = true;
+            }
+            else
+            {
+                _IsListOfBaseObjectsIndex = false;
+            }
+
+            #endregion
+
             // we could use Guid.New as well
             _FileSystemLocation = (correspondingType.ObjectLocation + "Indices") + (_IndexName + "#" + _IndexEdition);
         }
@@ -243,12 +275,12 @@ namespace sones.GraphDB.Indices
                             case KindsOfType.SetOfNoneReferences:
 
                                 var helperSet = new List<ADBBaseObject>();
-
+                                
                                 foreach (var aBaseObject in ((AListBaseEdgeType)myDBObject.GetAttribute(aIndexAttributeUUID, myTypeOfDBObject, dbContext)).GetAll())
                                 {
                                     helperSet.Add((ADBBaseObject)aBaseObject);
                                 }
-
+                                
                                 if (result.Count != 0)
                                 {
                                     #region update
@@ -328,7 +360,7 @@ namespace sones.GraphDB.Indices
                     {
                         //add default value
 
-                        var defaultADBBAseObject = PandoraTypeMapper.GetADBBaseObjectFromUUID(currentAttribute.DBTypeUUID);
+                        var defaultADBBAseObject = GraphDBTypeMapper.GetADBBaseObjectFromUUID(currentAttribute.DBTypeUUID);
                         defaultADBBAseObject.SetValue(DBObjectInitializeType.Default);
 
                         if (result.Count != 0)

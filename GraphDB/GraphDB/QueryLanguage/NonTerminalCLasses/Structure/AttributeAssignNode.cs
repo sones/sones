@@ -88,7 +88,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
             #endregion
 
-            _AttributeType = PandoraTypeMapper.ConvertPandora2CSharp(parseNode.ChildNodes[2].Term.GetType().Name);
+            _AttributeType = GraphDBTypeMapper.ConvertPandora2CSharp(parseNode.ChildNodes[2].Term.GetType().Name);
 
             #endregion
 

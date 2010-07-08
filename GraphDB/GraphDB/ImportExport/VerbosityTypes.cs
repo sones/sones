@@ -1,9 +1,18 @@
-﻿using System;
+﻿/* 
+ * AGraphDBExport
+ * (c) Stefan Licht, 2010
+ */
+
+#region Usings
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Import
+#endregion
+
+namespace sones.GraphDB.ImportExport
 {
     public enum VerbosityTypes
     {

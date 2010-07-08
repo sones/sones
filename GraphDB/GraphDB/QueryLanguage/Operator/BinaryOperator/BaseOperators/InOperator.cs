@@ -166,7 +166,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
                     foreach (var aRightValue in right.GetAllValues())
                     {
-                        anotherValues.Add(PandoraTypeMapper.GetPandoraObjectFromType(left.TypeOfValue, aRightValue));
+                        anotherValues.Add(GraphDBTypeMapper.GetPandoraObjectFromType(left.TypeOfValue, aRightValue));
                     }
 
                     foreach (var aLeft in left.GetAllValues())
@@ -187,7 +187,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
                     foreach (var aLeftValue in left.GetAllValues())
                     {
-                        anotherValues.Add(PandoraTypeMapper.GetPandoraObjectFromType(right.TypeOfValue, aLeftValue));
+                        anotherValues.Add(GraphDBTypeMapper.GetPandoraObjectFromType(right.TypeOfValue, aLeftValue));
                     }
 
                     foreach (var aAnother in anotherValues)
@@ -211,7 +211,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
         protected override Exceptional<Boolean> Compare(ADBBaseObject myLeft, ADBBaseObject myRight)
         {
-            if (!PandoraTypeMapper.ConvertToBestMatchingType(ref myLeft, ref myRight).Value)
+            if (!GraphDBTypeMapper.ConvertToBestMatchingType(ref myLeft, ref myRight).Value)
             {
                 return new Exceptional<Boolean>(new Error_DataTypeDoesNotMatch(myLeft.Type.ToString(), myRight.Type.ToString()));
             }
@@ -259,18 +259,34 @@ namespace sones.GraphDB.QueryLanguage.Operators
             {
                 case TypesOfBinaryExpression.LeftComplex:
 
-                    foreach (var aItem in myOperationValues)
+                    if (!myIndex.IsListOfBaseObjectsIndex)
                     {
-                        idxLookupKey = new IndexKey(myIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs[0], aItem, myIndex.IndexKeyDefinition);
-                        interestingUUIDs.UnionWith(idxRef.Value[idxLookupKey]);
-                    }
-
-                    foreach (var aKey in idxRef.Value.Keys().Where(item => !myOperationValues.Contains(item.IndexKeyValues[0])))
-                    {
-                        foreach (var aMatch in idxRef.Value[aKey].Intersect(interestingUUIDs))
+                        foreach (var aItem in myOperationValues)
                         {
-                            interestingUUIDs.Remove(aMatch);
+                            idxLookupKey = new IndexKey(myIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs[0], aItem, myIndex.IndexKeyDefinition);
+                            interestingUUIDs.UnionWith(idxRef.Value[idxLookupKey]);
                         }
+                    }
+                    else
+                    {
+                        #region In case the index is from a set or list of baseobjects we use this way to get the values
+
+                        foreach (var aItem in myOperationValues)
+                        {
+                            idxLookupKey = new IndexKey(myIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs[0], aItem, myIndex.IndexKeyDefinition);
+                            interestingUUIDs.UnionWith(idxRef.Value[idxLookupKey]);
+                        }
+
+                        /* What the heck is that??? - This is too slow for any usual usage of in operator! */
+                        foreach (var aKey in idxRef.Value.Keys().Where(item => !myOperationValues.Contains(item.IndexKeyValues[0])))
+                        {
+                            foreach (var aMatch in idxRef.Value[aKey].Intersect(interestingUUIDs))
+                            {
+                                interestingUUIDs.Remove(aMatch);
+                            }
+                        }
+
+                        #endregion
                     }
 
                     break;

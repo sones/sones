@@ -39,19 +39,7 @@ namespace sones.GraphDB.Warnings
 
     public class GraphDBWarning : IWarning
     {
-
-        #region Properties
-
-        public String Message
-        {
-            get
-            {
-                return ToString();
-            }
-        }
-
-        #endregion
-
+        
     }
 
 }

@@ -83,6 +83,12 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// </summary>
         /// <returns></returns>
         public abstract IEnumerable<Tuple<ADBBaseObject, ADBBaseObject>> GetEdges();
+
+        /// <summary>
+        /// Get all data and their edge infos
+        /// </summary>
+        /// <returns></returns>
+        public abstract IEnumerable<ADBBaseObject> GetBaseObjects();
    
     }
 }

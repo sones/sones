@@ -102,7 +102,7 @@ namespace sones.GraphDS.API.CSharp
 
         public CreateIndexQuery On(String myTypeName)
         {
-            _OnString = "ON " + myTypeName;
+            _OnString = "ON TYPE " + myTypeName;
             return this;
         }
 
@@ -166,7 +166,7 @@ namespace sones.GraphDS.API.CSharp
             if (_OnString == null)
                 throw new ArgumentException("Invalid CREATE INDEX command!");
 
-            if (Name != "")
+            if (Name == "")
             {
 
                 _CommandString.Append("IDX_");
@@ -188,16 +188,19 @@ namespace sones.GraphDS.API.CSharp
 
             }
 
-            _CommandString.Append(_OnString + " ");
-
             if (_EditionString != null)
                 _CommandString.Append(_EditionString + " ");
 
-            if (_IndexTypeString != null)
-                _CommandString.Append(_IndexTypeString + " ON ");
+            _CommandString.Append(_OnString + " ");            
 
             // Add list of attributes
-            AddToCommandString(_AttributeStrings, "");
+            if (_AttributeStrings.Count == 0)
+                throw new ArgumentException("Invalid CREATE INDEX command!");
+
+            AddToCommandString(_AttributeStrings, "");            
+
+            if (_IndexTypeString != null)
+                _CommandString.Append(" " + _IndexTypeString);
 
             return _CommandString.ToString();
 

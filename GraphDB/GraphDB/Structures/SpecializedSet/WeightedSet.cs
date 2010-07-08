@@ -549,7 +549,7 @@ namespace sones.GraphDB.Structures
 
             TypeUUID typeID = new TypeUUID();
             typeID.Deserialize(ref mySerializationReader);
-            _DefaultWeight = (DBNumber)PandoraTypeMapper.GetADBBaseObjectFromUUID(typeID, 0);
+            _DefaultWeight = (DBNumber)GraphDBTypeMapper.GetADBBaseObjectFromUUID(typeID, 0);
             _DefaultWeight.Deserialize(ref mySerializationReader);
 
             Int32 _WeightedListEntriesCount = (Int32)mySerializationReader.ReadObject();

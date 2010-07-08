@@ -357,10 +357,17 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                             TypeAttribute currentAttribute = _DBContext.DBTypeManager.GetTypeByUUID(myLevelKey.LastEdge.TypeUUID).GetTypeAttributeByUUID(myLevelKey.LastEdge.AttrUUID);
                             GraphDBType myType = GetTypeOfAttribute(currentAttribute.GetRelatedType(_DBContext.DBTypeManager), currentAttribute);
 
-
-                            foreach (var aUUID in this._Levels[predecessorLevelKey.Level].ExpressionLevels[predecessorLevelKey].Nodes[mySourceDBObject.ObjectUUID].ForwardEdges[myLevelKey.LastEdge].Select(item => item.Destination))
+                            if (this._Levels[predecessorLevelKey.Level].ExpressionLevels[predecessorLevelKey].Nodes[mySourceDBObject.ObjectUUID].ForwardEdges.ContainsKey(myLevelKey.LastEdge))
                             {
-                                yield return aUUID;
+                                foreach (var aUUID in this._Levels[predecessorLevelKey.Level].ExpressionLevels[predecessorLevelKey].Nodes[mySourceDBObject.ObjectUUID].ForwardEdges[myLevelKey.LastEdge].Select(item => item.Destination))
+                                {
+                                    yield return aUUID;
+                                }
+                            }
+                            else
+                            {
+                                AddNode(mySourceDBObject, myLevelKey);
+                                //var attrVal = mySourceDBObject.GetAttribute(myLevelKey.LastEdge.AttrUUID);
                             }
                         }
                     }

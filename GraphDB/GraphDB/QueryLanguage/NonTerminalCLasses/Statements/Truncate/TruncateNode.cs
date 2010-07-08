@@ -21,35 +21,35 @@
 #region usings
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
-using sones.GraphDB.Indices;
-using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.Managers;
 using sones.GraphDB.QueryLanguage.Enums;
+using sones.GraphDB.QueryLanguage.ExpressionGraph;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements;
 using sones.GraphDB.QueryLanguage.Result;
-using sones.GraphDB.Structures;
 using sones.GraphDB.TypeManagement;
-using sones.GraphFS.DataStructures;
+
 using sones.Lib.Frameworks.Irony.Parsing;
-using sones.Lib.Session;
-using sones.GraphDB.QueryLanguage.ExpressionGraph;
 using sones.Lib.ErrorHandling;
-using sones.GraphDB.Managers;
+using System.Collections.Generic;
 
 #endregion
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
 {
+
     public class TruncateNode : AStatement
     {
+
         #region Data
 
         private ObjectManipulationManager _ObjectManipulationManager;
         private String _TypeName = ""; //the name of the type that should be dropped
+        private List<IWarning> _Warnings = new List<IWarning>();
 
         #endregion
 
@@ -64,62 +64,72 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
 
         #endregion
 
-        public override void GetContent(CompilerContext context, ParseTreeNode parseNode)
+        public override void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
         {
-            var dbContext = context.IContext as DBContext;
-            var typeManager = dbContext.DBTypeManager;
 
-            #region get Name
+            var _DBContext   = myCompilerContext.IContext as DBContext;
+            var _TypeManager = _DBContext.DBTypeManager;
+            var grammar = GetGraphQLGrammar(myCompilerContext);
 
-            _TypeName = parseNode.ChildNodes[1].Token.ValueString;
+            // get Name
+            _TypeName = myParseTreeNode.ChildNodes.Last().Token.ValueString;
+            if (myParseTreeNode.ChildNodes[1].Token == null || myParseTreeNode.ChildNodes[1].Token.AsSymbol != grammar.S_TYPE)
+            {
+                _Warnings.Add(new Warnings.Warning_ObsoleteGQL(
+                    String.Format("{0} {1}", grammar.S_TRUNCATE.ToUpperString(), _TypeName),
+                    String.Format("{0} {1} {2}", grammar.S_TRUNCATE.ToUpperString(), grammar.S_TYPE.ToUpperString(), _TypeName)));
+            }
 
-            #endregion
+            var _GraphDBType = _TypeManager.GetTypeByName(_TypeName);
 
-            GraphDBType pandoraType = typeManager.GetTypeByName(_TypeName);
-            if (pandoraType == null)
+            if (_GraphDBType == null)
             {
                 throw new GraphDBException(new Error_TypeDoesNotExist(_TypeName));
             }
 
-            if (typeManager.GetAllSubtypes(pandoraType, false).Count > 0)
+            if (_TypeManager.GetAllSubtypes(_GraphDBType, false).Count > 0)
             {
                 throw new GraphDBException(new Error_TruncateNotAllowedOnInheritedType(_TypeName));
             }
 
-            _ObjectManipulationManager = new ObjectManipulationManager(dbContext.SessionSettings, null, dbContext, this);
+            _ObjectManipulationManager = new ObjectManipulationManager(_DBContext.SessionSettings, null, _DBContext, this);
 
         }
 
         /// <summary>
         /// Executes the statement
         /// </summary>
-        /// <param name="graphDBSession">The DBSession to start new transactions</param>
-        /// <param name="dbContext">The current dbContext inside an readonly transaction. For any changes, you need to start a new transaction using <paramref name="graphDBSession"/></param>
+        /// <param name="myIGraphDBSession">The DBSession to start new transactions</param>
+        /// <param name="myDBContext">The current dbContext inside an readonly transaction. For any changes, you need to start a new transaction using <paramref name="myIGraphDBSession"/></param>
         /// <returns>The result of the query</returns>
-        public override QueryResult Execute(IGraphDBSession graphDBSession, DBContext dbContext)
+        public override QueryResult Execute(IGraphDBSession myIGraphDBSession, DBContext myDBContext)
         {
 
-            using (var transaction = graphDBSession.BeginTransaction())
+            using (var _Transaction = myIGraphDBSession.BeginTransaction())
             {
 
-                var dbInnerContext = transaction.GetDBContext();
-                GraphDBType graphDBType = dbContext.DBTypeManager.GetTypeByName(_TypeName);
+                var _DBInnerContext = _Transaction.GetDBContext();
 
-                if (graphDBType == null)
+                var _GraphDBType = myDBContext.DBTypeManager.GetTypeByName(_TypeName);
+
+                if (_GraphDBType == null)
                 {
+
                     var aError = new Error_TypeDoesNotExist(_TypeName);
 
                     return new QueryResult(aError);
+
                 }
 
                 #region Remove
 
                 #region remove dbobjects
 
-                var listOfAffectedDBObjects = dbContext.DBObjectCache.SelectDBObjectsForLevelKey(new LevelKey(graphDBType), dbInnerContext).ToList();
+                var listOfAffectedDBObjects = myDBContext.DBObjectCache.SelectDBObjectsForLevelKey(new LevelKey(_GraphDBType), _DBInnerContext).ToList();
 
                 foreach (var aDBO in listOfAffectedDBObjects)
                 {
+
                     if (!aDBO.Success)
                     {
                         return new QueryResult(aDBO.Errors);
@@ -130,7 +140,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
 
                     if (dbBackwardEdges == null)
                     {
-                        var dbBackwardEdgeLoadExcept = dbContext.DBObjectManager.LoadBackwardEdge(aDBO.Value.ObjectLocation);
+                        var dbBackwardEdgeLoadExcept = myDBContext.DBObjectManager.LoadBackwardEdge(aDBO.Value.ObjectLocation);
 
                         if (!dbBackwardEdgeLoadExcept.Success)
                             return new QueryResult(dbBackwardEdgeLoadExcept.Errors);
@@ -138,7 +148,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
                         dbBackwardEdges = dbBackwardEdgeLoadExcept.Value;
                     }
 
-                    var result = dbContext.DBObjectManager.RemoveDBObject(graphDBType, aDBO.Value, dbContext.DBObjectCache, dbContext.SessionSettings);
+                    var result = myDBContext.DBObjectManager.RemoveDBObject(_GraphDBType, aDBO.Value, myDBContext.DBObjectCache, myDBContext.SessionSettings);
 
                     if (!result.Success)
                     {
@@ -147,22 +157,23 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
 
                     if (dbBackwardEdges != null)
                     {
-                        var deleteReferences = _ObjectManipulationManager.DeleteObjectReferences(dbObjID, dbBackwardEdges, dbContext);
+                        var deleteReferences = _ObjectManipulationManager.DeleteObjectReferences(dbObjID, dbBackwardEdges, myDBContext);
 
                         if (!deleteReferences.Success)
                             return new QueryResult(deleteReferences.Errors);
                     }
+
                 }
 
                 #endregion
 
-                #region remove indexe
+                #region remove indices
 
-                dbContext.DBIndexManager.RemoveGuidIndexEntriesOfParentTypes(graphDBType, dbContext.DBIndexManager);
+                myDBContext.DBIndexManager.RemoveGuidIndexEntriesOfParentTypes(_GraphDBType, myDBContext.DBIndexManager);
                 
-                Parallel.ForEach(graphDBType.GetAllAttributeIndices(), aIdx =>
+                Parallel.ForEach(_GraphDBType.GetAllAttributeIndices(), aIdx =>
                     {
-                        var idxRef = aIdx.GetIndexReference(dbContext.DBIndexManager);
+                        var idxRef = aIdx.GetIndexReference(myDBContext.DBIndexManager);
                         if (!idxRef.Success)
                         {
                             throw new GraphDBException(idxRef.Errors);
@@ -176,9 +187,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
 
                 #region Commit transaction and add all Warnings and Errors
 
-                var queryResult = new QueryResult(transaction.Commit());
+                var queryResult = new QueryResult(_Transaction.Commit());
 
                 #endregion
+
+                queryResult.AddWarnings(_Warnings);
 
                 return queryResult;
 

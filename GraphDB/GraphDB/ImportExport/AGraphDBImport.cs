@@ -1,4 +1,11 @@
-﻿using System;
+﻿/* 
+ * AGraphDBImport
+ * (c) Stefan Licht, 2010
+ */
+
+#region Usings
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,9 +16,16 @@ using System.IO;
 using System.Net;
 using sones.GraphDB.QueryLanguage.Result;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Import;
+using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements;
 
-namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Imports
+#endregion
+
+namespace sones.GraphDB.ImportExport
 {
+
+    /// <summary>
+    /// The base import class. Implement the Import method to do what you want with the input lines.
+    /// </summary>
     public abstract class AGraphDBImport
     {
 
@@ -34,7 +48,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Imports
                 }
                 else if (location.ToLower().StartsWith("http://"))
                 {
-                    lines = ReadHttpResource(location.Substring("http://".Length));
+                    lines = ReadHttpResource(location);
                 }
                 else
                 {

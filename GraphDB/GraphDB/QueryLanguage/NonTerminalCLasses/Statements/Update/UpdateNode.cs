@@ -158,6 +158,12 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
             {
                 WhereExpressionNode tempWhereNode = (WhereExpressionNode)myParseTreeNode.ChildNodes[4].AstNode;
                 _WhereExpression = tempWhereNode.BinExprNode;
+
+                Exceptional validateResult = _WhereExpression.Validate(dbContext, _Type);
+                if (!validateResult.Success)
+                {
+                    throw new GraphDBException(validateResult.Errors);
+                }
             }
 
             #endregion

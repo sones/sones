@@ -30,7 +30,6 @@ namespace sones.Lib.ErrorHandling
 
     public interface IWarning
     {
-        String Message { get; }
     }
 
 }

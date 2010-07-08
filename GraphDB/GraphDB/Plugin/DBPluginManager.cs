@@ -28,25 +28,24 @@
  */
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using sones.GraphDB.Errors;
+using sones.GraphDB.Exceptions;
+using sones.GraphDB.ImportExport;
+using sones.GraphDB.Indices;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Aggregates;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Functions;
 using sones.GraphDB.QueryLanguage.Operators;
 using sones.GraphDB.Settings;
 using sones.GraphDB.Structures.EdgeTypes;
-using sones.GraphFS.DataStructures;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.Exceptions;
-using sones.GraphDB.Errors;
+using sones.GraphFS.DataStructures;
 using sones.GraphFS.Objects;
-using sones.GraphDB.Indices;
-using sones.Lib.DataStructures.Indices;
 using sones.Lib.ErrorHandling;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Imports;
 
 namespace sones.GraphDB.Plugin
 {

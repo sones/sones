@@ -21,23 +21,16 @@
 
 #region Usings
 
-using System;
 
 using sones.GraphDB.Exceptions;
+using sones.GraphDB.ImportExport;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
-
 using sones.Lib.Frameworks.Irony.Parsing;
 
 #endregion
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Dump
 {
-
-    public enum DumpFormats
-    {
-        GQL = 1,
-        CSV = 2
-    }
 
     public class DumpFormatNode : AStructureNode
     {
@@ -54,13 +47,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Dump
 
                 var _Terminal = parseNode.ChildNodes[1].Token.Terminal;
 
-                if (_Terminal == _GraphQL.S_DUMP_FORMAT_GQL)
+                if (_Terminal == _GraphQL.S_GQL)
                 {
                     DumpFormat = DumpFormats.GQL;
-                }
-                else if (_Terminal == _GraphQL.S_DUMP_FORMAT_CSV)
-                {
-                    DumpFormat = DumpFormats.CSV;
                 }
                 else
                 {

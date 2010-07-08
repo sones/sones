@@ -569,7 +569,7 @@ namespace sones.GraphDB.Managers
                     {
                         if (tuple.TypeOfValue == TypesOfOperatorResult.Unknown)
                         {
-                            ADBBaseObject elemToAdd = PandoraTypeMapper.GetBaseObjectFromCSharpType(tuple.Value);
+                            ADBBaseObject elemToAdd = GraphDBTypeMapper.GetBaseObjectFromCSharpType(tuple.Value);
                             ((EdgeTypeListOfBaseObjects)elementsToBeAdded).Add(elemToAdd);
                             undefAttrList.Add(elemToAdd);
                         }
@@ -607,7 +607,7 @@ namespace sones.GraphDB.Managers
                     elementsToBeAdded = ((AListBaseEdgeType)aAddToListAttrUpdateNode.Attribute.EdgeType.GetNewInstance());
                     foreach (var tupleElem in aAddToListAttrUpdateNode.ElementsToBeAdded.TupleNodeElement.Tuple)
                     {
-                        (elementsToBeAdded as AListBaseEdgeType).Add(PandoraTypeMapper.GetPandoraObjectFromTypeName(attrDef.GetDBType(dbContext.DBTypeManager).Name, tupleElem.Value), tupleElem.Parameters.ToArray());
+                        (elementsToBeAdded as AListBaseEdgeType).Add(GraphDBTypeMapper.GetPandoraObjectFromTypeName(attrDef.GetDBType(dbContext.DBTypeManager).Name, tupleElem.Value), tupleElem.Parameters.ToArray());
                     }
 
                     #endregion
@@ -618,7 +618,7 @@ namespace sones.GraphDB.Managers
 
                     if (aAddToListAttrUpdateNode.ElementsToBeAdded.CollectionType == CollectionType.SetOfUUIDs)
                     {
-                        var result = aAddToListAttrUpdateNode.ElementsToBeAdded.TupleNodeElement.GetAsUUIDEdge(dbContext, _Type);
+                        var result = aAddToListAttrUpdateNode.ElementsToBeAdded.TupleNodeElement.GetAsUUIDEdge(dbContext, attrDef);
                         if (result.Failed)
                         {
                             return new Exceptional<Tuple<String, TypeAttribute, AListEdgeType>>(result);
@@ -706,7 +706,7 @@ namespace sones.GraphDB.Managers
 
                         foreach (var tuple in aRemoveFromListAttrUpdateNode.TupleNode.Tuple)
                         {
-                            undefAttrList.Remove(PandoraTypeMapper.GetBaseObjectFromCSharpType(tuple.Value));
+                            undefAttrList.Remove(GraphDBTypeMapper.GetBaseObjectFromCSharpType(tuple.Value));
                         }
 
                         dbContext.DBObjectManager.AddUndefinedAttribute(aRemoveFromListAttrUpdateNode.AttributeName, undefAttrList, aDBObject);
@@ -950,7 +950,7 @@ namespace sones.GraphDB.Managers
 
                         if (aSetNode.CollectionType == CollectionType.SetOfUUIDs)
                         {
-                            var retVal = aSetNode.TupleNodeElement.GetAsUUIDEdge(dbContext, _Type);
+                            var retVal = aSetNode.TupleNodeElement.GetAsUUIDEdge(dbContext, aTaskNode.AttributeIDNode.LastAttribute);
                             if (!retVal.Success)
                             {
                                 return new Exceptional<AObject>(retVal);
@@ -1002,9 +1002,9 @@ namespace sones.GraphDB.Managers
                 case TypesOfOperatorResult.Boolean:
                 case TypesOfOperatorResult.String:
 
-                    if (PandoraTypeMapper.IsAValidAttributeType(aTaskNode.AttributeIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager), aTaskNode.AttributeType, dbContext, aTaskNode.AttributeValue))
+                    if (GraphDBTypeMapper.IsAValidAttributeType(aTaskNode.AttributeIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager), aTaskNode.AttributeType, dbContext, aTaskNode.AttributeValue))
                     {
-                        value = PandoraTypeMapper.GetPandoraObjectFromType(aTaskNode.AttributeType, aTaskNode.AttributeValue);
+                        value = GraphDBTypeMapper.GetPandoraObjectFromType(aTaskNode.AttributeType, aTaskNode.AttributeValue);
                     }
                     else
                     {
@@ -1072,15 +1072,15 @@ namespace sones.GraphDB.Managers
             //add some basic elements like FavoriteNumbers
             foreach (TupleElement aTupleElement in aListObject.TupleNodeElement.Tuple)
             {
-                if (PandoraTypeMapper.IsAValidAttributeType(attr.GetDBType(dbContext.DBTypeManager), aTupleElement.TypeOfValue, dbContext, aTupleElement.Value))
+                if (GraphDBTypeMapper.IsAValidAttributeType(attr.GetDBType(dbContext.DBTypeManager), aTupleElement.TypeOfValue, dbContext, aTupleElement.Value))
                 {
-                    edge.Add(PandoraTypeMapper.GetPandoraObjectFromTypeName(attr.GetDBType(dbContext.DBTypeManager).Name, aTupleElement.Value), aTupleElement.Parameters.ToArray());
+                    edge.Add(GraphDBTypeMapper.GetPandoraObjectFromTypeName(attr.GetDBType(dbContext.DBTypeManager).Name, aTupleElement.Value), aTupleElement.Parameters.ToArray());
                 }
                 else
                 {
                     if (aTupleElement.Value is BinaryExpressionNode
                     && ((BinaryExpressionNode)aTupleElement.Value).ResultValue.Value is AtomValue
-                    && PandoraTypeMapper.IsAValidAttributeType(attr.GetDBType(dbContext.DBTypeManager), ((AtomValue)((BinaryExpressionNode)aTupleElement.Value).ResultValue.Value).TypeOfValue, dbContext, aTupleElement.Value))
+                    && GraphDBTypeMapper.IsAValidAttributeType(attr.GetDBType(dbContext.DBTypeManager), ((AtomValue)((BinaryExpressionNode)aTupleElement.Value).ResultValue.Value).TypeOfValue, dbContext, aTupleElement.Value))
                     {
                         ((AListBaseEdgeType)edge).Add(((AtomValue)((BinaryExpressionNode)aTupleElement.Value).ResultValue.Value).Value, aTupleElement.Parameters.ToArray());
                     }
@@ -1282,7 +1282,7 @@ namespace sones.GraphDB.Managers
                                             foreach (var tuple in colNode.TupleNodeElement.Tuple)
                                             {
                                                 if (tuple.TypeOfValue == TypesOfOperatorResult.Unknown)
-                                                    valueList.Add(PandoraTypeMapper.GetBaseObjectFromCSharpType(tuple.Value));
+                                                    valueList.Add(GraphDBTypeMapper.GetBaseObjectFromCSharpType(tuple.Value));
                                                 else
                                                     return new Exceptional(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                                             }
@@ -1300,7 +1300,7 @@ namespace sones.GraphDB.Managers
                                     else
                                     {
                                         var typeOfExpression = aAttributeAssignment.ChildNodes[2].Term.GetType();
-                                        var value = PandoraTypeMapper.GetBaseObjectFromCSharpType(aAttributeAssignment.ChildNodes[2].Token.Value);
+                                        var value = GraphDBTypeMapper.GetBaseObjectFromCSharpType(aAttributeAssignment.ChildNodes[2].Token.Value);
                                         _UndefinedAttributes.Add(UndefAttrName, value);
                                     }
                                 }
@@ -1492,10 +1492,10 @@ namespace sones.GraphDB.Managers
 
                             var val = (value.Value as AtomValue).Value.Value;
 
-                            correspondingCSharpType = PandoraTypeMapper.ConvertPandora2CSharp(attr, attr.GetDBType(dbContext.DBTypeManager));
-                            if (PandoraTypeMapper.GetEmptyPandoraObjectFromType(correspondingCSharpType).IsValidValue(val))
+                            correspondingCSharpType = GraphDBTypeMapper.ConvertPandora2CSharp(attr, attr.GetDBType(dbContext.DBTypeManager));
+                            if (GraphDBTypeMapper.GetEmptyPandoraObjectFromType(correspondingCSharpType).IsValidValue(val))
                             {
-                                typedAttributeValue = PandoraTypeMapper.GetPandoraObjectFromType(correspondingCSharpType, val);
+                                typedAttributeValue = GraphDBTypeMapper.GetPandoraObjectFromType(correspondingCSharpType, val);
                                 _Attributes.Add(new AttributeDefinition(attr, attr.GetDBType(dbContext.DBTypeManager)), typedAttributeValue);
 
                                 if (_TypeMandatoryAttribs.Contains(attr.UUID))
@@ -1520,7 +1520,7 @@ namespace sones.GraphDB.Managers
                             if (!(attr.EdgeType is AListBaseEdgeType))
                                 return new Exceptional(new Error_InvalidEdgeType(attr.EdgeType.GetType(), typeof(AListBaseEdgeType)));
 
-                            correspondingCSharpType = PandoraTypeMapper.ConvertPandora2CSharp(attr, attr.GetDBType(dbContext.DBTypeManager));
+                            correspondingCSharpType = GraphDBTypeMapper.ConvertPandora2CSharp(attr, attr.GetDBType(dbContext.DBTypeManager));
 
                             if ((value.Value as TupleValue).TypeOfValue != correspondingCSharpType)
                                 return new Exceptional(new Error_DataTypeDoesNotMatch(correspondingCSharpType.ToString(), (value.Value as TupleValue).TypeOfValue.ToString()));
@@ -1542,10 +1542,10 @@ namespace sones.GraphDB.Managers
                         if (attr.KindOfType == KindsOfType.ListOfNoneReferences)
                             return new Exceptional(new Error_InvalidTuple(aAttributeAssignNode.AttributeValue.ToString()));
 
-                        correspondingCSharpType = PandoraTypeMapper.ConvertPandora2CSharp(attr, attr.GetDBType(dbContext.DBTypeManager));
-                        if (PandoraTypeMapper.GetEmptyPandoraObjectFromType(correspondingCSharpType).IsValidValue(aAttributeAssignNode.AttributeValue))
+                        correspondingCSharpType = GraphDBTypeMapper.ConvertPandora2CSharp(attr, attr.GetDBType(dbContext.DBTypeManager));
+                        if (GraphDBTypeMapper.GetEmptyPandoraObjectFromType(correspondingCSharpType).IsValidValue(aAttributeAssignNode.AttributeValue))
                         {
-                            typedAttributeValue = PandoraTypeMapper.GetPandoraObjectFromType(correspondingCSharpType, aAttributeAssignNode.AttributeValue);
+                            typedAttributeValue = GraphDBTypeMapper.GetPandoraObjectFromType(correspondingCSharpType, aAttributeAssignNode.AttributeValue);
                             _Attributes.Add(new AttributeDefinition(attr, attr.GetDBType(dbContext.DBTypeManager)), typedAttributeValue);
 
                             if (_TypeMandatoryAttribs.Contains(attr.UUID))
@@ -1815,7 +1815,7 @@ namespace sones.GraphDB.Managers
                             result.AddResult(deleteResult.Value);
 
                         }
-                        
+
                     }
 
                     #region expressionGraph error handling
@@ -1867,7 +1867,11 @@ namespace sones.GraphDB.Managers
                     }
                 }
 
-                #endregion  
+                #endregion
+            }
+            catch (GraphDBException gdbEx)
+            {
+                return new QueryResult(gdbEx.GraphDBErrors);
             }
             catch (Exception e)
             {

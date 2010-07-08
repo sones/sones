@@ -52,7 +52,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         #region data
 
         private AObject _Value;
-        private String  _BaseTypeName;
         private TypesOfPandoraType _TypeOfList;
         
         #endregion
@@ -74,7 +73,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         /// <returns>an ADBBaseObject</returns>
         private ADBBaseObject CheckTypeOfItems(object myObjects, ADBBaseObject myLastObject)
         {
-            var baseObject = PandoraTypeMapper.GetBaseObjectFromCSharpType(myObjects);
+            var baseObject = GraphDBTypeMapper.GetBaseObjectFromCSharpType(myObjects);
 
             if (baseObject.Type == myLastObject.Type)
             {
@@ -95,8 +94,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
                 if (parseNode.ChildNodes.Count >= 3)
                 {   
                     EdgeTypeListOfBaseObjects ListOfDefaults = new EdgeTypeListOfBaseObjects();
-                    var firstListObject = PandoraTypeMapper.GetBaseObjectFromCSharpType(parseNode.ChildNodes[2].ChildNodes[0].Token.Value);
-                    _BaseTypeName = firstListObject.ObjectName;
+                    var firstListObject = GraphDBTypeMapper.GetBaseObjectFromCSharpType(parseNode.ChildNodes[2].ChildNodes[0].Token.Value);
                     
                     ListOfDefaults.AddRange(parseNode.ChildNodes[2].ChildNodes.Select(item => CheckTypeOfItems(item.Token.Value, firstListObject)));
 
@@ -115,9 +113,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
                 else
                 {
                     
-                    var baseObject = PandoraTypeMapper.GetBaseObjectFromCSharpType(parseNode.ChildNodes[1].Token.Value);
-                    _BaseTypeName = baseObject.ObjectName;
-
+                    var baseObject = GraphDBTypeMapper.GetBaseObjectFromCSharpType(parseNode.ChildNodes[1].Token.Value);
                     _Value = (AObject)baseObject;
                 }
             }
@@ -132,11 +128,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         public AObject Value
         {
             get { return _Value; }
-        }
-
-        public String BaseTypeName
-        {
-            get { return _BaseTypeName; }
         }
 
         public TypesOfPandoraType TypeOfList

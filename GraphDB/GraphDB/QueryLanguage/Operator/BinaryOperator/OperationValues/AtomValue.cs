@@ -61,7 +61,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
         public AtomValue(TypesOfOperatorResult TypeOfValue, Object Value)
         {
 
-            _value = PandoraTypeMapper.GetPandoraObjectFromType(TypeOfValue, Value);
+            _value = GraphDBTypeMapper.GetPandoraObjectFromType(TypeOfValue, Value);
 
             _typeOfValue = TypeOfValue;
         }

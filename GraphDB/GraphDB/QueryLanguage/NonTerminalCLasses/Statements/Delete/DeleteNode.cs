@@ -208,6 +208,13 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
             {
                 WhereExpressionNode tempWhereNode = (WhereExpressionNode)myParseTreeNode.ChildNodes[4].AstNode;
                 _WhereExpression = tempWhereNode.BinExprNode;
+
+                Exceptional validateResult = _WhereExpression.Validate(dbContext, _TypeList.Select(tnode => tnode.DBTypeStream).ToArray());
+                if (!validateResult.Success)
+                {
+                    throw new GraphDBException(validateResult.Errors);
+                }
+
             }
 
             #endregion

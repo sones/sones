@@ -26,17 +26,12 @@ using sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.Exceptions;
+using sones.GraphDB.ImportExport;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
+using sones.Lib.Frameworks.Irony.Parsing;
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Dump
 {
-
-    [Flags]
-    public enum DumpTypes
-    {
-        GDDL = 1,
-        GDML = 2
-    }
 
     public class DumpTypeNode : AStructureNode
     {
@@ -53,15 +48,15 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Dump
 
                 var _Terminal = parseNode.ChildNodes[0].Token.Terminal;
 
-                if (_Terminal      == _GraphQL.S_DUMP_TYPE_ALL)
+                if (_Terminal      == _GraphQL.S_ALL)
                 {
                     DumpType = DumpTypes.GDDL | DumpTypes.GDML;
                 }
-                else if (_Terminal == _GraphQL.S_DUMP_TYPE_GDDL)
+                else if (_Terminal == _GraphQL.S_GDDL)
                 {
                     DumpType = DumpTypes.GDDL;
                 }
-                else if (_Terminal == _GraphQL.S_DUMP_TYPE_GDML)
+                else if (_Terminal == _GraphQL.S_GDML)
                 {
                     DumpType = DumpTypes.GDML;
                 }

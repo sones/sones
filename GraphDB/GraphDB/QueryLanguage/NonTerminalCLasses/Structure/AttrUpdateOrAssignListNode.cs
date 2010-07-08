@@ -100,7 +100,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
                                         foreach (var tuple in colNode.TupleNodeElement.Tuple)
                                         {
                                             if (tuple.TypeOfValue == TypesOfOperatorResult.Unknown)
-                                                valueList.Add(PandoraTypeMapper.GetBaseObjectFromCSharpType(tuple.Value));
+                                                valueList.Add(GraphDBTypeMapper.GetBaseObjectFromCSharpType(tuple.Value));
                                         }
 
                                         if (colNode.CollectionType == CollectionType.Set)
@@ -118,7 +118,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
                                 else
                                 {
                                     var typeOfExpression = UndefNode.ChildNodes[2].Term.GetType();
-                                    var UndefValue = PandoraTypeMapper.GetPandoraObjectFromType(PandoraTypeMapper.ConvertPandora2CSharp(typeOfExpression.Name), UndefNode.ChildNodes[2].Token.Value);
+                                    var UndefValue = GraphDBTypeMapper.GetPandoraObjectFromType(GraphDBTypeMapper.ConvertPandora2CSharp(typeOfExpression.Name), UndefNode.ChildNodes[2].Token.Value);
                                     var keyValPair = new KeyValuePair<String, AObject>(UndefName, UndefValue);
                                     _listOfUpdates.Add(new AttributeUpdateOrAssign(TypesOfUpdate.AssignAttribute, keyValPair) { IsUndefinedAttribute = true });
                                 }

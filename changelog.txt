@@ -1,0 +1,32 @@
+sones GraphDB Changelog:
+
+08.07.2010
+- Fixed IMPORT http:// bug; Added begin transaction to import
+- new special type attributes MAXNUMBEROFCOPIES, MAXNUMBEROFREVISIONS, MAXREVISIONAGE, MINNUMBEROFCOPIES, NUMBEROFCOPIES, NUMBEROFREVISIONS, PARENTREVISIONS, MINNUMBEROFREVISIONS
+- Return NotResolvedReferenceAttributeValues on function result
+- Fix NullReference exception for not found Url in WebServerInterface definition
+- Fixed error creation on SelectToObjectGraph
+- IExtendableGrammar for aggregates and functions
+- Add indices to grammar
+- Changed dump to use SETOFUUIDS instead of updates
+- Use slow index operation of InOperator ONLY for index keys of List/Set of base objects
+- Fixed error message of delete with not existing attribute in where expression
+- Fixed error message of update and insertOr* with not existing attribute in where expression
+- Bugfix empty edge in select and expressiongraph for not existing backwardedge attribute (KeyNotFoundException)
+- fixed bug in assignment of default attributes
+- Import escape bugfix
+- fixed bug: ambiguous attribute name on a type creation
+- Renamed PandoraTypeMapper to GraphDBTypeMapper
+- GraphQL simplifications, AGraphDSSharp improvements
+- Dump changes ([TYPES ...], [INTO/TO ...])
+- Fixed Bug 486: Wrong IDNode for BackwardEdge reference
+- Dump error handling
+- Added favicon to rest
+- Allow file:\\\ as valid dump destination prefix 
+- Changed GQL (optional currently)
+ - TRUNCATE Nutzer -> TRUNCATE TYPE Nutzer
+ - CREATE TYPE ... INDICES(...ON Nutzer) ->CREATE TYPE ... INDICES(...ON TYPE Nutzer)
+ - CREATE INDEX ... ON Nutzer ->CREATE INDEX ... ON TYPE Nutzer
+- Add line number for failed import
+- Add warnings for obsolete usage of INDICES and TRUNCATE
+

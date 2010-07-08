@@ -21,17 +21,22 @@
 #region Usings
 
 using System;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Dump;
-using sones.Lib.ErrorHandling;
 using System.Collections.Generic;
+using sones.GraphDB.ImportExport;
+using sones.GraphDB.TypeManagement;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
 namespace sones.GraphDB.QueryLanguage
 {
+
+    /// <summary>
+    /// Marks a grammar as dump able
+    /// </summary>
     public interface IDumpable
     {
-        Exceptional<List<String>> ExportGraphDDL(DumpFormats myDumpFormat, DBContext myDBContext);
-        Exceptional<List<String>> ExportGraphDML(DumpFormats myDumpFormat, DBContext myDBContext);
+        Exceptional<List<String>> ExportGraphDDL(DumpFormats myDumpFormat, DBContext myDBContext, IEnumerable<GraphDBType> myTypes);
+        Exceptional<List<String>> ExportGraphDML(DumpFormats myDumpFormat, DBContext myDBContext, IEnumerable<GraphDBType> myTypes);
     }
 }

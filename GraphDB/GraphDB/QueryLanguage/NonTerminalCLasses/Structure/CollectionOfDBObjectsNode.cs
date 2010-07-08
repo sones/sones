@@ -135,15 +135,24 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
         internal Exceptional<ASetReferenceEdgeType> GetEdge(TypeAttribute attr, GraphDBType dbType, DBContext dbContext)
         {
 
-            if (CollectionType == CollectionType.List)
+            if (CollectionType == CollectionType.List || !(attr.EdgeType is ASetReferenceEdgeType))
             {
                 return new Exceptional<ASetReferenceEdgeType>(new Error_InvalidAssignOfSet(attr.Name));
             }
 
+            #region The Edge is empty
+
+            if (TupleNodeElement == null)
+            {
+                return new Exceptional<ASetReferenceEdgeType>(attr.EdgeType.GetNewInstance() as ASetReferenceEdgeType);
+            }
+
+            #endregion
+
             Exceptional<ASetReferenceEdgeType> uuids = null;
             if (CollectionType == CollectionType.SetOfUUIDs)
             {
-                uuids = TupleNodeElement.GetAsUUIDEdge(dbContext, dbType);
+                uuids = TupleNodeElement.GetAsUUIDEdge(dbContext, attr);
                 if (uuids.Failed)
                 {
                     return new Exceptional<ASetReferenceEdgeType>(uuids);

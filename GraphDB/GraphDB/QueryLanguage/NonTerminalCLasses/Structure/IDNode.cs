@@ -645,7 +645,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
                                     {
                                         foundSth = true;
 
-                                        if (tempTypeAttribute.GetDBType(dbContext.DBTypeManager).IsUserDefined)
+                                        if (tempTypeAttribute.GetDBType(dbContext.DBTypeManager).IsUserDefined || tempTypeAttribute.IsBackwardEdge)
                                         {
                                             _level++;
                                         }

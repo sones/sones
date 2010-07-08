@@ -184,7 +184,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
         protected override Exceptional<Boolean> Compare(ADBBaseObject myLeft, ADBBaseObject myRight)
         {
-            if (!PandoraTypeMapper.ConvertToBestMatchingType(ref myLeft, ref myRight).Value)
+            if (!GraphDBTypeMapper.ConvertToBestMatchingType(ref myLeft, ref myRight).Value)
             {
                 return new Exceptional<bool>(new Error_DataTypeDoesNotMatch(myLeft.Type.ToString(), myRight.Type.ToString()));
             }

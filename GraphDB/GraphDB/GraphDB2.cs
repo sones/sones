@@ -54,10 +54,8 @@ using sones.Lib.DataStructures.UUID;
 using sones.Lib.Session;
 using sones.GraphDB.Transactions;
 using sones.GraphFS.Transactions;
-using GraphFSInterface.Transactions;
 using sones.GraphDB.Managers;
 using sones.GraphDB.Plugin;
-
 
 #endregion
 

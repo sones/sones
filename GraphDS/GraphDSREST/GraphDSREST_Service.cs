@@ -86,6 +86,7 @@ namespace sones.GraphDS.Connectors.REST
 
         private static ContentType _CSS             = new ContentType("text/css");
         private static ContentType _GIF             = new ContentType("image/gif");
+        private static ContentType _ICO             = new ContentType("image/ico");
         private static ContentType _PNG             = new ContentType("image/png");
         private static ContentType _JPG             = new ContentType("image/jpg");
 
@@ -205,7 +206,8 @@ namespace sones.GraphDS.Connectors.REST
                     switch (_FileNameSuffix)
                     {
                         case "css": _Header.ContentType = _CSS;  break;
-                        case "gif": _Header.ContentType = _GIF;  break;
+                        case "gif": _Header.ContentType = _GIF; break;
+                        case "ico": _Header.ContentType = _ICO; break;
                         default:    _Header.ContentType = _HTML; break;
                     }
 
@@ -1621,6 +1623,17 @@ namespace sones.GraphDS.Connectors.REST
 
         #endregion
 
+
+        #region IGraphDSREST_Service Members
+
+        public void GetFavicon()
+        {
+
+            GetResources("favicon.ico");
+
+        }
+
+        #endregion
     }
 
 }

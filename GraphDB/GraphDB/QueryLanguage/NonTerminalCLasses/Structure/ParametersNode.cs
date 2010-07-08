@@ -56,7 +56,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             {
                 foreach (var child in parseNode.ChildNodes[1].ChildNodes)
                 {
-                    _ParameterValues.Add(PandoraTypeMapper.GetPandoraObjectFromTypeName(child.Token.Terminal.GetType().Name, child.Token.Value));
+                    _ParameterValues.Add(GraphDBTypeMapper.GetPandoraObjectFromTypeName(child.Token.Terminal.GetType().Name, child.Token.Value));
                 }
             }
         }

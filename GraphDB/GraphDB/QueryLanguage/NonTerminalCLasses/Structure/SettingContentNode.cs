@@ -122,10 +122,10 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             var _TypeUUID = mySetting.Type;
 
             if (myValue != "DEFAULT")
-                return PandoraTypeMapper.GetADBBaseObjectFromUUID(_TypeUUID, myValue);
+                return GraphDBTypeMapper.GetADBBaseObjectFromUUID(_TypeUUID, myValue);
 
             else
-                return PandoraTypeMapper.GetADBBaseObjectFromUUID(_TypeUUID, mySetting.Default.Value);
+                return GraphDBTypeMapper.GetADBBaseObjectFromUUID(_TypeUUID, mySetting.Default.Value);
 
         }
 

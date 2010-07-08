@@ -62,7 +62,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
 
         //NLOG: temporarily commented
         //private static Logger //_Logger = LogManager.GetCurrentClassLogger();
-        private List<GraphDBTypeDefinition> _listOfTypes = null;
+        private List<GraphDBTypeDefinition> _ListOfTypes = null;
 
         #endregion
 
@@ -100,7 +100,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
             using (var transaction = graphDBSession.BeginTransaction())
             {
 
-                var result = transaction.GetDBContext().DBTypeManager.AddBulkTypes(_listOfTypes);
+                var result = transaction.GetDBContext().DBTypeManager.AddBulkTypes(_ListOfTypes);
 
                 if (!result.Success)
                 {
@@ -112,6 +112,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
                     #endregion
 
                     return new QueryResult(result.Errors);
+
                 }
                 else
                 {
@@ -316,54 +317,61 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
         /// <summary>
         /// Gets the content of a CreateTypeStatement.
         /// </summary>
-        /// <param name="context">CompilerContext of Irony.</param>
-        /// <param name="parseNode">The current ParseNode.</param>
+        /// <param name="myCompilerContext">CompilerContext of Irony.</param>
+        /// <param name="myParseTreeNode">The current ParseNode.</param>
         /// <param name="typeManager">The TypeManager of the PandoraDB.</param>
-        public override void GetContent(CompilerContext context, ParseTreeNode parseNode)
+        public override void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
         {
-            var dbContext = context.IContext as DBContext;
-            var typeManager = dbContext.DBTypeManager;
+
+            var _DBContext   = myCompilerContext.IContext as DBContext;
+            var _TypeManager = _DBContext.DBTypeManager;
 
             #region Data
 
-            _listOfTypes = new List<GraphDBTypeDefinition>();
+            _ListOfTypes = new List<GraphDBTypeDefinition>();
 
             #endregion
 
             try
             {
-                if (parseNode.ChildNodes.Count > 3)
+
+                if (myParseTreeNode.ChildNodes.Count > 3)
                 {
-                    BulkTypeNode aTempNode = (BulkTypeNode)parseNode.ChildNodes[3].AstNode;
-                    CheckExtends(aTempNode, dbContext);
-                    CheckForSetConstraint(parseNode.ChildNodes[3].ChildNodes[2], aTempNode.TypeName, dbContext);
+
+                    BulkTypeNode aTempNode = (BulkTypeNode) myParseTreeNode.ChildNodes[3].AstNode;
+                    CheckExtends(aTempNode, _DBContext);
+                    CheckForSetConstraint(myParseTreeNode.ChildNodes[3].ChildNodes[2], aTempNode.TypeName, _DBContext);
 
                     Boolean isAbstract = false;
 
-                    if (parseNode.ChildNodes[1].HasChildNodes())
+                    if (myParseTreeNode.ChildNodes[1].HasChildNodes())
                         isAbstract = true;
 
-                    _listOfTypes.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, isAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
+                    _ListOfTypes.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, isAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
                     
                 }
+
                 else
                 {
-                    foreach (ParseTreeNode aNode in parseNode.ChildNodes[2].ChildNodes)
+                    foreach (var _ParseTreeNode in myParseTreeNode.ChildNodes[2].ChildNodes)
                     {
-                        if (aNode.AstNode != null)
+                        if (_ParseTreeNode.AstNode != null)
                         {
-                            BulkTypeListMemberNode aTempNode = (BulkTypeListMemberNode)aNode.AstNode;
-                            CheckExtends(aTempNode, dbContext, parseNode.ChildNodes[2].ChildNodes);
-                            CheckForSetConstraint(aNode.ChildNodes[1].ChildNodes[2], aTempNode.TypeName, dbContext, parseNode.ChildNodes[2].ChildNodes);
-                            _listOfTypes.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, aTempNode.IsAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
+                            BulkTypeListMemberNode aTempNode = (BulkTypeListMemberNode)_ParseTreeNode.AstNode;
+                            CheckExtends(aTempNode, _DBContext, myParseTreeNode.ChildNodes[2].ChildNodes);
+                            CheckForSetConstraint(_ParseTreeNode.ChildNodes[1].ChildNodes[2], aTempNode.TypeName, _DBContext, myParseTreeNode.ChildNodes[2].ChildNodes);
+                            _ListOfTypes.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, aTempNode.IsAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
                         }
                     }
                 }
+
             }
+
             catch (GraphDBException e)
             {
                 throw new GraphDBException(e.GraphDBErrors);
             }
+
         }        
 
         #endregion

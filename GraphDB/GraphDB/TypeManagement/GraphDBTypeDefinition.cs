@@ -32,6 +32,7 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
@@ -113,8 +114,8 @@ namespace sones.GraphDB.TypeManagement
 
         #endregion
 
-        private List<IndexOptOnCreateTypeMemberNode> _Indices;
-        public List<IndexOptOnCreateTypeMemberNode> Indices
+        private List<Exceptional<IndexOptOnCreateTypeMemberNode>> _Indices;
+        public List<Exceptional<IndexOptOnCreateTypeMemberNode>> Indices
         {
             get { return _Indices; }
         }
@@ -150,7 +151,7 @@ namespace sones.GraphDB.TypeManagement
 
         #region Constructor
 
-        public GraphDBTypeDefinition(String myName, String myParentType, Boolean myIsAbstract, Dictionary<TypeAttribute, String> myAttributes, List<BackwardEdgeNode> myBackwardEdgeNodes, List<IndexOptOnCreateTypeMemberNode> myIndices, String myComment = null)
+        public GraphDBTypeDefinition(String myName, String myParentType, Boolean myIsAbstract, Dictionary<TypeAttribute, String> myAttributes, List<BackwardEdgeNode> myBackwardEdgeNodes, List<Exceptional<IndexOptOnCreateTypeMemberNode>> myIndices, String myComment = null)
         {
 
             _Name       = myName;

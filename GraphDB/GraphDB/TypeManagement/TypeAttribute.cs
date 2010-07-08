@@ -427,7 +427,7 @@ namespace sones.GraphDB.TypeManagement
                 }
                 else
                 {
-                    var val = ((ADBBaseObject)PandoraTypeMapper.GetADBBaseObjectFromUUID(DBTypeUUID));
+                    var val = ((ADBBaseObject)GraphDBTypeMapper.GetADBBaseObjectFromUUID(DBTypeUUID));
                     val.SetValue(DBObjectInitializeType.Default);
                     return val as AObject;
                 }
@@ -444,8 +444,8 @@ namespace sones.GraphDB.TypeManagement
         public ADBBaseObject GetADBBaseObjectType(DBTypeManager myDBTypeManager)
         {
 
-            if (PandoraTypeMapper.IsBasicType(GetDBType(myDBTypeManager).Name))
-                return PandoraTypeMapper.GetPandoraObjectFromTypeName(GetDBType(myDBTypeManager).Name);
+            if (GraphDBTypeMapper.IsBasicType(GetDBType(myDBTypeManager).Name))
+                return GraphDBTypeMapper.GetPandoraObjectFromTypeName(GetDBType(myDBTypeManager).Name);
 
             return null;
 
@@ -543,5 +543,7 @@ namespace sones.GraphDB.TypeManagement
         #endregion
 
         #endregion
+    
     }
+
 }

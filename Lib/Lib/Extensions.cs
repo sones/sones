@@ -527,10 +527,10 @@ namespace sones.Lib
             return _Array.ToList<T>();
         }
 
-        public static String ToString<T>(this List<T> myList)
+        public static String ToContentString<T>(this List<T> myList)
         {
 
-            var _ReturnValue = new StringBuilder("List<T>[" + myList.Count + "] ");
+            var _ReturnValue = new StringBuilder();
 
             foreach (var _Items in myList)
                 _ReturnValue.Append(_Items + ", ");
@@ -785,7 +785,8 @@ namespace sones.Lib
 
         public static String ToString(this Exception exception, Boolean includeInnerExceptions)
         {
-            StringBuilder ret = new StringBuilder(exception.Message);
+            StringBuilder ret = new StringBuilder();
+            ret.AppendLine("Message: " + exception.Message);
             ret.AppendLine("Stacktrace: " + exception.StackTrace);
 
             Exception innerException = exception.InnerException;

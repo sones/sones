@@ -31,30 +31,22 @@
 #region Usings
 
 using System;
-using System.Text;
-using System.Linq;
 using System.Collections.Generic;
-using sones.GraphDB.TypeManagement;
-using sones.GraphDB.QueryLanguage.Result;
-using sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements;
-using sones.GraphDB.Exceptions;
-using sones.Lib.Frameworks.Irony.Parsing;
-using sones.Lib.ErrorHandling;
+using System.Linq;
 
-using sones.GraphDB.ObjectManagement;
-using sones.Lib.DataStructures;
-using System.Diagnostics;
+using sones.GraphFS.Transactions;
 using sones.GraphDB.Errors;
-using sones.GraphDB.Structures;
-using sones.GraphDB.Warnings;
-using sones.GraphFS.Session;
-using sones.Lib.Session;
-using sones.GraphDB.QueryLanguage.Enums;
-using sones.GraphDB.Settings;
-using sones.GraphDB.Transactions;
-using sones.Lib;
-using GraphFSInterface.Transactions;
+using sones.GraphDB.Exceptions;
 using sones.GraphDB.Plugin;
+using sones.GraphDB.QueryLanguage;
+using sones.GraphDB.QueryLanguage.Enums;
+using sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements;
+using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Settings;
+using sones.GraphDB.Warnings;
+
+using sones.Lib.ErrorHandling;
+using sones.Lib.Frameworks.Irony.Parsing;
 
 #endregion
 
@@ -87,35 +79,16 @@ namespace sones.GraphDB.Query
         {
 
             //get grammar
-            var pandoraQL = new QueryLanguage.GraphQL();
+            var graphQL = new GraphQL();
 
+            graphQL.SetFunctions(pluginManager.Functions.Values);
+            graphQL.SetAggregates(pluginManager.Aggregates.Values);
+            graphQL.SetGraphDBImporter(pluginManager.GraphDBImporter.Values);
+            graphQL.SetIndices(pluginManager.Indices.Values);
 
-            #region Add all plugins to the grammar - Move to interface of grammar
-
-            if (pluginManager.GraphDBImporter.IsNullOrEmpty())
-            {
-                /// empty is not the best solution, Maybe: remove complete import rule if no importer exist
-                pandoraQL.BNF_ImportFormat.Rule = pandoraQL.Empty;
-            }
-            else
-            {
-                foreach (var importer in pluginManager.GraphDBImporter)
-                {
-                    if (pandoraQL.BNF_ImportFormat.Rule == null)
-                    {
-                        pandoraQL.BNF_ImportFormat.Rule = pandoraQL.Symbol(importer.Key);
-                    }
-                    else
-                    {
-                        pandoraQL.BNF_ImportFormat.Rule |= pandoraQL.Symbol(importer.Key);
-                    }
-                }
-            }
-
-            #endregion
 
             //build compiler
-            this._IronyCompiler = new Compiler(pandoraQL);
+            this._IronyCompiler = new Compiler(graphQL);
 
             //check language
             if (this._IronyCompiler.Language.ErrorLevel != GrammarErrorLevel.NoError)

@@ -30,8 +30,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
 using sones.Lib.DataStructures.Indices;
 
@@ -43,9 +41,6 @@ namespace sones.Lib.DataStructures.BPlusTree
         where TKey : IComparable
     {
         #region private members
-
-        //NLOG: temporarily commented
-        //Logger logger = LogManager.GetLogger("UnitTestLogger"); 
 
         /// <summary>
         /// Holds a reference to the parent node.
@@ -512,12 +507,12 @@ namespace sones.Lib.DataStructures.BPlusTree
         {
             #region data
 
-            Debug.WriteLine("----------------");
-            Debug.WriteLine("| SHIFT PRE");
-            Debug.WriteLine("| anchor node: {0}", myAnchor);
-            Debug.WriteLine("| left node: {0}", myLeftNode);
-            Debug.WriteLine("| right node: {0}", myRightNode);
-            Debug.WriteLine("----------------");
+            //Debug.WriteLine("----------------");
+            //Debug.WriteLine("| SHIFT PRE");
+            //Debug.WriteLine("| anchor node: {0}", myAnchor);
+            //Debug.WriteLine("| left node: {0}", myLeftNode);
+            //Debug.WriteLine("| right node: {0}", myRightNode);
+            //Debug.WriteLine("----------------");
 
 
             bool isInternal = myLeftNode is InnerNode<TKey, TValue>;
@@ -759,12 +754,12 @@ namespace sones.Lib.DataStructures.BPlusTree
                 myAnchor.Keys[keySlotInAnchor] = newAnchorKey;
             }
 
-            Debug.WriteLine("----------------");
-            Debug.WriteLine("| SHIFT POST");
-            Debug.WriteLine("| anchor node: {0}", myAnchor);
-            Debug.WriteLine("| left node: {0}", myLeftNode);
-            Debug.WriteLine("| right node: {0}", myRightNode);
-            Debug.WriteLine("----------------");
+            //Debug.WriteLine("----------------");
+            //Debug.WriteLine("| SHIFT POST");
+            //Debug.WriteLine("| anchor node: {0}", myAnchor);
+            //Debug.WriteLine("| left node: {0}", myLeftNode);
+            //Debug.WriteLine("| right node: {0}", myRightNode);
+            //Debug.WriteLine("----------------");
 
             //finished here, nothing must happen in parent nodes
             return null;
@@ -786,13 +781,13 @@ namespace sones.Lib.DataStructures.BPlusTree
         /// <returns>the node which must be handled next</returns>
         private Node<TKey, TValue> Merge(Node<TKey, TValue> myLeftNode, Node<TKey, TValue> myRightNode, Node<TKey, TValue> myAnchor, ref TKey myRemoveKey)
         {                       
-            Debug.WriteLine("----------------");
-            Debug.WriteLine("| MERGE PRE");
-            Debug.WriteLine("| anchor node: {0}", myAnchor);
-            Debug.WriteLine("| Remove Key: {0}", myRemoveKey);
-            Debug.WriteLine("| left node: {0}", myLeftNode);
-            Debug.WriteLine("| right node: {0}", myRightNode);
-            Debug.WriteLine("----------------");
+            //Debug.WriteLine("----------------");
+            //Debug.WriteLine("| MERGE PRE");
+            //Debug.WriteLine("| anchor node: {0}", myAnchor);
+            //Debug.WriteLine("| Remove Key: {0}", myRemoveKey);
+            //Debug.WriteLine("| left node: {0}", myLeftNode);
+            //Debug.WriteLine("| right node: {0}", myRightNode);
+            //Debug.WriteLine("----------------");
 
             #region data
 
@@ -841,13 +836,13 @@ namespace sones.Lib.DataStructures.BPlusTree
 
             myRightNode.Transfer(0, myLeftNode.KeyCount, myRightNode.KeyCount, myLeftNode);
 
-            Debug.WriteLine("----------------");
-            Debug.WriteLine("| MERGE POST");            
-            Debug.WriteLine("| Remove Key: {0}", myRemoveKey);
-            Debug.WriteLine("| anchor node: {0}", myAnchor);
-            Debug.WriteLine("| left node: {0}", myLeftNode);
-            Debug.WriteLine("| right node: {0}", myRightNode);
-            Debug.WriteLine("----------------");
+            //Debug.WriteLine("----------------");
+            //Debug.WriteLine("| MERGE POST");            
+            //Debug.WriteLine("| Remove Key: {0}", myRemoveKey);
+            //Debug.WriteLine("| anchor node: {0}", myAnchor);
+            //Debug.WriteLine("| left node: {0}", myLeftNode);
+            //Debug.WriteLine("| right node: {0}", myRightNode);
+            //Debug.WriteLine("----------------");
 
             return myAnchor;            
         }

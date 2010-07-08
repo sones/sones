@@ -313,7 +313,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
                 }
                 else if (!typeAttribute.GetDBType(dbContext.DBTypeManager).IsUserDefined)
                 {
-                    return new AtomValue(PandoraTypeMapper.GetADBBaseObjectFromUUID(typeAttribute.DBTypeUUID, atomValue.Value));
+                    return new AtomValue(GraphDBTypeMapper.GetADBBaseObjectFromUUID(typeAttribute.DBTypeUUID, atomValue.Value));
                 }
                 else
                 {
@@ -846,8 +846,8 @@ namespace sones.GraphDB.QueryLanguage.Operators
                                         {
                                             //everything is valid
 
-                                            var leftType = PandoraTypeMapper.ConvertPandora2CSharp(data.IdNodes.Item1.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
-                                            var rightType = PandoraTypeMapper.ConvertPandora2CSharp(data.IdNodes.Item2.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
+                                            var leftType = GraphDBTypeMapper.ConvertPandora2CSharp(data.IdNodes.Item1.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
+                                            var rightType = GraphDBTypeMapper.ConvertPandora2CSharp(data.IdNodes.Item2.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
 
                                             IOperationValue leftValue;
                                             IOperationValue rightValue;
@@ -987,7 +987,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
                             if (IsValidDBObjectStreamForBinExpr(DBObjectStream.Value, primIDNode.LastAttribute, dbContext.DBTypeManager))
                             {
-                                var aCtype = PandoraTypeMapper.ConvertPandora2CSharp(primIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
+                                var aCtype = GraphDBTypeMapper.ConvertPandora2CSharp(primIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
                                 Object dbos = GetDbos(primIDNode, DBObjectStream.Value, dbContext, mySessionToken, dbObjectCache);
 
                                 Exceptional<IOperationValue> tempResult;
@@ -1451,7 +1451,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
         /// <returns>An IOperationValue.</returns>
         private Exceptional<IOperationValue> GetOperand(IDNode myIDNode, Object myExtraordinary, DBContext dbContext, DBObjectStream myDBObjectStream, DBObjectCache dbObjectCache, SessionSettings mySessionToken)
         {
-            var aCtype = PandoraTypeMapper.ConvertPandora2CSharp(myIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
+            var aCtype = GraphDBTypeMapper.ConvertPandora2CSharp(myIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
             Object dbos = GetDbos(myIDNode, myDBObjectStream, dbContext, mySessionToken, dbObjectCache);
 
             if (dbos == null)
@@ -1633,7 +1633,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
             ADBBaseObject leftObj = left.Value;
             ADBBaseObject rightObj = right.Value;
 
-            if (!PandoraTypeMapper.ConvertToBestMatchingType(ref leftObj, ref rightObj).Value)
+            if (!GraphDBTypeMapper.ConvertToBestMatchingType(ref leftObj, ref rightObj).Value)
                 return new Exceptional<IOperationValue>(new Error_DataTypeDoesNotMatch(leftObj.ObjectName, rightObj.ObjectName));
             //return new Exceptional<IOperationValue>(new PandoraError(ErrorCode.DataTypeDoesNotMatchValue, (leftObj.ObjectName + " != " + rightObj.ToString())));
 
@@ -1660,7 +1660,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
             {
                 ADBBaseObject rightObj = right.Values[i];
 
-                if (!PandoraTypeMapper.ConvertToBestMatchingType(ref leftObj, ref rightObj).Value)
+                if (!GraphDBTypeMapper.ConvertToBestMatchingType(ref leftObj, ref rightObj).Value)
                 {
                     return new Exceptional<IOperationValue>(new Error_DataTypeDoesNotMatch(leftObj.Type.ToString(), rightObj.Type.ToString()));
                 }
@@ -1701,7 +1701,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
             {
                 ADBBaseObject leftObj = left.Values[i];
 
-                if (!PandoraTypeMapper.ConvertToBestMatchingType(ref leftObj, ref rightObj).Value)
+                if (!GraphDBTypeMapper.ConvertToBestMatchingType(ref leftObj, ref rightObj).Value)
                 {
                     return new Exceptional<IOperationValue>(new Error_DataTypeDoesNotMatch(leftObj.Type.ToString(), rightObj.Type.ToString()));
                 }
@@ -1745,7 +1745,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
                 {
                     ADBBaseObject rightObj = right.Values[i];
 
-                    if (!PandoraTypeMapper.ConvertToBestMatchingType(ref leftObj, ref rightObj).Value)
+                    if (!GraphDBTypeMapper.ConvertToBestMatchingType(ref leftObj, ref rightObj).Value)
                     {
                         return new Exceptional<IOperationValue>(new Error_DataTypeDoesNotMatch(leftObj.Type.ToString(), rightObj.Type.ToString()));
                     }

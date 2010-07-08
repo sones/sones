@@ -75,9 +75,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
                 }
                 else
                 {
-                    if (PandoraTypeMapper.IsBasicType(parseNode.ChildNodes[0].Token.ValueString))
+                    if (GraphDBTypeMapper.IsBasicType(parseNode.ChildNodes[0].Token.ValueString))
                     {
-                        _Param = PandoraTypeMapper.GetPandoraObjectFromTypeName(parseNode.ChildNodes[0].Token.ValueString);
+                        _Param = GraphDBTypeMapper.GetPandoraObjectFromTypeName(parseNode.ChildNodes[0].Token.ValueString);
                         Type = ParamType.PandoraType;
                     }
                     else

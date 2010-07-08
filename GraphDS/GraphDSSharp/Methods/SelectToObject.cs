@@ -112,12 +112,12 @@ namespace sones.GraphDS.API.CSharp
 
             #region Errors
 
-            var errors = _QResultElement.Element("errors").Elements("Error");
+            var errors = _QResultElement.Element("errors").Elements("error");
             if (errors != null)
             {
                 _Errors = errors.Aggregate<XElement, List<String>>(new List<String>(), (result, elem) =>
                 {
-                    result.Add(String.Format("[{0}]: {1}", elem.Attribute("ErrorCode").Value, elem.Attribute("ErrorDescription").Value));
+                    result.Add(String.Format("[{0}]: {1}", elem.Attribute("error code").Value, elem.Value));
                     return result;
                 });
             }

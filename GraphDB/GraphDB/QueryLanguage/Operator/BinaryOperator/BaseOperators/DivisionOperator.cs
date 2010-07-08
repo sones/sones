@@ -100,7 +100,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
             #endregion
 
-            if (!PandoraTypeMapper.ConvertToBestMatchingType(ref leftObject, ref rightObject).Value)
+            if (!GraphDBTypeMapper.ConvertToBestMatchingType(ref leftObject, ref rightObject).Value)
             {
                 return new Exceptional<IOperationValue>(new Error_DataTypeDoesNotMatch(leftObject.ObjectName, rightObject.ObjectName));
             }

@@ -28,7 +28,7 @@ using System.Collections;
 
 #endregion
 
-namespace Lib.DataStructures.ConcurrentDictionary_Mono
+namespace sones.Lib.DataStructures.ConcurrentDictionary_Mono
 {
     public class MonoConcurrentDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollection<KeyValuePair<TKey, TValue>>, IEnumerable<KeyValuePair<TKey, TValue>>, IDictionary, ICollection, IEnumerable
     {

@@ -628,6 +628,8 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Select
                         var edge = GetAttributeValue(typeNode.DBTypeStream, attrSel.Element, myDBObject, myLevelKey);
                         if (edge is AEdgeType)
                             fcn.CallingObject = (edge as AEdgeType).GetNewInstance(_ExpressionGraph.SelectUUIDs(myLevelKey + new EdgeKey(attrSel.Element), myDBObject, true));
+                        else if (edge == null)
+                            fcn.CallingObject = null;
                         else
                             throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                     }
@@ -682,7 +684,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Select
                             else
                             {
 
-                                Attributes.Add(attrSel.Alias, null);
+                                Attributes.Add(attrSel.Alias, GetNotResolvedReferenceAttributeValue(res.Value.Value as IReferenceEdge, res.Value.TypeAttribute, res.Value.TypeAttribute.GetDBType(_DBContext.DBTypeManager), _DBContext));
 
                             }
 
@@ -926,7 +928,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Select
                     if (myDBObject.HasAttribute(typeAttr.UUID, myTypeNode.DBTypeStream, mySessionToken))
                     {
                         groupingVals.Add(typeAttr.UUID,
-                            PandoraTypeMapper.GetPandoraObjectFromTypeName(
+                            GraphDBTypeMapper.GetPandoraObjectFromTypeName(
                             typeAttr.GetDBType(_DBContext.DBTypeManager).Name, ResolveAttributeValue(_InterestingAttribute.Element as TypeAttribute, myDBObject.GetAttribute(typeAttr.UUID, myTypeNode.DBTypeStream, _DBContext),
                             myResolutionDepth, levelKey, myDBObject, myTypeNode.Reference, myUsingGraph)
                             ));
@@ -1315,6 +1317,23 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Select
 
             attributeValue = null;
             return false;
+        }
+
+        private Edge GetNotResolvedReferenceAttributeValue(IReferenceEdge referenceEdge, TypeAttribute typeAttribute, GraphDBType graphDBType, DBContext _DBContext)
+        {
+
+            if (referenceEdge is ASetReferenceEdgeType)
+            {
+                return new Edge((referenceEdge as ASetReferenceEdgeType).GetReadouts((uuid) => GenerateUndefindedDBReadout(uuid, graphDBType)), graphDBType.Name);
+            }
+            else if (referenceEdge is ASingleReferenceEdgeType)
+            {
+                return new Edge((referenceEdge as ASingleReferenceEdgeType).GetReadout((uuid) => GenerateUndefindedDBReadout(uuid, graphDBType)), graphDBType.Name);
+            }
+            else
+            {
+                throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+            }
         }
 
         private Edge GetNotResolvedReferenceAttributeValue(DBObjectStream myDBObject, TypeAttribute myTypeAttribute, GraphDBType myType, DBContext _DBContext)

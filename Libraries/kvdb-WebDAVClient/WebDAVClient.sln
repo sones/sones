@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDAVClient", "WebDAVClient\WebDAVClient.csproj", "{F21EB154-C84E-4390-87CF-271E3DF4F059}"
@@ -6,6 +6,18 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWebDAVClient", "TestWebDAVClient\TestWebDAVClient.csproj", "{C8999849-83F9-4B2A-AFD6-1C6ED43A4B87}"
 EndProject
 Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 3
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
+		SccProjectUniqueName0 = WebDAVClient\\WebDAVClient.csproj
+		SccProjectName0 = WebDAVClient
+		SccLocalPath0 = WebDAVClient
+		SccLocalPath1 = .
+		SccProjectUniqueName2 = TestWebDAVClient\\TestWebDAVClient.csproj
+		SccProjectName2 = TestWebDAVClient
+		SccLocalPath2 = TestWebDAVClient
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU

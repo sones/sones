@@ -30,7 +30,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using sones.Lib.DataStructures.Indices;
 
@@ -399,23 +398,6 @@ namespace sones.Lib.DataStructures.BPlusTree
                 //done
                 return true;
             }
-        }
-
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.AppendLine("Leaf");
-            sb.AppendLine("KeyCount: " + _KeyCount);
-
-            sb.AppendLine("Keys: ");
-            for (int i = 0; i < _KeyCount; i++)
-            {
-                sb.Append(_Keys[i] + " ");
-            }            
-            sb.AppendLine();
-
-            return sb.ToString();
         }
 
         #endregion

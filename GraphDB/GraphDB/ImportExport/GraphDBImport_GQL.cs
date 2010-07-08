@@ -1,4 +1,11 @@
-﻿using System;
+﻿/* 
+ * GraphDBImport_GQL
+ * (c) Stefan Licht, 2010
+ */
+
+#region Usings
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +15,16 @@ using System.Threading.Tasks;
 using sones.GraphDB.QueryLanguage.Result;
 using System.Collections.Concurrent;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Import;
+using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements;
 
-namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Imports
+#endregion
+
+namespace sones.GraphDB.ImportExport
 {
+
+    /// <summary>
+    /// An import implementation for GQL
+    /// </summary>
     public class GraphDBImport_GQL : AGraphDBImport
     {
         public override string ImportFormat
@@ -67,42 +81,52 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Imports
 
             #endregion
 
+            Int64 numberOfLine = 0;
+
             Parallel.ForEach(lines, parallelOptions, (line, state) =>
             {
 
                 if (!IsComment(line, comments))
                 {
 
-                    var qresult = ExecuteQuery(line, graphDBSession);
+                    System.Threading.Interlocked.Add(ref numberOfLine, 1L);
 
-                    #region VerbosityTypes.Full: Add result 
-
-                    if (verbosityType == VerbosityTypes.Full)
+                    if (!IsComment(line, comments)) // Skip comments
                     {
-                        lock (queryResult)
+
+                        var qresult = ExecuteQuery(line, graphDBSession);
+
+                        #region VerbosityTypes.Full: Add result
+
+                        if (verbosityType == VerbosityTypes.Full)
                         {
-                            foreach (var resultSet in qresult.Results)
+                            lock (queryResult)
                             {
-                                queryResult.AddResult(resultSet);
+                                foreach (var resultSet in qresult.Results)
+                                {
+                                    queryResult.AddResult(resultSet);
+                                }
                             }
                         }
-                    }
-                    
-                    #endregion
 
-                    #region !VerbosityTypes.Silent: Add errors and break execution
+                        #endregion
 
-                    if (qresult.ResultType != Structures.ResultType.Successful && verbosityType != VerbosityTypes.Silent)
-                    {
-                        lock (queryResult)
+                        #region !VerbosityTypes.Silent: Add errors and break execution
+
+                        if (qresult.ResultType != Structures.ResultType.Successful && verbosityType != VerbosityTypes.Silent)
                         {
-                            queryResult.AddErrors(qresult.Errors);
-                            queryResult.AddWarnings(qresult.Warnings);
+                            lock (queryResult)
+                            {
+                                queryResult.AddErrors(new[] { new Errors.Error_ImportFailed(line, numberOfLine) });
+                                queryResult.AddErrors(qresult.Errors);
+                                queryResult.AddWarnings(qresult.Warnings);
+                            }
+                            state.Break();
                         }
-                        state.Break();
-                    }
 
-                    #endregion
+                        #endregion
+                    
+                    }
 
                 }
 
@@ -116,9 +140,12 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Imports
         {
 
             var queryResult = new QueryResult();
-
+            Int64 numberOfLine = 0;
+            String query = String.Empty;
             foreach (var line in lines)
             {
+
+                numberOfLine++;
 
                 #region Skip comments
 
@@ -129,7 +156,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Imports
 
                 #endregion
 
-                var qresult = ExecuteQuery(line, graphDBSession);
+                query += line;
+
+                var qresult = ExecuteQuery(query, graphDBSession);
 
                 #region VerbosityTypes.Full: Add result
 
@@ -145,14 +174,30 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Imports
 
                 #region !VerbosityTypes.Silent: Add errors and break execution
 
-                if (qresult.ResultType != Structures.ResultType.Successful && verbosityType != VerbosityTypes.Silent)
+                if (qresult.ResultType != Structures.ResultType.Successful)
                 {
-                    queryResult.AddErrors(qresult.Errors);
-                    queryResult.AddWarnings(qresult.Warnings);
-                    break;
+
+                    if (verbosityType != VerbosityTypes.Silent)
+                    {
+                        queryResult.AddErrors(new[] { new Errors.Error_ImportFailed(query, numberOfLine) });
+                        queryResult.AddErrors(qresult.Errors);
+                        queryResult.AddWarnings(qresult.Warnings);
+                    }
+
+                    if (qresult.Errors.Any(e => (e is Errors.Error_GqlSyntax) && (e as Errors.Error_GqlSyntax).SyntaxError.Message.Equals("Mal-formed  string literal - cannot find termination symbol.")))
+                    {
+                        System.Diagnostics.Debug.WriteLine("Query [" + query + "] failed with " + qresult.GetErrorsAsString() + " add next line...");
+                        continue;
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
 
                 #endregion
+
+                query = String.Empty;
 
             }
 

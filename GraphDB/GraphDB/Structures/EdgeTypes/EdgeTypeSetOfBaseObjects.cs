@@ -128,6 +128,12 @@ namespace sones.GraphDB.Structures.EdgeTypes
         {
             _Objects = new HashSet<ADBBaseObject>(_Objects.Distinct());
         }
+
+        public override IEnumerable<ADBBaseObject> GetBaseObjects()
+        {
+            return _Objects;
+        }
+
         #endregion
 
         #region IBaseEdge Members
@@ -212,7 +218,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             {
                 TypeUUID id = new TypeUUID();
                 id.Deserialize(ref mySerializationReader);
-                ADBBaseObject obj = PandoraTypeMapper.GetADBBaseObjectFromUUID(id);
+                ADBBaseObject obj = GraphDBTypeMapper.GetADBBaseObjectFromUUID(id);
                 obj.Deserialize(ref mySerializationReader);
                 myValue._Objects.Add(obj);
             }
@@ -286,6 +292,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
         }
 
         #endregion
+
 
     }
 }

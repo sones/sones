@@ -23,14 +23,14 @@
 
 using System;
 using System.Collections.Generic;
-
 using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
-using sones.GraphDB.QueryLanguage.Result;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements;
-
-using sones.Lib.ErrorHandling;
+using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+using sones.GraphDB.QueryLanguage.Result;
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.GraphDB.ImportExport;
+
 
 #endregion
 
@@ -40,20 +40,28 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Dump
     public class DumpNode : AStatement
     {
 
+        private List<String> _TypesToDump;
         private DumpFormats _DumpFormat;
         private DumpTypes   _DumpType;
         private IDumpable   _DumpableGrammar;
+        private String      _DumpDestination;
 
         public override void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
 
-            _DumpType           = (parseNode.ChildNodes[1].AstNode as DumpTypeNode).DumpType;
-            _DumpFormat         = (parseNode.ChildNodes[2].AstNode as DumpFormatNode).DumpFormat;
+            _TypesToDump        = (parseNode.ChildNodes[1].AstNode as TypeListNode).Types;
+            _DumpType           = (parseNode.ChildNodes[2].AstNode as DumpTypeNode).DumpType;
+            _DumpFormat         = (parseNode.ChildNodes[3].AstNode as DumpFormatNode).DumpFormat;
             _DumpableGrammar    = context.Compiler.Language.Grammar as IDumpable;
 
             if (_DumpableGrammar == null)
             {
                 throw new GraphDBException(new Error_NotADumpableGrammar(context.Compiler.Language.Grammar.GetType().ToString()));
+            }
+
+            if (parseNode.ChildNodes[4].HasChildNodes())
+            {
+                _DumpDestination = parseNode.ChildNodes[4].ChildNodes[1].Token.ValueString;
             }
 
         }
@@ -77,39 +85,107 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Dump
         public override QueryResult Execute(IGraphDBSession myIGraphDBSession, DBContext myDBContext)
         {
 
-            var _DumpReadout = new Dictionary<String, Object>();
+            var dumpReadout = new Dictionary<String, Object>();
+            AGraphDBExport exporter;
 
-            if ((_DumpType & DumpTypes.GDDL) == DumpTypes.GDDL)
+            switch (_DumpFormat)
             {
-
-                var _GraphDDL = _DumpableGrammar.ExportGraphDDL(_DumpFormat, myDBContext);
-
-                if (!_GraphDDL.Success)
-                {
-                    return new QueryResult(_GraphDDL);
-                }
-
-                _DumpReadout.Add("GDDL", _GraphDDL.Value);
+                case DumpFormats.GQL:
+                    exporter = new GraphDBExport_GQL();
+                    break;
+                default:
+                    return new QueryResult(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
 
             }
 
-            if ((_DumpType & DumpTypes.GDML) == DumpTypes.GDML)
-            {
+            return exporter.Export(_DumpDestination, myDBContext, _DumpableGrammar, _TypesToDump, _DumpType);
 
-                var _GraphDML = _DumpableGrammar.ExportGraphDML(_DumpFormat, myDBContext);
-
-                if (!_GraphDML.Success)
-                {
-                    return new QueryResult(_GraphDML);
-                }
-
-                _DumpReadout.Add("GDML", _GraphDML.Value);
-
-            }
-
-            return new QueryResult(new SelectionResultSet(new List<DBObjectReadout>() { new DBObjectReadout(_DumpReadout) }));
 
         }
+
+        /*
+
+#region WriteToLocation - Wrap this into classes
+
+private QueryResult WriteToLocation(Dictionary<String, Object> GDDLandGDML)
+{
+
+    #region Read querie lines from location
+
+    try
+    {
+        if (_DumpDestination.ToLower().StartsWith(@"file:\\"))
+        {
+            return new QueryResult(new SelectionResultSet(new List<DBObjectReadout>() { new DBObjectReadout(WriteFile(_DumpDestination.Substring(@"file:\\".Length), GDDLandGDML)) }));
+        }
+        else if (_DumpDestination.ToLower().StartsWith("http://"))
+        {
+            return new QueryResult(new SelectionResultSet(new List<DBObjectReadout>() { new DBObjectReadout(UploadToHttp(_DumpDestination, GDDLandGDML)) }));
+        }
+    }
+    catch (Exception ex)
+    {
+        return new QueryResult(new Exceptional(new Error_ImportFailed(ex)));
+    }
+
+    #endregion
+
+    return new QueryResult(new Exceptional(new Error_InvalidDumpLocation(_DumpDestination, @"file:\\", "http://")));
+
+}
+
+private Dictionary<String, Object> WriteFile(string filename, Dictionary<String, Object> GDDLandGDML)
+{
+
+    var output = new Dictionary<String, Object>();
+
+    using (var file = File.Create(filename))
+    { }
+
+    foreach (var vals in GDDLandGDML)
+    {
+        File.AppendAllLines(filename, vals.Value as List<String>);
+        output.Add(vals.Key, new List<String>(new[] { filename }));
+    }
+
+    return output;
+}
+
+private Dictionary<String, Object> UploadToHttp(string destination, Dictionary<String, Object> GDDLandGDML)
+{
+
+    var output = new Dictionary<String, Object>();
+
+    var request = (HttpWebRequest)WebRequest.Create(destination);
+    request.Method = "PUT";
+    request.Timeout = 1000;
+    using (var streamWriter = new StreamWriter(request.GetRequestStream()))
+    {
+        foreach (var vals in GDDLandGDML)
+        {
+            foreach (var line in vals.Value as List<String>)
+            {
+                streamWriter.WriteLine(line);
+            }
+            output.Add(vals.Key, new List<String>(new[] { destination }));
+        }
+    }
+
+    var response = request.GetResponse();
+    var stream = new StreamReader(response.GetResponseStream());
+
+    var errors = stream.ReadToEnd();
+
+    if (!String.IsNullOrEmpty(errors))
+    {
+        throw new Exception(errors);
+    }
+
+    return output;
+}
+
+#endregion
+*/
 
     }
 

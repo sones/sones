@@ -156,7 +156,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
                     if (aTupleNode.Tuple.Count == 1)
                     {
-                        return new AtomValue(PandoraTypeMapper.GetBaseObjectFromCSharpType(aTupleNode.Tuple[0].Value));
+                        return new AtomValue(GraphDBTypeMapper.GetBaseObjectFromCSharpType(aTupleNode.Tuple[0].Value));
                     }
                     else
                     {
@@ -176,7 +176,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
             foreach (var item in aTupleNode.Tuple)
             {
-                result.Add(PandoraTypeMapper.GetPandoraObjectFromType(item.TypeOfValue, item.Value));
+                result.Add(GraphDBTypeMapper.GetPandoraObjectFromType(item.TypeOfValue, item.Value));
             }
 
             return result;
@@ -237,7 +237,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
             #endregion
 
-            result = new AtomValue(PandoraTypeMapper.ConvertPandora2CSharp(token.Terminal.GetType().Name), token.Value);
+            result = new AtomValue(GraphDBTypeMapper.ConvertPandora2CSharp(token.Terminal.GetType().Name), token.Value);
 
             return result;
         }

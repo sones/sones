@@ -524,6 +524,23 @@ namespace sones.Lib.ErrorHandling
 
         #region PushT
 
+        #region Push(myExceptional)
+
+        /// <summary>
+        /// This will internal set Failed=True and Status=False
+        /// </summary>
+        /// <param name="myException"></param>
+        public Exceptional<TValue> Push(Exceptional myExceptional)
+        {
+            lock (this)
+            {
+                AddErrorsAndWarnings(myExceptional);
+                return this;
+            }
+        }
+
+        #endregion
+
         #region PushT(myIError)
 
         /// <summary>

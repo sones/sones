@@ -249,10 +249,10 @@ namespace sones.GraphDB.Structures.EdgeTypes
             myValue._ObjectUUID = new ObjectUUID();
             myValue._ObjectUUID.Deserialize(ref mySerializationReader);
             TypeUUID countType = new TypeUUID(ref mySerializationReader);
-            myValue._Count = PandoraTypeMapper.GetADBBaseObjectFromUUID(countType);
+            myValue._Count = GraphDBTypeMapper.GetADBBaseObjectFromUUID(countType);
             myValue._Count.Deserialize(ref mySerializationReader);
             TypeUUID countByType = new TypeUUID(ref mySerializationReader);
-            myValue._CountBy = PandoraTypeMapper.GetADBBaseObjectFromUUID(countByType);
+            myValue._CountBy = GraphDBTypeMapper.GetADBBaseObjectFromUUID(countByType);
             myValue._CountBy.Deserialize(ref mySerializationReader);
 
             return myValue;

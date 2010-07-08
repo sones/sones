@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using sones.GraphDB.QueryLanguage.Result;
 using sones.GraphDB.Structures;
 using sones.Lib;
+using sones.GraphDB.TypeManagement;
 
 #endregion
 
@@ -45,6 +46,7 @@ namespace sones.GraphDS.API.CSharp
         #region Data
 
         private String       _ExtendsString         = null;
+        private String       _AbstractString        = null;
         private List<String> _AttributeStrings      = new List<String>();
         private List<String> _BackwardEdgesStrings  = new List<String>();
         private List<String> _MandatoryStrings      = new List<String>();
@@ -56,26 +58,32 @@ namespace sones.GraphDS.API.CSharp
 
         #region Properties
 
-        public String Name { get; private set;}
+        public String  Name { get; private set;}
+        public Boolean isAbstract { get; private set; }        
 
         #endregion
 
         #region Constructors
 
-        #region CreateType(myTypeName)
+        #region CreateType(myTypeName, myIsAbstract)
 
-        public CreateTypeQuery(String myTypeName)
+        public CreateTypeQuery(String myTypeName, Boolean myIsAbstract = false)
         {
             Name            = myTypeName;
             _CommandString  = new StringBuilder();
+
+            if (myIsAbstract)
+                _AbstractString = "ABSTRACT ";
+
+            isAbstract = myIsAbstract;
         }
 
         #endregion
 
-        #region CreateType(myIGraphDBSession, myTypeName)
+        #region CreateType(myIGraphDBSession, myTypeName, myIsAbstract)
 
-        public CreateTypeQuery(AGraphDSSharp myIGraphDBSession, String myTypeName)
-            : this(myTypeName)
+        public CreateTypeQuery(AGraphDSSharp myIGraphDBSession, String myTypeName, Boolean myIsAbstract = false)
+            : this(myTypeName, myIsAbstract)
         {
             _DBWrapper      = myIGraphDBSession;
         }
@@ -111,40 +119,44 @@ namespace sones.GraphDS.API.CSharp
 
         // Use "mandatory" and "hyperEdge", but not "myMandatory" and "myHyperEdge" for a more 'fluent' interface!
 
-        public CreateTypeQuery AddAttribute(String myAttributeType, String myAttributeName, Boolean hyperEdge = false, Boolean mandatory = false, Boolean unique = false, DBIndexTypes? index = null)
+        public CreateTypeQuery AddAttribute(String myAttributeType, String myAttributeName, Object defaultValue = null, Boolean hyperEdge = false, Boolean mandatory = false, Boolean unique = false, DBIndexTypes? index = null)
         {
-
             if (hyperEdge)
                 _AttributeStrings.Add("SET<" + myAttributeType + "> " + myAttributeName);
             else
                 _AttributeStrings.Add(myAttributeType + " " + myAttributeName);
+            
+            if (defaultValue != null)
+                _AttributeStrings[_AttributeStrings.Count - 1] += ("=" + defaultValue.ToString());
+
+            if (unique)
+               _UniqunessStrings.Add(myAttributeName);
 
             if (mandatory)
                 _MandatoryStrings.Add(myAttributeName);
-
-            if (unique)
-                _UniqunessStrings.Add(myAttributeName);
-
+            
             if (index != null)
-                return AddIndex(myAttributeName, index);
+                return AddIndex(myAttributeName, index);            
 
             return this;
 
         }
 
-        public CreateTypeQuery AddAttribute(CreateTypeQuery myAttributeType, String myAttributeName, Boolean hyperEdge = false, Boolean mandatory = false, Boolean unique = false, DBIndexTypes? index = null)
+        public CreateTypeQuery AddAttribute(CreateTypeQuery myAttributeType, String myAttributeName, Object defaultValue = null, Boolean hyperEdge = false, Boolean mandatory = false, Boolean unique = false, DBIndexTypes? index = null)
         {
-
             if (hyperEdge)
                 _AttributeStrings.Add("SET<" + myAttributeType.Name + "> " + myAttributeName);
             else
                 _AttributeStrings.Add(myAttributeType.Name + " " + myAttributeName);
 
-            if (mandatory)
-                _MandatoryStrings.Add(myAttributeName);
+            if (defaultValue != null)
+                _AttributeStrings[_AttributeStrings.Count - 1] += ("=" + defaultValue.ToString());
 
             if (unique)
                 _UniqunessStrings.Add(myAttributeName);
+
+            if (mandatory)
+                _MandatoryStrings.Add(myAttributeName);            
 
             if (index != null)
                 return AddIndex(myAttributeName, index);
@@ -155,17 +167,16 @@ namespace sones.GraphDS.API.CSharp
 
         public CreateTypeQuery AddLoop(String myAttributeName, Boolean hyperEdge = false, Boolean mandatory = false, Boolean unique = false, DBIndexTypes? index = null)
         {
-
             if (hyperEdge)
                 _AttributeStrings.Add("SET<" + Name + "> " + myAttributeName);
             else
                 _AttributeStrings.Add(Name + " " + myAttributeName);
 
-            if (mandatory)
-                _MandatoryStrings.Add(myAttributeName);
-
             if (unique)
                 _UniqunessStrings.Add(myAttributeName);
+            
+            if (mandatory)
+                _MandatoryStrings.Add(myAttributeName);            
 
             if (index != null)
                 return AddIndex(myAttributeName, index);
@@ -174,34 +185,12 @@ namespace sones.GraphDS.API.CSharp
 
         }
 
-        public CreateTypeQuery AddInteger(String myAttributeName, Boolean hyperEdge = false, Boolean mandatory = false, Boolean unique = false, DBIndexTypes? index = null)
-        {
+        public CreateTypeQuery AddInteger(String myAttributeName, Object defaultValue = null, Boolean mandatory = false, Boolean unique = false, DBIndexTypes? index = null)
+        {   
+            _AttributeStrings.Add("Integer " + " " + myAttributeName);
 
-            if (hyperEdge)
-                _AttributeStrings.Add("SET<Integer> " + myAttributeName);
-            else
-                _AttributeStrings.Add("Integer " + " " + myAttributeName);
-
-            if (mandatory)
-                _MandatoryStrings.Add(myAttributeName);
-
-            if (unique)
-                _UniqunessStrings.Add(myAttributeName);
-
-            if (index != null)
-                return AddIndex(myAttributeName, index);
-
-            return this;
-
-        }
-
-        public CreateTypeQuery AddString(String myAttributeName, Boolean hyperEdge = false, Boolean mandatory = false, Boolean unique = false, DBIndexTypes? index = null)
-        {
-
-            if (hyperEdge)
-                _AttributeStrings.Add("SET<String> " + myAttributeName);
-            else
-                _AttributeStrings.Add("String " + " " + myAttributeName);
+            if (defaultValue != null)
+                _AttributeStrings[_AttributeStrings.Count - 1] += ("=" + defaultValue.ToString());
 
             if (mandatory)
                 _MandatoryStrings.Add(myAttributeName);
@@ -216,13 +205,33 @@ namespace sones.GraphDS.API.CSharp
 
         }
 
-        public CreateTypeQuery AddDateTime(String myAttributeName, Boolean hyperEdge = false, Boolean mandatory = false, Boolean unique = false, DBIndexTypes? index = null)
-        {
+        public CreateTypeQuery AddString(String myAttributeName, Object defaultValue = null, Boolean mandatory = false, Boolean unique = false, DBIndexTypes? index = null)
+        {   
+            
+            _AttributeStrings.Add("String " + " " + myAttributeName);
 
-            if (hyperEdge)
-                _AttributeStrings.Add("SET<DateTime> " + myAttributeName);
-            else
-                _AttributeStrings.Add("DateTime " + " " + myAttributeName);
+            if (defaultValue != null)
+                _AttributeStrings[_AttributeStrings.Count - 1] += ("='" + defaultValue.ToString() + "'");
+
+            if (mandatory)
+                _MandatoryStrings.Add(myAttributeName);
+
+            if (unique)
+                _UniqunessStrings.Add(myAttributeName);
+
+            if (index != null)
+                return AddIndex(myAttributeName, index);
+
+            return this;
+
+        }
+
+        public CreateTypeQuery AddDateTime(String myAttributeName, Object defaultValue = null, Boolean mandatory = false, Boolean unique = false, DBIndexTypes? index = null)
+        {
+            _AttributeStrings.Add("DateTime " + " " + myAttributeName);
+
+            if (defaultValue != null)
+                _AttributeStrings[_AttributeStrings.Count - 1] += ("=" + defaultValue.ToString());
 
             if (mandatory)
                 _MandatoryStrings.Add(myAttributeName);
@@ -385,7 +394,7 @@ namespace sones.GraphDS.API.CSharp
             if (myDBIndexType == null)
                 return AddIndex(myAttributeName);
 
-            _IndicesStrings.Add("(" + myIndexName + " INDEXTYPE " + myDBIndexType + " ON " + myAttributeName + ")");
+            _IndicesStrings.Add("(" + myIndexName + " INDEXTYPE " + myDBIndexType + " ON ATTRIBUTES " + myAttributeName + ")");
 
             return this;
 
@@ -424,7 +433,13 @@ namespace sones.GraphDS.API.CSharp
         {
 
             _CommandString.Clear();
-            _CommandString.Append("CREATE TYPE ").Append(Name);
+
+            _CommandString.Append("CREATE ");
+
+            if (_AbstractString != null)
+                _CommandString.Append(_AbstractString);
+            
+            _CommandString.Append("TYPE ").Append(Name);
 
             // EXTENDS
             if (_ExtendsString != null)
@@ -432,9 +447,9 @@ namespace sones.GraphDS.API.CSharp
 
             AddToCommandString(_AttributeStrings,       "ATTRIBUTES");
             AddToCommandString(_BackwardEdgesStrings,   "BACKWARDEDGES");
-            AddToCommandString(_MandatoryStrings,       "MANDATORY");
-            AddToCommandString(_IndicesStrings,         "INDICES");
             AddToCommandString(_UniqunessStrings,       "UNIQUE");
+            AddToCommandString(_MandatoryStrings,       "MANDATORY");
+            AddToCommandString(_IndicesStrings,         "INDICES");            
 
             // COMMENT
             if (_CommentString != null)

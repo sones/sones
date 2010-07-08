@@ -35,6 +35,7 @@ using sones.GraphDB.QueryLanguage.Result;
 using sones.GraphDB.Transactions;
 using sones.GraphFS.Transactions;
 using sones.GraphDB.Structures;
+using System.Diagnostics;
 
 #endregion
 
@@ -98,6 +99,7 @@ namespace sones.GraphDS.API.CSharp
 
         public QueryResult CreateType(CreateTypeQuery myCreateTypeQuery)
         {
+            myCreateTypeQuery._DBWrapper = this;
             return Query(myCreateTypeQuery.ToString());
         }
 
@@ -116,6 +118,7 @@ namespace sones.GraphDS.API.CSharp
 
         public QueryResult CreateType(Action<QueryResult> myAction, CreateTypeQuery myCreateTypeQuery)
         {
+            myCreateTypeQuery._DBWrapper = this;
             return ActionQuery(myAction, myCreateTypeQuery.ToString());
         }
 
@@ -207,9 +210,23 @@ namespace sones.GraphDS.API.CSharp
         {
 
             var _CreateTypesQuery = new StringBuilder("CREATE TYPES ");
-
+            String tmp = null;
+            
             foreach (var CreateTypeQuery in myCreateTypeQueries)
-                _CreateTypesQuery.Append(CreateTypeQuery.GetGQLQuery().Replace("CREATE TYPE ", "") + ", ");
+            {
+                if (CreateTypeQuery.isAbstract)
+                {
+                    tmp = " ABSTRACT ";
+                    tmp += CreateTypeQuery.GetGQLQuery().Replace("CREATE ABSTRACT TYPE ", "") + ", ";
+                    _CreateTypesQuery.Append(tmp);
+                }
+                else
+                {
+                    _CreateTypesQuery.Append(CreateTypeQuery.GetGQLQuery().Replace("CREATE TYPE ", "") + ", ");
+                }
+                
+                CreateTypeQuery._DBWrapper = this;
+            }
 
             _CreateTypesQuery.Remove(_CreateTypesQuery.Length - 2, 2);
 
@@ -262,7 +279,26 @@ namespace sones.GraphDS.API.CSharp
 
         public CreateIndexQuery CreateIndex(String myIndexName)
         {
+
+            // myIndexName will never be null or its size zero!
+            Debug.Assert(myIndexName != null || myIndexName.Length == 0);
+
             return new CreateIndexQuery(this, myIndexName);
+
+        }
+
+        #endregion
+
+        #region CreateIndex(myCreateTypeQuery)
+
+        public CreateIndexQuery CreateIndex(CreateTypeQuery myCreateTypeQuery)
+        {
+
+            // myCreateTypeQuery.Name will never be null or its size zero!
+            Debug.Assert(myCreateTypeQuery.Name != null || myCreateTypeQuery.Name.Length == 0);
+            
+            return new CreateIndexQuery(this, myCreateTypeQuery.Name);
+
         }
 
         #endregion
@@ -274,10 +310,17 @@ namespace sones.GraphDS.API.CSharp
 
             QueryResult _QueryResult = null;
 
+            // myDBObject.CreateIndicesQueries will never be null!
+            Debug.Assert(myDBObject.CreateIndicesQueries != null);
+
             foreach (var _CreateIndexCommands in myDBObject.CreateIndicesQueries)
             {
-                //_QueryResult = _PandoraDB.Query(_CreateIndexCommands, _SessionToken);
-                myAction(_QueryResult);
+
+                _QueryResult = Query(_CreateIndexCommands);
+
+                if (myAction != null)
+                    myAction(_QueryResult);
+
             }
 
         }
@@ -306,59 +349,87 @@ namespace sones.GraphDS.API.CSharp
 
             QueryResult _QueryResult = null;
 
-            foreach (var _DBObject in myDBObjects)
+            if (myDBObjects != null)
             {
-
-                _QueryResult = ActionQuery(myAction, "INSERT INTO " + _DBObject.GetType().Name + " VALUES (" + _DBObject.GetInsertValues(", ") + ")");
-
-                if (_QueryResult.ResultType == ResultType.Failed)
+                foreach (var _DBObject in myDBObjects)
                 {
-                    return _QueryResult;
-                }
 
+                    _QueryResult = ActionQuery(myAction, "INSERT INTO " + _DBObject.GetType().Name + " VALUES (" + _DBObject.GetInsertValues(", ") + ")");
+
+                    if (_QueryResult.ResultType == ResultType.Failed)
+                        return _QueryResult;
+
+                }
             }
 
             return _QueryResult;
 
         }
 
-        #endregion
+        #endregion 
+       
+        #region Insert(myAction, myDBObjectsOfT)
 
-        #region Insert(myAction, myGraphDBType, myValues)
-
-        public QueryResult Insert(Action<QueryResult> myAction, CreateTypeQuery myGraphDBType, String myValues)
+        public QueryResult Insert<T>(Action<QueryResult> myAction, params T[] myDBObjectsOfT) where T : DBObject
         {
-            return ActionQuery(myAction, "INSERT INTO " + myGraphDBType.Name + " VALUES (" + myValues + ")");
+
+            QueryResult _QueryResult = null;
+
+            if (myDBObjectsOfT != null)
+            {
+                foreach (var _DBObject in myDBObjectsOfT)
+                {
+                    _QueryResult = ActionQuery(myAction, "INSERT INTO " + typeof(T).Name + " VALUES (" + _DBObject.GetInsertValues(", ") + ")");
+
+                    if (_QueryResult.ResultType == ResultType.Failed)
+                        return _QueryResult;
+                }
+            }
+
+            return _QueryResult;
         }
 
         #endregion
 
         #region Insert(myAction, myGraphDBType, myValues)
 
-        public QueryResult Insert<T>(Action<QueryResult> myAction, CreateTypeQuery myGraphDBType, T myValues)
+        public QueryResult Insert<T>(Action<QueryResult> myAction, CreateTypeQuery myGraphDBType, T myValues) where T : class
         {
 
             var _StringBuilder = new StringBuilder("INSERT INTO ").Append(myGraphDBType.Name).Append(" VALUES (");
             Object _Value;
             String _StringValue;
+            Boolean bAppend = false;
 
 
             foreach (var property in myValues.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            {
                 if (property.CanRead)
                 {
 
-                    _Value       = property.GetValue(myValues, null);
+                    _Value = property.GetValue(myValues, null);
                     _StringValue = _Value as String;
 
                     if (_StringValue != null)
+                    {
                         _StringValue = "'" + _StringValue + "'";
+                        bAppend = true;
+                    }
                     else
-                        _StringValue = _Value.ToString();
+                    {
+                        if (_Value != null && property.PropertyType.IsValueType)
+                        {
+                            _StringValue = _Value.ToString();
+                            bAppend = true;
+                        }
+                    }
 
-                    _StringBuilder.Append(property.Name).Append(" = ").Append(_StringValue).Append(", ");
+                    if(bAppend)
+                        _StringBuilder.Append(property.Name).Append(" = ").Append(_StringValue).Append(", ");
 
+                    bAppend = false;
                 }
-
+            }
             _StringBuilder.Length = _StringBuilder.Length - 2;
 
             _StringBuilder.Append(")");

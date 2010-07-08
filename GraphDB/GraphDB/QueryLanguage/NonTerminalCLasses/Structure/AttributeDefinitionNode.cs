@@ -89,7 +89,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
             
             //we can not validate the type at this point, because in the bulk type creation we does not have the type
             _Type = aTypeNode.Name;
-
+            
             //if we have an default value for this attribute, then check for correct value and attribute type
             if (myParseTreeNode.ChildNodes[2].AstNode != null)
             {
@@ -97,14 +97,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
                 
                 if (defaultValueNode.Value != null)
                 {
-                    if (_Type != defaultValueNode.BaseTypeName)
-                    {
-                        throw new GraphDBException(new Error_InvalidAttrDefaultValueAssignment(_TypeAttribute.Name, _Type, defaultValueNode.BaseTypeName));
-                    }
-
                     if (defaultValueNode.Value is AListBaseEdgeType)
                     {
-                        if (myParseTreeNode.ChildNodes[0].FirstChild.Token.Text.ToUpper() == DBConstants.SET && defaultValueNode.TypeOfList == TypesOfPandoraType.ListOfNoneReferences)
+                        if ((aTypeNode.Type == TypesOfPandoraType.SetOfReferences || aTypeNode.Type == TypesOfPandoraType.SetOfNoneReferences) && defaultValueNode.TypeOfList == TypesOfPandoraType.ListOfNoneReferences)
                         {
                             throw new GraphDBException(new Error_InvalidAttrDefaultValueAssignment(_TypeAttribute.Name, TypesOfPandoraType.ListOfNoneReferences.ToString(), TypesOfPandoraType.SetOfReferences.ToString()));
                         }
@@ -112,6 +107,15 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
                         if (defaultValueNode.TypeOfList == TypesOfPandoraType.SetOfReferences)
                         {
                             ((AListBaseEdgeType)defaultValueNode.Value).UnionWith((AListBaseEdgeType)defaultValueNode.Value);
+                        }
+                    }
+                    else
+                    {
+                        var attrVal = GraphDBTypeMapper.GetPandoraObjectFromTypeName(aTypeNode.Name);
+
+                        if (!attrVal.IsValidValue(defaultValueNode.Value))
+                        {
+                            throw new GraphDBException(new Error_InvalidAttrDefaultValueAssignment(_TypeAttribute.Name, _Type));
                         }
                     }
                 }

@@ -83,14 +83,15 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.InsertOrRepl
         {
             var dbContext = context.IContext as DBContext;
             var typeManager = dbContext.DBTypeManager;
+            GraphDBType type;
 
             if (parseNode.HasChildNodes())
             {
                 //get type
                 if (parseNode.ChildNodes[1] != null && parseNode.ChildNodes[1].AstNode != null)
                 {
-                    var _Type = ((ATypeNode)(parseNode.ChildNodes[1].AstNode)).DBTypeStream;
-                    _ObjectManipulationManager = new ObjectManipulationManager(dbContext.SessionSettings, _Type, dbContext, this);
+                    type = ((ATypeNode)(parseNode.ChildNodes[1].AstNode)).DBTypeStream;
+                    _ObjectManipulationManager = new ObjectManipulationManager(dbContext.SessionSettings, type, dbContext, this);
                 }
                 else
                 {
@@ -108,9 +109,15 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.InsertOrRepl
                     _ObjectManipulationManager.CheckMandatoryAttributes(dbContext);
                 }
 
-                if (parseNode.ChildNodes[4] != null)
+                if (parseNode.ChildNodes[4] != null && ((WhereExpressionNode)parseNode.ChildNodes[4].AstNode).BinExprNode != null)
                 {
                     _whereExpression = ((WhereExpressionNode)parseNode.ChildNodes[4].AstNode).BinExprNode;
+
+                    Exceptional validateResult = _whereExpression.Validate(dbContext, type);
+                    if (!validateResult.Success)
+                    {
+                        throw new GraphDBException(validateResult.Errors);
+                    }
                 }
             }   
         }

@@ -66,7 +66,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             {
                 if (parseNode.HasChildNodes())
                 {
-                    _Object = PandoraTypeMapper.GetPandoraObjectFromTypeName(parseNode.ChildNodes[1].Token.ValueString);
+                    _Object = GraphDBTypeMapper.GetPandoraObjectFromTypeName(parseNode.ChildNodes[1].Token.ValueString);
 
                    // _ObjectValues.Add("ID", _Object.ID.ToString());
 

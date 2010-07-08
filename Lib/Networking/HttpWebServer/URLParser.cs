@@ -429,6 +429,17 @@ namespace sones.Networking.HTTP
 
             }
 
+            else if (curUrlNode.Callback == null && !curUrlNode.ChildNodes.IsNullOrEmpty() && !curUrlNode.ChildNodes.ContainsKey("{}"))
+            {
+
+                #region There are childs but they have no placeholders ({}), so we have no valid definition
+
+                return null;
+
+                #endregion
+
+            }
+
             return new Tuple<UrlNode, List<object>>(curUrlNode, parameters);
 
         }

@@ -34,7 +34,6 @@ using System.Linq;
 using System.Text;
 using System.Collections;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using sones.Lib.DataStructures.Indices;
 
 #endregion
@@ -47,12 +46,12 @@ namespace sones.Lib.DataStructures.BPlusTree
         #region private members
 
         /// <summary>
-        /// The root node of the B*Tree.
+        /// The root node of the b-tree
         /// </summary>
         private Node<TKey, TValue> _Root;
 
         /// <summary>
-        /// The Order k of the B*Tree
+        /// The Order k of the b-tree
         /// * every node contains at max 2k elements
         /// * every node except the root has at least k elements
         /// * every node is a leaf and has no successor, or it's an "inner-node" and has i + 1 successor if i is the element count        
@@ -109,7 +108,7 @@ namespace sones.Lib.DataStructures.BPlusTree
         #region constructors
 
         /// <summary>
-        /// Instantiates a BStarTree with a default order of k = 60
+        /// Instantiates a BPlusTree with a default order of k = 60
         /// </summary>
         public BPlusTree()
             : this(60)
@@ -117,7 +116,7 @@ namespace sones.Lib.DataStructures.BPlusTree
         }
         
         /// <summary>
-        /// Instantiates a BStarTree with a given order k
+        /// Instantiates a BPlusTree with a given order k
         /// </summary>
         /// <param name="myOrder"></param>
         public BPlusTree(Int32 myOrder)
@@ -168,7 +167,7 @@ namespace sones.Lib.DataStructures.BPlusTree
         }
 
         /// <summary>
-        /// Returns the Order of the tree
+        /// Returns the order of the tree
         /// </summary>
         public Int32 Order
         {
@@ -176,7 +175,7 @@ namespace sones.Lib.DataStructures.BPlusTree
         }
 
         /// <summary>
-        /// Returns the current Height of the BStarTree
+        /// Returns the current height of the tree
         /// </summary>
         public Int32 Height
         {
@@ -237,7 +236,7 @@ namespace sones.Lib.DataStructures.BPlusTree
         }
 
         /// <summary>
-        /// Get all Keys in the tree.
+        /// Get all keys in the tree.
         /// </summary>
         public IEnumerable<TKey> Keys
         {
@@ -255,7 +254,7 @@ namespace sones.Lib.DataStructures.BPlusTree
         }
 
         /// <summary>
-        /// Remove a Key and all associated Values from the tree.
+        /// Remove a key and all associated values from the tree.
         /// </summary>
         /// <param name="key">TKey</param>
         /// <returns>true if deleted</returns>
@@ -265,7 +264,7 @@ namespace sones.Lib.DataStructures.BPlusTree
         }
 
         /// <summary>
-        /// Returns all values of the tree as ICollection
+        /// Returns all values of the tree.
         /// </summary>
         /// <returns>All values in the tree</returns>
         public IEnumerable<TValue> Values
@@ -293,12 +292,12 @@ namespace sones.Lib.DataStructures.BPlusTree
         }
 
         /// <summary>
-        /// Adds a key and it's value into the tree.
-        /// If the key already exists, the value is added to the key's associated value-hashset.
-        /// myKey must implement IComparable
+        /// Adds a key and it's value(s) into the tree.
+        /// If the key already exists, the value(s) is/are added to the key's associated value-hashset
+        /// using the given IndexSetStrategy.
         /// </summary>
-        /// <param name="myKey">The Key to be added</param>
-        /// <param name="myValue">The Value associated to the key</param>
+        /// <param name="myKey">The key to be added</param>
+        /// <param name="myValue">The value(s) associated to the key</param>
         private void AddInternal(TKey myKey, HashSet<TValue> myValue, IndexSetStrategy myIndexSetStrategy)
         {
             if (!IsTreeInitialized()) //tree is empty
@@ -349,14 +348,13 @@ namespace sones.Lib.DataStructures.BPlusTree
             LeafNode<TKey, TValue> leaf;
 
             return ContainsKeyInternal(myNode, myKey, out leaf);
-                
         }
 
         /// <summary>
         /// Recursive search for myKey. If the search-node is internal, it searches for smaller for the right child
         /// and continues search. If the method reaches a leaf node it checks, if the key is contained in that node.
         /// 
-        /// If the key is found in the tree, a reference to the corresponding leaf node is stored in an extra reference variable
+        /// In any case ([not]found), a reference to the corresponding leaf node is stored in an out param.
         /// </summary>
         /// <param name="myNode">The node which shall be searched.</param>
         /// <param name="myKey">They key to search for.</param>
@@ -401,7 +399,7 @@ namespace sones.Lib.DataStructures.BPlusTree
         }
 
         /// <summary>
-        /// starts with the left-most leaf and adds all keys to a list, until the leaf has no right sibling
+        /// Returns all (not deleted) keys in sorted order starting at the left-most leaf.
         /// </summary>
         /// <returns>a (sorted) collection which contains all keys of the tree</returns>
         private IEnumerable<TKey> GetAllKeys()
@@ -425,9 +423,9 @@ namespace sones.Lib.DataStructures.BPlusTree
         }
 
         /// <summary>
-        /// starts with the left-most leaf and yield returns all values associated to the keys
+        /// Returns all values in the tree starting with the left-most leaf.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>All values in the tree (using yield return)</returns>
         private IEnumerable<TValue> GetAllValues()
         {
             HashSet<TValue> resultCollection = new HashSet<TValue>();
@@ -446,36 +444,12 @@ namespace sones.Lib.DataStructures.BPlusTree
                 tmpLeaf = tmpLeaf.RightSibling as LeafNode<TKey, TValue>;
             }
         }
-        
-        ///// <summary>
-        ///// Returns the corresponding leaf node, if the key is located in the tree or null if the key
-        ///// doesn't exist.
-        ///// </summary>
-        ///// <param name="myKey">the key where the leaf is searched</param>
-        ///// <returns>
-        ///// - a leaf node reference if the key is located in the tree
-        ///// - null if the key is not located in the tree
-        ///// </returns>
-        //private LeafNode<TKey, TValue> GetCorrespondingLeaf(TKey myKey)
-        //{
-        //    //stores the leaf node which contains the key
-        //    LeafNode<TKey, TValue> leaf;
-
-        //    //if the tree contains the key, the reference value contains the corresponding leaf
-        //    if(ContainsKeyInternal(_Root, myKey, out leaf))
-        //    {
-        //        return leaf;
-        //    }
-        //    //no key, no leaf
-        //    return null;
-        //}
 
         /// <summary>
-        /// Methods goes down the tree 
+        /// Method removes a given key and all associated values from the tree.
         /// </summary>
-        /// <param name="myCurrent"></param>
-        /// <param name="myRemoveKey"></param>
-        /// <returns></returns>
+        /// <param name="myRemoveKey">The key to be removed</param>
+        /// <returns>true if successful</returns>
         private bool RemoveKeyInternal(TKey myRemoveKey)
         {
             //stores the result
@@ -499,10 +473,10 @@ namespace sones.Lib.DataStructures.BPlusTree
 
         #endregion
 
-        #region IBStarTree<TKey> Members
+        #region IBPlusTree<TKey> Members
 
         /// <summary>
-        /// see interface IBStarTree for general documentation
+        /// see interface IBPlusTree for general documentation
         /// 
         /// Method returns an IEnumerable of values corresponding to all keys between 
         /// the myFromKey and the myToKey including the values of the limit keys.
@@ -514,6 +488,8 @@ namespace sones.Lib.DataStructures.BPlusTree
         /// from there.
         /// 
         /// The Method DOES NOT handle duplicate values assigned to different keys!
+        /// 
+        /// NOTE: Range methods are implemented by using IIndexInterface
         /// </summary>
         /// <param name="myFromKey"></param>
         /// <param name="myToKey"></param>
@@ -666,18 +642,122 @@ namespace sones.Lib.DataStructures.BPlusTree
             return false;
         }
 
+        /// <summary>
+        /// Method returns the value for the best match of the key. 
+        /// 
+        /// Exact match returns the corresponding set of values.
+        /// LowerThan means that if the key is not in the tree, the key which would be
+        /// its left neighbour is returned. 
+        /// !LowerThen means that if the key is not in the tree, the key which would be
+        /// its right neighbour is returned.
+        /// 
+        /// If myLowerThan is true and there is no lower key, then null will be returned
+        /// If myLowerThan is false and there is no greater key, then null will be returned
+        /// </summary>
+        /// <param name="myKey">the key to find a match</param>
+        /// <param name="myLowerThan">the values associated to the best matching key</param>
+        /// <returns>Set of values or null if no best key is found</returns>
+        public HashSet<TValue> GetBestMatch(TKey myKey, bool myLowerThan = true)
+        {
+            #region init & data
+
+            if (!IsTreeInitialized())
+            {
+                return null;
+            }
+
+            LeafNode<TKey, TValue> correspondingLeaf = null;
+
+            #endregion
+
+            #region check if key is in the tree and get the corresponding leaf and key's position
+
+            ContainsKeyInternal(_Root, myKey, out correspondingLeaf);
+            //if key is not found, the index is the position where the key would be
+            int index = correspondingLeaf.FindSlot(myKey);
+
+            #endregion
+
+            #region equality check
+
+            if (index >= 0 && index < correspondingLeaf.KeyCount)
+            {
+                if (correspondingLeaf.Keys[index].Equals(myKey))
+                {
+                    return correspondingLeaf.Values[index];
+                }
+            }
+
+            #endregion
+
+            #region lowerThan = true
+
+            if (myLowerThan)
+            {
+                if (index >= 0) //same leaf
+                {
+                    return correspondingLeaf.Values[index];
+                }
+                else
+                {
+                    if (correspondingLeaf.LeftSibling == null) //leftMostLeaf
+                    {
+                        //no smaller key
+                        return null;
+                    }
+                    else
+                    {
+                        var left = correspondingLeaf.LeftSibling as LeafNode<TKey, TValue>;
+                        return left.Values[left.KeyCount - 1];
+                    }
+                }
+            }
+
+            #endregion
+
+            #region lowerThan = false
+
+            index++;
+            if (index < correspondingLeaf.KeyCount) //same leaf
+            {
+                return correspondingLeaf.Values[index];
+            }
+            else
+            {
+                if (correspondingLeaf.RightSibling == null) //rightmost
+                {
+                    //no greater key
+                    return null;
+                }
+                else
+                {
+                    var right = correspondingLeaf.RightSibling as LeafNode<TKey, TValue>;
+                    return right.Values[0];
+                }
+            }
+            
+            #endregion
+        }
+
         #endregion
 
         #region IIndexInterface<TKey, TValue> members
 
+        /// <summary>
+        /// Used in the database..
+        /// </summary>
         public string IndexName
         {
             get { return "BPlusTree"; }
         }
 
+        /// <summary>
+        /// Creates a new instance of the tree with the same order.
+        /// </summary>
+        /// <returns>a new instance of a BPlusTree</returns>
         public IIndexInterface<TKey, TValue> GetNewInstance()
         {
-            return new BPlusTree<TKey, TValue>();
+            return new BPlusTree<TKey, TValue>(this.Order);
         }
 
         #region Add
@@ -1054,53 +1134,6 @@ namespace sones.Lib.DataStructures.BPlusTree
 
         #endregion
 
-        #region debug stuff
-
-        public String Draw()
-        {
-            if (IsTreeInitialized())
-            {
-                StringBuilder sb = new StringBuilder();
-                
-                DrawInternal(_Root, ref sb, _Height);
-                return sb.ToString();
-            }
-            return "";
-        }
-
-
-        private void DrawInternal(Node<TKey, TValue> myNode, ref StringBuilder myStringBuilder, int tabs)
-        {
-            Node<TKey, TValue> tmp = myNode;
-            
-            int index;
-            for (index = 0; index < tabs * tabs; index++)
-            {
-                myStringBuilder.Append("\t");
-            }
-            
-            while (tmp != null)
-            {
-                myStringBuilder.Append("|");
-                for(index = 0; index < tmp.KeyCount; index++)
-                {
-                    myStringBuilder.Append(tmp.Keys[index].ToString() + "|");
-                }
-                tmp = tmp.RightSibling;
-
-                for(index = tabs * tabs; index >= 0; index--)
-                    myStringBuilder.Append("\t");
-            }
-            if(myNode is InnerNode<TKey, TValue>)
-            {
-                myStringBuilder.Append("\n\n");
-                DrawInternal((myNode as InnerNode<TKey, TValue>).Children[0], ref myStringBuilder, --tabs);
-            }
-        }
-
-        #endregion
-
-
         #region IEnumerable Members
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -1336,6 +1369,52 @@ namespace sones.Lib.DataStructures.BPlusTree
             #endregion
         }
 
+
+        #endregion
+
+        #region debug stuff
+
+        public String Draw()
+        {
+            if (IsTreeInitialized())
+            {
+                StringBuilder sb = new StringBuilder();
+
+                DrawInternal(_Root, ref sb, _Height);
+                return sb.ToString();
+            }
+            return "";
+        }
+
+
+        private void DrawInternal(Node<TKey, TValue> myNode, ref StringBuilder myStringBuilder, int tabs)
+        {
+            Node<TKey, TValue> tmp = myNode;
+
+            int index;
+            for (index = 0; index < tabs * tabs; index++)
+            {
+                myStringBuilder.Append("\t");
+            }
+
+            while (tmp != null)
+            {
+                myStringBuilder.Append("|");
+                for (index = 0; index < tmp.KeyCount; index++)
+                {
+                    myStringBuilder.Append(tmp.Keys[index].ToString() + "|");
+                }
+                tmp = tmp.RightSibling;
+
+                for (index = tabs * tabs; index >= 0; index--)
+                    myStringBuilder.Append("\t");
+            }
+            if (myNode is InnerNode<TKey, TValue>)
+            {
+                myStringBuilder.Append("\n\n");
+                DrawInternal((myNode as InnerNode<TKey, TValue>).Children[0], ref myStringBuilder, --tabs);
+            }
+        }
 
         #endregion
     }

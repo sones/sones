@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -12,6 +12,10 @@
     <AssemblyName>GraphDB</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -50,6 +54,7 @@
     <Compile Include="Errors\BackwardEdegeErrors\GraphDBBackwardEdgeError.cs" />
     <Compile Include="Errors\DBObjectErrors\GraphDBObjectError.cs" />
     <Compile Include="Errors\DBOperatorErrors\GraphDBOperatorError.cs" />
+    <Compile Include="Errors\DumpErrors\Error_InvalidDumpLocation.cs" />
     <Compile Include="Errors\DumpErrors\GraphDBDumpError.cs" />
     <Compile Include="Errors\EdgeErrors\Error_TooManyElementsForEdge.cs" />
     <Compile Include="Errors\AggregateErrors\Error_AggregateParameterCountMismatch.cs" />
@@ -83,6 +88,8 @@
     <Compile Include="Errors\TransactionErrors\Error_NoTransaction.cs" />
     <Compile Include="Errors\TransactionErrors\Error_ParallelTransactionsNotAllowed.cs" />
     <Compile Include="Errors\TypeAttributeErrors\GraphDBAttributeError.cs" />
+    <Compile Include="ImportExport\DumpFormats.cs" />
+    <Compile Include="ImportExport\DumpTypes.cs" />
     <Compile Include="Indices\DBIndexManager.cs" />
     <Compile Include="Managers\DBTransactionManager.cs" />
     <Compile Include="Plugin\DBPluginManager.cs" />
@@ -225,6 +232,7 @@
     <Compile Include="QueryLanguage\ExpressionGraph\LevelKey.cs" />
     <Compile Include="QueryLanguage\GQLDumpBuilder.cs" />
     <Compile Include="QueryLanguage\IDumpable.cs" />
+    <Compile Include="QueryLanguage\IExtendableGrammar.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Aggregates\ABaseAggregate.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Aggregates\AggregateType.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Aggregates\AvgAggregate.cs" />
@@ -232,6 +240,8 @@
     <Compile Include="QueryLanguage\NonTerminalCLasses\Aggregates\MaxAggregate.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Aggregates\MinAggregate.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Aggregates\SumAggregate.cs" />
+    <Compile Include="ImportExport\AGraphDBExport.cs" />
+    <Compile Include="ImportExport\GraphDBExport_GQL.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\ABaseFunction.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\ConcatFunc.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\CountFunc.cs" />
@@ -242,8 +252,8 @@
     <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\SubstringFunc.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\TopFunc.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Functions\ToUpperFunc.cs" />
-    <Compile Include="QueryLanguage\NonTerminalCLasses\Imports\GraphDBImport_GQL.cs" />
-    <Compile Include="QueryLanguage\NonTerminalCLasses\Imports\AGraphDBImport.cs" />
+    <Compile Include="ImportExport\GraphDBImport_GQL.cs" />
+    <Compile Include="ImportExport\AGraphDBImport.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\AlterType\AlterTypeNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\AStatement.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\AttributeDefinition.cs" />
@@ -266,7 +276,7 @@
     <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Import\VerbosityNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Import\ImportNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Import\ParallelTasksNode.cs" />
-    <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Import\VerbosityTypes.cs" />
+    <Compile Include="ImportExport\VerbosityTypes.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\InsertOrReplace\InsertOrReplaceNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\InsertOrUpdate\InsertOrUpdateNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Statements\Insert\InsertNode.cs" />
@@ -304,13 +314,14 @@
     <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\CollectionOfDBObjectsNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\AddToListAttrUpdateAddToNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\AddToListAttrUpdateOperatorNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\TypeListNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\RemoveFromListAttrUpdateAddToOperatorNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\RemoveFromListAttrUpdateAddToRemoveFromNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\EdgeInformationNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\EdgeTraversalNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\SelectionDelimiterNode.cs" />
-    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\CreateIndexAttributeListNode.cs" />
-    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\CreateIndexAttributeNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\IndexAttributeListNode.cs" />
+    <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\IndexAttributeNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DefaultValueDefNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrAggrNode.cs" />
     <Compile Include="QueryLanguage\NonTerminalCLasses\Structure\DescrAggrsNode.cs" />
@@ -465,7 +476,7 @@
     <Compile Include="TypeManagement\DBTypeManager.cs" />
     <Compile Include="TypeManagement\GraphDBType.cs" />
     <Compile Include="TypeManagement\GraphDBTypeDefinition.cs" />
-    <Compile Include="TypeManagement\PandoraTypeMapper.cs" />
+    <Compile Include="TypeManagement\GraphDBTypeMapper.cs" />
     <Compile Include="TypeManagement\PandoraTypes\ADBBaseObject.cs" />
     <Compile Include="TypeManagement\PandoraTypes\DBBackwardEdgeType.cs" />
     <Compile Include="TypeManagement\PandoraTypes\DBBaseObject.cs" />
@@ -488,6 +499,14 @@
     <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_EDITIONS.cs" />
     <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_LASTACCESSTIME.cs" />
     <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_LASTMODIFICATIONTIME.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_MAXNUMBEROFCOPIES.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_MAXNUMBEROFREVISIONS.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_MAXREVISIONAGE.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_MINNUMBEROFCOPIES.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_MINNUMBEROFREVISIONS.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_NUMBEROFCOPIES.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_NUMBEROFREVISIONS.cs" />
+    <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_PARENTREVISIONS.cs" />
     <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_REVISION.cs" />
     <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_REVISIONS.cs" />
     <Compile Include="TypeManagement\SpecialTypeAttributes\SpecialTypeAttribute_STREAMS.cs" />
@@ -506,12 +525,14 @@
     <Compile Include="Warnings\GraphDBWarningException.cs" />
     <Compile Include="Warnings\Warning_EdgeToNonExistingNode.cs" />
     <Compile Include="Warnings\Warning_NoObjectsToDelete.cs" />
+    <Compile Include="Warnings\Warning_ObsoleteGQL.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NLog.config" />
     <None Include="Settings\SettingsClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="QueryLanguage\NonTerminalCLasses\Imports\" />
     <Folder Include="QueryLanguage\Operator\OperatorContext\" />
   </ItemGroup>
   <ItemGroup>

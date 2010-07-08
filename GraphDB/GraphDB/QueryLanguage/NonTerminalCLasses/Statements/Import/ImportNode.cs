@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements;
-using sones.Lib.ErrorHandling;
-using sones.Lib.Frameworks.Irony.Parsing;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Imports;
-using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;
+using sones.GraphDB.Exceptions;
+using sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
 using sones.GraphDB.QueryLanguage.Result;
+using sones.Lib.Frameworks.Irony.Parsing;
+using sones.GraphDB.ImportExport;
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Import
 {
@@ -72,7 +69,17 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Import
 
         public override QueryResult Execute(IGraphDBSession graphDBSession, DBContext dbContext)
         {
-            return Importer.Import(SourceLocation, graphDBSession, ParallelTasks, Comments, Offset, Limit, VerbosityType);
+            using (var transaction = graphDBSession.BeginTransaction())
+            {
+                var importResult = Importer.Import(SourceLocation, graphDBSession, ParallelTasks, Comments, Offset, Limit, VerbosityType);
+
+                if (importResult.ResultType == Structures.ResultType.Successful)
+                {
+                    importResult.AddErrorsAndWarnings(transaction.Commit());
+                }
+
+                return importResult;
+            }
         }
     }
 }

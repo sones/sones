@@ -40,6 +40,7 @@ using sones.GraphDB.Errors;
 using sones.Lib;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
@@ -54,7 +55,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         private String _Comment = ""; //the name of the type that should be extended
         private Dictionary<TypeAttribute, String> _Attributes = new Dictionary<TypeAttribute, String>(); //the dictionayry of attribute definitions
         private List<BackwardEdgeNode> _BackwardEdgeInformation;
-        private List<IndexOptOnCreateTypeMemberNode> _Indices;    
+        private List<Exceptional<IndexOptOnCreateTypeMemberNode>> _Indices;    
 
         #endregion
 
@@ -66,8 +67,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
         #endregion
 
-        public void GetContent(CompilerContext context, ParseTreeNode parseNode)
+        public Exceptional GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
+
+            var retExceptional = new Exceptional();
+
             var dbContext = context.IContext as DBContext;
             var typeManager = dbContext.DBTypeManager;
 
@@ -154,14 +158,22 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
             if (parseNode.ChildNodes[6].HasChildNodes() && parseNode.ChildNodes[6].ChildNodes[1].HasChildNodes())
             {
-                if (parseNode.ChildNodes[6].ChildNodes[1].AstNode is IndexOptOnCreateTypeMemberNode)
+                if (parseNode.ChildNodes[6].ChildNodes[1].AstNode is Exceptional<IndexOptOnCreateTypeMemberNode>)
                 {
                     #region data
-                    _Indices = new List<IndexOptOnCreateTypeMemberNode>();
-                    var aIDX = (IndexOptOnCreateTypeMemberNode)parseNode.ChildNodes[6].ChildNodes[1].AstNode;
+                    _Indices = new List<Exceptional<IndexOptOnCreateTypeMemberNode>>();
+                    var aIDX = (Exceptional<IndexOptOnCreateTypeMemberNode>)parseNode.ChildNodes[6].ChildNodes[1].AstNode;
+                    if (aIDX.Failed)
+                    {
+                        return aIDX;
+                    }
+                    if (!aIDX.Success)
+                    {
+                        retExceptional.AddErrorsAndWarnings(aIDX);
+                    }
                     #endregion
 
-                    foreach (var aAttrInIdx in aIDX.IndexAttributeNames)
+                    foreach (var aAttrInIdx in aIDX.Value.IndexAttributeNames)
                     {
                         #region check attributes of idx
 
@@ -202,11 +214,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
                         #endregion
                     }
 
-                    _Indices.Add(parseNode.ChildNodes[6].ChildNodes[1].AstNode as IndexOptOnCreateTypeMemberNode);
+                    _Indices.Add(parseNode.ChildNodes[6].ChildNodes[1].AstNode as Exceptional<IndexOptOnCreateTypeMemberNode>);
                 }
                 else
                 {
-                    _Indices = new List<IndexOptOnCreateTypeMemberNode>(parseNode.ChildNodes[6].ChildNodes[1].ChildNodes.Select(child => (IndexOptOnCreateTypeMemberNode)child.AstNode));
+                    _Indices = new List<Exceptional<IndexOptOnCreateTypeMemberNode>>(parseNode.ChildNodes[6].ChildNodes[1].ChildNodes.Select(child => (Exceptional<IndexOptOnCreateTypeMemberNode>)child.AstNode));
                 }
             }
 
@@ -220,6 +232,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             }
 
             #endregion
+
+            return retExceptional;
+
         }
 
         #region Accessessors
@@ -229,7 +244,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         public String Comment { get { return _Comment; } }
         public Dictionary<TypeAttribute, String> Attributes { get { return _Attributes; } }
         public List<BackwardEdgeNode> BackwardEdges { get { return _BackwardEdgeInformation; } }
-        public List<IndexOptOnCreateTypeMemberNode> Indices { get { return _Indices; } }
+        public List<Exceptional<IndexOptOnCreateTypeMemberNode>> Indices { get { return _Indices; } }
 
         #endregion
 
@@ -256,7 +271,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
                 {
                     aAttrDef.TypeAttribute.TypeCharacteristics.IsMandatory = true;
                 }
-                attributes.Add(aAttrDef.TypeAttribute, aAttrDef.Type);
+
+                if (attributes.Exists(item => item.Key.Name == aAttrDef.TypeAttribute.Name))
+                    throw new GraphDBException(new Error_AttributeAlreadyExists(aAttrDef.TypeAttribute.Name));
+                else
+                    attributes.Add(aAttrDef.TypeAttribute, aAttrDef.Type);
             }
 
             return attributes;

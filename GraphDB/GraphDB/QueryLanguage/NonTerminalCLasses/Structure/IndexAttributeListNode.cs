@@ -1,27 +1,7 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB OpenSource Edition.
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-*
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-*/
-
-
-/* <id name="sones GraphDB – CreateIndexAttributeList Node" />
+﻿/* <id name="PandoraDB – CreateIndexAttributeList Node" />
  * <copyright file="CreateIndexAttributeListNode.cs
  *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Achim Friedland</developer>
  * <summary>This node is requested in case of an CreateIndexAttributeList node.</summary>
@@ -43,18 +23,18 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     /// <summary>
     /// This node is requested in case of an CreateIndexAttributeList node.
     /// </summary>
-    public class CreateIndexAttributeListNode : AStructureNode, IAstNodeInit
+    public class IndexAttributeListNode : AStructureNode, IAstNodeInit
     {
 
         #region properties
 
-        private List<CreateIndexAttributeNode> _IndexAttributes = null;
+        private List<IndexAttributeNode> _IndexAttributes = null;
 
         #endregion
 
         #region constructor
 
-        public CreateIndexAttributeListNode()
+        public IndexAttributeListNode()
         {
 
         }
@@ -66,11 +46,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
             #region Data
 
-            _IndexAttributes = new List<CreateIndexAttributeNode>();
+            _IndexAttributes = new List<IndexAttributeNode>();
 
             foreach(ParseTreeNode aNode in parseNode.ChildNodes)
             {
-                _IndexAttributes.Add((CreateIndexAttributeNode)aNode.AstNode);
+                _IndexAttributes.Add((IndexAttributeNode)aNode.AstNode);
             }
             
             #endregion
@@ -79,7 +59,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         #region Accessessors
 
-        public List<CreateIndexAttributeNode> IndexAttributes { get { return _IndexAttributes; } }
+        public List<IndexAttributeNode> IndexAttributes { get { return _IndexAttributes; } }
 
         #endregion
 
