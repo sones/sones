@@ -16,6 +16,7 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 {
     public class SpecialTypeAttribute_MAXREVISIONAGE : ASpecialTypeAttribute
     {
+
         #region AttributeUUID
 
         public static AttributeUUID AttributeUUID = new AttributeUUID(15);
@@ -28,13 +29,12 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 
         #endregion
 
-
         #region constructors
 
         public SpecialTypeAttribute_MAXREVISIONAGE()
         {
-            _Name = AttributeName;
-            _UUID = AttributeUUID;
+            Name = AttributeName;
+            UUID = AttributeUUID;
         }
 
         #endregion
@@ -56,5 +56,6 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
         {
             return new Exceptional<AObject>(new DBUInt64(dbObjectStream.MaxRevisionAge));
         }
+
     }
 }

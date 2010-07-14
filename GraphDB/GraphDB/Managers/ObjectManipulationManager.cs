@@ -821,7 +821,7 @@ namespace sones.GraphDB.Managers
                 if (!streamExcept.Success)
                     return new Exceptional<Boolean>(streamExcept.Errors.First());
 
-                var removeExcept = dbContext.DBObjectManager.RemoveBackwardEdge(streamExcept.Value, aTaskNode.AttributeIDNode.LastAttribute.RelatedPandoraTypeUUID, aTaskNode.AttributeIDNode.LastAttribute.UUID, aDBObject.ObjectUUID);
+                var removeExcept = dbContext.DBObjectManager.RemoveBackwardEdge(streamExcept.Value, aTaskNode.AttributeIDNode.LastAttribute.RelatedGraphDBTypeUUID, aTaskNode.AttributeIDNode.LastAttribute.UUID, aDBObject.ObjectUUID);
 
                 if (!removeExcept.Success)
                     return new Exceptional<Boolean>(removeExcept.Errors.First());

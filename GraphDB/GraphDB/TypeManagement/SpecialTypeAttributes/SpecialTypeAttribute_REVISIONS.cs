@@ -17,6 +17,7 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 {
     public class SpecialTypeAttribute_REVISIONS : ASpecialTypeAttribute
     {
+
         #region AttributeUUID
 
         public static AttributeUUID AttributeUUID = new AttributeUUID(10);
@@ -41,8 +42,8 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 
         public SpecialTypeAttribute_REVISIONS()
         {
-            _Name = AttributeName;
-            _UUID = AttributeUUID;
+            Name = AttributeName;
+            UUID = AttributeUUID;
         }
 
         #endregion
@@ -61,5 +62,7 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 
             return new Exceptional<AObject>(revisions);
         }
+
     }
+
 }

@@ -126,7 +126,7 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
-        #region Export(myDBObjectReadout, myRecursion = false)
+        #region Export(myDBObjectReadout, myRecursion)
 
         public Object Export(DBObjectReadout myDBObjectReadout, Boolean myRecursion)
         {

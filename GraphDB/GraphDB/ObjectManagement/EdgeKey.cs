@@ -114,7 +114,7 @@ namespace sones.GraphDB.ObjectManagement
         }
 
         public EdgeKey(TypeAttribute myTypeAttribute)
-            : this(myTypeAttribute.RelatedPandoraTypeUUID, myTypeAttribute.UUID)
+            : this(myTypeAttribute.RelatedGraphDBTypeUUID, myTypeAttribute.UUID)
         { }
 
         #endregion

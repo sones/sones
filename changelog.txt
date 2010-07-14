@@ -1,5 +1,11 @@
 sones GraphDB Changelog:
 
+
+14.07.2010
+- Fixed Bug_CouldNotDetermineJSON_ObjectUUID bug
+- Some refactoring within GraphDBType and TypeAttribute... added IGetName interface
+- Used IGetName interface within JSON_IO and XML_IO
+
 08.07.2010
 - Fixed IMPORT http:// bug; Added begin transaction to import
 - new special type attributes MAXNUMBEROFCOPIES, MAXNUMBEROFREVISIONS, MAXREVISIONAGE, MINNUMBEROFCOPIES, NUMBEROFCOPIES, NUMBEROFREVISIONS, PARENTREVISIONS, MINNUMBEROFREVISIONS

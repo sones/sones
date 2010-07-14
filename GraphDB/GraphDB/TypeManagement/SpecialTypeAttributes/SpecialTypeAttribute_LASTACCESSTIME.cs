@@ -52,8 +52,8 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 
         public SpecialTypeAttribute_LASTACCESSTIME()
         {
-            _Name = AttributeName;
-            _UUID = AttributeUUID;
+            Name = AttributeName;
+            UUID = AttributeUUID;
         }
 
         #endregion

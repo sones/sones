@@ -18,6 +18,7 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 {
     public class SpecialTypeAttribute_PARENTREVISIONS : ASpecialTypeAttribute
     {
+
         #region AttributeUUID
 
         public static AttributeUUID AttributeUUID = new AttributeUUID(14);
@@ -34,8 +35,8 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 
         public SpecialTypeAttribute_PARENTREVISIONS()
         {
-            _Name = AttributeName;
-            _UUID = AttributeUUID;
+            Name = AttributeName;
+            UUID = AttributeUUID;
         }
 
         #endregion
@@ -55,12 +56,16 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 
         public override Exceptional<AObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
         {
+        
             EdgeTypeListOfBaseObjects parentRevisions = new EdgeTypeListOfBaseObjects();
 
             foreach (var item in dbObjectStream.ParentRevisionIDs)
                 parentRevisions.Add(new DBString(item.ToString()));
 
             return new Exceptional<AObject>(parentRevisions);
+
         }
+
     }
+
 }

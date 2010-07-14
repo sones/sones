@@ -510,7 +510,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Select
 
                 foreach (var sel in selections)
                 {
-                    var edgeKey = new EdgeKey(sel.Element.RelatedPandoraTypeUUID, sel.Element.UUID);
+                    var edgeKey = new EdgeKey(sel.Element.RelatedGraphDBTypeUUID, sel.Element.UUID);
                     Attributes.Add(sel.Alias, new Edge(ExamineDBO(myResolutionDepth, myTypeNode, levelKey + edgeKey, myUsingGraph, myDBObjectCache, mySessionToken), sel.Element.GetDBType(_DBContext.DBTypeManager).Name));
                 }
                 
@@ -1483,11 +1483,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Select
             {
                 if (myLevelKey.Level == 0)
                 {
-                    myLevelKey = new LevelKey(new EdgeKey(attrDefinition.RelatedPandoraTypeUUID, attrDefinition.UUID));
+                    myLevelKey = new LevelKey(new EdgeKey(attrDefinition.RelatedGraphDBTypeUUID, attrDefinition.UUID));
                 }
                 else
                 {
-                    myLevelKey += new EdgeKey(attrDefinition.RelatedPandoraTypeUUID, attrDefinition.UUID);
+                    myLevelKey += new EdgeKey(attrDefinition.RelatedGraphDBTypeUUID, attrDefinition.UUID);
                 }
             }
 

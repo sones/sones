@@ -64,8 +64,8 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 
         public SpecialTypeAttribute_UUID()
         {
-            _Name = AttributeName;
-            _UUID = AttributeUUID;
+            Name = AttributeName;
+            UUID = AttributeUUID;
         }
 
         #region Extract
