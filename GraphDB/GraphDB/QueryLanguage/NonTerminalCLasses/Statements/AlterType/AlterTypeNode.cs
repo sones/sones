@@ -599,7 +599,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
                 {
                     var theType = dbContext.DBTypeManager.GetTypeByName(aAttributeDefinition.Type);
                     aAttributeDefinition.TypeAttribute.DBTypeUUID = theType.UUID;
-                    aAttributeDefinition.TypeAttribute.RelatedPandoraTypeUUID = atype.UUID;
+                    aAttributeDefinition.TypeAttribute.RelatedGraphDBTypeUUID = atype.UUID;
 
                     #region EdgeType
                     if (aAttributeDefinition.TypeAttribute.EdgeType == null)

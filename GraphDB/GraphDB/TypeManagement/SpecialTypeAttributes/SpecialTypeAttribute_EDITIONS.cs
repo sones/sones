@@ -52,8 +52,8 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 
         public SpecialTypeAttribute_EDITIONS()
         {
-            _Name = AttributeName;
-            _UUID = AttributeUUID;
+            Name = AttributeName;
+            UUID = AttributeUUID;
         }
         
         #endregion
@@ -72,5 +72,6 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
         {
             return new Exceptional<AObject>(new DBString(dbObjectStream.ObjectEditions.ToString()));
         }
+
     }
 }

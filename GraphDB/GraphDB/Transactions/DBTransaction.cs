@@ -31,10 +31,15 @@ using sones.GraphDB.Exceptions;
 using sones.GraphFS.Errors;
 using sones.GraphFS.Exceptions;
 using sones.GraphFS.Transactions;
-
+using sones.Lib.DataStructures.ConcurrentDictionary_Mono;
 using sones.Lib.ErrorHandling;
 using sones.Lib.Session;
+
+#if(__MonoCS__)
 using sones.Lib.DataStructures.ConcurrentDictionary_Mono;
+#else
+#endif
+
 #endregion
 
 namespace sones.GraphDB.Transactions

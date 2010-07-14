@@ -60,8 +60,8 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 
         public SpecialTypeAttribute_TYPE()
         {
-            _Name = AttributeName;
-            _UUID = AttributeUUID;
+            Name = AttributeName;
+            UUID = AttributeUUID;
         }
 
         public override Exceptional<AObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
@@ -81,5 +81,6 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
         {
             return new Exceptional(new Errors.Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
+
     }
 }

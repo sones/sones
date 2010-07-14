@@ -12,6 +12,7 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 {
     public class SpecialTypeAttribute_MINNUMBEROFCOPIES : ASpecialTypeAttribute 
     {
+
         #region AttributeUUID
 
         public static AttributeUUID AttributeUUID = new AttributeUUID(19);
@@ -28,8 +29,8 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 
         public SpecialTypeAttribute_MINNUMBEROFCOPIES()
         {
-            _Name = AttributeName;
-            _UUID = AttributeUUID;
+            Name = AttributeName;
+            UUID = AttributeUUID;
         }
 
         #endregion
@@ -51,5 +52,6 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
         {
             return new Exceptional<AObject>(new DBUInt64(dbObjectStream.MinNumberOfCopies));
         }
+
     }
 }

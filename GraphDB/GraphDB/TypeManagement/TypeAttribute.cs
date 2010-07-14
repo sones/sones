@@ -29,23 +29,23 @@
 #region Usings
 
 using System;
+using System.Text;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
+
 using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.QueryLanguage.Result;
 using sones.GraphDB.Settings;
-using sones.GraphDB.Structures;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement.PandoraTypes;
+
 using sones.Lib;
+using sones.Lib.Serializer;
 using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
-using sones.Lib.Serializer;
-using sones.Lib.Session;
-using sones.GraphDB.QueryLanguage.Enums;
 
 #endregion
 
@@ -70,38 +70,16 @@ namespace sones.GraphDB.TypeManagement
     /// This class holds all information about an specific attribute of a DB type.
     /// </summary>
     
-    public class TypeAttribute : IFastSerialize
+    public class TypeAttribute : IFastSerialize, IGetName
     {
 
         //NLOG: temporarily commented
         //private static Logger Logger = LogManager.GetCurrentClassLogger();
 
-        #region constructor
+        #region Data
 
-        public TypeAttribute()
-        {
-            _TypeCharacteristics = new TypeCharacteristics();
-            _UUID = new AttributeUUID();
-            _Settings = new Dictionary<string, ADBSettingsBase>();
-        }
-    
-        
-        public TypeAttribute(AttributeUUID myAttributeUUID)
-        {
-            _TypeCharacteristics = new TypeCharacteristics();
-            _UUID = myAttributeUUID;
-            _Settings = new Dictionary<string, ADBSettingsBase>();
-            _RelatedPandoraTypeUUID = null;
-        }
-
-        public TypeAttribute(Byte[] mySerializedData) : this()
-        {
-            if (mySerializedData == null || mySerializedData.Length == 0)
-                throw new ArgumentNullException("mySerializedData must not be null or its length be zero!");
-
-            //Deserialize(mySerializedData);
-            throw new NotImplementedException();
-        }
+        private GraphDBType _GraphDBType        = null;
+        private GraphDBType _RelatedPandoraType = null;
 
         #endregion
 
@@ -109,127 +87,302 @@ namespace sones.GraphDB.TypeManagement
 
         #region Settings
 
-        private Dictionary<string, ADBSettingsBase> _Settings;
+        private Dictionary<String, ADBSettingsBase> _Settings;
 
-        public Dictionary<string, ADBSettingsBase> GetObjectSettings
+        public Dictionary<String, ADBSettingsBase> GetObjectSettings
         {
             get { return _Settings; }
         }
 
         #endregion
 
-        /// <summary>
-        /// The PandoraType
-        /// </summary>
-        public AttributeUUID UUID
-        {
-            get { return _UUID; }
-            set { _UUID = value; }
-        }
-        protected AttributeUUID _UUID;
+        #region UUID
 
         /// <summary>
-        /// The PandoraTypeUUID
+        /// The UUID
         /// </summary>
-        public TypeUUID DBTypeUUID
-        {
-            get { return _DBTypeUUID; }
-            set { _DBTypeUUID = value; }
-        }
-        private TypeUUID _DBTypeUUID;
+        public AttributeUUID UUID { get; set; }
 
-        private GraphDBType _dbType = null;
+        #endregion
+
+        #region DBTypeUUID
+
+        /// <summary>
+        /// The DBTypeUUID
+        /// </summary>
+        public TypeUUID DBTypeUUID { get; set; }
+
+        #endregion
+
+        #region KindOfType
 
         /// <summary>
         /// The kind of type (single, list)
         /// </summary>
-        public KindsOfType KindOfType
-        {
-            get { return _KindOfType; }
-            set { _KindOfType = value; }
-        }
-        private KindsOfType _KindOfType;
-        
+        public KindsOfType KindOfType { get; set; }
+
+        #endregion
+
+        #region TypeCharacteristics
+
         /// <summary>
         /// The characteristic (queue, unique, weighted) of the List-Typed Attribute
         /// </summary>
-        public TypeCharacteristics TypeCharacteristics
-        {
-            get { return _TypeCharacteristics; }
-            set { _TypeCharacteristics = value; }
-        }
-        private TypeCharacteristics _TypeCharacteristics;
+        public TypeCharacteristics TypeCharacteristics { get; set; }
+
+        #endregion
+
+        #region Name
 
         /// <summary>
-        /// The Name of the Attribute
+        /// The Name of the TypeAttribute
         /// </summary>
-        public String Name
-        {
-            get { return _Name; }
-            set { _Name = value; }
-        }
-        protected String _Name;
-                
-        public TypeUUID RelatedPandoraTypeUUID
-        {
-            get
-            {
-                return _RelatedPandoraTypeUUID;
-            }
+        public String Name { get; set; }
 
-            set
-            {
-                _RelatedPandoraTypeUUID = value;
-            }
-        }
-        private TypeUUID _RelatedPandoraTypeUUID;
+        #endregion
 
-        private GraphDBType _RelatedPandoraType = null;
+        #region RelatedGraphDBTypeUUID
+
+        public TypeUUID RelatedGraphDBTypeUUID { get; set; }
+
+        #endregion
+
+        #region BackwardEdgeDefinition
 
         /// <summary>
         /// If this attribute is an BackwardEdge attribute, than this hold the information about the Edge
         /// </summary>
-        public EdgeKey BackwardEdgeDefinition
-        {
-            get { return _BackwardEdgeDefinition; }
-            set { _BackwardEdgeDefinition = value; }
-        }
-        private EdgeKey _BackwardEdgeDefinition;
-        
-        
+        public EdgeKey BackwardEdgeDefinition { get; set; }
+
+        #endregion
+
+        #region IsBackwardEdge
+
         public Boolean IsBackwardEdge
         {
             get
             {
+                Debug.Assert(TypeCharacteristics != null);
                 return TypeCharacteristics.IsBackwardEdge;
             }
         }
 
-        private AEdgeType _EdgeType;
-        public AEdgeType EdgeType
+        #endregion
+
+        #region EdgeType
+
+        public AEdgeType EdgeType { get; set; }
+
+        #endregion
+
+        #region DefaultValue
+
+        public AObject DefaultValue { get; set; }
+
+        #endregion
+
+        #endregion
+
+        #region Constructors
+
+        #region TypeAttribute()
+
+        public TypeAttribute()
+            : this(new AttributeUUID())
         {
-            get
-            {
-                return _EdgeType;
-            }
-            set { _EdgeType = value; }
         }
 
-        private AObject _DefaultValue;
-        public AObject DefaultValue
+        #endregion
+
+        #region TypeAttribute(myAttributeUUID)
+
+        public TypeAttribute(AttributeUUID myAttributeUUID)
         {
-            get 
+            UUID                    = myAttributeUUID;
+            RelatedGraphDBTypeUUID  = null;
+            TypeCharacteristics     = new TypeCharacteristics();
+            _Settings               = new Dictionary<String, ADBSettingsBase>();
+        }
+
+        #endregion
+
+        #region TypeAttribute(mySerializedData)
+
+        public TypeAttribute(Byte[] mySerializedData)
+            : this()
+        {
+
+            if (mySerializedData == null || mySerializedData.Length == 0)
+                throw new ArgumentNullException("mySerializedData must not be null or its length be zero!");
+
+            //Deserialize(mySerializedData);
+            throw new NotImplementedException();
+
+        }
+
+        #endregion
+
+        #endregion
+
+
+        #region Methods
+
+        #region SetPersistentSetting(mySettingName, myADBSettingsBase, myDBTypeManager)
+
+        public Exceptional<Boolean> SetPersistentSetting(String mySettingName, ADBSettingsBase myADBSettingsBase, DBTypeManager myDBTypeManager)
+        {
+
+            if (!_Settings.ContainsKey(mySettingName))
             {
-                return _DefaultValue;
+                _Settings.Add(mySettingName, (ADBSettingsBase)myADBSettingsBase.Clone());
             }
-            set { _DefaultValue = value; }
+            else
+            {
+                _Settings[mySettingName] = (ADBSettingsBase)myADBSettingsBase.Clone();
+            }
+
+            var FlushExcept = myDBTypeManager.FlushType(GetRelatedType(myDBTypeManager));
+
+            if (FlushExcept.Failed)
+                return new Exceptional<Boolean>(FlushExcept);
+
+            return new Exceptional<Boolean>(true);
+
+        }
+
+        #endregion
+
+        #region RemovePersistentSetting(mySettingName, myDBTypeManager)
+
+        public Exceptional<Boolean> RemovePersistentSetting(String mySettingName, DBTypeManager myDBTypeManager)
+        {
+
+            _Settings.Remove(mySettingName);
+
+            var FlushExcept = myDBTypeManager.FlushType(GetRelatedType(myDBTypeManager));
+
+            if (FlushExcept.Failed)
+                return new Exceptional<Boolean>(FlushExcept);
+
+            return new Exceptional<Boolean>(true);
+
+        }
+
+        #endregion
+
+        #region GetPersistentSetting(mySettingName)
+
+        public ADBSettingsBase GetPersistentSetting(String mySettingName)
+        {
+
+            ADBSettingsBase _ADBSettingsBase = null;
+
+            if (_Settings.TryGetValue(mySettingName, out _ADBSettingsBase))
+                //TODO: Remove this senseless .Clone()!
+                return (ADBSettingsBase)_ADBSettingsBase.Clone();
+
+            return null;
+
+        }
+
+        #endregion
+
+
+        #region GetDefaultValue(myDBContext)
+
+        public AObject GetDefaultValue(DBContext myDBContext)
+        {
+
+            if (KindOfType == KindsOfType.SingleReference)
+            {
+
+                if (GetDBType(myDBContext.DBTypeManager).IsUserDefined)
+                    return (AObject) EdgeType.GetNewInstance();
+
+                var val = ((ADBBaseObject) GraphDBTypeMapper.GetADBBaseObjectFromUUID(DBTypeUUID));
+                val.SetValue(DBObjectInitializeType.Default);
+                return val as AObject;
+
+            }
+
+            if (KindOfType == KindsOfType.SetOfReferences)
+                return (AObject) EdgeType.GetNewInstance();
+
+            return null;
+
+        }
+
+        #endregion
+
+        #region GetADBBaseObjectType(myDBTypeManager)
+
+        public ADBBaseObject GetADBBaseObjectType(DBTypeManager myDBTypeManager)
+        {
+
+            if (GraphDBTypeMapper.IsBasicType(GetDBType(myDBTypeManager).Name))
+                return GraphDBTypeMapper.GetPandoraObjectFromTypeName(GetDBType(myDBTypeManager).Name);
+
+            return null;
+
+        }
+
+        #endregion
+
+        #region GetDBType(myDBTypeManager)
+
+        public GraphDBType GetDBType(DBTypeManager myDBTypeManager)
+        {
+
+            if (_GraphDBType == null)
+                _GraphDBType = myDBTypeManager.GetTypeByUUID(DBTypeUUID);
+            
+            return _GraphDBType;
+
+        }
+
+        #endregion
+
+        #region GetRelatedType(myDBTypeManager)
+
+        public GraphDBType GetRelatedType(DBTypeManager myDBTypeManager)
+        {
+
+            if (_RelatedPandoraType == null)
+            {
+                if (!IsBackwardEdge)
+                    _RelatedPandoraType = myDBTypeManager.GetTypeByUUID(RelatedGraphDBTypeUUID);
+
+                else
+                    _RelatedPandoraType = myDBTypeManager.GetTypeByUUID(BackwardEdgeDefinition.TypeUUID);
+            }
+
+            return _RelatedPandoraType;
+
+        }
+
+        #endregion
+
+        #endregion
+
+
+        #region IComparable Members
+
+        public Int32 CompareTo(Object myObject)
+        {
+
+            var objType = (TypeAttribute) myObject;
+
+            return UUID.CompareTo(objType.UUID);
+
         }
 
         #endregion
 
         #region IFastSerialize Members
 
-        public bool isDirty
+        #region isDirty
+
+        public Boolean isDirty
         {
             get
             {
@@ -241,74 +394,83 @@ namespace sones.GraphDB.TypeManagement
             }
         }
 
+        #endregion
+
+        #region ModificationTime
+
         public DateTime ModificationTime
         {
             get { throw new NotImplementedException(); }
         }
 
+        #endregion
+
+        #region Serialize(ref mySerializationWriter)
+
         public void Serialize(ref SerializationWriter mySerializationWriter)
         {
-            #region Write
 
             if (mySerializationWriter != null)
             {
-                _UUID.Serialize(ref mySerializationWriter);
-                _DBTypeUUID.Serialize(ref mySerializationWriter);
-                mySerializationWriter.WriteObject((Byte)_KindOfType);
-                _TypeCharacteristics.Serialize(ref mySerializationWriter);
+
+                UUID.Serialize(ref mySerializationWriter);
+                DBTypeUUID.Serialize(ref mySerializationWriter);
+                mySerializationWriter.WriteObject((Byte)KindOfType);
+                TypeCharacteristics.Serialize(ref mySerializationWriter);
                 
-                mySerializationWriter.WriteObject(_Name);
+                mySerializationWriter.WriteObject(Name);
 
-                mySerializationWriter.WriteObject(_EdgeType != null);
-                if (_EdgeType != null)
-                    mySerializationWriter.WriteObject(_EdgeType);
+                mySerializationWriter.WriteObject(EdgeType != null);
+                if (EdgeType != null)
+                    mySerializationWriter.WriteObject(EdgeType);
 
-                _RelatedPandoraTypeUUID.Serialize(ref mySerializationWriter);
+                RelatedGraphDBTypeUUID.Serialize(ref mySerializationWriter);
 
-                if (_TypeCharacteristics.IsBackwardEdge)
-                    mySerializationWriter.WriteObject(_BackwardEdgeDefinition);
+                if (TypeCharacteristics.IsBackwardEdge)
+                    mySerializationWriter.WriteObject(BackwardEdgeDefinition);
 
-                mySerializationWriter.WriteObject(_DefaultValue);
+                mySerializationWriter.WriteObject(DefaultValue);
 
-                #region Write Settings
-
+                // Write Settings
                 mySerializationWriter.WriteObject((UInt32)_Settings.Count);
-                foreach (KeyValuePair<string, ADBSettingsBase> pSetting in _Settings)
-                    mySerializationWriter.WriteObject(pSetting.Value);
-
-                #endregion
+                foreach (var _KVPair in _Settings)
+                    mySerializationWriter.WriteObject(_KVPair.Value);
 
             }
 
-            #endregion
         }
+
+        #endregion
+
+        #region Deserialize(ref mySerializationReader)
 
         public void Deserialize(ref SerializationReader mySerializationReader)
         {
-            UInt32 _Capacity;
 
-            #region Read
+            UInt32 _Capacity;
 
             try
             {
+
                 if (mySerializationReader != null)
                 {
-                    _UUID = new AttributeUUID();
-                    _UUID.Deserialize(ref mySerializationReader);
-                    _DBTypeUUID = new TypeUUID();
-                    _DBTypeUUID.Deserialize(ref mySerializationReader);
-                    _KindOfType = (KindsOfType)(Byte)mySerializationReader.ReadObject();
-                    _TypeCharacteristics = new TypeCharacteristics();
-                    _TypeCharacteristics.Deserialize(ref mySerializationReader);
 
-                    _Name = (String)mySerializationReader.ReadObject();
+                    UUID = new AttributeUUID();
+                    UUID.Deserialize(ref mySerializationReader);
+                    DBTypeUUID = new TypeUUID();
+                    DBTypeUUID.Deserialize(ref mySerializationReader);
+                    KindOfType = (KindsOfType) (Byte) mySerializationReader.ReadObject();
+                    TypeCharacteristics = new TypeCharacteristics();
+                    TypeCharacteristics.Deserialize(ref mySerializationReader);
 
-                    Boolean hasEdgeType = (Boolean)mySerializationReader.ReadObject();
+                    Name = (String)mySerializationReader.ReadObject();
+
+                    var hasEdgeType = (Boolean) mySerializationReader.ReadObject();
                     if (hasEdgeType)
                     {                        
                         try
                         {
-                            _EdgeType = (AEdgeType)mySerializationReader.ReadObject();
+                            EdgeType = (AEdgeType) mySerializationReader.ReadObject();
                         }
                         catch(Exception ex)
                         {
@@ -319,22 +481,24 @@ namespace sones.GraphDB.TypeManagement
 
                     }
 
-                    _RelatedPandoraTypeUUID = new TypeUUID();
-                    _RelatedPandoraTypeUUID.Deserialize(ref mySerializationReader);
-                    if (_TypeCharacteristics.IsBackwardEdge)
-                        _BackwardEdgeDefinition = (EdgeKey)mySerializationReader.ReadObject();
+                    RelatedGraphDBTypeUUID = new TypeUUID();
+                    RelatedGraphDBTypeUUID.Deserialize(ref mySerializationReader);
+                    if (TypeCharacteristics.IsBackwardEdge)
+                        BackwardEdgeDefinition = (EdgeKey) mySerializationReader.ReadObject();
 
-                    _DefaultValue = (AObject)mySerializationReader.ReadObject();
+                    DefaultValue = (AObject) mySerializationReader.ReadObject();
 
                     #region Read Settings
 
-                    _Capacity = (UInt32)mySerializationReader.ReadObject();
+                    _Capacity = (UInt32) mySerializationReader.ReadObject();
 
-                    _Settings = new Dictionary<string, ADBSettingsBase>();
+                    _Settings = new Dictionary<String, ADBSettingsBase>();
 
-                    for (UInt32 i = 0; i < _Capacity; i++)
+                    for (var i = 0; i < _Capacity; i++)
                     {
-                        ADBSettingsBase _SettingObject = (ADBSettingsBase)mySerializationReader.ReadObject();
+
+                        var _SettingObject = (ADBSettingsBase) mySerializationReader.ReadObject();
+
                         if (_SettingObject != null)
                             _Settings.Add(_SettingObject.Name, _SettingObject);
                         
@@ -355,195 +519,89 @@ namespace sones.GraphDB.TypeManagement
                             _Settings.Add(_SettingObject.Name, _SettingObject);
                         }*/
                     }
+
                     #endregion
+
                 }
             }
+
             catch (Exception e)
             {
                 throw new SerializationException("The Setting could not be deserialized!\n\n" + e);
             }
 
-            #endregion
         }
 
         #endregion
 
-        #region public methods
-
-        #region settings
-
-        public Exceptional<bool> SetPersistentSetting(string myName, ADBSettingsBase mySetting, DBTypeManager myTypeManager)
-        {
-            if (!_Settings.ContainsKey(myName))
-                _Settings.Add(myName, (ADBSettingsBase)mySetting.Clone());
-            else
-            {
-                _Settings[myName] = (ADBSettingsBase)mySetting.Clone();
-            }
-
-            var FlushExcept = myTypeManager.FlushType(GetRelatedType(myTypeManager));
-
-            if (FlushExcept.Failed)
-                return new Exceptional<bool>(FlushExcept);
-
-            return new Exceptional<bool>(true);
-        }
-
-        public Exceptional<bool> RemovePersistentSetting(string myName, DBTypeManager myTypeManager)
-        {
-            _Settings.Remove(myName);
-
-            var FlushExcept = myTypeManager.FlushType(GetRelatedType(myTypeManager));
-
-            if (FlushExcept.Failed)
-                return new Exceptional<bool>(FlushExcept);
-
-            return new Exceptional<bool>(true);
-        }
-
-        public ADBSettingsBase GetPersistentSetting(string mySettingName)
-        {
-            if (_Settings.ContainsKey(mySettingName))
-            {
-                return (ADBSettingsBase)_Settings[mySettingName].Clone();
-            }
-            else
-            {
-                return null;
-            }
-        }
-
         #endregion
 
-        #region DefaultValue
-                
-        public AObject GetDefaultValue(DBContext dbContext)
-        {
-            if (KindOfType == KindsOfType.SingleReference)
-            {
-                if (GetDBType(dbContext.DBTypeManager).IsUserDefined)
-                {
-                    return (AObject)_EdgeType.GetNewInstance();
-                }
-                else
-                {
-                    var val = ((ADBBaseObject)GraphDBTypeMapper.GetADBBaseObjectFromUUID(DBTypeUUID));
-                    val.SetValue(DBObjectInitializeType.Default);
-                    return val as AObject;
-                }
-            }
+        #region ToString(...)
 
-            if (KindOfType == KindsOfType.SetOfReferences)
-                return (AObject)_EdgeType.GetNewInstance();
+        #region ToString()
 
-            return null;
-        }
-
-        #endregion
-
-        public ADBBaseObject GetADBBaseObjectType(DBTypeManager myDBTypeManager)
-        {
-
-            if (GraphDBTypeMapper.IsBasicType(GetDBType(myDBTypeManager).Name))
-                return GraphDBTypeMapper.GetPandoraObjectFromTypeName(GetDBType(myDBTypeManager).Name);
-
-            return null;
-
-        }
-
-        public GraphDBType GetDBType(DBTypeManager myDBTypeManager)
-        {
-
-            if (_dbType == null)
-                _dbType = myDBTypeManager.GetTypeByUUID(_DBTypeUUID);
-            
-            return _dbType;
-
-        }
-
-        public GraphDBType GetRelatedType(DBTypeManager myDBTypeManager)
-        {
-
-            if (_RelatedPandoraType == null)
-            {
-                if (!IsBackwardEdge)
-                    _RelatedPandoraType = myDBTypeManager.GetTypeByUUID(_RelatedPandoraTypeUUID);
-
-                else
-                    _RelatedPandoraType = myDBTypeManager.GetTypeByUUID(_BackwardEdgeDefinition.TypeUUID);
-            }
-
-            return _RelatedPandoraType;
-
-        }
-
-        #region IComparable Members
-
-        public int CompareTo(object obj)
-        {
-            TypeAttribute objType = (TypeAttribute)obj;
-            return this.UUID.CompareTo(objType.UUID);
-        }
-
-        #endregion
-
-        #region toString
-
-        public override string ToString()
+        public override String ToString()
         {
             return ToString("|");
         }
 
-        public string ToString(String mySeperator)
+        #endregion
+
+        #region ToString(mySeperator)
+
+        public String ToString(String mySeperator)
         {
-            StringBuilder sb = new StringBuilder();
 
-            sb.Append(_Name);
+            var _StringBuilder = new StringBuilder();
 
-            sb.Append(" : ");
+            _StringBuilder.Append(Name);
 
-            if (_TypeCharacteristics.IsBackwardEdge)
+            _StringBuilder.Append(" : ");
+
+            if (TypeCharacteristics.IsBackwardEdge)
             {
-                sb.Append("BACKWARDEDGE<");
+                _StringBuilder.Append("BACKWARDEDGE<");
 
-                sb.Append(_BackwardEdgeDefinition.ToString());
+                _StringBuilder.Append(BackwardEdgeDefinition.ToString());
 
-                sb.Append(">");
+                _StringBuilder.Append(">");
             }
+
             else
             {
 
-                if (_KindOfType == KindsOfType.ListOfNoneReferences)
-                    sb.Append("LIST<");
+                if (KindOfType == KindsOfType.ListOfNoneReferences)
+                    _StringBuilder.Append("LIST<");
 
-                if (_KindOfType == KindsOfType.SetOfNoneReferences || _KindOfType == KindsOfType.SetOfReferences)
-                    sb.Append("SET<");
+                if (KindOfType == KindsOfType.SetOfNoneReferences || KindOfType == KindsOfType.SetOfReferences)
+                    _StringBuilder.Append("SET<");
 
-                sb.Append(_DBTypeUUID.ToString());
+                _StringBuilder.Append(DBTypeUUID.ToString());
 
-                if (_KindOfType == KindsOfType.SetOfReferences || _KindOfType == KindsOfType.SetOfNoneReferences || _KindOfType == KindsOfType.ListOfNoneReferences)
-                    sb.Append(">");
+                if (KindOfType == KindsOfType.SetOfReferences || KindOfType == KindsOfType.SetOfNoneReferences || KindOfType == KindsOfType.ListOfNoneReferences)
+                    _StringBuilder.Append(">");
             }
 
-            var tCharcts = _TypeCharacteristics.ToString();
+            var tCharcts = TypeCharacteristics.ToString();
             if (tCharcts != String.Empty)
             {
-                sb.Append(mySeperator);
-                sb.Append(_TypeCharacteristics.ToString());
+                _StringBuilder.Append(mySeperator);
+                _StringBuilder.Append(TypeCharacteristics.ToString());
             }
 
-            sb.Append(mySeperator);
-            sb.Append("[UUID: ");
-            sb.Append(_DBTypeUUID.ToString().Firststring(3));
-            sb.Append("]");
+            _StringBuilder.Append(mySeperator);
+            _StringBuilder.Append("[UUID: ");
+            _StringBuilder.Append(DBTypeUUID.ToString().Firststring(3));
+            _StringBuilder.Append("]");
 
-            return sb.ToString();
+            return _StringBuilder.ToString();
+
         }
 
         #endregion
 
         #endregion
-    
+
     }
 
 }

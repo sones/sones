@@ -42,6 +42,7 @@ using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
 using sones.Lib;
 using sones.GraphDB.QueryLanguage.Enums;
+using System.Diagnostics;
 
 namespace sones.GraphDB.TypeManagement
 {
@@ -215,7 +216,7 @@ namespace sones.GraphDB.TypeManagement
 
             #region UUID special Attribute
 
-            var specialTypeAttribute_UUID = new SpecialTypeAttribute_UUID() { DBTypeUUID = DBReference.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_UUID = new SpecialTypeAttribute_UUID() { DBTypeUUID = DBReference.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_UUID.UUID, specialTypeAttribute_UUID);
             _GUIDTypeAttribute = specialTypeAttribute_UUID;
 
@@ -223,126 +224,126 @@ namespace sones.GraphDB.TypeManagement
 
             #region CreationTime special attribute
 
-            var specialTypeAttribute_CrTime = new SpecialTypeAttribute_CREATIONTIME() { DBTypeUUID = DBString.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_CrTime = new SpecialTypeAttribute_CREATIONTIME() { DBTypeUUID = DBString.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_CrTime.UUID, specialTypeAttribute_CrTime);
 
             #endregion
             
             #region DeletionTime special attribute
 
-            var specialTypeAttribute_DelTime = new SpecialTypeAttribute_DELETIONTIME() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_DelTime = new SpecialTypeAttribute_DELETIONTIME() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_DelTime.UUID, specialTypeAttribute_DelTime);
 
             #endregion
 
             #region Edition special attribute
 
-            var specialTypeAttribute_Edition = new SpecialTypeAttribute_EDITION() { DBTypeUUID = DBString.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_Edition = new SpecialTypeAttribute_EDITION() { DBTypeUUID = DBString.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_Edition.UUID, specialTypeAttribute_Edition);
 
             #endregion
 
             #region Editions special attribute
 
-            var specialTypeAttribute_Editions = new SpecialTypeAttribute_EDITIONS() { DBTypeUUID = DBString.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_Editions = new SpecialTypeAttribute_EDITIONS() { DBTypeUUID = DBString.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_Editions.UUID, specialTypeAttribute_Editions);
 
             #endregion
 
             #region LastAccessTime special attribute
 
-            var specialTypeAttribute_AcTime = new SpecialTypeAttribute_LASTACCESSTIME() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_AcTime = new SpecialTypeAttribute_LASTACCESSTIME() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_AcTime.UUID, specialTypeAttribute_AcTime);
 
             #endregion
 
             #region LastModificationTime special attribute
 
-            var specialTypeAttribute_LastModTime = new SpecialTypeAttribute_LASTMODIFICATIONTIME() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_LastModTime = new SpecialTypeAttribute_LASTMODIFICATIONTIME() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_LastModTime.UUID, specialTypeAttribute_LastModTime);
 
             #endregion            
 
             #region TypeName special Attribute
 
-            var specialTypeAttribute_TYPE = new SpecialTypeAttribute_TYPE() { DBTypeUUID = DBString.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_TYPE = new SpecialTypeAttribute_TYPE() { DBTypeUUID = DBString.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_TYPE.UUID, specialTypeAttribute_TYPE);
 
             #endregion
 
             #region REVISION special Attribute
 
-            var specialTypeAttribute_REVISION = new SpecialTypeAttribute_REVISION() { DBTypeUUID = DBString.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_REVISION = new SpecialTypeAttribute_REVISION() { DBTypeUUID = DBString.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_REVISION.UUID, specialTypeAttribute_REVISION);
 
             #endregion
 
             #region REVISIONS special Attribute
 
-            var specialTypeAttribute_REVISIONS = new SpecialTypeAttribute_REVISIONS() { DBTypeUUID = DBString.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_REVISIONS = new SpecialTypeAttribute_REVISIONS() { DBTypeUUID = DBString.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_REVISIONS.UUID, specialTypeAttribute_REVISIONS);
 
             #endregion
 
             #region STREAMS special Attribute
 
-            var specialTypeAttribute_STREAMS = new SpecialTypeAttribute_STREAMS() { DBTypeUUID = DBString.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_STREAMS = new SpecialTypeAttribute_STREAMS() { DBTypeUUID = DBString.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_STREAMS.UUID, specialTypeAttribute_STREAMS);
 
             #endregion
 
             #region NUMBER OF REVISIONS Attribute
 
-            var specialTypeAttribute_NUMBEROFREVISIONS = new SpecialTypeAttribute_NUMBEROFREVISIONS() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_NUMBEROFREVISIONS = new SpecialTypeAttribute_NUMBEROFREVISIONS() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_NUMBEROFREVISIONS.UUID, specialTypeAttribute_NUMBEROFREVISIONS);
 
             #endregion
 
             #region NUMBER OF COPIES
 
-            var specialTypeAttribute_NUMBEROFCOPIES = new SpecialTypeAttribute_NUMBEROFCOPIES() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_NUMBEROFCOPIES = new SpecialTypeAttribute_NUMBEROFCOPIES() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_NUMBEROFCOPIES.UUID, specialTypeAttribute_NUMBEROFCOPIES);
 
             #endregion
 
             #region PARENT REVISION IDs
 
-            var specialTypeAttribute_PARENTREVISIONIDs = new SpecialTypeAttribute_PARENTREVISIONS() { DBTypeUUID = DBString.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_PARENTREVISIONIDs = new SpecialTypeAttribute_PARENTREVISIONS() { DBTypeUUID = DBString.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_PARENTREVISIONIDs.UUID, specialTypeAttribute_PARENTREVISIONIDs);
 
             #endregion
 
             #region MAX REVISION AGE
 
-            var specialTypeAttribute_MAXREVISIONAGE = new SpecialTypeAttribute_MAXREVISIONAGE() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_MAXREVISIONAGE = new SpecialTypeAttribute_MAXREVISIONAGE() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_MAXREVISIONAGE.UUID, specialTypeAttribute_MAXREVISIONAGE);
 
             #endregion
 
             #region MIN NUMBER OF REVISIONS
 
-            var specialTypeAttribute_MINNUMBEROFREVISIONS = new SpecialTypeAttribute_MINNUMBEROFREVISIONS() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_MINNUMBEROFREVISIONS = new SpecialTypeAttribute_MINNUMBEROFREVISIONS() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_MINNUMBEROFREVISIONS.UUID, specialTypeAttribute_MINNUMBEROFREVISIONS);
 
             #endregion
             
             #region MAX NUMBER OF REVISIONS
 
-            var specialTypeAttribute_MAXNUMBEROFREVISIONS = new SpecialTypeAttribute_MAXNUMBEROFREVISIONS() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_MAXNUMBEROFREVISIONS = new SpecialTypeAttribute_MAXNUMBEROFREVISIONS() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_MAXNUMBEROFREVISIONS.UUID, specialTypeAttribute_MAXNUMBEROFREVISIONS);
 
             #endregion
 
             #region MAX NUMBER OF COPIES
 
-            var specialTypeAttribute_MAXNUMBEROFCOPIES = new SpecialTypeAttribute_MAXNUMBEROFCOPIES() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_MAXNUMBEROFCOPIES = new SpecialTypeAttribute_MAXNUMBEROFCOPIES() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_MAXNUMBEROFCOPIES.UUID, specialTypeAttribute_MAXNUMBEROFCOPIES);
 
             #endregion
 
             #region MIN NUMBER OF COPIES
 
-            var specialTypeAttribute_MINNUMBEROFCOPIES = new SpecialTypeAttribute_MINNUMBEROFCOPIES() { DBTypeUUID = DBUInt64.UUID, RelatedPandoraTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
+            var specialTypeAttribute_MINNUMBEROFCOPIES = new SpecialTypeAttribute_MINNUMBEROFCOPIES() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
             typeDBReference.AddAttribute(specialTypeAttribute_MINNUMBEROFCOPIES.UUID, specialTypeAttribute_MINNUMBEROFCOPIES);
 
             #endregion
@@ -632,7 +633,7 @@ namespace sones.GraphDB.TypeManagement
             #region adapt type
 
             //if we reach this code, no other superclass contains an attribute with this name, so add it!
-            myTypeAttribute.RelatedPandoraTypeUUID = tempTargetClassType.UUID;
+            myTypeAttribute.RelatedGraphDBTypeUUID = tempTargetClassType.UUID;
             
             if (myTypeAttribute.DefaultValue != null)
             {
@@ -1113,7 +1114,7 @@ namespace sones.GraphDB.TypeManagement
                         TypeAttribute newAttr = attribute.Key;
 
                         newAttr.DBTypeUUID = attrType.UUID;
-                        newAttr.RelatedPandoraTypeUUID = aType.UUID;
+                        newAttr.RelatedGraphDBTypeUUID = aType.UUID;
 
                         #region we had not defined a special EdgeType - for single reference attributes we need to set the EdgeTypeSingle NOW!
 
@@ -1416,7 +1417,7 @@ namespace sones.GraphDB.TypeManagement
             ta.Name = myBackwardEdgeNode.AttributeName;
             ta.EdgeType = myBackwardEdgeNode.EdgeType.GetNewInstance();
             ta.TypeCharacteristics.IsBackwardEdge = true;
-            ta.RelatedPandoraTypeUUID = myDBTypeStream.UUID;
+            ta.RelatedGraphDBTypeUUID = myDBTypeStream.UUID;
 
             return new Exceptional<TypeAttribute>(ta);
 
@@ -1661,7 +1662,7 @@ namespace sones.GraphDB.TypeManagement
             }
             else
             {
-                System.Diagnostics.Debug.WriteLine("[ TypeManager -> RemoveType(String TypeName) ] " + "Type " + myType + " could not be deleted, because no such user defined type does exist.");
+                Debug.WriteLine("[ TypeManager -> RemoveType(String TypeName) ] " + "Type " + myType + " could not be deleted, because no such user defined type does exist.");
                 return new Exceptional<bool>(new GraphDBError("[ TypeManager -> RemoveType(String TypeName) ] " + "Type " + myType + " could not be deleted, because no such user defined type does exist."));
             }
 

@@ -16,6 +16,7 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 {
     public class SpecialTypeAttribute_MINNUMBEROFREVISIONS : ASpecialTypeAttribute
     {
+
         #region AttributeUUID
 
         public static AttributeUUID AttributeUUID = new AttributeUUID(16);
@@ -28,12 +29,12 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 
         #endregion
 
-        #region constructors
+        #region Constructors
 
         public SpecialTypeAttribute_MINNUMBEROFREVISIONS()
         {
-            _Name = AttributeName;
-            _UUID = AttributeUUID;
+            Name = AttributeName;
+            UUID = AttributeUUID;
         }
 
         #endregion
@@ -55,5 +56,6 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
         {
             return new Exceptional<AObject>(new DBUInt64(dbObjectStream.MinNumberOfRevisions));
         }
+
     }
 }

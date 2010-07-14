@@ -34,6 +34,7 @@ using Newtonsoft.Json.Linq;
 
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.ObjectManagement;
 
 #endregion
 
@@ -139,17 +140,18 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
-        #region Export(myDBObjectReadout, myRecursion = false)
+        #region Export(myDBObjectReadout, myRecursion)
 
         public Object Export(DBObjectReadout myDBObjectReadout, Boolean myRecursion)
         {
 
             var _DBObject = new JObject();
 
-            DBObjectReadoutGroup _GroupedDBObjects = null;
-            DBWeightedObjectReadout _WeightedDBObject = null;
-            IEnumerable<DBObjectReadout> _DBObjects = null;
-            IEnumerable<Object> _AttributeValueList = null;
+            DBObjectReadoutGroup         _GroupedDBObjects      = null;
+            DBWeightedObjectReadout      _WeightedDBObject      = null;
+            IEnumerable<DBObjectReadout> _DBObjects             = null;
+            IEnumerable<Object>          _AttributeValueList    = null;
+            IGetName                     _IGetName              = null;
 
             #region DBWeightedObjectReadout
 
@@ -247,25 +249,22 @@ namespace sones.GraphDS.API.CSharp
                     if (_AttributeValueList != null)
                     {
 
-                        JArray array = new JArray();
+                        var _JArray = new JArray();
 
                         foreach (var item in _AttributeValueList)
                         {
-                            if (!(item is GraphDBType))
-                                array.Add(item);
+
+                            // item.ToString() may not always return the information we need!
+                            _IGetName = item as IGetName;
+
+                            if (_IGetName != null)
+                                _JArray.Add(_IGetName.Name);
+                            else
+                                _JArray.Add(item.ToString());
+
                         }
 
-                        if (_AttributeValueList.Count() > 0)
-                        {
-                            if (_AttributeValueList.First() is GraphDBType)
-                            {
-                                _Attributes.Add(new JProperty(_Attribute.Key, ((GraphDBType)_AttributeValueList.First()).Name + " []"));
-                            }
-                            else
-                                _Attributes.Add(new JProperty(_Attribute.Key, array));
-                        }
-                        else
-                            _Attributes.Add(new JProperty(_Attribute.Key, new JArray()));
+                        _Attributes.Add(new JProperty(_Attribute.Key, _JArray));
 
                         continue;
 
@@ -275,10 +274,11 @@ namespace sones.GraphDS.API.CSharp
 
                     #region Attribute Value
 
-                    if (_Attribute.Value is GraphDBType)
-                        _Attributes.Add(new JProperty(_Attribute.Key, ((GraphDBType)_Attribute.Value).Name));
-                    else if(_Attribute.Value is TypeAttribute)
-                        _Attributes.Add(new JProperty(_Attribute.Key, ((TypeAttribute)_Attribute.Value).Name));
+                    // _Attribute.Value.ToString() may not always return the information we need!
+                    _IGetName = _Attribute.Value as IGetName;
+
+                    if (_IGetName != null)
+                        _Attributes.Add(new JProperty(_Attribute.Key, _IGetName.Name));
                     else
                         _Attributes.Add(new JProperty(_Attribute.Key, _Attribute.Value.ToString()));
 

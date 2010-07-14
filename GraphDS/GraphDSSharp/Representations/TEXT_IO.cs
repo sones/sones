@@ -130,7 +130,7 @@ namespace sones.GraphDB.QueryLanguage.Result
         #endregion
 
 
-        #region Export(myDBObjectReadout, myRecursion = false)
+        #region Export(myDBObjectReadout, myRecursion)
 
         public Object Export(DBObjectReadout myDBObjectReadout)
         {

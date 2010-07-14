@@ -34,6 +34,7 @@ using sones.GraphDB.TypeManagement;
 using sones.GraphDB.QueryLanguage.Result;
 
 using sones.Lib;
+using sones.GraphDB.ObjectManagement;
 
 #endregion
 
@@ -142,7 +143,7 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
-        #region Export(myDBObjectReadout, myRecursion = false)
+        #region Export(myDBObjectReadout, myRecursion)
 
         public Object Export(DBObjectReadout myDBObjectReadout, Boolean myRecursion)
         {
@@ -151,10 +152,11 @@ namespace sones.GraphDS.API.CSharp
             var  _AttributeTypeString   = "";
             var  _DBObject              = new XElement("DBObject");
 
-            DBObjectReadoutGroup         _GroupedDBObjects   = null;
-            DBWeightedObjectReadout      _WeightedDBObject   = null;
-            IEnumerable<DBObjectReadout> _DBObjects          = null;
-            IEnumerable<Object>          _AttributeValueList = null;
+            DBObjectReadoutGroup         _GroupedDBObjects      = null;
+            DBWeightedObjectReadout      _WeightedDBObject      = null;
+            IEnumerable<DBObjectReadout> _DBObjects             = null;
+            IEnumerable<Object>          _AttributeValueList    = null;
+            IGetName                     _IGetName              = null;
 
             #region DBWeightedObjectReadout
 
@@ -267,22 +269,31 @@ namespace sones.GraphDS.API.CSharp
                     _AttributeValueList = _Attribute.Value as IEnumerable<Object>;
 
                     if (_AttributeValueList != null)
+                    {
                         foreach (var _Value in _AttributeValueList)
                         {
-                            if(_Value is GraphDBType)
-                                _AttributeTag.Add(new XElement("item", ((GraphDBType)_Value).Name));
+
+                            // _Value.ToString() may not always return the information we need!
+                            _IGetName = _Value as IGetName;
+                            if (_IGetName != null)
+                                _AttributeTag.Add(new XElement("item", _IGetName.Name));
                             else
                                 _AttributeTag.Add(new XElement("item", _Value.ToString().EscapeForXMLandHTML()));
+
                         }
+                    }
 
                     else
-                    {   
-                        if (_Attribute.Value is GraphDBType)
-                            _AttributeTag.Value = ((GraphDBType)_Attribute.Value).Name;
-                        else if(_Attribute.Value is TypeAttribute)
-                            _AttributeTag.Value = ((TypeAttribute)_Attribute.Value).Name;
+                    {
+
+                        // _Attribute.Value.ToString() may not always return the information we need!
+                        _IGetName = _Attribute.Value as IGetName;
+
+                        if (_IGetName != null)
+                            _AttributeTag.Value = _IGetName.Name;
                         else
-                            _AttributeTag.Value = _Attribute.Value.ToString().EscapeForXMLandHTML();                        
+                            _AttributeTag.Value = _Attribute.Value.ToString().EscapeForXMLandHTML();
+
                     }
 
                     #endregion

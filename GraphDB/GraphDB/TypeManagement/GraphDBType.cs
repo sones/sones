@@ -40,6 +40,7 @@ using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Indices;
 using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.QueryLanguage.Enums;
 using sones.GraphDB.Settings;
 using sones.GraphDB.Structures;
 using sones.GraphDB.TypeManagement.PandoraTypes;
@@ -54,16 +55,22 @@ using sones.Lib.DataStructures.UUID;
 using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
 using sones.Lib.Serializer;
-using sones.Lib.Session;
-using sones.GraphDB.QueryLanguage.Enums;
+using System.Diagnostics;
 
 #endregion
 
 namespace sones.GraphDB.TypeManagement
 {
 
-    public class GraphDBType : AFSObject, IComparable//, ICloneable
+    public class GraphDBType : AFSObject, IComparable, IGetName
     {
+
+        #region Data
+
+        private Boolean isNew = true;
+        private GraphDBType _ParentType = null;
+
+        #endregion
 
         #region Properties
 
@@ -98,20 +105,10 @@ namespace sones.GraphDB.TypeManagement
 
         #region ParentType
 
-        private TypeUUID _ParentTypeUUID;
-
         /// <summary>
         /// The parent type of this PandoraType
         /// </summary>
-        public TypeUUID ParentTypeUUID
-        {
-            get
-            {
-                return _ParentTypeUUID;
-            }
-        }
-
-        private GraphDBType _ParentType = null;
+        public TypeUUID ParentTypeUUID { get; private set; }
 
         #endregion
 
@@ -120,12 +117,14 @@ namespace sones.GraphDB.TypeManagement
         private Dictionary<String, ADBSettingsBase>         _TypeSettings;
         private List<AttributeUUID>                         _UniqueAttributes;
         private HashSet<AttributeUUID>                      _MandatoryAttributes;
-        private HashSet<AttributeUUID>                      _ParentMandatoryAttribs;
+        private HashSet<AttributeUUID>                      _MandatoryParentAttributes;
 
         /// <summary>
         /// All attributes which are explicitly defined by the user but just show the implicit backwardedge
         /// </summary>
-        private Dictionary<EdgeKey, AttributeUUID> _BackwardEdgeAttributes;
+        private Dictionary<EdgeKey, AttributeUUID>          _BackwardEdgeAttributes;
+        
+        #endregion
 
         #region Attributes
 
@@ -144,8 +143,6 @@ namespace sones.GraphDB.TypeManagement
                 return _Attributes;
             }
         }
-
-        #endregion
 
         #endregion
 
@@ -264,8 +261,6 @@ namespace sones.GraphDB.TypeManagement
 
         #endregion
 
-        private Boolean isNew = true;
-
         #endregion
 
         #region Constructor
@@ -330,7 +325,7 @@ namespace sones.GraphDB.TypeManagement
                 throw new ArgumentNullException("Invalid ObjectLocation!");
 
 
-            _ParentTypeUUID                 = new TypeUUID(0);
+            ParentTypeUUID              = new TypeUUID(0);
             _Attributes                 = new Dictionary<AttributeUUID,TypeAttribute>();
             _AttributeIndices           = new Dictionary<IndexKeyDefinition, Dictionary<string,AttributeIndex>>();
             _AttributeIndicesNameLookup = new Dictionary<String, IndexKeyDefinition>();
@@ -361,7 +356,7 @@ namespace sones.GraphDB.TypeManagement
             // PandoraType is the most abstract type, not inheriting from any type.
             // Any type defineable is a Pandora type.
             // Set the parent type
-            _ParentTypeUUID                 = myParentType;
+            ParentTypeUUID                 = myParentType;
 
             // PandoraType is the most abstract type.
             // It doesnt contain any special myAttributes.
@@ -394,332 +389,38 @@ namespace sones.GraphDB.TypeManagement
 
         #endregion
 
-        #region APandoraStructure Members
-
-        #region Clone()
-
-        public override AFSObject Clone()
-        {
-
-            var newT = new GraphDBType();
-            newT._AttributeIndices = _AttributeIndices;
-            newT.Deserialize(Serialize(null, null, false), null, null, this);
-
-            return newT;
-
-        }
-
-        #endregion
-
-        #endregion
-
-        #region IComparable Members
-
-        public int CompareTo(object obj)
-        {
-            GraphDBType objType = (GraphDBType) obj;
-            return this.Name.CompareTo(objType.Name);
-        }
-
-        #endregion
-
-        #region Equals Overrides
-
-        public override Boolean Equals(System.Object obj)
-        {
-
-            // If parameter is null return false.
-            if (obj == null)
-            {
-                return false;
-            }
-
-            // If parameter cannot be cast to Point return false.
-            GraphDBType p = obj as GraphDBType;
-            if ((System.Object)p == null)
-            {
-                return false;
-            }
-
-            return Equals(p);
-
-        }
-
-        public Boolean Equals(GraphDBType p)
-        {
-            // If parameter is null return false:
-            if ((object)p == null)
-            {
-                return false;
-            }
-
-            return (this.UUID == p.UUID);
-        }
-
-        public override int GetHashCode()
-        {
-            return this.UUID.GetHashCode();
-        }
-
-        public static Boolean operator ==(GraphDBType a, GraphDBType b)
-        {
-            // If both are null, or both are same instance, return true.
-            if (System.Object.ReferenceEquals(a, b))
-            {
-                return true;
-            }
-
-            // If one is null, but not both, return false.
-            if (((object)a == null) || ((object)b == null))
-            {
-                return false;
-            }
-
-            // Return true if the fields match:
-            return a.Equals(b);
-        }
-
-        public static Boolean operator !=(GraphDBType a, GraphDBType b)
-        {
-            return !(a == b);
-        }
-
-        #endregion
-
-        #region ToString()
-
-        public override String ToString()
-        {
-
-            var _returnValue = new StringBuilder(String.Empty);
-
-            _returnValue.Append(Name);
-
-            _returnValue.Append(" : " + _ParentTypeUUID + " (");
-
-            foreach (KeyValuePair<AttributeUUID, TypeAttribute> attr in _Attributes)
-            {
-                _returnValue.Append("<");
-                var keyString = attr.Key.ToString();
-
-                if (keyString.Length >= 3)
-                {
-                    _returnValue.Append(keyString.Substring(0, 3));
-                }
-                else
-                {
-                    _returnValue.Append(keyString);
-                }
-
-                _returnValue.Append("> ");
-                _returnValue.Append(attr.Value.ToString());
-                _returnValue.Append(",");
-            }
-            _returnValue.Remove(_returnValue.Length - 1, 1);
-
-            _returnValue.Append(")");
-
-            if (!_Comment.IsNullOrEmpty())
-            {
-                _returnValue.Append(String.Format(" Comment: {0}", _Comment));
-            }
-
-            return _returnValue.ToString();
-
-        }
-
-        #endregion
-
-        #region Serialization
-
-        public override void Serialize(ref SerializationWriter mySerializationWriter)
-        {
-            if (mySerializationWriter != null)
-            {
-                try
-                {
-                    _UUID.Serialize(ref mySerializationWriter);
-                    _ParentTypeUUID.Serialize(ref mySerializationWriter);
-                    mySerializationWriter.WriteObject(_IsUserDefined);
-                    mySerializationWriter.WriteObject(_IsAbstract);
-                    mySerializationWriter.WriteObject(_Comment);
-
-                    mySerializationWriter.WriteObject((UInt32)_Attributes.Count);
-                    foreach (var pValPair in _Attributes)
-                    {
-                        pValPair.Key.Serialize(ref mySerializationWriter);
-                        pValPair.Value.Serialize(ref mySerializationWriter);
-                    }
-
-                    mySerializationWriter.WriteObject((UInt32)_TypeSettings.Count);
-                    foreach (var pValPair in _TypeSettings)
-                        mySerializationWriter.WriteObject(pValPair.Value);                    
-
-                    mySerializationWriter.WriteObject((UInt32)_UniqueAttributes.Count);
-                    foreach (var pValPair in _UniqueAttributes)
-                        mySerializationWriter.WriteObject(pValPair.GetByteArray());
-
-                    mySerializationWriter.WriteObject((UInt32)_MandatoryAttributes.Count);
-                    foreach (var pValPair in _MandatoryAttributes)
-                        mySerializationWriter.WriteObject(pValPair.GetByteArray());
-
-
-                    #region Indices
-
-                    mySerializationWriter.WriteObject(_AttributeIndices.Count);
-                    foreach (var idx in _AttributeIndices)
-                    {
-                        idx.Key.Serialize(ref mySerializationWriter);
-
-                        mySerializationWriter.WriteObject(idx.Value.Count);
-                        foreach (var idxType in idx.Value)
-                        {
-                            mySerializationWriter.WriteObject(idxType.Key);
-                            mySerializationWriter.WriteObject(idxType.Value.FileSystemLocation.ToString());
-                            mySerializationWriter.WriteObject(idxType.Value.IndexEdition);
-                            mySerializationWriter.WriteObject(idxType.Value.IndexName);
-                            mySerializationWriter.WriteObject(idxType.Value.IndexType);
-                        }
-                    }
-
-                    #endregion
-
-                }
-                catch (Exception e)
-                {
-                    throw new SerializationException("The GraphDBType could not be serialized!\n\n" + e);
-                }
-            }
-        }
-
-        public override void Deserialize(ref SerializationReader mySerializationReader)
-        {
-            UInt32              _Capacity;
-
-            if (mySerializationReader != null)
-            {
-                try 
-                {
-                    _UUID = new TypeUUID();
-                    UUID.Deserialize(ref mySerializationReader);
-                    _ParentTypeUUID = new TypeUUID();
-                    _ParentTypeUUID.Deserialize(ref mySerializationReader);
-                    _IsUserDefined = (Boolean)mySerializationReader.ReadObject();
-                    _IsAbstract = (Boolean)mySerializationReader.ReadObject();
-                    _Comment = (String)mySerializationReader.ReadObject();
-
-                    _Capacity = (UInt32)mySerializationReader.ReadObject();
-                
-                    _Attributes = new Dictionary<AttributeUUID, TypeAttribute>();
-                    _BackwardEdgeAttributes = new Dictionary<EdgeKey, AttributeUUID>();
-
-                    _TypeAttributeLookupTable = new Dictionary<AttributeUUID, TypeAttribute>();
-                    for (UInt32 i = 0; i < _Capacity; i++)
-                    {
-                        var _AttrAtrib = new AttributeUUID();
-                        _AttrAtrib.Deserialize(ref mySerializationReader);
-                        var _TypeObj = new TypeAttribute();                        
-                        _TypeObj.Deserialize(ref mySerializationReader);
-                        _Attributes.Add(_AttrAtrib, _TypeObj);
-                        _TypeAttributeLookupTable.Add(_AttrAtrib, _TypeObj);
-
-                        if (_TypeObj.IsBackwardEdge)
-                        {
-                            AddBackwardEdgeAttribute(_TypeObj);
-                        }
-                    }
-                               
-                    _Capacity = (UInt32)mySerializationReader.ReadObject();
-                    _TypeSettings = new Dictionary<String, ADBSettingsBase>();
-                
-                    for (UInt32 i = 0; i < _Capacity; i++)
-                    {                        
-                        ADBSettingsBase _ADBSettingsBase = (ADBSettingsBase)mySerializationReader.ReadObject();
-                        if(_ADBSettingsBase != null)
-                            _TypeSettings.Add(_ADBSettingsBase.Name, _ADBSettingsBase);
-                    }
-
-                    _Capacity = (UInt32)mySerializationReader.ReadObject();
-                    _UniqueAttributes = new List<AttributeUUID>();
-                    AttributeUUID AttribID = null;
-
-                    for (UInt32 i = 0; i < _Capacity; i++)
-                    {
-                        AttribID = new AttributeUUID(ref mySerializationReader);
-                        _UniqueAttributes.Add(AttribID);
-                    }
-
-                    _Capacity = (UInt32)mySerializationReader.ReadObject();
-                    _MandatoryAttributes = new HashSet<AttributeUUID>();
-
-                    for (UInt32 i = 0; i < _Capacity; i++)
-                    {
-                        AttribID = new AttributeUUID(ref mySerializationReader);
-                        _MandatoryAttributes.Add(AttribID);
-                    }
-
-                    #region Indices
-
-                    _AttributeIndices = new Dictionary<IndexKeyDefinition, Dictionary<String, AttributeIndex>>();
-                    _AttributeIndicesNameLookup = new Dictionary<string, IndexKeyDefinition>();
-
-                    Int32 idxCount = (Int32)mySerializationReader.ReadObject();
-                    for (Int32 i = 0; i < idxCount; i++)
-                    {
-
-                        IndexKeyDefinition idxKey = new IndexKeyDefinition();
-                        idxKey.Deserialize(ref mySerializationReader);
-
-                        //_AttributeIndices.Add(idxKey, new Dictionary<String, AttributeIndex>());
-
-                        Int32 idxVersionCount = (Int32)mySerializationReader.ReadObject();
-                        for (UInt32 j = 0; j < idxVersionCount; j++)
-                        {
-                            String key = (String)mySerializationReader.ReadObject();
-                            var fileSystemLocation = new ObjectLocation((String)mySerializationReader.ReadObject());
-                            String indexEdition = (String)mySerializationReader.ReadObject();
-                            String indexName = (String)mySerializationReader.ReadObject();
-                            String indexType = (String)mySerializationReader.ReadObject();
-
-                            //var CreateIdxExcept = CreateAttributeIndex(indexName, idxKey.IndexKeyAttributeUUIDs, indexEdition, indexObjectType, fileSystemLocation);
-                            AddAttributeIndex(new AttributeIndex(indexName, idxKey, this, indexType, indexEdition));
-
-                            //if (CreateIdxExcept.Failed)
-                            //    throw new GraphDBException(CreateIdxExcept.Errors);
-                        }
-
-                    }
-
-                    #endregion
-                }
-                catch (Exception e)
-                {
-                    throw new SerializationException("The GraphDBType could not be deserialized!\n\n" + e);
-                }
-            }
-        }
-        #endregion
-
+        
         #region private helper methods
 
-        private HashSet<AttributeUUID> GetParentMandatoryAttr(DBTypeManager myTypeManager)
+        #region GetParentMandatoryAttr(myDBTypeManager)
+
+        private HashSet<AttributeUUID> GetParentMandatoryAttr(DBTypeManager myDBTypeManager)
         {
-            IEnumerable<GraphDBType> ParentTypes = myTypeManager.GetAllParentTypes(this, false, false);
 
-            if (_ParentMandatoryAttribs == null)
-                _ParentMandatoryAttribs = new HashSet<AttributeUUID>();
+            Debug.Assert(myDBTypeManager != null);
 
-            _ParentMandatoryAttribs.Clear();
-            foreach (var Type in ParentTypes)
+            var _ParentGraphDBTypes = myDBTypeManager.GetAllParentTypes(this, false, false);
+
+            if (_MandatoryParentAttributes == null)
+                _MandatoryParentAttributes = new HashSet<AttributeUUID>();
+
+            _MandatoryParentAttributes.Clear();
+
+            foreach (var Type in _ParentGraphDBTypes)
             {
-                foreach (var attribID in Type.GetMandatoryAttributesUUIDs(myTypeManager))
+                foreach (var attribID in Type.GetMandatoryAttributesUUIDs(myDBTypeManager))
                 {
-                    _ParentMandatoryAttribs.Add(attribID);
+                    _MandatoryParentAttributes.Add(attribID);
                 }
             }
 
-            return _ParentMandatoryAttribs;
+            return _MandatoryParentAttributes;
+
         }
+
+        #endregion
+
+        #region AddAttributeIndex(myAttributeIndex)
 
         /// <summary>
         /// Creates an index for the given myAttributes by filling the given the index with the objects
@@ -797,43 +498,54 @@ namespace sones.GraphDB.TypeManagement
             }
 
             return new Exceptional<Boolean>(true);
+
         }
 
-        private TypeAttribute FindAttributeInLookup(string myName, ref AttributeUUID myKey)
+        #endregion
+
+        #region FindAttributeInLookup(myTypeName, ref myAttributeUUID)
+
+        private TypeAttribute FindAttributeInLookup(String myTypeName, ref AttributeUUID myAttributeUUID)
         {
+
             foreach (var attr in _TypeAttributeLookupTable)
             {
-                if (attr.Value.Name == myName)
+                if (attr.Value.Name == myTypeName)
                 {
-                    myKey = attr.Key;
+                    myAttributeUUID = attr.Key;
                     return attr.Value;
                 }
             }
 
             return null;
+
         }
 
-        private void LoadPandoraType(IGraphFSSession myIGraphFS2Session, ObjectLocation myObjectLocation)
+        #endregion
+
+        #region LoadPandoraType(myIGraphFSSession, myObjectLocation)
+
+        private void LoadPandoraType(IGraphFSSession myIGraphFSSession, ObjectLocation myObjectLocation)
         {
 
 
-            if (myIGraphFS2Session.ObjectExists(myObjectLocation).Value != Trinary.TRUE)
+            if (myIGraphFSSession.ObjectExists(myObjectLocation).Value != Trinary.TRUE)
                 throw new GraphDBException(new Error_DatabaseNotFound(myObjectLocation));
 
-            if (myIGraphFS2Session.UserMetadataExists(new ObjectLocation(myObjectLocation, DBConstants.DBTypeDefinition), "Name").Value != Trinary.TRUE)
+            if (myIGraphFSSession.UserMetadataExists(new ObjectLocation(myObjectLocation, DBConstants.DBTypeDefinition), "Name").Value != Trinary.TRUE)
                 throw new GraphDBException(new Error_DatabaseNotFound(myObjectLocation));
 
-            if (myIGraphFS2Session.UserMetadataExists(new ObjectLocation(myObjectLocation, DBConstants.DBTypeDefinition), "Superclass").Value != Trinary.TRUE)
+            if (myIGraphFSSession.UserMetadataExists(new ObjectLocation(myObjectLocation, DBConstants.DBTypeDefinition), "Superclass").Value != Trinary.TRUE)
                 throw new GraphDBException(new Error_DatabaseNotFound(myObjectLocation));
 
-            _ParentTypeUUID = (TypeUUID)myIGraphFS2Session.GetUserMetadatum(new ObjectLocation(myObjectLocation, DBConstants.DBTypeDefinition), "Superclass").Value.First<Object>();
-            _UUID = (TypeUUID)myIGraphFS2Session.GetUserMetadatum(new ObjectLocation(myObjectLocation, DBConstants.DBTypeDefinition), "UUID").Value.First<Object>();
+            ParentTypeUUID = (TypeUUID)myIGraphFSSession.GetUserMetadatum(new ObjectLocation(myObjectLocation, DBConstants.DBTypeDefinition), "Superclass").Value.First<Object>();
+            _UUID = (TypeUUID)myIGraphFSSession.GetUserMetadatum(new ObjectLocation(myObjectLocation, DBConstants.DBTypeDefinition), "UUID").Value.First<Object>();
 
 
             #region Load attributes and settings
 
             // Attributes
-            var _AttributeList = myIGraphFS2Session.GetUserMetadata(new ObjectLocation(myObjectLocation, DBConstants.DBAttributesLocation));
+            var _AttributeList = myIGraphFSSession.GetUserMetadata(new ObjectLocation(myObjectLocation, DBConstants.DBAttributesLocation));
 
             if (_AttributeList != null && _AttributeList.Success && _AttributeList.Value != null)
             {
@@ -849,7 +561,7 @@ namespace sones.GraphDB.TypeManagement
             }
 
             // Settings
-            var _SettingList = myIGraphFS2Session.GetUserMetadata(new ObjectLocation(myObjectLocation, DBConstants.DBSettingsLocation));
+            var _SettingList = myIGraphFSSession.GetUserMetadata(new ObjectLocation(myObjectLocation, DBConstants.DBSettingsLocation));
 
             if (_SettingList != null && _SettingList.Success && _SettingList.Value != null)
             {
@@ -865,7 +577,7 @@ namespace sones.GraphDB.TypeManagement
             #region Load the list of Indices
 
             // ahzf: This looks strange!
-            if (myIGraphFS2Session.ObjectStreamExists(new ObjectLocation(myObjectLocation, DBConstants.DBIndicesLocation), FSConstants.DIRECTORYSTREAM).Value == Trinary.TRUE)
+            if (myIGraphFSSession.ObjectStreamExists(new ObjectLocation(myObjectLocation, DBConstants.DBIndicesLocation), FSConstants.DIRECTORYSTREAM).Value == Trinary.TRUE)
                 _AttributeIndices = new Dictionary<IndexKeyDefinition, Dictionary<String, AttributeIndex>>();
 
             else
@@ -880,13 +592,18 @@ namespace sones.GraphDB.TypeManagement
 
         }
 
-        private IEnumerable<TypeAttribute> GetAttributes(DBContext context)
+        #endregion
+
+        #region GetAttributes(myDBContext)
+
+        private IEnumerable<TypeAttribute> GetAttributes(DBContext myDBContext)
         {
+
             foreach (var attrib in Attributes)
             {
                 if (attrib.Value is ASpecialTypeAttribute)
                 {
-                    if ((bool)context.DBSettingsManager.GetSettingValue((attrib.Value as ASpecialTypeAttribute).ShowSettingName, context, TypesSettingScope.ATTRIBUTE, this, (attrib.Value as TypeAttribute)).Value.Value)
+                    if ((bool)myDBContext.DBSettingsManager.GetSettingValue((attrib.Value as ASpecialTypeAttribute).ShowSettingName, myDBContext, TypesSettingScope.ATTRIBUTE, this, (attrib.Value as TypeAttribute)).Value.Value)
                     {
                         continue;
                     }
@@ -896,7 +613,10 @@ namespace sones.GraphDB.TypeManagement
             }
 
             yield break;
+
         }
+
+        #endregion
 
         #endregion
 
@@ -1815,7 +1535,7 @@ namespace sones.GraphDB.TypeManagement
 
         #region comment
 
-        public void SetComment(string comment)
+        public void SetComment(String comment)
         {
             _Comment = comment;
         }
@@ -1828,13 +1548,13 @@ namespace sones.GraphDB.TypeManagement
         {
             if (_ParentType == null)
             {
-                if (_ParentTypeUUID == null)
+                if (ParentTypeUUID == null)
                 {
                     return null;
                 }
                 else
                 {
-                    _ParentType = myTypeManager.GetTypeByUUID(_ParentTypeUUID);
+                    _ParentType = myTypeManager.GetTypeByUUID(ParentTypeUUID);
 
                     return _ParentType;
                 }
@@ -1853,20 +1573,23 @@ namespace sones.GraphDB.TypeManagement
 
         public void SetParentTypeUUID(TypeUUID typeUUID)
         {
-            _ParentTypeUUID = typeUUID;
+            ParentTypeUUID = typeUUID;
         }
 
         #endregion
 
         #endregion
 
+        #region (internal) Initialize(myDBTypeManager)
+
         /// <summary>
         /// Initialize the type: verify it and set all lookuptables threadsafe
         /// </summary>
-        /// <param name="dBTypeManager"></param>
+        /// <param name="myDBTypeManager"></param>
         /// <returns></returns>
-        internal Exceptional Initialize(DBTypeManager dBTypeManager)
+        internal Exceptional Initialize(DBTypeManager myDBTypeManager)
         {
+
             lock (this)
             {
 
@@ -1877,7 +1600,7 @@ namespace sones.GraphDB.TypeManagement
 
                 #region check if the parent type exists
 
-                GraphDBType parentType = dBTypeManager.GetTypeByUUID(ParentTypeUUID);
+                GraphDBType parentType = myDBTypeManager.GetTypeByUUID(ParentTypeUUID);
 
                 if (parentType == null)
                 {
@@ -1893,7 +1616,7 @@ namespace sones.GraphDB.TypeManagement
 
                     _TypeAttributeLookupTable.Clear();
 
-                    foreach (var aParentType in dBTypeManager.GetAllParentTypes(this, false, true).Where(type => type != this))
+                    foreach (var aParentType in myDBTypeManager.GetAllParentTypes(this, false, true).Where(type => type != this))
                     {
                         AddAttributeToLookupTable(aParentType.Attributes);
                     }
@@ -1904,7 +1627,7 @@ namespace sones.GraphDB.TypeManagement
 
                 }
 
-                var parentTypeExcept = dBTypeManager.HasParentType(ParentTypeUUID, DBBaseObject.UUID);
+                var parentTypeExcept = myDBTypeManager.HasParentType(ParentTypeUUID, DBBaseObject.UUID);
 
                 if (parentTypeExcept.Failed)
                     return new Exceptional(parentTypeExcept);
@@ -1921,10 +1644,10 @@ namespace sones.GraphDB.TypeManagement
 
                 foreach (TypeAttribute attribute in _Attributes.Values)
                 {
-                    if (attribute.GetDBType(dBTypeManager) == null)
+                    if (attribute.GetDBType(myDBTypeManager) == null)
                     {
                         //The typemanager is able to add myAttributes that are of its type
-                        if (!dBTypeManager.GetTypeByUUID(attribute.DBTypeUUID).Name.Equals(Name))
+                        if (!myDBTypeManager.GetTypeByUUID(attribute.DBTypeUUID).Name.Equals(Name))
                         {
                             return new Exceptional(new Error_TypeDoesNotExist(attribute.DBTypeUUID.ToHexString()));
                         }
@@ -1937,6 +1660,371 @@ namespace sones.GraphDB.TypeManagement
             }
 
             return Exceptional.OK;
+
         }
+
+        #endregion
+
+
+        #region Serialization
+
+        #region Serialize(ref mySerializationWriter)
+
+        public override void Serialize(ref SerializationWriter mySerializationWriter)
+        {
+
+            if (mySerializationWriter != null)
+            {
+
+                try
+                {
+
+                    _UUID.Serialize(ref mySerializationWriter);
+                    ParentTypeUUID.Serialize(ref mySerializationWriter);
+                    mySerializationWriter.WriteObject(_IsUserDefined);
+                    mySerializationWriter.WriteObject(_IsAbstract);
+                    mySerializationWriter.WriteObject(_Comment);
+
+                    mySerializationWriter.WriteObject((UInt32)_Attributes.Count);
+                    foreach (var pValPair in _Attributes)
+                    {
+                        pValPair.Key.Serialize(ref mySerializationWriter);
+                        pValPair.Value.Serialize(ref mySerializationWriter);
+                    }
+
+                    mySerializationWriter.WriteObject((UInt32)_TypeSettings.Count);
+                    foreach (var pValPair in _TypeSettings)
+                        mySerializationWriter.WriteObject(pValPair.Value);                    
+
+                    mySerializationWriter.WriteObject((UInt32)_UniqueAttributes.Count);
+                    foreach (var pValPair in _UniqueAttributes)
+                        mySerializationWriter.WriteObject(pValPair.GetByteArray());
+
+                    mySerializationWriter.WriteObject((UInt32)_MandatoryAttributes.Count);
+                    foreach (var pValPair in _MandatoryAttributes)
+                        mySerializationWriter.WriteObject(pValPair.GetByteArray());
+
+
+                    #region Indices
+
+                    mySerializationWriter.WriteObject(_AttributeIndices.Count);
+                    foreach (var idx in _AttributeIndices)
+                    {
+                        idx.Key.Serialize(ref mySerializationWriter);
+
+                        mySerializationWriter.WriteObject(idx.Value.Count);
+                        foreach (var idxType in idx.Value)
+                        {
+                            mySerializationWriter.WriteObject(idxType.Key);
+                            mySerializationWriter.WriteObject(idxType.Value.FileSystemLocation.ToString());
+                            mySerializationWriter.WriteObject(idxType.Value.IndexEdition);
+                            mySerializationWriter.WriteObject(idxType.Value.IndexName);
+                            mySerializationWriter.WriteObject(idxType.Value.IndexType);
+                        }
+                    }
+
+                    #endregion
+
+                }
+
+                catch (Exception e)
+                {
+                    throw new SerializationException("The GraphDBType could not be serialized!\n\n" + e);
+                }
+
+            }
+
+        }
+
+        #endregion
+
+        #region Deserialize(ref mySerializationReader)
+
+        public override void Deserialize(ref SerializationReader mySerializationReader)
+        {
+
+            UInt32 _Capacity;
+
+            if (mySerializationReader != null)
+            {
+                try 
+                {
+
+                    _UUID = new TypeUUID();
+                    UUID.Deserialize(ref mySerializationReader);
+                    ParentTypeUUID = new TypeUUID();
+                    ParentTypeUUID.Deserialize(ref mySerializationReader);
+                    _IsUserDefined = (Boolean)mySerializationReader.ReadObject();
+                    _IsAbstract = (Boolean)mySerializationReader.ReadObject();
+                    _Comment = (String)mySerializationReader.ReadObject();
+
+                    _Capacity = (UInt32)mySerializationReader.ReadObject();
+                
+                    _Attributes = new Dictionary<AttributeUUID, TypeAttribute>();
+                    _BackwardEdgeAttributes = new Dictionary<EdgeKey, AttributeUUID>();
+
+                    _TypeAttributeLookupTable = new Dictionary<AttributeUUID, TypeAttribute>();
+                    for (UInt32 i = 0; i < _Capacity; i++)
+                    {
+                        var _AttrAtrib = new AttributeUUID();
+                        _AttrAtrib.Deserialize(ref mySerializationReader);
+                        var _TypeObj = new TypeAttribute();                        
+                        _TypeObj.Deserialize(ref mySerializationReader);
+                        _Attributes.Add(_AttrAtrib, _TypeObj);
+                        _TypeAttributeLookupTable.Add(_AttrAtrib, _TypeObj);
+
+                        if (_TypeObj.IsBackwardEdge)
+                        {
+                            AddBackwardEdgeAttribute(_TypeObj);
+                        }
+                    }
+                               
+                    _Capacity = (UInt32) mySerializationReader.ReadObject();
+                    _TypeSettings = new Dictionary<String, ADBSettingsBase>();
+                
+                    for (var i = 0; i < _Capacity; i++)
+                    {                        
+                        ADBSettingsBase _ADBSettingsBase = (ADBSettingsBase) mySerializationReader.ReadObject();
+                        if(_ADBSettingsBase != null)
+                            _TypeSettings.Add(_ADBSettingsBase.Name, _ADBSettingsBase);
+                    }
+
+                    _Capacity = (UInt32) mySerializationReader.ReadObject();
+                    _UniqueAttributes = new List<AttributeUUID>();
+                    AttributeUUID AttribID = null;
+
+                    for (UInt32 i = 0; i < _Capacity; i++)
+                    {
+                        AttribID = new AttributeUUID(ref mySerializationReader);
+                        _UniqueAttributes.Add(AttribID);
+                    }
+
+                    _Capacity = (UInt32) mySerializationReader.ReadObject();
+                    _MandatoryAttributes = new HashSet<AttributeUUID>();
+
+                    for (UInt32 i = 0; i < _Capacity; i++)
+                    {
+                        AttribID = new AttributeUUID(ref mySerializationReader);
+                        _MandatoryAttributes.Add(AttribID);
+                    }
+
+                    #region Indices
+
+                    _AttributeIndices = new Dictionary<IndexKeyDefinition, Dictionary<String, AttributeIndex>>();
+                    _AttributeIndicesNameLookup = new Dictionary<String, IndexKeyDefinition>();
+
+                    var idxCount = (Int32) mySerializationReader.ReadObject();
+                    for (var i = 0; i < idxCount; i++)
+                    {
+
+                        var idxKey = new IndexKeyDefinition();
+                        idxKey.Deserialize(ref mySerializationReader);
+
+                        //_AttributeIndices.Add(idxKey, new Dictionary<String, AttributeIndex>());
+
+                        var idxVersionCount = (Int32) mySerializationReader.ReadObject();
+
+                        for (var j = 0; j < idxVersionCount; j++)
+                        {
+
+                            var key                 = (String) mySerializationReader.ReadObject();
+                            var fileSystemLocation  = new ObjectLocation((String) mySerializationReader.ReadObject());
+                            var indexEdition        = (String) mySerializationReader.ReadObject();
+                            var indexName           = (String) mySerializationReader.ReadObject();
+                            var indexType           = (String) mySerializationReader.ReadObject();
+
+                            //var CreateIdxExcept = CreateAttributeIndex(indexName, idxKey.IndexKeyAttributeUUIDs, indexEdition, indexObjectType, fileSystemLocation);
+                            AddAttributeIndex(new AttributeIndex(indexName, idxKey, this, indexType, indexEdition));
+
+                            //if (CreateIdxExcept.Failed)
+                            //    throw new GraphDBException(CreateIdxExcept.Errors);
+                        }
+
+                    }
+
+                    #endregion
+
+                }
+
+                catch (Exception e)
+                {
+                    throw new SerializationException("The GraphDBType could not be deserialized!\n\n" + e);
+                }
+
+            }
+
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Clone()
+
+        public override AFSObject Clone()
+        {
+
+            var newT = new GraphDBType();
+            newT._AttributeIndices = _AttributeIndices;
+            newT.Deserialize(Serialize(null, null, false), null, null, this);
+
+            return newT;
+
+        }
+
+        #endregion
+
+
+        #region Operator overloading
+
+        #region myGraphDBType1 == myGraphDBType2
+
+        public static Boolean operator == (GraphDBType myGraphDBType1, GraphDBType myGraphDBType2)
+        {
+
+            // If both are null, or both are same instance, return true.
+            if (Object.ReferenceEquals(myGraphDBType1, myGraphDBType2))
+            {
+                return true;
+            }
+
+            // If one is null, but not both, return false.
+            if (((Object)myGraphDBType1 == null) || ((Object)myGraphDBType2 == null))
+            {
+                return false;
+            }
+
+            // Return true if the fields match:
+            return myGraphDBType1.Equals(myGraphDBType2);
+
+        }
+
+        #endregion
+
+        #region myGraphDBType1 != myGraphDBType2
+
+        public static Boolean operator != (GraphDBType myGraphDBType1, GraphDBType myGraphDBType2)
+        {
+            return !(myGraphDBType1 == myGraphDBType2);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region IComparable Members
+
+        public Int32 CompareTo(Object myObject)
+        {
+            
+            var objType = (GraphDBType) myObject;
+
+            return Name.CompareTo(objType.Name);
+
+        }
+
+        #endregion
+
+        #region Equals Overrides
+
+        #region Equals(myObject)
+
+        public override Boolean Equals(Object myObject)
+        {
+
+            // If parameter is null return false.
+            if (myObject == null)
+            {
+                return false;
+            }
+
+            // If parameter cannot be cast to Point return false.
+            var _GraphDBType = myObject as GraphDBType;
+            if ((Object) _GraphDBType == null)
+            {
+                return false;
+            }
+
+            return Equals(_GraphDBType);
+
+        }
+
+        #endregion
+
+        #region Equals(myGraphDBType)
+
+        public Boolean Equals(GraphDBType myGraphDBType)
+        {
+
+            // If parameter is null return false:
+            if ((Object) myGraphDBType == null)
+            {
+                return false;
+            }
+
+            return (UUID == myGraphDBType.UUID);
+
+        }
+
+        #endregion
+
+        #endregion
+
+        #region GetHashCode()
+
+        public override Int32 GetHashCode()
+        {
+            return UUID.GetHashCode();
+        }
+
+        #endregion
+
+        #region ToString()
+
+        public override String ToString()
+        {
+
+            var _StringBuilder = new StringBuilder(String.Empty);
+
+            _StringBuilder.Append(Name);
+
+            _StringBuilder.Append(" : " + ParentTypeUUID + " (");
+
+            foreach (KeyValuePair<AttributeUUID, TypeAttribute> attr in _Attributes)
+            {
+                _StringBuilder.Append("<");
+                var keyString = attr.Key.ToString();
+
+                if (keyString.Length >= 3)
+                {
+                    _StringBuilder.Append(keyString.Substring(0, 3));
+                }
+                else
+                {
+                    _StringBuilder.Append(keyString);
+                }
+
+                _StringBuilder.Append("> ");
+                _StringBuilder.Append(attr.Value.ToString());
+                _StringBuilder.Append(",");
+            }
+
+            _StringBuilder.Remove(_StringBuilder.Length - 1, 1);
+
+            _StringBuilder.Append(")");
+
+            if (!_Comment.IsNullOrEmpty())
+            {
+                _StringBuilder.Append(String.Format(" Comment: {0}", _Comment));
+            }
+
+            return _StringBuilder.ToString();
+
+        }
+
+        #endregion
+
+
     }
+
 }
