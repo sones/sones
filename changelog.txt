@@ -2,6 +2,7 @@ sones GraphDB Changelog:
 
 15.07.2010
 - Fixed Bug 497 (Crunchbase Path Search over Competitions throws exception)
+- removed console output from BFS Graph Algorithm, breaks linux daemon
 
 14.07.2010
 - Fixed Bug_CouldNotDetermineJSON_ObjectUUID bug

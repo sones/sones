@@ -167,7 +167,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
             if (!dbObject.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myTypeManager), null))
             {
                 ////_Logger.Info("Abort search! Start object has no edge!");
-                Console.WriteLine("No paths found!");
+                //Console.WriteLine("No paths found!");
                 return null;
             }
 
@@ -180,7 +180,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
             if (!be.Value.ContainsBackwardEdge(edgeKey))
             {
                 ////_Logger.Info("Abort search! End object has no backwardedge!");
-                Console.WriteLine("No paths found!");
+                //Console.WriteLine("No paths found!");
                 return null;
             }
 
