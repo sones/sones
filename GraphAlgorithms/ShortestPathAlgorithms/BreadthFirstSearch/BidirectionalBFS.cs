@@ -221,7 +221,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                 if (!dbo.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), null))
                 {
                     ////_Logger.Info("Abort search! Start object has no edge!");
-                    Console.WriteLine("No paths found!");
+                    //Console.WriteLine("No paths found!");
                     return null;
                 }
 
@@ -234,7 +234,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                 if (!be.Value.ContainsBackwardEdge(edgeKey))
                 {
                     ////_Logger.Info("Abort search! End object has no backwardedge!");
-                    Console.WriteLine("No paths found!");
+                    //Console.WriteLine("No paths found!");
                     return null;
                 }
                 #endregion
@@ -1170,7 +1170,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                 if (!dbo.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), null))
                 {
                     ////_Logger.Info("Abort search! Start object has no edge!");
-                    Console.WriteLine("No paths found!");
+                    //Console.WriteLine("No paths found!");
                     return null;
                 }
                 #endregion

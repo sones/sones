@@ -141,7 +141,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
             //no paths found
             if (_Paths.Count == 0)
             {
-                Console.WriteLine("No paths found!");
+                //Console.WriteLine("No paths found!");
 
                 return null;
             }
@@ -167,14 +167,14 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
             //all paths are searched
             else
             {
-                if (_Paths.Count == 1)
-                {
-                    Console.WriteLine(_Paths.Count + " path found.");
-                }
-                else
-                {
-                    Console.WriteLine(_Paths.Count + " paths found.");
-                }
+                //if (_Paths.Count == 1)
+                //{
+                //    Console.WriteLine(_Paths.Count + " path found.");
+                //}
+                //else
+                //{
+                //    Console.WriteLine(_Paths.Count + " paths found.");
+                //}
 
                 return _Paths;
             }
