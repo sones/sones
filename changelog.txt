@@ -1,5 +1,7 @@
 sones GraphDB Changelog:
 
+15.07.2010
+- Fixed Bug 497 (Crunchbase Path Search over Competitions throws exception)
 
 14.07.2010
 - Fixed Bug_CouldNotDetermineJSON_ObjectUUID bug
