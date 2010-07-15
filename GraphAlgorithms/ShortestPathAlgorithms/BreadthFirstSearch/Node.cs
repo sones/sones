@@ -160,7 +160,10 @@ namespace GraphAlgorithms.PathAlgorithm.BFSTreeStructure
                 if (!equal)
                 {
                     _Children.Add(myChild);
-                    myChild.addParent(this);
+                    if (!myChild.Parents.Contains(this))
+                    {
+                        myChild.addParent(this);
+                    }
                 }
                 else
                 {
@@ -222,5 +225,27 @@ namespace GraphAlgorithms.PathAlgorithm.BFSTreeStructure
         }
 
         #endregion
+
+        #region Overrides
+                
+        public override int GetHashCode()
+        {
+            return _Key.GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Node)
+            {
+                return _Key.Equals((obj as Node)._Key);
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
+        #endregion
+
     }
 }
