@@ -169,7 +169,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
 
                                 }
 
-                                payload.Add("BACKWARDEDGES", new Edge(attributeReadouts));
+                                payload.Add("BACKWARDEDGES", new Edge(attributeReadouts, "BACKWARDEDGE"));
 
                                 #endregion
                             }
@@ -189,7 +189,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
                                     attributeReadouts.Add(new DBObjectReadout(payloadPerAttribute));
                                 }
 
-                                payload.Add("ATTRIBUTES", new Edge(attributeReadouts));
+                                payload.Add("ATTRIBUTES", new Edge(attributeReadouts, "ATTRIBUTE"));
 
                                 #endregion
                             }

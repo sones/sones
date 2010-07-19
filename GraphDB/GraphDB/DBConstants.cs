@@ -146,6 +146,7 @@ namespace sones.GraphDB
 
         public const String SettingScopeAttribute               = "SCOPE";
         public const String SettingAttributesAttribute          = "ATTRIBUTES";
+        public const String SettingAttributesAttributeTYPE      = "ATTRIBUTE";
         
         public const Boolean RunMT                              = false;
         public const Boolean UseThreadedSelect                  = true;

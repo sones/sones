@@ -46,13 +46,13 @@ namespace sones.GraphDB.QueryLanguage.Result
         /// </summary>
         /// <param name="objects">The objects</param>
         /// <param name="edgeTypeName">The type of the edge. For User.Friends this would be User. </param>
-        public Edge(IEnumerable<DBObjectReadout> objects, String edgeTypeName = "")
+        public Edge(IEnumerable<DBObjectReadout> objects, String edgeTypeName)
         {
             _Objects = objects;
             _EdgeTypeName = edgeTypeName;
         }
 
-        public Edge(DBObjectReadout dBObjectReadout, String edgeTypeName = "")
+        public Edge(DBObjectReadout dBObjectReadout, String edgeTypeName)
         {
             _Objects = new List<DBObjectReadout>(){ dBObjectReadout };
             _EdgeTypeName = edgeTypeName;
