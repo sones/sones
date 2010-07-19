@@ -311,7 +311,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Setting
                 attributes.Add(new DBObjectReadout(innerPayload));
             }
 
-            payload.Add(DBConstants.SettingAttributesAttribute, new Edge(attributes));
+            payload.Add(DBConstants.SettingAttributesAttribute, new Edge(attributes, DBConstants.SettingAttributesAttributeTYPE));
 
             return new DBObjectReadout(payload);
         }

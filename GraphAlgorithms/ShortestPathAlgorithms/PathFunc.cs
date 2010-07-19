@@ -172,11 +172,11 @@ namespace sones.GraphDB
             
             if (paths != null)
             {
-                pResult.Value = new FuncParameter(new EdgeTypePath(paths, typeAttribute), typeAttribute);
+                pResult.Value = new FuncParameter(new EdgeTypePath(paths, typeAttribute, typeAttribute.GetDBType(dbContext.DBTypeManager)), typeAttribute);
             }
             else
             {
-                return new Exceptional<FuncParameter>(new FuncParameter(new EdgeTypePath(new HashSet<List<ObjectUUID>>(), typeAttribute), typeAttribute));
+                return new Exceptional<FuncParameter>(new FuncParameter(new EdgeTypePath(new HashSet<List<ObjectUUID>>(), typeAttribute, typeAttribute.GetDBType(dbContext.DBTypeManager)), typeAttribute));
             }
 
             #endregion

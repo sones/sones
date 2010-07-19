@@ -58,13 +58,15 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         private IEnumerable<List<ObjectUUID>> _Paths;
         private TypeAttribute _pathAttribute;
+        private GraphDBType _typeOfObjects;
 
         public EdgeTypePath() { }
 
-        public EdgeTypePath(IEnumerable<List<ObjectUUID>> myPaths, TypeAttribute myTypeAttribute)
+        public EdgeTypePath(IEnumerable<List<ObjectUUID>> myPaths, TypeAttribute myTypeAttribute, GraphDBType myTypeOfObjects)
         {
             _Paths = myPaths;
             _pathAttribute = myTypeAttribute;
+            _typeOfObjects = myTypeOfObjects;
         }
         
         #endregion
@@ -143,11 +145,11 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
                 if (dbReadout.Attributes.ContainsKey(_pathAttribute.Name))
                     if ((dbReadout.Attributes[_pathAttribute.Name] as List<DBObjectReadout>) == null)
-                        dbReadout.Attributes[_pathAttribute.Name] = new Edge( new List<DBObjectReadout>() { res } );
+                        dbReadout.Attributes[_pathAttribute.Name] = new Edge( new List<DBObjectReadout>() { res }, _typeOfObjects.Name );
                     else
                         ((List<DBObjectReadout>)(dbReadout.Attributes[_pathAttribute.Name] as Edge)).Add(res);
                 else
-                    dbReadout.Attributes.Add(_pathAttribute.Name, new Edge( new List<DBObjectReadout>() { res } ));
+                    dbReadout.Attributes.Add(_pathAttribute.Name, new Edge(new List<DBObjectReadout>() { res }, _typeOfObjects.Name));
 
             }
             else

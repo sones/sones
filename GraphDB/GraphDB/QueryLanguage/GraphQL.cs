@@ -1022,11 +1022,10 @@ namespace sones.GraphDB.QueryLanguage
             //Operators
             RegisterOperators(10, "*", "/", "%");
             RegisterOperators(9, "+", "-");
-            RegisterOperators(8, "=", ">", "<", ">=", "<=", "<>", "!=", "!<", "!>", "INRANGE");
+            RegisterOperators(8, "=", ">", "<", ">=", "<=", "<>", "!=", "!<", "!>", "INRANGE", "LIKE", "IN", "NOTIN", "NOT_IN", "NIN", "!IN");
             RegisterOperators(7, "^", "&", "|");
             RegisterOperators(6, "NOT");
-            RegisterOperators(5, "AND");
-            RegisterOperators(4, "OR", "LIKE", "IN", "NOTIN", "NOT_IN", "NIN", "!IN");
+            RegisterOperators(5, "AND", "OR");
 
             #region operators
             // Why this definition was twice in the GraphQL???

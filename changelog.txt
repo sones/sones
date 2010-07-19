@@ -1,4 +1,8 @@
-sones GraphDB Changelog:
+sones GraphDB v1.1 (stable) Changelog:
+
+19.07.2010
+- Fixed Bug: Empty type information in path result
+- Fixed Bug: Error in AND Operator with IN - Operation
 
 15.07.2010
 - Fixed Bug 497 (Crunchbase Path Search over Competitions throws exception)

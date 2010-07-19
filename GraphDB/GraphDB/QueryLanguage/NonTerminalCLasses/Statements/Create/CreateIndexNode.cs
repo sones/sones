@@ -194,7 +194,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
 
             }
 
-            payload.Add("ATTRIBUTES", new Edge(_Attributes));
+            payload.Add("ATTRIBUTES", new Edge(_Attributes, "ATTRIBUTE"));
 
             //payload.Add("NAME", attributeIndex.IndexName)
 

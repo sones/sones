@@ -75,7 +75,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure.Helper
                     parameters.Add(param.Name, myTypeManager.GetTypeByUUID(param.DBType.ID));
                 }
             }
-            Func.Add("Parameters", new Edge(new DBObjectReadout(parameters)));
+            Func.Add("Parameters", new Edge(new DBObjectReadout(parameters), "Parameter"));
 
             #endregion            
 
