@@ -1,23 +1,4 @@
 ﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB OpenSource Edition.
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-*
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/*
  * Achim Friedland, 2008-2009
  * Henning Rauch, 2009
  */
@@ -323,17 +304,30 @@ namespace sones.Lib.CLI
             }
 
             _CPUCounter = new PerformanceCounter();
-            //_CPUCounter.CategoryName    = "Processor";
-            //_CPUCounter.CounterName     = "% Processor Time";
-            //_CPUCounter.InstanceName    = "_Total";
+
+#if __MonoCS__
+            _CPUCounter.CategoryName = "Process";
+            _CPUCounter.CounterName = "% Processor Time";
+            _CPUCounter.InstanceName = Process.GetCurrentProcess().Id.ToString();
+
+            _RAMCounter = new PerformanceCounter(); 
+            _RAMCounter.CategoryName = "Process";
+            _RAMCounter.CounterName = "Working Set";
+            _RAMCounter.InstanceName = Process.GetCurrentProcess().Id.ToString();
+
+#else
             _CPUCounter.CategoryName = "Process";
             _CPUCounter.CounterName = "% Processor Time";
             _CPUCounter.InstanceName = Process.GetCurrentProcess().ProcessName;
 
-            _RAMCounter = new PerformanceCounter(); //"Memory", "Available MBytes");
+            _RAMCounter = new PerformanceCounter(); 
             _RAMCounter.CategoryName = "Process";
             _RAMCounter.CounterName = "Working Set - Private";
             _RAMCounter.InstanceName = Process.GetCurrentProcess().ProcessName;
+
+#endif
+
+
         }
         #endregion
 
@@ -2196,14 +2190,9 @@ namespace sones.Lib.CLI
                         sw.Stop();
 
                         if (Parameters.Count > 0 && Commands[CurrentCommand].CLI_Output != CLI_Output.Short)
-                        {   
-#if __MonoCS__
-                            WriteLine("Command took {0}ms, {1:0.0} MB RAM, {2:0.0} total msecs CPU time", sw.ElapsedMilliseconds,  Process.GetCurrentProcess().WorkingSet64 / 1024 / 1024, Process.GetCurrentProcess().TotalProcessorTime.TotalMilliseconds);
-#else
+                        {
                             WriteLine("Command took {0}ms, {1:0.0} MB RAM, {2:0.0}% CPU", sw.ElapsedMilliseconds, _RAMCounter.NextValue() / 1024 / 1024, _CPUCounter.NextValue());
-#endif
                         }
-
                     //}
                     //catch (Exception e)
                     //{
