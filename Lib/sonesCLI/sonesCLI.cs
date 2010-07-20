@@ -2196,8 +2196,12 @@ namespace sones.Lib.CLI
                         sw.Stop();
 
                         if (Parameters.Count > 0 && Commands[CurrentCommand].CLI_Output != CLI_Output.Short)
-                        {
-                            WriteLine("Command took {0}ms, {1:0.0} MB RAM, {2:0.0}% CPU", sw.ElapsedMilliseconds, _RAMCounter.NextValue()/1024/1024, _CPUCounter.NextValue());
+                        {   
+#if __MonoCS__
+                            WriteLine("Command took {0}ms, {1:0.0} MB RAM, {2:0.0} total msecs CPU time", sw.ElapsedMilliseconds,  Process.GetCurrentProcess().WorkingSet64 / 1024 / 1024, Process.GetCurrentProcess().TotalProcessorTime.TotalMilliseconds);
+#else
+                            WriteLine("Command took {0}ms, {1:0.0} MB RAM, {2:0.0}% CPU", sw.ElapsedMilliseconds, _RAMCounter.NextValue() / 1024 / 1024, _CPUCounter.NextValue());
+#endif
                         }
 
                     //}
