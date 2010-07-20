@@ -408,6 +408,8 @@ namespace sones.GraphDS.API.CSharp
             {
                 case "Int64":
                     return Convert.ToInt64(value);
+                case "UInt64":
+                    return Convert.ToUInt64(value);
                 case "String":
                     return Convert.ToString(value);
                 case "Double":
@@ -471,6 +473,12 @@ namespace sones.GraphDS.API.CSharp
             {
                 ApplyAttributeToObjectFromXML(listType, refObject, attr.Attributes("name").First().Value, attr);
             }
+
+            foreach (var attr in val.Elements("edge"))
+            {
+                ApplyReferenceAttributeToObjectFromXML(listType, refObject, attr.Attribute("name").Value, attr);
+            }
+
             return refObject;
         }
 

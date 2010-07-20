@@ -127,7 +127,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             {
                 var keyVal = new Dictionary<String, Object>();
 
-                result.Add(resolvePath(null, path, GetAllAttributesFromDBO));
+                result.Add(resolvePath(null, path.Skip(1), GetAllAttributesFromDBO));
             }
             return result;
         }

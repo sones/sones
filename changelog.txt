@@ -1,5 +1,8 @@
 sones GraphDB 1.2 (developer) Changelog:
 
+20.07.2010
+- Changed result of PATH algorithm to containing NOT the starting element!
+
 19.07.2010
 - Fixed Bug: Empty type information in path result
 - Fixed Bug: Error in AND Operator with IN - Operation
