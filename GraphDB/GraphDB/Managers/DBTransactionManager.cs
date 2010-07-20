@@ -48,7 +48,7 @@ namespace sones.GraphDB.Managers
             _GlobalCacheSettings.SlidingExpirationTimeSpan = TimeSpan.FromHours(1.0);
             _GlobalCacheSettings.MaxNumberOfCachedItems = 100;
 
-            base.OnItemRemoved += new EventHandler<ItemRemovedEventArgs<DBTransaction>>(DBTransactionManager_OnItemRemoved);
+            //base.OnItemRemoved += new EventHandler<ItemRemovedEventArgs<DBTransaction>>(DBTransactionManager_OnItemRemoved);
         }
 
         void DBTransactionManager_OnItemRemoved(object sender, ItemRemovedEventArgs<DBTransaction> e)
