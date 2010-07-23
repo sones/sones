@@ -349,11 +349,11 @@ namespace sones.GraphDB.TypeManagement
 
             if (_RelatedPandoraType == null)
             {
-                if (!IsBackwardEdge)
+                //if (!IsBackwardEdge)
                     _RelatedPandoraType = myDBTypeManager.GetTypeByUUID(RelatedGraphDBTypeUUID);
 
-                else
-                    _RelatedPandoraType = myDBTypeManager.GetTypeByUUID(BackwardEdgeDefinition.TypeUUID);
+                //else
+                //    _RelatedPandoraType = myDBTypeManager.GetTypeByUUID(BackwardEdgeDefinition.TypeUUID);
             }
 
             return _RelatedPandoraType;

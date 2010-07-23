@@ -1,5 +1,8 @@
 sones GraphDB 1.2 (developer) Changelog:
 
+23.07.2010
+- fixed: ExpressionGraph contained more edge information than selected
+
 20.07.2010
 - Changed result of PATH algorithm to containing NOT the starting element!
 - fixed sonesCLI to display RAM usage and used CPU time on mono

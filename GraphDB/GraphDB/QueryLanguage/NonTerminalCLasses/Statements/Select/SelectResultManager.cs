@@ -1128,7 +1128,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Select
                     }
                     else
                     {
-                        attributes.Add(typeAttr.Name, GetNotResolvedReferenceAttributeValue(myDBObject, typeAttr, type, _DBContext));
+                        attributes.Add(typeAttr.Name, GetNotResolvedReferenceAttributeValue(myDBObject, typeAttr, type, myLevelKey, myUsingGraph, _DBContext));
                     }
                 }
                 else
@@ -1154,7 +1154,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Select
                 }
                 else
                 {
-                    var notResolvedBEs = GetNotResolvedBackwardEdgeReferenceAttributeValue(myDBObject, beAttr, beAttr.BackwardEdgeDefinition, _DBContext);
+                    var notResolvedBEs = GetNotResolvedBackwardEdgeReferenceAttributeValue(myDBObject, beAttr, beAttr.BackwardEdgeDefinition, myLevelKey, myUsingGraph, _DBContext);
                     if (notResolvedBEs != null)
                     {
                         attributes.Add(beAttr.Name, notResolvedBEs);
@@ -1231,89 +1231,91 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Select
         /// <returns>   true if it succeeds, false if the DBO does not have the attribute. </returns>
         private Boolean GetAttributeValueAndResolve(GraphDBType myType, TypeAttribute myTypeAttribute, DBObjectStream myDBObject, Int64 myDepth, LevelKey myLevelKey, String reference, Boolean myUsingGraph, out Object attributeValue)
         {
-            if (myTypeAttribute.TypeCharacteristics.IsBackwardEdge)
-            {
-                #region IsBackwardEdge
-
-                EdgeKey edgeKey = myTypeAttribute.BackwardEdgeDefinition;
-                var contBackwardExcept = myDBObject.ContainsBackwardEdge(edgeKey, _DBContext, _DBObjectCache, myType);
-
-                if (contBackwardExcept.Failed)
-                    throw new GraphDBException(contBackwardExcept.Errors);
-
-                if (contBackwardExcept.Value)
+            
+                if (myTypeAttribute.TypeCharacteristics.IsBackwardEdge)
                 {
-                    if (myDepth > 0)
+                    #region IsBackwardEdge
+
+                    EdgeKey edgeKey = myTypeAttribute.BackwardEdgeDefinition;
+                    var contBackwardExcept = myDBObject.ContainsBackwardEdge(edgeKey, _DBContext, _DBObjectCache, myType);
+
+                    if (contBackwardExcept.Failed)
+                        throw new GraphDBException(contBackwardExcept.Errors);
+
+                    if (contBackwardExcept.Value)
                     {
-                        var dbos = myDBObject.GetBackwardEdges(edgeKey, _DBContext, _DBObjectCache, myTypeAttribute.GetDBType(_DBContext.DBTypeManager));
-
-                        if (dbos.Failed)
-                            throw new GraphDBException(dbos.Errors);
-
-                        if (dbos.Value != null)
+                        if (myDepth > 0)
                         {
-                            attributeValue = ResolveAttributeValue(myTypeAttribute, dbos.Value, myDepth - 1, myLevelKey, myDBObject, reference, myUsingGraph);
+                            var dbos = myDBObject.GetBackwardEdges(edgeKey, _DBContext, _DBObjectCache, myTypeAttribute.GetDBType(_DBContext.DBTypeManager));
+
+                            if (dbos.Failed)
+                                throw new GraphDBException(dbos.Errors);
+
+                            if (dbos.Value != null)
+                            {
+                                attributeValue = ResolveAttributeValue(myTypeAttribute, dbos.Value, myDepth - 1, myLevelKey, myDBObject, reference, myUsingGraph);
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            attributeValue = GetNotResolvedBackwardEdgeReferenceAttributeValue(myDBObject, myTypeAttribute, edgeKey, myLevelKey, myUsingGraph, _DBContext);
+                            return true;
+
+                        }
+                    }
+
+                    #endregion
+
+                }
+
+
+                else if (myDBObject.HasAttribute(myTypeAttribute.UUID, myType, _SessionToken))
+                {
+
+                    #region ELSE (!IsBackwardEdge)
+
+                    #region not a reference attribute value
+
+                    if (!myTypeAttribute.GetDBType(_DBContext.DBTypeManager).IsUserDefined)
+                    {
+                        var attrVal = myDBObject.GetAttribute(myTypeAttribute.UUID, myType, _DBContext);
+                        // currently, we do not want to return a ADBBaseObject but the real value
+                        if (attrVal is ADBBaseObject)
+                            attributeValue = (attrVal as ADBBaseObject).GetReadoutValue();
+                        else if (attrVal is AListBaseEdgeType)
+                            attributeValue = (attrVal as AListBaseEdgeType).GetReadoutValues();
+                        else
+                            attributeValue = attrVal;
+
+                        return true;
+                    }
+
+                    #endregion
+
+                    #region ELSE Reference attribute value
+
+                    else
+                    {
+                        if (myDepth > 0)
+                        {
+                            var attrValue = myDBObject.GetAttribute(myTypeAttribute.UUID, myType, _DBContext);
+                            attributeValue = ResolveAttributeValue(myTypeAttribute, attrValue, myDepth - 1, myLevelKey, myDBObject, reference, myUsingGraph);
+                            return true;
+                        }
+                        else
+                        {
+                            attributeValue = GetNotResolvedReferenceAttributeValue(myDBObject, myTypeAttribute, myType, myLevelKey, myUsingGraph, _DBContext);
                             return true;
                         }
                     }
-                    else
-                    {
-                        attributeValue = GetNotResolvedBackwardEdgeReferenceAttributeValue(myDBObject, myTypeAttribute, edgeKey, _DBContext);
-                        return true;
 
-                    }
+                    #endregion
+
+                    #endregion
+
                 }
-
-                #endregion
-
-            }
-
-
-            else if (myDBObject.HasAttribute(myTypeAttribute.UUID, myType, _SessionToken))
-            {
-
-                #region ELSE (!IsBackwardEdge)
-
-                #region not a reference attribute value
-
-                if (!myTypeAttribute.GetDBType(_DBContext.DBTypeManager).IsUserDefined)
-                {
-                    var attrVal = myDBObject.GetAttribute(myTypeAttribute.UUID, myType, _DBContext);
-                    // currently, we do not want to return a ADBBaseObject but the real value
-                    if (attrVal is ADBBaseObject)
-                        attributeValue = (attrVal as ADBBaseObject).GetReadoutValue();
-                    else if (attrVal is AListBaseEdgeType)
-                        attributeValue = (attrVal as AListBaseEdgeType).GetReadoutValues();
-                    else
-                        attributeValue = attrVal;
-
-                    return true;
-                }
-
-                #endregion
-
-                #region ELSE Reference attribute value
-
-                else
-                {
-                    if (myDepth > 0)
-                    {
-                        var attrValue = myDBObject.GetAttribute(myTypeAttribute.UUID, myType, _DBContext);
-                        attributeValue = ResolveAttributeValue(myTypeAttribute, attrValue, myDepth - 1, myLevelKey, myDBObject, reference, myUsingGraph);
-                        return true;
-                    }
-                    else
-                    {
-                        attributeValue = GetNotResolvedReferenceAttributeValue(myDBObject, myTypeAttribute, myType, _DBContext);
-                        return true;
-                    }
-                }
-
-                #endregion
-
-                #endregion
-
-            }
+            
 
             attributeValue = null;
             return false;
@@ -1336,9 +1338,22 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Select
             }
         }
 
-        private Edge GetNotResolvedReferenceAttributeValue(DBObjectStream myDBObject, TypeAttribute myTypeAttribute, GraphDBType myType, DBContext _DBContext)
+        private Edge GetNotResolvedReferenceAttributeValue(DBObjectStream myDBObject, TypeAttribute myTypeAttribute, GraphDBType myType, LevelKey currentLevelKey, Boolean myUsingGraph, DBContext _DBContext)
         {
-            var attrValue = myDBObject.GetAttribute(myTypeAttribute.UUID, myType, _DBContext);
+            AObject attrValue = null;
+
+            if (myUsingGraph)
+            {
+                var interestingLevelKey = currentLevelKey + new EdgeKey(myType.UUID, myTypeAttribute.UUID);
+
+                var interestingUUIDs = _ExpressionGraph.SelectUUIDs(interestingLevelKey, myDBObject);
+
+                attrValue = ((AEdgeType)myDBObject.GetAttribute(myTypeAttribute.UUID, myType, _DBContext)).GetNewInstance(interestingUUIDs);
+            }
+            else
+            {
+                attrValue = myDBObject.GetAttribute(myTypeAttribute.UUID, myType, _DBContext);
+            }
 
             if (attrValue == null)
             {
@@ -1375,26 +1390,39 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Select
             return new DBObjectReadout(specialAttributes);
         }
 
-        private object GetNotResolvedBackwardEdgeReferenceAttributeValue(DBObjectStream myDBObject, TypeAttribute myTypeAttribute, EdgeKey edgeKey, DBContext _DBContext)
+        private object GetNotResolvedBackwardEdgeReferenceAttributeValue(DBObjectStream myDBObject, TypeAttribute myTypeAttribute, EdgeKey edgeKey, LevelKey currentLevelKey, Boolean myUsingGraph, DBContext _DBContext)
         {
-            var attrValue = myDBObject.GetBackwardEdges(edgeKey, _DBContext, _DBObjectCache, myTypeAttribute.GetDBType(_DBContext.DBTypeManager));
-            if (attrValue.Failed)
+            AObject attrValue = null;
+
+            if (myUsingGraph)
             {
-                throw new GraphDBException(attrValue.Errors);
+                var interestingLevelKey = currentLevelKey + new EdgeKey(myTypeAttribute.GetRelatedType(_DBContext.DBTypeManager).UUID, myTypeAttribute.UUID);
+
+                attrValue = new EdgeTypeSetOfReferences(_ExpressionGraph.SelectUUIDs(interestingLevelKey, myDBObject));
+            }
+            else
+            {
+                var attrValueException = myDBObject.GetBackwardEdges(edgeKey, _DBContext, _DBObjectCache, myTypeAttribute.GetDBType(_DBContext.DBTypeManager));
+                if (attrValueException.Failed)
+                {
+                    throw new GraphDBException(attrValueException.Errors);
+                }
+
+                attrValue = attrValueException.Value;
             }
 
-            if (attrValue.Value == null)
+            if (attrValue == null)
             {
                 return null;
             }
-            else if (!(attrValue.Value is IReferenceEdge))
+            else if (!(attrValue is IReferenceEdge))
             {
                 throw new GraphDBException(new Error_InvalidEdgeType(attrValue.GetType(), typeof(IReferenceEdge)));
             }
 
             List<DBObjectReadout> readouts = new List<DBObjectReadout>();
             var typeName = _DBContext.DBTypeManager.GetTypeByUUID(edgeKey.TypeUUID).Name;
-            foreach (var reference in (attrValue.Value as IReferenceEdge).GetAllUUIDs())
+            foreach (var reference in (attrValue as IReferenceEdge).GetAllUUIDs())
             {
                 var specialAttributes = new Dictionary<string, object>();
                 specialAttributes.Add(SpecialTypeAttribute_UUID.AttributeName, reference);

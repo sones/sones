@@ -753,9 +753,9 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
 
                     referenceType = _DBContext.DBTypeManager.GetTypeByUUID(tempTypeAttribute.BackwardEdgeDefinition.TypeUUID).GetTypeAttributeByUUID(tempTypeAttribute.BackwardEdgeDefinition.AttrUUID).GetDBType(_DBContext.DBTypeManager);
 
-                    if (aDBObject.HasAttribute(tempTypeAttribute.BackwardEdgeDefinition.AttrUUID, tempTypeAttribute.GetRelatedType(_DBContext.DBTypeManager), null))
+                    if (aDBObject.HasAttribute(tempTypeAttribute.BackwardEdgeDefinition.AttrUUID, _DBContext.DBTypeManager.GetTypeByUUID(tempTypeAttribute.BackwardEdgeDefinition.TypeUUID), null))
                     {
-                        referenceUUIDs = GetUUIDsForAttribute(aDBObject, tempTypeAttribute.GetRelatedType(_DBContext.DBTypeManager).GetTypeAttributeByUUID(tempTypeAttribute.BackwardEdgeDefinition.AttrUUID), tempTypeAttribute.GetRelatedType(_DBContext.DBTypeManager));
+                        referenceUUIDs = GetUUIDsForAttribute(aDBObject, tempTypeAttribute.BackwardEdgeDefinition.GetTypeAndAttributeInformation(_DBContext).Item2, _DBContext.DBTypeManager.GetTypeByUUID(aDBObject.TypeUUID));
                     }
 
                     #endregion
@@ -815,8 +815,6 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                                     #region ignore
 
                                     //insert if the next lower level is 0
-
-                                    currentBackwardResolution++;
 
                                     if ((myLevelKey.Level - currentBackwardResolution) == 0)
                                     {
@@ -1410,13 +1408,15 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
 
                         if (currentAttribute.IsBackwardEdge)
                         {
-                            var dbObjectStream = myNode.GetDBObjectStream(_DBObjectCache, currentAttribute.GetRelatedType(_DBContext.DBTypeManager).UUID);
+                            var backwardEdgeTypeInfo = currentAttribute.BackwardEdgeDefinition.GetTypeAndAttributeInformation(_DBContext);
 
-                            referencedType = _DBContext.DBTypeManager.GetTypeByUUID(currentAttribute.BackwardEdgeDefinition.TypeUUID).GetTypeAttributeByUUID(currentAttribute.BackwardEdgeDefinition.AttrUUID).GetDBType(_DBContext.DBTypeManager);
+                            var dbObjectStream = myNode.GetDBObjectStream(_DBObjectCache, backwardEdgeTypeInfo.Item1.UUID);
 
-                            if (dbObjectStream.HasAttribute(currentAttribute.BackwardEdgeDefinition.AttrUUID, currentAttribute.GetRelatedType(_DBContext.DBTypeManager), null))
+                            referencedType = backwardEdgeTypeInfo.Item2.GetDBType(_DBContext.DBTypeManager);
+
+                            if (dbObjectStream.HasAttribute(backwardEdgeTypeInfo.Item2.UUID, backwardEdgeTypeInfo.Item1, null))
                             {
-                                referencedUUIDs = GetUUIDsForAttribute(dbObjectStream, currentAttribute.GetRelatedType(_DBContext.DBTypeManager).GetTypeAttributeByUUID(currentAttribute.BackwardEdgeDefinition.AttrUUID), currentAttribute.GetRelatedType(_DBContext.DBTypeManager));
+                                referencedUUIDs = GetUUIDsForAttribute(dbObjectStream, backwardEdgeTypeInfo.Item2, backwardEdgeTypeInfo.Item1);
                             }
                         }
                         else
