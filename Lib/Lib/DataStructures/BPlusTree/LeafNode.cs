@@ -224,7 +224,10 @@ namespace sones.Lib.DataStructures.BPlusTree
 
                 #region update trees rightmost leaf
 
-                _CorrespondingTree._RightMostLeaf = newLeaf;
+                if (_CorrespondingTree._RightMostLeaf == this)
+                {
+                    _CorrespondingTree._RightMostLeaf = newLeaf;
+                }
 
                 #endregion
 

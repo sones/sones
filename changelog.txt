@@ -1,5 +1,8 @@
 sones GraphDB 1.2 (developer) Changelog:
 
+31.07.2010
+- bugfix in bplustree leafnode (reference to rightmost leaf was not updated correctly)
+
 23.07.2010
 - fixed: ExpressionGraph contained more edge information than selected
 
