@@ -54,19 +54,20 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Transaction
 {
     public class BeginTransactionNode : AStatement
     {
-        #region data
 
-        private Boolean         _IsDistributed;
-        private Boolean         _IsLongRunning;
-        private IsolationLevel  _Isolation;
-        private String          _Name;
-        private DateTime?       _TimeStamp = null;
+        #region Properties
+
+        public Boolean IsDistributed { get; private set; }
+        public Boolean IsLongRunning { get; private set; }
+        public IsolationLevel Isolation { get; private set; }
+        public String Name { get; private set; }
+        public DateTime? TimeStamp { get; private set; }
 
         #endregion
 
         #region AStatement
 
-        #region properties
+        #region AStatement properties
 
         public override string StatementName
         {
@@ -83,7 +84,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Transaction
         #region constructors
 
         public BeginTransactionNode()
-        { }
+        {
+            TimeStamp = null;
+        }
 
         #endregion
 
@@ -104,11 +107,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Transaction
                         switch (parseNode.ChildNodes[1].ChildNodes[0].Token.Text.ToUpper())
                         {
                             case DBConstants.TRANSACTION_DISTRIBUTED:
-                                _IsDistributed = true;
+                                IsDistributed = true;
                                 break;
 
                             case DBConstants.TRANSACTION_LONGRUNNING:
-                                _IsLongRunning = true;
+                                IsLongRunning = true;
                                 break;
                         }
                     }
@@ -116,7 +119,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Transaction
                     if (parseNode.ChildNodes[1].ChildNodes.Count > 1)
                     {
                         if (parseNode.ChildNodes[1].ChildNodes[1].Token.Text.ToUpper() == DBConstants.TRANSACTION_LONGRUNNING)
-                            _IsLongRunning = true;
+                            IsLongRunning = true;
                     }
                 }
             }
@@ -138,10 +141,12 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Transaction
                         case DBConstants.TRANSACTION_ISOLATION :
                             if (parseNode.ChildNodes[myCurrentChildNode].ChildNodes[2] != null)
                             {
-                                if (!Enum.TryParse<IsolationLevel>(parseNode.ChildNodes[myCurrentChildNode].ChildNodes[2].Token.ValueString, true, out _Isolation))
+                                IsolationLevel isolation;
+                                if (!Enum.TryParse<IsolationLevel>(parseNode.ChildNodes[myCurrentChildNode].ChildNodes[2].Token.ValueString, true, out isolation))
                                 {
                                     throw new GraphDBException(new Error_InvalidTransactionIsolationLevel(parseNode.ChildNodes[myCurrentChildNode].ChildNodes[2].Token.ValueString));
                                 }
+                                Isolation = isolation;
                                 //_Isolation = (IsolationLevel)Enum.Parse(typeof(IsolationLevel), parseNode.ChildNodes[myCurrentChildNode].ChildNodes[2].Token.ValueString, true);
                             }
                             break;
@@ -149,14 +154,14 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Transaction
                         case DBConstants.TRANSACTION_NAME :
                             if (parseNode.ChildNodes[myCurrentChildNode].ChildNodes[2] != null)
                             {
-                                _Name = parseNode.ChildNodes[myCurrentChildNode].ChildNodes[2].Token.ValueString;
+                                Name = parseNode.ChildNodes[myCurrentChildNode].ChildNodes[2].Token.ValueString;
                             }
                             break;
                         
                         case DBConstants.TRANSACTION_TIMESTAMP :
                             if (parseNode.ChildNodes[myCurrentChildNode].ChildNodes[2] != null)
                             {
-                                _TimeStamp = DateTime.ParseExact(parseNode.ChildNodes[myCurrentChildNode].ChildNodes[2].Token.ValueString, "yyyyddMM.HHmmss.fffffff", null);
+                                TimeStamp = DateTime.ParseExact(parseNode.ChildNodes[myCurrentChildNode].ChildNodes[2].Token.ValueString, "yyyyddMM.HHmmss.fffffff", null);
                             }
                             break;
                     }
@@ -199,7 +204,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Transaction
         public override QueryResult Execute(IGraphDBSession graphDBSession, DBContext dbContext)
         {
             var qr = new QueryResult();
-            var dbTransaction = graphDBSession.BeginTransaction(_IsDistributed, _IsLongRunning, _Isolation, _Name, _TimeStamp);
+            var dbTransaction = graphDBSession.BeginTransaction(IsDistributed, IsLongRunning, Isolation, Name, TimeStamp);
 
             if (dbTransaction.Success)
             {
@@ -225,23 +230,5 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Transaction
 
         #endregion
 
-        #region Accessor
-
-        public Boolean IsDistributed
-        { get { return _IsDistributed; } }
-
-        public Boolean IsLongRunning
-        { get { return _IsLongRunning; } }
-
-        public IsolationLevel Isolation
-        { get { return _Isolation; } }
-
-        public String Name
-        { get { return _Name; } }
-
-        public DateTime? TimeStamp
-        { get { return _TimeStamp; } }
-
-        #endregion
     }
 }

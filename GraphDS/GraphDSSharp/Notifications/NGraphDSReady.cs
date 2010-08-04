@@ -58,7 +58,7 @@ namespace sones.GraphDS.API.CSharp.Notifications
             {
 
                 var _SerializationWriter = new SerializationWriter();
-                _SerializationWriter.WriteObject(Message);
+                _SerializationWriter.WriteString(Message);
 
                 return _SerializationWriter.ToArray();
 
@@ -68,7 +68,7 @@ namespace sones.GraphDS.API.CSharp.Notifications
             {
 
                 var _SerializationReader = new SerializationReader(mySerializedBytes);
-                Message = (String) _SerializationReader.ReadObject();
+                Message = _SerializationReader.ReadString();
 
             }
 

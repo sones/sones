@@ -34,22 +34,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using sones.Lib.Serializer;
-using sones.GraphDB.TypeManagement.PandoraTypes;
-using sones.Lib.DataStructures;
-using sones.GraphDB.TypeManagement;
+using sones.GraphDB.Errors;
+using sones.GraphDB.Exceptions;
+using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.QueryLanguage;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
 using sones.GraphDB.QueryLanguage.Result;
-using sones.GraphDB.Exceptions;
-using sones.Lib.NewFastSerializer;
-using sones.GraphDB.ObjectManagement;
-using sones.Lib.DataStructures.UUID;
-using sones.GraphDB.Errors;
-using sones.Lib;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.PandoraTypes;
 using sones.GraphFS.DataStructures;
+using sones.Lib;
+using sones.Lib.DataStructures;
 using sones.Lib.ErrorHandling;
-using sones.GraphDB.QueryLanguage;
+using sones.Lib.NewFastSerializer;
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
@@ -63,24 +60,32 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public override String EdgeTypeName { get { return "WEIGHTED"; } }
         public override EdgeTypeUUID EdgeTypeUUID { get { return new EdgeTypeUUID(1001); } }
 
-        private WeightedSet<ObjectUUID> weightedSet;
+        private WeightedSet<Reference> weightedSet;
         private ADBBaseObject weightDataType = null;
+        private TypeUUID _typeOfDBObjects = null;
 
         #region TypeCode
         public override UInt32 TypeCode { get { return 457; } }
         #endregion
 
+#warning do not use this one
         public EdgeTypeWeightedList()
         {
-            weightedSet = new WeightedSet<ObjectUUID>(SortDirection.Desc);
+            weightedSet = new WeightedSet<Reference>(SortDirection.Desc);
+        }
+
+        public EdgeTypeWeightedList(TypeUUID typeOfObjects)
+        {
+            weightedSet = new WeightedSet<Reference>(SortDirection.Desc);
+            _typeOfDBObjects = typeOfObjects;
         }
         
         #region AEdgeType Members
 
         public override AEdgeType GetNewInstance()
         {
-            var edgeTypeWeightedList = new EdgeTypeWeightedList();
-            edgeTypeWeightedList.weightedSet = new WeightedSet<ObjectUUID>(weightedSet.SortDirection);
+            var edgeTypeWeightedList = new EdgeTypeWeightedList(_typeOfDBObjects);
+            edgeTypeWeightedList.weightedSet = new WeightedSet<Reference>(weightedSet.SortDirection);
             edgeTypeWeightedList.weightedSet.SetWeightedDefaultValue(weightedSet.DefaultWeight);
 
             return edgeTypeWeightedList;
@@ -153,11 +158,13 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         private void Serialize(ref SerializationWriter mySerializationWriter, EdgeTypeWeightedList myValue)
         {
+            mySerializationWriter.WriteObject(_typeOfDBObjects);
             myValue.weightedSet.Serialize(ref mySerializationWriter);
         }
 
         private object Deserialize(ref SerializationReader mySerializationReader, EdgeTypeWeightedList myValue)
         {
+            myValue._typeOfDBObjects = (TypeUUID)mySerializationReader.ReadObject();
             myValue.weightedSet.Deserialize(ref mySerializationReader);
             return myValue;
         }
@@ -204,12 +211,12 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public override System.Collections.IEnumerable GetAll()
         {
-            return weightedSet.GetAll();
+            return weightedSet.GetAll().Select(item => new KeyValuePair<ObjectUUID, ADBBaseObject>(item.Key.ObjectUUID, item.Value));
         }
 
         public override System.Collections.IEnumerable GetTop(ulong myNumOfEntries)
         {
-            return weightedSet.GetTop(myNumOfEntries);
+            return weightedSet.GetTop(myNumOfEntries).Select(item => item.ObjectUUID);
         }
 
         public override void UnionWith(AEdgeType myAEdgeType)
@@ -222,7 +229,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 }
             }
             else
+            {
                 throw new ArgumentException("myAEdgeType is not of type EdgeTypeWeightedList");
+            }
         }
 
         public override void Distinction()
@@ -233,53 +242,33 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         #region AListReferenceEdgeType Members
 
-        public void Add(ObjectUUID myValue, DBNumber myWeight)
+        public void Add(Reference myValue, DBNumber myWeight)
         {
-            if (!(myValue is ObjectUUID))
-                throw new ArgumentException("myValue is not of type ObjectUUID");
-            weightedSet.Add((ObjectUUID)myValue, myWeight);
+            weightedSet.Add(myValue, myWeight);
         }
 
-        public void Add(IEnumerable<ObjectUUID> myValues, DBNumber myWeight)
-        {
-            foreach (var val in myValues)
-                weightedSet.Add(val, myWeight);
-        }
-
-        public override void Add(ObjectUUID myValue, params ADBBaseObject[] myParameters)
+        public override void Add(ObjectUUID myValue, TypeUUID typeOfDBObjects, params ADBBaseObject[] myParameters)
         {
             if (myParameters != null && myParameters.Count() > 0 && DBNumber.IsValid(myParameters[0].Value))
             {
-                Add(myValue, (DBNumber)weightedSet.DefaultWeight.Clone(myParameters[0].Value));//new DBNumber(myParameters[0].Value));
+                Add(new Reference(myValue, typeOfDBObjects), (DBNumber)weightedSet.DefaultWeight.Clone(myParameters[0].Value));//new DBNumber(myParameters[0].Value));
             }
             else
             {
-                Add(myValue, weightedSet.DefaultWeight);
+                Add(new Reference(myValue, typeOfDBObjects), weightedSet.DefaultWeight);
             }
         }
 
-        public override void Add(IEnumerable<ObjectUUID> myValue, params ADBBaseObject[] myParameters)
+        public override IEnumerable<ObjectUUID> GetAllReferenceIDs()
         {
-            if (myParameters != null && myParameters.Count() > 0 && DBNumber.IsValid(myParameters[0].Value))
-            {
-                Add(myValue, (DBNumber)weightedSet.DefaultWeight.Clone(myParameters[0].Value));//new DBNumber(myParameters[0].Value));
-            }
-            else
-            {
-                Add(myValue, weightedSet.DefaultWeight);
-            }
-        }
-
-        public override IEnumerable<ObjectUUID> GetAllUUIDs()
-        {
-            return weightedSet.GetAllValues();
+            return weightedSet.GetAllValues().Select(aReference => aReference.ObjectUUID);
         }
 
         public override IEnumerable<DBObjectReadout> GetReadouts(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO)
         {
             foreach (var dbo in weightedSet.GetAll())
             {
-                var readout = GetAllAttributesFromDBO(dbo.Key);
+                var readout = GetAllAttributesFromDBO(dbo.Key.ObjectUUID);
 
                 yield return new DBWeightedObjectReadout(readout.Attributes, dbo.Value);
             }
@@ -291,106 +280,100 @@ namespace sones.GraphDB.Structures.EdgeTypes
             {
 
                 if (dbo.Failed)
+                {
                     throw new GraphDBException(dbo.Errors);
-
-                if (!weightedSet.Contains(dbo.Value.ObjectUUID))
-                {
-                    /* If we had a function like TOP(1) the GetAllAttributesFromDBO might not contains elements which are in myObjectUUIDs (which is coming from the where)*/
-                    //throw new Exception("Fatal error during EdgeTypeWeightedList.GetReadouts - the ObjectUUID does not have an edge!");
                 }
-                else
+
+                var lookupReference = new Reference(dbo.Value.ObjectUUID, dbo.Value.TypeUUID);
+
+                if (weightedSet.Contains(lookupReference))
                 {
-                    var weight = weightedSet.Get(dbo.Value.ObjectUUID);
+                    var weight = weightedSet.Get(lookupReference);
                     var readout = GetAllAttributesFromDBO(dbo.Value.ObjectUUID);
                     yield return new DBWeightedObjectReadout(readout.Attributes, weight.Value);
                 }
             }
         }
 
-        public override void RemoveWhere(Predicate<ObjectUUID> match)
-        {
-            weightedSet.RemoveWhere(match);
-        }
-
         public override ObjectUUID FirstOrDefault()
         {
-            throw new NotImplementedException();
+            return weightedSet.GetAll().FirstOrDefault().Key.ObjectUUID;
         }
 
-        public override void AddRange(IEnumerable<ObjectUUID> hashSet, params ADBBaseObject[] myParameters)
+        public override void AddRange(IEnumerable<ObjectUUID> hashSet, TypeUUID typeOfDBObjects, params ADBBaseObject[] myParameters)
         {
             if (!myParameters.IsNullOrEmpty())
             {
-                if(weightedSet.DefaultWeight.IsValidValue(myParameters[0].Value))
-                    weightedSet.AddRange(hashSet, (DBNumber)weightedSet.DefaultWeight.Clone(myParameters[0].Value));
+                if (weightedSet.DefaultWeight.IsValidValue(myParameters[0].Value))
+                {
+                    weightedSet.AddRange(hashSet.Select(item => new Reference(item, typeOfDBObjects)), (DBNumber)weightedSet.DefaultWeight.Clone(myParameters[0].Value));
+                }
                 else
+                {
                     throw new GraphDBException(new Error_DataTypeDoesNotMatch(myParameters[0].Value.GetType().Name, weightedSet.DefaultWeight.ObjectName));
+                }
             }
             else
             {
-                weightedSet.AddRange(hashSet, weightedSet.DefaultWeight);
+                weightedSet.AddRange(hashSet.Select(item => new Reference(item, typeOfDBObjects)), weightedSet.DefaultWeight);
             }
         }
 
         public override bool Contains(ObjectUUID myValue)
         {
-            if (!(myValue is ObjectUUID))
-                throw new ArgumentException("myValue is not of type ObjectUUID");
-
-            return weightedSet.Contains((ObjectUUID)myValue);
+            return weightedSet.Contains(new Reference(myValue, null));
         }
 
         public override Boolean RemoveUUID(ObjectUUID myValue)
         {
-            if (!(myValue is ObjectUUID))
-                throw new ArgumentException("myValue is not of type ObjectUUID");
-
-            return weightedSet.Remove((ObjectUUID)myValue);
+            return weightedSet.Remove(new Reference(myValue, null));
         }
 
         public override bool RemoveUUID(IEnumerable<ObjectUUID> myObjectUUIDs)
         {
             if (!myObjectUUIDs.IsNullOrEmpty())
             {
-                weightedSet.RemoveWhere(item => myObjectUUIDs.Contains(item));
+                weightedSet.RemoveWhere(item => myObjectUUIDs.Contains(item.ObjectUUID));
                 return false;
             }
 
             return false;
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
+        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable, TypeUUID typeOfObjects)
         {
-            var retEdge = new EdgeTypeWeightedList();
+            var retEdge = new EdgeTypeWeightedList(typeOfObjects);
 
             foreach (var dbo in iEnumerable)
             {
-                var vals = weightedSet.Get(dbo.Value.ObjectUUID);;
+                var vals = weightedSet.Get(new Reference(dbo.Value.ObjectUUID, typeOfObjects));
                 retEdge.Add(vals.Key, vals.Value);
             }
 
             return retEdge;
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable)
+        public override AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeOfObjects)
         {
-            var retEdge = new EdgeTypeWeightedList();
+            var retEdge = new EdgeTypeWeightedList(typeOfObjects);
 
             foreach (var uuid in iEnumerable)
             {
-                var vals = weightedSet.Get(uuid); ;
+                var vals = weightedSet.Get(new Reference(uuid, typeOfObjects)); ;
                 retEdge.Add(vals.Key, vals.Value);
             }
 
             return retEdge;
         }
 
-        public override IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetEdges()
+        public override IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetAllReferenceIDsWeighted()
         {
             foreach (var vals in weightedSet.GetAll())
             {
-                yield return new Tuple<ObjectUUID, ADBBaseObject>(vals.Key, vals.Value);
+                yield return new Tuple<ObjectUUID, ADBBaseObject>(vals.Key.ObjectUUID, vals.Value);
             }
+
+            yield break;
         }
 
         #endregion
@@ -465,5 +448,30 @@ namespace sones.GraphDB.Structures.EdgeTypes
         }
 
         #endregion
+
+        public override IEnumerable<Exceptional<DBObjectStream>> GetAllEdgeDestinations(DBObjectCache dbObjectCache)
+        {
+            foreach (var aReference in weightedSet.GetAll())
+            {
+                yield return aReference.Key.GetDBObjectStream(dbObjectCache);
+            }
+
+            yield break;
+        }
+
+        public override IEnumerable<Tuple<Exceptional<DBObjectStream>, ADBBaseObject>> GetAllEdgeDestinationsWeighted(DBObjectCache dbObjectCache)
+        {
+            foreach (var vals in weightedSet.GetAll())
+            {
+                yield return new Tuple<Exceptional<DBObjectStream>, ADBBaseObject>(vals.Key.GetDBObjectStream(dbObjectCache), vals.Value);
+            }
+
+            yield break;
+        }
+
+        public override TypeUUID GetTypeUUIDOfReferences()
+        {
+            return _typeOfDBObjects;
+        }
     }
 }

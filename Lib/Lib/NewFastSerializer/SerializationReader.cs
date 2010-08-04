@@ -149,9 +149,10 @@ namespace sones.Lib.NewFastSerializer
         /// <returns>A BitVector32 value.</returns>
         public BitVector32 ReadBitVector32()
         {
-            return new BitVector32(ReadInt32());
+            return new BitVector32(base.ReadInt32());
         }
 
+        
         /// <summary>
         /// Reads the specified number of bytes directly from the stream.
         /// </summary>
@@ -162,14 +163,75 @@ namespace sones.Lib.NewFastSerializer
             return base.ReadBytes(count);
         }
 
+
+        #region DateTime
+
+        public DateTime ReadDateTimeOptimized()
+        {
+            var typeCode = readTypeCode();
+
+            switch (typeCode)
+            { 
+                case SerializedType.MinDateTimeType:
+                    return DateTime.MinValue;
+
+                case SerializedType.MaxDateTimeType:
+                    return DateTime.MaxValue;
+
+                case SerializedType.OptimizedDateTimeType:
+                    return ReadOptimizedDateTime();
+
+                case SerializedType.DateTimeType:
+                    return ReadDateTime();
+
+                default:
+                    throw new InvalidOperationException("Unrecognized TypeCode: " + typeCode);
+            }
+        
+        }
+
+        /// <summary>
+        /// Returns a DateTime value from the stream that was stored optimized.
+        /// </summary>
+        /// <returns>A DateTime value.</returns>
+        private DateTime ReadOptimizedDateTime()
+        {
+            // Read date information from first three bytes
+            BitVector32 dateMask = new BitVector32(base.ReadByte() | (base.ReadByte() << 8) | (base.ReadByte() << 16));
+            DateTime result = new DateTime(
+                    dateMask[SerializationWriter.DateYearMask],
+                    dateMask[SerializationWriter.DateMonthMask],
+                    dateMask[SerializationWriter.DateDayMask]
+            );
+
+            if (dateMask[SerializationWriter.DateHasTimeOrKindMask] == 1)
+            {
+                byte initialByte = base.ReadByte();
+                DateTimeKind dateTimeKind = (DateTimeKind)(initialByte & 0x03);
+                initialByte &= 0xfc; // Remove the IsNegative and HasDays flags which are never true for a DateTime
+                if (dateTimeKind != DateTimeKind.Unspecified) result = DateTime.SpecifyKind(result, dateTimeKind);
+                if (initialByte == 0)
+                    base.ReadByte(); // No need to call decodeTimeSpan if there is no time information
+                else
+                {
+                    result = result.Add(decodeTimeSpan(initialByte));
+                }
+            }
+            return result;
+        }
+        
         /// <summary>
         /// Returns a DateTime value from the stream.
         /// </summary>
         /// <returns>A DateTime value.</returns>
-        public DateTime ReadDateTime()
+        private DateTime ReadDateTime()
         {
-            return DateTime.FromBinary(ReadInt64());
+            return DateTime.FromBinary(base.ReadInt64());
         }
+
+        #endregion
+
+        #region GUID
 
         /// <summary>
         /// Returns a Guid value from the stream.
@@ -180,14 +242,50 @@ namespace sones.Lib.NewFastSerializer
             return new Guid(ReadBytes(16));
         }
 
+        #endregion
+
+
+        #region Object
         /// <summary>
         /// Returns an object based on the SerializedType read next from the stream.
         /// </summary>
         /// <returns>An object instance.</returns>
         public object ReadObject()
         {
-            return processObject((SerializedType)ReadByte());
+            return processObject((SerializedType)base.ReadByte());
         }
+        #endregion
+
+
+        #region Enum
+
+        /// <summary>
+        /// need to read enum values
+        /// </summary>
+        /// <returns>the enum bytes</returns>
+        public Byte ReadOptimizedByte()
+        {
+            var typeCode = readTypeCode();
+
+            switch (typeCode)
+            { 
+                case SerializedType.ZeroByteType:
+                    return (Byte)0;
+                
+                case SerializedType.OneByteType:
+                    return (Byte)1;
+
+                case SerializedType.ByteType:
+                    return base.ReadByte();
+            
+                default:
+                    throw new InvalidOperationException("Unrecognized TypeCode: " + typeCode);
+            }
+        }
+
+        #endregion
+
+        #region String
 
         /// <summary>
         /// Called ReadOptimizedString().
@@ -195,7 +293,7 @@ namespace sones.Lib.NewFastSerializer
         /// </summary>
         /// <returns>A string value.</returns>
         public override string ReadString()
-        {
+        {            
             return ReadOptimizedString();
         }
 
@@ -209,21 +307,126 @@ namespace sones.Lib.NewFastSerializer
         }
 
         /// <summary>
+        /// Returns a string value from the stream that was stored optimized.
+        /// </summary>
+        /// <returns>A string value.</returns>
+        private string ReadOptimizedString()
+        {
+            SerializedType typeCode = readTypeCode();
+
+            /*if (typeCode < SerializedType.NullType)
+                return readTokenizedString((int)typeCode);
+
+            else if (typeCode == SerializedType.NullType)
+                return null;
+
+            else if (typeCode == SerializedType.YStringType)
+                return "Y";
+
+            else if (typeCode == SerializedType.NStringType)
+                return "N";
+
+            else if (typeCode == SerializedType.SingleCharStringType)
+                return Char.ToString(ReadChar());
+
+            else if (typeCode == SerializedType.SingleSpaceType)
+                return " ";
+
+            else if (typeCode == SerializedType.EmptyStringType)
+                return string.Empty;*/
+
+            if (typeCode == SerializedType.NullType)
+                return null;
+
+            if (typeCode == SerializedType.StringType)
+                return ReadStringDirect();
+            else
+            {
+                throw new InvalidOperationException("Unrecognized TypeCode");
+            }
+        }
+
+        #endregion
+
+        #region TimeSpan
+        /// <summary>
         /// Returns a TimeSpan value from the stream.
         /// </summary>
         /// <returns>A TimeSpan value.</returns>
-        public TimeSpan ReadTimeSpan()
+        private TimeSpan ReadTimeSpan()
         {
-            return new TimeSpan(ReadInt64());
+            return new TimeSpan(base.ReadInt64());
         }
 
+        /// <summary>
+        /// Returns a TimeSpan value from the stream that was stored optimized.
+        /// </summary>
+        /// <returns>A TimeSpan value.</returns>
+        private TimeSpan ReadOptimizedTimeSpan()
+        {
+            return decodeTimeSpan(base.ReadByte());
+        }
+
+        public TimeSpan ReadTimeSpanOptimized()
+        {
+            var typeCode = readTypeCode();
+
+            switch (typeCode)
+            { 
+                case SerializedType.ZeroTimeSpanType:
+                    return TimeSpan.Zero;
+
+                case SerializedType.OptimizedTimeSpanType:
+                    return ReadOptimizedTimeSpan();
+
+                case SerializedType.TimeSpanType:
+                    return ReadTimeSpan();
+
+                default:
+                    throw new InvalidOperationException("Unrecognized TypeCode: " + typeCode);
+            }
+
+        }
+
+        #endregion
+
+        #region Type
+
+        public Type ReadTypeOptimized()
+        {
+            var typeCode = readTypeCode();
+            return ReadOptimizedType();
+        }
+
+        /// <summary>
+        /// Returns a myObjectStream from the stream.
+        /// 
+        /// Throws an exception if the myObjectStream cannot be found.
+        /// </summary>
+        /// <returns>A myObjectStream instance.</returns>
+        private Type ReadOptimizedType()
+        {
+            return ReadOptimizedType(true);
+        }
+
+        /// <summary>
+        /// Returns a myObjectStream from the stream.
+        /// 
+        /// Throws an exception if the myObjectStream cannot be found and throwOnError is true.
+        /// </summary>
+        /// <returns>A myObjectStream instance.</returns>
+        private Type ReadOptimizedType(bool throwOnError)
+        {
+            return Type.GetType(ReadOptimizedString(), throwOnError);
+        }
+        
         /// <summary>
         /// Returns a myObjectStream or null from the stream.
         /// 
         /// Throws an exception if the myObjectStream cannot be found.
         /// </summary>
         /// <returns>A myObjectStream instance.</returns>
-        public Type ReadType()
+        private Type ReadType()
         {
             return ReadType(true);
         }
@@ -234,17 +437,21 @@ namespace sones.Lib.NewFastSerializer
         /// Throws an exception if the myObjectStream cannot be found and throwOnError is true.
         /// </summary>
         /// <returns>A myObjectStream instance.</returns>
-        public Type ReadType(bool throwOnError)
+        private Type ReadType(bool throwOnError)
         {
             if (readTypeCode() == SerializedType.NullType) return null;
             return Type.GetType(ReadOptimizedString(), throwOnError);
         }
 
+        #endregion
+
+        #region Arrays
+
         /// <summary>
         /// Returns an ArrayList from the stream that was stored optimized.
         /// </summary>
         /// <returns>An ArrayList instance.</returns>
-        public ArrayList ReadOptimizedArrayList()
+        private ArrayList ReadOptimizedArrayList()
         {
             return new ArrayList(ReadOptimizedObjectArray());
         }
@@ -253,7 +460,7 @@ namespace sones.Lib.NewFastSerializer
         /// Returns a BitArray from the stream that was stored optimized.
         /// </summary>
         /// <returns>A BitArray instance.</returns>
-        public BitArray ReadOptimizedBitArray()
+        private BitArray ReadOptimizedBitArray()
         {
             int length = ReadOptimizedInt32();
             if (length == 0)
@@ -267,113 +474,10 @@ namespace sones.Lib.NewFastSerializer
         }
 
         /// <summary>
-        /// Returns a BitVector32 value from the stream that was stored optimized.
-        /// </summary>
-        /// <returns>A BitVector32 value.</returns>
-        public BitVector32 ReadOptimizedBitVector32()
-        {
-            return new BitVector32(Read7BitEncodedInt());
-        }
-
-        /// <summary>
-        /// Returns a DateTime value from the stream that was stored optimized.
-        /// </summary>
-        /// <returns>A DateTime value.</returns>
-        public DateTime ReadOptimizedDateTime()
-        {
-            // Read date information from first three bytes
-            BitVector32 dateMask = new BitVector32(ReadByte() | (ReadByte() << 8) | (ReadByte() << 16));
-            DateTime result = new DateTime(
-                    dateMask[SerializationWriter.DateYearMask],
-                    dateMask[SerializationWriter.DateMonthMask],
-                    dateMask[SerializationWriter.DateDayMask]
-            );
-
-            if (dateMask[SerializationWriter.DateHasTimeOrKindMask] == 1)
-            {
-                byte initialByte = ReadByte();
-                DateTimeKind dateTimeKind = (DateTimeKind)(initialByte & 0x03);
-                initialByte &= 0xfc; // Remove the IsNegative and HasDays flags which are never true for a DateTime
-                if (dateTimeKind != DateTimeKind.Unspecified) result = DateTime.SpecifyKind(result, dateTimeKind);
-                if (initialByte == 0)
-                    ReadByte(); // No need to call decodeTimeSpan if there is no time information
-                else
-                {
-                    result = result.Add(decodeTimeSpan(initialByte));
-                }
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Returns a Decimal value from the stream that was stored optimized.
-        /// </summary>
-        /// <returns>A Decimal value.</returns>
-        public Decimal ReadOptimizedDecimal()
-        {
-            byte flags = ReadByte();
-            int lo = 0;
-            int mid = 0;
-            int hi = 0;
-            byte scale = 0;
-
-            if ((flags & 0x02) != 0) scale = ReadByte();
-
-            if ((flags & 4) == 0) if ((flags & 32) != 0) lo = ReadOptimizedInt32(); else lo = ReadInt32();
-            if ((flags & 8) == 0) if ((flags & 64) != 0) mid = ReadOptimizedInt32(); else mid = ReadInt32();
-            if ((flags & 16) == 0) if ((flags & 128) != 0) hi = ReadOptimizedInt32(); else hi = ReadInt32();
-
-            return new decimal(lo, mid, hi, (flags & 0x01) != 0, scale);
-        }
-
-        /// <summary>
-        /// Returns an Int32 value from the stream that was stored optimized.
-        /// </summary>
-        /// <returns>An Int32 value.</returns>
-        public int ReadOptimizedInt32()
-        {
-            int result = 0;
-            int bitShift = 0;
-            while (true)
-            {
-                byte nextByte = ReadByte();
-                result |= ((int)nextByte & 0x7f) << bitShift;
-                bitShift += 7;
-                if ((nextByte & 0x80) == 0) return result;
-            }
-        }
-
-        /// <summary>
-        /// Returns an Int16 value from the stream that was stored optimized.
-        /// </summary>
-        /// <returns>An Int16 value.</returns>
-        public short ReadOptimizedInt16()
-        {
-            return (short)ReadOptimizedInt32();
-        }
-
-        /// <summary>
-        /// Returns an Int64 value from the stream that was stored optimized.
-        /// </summary>
-        /// <returns>An Int64 value.</returns>
-        public long ReadOptimizedInt64()
-        {
-            long result = 0;
-            int bitShift = 0;
-            while (true)
-            {
-                byte nextByte = ReadByte();
-                result |= ((long)nextByte & 0x7f) << bitShift;
-                bitShift += 7;
-                if ((nextByte & 0x80) == 0) return result;
-            }
-        }
-
-        /// <summary>
         /// Returns an object[] from the stream that was stored optimized.
         /// </summary>
         /// <returns>An object[] instance.</returns>
-        public object[] ReadOptimizedObjectArray()
+        private object[] ReadOptimizedObjectArray()
         {
             return ReadOptimizedObjectArray(null);
         }
@@ -391,13 +495,13 @@ namespace sones.Lib.NewFastSerializer
         /// </summary>
         /// <param name="elementType">The myObjectStream of the expected array elements. null will return a plain object[].</param>
         /// <returns>An object[] instance.</returns>
-        public object[] ReadOptimizedObjectArray(Type elementType)
+        private object[] ReadOptimizedObjectArray(Type elementType)
         {
             int length = ReadOptimizedInt32();
             object[] result = (object[])(elementType == null ? new object[length] : Array.CreateInstance(elementType, length));
             for (int i = 0; i < result.Length; i++)
             {
-                SerializedType t = (SerializedType)ReadByte();
+                SerializedType t = readTypeCode();
 
                 if (t == SerializedType.NullSequenceType)
                     i += ReadOptimizedInt32();
@@ -425,14 +529,14 @@ namespace sones.Lib.NewFastSerializer
         /// Returns a pair of object[] arrays from the stream that were stored optimized.
         /// </summary>
         /// <returns>A pair of object[] arrays.</returns>
-        public void ReadOptimizedObjectArrayPair(out object[] values1, out object[] values2)
+        private void ReadOptimizedObjectArrayPair(out object[] values1, out object[] values2)
         {
             values1 = ReadOptimizedObjectArray(null);
             values2 = new object[values1.Length];
 
             for (int i = 0; i < values2.Length; i++)
             {
-                SerializedType t = (SerializedType)ReadByte();
+                SerializedType t = readTypeCode();
 
                 if (t == SerializedType.DuplicateValueSequenceType)
                 {
@@ -462,329 +566,14 @@ namespace sones.Lib.NewFastSerializer
         }
 
         /// <summary>
-        /// Returns a string value from the stream that was stored optimized.
-        /// </summary>
-        /// <returns>A string value.</returns>
-        public string ReadOptimizedString()
-        {
-            SerializedType typeCode = readTypeCode();
-
-            if (typeCode < SerializedType.NullType)
-                return readTokenizedString((int)typeCode);
-
-            else if (typeCode == SerializedType.NullType)
-                return null;
-
-            else if (typeCode == SerializedType.YStringType)
-                return "Y";
-
-            else if (typeCode == SerializedType.NStringType)
-                return "N";
-
-            else if (typeCode == SerializedType.SingleCharStringType)
-                return Char.ToString(ReadChar());
-
-            else if (typeCode == SerializedType.SingleSpaceType)
-                return " ";
-
-            else if (typeCode == SerializedType.EmptyStringType)
-                return string.Empty;
-
-            else if (typeCode == SerializedType.StringType)
-                return ReadStringDirect();
-
-            else
-            {
-                throw new InvalidOperationException("Unrecognized TypeCode");
-            }
-        }
-
-        /// <summary>
-        /// Returns a TimeSpan value from the stream that was stored optimized.
-        /// </summary>
-        /// <returns>A TimeSpan value.</returns>
-        public TimeSpan ReadOptimizedTimeSpan()
-        {
-            return decodeTimeSpan(ReadByte());
-        }
-
-        /// <summary>
-        /// Returns a myObjectStream from the stream.
-        /// 
-        /// Throws an exception if the myObjectStream cannot be found.
-        /// </summary>
-        /// <returns>A myObjectStream instance.</returns>
-        public Type ReadOptimizedType()
-        {
-            return ReadOptimizedType(true);
-        }
-
-        /// <summary>
-        /// Returns a myObjectStream from the stream.
-        /// 
-        /// Throws an exception if the myObjectStream cannot be found and throwOnError is true.
-        /// </summary>
-        /// <returns>A myObjectStream instance.</returns>
-        public Type ReadOptimizedType(bool throwOnError)
-        {
-            return Type.GetType(ReadOptimizedString(), throwOnError);
-        }
-
-        /// <summary>
-        /// Returns a UInt16 value from the stream that was stored optimized.
-        /// </summary>
-        /// <returns>A UInt16 value.</returns>
-        //[CLSCompliant(false)]
-        public ushort ReadOptimizedUInt16()
-        {
-            return (ushort)ReadOptimizedUInt32();
-        }
-
-        /// <summary>
-        /// Returns a UInt32 value from the stream that was stored optimized.
-        /// </summary>
-        /// <returns>A UInt32 value.</returns>
-        //[CLSCompliant(false)]
-        public uint ReadOptimizedUInt32()
-        {
-            uint result = 0;
-            int bitShift = 0;
-            while (true)
-            {
-                byte nextByte = ReadByte();
-                result |= ((uint)nextByte & 0x7f) << bitShift;
-                bitShift += 7;
-                if ((nextByte & 0x80) == 0) return result;
-            }
-        }
-
-        /// <summary>
-        /// Returns a UInt64 value from the stream that was stored optimized.
-        /// </summary>
-        /// <returns>A UInt64 value.</returns>
-        //[CLSCompliant(false)]
-        public ulong ReadOptimizedUInt64()
-        {
-            ulong result = 0;
-            int bitShift = 0;
-            while (true)
-            {
-                byte nextByte = ReadByte();
-                result |= ((ulong)nextByte & 0x7f) << bitShift;
-                bitShift += 7;
-                if ((nextByte & 0x80) == 0) return result;
-            }
-        }
-
-        /// <summary>
         /// Returns a typed array from the stream.
         /// </summary>
         /// <returns>A typed array.</returns>
-        public Array ReadTypedArray()
+        private Array ReadTypedArray()
         {
             return (Array)processArrayTypes(readTypeCode(), null);
         }
 
-        /// <summary>
-        /// Returns a new, simple generic dictionary populated with keys and values from the stream.
-        /// </summary>
-        /// <typeparam name="K">The key myObjectStream.</typeparam>
-        /// <typeparam name="V">The value myObjectStream.</typeparam>
-        /// <returns>A new, simple, populated generic Dictionary.</returns>
-        public Dictionary<K, V> ReadDictionary<K, V>()
-        {
-            Dictionary<K, V> result = new Dictionary<K, V>();
-            ReadDictionary(result);
-            return result;
-        }
-
-        /// <summary>
-        /// Populates a pre-existing generic dictionary with keys and values from the stream.
-        /// This allows a generic dictionary to be created without using the default constructor.
-        /// </summary>
-        /// <typeparam name="K">The key myObjectStream.</typeparam>
-        /// <typeparam name="V">The value myObjectStream.</typeparam>
-        public void ReadDictionary<K, V>(Dictionary<K, V> dictionary)
-        {
-
-            K[] keys = (K[])processArrayTypes(readTypeCode(), typeof(K));
-            V[] values = (V[])processArrayTypes(readTypeCode(), typeof(V));
-
-            if (dictionary == null) dictionary = new Dictionary<K, V>(keys.Length);
-            for (int i = 0; i < keys.Length; i++)
-            {
-                dictionary.Add(keys[i], values[i]);
-            }
-        }
-
-        /// <summary>
-        /// Returns a generic List populated with values from the stream.
-        /// </summary>
-        /// <typeparam name="T">The list myObjectStream.</typeparam>
-        /// <returns>A new generic List.</returns>
-        public List<T> ReadList<T>()
-        {
-            return new List<T>((T[])processArrayTypes(readTypeCode(), typeof(T)));
-        }
-
-        /// <summary>
-        /// Returns a Nullable struct from the stream.
-        /// The value returned must be cast to the correct Nullable type.
-        /// Synonym for ReadObject();
-        /// </summary>
-        /// <returns>A struct value or null</returns>
-        public ValueType ReadNullable()
-        {
-            return (ValueType)ReadObject();
-        }
-
-        /// <summary>
-        /// Returns a Nullable Boolean from the stream.
-        /// </summary>
-        /// <returns>A Nullable Boolean.</returns>
-        public Boolean? ReadNullableBoolean()
-        {
-            return (bool?)ReadObject();
-        }
-
-        /// <summary>
-        /// Returns a Nullable Byte from the stream.
-        /// </summary>
-        /// <returns>A Nullable Byte.</returns>
-        public Byte? ReadNullableByte()
-        {
-            return (byte?)ReadObject();
-        }
-
-        /// <summary>
-        /// Returns a Nullable Char from the stream.
-        /// </summary>
-        /// <returns>A Nullable Char.</returns>
-        public Char? ReadNullableChar()
-        {
-            return (char?)ReadObject();
-        }
-
-        /// <summary>
-        /// Returns a Nullable DateTime from the stream.
-        /// </summary>
-        /// <returns>A Nullable DateTime.</returns>
-        public DateTime? ReadNullableDateTime()
-        {
-            return (DateTime?)ReadObject();
-        }
-
-        /// <summary>
-        /// Returns a Nullable Decimal from the stream.
-        /// </summary>
-        /// <returns>A Nullable Decimal.</returns>
-        public Decimal? ReadNullableDecimal()
-        {
-            return (decimal?)ReadObject();
-        }
-
-        /// <summary>
-        /// Returns a Nullable Double from the stream.
-        /// </summary>
-        /// <returns>A Nullable Double.</returns>
-        public Double? ReadNullableDouble()
-        {
-            return (double?)ReadObject();
-        }
-
-        /// <summary>
-        /// Returns a Nullable Guid from the stream.
-        /// </summary>
-        /// <returns>A Nullable Guid.</returns>
-        public Guid? ReadNullableGuid()
-        {
-            return (Guid?)ReadObject();
-        }
-
-        /// <summary>
-        /// Returns a Nullable Int16 from the stream.
-        /// </summary>
-        /// <returns>A Nullable Int16.</returns>
-        public Int16? ReadNullableInt16()
-        {
-            return (short?)ReadObject();
-        }
-
-        /// <summary>
-        /// Returns a Nullable Int32 from the stream.
-        /// </summary>
-        /// <returns>A Nullable Int32.</returns>
-        public Int32? ReadNullableInt32()
-        {
-            return (int?)ReadObject();
-        }
-
-        /// <summary>
-        /// Returns a Nullable Int64 from the stream.
-        /// </summary>
-        /// <returns>A Nullable Int64.</returns>
-        public Int64? ReadNullableInt64()
-        {
-            return (long?)ReadObject();
-        }
-
-        /// <summary>
-        /// Returns a Nullable SByte from the stream.
-        /// </summary>
-        /// <returns>A Nullable SByte.</returns>
-        //[CLSCompliant(false)]
-        public SByte? ReadNullableSByte()
-        {
-            return (sbyte?)ReadObject();
-        }
-
-        /// <summary>
-        /// Returns a Nullable Single from the stream.
-        /// </summary>
-        /// <returns>A Nullable Single.</returns>
-        public Single? ReadNullableSingle()
-        {
-            return (float?)ReadObject();
-        }
-
-        /// <summary>
-        /// Returns a Nullable TimeSpan from the stream.
-        /// </summary>
-        /// <returns>A Nullable TimeSpan.</returns>
-        public TimeSpan? ReadNullableTimeSpan()
-        {
-            return (TimeSpan?)ReadObject();
-        }
-
-        /// <summary>
-        /// Returns a Nullable UInt16 from the stream.
-        /// </summary>
-        /// <returns>A Nullable UInt16.</returns>
-        //[CLSCompliant(false)]
-        public UInt16? ReadNullableUInt16()
-        {
-            return (ushort?)ReadObject();
-        }
-
-        /// <summary>
-        /// Returns a Nullable UInt32 from the stream.
-        /// </summary>
-        /// <returns>A Nullable UInt32.</returns>
-        //[CLSCompliant(false)]
-        public UInt32? ReadNullableUInt32()
-        {
-            return (uint?)ReadObject();
-        }
-
-        /// <summary>
-        /// Returns a Nullable UInt64 from the stream.
-        /// </summary>
-        /// <returns>A Nullable UInt64.</returns>
-        //[CLSCompliant(false)]
-        public UInt64? ReadNullableUInt64()
-        {
-            return (ulong?)ReadObject();
-        }
 
         /// <summary>
         /// Returns a Byte[] from the stream.
@@ -982,7 +771,7 @@ namespace sones.Lib.NewFastSerializer
                 for (int i = 0; i < result.Length; i++)
                 {
                     if (optimizeFlags == null || (optimizeFlags != FullyOptimizableTypedArray && !optimizeFlags[i]))
-                        result[i] = ReadUInt16();
+                        result[i] = base.ReadUInt16();
                     else
                     {
                         result[i] = ReadOptimizedUInt16();
@@ -1072,7 +861,7 @@ namespace sones.Lib.NewFastSerializer
                 for (int i = 0; i < result.Length; i++)
                 {
                     if (optimizeFlags == null || (optimizeFlags != FullyOptimizableTypedArray && !optimizeFlags[i]))
-                        result[i] = ReadInt32();
+                        result[i] = base.ReadInt32();
                     else
                     {
                         result[i] = ReadOptimizedInt32();
@@ -1100,7 +889,7 @@ namespace sones.Lib.NewFastSerializer
                 for (int i = 0; i < result.Length; i++)
                 {
                     if (optimizeFlags == null || (optimizeFlags != FullyOptimizableTypedArray && !optimizeFlags[i]))
-                        result[i] = ReadInt64();
+                        result[i] = base.ReadInt64();
                     else
                     {
                         result[i] = ReadOptimizedInt64();
@@ -1166,7 +955,7 @@ namespace sones.Lib.NewFastSerializer
                 for (int i = 0; i < result.Length; i++)
                 {
                     if (optimizeFlags == null || (optimizeFlags != FullyOptimizableTypedArray && !optimizeFlags[i]))
-                        result[i] = ReadUInt32();
+                        result[i] = base.ReadUInt32();
                     else
                     {
                         result[i] = ReadOptimizedUInt32();
@@ -1195,7 +984,7 @@ namespace sones.Lib.NewFastSerializer
                 for (int i = 0; i < result.Length; i++)
                 {
                     if (optimizeFlags == null || (optimizeFlags != FullyOptimizableTypedArray && !optimizeFlags[i]))
-                        result[i] = ReadUInt64();
+                        result[i] = base.ReadUInt64();
                     else
                     {
                         result[i] = ReadOptimizedUInt64();
@@ -1209,7 +998,7 @@ namespace sones.Lib.NewFastSerializer
         /// Returns a Boolean[] from the stream.
         /// </summary>
         /// <returns>A Boolean[] instance; or null.</returns>
-        public bool[] ReadOptimizedBooleanArray()
+        private bool[] ReadOptimizedBooleanArray()
         {
             return ReadBooleanArray();
         }
@@ -1218,7 +1007,7 @@ namespace sones.Lib.NewFastSerializer
         /// Returns a DateTime[] from the stream.
         /// </summary>
         /// <returns>A DateTime[] instance; or null.</returns>
-        public DateTime[] ReadOptimizedDateTimeArray()
+        private DateTime[] ReadOptimizedDateTimeArray()
         {
             return ReadDateTimeArray();
         }
@@ -1227,7 +1016,7 @@ namespace sones.Lib.NewFastSerializer
         /// Returns a Decimal[] from the stream.
         /// </summary>
         /// <returns>A Decimal[] instance; or null.</returns>
-        public decimal[] ReadOptimizedDecimalArray()
+        private decimal[] ReadOptimizedDecimalArray()
         {
             return ReadDecimalArray();
         }
@@ -1236,7 +1025,7 @@ namespace sones.Lib.NewFastSerializer
         /// Returns a Int16[] from the stream.
         /// </summary>
         /// <returns>An Int16[] instance; or null.</returns>
-        public short[] ReadOptimizedInt16Array()
+        private short[] ReadOptimizedInt16Array()
         {
             return ReadInt16Array();
         }
@@ -1245,7 +1034,7 @@ namespace sones.Lib.NewFastSerializer
         /// Returns a Int32[] from the stream.
         /// </summary>
         /// <returns>An Int32[] instance; or null.</returns>
-        public int[] ReadOptimizedInt32Array()
+        private int[] ReadOptimizedInt32Array()
         {
             return ReadInt32Array();
         }
@@ -1254,7 +1043,7 @@ namespace sones.Lib.NewFastSerializer
         /// Returns a Int64[] from the stream.
         /// </summary>
         /// <returns>A Int64[] instance; or null.</returns>
-        public long[] ReadOptimizedInt64Array()
+        private long[] ReadOptimizedInt64Array()
         {
             return ReadInt64Array();
         }
@@ -1263,7 +1052,7 @@ namespace sones.Lib.NewFastSerializer
         /// Returns a TimeSpan[] from the stream.
         /// </summary>
         /// <returns>A TimeSpan[] instance; or null.</returns>
-        public TimeSpan[] ReadOptimizedTimeSpanArray()
+        private TimeSpan[] ReadOptimizedTimeSpanArray()
         {
             return ReadTimeSpanArray();
         }
@@ -1273,7 +1062,7 @@ namespace sones.Lib.NewFastSerializer
         /// </summary>
         /// <returns>A UInt16[] instance; or null.</returns>
         //[CLSCompliant(false)]
-        public ushort[] ReadOptimizedUInt16Array()
+        private ushort[] ReadOptimizedUInt16Array()
         {
             return ReadUInt16Array();
         }
@@ -1283,7 +1072,7 @@ namespace sones.Lib.NewFastSerializer
         /// </summary>
         /// <returns>A UInt32[] instance; or null.</returns>
         //[CLSCompliant(false)]
-        public uint[] ReadOptimizedUInt32Array()
+        private uint[] ReadOptimizedUInt32Array()
         {
             return ReadUInt32Array();
         }
@@ -1293,10 +1082,647 @@ namespace sones.Lib.NewFastSerializer
         /// </summary>
         /// <returns>A UInt64[] instance; or null.</returns>
         //[CLSCompliant(false)]
-        public ulong[] ReadOptimizedUInt64Array()
+        private ulong[] ReadOptimizedUInt64Array()
         {
             return ReadUInt64Array();
         }
+
+        /// <summary>
+        /// Internal implementation returning a Bool[].
+        /// </summary>
+        /// <returns>A Bool[].</returns>
+        private bool[] readBooleanArray()
+        {
+            BitArray bitArray = ReadOptimizedBitArray();
+            bool[] result = new bool[bitArray.Count];
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = bitArray[i];
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Internal implementation returning a Byte[].
+        /// </summary>
+        /// <returns>A Byte[].</returns>
+        private byte[] readByteArray()
+        {
+            return base.ReadBytes(ReadOptimizedInt32());
+        }
+
+        /// <summary>
+        /// Internal implementation returning a Char[].
+        /// </summary>
+        /// <returns>A Char[].</returns>
+        private char[] readCharArray()
+        {
+            return base.ReadChars(ReadOptimizedInt32());
+        }
+
+        /// <summary>
+        /// Internal implementation returning a Decimal[].
+        /// </summary>
+        /// <returns>A Decimal[].</returns>
+        private decimal[] readDecimalArray()
+        {
+            decimal[] result = new decimal[ReadOptimizedInt32()];
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = ReadOptimizedDecimal();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Internal implementation returning a Double[].
+        /// </summary>
+        /// <returns>A Double[].</returns>
+        private double[] readDoubleArray()
+        {
+            double[] result = new double[ReadOptimizedInt32()];
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = base.ReadDouble();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Internal implementation returning a Guid[].
+        /// </summary>
+        /// <returns>A Guid[].</returns>
+        private Guid[] readGuidArray()
+        {
+            Guid[] result = new Guid[ReadOptimizedInt32()];
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = ReadGuid();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Internal implementation returning an SByte[].
+        /// </summary>
+        /// <returns>An SByte[].</returns>
+        private sbyte[] readSByteArray()
+        {
+            sbyte[] result = new sbyte[ReadOptimizedInt32()];
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = ReadSByte();
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Internal implementation returning a Single[].
+        /// </summary>
+        /// <returns>A Single[].</returns>
+        private float[] readSingleArray()
+        {
+            float[] result = new float[ReadOptimizedInt32()];
+            for (int i = 0; i < result.Length; i++)
+            {
+                result[i] = ReadSingle();
+            }
+            return result;
+        }
+
+        #endregion
+
+        #region BitVector32
+
+        /// <summary>
+        /// Returns a BitVector32 value from the stream that was stored optimized.
+        /// </summary>
+        /// <returns>A BitVector32 value.</returns>
+        private BitVector32 ReadOptimizedBitVector32()
+        {
+            return new BitVector32(Read7BitEncodedInt());
+        }        
+
+        #endregion
+
+        #region Decimal
+        /// <summary>
+        /// Returns a Decimal value from the stream that was stored optimized.
+        /// </summary>
+        /// <returns>A Decimal value.</returns>
+        private Decimal ReadOptimizedDecimal()
+        {
+            byte flags = base.ReadByte();
+            int lo = 0;
+            int mid = 0;
+            int hi = 0;
+            byte scale = 0;
+
+            if ((flags & 0x02) != 0) scale = base.ReadByte();
+
+            if ((flags & 4) == 0) if ((flags & 32) != 0) lo = ReadOptimizedInt32(); else lo = base.ReadInt32();
+            if ((flags & 8) == 0) if ((flags & 64) != 0) mid = ReadOptimizedInt32(); else mid = base.ReadInt32();
+            if ((flags & 16) == 0) if ((flags & 128) != 0) hi = ReadOptimizedInt32(); else hi = base.ReadInt32();
+
+            return new decimal(lo, mid, hi, (flags & 0x01) != 0, scale);
+        }
+
+        #endregion
+        
+        #region Int32
+        /// <summary>
+        /// Returns an Int32 value from the stream that was stored optimized.
+        /// </summary>
+        /// <returns>An Int32 value.</returns>
+        private int ReadOptimizedInt32()
+        {
+            int result = 0;
+            int bitShift = 0;
+            while (true)
+            {
+                byte nextByte = base.ReadByte();
+                result |= ((int)nextByte & 0x7f) << bitShift;
+                bitShift += 7;
+                if ((nextByte & 0x80) == 0) return result;
+            }
+        }
+
+        public override Int32 ReadInt32()
+        {
+            var typeCode = readTypeCode();
+
+            switch (typeCode)
+            {
+                case SerializedType.ZeroInt32Type:
+                    return 0;
+
+                case SerializedType.MinusOneInt32Type:
+                    return -1;
+
+                case SerializedType.OneInt32Type:
+                    return 1;
+
+                case SerializedType.OptimizedInt32Type:
+                    return ReadOptimizedInt32();
+
+                case SerializedType.OptimizedInt32NegativeType:
+                    return -ReadOptimizedInt32() - 1;
+
+                case SerializedType.Int32Type:
+                    return base.ReadInt32();
+
+                default:
+                    throw new InvalidOperationException("Unrecognized TypeCode: " + typeCode);
+            }
+        }
+
+        #endregion
+
+        #region Int16
+
+        /// <summary>
+        /// Returns an Int16 value from the stream that was stored optimized.
+        /// </summary>
+        /// <returns>An Int16 value.</returns>
+        private short ReadOptimizedInt16()
+        {
+            return (short)ReadOptimizedInt32();
+        }
+
+        /// <summary>
+        /// Returns a UInt16 value from the stream that was stored optimized.
+        /// </summary>
+        /// <returns>A UInt16 value.</returns>
+        //[CLSCompliant(false)]
+        private ushort ReadOptimizedUInt16()
+        {
+            return (ushort)ReadOptimizedUInt32();
+        }
+
+
+        public override UInt16 ReadUInt16()
+        {
+            var typeCode = readTypeCode();
+
+            switch (typeCode)
+            {
+                case SerializedType.ZeroUInt16Type:
+                    return 0;
+
+                case SerializedType.OneUInt16Type:
+                    return 1;
+
+                case SerializedType.OptimizedUInt16Type:
+                    return ReadOptimizedUInt16();
+
+                case SerializedType.UInt16Type:
+                    return base.ReadUInt16();
+
+                default:
+                    throw new InvalidOperationException("Unrecognized TypeCode: " + typeCode);
+            }
+        }
+
+        #endregion
+
+        #region UInt64
+
+        public override UInt64 ReadUInt64()
+        {
+            var typeCode = readTypeCode();
+
+            switch(typeCode)
+            {
+                case SerializedType.ZeroUInt64Type:
+                    return 0;
+
+                case SerializedType.OneUInt64Type:
+                    return 1;
+
+                case SerializedType.OptimizedUInt64Type:
+                    return ReadOptimizedUInt64();
+
+                case SerializedType.UInt64Type:
+                    return base.ReadUInt64();
+
+                default:
+                    throw new InvalidOperationException("Unrecognized TypeCode: " + typeCode);
+            }            
+        }
+
+        /// <summary>
+        /// Returns a UInt64 value from the stream that was stored optimized.
+        /// </summary>
+        /// <returns>A UInt64 value.</returns>
+        //[CLSCompliant(false)]
+        private ulong ReadOptimizedUInt64()
+        {
+            ulong result = 0;
+            int bitShift = 0;
+            while (true)
+            {
+                byte nextByte = base.ReadByte();
+                result |= ((ulong)nextByte & 0x7f) << bitShift;
+                bitShift += 7;
+                if ((nextByte & 0x80) == 0) return result;
+            }
+        }
+
+        #endregion        
+
+        #region Int64
+
+        public override Int64 ReadInt64()
+        {
+            var typeCode = readTypeCode();
+
+            switch (typeCode)
+            { 
+                case SerializedType.ZeroInt64Type:
+                    return 0;
+
+                case SerializedType.OneInt64Type:
+                    return 1;
+
+                case SerializedType.MinusOneInt64Type:
+                    return -1;
+
+                case SerializedType.OptimizedInt64Type:
+                    return ReadOptimizedInt64();
+
+                case SerializedType.OptimizedInt64NegativeType:
+                    return -ReadOptimizedInt64() - 1;
+
+                case SerializedType.Int64Type:
+                    return base.ReadInt64();
+
+                default:
+                    throw new InvalidOperationException("Unrecognized TypeCode: " + typeCode);
+            }
+        }
+
+        /// <summary>
+        /// Returns an Int64 value from the stream that was stored optimized.
+        /// </summary>
+        /// <returns>An Int64 value.</returns>
+        private long ReadOptimizedInt64()
+        {
+            long result = 0;
+            int bitShift = 0;
+            while (true)
+            {
+                byte nextByte = base.ReadByte();
+                result |= ((long)nextByte & 0x7f) << bitShift;
+                bitShift += 7;
+                if ((nextByte & 0x80) == 0) return result;
+            }
+        }
+
+        #endregion
+
+        #region Double
+
+        public override Double ReadDouble()
+        {
+            var typeCode = readTypeCode();
+
+            switch (typeCode)
+            { 
+                case SerializedType.ZeroDoubleType:
+                    return 0.0;
+
+                case SerializedType.OneDoubleType:
+                    return 1.0;
+
+                case SerializedType.DoubleType:
+                    return base.ReadDouble();
+
+                default:
+                    throw new InvalidOperationException("Unrecognized TypeCode: " + typeCode);
+            }
+        }
+
+        #endregion
+
+        #region UInt32
+
+        public override UInt32 ReadUInt32()
+        {
+            var typeCode = readTypeCode();
+
+            switch (typeCode)
+            { 
+                case SerializedType.ZeroUInt32Type:
+                    return 0;
+                
+                case SerializedType.OneUInt32Type:
+                    return 1;
+                
+                case SerializedType.OptimizedUInt32Type:
+                    return ReadOptimizedUInt32();
+
+                case SerializedType.UInt32Type:
+                    return base.ReadUInt32();
+
+                default:
+                    throw new InvalidOperationException("Unrecognized TypeCode: " + typeCode);
+            }
+        }    
+
+        /// <summary>
+        /// Returns a UInt32 value from the stream that was stored optimized.
+        /// </summary>
+        /// <returns>A UInt32 value.</returns>
+        //[CLSCompliant(false)]
+        private uint ReadOptimizedUInt32()
+        {
+            uint result = 0;
+            int bitShift = 0;
+            while (true)
+            {
+                byte nextByte = base.ReadByte();
+                result |= ((uint)nextByte & 0x7f) << bitShift;
+                bitShift += 7;
+                if ((nextByte & 0x80) == 0) return result;
+            }
+        }
+
+        #endregion                
+
+        #region List types
+
+        /// <summary>
+        /// Returns a new, simple generic dictionary populated with keys and values from the stream.
+        /// </summary>
+        /// <typeparam name="K">The key myObjectStream.</typeparam>
+        /// <typeparam name="V">The value myObjectStream.</typeparam>
+        /// <returns>A new, simple, populated generic Dictionary.</returns>
+        public Dictionary<K, V> ReadDictionary<K, V>()
+        {
+            Dictionary<K, V> result = new Dictionary<K, V>();
+            ReadDictionary(result);
+            return result;
+        }
+
+        /// <summary>
+        /// Populates a pre-existing generic dictionary with keys and values from the stream.
+        /// This allows a generic dictionary to be created without using the default constructor.
+        /// </summary>
+        /// <typeparam name="K">The key myObjectStream.</typeparam>
+        /// <typeparam name="V">The value myObjectStream.</typeparam>
+        public void ReadDictionary<K, V>(Dictionary<K, V> dictionary)
+        {
+
+            K[] keys = (K[])processArrayTypes(readTypeCode(), typeof(K));
+            V[] values = (V[])processArrayTypes(readTypeCode(), typeof(V));
+
+            if (dictionary == null) dictionary = new Dictionary<K, V>(keys.Length);
+            for (int i = 0; i < keys.Length; i++)
+            {
+                dictionary.Add(keys[i], values[i]);
+            }
+        }
+
+        /// <summary>
+        /// Returns a generic List populated with values from the stream.
+        /// </summary>
+        /// <typeparam name="T">The list myObjectStream.</typeparam>
+        /// <returns>A new generic List.</returns>
+        public List<T> ReadList<T>()
+        {
+            return new List<T>((T[])processArrayTypes(readTypeCode(), typeof(T)));
+        }
+
+        #endregion
+
+        #region nullable values
+
+        /// <summary>
+        /// Returns a Nullable struct from the stream.
+        /// The value returned must be cast to the correct Nullable type.
+        /// Synonym for ReadObject();
+        /// </summary>
+        /// <returns>A struct value or null</returns>
+        public ValueType ReadNullable()
+        {
+            return (ValueType)ReadObject();
+        }
+
+        /// <summary>
+        /// Returns a Nullable Boolean from the stream.
+        /// </summary>
+        /// <returns>A Nullable Boolean.</returns>
+        public Boolean? ReadNullableBoolean()
+        {
+            return (bool?)ReadObject();
+        }
+
+        /// <summary>
+        /// Returns a Nullable Byte from the stream.
+        /// </summary>
+        /// <returns>A Nullable Byte.</returns>
+        public Byte? ReadNullableByte()
+        {
+            return (byte?)ReadObject();
+        }
+
+        /// <summary>
+        /// Returns a Nullable Char from the stream.
+        /// </summary>
+        /// <returns>A Nullable Char.</returns>
+        public Char? ReadNullableChar()
+        {
+            return (char?)ReadObject();
+        }
+
+        /// <summary>
+        /// Returns a Nullable DateTime from the stream.
+        /// </summary>
+        /// <returns>A Nullable DateTime.</returns>
+        public DateTime? ReadNullableDateTime()
+        {
+            return (DateTime?)ReadObject();
+        }
+
+        /// <summary>
+        /// Returns a Nullable Decimal from the stream.
+        /// </summary>
+        /// <returns>A Nullable Decimal.</returns>
+        public Decimal? ReadNullableDecimal()
+        {
+            return (decimal?)ReadObject();
+        }
+
+        /// <summary>
+        /// Returns a Nullable Double from the stream.
+        /// </summary>
+        /// <returns>A Nullable Double.</returns>
+        public Double? ReadNullableDouble()
+        {
+            return (double?)ReadObject();
+        }
+
+        /// <summary>
+        /// Returns a Nullable Guid from the stream.
+        /// </summary>
+        /// <returns>A Nullable Guid.</returns>
+        public Guid? ReadNullableGuid()
+        {
+            return (Guid?)ReadObject();
+        }
+
+        /// <summary>
+        /// Returns a Nullable Int16 from the stream.
+        /// </summary>
+        /// <returns>A Nullable Int16.</returns>
+        public Int16? ReadNullableInt16()
+        {
+            return (short?)ReadObject();
+        }
+
+        /// <summary>
+        /// Returns a Nullable Int32 from the stream.
+        /// </summary>
+        /// <returns>A Nullable Int32.</returns>
+        public Int32? ReadNullableInt32()
+        {
+            return (int?)ReadObject();
+        }
+
+        /// <summary>
+        /// Returns a Nullable Int64 from the stream.
+        /// </summary>
+        /// <returns>A Nullable Int64.</returns>
+        public Int64? ReadNullableInt64()
+        {
+            return (long?)ReadObject();
+        }
+
+        /// <summary>
+        /// Returns a Nullable SByte from the stream.
+        /// </summary>
+        /// <returns>A Nullable SByte.</returns>
+        //[CLSCompliant(false)]
+        public SByte? ReadNullableSByte()
+        {
+            return (sbyte?)ReadObject();
+        }
+
+        /// <summary>
+        /// Returns a Nullable Single from the stream.
+        /// </summary>
+        /// <returns>A Nullable Single.</returns>
+        public Single? ReadNullableSingle()
+        {
+            return (float?)ReadObject();
+        }
+
+        /// <summary>
+        /// Returns a Nullable TimeSpan from the stream.
+        /// </summary>
+        /// <returns>A Nullable TimeSpan.</returns>
+        public TimeSpan? ReadNullableTimeSpan()
+        {
+            return (TimeSpan?)ReadObject();
+        }
+
+        /// <summary>
+        /// Returns a Nullable UInt16 from the stream.
+        /// </summary>
+        /// <returns>A Nullable UInt16.</returns>
+        //[CLSCompliant(false)]
+        public UInt16? ReadNullableUInt16()
+        {
+            return (ushort?)ReadObject();
+        }
+
+        /// <summary>
+        /// Returns a Nullable UInt32 from the stream.
+        /// </summary>
+        /// <returns>A Nullable UInt32.</returns>
+        //[CLSCompliant(false)]
+        public UInt32? ReadNullableUInt32()
+        {
+            return (uint?)ReadObject();
+        }
+
+        /// <summary>
+        /// Returns a Nullable UInt64 from the stream.
+        /// </summary>
+        /// <returns>A Nullable UInt64.</returns>
+        //[CLSCompliant(false)]
+        public UInt64? ReadNullableUInt64()
+        {
+            return (ulong?)ReadObject();
+        }
+
+        #endregion        
+
+        #region Boolean
+
+        public override Boolean ReadBoolean()
+        {
+            var typeCode = (SerializedType)base.ReadByte();
+
+            switch (typeCode)
+            { 
+                case SerializedType.BooleanFalseType:
+                    return false;
+
+                case SerializedType.BooleanTrueType:
+                    return true;
+
+                default:
+                    throw new InvalidOperationException("Unrecognized TypeCode: " + typeCode);
+            }
+        }
+
+        #endregion      
 
         /// <summary>
         /// Allows an existing object, implementing IOwnedDataSerializable, to 
@@ -1338,16 +1764,16 @@ namespace sones.Lib.NewFastSerializer
             bool hasMilliseconds;
             long ticks = 0;
 
-            BitVector32 packedData = new BitVector32(initialByte | (ReadByte() << 8)); // Read first two bytes
+            BitVector32 packedData = new BitVector32(initialByte | (base.ReadByte() << 8)); // Read first two bytes
             hasTime = packedData[SerializationWriter.HasTimeSection] == 1;
             hasSeconds = packedData[SerializationWriter.HasSecondsSection] == 1;
             hasMilliseconds = packedData[SerializationWriter.HasMillisecondsSection] == 1;
 
             if (hasMilliseconds)
-                packedData = new BitVector32(packedData.Data | (ReadByte() << 16) | (ReadByte() << 24));
+                packedData = new BitVector32(packedData.Data | (base.ReadByte() << 16) | (base.ReadByte() << 24));
             else if (hasSeconds && hasTime)
             {
-                packedData = new BitVector32(packedData.Data | (ReadByte() << 16));
+                packedData = new BitVector32(packedData.Data | (base.ReadByte() << 16));
             }
 
             if (hasTime)
@@ -1408,7 +1834,7 @@ namespace sones.Lib.NewFastSerializer
                 return null;
 
             else if (typeCode == SerializedType.Int32Type)
-                return ReadInt32();
+                return base.ReadInt32();
 
             else if (typeCode == SerializedType.EmptyStringType)
                 return string.Empty;
@@ -1507,13 +1933,13 @@ namespace sones.Lib.NewFastSerializer
                 return ReadOptimizedTimeSpan();
 
             else if (typeCode == SerializedType.DoubleType)
-                return ReadDouble();
+                return base.ReadDouble();
 
             else if (typeCode == SerializedType.ZeroDoubleType)
                 return (Double)0;
 
             else if (typeCode == SerializedType.Int64Type)
-                return ReadInt64();
+                return base.ReadInt64();
 
             else if (typeCode == SerializedType.ZeroInt64Type)
                 return (Int64)0;
@@ -1537,7 +1963,7 @@ namespace sones.Lib.NewFastSerializer
                 return (Single)0;
 
             else if (typeCode == SerializedType.ByteType)
-                return ReadByte();
+                return base.ReadByte();
 
             else if (typeCode == SerializedType.ZeroByteType)
                 return (Byte)0;
@@ -1546,13 +1972,13 @@ namespace sones.Lib.NewFastSerializer
                 return new BinaryFormatter().Deserialize(BaseStream);
 
             else if (typeCode == SerializedType.UInt16Type)
-                return ReadUInt16();
+                return base.ReadUInt16();
 
             else if (typeCode == SerializedType.ZeroUInt16Type)
                 return (UInt16)0;
 
             else if (typeCode == SerializedType.UInt32Type)
-                return ReadUInt32();
+                return base.ReadUInt32();
 
             else if (typeCode == SerializedType.ZeroUInt32Type)
                 return (UInt32)0;
@@ -1561,7 +1987,7 @@ namespace sones.Lib.NewFastSerializer
                 return ReadOptimizedUInt32();
 
             else if (typeCode == SerializedType.UInt64Type)
-                return ReadUInt64();
+                return base.ReadUInt64();
 
             else if (typeCode == SerializedType.ZeroUInt64Type)
                 return (UInt64)0;
@@ -1655,7 +2081,7 @@ namespace sones.Lib.NewFastSerializer
                     return Enum.ToObject(enumType, ReadOptimizedUInt64());
                 else
                 {
-                    return Enum.ToObject(enumType, ReadUInt64());
+                    return Enum.ToObject(enumType, base.ReadUInt64());
                 }
             }
 
@@ -1664,22 +2090,22 @@ namespace sones.Lib.NewFastSerializer
                 Type enumType = ReadOptimizedType();
                 Type underlyingType = Enum.GetUnderlyingType(enumType);
                 if (underlyingType == typeof(Int32))
-                    return Enum.ToObject(enumType, ReadInt32());
+                    return Enum.ToObject(enumType, base.ReadInt32());
                 else if (underlyingType == typeof(Byte))
-                    return Enum.ToObject(enumType, ReadByte());
+                    return Enum.ToObject(enumType, base.ReadByte());
                 else if (underlyingType == typeof(Int16))
                     return Enum.ToObject(enumType, ReadInt16());
                 else if (underlyingType == typeof(UInt32))
-                    return Enum.ToObject(enumType, ReadUInt32());
+                    return Enum.ToObject(enumType, base.ReadUInt32());
                 else if (underlyingType == typeof(Int64))
-                    return Enum.ToObject(enumType, ReadInt64());
+                    return Enum.ToObject(enumType, base.ReadInt64());
                 else if (underlyingType == typeof(SByte))
                     return Enum.ToObject(enumType, ReadSByte());
                 else if (underlyingType == typeof(UInt16))
                     return Enum.ToObject(enumType, ReadUInt16());
                 else
                 {
-                    return Enum.ToObject(enumType, ReadUInt64());
+                    return Enum.ToObject(enumType, base.ReadUInt64());
                 }
             }
 
@@ -1820,116 +2246,9 @@ namespace sones.Lib.NewFastSerializer
         /// <returns>A SerializedType value.</returns>
         private SerializedType readTypeCode()
         {
-            return (SerializedType)ReadByte();
+            return (SerializedType)base.ReadByte();
         }
-
-        /// <summary>
-        /// Internal implementation returning a Bool[].
-        /// </summary>
-        /// <returns>A Bool[].</returns>
-        private bool[] readBooleanArray()
-        {
-            BitArray bitArray = ReadOptimizedBitArray();
-            bool[] result = new bool[bitArray.Count];
-            for (int i = 0; i < result.Length; i++)
-            {
-                result[i] = bitArray[i];
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Internal implementation returning a Byte[].
-        /// </summary>
-        /// <returns>A Byte[].</returns>
-        private byte[] readByteArray()
-        {
-            return base.ReadBytes(ReadOptimizedInt32());
-        }
-
-        /// <summary>
-        /// Internal implementation returning a Char[].
-        /// </summary>
-        /// <returns>A Char[].</returns>
-        private char[] readCharArray()
-        {
-            return base.ReadChars(ReadOptimizedInt32());
-        }
-
-        /// <summary>
-        /// Internal implementation returning a Decimal[].
-        /// </summary>
-        /// <returns>A Decimal[].</returns>
-        private decimal[] readDecimalArray()
-        {
-            decimal[] result = new decimal[ReadOptimizedInt32()];
-            for (int i = 0; i < result.Length; i++)
-            {
-                result[i] = ReadOptimizedDecimal();
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Internal implementation returning a Double[].
-        /// </summary>
-        /// <returns>A Double[].</returns>
-        private double[] readDoubleArray()
-        {
-            double[] result = new double[ReadOptimizedInt32()];
-            for (int i = 0; i < result.Length; i++)
-            {
-                result[i] = ReadDouble();
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Internal implementation returning a Guid[].
-        /// </summary>
-        /// <returns>A Guid[].</returns>
-        private Guid[] readGuidArray()
-        {
-            Guid[] result = new Guid[ReadOptimizedInt32()];
-            for (int i = 0; i < result.Length; i++)
-            {
-                result[i] = ReadGuid();
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Internal implementation returning an SByte[].
-        /// </summary>
-        /// <returns>An SByte[].</returns>
-        private sbyte[] readSByteArray()
-        {
-            sbyte[] result = new sbyte[ReadOptimizedInt32()];
-            for (int i = 0; i < result.Length; i++)
-            {
-                result[i] = ReadSByte();
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Internal implementation returning a Single[].
-        /// </summary>
-        /// <returns>A Single[].</returns>
-        private float[] readSingleArray()
-        {
-            float[] result = new float[ReadOptimizedInt32()];
-            for (int i = 0; i < result.Length; i++)
-            {
-                result[i] = ReadSingle();
-            }
-            return result;
-        }
+        
         #endregion Private Methods
 
         #region Debug

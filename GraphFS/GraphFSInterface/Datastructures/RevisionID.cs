@@ -413,7 +413,7 @@ namespace sones.GraphFS.DataStructures
             try
             {
 
-                mySerializationWriter.WriteObject(Timestamp);
+                mySerializationWriter.WriteUInt64(Timestamp);
                 UUID.Serialize(ref mySerializationWriter);
 
             }
@@ -433,8 +433,8 @@ namespace sones.GraphFS.DataStructures
         {
             try
             {
-                Timestamp   = (UInt64)mySerializationReader.ReadObject();
-                UUID        = new UUID((Byte[])mySerializationReader.ReadObject());
+                Timestamp   = mySerializationReader.ReadUInt64();
+                UUID        = new UUID(mySerializationReader.ReadByteArray());
             }
 
             catch (Exception e)

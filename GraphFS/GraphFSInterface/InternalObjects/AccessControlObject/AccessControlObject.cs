@@ -443,34 +443,34 @@ namespace sones.GraphFS.InternalObjects
 
                 #region NotificationHandling
 
-                mySerializationWriter.WriteObject((ulong)_NotificationHandling);
+                mySerializationWriter.WriteByte((Byte)_NotificationHandling);
 
                 #endregion
 
                 #region DefaultRule
 
-                mySerializationWriter.WriteObject((byte)_DefaultRule);
+                mySerializationWriter.WriteByte((Byte)_DefaultRule);
 
                 #endregion
 
                 #region AllowACL
 
                 // Write number of AllowACL items
-                mySerializationWriter.WriteObject( (UInt64) _AllowACL.Count);
+                mySerializationWriter.WriteUInt64((UInt64)_AllowACL.Count);
 
                 foreach (KeyValuePair<RightUUID, HashSet<EntityUUID>> _KeyValuePair in _AllowACL)
                 {
 
                     // KEY: RightUUID
-                    mySerializationWriter.WriteObject(_KeyValuePair.Key.GetByteArray());
+                    mySerializationWriter.Write(_KeyValuePair.Key.GetByteArray());
 
                     // VALUE:
                     // Write number of HashSet elements
-                    mySerializationWriter.WriteObject( (UInt64) _KeyValuePair.Value.Count);
+                    mySerializationWriter.WriteUInt64((UInt64)_KeyValuePair.Value.Count);
 
                     // Write the elements itself
                     foreach (EntityUUID _HashItem in _KeyValuePair.Value)
-                        mySerializationWriter.WriteObject(_HashItem.GetByteArray());
+                        mySerializationWriter.Write(_HashItem.GetByteArray());
 
                 }
 
@@ -479,21 +479,21 @@ namespace sones.GraphFS.InternalObjects
                 #region DenyACL
 
                 // Write number of DenyACL items
-                mySerializationWriter.WriteObject( (UInt64) _DenyACL.Count);
+                mySerializationWriter.WriteUInt64( (UInt64) _DenyACL.Count);
 
                 foreach (KeyValuePair<RightUUID, HashSet<EntityUUID>> _KeyValuePair in _DenyACL)
                 {
 
                     // KEY:
-                    mySerializationWriter.WriteObject(_KeyValuePair.Key.GetByteArray());
+                    mySerializationWriter.Write(_KeyValuePair.Key.GetByteArray());
 
                     // VALUE:
                     // Write number of HashSet elements
-                    mySerializationWriter.WriteObject( (UInt64) _KeyValuePair.Value.Count);
+                    mySerializationWriter.WriteUInt64( (UInt64) _KeyValuePair.Value.Count);
 
                     // Write the elements itself
                     foreach (EntityUUID _HashItem in _KeyValuePair.Value)
-                        mySerializationWriter.WriteObject(_HashItem.GetByteArray());
+                        mySerializationWriter.Write(_HashItem.GetByteArray());
 
                 }
 
@@ -527,13 +527,13 @@ namespace sones.GraphFS.InternalObjects
 
                 #region NotificationHandling
 
-                _NotificationHandling = (NHAccessControlObject) mySerializationReader.ReadObject();
+                _NotificationHandling = (NHAccessControlObject)mySerializationReader.ReadOptimizedByte();
 
                 #endregion
 
                 #region DefaultRule
 
-                _DefaultRule = (DefaultRuleTypes) mySerializationReader.ReadObject();
+                _DefaultRule = (DefaultRuleTypes)mySerializationReader.ReadOptimizedByte();
 
                 #endregion
 
@@ -541,14 +541,14 @@ namespace sones.GraphFS.InternalObjects
 
                 _AllowACL = new Dictionary<RightUUID, HashSet<EntityUUID>>();
 
-                _NumberOfACLs = (UInt64) mySerializationReader.ReadObject();
+                _NumberOfACLs = mySerializationReader.ReadUInt64();
 
                 for (UInt64 i=0; i<_NumberOfACLs; i++)
                 {
 
                     #region KEY
 
-                    _RightUUID = new RightUUID( (Byte[]) mySerializationReader.ReadObject());
+                    _RightUUID = new RightUUID(mySerializationReader.ReadByteArray());
 
                     #endregion
 
@@ -556,11 +556,11 @@ namespace sones.GraphFS.InternalObjects
 
                     _EntityUUIDHashSet = new HashSet<EntityUUID>();
 
-                    _NumberOfEntityUUIDs = (UInt64) mySerializationReader.ReadObject();
+                    _NumberOfEntityUUIDs = mySerializationReader.ReadUInt64();
 
                     for (UInt64 j=0; j<_NumberOfEntityUUIDs; j++)
                     {
-                        _EntityUUID = new EntityUUID( (Byte[]) mySerializationReader.ReadObject());
+                        _EntityUUID = new EntityUUID(mySerializationReader.ReadByteArray());
                         _EntityUUIDHashSet.Add(_EntityUUID);
                     }
 
@@ -577,14 +577,14 @@ namespace sones.GraphFS.InternalObjects
 
                 _DenyACL = new Dictionary<RightUUID, HashSet<EntityUUID>>();
 
-                _NumberOfACLs = (UInt64) mySerializationReader.ReadObject();
+                _NumberOfACLs = mySerializationReader.ReadUInt64();
 
                 for (UInt64 i=0; i<_NumberOfACLs; i++)
                 {
 
                     #region KEY
 
-                    _RightUUID = new RightUUID( (Byte[]) mySerializationReader.ReadObject());
+                    _RightUUID = new RightUUID(mySerializationReader.ReadByteArray());
 
                     #endregion
 
@@ -592,11 +592,11 @@ namespace sones.GraphFS.InternalObjects
 
                     _EntityUUIDHashSet = new HashSet<EntityUUID>();
 
-                    _NumberOfEntityUUIDs = (UInt64) mySerializationReader.ReadObject();
+                    _NumberOfEntityUUIDs = mySerializationReader.ReadUInt64();
 
                     for (UInt64 j=0; j<_NumberOfEntityUUIDs; j++)
                     {
-                        _EntityUUID = new EntityUUID( (Byte[]) mySerializationReader.ReadObject());
+                        _EntityUUID = new EntityUUID(mySerializationReader.ReadByteArray());
                         _EntityUUIDHashSet.Add(_EntityUUID);
                     }
 

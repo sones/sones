@@ -70,12 +70,12 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return new EdgeTypeSetOfBaseObjects();
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
+        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable, TypeUUID typeOfObjects)
         {
             return GetNewInstance();
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable)
+        public override AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeOfObjects)
         {
             return GetNewInstance();
         }
@@ -202,7 +202,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         private void Serialize(ref SerializationWriter mySerializationWriter, EdgeTypeSetOfBaseObjects myValue)
         {
-            mySerializationWriter.WriteObject(myValue._Objects.Count);
+            mySerializationWriter.WriteUInt32((UInt32)myValue._Objects.Count);
             foreach (var obj in myValue._Objects)
             {
                 obj.ID.Serialize(ref mySerializationWriter);
@@ -212,9 +212,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         private object Deserialize(ref SerializationReader mySerializationReader, EdgeTypeSetOfBaseObjects myValue)
         {
-            var count = (Int32)mySerializationReader.ReadObject();
+            var count = mySerializationReader.ReadUInt32();
             myValue._Objects = new HashSet<ADBBaseObject>();
-            for (Int32 i = 0; i < count; i++)
+            for (UInt32 i = 0; i < count; i++)
             {
                 TypeUUID id = new TypeUUID();
                 id.Deserialize(ref mySerializationReader);
@@ -292,7 +292,5 @@ namespace sones.GraphDB.Structures.EdgeTypes
         }
 
         #endregion
-
-
     }
 }

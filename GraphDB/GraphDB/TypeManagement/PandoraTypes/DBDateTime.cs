@@ -260,12 +260,12 @@ namespace sones.GraphDB.TypeManagement.PandoraTypes
 
         private void Serialize(ref SerializationWriter mySerializationWriter, DBDateTime myValue)
         {
-            mySerializationWriter.WriteObject(myValue._Value);
+            mySerializationWriter.WriteDateTime((DateTime)myValue.Value);
         }
 
         private object Deserialize(ref SerializationReader mySerializationReader, DBDateTime myValue)
         {
-            myValue._Value = (DateTime)mySerializationReader.ReadObject();
+            myValue._Value = mySerializationReader.ReadDateTimeOptimized();
             return myValue;
         }
 

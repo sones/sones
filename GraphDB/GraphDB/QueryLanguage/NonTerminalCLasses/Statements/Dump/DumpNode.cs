@@ -22,6 +22,7 @@
 #region Usings
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
@@ -49,7 +50,15 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Dump
         public override void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
 
-            _TypesToDump        = (parseNode.ChildNodes[1].AstNode as TypeListNode).Types;
+            #region Get the optional type list
+
+            if (parseNode.ChildNodes[1].HasChildNodes())
+            {
+                _TypesToDump = ((parseNode.ChildNodes[1].ChildNodes[1].AstNode as TypeListNode).Types).Select(tlnode => tlnode.TypeName).ToList();
+            }
+
+            #endregion
+
             _DumpType           = (parseNode.ChildNodes[2].AstNode as DumpTypeNode).DumpType;
             _DumpFormat         = (parseNode.ChildNodes[3].AstNode as DumpFormatNode).DumpFormat;
             _DumpableGrammar    = context.Compiler.Language.Grammar as IDumpable;

@@ -45,7 +45,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
     /// The DBObject class for user-defined graph data base types
     /// </summary>
 
-    public class DBObject : DynamicObject, IEquatable<DBObject>
+    public abstract class DBObject : DynamicObject, IEquatable<DBObject>
     {
 
         #region Data
@@ -53,15 +53,17 @@ namespace sones.GraphDS.API.CSharp.Reflection
         /// <summary>
         /// This dictionary will hold undefined attributes 
         /// </summary>
-        private Dictionary<String, Object> _UndefinedAttributes;
+        protected readonly Dictionary<String, Object> _UndefinedAttributes;
 
         #endregion
 
         #region Properties
 
+        public GraphDSSharp GraphDSSharp { get; set; }
+
         #region CreateTypeQuery
 
-        private String _CreateTypeQuery;
+        protected String _CreateTypeQuery;
 
         internal String CreateTypeQuery
         {
@@ -77,8 +79,11 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region CreateIndicesQueries
 
-        private List<String> _CreateIndicesQueries;
+        // Just used within tests!
 
+        protected readonly List<String> _CreateIndicesQueries;
+
+        [HideFromDatabase]
         public List<String> CreateIndicesQueries
         {
             get
@@ -93,10 +98,18 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region Omnipresent attributes
 
-        public ObjectUUID  UUID       { get; set; }
-        public String      TYPE       { get; set; }
-        public String      Edition    { get; set; }
-        public RevisionID  RevisionID { get; set; }
+        public ObjectUUID   UUID        { get; set; }
+
+        [HideFromDatabase]
+        public String       TYPE        { get; protected set; }
+
+        public String       Edition     { get; set; }
+
+        [HideFromDatabase]
+        public RevisionID   RevisionID  { get; set; }
+
+        [HideFromDatabase]
+        public virtual String Comment   { get; set; }
 
         #endregion
 
@@ -108,10 +121,11 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         public DBObject()
         {
-            UUID                    = new ObjectUUID();
+            UUID                    = null;
             Edition                 = null;
             RevisionID              = null;
             _UndefinedAttributes    = new Dictionary<String, Object>();
+            _CreateIndicesQueries   = new List<String>();
         }
 
         #endregion
@@ -119,288 +133,8 @@ namespace sones.GraphDS.API.CSharp.Reflection
         #endregion
 
 
-        #region GetInsertValues(mySeperator)
-
-        public String GetInsertValues(String mySeperator)
-        {
-
-            var _StringBuilder = new StringBuilder();
-            Object _PropertyValue = null;
-
-            var _AllProperties = this.GetType().GetProperties();
-
-            if (_AllProperties.Length > 0)
-            {
-
-                foreach (var _PropertyInfo in _AllProperties)
-                {
-
-                    if (_PropertyInfo.CanRead && _PropertyInfo.CanWrite)
-                    {
-
-                        _PropertyValue = _PropertyInfo.GetValue(this, null);
-
-                        if (_PropertyValue != null)
-                        {
-                            _StringBuilder.Append(_PropertyInfo.Name).Append(" = '").Append(_PropertyInfo.GetValue(this, null)).Append("'").Append(mySeperator);
-                        }
-
-                    }
-
-                }
-
-                _StringBuilder.Length = _StringBuilder.Length - mySeperator.Length;
-
-            }
-
-            return _StringBuilder.ToString();
-
-        }
-
-        #endregion
-
-        #region ReflectMyself()
-
-        private void ReflectMyself()
-        {
-
-            #region Init StringBuilder
-
-            var _Command = new StringBuilder();
-            var _Attributes = new StringBuilder();
-            var _BackwardEdges = new StringBuilder();
-
-            _Command.Append("CREATE TYPE " + this.GetType().Name);
-            _Command.Append(" EXTENDS " + this.GetType().BaseType.Name);
-
-            #endregion
-
-            #region Init CreateIndicesQueries
-
-            if(_CreateIndicesQueries == null)
-                _CreateIndicesQueries = new List<String>();
-
-            #endregion
-
-            #region Find Attributes and Backwardedges
-
-            var _AllProperties = this.GetType().GetProperties();
-
-            if (_AllProperties.Length > 0)
-            {
-
-                foreach (var _PropertyInfo in _AllProperties)
-                {
-
-                    if (_PropertyInfo.CanRead && _PropertyInfo.CanWrite)
-                    {
-
-                        #region Check found attribute
-
-                        var _AddToDatabaseType = true;
-                        var _IsBackwardEdge = "";
-                        var _CreateAttributeIndex = "";
-
-                        // Ignore inherited attributes
-                        if (_PropertyInfo.DeclaringType.Name != this.GetType().Name)
-                            _AddToDatabaseType = false;
-
-                        // Check attribute attributes ;)
-                        else
-                        {
-
-                            foreach (var _Property in _PropertyInfo.GetCustomAttributes(true))
-                            {
-
-                                #region Check "HideFromDatabase"-Attribute
-
-                                if (_Property as HideFromDatabase != null)
-                                {
-                                    _AddToDatabaseType = false;
-                                    break;
-                                }
-
-                                #endregion
-
-                                #region Check "NoAutoCreation"-Attribute
-
-                                if (_Property as NoAutoCreation != null)
-                                {
-                                    _AddToDatabaseType = false;
-                                    break;
-                                }
-
-                                #endregion
-
-                                #region Check "BackwardEdge"-Attribute
-
-                                var _BackwardEdge = _Property as BackwardEdge;
-
-                                if (_BackwardEdge != null)
-                                {
-                                    _IsBackwardEdge = _BackwardEdge.ReferencedAttributeName;
-                                    break;
-                                }
-
-                                #endregion
-
-                                #region Check "CreateIndex"-Attribute
-
-                                var _CreateIndexProperty = _Property as Indexed;
-
-                                if (_CreateIndexProperty != null)
-                                {
-
-                                    var _IndexName = _CreateIndexProperty.IndexName;
-
-                                    if (_IndexName.Equals(""))
-                                        _IndexName = "IDX_" + _PropertyInfo.Name;
-
-                                    var _IndexOrder = _CreateIndexProperty.IndexOrder;
-                                    if (!_IndexOrder.Equals(""))
-                                        _IndexOrder = " " + _IndexOrder;
-
-                                    var _IndexType = _CreateIndexProperty.IndexType;
-                                    if (!_IndexType.Equals(""))
-                                        _IndexType = " INDEXTYPE " + _IndexType;
-
-                                    _CreateAttributeIndex = "CREATE INDEX " + _IndexName + " ON " + this.GetType().Name + " (" + _PropertyInfo.Name + _IndexOrder + ")" + _IndexType;
-
-                                }
-
-                                #endregion
-
-                            }
-
-                        }
-
-                        #endregion
-
-                        #region In case: Add attribute to database type
-
-                        if (_AddToDatabaseType)
-                        {
-
-                            #region Add the type of the property
-
-                            var _DatabaseAttributeType = _PropertyInfo.PropertyType.Name;
-
-                            #endregion
-
-                            //HACK: Refactor this! e.g. use a dictionary for C#->PandoraDB type mappings
-                            if (_DatabaseAttributeType == "UInt64" || _DatabaseAttributeType == "Int64" || _DatabaseAttributeType == "UInt32" || _DatabaseAttributeType == "Int32" ||
-                                _DatabaseAttributeType == "ulong" || _DatabaseAttributeType == "long" || _DatabaseAttributeType == "uint" || _DatabaseAttributeType == "int")
-                                _DatabaseAttributeType = "Integer";
-
-                            #region Handle generic types like "LIST<...>"
-
-                            if (_IsBackwardEdge.Equals(""))
-                            {
-
-                                if (_PropertyInfo.PropertyType.IsGenericType && _DatabaseAttributeType.StartsWith("List"))
-                                    _DatabaseAttributeType = "LIST<" + _PropertyInfo.PropertyType.GetGenericArguments()[0].Name + "> ";
-
-                                if (_PropertyInfo.PropertyType.IsGenericType && _DatabaseAttributeType.StartsWith("Set"))
-                                    _DatabaseAttributeType = "SET<" + _PropertyInfo.PropertyType.GetGenericArguments()[0].Name + "> ";
-
-                                _Attributes.Append(_DatabaseAttributeType + " ");
-
-                            }
-
-                            #endregion
-
-                            #region Add the name of the property
-
-                            var _DatabaseAttributeName = _PropertyInfo.Name;
-
-                            if (_IsBackwardEdge.Equals(""))
-                                _Attributes.Append(_DatabaseAttributeName + ", ");
-
-                            else
-                                _BackwardEdges.Append(_PropertyInfo.PropertyType.GetGenericArguments()[0].Name + "." + _IsBackwardEdge + " " + _DatabaseAttributeName);
-
-                            #endregion
-
-                            #region Add Attribute Index
-
-                            if (!_CreateAttributeIndex.Equals(""))
-                            {
-                                _CreateIndicesQueries.Add(_CreateAttributeIndex);
-                            }
-
-                            #endregion
-
-                        }
-
-                        #endregion
-
-                    }
-
-                }
-
-                if (_Attributes.Length > 0)
-                    _Attributes.Remove(_Attributes.Length - 2, 2);
-
-            }
-
-            #endregion
-
-            #region Add Attributes
-
-            if (_Attributes.Length > 0)
-            {
-                _Command.Append(" ATTRIBUTES (");
-                _Command.Append(_Attributes);
-                _Command.Append(")");
-            }
-
-            #endregion
-
-            #region Add Backwardedges
-
-            if (_BackwardEdges.Length > 0)
-            {
-                _Command.Append(" BACKWARDEDGES (");
-                _Command.Append(_BackwardEdges);
-                _Command.Append(")");
-            }
-
-            #endregion
-
-            _CreateTypeQuery = _Command.ToString();
-
-        }
-
-        #endregion
-
-        #region GetEdge(myEdgeName)
-
-        public IEnumerable<DBObject> GetEdge(String myEdgeName)
-        {
-
-            var prop = this.GetType().GetProperty(myEdgeName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-            if (prop == null)
-                return null;
-            
-            var edgeProp = this.GetType().GetProperty(myEdgeName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).GetValue(this, null) as IList;
-            if (edgeProp == null)
-                return null;
-                //yield break;
-
-
-            var retVal = new List<DBObject>();
-
-            foreach (var edge in edgeProp)
-            {
-                retVal.Add(edge as DBObject);
-                //yield return edge as DBObject;
-            }
-
-            return retVal;
-
-        }
-
-        #endregion
+        public abstract String GetInsertValues(String mySeperator);
+        public abstract void ReflectMyself();
 
 
         #region Members of DynamicObject
@@ -446,6 +180,8 @@ namespace sones.GraphDS.API.CSharp.Reflection
         #endregion
 
         #endregion
+
+
 
         #region Operator overloading
 

@@ -1,5 +1,83 @@
 sones GraphDB 1.2 (developer) Changelog:
 
+03.08.2010
+- fastSerializer refactoring and optimization
+- Added LinqQuerable, LinqQueryProver for _very basic_ linq support without complex queries like WHERE-clauses 
+and the selection of edges
+  + var q = from website in GDB.LinqQuery<Website>("w") select website; // DBVertices
+  + var q = from website in GDB.LinqQuery<Website>("w") select website.Name;  // Strings
+  + var q = from website in GDB.LinqQuery<Website>("w") select new { newUUID = UUID };  // Anonymous types
+- LinqExpressionVisitor class for parsing complex queries to GQL (or calling the appropriate methods on a 
+graphdb) still missing
+- Refactored SelectToObject => edges currently broken!!!
+- Refactored GraphDS interfache for fluent queries and internal usage of DBVertex
+- first usage of WeakReferences
+- bugfixes
+- GetContent refactoring
+- added the system types DBVertex, DBEdge
+- TransactionNodes, TruncateNode, UpdateNode refactored
+- SettingNode refactored
+- SelectNode refactored
+- minor UUID.GetHashCode() and Equals improvments
+- refactored architecture of DBObjectCache
+- added ifdef for RunMT (currently runMT = false using mono)
+- reimplemented Reference class
+- added GetAllEdgeDestinations and GetAllEdgeDestinationsWeighted to IReference
+- Changed all TYPE/TYPES statements to alternatively allow VERTEX/VERTICES, e.g. CREATE VERTEX User...
+- GetContent refactored & Path bug fixed
+- Refactored attribute assign nodes
+- Add temporary attribute for non-persisting attributes
+- Add DBObject.GetNeighbors(), DBObject.GetEdges(), ...
+- Add DBObject.Traversal() method stub
+- Add path class for traversal results
+- Added DBEdge (like DBObject) as base of all edge types within GraphDSSharp
+- Added new version of JIT (JavaScript InfoVis Toolkit) to GraphDSREST/resources/libs...
+- Some *GraphFS refactoring...
+- Multiple DBObject bugfixes
+- Added Set<VertexType, EdgeType>
+- Removed IXMLExport on ObjectLocator and INode in favor of a XML_IO_Extension to these classes
+- Added robots.txt to REST
+- Refactored Nodes DropIndex, Import
+- added Reference class
+- DescribeNode refactored
+- implemented NotImplemented methods within UUIDIndex
+- fixed bug on ouput of alter type add indices command
+- Replaced TupleValue with TupleDefinition
+- renamed Error_CouldAlterIndexOnType to Error_CouldNotAlterIndexOnType
+- fixed bug on alter type create index for false type
+- alter type define and undefine attributes for GraphDSSharp
+- refactored dbIndices to support directoryObject as UUID-idx
+- ExpressionNode refactored
+- alter type define and undefine attributes
+- REST, GEXF_IO Bugfixes
+- Added DateTime_to_UNIXTimestamp and vice versa extension
+- Updated WebShell to make use of jQuery-1.4.2.min
+- alter type add or remove indices in GraphDSSharp 
+- Added /resources handler to REST for all libs and sonoeslogos etc.pp
+- Split all into even more JavaScript files
+- Split WebShell.html into WebShell.html, WebShell.js (more or less JQuery.js + extensions) and goosh.js
+- Refactored IDNode
+- browser part of GEXF output
+- Added jquery and protovis license files
+- change for alter type command
+- execute a list of instructions like (ADD ATTRIBUTES, DROP ATTRIBUTES)
+- refactored LevelKey constructors + operators (now as functions)
+- Changed GEXF stuff to be embedded resources
+- Added GraphDSREST "/GEXFResources/{myResource}" handler
+- Added GEXF_IO, GEXF_IO_Extensions stub
+- Added /gexf?FROM+Website+w+SELECT+*+WHERE+w.Name+%3d+%27xkcd%27 handler to GraphDSREST
+- Added (JavaScript) files of gexf4js to GraphDSREST/GEXF
+- Added GexfExplorer1.0.swf FlashVisualization tool
+- Fixed Bug_CouldNotDetermineJSON_ObjectUUID bug
+- Some refactoring within GraphDBType and TypeAttribute... added IGetName interface
+- Used IGetName interface within JSON_IO and XML_IO
+- Refactor DeleteNode I
+- ATypeNode and TypeList refactored
+- Refactored CreateTypesNode
+- Refactored CreateIndexNode
+- AlterTypeNode refactored
+
+
 31.07.2010
 - bugfix in bplustree leafnode (reference to rightmost leaf was not updated correctly)
 

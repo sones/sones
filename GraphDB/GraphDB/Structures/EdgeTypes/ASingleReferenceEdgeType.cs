@@ -28,14 +28,12 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.QueryLanguage.Result;
-using sones.Lib.DataStructures.UUID;
+using sones.GraphDB.TypeManagement.PandoraTypes;
 using sones.GraphFS.DataStructures;
+using sones.GraphDB.TypeManagement;
+using sones.Lib.ErrorHandling;
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
@@ -56,7 +54,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// </summary>
         /// <param name="myValue">A ObjectUUID</param>
         /// <param name="myParameters">Some optional parameters</param>
-        public abstract void Set(ObjectUUID myValue, params ADBBaseObject[] myParameters);
+        public abstract void Set(ObjectUUID myValue, TypeUUID typeOfObjects, params ADBBaseObject[] myParameters);
 
         /// <summary>
         /// Merge the current value with the value of mySingleEdgeType. In detail, overwrites the ObjectUUID and make some magic with the edge informations
@@ -77,13 +75,13 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// The ObjectUUID of the value
         /// </summary>
         /// <returns></returns>
-        public abstract IEnumerable<ObjectUUID> GetAllUUIDs();
+        public abstract IEnumerable<ObjectUUID> GetAllReferenceIDs();
 
         /// <summary>
         /// Get all uuids and their edge infos
         /// </summary>
         /// <returns></returns>
-        public abstract IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetEdges();
+        public abstract IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetAllReferenceIDsWeighted();
 
         /// <summary>
         /// removes a specific reference
@@ -97,7 +95,21 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// <param name="myObjectUUIDs">the object uuid's of the objects, that should remove</param>
         public abstract Boolean RemoveUUID(IEnumerable<ObjectUUID> myObjectUUIDs);
 
+        /// <summary>
+        /// Get all destinations of an edge
+        /// </summary>
+        /// <returns></returns>
+        public abstract IEnumerable<Exceptional<DBObjectStream>> GetAllEdgeDestinations(DBObjectCache dbObjectCache);
+
+        /// <summary>
+        /// Get all weighted destinations of an edge
+        /// </summary>
+        /// <returns></returns>
+        public abstract IEnumerable<Tuple<Exceptional<DBObjectStream>, ADBBaseObject>> GetAllEdgeDestinationsWeighted(DBObjectCache dbObjectCache);
 
         #endregion
+
+
+        public abstract TypeUUID GetTypeUUIDOfReferences();
     }
 }

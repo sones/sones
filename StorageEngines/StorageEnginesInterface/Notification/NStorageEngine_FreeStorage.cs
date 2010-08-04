@@ -68,15 +68,15 @@ namespace sones.StorageEngines.Notification
             {
                 var _SerializationWriter = new SerializationWriter();
                 if (StorageURIs == null)
-                    _SerializationWriter.WriteObject((Int32)0);
+                    _SerializationWriter.WriteUInt32(0);
                 else
-                    _SerializationWriter.WriteObject((Int32)StorageURIs.Count);
+                    _SerializationWriter.WriteUInt32((UInt32)StorageURIs.Count);
 
-                foreach(String uri in StorageURIs)
-                    _SerializationWriter.WriteObject(uri);
+                foreach (String uri in StorageURIs)
+                    _SerializationWriter.WriteString(uri);
 
-                _SerializationWriter.WriteObject(StorageType);
-                _SerializationWriter.WriteObject(StorageSize);
+                _SerializationWriter.WriteString(StorageType);
+                _SerializationWriter.WriteUInt64(StorageSize);
 
                 return _SerializationWriter.ToArray();
             }
@@ -86,13 +86,13 @@ namespace sones.StorageEngines.Notification
                 var _SerializationReader = new SerializationReader(mySerializedBytes);
 
                 StorageURIs = new List<String>();
-                Int32 numberOfStorageURIs = (Int32)_SerializationReader.ReadObject();
+                UInt32 numberOfStorageURIs = _SerializationReader.ReadUInt32();
 
-                for(Int32 i=0; i<numberOfStorageURIs; i++)
-                    StorageURIs.Add((String)_SerializationReader.ReadObject());
+                for(UInt32 i=0; i<numberOfStorageURIs; i++)
+                    StorageURIs.Add(_SerializationReader.ReadString());
 
-                StorageType = (String)_SerializationReader.ReadObject();
-                StorageSize = (UInt64)_SerializationReader.ReadObject();
+                StorageType = _SerializationReader.ReadString();
+                StorageSize = _SerializationReader.ReadUInt64();
 
             }
 

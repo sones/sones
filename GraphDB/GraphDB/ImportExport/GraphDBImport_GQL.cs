@@ -174,9 +174,15 @@ namespace sones.GraphDB.ImportExport
 
                 #region !VerbosityTypes.Silent: Add errors and break execution
 
-                if (qresult.ResultType != Structures.ResultType.Successful)
+                if (qresult.ResultType == Structures.ResultType.Failed)
                 {
 
+                    if (qresult.Errors.Any(e => (e is Errors.Error_GqlSyntax) && (e as Errors.Error_GqlSyntax).SyntaxError.Message.Equals("Mal-formed  string literal - cannot find termination symbol.")))
+                    {
+                        System.Diagnostics.Debug.WriteLine("Query at line [" + numberOfLine + "] [" + query + "] failed with " + qresult.GetErrorsAsString() + " add next line...");
+                        continue;
+                    }
+                    
                     if (verbosityType != VerbosityTypes.Silent)
                     {
                         queryResult.AddErrors(new[] { new Errors.Error_ImportFailed(query, numberOfLine) });
@@ -184,15 +190,14 @@ namespace sones.GraphDB.ImportExport
                         queryResult.AddWarnings(qresult.Warnings);
                     }
 
-                    if (qresult.Errors.Any(e => (e is Errors.Error_GqlSyntax) && (e as Errors.Error_GqlSyntax).SyntaxError.Message.Equals("Mal-formed  string literal - cannot find termination symbol.")))
-                    {
-                        System.Diagnostics.Debug.WriteLine("Query [" + query + "] failed with " + qresult.GetErrorsAsString() + " add next line...");
-                        continue;
-                    }
-                    else
-                    {
-                        break;
-                    }
+                    break;
+                }
+                else if (qresult.ResultType == Structures.ResultType.PartialSuccessful && verbosityType != VerbosityTypes.Silent)
+                {
+
+                    queryResult.AddWarning(new Warnings.Warning_ImportWarning(query, numberOfLine));
+                    queryResult.AddWarnings(qresult.Warnings);
+
                 }
 
                 #endregion

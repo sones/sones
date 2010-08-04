@@ -232,15 +232,15 @@ namespace sones.Libraries.Caches
 
                 #region Write
 
-                writer.WriteObject(AbsoluteExpirationTimeSpan);
-                writer.WriteObject(AllowNotExistingDependOnMeItems);
-                writer.WriteObject(ExpirationType);
-                writer.WriteObject(ForceCleanPercentage);
-                writer.WriteObject(MaxAmountOfMemory);
-                writer.WriteObject(MaxNumberOfCachedItems);
-                writer.WriteObject(SlidingExpirationTimeSpan);
-                writer.WriteObject(TimerDueTime);
-                writer.WriteObject(TimerPeriod);
+                writer.WriteTimeSpan(AbsoluteExpirationTimeSpan);
+                writer.WriteBoolean(AllowNotExistingDependOnMeItems);
+                writer.WriteByte((Byte)ExpirationType);
+                writer.WriteDouble(ForceCleanPercentage);
+                writer.WriteUInt64(MaxAmountOfMemory);
+                writer.WriteUInt32(MaxNumberOfCachedItems);
+                writer.WriteTimeSpan(SlidingExpirationTimeSpan);
+                writer.WriteTimeSpan(TimerDueTime);
+                writer.WriteTimeSpan(TimerPeriod);
 
                 #endregion
 
@@ -270,15 +270,15 @@ namespace sones.Libraries.Caches
 
                 #region Read
 
-                AbsoluteExpirationTimeSpan = (TimeSpan)reader.ReadObject();
-                AllowNotExistingDependOnMeItems = (Boolean)reader.ReadObject();
-                ExpirationType = (ExpirationTypes)reader.ReadObject();
-                ForceCleanPercentage = (Double)reader.ReadObject();
-                MaxAmountOfMemory = (UInt64)reader.ReadObject();
-                MaxNumberOfCachedItems = (UInt32)reader.ReadObject();
-                SlidingExpirationTimeSpan = (TimeSpan)reader.ReadObject();
-                TimerDueTime = (TimeSpan)reader.ReadObject();
-                TimerPeriod = (TimeSpan)reader.ReadObject();
+                AbsoluteExpirationTimeSpan              = reader.ReadTimeSpanOptimized();
+                AllowNotExistingDependOnMeItems         = reader.ReadBoolean();
+                ExpirationType                          = (ExpirationTypes)reader.ReadOptimizedByte();
+                ForceCleanPercentage                    = reader.ReadDouble();
+                MaxAmountOfMemory                       = reader.ReadUInt64();
+                MaxNumberOfCachedItems                  = reader.ReadUInt32();
+                SlidingExpirationTimeSpan               = reader.ReadTimeSpanOptimized();
+                TimerDueTime                            = reader.ReadTimeSpanOptimized();
+                TimerPeriod                             = reader.ReadTimeSpanOptimized();
 
                 #endregion
 

@@ -1,0 +1,63 @@
+/*
+Theme Name: sones Theme |
+Theme URI:  http://developers.sones.de/
+Version: Version 1.0 |
+Author: Achim 'ahzf' Friedland
+Author URI: http://www.ahzf.de/
+*/
+
+html              { height:100%;}
+body              { background:#ffffff;font-size:12px;font-family:monospace;height:99%;margin:0px;padding:0px;}
+
+a                 { color:#88C000;text-decoration:none;}
+a:link            { color:#88C000;text-decoration:none;}
+a:focus           { color:#88C000;text-decoration:underline;}
+a:hover           { color:#88C000;text-decoration:underline;}
+a:active          { color:#88C000;text-decoration:underline;}
+a:visited         { color:#88C000;text-decoration:none;}
+
+div #ddate        { padding:0px;margin:0px;display:inline;white-space:nowrap;color:#606060; }
+form              { padding:0px;margin:0px;}
+table             { padding:0px;margin:0px;border-collapse:collapse;border-spacing:0px;}
+table.commandline { width:100%;vertical-align:top;}
+td                { padding:0px;margin:0px;font-size:12px;font-family:monospace;vertical-align:top;}
+td.prompt         { }
+div #prompt       { padding:0px;margin:0px;display:inline;white-space:nowrap;}
+td.cmdline        { width:100%;}
+input.cmdline     { padding:0px;margin:0px;font-size:12px;font-family:monospace;width:100%;border:none;border-width:0px;}
+
+#frame            { border:dashed;border-width:0px;border-color:#C0C0C0;margin-left:20px;margin-top:30px;width:99%;}
+#output           { margin-left:8px;margin-top:1px;background: #ffffff url(/resources/soneslogo.gif) no-repeat left top;}
+#input            { margin-left:8px;color:#666;overflow:hidden;padding-bottom:8px;}
+#header           { border-bottom:1px solid #98C000;width:1000px;}
+
+#footer           { border-top:2px solid #98C000;width:1000px;text-align:center;font-family:"TrebuchetMS",Arial,Helvetica,sans-serif;font-size:11px;color:#B0B0B0;}
+#footer a         { color:#B8D080;text-decoration:none;}
+#footer a:link    { color:#B8D080;text-decoration:none;}
+#footer a:focus   { color:#B8D080;text-decoration:underline;}
+#footer a:hover   { color:#B8D080;text-decoration:underline;}
+#footer a:active  { color:#B8D080;text-decoration:underline;}
+#footer a:visited { color:#B8D080;text-decoration:none;}
+
+img               { border:none;}
+br                { clear:both;}
+pre               { font-size:12px;}
+
+.error            { color:Red}
+.nodeName         { color:#000088; font-weight:bold}
+.QueryResultTag   { color:#333333}
+.DBObjectTag      { color:#111111}
+.AttrTag          { color:#333399}
+.AttrParamName    { color:#660066}
+.AttrParamValue   { color:#008800}
+.AttrTagValue     { color:#000000}
+
+
+.value            { color:#000000}
+.success          { color:#009900}
+.outer            { margin-left:20px}
+.inner            { padding-left:20px}
+.less             { color:#606060;}
+.info             { color:#B8D080;}
+:focus            { outline:0;}
+.help td          { padding-right:25px;font-size:12px;}

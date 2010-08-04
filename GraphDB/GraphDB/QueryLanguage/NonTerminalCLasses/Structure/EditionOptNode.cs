@@ -28,16 +28,12 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 {
     public class EditionOptNode : AStructureNode, IAstNodeInit
     {
-        private String _IndexEdition;
-        public String IndexEdition
-        {
-            get { return _IndexEdition; }
-        }
+        public String IndexEdition { get; private set; }
 
         private void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
             if (parseNode.HasChildNodes())
-                _IndexEdition = parseNode.ChildNodes[1].Token.ValueString;
+                IndexEdition = parseNode.ChildNodes[1].Token.ValueString;
 
         }
 

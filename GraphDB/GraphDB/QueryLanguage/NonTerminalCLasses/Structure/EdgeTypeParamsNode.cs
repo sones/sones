@@ -61,12 +61,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             foreach (var child in parseNode.ChildNodes)
             {
                 _Parameters.Add(child.AstNode as EdgeTypeParamNode);
-                /*
-                if (child.AstNode != null && child.AstNode is AStructureNode)
-                    _Parameters.Add(child.AstNode);
-                else
-                    _Parameters.Add(child.Token.Value);
-                  * */
+
             }
         }
 

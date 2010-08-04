@@ -19,28 +19,20 @@
 
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
+using sones.GraphDB.Errors;
+using sones.GraphDB.Exceptions;
+using sones.GraphDB.Managers;
+using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.QueryLanguage.Enums;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements;
+using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
+using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
 using sones.GraphDB.QueryLanguage.Result;
 using sones.GraphDB.TypeManagement;
-using sones.Lib.Frameworks.Irony.Parsing;
 using sones.Lib.ErrorHandling;
-using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
-using sones.GraphDB.Exceptions;
-
-using sones.GraphDB.ObjectManagement;
-using sones.GraphFS.Objects;
-using sones.GraphDB.Errors;
-using sones.GraphDB.Structures;
-using sones.GraphDB.Warnings;
-using sones.Lib;
-using sones.GraphFS.DataStructures;
-using sones.GraphFS.Session;
-using sones.GraphDB.QueryLanguage.ExpressionGraph;
-using sones.Lib.Session;
-using sones.GraphDB.QueryLanguage.Enums;
-using sones.GraphDB.Managers;
+using sones.Lib.Frameworks.Irony.Parsing;
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
 {
@@ -49,13 +41,12 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
 
         #region Data
 
-        private ObjectManipulationManager _ObjectManipulationManager;
+        private BinaryExpressionDefinition _WhereExpression;
+        
+        private List<IDChainDefinition> _IDChainDefinitions;
 
-        private BinaryExpressionNode _WhereExpression;
-
-        private Dictionary<String, List<TypeAttribute>> _DBTypeAttributeToDelete;
-        private Dictionary<String, GraphDBType> _ReferenceTypeLookup;
-        private Dictionary<GraphDBType, List<String>> _TypeWithUndefAttrs;
+        private List<TypeReferenceDefinition> _TypeReferenceDefinitions;
+        
 
         #endregion
 
@@ -73,143 +64,44 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
         
         public override void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
         {
-            var dbContext = myCompilerContext.IContext as DBContext;
-            var typeManager = dbContext.DBTypeManager;
 
-            #region Data
+            _IDChainDefinitions = new List<IDChainDefinition>();
 
-            var _TypeList = new HashSet<ATypeNode>();
-            _DBTypeAttributeToDelete = new Dictionary<string, List<TypeAttribute>>();
-            _ReferenceTypeLookup = new Dictionary<string, GraphDBType>();
-            _TypeWithUndefAttrs = new Dictionary<GraphDBType, List<String>>();
-            String undefAttrName = String.Empty;
-
-            #endregion
-
-            #region TypeList
-
-            foreach (ParseTreeNode _ParseTreeNode in myParseTreeNode.ChildNodes[1].ChildNodes)
-            {
-
-                ATypeNode ATypeNode;
-
-                if (_ParseTreeNode.AstNode is ATypeNode)
-                    ATypeNode = (ATypeNode)_ParseTreeNode.AstNode;
-                
-                else if (_ParseTreeNode.AstNode is IDNode)
-                    ATypeNode = new ATypeNode(((IDNode)_ParseTreeNode.AstNode).LastAttribute.GetRelatedType(dbContext.DBTypeManager));
-                
-                else 
-                    continue; // we found just a reference
-
-                if (!_TypeList.Contains(ATypeNode))
-                {
-                    _TypeList.Add(ATypeNode);
-                }
-                else
-                {
-                    throw new GraphDBException(new Error_DuplicateReferenceOccurence(ATypeNode.DBTypeStream));
-                }
-            }
-
-            #endregion
+            _TypeReferenceDefinitions = (myParseTreeNode.ChildNodes[1].AstNode as TypeListNode).Types;
 
             if (myParseTreeNode.ChildNodes[3].HasChildNodes())
-            {   
+            {
                 IDNode tempIDNode;
                 foreach (var _ParseTreeNode in myParseTreeNode.ChildNodes[3].ChildNodes[0].ChildNodes)
                 {
                     if (_ParseTreeNode.AstNode is IDNode)
                     {
                         tempIDNode = (IDNode)_ParseTreeNode.AstNode;
-
-                        if ((tempIDNode.Level > 0) && (tempIDNode.Depth > 1))
-                        {
-                            throw new GraphDBException(new Error_RemoveTypeAttribute(tempIDNode.LastType, tempIDNode.LastAttribute));
-                        }
-
-                        if (tempIDNode.IsValidated)
-                        {
-
-                            if (!_DBTypeAttributeToDelete.ContainsKey(tempIDNode.Reference.Item1))
-                                _DBTypeAttributeToDelete.Add(tempIDNode.Reference.Item1, new List<TypeAttribute>());
-
-                            if (tempIDNode.LastAttribute != null && !tempIDNode.IsAsteriskSet)
-                                _DBTypeAttributeToDelete[tempIDNode.Reference.Item1].Add(tempIDNode.LastAttribute);
-
-                            if (!_ReferenceTypeLookup.ContainsKey(tempIDNode.Reference.Item1))
-                                _ReferenceTypeLookup.Add(tempIDNode.Reference.Item1, tempIDNode.Reference.Item2);
-                        }
-                        else
-                        {
-                            #region undefined Attributes
-
-                            if (tempIDNode.Reference != null)
-                            {
-                                var firstUndefinedNode = tempIDNode.GetInvalidIDNodeParts().First();
-
-                                #region GetType
-
-                                var type = _TypeList.Where(item => item.Reference == tempIDNode.Reference.Item1).FirstOrDefault().DBTypeStream;
-
-                                #endregion
-
-                                if (!(firstUndefinedNode.AstNode is EdgeTraversalNode))
-                                {
-                                    throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-                                }
-
-                                undefAttrName = ((EdgeTraversalNode)firstUndefinedNode.AstNode).AttributeName;
-
-                                if (!_TypeWithUndefAttrs.ContainsKey(type))
-                                    _TypeWithUndefAttrs.Add(type, new List<String>() { undefAttrName });
-                                else
-                                    _TypeWithUndefAttrs[type].Add(undefAttrName);
-
-                            }
-                            else
-                            {
-                                undefAttrName = _ParseTreeNode.ChildNodes[0].Token.ValueString;
-
-                                if (_TypeWithUndefAttrs.Count == 0)
-                                {
-                                    foreach (var types in _TypeList)
-                                        _TypeWithUndefAttrs.Add(types.DBTypeStream, new List<String>() { undefAttrName });
-                                }
-                                else
-                                {
-                                    foreach (var types in _TypeWithUndefAttrs)
-                                        types.Value.Add(undefAttrName);
-                                }
-                            }
-
-                            #endregion
-                        }
-                    }                   
-                }                
+                        _IDChainDefinitions.Add(tempIDNode.IDChainDefinition);
+                    }
+                }
             }
             else
             {
-                foreach (ATypeNode _ATypeNode in _TypeList)
-                {   
-                    _DBTypeAttributeToDelete.Add(_ATypeNode.Reference, new List<TypeAttribute>());
-
-                    if (!_ReferenceTypeLookup.ContainsKey(_ATypeNode.Reference))
-                        _ReferenceTypeLookup.Add(_ATypeNode.Reference, _ATypeNode.DBTypeStream);
-
+                foreach (var type in _TypeReferenceDefinitions)
+                {
+                    var def = new IDChainDefinition();
+                    def.AddPart(new ChainPartTypeOrAttributeDefinition(type.Reference));
+                    _IDChainDefinitions.Add(def);
                 }
             }
 
-            _ObjectManipulationManager = new ObjectManipulationManager(dbContext.SessionSettings, null, dbContext, this);
+            var dbContext = myCompilerContext.IContext as DBContext;
 
             #region whereClauseOpt
 
             if (myParseTreeNode.ChildNodes[4].HasChildNodes())
             {
                 WhereExpressionNode tempWhereNode = (WhereExpressionNode)myParseTreeNode.ChildNodes[4].AstNode;
-                _WhereExpression = tempWhereNode.BinExprNode;
+                _WhereExpression = tempWhereNode.BinExprNode.BinaryExpressionDefinition;
 
-                Exceptional validateResult = _WhereExpression.Validate(dbContext, _TypeList.Select(tnode => tnode.DBTypeStream).ToArray());
+                //Exceptional validateResult = _WhereExpression.Validate(dbContext, _TypeReferenceDefinitions.Select(type => dbContext.DBTypeManager.GetTypeByName(type.TypeName)).ToArray());
+                Exceptional validateResult = _WhereExpression.Validate(dbContext);
                 if (!validateResult.Success)
                 {
                     throw new GraphDBException(validateResult.Errors);
@@ -235,7 +127,58 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
 
                 var dbInnerContext = transaction.GetDBContext();
 
-                var result = _ObjectManipulationManager.Delete(_WhereExpression, dbContext, _TypeWithUndefAttrs, _DBTypeAttributeToDelete, _ReferenceTypeLookup);
+                var _TypeWithUndefAttrs = new Dictionary<GraphDBType, List<string>>();
+                var _DBTypeAttributeToDelete = new Dictionary<GraphDBType, List<TypeAttribute>>();
+                
+                var _ReferenceTypeLookup = GetTypeReferenceLookup(dbContext, _TypeReferenceDefinitions);
+                if (_ReferenceTypeLookup.Failed)
+                {
+                    return new QueryResult(_ReferenceTypeLookup);
+                }
+
+                foreach (var id in _IDChainDefinitions)
+                {
+                    
+                    id.Validate(dbContext, _ReferenceTypeLookup.Value, true);
+                    if (id.ValidateResult.Failed)
+                    {
+                        return new QueryResult(id.ValidateResult);
+                    }
+
+                    if ((id.Level > 0) && (id.Depth > 1))
+                    {
+                        throw new GraphDBException(new Error_RemoveTypeAttribute(id.LastType, id.LastAttribute));
+                    }
+
+                    if (id.IsUndefinedAttribute)
+                    {
+
+                        if (!_TypeWithUndefAttrs.ContainsKey(id.LastType))
+                        {
+                            _TypeWithUndefAttrs.Add(id.LastType, new List<String>());
+                        }
+                        _TypeWithUndefAttrs[id.LastType].Add(id.UndefinedAttribute);
+
+                    }
+                    else
+                    {
+                        if (!_DBTypeAttributeToDelete.ContainsKey(id.LastType))
+                        {
+                            _DBTypeAttributeToDelete.Add(id.LastType, new List<TypeAttribute>());
+                        }
+                        if (id.LastAttribute != null) // in case we want to delete the complete DBO we have no attribute definition
+                        {
+                            _DBTypeAttributeToDelete[id.LastType].Add(id.LastAttribute);
+                        }
+                    }
+
+                }
+
+
+                var _ObjectManipulationManager = new ObjectManipulationManager();
+
+
+                var result = _ObjectManipulationManager.Delete(_WhereExpression, dbContext, _TypeWithUndefAttrs, _DBTypeAttributeToDelete, _ReferenceTypeLookup.Value);
 
                 #region Commit transaction and add all Warnings and Errors
 

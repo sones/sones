@@ -215,8 +215,8 @@ namespace sones.GraphFS.Objects
             {
 
                 #region ListType T
-
-                mySerializationWriter.WriteObject(typeof(T));
+                
+                mySerializationWriter.WriteType(typeof(T));
 
                 #endregion
 
@@ -225,8 +225,8 @@ namespace sones.GraphFS.Objects
                 if ((typeof(IFastSerialize)).IsAssignableFrom(typeof(T)))
                 {
 
-                    mySerializationWriter.WriteObject(true);
-                    mySerializationWriter.WriteObject( (UInt64) _HashSet.Count);
+                    mySerializationWriter.WriteBoolean(true);
+                    mySerializationWriter.WriteUInt32( (UInt32) _HashSet.Count);
 
                     foreach (T _Item in _HashSet)
                         ((IFastSerialize)_Item).Serialize(ref mySerializationWriter);
@@ -240,8 +240,8 @@ namespace sones.GraphFS.Objects
                 else
                 {
 
-                    mySerializationWriter.WriteObject(false);
-                    mySerializationWriter.WriteObject((UInt64)_HashSet.Count);
+                    mySerializationWriter.WriteBoolean(false);
+                    mySerializationWriter.WriteUInt32((UInt32)_HashSet.Count);
 
                     foreach (T _Item in _HashSet)
                         mySerializationWriter.WriteObject(_Item);
@@ -268,7 +268,7 @@ namespace sones.GraphFS.Objects
 
                 #region Read T Type
 
-                Type    ListType                        = (Type) mySerializationReader.ReadObject();
+                Type ListType = mySerializationReader.ReadTypeOptimized();
 
                 if (ListType != typeof(T))
                     throw new PandoraFSException_TypeParametersDiffer("Type parameter PT of List<PT> is different from the serialized ListType<" + ListType.ToString() + ">!");
@@ -278,10 +278,10 @@ namespace sones.GraphFS.Objects
                 #region Read List items
 
                 Object  ListItem;
-                Boolean ListTypeIsIFastSerializeable    = (Boolean) mySerializationReader.ReadObject();
-                UInt64  NumberOfListEntries             = (UInt64)  mySerializationReader.ReadObject();
+                Boolean ListTypeIsIFastSerializeable    = mySerializationReader.ReadBoolean();
+                UInt32  NumberOfListEntries             = mySerializationReader.ReadUInt32();
 
-                for (UInt64 i=0; i < NumberOfListEntries; i++)
+                for (UInt32 i=0; i < NumberOfListEntries; i++)
                 {
 
                     if (ListTypeIsIFastSerializeable)

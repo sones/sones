@@ -49,6 +49,7 @@ using sones.GraphDB.Structures;
 using sones.GraphFS.Session;
 using sones.Lib.Session;
 using sones.GraphDB.Exceptions;
+using sones.GraphDB.Managers.Structures.Setting;
 
 #endregion
 
@@ -58,11 +59,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Setting
     public class SettingNode : AStatement
     {
 
-        #region Data
+        #region Fields
 
-        private SettingContentNode          _SettingContentNode = null;
-        private SettingScopeNode            _Scope = null;
-        private Dictionary<string, string>  _Settings = null;
+        private TypesOfSettingOperation _TypeOfSettingOperation;
+        private Dictionary<string, string> _Settings = null;
+        private ASettingDefinition _ASettingDefinition = null;
 
         #endregion
 
@@ -83,154 +84,16 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Setting
         }
         #endregion
 
-        #region private helper methods
-
-        /// <summary>
-        /// this is whaer the aektschn haeppens
-        /// </summary>
-        /// <param name="dbContext"></param>
-        /// <returns></returns>
-        private QueryResult DoAction(DBContext dbContext)
-        {
-
-            QueryResult result = new QueryResult();
-
-            try
-            {
-                if (_Scope.SettingNode is SettingAttrNode)
-                {
-
-                    var attrNode = _Scope.SettingNode as SettingAttrNode;
-
-                    switch (_SettingContentNode.ActOperation)
-                    {
-                        case TypesOfSettingOperation.GET:
-                            return new QueryResult(_SettingContentNode.ExtractData(attrNode, _Settings, dbContext, dbContext.SessionSettings));
-
-                        case TypesOfSettingOperation.SET:
-                            _SettingContentNode.SetData(attrNode, _Settings, dbContext);
-                            break;
-
-                        case TypesOfSettingOperation.REMOVE:
-                            _SettingContentNode.RemoveData(attrNode, _Settings, dbContext);
-                            break;
-                    }
-
-                }
-
-                else if (_Scope.SettingNode is SettingTypeNode)
-                {
-
-                    var typeNode = _Scope.SettingNode as SettingTypeNode;
-
-                    switch (_SettingContentNode.ActOperation)
-                    {
-                        case TypesOfSettingOperation.GET:
-                            return new QueryResult(_SettingContentNode.ExtractData(typeNode, _Settings, dbContext, dbContext.SessionSettings));
-
-                        case TypesOfSettingOperation.SET:
-                            _SettingContentNode.SetData(typeNode, _Settings, dbContext);
-                            break;
-
-                        case TypesOfSettingOperation.REMOVE:
-                            _SettingContentNode.RemoveData(typeNode, _Settings, dbContext.DBTypeManager);
-                            break;
-                    }
-
-                }
-                else
-                {
-                    switch (_SettingContentNode.ActOperation)
-                    {
-                        case TypesOfSettingOperation.GET:
-                            return new QueryResult(_SettingContentNode.ExtractData(_Settings, dbContext));
-
-                        case TypesOfSettingOperation.SET:
-                            _SettingContentNode.SetData(_Settings, dbContext);
-                            break;
-
-                        case TypesOfSettingOperation.REMOVE:
-                            _SettingContentNode.RemoveData(_Settings, dbContext);
-                            break;
-                    }
-                }
-            }
-            catch (GraphDBException e)
-            {
-                return new QueryResult(e.GraphDBErrors);
-            }
-
-
-            if (_SettingContentNode.ActOperation == TypesOfSettingOperation.SET)
-            {
-                #region prepare result
-
-                List<DBObjectReadout> resultingReadouts = new List<DBObjectReadout>();
-
-                switch (_Scope.Scope)
-                {
-                    case TypesSettingScope.DB:
-
-                        resultingReadouts.Add(CreateNewSettingReadoutOnSet(TypesSettingScope.DB, _Settings));
-
-                        break;
-
-                    case TypesSettingScope.SESSION:
-
-                        resultingReadouts.Add(CreateNewSettingReadoutOnSet(TypesSettingScope.SESSION, _Settings));
-
-                        break;
-                    case TypesSettingScope.TYPE:
-
-                        foreach (var aType in ((SettingTypeNode)_Scope.SettingNode).Types)
-                        {
-                            resultingReadouts.Add(CreateNewTYPESettingReadoutOnSet(TypesSettingScope.TYPE, aType, _Settings));
-                        }
-
-                        break;
-                    case TypesSettingScope.ATTRIBUTE:
-
-                        foreach (var aType in ((SettingAttrNode)_Scope.SettingNode).Attributes)
-                        {
-                            resultingReadouts.Add(CreateNewATTRIBUTESettingReadoutOnSet(TypesSettingScope.ATTRIBUTE, aType, _Settings));
-                        }
-
-                        break;
-                    default:
-
-                        return new QueryResult(new Error_NotImplemented(new System.Diagnostics.StackTrace()));
-                }
-
-                return new QueryResult(new List<SelectionResultSet> { new SelectionResultSet(null, resultingReadouts) });
-
-                #endregion
-            }
-
-            return new QueryResult();
-        }
-
-        #endregion
+        #region override AStatement
 
         public override void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
-            var dbContext = context.IContext as DBContext;
-            var typeManager = dbContext.DBTypeManager;
 
-            try
-            {
-                _SettingContentNode = new SettingContentNode(dbContext);
+            _ASettingDefinition = ((SettingScopeNode)parseNode.ChildNodes[1].AstNode).SettingDefinition;
 
-                _Scope            = (SettingScopeNode)     parseNode.ChildNodes[1].AstNode;
-                var settingOpNode = (SettingOperationNode) parseNode.ChildNodes[2].AstNode;
-
-                _SettingContentNode.ActScope     = _Scope.Scope;
-                _SettingContentNode.ActOperation = settingOpNode.OperationType;
-                _Settings                        = settingOpNode.Settings;
-            }
-            catch (GraphDBException e)
-            {
-                throw new GraphDBException(e.GraphDBErrors);
-            }
+            var settingOpNode = (SettingOperationNode)parseNode.ChildNodes[2].AstNode;
+            _TypeOfSettingOperation = settingOpNode.OperationType;
+            _Settings = settingOpNode.Settings;
 
         }
 
@@ -247,7 +110,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Setting
             {
                 var transactionContext = transaction.GetDBContext();
 
-                var result = DoAction(transaction.GetDBContext());
+                var result = dbContext.DBSettingsManager.ExecuteSettingOperation(transaction.GetDBContext(), _ASettingDefinition, _TypeOfSettingOperation, _Settings);
 
                 #region Commit transaction and add all Warnings and Errors
 
@@ -259,62 +122,8 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Setting
             }
         }
 
-        private DBObjectReadout CreateNewSettingReadoutOnSet(TypesSettingScope typesSettingScope, Dictionary<string, string> _Settings)
-        {
-            Dictionary<String, Object> payload = new Dictionary<string, object>();
+        #endregion
 
-            payload.Add(DBConstants.SettingScopeAttribute, typesSettingScope.ToString());
-
-            foreach (var aSetting in _Settings)
-            {
-                payload.Add(aSetting.Key, aSetting.Value);
-            }
-
-            return new DBObjectReadout(payload);
-        }
-
-        private DBObjectReadout CreateNewTYPESettingReadoutOnSet(TypesSettingScope typesSettingScope, GraphDBType aType, Dictionary<string, string> _Settings)
-        {
-            Dictionary<String, Object> payload = new Dictionary<string, object>();
-
-            payload.Add(DBConstants.SettingScopeAttribute, typesSettingScope.ToString());
-            payload.Add(typesSettingScope.ToString(), aType.Name);
-
-            foreach (var aSetting in _Settings)
-            {
-                payload.Add(aSetting.Key, aSetting.Value);
-            }
-
-            return new DBObjectReadout(payload);
-        }
-
-        private DBObjectReadout CreateNewATTRIBUTESettingReadoutOnSet(TypesSettingScope typesSettingScope, KeyValuePair<string, List<TypeAttribute>> aType, Dictionary<string, string> _Settings)
-        {
-            Dictionary<String, Object> payload = new Dictionary<string, object>();
-
-            payload.Add(DBConstants.SettingScopeAttribute, typesSettingScope.ToString());
-            payload.Add(TypesSettingScope.TYPE.ToString(), aType.Key);
-
-            List<DBObjectReadout> attributes = new List<DBObjectReadout>();
-
-            foreach (var aAttribute in aType.Value)
-            {
-                Dictionary<String, Object> innerPayload = new Dictionary<string, object>();
-
-                innerPayload.Add(TypesSettingScope.ATTRIBUTE.ToString(), aAttribute.Name);
-
-                foreach (var aSetting in _Settings)
-                {
-                    innerPayload.Add(aSetting.Key, aSetting.Value);
-                }
-
-                attributes.Add(new DBObjectReadout(innerPayload));
-            }
-
-            payload.Add(DBConstants.SettingAttributesAttribute, new Edge(attributes, DBConstants.SettingAttributesAttributeTYPE));
-
-            return new DBObjectReadout(payload);
-        }
 
     }
 

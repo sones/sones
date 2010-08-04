@@ -56,11 +56,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Transaction
     public class CommitRollbackTransactionNode : AStatement
     {
 
-        #region Data
+        #region Properties
 
-        private String _Name;
-        private Boolean _ASync;
-        private CommandType _TypeOfCommand;
+        public String Name { get; private set; }
+        public Boolean ASync { get; private set; }
+        public CommandType CommandType { get; private set; }
 
         #endregion
 
@@ -85,12 +85,12 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Transaction
                 if (myNode.ChildNodes[myCurrentChildNode].HasChildNodes())
                 {
                     if (myNode.ChildNodes[myCurrentChildNode].ChildNodes[0].Token.Text.ToUpper() == DBConstants.TRANSACTION_NAME)
-                        _Name = myNode.ChildNodes[myCurrentChildNode].ChildNodes[2].Token.ValueString;
+                        Name = myNode.ChildNodes[myCurrentChildNode].ChildNodes[2].Token.ValueString;
                 }
                 else
                 {
                     if (myNode.ChildNodes[myCurrentChildNode].Token.Text.ToUpper() == DBConstants.TRANSACTION_COMROLLASYNC)
-                        _ASync = true;
+                        ASync = true;
                 }
             
                 GetAttributes(myNode, myCurrentChildNode + 1);    
@@ -118,7 +118,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Transaction
             {
                 if (parseNode.HasChildNodes())
                 {
-                    _TypeOfCommand = (CommandType)Enum.Parse(typeof(CommandType), parseNode.ChildNodes[0].ChildNodes[0].Token.Text, true);
+                    CommandType = (CommandType)Enum.Parse(typeof(CommandType), parseNode.ChildNodes[0].ChildNodes[0].Token.Text, true);
                     
                     //in the case we have some optional parameters
                     if (parseNode.ChildNodes[2].HasChildNodes())
@@ -143,7 +143,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Transaction
         {
             var qr = new QueryResult();
             DBTransaction dbTransaction;
-            if (_TypeOfCommand == Transaction.CommandType.Commit)
+            if (CommandType == Transaction.CommandType.Commit)
             {
                 dbTransaction = graphDBSession.CommitTransaction();
 
@@ -178,17 +178,5 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Transaction
 
         #endregion
 
-        #region Accessor
-
-        public String Name
-        { get { return _Name; } }
-
-        public Boolean ASync
-        { get { return _ASync; } }
-
-        public CommandType CommandType
-        { get { return _TypeOfCommand; } }
-
-        #endregion
     }
 }

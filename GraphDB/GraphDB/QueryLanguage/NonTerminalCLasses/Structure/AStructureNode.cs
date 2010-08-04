@@ -57,6 +57,8 @@ using sones.Lib.Session;
 using sones.GraphDB.QueryLanguage.ExpressionGraph;
 using sones.Lib.Frameworks.Irony.Parsing;
 using System.Diagnostics;
+using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
 
 #endregion
 
@@ -68,465 +70,63 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     public abstract class AStructureNode
     {
 
-
-
-        protected IDNode GenerateIDNode(ATypeNode myTypeDefinition, SessionSettings mySessionToken)
-        {
-            #region INPUT exceptions
-
-            if (myTypeDefinition == null)
-            {
-                throw new ArgumentNullException("The ATypeNode object is null.");
-            }
-
-            #endregion
-
-            return new IDNode(myTypeDefinition.DBTypeStream, myTypeDefinition.Reference, mySessionToken);
-        }
-
-
-
-        protected GraphDBType ExtractDBTypeStreamFromTypeNode(Object myTypeNode)
-        {
-            #region input exceptions
-
-            if (myTypeNode == null)
-            {
-                throw new ArgumentNullException();
-            }
-
-            #endregion
-
-            if (myTypeNode is ATypeNode)
-            {
-                return ((ATypeNode)myTypeNode).DBTypeStream as GraphDBType;
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        protected Exceptional<bool> ValidateBinaryExpression(BinaryExpressionNode aUniqueExpr, GraphDBType validationType, DBContext typeManager)
-        {
-
-            switch (aUniqueExpr.TypeOfBinaryExpression)
-            {
-
-                case TypesOfBinaryExpression.LeftComplex:
-                    return ValidateBinaryExpressionInternal(aUniqueExpr.Left, validationType, typeManager);
-
-                case TypesOfBinaryExpression.RightComplex:
-                    return ValidateBinaryExpressionInternal(aUniqueExpr.Right, validationType, typeManager);
-
-                case TypesOfBinaryExpression.Complex:
-                    return new Exceptional<bool>(ValidateBinaryExpressionInternal(aUniqueExpr.Left, validationType, typeManager).Value && ValidateBinaryExpressionInternal(aUniqueExpr.Right, validationType, typeManager).Value);
-
-                case TypesOfBinaryExpression.Atom:
-
-                default:
-                    return new Exceptional<bool>(true);
-
-            }
-
-
-        }
-
-        private Exceptional<bool> ValidateBinaryExpressionInternal(Object aUniqueExpr, GraphDBType validationType, DBContext typeManager)
-        {
-            if (aUniqueExpr is BinaryExpressionNode)
-            {
-                return ValidateBinaryExpression((BinaryExpressionNode)aUniqueExpr, validationType, typeManager);
-            }
-            else
-            {
-                var _potIdNode = aUniqueExpr as IDNode;
-
-                if (_potIdNode != null)
-                {
-                    var validationResult = _potIdNode.ValidateMe(validationType, typeManager);
-
-                    if (validationResult.Failed)
-                    {
-                        return new Exceptional<bool>(false, validationResult);
-                    }
-                    else
-                    {
-                        return new Exceptional<bool>(true);
-                    }
-                }
-                else
-                {
-                    return new Exceptional<bool>(true);
-                }
-            }
-        }
-
         #region protected helper methods
 
         /// <summary>
-        /// Checks if there is a valid tuple node. Valid tuple nodes in this case look like : (Name = 'Henning', Age = 10)
+        /// Extracts a AExpressionDefinition from the ParseTreeNode
         /// </summary>
-        /// <param name="tupleElementList">List of tuple elements</param>
-        /// <param name="myAttributes">myAttributes of the type</param>
-        /// <returns>True if valid or otherwise false</returns>
-        protected bool IsValidTupleNode(List<TupleElement> tupleElementList, GraphDBType myPandoraType)
-        {
-            foreach (TupleElement aTupleElement in tupleElementList)
-            {
-                if (aTupleElement.Value is BinaryExpressionNode)
-                {
-                    if (!IsValidBinaryExpressionNode((BinaryExpressionNode)aTupleElement.Value, myPandoraType))
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// fast check if a given binary expression node is suitable for list integration
-        /// </summary>
-        /// <param name="aUniqueExpr">A BinaryExpressionNode.</param>
-        /// <param name="myAttributes"></param>
+        /// <param name="myParseTreeNode"></param>
         /// <returns></returns>
-        protected bool IsValidBinaryExpressionNode(BinaryExpressionNode aUniqueExpr, GraphDBType myPandoraType)
+        protected AExpressionDefinition GetExpressionDefinition(ParseTreeNode myParseTreeNode)
         {
-
-            switch (aUniqueExpr.TypeOfBinaryExpression)
+            AExpressionDefinition retVal = null;
+            if (myParseTreeNode.Term is NonTerminal)
             {
-                case TypesOfBinaryExpression.LeftComplex:
+                #region left is NonTerminal
 
-                    #region left complex
-
-                    return CheckIDNode(aUniqueExpr.Left);
-
-                    #endregion
-
-                case TypesOfBinaryExpression.RightComplex:
-
-                    #region right complex
-
-                    return CheckIDNode(aUniqueExpr.Right);
-
-                    #endregion
-
-
-                case TypesOfBinaryExpression.Complex:
-
-                    #region complex
-
-                    #region Data
-
-                    BinaryExpressionNode leftNode = null;
-                    BinaryExpressionNode rightNode = null;
-
-                    #endregion
-
-                    #region get expr
-
-                    #region left
-
-                    if (aUniqueExpr.Left is BinaryExpressionNode)
-                    {
-                        leftNode = (BinaryExpressionNode)aUniqueExpr.Left;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
-                    #endregion
-
-                    #region right
-
-                    if (aUniqueExpr.Right is BinaryExpressionNode)
-                    {
-                        rightNode = (BinaryExpressionNode)aUniqueExpr.Right;
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
-                    #endregion
-
-                    #endregion
-
-                    #region check
-
-                    if ((leftNode != null) && (rightNode != null))
-                    {
-                        if (IsValidBinaryExpressionNode(leftNode, myPandoraType) && IsValidBinaryExpressionNode(rightNode, myPandoraType))
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        return false;
-                    }
-
-                    #endregion
-
-                    #endregion
-
-                #region error cases
-
-                case TypesOfBinaryExpression.Atom:
-
-                default:
-
-                    //in this kind of node it is not allowed to use Atom or complex expressions
-                    return false;
+                if (myParseTreeNode.AstNode is IDNode)
+                {
+                    retVal = (myParseTreeNode.AstNode as IDNode).IDChainDefinition;
+                }
+                else if (myParseTreeNode.AstNode is TupleNode)
+                {
+                    retVal = (myParseTreeNode.AstNode as TupleNode).TupleDefinition;
+                }
+                else if (myParseTreeNode.AstNode is BinaryExpressionNode)
+                {
+                    retVal = (myParseTreeNode.AstNode as BinaryExpressionNode).BinaryExpressionDefinition;
+                }
+                else if (myParseTreeNode.AstNode is UnaryExpressionNode)
+                {
+                    retVal = (myParseTreeNode.AstNode as UnaryExpressionNode).UnaryExpressionDefinition;
+                }
+                else if (myParseTreeNode.AstNode is AggregateNode)
+                {
+                    retVal = (myParseTreeNode.AstNode as AggregateNode).AggregateDefinition;
+                }
 
                 #endregion
-
-            }
-
-        }
-
-        private bool CheckIDNode(Object aPossibleIDNode)
-        {
-            if (aPossibleIDNode is IDNode)
-            {
-                IDNode left = (IDNode)aPossibleIDNode;
-
-                if (left.Level == 0)
-                {
-                    //case 1: IDNode is U.Name --> two edges ... trivial --> level 0
-                    //case 2: IDNode is Name --> there are also two edges (have a closer look in IDNode.cs) --> level 0
-
-                    //The IDNode checks if the attribute is correct.
-
-                    return true;
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
             }
             else
             {
-                throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "IDNode expected but found: " + aPossibleIDNode.GetType()));
+                #region No NonTerminal
+
+                retVal = new ValueDefinition(myParseTreeNode.Token.Value);
+
+                #endregion
             }
+
+            return retVal;
         }
 
-        /// <summary>
-        /// Intersecting n Lists of Lists of String.
-        /// </summary>
-        /// <param name="containerList">The List that containts all the other lists</param>
-        /// <returns>A list of String which contains the extract of the container list.</returns>
-        protected HashSet<ObjectUUID> GetIntersection(HashSet<HashSet<ObjectUUID>> containerList)
+        protected List<TypeReferenceDefinition> GetTypeReferenceDefinitions(CompilerContext context)
         {
-
-            //hack: ahzf removed this old implementation!
-
-            //#region data
-
-            //IEnumerable<ObjectUUID> tempList = containerList.First<HashSet<ObjectUUID>>();
-            //GuidEqualityComparer comparer = new GuidEqualityComparer();
-
-            //#endregion
-
-            //#region process containerlist
-
-            //foreach (var list in containerList)
-            //{
-            //    tempList = tempList.Intersect<ObjectUUID>(list, comparer);
-            //}
-
-            //#endregion
-
-            //return tempList.ToList<ObjectUUID>();
-
-            var tempList = containerList.First<HashSet<ObjectUUID>>();
-
-            foreach (var list in containerList)
-                tempList.IntersectWith(list);
-
-            return tempList;
-
-        }
-
-        /// <summary>
-        /// Returns all guids of a given index
-        /// </summary>
-        /// <param name="aIndex">An Index.</param>
-        /// <returns>List of ObjectUUIDs</returns>
-        protected HashSet<ObjectUUID> GetAllDBObjectGUIDsForIndex(IIndexObject<String, ObjectUUID> aIndex)
-        {
-
-            var listOfDBObjectGUIDs = new HashSet<ObjectUUID>();
-
-            foreach (var _ObjectUUIDs in aIndex.Values())
-                listOfDBObjectGUIDs.UnionWith(_ObjectUUIDs);
-
-            return listOfDBObjectGUIDs;
-
+            return ((List<TypeReferenceDefinition>)context.PandoraListOfReferences);
         }
 
         #endregion
 
         #region public methods
-
-        /// <summary>
-        /// returns a list of guids which match the tupleNode of the ListOfDBObjects object.
-        /// </summary>
-        /// <param name="TypeOfAttribute">PandoraType of the attribute.</param>
-        /// <param name="dbContext">The TypeManager of the PandoraDatabase</param>
-        /// <returns>A List of Guids.</returns>
-        public Exceptional<ASetReferenceEdgeType> GetCorrespondigDBObjectGuidAsList(GraphDBType myType, DBContext dbContext, TupleNode _tupleNode, AEdgeType mySourceEdge, GraphDBType validationType)
-        {
-            #region data
-
-            ASetReferenceEdgeType _referenceEdge = (ASetReferenceEdgeType)mySourceEdge.GetNewInstance();
-
-            #endregion
-
-            #region Evaluate tuple
-
-            //ask guid-index of type
-            if (_tupleNode != null)
-            {
-                foreach (TupleElement aTupleElement in _tupleNode.Tuple)
-                {
-                    switch (aTupleElement.TypeOfValue)
-                    {
-                        case TypesOfOperatorResult.String:
-                            throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-                            /*
-                            #region String
-
-                            ObjectUUID Guid = (ObjectUUID)aTupleElement.Value;
-
-                            IIndexObject<String, ObjectUUID> Index = (IIndexObject<String, ObjectUUID>)myType.GetUUIDIndex(dbContext.DBTypeManager).IndexReference;
-
-                            if (Index.ContainsKey(Guid.ToString()) == Trinary.TRUE)
-                            {
-                                _referenceEdge.Add(Guid);
-                            }
-                            else
-                            {
-                                throw new GraphDBException(new Error_DBObjectDoesNotExistInIndex("The DBObject with UUID \"" + Guid + "\" does not exist in PandoraType \"" + myType.Name + "\"."));
-                            }
-
-                            break;
-
-                            #endregion
-                            */
-                        case TypesOfOperatorResult.NotABasicType:
-
-                            if (aTupleElement.Value is BinaryExpressionNode)
-                            {
-                                #region Binary Expression
-
-                                BinaryExpressionNode aUniqueExpr = (BinaryExpressionNode)aTupleElement.Value;
-
-                                if (ValidateBinaryExpression(aUniqueExpr, validationType, dbContext).Failed)
-                                {
-                                    return new Exceptional<ASetReferenceEdgeType>(new Error_InvalidBinaryExpression(aUniqueExpr));
-                                }
-
-                                if (IsValidBinaryExpressionNode(aUniqueExpr, myType))
-                                {
-                                    var _graphResult = aUniqueExpr.Calculon(dbContext, new CommonUsageGraph(dbContext));
-
-                                    if (_graphResult.Success)
-                                    {
-                                        _referenceEdge.AddRange(_graphResult.Value.SelectUUIDs(new LevelKey(validationType),null, true), aTupleElement.Parameters.ToArray());
-                                    }
-                                    else
-                                    {
-                                        return new Exceptional<ASetReferenceEdgeType>(_graphResult);
-                                    }
-                                }
-                                else
-                                {
-                                    throw new GraphDBException(new Error_UnknownDBError("Found an invalid BinaryExpression while analyzing list of DBObjects."));
-                                }
-
-                                #endregion
-                            }
-                            else
-                            {
-                                #region tuple node
-
-                                if (aTupleElement.Value is TupleNode)
-                                {
-                                    TupleNode aTupleNode = (TupleNode)aTupleElement.Value;
-
-                                    if (IsValidTupleNode(aTupleNode.Tuple, myType))
-                                    {
-                                        #region get partial results
-
-                                        HashSet<ObjectUUID> partialResults = new HashSet<ObjectUUID>();
-                                        BinaryExpressionNode tempNode = null;
-
-                                        foreach (TupleElement aElement in aTupleNode.Tuple)
-                                        {
-                                            tempNode = (BinaryExpressionNode)aElement.Value;
-
-                                            if (ValidateBinaryExpression(tempNode, validationType, dbContext).Failed)
-                                            {
-                                                return new Exceptional<ASetReferenceEdgeType>(new Error_InvalidBinaryExpression(tempNode));
-                                            }
-
-                                            var tempGraphResult = tempNode.Calculon(dbContext, new CommonUsageGraph(dbContext));
-
-                                            if (tempGraphResult.Success)
-                                            {
-                                                partialResults.UnionWith(tempGraphResult.Value.SelectUUIDs(new LevelKey(validationType), null, true));
-                                            }
-                                            else
-                                            {
-                                                return new Exceptional<ASetReferenceEdgeType>(tempGraphResult);
-                                            }
-                                        }
-
-                                        #endregion
-
-                                        _referenceEdge.AddRange(partialResults, aTupleElement.Parameters.ToArray());
-                                    }
-                                    else
-                                    {
-                                        throw new GraphDBException(new Error_UnknownDBError("Found an invalid TupleNode while analyzing ListOfDBObjects"));
-                                    }
-                                }
-                                else
-                                {
-                                    throw new GraphDBException(new Error_NotImplemented(new StackTrace(true), "Error while checking the elements of ListOfDBObjects. A tupleElement is not a BinaryExpression or a Tuple."));
-                                    //throw new GraphDBException(new Error_SetOfAssignment("Error while checking the elements of ListOfDBObjects. A tupleElement is not a BinaryExpression or a Tuple."));
-                                }
-
-                                #endregion
-                            }
-
-                            break;
-
-                        default:
-
-                            //it is an expression
-
-                            throw new NotImplementedException();
-                    }
-                }
-            }
-
-            #endregion
-
-            return new Exceptional<ASetReferenceEdgeType>(_referenceEdge);
-        }
 
         public GraphQL GetGraphQLGrammar(CompilerContext context)
         {
@@ -534,7 +134,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
         }
 
         #endregion
-
 
     }
 }

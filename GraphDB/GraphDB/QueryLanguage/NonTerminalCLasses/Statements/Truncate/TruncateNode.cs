@@ -36,6 +36,7 @@ using sones.GraphDB.TypeManagement;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.Lib.ErrorHandling;
 using System.Collections.Generic;
+using sones.GraphDB.Indices;
 
 #endregion
 
@@ -47,7 +48,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
 
         #region Data
 
-        private ObjectManipulationManager _ObjectManipulationManager;
         private String _TypeName = ""; //the name of the type that should be dropped
         private List<IWarning> _Warnings = new List<IWarning>();
 
@@ -67,8 +67,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
         public override void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
         {
 
-            var _DBContext   = myCompilerContext.IContext as DBContext;
-            var _TypeManager = _DBContext.DBTypeManager;
             var grammar = GetGraphQLGrammar(myCompilerContext);
 
             // get Name
@@ -79,20 +77,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
                     String.Format("{0} {1}", grammar.S_TRUNCATE.ToUpperString(), _TypeName),
                     String.Format("{0} {1} {2}", grammar.S_TRUNCATE.ToUpperString(), grammar.S_TYPE.ToUpperString(), _TypeName)));
             }
-
-            var _GraphDBType = _TypeManager.GetTypeByName(_TypeName);
-
-            if (_GraphDBType == null)
-            {
-                throw new GraphDBException(new Error_TypeDoesNotExist(_TypeName));
-            }
-
-            if (_TypeManager.GetAllSubtypes(_GraphDBType, false).Count > 0)
-            {
-                throw new GraphDBException(new Error_TruncateNotAllowedOnInheritedType(_TypeName));
-            }
-
-            _ObjectManipulationManager = new ObjectManipulationManager(_DBContext.SessionSettings, null, _DBContext, this);
 
         }
 
@@ -109,85 +93,28 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
             {
 
                 var _DBInnerContext = _Transaction.GetDBContext();
-
-                var _GraphDBType = myDBContext.DBTypeManager.GetTypeByName(_TypeName);
+                var _ObjectManipulationManager = new ObjectManipulationManager(_DBInnerContext);
+                var _GraphDBType = _DBInnerContext.DBTypeManager.GetTypeByName(_TypeName);
 
                 if (_GraphDBType == null)
                 {
-
-                    var aError = new Error_TypeDoesNotExist(_TypeName);
-
-                    return new QueryResult(aError);
-
+                    return new QueryResult(new Error_TypeDoesNotExist(_TypeName));
                 }
 
-                #region Remove
-
-                #region remove dbobjects
-
-                var listOfAffectedDBObjects = myDBContext.DBObjectCache.SelectDBObjectsForLevelKey(new LevelKey(_GraphDBType), _DBInnerContext).ToList();
-
-                foreach (var aDBO in listOfAffectedDBObjects)
+                if (_DBInnerContext.DBTypeManager.GetAllSubtypes(_GraphDBType, false).Count > 0)
                 {
-
-                    if (!aDBO.Success)
-                    {
-                        return new QueryResult(aDBO.Errors);
-                    }
-
-                    var dbObjID = aDBO.Value.ObjectUUID;
-                    var dbBackwardEdges = aDBO.Value.BackwardEdges;
-
-                    if (dbBackwardEdges == null)
-                    {
-                        var dbBackwardEdgeLoadExcept = myDBContext.DBObjectManager.LoadBackwardEdge(aDBO.Value.ObjectLocation);
-
-                        if (!dbBackwardEdgeLoadExcept.Success)
-                            return new QueryResult(dbBackwardEdgeLoadExcept.Errors);
-
-                        dbBackwardEdges = dbBackwardEdgeLoadExcept.Value;
-                    }
-
-                    var result = myDBContext.DBObjectManager.RemoveDBObject(_GraphDBType, aDBO.Value, myDBContext.DBObjectCache, myDBContext.SessionSettings);
-
-                    if (!result.Success)
-                    {
-                        return new QueryResult(result.Errors);
-                    }
-
-                    if (dbBackwardEdges != null)
-                    {
-                        var deleteReferences = _ObjectManipulationManager.DeleteObjectReferences(dbObjID, dbBackwardEdges, myDBContext);
-
-                        if (!deleteReferences.Success)
-                            return new QueryResult(deleteReferences.Errors);
-                    }
-
+                    return new QueryResult(new Error_TruncateNotAllowedOnInheritedType(_TypeName));
                 }
 
-                #endregion
-
-                #region remove indices
-
-                myDBContext.DBIndexManager.RemoveGuidIndexEntriesOfParentTypes(_GraphDBType, myDBContext.DBIndexManager);
-                
-                Parallel.ForEach(_GraphDBType.GetAllAttributeIndices(), aIdx =>
-                    {
-                        var idxRef = aIdx.GetIndexReference(myDBContext.DBIndexManager);
-                        if (!idxRef.Success)
-                        {
-                            throw new GraphDBException(idxRef.Errors);
-                        }
-                        idxRef.Value.Clear();
-                    });
-
-                #endregion
-
-                #endregion
+                Exceptional truncateResult = _ObjectManipulationManager.Truncate(_DBInnerContext, _GraphDBType);
+                if (truncateResult.Failed)
+                {
+                    return new QueryResult(truncateResult);
+                }
 
                 #region Commit transaction and add all Warnings and Errors
 
-                var queryResult = new QueryResult(_Transaction.Commit());
+                var queryResult = new QueryResult(_Transaction.Commit().Push(truncateResult));
 
                 #endregion
 

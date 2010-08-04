@@ -164,7 +164,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                 throw new NotImplementedException();
             }
 
-            if (!dbObject.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myTypeManager), null))
+            if (!dbObject.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myTypeManager)))
             {
                 ////_Logger.Info("Abort search! Start object has no edge!");
                 //Console.WriteLine("No paths found!");
@@ -203,12 +203,12 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                     throw new NotImplementedException();
                 }
 
-                if (currentDBObject.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myTypeManager), null))
+                if (currentDBObject.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myTypeManager)))
                 {
                     if (myTypeAttribute.EdgeType is ASetReferenceEdgeType)
                     {
                         //get all referenced ObjectUUIDs using the given Edge                                                
-                        var objectUUIDs = (currentDBObject.Value.GetAttribute(myTypeAttribute.UUID) as ASetReferenceEdgeType).GetAllUUIDs();
+                        var objectUUIDs = (currentDBObject.Value.GetAttribute(myTypeAttribute.UUID) as ASetReferenceEdgeType).GetAllReferenceIDs();
                         Node tmp;
                         
                         foreach(ObjectUUID dbo in objectUUIDs)

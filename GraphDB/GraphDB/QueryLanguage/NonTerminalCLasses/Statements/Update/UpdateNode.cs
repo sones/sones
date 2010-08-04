@@ -24,6 +24,7 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Henning Rauch</developer>
+ * <developer>Stefan Licht</developer>
  * <summary>This node is requested in case of an Update statement.</summary>
  */
 
@@ -50,6 +51,7 @@ using sones.Lib.Session;
 using sones.GraphDB.QueryLanguage.ExpressionGraph;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 using sones.GraphDB.Managers;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -64,10 +66,10 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
 
         #region Data
 
-        private HashSet<AttributeUpdateOrAssign> _listOfUpdates;
+        private HashSet<AAttributeAssignOrUpdateOrRemove> _listOfUpdates;
 
-        private ObjectManipulationManager _ObjectManipulationManager;
-        private BinaryExpressionNode _WhereExpression;
+        private BinaryExpressionDefinition _WhereExpression;
+        private String _TypeName;
 
         #endregion
 
@@ -102,9 +104,16 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
             using (var transaction = graphDBSession.BeginTransaction())
             {
 
-                var transactionContext = transaction.GetDBContext(); 
-                
-                var queryResult = _ObjectManipulationManager.Update(_WhereExpression, _listOfUpdates, dbContext);
+                var transactionContext = transaction.GetDBContext();
+
+                var graphDBType = transactionContext.DBTypeManager.GetTypeByName(_TypeName);
+                if (graphDBType == null)
+                {
+                    return new QueryResult(new Error_TypeDoesNotExist(_TypeName));
+                }
+
+                var objectManipulationManager = new ObjectManipulationManager();
+                var queryResult = objectManipulationManager.Update(_listOfUpdates, transactionContext, graphDBType, _WhereExpression);
 
                 #region Commit transaction and add all Warnings and Errors
 
@@ -125,24 +134,14 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
         /// <param name="typeManager">The TypeManager of the PandoraDB.</param>
         public override void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
         {
-            var dbContext = myCompilerContext.IContext as DBContext;
-            var typeManager = dbContext.DBTypeManager;
 
             #region get Type
 
-            var _Type = ExtractDBTypeStreamFromTypeNode(myParseTreeNode.ChildNodes[1].AstNode);
-
-            if (_Type == null)
-            {
-                throw new GraphDBException(new Error_TypeDoesNotExist(myParseTreeNode.ChildNodes[1].ToString()));
-            }
-
-            _ObjectManipulationManager = new ObjectManipulationManager(dbContext.SessionSettings, _Type, dbContext, this);
+            _TypeName = (myParseTreeNode.ChildNodes[1].AstNode as ATypeNode).ReferenceAndType.TypeName;
 
             #endregion
 
             #region get myAttributes
-
 
             if (myParseTreeNode.ChildNodes[3].HasChildNodes())
             {
@@ -157,13 +156,8 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
             if (myParseTreeNode.ChildNodes[4].HasChildNodes())
             {
                 WhereExpressionNode tempWhereNode = (WhereExpressionNode)myParseTreeNode.ChildNodes[4].AstNode;
-                _WhereExpression = tempWhereNode.BinExprNode;
+                _WhereExpression = tempWhereNode.BinExprNode.BinaryExpressionDefinition;
 
-                Exceptional validateResult = _WhereExpression.Validate(dbContext, _Type);
-                if (!validateResult.Success)
-                {
-                    throw new GraphDBException(validateResult.Errors);
-                }
             }
 
             #endregion

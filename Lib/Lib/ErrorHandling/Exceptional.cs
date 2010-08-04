@@ -41,13 +41,6 @@ namespace sones.Lib.ErrorHandling
     public class Exceptional : IExceptional, IDisposable
     {
 
-        private Boolean _CheckForErrors;
-
-        protected Boolean CheckForErrors
-        {
-            get { return _CheckForErrors; }
-        }
-        
         #region Properties
 
         #region Succeess
@@ -59,7 +52,7 @@ namespace sones.Lib.ErrorHandling
         {
             get
             {
-                _CheckForErrors = true;
+                CheckForErrors = true;  //HACK: Rethink this!
                 return !Failed && Warnings.IsNullOrEmpty();
             }
         }
@@ -75,7 +68,7 @@ namespace sones.Lib.ErrorHandling
         {
             get
             {
-                _CheckForErrors = true;
+                CheckForErrors = true;  //HACK: Rethink this!
                 return !_IErrors.IsNullOrEmpty();
             }
         }
@@ -135,6 +128,12 @@ namespace sones.Lib.ErrorHandling
 
         #endregion
 
+        #region CheckForErrors
+
+        public Boolean CheckForErrors { get; protected set; }
+
+        #endregion
+
         #endregion
 
         #region Constructors
@@ -143,7 +142,7 @@ namespace sones.Lib.ErrorHandling
 
         public Exceptional()
         {
-            _CheckForErrors = false;
+            CheckForErrors = false; //HACK: Rethink this!
             _IErrors    = new Stack<IError>();
             _IWarnings  = new Stack<IWarning>();
         }
@@ -577,7 +576,7 @@ namespace sones.Lib.ErrorHandling
 
         #endregion
 
-
+        //HACK: Disabled because of nasty side effects!
         //#region Implicit conversation to/from TValue
 
         //public static implicit operator Exceptional<TValue>(TValue myValue)
@@ -643,5 +642,6 @@ namespace sones.Lib.ErrorHandling
         #endregion
 
     }
+
 }
 

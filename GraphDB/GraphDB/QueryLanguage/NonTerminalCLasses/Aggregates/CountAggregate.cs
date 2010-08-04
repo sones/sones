@@ -40,9 +40,7 @@ using sones.GraphDB.QueryLanguage.Result;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.Structures;
 using sones.GraphDB.Structures.EdgeTypes;
-
 using sones.Lib.ErrorHandling;
-
 using sones.Lib.DataStructures.UUID;
 using sones.GraphDB.Errors;
 using sones.GraphFS.DataStructures;
@@ -96,7 +94,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Aggregates
         }
 
 
-        public override Exceptional<object> Aggregate(AttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
+        public override Exceptional<object> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
         {
             if (graphDBType.IsAbstract)
             {
@@ -108,12 +106,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Aggregates
                 {
                     if (!aSubType.IsAbstract)
                     {
-                        var idxRef = aSubType.GetUUIDIndex(dbContext.DBTypeManager).GetIndexReference(dbContext.DBIndexManager);
-                        if (!idxRef.Success)
-                        {
-                            return new Exceptional<object>(idxRef);
-                        }
-                        count += idxRef.Value.ValueCount();
+                        count += aSubType.GetUUIDIndex(dbContext.DBTypeManager).GetValueCount(aSubType, dbContext);
                     }
                 }
 
@@ -125,12 +118,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Aggregates
             {
                 #region Return the count of idx values
 
-                var idxRef = attributeIndex.GetIndexReference(dbContext.DBIndexManager);
-                if (!idxRef.Success)
-                {
-                    return new Exceptional<object>(idxRef);
-                }
-                return new Exceptional<object>(idxRef.Value.ValueCount());
+                var indexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(attributeIndex.IndexRelatedTypeUUID);
+
+                return new Exceptional<object>(attributeIndex.GetValueCount(indexRelatedType, dbContext));
                 
                 #endregion
             }

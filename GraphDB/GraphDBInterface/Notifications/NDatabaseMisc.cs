@@ -64,7 +64,7 @@ namespace sones.GraphDB.Notification.NotificationTypes.Database
             public byte[] Serialize()
             {
                 var _SerializationWriter = new SerializationWriter();
-                _SerializationWriter.WriteObject(Message);
+                _SerializationWriter.WriteString(Message);
                
                 return _SerializationWriter.ToArray();
             }
@@ -72,7 +72,7 @@ namespace sones.GraphDB.Notification.NotificationTypes.Database
             public void Deserialize(byte[] mySerializedBytes)
             {
                 var _SerializationReader = new SerializationReader(mySerializedBytes);
-                Message = (String)_SerializationReader.ReadObject();                
+                Message = _SerializationReader.ReadString();
             }
 
             #endregion

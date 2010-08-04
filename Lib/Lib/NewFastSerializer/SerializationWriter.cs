@@ -29,6 +29,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Diagnostics;
 using System.Runtime.Serialization.Formatters;
 
+
 namespace sones.Lib.NewFastSerializer
 {
 
@@ -337,6 +338,7 @@ namespace sones.Lib.NewFastSerializer
 
         #region Methods
 
+        #region Arrays
         /// <summary>
         /// Writes an ArrayList into the stream using the fewest number of bytes possible.
         /// Stored myNumberOfBytes: 1 byte upwards depending on data content
@@ -377,6 +379,885 @@ namespace sones.Lib.NewFastSerializer
             }
         }
 
+        public SerializationWriter WriteArray(Array value)
+        {
+            writeTypedArray((Array)value, true);
+
+            return this;
+        }
+
+        public SerializationWriter WriteBitArray(BitArray value)
+        {
+            writeTypeCode(SerializedType.BitArrayType);
+            WriteOptimized((BitArray)value);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Writes an non-null ArrayList into the stream using the fewest number of bytes possible.
+        /// Stored myNumberOfBytes: 1 byte upwards depending on data content
+        /// Notes:
+        /// An empty ArrayList takes 1 byte.
+        /// </summary>
+        /// <param name="value">The ArrayList to store. Must not be null.</param>
+        public void WriteOptimized(ArrayList value)
+        {
+            checkOptimizable(value != null, "Cannot optimize a null ArrayList");
+
+            writeObjectArray(value.ToArray());
+        }
+
+        /// <summary>
+        /// Writes a BitArray into the stream using the fewest number of bytes possible.
+        /// Stored myNumberOfBytes: 1 byte upwards depending on data content
+        /// Notes:
+        /// An empty BitArray takes 1 byte.
+        /// </summary>
+        /// <param name="value">The BitArray value to store. Must not be null.</param>
+        public void WriteOptimized(BitArray value)
+        {
+            checkOptimizable(value != null, "Cannot optimize a null BitArray");
+
+            write7bitEncodedSigned32BitValue(value.Length);
+
+            if (value.Length > 0)
+            {
+                byte[] data = new byte[(value.Length + 7) / 8];
+                value.CopyTo(data, 0);
+                base.Write(data, 0, data.Length);
+            }
+        }
+
+
+        /// <summary>
+        /// Writes a Boolean[] into the stream.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// Calls WriteOptimized(Boolean[]).
+        /// </summary>
+        /// <param name="values">The Boolean[] to store.</param>
+        public void Write(bool[] values)
+        {
+            WriteOptimized(values);
+        }
+
+        /// <summary>
+        /// Writes a Byte[] into the stream.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The Byte[] to store.</param>
+        public override void Write(byte[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                writeTypeCode(SerializedType.NonOptimizedTypedArrayType);
+                writeArray(values);
+            }
+        }
+
+        /// <summary>
+        /// Writes a Char[] into the stream.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The Char[] to store.</param>
+        public override void Write(char[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                writeTypeCode(SerializedType.NonOptimizedTypedArrayType);
+                writeArray(values);
+            }
+        }
+
+        /// <summary>
+        /// Writes a DateTime[] into the stream.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The DateTime[] to store.</param>
+        public void Write(DateTime[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                writeArray(values, null);
+            }
+        }
+
+        /// <summary>
+        /// Writes a Decimal[] into the stream.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// Calls WriteOptimized(Decimal[]).
+        /// </summary>
+        /// <param name="values">The Decimal[] to store.</param>
+        public void Write(decimal[] values)
+        {
+            WriteOptimized(values);
+        }
+
+        /// <summary>
+        /// Writes a Double[] into the stream.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The Double[] to store.</param>
+        public void Write(double[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                writeTypeCode(SerializedType.NonOptimizedTypedArrayType);
+                writeArray(values);
+            }
+        }
+
+        /// <summary>
+        /// Writes a Single[] into the stream.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The Single[] to store.</param>
+        public void Write(float[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                writeTypeCode(SerializedType.NonOptimizedTypedArrayType);
+                writeArray(values);
+            }
+        }
+
+        /// <summary>
+        /// Writes a Guid[] into the stream.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The Guid[] to store.</param>
+        public void Write(Guid[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                writeTypeCode(SerializedType.NonOptimizedTypedArrayType);
+                writeArray(values);
+            }
+        }
+
+        /// <summary>
+        /// Writes an Int32[] into the stream.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The Int32[] to store.</param>
+        public void Write(int[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                writeArray(values, null);
+            }
+        }
+
+        /// <summary>
+        /// Writes an Int64[] into the stream.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The Int64[] to store.</param>
+        public void Write(long[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                writeArray(values, null);
+            }
+        }
+
+        /// <summary>
+        /// Writes an object[] into the stream.
+        /// Stored myNumberOfBytes: 2 bytes upwards depending on data content
+        /// Notes:
+        /// A null object[] takes 1 byte.
+        /// An empty object[] takes 2 bytes.
+        /// The contents of the array will be stored optimized.
+        /// </summary>
+        /// <param name="values">The object[] to store.</param>
+        public void Write(object[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyObjectArrayType);
+            else
+            {
+                writeTypeCode(SerializedType.ObjectArrayType);
+                writeObjectArray(values);
+            }
+        }
+
+        /// <summary>
+        /// Writes an SByte[] into the stream.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The SByte[] to store.</param>
+        //[CLSCompliant(false)]
+        public void Write(sbyte[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                writeTypeCode(SerializedType.NonOptimizedTypedArrayType);
+                writeArray(values);
+            }
+        }
+
+        /// <summary>
+        /// Writes an Int16[]or a null into the stream.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// Calls WriteOptimized(decimal[]).
+        /// </summary>
+        /// <param name="values">The Int16[] to store.</param>
+        public void Write(short[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                writeTypeCode(SerializedType.NonOptimizedTypedArrayType);
+                writeArray(values);
+            }
+        }
+
+        /// <summary>
+        /// Writes a TimeSpan[] into the stream.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The TimeSpan[] to store.</param>
+        public void Write(TimeSpan[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                writeArray(values, null);
+            }
+        }
+
+        /// <summary>
+        /// Writes a UInt32[] into the stream.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The UInt32[] to store.</param>
+        //[CLSCompliant(false)]
+        public void Write(uint[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                writeArray(values, null);
+            }
+        }
+
+        /// <summary>
+        /// Writes a UInt64[] into the stream.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The UInt64[] to store.</param>
+        //[CLSCompliant(false)]
+        public void Write(ulong[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                writeArray(values, null);
+            }
+        }
+
+        /// <summary>
+        /// Writes a UInt16[] into the stream.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The UInt16[] to store.</param>
+        //[CLSCompliant(false)]
+        public void Write(ushort[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                writeTypeCode(SerializedType.NonOptimizedTypedArrayType);
+                writeArray(values);
+            }
+        }
+
+        /// <summary>
+        /// Writes an optimized Boolean[] into the stream using the fewest possible bytes.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// Stored as a BitArray.
+        /// </summary>
+        /// <param name="values">The Boolean[] to store.</param>
+        public void WriteOptimized(bool[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                writeTypeCode(SerializedType.FullyOptimizedTypedArrayType);
+                writeArray(values);
+            }
+        }
+
+        /// <summary>
+        /// Writes a DateTime[] into the stream using the fewest possible bytes.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The DateTime[] to store.</param>
+        private void WriteOptimized(DateTime[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                BitArray optimizeFlags = null;
+                int notOptimizable = 0;
+                int notWorthOptimizingLimit = 1 + (int)(values.Length * (optimizeForSize ? 0.8f : 0.6f));
+                for (int i = 0; i < values.Length && notOptimizable < notWorthOptimizingLimit; i++)
+                {
+                    if (values[i].Ticks % TimeSpan.TicksPerMillisecond != 0)
+                        notOptimizable++;
+                    else
+                    {
+                        if (optimizeFlags == null) optimizeFlags = new BitArray(values.Length);
+                        optimizeFlags[i] = true;
+                    }
+                }
+
+                if (notOptimizable == 0)
+                    optimizeFlags = FullyOptimizableTypedArray;
+                else if (notOptimizable >= notWorthOptimizingLimit)
+                {
+                    optimizeFlags = null;
+                }
+
+                writeArray(values, optimizeFlags);
+            }
+        }
+
+        /// <summary>
+        /// Writes a Decimal[] into the stream using the fewest possible bytes.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The Decimal[] to store.</param>
+        private void WriteOptimized(decimal[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                writeTypeCode(SerializedType.FullyOptimizedTypedArrayType);
+                writeArray(values);
+            }
+        }
+
+        /// <summary>
+        /// Writes a not-null object[] into the stream using the fewest number of bytes possible.
+        /// Stored myNumberOfBytes: 2 bytes upwards depending on data content
+        /// Notes:
+        /// An empty object[] takes 1 byte.
+        /// The contents of the array will be stored optimized.
+        /// </summary>
+        /// <param name="values">The object[] to store. Must not be null.</param>
+        private void WriteOptimized(object[] values)
+        {
+            checkOptimizable(values != null, "Cannot optimize a null object[]");
+
+            writeObjectArray(values);
+        }
+
+        /// <summary>
+        /// Writes a pair of object[] arrays into the stream using the fewest number of bytes possible.
+        /// The arrays must not be null and must have the same length
+        /// The first array's values are written optimized
+        /// The second array's values are compared against the first and, where identical, will be stored
+        /// using a single byte.
+        /// Useful for storing entity data where there is a before-change and after-change set of value pairs
+        /// and, typically, only a few of the values will have changed.
+        /// </summary>
+        /// <param name="values1">The first object[] value which must not be null and must have the same length as values2</param>
+        /// <param name="values2">The second object[] value which must not be null and must have the same length as values1</param>
+        private void WriteOptimized(object[] values1, object[] values2)
+        {
+            checkOptimizable(values1 != null && values2 != null, "Cannot optimimize an object[] pair that is null");
+            checkOptimizable(values1.Length == values2.Length, "Cannot optimize an object[] pair with different lengths");
+
+            writeObjectArray(values1);
+            int lastIndex = values2.Length - 1;
+            for (int i = 0; i < values2.Length; i++)
+            {
+                object value2 = values2[i];
+
+                if (value2 == null ? values1[i] == null : value2.Equals(values1[i]))
+                {
+                    int duplicates = 0;
+                    for (; i < lastIndex && (values2[i + 1] == null ? values1[i + 1] == null : values2[i + 1].Equals(values1[i + 1])); i++) duplicates++;
+                    if (duplicates == 0)
+                        writeTypeCode(SerializedType.DuplicateValueType);
+                    else
+                    {
+                        writeTypeCode(SerializedType.DuplicateValueSequenceType);
+                        write7bitEncodedSigned32BitValue(duplicates);
+                    }
+                }
+                else if (value2 == null)
+                {
+                    int duplicates = 0;
+                    for (; i < lastIndex && values2[i + 1] == null; i++) duplicates++;
+                    if (duplicates == 0)
+                        writeTypeCode(SerializedType.NullType);
+                    else
+                    {
+                        writeTypeCode(SerializedType.NullSequenceType);
+                        write7bitEncodedSigned32BitValue(duplicates);
+                    }
+                }
+                else if (value2 == DBNull.Value)
+                {
+                    int duplicates = 0;
+                    for (; i < lastIndex && values2[i + 1] == DBNull.Value; i++) duplicates++;
+                    if (duplicates == 0)
+                        writeTypeCode(SerializedType.DBNullType);
+                    else
+                    {
+                        writeTypeCode(SerializedType.DBNullSequenceType);
+                        write7bitEncodedSigned32BitValue(duplicates);
+                    }
+                }
+                else
+                {
+                    WriteObject(value2);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Writes an Int16[] into the stream using the fewest possible bytes.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The Int16[] to store.</param>
+        private void WriteOptimized(short[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                BitArray optimizeFlags = null;
+                int notOptimizable = 0;
+                int notWorthOptimizingLimit = 1 + (int)(values.Length * (optimizeForSize ? 0.8f : 0.6f));
+                for (int i = 0; i < values.Length && notOptimizable < notWorthOptimizingLimit; i++)
+                {
+                    if (values[i] < 0 || values[i] > HighestOptimizable16BitValue)
+                        notOptimizable++;
+                    else
+                    {
+                        if (optimizeFlags == null) optimizeFlags = new BitArray(values.Length);
+                        optimizeFlags[i] = true;
+                    }
+                }
+
+                if (notOptimizable == 0)
+                    optimizeFlags = FullyOptimizableTypedArray;
+                else if (notOptimizable >= notWorthOptimizingLimit)
+                {
+                    optimizeFlags = null;
+                }
+
+                writeArray(values, optimizeFlags);
+            }
+        }
+
+
+        /// <summary>
+        /// Writes an Int32[] into the stream using the fewest possible bytes.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The Int32[] to store.</param>
+        private void WriteOptimized(int[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                BitArray optimizeFlags = null;
+                int notOptimizable = 0;
+                int notWorthOptimizingLimit = 1 + (int)(values.Length * (optimizeForSize ? 0.8f : 0.6f));
+                for (int i = 0; i < values.Length && notOptimizable < notWorthOptimizingLimit; i++)
+                {
+                    if (values[i] < 0 || values[i] > HighestOptimizable32BitValue)
+                        notOptimizable++;
+                    else
+                    {
+                        if (optimizeFlags == null) optimizeFlags = new BitArray(values.Length);
+                        optimizeFlags[i] = true;
+                    }
+                }
+
+                if (notOptimizable == 0)
+                    optimizeFlags = FullyOptimizableTypedArray;
+                else if (notOptimizable >= notWorthOptimizingLimit)
+                {
+                    optimizeFlags = null;
+                }
+
+                writeArray(values, optimizeFlags);
+            }
+        }
+
+        /// <summary>
+        /// Writes an Int64[] into the stream using the fewest possible bytes.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The Int64[] to store.</param>
+        private void WriteOptimized(long[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                BitArray optimizeFlags = null;
+                int notOptimizable = 0;
+                int notWorthOptimizingLimit = 1 + (int)(values.Length * (optimizeForSize ? 0.8f : 0.6f));
+
+                for (int i = 0; i < values.Length && notOptimizable < notWorthOptimizingLimit; i++)
+                {
+                    if (values[i] < 0 || values[i] > HighestOptimizable64BitValue)
+                        notOptimizable++;
+                    else
+                    {
+                        if (optimizeFlags == null) optimizeFlags = new BitArray(values.Length);
+                        optimizeFlags[i] = true;
+                    }
+                }
+
+                if (notOptimizable == 0)
+                    optimizeFlags = FullyOptimizableTypedArray;
+                else if (notOptimizable >= notWorthOptimizingLimit)
+                {
+                    optimizeFlags = null;
+                }
+
+                writeArray(values, optimizeFlags);
+            }
+        }
+
+        /// <summary>
+        /// Writes a TimeSpan[] into the stream using the fewest possible bytes.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The TimeSpan[] to store.</param>
+        private void WriteOptimized(TimeSpan[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                BitArray optimizeFlags = null;
+                int notOptimizable = 0;
+                int notWorthOptimizingLimit = 1 + (int)(values.Length * (optimizeForSize ? 0.8f : 0.6f));
+                for (int i = 0; i < values.Length && notOptimizable < notWorthOptimizingLimit; i++)
+                {
+                    if (values[i].Ticks % TimeSpan.TicksPerMillisecond != 0)
+                        notOptimizable++;
+                    else
+                    {
+                        if (optimizeFlags == null) optimizeFlags = new BitArray(values.Length);
+                        optimizeFlags[i] = true;
+                    }
+                }
+
+                if (notOptimizable == 0)
+                    optimizeFlags = FullyOptimizableTypedArray;
+                else if (notOptimizable >= notWorthOptimizingLimit)
+                {
+                    optimizeFlags = null;
+                }
+
+                writeArray(values, optimizeFlags);
+            }
+        }
+
+        /// <summary>
+        /// Writes a UInt16[] into the stream using the fewest possible bytes.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The UInt16[] to store.</param>
+        //[CLSCompliant(false)]
+        private void WriteOptimized(ushort[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                BitArray optimizeFlags = null;
+                int notOptimizable = 0;
+                int notWorthOptimizingLimit = 1 + (int)(values.Length * (optimizeForSize ? 0.8f : 0.6f));
+                for (int i = 0; i < values.Length && notOptimizable < notWorthOptimizingLimit; i++)
+                {
+                    if (values[i] > HighestOptimizable16BitValue)
+                        notOptimizable++;
+                    else
+                    {
+                        if (optimizeFlags == null) optimizeFlags = new BitArray(values.Length);
+                        optimizeFlags[i] = true;
+                    }
+                }
+
+                if (notOptimizable == 0)
+                    optimizeFlags = FullyOptimizableTypedArray;
+                else if (notOptimizable >= notWorthOptimizingLimit)
+                {
+                    optimizeFlags = null;
+                }
+
+                writeArray(values, optimizeFlags);
+            }
+        }
+
+        /// <summary>
+        /// Writes a UInt32[] into the stream using the fewest possible bytes.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The UInt32[] to store.</param>
+        //[CLSCompliant(false)]
+        private void WriteOptimized(uint[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                BitArray optimizeFlags = null;
+                int notOptimizable = 0;
+                int notWorthOptimizingLimit = 1 + (int)(values.Length * (optimizeForSize ? 0.8f : 0.6f));
+                for (int i = 0; i < values.Length && notOptimizable < notWorthOptimizingLimit; i++)
+                {
+                    if (values[i] > HighestOptimizable32BitValue)
+                        notOptimizable++;
+                    else
+                    {
+                        if (optimizeFlags == null) optimizeFlags = new BitArray(values.Length);
+                        optimizeFlags[i] = true;
+                    }
+                }
+
+                if (notOptimizable == 0)
+                    optimizeFlags = FullyOptimizableTypedArray;
+                else if (notOptimizable >= notWorthOptimizingLimit)
+                {
+                    optimizeFlags = null;
+                }
+
+                writeArray(values, optimizeFlags);
+            }
+        }
+
+        /// <summary>
+        /// Writes a UInt64[] into the stream using the fewest possible bytes.
+        /// Notes:
+        /// A null or empty array will take 1 byte.
+        /// </summary>
+        /// <param name="values">The UInt64[] to store.</param>
+        //[CLSCompliant(false)]
+        private void WriteOptimized(ulong[] values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else if (values.Length == 0)
+                writeTypeCode(SerializedType.EmptyTypedArrayType);
+            else
+            {
+                BitArray optimizeFlags = null;
+                int notOptimizable = 0;
+                int notWorthOptimizingLimit = 1 + (int)(values.Length * (optimizeForSize ? 0.8f : 0.6f));
+                for (int i = 0; i < values.Length && notOptimizable < notWorthOptimizingLimit; i++)
+                {
+                    if (values[i] > HighestOptimizable64BitValue)
+                        notOptimizable++;
+                    else
+                    {
+                        if (optimizeFlags == null) optimizeFlags = new BitArray(values.Length);
+                        optimizeFlags[i] = true;
+                    }
+                }
+
+                if (notOptimizable == 0)
+                    optimizeFlags = FullyOptimizableTypedArray;
+                else if (notOptimizable >= notWorthOptimizingLimit)
+                {
+                    optimizeFlags = null;
+                }
+
+                writeArray(values, optimizeFlags);
+            }
+        }
+
+        /// <summary>
+        /// Writes a null or a typed array into the stream.
+        /// </summary>
+        /// <param name="values">The array to store.</param>
+        public void WriteTypedArray(Array values)
+        {
+            if (values == null)
+                writeTypeCode(SerializedType.NullType);
+            else
+            {
+                writeTypedArray(values, true);
+            }
+        }
+
+        /// <summary>
+        /// Writes the contents of the string and object token tables into the stream.
+        /// Also SerializedSuperblock the starting offset into the first 4 bytes of the stream.
+        /// Notes:
+        /// Called automatically by ToArray().
+        /// Can be used to ensure that the complete graph is written before using an
+        /// alternate technique of extracting a Byte[] such as using compression on
+        /// the underlying stream.
+        /// </summary>
+        /// <returns>The length of the string and object tables.</returns>
+        //public int AppendTokenTables()
+        //{
+        //    long currentPosition = BaseStream.Position;
+        //    BaseStream.Position = 0;
+        //    Write((int)currentPosition);
+        //    BaseStream.Position = currentPosition;
+
+        //    int stringTokensCount = stringLookup.Count;
+        //    write7bitEncodedSigned32BitValue(stringLookup.Count);
+        //    for (int i = 0; i < stringTokensCount; i++)
+        //    {
+        //        base.Write(stringLookup[i]);
+        //    }
+
+        //    write7bitEncodedSigned32BitValue(objectTokens.Count);
+        //    for (int i = 0; i < objectTokens.Count; i++)
+        //    {
+        //        WriteObject(objectTokens[i]);
+        //    }
+
+        //    return (int)(BaseStream.Position - currentPosition);
+        //}
+
+        /// <summary>
+        /// Returns a byte[] containing all of the serialized data.
+        /// 
+        /// The current implementation has the data in 3 sections:
+        /// 1) A 4 byte Int32 giving the offset to the 3rd section.
+        /// 2) The main serialized data.
+        /// 3) The serialized string tokenization lists and object
+        ///    tokenization lists.
+        /// 
+        /// Only call this method once all of the data has been serialized.
+        /// 
+        /// This method appends all of the tokenized data (String and object)
+        /// to the end of the stream and ensures that the first four bytes
+        /// reflect the offset of the tokenized data so that it can be
+        /// deserialized first.
+        /// This is the reason for requiring a rewindable stream.
+        /// 
+        /// Future implementations may also allow the serialized data to be
+        /// accessed via 2 byte[] arrays. This would remove the requirement
+        /// for a rewindable stream opening the possibility of streaming the
+        /// serialized data directly over the network allowing simultaneous
+        /// of partially simultaneous deserialization.
+        /// </summary>
+        /// <returns>A byte[] containing all serialized data.</returns>
+        public byte[] ToArray()
+        {
+            //AppendTokenTables();
+            return (BaseStream as MemoryStream).ToArray();
+        }
+
+        #endregion
+
+
+        #region BitVector32
         /// <summary>
         /// Writes a BitVector32 into the stream.
         /// Stored myNumberOfBytes: 4 bytes.
@@ -386,6 +1267,39 @@ namespace sones.Lib.NewFastSerializer
         {
             base.Write(value.Data);
         }
+
+        public SerializationWriter WriteBitVector32(BitVector32 value)
+        {
+            writeTypeCode(SerializedType.BitVector32Type);
+            Write((BitVector32)value);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Writes a BitVector32 into the stream using the fewest number of bytes possible.
+        /// Stored myNumberOfBytes: 1 to 4 bytes. (.Net is 4 bytes)
+        ///  1 to  7 bits takes 1 byte
+        ///  8 to 14 bits takes 2 bytes
+        /// 15 to 21 bits takes 3 bytes
+        /// 22 to 28 bits takes 4 bytes
+        /// -------------------------------------------------------------------
+        /// 29 to 32 bits takes 5 bytes - use Write(BitVector32) method instead
+        /// 
+        /// Try to order the BitVector32 masks so that the highest bits are least-likely
+        /// to be set.
+        /// </summary>
+        /// <param name="value">The BitVector32 to store. Must not use more than 28 bits.</param>
+        public void WriteOptimized(BitVector32 value)
+        {
+            checkOptimizable(value.Data < OptimizationFailure32BitValue && value.Data >= 0, "BitVector32 value is not optimizable");
+
+            write7bitEncodedSigned32BitValue(value.Data);
+        }
+
+        #endregion
+
+        #region DateTime
 
         /// <summary>
         /// Writes a DateTime value into the stream.
@@ -397,6 +1311,10 @@ namespace sones.Lib.NewFastSerializer
             Write(value.ToBinary());
         }
 
+        #endregion
+
+        #region Guid
+
         /// <summary>
         /// Writes a Guid into the stream.
         /// Stored myNumberOfBytes: 16 bytes.
@@ -406,6 +1324,8 @@ namespace sones.Lib.NewFastSerializer
         {
             base.Write(value.ToByteArray());
         }
+
+        #endregion
 
         /// <summary>
         /// Allows any object implementing IOwnedDataSerializable to serialize itself
@@ -420,6 +1340,877 @@ namespace sones.Lib.NewFastSerializer
         {
             target.SerializeOwnedData(this, context);
         }
+
+        #region Int32
+
+        public SerializationWriter WriteInt32(Int32 value)
+        {
+            Int32 int32Value = (int)value;
+
+            if (int32Value == (Int32)0)
+                writeTypeCode(SerializedType.ZeroInt32Type);
+            else if (int32Value == (Int32)(-1))
+                writeTypeCode(SerializedType.MinusOneInt32Type);
+            else if (int32Value == (Int32)1)
+                writeTypeCode(SerializedType.OneInt32Type);
+            else
+            {
+                if (optimizeForSize)
+                {
+                    if (int32Value > 0)
+                    {
+                        if (int32Value <= HighestOptimizable32BitValue)
+                        {
+                            writeTypeCode(SerializedType.OptimizedInt32Type);
+                            write7bitEncodedSigned32BitValue(int32Value);
+                            return this;
+                        }
+                    }
+                    else
+                    {
+                        Int32 positiveInt32Value = -(int32Value + 1);
+                        if (positiveInt32Value <= HighestOptimizable32BitValue)
+                        {
+                            writeTypeCode(SerializedType.OptimizedInt32NegativeType);
+                            write7bitEncodedSigned32BitValue(positiveInt32Value);
+                            return this;
+                        }
+                    }
+                }
+
+                writeTypeCode(SerializedType.Int32Type);
+                Write(int32Value);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Write an Int32 value using the fewest number of bytes possible.
+        /// </summary>
+        /// <remarks>
+        /// 0x00000000 - 0x0000007f (0 to 127) takes 1 byte
+        /// 0x00000080 - 0x000003FF (128 to 16,383) takes 2 bytes
+        /// 0x00000400 - 0x001FFFFF (16,384 to 2,097,151) takes 3 bytes
+        /// 0x00200000 - 0x0FFFFFFF (2,097,152 to 268,435,455) takes 4 bytes
+        /// ----------------------------------------------------------------
+        /// 0x10000000 - 0x07FFFFFF (268,435,456 and above) takes 5 bytes
+        /// All negative numbers take 5 bytes
+        /// 
+        /// Only call this method if the value is known to be between 0 and 
+        /// 268,435,455 otherwise use Write(Int32 value)
+        /// </remarks>
+        /// <param name="value">The Int32 to store. Must be between 0 and 268,435,455 inclusive.</param>
+        private void WriteOptimized(int value)
+        {
+            checkOptimizable(value < OptimizationFailure32BitValue && value >= 0, "Int32 value is not optimizable");
+
+            write7bitEncodedSigned32BitValue(value);
+        }
+
+        #endregion
+
+        #region Int64
+
+        public SerializationWriter WriteInt64(Int64 value)
+        {
+            Int64 int64Value = (Int64)value;
+
+            if (int64Value == (Int64)0)
+                writeTypeCode(SerializedType.ZeroInt64Type);
+            else if (int64Value == (Int64)(-1))
+                writeTypeCode(SerializedType.MinusOneInt64Type);
+            else if (int64Value == (Int64)1)
+                writeTypeCode(SerializedType.OneInt64Type);
+            else
+            {
+                if (optimizeForSize)
+                {
+                    if (int64Value > 0)
+                    {
+                        if (int64Value <= HighestOptimizable64BitValue)
+                        {
+                            writeTypeCode(SerializedType.OptimizedInt64Type);
+                            write7bitEncodedSigned64BitValue(int64Value);
+                            return this;
+                        }
+                    }
+                    else
+                    {
+                        Int64 positiveInt64Value = -(int64Value + 1);
+                        if (positiveInt64Value <= HighestOptimizable64BitValue)
+                        {
+                            writeTypeCode(SerializedType.OptimizedInt64NegativeType);
+                            write7bitEncodedSigned64BitValue(positiveInt64Value);
+                            return this;
+                        }
+                    }
+                }
+
+                writeTypeCode(SerializedType.Int64Type);
+                Write(int64Value);
+            }      
+
+            return this;
+        }
+
+        /// <summary>
+        /// Write an Int64 value using the fewest number of bytes possible.
+        /// </summary>
+        /// <remarks>
+        /// 0x0000000000000000 - 0x000000000000007f (0 to 127) takes 1 byte
+        /// 0x0000000000000080 - 0x00000000000003FF (128 to 16,383) takes 2 bytes
+        /// 0x0000000000000400 - 0x00000000001FFFFF (16,384 to 2,097,151) takes 3 bytes
+        /// 0x0000000000200000 - 0x000000000FFFFFFF (2,097,152 to 268,435,455) takes 4 bytes
+        /// 0x0000000010000000 - 0x00000007FFFFFFFF (268,435,456 to 34,359,738,367) takes 5 bytes
+        /// 0x0000000800000000 - 0x000003FFFFFFFFFF (34,359,738,368 to 4,398,046,511,103) takes 6 bytes
+        /// 0x0000040000000000 - 0x0001FFFFFFFFFFFF (4,398,046,511,104 to 562,949,953,421,311) takes 7 bytes
+        /// 0x0002000000000000 - 0x00FFFFFFFFFFFFFF (562,949,953,421,312 to 72,057,594,037,927,935) takes 8 bytes
+        /// ------------------------------------------------------------------
+        /// 0x0100000000000000 - 0x7FFFFFFFFFFFFFFF (72,057,594,037,927,936 to 9,223,372,036,854,775,807) takes 9 bytes
+        /// 0x7FFFFFFFFFFFFFFF - 0xFFFFFFFFFFFFFFFF (9,223,372,036,854,775,807 and above) takes 10 bytes
+        /// All negative numbers take 10 bytes
+        /// 
+        /// Only call this method if the value is known to be between 0 and
+        /// 72,057,594,037,927,935 otherwise use Write(Int64 value)
+        /// </remarks>
+        /// <param name="value">The Int64 to store. Must be between 0 and 72,057,594,037,927,935 inclusive.</param>
+        private void WriteOptimized(long value)
+        {
+            checkOptimizable(value < OptimizationFailure64BitValue && value >= 0, "long value is not optimizable");
+
+            write7bitEncodedSigned64BitValue(value);
+        }
+
+        #endregion
+
+        #region Int16
+
+        public SerializationWriter WriteInt16(Int16 value)
+        {
+            Int16 int16Value = (Int16)value;
+
+            if (int16Value == (Int16)0)
+                writeTypeCode(SerializedType.ZeroInt16Type);
+            else if (int16Value == (Int16)(-1))
+                writeTypeCode(SerializedType.MinusOneInt16Type);
+            else if (int16Value == (Int16)1)
+                writeTypeCode(SerializedType.OneInt16Type);
+            else
+            {
+                if (optimizeForSize)
+                {
+                    if (int16Value > 0)
+                    {
+                        if (int16Value <= HighestOptimizable16BitValue)
+                        {
+                            writeTypeCode(SerializedType.OptimizedInt16Type);
+                            write7bitEncodedSigned32BitValue((int)int16Value);
+                            return this;
+                        }
+                    }
+                    else
+                    {
+                        Int32 positiveInt16Value = (-(int16Value + 1));
+                        if (positiveInt16Value <= HighestOptimizable16BitValue)
+                        {
+                            writeTypeCode(SerializedType.OptimizedInt16NegativeType);
+                            write7bitEncodedSigned32BitValue(positiveInt16Value);
+                            return this;
+                        }
+                    }
+
+                }
+
+                writeTypeCode(SerializedType.Int16Type);
+                Write(int16Value);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Write an Int16 value using the fewest number of bytes possible.
+        /// </summary>
+        /// <remarks>
+        /// 0x0000 - 0x007f (0 to 127) takes 1 byte
+        /// 0x0080 - 0x03FF (128 to 16,383) takes 2 bytes
+        /// ----------------------------------------------------------------
+        /// 0x0400 - 0x7FFF (16,384 to 32,767) takes 3 bytes
+        /// All negative numbers take 3 bytes
+        /// 
+        /// Only call this method if the value is known to be between 0 and 
+        /// 16,383 otherwise use Write(Int16 value)
+        /// </remarks>
+        /// <param name="value">The Int16 to store. Must be between 0 and 16,383 inclusive.</param>
+        private void WriteOptimized(short value)
+        {
+            checkOptimizable(value < OptimizationFailure16BitValue && value >= 0, "Int16 value is not optimizable");
+
+            write7bitEncodedSigned32BitValue(value);
+        }
+
+        #endregion
+
+        #region Single
+
+        public SerializationWriter WriteSingle(Single value)
+        {
+            Single singleValue = (Single)value;
+
+            if (singleValue == (Single)0)
+                writeTypeCode(SerializedType.ZeroSingleType);
+            else if (singleValue == (Single)1)
+                writeTypeCode(SerializedType.OneSingleType);
+            else
+            {
+                writeTypeCode(SerializedType.SingleType);
+                Write(singleValue);
+            }
+            
+            return this;
+        }
+
+        #endregion
+
+        #region Double
+
+        public SerializationWriter WriteDouble(Double value)
+        {
+            Double doubleValue = (Double)value;
+
+            if (doubleValue == (Double)0)
+                writeTypeCode(SerializedType.ZeroDoubleType);
+            else if (doubleValue == (Double)1)
+                writeTypeCode(SerializedType.OneDoubleType);
+            else
+            {
+                writeTypeCode(SerializedType.DoubleType);
+                Write(doubleValue);
+            }
+
+            return this;
+        }
+
+        #endregion
+
+        #region Decimal
+
+        public SerializationWriter WriteDecimal(Decimal value)
+        {
+            Decimal decimalValue = (Decimal)value;
+
+            if (decimalValue == (Decimal)0)
+                writeTypeCode(SerializedType.ZeroDecimalType);
+            else if (decimalValue == (Decimal)1)
+                writeTypeCode(SerializedType.OneDecimalType);
+            else
+            {
+                writeTypeCode(SerializedType.DecimalType);
+                WriteOptimized(decimalValue);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Writes a Decimal value into the stream using the fewest number of bytes possible.
+        /// Stored myNumberOfBytes: 1 byte to 14 bytes (.Net is 16 bytes)
+        /// Restrictions: None
+        /// </summary>
+        /// <param name="value">The Decimal value to store</param>
+        private void WriteOptimized(Decimal value)
+        {
+            int[] data = Decimal.GetBits(value);
+            byte scale = (byte)(data[3] >> 16);
+            byte flags = 0;
+            if (scale != 0 && !preserveDecimalScale && optimizeForSize)
+            {
+                decimal normalized = Decimal.Truncate(value);
+                if (normalized == value)
+                {
+                    data = Decimal.GetBits(normalized);
+                    scale = 0;
+                }
+            }
+
+            if ((data[3] & -2147483648) != 0) flags |= 0x01;
+            if (scale != 0) flags |= 0x02;
+
+            if (data[0] == 0)
+                flags |= 0x04;
+            else if (data[0] <= HighestOptimizable32BitValue && data[0] >= 0)
+            {
+                flags |= 0x20;
+            }
+
+            if (data[1] == 0)
+                flags |= 0x08;
+            else if (data[1] <= HighestOptimizable32BitValue && data[1] >= 0)
+            {
+                flags |= 0x40;
+            }
+
+            if (data[2] == 0)
+                flags |= 0x10;
+            else if (data[2] <= HighestOptimizable32BitValue && data[2] >= 0)
+            {
+                flags |= 0x80;
+            }
+
+            Write(flags);
+            if (scale != 0) Write(scale);
+            if ((flags & 0x04) == 0) if ((flags & 0x20) != 0) write7bitEncodedSigned32BitValue(data[0]); else Write(data[0]);
+            if ((flags & 0x08) == 0) if ((flags & 0x40) != 0) write7bitEncodedSigned32BitValue(data[1]); else Write(data[1]);
+            if ((flags & 0x10) == 0) if ((flags & 0x80) != 0) write7bitEncodedSigned32BitValue(data[2]); else Write(data[2]);
+        }
+
+        #endregion
+
+        #region Boolean
+
+        public SerializationWriter WriteBoolean(Boolean value)
+        {
+            writeTypeCode((bool)value ? SerializedType.BooleanTrueType : SerializedType.BooleanFalseType);
+
+            return this;
+        }
+
+        #endregion
+
+        #region DateTime
+
+        public SerializationWriter WriteDateTime(DateTime value)
+        {
+
+            DateTime dateTimeValue = (DateTime)value;
+
+            if (dateTimeValue == DateTime.MinValue)
+                writeTypeCode(SerializedType.MinDateTimeType);
+            else if (dateTimeValue == DateTime.MaxValue)
+                writeTypeCode(SerializedType.MaxDateTimeType);
+            else if (optimizeForSize && (dateTimeValue.Ticks % TimeSpan.TicksPerMillisecond) == 0)
+            {
+                writeTypeCode(SerializedType.OptimizedDateTimeType);
+                WriteOptimized(dateTimeValue);
+            }
+            else
+            {
+                writeTypeCode(SerializedType.DateTimeType);
+                Write(dateTimeValue);
+            }
+            
+            return this;
+        }
+
+        /// <summary>
+        /// Writes a DateTime value into the stream using the fewest number of bytes possible.
+        /// Stored myNumberOfBytes: 3 bytes to 7 bytes (.Net is 8 bytes)
+        /// Notes:
+        /// A DateTime containing only a date takes 3 bytes
+        /// (except a .NET 2.0 Date with a specified DateTimeKind which will take a minimum
+        /// of 5 bytes - no further optimization for this situation felt necessary since it
+        /// is unlikely that a DateTimeKind would be specified without hh:mm also)
+        /// Date plus hh:mm takes 5 bytes.
+        /// Date plus hh:mm:ss takes 6 bytes.
+        /// Date plus hh:mm:ss.fff takes 7 bytes.
+        /// </summary>
+        /// <param name="value">The DateTime value to store. Must not contain sub-millisecond data.</param>
+        private void WriteOptimized(DateTime value)
+        {
+            checkOptimizable((value.Ticks % TimeSpan.TicksPerMillisecond) == 0, "Cannot optimize a DateTime with sub-millisecond accuracy");
+
+            BitVector32 dateMask = new BitVector32();
+            dateMask[DateYearMask] = value.Year;
+            dateMask[DateMonthMask] = value.Month;
+            dateMask[DateDayMask] = value.Day;
+
+            int initialData = 0;
+            bool writeAdditionalData = value != value.Date;
+
+            initialData = (int)value.Kind;
+            writeAdditionalData |= initialData != 0;
+
+            dateMask[DateHasTimeOrKindMask] = writeAdditionalData ? 1 : 0;
+
+            // Store 3 bytes of Date information
+            int dateMaskData = dateMask.Data;
+            Write((byte)dateMaskData);
+            Write((byte)(dateMaskData >> 8));
+            Write((byte)(dateMaskData >> 16));
+
+            if (writeAdditionalData)
+            {
+                checkOptimizable((value.Ticks % TimeSpan.TicksPerMillisecond) == 0, "Cannot optimize a DateTime with sub-millisecond accuracy");
+                encodeTimeSpan(value.TimeOfDay, true, initialData);
+            }
+        }
+
+        #endregion
+
+        #region Byte
+
+        public SerializationWriter WriteByte(Byte value)
+        {
+            Byte byteValue = (Byte)value;
+
+            if (byteValue == (Byte)0)
+                writeTypeCode(SerializedType.ZeroByteType);
+            else if (byteValue == (Byte)1)
+                writeTypeCode(SerializedType.OneByteType);
+            else
+            {
+                writeTypeCode(SerializedType.ByteType);
+                Write(byteValue);
+            }
+
+            return this;
+        }
+
+        #endregion
+
+        #region Char
+
+        public SerializationWriter WriteChar(Char value)
+        {
+            Char charValue = (Char)value;
+
+            if (charValue == (Char)0)
+                writeTypeCode(SerializedType.ZeroCharType);
+            else if (charValue == (Char)1)
+                writeTypeCode(SerializedType.OneCharType);
+            else
+            {
+                writeTypeCode(SerializedType.CharType);
+                Write(charValue);
+            }
+
+            return this;
+        }
+
+        #endregion
+
+        #region SByte
+
+        public SerializationWriter WriteSByte(SByte value)
+        {
+            SByte sbyteValue = (SByte)value;
+
+            if (sbyteValue == (SByte)0)
+                writeTypeCode(SerializedType.ZeroSByteType);
+            else if (sbyteValue == (SByte)1)
+                writeTypeCode(SerializedType.OneSByteType);
+            else
+            {
+                writeTypeCode(SerializedType.SByteType);
+                Write(sbyteValue);
+            }
+
+            return this;            
+        }
+
+        #endregion
+
+        #region UInt32
+
+        public SerializationWriter WriteUInt32(UInt32 value)
+        {
+
+            UInt32 uint32Value = (UInt32)value;
+
+            if (uint32Value == (UInt32)0)
+                writeTypeCode(SerializedType.ZeroUInt32Type);
+            else if (uint32Value == (UInt32)1)
+                writeTypeCode(SerializedType.OneUInt32Type);
+            else if (optimizeForSize && uint32Value <= HighestOptimizable32BitValue)
+            {
+                writeTypeCode(SerializedType.OptimizedUInt32Type);
+                write7bitEncodedUnsigned32BitValue(uint32Value);
+            }
+            else
+            {
+                writeTypeCode(SerializedType.UInt32Type);
+                Write(uint32Value);
+            }
+
+            return this;
+        }
+        
+        /// <summary>
+        /// Write a UInt32 value using the fewest number of bytes possible.
+        /// </summary>
+        /// </remarks>
+        /// 0x00000000 - 0x0000007f (0 to 127) takes 1 byte
+        /// 0x00000080 - 0x000003FF (128 to 16,383) takes 2 bytes
+        /// 0x00000400 - 0x001FFFFF (16,384 to 2,097,151) takes 3 bytes
+        /// 0x00200000 - 0x0FFFFFFF (2,097,152 to 268,435,455) takes 4 bytes
+        /// ----------------------------------------------------------------
+        /// 0x10000000 - 0xFFFFFFFF (268,435,456 and above) takes 5 bytes
+        /// 
+        /// Only call this method if the value is known to  be between 0 and 
+        /// 268,435,455 otherwise use Write(UInt32 value)
+        /// </remarks>
+        /// <param name="value">The UInt32 to store. Must be between 0 and 268,435,455 inclusive.</param>
+        //[CLSCompliant(false)]
+        private void WriteOptimized(uint value)
+        {
+            checkOptimizable(value < OptimizationFailure32BitValue, "UInt32 value is not optimizable");
+
+            write7bitEncodedUnsigned32BitValue(value);
+        }
+
+        #endregion
+
+        #region UInt16
+
+        public SerializationWriter WriteUInt16(UInt16 value)
+        { 
+            UInt16 uint16Value = (UInt16)value;
+
+            if (uint16Value == (UInt16)0)
+                writeTypeCode(SerializedType.ZeroUInt16Type);
+            else if (uint16Value == (UInt16)1)
+                writeTypeCode(SerializedType.OneUInt16Type);
+            else if (optimizeForSize && uint16Value <= HighestOptimizable16BitValue)
+            {
+                writeTypeCode(SerializedType.OptimizedUInt16Type);
+                write7bitEncodedUnsigned32BitValue((uint)uint16Value);
+            }
+            else
+            {
+                writeTypeCode(SerializedType.UInt16Type);
+                Write(uint16Value);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Write a UInt16 value using the fewest number of bytes possible.
+        /// </summary>
+        /// <remarks>
+        /// 0x0000 - 0x007f (0 to 127) takes 1 byte
+        /// 0x0080 - 0x03FF (128 to 16,383) takes 2 bytes
+        /// ----------------------------------------------------------------
+        /// 0x0400 - 0xFFFF (16,384 to 65,536) takes 3 bytes
+        /// 
+        /// Only call this method if the value is known to  be between 0 and 
+        /// 16,383 otherwise use Write(UInt16 value)
+        /// </remarks>
+        /// <param name="value">The UInt16 to store. Must be between 0 and 16,383 inclusive.</param>
+        ////[CLSCompliant(false)]
+        private void WriteOptimized(ushort value)
+        {
+            checkOptimizable(value < OptimizationFailure16BitValue, "UInt16 value is not optimizable");
+
+            write7bitEncodedUnsigned32BitValue(value);
+        }
+
+        #endregion
+
+        #region UInt64
+
+        public SerializationWriter WriteUInt64(UInt64 value)
+        {
+            UInt64 uint64Value = (UInt64)value;
+
+            if (uint64Value == (UInt64)0)
+                writeTypeCode(SerializedType.ZeroUInt64Type);
+            else if (uint64Value == (UInt64)1)
+                writeTypeCode(SerializedType.OneUInt64Type);
+            else if (optimizeForSize && uint64Value <= HighestOptimizable64BitValue)
+            {
+                writeTypeCode(SerializedType.OptimizedUInt64Type);
+                WriteOptimized(uint64Value);
+            }
+            else
+            {
+                writeTypeCode(SerializedType.UInt64Type);
+                Write(uint64Value);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Write a UInt64 value using the fewest number of bytes possible.
+        /// </summary>
+        /// <remarks>
+        /// 0x0000000000000000 - 0x000000000000007f (0 to 127) takes 1 byte
+        /// 0x0000000000000080 - 0x00000000000003FF (128 to 16,383) takes 2 bytes
+        /// 0x0000000000000400 - 0x00000000001FFFFF (16,384 to 2,097,151) takes 3 bytes
+        /// 0x0000000000200000 - 0x000000000FFFFFFF (2,097,152 to 268,435,455) takes 4 bytes
+        /// 0x0000000010000000 - 0x00000007FFFFFFFF (268,435,456 to 34,359,738,367) takes 5 bytes
+        /// 0x0000000800000000 - 0x000003FFFFFFFFFF (34,359,738,368 to 4,398,046,511,103) takes 6 bytes
+        /// 0x0000040000000000 - 0x0001FFFFFFFFFFFF (4,398,046,511,104 to 562,949,953,421,311) takes 7 bytes
+        /// 0x0002000000000000 - 0x00FFFFFFFFFFFFFF (562,949,953,421,312 to 72,057,594,037,927,935) takes 8 bytes
+        /// ------------------------------------------------------------------
+        /// 0x0100000000000000 - 0x7FFFFFFFFFFFFFFF (72,057,594,037,927,936 to 9,223,372,036,854,775,807) takes 9 bytes
+        /// 0x7FFFFFFFFFFFFFFF - 0xFFFFFFFFFFFFFFFF (9,223,372,036,854,775,807 and above) takes 10 bytes
+        /// 
+        /// Only call this method if the value is known to be between 0 and
+        /// 72,057,594,037,927,935 otherwise use Write(UInt64 value)
+        /// </remarks>
+        /// <param name="value">The UInt64 to store. Must be between 0 and 72,057,594,037,927,935 inclusive.</param>
+        //[CLSCompliant(false)]
+        private void WriteOptimized(ulong value)
+        {
+            checkOptimizable(value < OptimizationFailure64BitValue, "ulong value is not optimizable");
+
+            write7bitEncodedUnsigned64BitValue(value);
+        }
+
+        #endregion
+
+        #region TimeSpan
+
+        public SerializationWriter WriteTimeSpan(TimeSpan value)
+        {
+            TimeSpan timeSpanValue = (TimeSpan)value;
+
+            if (timeSpanValue == TimeSpan.Zero)
+                writeTypeCode(SerializedType.ZeroTimeSpanType);
+            else if (optimizeForSize && (timeSpanValue.Ticks % TimeSpan.TicksPerMillisecond) == 0)
+            {
+                writeTypeCode(SerializedType.OptimizedTimeSpanType);
+                WriteOptimized(timeSpanValue);
+            }
+            else
+            {
+                writeTypeCode(SerializedType.TimeSpanType);
+                Write(timeSpanValue);
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Writes a TimeSpan value into the stream using the fewest number of bytes possible.
+        /// Stored myNumberOfBytes: 2 bytes to 8 bytes (.Net is 8 bytes)
+        /// Notes:
+        /// hh:mm (time) are always stored together and take 2 bytes.
+        /// If seconds are present then 3 bytes unless (time) is not present in which case 2 bytes
+        /// since the seconds are stored in the minutes position.
+        /// If milliseconds are present then 4 bytes.
+        /// In addition, if days are present they will add 1 to 4 bytes to the above.
+        /// </summary>
+        /// <param name="value">The TimeSpan value to store. Must not contain sub-millisecond data.</param>
+        private void WriteOptimized(TimeSpan value)
+        {
+            checkOptimizable((value.Ticks % TimeSpan.TicksPerMillisecond) == 0, "Cannot optimize a TimeSpan with sub-millisecond accuracy");
+
+            encodeTimeSpan(value, false, 0);
+        }
+
+        /// <summary>
+        /// Writes a TimeSpan value into the stream.
+        /// Stored myNumberOfBytes: 8 bytes
+        /// </summary>
+        /// <param name="value">The TimeSpan value to store.</param>
+        public void Write(TimeSpan value)
+        {
+            Write(value.Ticks);
+        }
+
+        #endregion        
+
+        #region Type
+
+        public SerializationWriter WriteType(Type value)
+        {
+            writeTypeCode(SerializedType.TypeType);
+            WriteOptimized((value as Type));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Stores a non-null myObjectStream object into the stream.
+        /// Stored myNumberOfBytes: Depends on the length of the myObjectStream's name.
+        /// If the type is a System type (mscorlib) then it is stored without assembly name information,
+        /// otherwise the myObjectStream's AssemblyQualifiedName is used.
+        /// </summary>
+        /// <param name="value">The myObjectStream to store. Must not be null.</param>
+        private void WriteOptimized(Type value)
+        {
+            checkOptimizable(value != null, "Cannot optimize a null Type");
+
+            WriteOptimized(value.AssemblyQualifiedName.IndexOf(", mscorlib,") == -1 ? value.AssemblyQualifiedName : value.FullName);
+        }
+
+        /// <summary>
+        /// Stores a myObjectStream object into the stream.
+        /// Stored myNumberOfBytes: Depends on the length of the myObjectStream's name and whether the fullyQualified parameter is set.
+        /// A null myObjectStream takes 1 byte.
+        /// </summary>
+        /// <param name="value">The myObjectStream to store.</param>
+        /// <param name="fullyQualified">true to store the AssemblyQualifiedName or false to store the FullName. </param>
+        public void Write(Type value, bool fullyQualified)
+        {
+            if (value == null)
+                writeTypeCode(SerializedType.NullType);
+            else
+            {
+                writeTypeCode(SerializedType.TypeType);
+                WriteOptimized(fullyQualified ? value.AssemblyQualifiedName : value.FullName);
+            }
+        }
+
+        #endregion
+
+        #region Enum
+
+        /// <summary>
+        /// don' use this method 
+        /// use instead WriteByte for enums
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public SerializationWriter WriteEnum(Enum value)
+        {
+            Type enumType = value.GetType();
+            Type underlyingType = Enum.GetUnderlyingType(enumType);
+            object enumValue = (object)value;
+
+            if (underlyingType == typeof(int) || underlyingType == typeof(uint))
+            {
+                uint uint32Value = underlyingType == typeof(int) ? (uint)(int)enumValue : (uint)enumValue;
+                if (uint32Value <= HighestOptimizable32BitValue)
+                {
+                    writeTypeCode(SerializedType.OptimizedEnumType);
+                    WriteOptimized(enumType);
+                    write7bitEncodedUnsigned32BitValue(uint32Value);
+                }
+                else
+                {
+                    writeTypeCode(SerializedType.EnumType);
+                    WriteOptimized(enumType);
+                    Write(uint32Value);
+                }
+            }
+            else if (underlyingType == typeof(long) || underlyingType == typeof(ulong))
+            {
+                ulong uint64value = underlyingType == typeof(long) ? (ulong)(long)enumValue : (ulong)enumValue;
+                if (uint64value <= HighestOptimizable64BitValue)
+                {
+                    writeTypeCode(SerializedType.OptimizedEnumType);
+                    WriteOptimized(enumType);
+                    write7bitEncodedUnsigned64BitValue(uint64value);
+                }
+                else
+                {
+                    writeTypeCode(SerializedType.EnumType);
+                    WriteOptimized(enumType);
+                    Write(uint64value);
+                }
+            }
+            else
+            {
+                writeTypeCode(SerializedType.EnumType);
+                WriteOptimized(enumType);
+                if (underlyingType == typeof(byte))
+                    Write((byte)enumValue);
+                else if (underlyingType == typeof(sbyte))
+                    Write((sbyte)enumValue);
+                else if (underlyingType == typeof(short))
+                    Write((short)enumValue);
+                else
+                {
+                    Write((ushort)enumValue);
+                }
+            }
+
+            return this;        
+        }
+
+        #endregion
+
+        #region String
+
+        public SerializationWriter WriteString(String value)
+        {
+            WriteOptimized((String)value);
+            return this;
+        }
+
+        /// <summary>
+        /// Calls WriteOptimized(String).
+        /// This override to hide base BinaryWriter.Write(String).
+        /// </summary>
+        /// <param name="value">The string to store.</param>
+        public override void Write(String value)
+        {
+            WriteOptimized(value);
+        }
+
+        /// <summary>
+        /// Writes a string value into the stream using the fewest number of bytes possible.
+        /// Stored myNumberOfBytes: 1 byte upwards depending on string length
+        /// Notes:
+        /// Encodes null, Empty, 'Y', 'N', ' ' values as a single byte
+        /// Any other single char string is stored as two bytes
+        /// All other strings are stored in a string token list:
+        /// 
+        /// The TypeCode representing the current string token list is written first (1 byte), 
+        /// followed by the string token itself (1-4 bytes)
+        /// 
+        /// When the current string list has reached 128 values then a new string list
+        /// is generated and that is used for generating future string tokens. This continues
+        /// until the maximum number (128) of string lists is in use, after which the string 
+        /// lists are used in a round-robin fashion.
+        /// By doing this, more lists are created with fewer items which allows a smaller 
+        /// token size to be used for more strings.
+        /// 
+        /// The first 16,384 strings will use a 1 byte token.
+        /// The next 2,097,152 strings will use a 2 byte token. (This should suffice for most uses!)
+        /// The next 268,435,456 strings will use a 3 byte token. (My, that is a lot!!)
+        /// The next 34,359,738,368 strings will use a 4 byte token. (only shown for completeness!!!)
+        /// </summary>
+        /// <param name="value">The string to store.</param>
+        private void WriteOptimized(String value)
+        {
+            //else if (value.Length == 1)
+            //{
+            //    char singleChar = value[0];
+            //    if (singleChar == 'Y')
+            //        writeTypeCode(SerializedType.YStringType);
+            //    else if (singleChar == 'N')
+            //        writeTypeCode(SerializedType.NStringType);
+            //    else if (singleChar == ' ')
+            //        writeTypeCode(SerializedType.SingleSpaceType);
+            //    else
+            //    {
+            //        writeTypeCode(SerializedType.SingleCharStringType);
+            //        Write(singleChar);
+            //    }
+            //}
+            //else if (value.Length == 0)
+            //    writeTypeCode(SerializedType.EmptyStringType);
+            //else
+            //{
+            //    int stringIndex = stringLookup.Add(value);
+
+            //    Write((byte)(stringIndex % 128));
+            //    write7bitEncodedSigned32BitValue(stringIndex >> 7);
+            //}
+
+            //throw new NotImplementedException("WriteOptimized(String) not implemented!");
+
+            if (value == null)
+            {
+                writeTypeCode(SerializedType.NullType);
+            }
+            else
+            {
+                writeTypeCode(SerializedType.StringType);
+                WriteStringDirect(value);
+            }
+        }
+
+
+        #endregion
+
+        #region Objects
 
         /// <summary>
         /// Stores an object into the stream using the fewest number of bytes possible.
@@ -908,1177 +2699,10 @@ namespace sones.Lib.NewFastSerializer
         
         }
 
-        /// <summary>
-        /// Calls WriteOptimized(String).
-        /// This override to hide base BinaryWriter.Write(String).
-        /// </summary>
-        /// <param name="value">The string to store.</param>
-        public override void Write(String value)
-        {
-            WriteOptimized(value);
-        }
-
-        /// <summary>
-        /// Writes a TimeSpan value into the stream.
-        /// Stored myNumberOfBytes: 8 bytes
-        /// </summary>
-        /// <param name="value">The TimeSpan value to store.</param>
-        public void Write(TimeSpan value)
-        {
-            Write(value.Ticks);
-        }
-
-        /// <summary>
-        /// Stores a myObjectStream object into the stream.
-        /// Stored myNumberOfBytes: Depends on the length of the myObjectStream's name and whether the fullyQualified parameter is set.
-        /// A null myObjectStream takes 1 byte.
-        /// </summary>
-        /// <param name="value">The myObjectStream to store.</param>
-        /// <param name="fullyQualified">true to store the AssemblyQualifiedName or false to store the FullName. </param>
-        public void Write(Type value, bool fullyQualified)
-        {
-            if (value == null)
-                writeTypeCode(SerializedType.NullType);
-            else
-            {
-                writeTypeCode(SerializedType.TypeType);
-                WriteOptimized(fullyQualified ? value.AssemblyQualifiedName : value.FullName);
-            }
-        }
-
-        /// <summary>
-        /// Writes an non-null ArrayList into the stream using the fewest number of bytes possible.
-        /// Stored myNumberOfBytes: 1 byte upwards depending on data content
-        /// Notes:
-        /// An empty ArrayList takes 1 byte.
-        /// </summary>
-        /// <param name="value">The ArrayList to store. Must not be null.</param>
-        public void WriteOptimized(ArrayList value)
-        {
-            checkOptimizable(value != null, "Cannot optimize a null ArrayList");
-
-            writeObjectArray(value.ToArray());
-        }
-
-        /// <summary>
-        /// Writes a BitArray into the stream using the fewest number of bytes possible.
-        /// Stored myNumberOfBytes: 1 byte upwards depending on data content
-        /// Notes:
-        /// An empty BitArray takes 1 byte.
-        /// </summary>
-        /// <param name="value">The BitArray value to store. Must not be null.</param>
-        public void WriteOptimized(BitArray value)
-        {
-            checkOptimizable(value != null, "Cannot optimize a null BitArray");
-
-            write7bitEncodedSigned32BitValue(value.Length);
-
-            if (value.Length > 0)
-            {
-                byte[] data = new byte[(value.Length + 7) / 8];
-                value.CopyTo(data, 0);
-                base.Write(data, 0, data.Length);
-            }
-        }
-
-        /// <summary>
-        /// Writes a BitVector32 into the stream using the fewest number of bytes possible.
-        /// Stored myNumberOfBytes: 1 to 4 bytes. (.Net is 4 bytes)
-        ///  1 to  7 bits takes 1 byte
-        ///  8 to 14 bits takes 2 bytes
-        /// 15 to 21 bits takes 3 bytes
-        /// 22 to 28 bits takes 4 bytes
-        /// -------------------------------------------------------------------
-        /// 29 to 32 bits takes 5 bytes - use Write(BitVector32) method instead
-        /// 
-        /// Try to order the BitVector32 masks so that the highest bits are least-likely
-        /// to be set.
-        /// </summary>
-        /// <param name="value">The BitVector32 to store. Must not use more than 28 bits.</param>
-        public void WriteOptimized(BitVector32 value)
-        {
-            checkOptimizable(value.Data < OptimizationFailure32BitValue && value.Data >= 0, "BitVector32 value is not optimizable");
-
-            write7bitEncodedSigned32BitValue(value.Data);
-        }
-
-        /// <summary>
-        /// Writes a DateTime value into the stream using the fewest number of bytes possible.
-        /// Stored myNumberOfBytes: 3 bytes to 7 bytes (.Net is 8 bytes)
-        /// Notes:
-        /// A DateTime containing only a date takes 3 bytes
-        /// (except a .NET 2.0 Date with a specified DateTimeKind which will take a minimum
-        /// of 5 bytes - no further optimization for this situation felt necessary since it
-        /// is unlikely that a DateTimeKind would be specified without hh:mm also)
-        /// Date plus hh:mm takes 5 bytes.
-        /// Date plus hh:mm:ss takes 6 bytes.
-        /// Date plus hh:mm:ss.fff takes 7 bytes.
-        /// </summary>
-        /// <param name="value">The DateTime value to store. Must not contain sub-millisecond data.</param>
-        public void WriteOptimized(DateTime value)
-        {
-            checkOptimizable((value.Ticks % TimeSpan.TicksPerMillisecond) == 0, "Cannot optimize a DateTime with sub-millisecond accuracy");
-
-            BitVector32 dateMask = new BitVector32();
-            dateMask[DateYearMask] = value.Year;
-            dateMask[DateMonthMask] = value.Month;
-            dateMask[DateDayMask] = value.Day;
-
-            int initialData = 0;
-            bool writeAdditionalData = value != value.Date;
-
-            initialData = (int)value.Kind;
-            writeAdditionalData |= initialData != 0;
-
-            dateMask[DateHasTimeOrKindMask] = writeAdditionalData ? 1 : 0;
-
-            // Store 3 bytes of Date information
-            int dateMaskData = dateMask.Data;
-            Write((byte)dateMaskData);
-            Write((byte)(dateMaskData >> 8));
-            Write((byte)(dateMaskData >> 16));
-
-            if (writeAdditionalData)
-            {
-                checkOptimizable((value.Ticks % TimeSpan.TicksPerMillisecond) == 0, "Cannot optimize a DateTime with sub-millisecond accuracy");
-                encodeTimeSpan(value.TimeOfDay, true, initialData);
-            }
-        }
-
-        /// <summary>
-        /// Writes a Decimal value into the stream using the fewest number of bytes possible.
-        /// Stored myNumberOfBytes: 1 byte to 14 bytes (.Net is 16 bytes)
-        /// Restrictions: None
-        /// </summary>
-        /// <param name="value">The Decimal value to store</param>
-        public void WriteOptimized(Decimal value)
-        {
-            int[] data = Decimal.GetBits(value);
-            byte scale = (byte)(data[3] >> 16);
-            byte flags = 0;
-            if (scale != 0 && !preserveDecimalScale && optimizeForSize)
-            {
-                decimal normalized = Decimal.Truncate(value);
-                if (normalized == value)
-                {
-                    data = Decimal.GetBits(normalized);
-                    scale = 0;
-                }
-            }
-
-            if ((data[3] & -2147483648) != 0) flags |= 0x01;
-            if (scale != 0) flags |= 0x02;
-
-            if (data[0] == 0)
-                flags |= 0x04;
-            else if (data[0] <= HighestOptimizable32BitValue && data[0] >= 0)
-            {
-                flags |= 0x20;
-            }
-
-            if (data[1] == 0)
-                flags |= 0x08;
-            else if (data[1] <= HighestOptimizable32BitValue && data[1] >= 0)
-            {
-                flags |= 0x40;
-            }
-
-            if (data[2] == 0)
-                flags |= 0x10;
-            else if (data[2] <= HighestOptimizable32BitValue && data[2] >= 0)
-            {
-                flags |= 0x80;
-            }
-
-            Write(flags);
-            if (scale != 0) Write(scale);
-            if ((flags & 0x04) == 0) if ((flags & 0x20) != 0) write7bitEncodedSigned32BitValue(data[0]); else Write(data[0]);
-            if ((flags & 0x08) == 0) if ((flags & 0x40) != 0) write7bitEncodedSigned32BitValue(data[1]); else Write(data[1]);
-            if ((flags & 0x10) == 0) if ((flags & 0x80) != 0) write7bitEncodedSigned32BitValue(data[2]); else Write(data[2]);
-        }
-
-        /// <summary>
-        /// Write an Int16 value using the fewest number of bytes possible.
-        /// </summary>
-        /// <remarks>
-        /// 0x0000 - 0x007f (0 to 127) takes 1 byte
-        /// 0x0080 - 0x03FF (128 to 16,383) takes 2 bytes
-        /// ----------------------------------------------------------------
-        /// 0x0400 - 0x7FFF (16,384 to 32,767) takes 3 bytes
-        /// All negative numbers take 3 bytes
-        /// 
-        /// Only call this method if the value is known to be between 0 and 
-        /// 16,383 otherwise use Write(Int16 value)
-        /// </remarks>
-        /// <param name="value">The Int16 to store. Must be between 0 and 16,383 inclusive.</param>
-        public void WriteOptimized(short value)
-        {
-            checkOptimizable(value < OptimizationFailure16BitValue && value >= 0, "Int16 value is not optimizable");
-
-            write7bitEncodedSigned32BitValue(value);
-        }
-
-        /// <summary>
-        /// Write an Int32 value using the fewest number of bytes possible.
-        /// </summary>
-        /// <remarks>
-        /// 0x00000000 - 0x0000007f (0 to 127) takes 1 byte
-        /// 0x00000080 - 0x000003FF (128 to 16,383) takes 2 bytes
-        /// 0x00000400 - 0x001FFFFF (16,384 to 2,097,151) takes 3 bytes
-        /// 0x00200000 - 0x0FFFFFFF (2,097,152 to 268,435,455) takes 4 bytes
-        /// ----------------------------------------------------------------
-        /// 0x10000000 - 0x07FFFFFF (268,435,456 and above) takes 5 bytes
-        /// All negative numbers take 5 bytes
-        /// 
-        /// Only call this method if the value is known to be between 0 and 
-        /// 268,435,455 otherwise use Write(Int32 value)
-        /// </remarks>
-        /// <param name="value">The Int32 to store. Must be between 0 and 268,435,455 inclusive.</param>
-        public void WriteOptimized(int value)
-        {
-            checkOptimizable(value < OptimizationFailure32BitValue && value >= 0, "Int32 value is not optimizable");
-
-            write7bitEncodedSigned32BitValue(value);
-        }
-
-        /// <summary>
-        /// Write an Int64 value using the fewest number of bytes possible.
-        /// </summary>
-        /// <remarks>
-        /// 0x0000000000000000 - 0x000000000000007f (0 to 127) takes 1 byte
-        /// 0x0000000000000080 - 0x00000000000003FF (128 to 16,383) takes 2 bytes
-        /// 0x0000000000000400 - 0x00000000001FFFFF (16,384 to 2,097,151) takes 3 bytes
-        /// 0x0000000000200000 - 0x000000000FFFFFFF (2,097,152 to 268,435,455) takes 4 bytes
-        /// 0x0000000010000000 - 0x00000007FFFFFFFF (268,435,456 to 34,359,738,367) takes 5 bytes
-        /// 0x0000000800000000 - 0x000003FFFFFFFFFF (34,359,738,368 to 4,398,046,511,103) takes 6 bytes
-        /// 0x0000040000000000 - 0x0001FFFFFFFFFFFF (4,398,046,511,104 to 562,949,953,421,311) takes 7 bytes
-        /// 0x0002000000000000 - 0x00FFFFFFFFFFFFFF (562,949,953,421,312 to 72,057,594,037,927,935) takes 8 bytes
-        /// ------------------------------------------------------------------
-        /// 0x0100000000000000 - 0x7FFFFFFFFFFFFFFF (72,057,594,037,927,936 to 9,223,372,036,854,775,807) takes 9 bytes
-        /// 0x7FFFFFFFFFFFFFFF - 0xFFFFFFFFFFFFFFFF (9,223,372,036,854,775,807 and above) takes 10 bytes
-        /// All negative numbers take 10 bytes
-        /// 
-        /// Only call this method if the value is known to be between 0 and
-        /// 72,057,594,037,927,935 otherwise use Write(Int64 value)
-        /// </remarks>
-        /// <param name="value">The Int64 to store. Must be between 0 and 72,057,594,037,927,935 inclusive.</param>
-        public void WriteOptimized(long value)
-        {
-            checkOptimizable(value < OptimizationFailure64BitValue && value >= 0, "long value is not optimizable");
-
-            write7bitEncodedSigned64BitValue(value);
-        }
-
-        /// <summary>
-        /// Writes a string value into the stream using the fewest number of bytes possible.
-        /// Stored myNumberOfBytes: 1 byte upwards depending on string length
-        /// Notes:
-        /// Encodes null, Empty, 'Y', 'N', ' ' values as a single byte
-        /// Any other single char string is stored as two bytes
-        /// All other strings are stored in a string token list:
-        /// 
-        /// The TypeCode representing the current string token list is written first (1 byte), 
-        /// followed by the string token itself (1-4 bytes)
-        /// 
-        /// When the current string list has reached 128 values then a new string list
-        /// is generated and that is used for generating future string tokens. This continues
-        /// until the maximum number (128) of string lists is in use, after which the string 
-        /// lists are used in a round-robin fashion.
-        /// By doing this, more lists are created with fewer items which allows a smaller 
-        /// token size to be used for more strings.
-        /// 
-        /// The first 16,384 strings will use a 1 byte token.
-        /// The next 2,097,152 strings will use a 2 byte token. (This should suffice for most uses!)
-        /// The next 268,435,456 strings will use a 3 byte token. (My, that is a lot!!)
-        /// The next 34,359,738,368 strings will use a 4 byte token. (only shown for completeness!!!)
-        /// </summary>
-        /// <param name="value">The string to store.</param>
-        public void WriteOptimized(String value)
-        {
-            //if (value == null)
-            //    writeTypeCode(SerializedType.NullType);
-            //else if (value.Length == 1)
-            //{
-            //    char singleChar = value[0];
-            //    if (singleChar == 'Y')
-            //        writeTypeCode(SerializedType.YStringType);
-            //    else if (singleChar == 'N')
-            //        writeTypeCode(SerializedType.NStringType);
-            //    else if (singleChar == ' ')
-            //        writeTypeCode(SerializedType.SingleSpaceType);
-            //    else
-            //    {
-            //        writeTypeCode(SerializedType.SingleCharStringType);
-            //        Write(singleChar);
-            //    }
-            //}
-            //else if (value.Length == 0)
-            //    writeTypeCode(SerializedType.EmptyStringType);
-            //else
-            //{
-            //    int stringIndex = stringLookup.Add(value);
-
-            //    Write((byte)(stringIndex % 128));
-            //    write7bitEncodedSigned32BitValue(stringIndex >> 7);
-            //}
-
-            //throw new NotImplementedException("WriteOptimized(String) not implemented!");
-
-            writeTypeCode(SerializedType.StringType);
-            WriteStringDirect(value);
-
-        }
-
-        /// <summary>
-        /// Writes a TimeSpan value into the stream using the fewest number of bytes possible.
-        /// Stored myNumberOfBytes: 2 bytes to 8 bytes (.Net is 8 bytes)
-        /// Notes:
-        /// hh:mm (time) are always stored together and take 2 bytes.
-        /// If seconds are present then 3 bytes unless (time) is not present in which case 2 bytes
-        /// since the seconds are stored in the minutes position.
-        /// If milliseconds are present then 4 bytes.
-        /// In addition, if days are present they will add 1 to 4 bytes to the above.
-        /// </summary>
-        /// <param name="value">The TimeSpan value to store. Must not contain sub-millisecond data.</param>
-        public void WriteOptimized(TimeSpan value)
-        {
-            checkOptimizable((value.Ticks % TimeSpan.TicksPerMillisecond) == 0, "Cannot optimize a TimeSpan with sub-millisecond accuracy");
-
-            encodeTimeSpan(value, false, 0);
-        }
-
-        /// <summary>
-        /// Stores a non-null myObjectStream object into the stream.
-        /// Stored myNumberOfBytes: Depends on the length of the myObjectStream's name.
-        /// If the type is a System type (mscorlib) then it is stored without assembly name information,
-        /// otherwise the myObjectStream's AssemblyQualifiedName is used.
-        /// </summary>
-        /// <param name="value">The myObjectStream to store. Must not be null.</param>
-        public void WriteOptimized(Type value)
-        {
-            checkOptimizable(value != null, "Cannot optimize a null Type");
-
-            WriteOptimized(value.AssemblyQualifiedName.IndexOf(", mscorlib,") == -1 ? value.AssemblyQualifiedName : value.FullName);
-        }
-
-        /// <summary>
-        /// Write a UInt16 value using the fewest number of bytes possible.
-        /// </summary>
-        /// <remarks>
-        /// 0x0000 - 0x007f (0 to 127) takes 1 byte
-        /// 0x0080 - 0x03FF (128 to 16,383) takes 2 bytes
-        /// ----------------------------------------------------------------
-        /// 0x0400 - 0xFFFF (16,384 to 65,536) takes 3 bytes
-        /// 
-        /// Only call this method if the value is known to  be between 0 and 
-        /// 16,383 otherwise use Write(UInt16 value)
-        /// </remarks>
-        /// <param name="value">The UInt16 to store. Must be between 0 and 16,383 inclusive.</param>
-        ////[CLSCompliant(false)]
-        public void WriteOptimized(ushort value)
-        {
-            checkOptimizable(value < OptimizationFailure16BitValue, "UInt16 value is not optimizable");
-
-            write7bitEncodedUnsigned32BitValue(value);
-        }
-
-        /// <summary>
-        /// Write a UInt32 value using the fewest number of bytes possible.
-        /// </summary>
-        /// </remarks>
-        /// 0x00000000 - 0x0000007f (0 to 127) takes 1 byte
-        /// 0x00000080 - 0x000003FF (128 to 16,383) takes 2 bytes
-        /// 0x00000400 - 0x001FFFFF (16,384 to 2,097,151) takes 3 bytes
-        /// 0x00200000 - 0x0FFFFFFF (2,097,152 to 268,435,455) takes 4 bytes
-        /// ----------------------------------------------------------------
-        /// 0x10000000 - 0xFFFFFFFF (268,435,456 and above) takes 5 bytes
-        /// 
-        /// Only call this method if the value is known to  be between 0 and 
-        /// 268,435,455 otherwise use Write(UInt32 value)
-        /// </remarks>
-        /// <param name="value">The UInt32 to store. Must be between 0 and 268,435,455 inclusive.</param>
-        //[CLSCompliant(false)]
-        public void WriteOptimized(uint value)
-        {
-            checkOptimizable(value < OptimizationFailure32BitValue, "UInt32 value is not optimizable");
-
-            write7bitEncodedUnsigned32BitValue(value);
-        }
-
-        /// <summary>
-        /// Write a UInt64 value using the fewest number of bytes possible.
-        /// </summary>
-        /// <remarks>
-        /// 0x0000000000000000 - 0x000000000000007f (0 to 127) takes 1 byte
-        /// 0x0000000000000080 - 0x00000000000003FF (128 to 16,383) takes 2 bytes
-        /// 0x0000000000000400 - 0x00000000001FFFFF (16,384 to 2,097,151) takes 3 bytes
-        /// 0x0000000000200000 - 0x000000000FFFFFFF (2,097,152 to 268,435,455) takes 4 bytes
-        /// 0x0000000010000000 - 0x00000007FFFFFFFF (268,435,456 to 34,359,738,367) takes 5 bytes
-        /// 0x0000000800000000 - 0x000003FFFFFFFFFF (34,359,738,368 to 4,398,046,511,103) takes 6 bytes
-        /// 0x0000040000000000 - 0x0001FFFFFFFFFFFF (4,398,046,511,104 to 562,949,953,421,311) takes 7 bytes
-        /// 0x0002000000000000 - 0x00FFFFFFFFFFFFFF (562,949,953,421,312 to 72,057,594,037,927,935) takes 8 bytes
-        /// ------------------------------------------------------------------
-        /// 0x0100000000000000 - 0x7FFFFFFFFFFFFFFF (72,057,594,037,927,936 to 9,223,372,036,854,775,807) takes 9 bytes
-        /// 0x7FFFFFFFFFFFFFFF - 0xFFFFFFFFFFFFFFFF (9,223,372,036,854,775,807 and above) takes 10 bytes
-        /// 
-        /// Only call this method if the value is known to be between 0 and
-        /// 72,057,594,037,927,935 otherwise use Write(UInt64 value)
-        /// </remarks>
-        /// <param name="value">The UInt64 to store. Must be between 0 and 72,057,594,037,927,935 inclusive.</param>
-        //[CLSCompliant(false)]
-        public void WriteOptimized(ulong value)
-        {
-            checkOptimizable(value < OptimizationFailure64BitValue, "ulong value is not optimizable");
-
-            write7bitEncodedUnsigned64BitValue(value);
-        }
-
-        /// <summary>
-        /// Writes a Boolean[] into the stream.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// Calls WriteOptimized(Boolean[]).
-        /// </summary>
-        /// <param name="values">The Boolean[] to store.</param>
-        public void Write(bool[] values)
-        {
-            WriteOptimized(values);
-        }
-
-        /// <summary>
-        /// Writes a Byte[] into the stream.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The Byte[] to store.</param>
-        public override void Write(byte[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                writeTypeCode(SerializedType.NonOptimizedTypedArrayType);
-                writeArray(values);
-            }
-        }
-
-        /// <summary>
-        /// Writes a Char[] into the stream.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The Char[] to store.</param>
-        public override void Write(char[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                writeTypeCode(SerializedType.NonOptimizedTypedArrayType);
-                writeArray(values);
-            }
-        }
-
-        /// <summary>
-        /// Writes a DateTime[] into the stream.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The DateTime[] to store.</param>
-        public void Write(DateTime[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                writeArray(values, null);
-            }
-        }
-
-        /// <summary>
-        /// Writes a Decimal[] into the stream.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// Calls WriteOptimized(Decimal[]).
-        /// </summary>
-        /// <param name="values">The Decimal[] to store.</param>
-        public void Write(decimal[] values)
-        {
-            WriteOptimized(values);
-        }
-
-        /// <summary>
-        /// Writes a Double[] into the stream.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The Double[] to store.</param>
-        public void Write(double[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                writeTypeCode(SerializedType.NonOptimizedTypedArrayType);
-                writeArray(values);
-            }
-        }
-
-        /// <summary>
-        /// Writes a Single[] into the stream.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The Single[] to store.</param>
-        public void Write(float[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                writeTypeCode(SerializedType.NonOptimizedTypedArrayType);
-                writeArray(values);
-            }
-        }
-
-        /// <summary>
-        /// Writes a Guid[] into the stream.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The Guid[] to store.</param>
-        public void Write(Guid[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                writeTypeCode(SerializedType.NonOptimizedTypedArrayType);
-                writeArray(values);
-            }
-        }
-
-        /// <summary>
-        /// Writes an Int32[] into the stream.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The Int32[] to store.</param>
-        public void Write(int[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                writeArray(values, null);
-            }
-        }
-
-        /// <summary>
-        /// Writes an Int64[] into the stream.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The Int64[] to store.</param>
-        public void Write(long[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                writeArray(values, null);
-            }
-        }
-
-        /// <summary>
-        /// Writes an object[] into the stream.
-        /// Stored myNumberOfBytes: 2 bytes upwards depending on data content
-        /// Notes:
-        /// A null object[] takes 1 byte.
-        /// An empty object[] takes 2 bytes.
-        /// The contents of the array will be stored optimized.
-        /// </summary>
-        /// <param name="values">The object[] to store.</param>
-        public void Write(object[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyObjectArrayType);
-            else
-            {
-                writeTypeCode(SerializedType.ObjectArrayType);
-                writeObjectArray(values);
-            }
-        }
-
-        /// <summary>
-        /// Writes an SByte[] into the stream.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The SByte[] to store.</param>
-        //[CLSCompliant(false)]
-        public void Write(sbyte[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                writeTypeCode(SerializedType.NonOptimizedTypedArrayType);
-                writeArray(values);
-            }
-        }
-
-        /// <summary>
-        /// Writes an Int16[]or a null into the stream.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// Calls WriteOptimized(decimal[]).
-        /// </summary>
-        /// <param name="values">The Int16[] to store.</param>
-        public void Write(short[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                writeTypeCode(SerializedType.NonOptimizedTypedArrayType);
-                writeArray(values);
-            }
-        }
-
-        /// <summary>
-        /// Writes a TimeSpan[] into the stream.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The TimeSpan[] to store.</param>
-        public void Write(TimeSpan[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                writeArray(values, null);
-            }
-        }
-
-        /// <summary>
-        /// Writes a UInt32[] into the stream.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The UInt32[] to store.</param>
-        //[CLSCompliant(false)]
-        public void Write(uint[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                writeArray(values, null);
-            }
-        }
-
-        /// <summary>
-        /// Writes a UInt64[] into the stream.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The UInt64[] to store.</param>
-        //[CLSCompliant(false)]
-        public void Write(ulong[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                writeArray(values, null);
-            }
-        }
-
-        /// <summary>
-        /// Writes a UInt16[] into the stream.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The UInt16[] to store.</param>
-        //[CLSCompliant(false)]
-        public void Write(ushort[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                writeTypeCode(SerializedType.NonOptimizedTypedArrayType);
-                writeArray(values);
-            }
-        }
-
-        /// <summary>
-        /// Writes an optimized Boolean[] into the stream using the fewest possible bytes.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// Stored as a BitArray.
-        /// </summary>
-        /// <param name="values">The Boolean[] to store.</param>
-        public void WriteOptimized(bool[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                writeTypeCode(SerializedType.FullyOptimizedTypedArrayType);
-                writeArray(values);
-            }
-        }
-
-        /// <summary>
-        /// Writes a DateTime[] into the stream using the fewest possible bytes.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The DateTime[] to store.</param>
-        public void WriteOptimized(DateTime[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                BitArray optimizeFlags = null;
-                int notOptimizable = 0;
-                int notWorthOptimizingLimit = 1 + (int)(values.Length * (optimizeForSize ? 0.8f : 0.6f));
-                for (int i = 0; i < values.Length && notOptimizable < notWorthOptimizingLimit; i++)
-                {
-                    if (values[i].Ticks % TimeSpan.TicksPerMillisecond != 0)
-                        notOptimizable++;
-                    else
-                    {
-                        if (optimizeFlags == null) optimizeFlags = new BitArray(values.Length);
-                        optimizeFlags[i] = true;
-                    }
-                }
-
-                if (notOptimizable == 0)
-                    optimizeFlags = FullyOptimizableTypedArray;
-                else if (notOptimizable >= notWorthOptimizingLimit)
-                {
-                    optimizeFlags = null;
-                }
-
-                writeArray(values, optimizeFlags);
-            }
-        }
-
-        /// <summary>
-        /// Writes a Decimal[] into the stream using the fewest possible bytes.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The Decimal[] to store.</param>
-        public void WriteOptimized(decimal[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                writeTypeCode(SerializedType.FullyOptimizedTypedArrayType);
-                writeArray(values);
-            }
-        }
-
-        /// <summary>
-        /// Writes a not-null object[] into the stream using the fewest number of bytes possible.
-        /// Stored myNumberOfBytes: 2 bytes upwards depending on data content
-        /// Notes:
-        /// An empty object[] takes 1 byte.
-        /// The contents of the array will be stored optimized.
-        /// </summary>
-        /// <param name="values">The object[] to store. Must not be null.</param>
-        public void WriteOptimized(object[] values)
-        {
-            checkOptimizable(values != null, "Cannot optimize a null object[]");
-
-            writeObjectArray(values);
-        }
-
-        /// <summary>
-        /// Writes a pair of object[] arrays into the stream using the fewest number of bytes possible.
-        /// The arrays must not be null and must have the same length
-        /// The first array's values are written optimized
-        /// The second array's values are compared against the first and, where identical, will be stored
-        /// using a single byte.
-        /// Useful for storing entity data where there is a before-change and after-change set of value pairs
-        /// and, typically, only a few of the values will have changed.
-        /// </summary>
-        /// <param name="values1">The first object[] value which must not be null and must have the same length as values2</param>
-        /// <param name="values2">The second object[] value which must not be null and must have the same length as values1</param>
-        public void WriteOptimized(object[] values1, object[] values2)
-        {
-            checkOptimizable(values1 != null && values2 != null, "Cannot optimimize an object[] pair that is null");
-            checkOptimizable(values1.Length == values2.Length, "Cannot optimize an object[] pair with different lengths");
-
-            writeObjectArray(values1);
-            int lastIndex = values2.Length - 1;
-            for (int i = 0; i < values2.Length; i++)
-            {
-                object value2 = values2[i];
-
-                if (value2 == null ? values1[i] == null : value2.Equals(values1[i]))
-                {
-                    int duplicates = 0;
-                    for (; i < lastIndex && (values2[i + 1] == null ? values1[i + 1] == null : values2[i + 1].Equals(values1[i + 1])); i++) duplicates++;
-                    if (duplicates == 0)
-                        writeTypeCode(SerializedType.DuplicateValueType);
-                    else
-                    {
-                        writeTypeCode(SerializedType.DuplicateValueSequenceType);
-                        write7bitEncodedSigned32BitValue(duplicates);
-                    }
-                }
-                else if (value2 == null)
-                {
-                    int duplicates = 0;
-                    for (; i < lastIndex && values2[i + 1] == null; i++) duplicates++;
-                    if (duplicates == 0)
-                        writeTypeCode(SerializedType.NullType);
-                    else
-                    {
-                        writeTypeCode(SerializedType.NullSequenceType);
-                        write7bitEncodedSigned32BitValue(duplicates);
-                    }
-                }
-                else if (value2 == DBNull.Value)
-                {
-                    int duplicates = 0;
-                    for (; i < lastIndex && values2[i + 1] == DBNull.Value; i++) duplicates++;
-                    if (duplicates == 0)
-                        writeTypeCode(SerializedType.DBNullType);
-                    else
-                    {
-                        writeTypeCode(SerializedType.DBNullSequenceType);
-                        write7bitEncodedSigned32BitValue(duplicates);
-                    }
-                }
-                else
-                {
-                    WriteObject(value2);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Writes an Int16[] into the stream using the fewest possible bytes.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The Int16[] to store.</param>
-        public void WriteOptimized(short[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                BitArray optimizeFlags = null;
-                int notOptimizable = 0;
-                int notWorthOptimizingLimit = 1 + (int)(values.Length * (optimizeForSize ? 0.8f : 0.6f));
-                for (int i = 0; i < values.Length && notOptimizable < notWorthOptimizingLimit; i++)
-                {
-                    if (values[i] < 0 || values[i] > HighestOptimizable16BitValue)
-                        notOptimizable++;
-                    else
-                    {
-                        if (optimizeFlags == null) optimizeFlags = new BitArray(values.Length);
-                        optimizeFlags[i] = true;
-                    }
-                }
-
-                if (notOptimizable == 0)
-                    optimizeFlags = FullyOptimizableTypedArray;
-                else if (notOptimizable >= notWorthOptimizingLimit)
-                {
-                    optimizeFlags = null;
-                }
-
-                writeArray(values, optimizeFlags);
-            }
-        }
-
-
-        /// <summary>
-        /// Writes an Int32[] into the stream using the fewest possible bytes.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The Int32[] to store.</param>
-        public void WriteOptimized(int[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                BitArray optimizeFlags = null;
-                int notOptimizable = 0;
-                int notWorthOptimizingLimit = 1 + (int)(values.Length * (optimizeForSize ? 0.8f : 0.6f));
-                for (int i = 0; i < values.Length && notOptimizable < notWorthOptimizingLimit; i++)
-                {
-                    if (values[i] < 0 || values[i] > HighestOptimizable32BitValue)
-                        notOptimizable++;
-                    else
-                    {
-                        if (optimizeFlags == null) optimizeFlags = new BitArray(values.Length);
-                        optimizeFlags[i] = true;
-                    }
-                }
-
-                if (notOptimizable == 0)
-                    optimizeFlags = FullyOptimizableTypedArray;
-                else if (notOptimizable >= notWorthOptimizingLimit)
-                {
-                    optimizeFlags = null;
-                }
-
-                writeArray(values, optimizeFlags);
-            }
-        }
-
-        /// <summary>
-        /// Writes an Int64[] into the stream using the fewest possible bytes.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The Int64[] to store.</param>
-        public void WriteOptimized(long[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                BitArray optimizeFlags = null;
-                int notOptimizable = 0;
-                int notWorthOptimizingLimit = 1 + (int)(values.Length * (optimizeForSize ? 0.8f : 0.6f));
-
-                for (int i = 0; i < values.Length && notOptimizable < notWorthOptimizingLimit; i++)
-                {
-                    if (values[i] < 0 || values[i] > HighestOptimizable64BitValue)
-                        notOptimizable++;
-                    else
-                    {
-                        if (optimizeFlags == null) optimizeFlags = new BitArray(values.Length);
-                        optimizeFlags[i] = true;
-                    }
-                }
-
-                if (notOptimizable == 0)
-                    optimizeFlags = FullyOptimizableTypedArray;
-                else if (notOptimizable >= notWorthOptimizingLimit)
-                {
-                    optimizeFlags = null;
-                }
-
-                writeArray(values, optimizeFlags);
-            }
-        }
-
-        /// <summary>
-        /// Writes a TimeSpan[] into the stream using the fewest possible bytes.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The TimeSpan[] to store.</param>
-        public void WriteOptimized(TimeSpan[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                BitArray optimizeFlags = null;
-                int notOptimizable = 0;
-                int notWorthOptimizingLimit = 1 + (int)(values.Length * (optimizeForSize ? 0.8f : 0.6f));
-                for (int i = 0; i < values.Length && notOptimizable < notWorthOptimizingLimit; i++)
-                {
-                    if (values[i].Ticks % TimeSpan.TicksPerMillisecond != 0)
-                        notOptimizable++;
-                    else
-                    {
-                        if (optimizeFlags == null) optimizeFlags = new BitArray(values.Length);
-                        optimizeFlags[i] = true;
-                    }
-                }
-
-                if (notOptimizable == 0)
-                    optimizeFlags = FullyOptimizableTypedArray;
-                else if (notOptimizable >= notWorthOptimizingLimit)
-                {
-                    optimizeFlags = null;
-                }
-
-                writeArray(values, optimizeFlags);
-            }
-        }
-
-        /// <summary>
-        /// Writes a UInt16[] into the stream using the fewest possible bytes.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The UInt16[] to store.</param>
-        //[CLSCompliant(false)]
-        public void WriteOptimized(ushort[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                BitArray optimizeFlags = null;
-                int notOptimizable = 0;
-                int notWorthOptimizingLimit = 1 + (int)(values.Length * (optimizeForSize ? 0.8f : 0.6f));
-                for (int i = 0; i < values.Length && notOptimizable < notWorthOptimizingLimit; i++)
-                {
-                    if (values[i] > HighestOptimizable16BitValue)
-                        notOptimizable++;
-                    else
-                    {
-                        if (optimizeFlags == null) optimizeFlags = new BitArray(values.Length);
-                        optimizeFlags[i] = true;
-                    }
-                }
-
-                if (notOptimizable == 0)
-                    optimizeFlags = FullyOptimizableTypedArray;
-                else if (notOptimizable >= notWorthOptimizingLimit)
-                {
-                    optimizeFlags = null;
-                }
-
-                writeArray(values, optimizeFlags);
-            }
-        }
-
-        /// <summary>
-        /// Writes a UInt32[] into the stream using the fewest possible bytes.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The UInt32[] to store.</param>
-        //[CLSCompliant(false)]
-        public void WriteOptimized(uint[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                BitArray optimizeFlags = null;
-                int notOptimizable = 0;
-                int notWorthOptimizingLimit = 1 + (int)(values.Length * (optimizeForSize ? 0.8f : 0.6f));
-                for (int i = 0; i < values.Length && notOptimizable < notWorthOptimizingLimit; i++)
-                {
-                    if (values[i] > HighestOptimizable32BitValue)
-                        notOptimizable++;
-                    else
-                    {
-                        if (optimizeFlags == null) optimizeFlags = new BitArray(values.Length);
-                        optimizeFlags[i] = true;
-                    }
-                }
-
-                if (notOptimizable == 0)
-                    optimizeFlags = FullyOptimizableTypedArray;
-                else if (notOptimizable >= notWorthOptimizingLimit)
-                {
-                    optimizeFlags = null;
-                }
-
-                writeArray(values, optimizeFlags);
-            }
-        }
-
-        /// <summary>
-        /// Writes a UInt64[] into the stream using the fewest possible bytes.
-        /// Notes:
-        /// A null or empty array will take 1 byte.
-        /// </summary>
-        /// <param name="values">The UInt64[] to store.</param>
-        //[CLSCompliant(false)]
-        public void WriteOptimized(ulong[] values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else if (values.Length == 0)
-                writeTypeCode(SerializedType.EmptyTypedArrayType);
-            else
-            {
-                BitArray optimizeFlags = null;
-                int notOptimizable = 0;
-                int notWorthOptimizingLimit = 1 + (int)(values.Length * (optimizeForSize ? 0.8f : 0.6f));
-                for (int i = 0; i < values.Length && notOptimizable < notWorthOptimizingLimit; i++)
-                {
-                    if (values[i] > HighestOptimizable64BitValue)
-                        notOptimizable++;
-                    else
-                    {
-                        if (optimizeFlags == null) optimizeFlags = new BitArray(values.Length);
-                        optimizeFlags[i] = true;
-                    }
-                }
-
-                if (notOptimizable == 0)
-                    optimizeFlags = FullyOptimizableTypedArray;
-                else if (notOptimizable >= notWorthOptimizingLimit)
-                {
-                    optimizeFlags = null;
-                }
-
-                writeArray(values, optimizeFlags);
-            }
-        }
+        #endregion                      
+        
+        
+        #region nullabel values
 
         /// <summary>
         /// Writes a Nullable type into the stream.
@@ -2089,6 +2713,10 @@ namespace sones.Lib.NewFastSerializer
         {
             WriteObject(value);
         }
+
+        #endregion
+
+        #region list types
 
         /// <summary>
         /// Writes a non-null generic Dictionary into the stream.
@@ -2130,82 +2758,8 @@ namespace sones.Lib.NewFastSerializer
             writeTypedArray(value.ToArray(), false);
         }
 
-        /// <summary>
-        /// Writes a null or a typed array into the stream.
-        /// </summary>
-        /// <param name="values">The array to store.</param>
-        public void WriteTypedArray(Array values)
-        {
-            if (values == null)
-                writeTypeCode(SerializedType.NullType);
-            else
-            {
-                writeTypedArray(values, true);
-            }
-        }
+        #endregion
 
-        /// <summary>
-        /// Writes the contents of the string and object token tables into the stream.
-        /// Also SerializedSuperblock the starting offset into the first 4 bytes of the stream.
-        /// Notes:
-        /// Called automatically by ToArray().
-        /// Can be used to ensure that the complete graph is written before using an
-        /// alternate technique of extracting a Byte[] such as using compression on
-        /// the underlying stream.
-        /// </summary>
-        /// <returns>The length of the string and object tables.</returns>
-        //public int AppendTokenTables()
-        //{
-        //    long currentPosition = BaseStream.Position;
-        //    BaseStream.Position = 0;
-        //    Write((int)currentPosition);
-        //    BaseStream.Position = currentPosition;
-
-        //    int stringTokensCount = stringLookup.Count;
-        //    write7bitEncodedSigned32BitValue(stringLookup.Count);
-        //    for (int i = 0; i < stringTokensCount; i++)
-        //    {
-        //        base.Write(stringLookup[i]);
-        //    }
-
-        //    write7bitEncodedSigned32BitValue(objectTokens.Count);
-        //    for (int i = 0; i < objectTokens.Count; i++)
-        //    {
-        //        WriteObject(objectTokens[i]);
-        //    }
-
-        //    return (int)(BaseStream.Position - currentPosition);
-        //}
-
-        /// <summary>
-        /// Returns a byte[] containing all of the serialized data.
-        /// 
-        /// The current implementation has the data in 3 sections:
-        /// 1) A 4 byte Int32 giving the offset to the 3rd section.
-        /// 2) The main serialized data.
-        /// 3) The serialized string tokenization lists and object
-        ///    tokenization lists.
-        /// 
-        /// Only call this method once all of the data has been serialized.
-        /// 
-        /// This method appends all of the tokenized data (String and object)
-        /// to the end of the stream and ensures that the first four bytes
-        /// reflect the offset of the tokenized data so that it can be
-        /// deserialized first.
-        /// This is the reason for requiring a rewindable stream.
-        /// 
-        /// Future implementations may also allow the serialized data to be
-        /// accessed via 2 byte[] arrays. This would remove the requirement
-        /// for a rewindable stream opening the possibility of streaming the
-        /// serialized data directly over the network allowing simultaneous
-        /// of partially simultaneous deserialization.
-        /// </summary>
-        /// <returns>A byte[] containing all serialized data.</returns>
-        public byte[] ToArray()
-        {
-            //AppendTokenTables();
-            return (BaseStream as MemoryStream).ToArray();
-        }
 
         /// <summary>
         /// Writes a byte directly into the stream.

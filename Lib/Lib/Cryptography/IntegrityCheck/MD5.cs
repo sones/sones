@@ -33,11 +33,6 @@
 #region Usings
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Security.Cryptography;
-using sones.Lib.Cryptography.IntegrityCheck;
-using sones.Lib;
 
 #endregion
 
@@ -47,135 +42,46 @@ namespace sones.Lib.Cryptography.IntegrityCheck
     /// <summary>
     /// Generates cryptographical secure hashes based on the MD5 algorithm
     /// </summary>
-
     
-    public class MD5 : IIntegrityCheck
+    public class MD5 : AIntegrityCheck
     {
+
+        #region Properties
+
         #region HashSize
-        public int HashSize
+
+        public override Int32 HashSize
         {
             get
             {
                 return 16;
             }
         }
+
         #endregion
 
         #region HashStringLength
-        public int HashStringLength
+
+        public override Int32 HashStringLength
         {
             get
             {
                 return 32;
             }
         }
-        #endregion
-
-        #region GetHashValue
-        public string GetHashValue(string ClearText)
-        {
-
-            if ((ClearText == null) || (ClearText.Length == 0))
-            {
-                return String.Empty;
-            }
-
-            System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
-            Byte[] result = md5.ComputeHash(Encoding.UTF8.GetBytes(ClearText));
-
-            return result.ToHexString(SeperatorTypes.NONE);
-
-        }
-
-        public string GetHashValue(byte[] ClearText)
-        {
-
-            System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
-
-            Byte[] result = md5.ComputeHash(ClearText);
-
-            return result.ToHexString(SeperatorTypes.NONE);
-
-        }
-        #endregion
-
-        #region GetHashValueAsByteArray
-        public byte[] GetHashValueAsByteArray(string ClearText)
-        {
-
-            System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create();
-
-            return md5.ComputeHash(Encoding.UTF8.GetBytes(ClearText));
-
-        }
-
-        public byte[] GetHashValueAsByteArray(byte[] ClearText)
-        {
-
-            System.Security.Cryptography.MD5 md5 = new MD5CryptoServiceProvider();
-            return md5.ComputeHash(ClearText);
-        
-        }
-        #endregion
-
-        #region CheckHashValue
-        /// <summary>
-        /// Checks if a Hash Value matches a given Cleartext
-        /// </summary>
-        /// <param name="ClearText">the text that needs to be checked</param>
-        /// <param name="HashValue">the hash value</param>
-        /// <returns>true if matches, false if does not match</returns>
-        public bool CheckHashValue(string ClearText, string HashValue)
-        {
-            return (GetHashValue(ClearText) == HashValue);
-        }
-
-        /// <summary>
-        /// Checks if a Hash Value matches a given Cleartext
-        /// </summary>
-        /// <param name="ClearText">the text that needs to be checked</param>
-        /// <param name="HashValue">the hash value</param>
-        /// <returns>true if matches, false if does not match</returns>
-        public bool CheckHashValue(byte[] ClearText, string HashValue)
-        {
-            return (GetHashValue(ClearText) == HashValue);
-        }
-
-        /// <summary>
-        /// Checks if a Hash Value matches a given Cleartext
-        /// </summary>
-        /// <param name="ClearText">the text that needs to be checked</param>
-        /// <param name="HashValue">the hash value</param>
-        /// <returns>true if matches, false if does not match</returns>
-        public bool CheckHashValue(byte[] ClearText, byte[] HashValue)
-        {
-
-            if (HashValue.CompareByteArray(GetHashValueAsByteArray(ClearText)) == 0)
-                return true;
-
-            return false;
-
-        }
-
-        /// <summary>
-        /// Checks if a Hash Value matches a given Cleartext
-        /// </summary>
-        /// <param name="ClearText">the text that needs to be checked</param>
-        /// <param name="HashValue">the hash value</param>
-        /// <returns>true if matches, false if does not match</returns>
-        public bool CheckHashValue(string ClearText, byte[] HashValue)
-        {
-
-            if (HashValue.CompareByteArray(GetHashValueAsByteArray(ClearText)) == 0)
-                return true;
-
-            return false;
-
-        }
-
 
         #endregion
 
+        #endregion
+
+        #region Constructor
+
+        public MD5()
+        {
+            _Hasher = System.Security.Cryptography.MD5.Create();
+        }
+
+        #endregion
 
     }
 

@@ -38,8 +38,6 @@ using sones.GraphDB.Exceptions;
 using sones.GraphDB.QueryLanguage.Enums;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
 
-using sones.GraphDB.QueryLanguage.Operator;
-
 using sones.Lib.ErrorHandling;
 
 using sones.Lib.Frameworks.Irony.Parsing;

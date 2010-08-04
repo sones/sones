@@ -31,11 +31,11 @@
 #region Usings
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using sones.GraphDB.Indices;
 using sones.GraphDB.QueryLanguage.Enums;
 using sones.GraphDB.QueryLanguage.ExpressionGraph;
-using sones.GraphDB.QueryLanguage.Operator;
 using sones.GraphDB.TypeManagement;
 using sones.Lib.ErrorHandling;
 using sones.Lib.Frameworks.Irony.Parsing;
@@ -44,6 +44,7 @@ using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
 using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.Managers.Structures;
 
 
 #endregion
@@ -68,9 +69,9 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
         #region (public) Methods
 
-        public abstract Exceptional<IOperationValue> SimpleOperation(IOperationValue left, IOperationValue right, TypesOfBinaryExpression typeOfBinExpr);
+        public abstract Exceptional<AOperationDefinition> SimpleOperation(AOperationDefinition left, AOperationDefinition right, TypesOfBinaryExpression typeOfBinExpr);
 
-        public abstract Exceptional<IExpressionGraph> TypeOperation(object myLeftValueObject, object myRightValueObject, DBContext dbContext, TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph result, Boolean aggregateAllowed = true);
+        public abstract Exceptional<IExpressionGraph> TypeOperation(AExpressionDefinition myLeftValueObject, AExpressionDefinition myRightValueObject, DBContext dbContext, TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph result, Boolean aggregateAllowed = true);
 
         #endregion
 
@@ -95,7 +96,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
         /// <param name="dbContext">The TypeManager of the database.</param>
         /// <param name="myType">The type of the interesing attribute.</param>
         /// <returns></returns>
-        protected IEnumerable<Tuple<GraphDBType, AttributeIndex>> GetIndex(TypeAttribute myAttribute, DBContext dbContext, GraphDBType myType, Object myExtraordinary)
+        protected IEnumerable<Tuple<GraphDBType, AAttributeIndex>> GetIndex(TypeAttribute myAttribute, DBContext dbContext, GraphDBType myType, Object myExtraordinary)
         {
 
             #region INPUT EXCEPTIONS
@@ -115,7 +116,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
                 //direct match of idx
                 if (myType.HasAttributeIndices(myAttribute.UUID))
                 {
-                    yield return new Tuple<GraphDBType, AttributeIndex>(myType, myType.GetAttributeIndex(myAttribute.UUID, null).Value);
+                    yield return new Tuple<GraphDBType, AAttributeIndex>(myType, myType.GetAttributeIndex(myAttribute.UUID, null).Value);
                 }
                 else
                 {
@@ -124,11 +125,11 @@ namespace sones.GraphDB.QueryLanguage.Operators
                     {
                         if (aSubType.HasAttributeIndices(myAttribute.UUID))
                         {
-                            yield return new Tuple<GraphDBType, AttributeIndex>(aSubType, aSubType.GetAttributeIndex(myAttribute.UUID, null).Value);
+                            yield return new Tuple<GraphDBType, AAttributeIndex>(aSubType, aSubType.GetAttributeIndex(myAttribute.UUID, null).Value);
                         }
                         else
                         {
-                            yield return new Tuple<GraphDBType, AttributeIndex>(aSubType, aSubType.GetUUIDIndex(dbContext.DBTypeManager));
+                            yield return new Tuple<GraphDBType, AAttributeIndex>(aSubType, aSubType.GetUUIDIndex(dbContext.DBTypeManager));
                         }
                     }
                 }
@@ -139,7 +140,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
             {
                 foreach (var aSubType in dbContext.DBTypeManager.GetAllSubtypes(myType, true))
                 {
-                    yield return new Tuple<GraphDBType, AttributeIndex>(aSubType, aSubType.GetUUIDIndex(dbContext.DBTypeManager));
+                    yield return new Tuple<GraphDBType, AAttributeIndex>(aSubType, aSubType.GetUUIDIndex(dbContext.DBTypeManager));
                 }
             }
 
@@ -148,35 +149,35 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
         #region Get tuple based on the operator (InRange allows other tuples than + or = ...)
 
-        public virtual object GetValidTupleReloaded(TupleNode aTupleNode, DBContext dbContext)
+        public virtual AOperationDefinition GetValidTupleReloaded(TupleDefinition myTupleDefinition, DBContext dbContext)
         {
-            switch (aTupleNode.KindOfTuple)
+            switch (myTupleDefinition.KindOfTuple)
             {
                 case KindOfTuple.Exclusive:
 
-                    if (aTupleNode.Tuple.Count == 1)
+                    if (myTupleDefinition.TupleElements.Count == 1)
                     {
-                        return new AtomValue(GraphDBTypeMapper.GetBaseObjectFromCSharpType(aTupleNode.Tuple[0].Value));
+                        return myTupleDefinition.TupleElements[0].Value as ValueDefinition;
                     }
                     else
                     {
-                        return CreateTupleValue(aTupleNode);
+                        return myTupleDefinition;
                     }
 
                 default:
 
-                    return CreateTupleValue(aTupleNode);
+                    return myTupleDefinition;
 
             }
         }
 
-        protected object CreateTupleValue(TupleNode aTupleNode)
+        protected AOperationDefinition CreateTupleValue(TupleDefinition aTupleNode)
         {
-            TupleValue result = new TupleValue(aTupleNode.KindOfTuple);
+            var result = new TupleDefinition(aTupleNode.KindOfTuple);
 
-            foreach (var item in aTupleNode.Tuple)
+            foreach (var item in aTupleNode)
             {
-                result.Add(GraphDBTypeMapper.GetPandoraObjectFromType(item.TypeOfValue, item.Value));
+                result.AddElement(new TupleElement((item.Value as ValueDefinition)));
             }
 
             return result;
@@ -196,9 +197,9 @@ namespace sones.GraphDB.QueryLanguage.Operators
                 {
                     return aTreeNode.AstNode;
                 }
-                else if (aTreeNode.AstNode is TupleNode && (aTreeNode.AstNode as TupleNode).Tuple.Count == 3)
+                else if (aTreeNode.AstNode is TupleNode && (aTreeNode.AstNode as TupleNode).TupleDefinition.Count() == 3)
                 {
-                    return (aTreeNode.AstNode as TupleNode).Tuple[0].Value;
+                    return (aTreeNode.AstNode as TupleNode).TupleDefinition.First().Value;
                 }
                 else if (aTreeNode.AstNode == null)
                 {
@@ -208,7 +209,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
                     }
                     else
                     {
-                        return GetAtomValue(aTreeNode.Token);
+                        return GetValueDefinition(aTreeNode.Token);
                     }
                 }
                 else if (aTreeNode.AstNode is UnaryExpressionNode)
@@ -229,17 +230,9 @@ namespace sones.GraphDB.QueryLanguage.Operators
         /// </summary>
         /// <param name="token">The token that will be evaluated.</param>
         /// <returns>An AtomValue</returns>
-        public virtual AtomValue GetAtomValue(Token token)
+        public virtual ValueDefinition GetValueDefinition(Token token)
         {
-            #region Data
-
-            AtomValue result = null;
-
-            #endregion
-
-            result = new AtomValue(GraphDBTypeMapper.ConvertPandora2CSharp(token.Terminal.GetType().Name), token.Value);
-
-            return result;
+            return new ValueDefinition(GraphDBTypeMapper.ConvertPandora2CSharp(token.Terminal.GetType().Name), token.Value);
         }
 
         public virtual BinaryExpressionNode GetBinaryExpressionNode(UnaryExpressionNode aTreeNode, DBContext dbContext)
@@ -248,15 +241,15 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
             try
             {
-                retVal.Left = aTreeNode.Term;
+                //retVal.Left = aTreeNode.Term;
 
-                if (dbContext.DBPluginManager.GetBinaryOperator(aTreeNode.OperatorSymbol).Label == BinaryOperator.Subtraction)
-                    retVal.Right = new AtomValue(new DBInt32(-1));
-                else
-                    retVal.Right = new AtomValue(new DBInt32(1));
+                //if (dbContext.DBPluginManager.GetBinaryOperator(aTreeNode.OperatorSymbol).Label == BinaryOperator.Subtraction)
+                //    retVal.Right = new AtomValue(new DBInt32(-1));
+                //else
+                //    retVal.Right = new AtomValue(new DBInt32(1));
 
-                retVal.TypeOfBinaryExpression = TypesOfBinaryExpression.LeftComplex;
-                retVal.Operator = dbContext.DBPluginManager.GetBinaryOperator(BinaryOperator.Multiplication);
+                //retVal.TypeOfBinaryExpression = TypesOfBinaryExpression.LeftComplex;
+                //retVal.Operator = dbContext.DBPluginManager.GetBinaryOperator(BinaryOperator.Multiplication);
             }
             catch (GraphDBException e)
             {

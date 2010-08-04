@@ -29,7 +29,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Import
 
         #region Properties
 
-        public AGraphDBImport Importer { get; private set; }
+        public String ImportFormat { get; private set; }
         public String SourceLocation { get; private set; }
         public UInt32 ParallelTasks { get; private set; }
         public List<String> Comments { get; private set; }
@@ -42,23 +42,14 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Import
         public override void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
 
-            var dbContext = context.IContext as DBContext;
+            //var dbContext = context.IContext as DBContext;
 
             // parseNode.ChildNodes[0] - import symbol
             // parseNode.ChildNodes[1] - from symbol
             SourceLocation = parseNode.ChildNodes[2].Token.ValueString;
             // parseNode.ChildNodes[3] - format symbol
 
-            var importFormat = parseNode.ChildNodes[4].Token.Text;
-            if (dbContext.DBPluginManager.HasGraphDBImporter(importFormat))
-            {
-                Importer = dbContext.DBPluginManager.GetGraphDBImporter(importFormat);
-            }
-            else
-            {
-                throw new GraphDBException(new Error_ImporterDoesNotExist(importFormat));
-            }
-
+            ImportFormat = parseNode.ChildNodes[4].Token.Text;
             ParallelTasks = (parseNode.ChildNodes[5].AstNode as ParallelTasksNode).ParallelTasks;
             Comments = (parseNode.ChildNodes[6].AstNode as CommentsNode).Comments;
             Offset = (parseNode.ChildNodes[7].AstNode as OffsetNode).Count;
@@ -71,7 +62,14 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Import
         {
             using (var transaction = graphDBSession.BeginTransaction())
             {
-                var importResult = Importer.Import(SourceLocation, graphDBSession, ParallelTasks, Comments, Offset, Limit, VerbosityType);
+
+                if (!dbContext.DBPluginManager.HasGraphDBImporter(ImportFormat))
+                {
+                    throw new GraphDBException(new Error_ImporterDoesNotExist(ImportFormat));
+                }
+
+                var importer = dbContext.DBPluginManager.GetGraphDBImporter(ImportFormat);
+                var importResult = importer.Import(SourceLocation, graphDBSession, ParallelTasks, Comments, Offset, Limit, VerbosityType);
 
                 if (importResult.ResultType == Structures.ResultType.Successful)
                 {

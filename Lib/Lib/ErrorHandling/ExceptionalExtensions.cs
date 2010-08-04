@@ -155,7 +155,7 @@ namespace sones.Lib.ErrorHandling
                 var _Exceptional = new Exceptional<TOut>(myExceptional);
 
                 // If Success => Generate new Exceptional.Value!
-                if (myExceptional != null && myExceptional.Success && myExceptional.Value != null)
+                if (myExceptional != null && !myExceptional.Failed && myExceptional.Value != null)
                     _Exceptional.Value = myFunc(myExceptional.Value);
 
                 return _Exceptional;
@@ -177,6 +177,25 @@ namespace sones.Lib.ErrorHandling
                 return myExceptional.Value;
 
             return default(T);
+
+        }
+
+        /// <summary>
+        /// This will always return the value. <paramref name="myAction"/> can be used to break execution via exception.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="myExceptional"></param>
+        /// <param name="myAction"></param>
+        /// <returns></returns>
+        public static T ReturnValue<T>(this Exceptional<T> myExceptional, Action<Exceptional> myAction)
+        {
+
+            if (myAction != null)
+            {
+                myAction(myExceptional);
+            }
+
+            return myExceptional.Value;
 
         }
 

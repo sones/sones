@@ -225,16 +225,17 @@ namespace sones.GraphDB.Indices
 
         public void Serialize(ref SerializationWriter mySerializationWriter)
         {
-            mySerializationWriter.WriteObject(_indexKeyAttributeUUIDs.Count);
+            mySerializationWriter.WriteUInt32((UInt32)_indexKeyAttributeUUIDs.Count);
             foreach (var attr in _indexKeyAttributeUUIDs)
                 attr.Serialize(ref mySerializationWriter);
         }
 
         public void Deserialize(ref SerializationReader mySerializationReader)
         {
-            Int32 count = (Int32)mySerializationReader.ReadObject();
+            UInt32 count = mySerializationReader.ReadUInt32();
             _indexKeyAttributeUUIDs = new List<AttributeUUID>();
-            for (Int32 i = 0; i < count; i++)
+
+            for (UInt32 i = 0; i < count; i++)
             {
                 AttributeUUID AttributeUUID = new AttributeUUID();
                 AttributeUUID.Deserialize(ref mySerializationReader);

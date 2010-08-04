@@ -380,25 +380,46 @@ namespace sones.GraphDB.TypeManagement
             {
 
                 case TypesOfOperatorResult.Double:
-                    return new DBDouble(myValue);
+                    if (myValue == null)
+                        return new DBDouble();
+                    else
+                        return new DBDouble(myValue);
 
                 case TypesOfOperatorResult.UInt64:
-                    return new DBUInt64(myValue);
+                    if (myValue == null)
+                        return new DBUInt64();
+                    else
+                        return new DBUInt64(myValue);
 
                 case TypesOfOperatorResult.Int64:
-                    return new DBInt64(myValue);
+                    if (myValue == null)
+                        return new DBInt64();
+                    else
+                        return new DBInt64(myValue);
 
                 case TypesOfOperatorResult.Int32:
-                    return new DBInt32(myValue);
+                    if (myValue == null)
+                        return new DBInt32();
+                    else
+                        return new DBInt32(myValue);
 
                 case TypesOfOperatorResult.String:
-                    return new DBString(myValue);
+                    if (myValue == null)
+                        return new DBString();
+                    else
+                        return new DBString(myValue);
 
                 case TypesOfOperatorResult.DateTime:
-                    return new DBDateTime(myValue);
+                    if (myValue == null)
+                        return new DBDateTime();
+                    else
+                        return new DBDateTime(myValue);
 
                 case TypesOfOperatorResult.Boolean:
-                    return new DBBoolean(myValue);
+                    if (myValue == null)
+                        return new DBBoolean();
+                    else
+                        return new DBBoolean(myValue);
 
                 case TypesOfOperatorResult.SetOfDBObjects:
                     if (myValue != null)
@@ -489,6 +510,17 @@ namespace sones.GraphDB.TypeManagement
                 {
                     //
                     if (DBInt64.IsValid(myDBBaseObjectB.Value))
+                    {
+                        myDBBaseObjectB = myDBBaseObjectA.Clone(myDBBaseObjectB.Value);
+                        return new Exceptional<Boolean>(true);
+                    }
+                    return new Exceptional<Boolean>(ConvertToBestMatchingTypeReverse(ref myDBBaseObjectA, ref myDBBaseObjectB));
+                }
+
+                else if (myDBBaseObjectA is DBInt32)
+                {
+                    //
+                    if (DBInt32.IsValid(myDBBaseObjectB.Value))
                     {
                         myDBBaseObjectB = myDBBaseObjectA.Clone(myDBBaseObjectB.Value);
                         return new Exceptional<Boolean>(true);

@@ -24,6 +24,7 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Dirk Bludau</developer>
+ * <developer>Stefan Licht</developer>
  * <summary></summary>
  */
 
@@ -49,6 +50,9 @@ using sones.GraphDB.QueryLanguage.ExpressionGraph;
 using sones.GraphDB.QueryLanguage.Enums;
 using sones.GraphDB.Managers;
 using sones.GraphDB.Exceptions;
+using sones.Lib;
+using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -56,8 +60,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Replace
 {
     public class ReplaceNode : AStatement
     {
-        private ObjectManipulationManager _ObjectManipulationManager;
-        private BinaryExpressionNode _whereExpression;
+        private BinaryExpressionDefinition _whereExpression;
+        private String _TypeName;
+        private List<AAttributeAssignOrUpdate> _AttributeAssignList;
 
         public override string StatementName
         {
@@ -76,33 +81,16 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Replace
 
             if (parseNode.HasChildNodes())
             {
-                //get type
-                if (parseNode.ChildNodes[1] != null && parseNode.ChildNodes[1].AstNode != null)
-                {
-                    var _Type = ((ATypeNode)(parseNode.ChildNodes[1].AstNode)).DBTypeStream;
-                    _ObjectManipulationManager = new ObjectManipulationManager(dbContext.SessionSettings, _Type, dbContext, this);
-                }
-                
+                _TypeName = ((ATypeNode)(parseNode.ChildNodes[1].AstNode)).ReferenceAndType.TypeName;
 
-                if (parseNode.ChildNodes[3] != null)
+                if (parseNode.ChildNodes[3] != null && parseNode.ChildNodes[3].HasChildNodes())
                 {
-                    if (parseNode.ChildNodes[3].HasChildNodes())
-                    {
-                        if (parseNode.ChildNodes[3].HasChildNodes())
-                        {
-                            var result = _ObjectManipulationManager.GetRecursiveAttributes(parseNode.ChildNodes[3], dbContext);
-                            if (result.Failed)
-                            {
-                                throw new GraphDBException(result.Errors);
-                            }
-
-                            _ObjectManipulationManager.CheckMandatoryAttributes(dbContext);
-                        }
-                    }
+                    _AttributeAssignList = (parseNode.ChildNodes[3].AstNode as AttrAssignListNode).AttributeAssigns;
                 }
 
-                if (parseNode.ChildNodes[5] != null)
-                    _whereExpression = (BinaryExpressionNode)parseNode.ChildNodes[5].AstNode;
+                _whereExpression = ((BinaryExpressionNode)parseNode.ChildNodes[5].AstNode).BinaryExpressionDefinition;
+
+                System.Diagnostics.Debug.Assert(_whereExpression != null);
             }
         }
 
@@ -117,8 +105,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Replace
 
             #region Data
 
-            IEnumerable<Exceptional<DBObjectStream>> _dbObjects = null;
-            List<IWarning> warnings = new List<IWarning>();
+            var _ObjectManipulationManager = new ObjectManipulationManager();
 
             #endregion
 
@@ -127,54 +114,13 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Replace
 
                 var dbInnerContext = transaction.GetDBContext();
 
-
-                var _whereGraphResult = _whereExpression.Calculon(dbContext, new CommonUsageGraph(dbContext), false);
-
-                if (_whereGraphResult.Success)
+                var type = dbInnerContext.DBTypeManager.GetTypeByName(_TypeName);
+                if (type == null)
                 {
-                    _dbObjects = _whereGraphResult.Value.Select(new LevelKey(_ObjectManipulationManager.Type), null, true);
-                }
-                else
-                {
-                    return new QueryResult(_whereGraphResult.Errors);
+                    return new QueryResult(new Error_TypeDoesNotExist(_TypeName));
                 }
 
-                #region expressionGraph error handling
-
-                warnings.AddRange(_whereGraphResult.Value.GetWarnings());
-
-                #endregion
-
-                if (_dbObjects.Count() > 1)
-                {
-                    return new QueryResult(new Error_MultipleResults());
-                }
-
-                if (_dbObjects.Count() == 0)
-                {
-                    warnings.Add(new Warnings.Warning_NoObjectsToReplace());
-                    return new QueryResult(myErrors: new List<IError>(), myWarnings: warnings);
-                }
-
-                IEnumerable<GraphDBType> parentTypes = dbContext.DBTypeManager.GetAllParentTypes(_ObjectManipulationManager.Type, true, false);
-                Exceptional<Boolean> checkUniqueVal = null;
-
-                var assingedAttrs = _ObjectManipulationManager.Attributes.ToDictionary(key => key.Key.Definition.UUID, value => value.Value);
-
-                checkUniqueVal = dbContext.DBIndexManager.CheckUniqueConstraint(_ObjectManipulationManager.Type, parentTypes, assingedAttrs);
-                if (!checkUniqueVal.Success)
-                    return new QueryResult(checkUniqueVal);
-
-                var DeleteResult = _ObjectManipulationManager.DeleteDBObjects(_ObjectManipulationManager.Type, null, _dbObjects, dbContext);
-
-                if (!DeleteResult.Success)
-                {
-                    return new QueryResult(DeleteResult);
-                }
-
-                var result = _ObjectManipulationManager.Insert(dbContext, false);
-
-                result.AddWarnings(warnings);
+                var result = _ObjectManipulationManager.Replace(dbInnerContext, type, _AttributeAssignList, _whereExpression);
 
                 #region Commit transaction and add all Warnings and Errors
 

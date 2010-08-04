@@ -53,6 +53,8 @@ namespace sones.GraphDB.Plugin
     {
         //NLOG: temporarily commented
         //private static Logger Logger = LogManager.GetCurrentClassLogger();
+        
+        #region Properties
 
         private Dictionary<String, ABaseFunction> _Functions;
         public Dictionary<String, ABaseFunction> Functions
@@ -88,7 +90,7 @@ namespace sones.GraphDB.Plugin
         public EntityUUID UserID
         {
             get { return _UserID; }
-            set { _UserID = value;  }
+            set { _UserID = value; }
         }
 
         private Dictionary<string, IVersionedIndexObject<IndexKey, ObjectUUID>> _Indices;
@@ -104,6 +106,9 @@ namespace sones.GraphDB.Plugin
             get { return _GraphDBImporter; }
             set { _GraphDBImporter = value; }
         }
+
+        #endregion
+
         public DBPluginManager(EntityUUID myUserID)
         {            
             _Functions  = new Dictionary<string, ABaseFunction>();
@@ -358,7 +363,7 @@ namespace sones.GraphDB.Plugin
 
             if (!Operators.ContainsKey(Symbol))
             {
-                throw new GraphDBException(new Error_OperatorDoesNotExist(Symbol));
+                return null;
             }
 
             return Operators[Symbol];
@@ -468,7 +473,7 @@ namespace sones.GraphDB.Plugin
                 throw new GraphDBException(new Error_AggregateOrFunctionDoesNotExist(myFuncName));
             }
 
-            return Functions[myFuncName];
+            return Activator.CreateInstance(Functions[myFuncName].GetType()) as ABaseFunction;
 
         }
 

@@ -44,6 +44,7 @@ using sones.GraphDB.QueryLanguage.Result;
 using sones.GraphDB.Structures;
 using sones.GraphDB.TypeManagement.PandoraTypes;
 using System.Linq;
+using sones.GraphDB.Managers.Structures;
 
 
 #endregion
@@ -55,12 +56,8 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     /// </summary>
     public class TupleNode : AStructureNode, IAstNodeInit
     {
-        #region Data
 
-        private List<TupleElement> _Tuple = null;
-        public KindOfTuple KindOfTuple { get; private set; }
-
-        #endregion
+        public TupleDefinition TupleDefinition { get; private set; }
 
         #region constructor
 
@@ -73,11 +70,10 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         private void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
-            _Tuple = new List<TupleElement>();
 
             DBContext DBcontext = context.IContext as DBContext;
 
-            GetKindOfTuple(context, parseNode);
+            TupleDefinition = new Managers.Structures.TupleDefinition(GetKindOfTuple(context, parseNode));
 
             ParseTreeNodeList childNodes;
             if (parseNode.ChildNodes[0].AstNode == null && parseNode.ChildNodes[0].HasChildNodes()) // this is a not resolved node and has childNodes
@@ -113,11 +109,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
                 if (aExpressionNode.AstNode is ExpressionOfAListNode)
                 {
-                    typeOfExpression = ((ExpressionOfAListNode)aExpressionNode.AstNode).ParseTreeNode.Term.GetType();
+                    typeOfExpression = ((ExpressionOfAListNode)aExpressionNode.AstNode).GetType();
                 }
                 else if (aExpressionNode.AstNode is ExpressionNode)
                 {
-                    typeOfExpression = ((ExpressionNode)aExpressionNode.AstNode).ParseTreeNode.Term.GetType();
+                    typeOfExpression = ((ExpressionNode)aExpressionNode.AstNode).GetType();
                 }
                 else if (aExpressionNode.AstNode is BinaryExpressionNode)
                 {
@@ -129,7 +125,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
                 }
                 else if (aExpressionNode.AstNode is TupleNode)
                 {
-                    _Tuple.AddRange(((TupleNode)aExpressionNode.AstNode).Tuple);
+                    TupleDefinition = ((TupleNode)aExpressionNode.AstNode).TupleDefinition;
                     continue;
                 }
                 else if (aExpressionNode.AstNode is PartialSelectStmtNode)
@@ -143,7 +139,8 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
                 else
                 {
                     typeOfExpression = aExpressionNode.Term.GetType();
-                    _Tuple.Add(new TupleElement(GraphDBTypeMapper.ConvertPandora2CSharp(typeOfExpression.Name), aExpressionNode.Token.Value));
+                    var val = new ValueDefinition(GraphDBTypeMapper.ConvertPandora2CSharp(typeOfExpression.Name), aExpressionNode.Token.Value);
+                    TupleDefinition.AddElement(new TupleElement(GraphDBTypeMapper.ConvertPandora2CSharp(typeOfExpression.Name), val));
                     continue;
                 }
 
@@ -157,34 +154,34 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
                     if (aExpressionNode.AstNode is ExpressionNode)
                     {
-                        aElement = new TupleElement(TypesOfOperatorResult.NotABasicType, ((ExpressionNode)aExpressionNode.AstNode).ParseTreeNode.AstNode);
-                        _Tuple.Add(aElement);
+                        aElement = new TupleElement(TypesOfOperatorResult.NotABasicType, ((ExpressionNode)aExpressionNode.AstNode).ExpressionDefinition);
+                        TupleDefinition.AddElement(aElement);
                     }
                     else
                     {
                         if (aExpressionNode.AstNode is ExpressionOfAListNode)
                         {
-                            aElement = new TupleElement(TypesOfOperatorResult.NotABasicType, ((ExpressionOfAListNode)aExpressionNode.AstNode).ParseTreeNode.AstNode);
+                            aElement = new TupleElement(TypesOfOperatorResult.NotABasicType, (((ExpressionOfAListNode)aExpressionNode.AstNode).ExpressionDefinition));
 
-                            if (((ExpressionOfAListNode)aExpressionNode.AstNode).ParametersNode != null)
+                            if (((ExpressionOfAListNode)aExpressionNode.AstNode).Parameters != null)
                             {
-                                aElement.Parameters = ((ExpressionOfAListNode)aExpressionNode.AstNode).ParametersNode.ParameterValues;
+                                aElement.Parameters = ((ExpressionOfAListNode)aExpressionNode.AstNode).Parameters;
                             }
-                            _Tuple.Add(aElement);
+                            TupleDefinition.AddElement(aElement);
                         }
                         else
                         {
                             if (aExpressionNode.AstNode is BinaryExpressionNode)
                             {
-                                aElement = new TupleElement(TypesOfOperatorResult.NotABasicType, aExpressionNode.AstNode);
-                                _Tuple.Add(aElement);
+                                aElement = new TupleElement(TypesOfOperatorResult.NotABasicType, (aExpressionNode.AstNode as BinaryExpressionNode).BinaryExpressionDefinition);
+                                TupleDefinition.AddElement(aElement);
                             }
                             else
                             {
                                 if (aExpressionNode.AstNode is UnaryExpressionNode)
                                 {
-                                    aElement = new TupleElement(TypesOfOperatorResult.NotABasicType, aExpressionNode.AstNode);
-                                    _Tuple.Add(aElement);
+                                    aElement = new TupleElement(TypesOfOperatorResult.NotABasicType, (aExpressionNode.AstNode as UnaryExpressionNode).UnaryExpressionDefinition);
+                                    TupleDefinition.AddElement(aElement);
                                 }
                                 else
                                 {
@@ -218,7 +215,8 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
                                                 if (curAttr != null)
                                                 {
-                                                    _Tuple.Add(new TupleElement(aTypeOfOperatorResult, dbo.Attributes[attrName]));
+                                                    var val = new ValueDefinition(aTypeOfOperatorResult, dbo.Attributes[attrName]);
+                                                    TupleDefinition.AddElement(new TupleElement(aTypeOfOperatorResult, val));
                                                 }
                                                 else 
                                                 {
@@ -246,22 +244,22 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
                     if (aExpressionNode.AstNode is ExpressionNode)
                     {
-                        aElement = new TupleElement(aTypeOfOperatorResult, ((ExpressionNode)aExpressionNode.AstNode).ParseTreeNode.Token.Value);
+                        aElement = new TupleElement(aTypeOfOperatorResult, ((ExpressionNode)aExpressionNode.AstNode).ExpressionDefinition);
                     }
                     else if (aExpressionNode.AstNode is ExpressionOfAListNode)
                     {
-                        aElement = new TupleElement(aTypeOfOperatorResult, ((ExpressionOfAListNode)aExpressionNode.AstNode).ParseTreeNode.Token.Value);
+                        aElement = new TupleElement(aTypeOfOperatorResult, ((ExpressionOfAListNode)aExpressionNode.AstNode).ExpressionDefinition);
 
-                        if (((ExpressionOfAListNode)aExpressionNode.AstNode).ParametersNode != null)
+                        if (((ExpressionOfAListNode)aExpressionNode.AstNode).Parameters != null)
                         {
-                            aElement.Parameters = ((ExpressionOfAListNode)aExpressionNode.AstNode).ParametersNode.ParameterValues;
+                            aElement.Parameters = ((ExpressionOfAListNode)aExpressionNode.AstNode).Parameters;
                         }
                     }
                     else
                     {
                         throw new NotImplementedException();
                     }
-                    _Tuple.Add(aElement);
+                    TupleDefinition.AddElement(aElement);
 
                     #endregion
                 }
@@ -271,33 +269,37 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
             #endregion
         }
 
-        private void GetKindOfTuple(CompilerContext context, ParseTreeNode parseNode)
+        private KindOfTuple GetKindOfTuple(CompilerContext context, ParseTreeNode parseNode)
         {
             var grammar = GetGraphQLGrammar(context);
 
             var leftSymbol = ExtractBracket(parseNode.FirstChild);
             var rightSymbol = ExtractBracket(parseNode.LastChild);
 
+            KindOfTuple kindOfTuple;
+
             if (leftSymbol == grammar.S_TUPLE_BRACKET_LEFT && rightSymbol == grammar.S_TUPLE_BRACKET_RIGHT)
             {
-                KindOfTuple = KindOfTuple.Inclusive;
+                kindOfTuple = KindOfTuple.Inclusive;
             }
             else if (leftSymbol == grammar.S_TUPLE_BRACKET_LEFT_EXCLUSIVE && rightSymbol == grammar.S_TUPLE_BRACKET_RIGHT)
             {
-                KindOfTuple = KindOfTuple.LeftExclusive;
+                kindOfTuple = KindOfTuple.LeftExclusive;
             }
             else if (leftSymbol == grammar.S_TUPLE_BRACKET_LEFT && rightSymbol == grammar.S_TUPLE_BRACKET_RIGHT_EXCLUSIVE)
             {
-                KindOfTuple = KindOfTuple.RightExclusive;
+                kindOfTuple = KindOfTuple.RightExclusive;
             }
             else if (leftSymbol == grammar.S_TUPLE_BRACKET_LEFT_EXCLUSIVE && rightSymbol == grammar.S_TUPLE_BRACKET_RIGHT_EXCLUSIVE)
             {
-                KindOfTuple = KindOfTuple.Exclusive;
+                kindOfTuple = KindOfTuple.Exclusive;
             }
             else
             {
                 throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
             }
+
+            return kindOfTuple;
         }
 
         private SymbolTerminal ExtractBracket(ParseTreeNode parseTreeNode)
@@ -312,52 +314,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
             }
         }
 
-        public List<TupleElement> Tuple { get { return _Tuple; } }
-
-        public Exceptional<TupleValue> GetAsTupleValue(DBContext dbContext, TypeAttribute attr)
-        {
-            var graphDBType = attr.GetDBType(dbContext.DBTypeManager);
-            var tupleBaseType = GraphDBTypeMapper.GetPandoraObjectFromTypeName(graphDBType.Name);
-            if (tupleBaseType == null)
-            {
-                return new Exceptional<TupleValue>(new Error_InvalidTuple("invalid type " + graphDBType.Name));
-            }
-
-            var edge = new EdgeTypeListOfBaseObjects();
-
-            foreach (TupleElement aTupleElement in _Tuple)
-            {
-                if (tupleBaseType.IsValidValue(aTupleElement.Value))
-                {
-                    edge.Add(tupleBaseType.Clone(aTupleElement.Value), aTupleElement.Parameters.ToArray());
-                }
-                else
-                {
-                    if (aTupleElement.Value is BinaryExpressionNode)
-                    {
-                        if (!((BinaryExpressionNode)aTupleElement.Value).ResultValue.Success)
-                        {
-                            return new Exceptional<TupleValue>(((BinaryExpressionNode)aTupleElement.Value).ResultValue);
-                        }
-
-                        var binExprVal = ((BinaryExpressionNode)aTupleElement.Value).ResultValue.Value;
-                        if (binExprVal is AtomValue && tupleBaseType.IsValidValue(((AtomValue)binExprVal).Value))
-                        {
-                            edge.Add(tupleBaseType.Clone(((AtomValue)binExprVal).Value), aTupleElement.Parameters.ToArray());
-                        }
-                    }
-                    else //if (!(aTupleElement.Value is BinaryExpressionNode))
-                    {
-                        return new Exceptional<TupleValue>(new Error_DataTypeDoesNotMatch(attr.GetDBType(dbContext.DBTypeManager).Name, aTupleElement.Value.GetType().Name));
-                    }
-                    
-
-                }
-            }
-
-            return new Exceptional<TupleValue>(new TupleValue(GraphDBTypeMapper.ConvertPandora2CSharp(graphDBType.Name), edge, graphDBType, KindOfTuple));
-        }
-
         #region IAstNodeInit Members
 
         public void Init(CompilerContext context, ParseTreeNode parseNode)
@@ -367,55 +323,5 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         #endregion
 
-        internal Exceptional<ASetReferenceEdgeType> GetAsUUIDEdge(DBContext dbContext, TypeAttribute attr)
-        {
-            var edge = attr.EdgeType.GetNewInstance() as ASetReferenceEdgeType;
-
-            foreach (TupleElement aTupleElement in _Tuple)
-            {
-
-                if (aTupleElement.Value is BinaryExpressionNode)
-                {
-                    return new Exceptional<ASetReferenceEdgeType>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-                }
-                else
-                {
-                    //var result = SpecialTypeAttribute_UUID.ConvertToUUID(aTupleElement.Value.ToString(), graphDBType, dbContext.SessionSettings, dbContext.DBTypeManager);
-                    //if (result.Failed)
-                    //{
-                    //    return new Exceptional<ASetReferenceEdgeType>(result);
-                    //}
-                    //edge.Add(result.Value);
-
-                    edge.Add(ObjectUUID.FromString(aTupleElement.Value.ToString()));
-
-                }
-
-            }
-
-            return new Exceptional<ASetReferenceEdgeType>(edge);
-        }
-
-        internal Exceptional<ASingleReferenceEdgeType> GetAsUUIDSingleEdge(DBContext dbContext, TypeAttribute attr)
-        {
-            var edge = attr.EdgeType.GetNewInstance() as ASingleReferenceEdgeType;
-            if (_Tuple.Count > 1)
-            {
-                return new Exceptional<ASingleReferenceEdgeType>(new Error_TooManyElementsForEdge(edge, (UInt64)_Tuple.Count));
-            }
-
-            var aTupleElement = _Tuple.First();
-
-            if (aTupleElement.Value is BinaryExpressionNode)
-            {
-                return new Exceptional<ASingleReferenceEdgeType>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-            }
-            else
-            {
-                edge.Set(ObjectUUID.FromString(aTupleElement.Value.ToString()));
-            }
-
-            return new Exceptional<ASingleReferenceEdgeType>(edge);
-        }
     }
 }

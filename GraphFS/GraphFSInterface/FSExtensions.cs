@@ -45,7 +45,7 @@ namespace sones.GraphFS
             }
             if (objExists.Value == Trinary.TRUE)
             {
-                var _RemoveObjectExceptional = myIGraphFSSession.RemoveObject(myObjectLocation, myObjectStream, myObjectEdition, myRevisionID);
+                var _RemoveObjectExceptional = myIGraphFSSession.RemoveFSObject(myObjectLocation, myObjectStream, myObjectEdition, myRevisionID);
                 return _RemoveObjectExceptional;
             }
             else
@@ -56,15 +56,15 @@ namespace sones.GraphFS
         }
 
 
-        #region CheckPersistency(this myIGraphFS)
+        #region IsPersistent(this myIGraphFS)
 
-        public static Boolean CheckPersistency(this WeakReference<IGraphFS> myIGraphFS)
+        public static Boolean IsPersistent(this WeakReference<IGraphFS> myIGraphFS)
         {
 
             if (myIGraphFS == null)             return false;
             if (!myIGraphFS.IsAlive)            return false;
             if (!myIGraphFS.Value.IsPersistent) return false;
-            if (!myIGraphFS.Value.isMounted)    return false;
+            if (!myIGraphFS.Value.IsMounted)    return false;
 
             return true;
 
@@ -72,15 +72,15 @@ namespace sones.GraphFS
 
         #endregion
 
-        #region CheckPersistency(this myIGraphFSSession)
+        #region IsPersistent(this myIGraphFSSession)
 
-        public static Boolean CheckPersistency(this WeakReference<IGraphFSSession> myIGraphFSSession)
+        public static Boolean IsPersistent(this WeakReference<IGraphFSSession> myIGraphFSSession)
         {
 
-            if (myIGraphFSSession == null) return false;
-            if (!myIGraphFSSession.IsAlive) return false;
-            if (!myIGraphFSSession.Value.IsPersistent) return false;
-            if (!myIGraphFSSession.Value.isMounted) return false;
+            if (myIGraphFSSession == null)              return false;
+            if (!myIGraphFSSession.IsAlive)             return false;
+            if (!myIGraphFSSession.Value.IsPersistent)  return false;
+            if (!myIGraphFSSession.Value.IsMounted)     return false;
 
             return true;
 

@@ -43,8 +43,8 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     {
         #region Data
 
-        private String                  _EdgeInformationName = null;
-        private SelectionDelimiterNode  _DelimiterNode = null;
+        public String EdgeInformationName { get; private set; }
+        public SelectionDelimiterNode Delimiter { get; private set; }
 
         #endregion
 
@@ -59,11 +59,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         public void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
         {
-            _DelimiterNode = (SelectionDelimiterNode)myParseTreeNode.FirstChild.AstNode;
-            _EdgeInformationName = myParseTreeNode.ChildNodes[1].Token.ValueString;
+            Delimiter = (SelectionDelimiterNode)myParseTreeNode.FirstChild.AstNode;
+            EdgeInformationName = myParseTreeNode.ChildNodes[1].Token.ValueString;
         }
-
-        public String                   EdgeInformationName { get { return _EdgeInformationName; } }
-        public SelectionDelimiterNode   Delimiter           { get { return _DelimiterNode; } }        
+    
     }
 }

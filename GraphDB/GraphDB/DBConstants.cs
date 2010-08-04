@@ -102,10 +102,22 @@ namespace sones.GraphDB
         /// The base of all user-defined database types
         /// </summary>
         public const String DBObject                            = "DBObject";
+        public const String DBVertex                            = "DBVertex";
         public const String DBBackwardEdge                      = "DBBackwardEdge";
         public const String DBType                              = "DBType";
         public const String DBTypeAttribute                     = "DBTypeAttribute";
 
+        /// <summary>
+        /// The base of all user-defined database vertices
+        /// </summary>
+        public const String DBVertexName                        = "DBVertex";
+        public const Int32  DBVertexID                          = 50;
+
+        /// <summary>
+        /// The base of all user-defined database vertices
+        /// </summary>
+        public const String DBEdgeName                          = "DBEdge";
+        public const Int32  DBEdgeID                            = 60;
 
         // Pre- and Postfix of the LIST-types
         public const String LIST_PREFIX                         = "LIST<";
@@ -148,7 +160,12 @@ namespace sones.GraphDB
         public const String SettingAttributesAttribute          = "ATTRIBUTES";
         public const String SettingAttributesAttributeTYPE      = "ATTRIBUTE";
         
-        public const Boolean RunMT                              = false;
+        #if __MonoCS__
+        public const Boolean RunMT                              = false;  
+        #else
+        public const Boolean RunMT                              = true;
+        #endif
+
         public const Boolean UseThreadedSelect                  = true;
 
     }

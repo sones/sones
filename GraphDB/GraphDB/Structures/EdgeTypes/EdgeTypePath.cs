@@ -29,18 +29,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
-using sones.GraphDB.QueryLanguage.Result;
-using sones.GraphDB.TypeManagement.PandoraTypes;
-using sones.GraphDB.TypeManagement;
 using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.QueryLanguage;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
-using sones.Lib.DataStructures.UUID;
+using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.PandoraTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
-using sones.GraphDB.QueryLanguage;
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
@@ -87,12 +84,12 @@ namespace sones.GraphDB.Structures.EdgeTypes
             throw new NotImplementedException();
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
+        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable, TypeUUID typeUUID)
         {
             throw new NotImplementedException();
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable)
+        public override AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeUUID)
         {
             throw new NotImplementedException();
         }
@@ -109,12 +106,12 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         #endregion
 
-        public override IEnumerable<ObjectUUID> GetAllUUIDs()
+        public override IEnumerable<ObjectUUID> GetAllReferenceIDs()
         {
             throw new NotImplementedException();
         }
 
-        public override IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetEdges()
+        public override IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetAllReferenceIDsWeighted()
         {
             throw new NotImplementedException();
         }
@@ -173,27 +170,17 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return result;
         }
 
-        public override void RemoveWhere(Predicate<ObjectUUID> match)
-        {
-            throw new NotImplementedException();
-        }
-
         public override ObjectUUID FirstOrDefault()
         {
             throw new NotImplementedException();
         }
 
-        public override void AddRange(IEnumerable<ObjectUUID> hashSet, params ADBBaseObject[] myParameters)
+        public override void AddRange(IEnumerable<ObjectUUID> hashSet, TypeUUID typeOfDBObjects, params ADBBaseObject[] myParameters)
         {
             throw new NotImplementedException();
         }
 
-        public override void Add(ObjectUUID myValue, params ADBBaseObject[] myParameters)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Add(IEnumerable<ObjectUUID> myValue, params ADBBaseObject[] myParameters)
+        public override void Add(ObjectUUID myValue, TypeUUID typeOfDBObjects, params ADBBaseObject[] myParameters)
         {
             throw new NotImplementedException();
         }
@@ -302,5 +289,20 @@ namespace sones.GraphDB.Structures.EdgeTypes
         }
 
         #endregion
+
+        public override IEnumerable<Exceptional<DBObjectStream>> GetAllEdgeDestinations(DBObjectCache dbObjectCache)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override IEnumerable<Tuple<Exceptional<DBObjectStream>, ADBBaseObject>> GetAllEdgeDestinationsWeighted(DBObjectCache dbObjectCache)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override TypeUUID GetTypeUUIDOfReferences()
+        {
+            return _typeOfObjects.UUID;
+        }
     }
 }

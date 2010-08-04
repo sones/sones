@@ -36,6 +36,7 @@ using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.Structures.EdgeTypes;
+using sones.GraphDB.Managers.Structures;
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 {
@@ -43,55 +44,27 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
     {
         #region Data
 
+        public BackwardEdgeDefinition BackwardEdgeDefinition { get; private set; }
+
         /// <summary>
         /// The destination type of the backwardedge
         /// </summary>
-        public String TypeName
-        {
-            get { return _TypeName; }
-        }
         private String _TypeName;
 
         /// <summary>
         /// the destination attribute on the TypeName
         /// </summary>
-        public String TypeAttributeName
-        {
-            get { return _TypeAttributeName; }
-        }
         private String _TypeAttributeName;
 
         /// <summary>
         /// The real new name of the attribute
         /// </summary>
-        public String AttributeName
-        {
-            get { return _AttributeName; }
-        }
         private String _AttributeName;
 
         /// <summary>
-        /// The Type of the edge, currently EdgeTypeList or EdgeTypeWeightedList
+        /// The Type of the edge
         /// </summary>
-        public AEdgeType EdgeType
-        {
-            get { return _EdgeType; }
-        }
         private AEdgeType _EdgeType;
-
-        /// <summary>
-        /// The parameters of the EdgeType defined in the statement, for EdgeTypeWeightedList this is the datatype, default weight etc,
-        /// </summary>
-        public Object[] EdgeTypeParams
-        {
-            get
-            {
-                if (_EdgeTypeParamsNode == null)
-                    return new Object[0];
-                return _EdgeTypeParamsNode.Parameters;
-            }
-        }
-        private EdgeTypeParamsNode _EdgeTypeParamsNode;
 
         #endregion
 
@@ -106,8 +79,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
         public void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
-            var dbContext = context.IContext as DBContext;
-            var typeManager = dbContext.DBTypeManager;
             
             #region Extract type and attribute
 
@@ -119,30 +90,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
             #endregion
 
-            #region Get the AttributeName or specials
+            _EdgeType = new EdgeTypeSetOfReferences();
+            _AttributeName = parseNode.ChildNodes[3].Token.ValueString;
 
-            if (parseNode.ChildNodes.Count == 4) // a simple list definition
-            {
-                _EdgeType = new EdgeTypeSetOfReferences();
-                _AttributeName = parseNode.ChildNodes[3].Token.ValueString;
-            }
-            else
-            {
-                if (!dbContext.DBPluginManager.HasEdgeType(parseNode.ChildNodes[4].Token.ValueString))
-                    throw new Exception("type not found");
+            BackwardEdgeDefinition = new BackwardEdgeDefinition(_AttributeName, _TypeName, _TypeAttributeName, _EdgeType);
 
-                _EdgeType = dbContext.DBPluginManager.GetEdgeType(parseNode.ChildNodes[4].Token.ValueString);
-                if (!(_EdgeType is EdgeTypeWeightedList))
-                {
-                    throw new NotImplementedException(parseNode.ChildNodes[4].Token.ValueString);
-                }
-
-                _EdgeTypeParamsNode = parseNode.ChildNodes[5].AstNode as EdgeTypeParamsNode;
-                _EdgeType.ApplyParams(_EdgeTypeParamsNode.Parameters);
-                _AttributeName = parseNode.ChildNodes[7].Token.ValueString;
-            }
-
-            #endregion
         }
 
     }

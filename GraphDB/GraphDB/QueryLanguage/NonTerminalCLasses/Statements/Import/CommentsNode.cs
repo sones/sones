@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.GraphDB.Managers.Structures;
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Import
 {
@@ -21,9 +22,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Import
         {
             if (parseNode.HasChildNodes())
             {
-                foreach (var child in (parseNode.ChildNodes[1].AstNode as TupleNode).Tuple)
+                foreach (var child in (parseNode.ChildNodes[1].AstNode as TupleNode).TupleDefinition)
                 {
-                    Comments.Add(child.Value.ToString());
+                    Comments.Add((child.Value as ValueDefinition).Value.ToString());
                 }
             }
 

@@ -28,8 +28,8 @@
 #region Usings
 
 using System;
-using System.Text;
 using System.Collections.Generic;
+
 using sones.GraphDS.API.CSharp.Reflection;
 
 #endregion
@@ -42,29 +42,24 @@ namespace sones.GraphDS.API.CSharp
 
         #region Data
 
-        private List<String> _FromStrings = new List<String>();
-        private List<String> _SelectStrings = new List<String>();
-        private List<String> _WhereStrings = new List<String>();
+        private List<String> _FromStrings;
+        private List<String> _SelectStrings;
+        private List<String> _WhereStrings;
+        private UInt16?      _Depth;
 
         #endregion
 
-        #region Constructors
+        #region Constructor(s)
 
-        #region SelectQuery(mySelection)
+        #region SelectQuery(myAGraphDSSharp)
 
-        public SelectQuery(String mySelection)
+        public SelectQuery(AGraphDSSharp myAGraphDSSharp)
+            : base(myAGraphDSSharp)
         {
-            _SelectStrings.Add(mySelection);
-        }
-
-        #endregion
-
-        #region SelectQuery(myIGraphDBSession, myTypeName)
-
-        public SelectQuery(AGraphDSSharp myIGraphDBSession, String myTypeName)
-            : this(myTypeName)
-        {
-            _DBWrapper = myIGraphDBSession;
+            _FromStrings    = new List<String>();
+            _SelectStrings  = new List<String>();
+            _WhereStrings   = new List<String>();
+            _Depth          = null;
         }
 
         #endregion
@@ -72,52 +67,105 @@ namespace sones.GraphDS.API.CSharp
         #endregion
 
 
-        #region From(myDBObjectType, myAlias)
+        #region From(myCreateVertexQuery)
 
-        public SelectQuery From(DBObject myDBObjectType, String myAlias)
+        public SelectQuery From(CreateVertexQuery myCreateVertexQuery)
         {
-            _FromStrings.Add(myDBObjectType.UUID + " " + myAlias);
+            return From(myCreateVertexQuery, "");
+        }
+
+        #endregion
+
+        #region From(myCreateVertexQuery, myAlias)
+
+        public SelectQuery From(CreateVertexQuery myCreateVertexQuery, String myAlias)
+        {
+            Name = myCreateVertexQuery.Name;
+            _FromStrings.Add(Name + " " + myAlias);
             return this;
         }
 
         #endregion
 
-        #region From(myTypeName, myAlias)
+        #region From(myDBVertex)
 
-        public SelectQuery From(String myTypeName, String myAlias)
+        public SelectQuery From(DBVertex myDBVertex)
         {
-            _FromStrings.Add(myTypeName + " " + myAlias);
+            return From(myDBVertex, "");
+        }
+
+        #endregion
+
+        #region From(myDBVertex, myAlias)
+
+        public SelectQuery From(DBVertex myDBVertex, String myAlias)
+        {
+            Name = myDBVertex.GetType().Name;
+            _FromStrings.Add(Name + " " + myAlias);
             return this;
         }
 
         #endregion
 
-        #region From(myDBObjectType, myAlias)
+        #region From(myDBVertexTypeName)
+
+        public SelectQuery From(String myDBVertexTypeName)
+        {
+            return From(myDBVertexTypeName, "");
+        }
+
+        #endregion
+
+        #region From(myDBVertexTypeName, myAlias)
+
+        public SelectQuery From(String myDBVertexTypeName, String myAlias)
+        {
+            Name = myDBVertexTypeName;
+            _FromStrings.Add(Name + " " + myAlias);
+            return this;
+        }
+
+        #endregion
+
+        #region From<T>(myAlias)
 
         public SelectQuery From<T>(String myAlias)
-            where T : DBObject
+            where T : DBVertex
         {
-            _FromStrings.Add(typeof(T).Name + " " + myAlias);
+            Name = typeof(T).Name;
+            _FromStrings.Add(Name + " " + myAlias);
             return this;
         }
 
         #endregion
 
-        #region Select(mySelection)
 
-        public SelectQuery Select(String mySelection)
+        #region Select(mySelections)
+
+        public SelectQuery Select(params String[] mySelections)
         {
-            _SelectStrings.Add(mySelection);
+            _SelectStrings.AddRange(mySelections);
             return this;
         }
 
         #endregion
+
 
         #region Where(myWhereClause)
 
         public SelectQuery Where(String myWhereClause)
         {
             _WhereStrings.Add(myWhereClause);
+            return this;
+        }
+
+        #endregion
+
+        #region Depth(myDepth)
+
+        public SelectQuery Depth(UInt16 myDepth)
+        {
+            _Depth = myDepth;
             return this;
         }
 
@@ -185,11 +233,19 @@ namespace sones.GraphDS.API.CSharp
 
             #endregion
 
+            #region DEPTH...
+
+            if (_Depth != null)
+                _Command += "DEPTH " + _Depth;
+
+            #endregion
+
             return _Command;
 
         }
 
         #endregion
+
 
         #region ToString()
 

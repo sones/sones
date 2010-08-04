@@ -36,6 +36,8 @@ using System.Text;
 using sones.Lib.Frameworks.Irony.Scripting.Ast;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.TypeManagement.PandoraTypes;
 
 #endregion
 
@@ -46,6 +48,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     /// </summary>
     class ExpressionOfAListNode : AStructureNode, IAstNodeInit
     {
+
         #region Data
 
         ParseTreeNode _ParseTreeNode = null;
@@ -53,20 +56,24 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         #endregion
 
-        private void GetContent(CompilerContext context, ParseTreeNode parseNode)
-        {
-            _ParseTreeNode = parseNode.ChildNodes[0];
-            if (parseNode.ChildNodes[1].HasChildNodes())
-                _ParametersNode = (ParametersNode)parseNode.ChildNodes[1].AstNode;
-        }
-
-        public ParseTreeNode ParseTreeNode { get { return _ParseTreeNode; } }
-
         /// <summary>
         /// A list of parameters which will be passed during an insert operation to the ListEdgeType
         /// Currently only ADBBaseObject is provided
         /// </summary>
-        public ParametersNode ParametersNode { get { return _ParametersNode; } }
+        public List<ADBBaseObject> Parameters { get; private set; }
+        public AExpressionDefinition ExpressionDefinition { get; private set; }
+
+        private void GetContent(CompilerContext context, ParseTreeNode parseNode)
+        {
+            _ParseTreeNode = parseNode.ChildNodes[0];
+
+            ExpressionDefinition = GetExpressionDefinition(_ParseTreeNode);
+
+            if (parseNode.ChildNodes[1].HasChildNodes())
+            {
+                Parameters = ((ParametersNode)parseNode.ChildNodes[1].AstNode).ParameterValues;
+            }
+        }
 
         #region IAstNodeInit Members
 

@@ -49,10 +49,10 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 {
     public class AttrDefaultValueNode : AStructureNode
     {
-        #region data
 
-        private AObject _Value;
-        private TypesOfPandoraType _TypeOfList;
+        #region Properties
+
+        public AObject Value { get; private set; }
         
         #endregion
 
@@ -92,49 +92,42 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             if (parseNode.HasChildNodes())
             {
                 if (parseNode.ChildNodes.Count >= 3)
-                {   
-                    EdgeTypeListOfBaseObjects ListOfDefaults = new EdgeTypeListOfBaseObjects();
+                {
+                    AListBaseEdgeType ListOfDefaults;
                     var firstListObject = GraphDBTypeMapper.GetBaseObjectFromCSharpType(parseNode.ChildNodes[2].ChildNodes[0].Token.Value);
                     
-                    ListOfDefaults.AddRange(parseNode.ChildNodes[2].ChildNodes.Select(item => CheckTypeOfItems(item.Token.Value, firstListObject)));
 
                     if (parseNode.ChildNodes[1].Token.Text.ToUpper() == DBConstants.SETOF)
                     {
-                        _TypeOfList = TypesOfPandoraType.SetOfNoneReferences;
+                        ListOfDefaults = new EdgeTypeSetOfBaseObjects();
                     }
 
-                    if (parseNode.ChildNodes[1].Token.Text.ToUpper() == DBConstants.LISTOF)
+                    else if (parseNode.ChildNodes[1].Token.Text.ToUpper() == DBConstants.LISTOF)
                     {
-                        _TypeOfList = TypesOfPandoraType.ListOfNoneReferences;
+                        ListOfDefaults = new EdgeTypeListOfBaseObjects();
                     }
 
-                    _Value = ListOfDefaults;
+                    else
+                    {
+                        throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                    }
+
+                    ListOfDefaults.AddRange(parseNode.ChildNodes[2].ChildNodes.Select(item => CheckTypeOfItems(item.Token.Value, firstListObject)));
+
+                    Value = ListOfDefaults;
                 }
                 else
                 {
                     
                     var baseObject = GraphDBTypeMapper.GetBaseObjectFromCSharpType(parseNode.ChildNodes[1].Token.Value);
-                    _Value = (AObject)baseObject;
+                    Value = (AObject)baseObject;
                 }
             }
             else
             {
-                _Value = null;
+                Value = null;
             }
         }
 
-        #region Accessors
-
-        public AObject Value
-        {
-            get { return _Value; }
-        }
-
-        public TypesOfPandoraType TypeOfList
-        {
-            get { return _TypeOfList; }
-        }
-
-        #endregion
     }
 }

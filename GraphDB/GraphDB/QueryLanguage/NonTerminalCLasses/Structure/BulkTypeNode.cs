@@ -41,6 +41,7 @@ using sones.Lib;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.TypeManagement.PandoraTypes;
 using sones.Lib.ErrorHandling;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -53,12 +54,22 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         private String _TypeName = ""; //the name of the type that should be created
         private String _Extends = ""; //the name of the type that should be extended
         private String _Comment = ""; //the name of the type that should be extended
-        private Dictionary<TypeAttribute, String> _Attributes = new Dictionary<TypeAttribute, String>(); //the dictionayry of attribute definitions
-        private List<BackwardEdgeNode> _BackwardEdgeInformation;
-        private List<Exceptional<IndexOptOnCreateTypeMemberNode>> _Indices;    
+        private Dictionary<AttributeDefinition, String> _Attributes = new Dictionary<AttributeDefinition, String>(); //the dictionayry of attribute definitions
+        private List<BackwardEdgeDefinition> _BackwardEdgeInformation;
+        private List<Exceptional<IndexDefinition>> _Indices;    
 
         #endregion
 
+        #region Accessessors
+
+        public String TypeName { get { return _TypeName; } }
+        public String Extends { get { return _Extends; } }
+        public String Comment { get { return _Comment; } }
+        public Dictionary<AttributeDefinition, String> Attributes { get { return _Attributes; } }
+        public List<BackwardEdgeDefinition> BackwardEdges { get { return _BackwardEdgeInformation; } }
+        public List<Exceptional<IndexDefinition>> Indices { get { return _Indices; } }
+
+        #endregion
 
         #region constructor
 
@@ -108,7 +119,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
             if (parseNode.ChildNodes[3].HasChildNodes())
             {
-                _BackwardEdgeInformation = ((BackwardEdgesNode)parseNode.ChildNodes[3].AstNode).BackwardEdgeInformation;
+                _BackwardEdgeInformation = (((BackwardEdgesNode)parseNode.ChildNodes[3].AstNode).BackwardEdgeInformation);
             }
 
             #endregion
@@ -120,14 +131,14 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             {
                 foreach (String uniqueAttr in ((UniqueAttributesOptNode)parseNode.ChildNodes[4].AstNode).UniqueAttributes)
                 {
-                    if (_Attributes.Any(a => a.Key.Name == uniqueAttr))
+                    if (_Attributes.Any(a => a.Key.AttributeName == uniqueAttr))
                     {
-                        var attr = (from a in _Attributes where a.Key.Name == uniqueAttr select a).First();
-                        attr.Key.TypeCharacteristics.IsUnique = true;
+                        var attr = (from a in _Attributes where a.Key.AttributeName == uniqueAttr select a).First();
+                        attr.Key.AttributeType.TypeCharacteristics.IsUnique = true;
                     }
                     else
                     {
-                        throw new GraphDBException(new Error_AttributeDoesNotExists(uniqueAttr));
+                        throw new GraphDBException(new Error_AttributeIsNotDefined(uniqueAttr));
                     }
                 }
             }
@@ -140,14 +151,14 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             {
                 foreach (String mandAttr in ((MandatoryOptNode)parseNode.ChildNodes[5].AstNode).MandatoryAttribs)
                 {
-                    if (_Attributes.Any(a => a.Key.Name == mandAttr))
+                    if (_Attributes.Any(a => a.Key.AttributeName == mandAttr))
                     {
-                        var attr = (from a in _Attributes where a.Key.Name == mandAttr select a).First();
-                        attr.Key.TypeCharacteristics.IsMandatory = true;
+                        var attr = (from a in _Attributes where a.Key.AttributeName == mandAttr select a).First();
+                        attr.Key.AttributeType.TypeCharacteristics.IsMandatory = true;
                     }
                     else
                     {
-                        throw new GraphDBException(new Error_AttributeDoesNotExists(mandAttr));
+                        throw new GraphDBException(new Error_AttributeIsNotDefined(mandAttr));
                     }
                 }
             }
@@ -156,69 +167,59 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
             #region Get Optional Indices
 
-            if (parseNode.ChildNodes[6].HasChildNodes() && parseNode.ChildNodes[6].ChildNodes[1].HasChildNodes())
+            if(parseNode.ChildNodes[6].HasChildNodes())
             {
-                if (parseNode.ChildNodes[6].ChildNodes[1].AstNode is Exceptional<IndexOptOnCreateTypeMemberNode>)
+                if (parseNode.ChildNodes[6].ChildNodes[0].HasChildNodes())
                 {
-                    #region data
-                    _Indices = new List<Exceptional<IndexOptOnCreateTypeMemberNode>>();
-                    var aIDX = (Exceptional<IndexOptOnCreateTypeMemberNode>)parseNode.ChildNodes[6].ChildNodes[1].AstNode;
-                    if (aIDX.Failed)
-                    {
-                        return aIDX;
-                    }
-                    if (!aIDX.Success)
-                    {
-                        retExceptional.AddErrorsAndWarnings(aIDX);
-                    }
-                    #endregion
+                    var idxCreateNode = (Exceptional<IndexOnCreateTypeNode>)parseNode.ChildNodes[6].ChildNodes[0].AstNode;
 
-                    foreach (var aAttrInIdx in aIDX.Value.IndexAttributeNames)
+                    if (!idxCreateNode.Success)
                     {
-                        #region check attributes of idx
+                        throw new GraphDBException(idxCreateNode.Errors);
+                    }
 
+                    _Indices = new List<Exceptional<IndexDefinition>>();
+                    
+                    foreach(var idx in idxCreateNode.Value.ListOfIndexDefinitions)
+                    {
                         bool IsValidIDXAttr = false;
+
                         foreach (var aAttr in _Attributes)
                         {
-                            if (aAttr.Key.Name == aAttrInIdx.IndexAttribute)
+                            if(idx.Value.IndexAttributeDefinitions.Exists(item => item.IndexAttribute == aAttr.Key.AttributeName))
                             {
                                 IsValidIDXAttr = true;
                                 break;
                             }
                         }
 
-                        #region check supertype
-
                         if (!IsValidIDXAttr)
                         {
                             if (!_Extends.IsNullOrEmpty())
                             {
                                 var extendsType = typeManager.GetTypeByName(_Extends);
+
                                 if (extendsType != null)
                                 {
-                                    if (extendsType.GetTypeAttributeByName(aAttrInIdx.IndexAttribute) != null)
+                                    foreach (var idxAttr in idx.Value.IndexAttributeDefinitions)
                                     {
-                                        IsValidIDXAttr = true;
+                                        if (extendsType.GetTypeAttributeByName(idxAttr.IndexAttribute) != null)
+                                        {
+                                            IsValidIDXAttr = true;
+                                            break;
+                                        }
                                     }
                                 }
                             }
                         }
 
-                        #endregion
-
                         if (!IsValidIDXAttr)
                         {
-                            throw new GraphDBException(new Error_AttributeDoesNotExists(_TypeName, aAttrInIdx.IndexAttribute));
+                            throw new GraphDBException(new Error_IndexCreationError(idx.Value.IndexName, idx.Value.Edition, ""));
                         }
 
-                        #endregion
+                        _Indices.Add(idx);
                     }
-
-                    _Indices.Add(parseNode.ChildNodes[6].ChildNodes[1].AstNode as Exceptional<IndexOptOnCreateTypeMemberNode>);
-                }
-                else
-                {
-                    _Indices = new List<Exceptional<IndexOptOnCreateTypeMemberNode>>(parseNode.ChildNodes[6].ChildNodes[1].ChildNodes.Select(child => (Exceptional<IndexOptOnCreateTypeMemberNode>)child.AstNode));
                 }
             }
 
@@ -237,16 +238,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
         }
 
-        #region Accessessors
-
-        public String TypeName { get { return _TypeName; } }
-        public String Extends { get { return _Extends; } }
-        public String Comment { get { return _Comment; } }
-        public Dictionary<TypeAttribute, String> Attributes { get { return _Attributes; } }
-        public List<BackwardEdgeNode> BackwardEdges { get { return _BackwardEdgeInformation; } }
-        public List<Exceptional<IndexOptOnCreateTypeMemberNode>> Indices { get { return _Indices; } }
-
-        #endregion
 
         #region private helper methods
 
@@ -256,26 +247,30 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         /// <param name="aChildNode">The interesting ParseTreeNode.</param>
         /// <param name="myTypeManager">the typemanager</param>
         /// <returns>A Dictionary with attribute definitions.</returns>
-        private Dictionary<TypeAttribute, String> GetAttributeList(ParseTreeNode aChildNode, DBContext myTypeManager)
+        private Dictionary<AttributeDefinition, String> GetAttributeList(ParseTreeNode aChildNode, DBContext myTypeManager)
         {
             #region Data
 
-            Dictionary<TypeAttribute, String> attributes = new Dictionary<TypeAttribute, String>();
+            var attributes = new Dictionary<AttributeDefinition, String>();
 
             #endregion
 
             foreach (ParseTreeNode aAttrDefNode in aChildNode.ChildNodes)
             {
                 AttributeDefinitionNode aAttrDef = (AttributeDefinitionNode)aAttrDefNode.AstNode;
-                if (aAttrDef.TypeAttribute.DefaultValue != null)
+                if (aAttrDef.AttributeDefinition.DefaultValue != null)
                 {
-                    aAttrDef.TypeAttribute.TypeCharacteristics.IsMandatory = true;
+                    if (aAttrDef.AttributeDefinition.AttributeType.TypeCharacteristics == null)
+                    {
+                        aAttrDef.AttributeDefinition.AttributeType.TypeCharacteristics = new TypeCharacteristics();
+                    }
+                    aAttrDef.AttributeDefinition.AttributeType.TypeCharacteristics.IsMandatory = true;
                 }
 
-                if (attributes.Exists(item => item.Key.Name == aAttrDef.TypeAttribute.Name))
-                    throw new GraphDBException(new Error_AttributeAlreadyExists(aAttrDef.TypeAttribute.Name));
+                if (attributes.Exists(item => item.Key.AttributeName == aAttrDef.AttributeDefinition.AttributeName))
+                    throw new GraphDBException(new Error_AttributeAlreadyExists(aAttrDef.AttributeDefinition.AttributeName));
                 else
-                    attributes.Add(aAttrDef.TypeAttribute, aAttrDef.Type);
+                    attributes.Add(aAttrDef.AttributeDefinition, aAttrDef.AttributeDefinition.AttributeType.Name);
             }
 
             return attributes;

@@ -9,8 +9,9 @@ using System;
 
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;
-
+using sones.Lib.ErrorHandling;
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -26,9 +27,15 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         #region Properties
 
-        private String _IndexAttribute  = null;
-        private String _OrderDirection  = null;
-        private String _IndexType       = null;
+        public IndexAttributeDefinition IndexAttributeDefinition { get; private set; }
+
+        #endregion
+
+        #region Data
+
+        private String _IndexAttribute = null;
+        private String _OrderDirection = null;
+        private String _IndexType = null;
 
         #endregion
 
@@ -50,12 +57,15 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
                 if (myParseTreeNode.ChildNodes[0].ChildNodes[0].ChildNodes.Count > 1)
                 {
 
-                    _IndexType = ((ATypeNode) myParseTreeNode.ChildNodes[0].ChildNodes[0].ChildNodes[0].AstNode).DBTypeStream.Name;
+                    _IndexType = ((ATypeNode)myParseTreeNode.ChildNodes[0].ChildNodes[0].ChildNodes[0].AstNode).ReferenceAndType.TypeName;
 
-                    if (((IDNode) myParseTreeNode.ChildNodes[0].ChildNodes[0].ChildNodes[2].AstNode).IsValidated == false)
-                        throw new GraphDBException(new Error_IndexTypesOverlap());
-                    else
-                        _IndexAttribute = ((IDNode) myParseTreeNode.ChildNodes[0].ChildNodes[0].ChildNodes[2].AstNode).LastAttribute.Name;                        
+                    Exceptional validateResult = ((IDNode)myParseTreeNode.ChildNodes[0].ChildNodes[0].ChildNodes[2].AstNode).IDChainDefinition.Validate(myCompilerContext.IContext as DBContext, false);
+                    if (validateResult.Failed)
+                    {
+                        throw new GraphDBException(validateResult.Errors);
+                    }
+
+                    _IndexAttribute = ((IDNode)myParseTreeNode.ChildNodes[0].ChildNodes[0].ChildNodes[2].AstNode).IDChainDefinition.LastAttribute.Name;
 
                 }
 
@@ -66,21 +76,18 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
             }
 
-            if(myParseTreeNode.ChildNodes.Count > 1 && myParseTreeNode.ChildNodes[1].HasChildNodes())
+            if (myParseTreeNode.ChildNodes.Count > 1 && myParseTreeNode.ChildNodes[1].HasChildNodes())
+            {
                 _OrderDirection = myParseTreeNode.ChildNodes[1].FirstChild.Token.ValueString;
-
+            }
             else
+            {
                 _OrderDirection = String.Empty;
+            }
+
+            IndexAttributeDefinition = new IndexAttributeDefinition(_IndexAttribute, _IndexType, _OrderDirection);
 
         }
-
-        #endregion
-
-        #region Accessessors
-
-        public String IndexAttribute { get { return _IndexAttribute; } }
-        public String OrderDirection { get { return _OrderDirection; } }
-        public String IndexTypes     { get { return _IndexType; } }
 
         #endregion
 

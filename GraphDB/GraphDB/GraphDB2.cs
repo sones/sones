@@ -61,6 +61,7 @@ using sones.GraphDB.Plugin;
 
 namespace sones.GraphDB
 {
+
     /// <summary>
     /// This is the main class for the Pandora Database Library and one instance of the Pandora Database.
     /// </summary>
@@ -80,33 +81,39 @@ namespace sones.GraphDB
 
         #endregion
 
-        #region Accessors
+        #region Properties
 
         public ObjectLocation DatabaseRootPath
         {
             get { return _DatabaseRootPath; }
         }
 
-        public Dictionary<string, ADBSettingsBase> DBSettings
+        public Dictionary<String, ADBSettingsBase> DBSettings
         {
             get { return _DBSettings; }
         }
-
-        //public ListOfStringsObject ObjectSchemes
-        //{
-        //    get { return _ListOfObjectSchemes; }
-        //}
 
         public IGraphFSSession GraphFSSession
         {
             get { return _IGraphFSSession; }
         }
+
+        public UUID GetDatabaseUUID()
+        {
+            return this._InternalDatabaseUUID;
+        }
+
+        public EntityUUID GetDatabaseUserID()
+        {
+            return this._InternalUserID;
+        }
+
         #endregion
 
-        #region Ctors
+        #region Constructor(s)
 
-        public GraphDB2(UUID myDatabaseInstanceUUID, ObjectLocation myDatabaseRootPath, IGraphFSSession myPandoraFS, Boolean myCreateNewIfNotExisting)
-            : this(myDatabaseInstanceUUID, myDatabaseRootPath, myPandoraFS, myCreateNewIfNotExisting, true)
+        public GraphDB2(UUID myDatabaseInstanceUUID, ObjectLocation myDatabaseRootPath, IGraphFSSession myIGraphFSSession, Boolean myCreateNewIfNotExisting)
+            : this(myDatabaseInstanceUUID, myDatabaseRootPath, myIGraphFSSession, myCreateNewIfNotExisting, true)
         {
         }
 
@@ -117,16 +124,16 @@ namespace sones.GraphDB
         /// <param name="DatabaseRootPath">where is the database - a path inside the Pandora Filessystem, including the name of the database like "/database1"</param>
         /// <param name="PandoraVFSInstance">Pandora Virtual myIPandoraFS Instance</param>
         /// <param name="CreateNewIfNotExisting">if true an empty database scheme and settings structure will be established at the given root path</param>
-        public GraphDB2(UUID myDatabaseInstanceUUID, ObjectLocation myDatabaseRootPath, IGraphFSSession myPandoraFS, Boolean myCreateNewIfNotExisting, Boolean myRebuildIndices)
+        public GraphDB2(UUID myDatabaseInstanceUUID, ObjectLocation myDatabaseRootPath, IGraphFSSession myIGraphFSSession, Boolean myCreateNewIfNotExisting, Boolean myRebuildIndices)
         {
 
             #region Data
 
-            this._DatabaseRootPath = myDatabaseRootPath;
-            this._IGraphFSSession = myPandoraFS;
-            this._InternalDatabaseUUID = myDatabaseInstanceUUID;
-            this._InternalUserID = new EntityUUID();
-            this._InternalUserID.Generate();
+            _DatabaseRootPath = myDatabaseRootPath;
+            _IGraphFSSession = myIGraphFSSession;
+            _InternalDatabaseUUID = myDatabaseInstanceUUID;
+            _InternalUserID = new EntityUUID();
+            _InternalUserID.Generate();
 
             #endregion
 
@@ -157,7 +164,7 @@ namespace sones.GraphDB
 
             #region Read the Database Instance Metadata
 
-            _DBSettings = new Dictionary<string, ADBSettingsBase>();
+            _DBSettings = new Dictionary<String, ADBSettingsBase>();
             _InstanceSettingsManager = new DBInstanceSettingsManager<InstanceSettings>(_DatabaseRootPath, _IGraphFSSession, myCreateNewIfNotExisting);
 
             #endregion
@@ -175,15 +182,15 @@ namespace sones.GraphDB
 
         #region Public Methods
 
-        #region Query(QueryScript, mySessionToken)
+        #region Query(QueryScript, myGraphDBSession, myQueryManager)
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="QueryScript"></param>
-        /// <param name="graphDBSession">Needed for BeginTransaction inside any AStatementNode</param>
+        /// <param name="myQueryScript"></param>
+        /// <param name="myGraphDBSession">Needed for BeginTransaction inside any AStatementNode</param>
         /// <returns></returns>
-        public QueryResult Query(String QueryScript, GraphDBSession graphDBSession, QueryManager queryManager)
+        public QueryResult Query(String myQueryScript, GraphDBSession myGraphDBSession, QueryManager myQueryManager)
         {
 
             #region Data
@@ -194,10 +201,11 @@ namespace sones.GraphDB
 
             /// As soon as the GetContent method of each statement needs no DBContext this methods should be removed and replaced by checking directly the parsed statement.
             /// But currently, we need to start a transaction for each query - but NOT for transaction related queries.
-            if (isNonTransactionalQuery(QueryScript))
+            if (isNonTransactionalQuery(myQueryScript))
             {
-                _QueryResult = queryManager.ExecuteQuery(QueryScript, graphDBSession.GetDBContext(), graphDBSession);
+                _QueryResult = myQueryManager.ExecuteQuery(myQueryScript, myGraphDBSession.GetDBContext(), myGraphDBSession);
             }
+
             else
             {
 
@@ -207,32 +215,34 @@ namespace sones.GraphDB
                     //1) no query is allowed without a valid transaction
                     //2) GetContent does not get any DBContext, so we can create the transaction just for the execute and with that we know we need either a ReadOnly or Serializeable
 
-                if (graphDBSession.GetLatestTransaction().IsRunning())
+                if (myGraphDBSession.GetLatestTransaction().IsRunning())
                 {
 
                     #region Create a new transaction based in the existing transaction
 
-                    var existingTransaction = graphDBSession.GetLatestTransaction();
-                    using (var transaction = graphDBSession.BeginTransaction(existingTransaction.Distributed, existingTransaction.LongRunning, existingTransaction.IsolationLevel))
+                    var existingTransaction = myGraphDBSession.GetLatestTransaction();
+                    using (var _Transaction = myGraphDBSession.BeginTransaction(existingTransaction.Distributed, existingTransaction.LongRunning, existingTransaction.IsolationLevel))
                     {
-                        _QueryResult = queryManager.ExecuteQuery(QueryScript, transaction.GetDBContext(), graphDBSession);
-                        _QueryResult.AddErrorsAndWarnings(transaction.Commit());
+                        _QueryResult = myQueryManager.ExecuteQuery(myQueryScript, _Transaction.GetDBContext(), myGraphDBSession);
+                        _QueryResult.AddErrorsAndWarnings(_Transaction.Commit());
                     }
 
                     #endregion
 
                 }
+
                 else
                 {
-                    using (var transaction = graphDBSession.BeginTransaction(myIsolationLevel: IsolationLevel.Serializable))
+                    using (var _Transaction = myGraphDBSession.BeginTransaction(myIsolationLevel: IsolationLevel.Serializable))
                     {
-                        _QueryResult = queryManager.ExecuteQuery(QueryScript, transaction.GetDBContext(), graphDBSession);
-                        _QueryResult.AddErrorsAndWarnings(transaction.Commit());
+                        _QueryResult = myQueryManager.ExecuteQuery(myQueryScript, _Transaction.GetDBContext(), myGraphDBSession);
+                        _QueryResult.AddErrorsAndWarnings(_Transaction.Commit());
                     }
                 }
+
             }
 
-            _QueryResult.Query = QueryScript;
+            _QueryResult.Query = myQueryScript;
 
             return _QueryResult;
 
@@ -242,25 +252,16 @@ namespace sones.GraphDB
         /// As soon as the GetContent method of each statement needs no DBContext this methods should be removed and replaced by checking directly the parsed statement.
         /// But currently, we need to start a transaction for each query - but NOT for transaction related queries.
         /// </summary>
-        /// <param name="queryScript"></param>
+        /// <param name="myQueryScript"></param>
         /// <returns></returns>
-        private bool isNonTransactionalQuery(string queryScript)
+        private Boolean isNonTransactionalQuery(String myQueryScript)
         {
-            var qs = queryScript.ToUpper();
+            var qs = myQueryScript.ToUpper();
             return qs.Contains("TRANSACTION") && (qs.StartsWith("BEGIN") || qs.StartsWith("COMMIT") || qs.StartsWith("ROLLBACK"));
         }
 
         #endregion
-
-        public UUID GetDatabaseUniqueID()
-        {
-            return this._InternalDatabaseUUID;
-        }
-
-        public EntityUUID GetDatabaseUserID()
-        {
-            return this._InternalUserID;
-        }
+                
 
         #region MapAndReduce(myDBTypeName, myMap, myReduce)
 
@@ -388,6 +389,70 @@ namespace sones.GraphDB
 
         #endregion
 
+
+        #region BeginTransaction
+
+        public DBTransaction BeginTransaction(DBContext dbContext, SessionToken mySessionToken, Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? timestamp = null)
+        {
+            var fsTransaction = _IGraphFSSession.BeginTransaction(myDistributed, myLongRunning, myIsolationLevel, myName, timestamp);
+
+            DBTransaction _Transaction = null;
+            var currentTransaction = DBTransaction.GetLatestTransaction(mySessionToken.SessionInfo.SessionUUID);
+            if (currentTransaction.IsRunning())
+            {
+                _Transaction = currentTransaction.BeginNestedTransaction(fsTransaction);
+            }
+            else
+            {
+                _Transaction = new DBTransaction(dbContext, mySessionToken.SessionInfo.SessionUUID, fsTransaction);
+                DBTransaction.SetTransaction(mySessionToken.SessionInfo.SessionUUID, _Transaction);
+            }
+
+            return _Transaction;
+
+        }
+
+        #endregion
+
+        #region CommitTransaction
+
+        internal DBTransaction CommitTransaction(SessionToken sessionToken, bool async)
+        {
+            var curTransaction = DBTransaction.GetLatestTransaction(sessionToken.SessionInfo.SessionUUID);
+
+            if (!curTransaction.IsRunning())
+            {
+                return new DBTransaction(new Errors.Error_NoTransaction());
+            }
+            curTransaction.Push(curTransaction.Commit(async));
+            //curTransaction = null;
+
+            return curTransaction;
+        }
+
+        #endregion
+
+        #region RollbackTransaction
+
+        internal DBTransaction RollbackTransaction(SessionToken sessionToken, bool async)
+        {
+            var curTransaction = DBTransaction.GetLatestTransaction(sessionToken.SessionInfo.SessionUUID);
+
+            if (!curTransaction.IsRunning())
+            {
+                return new DBTransaction(new Errors.Error_NoTransaction());
+            }
+            curTransaction.Push(curTransaction.Rollback(async));
+            //curTransaction = null;
+
+            return curTransaction;
+        }
+
+        #endregion
+
+
+        #region Shutdown(mySessionToken)
+
         /// <summary>
         /// Initiates the Shutdown of this Database Instance Manager
         /// </summary>
@@ -401,6 +466,9 @@ namespace sones.GraphDB
         }
 
         #endregion
+
+        #endregion
+
 
         #region NotificationDispatcher
 
@@ -478,69 +546,6 @@ namespace sones.GraphDB
 
         #endregion
 
-        #region Transactions
-
-        #region BeginTransaction
-
-        public DBTransaction BeginTransaction(DBContext dbContext, SessionToken mySessionToken, Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? timestamp = null)
-        {
-            var fsTransaction = _IGraphFSSession.BeginTransaction(myDistributed, myLongRunning, myIsolationLevel, myName, timestamp);
-
-            DBTransaction _Transaction = null;
-            var currentTransaction = DBTransaction.GetLatestTransaction(mySessionToken.SessionInfo.SessionUUID);
-            if (currentTransaction.IsRunning())
-            {
-                _Transaction = currentTransaction.BeginNestedTransaction(fsTransaction);
-            }
-            else
-            {
-                _Transaction = new DBTransaction(dbContext, mySessionToken.SessionInfo.SessionUUID, fsTransaction);
-                DBTransaction.SetTransaction(mySessionToken.SessionInfo.SessionUUID, _Transaction);
-            }
-
-            return _Transaction;
-
-        }
-
-        #endregion
-
-        #region CommitTransaction
-
-        internal DBTransaction CommitTransaction(SessionToken sessionToken, bool async)
-        {
-            var curTransaction = DBTransaction.GetLatestTransaction(sessionToken.SessionInfo.SessionUUID);
-
-            if (!curTransaction.IsRunning())
-            {
-                return new DBTransaction(new Errors.Error_NoTransaction());
-            }
-            curTransaction.Push(curTransaction.Commit(async));
-            //curTransaction = null;
-
-            return curTransaction;
-        }
-
-        #endregion
-
-        #region RollbackTransaction
-
-        internal DBTransaction RollbackTransaction(SessionToken sessionToken, bool async)
-        {
-            var curTransaction = DBTransaction.GetLatestTransaction(sessionToken.SessionInfo.SessionUUID);
-
-            if (!curTransaction.IsRunning())
-            {
-                return new DBTransaction(new Errors.Error_NoTransaction());
-            }
-            curTransaction.Push(curTransaction.Rollback(async));
-            //curTransaction = null;
-
-            return curTransaction;
-        }
-        
-        #endregion
-
-        #endregion
-
     }
+
 }

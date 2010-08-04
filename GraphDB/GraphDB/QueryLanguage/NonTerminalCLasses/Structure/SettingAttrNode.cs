@@ -32,24 +32,25 @@ using System.Text;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
 using sones.GraphDB.TypeManagement;
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.GraphDB.Exceptions;
+using sones.GraphDB.Managers.Structures.Setting;
+using sones.GraphDB.Managers.Structures;
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 {
     public class SettingAttrNode : AStructureNode
     {
-        #region Data
-        Dictionary<string, List<TypeAttribute>> _AttrList;
-        #endregion
 
-        #region constructor
-        public SettingAttrNode()
-        {
-            _AttrList = new Dictionary<string, List<TypeAttribute>>();
-        }
-        #endregion
+        /// <summary>
+        /// TypeName,Attribute
+        /// </summary>
+        public Dictionary<String, List<IDChainDefinition>> Attributes { get; private set; }
 
         public void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
+
+            Attributes = new Dictionary<String, List<IDChainDefinition>>();
+
             if (parseNode == null)
                 return;
 
@@ -59,25 +60,17 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
                 {
                     if (Node.HasChildNodes())
                     {
-                        var typeAttr = (Node.ChildNodes[2].AstNode as IDNode).LastAttribute;
-                        var typeOfNode = (Node.ChildNodes[2].AstNode as IDNode).LastType;
 
-                        if (!_AttrList.ContainsKey(typeOfNode.Name))
-                            _AttrList.Add(typeOfNode.Name, new List<TypeAttribute>());
-
-                        if (!_AttrList[typeOfNode.Name].Contains(typeAttr))
-                            _AttrList[typeOfNode.Name].Add(typeAttr);
+                        if (!Attributes.ContainsKey((Node.ChildNodes[0].AstNode as ATypeNode).ReferenceAndType.TypeName))
+                        {
+                            Attributes.Add((Node.ChildNodes[0].AstNode as ATypeNode).ReferenceAndType.TypeName, new List<IDChainDefinition>());
+                        }
+                        Attributes[(Node.ChildNodes[0].AstNode as ATypeNode).ReferenceAndType.TypeName].Add((Node.ChildNodes[2].AstNode as IDNode).IDChainDefinition);
 
                     }
                 }
             }
         }
 
-        #region Accessor
-
-        public Dictionary<string, List<TypeAttribute>> Attributes
-        { get { return _AttrList; } }
-
-        #endregion
     }
 }

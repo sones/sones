@@ -79,28 +79,28 @@ namespace sones.GraphDB.Licensing
 
         public void Serialize(ref SerializationWriter mySerializationWriter)
         {
-            mySerializationWriter.WriteObject((UInt32)Features.Count);
+            mySerializationWriter.WriteUInt32((UInt32)Features.Count);
 
             foreach (var entry in Features)
-                mySerializationWriter.WriteObject((byte)entry);
+                mySerializationWriter.Write((byte)entry);
 
-            mySerializationWriter.WriteObject(NumberOfLicensedCPUs);
-            mySerializationWriter.WriteObject(NumberOfLicensedRAM);
+            mySerializationWriter.WriteInt32(NumberOfLicensedCPUs);
+            mySerializationWriter.WriteInt32(NumberOfLicensedRAM);
         }
 
         public void Deserialize(ref SerializationReader mySerializationReader)
         {
             Features = new List<FeatureIDs>();
-            UInt32 cnt = (UInt32)mySerializationReader.ReadObject();
+            UInt32 cnt = mySerializationReader.ReadUInt32();
 
             for (int i = 0; i < cnt; i++)
             {
-                byte entry = (byte)mySerializationReader.ReadObject();
+                byte entry = mySerializationReader.ReadOptimizedByte();
                 Features.Add((FeatureIDs)entry);
             }
 
-            NumberOfLicensedCPUs = (Int32)mySerializationReader.ReadObject();
-            NumberOfLicensedRAM = (Int32)mySerializationReader.ReadObject();
+            NumberOfLicensedCPUs = mySerializationReader.ReadInt32();
+            NumberOfLicensedRAM  = mySerializationReader.ReadInt32();
         }
 
         #endregion
@@ -119,10 +119,10 @@ namespace sones.GraphDB.Licensing
             mySerializationWriter.WriteObject((UInt32)thisObject.Features.Count);
 
             foreach (var entry in thisObject.Features)
-                mySerializationWriter.WriteObject((byte)entry);
+                mySerializationWriter.WriteByte((Byte)entry);
 
-            mySerializationWriter.WriteObject(thisObject.NumberOfLicensedCPUs);
-            mySerializationWriter.WriteObject(thisObject.NumberOfLicensedRAM);
+            mySerializationWriter.WriteInt32(thisObject.NumberOfLicensedCPUs);
+            mySerializationWriter.WriteInt32(thisObject.NumberOfLicensedRAM);
         }
 
         public object Deserialize(SerializationReader mySerializationReader, Type type)
@@ -134,12 +134,12 @@ namespace sones.GraphDB.Licensing
 
             for (int i = 0; i < cnt; i++)
             {
-                byte entry = (byte)mySerializationReader.ReadObject();
+                Byte entry = mySerializationReader.ReadOptimizedByte();
                 thisObject.Features.Add((FeatureIDs)entry);
             }
 
-            thisObject.NumberOfLicensedCPUs = (Int32)mySerializationReader.ReadObject();
-            thisObject.NumberOfLicensedRAM = (Int32)mySerializationReader.ReadObject();
+            thisObject.NumberOfLicensedCPUs = mySerializationReader.ReadInt32();
+            thisObject.NumberOfLicensedRAM  = mySerializationReader.ReadInt32();
 
             return thisObject;
         }

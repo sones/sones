@@ -44,6 +44,8 @@ using sones.GraphDB.TypeManagement;
 
 using sones.Lib.DataStructures.Indices;
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.Managers;
 
 #endregion
 
@@ -51,19 +53,17 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
 {
 
     /// <summary>
-    /// This node is requested in case of an create type statement.
+    /// This node is requested in case of an create index statement.
     /// </summary>
-
-    class CreateIndexNode : AStatement
+    public class CreateIndexNode : AStatement
     {
 
         #region Data
 
         String                          _IndexName          = null;
         String                          _IndexEdition       = null;
-        GraphDBType                     _DBObjectType       = null;
-        IndexAttributeListNode    _AttributeList      = null;
-        List<AttributeUUID>             _IndexAttributes    = null;
+        String                          _DBType             = null;
+        List<IndexAttributeDefinition>  _AttributeList      = null;
         String                          _IndexType;
 
         #endregion
@@ -86,121 +86,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
 
         #endregion
 
-        #region public AStatement methods
-
-        /// <summary>
-        /// Executes the statement
-        /// </summary>
-        /// <param name="myIGraphDBSession">The DBSession to start new transactions</param>
-        /// <param name="transactionContext">The current dbContext inside an readonly transaction. For any changes, you need to start a new transaction using <paramref name="myIGraphDBSession"/></param>
-        /// <returns>The result of the query</returns>
-        public override QueryResult Execute(IGraphDBSession myIGraphDBSession, DBContext myDBContext)
-        {
-
-            #region checking for reference attributes
-
-            TypeAttribute aIdxAttribute;
-            foreach (var aAttributeUUID in _IndexAttributes)
-            {
-                aIdxAttribute = _DBObjectType.GetTypeAttributeByUUID(aAttributeUUID);
-
-                if (aIdxAttribute.GetDBType(myDBContext.DBTypeManager).IsUserDefined)
-                {
-                    return new QueryResult(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), String.Format("Currently it is not implemented to create an index on reference attributes like {0}", aIdxAttribute.Name) ));
-                }
-            }
-
-            #endregion
-
-            using (var _Transaction = myIGraphDBSession.BeginTransaction())
-            {
-
-                var transactionContext = _Transaction.GetDBContext();
-                SelectionResultSet resultOutput = null;
-
-                foreach (var item in transactionContext.DBTypeManager.GetAllSubtypes(_DBObjectType))
-                {
-
-                    var createdIDx = item.CreateAttributeIndex(_IndexName, _IndexAttributes, _IndexEdition, _IndexType);
-                    if (!createdIDx.Success)
-                    {
-                        return new QueryResult(createdIDx);
-                    }
-
-                    else
-                    {
-
-                        #region prepare readouts
-
-                        var readOut = GenerateCreateIndexResult(createdIDx.Value);
-
-                        resultOutput = new SelectionResultSet(null, new List<DBObjectReadout> { readOut });
-
-                        #endregion
-
-                    }
-
-                    var rebuildResult = transactionContext.DBIndexManager.RebuildIndex(createdIDx.Value.IndexName, createdIDx.Value.IndexEdition, item, IndexSetStrategy.MERGE);
-                    if (!rebuildResult.Success)
-                    {
-                        return new QueryResult(rebuildResult);
-                    }
-
-                    var flushResult = transactionContext.DBTypeManager.FlushType(item);
-                    if (flushResult.Failed)
-                    {
-                        return new QueryResult(flushResult);
-                    }
-
-                }
-
-                #region Commit transaction and add all Warnings and Errors
-
-                var result = new QueryResult(_Transaction.Commit());
-
-                #endregion
-
-                if (result.ResultType == ResultType.Successful)
-                {
-                    result.AddResult(resultOutput);
-                }
-                
-                return result;
-
-            }
-
-        }
-
-        private DBObjectReadout GenerateCreateIndexResult(AttributeIndex myAttributeIndex)
-        {
-
-            var payload = new Dictionary<String, Object>();
-
-            payload.Add("NAME", myAttributeIndex.IndexName);
-            payload.Add("EDITION", myAttributeIndex.IndexEdition);
-            payload.Add("INDEXTYPE", myAttributeIndex.IndexType);
-            payload.Add("ONTYPE", _DBObjectType.Name);
-
-            var _Attributes = new List<DBObjectReadout>();
-
-            foreach (var _Attribute in _AttributeList.IndexAttributes)
-            {
-
-                var payloadAttributes = new Dictionary<String, Object>();
-
-                payloadAttributes.Add("ATTRIBUTE", _Attribute.IndexAttribute);
-
-                _Attributes.Add(new DBObjectReadout(payloadAttributes));
-
-            }
-
-            payload.Add("ATTRIBUTES", new Edge(_Attributes, "ATTRIBUTE"));
-
-            //payload.Add("NAME", attributeIndex.IndexName)
-
-            return new DBObjectReadout(payload);
-
-        }
+        #region GetContent
 
         /// <summary>
         /// Gets the content of an UpdateStatement.
@@ -210,9 +96,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
         /// <param name="typeManager">The TypeManager of the PandoraDB.</param>
         public override void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
         {
-
-            var _DBContext   = myCompilerContext.IContext as DBContext;
-            var _TypeManager = _DBContext.DBTypeManager;
 
             foreach (var child in myParseTreeNode.ChildNodes)
             {
@@ -228,27 +111,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
                     }
                     else if (child.AstNode is ATypeNode)
                     {
-                        _DBObjectType = (child.AstNode as ATypeNode).DBTypeStream;
+                        _DBType = (child.AstNode as ATypeNode).ReferenceAndType.TypeName;
                     }
                     else if (child.AstNode is IndexAttributeListNode)
                     {
-                        _AttributeList = (child.AstNode as IndexAttributeListNode);
-                        _IndexAttributes = new List<AttributeUUID>();
-
-                        foreach (IndexAttributeNode _CreateIndexAttributeNode in _AttributeList.IndexAttributes)
-                        {
-
-                            var validAttrExcept = _TypeManager.AreValidAttributes(_DBObjectType, _CreateIndexAttributeNode.IndexAttribute);
-
-                            if (validAttrExcept.Failed)
-                                throw new GraphDBException(validAttrExcept.Errors);
-
-                            if (!validAttrExcept.Value)
-                                throw new GraphDBException(new Error_AttributeDoesNotExists(_DBObjectType.Name, _CreateIndexAttributeNode.IndexAttribute));
-
-                            _IndexAttributes.Add(_DBObjectType.GetTypeAttributeByName(_CreateIndexAttributeNode.IndexAttribute).UUID);
-
-                        }
+                        _AttributeList = (child.AstNode as IndexAttributeListNode).IndexAttributes;
                     }
                     else if (child.AstNode is IndexTypeOptNode)
                     {
@@ -256,7 +123,50 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
                     }
                 }
             }
-            
+
+        }
+
+        #endregion
+
+        #region Execute
+
+        /// <summary>
+        /// Executes the statement
+        /// </summary>
+        /// <param name="myIGraphDBSession">The DBSession to start new transactions</param>
+        /// <param name="transactionContext">The current dbContext inside an readonly transaction. For any changes, you need to start a new transaction using <paramref name="myIGraphDBSession"/></param>
+        /// <returns>The result of the query</returns>
+        public override QueryResult Execute(IGraphDBSession myIGraphDBSession, DBContext myDBContext)
+        {
+
+            using (var _Transaction = myIGraphDBSession.BeginTransaction())
+            {
+
+                var transactionContext = _Transaction.GetDBContext();
+                var qresult = new QueryResult();
+
+                #region Create the index
+
+                var resultOutput = transactionContext.DBIndexManager.CreateIndex(transactionContext, _DBType, _IndexName, _IndexEdition, _IndexType, _AttributeList);
+                qresult.AddErrorsAndWarnings(resultOutput);
+
+                #endregion
+
+                #region Commit transaction and add all Warnings and Errors
+
+                qresult.AddErrorsAndWarnings(_Transaction.Commit());
+
+                #endregion
+
+                if (qresult.ResultType == ResultType.Successful)
+                {
+                    qresult.AddResult(resultOutput.Value);
+                }
+
+                return qresult;
+
+            }
+
         }
 
         #endregion

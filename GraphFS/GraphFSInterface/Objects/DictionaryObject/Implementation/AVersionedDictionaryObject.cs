@@ -200,13 +200,13 @@ namespace sones.GraphFS.Objects
 
                     #region Write HistorySize
 
-                    mySerializationWriter.WriteObject(_HistorySize);
+                    mySerializationWriter.WriteUInt64(_HistorySize);
 
                     #endregion
 
                     #region NotificationHandling
 
-                    mySerializationWriter.WriteObject(myNotificationHandling);
+                    mySerializationWriter.WriteUInt64(myNotificationHandling);
 
                     #endregion
 
@@ -228,7 +228,7 @@ namespace sones.GraphFS.Objects
                             mySerializationWriter.WriteObject(_KeyValuePair.Key);
 
                             // Write Timestamp...
-                            mySerializationWriter.WriteObject(_TimestampValuePair.Timestamp);                            
+                            mySerializationWriter.WriteUInt64(_TimestampValuePair.Timestamp);                            
 
                             // Write TValue...
                             
@@ -284,13 +284,13 @@ namespace sones.GraphFS.Objects
 
                 #region Read HistorySize
 
-                _HistorySize = (UInt64) mySerializationReader.ReadObject();
+                _HistorySize = mySerializationReader.ReadUInt64();
 
                 #endregion
 
                 #region NotificationHandling
 
-                UInt64 _NotificationHandling = (UInt64) mySerializationReader.ReadObject();
+                UInt64 _NotificationHandling = mySerializationReader.ReadUInt64();
 
                 #endregion
 
@@ -314,7 +314,7 @@ namespace sones.GraphFS.Objects
 
                     #endregion
 
-                    Timestamp = (UInt64) mySerializationReader.ReadObject();
+                    Timestamp = mySerializationReader.ReadUInt64();
 
                     #region Read TValue
                     
@@ -390,7 +390,7 @@ namespace sones.GraphFS.Objects
         private void AddOnFileSystem(TKey myKey, TValue myValue, UInt64 myTimestamp)
         {
 
-            if (_IGraphFSReference.CheckPersistency())
+            if (_IGraphFSReference.IsPersistent())
             {
 
                 var _IFSStream = this._IGraphFSReference.Value.OpenStream(new SessionToken(new FSSessionInfo("AVersionedDictionaryObject")), _ObjectLocation, _ObjectStream, _ObjectEdition, null, 0);
@@ -405,7 +405,7 @@ namespace sones.GraphFS.Objects
 
             }
 
-            else if (_IGraphFSSessionReference.CheckPersistency())
+            else if (_IGraphFSSessionReference.IsPersistent())
             {
             //    var _IPandoraStream = this._FSSessionReference.OpenStream(_ObjectLocation, _ObjectStream, _ObjectEdition, null, 0);
 

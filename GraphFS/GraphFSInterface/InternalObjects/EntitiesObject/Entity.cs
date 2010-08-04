@@ -1172,24 +1172,24 @@ namespace sones.GraphFS.InternalObjects
                 #region Write Entity Basics
 
                 _UUID.Serialize(ref mySerializationWriter);
-                mySerializationWriter.WriteObject(_Login);
-                mySerializationWriter.WriteObject(_Realname);
-                mySerializationWriter.WriteObject(_Description);
-                mySerializationWriter.WriteObject((UInt16)_Status);
+                mySerializationWriter.WriteString(_Login);
+                mySerializationWriter.WriteString(_Realname);
+                mySerializationWriter.WriteString(_Description);
+                mySerializationWriter.WriteByte((Byte)_Status);
 
                 #endregion
 
                 #region ContactList
 
-                mySerializationWriter.WriteObject((UInt32)_Contacts.Count);
+                mySerializationWriter.WriteUInt32((UInt32)_Contacts.Count);
                 foreach (KeyValuePair<ContactTypes, List<String>> _KeyValuePair in _Contacts)
                 {
 
-                    mySerializationWriter.WriteObject((Byte)_KeyValuePair.Key);
+                    mySerializationWriter.WriteByte((Byte)_KeyValuePair.Key);
 
-                    mySerializationWriter.WriteObject((UInt32)_KeyValuePair.Value.Count);
+                    mySerializationWriter.WriteUInt32((UInt32)_KeyValuePair.Value.Count);
                     foreach (String _String in _KeyValuePair.Value)
-                        mySerializationWriter.WriteObject(_String);
+                        mySerializationWriter.WriteString(_String);
 
                 }
 
@@ -1203,17 +1203,17 @@ namespace sones.GraphFS.InternalObjects
 
                 #region PublicKeyList
 
-                mySerializationWriter.WriteObject((UInt32)_PublicKeyList.Count);
+                mySerializationWriter.WriteUInt32((UInt32)_PublicKeyList.Count);
                 foreach (PublicKey _PublicKey in _PublicKeyList)
-                    mySerializationWriter.WriteObject(_PublicKey.ToByteArray());
+                    _PublicKey.Serialize(ref mySerializationWriter);
 
                 #endregion
 
                 #region Memberships
 
-                mySerializationWriter.WriteObject((UInt64)_Membership.Count);
+                mySerializationWriter.WriteUInt32((UInt32)_Membership.Count);
                 foreach (EntityUUID _MembershipUUID in _Membership)
-                    mySerializationWriter.WriteObject(_MembershipUUID.GetByteArray());
+                    _MembershipUUID.Serialize(ref mySerializationWriter);
 
                 #endregion
 
@@ -1236,28 +1236,28 @@ namespace sones.GraphFS.InternalObjects
                 #region Read Entity Basics
                                 
                 _UUID.Deserialize(ref mySerializationReader);
-                _Login          = (String) mySerializationReader.ReadObject();
-                _Realname       = (String) mySerializationReader.ReadObject();
-                _Description    = (String) mySerializationReader.ReadObject();
-                _Status         = (EntityStatus) mySerializationReader.ReadObject();
+                _Login          = mySerializationReader.ReadString();
+                _Realname       = mySerializationReader.ReadString();
+                _Description    = mySerializationReader.ReadString();
+                _Status         = (EntityStatus)mySerializationReader.ReadOptimizedByte();
 
                 #endregion
 
                 #region Read ContactList
 
-                UInt32 _NumberOfContacts = (UInt32) mySerializationReader.ReadObject();
+                UInt32 _NumberOfContacts = mySerializationReader.ReadUInt32();
 
                 for (UInt32 i=0; i<_NumberOfContacts; i++)
                 {
-                    
-                    ContactTypes _ContactTypes = (ContactTypes) mySerializationReader.ReadObject();
+
+                    ContactTypes _ContactTypes = (ContactTypes)mySerializationReader.ReadOptimizedByte();
 
                     List<String> _StringList = new List<String>();
 
-                    UInt32 _ListEntries = (UInt32) mySerializationReader.ReadObject();
+                    UInt32 _ListEntries = mySerializationReader.ReadUInt32();
 
                     for (UInt32 j=0; j<_NumberOfContacts; j++)
-                        _StringList.Add( (String) mySerializationReader.ReadObject());
+                        _StringList.Add( mySerializationReader.ReadString());
 
                     _Contacts.Add(_ContactTypes, _StringList);
                         
@@ -1274,19 +1274,19 @@ namespace sones.GraphFS.InternalObjects
 
                 #region PublicKeyList
 
-                UInt32 _NumberOfPublicKeys = (UInt32) mySerializationReader.ReadObject();
+                UInt32 _NumberOfPublicKeys = mySerializationReader.ReadUInt32();
 
                 for (UInt32 i=0; i<_NumberOfPublicKeys; i++)
-                    _PublicKeyList.Add(new PublicKey( (Byte[]) mySerializationReader.ReadObject()));
+                    _PublicKeyList.Add(new PublicKey(mySerializationReader.ReadByteArray()));
 
                 #endregion
 
                 #region Memberships
 
-                UInt64 _NumberOfMemberships = (UInt64) mySerializationReader.ReadObject();
+                UInt64 _NumberOfMemberships = mySerializationReader.ReadUInt64();
 
                 for (UInt64 i=0; i<_NumberOfMemberships; i++)
-                    _Membership.Add(new EntityUUID( (Byte[]) mySerializationReader.ReadObject()));
+                    _Membership.Add(new EntityUUID(mySerializationReader.ReadByteArray()));
 
                 #endregion
 
@@ -1317,22 +1317,22 @@ namespace sones.GraphFS.InternalObjects
                 #region Write Entity Basics
 
                 thisObject._UUID.Serialize(ref mySerializationWriter);
-                mySerializationWriter.WriteObject(thisObject._Login);
-                mySerializationWriter.WriteObject(thisObject._Realname);
-                mySerializationWriter.WriteObject(thisObject._Description);
-                mySerializationWriter.WriteObject((UInt16)thisObject._Status);
+                mySerializationWriter.WriteString(thisObject._Login);
+                mySerializationWriter.WriteString(thisObject._Realname);
+                mySerializationWriter.WriteString(thisObject._Description);
+                mySerializationWriter.WriteByte((Byte)thisObject._Status);
 
                 #endregion
 
                 #region ContactList
 
-                mySerializationWriter.WriteObject((UInt32)thisObject._Contacts.Count);
+                mySerializationWriter.WriteUInt32((UInt32)thisObject._Contacts.Count);
                 foreach (KeyValuePair<ContactTypes, List<String>> _KeyValuePair in thisObject._Contacts)
                 {
 
-                    mySerializationWriter.WriteObject((Byte)_KeyValuePair.Key);
+                    mySerializationWriter.WriteByte((Byte)_KeyValuePair.Key);
 
-                    mySerializationWriter.WriteObject((UInt32)_KeyValuePair.Value.Count);
+                    mySerializationWriter.WriteUInt32((UInt32)_KeyValuePair.Value.Count);
                     foreach (String _String in _KeyValuePair.Value)
                         mySerializationWriter.WriteObject(_String);
 
@@ -1348,17 +1348,19 @@ namespace sones.GraphFS.InternalObjects
 
                 #region PublicKeyList
 
-                mySerializationWriter.WriteObject((UInt32)thisObject._PublicKeyList.Count);
+                mySerializationWriter.WriteUInt32((UInt32)thisObject._PublicKeyList.Count);
+
                 foreach (PublicKey _PublicKey in thisObject._PublicKeyList)
-                    mySerializationWriter.WriteObject(_PublicKey.ToByteArray());
+                    _PublicKey.Serialize(ref mySerializationWriter);
 
                 #endregion
 
                 #region Memberships
 
-                mySerializationWriter.WriteObject((UInt64)thisObject._Membership.Count);
+                mySerializationWriter.WriteUInt64((UInt64)thisObject._Membership.Count);
+
                 foreach (EntityUUID _MembershipUUID in thisObject._Membership)
-                    mySerializationWriter.WriteObject(_MembershipUUID.GetByteArray());
+                    _MembershipUUID.Serialize(ref mySerializationWriter);
 
                 #endregion
 
@@ -1383,28 +1385,28 @@ namespace sones.GraphFS.InternalObjects
                 #region Read Entity Basics
 
                 thisObject._UUID.Deserialize(ref mySerializationReader);
-                thisObject._Login = (String)mySerializationReader.ReadObject();
-                thisObject._Realname = (String)mySerializationReader.ReadObject();
-                thisObject._Description = (String)mySerializationReader.ReadObject();
-                thisObject._Status = (EntityStatus)mySerializationReader.ReadObject();
+                thisObject._Login = mySerializationReader.ReadString();
+                thisObject._Realname = mySerializationReader.ReadString();
+                thisObject._Description = mySerializationReader.ReadString();
+                thisObject._Status = (EntityStatus)mySerializationReader.ReadOptimizedByte();
 
                 #endregion
 
                 #region Read ContactList
 
-                UInt32 _NumberOfContacts = (UInt32)mySerializationReader.ReadObject();
+                UInt32 _NumberOfContacts = mySerializationReader.ReadUInt32();
 
                 for (UInt32 i = 0; i < _NumberOfContacts; i++)
                 {
 
-                    ContactTypes _ContactTypes = (ContactTypes)mySerializationReader.ReadObject();
+                    ContactTypes _ContactTypes = (ContactTypes)mySerializationReader.ReadOptimizedByte();
 
                     List<String> _StringList = new List<String>();
 
                     UInt32 _ListEntries = (UInt32)mySerializationReader.ReadObject();
 
                     for (UInt32 j = 0; j < _NumberOfContacts; j++)
-                        _StringList.Add((String)mySerializationReader.ReadObject());
+                        _StringList.Add(mySerializationReader.ReadString());
 
                     thisObject._Contacts.Add(_ContactTypes, _StringList);
 
@@ -1421,19 +1423,19 @@ namespace sones.GraphFS.InternalObjects
 
                 #region PublicKeyList
 
-                UInt32 _NumberOfPublicKeys = (UInt32)mySerializationReader.ReadObject();
+                UInt32 _NumberOfPublicKeys = (UInt32)mySerializationReader.ReadUInt32();
 
                 for (UInt32 i = 0; i < _NumberOfPublicKeys; i++)
-                    thisObject._PublicKeyList.Add(new PublicKey((Byte[])mySerializationReader.ReadObject()));
+                    thisObject._PublicKeyList.Add(new PublicKey(mySerializationReader.ReadByteArray()));
 
                 #endregion
 
                 #region Memberships
 
-                UInt64 _NumberOfMemberships = (UInt64)mySerializationReader.ReadObject();
+                UInt64 _NumberOfMemberships = mySerializationReader.ReadUInt64();
 
                 for (UInt64 i = 0; i < _NumberOfMemberships; i++)
-                    thisObject._Membership.Add(new EntityUUID((Byte[])mySerializationReader.ReadObject()));
+                    thisObject._Membership.Add(new EntityUUID(mySerializationReader.ReadByteArray()));
 
                 #endregion
 

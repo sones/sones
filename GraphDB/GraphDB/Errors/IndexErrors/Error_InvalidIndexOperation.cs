@@ -31,10 +31,20 @@ namespace sones.GraphDB.Errors
         public String IndexName { get; private set; }
         public Object IndexKey { get; private set; }
         public Object Operand { get; private set; }
+        public String OperationName { get; private set; }
+
+        public Error_InvalidIndexOperation(String myIndexName, String myOperationName)
+        {
+            IndexName = myIndexName;
+            OperationName = myOperationName;
+            IndexKey = null;
+            Operand = null;
+        }
 
         public Error_InvalidIndexOperation(String myIndexName)
         {
             IndexName = myIndexName;
+            OperationName = null;
             IndexKey = null;
             Operand = null;
         }
@@ -43,6 +53,7 @@ namespace sones.GraphDB.Errors
         {
             IndexName = myIndexName;
             IndexKey = myIndexKey;
+            OperationName = null;
             Operand = myOperand;
         }
 
@@ -50,7 +61,14 @@ namespace sones.GraphDB.Errors
         {
             if (IndexKey == null)
             {
-                return String.Format("A invalid index operation on \"{0}\" occurred.", IndexName);
+                if (OperationName == null)
+                {
+                    return String.Format("A invalid index operation on \"{0}\" occurred.", IndexName);
+                }
+                else
+                {
+                    return String.Format("A invalid index operation ({0}) on \"{1}\" occurred.", OperationName, IndexName);
+                }
             }
             else
             {

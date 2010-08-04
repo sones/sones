@@ -54,6 +54,7 @@ using sones.Lib;
 using sones.Lib.ErrorHandling;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.Lib.Frameworks.Irony.Scripting.Ast;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -149,6 +150,8 @@ namespace sones.GraphDB.QueryLanguage
         public SymbolTerminal S_WHERE           { get; private set; }
         public SymbolTerminal S_TYPE            { get; private set; }
         public SymbolTerminal S_TYPES           { get; private set; }
+        public SymbolTerminal S_VERTEX          { get; private set; }
+        public SymbolTerminal S_VERTICES        { get; private set; }
         public SymbolTerminal S_EDITION         { get; private set; }
         public SymbolTerminal S_INDEXTYPE       { get; private set; }
         public SymbolTerminal S_LIST            { get; private set; }
@@ -159,6 +162,8 @@ namespace sones.GraphDB.QueryLanguage
         public SymbolTerminal S_MATCHES         { get; private set; }
         public SymbolTerminal S_LIMIT           { get; private set; }
         public SymbolTerminal S_DEPTH           { get; private set; }
+        public SymbolTerminal S_DEFINE          { get; private set; }
+        public SymbolTerminal S_UNDEFINE        { get; private set; }
 
         #region REF/REFUUID/...
 
@@ -194,7 +199,7 @@ namespace sones.GraphDB.QueryLanguage
         public SymbolTerminal S_DB              { get; private set; }
         public SymbolTerminal S_SESSION         { get; private set; }
         public SymbolTerminal S_ATTRIBUTE       { get; private set; }
-        public SymbolTerminal S_DEFAULT         { get; private set; }
+        public SymbolTerminal S_DEFAULT         { get; private set; }        
 
         public SymbolTerminal S_BACKWARDEDGES   { get; private set; }
         public SymbolTerminal S_BACKWARDEDGE    { get; private set; }
@@ -366,6 +371,8 @@ namespace sones.GraphDB.QueryLanguage
             S_WHERE                           = Symbol("WHERE");
             S_TYPE                            = Symbol("TYPE");
             S_TYPES                           = Symbol("TYPES");
+            S_VERTEX                          = Symbol("VERTEX");
+            S_VERTICES                        = Symbol("VERTICES");
             S_EDITION                         = Symbol("EDITION");
             S_INDEXTYPE                       = Symbol("INDEXTYPE");
             S_LIST                            = Symbol(TERMINAL_LIST);
@@ -433,6 +440,8 @@ namespace sones.GraphDB.QueryLanguage
             S_CSV                             = Symbol("CSV");
             S_COMMENT                         = Symbol("COMMENT");
             S_REBUILD                         = Symbol("REBUILD");
+            S_DEFINE                          = Symbol("DEFINE");
+            S_UNDEFINE                        = Symbol("UNDEFINE");
 
             #region IMPORT
 
@@ -504,6 +513,7 @@ namespace sones.GraphDB.QueryLanguage
             var indexNameOpt                = new NonTerminal("indextNameOpt",          typeof(IndexNameOptNode));
             var editionOpt                  = new NonTerminal("editionOpt",             typeof(EditionOptNode));
             var alterCmd                    = new NonTerminal("alterCmd",               typeof(AlterCommandNode));
+            var alterCmdList                = new NonTerminal("alterCmdList");
             var insertData                  = new NonTerminal("insertData");
             var intoOpt                     = new NonTerminal("intoOpt");
             var assignList                  = new NonTerminal("assignList");
@@ -569,6 +579,9 @@ namespace sones.GraphDB.QueryLanguage
             var term                        = new NonTerminal("term");
             var notOpt                      = new NonTerminal("notOpt");
 
+            var typeOrVertex                = new NonTerminal("typeOrVertex");
+            var typesOrVertices             = new NonTerminal("typesOrVertices");
+
             var GraphDBType                 = new NonTerminal(DBConstants.GraphDBType, CreateGraphDBTypeNode);
             var AttributeList               = new NonTerminal("AttributeList");
             var AttrDefinition              = new NonTerminal("AttrDefinition",     CreateAttributeDefinitionNode);
@@ -578,13 +591,13 @@ namespace sones.GraphDB.QueryLanguage
             var Matching                    = new NonTerminal("MatchingClause");
             var PrefixOperation             = new NonTerminal("PrefixOperation");
             var ParameterList               = new NonTerminal("ParameterList");
-            var TypeList                    = new NonTerminal("TypeList");
+            var TypeList                    = new NonTerminal("TypeList",           CreateTypeListNode);
             var AType                       = new NonTerminal("AType",              CreateATypeNode);
             var TypeWrapper                 = new NonTerminal("TypeWrapper");
 
             #region Attribute changes
 
-            var AttrAssignList              = new NonTerminal("AttrAssignList");
+            var AttrAssignList              = new NonTerminal("AttrAssignList", CreateAttrAssignListNode);
             var AttrUpdateList              = new NonTerminal("AttrUpdateList", typeof(AttrUpdateOrAssignListNode));
             var AttrAssign                  = new NonTerminal("AttrAssign", typeof(AttributeAssignNode));
             var AttrRemove                  = new NonTerminal("AttrRemove", typeof(AttrRemoveNode));
@@ -679,8 +692,12 @@ namespace sones.GraphDB.QueryLanguage
             #region Index
 
             var indexOptOnCreateType            = new NonTerminal("IndexOptOnCreateType");
+            var indexOnCreateType               = new NonTerminal("indexOnCreateType", CreateIndexOnCreateType);
             var IndexOptOnCreateTypeMember      = new NonTerminal("IndexOptOnCreateTypeMember", CreateIndexOptOnCreateTypeMemberNode);
             var IndexOptOnCreateTypeMemberList  = new NonTerminal("IndexOptOnCreateTypeMemberList");
+            var IndexDropOnAlterType            = new NonTerminal("IndexDropOnAlterType", CreateDropIndicesNode);
+            var IndexDropOnAlterTypeMember      = new NonTerminal("IndexDropOnAlterTypeMember");
+            var IndexDropOnAlterTypeMemberList  = new NonTerminal("IndexDropOnAlterTypeMemberList");
 
             #endregion
 
@@ -689,7 +706,7 @@ namespace sones.GraphDB.QueryLanguage
             var dumpStmt                        = new NonTerminal("Dump", CreateDumpNode);
             var dumpType                        = new NonTerminal("dumpType",   CreateDumpTypeNode);
             var dumpFormat                      = new NonTerminal("dumpFormat", CreateDumpFormatNode);
-            var typeOptionalList                = new NonTerminal("typeOptionalList", CreateTypeListNode);
+            var typeOptionalList                = new NonTerminal("typeOptionalList");
             var dumpDestination                 = new NonTerminal("dumpDestination");
 
             #endregion
@@ -706,7 +723,6 @@ namespace sones.GraphDB.QueryLanguage
             var DescrSettItem               = new NonTerminal("DescrSettItem",      CreateDescrSettItem);
             var DescrSettingsItems          = new NonTerminal("DescrSettingsItems", CreateDescrSettingsItems); 
             var DescrSettingsStmt           = new NonTerminal("DescrSettingsStmt",  CreateDescrSettings);
-            var DescrObjStmt                = new NonTerminal("DescrObjStmt",       CreateDescrObj);
             var DescrTypeStmt               = new NonTerminal("DescrTypeStmt",      CreateDescrType);
             var DescrTypesStmt              = new NonTerminal("DescrTypesStmt",     CreateDescrTypes);
             var DescrIdxStmt                = new NonTerminal("DescrIdxStmt",       CreateDescrIdx);
@@ -801,8 +817,8 @@ namespace sones.GraphDB.QueryLanguage
 
             edgeAccessorWrapper.Rule = S_edgeInformationDelimiterSymbol;
 
-            IDOrFuncDelimiter.Rule =        dotWrapper
-                                        |   edgeAccessorWrapper;
+            //IDOrFuncDelimiter.Rule =        dotWrapper
+            //                            |   edgeAccessorWrapper;
 
             EdgeTraversalWithFunctions.Rule = dotWrapper + IdOrFunc;
 
@@ -1051,7 +1067,7 @@ namespace sones.GraphDB.QueryLanguage
 
             #region CREATE INDEX
 
-            createIndexStmt.Rule = S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + S_TYPE + TypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt
+            createIndexStmt.Rule = S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + typeOrVertex + TypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt
                 | S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + TypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt; // due to compatibility the  + S_TYPE is optional
 
             uniqueOpt.Rule = Empty | S_UNIQUE;
@@ -1077,8 +1093,11 @@ namespace sones.GraphDB.QueryLanguage
 
             #region CREATE TYPE(S)
 
-            createTypesStmt.Rule    = S_CREATE + S_TYPES + bulkTypeList
-                                    | S_CREATE +  abstractOpt + S_TYPE + bulkType;
+            createTypesStmt.Rule    = S_CREATE + typesOrVertices + bulkTypeList
+                                    | S_CREATE + abstractOpt + typeOrVertex + bulkType;
+
+            typeOrVertex.Rule       = S_TYPE | S_VERTEX;
+            typesOrVertices.Rule    = S_TYPES | S_VERTICES;
 
             bulkTypeList.Rule       = MakePlusRule(bulkTypeList, S_comma, bulkTypeListMember);
 
@@ -1108,7 +1127,9 @@ namespace sones.GraphDB.QueryLanguage
                                     | S_MANDATORY + S_BRACKET_LEFT + id_simpleList + S_BRACKET_RIGHT;
 
             indexOptOnCreateType.Rule = Empty
-                                    | S_INDICES + S_BRACKET_LEFT + IndexOptOnCreateTypeMemberList + S_BRACKET_RIGHT
+                                        | indexOnCreateType;
+
+            indexOnCreateType.Rule = S_INDICES + S_BRACKET_LEFT + IndexOptOnCreateTypeMemberList + S_BRACKET_RIGHT
                                     | S_INDICES + IndexOptOnCreateTypeMember;
 
             IndexOptOnCreateTypeMemberList.Rule = MakePlusRule(IndexOptOnCreateTypeMemberList, S_comma, IndexOptOnCreateTypeMember);
@@ -1126,19 +1147,32 @@ namespace sones.GraphDB.QueryLanguage
 
             #region ALTER TYPE
 
-            alterStmt.Rule = S_ALTER + S_TYPE + Id_simple + alterCmd + uniquenessOpt + mandatoryOpt;
+            alterStmt.Rule = S_ALTER + typeOrVertex + Id_simple + alterCmdList + uniquenessOpt + mandatoryOpt;
 
             alterCmd.Rule = Empty
-                            | S_ADD     + S_ATTRIBUTES    + S_BRACKET_LEFT + AttributeList     + S_BRACKET_RIGHT
-                            | S_DROP    + S_ATTRIBUTES    + S_BRACKET_LEFT + SimpleIdList      + S_BRACKET_RIGHT
-                            | S_ADD     + S_BACKWARDEDGES + S_BRACKET_LEFT + BackwardEdgesList + S_BRACKET_RIGHT
-                            | S_DROP    + S_BACKWARDEDGES + S_BRACKET_LEFT + SimpleIdList      + S_BRACKET_RIGHT
-                            | S_RENAME  + S_ATTRIBUTE     + Id_simple + S_TO + Id_simple
-                            | S_RENAME  + S_BACKWARDEDGE  + Id_simple + S_TO + Id_simple
-                            | S_RENAME  + S_TO + Id_simple
-                            | S_DROP    + S_UNIQUE
-                            | S_DROP    + S_MANDATORY
-                            | S_COMMENT + "=" + string_literal;
+                            | S_ADD         + S_ATTRIBUTES    + S_BRACKET_LEFT + AttributeList     + S_BRACKET_RIGHT
+                            | S_DROP        + S_ATTRIBUTES    + S_BRACKET_LEFT + SimpleIdList      + S_BRACKET_RIGHT
+                            | S_ADD         + S_BACKWARDEDGES + S_BRACKET_LEFT + BackwardEdgesList + S_BRACKET_RIGHT
+                            | S_DROP        + S_BACKWARDEDGES + S_BRACKET_LEFT + SimpleIdList      + S_BRACKET_RIGHT
+                            | S_ADD         + indexOnCreateType
+                            | S_DROP        + IndexDropOnAlterType
+                            | S_RENAME      + S_ATTRIBUTE     + Id_simple + S_TO + Id_simple
+                            | S_RENAME      + S_BACKWARDEDGE  + Id_simple + S_TO + Id_simple
+                            | S_RENAME      + S_TO + Id_simple
+                            | S_DEFINE      + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
+                            | S_UNDEFINE    + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT 
+                            | S_DROP        + S_UNIQUE
+                            | S_DROP        + S_MANDATORY
+                            | S_COMMENT     + "=" + string_literal;
+
+            alterCmdList.Rule = MakePlusRule(alterCmdList, S_comma, alterCmd);
+
+            IndexDropOnAlterTypeMember.Rule = S_BRACKET_LEFT + Id_simple + editionOpt + S_BRACKET_RIGHT;
+
+            IndexDropOnAlterTypeMemberList.Rule = MakePlusRule(IndexDropOnAlterTypeMemberList, S_comma, IndexDropOnAlterTypeMember);
+
+            IndexDropOnAlterType.Rule = S_INDICES + IndexDropOnAlterTypeMember
+                                        | S_INDICES + S_BRACKET_LEFT + IndexDropOnAlterTypeMemberList + S_BRACKET_RIGHT;
 
             #endregion
 
@@ -1294,7 +1328,7 @@ namespace sones.GraphDB.QueryLanguage
 
             #region DROP TYPE
 
-            dropTypeStmt.Rule = S_DROP + S_TYPE + Id_simple;
+            dropTypeStmt.Rule = S_DROP + typeOrVertex + Id_simple;
 
             #endregion
 
@@ -1306,7 +1340,7 @@ namespace sones.GraphDB.QueryLanguage
 
             #region TRUNCATE
 
-            truncateStmt.Rule = S_TRUNCATE + S_TYPE + Id_simple
+            truncateStmt.Rule = S_TRUNCATE + typeOrVertex + Id_simple
                               | S_TRUNCATE + Id_simple; // Due to compatibility the  + S_TYPE is optional
 
             #endregion
@@ -1324,7 +1358,7 @@ namespace sones.GraphDB.QueryLanguage
 
             SettingScope.Rule = S_DB | S_SESSION | SettingTypeNode | SettingAttrNode;
 
-            SettingTypeNode.Rule = S_TYPE + SettingTypeStmLst;
+            SettingTypeNode.Rule = typeOrVertex + SettingTypeStmLst;
 
             SettingTypeStmLst.Rule = MakePlusRule(SettingTypeStmLst, S_comma, TypeWrapper);
 
@@ -1368,7 +1402,7 @@ namespace sones.GraphDB.QueryLanguage
 
             DescrEdgesStmt.Rule = S_EDGES;
 
-            DescrTypeStmt.Rule = S_TYPE + Id_simple;
+            DescrTypeStmt.Rule = typeOrVertex + Id_simple;
 
             DescrTypesStmt.Rule = S_TYPES;
 
@@ -1378,9 +1412,9 @@ namespace sones.GraphDB.QueryLanguage
 
             DescrSettStmt.Rule = S_SETTING + DescrSettItem | S_SETTINGS + DescrSettingsItems;
 
-            DescrSettItem.Rule = Id_simple + Empty | Id_simple + S_ON + S_TYPE + AType | Id_simple + S_ON + S_ATTRIBUTE + id_typeAndAttribute | Id_simple + S_ON + S_DB | Id_simple + S_ON + S_SESSION;
+            DescrSettItem.Rule = Id_simple + Empty | Id_simple + S_ON + typeOrVertex + AType | Id_simple + S_ON + S_ATTRIBUTE + id_typeAndAttribute | Id_simple + S_ON + S_DB | Id_simple + S_ON + S_SESSION;
 
-            DescrSettingsItems.Rule = S_ON + S_TYPE + TypeList | S_ON + S_ATTRIBUTE + id_typeAndAttribute | S_ON + S_DB | S_ON + S_SESSION;
+            DescrSettingsItems.Rule = S_ON + typeOrVertex + TypeList | S_ON + S_ATTRIBUTE + id_typeAndAttribute | S_ON + S_DB | S_ON + S_SESSION;
 
             DescrSettingsStmt.Rule = S_SETTINGS;
 
@@ -1458,7 +1492,7 @@ namespace sones.GraphDB.QueryLanguage
 
             dumpType.Rule           = Empty | S_ALL | S_GDDL | S_GDML;      // If empty => create both
             dumpFormat.Rule         = Empty | S_AS + S_GQL;                 // If empty => create GQL
-            typeOptionalList.Rule   = Empty | S_TYPES + TypeList;
+            typeOptionalList.Rule   = Empty | typesOrVertices + TypeList;
 
             dumpDestination.Rule    = Empty | S_INTO + location_literal | S_TO + location_literal;
 
@@ -1507,8 +1541,8 @@ namespace sones.GraphDB.QueryLanguage
                 , IdOrFunc //, IdOrFuncList
                 , BNF_ExprList, BNF_AggregateArg,
                 ExtendedExpressionList,
-                BNF_ImportFormat, BNF_FuncCall, BNF_Aggregate, verbosityTypes
-                );
+                BNF_ImportFormat, BNF_FuncCall, BNF_Aggregate, verbosityTypes,
+                typeOrVertex, typesOrVertices);
 
             #endregion
         
@@ -1518,11 +1552,40 @@ namespace sones.GraphDB.QueryLanguage
 
         #region Node Delegates
 
+        private void CreateTypeList(CompilerContext context, ParseTreeNode parseNode)
+        {
+            var node = new TypeListNode();
+            node.GetContent(context, parseNode);
+            parseNode.AstNode = node;
+        }
+
+        private void CreateIndexOnCreateType(CompilerContext context, ParseTreeNode parseNode)
+        {
+            var Node = new IndexOnCreateTypeNode();
+
+            parseNode.AstNode = new Exceptional<IndexOnCreateTypeNode>(Node).Push(Node.GetContent(context, parseNode));
+        }
+
+        private void CreateDropIndicesNode(CompilerContext context, ParseTreeNode parseNode)
+        {
+            var Node = new IndexDropOnAlterType();
+
+            parseNode.AstNode = new Exceptional<IndexDropOnAlterType>(Node).Push(Node.GetContent(context, parseNode));
+        }
 
         private void CreateIndexOptOnCreateTypeMemberNode(CompilerContext context, ParseTreeNode parseNode)
         {
             var node = new IndexOptOnCreateTypeMemberNode();
             parseNode.AstNode = new Exceptional<IndexOptOnCreateTypeMemberNode>(node).Push(node.GetContent(context, parseNode));
+        }
+
+        private void CreateAttrAssignListNode(CompilerContext context, ParseTreeNode parseNode)
+        {
+            var attrAssignListNode = new AttrAssignListNode();
+
+            attrAssignListNode.GetContent(context, parseNode);
+
+            parseNode.AstNode = (object)attrAssignListNode;
         }
 
         private void CreateUnExpressionNode(CompilerContext context, ParseTreeNode parseNode)
@@ -1724,11 +1787,11 @@ namespace sones.GraphDB.QueryLanguage
             parseNode.AstNode = (object)aATypeNode;
 
             if (context.PandoraListOfReferences == null)
-                context.PandoraListOfReferences = new Dictionary<string, object>();
+                context.PandoraListOfReferences = new List<TypeReferenceDefinition>();
 
-            if (aATypeNode.Reference != null && !context.PandoraListOfReferences.ContainsKey(aATypeNode.Reference))
+            if (aATypeNode.ReferenceAndType.Reference != null && !(context.PandoraListOfReferences as List<TypeReferenceDefinition>).Contains(aATypeNode.ReferenceAndType))
             {
-                context.PandoraListOfReferences.Add(aATypeNode.Reference, (object)aATypeNode);
+                (context.PandoraListOfReferences as List<TypeReferenceDefinition>).Add(aATypeNode.ReferenceAndType);
             }
         }
 
@@ -2046,16 +2109,6 @@ namespace sones.GraphDB.QueryLanguage
             parseNode.AstNode = (object)settInfoNode;
         }
 
-
-        private void CreateDescrObj(CompilerContext context, ParseTreeNode parseNode)
-        {
-            DescribeObjectNode objInfoNode = new DescribeObjectNode();
-
-            objInfoNode.GetContent(context, parseNode);
-
-            parseNode.AstNode = (object)objInfoNode;
-        }
-
         private void CreateDescrType(CompilerContext context, ParseTreeNode parseNode)
         {
             DescribeTypeNode typeInfoNode = new DescribeTypeNode();
@@ -2312,7 +2365,7 @@ namespace sones.GraphDB.QueryLanguage
 
             foreach (var _Attribute in myTypeAttributes)
             {
-                var typeAttrInfos = _Attribute.BackwardEdgeDefinition.GetTypeAndAttributeInformation(myDBContext);
+                var typeAttrInfos = _Attribute.BackwardEdgeDefinition.GetTypeAndAttributeInformation(myDBContext.DBTypeManager);
                 stringBuilder.Append(String.Concat(typeAttrInfos.Item1.Name, ".", typeAttrInfos.Item2.Name, " ", _Attribute.Name));
                 stringBuilder.Append(delimiter);
             }
@@ -2363,7 +2416,7 @@ namespace sones.GraphDB.QueryLanguage
         /// <param name="indent"></param>
         /// <param name="indentWidth"></param>
         /// <returns></returns>
-        private String CreateGraphDDLOfIndices(DumpFormats myDumpFormat, IEnumerable<AttributeIndex> myAttributeIndices, GraphDBType myGraphDBType)
+        private String CreateGraphDDLOfIndices(DumpFormats myDumpFormat, IEnumerable<AAttributeIndex> myAttributeIndices, GraphDBType myGraphDBType)
         {
 
             var _StringBuilder = new StringBuilder();
@@ -2372,7 +2425,7 @@ namespace sones.GraphDB.QueryLanguage
             foreach (var _AttributeIndex in myAttributeIndices)
             {
 
-                if (_AttributeIndex.IsUuidIndex || _AttributeIndex.IndexEdition == DBConstants.UNIQUEATTRIBUTESINDEX)
+                if (_AttributeIndex is UUIDIndex || _AttributeIndex.IndexEdition == DBConstants.UNIQUEATTRIBUTESINDEX)
                     continue;
 
                 _StringBuilder.Append(String.Concat(S_BRACKET_LEFT, _AttributeIndex.IndexName));
@@ -2410,10 +2463,10 @@ namespace sones.GraphDB.QueryLanguage
         /// Create the GraphDML of all DBObjects in the database.
         /// </summary>
         /// <param name="myDumpFormat"></param>
-        /// <param name="myDBContext"></param>
+        /// <param name="dbContext"></param>
         /// <param name="objectManager"></param>
         /// <returns></returns>
-        public Exceptional<List<String>> ExportGraphDML(DumpFormats myDumpFormat, DBContext myDBContext, IEnumerable<GraphDBType> myTypesToDump)
+        public Exceptional<List<String>> ExportGraphDML(DumpFormats myDumpFormat, DBContext dbContext, IEnumerable<GraphDBType> myTypesToDump)
         {
 
             //var _StringBuilder  = new StringBuilder();
@@ -2425,47 +2478,32 @@ namespace sones.GraphDB.QueryLanguage
             foreach (var graphDBType in myTypesToDump)
             {
 
-                var indexReference = graphDBType.GetUUIDIndex(myDBContext.DBTypeManager).GetIndexReference(myDBContext.DBIndexManager);
-
-                if (!indexReference.Success)
-                    return new Exceptional<List<String>>(indexReference);
+                var UUIDIdx = graphDBType.GetUUIDIndex(dbContext.DBTypeManager);
 
                 #region Take UUID index
 
-                foreach (var indexEntry in indexReference.Value)
+                foreach (var aDBO in dbContext.DBObjectCache.LoadListOfDBObjectStreams(graphDBType, UUIDIdx.GetAllUUIDs(graphDBType, dbContext)))
                 {
 
-                    #region Load DBObject and create GraphDML
-
-                    foreach (var dbObject in indexEntry.Value)
+                    if (!aDBO.Success)
+                    {
+                        exceptional.AddErrorsAndWarnings(aDBO);
+                    }
+                    else
                     {
 
-                        var dbObjectStream = myDBContext.DBObjectManager.LoadDBObject(graphDBType, dbObject);
+                        var gdmlExceptional = CreateGraphDMLforDBObject(myDumpFormat, dbContext, graphDBType, aDBO.Value);
 
-                        if (!dbObjectStream.Success)
+                        if (!gdmlExceptional.Success)
                         {
-                            exceptional.AddErrorsAndWarnings(dbObjectStream);
+                            exceptional.AddErrorsAndWarnings(aDBO);
                         }
                         else
                         {
-
-                            var gdmlExceptional = CreateGraphDMLforDBObject(myDumpFormat, myDBContext, graphDBType, dbObjectStream.Value);
-
-                            if (!gdmlExceptional.Success)
-                            {
-                                exceptional.AddErrorsAndWarnings(dbObjectStream);
-                            }
-                            else
-                            {
-                                queries.Add(gdmlExceptional.Value);
-                            }
-
+                            queries.Add(gdmlExceptional.Value);
                         }
 
                     }
-
-                    #endregion
-
                 }
 
                 #endregion
@@ -2528,7 +2566,7 @@ namespace sones.GraphDB.QueryLanguage
 
             #endregion
 
-            stringBuilder.RemoveEnding(delimiter);
+            stringBuilder.RemoveSuffix(delimiter);
             stringBuilder.Append(S_BRACKET_RIGHT);
 
             return new Exceptional<String>(stringBuilder.ToString());
@@ -2568,12 +2606,12 @@ namespace sones.GraphDB.QueryLanguage
 
                         #region Create an assignment content - if edge does not contain any elements create an empty one
 
-                        if ((attribute.Value as ASetReferenceEdgeType).GetEdges().CountIsGreater(0))
+                        if ((attribute.Value as ASetReferenceEdgeType).GetAllReferenceIDsWeighted().CountIsGreater(0))
                         {
 
                             #region Create attribute assignments
 
-                            foreach (var val in (attribute.Value as ASetReferenceEdgeType).GetEdges())
+                            foreach (var val in (attribute.Value as ASetReferenceEdgeType).GetAllReferenceIDsWeighted())
                             {
                                 stringBuilder.Append(String.Concat("'", val.Item1.ToString(), "'"));
                                 if (val.Item2 != null)
@@ -2582,7 +2620,7 @@ namespace sones.GraphDB.QueryLanguage
                                 }
                                 stringBuilder.Append(delimiter);
                             }
-                            stringBuilder.RemoveEnding(delimiter);
+                            stringBuilder.RemoveSuffix(delimiter);
 
                             #endregion
 
@@ -2634,7 +2672,7 @@ namespace sones.GraphDB.QueryLanguage
                         {
                             stringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
                         }
-                        stringBuilder.RemoveEnding(delimiter);
+                        stringBuilder.RemoveSuffix(delimiter);
                         stringBuilder.Append(S_BRACKET_RIGHT);
                     }
 
@@ -2649,7 +2687,7 @@ namespace sones.GraphDB.QueryLanguage
                         {
                             stringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
                         }
-                        stringBuilder.RemoveEnding(delimiter);
+                        stringBuilder.RemoveSuffix(delimiter);
                         stringBuilder.Append(S_BRACKET_RIGHT);
 
                     }
@@ -2716,7 +2754,7 @@ namespace sones.GraphDB.QueryLanguage
                         stringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
                     }
 
-                    stringBuilder.RemoveEnding(delimiter);
+                    stringBuilder.RemoveSuffix(delimiter);
                     stringBuilder.Append(S_BRACKET_RIGHT);
 
                 }

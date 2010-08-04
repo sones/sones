@@ -83,9 +83,9 @@ namespace sones.GraphFS.Notification
 
                 var _SerializationWriter = new SerializationWriter();
 
-                _SerializationWriter.WriteObject(ObjectLocation);
-                _SerializationWriter.WriteObject(RightUUID);
-                _SerializationWriter.WriteObject(EntitiyUUID.GetByteArray());
+                _SerializationWriter.WriteString(ObjectLocation);
+                RightUUID.Serialize(ref _SerializationWriter);
+                EntitiyUUID.Serialize(ref _SerializationWriter);
                
                 return _SerializationWriter.ToArray();
 
@@ -96,9 +96,9 @@ namespace sones.GraphFS.Notification
 
                 var _SerializationReader = new SerializationReader(mySerializedBytes);
 
-                ObjectLocation  = (String)_SerializationReader.ReadObject();
-                RightUUID       = new UUID((Byte[])_SerializationReader.ReadObject());
-                EntitiyUUID     = new UUID((Byte[])_SerializationReader.ReadObject());
+                ObjectLocation = _SerializationReader.ReadString();
+                RightUUID       = new UUID(_SerializationReader.ReadByteArray());
+                EntitiyUUID     = new UUID(_SerializationReader.ReadByteArray());
                 
             }
 

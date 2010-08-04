@@ -38,8 +38,6 @@ using sones.GraphDB.TypeManagement;
 
 using sones.GraphDB.QueryLanguage.Enums;
 
-using sones.GraphDB.QueryLanguage.Operator;
-
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.TypeManagement.PandoraTypes;
 using sones.Lib.ErrorHandling;
@@ -49,6 +47,7 @@ using sones.GraphDB.QueryLanguage.ExpressionGraph;
 using sones.GraphDB.Errors;
 using sones.GraphFS.Session;
 using sones.Lib.Session;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -79,22 +78,22 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
         #region (public) Methods
 
-        public override Exceptional<IOperationValue> SimpleOperation(IOperationValue left, IOperationValue right, TypesOfBinaryExpression myTypeOfBinaryExpression)
+        public override Exceptional<AOperationDefinition> SimpleOperation(AOperationDefinition left, AOperationDefinition right, TypesOfBinaryExpression myTypeOfBinaryExpression)
         {
-            if (!(left is AtomValue && right is AtomValue))
+            if (!(left is ValueDefinition && right is ValueDefinition))
             {
-                return new Exceptional<IOperationValue>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                return new Exceptional<AOperationDefinition>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
             }
 
-            return SimpleOperation((AtomValue)left, (AtomValue)right);
+            return SimpleOperation((ValueDefinition)left, (ValueDefinition)right);
         }
 
-        public Exceptional<IOperationValue> SimpleOperation(AtomValue left, AtomValue right)
+        public Exceptional<AOperationDefinition> SimpleOperation(ValueDefinition left, ValueDefinition right)
         {
 
             #region Data
 
-            AtomValue resultObject = null;
+            ValueDefinition resultObject = null;
 
             ADBBaseObject leftObject = left.Value;
             ADBBaseObject rightObject = right.Value;
@@ -103,18 +102,18 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
             if (!GraphDBTypeMapper.ConvertToBestMatchingType(ref leftObject, ref rightObject).Value)
             {
-                return new Exceptional<IOperationValue>(new Error_DataTypeDoesNotMatch(leftObject.Type.ToString(), rightObject.Type.ToString()));
+                return new Exceptional<AOperationDefinition>(new Error_DataTypeDoesNotMatch(leftObject.Type.ToString(), rightObject.Type.ToString()));
             }
 
             ADBBaseObject resultValue = leftObject.Mul(leftObject, rightObject);
 
-            resultObject = new AtomValue(resultValue.Type, resultValue.Value);
+            resultObject = new ValueDefinition(resultValue.Type, resultValue.Value);
 
-            return new Exceptional<IOperationValue>(resultObject);
+            return new Exceptional<AOperationDefinition>(resultObject);
 
         }
 
-        public override Exceptional<IExpressionGraph> TypeOperation(object myLeftValueObject, object myRightValueObject, DBContext dbCon, TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph result, Boolean aggregateAllowed = true)
+        public override Exceptional<IExpressionGraph> TypeOperation(AExpressionDefinition myLeftValueObject, AExpressionDefinition myRightValueObject, DBContext dbCon, TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph result, Boolean aggregateAllowed = true)
         {
             return new Exceptional<IExpressionGraph>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }

@@ -420,23 +420,37 @@ namespace sones.Lib.DataStructures.UUID
 
         #region Equals(myUUID)
 
-        public Boolean Equals(UUID myUUID)
+        public Boolean Equals(UUID anotherUUID)
         {
 
             // Check if myUUID is null
-            if ( (Object) myUUID == null)
+            if (anotherUUID == null)
+            {
                 throw new ArgumentNullException("Parameter myUUID must not be null!");
+            }
 
             // Check if the arrays have the same length
-            if (_UUID.ULongLength() != myUUID.Length)
+            var myLength = _UUID.ULongLength();
+            var anotherLength = anotherUUID.Length;
+
+            if (myLength != anotherLength)
                 return false;
 
-            // Check if the inner array of bytes have the same values
-            var myUUIDArray = myUUID.GetByteArray();
+            if (this.GetHashCode() != anotherUUID.GetHashCode())
+            {
+                return false;
+            }
 
-            for (var i = _UUID.ULongLength(); i > 0; i--)
-                if ((_UUID[i-1] ^ myUUIDArray[i-1]) != 0)
+            // Check if the inner array of bytes have the same values
+            var anotherUUIDArray = anotherUUID.GetByteArray();
+
+            for (var i = myLength; i > 0; i--)
+            {
+                if (_UUID[i - 1] != anotherUUIDArray[i - 1])
+                {
                     return false;
+                }
+            }
 
             return true;
 
@@ -524,12 +538,12 @@ namespace sones.Lib.DataStructures.UUID
 
         private void Serialize(ref SerializationWriter mySerializationWriter, UUID myValue)
         {
-            mySerializationWriter.WriteObject(myValue._UUID);
+            mySerializationWriter.Write(myValue._UUID);
         }
 
         private object Deserialize(ref SerializationReader mySerializationReader, UUID myValue)
         {
-            myValue._UUID = (Byte[]) mySerializationReader.ReadObject();
+            myValue._UUID = mySerializationReader.ReadByteArray();
             return myValue;
         }
 
@@ -558,41 +572,40 @@ namespace sones.Lib.DataStructures.UUID
 
 
         #region GetHashCode()
+        private Int32 _hashcode = 0;
 
         public override Int32 GetHashCode()
         {
-
-            // Do not return _UUID.GetHashCode() as this method does not
-            //    compare the values of an byte array!
-            //
-            //return ByteArrayHelper.ByteArrayToFormatedString(_UUID).GetHashCode();
-
-            int byteIndex = 0;
-            int num1;
-            int num2 = 0x1505;
-            int num3 = num2;
-            byte currentByte;
-
-            while (byteIndex < _UUID.Length)
+            if (_hashcode == 0)
             {
-                currentByte = _UUID[byteIndex];
-                num1 = (int)currentByte;
-                num2 = ((num2 << 5) + num2) ^ num1;
+                int byteIndex = 0;
+                int num1;
+                int num2 = 0x1505;
+                int num3 = num2;
+                byte currentByte;
 
-                if (byteIndex == _UUID.Length - 1)
-                    break;
-
-                num1 = _UUID[byteIndex + 1];
-                if (num1 == 0)
+                while (byteIndex < _UUID.Length)
                 {
-                    break;
+                    currentByte = _UUID[byteIndex];
+                    num1 = (int)currentByte;
+                    num2 = ((num2 << 5) + num2) ^ num1;
+
+                    if (byteIndex == _UUID.Length - 1)
+                        break;
+
+                    num1 = _UUID[byteIndex + 1];
+                    if (num1 == 0)
+                    {
+                        break;
+                    }
+                    num3 = ((num3 << 5) + num3) ^ num1;
+                    byteIndex += 2;
                 }
-                num3 = ((num3 << 5) + num3) ^ num1;
-                byteIndex += 2;
+
+                _hashcode = (num2 + (num3 * 0x5d588b65));
             }
 
-            return (num2 + (num3 * 0x5d588b65));
-
+            return _hashcode;
         }
 
         #endregion

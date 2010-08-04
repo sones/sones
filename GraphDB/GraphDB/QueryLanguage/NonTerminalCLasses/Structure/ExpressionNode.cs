@@ -35,6 +35,7 @@ using System.Text;
 using sones.Lib.Frameworks.Irony.Scripting.Ast;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -45,18 +46,14 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     /// </summary>
     class ExpressionNode : AStructureNode, IAstNodeInit
     {
-        #region Data
 
-        ParseTreeNode _ParseTreeNode = null;
-
-        #endregion
+        public AExpressionDefinition ExpressionDefinition { get; private set; }
 
         private void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
-            _ParseTreeNode = parseNode.ChildNodes[0];
-        }
 
-        public ParseTreeNode ParseTreeNode { get { return _ParseTreeNode; } }
+            ExpressionDefinition = GetExpressionDefinition(parseNode.ChildNodes[0]);
+        }
 
         #region IAstNodeInit Members
 

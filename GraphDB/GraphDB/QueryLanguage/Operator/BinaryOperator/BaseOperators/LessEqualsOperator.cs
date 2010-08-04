@@ -37,8 +37,6 @@ using sones.GraphDB.Exceptions;
 
 using sones.GraphDB.QueryLanguage.Enums;
 
-using sones.GraphDB.QueryLanguage.Operator;
-
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.TypeManagement.PandoraTypes;

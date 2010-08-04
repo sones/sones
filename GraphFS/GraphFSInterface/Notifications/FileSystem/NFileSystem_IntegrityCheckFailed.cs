@@ -70,19 +70,19 @@ namespace sones.GraphFS.Notification
             public byte[] Serialize()
             {
                 var _SerializationWriter = new SerializationWriter();
-                _SerializationWriter.WriteObject(FailedCopy);
-                _SerializationWriter.WriteObject(MaxNumberOfCopies);
-                _SerializationWriter.WriteObject(SerializedObjectStream);
+                _SerializationWriter.WriteInt32(FailedCopy);
+                _SerializationWriter.WriteInt32(MaxNumberOfCopies);
+                _SerializationWriter.Write(SerializedObjectStream);
 
                 return _SerializationWriter.ToArray();
             }
 
             public void Deserialize(byte[] mySerializedBytes)
             {
-                var _SerializationReader = new SerializationReader(mySerializedBytes);
-                FailedCopy = (Int32)_SerializationReader.ReadObject();
-                MaxNumberOfCopies = (Int32)_SerializationReader.ReadObject();
-                SerializedObjectStream = (Byte[])_SerializationReader.ReadObject();
+                var _SerializationReader    = new SerializationReader(mySerializedBytes);
+                FailedCopy                  = _SerializationReader.ReadInt32();
+                MaxNumberOfCopies           = _SerializationReader.ReadInt32();
+                SerializedObjectStream      = _SerializationReader.ReadByteArray();
             }
 
             #endregion

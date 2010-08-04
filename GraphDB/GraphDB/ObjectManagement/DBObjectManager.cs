@@ -166,21 +166,7 @@ namespace sones.GraphDB.ObjectManagement
                 {
                     if (specialAttr.Key is SpecialTypeAttribute_UUID)
                     {
-
-                        //if we have a SettingUUID, we have to find out in which way 
-                        //we have to create the objectUUID
-                        #region preparation
-
-                        //settingEncoding = (String)myGraphDBType.GetSettingValue(DBConstants.SettingUUIDEncoding, mySessionSettings, _DBContext.DBTypeManager).Value.Value;
-
-                        //if (settingEncoding == null)
-                        //{
-                        //    return new Exceptional<DBObjectStream>(new Error_ArgumentNullOrEmpty("settingEncoding"));
-                        //}
-
-                        #endregion
-
-                        var result = specialAttr.Key.ApplyTo(NewDBObject, specialAttr.Value);//, settingEncoding);
+                        var result = specialAttr.Key.ApplyTo(NewDBObject, specialAttr.Value);
                         if (result.Failed)
                         {
                             return new Exceptional<DBObjectStream>(result);
@@ -242,15 +228,6 @@ namespace sones.GraphDB.ObjectManagement
             if (flushResult.Failed)
                 return new Exceptional<DBObjectStream>(flushResult);
 
-            #region Create symlink on each parent type dir
-            /*
-            foreach (var type in _TypeManager.GetAllParentTypes(myPandoraType, false, false))
-            {
-                _IGraphFSSession.AddSymlink(type.GetObjectLocation(NewDBObject.ObjectUUID), NewDBObject.ObjectLocation.ToString());
-            }
-            */
-            #endregion
-
             #region Check for existing object - might be removed at some time
 
             var exists = ObjectExistsOnFS(NewDBObject);
@@ -269,33 +246,13 @@ namespace sones.GraphDB.ObjectManagement
 
             foreach (var type in _DBContext.DBTypeManager.GetAllParentTypes(myGraphDBType, true, false))
             {
-                foreach (var aIdx in type.GetAllAttributeIndices())
+                foreach (var aIdx in type.GetAllAttributeIndices(false))
                 {
-                    if (aIdx.IsUuidIndex)
+                    //Find out if the dbobject carries all necessary attributes
+                    if (NewDBObject.HasAtLeastOneAttribute(aIdx.IndexKeyDefinition.IndexKeyAttributeUUIDs, type, mySessionSettings))
                     {
-                        // add to UUID index only for the direct type
-                        if (type == myGraphDBType)
-                        {
-                            /*
-                            var idxRef = aIdx.GetIndexReference(_DBContext.DBIndexManager);
-                            if (!idxRef.Success)
-                            {
-                                return new Exceptional<DBObjectStream>(idxRef);
-                            }
-
-                            idxRef.Value.Add(new IndexKey(aIdx.IndexKeyDefinition.IndexKeyAttributeUUIDs[0], new DBReference(NewDBObject.ObjectUUID), aIdx.IndexKeyDefinition), NewDBObject.ObjectUUID);
-                            */
-                            aIdx.Insert(NewDBObject, type, _DBContext);
-                        }
-                    }
-                    else
-                    {
-                        //Find out if the dbobject carries all necessary attributes
-                        if (NewDBObject.HasAtLeastOneAttribute(aIdx.IndexKeyDefinition.IndexKeyAttributeUUIDs, type, mySessionSettings))
-                        {
-                            //valid dbo for idx
-                            aIdx.Insert(NewDBObject, type, _DBContext);
-                        }
+                        //valid dbo for idx
+                        aIdx.Insert(NewDBObject, type, _DBContext);
                     }
                 }
             }
@@ -311,7 +268,9 @@ namespace sones.GraphDB.ObjectManagement
                     var addExcept = NewDBObject.AddUndefinedAttribute(item.Key, item.Value, this);
 
                     if (addExcept.Failed)
+                    {
                         return new Exceptional<DBObjectStream>(addExcept);
+                    }
                 }
             }
 
@@ -365,7 +324,7 @@ namespace sones.GraphDB.ObjectManagement
 
             // This will lock 
             
-            var _GetObjectExceptional = _IGraphFSSession.GetObject<DBObjectStream>(myObjectLocation, DBConstants.DBOBJECTSTREAM, null, null, 0, false);
+            var _GetObjectExceptional = _IGraphFSSession.GetFSObject<DBObjectStream>(myObjectLocation, DBConstants.DBOBJECTSTREAM, null, null, 0, false);
 
             if (_GetObjectExceptional == null || _GetObjectExceptional.Failed || _GetObjectExceptional.Value == null)
             {
@@ -440,36 +399,12 @@ namespace sones.GraphDB.ObjectManagement
             // Get DBObject path
             myDBObjectLocation = myDBObject.ObjectLocation;
 
-            #region remove from index
-
-            #region Remove from parent types guid index
-
-            foreach (var type in _DBContext.DBTypeManager.GetAllParentTypes(myTypeOfDBObject, true, false))
-            {
-                var aUUIDIdx = type.GetUUIDIndex(_DBContext.DBTypeManager);
-                
-                var idxRef = aUUIDIdx.GetIndexReference(_DBContext.DBIndexManager);
-                if (!idxRef.Success)
-                {
-                    return new Exceptional<object>(idxRef);
-                }
-
-                idxRef.Value.Remove(new IndexKey(aUUIDIdx.IndexKeyDefinition.IndexKeyAttributeUUIDs[0], new DBReference(myDBObject.ObjectUUID), aUUIDIdx.IndexKeyDefinition));
-            }
-
-            #endregion
-
             #region remove from attributeIDX
 
-            foreach (var anIndex in myTypeOfDBObject.GetAllAttributeIndices())
+            foreach (var anIndex in myTypeOfDBObject.GetAllAttributeIndices(false))
             {
-                if (!anIndex.IsUuidIndex)
-                {
-                    anIndex.Remove(myDBObject, myTypeOfDBObject, _DBContext);
-                }
+                anIndex.Remove(myDBObject, myTypeOfDBObject, _DBContext);
             }
-
-            #endregion
 
             #endregion
 
@@ -554,7 +489,7 @@ namespace sones.GraphDB.ObjectManagement
 
             if (existExcept.Value == Trinary.TRUE)
             {
-                var loadException = _IGraphFSSession.GetObject<UndefinedAttributesStream>(myAttributeLocation, DBConstants.UNDEFATTRIBUTESSTREAM, null, null, 0, false);
+                var loadException = _IGraphFSSession.GetFSObject<UndefinedAttributesStream>(myAttributeLocation, DBConstants.UNDEFATTRIBUTESSTREAM, null, null, 0, false);
 
                 if (loadException.Failed)
                     return new Exceptional<UndefinedAttributesStream>(loadException);
@@ -611,7 +546,7 @@ namespace sones.GraphDB.ObjectManagement
 
             if (existExcept.Value == Trinary.TRUE)
             {
-                var loadException = _IGraphFSSession.GetObject<BackwardEdgeStream>(myEdgeLocation, DBConstants.DBBACKWARDEDGESTREAM, null, null, 0, false);
+                var loadException = _IGraphFSSession.GetFSObject<BackwardEdgeStream>(myEdgeLocation, DBConstants.DBBACKWARDEDGESTREAM, null, null, 0, false);
 
                 if (loadException.Failed)
                     return new Exceptional<BackwardEdgeStream>(loadException);

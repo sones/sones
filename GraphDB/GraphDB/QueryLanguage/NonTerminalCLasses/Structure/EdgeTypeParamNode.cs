@@ -51,11 +51,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         }
 
 
-        private Object _Param;
-        public Object Param
-        {
-            get { return _Param; }
-        }
+        public Object Param { get; private set; }
 
         public ParamType Type { get; set; }
 
@@ -65,24 +61,24 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             {
                 if (parseNode.ChildNodes[0].AstNode is DefaultValueDefNode)
                 {
-                    _Param = (parseNode.ChildNodes[0].AstNode as DefaultValueDefNode).Value;
+                    Param = (parseNode.ChildNodes[0].AstNode as DefaultValueDefNode).Value;
                     Type = ParamType.DefaultValueDef;
                 }
                 else if (parseNode.ChildNodes[0].AstNode is EdgeType_SortedNode)
                 {
-                    _Param = (parseNode.ChildNodes[0].AstNode as EdgeType_SortedNode).SortDirection;
+                    Param = (parseNode.ChildNodes[0].AstNode as EdgeType_SortedNode).SortDirection;
                     Type = ParamType.Sort;
                 }
                 else
                 {
                     if (GraphDBTypeMapper.IsBasicType(parseNode.ChildNodes[0].Token.ValueString))
                     {
-                        _Param = GraphDBTypeMapper.GetPandoraObjectFromTypeName(parseNode.ChildNodes[0].Token.ValueString);
+                        Param = GraphDBTypeMapper.GetPandoraObjectFromTypeName(parseNode.ChildNodes[0].Token.ValueString);
                         Type = ParamType.PandoraType;
                     }
                     else
                     {
-                        _Param = parseNode.ChildNodes[0].Token.Value;
+                        Param = parseNode.ChildNodes[0].Token.Value;
                         Type = ParamType.Value;
                     }
                 }

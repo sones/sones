@@ -218,7 +218,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                     throw new NotImplementedException();
                 }
 
-                if (!dbo.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), null))
+                if (!dbo.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
                 {
                     ////_Logger.Info("Abort search! Start object has no edge!");
                     //Console.WriteLine("No paths found!");
@@ -410,11 +410,11 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                         }
 
                         #region the edge and the backwardedge are existing
-                        if (currentDBObjectLeft.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), null)
+                        if (currentDBObjectLeft.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager))
                             && currentDBObjectRight.Value.ContainsBackwardEdge(edgeKey))
                         {
                             //get all referenced ObjectUUIDs using the given Edge                                                
-                            var objectUUIDsLeft = (currentDBObjectLeft.Value.GetAttribute(myTypeAttribute.UUID) as ASetReferenceEdgeType).GetAllUUIDs();
+                            var objectUUIDsLeft = (currentDBObjectLeft.Value.GetAttribute(myTypeAttribute.UUID) as ASetReferenceEdgeType).GetAllReferenceIDs();
                             Node currentNodeLeft;
 
                             #region check left friends
@@ -633,10 +633,10 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                         }
                         #endregion
                         #region only the edge exists
-                        else if (currentDBObjectLeft.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), null))
+                        else if (currentDBObjectLeft.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
                         {
                             //get all referenced ObjectUUIDs using the given Edge                                                
-                            var objectUUIDsLeft = (currentDBObjectLeft.Value.GetAttribute(myTypeAttribute.UUID) as ASetReferenceEdgeType).GetAllUUIDs();
+                            var objectUUIDsLeft = (currentDBObjectLeft.Value.GetAttribute(myTypeAttribute.UUID) as ASetReferenceEdgeType).GetAllReferenceIDs();
                             Node currentNodeLeft;
 
                             #region check left friends
@@ -887,10 +887,10 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                             throw new NotImplementedException();
                         }
 
-                        if (currentDBObjectLeft.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), null))
+                        if (currentDBObjectLeft.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
                         {
                             //get all referenced ObjectUUIDs using the given Edge                                                
-                            var objectUUIDsLeft = (currentDBObjectLeft.Value.GetAttribute(myTypeAttribute.UUID) as ASetReferenceEdgeType).GetAllUUIDs();
+                            var objectUUIDsLeft = (currentDBObjectLeft.Value.GetAttribute(myTypeAttribute.UUID) as ASetReferenceEdgeType).GetAllReferenceIDs();
                             Node currentNodeLeft;
 
                             #region check left friends
@@ -1167,7 +1167,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                     throw new NotImplementedException();
                 }
 
-                if (!dbo.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), null))
+                if (!dbo.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
                 {
                     ////_Logger.Info("Abort search! Start object has no edge!");
                     //Console.WriteLine("No paths found!");
@@ -1210,10 +1210,10 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                         throw new NotImplementedException();
                     }
 
-                    if (currentDBObjectLeft.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), null))
+                    if (currentDBObjectLeft.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
                     {
                         //get referenced ObjectUUID using the given Edge                                                
-                        var objectUUIDsLeft = (currentDBObjectLeft.Value.GetAttribute(myTypeAttribute.UUID) as ASingleReferenceEdgeType).GetAllUUIDs();
+                        var objectUUIDsLeft = (currentDBObjectLeft.Value.GetAttribute(myTypeAttribute.UUID) as ASingleReferenceEdgeType).GetAllReferenceIDs();
                         Node currentNodeLeft;
 
                         #region check left friend

@@ -53,119 +53,46 @@ namespace sones.GraphDB.Indices
     /// <summary>
     /// This datastructure contains information concerning a single attribute index
     /// </summary>
-    public class AttributeIndex
+    public class AttributeIndex : AAttributeIndex
     {
-
-        #region Properties
-
-        #region IndexName
-
-        private String _IndexName;
-        /// <summary>
-        /// The user-defined name of this index
-        /// </summary>
-        public String IndexName { get { return _IndexName; } }
-
-        #endregion
-
-        #region IndexKeyDefinition
-
-        private IndexKeyDefinition _IndexKeyDefinition;
-        /// <summary>
-        /// Definition of the AttributeIndex.
-        /// </summary>
-        public IndexKeyDefinition IndexKeyDefinition { get { return _IndexKeyDefinition; } }
-
-        #endregion
-
-        #region IndexEdition
-
-        private String _IndexEdition;
-        /// <summary>
-        /// You may have different versions of an attribute index, e.g. HashMap,
-        /// BTree to speed up different database operations
-        /// </summary>
-        public String IndexEdition { get { return _IndexEdition; } }
-
-        #endregion
-
-        /// <summary>
-        /// This is a special handling for indices on list or set of baseobjects cause we can't use the standard indexOperation on this type of index
-        /// </summary>
-        private Boolean _IsListOfBaseObjectsIndex;
-        public Boolean IsListOfBaseObjectsIndex { get { return _IsListOfBaseObjectsIndex; } }
-
-        /// <summary>
-        /// Determines whether this index is an unique index
-        /// </summary>
-        public Boolean IsUniqueIndex { get; set; }
-
-        /// <summary>
-        /// Determines whether this index is an special index for unique attributes definition
-        /// </summary>
-        public Boolean IsUniqueAttributeIndex
-        {
-            get
-            {
-                return _IndexEdition == DBConstants.UNIQUEATTRIBUTESINDEX;
-            }
-        }
-
-        #region IndexObjectType
-
-        private String _IndexType;
-        /// <summary>
-        /// The IndexType e.g. HashMap, BTree of this AttributeIndex
-        /// </summary>
-        public String IndexType 
-        { 
-            get { return _IndexType; } 
-        }
-
-        #endregion
+        #region properties
 
         #region IndexReference
 
-        private Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>> _IndexReference;
+        private IVersionedIndexObject<IndexKey, ObjectUUID> _indexReference = null;
+        
         /// <summary>
         /// A reference to this index after it was loaded into the memory
         /// or connected by a proxy class
         /// </summary>
-        public Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>> GetIndexReference(DBIndexManager indexManager)
+        private Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>> GetIndexReference(DBIndexManager indexManager)
         {
 
-            if (_IndexReference == null)
+            if (_indexReference == null)
             {
-                if (!indexManager.HasIndex(_IndexType))
+                if (!indexManager.HasIndex(IndexType))
                 {
                     // the index type does not exist anymore - return null or throw exception
                     return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(new GraphDBError("Index is away!"));
                 }
-                
-                var emptyIdx = indexManager.GetIndex(_IndexType);
+
+                var emptyIdx = indexManager.GetIndex(IndexType);
                 if (!emptyIdx.Success)
                 {
                     return emptyIdx;
                 }
 
-                _IndexReference = indexManager.LoadOrCreateDBIndex(_FileSystemLocation, emptyIdx.Value);
+                var indexExceptional = indexManager.LoadOrCreateDBIndex(FileSystemLocation, emptyIdx.Value);
+
+                if (indexExceptional.Failed)
+                {
+                    return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(indexExceptional);
+                }
+
+                _indexReference = indexExceptional.Value;
             }
 
-            return _IndexReference;
-        }
-
-        #endregion
-
-        #region FileSystemLocation
-
-        private ObjectLocation _FileSystemLocation;
-
-        /// <summary>
-        /// The ObjectLocation of the IndexObject within a pandora file system
-        /// </summary>
-        public ObjectLocation FileSystemLocation
-        {
-            get { return _FileSystemLocation; }
+            return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(_indexReference);
         }
 
         #endregion
@@ -188,26 +115,27 @@ namespace sones.GraphDB.Indices
 
         public AttributeIndex(string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, string indexType = null, string indexEdition = DBConstants.DEFAULTINDEX)
         {
-            _IndexName          = indexName;
-            _IndexEdition       = indexEdition;
-            _IndexKeyDefinition = idxKey;
+            IndexName          = indexName;
+            IndexEdition       = indexEdition;
+            IndexKeyDefinition = idxKey;
+            IndexRelatedTypeUUID = correspondingType.UUID;
 
             if (indexEdition == null)
             {
-                _IndexEdition = DBConstants.DEFAULTINDEX;
+                IndexEdition = DBConstants.DEFAULTINDEX;
             }
             else
             {
-                _IndexEdition = indexEdition;
+                IndexEdition = indexEdition;
             }
 
             if (String.IsNullOrEmpty(indexType))
             {
-                _IndexType = VersionedHashIndexObject.Name;
+                IndexType = VersionedHashIndexObject.Name;
             }
             else
             {
-                _IndexType = indexType;
+                IndexType = indexType;
             }
 
             #region Workaround for current IndexOperation of InOperator - just follow the IsListOfBaseObjectsIndex property
@@ -226,17 +154,16 @@ namespace sones.GraphDB.Indices
                 }
             }))
             {
-                _IsListOfBaseObjectsIndex = true;
+                IsListOfBaseObjectsIndex = true;
             }
             else
             {
-                _IsListOfBaseObjectsIndex = false;
+                IsListOfBaseObjectsIndex = false;
             }
 
             #endregion
 
-            // we could use Guid.New as well
-            _FileSystemLocation = (correspondingType.ObjectLocation + "Indices") + (_IndexName + "#" + _IndexEdition);
+            FileSystemLocation = (correspondingType.ObjectLocation + "Indices") + (IndexName + "#" + IndexEdition);
         }
 
         #endregion
@@ -255,7 +182,7 @@ namespace sones.GraphDB.Indices
             HashSet<IndexKey> result = new HashSet<IndexKey>();
             TypeAttribute currentAttribute;
 
-            foreach (var aIndexAttributeUUID in _IndexKeyDefinition.IndexKeyAttributeUUIDs)
+            foreach (var aIndexAttributeUUID in IndexKeyDefinition.IndexKeyAttributeUUIDs)
             {
                 currentAttribute = myTypeOfDBObject.GetTypeAttributeByUUID(aIndexAttributeUUID);
 
@@ -263,7 +190,7 @@ namespace sones.GraphDB.Indices
                 {
                     #region base attribute
 
-                    if (myDBObject.HasAttribute(aIndexAttributeUUID, myTypeOfDBObject, dbContext.SessionSettings))
+                    if (myDBObject.HasAttribute(aIndexAttributeUUID, myTypeOfDBObject))
                     {
                         ADBBaseObject newIndexKeyItem = null;
 
@@ -318,6 +245,7 @@ namespace sones.GraphDB.Indices
                             #region single/special
 
                             case KindsOfType.SingleReference:
+                            case KindsOfType.SingleNoneReference:
                             case KindsOfType.SpecialAttribute:
 
                                 newIndexKeyItem = (ADBBaseObject)myDBObject.GetAttribute(aIndexAttributeUUID, myTypeOfDBObject, dbContext);
@@ -401,6 +329,8 @@ namespace sones.GraphDB.Indices
 
         #endregion
 
+        #region public methods
+
         #region Update
 
         /// <summary>
@@ -409,7 +339,7 @@ namespace sones.GraphDB.Indices
         /// <param name="myDBObject">The DBObject that should be updated</param>
         /// <param name="myTypeOfDBObject">The type of the DBObject</param>
         /// <param name="myToken">The SessionInfos</param>
-        public Exceptional Update(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext)
+        public override Exceptional Update(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
 
             #region Get index reference
@@ -462,7 +392,7 @@ namespace sones.GraphDB.Indices
             }
             else
             {
-                return new Exceptional(new Error_InvalidIndexReference(_IndexName, _IndexEdition));
+                return new Exceptional(new Error_InvalidIndexReference(IndexName, IndexEdition));
             }
 
             return Exceptional.OK;
@@ -479,9 +409,9 @@ namespace sones.GraphDB.Indices
         /// <param name="myDBObject">The DBObject that should be inserted</param>
         /// <param name="myTypeOfDBobject">The type of the DBObject</param>
         /// <param name="myToken">The SessionInfos</param>
-        public void Insert(DBObjectStream myDBObject, GraphDBType myTypeOfDBobject, DBContext dbContext)
+        public override Exceptional Insert(DBObjectStream myDBObject, GraphDBType myTypeOfDBobject, DBContext dbContext)
         {
-            Insert(myDBObject, IndexSetStrategy.MERGE, myTypeOfDBobject, dbContext);
+            return Insert(myDBObject, IndexSetStrategy.MERGE, myTypeOfDBobject, dbContext);
         }
 
         /// <summary>
@@ -491,7 +421,7 @@ namespace sones.GraphDB.Indices
         /// <param name="myIndexSetStrategy">The index merge strategy</param>
         /// <param name="myTypeOfDBObject">The type of the DBObject</param>
         /// <param name="myToken">The SessionInfos</param>
-        public Exceptional Insert(DBObjectStream myDBObject, IndexSetStrategy myIndexSetStrategy, GraphDBType myTypeOfDBObject, DBContext dbContext)
+        public override Exceptional Insert(DBObjectStream myDBObject, IndexSetStrategy myIndexSetStrategy, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
 
             #region Get index reference
@@ -516,7 +446,7 @@ namespace sones.GraphDB.Indices
                     {
                         if (idxRefVal.ContainsKey(aIndexKex))
                         {
-                            return new Exceptional(new Error_UniqueConstrainViolation(myTypeOfDBObject.Name, _IndexName));
+                            return new Exceptional(new Error_UniqueConstrainViolation(myTypeOfDBObject.Name, IndexName));
                         }
                     }
 
@@ -528,7 +458,7 @@ namespace sones.GraphDB.Indices
             }
             else
             {
-                return new Exceptional(new Error_InvalidIndexReference(_IndexName, _IndexEdition));
+                return new Exceptional(new Error_InvalidIndexReference(IndexName, IndexEdition));
             }
 
             return Exceptional.OK;
@@ -546,15 +476,15 @@ namespace sones.GraphDB.Indices
         /// <param name="myTypeOfDBObject">The Type of the DBObject</param>
         /// <param name="myToken">The SessionInfos</param>
         /// <returns>A Trinary</returns>
-        public Exceptional<Boolean> Contains(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext)
+        public override Boolean Contains(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
 
             #region Get index reference
 
             var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (!idxRef.Success)
+            if (idxRef.Failed)
             {
-                return new Exceptional<Boolean>(idxRef);
+                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
             }
             var idxRefVal = idxRef.Value;
 
@@ -566,17 +496,40 @@ namespace sones.GraphDB.Indices
                 {
                     if (idxRefVal.Contains(aIndexKex, myDBObject.ObjectUUID))
                     {
-                        return new Exceptional<bool>(true);
+                        return true;
                     }
                 }
 
-                return new Exceptional<bool>(false);
+                return false;
             }
             else
             {
-                return new Exceptional<bool>(new Error_InvalidIndexReference(_IndexName, _IndexEdition));
+                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
             }
 
+        }
+
+        public override Boolean Contains(IndexKey myIndeyKey, GraphDBType myTypeOfDBObject, DBContext dbContext)
+        {
+            #region Get index reference
+
+            var idxRef = GetIndexReference(dbContext.DBIndexManager);
+            if (idxRef.Failed)
+            {
+                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
+            }
+            var idxRefVal = idxRef.Value;
+
+            #endregion
+
+            if (idxRefVal != null)
+            {
+                return idxRefVal.ContainsKey(myIndeyKey);
+            }
+            else
+            {
+                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
+            }
         }
 
         #endregion
@@ -589,7 +542,7 @@ namespace sones.GraphDB.Indices
         /// <param name="myDBObject">The DBObject that should be removed</param>
         /// <param name="myTypeOfDBObjects">The type of the DBObject</param>
         /// <param name="myToken">The SessionInfos</param>
-        public Exceptional Remove(DBObjectStream myDBObject, GraphDBType myTypeOfDBObjects, DBContext dbContext)
+        public override Exceptional Remove(DBObjectStream myDBObject, GraphDBType myTypeOfDBObjects, DBContext dbContext)
         {
 
             #region Get index reference
@@ -611,7 +564,7 @@ namespace sones.GraphDB.Indices
             }
             else
             {
-                return new Exceptional(new Error_InvalidIndexReference(_IndexName, _IndexEdition));
+                return new Exceptional(new Error_InvalidIndexReference(IndexName, IndexEdition));
             }
 
             return Exceptional.OK;
@@ -620,14 +573,12 @@ namespace sones.GraphDB.Indices
 
         #endregion
 
-        #region IsUuidIndex
+        #region Clear
 
-        public Boolean IsUuidIndex
+        public override Exceptional Clear(DBIndexManager indexManager)
         {
-            get
-            {
-                return _IndexName == SpecialTypeAttribute_UUID.AttributeName;
-            }
+            _indexReference = null;
+            return indexManager.RemoveDBIndex(FileSystemLocation);
         }
 
         #endregion
@@ -638,7 +589,7 @@ namespace sones.GraphDB.Indices
 
         public override int GetHashCode()
         {
-            return _IndexKeyDefinition.GetHashCode() ^ _IndexName.GetHashCode() ^ _IndexEdition.GetHashCode();
+            return IndexKeyDefinition.GetHashCode() ^ IndexName.GetHashCode() ^ IndexEdition.GetHashCode();
         }
 
         public override Boolean Equals(Object obj)
@@ -670,17 +621,17 @@ namespace sones.GraphDB.Indices
                 return false;
             }
 
-            if (this._IndexName != p.IndexName)
+            if (this.IndexName != p.IndexName)
             {
                 return false;
             }
 
-            if (this._IndexEdition != p.IndexEdition)
+            if (this.IndexEdition != p.IndexEdition)
             {
                 return false;
             }
 
-            if (this._IndexKeyDefinition != p.IndexKeyDefinition)
+            if (this.IndexKeyDefinition != p.IndexKeyDefinition)
             {
                 return false;
             }
@@ -717,19 +668,212 @@ namespace sones.GraphDB.Indices
 
         public override string ToString()
         {
-            return _IndexName;
+            return IndexName;
         }
 
         #endregion
 
         #endregion
 
+        #region GetKeys
 
-        internal void Clear(DBIndexManager indexManager)
+        public override IEnumerable<IndexKey> GetKeys(GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            indexManager.RemoveDBIndex(_FileSystemLocation);
-            _IndexReference = null;
+            #region Get index reference
+
+            var idxRef = GetIndexReference(dbContext.DBIndexManager);
+            if (idxRef.Failed)
+            {
+                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
+            }
+            var idxRefVal = idxRef.Value;
+
+            #endregion
+
+            if (idxRefVal != null)
+            {
+                return idxRefVal.Keys();
+            }
+            else
+            {
+                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
+            }
         }
 
+        #endregion
+
+        #region GetValues
+
+        public override IEnumerable<ObjectUUID> GetValues(IndexKey myIndeyKey, GraphDBType myTypeOfDBObject, DBContext dbContext)
+        {
+            #region Get index reference
+
+            var idxRef = GetIndexReference(dbContext.DBIndexManager);
+            if (idxRef.Failed)
+            {
+                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
+            }
+            var idxRefVal = idxRef.Value;
+
+            #endregion
+
+            if (idxRefVal != null)
+            {
+                return idxRef.Value[myIndeyKey];
+            }
+            else
+            {
+                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
+            }
+        }
+
+        #endregion
+
+        #region GetAllValues
+
+        public override IEnumerable<IEnumerable<ObjectUUID>> GetAllValues(GraphDBType myTypeOfDBObject, DBContext dbContext)
+        {
+            #region Get index reference
+
+            var idxRef = GetIndexReference(dbContext.DBIndexManager);
+            if (idxRef.Failed)
+            {
+                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
+            }
+            var idxRefVal = idxRef.Value;
+
+            #endregion
+
+            if (idxRefVal != null)
+            {
+                foreach (var aValue in idxRefVal.Values())
+                {
+                    yield return aValue;
+                }
+
+                yield break;
+            }
+            else
+            {
+                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
+            }
+        }
+
+        #endregion
+
+        #region GetKeyValues
+
+        public override IEnumerable<KeyValuePair<IndexKey, HashSet<ObjectUUID>>> GetKeyValues(GraphDBType myTypeOfDBObject, DBContext dbContext)
+        {
+            #region Get index reference
+
+            var idxRef = GetIndexReference(dbContext.DBIndexManager);
+            if (idxRef.Failed)
+            {
+                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
+            }
+            var idxRefVal = idxRef.Value;
+
+            #endregion
+
+            if (idxRefVal != null)
+            {
+                foreach (var aKV in idxRef.Value)
+                {
+                    yield return aKV;
+                }
+
+                yield break;
+            }
+            else
+            {
+                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
+            }
+        }
+
+        #endregion
+
+        #region GetValueCount
+
+        public override UInt64 GetValueCount(GraphDBType myTypeOfDBObject, DBContext dbContext)
+        {
+            #region Get index reference
+
+            var idxRef = GetIndexReference(dbContext.DBIndexManager);
+            if (idxRef.Failed)
+            {
+                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
+            }
+            var idxRefVal = idxRef.Value;
+
+            #endregion
+
+            if (idxRefVal != null)
+            {
+                return idxRefVal.ValueCount();
+            }
+            else
+            {
+                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
+            }
+        }
+
+        #endregion
+
+        #region GetKeyCount
+
+        public override UInt64 GetKeyCount(GraphDBType myTypeOfDBObject, DBContext dbContext)
+        {
+            #region Get index reference
+
+            var idxRef = GetIndexReference(dbContext.DBIndexManager);
+            if (idxRef.Failed)
+            {
+                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
+            }
+            var idxRefVal = idxRef.Value;
+
+            #endregion
+
+            if (idxRefVal != null)
+            {
+                return idxRefVal.KeyCount();
+            }
+            else
+            {
+                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
+            }
+        }
+
+        #endregion
+
+        #region InRange
+
+        public override IEnumerable<ObjectUUID> InRange(IndexKey fromIndexKey, IndexKey toIndexKey, bool myOrEqualFromKey, bool myOrEqualToKey, GraphDBType myTypeOfDBObject, DBContext dbContext)
+        {
+            #region Get index reference
+
+            var idxRef = GetIndexReference(dbContext.DBIndexManager);
+            if (idxRef.Failed)
+            {
+                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
+            }
+            var idxRefVal = idxRef.Value;
+
+            #endregion
+
+            if (idxRefVal != null)
+            {
+                return idxRefVal.InRange(fromIndexKey, toIndexKey, myOrEqualFromKey, myOrEqualToKey);
+            }
+            else
+            {
+                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
+            }
+        }
+
+        #endregion
+
+        #endregion
     }
 }

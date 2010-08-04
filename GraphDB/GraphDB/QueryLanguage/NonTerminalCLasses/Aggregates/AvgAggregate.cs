@@ -104,40 +104,28 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Aggregates
             return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
 
-        public override Exceptional<object> Aggregate(AttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
+        public override Exceptional<object> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
         {
+            if (attributeIndex is UUIDIndex)
+            {
+                return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "AVG(UUID) is not implemented!"));     
+            }
+
+            var indexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(attributeIndex.IndexRelatedTypeUUID);
+
             // HACK: rewrite as soon as we have real attribute index keys
-            ADBBaseObject pandoraObject = new DBDouble(DBObjectInitializeType.Default);
+            ADBBaseObject aADBBaseObject = new DBDouble(DBObjectInitializeType.Default);
             DBUInt64 total = new DBUInt64((UInt64)0);
 
-            var idxRef = attributeIndex.GetIndexReference(dbContext.DBIndexManager);
-            if (!idxRef.Success)
+            foreach (var idxEntry in attributeIndex.GetKeyValues(indexRelatedType, dbContext))
             {
-                return new Exceptional<object>(idxRef);
-            }
-            
-            foreach (var idxEntry in idxRef.Value)
-            {
-                if (attributeIndex.IsUuidIndex)
-                {
-                    
-                    //String settingEncoding = (String)graphDBType.GetSettingValue(DBConstants.SettingUUIDEncoding, mySessionToken, dbContext.DBTypeManager).Value.Value;
-                    //if (settingEncoding == null)
-                    //    return new Exceptional<object>(new Error_ArgumentNullOrEmpty("settingEncoding"));
-
-                    throw new NotImplementedException("AVG(UUID) is not implemented!");
-                    //pandoraObject.Add(pandoraObject.Clone(SpecialTypeAttribute_UUID.ConvertFromUUID(idxEntry.Value.First(), settingEncoding.ToLower())));
-
-                }
-                else
-                {
-                    pandoraObject.Add(pandoraObject.Clone(idxEntry.Key));
-                }
+                aADBBaseObject.Add(aADBBaseObject.Clone(idxEntry.Key));
+                
                 total += (UInt64)idxEntry.Value.LongCount();
             }
-            pandoraObject.Div(total);
+            aADBBaseObject.Div(total);
 
-            return new Exceptional<object>(pandoraObject.Value);
+            return new Exceptional<object>(aADBBaseObject.Value);
         }
     }
 }

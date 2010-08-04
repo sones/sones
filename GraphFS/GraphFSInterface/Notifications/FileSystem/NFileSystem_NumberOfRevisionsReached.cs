@@ -72,19 +72,19 @@ namespace sones.GraphFS.Notification
             public byte[] Serialize()
             {
                 var _SerializationWriter = new SerializationWriter();
-                _SerializationWriter.WriteObject(ObjectLocation);
-                _SerializationWriter.WriteObject(UserMetadataKey);
-                _SerializationWriter.WriteObject(NumberOfRevisions);
+                _SerializationWriter.WriteString(ObjectLocation);
+                _SerializationWriter.WriteString(UserMetadataKey);
+                _SerializationWriter.WriteInt32(NumberOfRevisions);
 
                 return _SerializationWriter.ToArray();
             }
 
             public void Deserialize(byte[] mySerializedBytes)
             {
-                var _SerializationReader = new SerializationReader(mySerializedBytes);
-                ObjectLocation = (String)_SerializationReader.ReadObject();
-                UserMetadataKey = (String)_SerializationReader.ReadObject();
-                NumberOfRevisions = (Int32)_SerializationReader.ReadObject();
+                var _SerializationReader        = new SerializationReader(mySerializedBytes);
+                ObjectLocation                  = _SerializationReader.ReadString();
+                UserMetadataKey                 = _SerializationReader.ReadString();
+                NumberOfRevisions               = _SerializationReader.ReadInt32();
             }
 
             public override string ToString()

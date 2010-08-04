@@ -25,27 +25,28 @@ using System.Text;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
 using sones.GraphDB.QueryLanguage.Operators;
 using sones.GraphDB.QueryLanguage.Enums;
+using sones.GraphDB.Managers.Structures;
 
 namespace sones.GraphDB.Errors
 {
     public class Error_InvalidBinaryExpression : GraphDBError
     {
-        public BinaryExpressionNode BinaryExpression { get; private set; }
+        public BinaryExpressionDefinition BinaryExpression { get; private set; }
 
         public ABinaryCompareOperator Operator { get; private set; }
-        public Tuple<IDNode, IDNode> IdNodes { get; private set; }
-        public Tuple<Object, Object> Operands { get; private set; }
+        public Tuple<IDChainDefinition, IDChainDefinition> IDChainDefinitions { get; private set; }
+        public Tuple<AExpressionDefinition, AExpressionDefinition> Operands { get; private set; }
         public TypesOfBinaryExpression TypeOfBinaryOperation { get; private set; }
 
-        public Error_InvalidBinaryExpression(BinaryExpressionNode myBinaryExpression)
+        public Error_InvalidBinaryExpression(BinaryExpressionDefinition myBinaryExpression)
         {
             BinaryExpression = myBinaryExpression;
         }
 
-        public Error_InvalidBinaryExpression(ABinaryCompareOperator myOperator, Tuple<IDNode, IDNode> myIdNodes, Tuple<Object, Object> myOperands, TypesOfBinaryExpression myTypeOfBinaryOperation)
+        public Error_InvalidBinaryExpression(ABinaryCompareOperator myOperator, Tuple<IDChainDefinition, IDChainDefinition> myIDChainDefinitions, Tuple<AExpressionDefinition, AExpressionDefinition> myOperands, TypesOfBinaryExpression myTypeOfBinaryOperation)
         {
             Operator = myOperator;
-            IdNodes = myIdNodes;
+            IDChainDefinitions = myIDChainDefinitions;
             Operands = myOperands;
             TypeOfBinaryOperation = myTypeOfBinaryOperation;
 
@@ -70,11 +71,11 @@ namespace sones.GraphDB.Errors
 
                     case TypesOfBinaryExpression.LeftComplex:
                     case TypesOfBinaryExpression.RightComplex:
-                        binexpr = String.Format("Left: {0}, Operator: {1}, Right: {2}", IdNodes.Item1, Operator.Symbol, Operands.Item1);
+                        binexpr = String.Format("Left: {0}, Operator: {1}, Right: {2}", IDChainDefinitions.Item1, Operator.Symbol, Operands.Item1);
                         break;
 
                     case TypesOfBinaryExpression.Complex:
-                        binexpr = String.Format("Left: {0}, Operator: {1}, Right: {2}", IdNodes.Item1.ToString(), Operator.Symbol.ToString(), IdNodes.Item2.ToString());
+                        binexpr = String.Format("Left: {0}, Operator: {1}, Right: {2}", IDChainDefinitions.Item1.ToString(), Operator.Symbol.ToString(), IDChainDefinitions.Item2.ToString());
                         break;
 
                     case TypesOfBinaryExpression.Unknown:

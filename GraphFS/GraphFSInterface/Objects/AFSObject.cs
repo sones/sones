@@ -40,6 +40,7 @@ using sones.GraphFS.Exceptions;
 using sones.Lib.ErrorHandling;
 using sones.GraphFS.Errors;
 using sones.Lib.ErrorHandling;
+using sones.GraphFS.Events;
 
 #endregion
 
@@ -50,11 +51,11 @@ namespace sones.GraphFS.Objects
     /// The abstract class for all GraphFS objects.
     /// </summary>
     
-    public abstract class AFSObject : AObjectOntology, IFastSerialize
+    public abstract class AFSObject : AFSObjectOntology, IFastSerialize
     {
 
         // A delegate type for hooking up change notifications.
-        public delegate void OnLoadEventHandler(Object mySender, EventArgs myEventArgs);
+        
 
 
         #region Constructors
@@ -232,7 +233,7 @@ namespace sones.GraphFS.Objects
             if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
             {
 
-                var _Exceptional = _IGraphFSSessionReference.Value.RenameObject(this.ObjectLocation, myNewObjectName);
+                var _Exceptional = _IGraphFSSessionReference.Value.RenameFSObject(this.ObjectLocation, myNewObjectName);
 
                 if (_Exceptional.Success)
                 {
@@ -255,7 +256,7 @@ namespace sones.GraphFS.Objects
         public void Remove()
         {
             if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
-                _IGraphFSSessionReference.Value.RemoveObject(_ObjectLocation, _ObjectStream, _ObjectEdition, _ObjectRevisionID);
+                _IGraphFSSessionReference.Value.RemoveFSObject(_ObjectLocation, _ObjectStream, _ObjectEdition, _ObjectRevisionID);
         }
 
         #endregion
@@ -265,7 +266,7 @@ namespace sones.GraphFS.Objects
         public void Erase()
         {
             if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
-                _IGraphFSSessionReference.Value.EraseObject(_ObjectLocation, _ObjectStream, _ObjectEdition, _ObjectRevisionID);
+                _IGraphFSSessionReference.Value.EraseFSObject(_ObjectLocation, _ObjectStream, _ObjectEdition, _ObjectRevisionID);
         }
 
         #endregion
@@ -273,18 +274,18 @@ namespace sones.GraphFS.Objects
         #endregion
 
 
-        #region APandoraObject Events
+        #region AFSObject Events
 
         #region OnLoad/OnLoadEvent(myEventArgs)
 
         /// <summary>
-        /// An event to be notified whenever a PandoraObject is
+        /// An event to be notified whenever a AFSObject is
         /// ready to be loaded.
         /// </summary>
-        public event OnLoadEventHandler OnLoad;
+        public event FSEventHandlers.OnLoadEventHandler OnLoad;
 
         /// <summary>
-        /// Invoke the OnLoad event, called whenever a PandoraObject
+        /// Invoke the OnLoad event, called whenever a AFSObject
         /// is ready to be loaded.
         /// </summary>
         /// <param name="e">EventArgs</param>
@@ -299,13 +300,13 @@ namespace sones.GraphFS.Objects
         #region OnLoaded/OnLoadedEvent(myEventArgs)
 
         /// <summary>
-        /// An event to be notified whenever a PandoraObject
+        /// An event to be notified whenever a AFSObject
         /// was successfully loaded.
         /// </summary>
-        public event OnLoadEventHandler OnLoaded;
+        public event FSEventHandlers.OnLoadedEventHandler OnLoaded;
 
         /// <summary>
-        /// Invoke the OnLoaded event, called whenever a PandoraObject
+        /// Invoke the OnLoaded event, called whenever a AFSObject
         /// was successfully loaded.
         /// </summary>
         /// <param name="e">EventArgs</param>
@@ -320,13 +321,13 @@ namespace sones.GraphFS.Objects
         #region OnSave/OnSaveEvent(myEventArgs)
 
         /// <summary>
-        /// An event to be notified whenever a PandoraObject
+        /// An event to be notified whenever a AFSObject
         /// is ready to be saved.
         /// </summary>
-        public event OnLoadEventHandler OnSave;
+        public event FSEventHandlers.OnSaveEventHandler OnSave;
 
         /// <summary>
-        /// Invoke the OnSave event, called whenever a PandoraObject
+        /// Invoke the OnSave event, called whenever a AFSObject
         /// is ready to be saved.
         /// </summary>
         /// <param name="e">EventArgs</param>
@@ -341,13 +342,13 @@ namespace sones.GraphFS.Objects
         #region OnSaved/OnSavedEvent(myEventArgs)
 
         /// <summary>
-        /// An event to be notified whenever a PandoraObject
+        /// An event to be notified whenever a AFSObject
         /// was successfully saved on disc.
         /// </summary>
-        public event OnLoadEventHandler OnSaved;
+        public event FSEventHandlers.OnSavedEventHandler OnSaved;
 
         /// <summary>
-        /// Invoke the OnSaved event, called whenever a PandoraObject
+        /// Invoke the OnSaved event, called whenever a AFSObject
         /// was successfully saved on disc.
         /// </summary>
         /// <param name="e">EventArgs</param>
@@ -362,13 +363,13 @@ namespace sones.GraphFS.Objects
         #region OnRemove/OnRemoveEvent(myEventArgs)
 
         /// <summary>
-        /// An event to be notified whenever a PandoraObject
+        /// An event to be notified whenever a AFSObject
         /// is ready to be removed.
         /// </summary>
-        public event OnLoadEventHandler OnRemove;
+        public event FSEventHandlers.OnRemoveEventHandler OnRemove;
 
         /// <summary>
-        /// Invoke the OnSave event, called whenever a PandoraObject
+        /// Invoke the OnSave event, called whenever a AFSObject
         /// is ready to be removed.
         /// </summary>
         /// <param name="e">EventArgs</param>
@@ -383,13 +384,13 @@ namespace sones.GraphFS.Objects
         #region OnRemoved/OnRemovedEvent(myEventArgs)
 
         /// <summary>
-        /// An event to be notified whenever a PandoraObject
+        /// An event to be notified whenever a AFSObject
         /// was successfully removed.
         /// </summary>
-        public event OnLoadEventHandler OnRemoved;
+        public event FSEventHandlers.OnRemovedEventHandler OnRemoved;
 
         /// <summary>
-        /// Invoke the OnRemoved event, called whenever a PandoraObject
+        /// Invoke the OnRemoved event, called whenever a AFSObject
         /// was successfully removed.
         /// </summary>
         /// <param name="e">EventArgs</param>
@@ -421,8 +422,8 @@ namespace sones.GraphFS.Objects
         #region Serialize(myIntegrityCheckAlgorithm, myEncryptionAlgorithm, myCacheSerializeData)
 
         /// <summary>
-        /// This will serialize the whole PandoraObject including the common header of an
-        /// APandoraObject and the actual PandoraObject
+        /// This will serialize the whole AFSObject including the common header of an
+        /// AAFSObject and the actual AFSObject
         /// </summary>
         /// <param name="myIntegrityCheckAlgorithm"></param>
         /// <param name="myEncryptionAlgorithm"></param>
@@ -460,30 +461,30 @@ namespace sones.GraphFS.Objects
 
                 #endregion
 
-                #region Serialize APandoraObjectHeader
+                #region Serialize AAFSObjectHeader
 
-                Byte[] APandoraObjectHeader = new Byte[HeaderLength];
+                Byte[] AAFSObjectHeader = new Byte[HeaderLength];
 
-                APandoraObjectHeader[0] = HeaderVersion;
+                AAFSObjectHeader[0] = HeaderVersion;
 
                 if (myIntegrityCheckAlgorithm != null)
                     IntegrityCheckValue_Length = myIntegrityCheckAlgorithm.HashSize;
 
                 if (IntegrityCheckValue_Length % 8 == 0)
-                    APandoraObjectHeader[1] = (Byte)(IntegrityCheckValue_Length / 8);
-                else APandoraObjectHeader[1] = (Byte)((IntegrityCheckValue_Length / 8) + 1);
+                    AAFSObjectHeader[1] = (Byte)(IntegrityCheckValue_Length / 8);
+                else AAFSObjectHeader[1] = (Byte)((IntegrityCheckValue_Length / 8) + 1);
 
                 if (EncryptionParameters_Length % 8 == 0)
-                    APandoraObjectHeader[2] = (Byte)(EncryptionParameters_Length / 8);
-                else APandoraObjectHeader[2] = (Byte)((EncryptionParameters_Length / 8) + 1);
+                    AAFSObjectHeader[2] = (Byte)(EncryptionParameters_Length / 8);
+                else AAFSObjectHeader[2] = (Byte)((EncryptionParameters_Length / 8) + 1);
 
-                APandoraObjectHeader[3] = (Byte)(DataPadding_Length);
-                APandoraObjectHeader[4] = (Byte)(AdditionalPadding_Length / 256);
-                APandoraObjectHeader[5] = (Byte)(AdditionalPadding_Length % 256);
-                APandoraObjectHeader[6] = 0x00;
-                APandoraObjectHeader[7] = 0x00;
+                AAFSObjectHeader[3] = (Byte)(DataPadding_Length);
+                AAFSObjectHeader[4] = (Byte)(AdditionalPadding_Length / 256);
+                AAFSObjectHeader[5] = (Byte)(AdditionalPadding_Length % 256);
+                AAFSObjectHeader[6] = 0x00;
+                AAFSObjectHeader[7] = 0x00;
 
-                writer.WriteBytesDirect(APandoraObjectHeader);                      // 8 Bytes
+                writer.WriteBytesDirect(AAFSObjectHeader);                      // 8 Bytes
                 IntegrityCheckValue_Position = writer.BaseStream.Position;
                 writer.WriteBytesDirect(new Byte[IntegrityCheckValue_Length]);      // n or at least 16 Bytes
                 writer.WriteBytesDirect(EncryptionParameters);                      // m Bytes
@@ -542,7 +543,7 @@ namespace sones.GraphFS.Objects
 
         #region Deserialize(mySerializedData, myIntegrityCheckAlgorithm, myEncryptionAlgorithm, myIgnoreIntegrityCheckFailures)
 
-        public void Deserialize(Byte[] mySerializedData, IIntegrityCheck myIntegrityCheckAlgorithm, ISymmetricEncryption myEncryptionAlgorithm, Boolean myIgnoreIntegrityCheckFailures)
+        public Exceptional Deserialize(Byte[] mySerializedData, IIntegrityCheck myIntegrityCheckAlgorithm, ISymmetricEncryption myEncryptionAlgorithm, Boolean myIgnoreIntegrityCheckFailures)
         {
 
             #region Data
@@ -706,6 +707,8 @@ namespace sones.GraphFS.Objects
             _SerializedAPandoraStructure = mySerializedData;
             _EstimatedSize = (UInt64)_SerializedAPandoraStructure.LongLength;
 
+            return new Exceptional();
+
         }
 
         #endregion
@@ -733,9 +736,9 @@ namespace sones.GraphFS.Objects
         #region (abstract) Clone()
 
         /// <summary>
-        /// This will create an exact deep-copy of this APandoraObject
+        /// This will create an exact deep-copy of this AAFSObject
         /// </summary>
-        /// <returns>An exact deep-copy of this APandoraObject</returns>
+        /// <returns>An exact deep-copy of this AAFSObject</returns>
         public abstract AFSObject Clone();
 
         #endregion
@@ -764,9 +767,9 @@ namespace sones.GraphFS.Objects
         /// An abstract method to deserialize this file system structure or object.
         /// </summary>
         /// <returns></returns>
-        public void Deserialize(Byte[] mySerializedData)
+        public Exceptional Deserialize(Byte[] mySerializedData)
         {
-            Deserialize(mySerializedData, null, null, false);
+            return Deserialize(mySerializedData, null, null, false);
         }
 
         #endregion
@@ -774,36 +777,36 @@ namespace sones.GraphFS.Objects
         #endregion
 
 
-        #region Deserialize(mySerializedData, myAPandoraObject)
+        #region Deserialize(mySerializedData, myAAFSObject)
 
         /// <summary>
         /// This will call the normal Deserialize method and afterwards it will
-        /// copy the content of all APandoraStructure and APandoraObject properties
+        /// copy the content of all APandoraStructure and AAFSObject properties
         /// to the clone.
         /// </summary>
         /// <param name="mySerializedData">The fastserialized object as an array of bytes</param>
-        /// <param name="myAPandoraObject">The APandoraObject to copy the content from</param>
-        public void Deserialize(Byte[] mySerializedData, AFSObject myAPandoraObject)
+        /// <param name="myAAFSObject">The AAFSObject to copy the content from</param>
+        public void Deserialize(Byte[] mySerializedData, AFSObject myAAFSObject)
         {
             Deserialize(mySerializedData);
-            CloneObjectOntology(myAPandoraObject);
+            CloneObjectOntology(myAAFSObject);
         }
 
         #endregion
 
-        #region Deserialize(mySerializedData, myIntegrityCheckAlgorithm, myEncryptionAlgorithm, myAPandoraObject)
+        #region Deserialize(mySerializedData, myIntegrityCheckAlgorithm, myEncryptionAlgorithm, myAAFSObject)
 
         /// <summary>
         /// This will call the normal Deserialize method and afterwards it will
-        /// copy the content of all APandoraStructure and APandoraObject properties
+        /// copy the content of all APandoraStructure and AAFSObject properties
         /// to the clone.
         /// </summary>
         /// <param name="mySerializedData">The fastserialized object as an array of bytes</param>
-        /// <param name="myAPandoraObject">The APandoraObject to copy the content from</param>
-        public void Deserialize(Byte[] mySerializedData, IIntegrityCheck myIntegrityCheckAlgorithm, ISymmetricEncryption myEncryptionAlgorithm, AFSObject myAPandoraObject)
+        /// <param name="myAAFSObject">The AAFSObject to copy the content from</param>
+        public void Deserialize(Byte[] mySerializedData, IIntegrityCheck myIntegrityCheckAlgorithm, ISymmetricEncryption myEncryptionAlgorithm, AFSObject myAAFSObject)
         {
             Deserialize(mySerializedData, myIntegrityCheckAlgorithm, myEncryptionAlgorithm, false);
-            CloneObjectOntology(myAPandoraObject);
+            CloneObjectOntology(myAAFSObject);
         }
 
         #endregion

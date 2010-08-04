@@ -1,13 +1,4 @@
-﻿#region usings
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-#endregion
-
-/*
+﻿/*
  * MurmurHash 2.0 - C# Implementation
  * 
  * Original C++ Implementation by Austin Appleby (aappleby (AT) gmail)
@@ -16,11 +7,21 @@ using System.Text;
  * MurmurHash is a non-cryptographic hash function suitable for general hash-based lookup.
  */
 
+#region usings
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+#endregion
 
 namespace Lib.Hashing
 {
+
     public class MurmurHash2 : IHashFunction
     {
+
         /// <summary>
         /// mixed constant that "just happen to work well"
         /// </summary>
@@ -45,6 +46,7 @@ namespace Lib.Hashing
 
         public Int64 Hash(byte[] myData, Int32 myLength, UInt32 mySeed)
         {
+
             #region data
 
             //initialize hash to random value
@@ -107,4 +109,5 @@ namespace Lib.Hashing
             return (Int64)_h;
         }
     }
+
 }

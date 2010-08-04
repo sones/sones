@@ -35,6 +35,7 @@ using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.TypeManagement;
 using sones.Lib.DataStructures;
+using sones.GraphDB.Managers.Structures;
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 {
@@ -45,11 +46,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         /// <summary>
         /// The information about the BackwardEdge: &lt;Type, Attribute, Visible AttributeName&gt;
         /// </summary>
-        public List<BackwardEdgeNode> BackwardEdgeInformation
+        public List<BackwardEdgeDefinition> BackwardEdgeInformation
         {
             get { return _BackwardEdgeInformation; }
         }
-        private List<BackwardEdgeNode> _BackwardEdgeInformation;
+        private List<BackwardEdgeDefinition> _BackwardEdgeInformation;
 
         #endregion
 
@@ -57,7 +58,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
         public BackwardEdgesNode()
         {
-            _BackwardEdgeInformation = new List<BackwardEdgeNode>();
+            _BackwardEdgeInformation = new List<BackwardEdgeDefinition>();
         }
 
         #endregion
@@ -68,7 +69,10 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             {
                 foreach (ParseTreeNode node in parseNode.ChildNodes[1].ChildNodes)
                 {
-                    _BackwardEdgeInformation.Add((BackwardEdgeNode)node.AstNode);
+                    if (node.AstNode as BackwardEdgeNode != null)
+                    {
+                        _BackwardEdgeInformation.Add(((BackwardEdgeNode)node.AstNode).BackwardEdgeDefinition);
+                    }
                 }
             }
         }

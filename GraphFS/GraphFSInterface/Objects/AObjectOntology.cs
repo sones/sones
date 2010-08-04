@@ -42,52 +42,8 @@ namespace sones.GraphFS.Objects
     /// The abstract class for the GraphFS object ontology.
     /// </summary>
 
-    public abstract class AObjectOntology : AObjectHeader, IObjectOntology
+    public abstract class AFSObjectOntology : AFSObjectHeader, IFSObjectOntology
     {
-
-
-        #region Constructors
-
-        #region APandoraOntology()
-
-        /// <summary>
-        /// This will set all important variables within this PandoraObject.
-        /// This will especially create a new ObjectUUID and mark the
-        /// APandoraObject as "new" and "dirty".
-        /// </summary>
-        public AObjectOntology()
-        {
-
-            _ObjectName             = "";
-            _ObjectPath             = "";
-            _ObjectLocation         = null;
-            _ObjectStream           = null;
-
-            _ObjectSize             = 0;
-            _ObjectSizeOnDisc       = 0;
-
-        }
-
-        #endregion
-
-        #region APandoraOntology(myObjectUUID)
-
-        /// <summary>
-        /// This will set all important variables within this PandoraObject.
-        /// Additionally it sets the ObjectUUID to the given value and marks
-        /// the APandoraObject as "new" and "dirty".
-        /// </summary>
-        public AObjectOntology(ObjectUUID myObjectUUID)
-            : this()
-        {
-            // Members of APandoraStructure
-            ObjectUUID               = myObjectUUID;
-        }
-
-        #endregion
-
-        #endregion
-
 
         #region Properties - in-memory only!
 
@@ -757,13 +713,54 @@ namespace sones.GraphFS.Objects
 
         #endregion
 
+        #region Constructors
+
+        #region AFSObjectOntology()
+
+        /// <summary>
+        /// This will set all important variables within this AFSObject.
+        /// This will especially create a new ObjectUUID and mark the
+        /// APandoraObject as "new" and "dirty".
+        /// </summary>
+        public AFSObjectOntology()
+        {
+
+            _ObjectName             = "";
+            _ObjectPath             = "";
+            _ObjectLocation         = null;
+            _ObjectStream           = null;
+
+            _ObjectSize             = 0;
+            _ObjectSizeOnDisc       = 0;
+
+        }
+
+        #endregion
+
+        #region AFSObjectOntology(myObjectUUID)
+
+        /// <summary>
+        /// This will set all important variables within this AFSObject.
+        /// Additionally it sets the ObjectUUID to the given value and marks
+        /// the APandoraObject as "new" and "dirty".
+        /// </summary>
+        public AFSObjectOntology(ObjectUUID myObjectUUID)
+            : this()
+        {
+            // Members of APandoraStructure
+            ObjectUUID               = myObjectUUID;
+        }
+
+        #endregion
+
+        #endregion
 
         #region CloneObjectOntology(myAObjectOntology)
 
-        public void CloneObjectOntology(AObjectOntology myAObjectOntology)
+        public void CloneObjectOntology(AFSObjectOntology myAObjectOntology)
         {
 
-            // Members of APandoraStructure
+            // Members of AFSObjectStructure
             _ObjectLocatorReference     = myAObjectOntology.ObjectLocatorReference;
             _INodeReference             = myAObjectOntology.INodeReference;
 
@@ -774,7 +771,7 @@ namespace sones.GraphFS.Objects
             _ObjectPath                 = myAObjectOntology.ObjectPath;
             _ObjectName                 = myAObjectOntology.ObjectName;
 
-            // Members of IObjectOntology
+            // Members of IFSObjectOntology
             _ObjectStream               = myAObjectOntology.ObjectStream;
             _ObjectEdition              = myAObjectOntology.ObjectEdition;
             _ObjectRevisionID           = myAObjectOntology.ObjectRevision;
@@ -785,7 +782,6 @@ namespace sones.GraphFS.Objects
         }
 
         #endregion
-
 
     }
 

@@ -111,12 +111,12 @@ namespace sones.GraphDB.TypeManagement
 
         public void Serialize(ref SerializationWriter mySerializationWriter)
         {
-            mySerializationWriter.WriteObject(IsBackwardEdge);
+            mySerializationWriter.WriteBoolean(IsBackwardEdge);
         }
 
         public void Deserialize(ref SerializationReader mySerializationReader)
         {
-            IsBackwardEdge              = (Boolean) mySerializationReader.ReadObject();
+            IsBackwardEdge = mySerializationReader.ReadBoolean();
         }
 
         #endregion

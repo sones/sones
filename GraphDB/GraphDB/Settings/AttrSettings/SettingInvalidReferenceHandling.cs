@@ -135,7 +135,7 @@ namespace sones.GraphDB.Settings
         public new void Serialize(SerializationWriter writer, object value)
         {
             base.Serialize(writer, this);
-            writer.WriteObject(Behaviour);
+            writer.WriteByte((Byte)Behaviour);
         }
 
         public new object Deserialize(SerializationReader reader, Type type)
@@ -146,7 +146,7 @@ namespace sones.GraphDB.Settings
         private object MyDeserialize(SerializationReader reader, System.Type type)
         {
             var result = (SettingInvalidReferenceHandling)base.Deserialize(reader, type);
-            result.Behaviour = (BehaviourOnInvalidReference)reader.ReadObject();
+            result.Behaviour = (BehaviourOnInvalidReference)reader.ReadOptimizedByte();
 
             return result;
         }

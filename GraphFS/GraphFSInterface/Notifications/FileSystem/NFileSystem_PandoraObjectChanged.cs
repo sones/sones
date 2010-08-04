@@ -55,17 +55,17 @@ namespace sones.GraphFS.Notification
             public byte[] Serialize()
             {
                 var _SerializationWriter = new SerializationWriter();
-                _SerializationWriter.WriteObject(ObjectLocation);
-                _SerializationWriter.WriteObject(PandoraObjectType);
+                _SerializationWriter.WriteString(ObjectLocation);
+                _SerializationWriter.WriteType(PandoraObjectType);
 
                 return _SerializationWriter.ToArray();
             }
 
             public void Deserialize(byte[] mySerializedBytes)
             {
-                var _SerializationReader = new SerializationReader(mySerializedBytes);
-                ObjectLocation = (String)_SerializationReader.ReadObject();
-                PandoraObjectType = (Type)_SerializationReader.ReadObject();
+                var _SerializationReader        = new SerializationReader(mySerializedBytes);
+                ObjectLocation                  = _SerializationReader.ReadString();
+                PandoraObjectType               = _SerializationReader.ReadTypeOptimized();
             }
 
             public override string ToString()

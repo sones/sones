@@ -72,39 +72,51 @@ namespace sones.GraphDB.QueryLanguage.Result
         public void Serialize(ref SerializationWriter mySerializationWriter)
         {
             // save list of "Header" (List<KeyValuePair<String, Object>>)
-            if (Header == null) mySerializationWriter.WriteObject(0);
+            if (Header == null)
+            {
+                mySerializationWriter.WriteUInt32(0);
+            }
             else
             {
-                mySerializationWriter.WriteObject(Header.Count);
+                mySerializationWriter.WriteUInt32((UInt32)Header.Count);
                 foreach (var header in Header)
                 {
-                    mySerializationWriter.WriteObject(header.Key);
+                    mySerializationWriter.WriteString(header.Key);
                     mySerializationWriter.WriteObject(header.Value);
                 }
             }
 
             // save list of "Data"
-            if (Data == null) mySerializationWriter.WriteObject(0);
+            if (Data == null)
+            {
+                mySerializationWriter.WriteUInt32(0);
+            }
             else
             {
-                mySerializationWriter.WriteObject(Data.Count);
+                mySerializationWriter.WriteUInt32((UInt32)Data.Count);
                 if (Data.Count > 0)
-                    mySerializationWriter.WriteObject(Data[0].Count());
+                {
+                    mySerializationWriter.WriteUInt32((UInt32)Data[0].Count());
+                }
                 foreach (var attr in Data)
                     mySerializationWriter.WriteObject(attr);
             }
 
             // save iResultType
-            mySerializationWriter.WriteObject(iResultType);
+            mySerializationWriter.WriteInt32(iResultType);
 
             // save List of "Errors"
-            if (Errors == null) mySerializationWriter.WriteObject(0);
+            if (Errors == null)
+            {
+                mySerializationWriter.WriteUInt32(0);
+            }
             else
             {
-                mySerializationWriter.WriteObject(Errors.Count);
+                mySerializationWriter.WriteUInt32((UInt32)Errors.Count);
+
                 foreach (var attr in Errors)
                 {
-                    mySerializationWriter.WriteObject(attr);
+                    mySerializationWriter.WriteString(attr);
                 }
             }
         }
@@ -112,20 +124,23 @@ namespace sones.GraphDB.QueryLanguage.Result
         public void Deserialize(ref SerializationReader mySerializationReader)
         {
             // load list of header
-            int count = (int)mySerializationReader.ReadObject();
+            UInt32 count = mySerializationReader.ReadUInt32();
             Header = new List<KeyValuePair<string, object>>();
+
             for (int i = 0; i < count; i++)
             {
-                Header.Add(new KeyValuePair<String, Object>((String)mySerializationReader.ReadObject(), mySerializationReader.ReadObject()));
+                Header.Add(new KeyValuePair<String, Object>(mySerializationReader.ReadString(), mySerializationReader.ReadObject()));
             }
             
 
             // load data
-            count = (int) mySerializationReader.ReadObject();
-            int iCols = (int) mySerializationReader.ReadObject();
+            count = mySerializationReader.ReadUInt32();
+            UInt32 iCols = mySerializationReader.ReadUInt32();
+
             Data = new List<object[]>();
             Object[] line = null;
-            for (int i = 0; i < count; i++)
+
+            for (UInt32 i = 0; i < count; i++)
             {
                 line = new Object[iCols];
                 for (int j = 0; j < iCols; j++)
@@ -136,14 +151,14 @@ namespace sones.GraphDB.QueryLanguage.Result
             }
 
             // load iResultType
-            iResultType = (int) mySerializationReader.ReadObject();
+            iResultType = mySerializationReader.ReadInt32();
 
             // load list of Errors
-            count = (int) mySerializationReader.ReadObject();
+            count = mySerializationReader.ReadUInt32();
             Errors = new List<string>();
             for (int i = 0; i < count; i++)
             {
-                Errors.Add((String) mySerializationReader.ReadObject());
+                Errors.Add(mySerializationReader.ReadString());
             }
         }
         #endregion

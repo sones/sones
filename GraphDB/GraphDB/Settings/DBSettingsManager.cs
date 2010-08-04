@@ -44,6 +44,8 @@ using sones.Lib.DataStructures.Indices;
 using sones.GraphDB.QueryLanguage.Enums;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.TypeManagement;
+using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Managers.Structures.Setting;
 
 #endregion
 
@@ -150,6 +152,8 @@ namespace sones.GraphDB.Settings
         }
 
         #endregion
+
+        #region GetSetting methods
 
         /// <summary>
         /// Returns the value of a setting
@@ -289,7 +293,19 @@ namespace sones.GraphDB.Settings
             }
             else
             {
-                return new Exceptional<ADBSettingsBase>();
+                return new Exceptional<ADBSettingsBase>(new Error_SettingDoesNotExist(settingName));
+            }
+        }
+
+        public Exceptional<ADBSettingsBase> GetSetting(string settingName)
+        {
+            if (AllSettingsByName.ContainsKey(settingName))
+            {
+                return new Exceptional<ADBSettingsBase>(AllSettingsByName[settingName]);
+            }
+            else
+            {
+                return new Exceptional<ADBSettingsBase>(new Error_SettingDoesNotExist(settingName));
             }
         }
 
@@ -332,7 +348,15 @@ namespace sones.GraphDB.Settings
             }
             else
             {
-                return new Exceptional<ADBSettingsBase>();
+                return new Exceptional<ADBSettingsBase>(new Error_SettingDoesNotExist(settingUUID.ToString()));
+            }
+        }
+
+        public IEnumerable<ADBSettingsBase> GetAllSettings()
+        {
+            foreach (var setting in AllSettingsByName)
+            {
+                yield return setting.Value;
             }
         }
 
@@ -359,8 +383,20 @@ namespace sones.GraphDB.Settings
 
                 if (aExtractedSetting.Value != null)
                 {
+                    /*
+                    var currentDBSetting = aExtractedSetting.Value.Get(_DBContext, TypesSettingScope.DB);
+                    if (currentDBSetting.Failed)
+                    {
+                        throw new GraphDBException(currentDBSetting.Errors);
+                    }
+                    if (currentDBSetting.Value != null)
+                    {
+                        result.Add(aSetting.Key, aExtractedSetting.Value);
+                    }
+                    */
                     result.Add(aSetting.Key, aExtractedSetting.Value);
                 }
+
             }
 
             return result;
@@ -389,6 +425,71 @@ namespace sones.GraphDB.Settings
 
         #endregion
 
+        #region ExecuteSettingOperation
+
+        /// <summary>
+        /// this is whaer the aektschn haeppens
+        /// </summary>
+        /// <param name="myDBContext"></param>
+        /// <returns></returns>
+        public QueryResult ExecuteSettingOperation(DBContext myDBContext, ASettingDefinition mySettingDefinition, TypesOfSettingOperation myTypeOfSettingOperation, Dictionary<string, string> mySettings)
+        {
+
+            QueryResult result = new QueryResult();
+
+            switch (myTypeOfSettingOperation)
+            {
+                case TypesOfSettingOperation.GET:
+
+                    #region GET
+
+                    var extractDataResult = mySettingDefinition.ExtractData(mySettings, myDBContext);
+                    if (extractDataResult.Failed)
+                    {
+                        return new QueryResult(extractDataResult);
+                    }
+                    return new QueryResult(extractDataResult.Value);
+                
+                    #endregion
+
+                case TypesOfSettingOperation.SET:
+
+                    #region SET
+
+                    var setDataResult = mySettingDefinition.SetData(mySettings, myDBContext);
+                    if (setDataResult.Failed)
+                    {
+                        return new QueryResult(setDataResult);
+                    }
+                    return new QueryResult(setDataResult.Value);
+
+                    #endregion
+
+                case TypesOfSettingOperation.REMOVE:
+
+                    #region REMOVE
+
+                    var removeDataResult = mySettingDefinition.RemoveData(mySettings, myDBContext);
+                    if (removeDataResult.Failed)
+                    {
+                        return new QueryResult(removeDataResult);
+                    }
+                    return new QueryResult(removeDataResult.Value);
+
+                    #endregion
+
+                default:
+                    
+                    return new QueryResult(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+
+            }
+
+        }
+
+        #endregion
+
+        #endregion
+
         #region IDisposable
 
         public void Dispose()
@@ -398,6 +499,7 @@ namespace sones.GraphDB.Settings
         }
 
         #endregion
+
     }
     #endregion
 }

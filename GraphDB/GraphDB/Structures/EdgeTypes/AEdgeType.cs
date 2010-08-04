@@ -27,19 +27,15 @@
  */
 
 using System;
-using System.Linq;
-using System.Text;
-using System.Collections;
 using System.Collections.Generic;
-
-using sones.Lib.Serializer;
-using sones.Lib.NewFastSerializer;
-using sones.GraphDB.TypeManagement;
-using sones.GraphDB.QueryLanguage.Result;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
 using sones.GraphDB.ObjectManagement;
-using sones.Lib.ErrorHandling;
+using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.TypeManagement;
 using sones.GraphFS.DataStructures;
+using sones.Lib.ErrorHandling;
+using sones.Lib.NewFastSerializer;
+using sones.Lib.Serializer;
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
@@ -65,12 +61,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// <param name="myParams">A array ob parameters</param>
         public abstract void ApplyParams(params EdgeTypeParamNode[] myParams);
 
-        /// <summary>
-        /// Returns a new instance of this EdgeType including all settings but without values
-        /// </summary>
-        /// <returns>A new instance with all settings</returns>
-        public abstract AEdgeType GetNewInstance();
-
         public new abstract String ToString();
 
         /// <summary>
@@ -87,19 +77,23 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public abstract String GetGDDL(GraphDBType myGraphDBType);
 
         /// <summary>
-        /// Creates a new instance of this edge from the passed data.
+        /// Returns a new instance of this EdgeType including all settings but without values
         /// </summary>
-        /// <param name="iEnumerable"></param>
-        /// <returns></returns>
-        public abstract AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable);
+        /// <returns>A new instance with all settings</returns>
+        public abstract AEdgeType GetNewInstance();
 
         /// <summary>
         /// Creates a new instance of this edge from the passed data.
         /// </summary>
         /// <param name="iEnumerable"></param>
         /// <returns></returns>
-        public abstract AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable);
+        public abstract AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable, TypeUUID typeOfObjects);
 
-
+        /// <summary>
+        /// Creates a new instance of this edge from the passed data.
+        /// </summary>
+        /// <param name="iEnumerable"></param>
+        /// <returns></returns>
+        public abstract AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeOfObjects);
     }  
 }

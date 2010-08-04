@@ -57,6 +57,8 @@
     <Compile Include="Caches\SimpleCache.cs" />
     <Compile Include="Caches\SimpleCacheItem.cs" />
     <Compile Include="Cryptography\CryptographyExceptions.cs" />
+    <Compile Include="Cryptography\IntegrityCheck\AIntegrityCheck.cs" />
+    <Compile Include="Cryptography\IntegrityCheck\MurmurHash2.cs" />
     <Compile Include="Cryptography\IntegrityCheck\IIntegrityCheck.cs" />
     <Compile Include="Cryptography\IntegrityCheck\IntegrityCheckFactory.cs" />
     <Compile Include="Cryptography\IntegrityCheck\IntegrityCheckTypes.cs" />
@@ -179,7 +181,8 @@
     <Compile Include="Settings\ISettings.cs" />
     <Compile Include="SimpleLogger\ConsoleOutputLogger.cs" />
     <Compile Include="Singleton\Singleton.cs" />
-    <Compile Include="UnitTestHelper.cs" />
+    <Compile Include="UnitTestHelper\DynamicUnitTestHelper.cs" />
+    <Compile Include="UnitTestHelper\UnitTestHelper.cs" />
     <Compile Include="Version.cs" />
     <Compile Include="XML\IXMLExport.cs" />
     <Compile Include="XML\PandoraXMLValidation.cs" />

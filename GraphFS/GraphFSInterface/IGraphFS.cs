@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using sones.StorageEngines;
 
 using sones.GraphFS;
+using sones.GraphFS.Events;
 using sones.GraphFS.Caches;
 using sones.GraphFS.Objects;
 using sones.GraphFS.Session;
@@ -63,10 +64,21 @@ namespace sones
 
         #region Properties
 
-        FileSystemUUID          FileSystemUUID          { set; }
+        FileSystemUUID          FileSystemUUID          { get; }
         NotificationSettings    NotificationSettings    { get; set; }
         ObjectCacheSettings     ObjectCacheSettings     { get; set; }
         NotificationDispatcher  NotificationDispatcher  { get; set; }
+
+        #endregion
+
+        #region Events
+
+        event FSEventHandlers.OnLoadEventHandler    OnLoad;
+        event FSEventHandlers.OnLoadedEventHandler  OnLoaded;
+        event FSEventHandlers.OnSaveEventHandler    OnSave;
+        event FSEventHandlers.OnSavedEventHandler   OnSaved;
+        event FSEventHandlers.OnRemoveEventHandler  OnRemove;
+        event FSEventHandlers.OnRemovedEventHandler OnRemoved;
 
         #endregion
 
@@ -84,9 +96,17 @@ namespace sones
         /// Returns true if the file system was mounted correctly
         /// </summary>
         /// <returns>true if the file system was mounted correctly</returns>
-        Boolean             isMounted { get; }
+        Boolean             IsMounted { get; }
 
         #endregion
+
+
+        #region TraverseChildFSs(myFunc, myDepth, mySessionToken)
+
+        IEnumerable<Object> TraverseChildFSs(Func<IGraphFS, UInt64, IEnumerable<Object>> myFunc, UInt64 myDepth, SessionToken mySessionToken);
+
+        #endregion
+
 
         #region GetFileSystemUUID(...)
 
@@ -94,21 +114,21 @@ namespace sones
         /// Returns the UUID of this file system
         /// </summary>
         /// <returns>The UUID of this file system</returns>
-        FileSystemUUID      GetFileSystemUUID(SessionToken mySessionToken);
+        FileSystemUUID              GetFileSystemUUID(SessionToken mySessionToken);
 
         /// <summary>
         /// Returns the UUID of the file system at the given ObjectLocation
         /// </summary>
         /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
         /// <returns>The UUID of the file system at the given ObjectLocation</returns>
-        FileSystemUUID      GetFileSystemUUID(ObjectLocation myObjectLocation, SessionToken mySessionToken);
+        FileSystemUUID              GetFileSystemUUID(ObjectLocation myObjectLocation, SessionToken mySessionToken);
 
         /// <summary>
-        /// Returns a (recursive) list of FileSystemUUIDs of all mounted file systems
+        /// Returns a recursive list of FileSystemUUIDs of all mounted file systems
         /// </summary>
-        /// <param name="myRecursiveOperation">Recursive operation?</param>
+        /// <param name="myDepth">Depth</param>
         /// <returns>A (recursive) list of FileSystemUUIDs of all mounted file systems</returns>
-        IEnumerable<FileSystemUUID> GetFileSystemUUIDs(Boolean myRecursiveOperation, SessionToken mySessionToken);
+        IEnumerable<FileSystemUUID> GetFileSystemUUIDs(UInt64 myDepth, SessionToken mySessionToken);
 
         #endregion
 
@@ -132,7 +152,7 @@ namespace sones
         /// </summary>
         /// <param name="myRecursiveOperation">Recursive operation?</param>
         /// <returns>A (recursive) list of file system descriptions of all mounted file systems</returns>
-        IEnumerable<String> GetFileSystemDescriptions(Boolean myRecursiveOperation, SessionToken mySessionToken);
+        IEnumerable<String> GetFileSystemDescriptions(UInt64 myDepth, SessionToken mySessionToken);
 
         #endregion
 
@@ -273,6 +293,9 @@ namespace sones
         /// <param name="myFSAccessMode">the access mode of this file system (read/write, read-only, ...)</param>
         Exceptional MountFileSystem(String myStorageLocation, AccessModeTypes myFSAccessMode, SessionToken mySessionToken);
 
+
+        Exceptional MountFileSystem(IGraphFS myIGraphFS, ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode, SessionToken mySessionToken);
+
         /// <summary>
         /// This method will mount the file system from a StorageLocation serving
         /// the file system into the given ObjectLocation using the given file system
@@ -348,12 +371,12 @@ namespace sones
 
         #region GraphObject specific methods
 
-        Exceptional LockObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime, SessionToken mySessionToken);
+        Exceptional LockFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime, SessionToken mySessionToken);
 
-        Exceptional<PT> GetOrCreateObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new();
-        Exceptional<PT> GetOrCreateObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken) where PT : AFSObject;
-        Exceptional<PT> GetObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new();
-        Exceptional<PT> GetObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken) where PT : AFSObject;
+        Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new();
+        Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken) where PT : AFSObject;
+        Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new();
+        Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken) where PT : AFSObject;
 
         Exceptional StoreFSObject(ObjectLocation myObjectLocation, AFSObject myAPandoraObject, Boolean myAllowOverwritting, SessionToken mySessionToken);
 
@@ -367,8 +390,8 @@ namespace sones
         Exceptional<IEnumerable<RevisionID>> GetObjectRevisionIDs (ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, SessionToken mySessionToken);
 
         Exceptional RenameObject(ObjectLocation myObjectLocation, String myNewObjectName, SessionToken mySessionToken);
-        Exceptional RemoveObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, SessionToken mySessionToken);
-        Exceptional EraseObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, SessionToken mySessionToken);
+        Exceptional RemoveFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, SessionToken mySessionToken);
+        Exceptional EraseFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, SessionToken mySessionToken);
 
         #endregion
 
@@ -990,25 +1013,6 @@ namespace sones
         #endregion
 
         #endregion
-
-        #region ResolveAndVerifyObjectLocation(...)
-
-        ResolveTypes ResolveObjectLocation_Internal(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, ref List<String> mySymlinkTargets, SessionToken mySessionToken);
-        ResolveTypes ResolveObjectLocationRecursive_Internal(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIGraphFS, ref List<String> mySymlinkTargets, SessionToken mySessionToken);
-
-        Trinary ResolveObjectLocation(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIGraphFS, SessionToken mySessionToken);
-
-        /// <summary>
-        /// This method will resolve the given ObjectLocation esp. it will resolve symlinks.
-        /// </summary>
-        /// <param name="myObjectLocation">an ObjectLocation (ObjectPath and ObjectName)</param>
-        /// <param name="myThrowObjectNotFoundException">If true it will throw an exception, otherwise it will just return null</param>
-        /// <param name="mySessionToken"></param>
-        /// <returns>The resolved ObjectLocation</returns>
-        ObjectLocation ResolveObjectLocation(ObjectLocation myObjectLocation, Boolean myThrowObjectNotFoundException, SessionToken mySessionToken);
-
-        #endregion
-
 
 
     }

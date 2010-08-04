@@ -42,7 +42,6 @@ using sones.GraphDB.QueryLanguage.ExpressionGraph;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
-using sones.GraphDB.QueryLanguage.Operator;
 using sones.GraphDB.Settings;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
@@ -55,6 +54,8 @@ using sones.Lib.DataStructures.UUID;
 using sones.Lib;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.QueryLanguage.Result;
 
 
 #endregion
@@ -72,7 +73,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
         /// <returns>A data tuple.</returns>
         private DataContainer JoinData(DataContainer leftData, DataContainer rightData)
         {
-            return new DataContainer(new Tuple<IDNode, IDNode>(leftData.IdNodes.Item1, rightData.IdNodes.Item1), new Tuple<object, object>(leftData.Operands.Item1, rightData.Operands.Item1), new Tuple<object, object>(leftData.Extraordinaries.Item1, rightData.Extraordinaries.Item1));
+            return new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(leftData.IDChainDefinitions.Item1, rightData.IDChainDefinitions.Item1), new Tuple<AExpressionDefinition, AExpressionDefinition>(leftData.Operands.Item1, rightData.Operands.Item1), new Tuple<AExpressionDefinition, AExpressionDefinition>(leftData.Extraordinaries.Item1, rightData.Extraordinaries.Item1));
         }
 
         /// <summary>
@@ -83,54 +84,59 @@ namespace sones.GraphDB.QueryLanguage.Operators
         /// <param name="errors">The list of errors.</param>
         /// <param name="typeOfBinExpr">The kind of the binary expression</param>
         /// <returns>A data tuple.</returns>
-        private Exceptional<DataContainer> ExtractData(object myComplexValue, object mySimpleValue, ref TypesOfBinaryExpression typeOfBinExpr, DBObjectCache myDBObjectCache, SessionSettings mySessionToken, DBContext dbContext, Boolean aggregateAllowed)
+        private Exceptional<DataContainer> ExtractData(AExpressionDefinition myComplexValue, AExpressionDefinition mySimpleValue, ref TypesOfBinaryExpression typeOfBinExpr, DBObjectCache myDBObjectCache, SessionSettings mySessionToken, DBContext dbContext, Boolean aggregateAllowed)
         {
             #region data
 
             //the complex IDNode (sth. like U.Age or Count(U.Friends))
-            IDNode complexIDNode = null;
+            IDChainDefinition complexIDNode = null;
 
             //the value that is on the opposite of the complex IDNode
-            Object simpleValue = null;
+            AExpressionDefinition simpleValue = null;
 
             //a complex IDNode may result in a complexValue (i.e. Count(U.Friends) --> 3)
-            Object complexValue = null;
+            AExpressionDefinition complexValue = null;
 
             //reference to former myComplexValue
-            Object extraordinaryValue = null;
+            AExpressionDefinition extraordinaryValue = null;
 
             #endregion
 
             #region extraction
 
-            if (myComplexValue is IDNode)
+            if (myComplexValue is IDChainDefinition)
             {
                 #region IDNode
 
                 #region Data
 
-                complexIDNode = (IDNode)myComplexValue;
+                complexIDNode = (IDChainDefinition)myComplexValue;
+                Exceptional validateResult = complexIDNode.Validate(dbContext, false);
+                if (validateResult.Failed)
+                {
+                    return new Exceptional<DataContainer>(validateResult);
+                }
 
-                if (complexIDNode.IDNodeParts.Any(id => id is IDNodeFunc))
+                if (complexIDNode.Any(id => id is ChainPartFuncDefinition))
                 {
                     if (complexIDNode.Edges.IsNullOrEmpty())
                     {
                         #region parameterless function
 
-                        var fcn = (complexIDNode.IDNodeParts.First(id => id is IDNodeFunc) as IDNodeFunc).FuncCallNode;
+                        var fcn = (complexIDNode.First(id => id is ChainPartFuncDefinition) as ChainPartFuncDefinition);
 
                         // somes functions (aggregates) like SUM are not valid for where expressions, though they are not resolved
                         if (fcn.Function == null)
                             return new Exceptional<DataContainer>(new Error_FunctionDoesNotExist(fcn.FuncName));
 
-                        var pResult = fcn.Function.ExecFunc(dbContext);
+                        Exceptional<FuncParameter> pResult = fcn.Function.ExecFunc(dbContext);
                         if (pResult.Failed)
                         {
                             return new Exceptional<DataContainer>(pResult);
                         }
 
                         //simpleValue = new AtomValue(fcn.Function.TypeOfResult, ((FuncParameter)pResult.Value).Value); //the new simple value extraced from the function
-                        simpleValue = new AtomValue(((FuncParameter)pResult.Value).Value);
+                        simpleValue = new ValueDefinition(((FuncParameter)pResult.Value).Value);
                         typeOfBinExpr = TypesOfBinaryExpression.Unknown; //we do not know if we are left or right associated
                         complexIDNode = null; //we resolved it... so it's null
 
@@ -138,9 +144,10 @@ namespace sones.GraphDB.QueryLanguage.Operators
                     }
                     else
                     {
-                        extraordinaryValue = (complexIDNode.IDNodeParts.First(id => id is IDNodeFunc) as IDNodeFunc).FuncCallNode;
+                        //extraordinaryValue = (complexIDNode.First(id => id is ChainPartFuncDefinition) as ChainPartFuncDefinition);
+                        extraordinaryValue = complexIDNode;
 
-                        if (mySimpleValue is AtomValue)
+                        if (mySimpleValue is ValueDefinition)
                         {
                             simpleValue = mySimpleValue;
                         }
@@ -148,34 +155,34 @@ namespace sones.GraphDB.QueryLanguage.Operators
                 }
                 else
                 {
-                    if(mySimpleValue is AtomValue)
+                    if(mySimpleValue is ValueDefinition)
                     {
                         try
                         {
-                            simpleValue = GetCorrectAtomValue(complexIDNode.LastAttribute, complexIDNode.LastType, (AtomValue)mySimpleValue, dbContext, mySessionToken);
+                            simpleValue = GetCorrectValueDefinition(complexIDNode.LastAttribute, complexIDNode.LastType, ((ValueDefinition)mySimpleValue), dbContext, mySessionToken);
                         }
                         catch (FormatException)
                         {
-                            return new Exceptional<DataContainer>(new Error_DataTypeDoesNotMatch(complexIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager).Name, ((AtomValue)mySimpleValue).Value.ObjectName));
+                            return new Exceptional<DataContainer>(new Error_DataTypeDoesNotMatch(complexIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager).Name, ((ValueDefinition)mySimpleValue).Value.ObjectName));
                         }
                     }
                     else
                     {
-                        if (mySimpleValue is TupleValue)
+                        if (mySimpleValue is TupleDefinition)
                         {
-                            ((TupleValue)mySimpleValue).ConvertToAttributeType(complexIDNode.LastAttribute, dbContext);
+                            ((TupleDefinition)mySimpleValue).ConvertToAttributeType(complexIDNode.LastAttribute, dbContext);
 
                             simpleValue = mySimpleValue;
                         }
-                        else if (mySimpleValue is TupleNode)
-                        {
-                            var simpleValE = (mySimpleValue as TupleNode).GetAsTupleValue(dbContext, complexIDNode.LastAttribute);
-                            if (!simpleValE.Success)
-                            {
-                                return new Exceptional<DataContainer>(simpleValE);
-                            }
-                            simpleValue = simpleValE.Value;
-                        }
+                        //else if (mySimpleValue is TupleNode)
+                        //{
+                        //    var simpleValE = (mySimpleValue as TupleNode).GetAsTupleValue(dbContext, complexIDNode.LastAttribute);
+                        //    if (!simpleValE.Success)
+                        //    {
+                        //        return new Exceptional<DataContainer>(simpleValE);
+                        //    }
+                        //    simpleValue = simpleValE.Value;
+                        //}
                         else
                         {
                             //return new Exceptional<DataContainer>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
@@ -188,35 +195,35 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
                 #endregion
             }
-            else if (myComplexValue is TupleNode)
+            else if (myComplexValue is TupleDefinition)
             {
                 #region TupleSetNode
 
-                complexValue = ((TupleNode)myComplexValue).Tuple;
+                complexValue = ((TupleDefinition)myComplexValue);
                 simpleValue = mySimpleValue;
                 typeOfBinExpr = TypesOfBinaryExpression.Atom;
 
                 #endregion
             }
-            else if (myComplexValue is AggregateNode)
+            else if (myComplexValue is AggregateDefinition)
             {
                 #region AggregateNode
 
                 if (aggregateAllowed)
                 {
-                    if (((AggregateNode)myComplexValue).Expressions.Count != 1)
+                    if (((AggregateDefinition)myComplexValue).ChainPartAggregateDefinition.Parameters.Count != 1)
                     {
                         return new Exceptional<DataContainer>(new Error_ArgumentException("An aggregate must have exactly one expression."));
                     }
 
-                    if (!(((AggregateNode)myComplexValue).Expressions[0] is IDNode))
+                    if (!(((AggregateDefinition)myComplexValue).ChainPartAggregateDefinition.Parameters[0] is IDChainDefinition))
                     {
                        return new Exceptional<DataContainer>(new Error_ArgumentException("An aggregate must have exactly one IDNode."));
                     }
 
                     #region Data
 
-                    complexIDNode = (((AggregateNode)myComplexValue).Expressions[0] as IDNode);
+                    complexIDNode = (((AggregateDefinition)myComplexValue).ChainPartAggregateDefinition.Parameters[0] as IDChainDefinition);
 
                     if (complexIDNode == null)
                     {
@@ -234,50 +241,8 @@ namespace sones.GraphDB.QueryLanguage.Operators
                 }
                 else
                 {
-                    return new Exceptional<DataContainer>(new Error_AggregateNotAllowed((AggregateNode)myComplexValue));
+                    return new Exceptional<DataContainer>(new Error_AggregateNotAllowed(((AggregateDefinition)myComplexValue).ChainPartAggregateDefinition));
                 }
-                #endregion
-            }
-            else if (myComplexValue is FuncCallNode)
-            {
-                #region FuncCallNode
-
-                #region Data
-
-                if (((FuncCallNode)myComplexValue).Expressions.Count > 1)
-                {
-                    return new Exceptional<DataContainer>(new Error_InvalidIDNode("Only single IDNodes are currently allowed in functions!"));
-                }
-
-                #endregion
-
-                #region parameterless function
-
-                if (((FuncCallNode)myComplexValue).Expressions.Count == 0)
-                {
-                    var pResult = ((FuncCallNode)myComplexValue).Function.ExecFunc(dbContext);
-                    if (pResult.Failed)
-                    {
-                        return new Exceptional<DataContainer>(pResult);
-                    }
-
-                    complexValue = new AtomValue(((FuncParameter)pResult.Value).Value);
-                    typeOfBinExpr = TypesOfBinaryExpression.Atom;
-                }
-                else
-                {
-                    complexIDNode = ((IDNode)((FuncCallNode)myComplexValue).Expressions[0]);
-                }
-
-                #endregion
-
-                #region values
-
-                simpleValue = mySimpleValue;
-                extraordinaryValue = myComplexValue;
-
-                #endregion
-
                 #endregion
             }
             else
@@ -287,15 +252,15 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
             #endregion
 
-            return new Exceptional<DataContainer>(new DataContainer(new Tuple<IDNode, IDNode>(complexIDNode, null), new Tuple<Object, Object>(simpleValue, complexValue), new Tuple<Object, Object>(extraordinaryValue, null)));
+            return new Exceptional<DataContainer>(new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(complexIDNode, null), new Tuple<AExpressionDefinition, AExpressionDefinition>(simpleValue, complexValue), new Tuple<AExpressionDefinition, AExpressionDefinition>(extraordinaryValue, null)));
         }
 
-        private AtomValue GetCorrectAtomValue(TypeAttribute typeAttribute, GraphDBType graphDBType, AtomValue atomValue, DBContext dbContext, SessionSettings mySessionsInfos)
+        private ValueDefinition GetCorrectValueDefinition(TypeAttribute typeAttribute, GraphDBType graphDBType, ValueDefinition myValueDefinition, DBContext dbContext, SessionSettings mySessionsInfos)
         {
 
             if (typeAttribute.IsBackwardEdge)
             {
-                return GetCorrectAtomValue(dbContext.DBTypeManager.GetTypeByUUID(typeAttribute.BackwardEdgeDefinition.TypeUUID).GetTypeAttributeByUUID(typeAttribute.BackwardEdgeDefinition.AttrUUID), graphDBType, atomValue, dbContext, mySessionsInfos);
+                return GetCorrectValueDefinition(dbContext.DBTypeManager.GetTypeByUUID(typeAttribute.BackwardEdgeDefinition.TypeUUID).GetTypeAttributeByUUID(typeAttribute.BackwardEdgeDefinition.AttrUUID), graphDBType, myValueDefinition, dbContext, mySessionsInfos);
             }
             else
             {
@@ -309,15 +274,15 @@ namespace sones.GraphDB.QueryLanguage.Operators
                     //    throw new GraphDBException(uuid.Errors);
                     //}
                     //return new AtomValue(new DBReference(uuid.Value));
-                    return new AtomValue(new DBReference(ObjectUUID.FromString(atomValue.Value.Value.ToString())));
+                    return new ValueDefinition(new DBReference(ObjectUUID.FromString(myValueDefinition.Value.Value.ToString())));
                 }
                 else if (!typeAttribute.GetDBType(dbContext.DBTypeManager).IsUserDefined)
                 {
-                    return new AtomValue(GraphDBTypeMapper.GetADBBaseObjectFromUUID(typeAttribute.DBTypeUUID, atomValue.Value));
+                    return new ValueDefinition(GraphDBTypeMapper.GetADBBaseObjectFromUUID(typeAttribute.DBTypeUUID, myValueDefinition.Value));
                 }
                 else
                 {
-                    throw new GraphDBException(new Error_InvalidAttributeValue(typeAttribute.Name, atomValue.Value));
+                    throw new GraphDBException(new Error_InvalidAttributeValue(typeAttribute.Name, myValueDefinition.Value));
                 }
             }
 
@@ -335,7 +300,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
         /// <param name="referenceList"></param>
         /// <param name="queryCache">The per query DBObject/BackwardEdge cache.</param>
         /// <returns></returns>
-        public override Exceptional<IExpressionGraph> TypeOperation(object myLeftValueObject, object myRightValueObject, DBContext dbContext, TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph resultGr, Boolean aggregateAllowed = true)        
+        public override Exceptional<IExpressionGraph> TypeOperation(AExpressionDefinition myLeftValueObject, AExpressionDefinition myRightValueObject, DBContext dbContext, TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph resultGr, Boolean aggregateAllowed = true)        
         {
             #region Data
             
@@ -346,10 +311,10 @@ namespace sones.GraphDB.QueryLanguage.Operators
             Exceptional<DataContainer> data;
 
             //the index of the left attribute
-            IEnumerable<Tuple<GraphDBType, AttributeIndex>> leftIndex = null;
+            IEnumerable<Tuple<GraphDBType, AAttributeIndex>> leftIndex = null;
 
             //the index of the right attribute
-            IEnumerable<Tuple<GraphDBType, AttributeIndex>> rightIndex = null;
+            IEnumerable<Tuple<GraphDBType, AAttributeIndex>> rightIndex = null;
 
             #endregion
 
@@ -425,17 +390,17 @@ namespace sones.GraphDB.QueryLanguage.Operators
                         {
                             case TypesOfBinaryExpression.Atom:
 
-                                data = new Exceptional<DataContainer>(new DataContainer(new Tuple<IDNode, IDNode>(null, null), new Tuple<object, object>(leftData.Value.Operands.Item1, leftData.Value.Operands.Item1), new Tuple<object, object>(null, null)));
+                                data = new Exceptional<DataContainer>(new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(null, null), new Tuple<AExpressionDefinition, AExpressionDefinition>(leftData.Value.Operands.Item1, leftData.Value.Operands.Item1), new Tuple<AExpressionDefinition, AExpressionDefinition>(null, null)));
 
                                 break;
                             case TypesOfBinaryExpression.LeftComplex:
 
-                                data = new Exceptional<DataContainer>(new DataContainer(new Tuple<IDNode, IDNode>(leftData.Value.IdNodes.Item1, null), new Tuple<object, object>(rightData.Value.Operands.Item1, null), new Tuple<object, object>(null, null)));
+                                data = new Exceptional<DataContainer>(new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(leftData.Value.IDChainDefinitions.Item1, null), new Tuple<AExpressionDefinition, AExpressionDefinition>(rightData.Value.Operands.Item1, null), new Tuple<AExpressionDefinition, AExpressionDefinition>(null, null)));
 
                                 break;
                             case TypesOfBinaryExpression.RightComplex:
 
-                                data = new Exceptional<DataContainer>(new DataContainer(new Tuple<IDNode, IDNode>(rightData.Value.IdNodes.Item1, null), new Tuple<object, object>(leftData.Value.Operands.Item1, null), new Tuple<object, object>(null, null)));
+                                data = new Exceptional<DataContainer>(new DataContainer(new Tuple<IDChainDefinition, IDChainDefinition>(rightData.Value.IDChainDefinitions.Item1, null), new Tuple<AExpressionDefinition, AExpressionDefinition>(leftData.Value.Operands.Item1, null), new Tuple<AExpressionDefinition, AExpressionDefinition>(null, null)));
 
                                 break;
                             case TypesOfBinaryExpression.Complex:
@@ -476,14 +441,14 @@ namespace sones.GraphDB.QueryLanguage.Operators
             {
                 case TypesOfBinaryExpression.LeftComplex:
 
-                    leftIndex = GetIndex(data.Value.IdNodes.Item1.LastAttribute, dbContext, data.Value.IdNodes.Item1.LastType, data.Value.Extraordinaries.Item1);
+                    leftIndex = GetIndex(data.Value.IDChainDefinitions.Item1.LastAttribute, dbContext, data.Value.IDChainDefinitions.Item1.LastType, data.Value.Extraordinaries.Item1);
 
                     break;
 
                 case TypesOfBinaryExpression.RightComplex:
 
                     //data.IdNodes.TupelElement1 is correct, because of correct handling in extract data (data.IdNodes.TupelElement2 should be null here)
-                    rightIndex = GetIndex(data.Value.IdNodes.Item1.LastAttribute, dbContext, data.Value.IdNodes.Item1.LastType, data.Value.Extraordinaries.Item1);
+                    rightIndex = GetIndex(data.Value.IDChainDefinitions.Item1.LastAttribute, dbContext, data.Value.IDChainDefinitions.Item1.LastType, data.Value.Extraordinaries.Item1);
 
                     break;
 
@@ -491,8 +456,8 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
                     //both indexe have to be catched
 
-                    leftIndex = GetIndex(data.Value.IdNodes.Item1.LastAttribute, dbContext, data.Value.IdNodes.Item1.LastType, data.Value.Extraordinaries.Item1);
-                    rightIndex = GetIndex(data.Value.IdNodes.Item2.LastAttribute, dbContext, data.Value.IdNodes.Item2.LastType, data.Value.Extraordinaries.Item1);
+                    leftIndex = GetIndex(data.Value.IDChainDefinitions.Item1.LastAttribute, dbContext, data.Value.IDChainDefinitions.Item1.LastType, data.Value.Extraordinaries.Item1);
+                    rightIndex = GetIndex(data.Value.IDChainDefinitions.Item2.LastAttribute, dbContext, data.Value.IDChainDefinitions.Item2.LastType, data.Value.Extraordinaries.Item1);
 
                     break;
             }
@@ -553,7 +518,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
             }
             else
             {
-                return new Exceptional<IExpressionGraph>(new Error_InvalidBinaryExpression(this, data.Value.IdNodes, data.Value.Operands, typeOfBinExpr));
+                return new Exceptional<IExpressionGraph>(new Error_InvalidBinaryExpression(this, data.Value.IDChainDefinitions, data.Value.Operands, typeOfBinExpr));
             }
 
             if (matchDataResult != null && matchDataResult.Failed)
@@ -566,19 +531,19 @@ namespace sones.GraphDB.QueryLanguage.Operators
         {
             TypesOfBinaryExpression result;
 
-            if (leftData.Value.IdNodes.Item1 != null && rightData.Value.IdNodes.Item1 != null)
+            if (leftData.Value.IDChainDefinitions.Item1 != null && rightData.Value.IDChainDefinitions.Item1 != null)
             {
                 result = TypesOfBinaryExpression.Complex;
             }
             else
             {
-                if (leftData.Value.IdNodes.Item1 == null && rightData.Value.IdNodes.Item1 == null)
+                if (leftData.Value.IDChainDefinitions.Item1 == null && rightData.Value.IDChainDefinitions.Item1 == null)
                 {
                     result = TypesOfBinaryExpression.Atom;
                 }
                 else
                 {
-                    if (leftData.Value.IdNodes.Item1 != null)
+                    if (leftData.Value.IDChainDefinitions.Item1 != null)
                     {
                         result = TypesOfBinaryExpression.LeftComplex;
                     }
@@ -604,12 +569,12 @@ namespace sones.GraphDB.QueryLanguage.Operators
             //do nothing here
         }
 
-        private Exceptional<Boolean> MatchComplexData(TypesOfAssociativity associativity, DataContainer data, DBContext dbContext, DBObjectCache dbObjectCache, TypesOfBinaryExpression typeOfBinExpr, IEnumerable<Tuple<GraphDBType, AttributeIndex>> leftIndices, IEnumerable<Tuple<GraphDBType, AttributeIndex>> rightIndices, ref List<GraphDBError> errors, ref IExpressionGraph result, SessionSettings mySessionToken)
+        private Exceptional<Boolean> MatchComplexData(TypesOfAssociativity associativity, DataContainer data, DBContext dbContext, DBObjectCache dbObjectCache, TypesOfBinaryExpression typeOfBinExpr, IEnumerable<Tuple<GraphDBType, AAttributeIndex>> leftIndices, IEnumerable<Tuple<GraphDBType, AAttributeIndex>> rightIndices, ref List<GraphDBError> errors, ref IExpressionGraph result, SessionSettings mySessionToken)
         {
             #region data
 
-            Dictionary<DBObjectStream, IOperationValue> operandsLeft = null;
-            Dictionary<DBObjectStream, IOperationValue> operandsRight = null;
+            Dictionary<DBObjectStream, AOperationDefinition> operandsLeft = null;
+            Dictionary<DBObjectStream, AOperationDefinition> operandsRight = null;
 
             #endregion
 
@@ -620,44 +585,40 @@ namespace sones.GraphDB.QueryLanguage.Operators
                 #region left extraordinary
                 //there is something like a function or so
 
-                operandsLeft = new Dictionary<DBObjectStream, IOperationValue>();
+                operandsLeft = new Dictionary<DBObjectStream, AOperationDefinition>();
 
                 //we have to calculate the real operand.
                 //TODO: try to use attribute idx instead of uuid idx
 
                 foreach (var aLeftIDX in leftIndices)
                 {
-                    AttributeIndex currentLeftIdx;
+                    UUIDIndex currentLeftIdx = null;
 
                     #region get UUID idx
-                    if (!aLeftIDX.Item2.IsUuidIndex)
+                    if (!(aLeftIDX.Item2 is UUIDIndex))
                     {
                         currentLeftIdx = aLeftIDX.Item1.GetUUIDIndex(dbContext.DBTypeManager);
                     }
                     else
                     {
-                        currentLeftIdx = aLeftIDX.Item2;
+                        currentLeftIdx = (UUIDIndex)aLeftIDX.Item2;
                     }
 
                     #endregion
 
-                    var idxRef = currentLeftIdx.GetIndexReference(dbContext.DBIndexManager);
-                    if (!idxRef.Success)
-                    {
-                        return new Exceptional<bool>(idxRef);
-                    }
+                    var currentIndexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(currentLeftIdx.IndexRelatedTypeUUID);
 
-                    foreach (var ObjectUUIDs_left in idxRef.Value.Values())
+                    foreach (var aObjectUUID_Left in currentLeftIdx.GetAllUUIDs(currentIndexRelatedType, dbContext))
                     {
-                        var leftDBObject = dbObjectCache.LoadDBObjectStream(aLeftIDX.Item1, ObjectUUIDs_left.FirstOrDefault());
+                        var leftDBObject = dbObjectCache.LoadDBObjectStream(aLeftIDX.Item1, aObjectUUID_Left);
                         if (leftDBObject.Failed)
                         {
                             throw new NotImplementedException();
                         }
 
-                        if (IsValidDBObjectStreamForBinExpr(leftDBObject.Value, data.IdNodes.Item1.LastAttribute, dbContext.DBTypeManager))
+                        if (IsValidDBObjectStreamForBinExpr(leftDBObject.Value, data.IDChainDefinitions.Item1.LastAttribute, dbContext.DBTypeManager))
                         {
-                            var oper = GetOperand(data.IdNodes.Item1, data.Extraordinaries.Item1, dbContext, leftDBObject.Value, dbObjectCache, mySessionToken);
+                            var oper = GetOperand(data.IDChainDefinitions.Item1, data.Extraordinaries.Item1, dbContext, leftDBObject.Value, dbObjectCache, mySessionToken);
                             if (oper.Failed)
                                 return new Exceptional<bool>(oper);
 
@@ -679,44 +640,40 @@ namespace sones.GraphDB.QueryLanguage.Operators
             {
                 #region right extraordinary
                 //there is something like a function or so
-                operandsRight = new Dictionary<DBObjectStream, IOperationValue>();
+                operandsRight = new Dictionary<DBObjectStream, AOperationDefinition>();
 
                 foreach (var aRightIDX in rightIndices)
                 {
-                    AttributeIndex currentRightIdx;
+                    UUIDIndex currentRightIdx = null;
 
                     #region get UUID idx
                     //we have to calculate the real operand.
                     //TODO: try to use attribute idx instead of uuid idx
 
-                    if (!aRightIDX.Item2.IsUuidIndex)
+                    if (!(aRightIDX.Item2 is UUIDIndex))
                     {
                         currentRightIdx = aRightIDX.Item1.GetUUIDIndex(dbContext.DBTypeManager);
                     }
                     else
                     {
-                        currentRightIdx = aRightIDX.Item2;
+                        currentRightIdx = (UUIDIndex)aRightIDX.Item2;
                     }
 
                     #endregion
 
-                    var idxRef = currentRightIdx.GetIndexReference(dbContext.DBIndexManager);
-                    if (!idxRef.Success)
-                    {
-                        return new Exceptional<bool>(idxRef);
-                    }
+                    var currentIndexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(currentRightIdx.IndexRelatedTypeUUID);
 
-                    foreach (var ObjectUUIDs_right in idxRef.Value.Values())
+                    foreach (var aObjectUUID_Right in currentRightIdx.GetAllUUIDs(currentIndexRelatedType, dbContext))
                     {
-                        var rightDBObject = dbObjectCache.LoadDBObjectStream(aRightIDX.Item1, ObjectUUIDs_right.FirstOrDefault());
+                        var rightDBObject = dbObjectCache.LoadDBObjectStream(aRightIDX.Item1, aObjectUUID_Right);
                         if (rightDBObject.Failed)
                         {
                             throw new NotImplementedException();
                         }
 
-                        if (IsValidDBObjectStreamForBinExpr(rightDBObject.Value, data.IdNodes.Item2.LastAttribute, dbContext.DBTypeManager))
+                        if (IsValidDBObjectStreamForBinExpr(rightDBObject.Value, data.IDChainDefinitions.Item2.LastAttribute, dbContext.DBTypeManager))
                         {
-                            var oper = GetOperand(data.IdNodes.Item2, data.Extraordinaries.Item2, dbContext, rightDBObject.Value, dbObjectCache, mySessionToken);
+                            var oper = GetOperand(data.IDChainDefinitions.Item2, data.Extraordinaries.Item2, dbContext, rightDBObject.Value, dbObjectCache, mySessionToken);
                             if (oper.Failed)
                                 return new Exceptional<bool>(oper);
 
@@ -748,18 +705,18 @@ namespace sones.GraphDB.QueryLanguage.Operators
                     {
                         case TypesOfAssociativity.Unknown:
                         case TypesOfAssociativity.Neutral:
-                            GetComplexAtom(dbContext, operandsLeft, operandsRight, data.IdNodes.Item1, dbObjectCache, ref result);
-                            GetComplexAtom(dbContext, operandsRight, operandsLeft, data.IdNodes.Item2, dbObjectCache, ref result);
+                            GetComplexAtom(dbContext, operandsLeft, operandsRight, data.IDChainDefinitions.Item1, dbObjectCache, ref result);
+                            GetComplexAtom(dbContext, operandsRight, operandsLeft, data.IDChainDefinitions.Item2, dbObjectCache, ref result);
                             break;
 
                         case TypesOfAssociativity.Left:
 
-                            GetComplexAtom(dbContext, operandsLeft, operandsRight, data.IdNodes.Item1,dbObjectCache, ref result);
+                            GetComplexAtom(dbContext, operandsLeft, operandsRight, data.IDChainDefinitions.Item1, dbObjectCache, ref result);
 
                             break;
                         case TypesOfAssociativity.Right:
 
-                            GetComplexAtom(dbContext, operandsRight, operandsLeft, data.IdNodes.Item2,dbObjectCache, ref result);
+                            GetComplexAtom(dbContext, operandsRight, operandsLeft, data.IDChainDefinitions.Item2, dbObjectCache, ref result);
 
                             break;
 
@@ -774,7 +731,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
                     #region Left complex
 
-                    GetComplexMatch(leftIndices, operandsRight, dbObjectCache, data.IdNodes.Item1, data.IdNodes.Item2, dbContext, associativity, ref result, mySessionToken);
+                    GetComplexMatch(leftIndices, operandsRight, dbObjectCache, data.IDChainDefinitions.Item1, data.IDChainDefinitions.Item2, dbContext, associativity, ref result, mySessionToken);
 
                     #endregion
 
@@ -783,7 +740,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
                     #region Right complex
 
-                    GetComplexMatch(rightIndices, operandsLeft, dbObjectCache, data.IdNodes.Item2, data.IdNodes.Item1, dbContext, associativity, ref result, mySessionToken);
+                    GetComplexMatch(rightIndices, operandsLeft, dbObjectCache, data.IDChainDefinitions.Item2, data.IDChainDefinitions.Item1, dbContext, associativity, ref result, mySessionToken);
 
                     #endregion
 
@@ -792,10 +749,10 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
                     #region Complex
 
-                    LevelKey leftLevelKey = CreateLevelKey(data.IdNodes.Item1);
-                    LevelKey rightLevelKey = CreateLevelKey(data.IdNodes.Item2);
-                    GraphDBType leftGraphDBType = data.IdNodes.Item1.LastType;
-                    GraphDBType rightGraphDBType = data.IdNodes.Item2.LastType;
+                    LevelKey leftLevelKey = CreateLevelKey(data.IDChainDefinitions.Item1, dbContext.DBTypeManager);
+                    LevelKey rightLevelKey = CreateLevelKey(data.IDChainDefinitions.Item2, dbContext.DBTypeManager);
+                    GraphDBType leftGraphDBType = data.IDChainDefinitions.Item1.LastType;
+                    GraphDBType rightGraphDBType = data.IDChainDefinitions.Item2.LastType;
 
                     #region exception
 
@@ -806,19 +763,10 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
                     #endregion
 
-                    var idxRefLeft = leftIndices.First().Item2.GetIndexReference(dbContext.DBIndexManager);
-                    if (!idxRefLeft.Success)
-                    {
-                        return new Exceptional<bool>(idxRefLeft);
-                    }
+                    var leftIndexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(leftIndices.First().Item2.IndexRelatedTypeUUID);
+                    var rightIndexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(rightIndices.First().Item2.IndexRelatedTypeUUID);
 
-                    var idxRefRight = rightIndices.First().Item2.GetIndexReference(dbContext.DBIndexManager);
-                    if (!idxRefRight.Success)
-                    {
-                        return new Exceptional<bool>(idxRefRight);
-                    }
-
-                    foreach (var ObjectUUIDs_left in idxRefLeft.Value.Values())
+                    foreach (var ObjectUUIDs_left in leftIndices.First().Item2.GetAllValues(leftIndexRelatedType, dbContext))
                     {
                         foreach (var aLeftUUID in ObjectUUIDs_left)
                         {
@@ -828,10 +776,10 @@ namespace sones.GraphDB.QueryLanguage.Operators
                                 return new Exceptional<bool>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                             }
 
-                            if (IsValidDBObjectStreamForBinExpr(leftDBObject.Value, data.IdNodes.Item1.LastAttribute, dbContext.DBTypeManager))
+                            if (IsValidDBObjectStreamForBinExpr(leftDBObject.Value, data.IDChainDefinitions.Item1.LastAttribute, dbContext.DBTypeManager))
                             {
 
-                                foreach (var ObjectUUIDs_right in idxRefRight.Value.Values())
+                                foreach (var ObjectUUIDs_right in rightIndices.First().Item2.GetAllValues(rightIndexRelatedType, dbContext))
                                 {
                                     foreach (var aRightUUID in ObjectUUIDs_right)
                                     {
@@ -842,27 +790,27 @@ namespace sones.GraphDB.QueryLanguage.Operators
                                             return new Exceptional<bool>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                                         }
 
-                                        if (IsValidDBObjectStreamForBinExpr(rightDBObject.Value, data.IdNodes.Item2.LastAttribute, dbContext.DBTypeManager))
+                                        if (IsValidDBObjectStreamForBinExpr(rightDBObject.Value, data.IDChainDefinitions.Item2.LastAttribute, dbContext.DBTypeManager))
                                         {
                                             //everything is valid
 
-                                            var leftType = GraphDBTypeMapper.ConvertPandora2CSharp(data.IdNodes.Item1.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
-                                            var rightType = GraphDBTypeMapper.ConvertPandora2CSharp(data.IdNodes.Item2.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
+                                            var leftType = GraphDBTypeMapper.ConvertPandora2CSharp(data.IDChainDefinitions.Item1.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
+                                            var rightType = GraphDBTypeMapper.ConvertPandora2CSharp(data.IDChainDefinitions.Item2.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
 
-                                            IOperationValue leftValue;
-                                            IOperationValue rightValue;
+                                            AOperationDefinition leftValue;
+                                            AOperationDefinition rightValue;
 
-                                            if (data.IdNodes.Item1.LastAttribute.KindOfType == KindsOfType.SetOfReferences
-                                                || data.IdNodes.Item1.LastAttribute.KindOfType == KindsOfType.ListOfNoneReferences || data.IdNodes.Item1.LastAttribute.KindOfType == KindsOfType.SetOfNoneReferences)
-                                                leftValue = new TupleValue(leftType, leftDBObject.Value.GetAttribute(data.IdNodes.Item1.LastAttribute.UUID), data.IdNodes.Item1.LastAttribute.GetDBType(dbContext.DBTypeManager));
+                                            if (data.IDChainDefinitions.Item1.LastAttribute.KindOfType == KindsOfType.SetOfReferences
+                                                || data.IDChainDefinitions.Item1.LastAttribute.KindOfType == KindsOfType.ListOfNoneReferences || data.IDChainDefinitions.Item1.LastAttribute.KindOfType == KindsOfType.SetOfNoneReferences)
+                                                leftValue = new TupleDefinition(leftType, leftDBObject.Value.GetAttribute(data.IDChainDefinitions.Item1.LastAttribute.UUID), data.IDChainDefinitions.Item1.LastAttribute.GetDBType(dbContext.DBTypeManager));
                                             else
-                                                leftValue = new AtomValue(leftType, leftDBObject.Value.GetAttribute(data.IdNodes.Item1.LastAttribute.UUID, data.IdNodes.Item1.LastAttribute.GetRelatedType(dbContext.DBTypeManager), dbContext));
+                                                leftValue = new ValueDefinition(leftType, leftDBObject.Value.GetAttribute(data.IDChainDefinitions.Item1.LastAttribute.UUID, data.IDChainDefinitions.Item1.LastAttribute.GetRelatedType(dbContext.DBTypeManager), dbContext));
 
-                                            if (data.IdNodes.Item2.LastAttribute.KindOfType == KindsOfType.SetOfReferences
-                                                || data.IdNodes.Item2.LastAttribute.KindOfType == KindsOfType.ListOfNoneReferences || data.IdNodes.Item2.LastAttribute.KindOfType == KindsOfType.SetOfNoneReferences)
-                                                rightValue = new TupleValue(rightType, rightDBObject.Value.GetAttribute(data.IdNodes.Item2.LastAttribute.UUID), data.IdNodes.Item2.LastAttribute.GetDBType(dbContext.DBTypeManager));
+                                            if (data.IDChainDefinitions.Item2.LastAttribute.KindOfType == KindsOfType.SetOfReferences
+                                                || data.IDChainDefinitions.Item2.LastAttribute.KindOfType == KindsOfType.ListOfNoneReferences || data.IDChainDefinitions.Item2.LastAttribute.KindOfType == KindsOfType.SetOfNoneReferences)
+                                                rightValue = new TupleDefinition(rightType, rightDBObject.Value.GetAttribute(data.IDChainDefinitions.Item2.LastAttribute.UUID), data.IDChainDefinitions.Item2.LastAttribute.GetDBType(dbContext.DBTypeManager));
                                             else
-                                                rightValue = new AtomValue(rightType, rightDBObject.Value.GetAttribute(data.IdNodes.Item2.LastAttribute.UUID, data.IdNodes.Item2.LastAttribute.GetRelatedType(dbContext.DBTypeManager), dbContext));
+                                                rightValue = new ValueDefinition(rightType, rightDBObject.Value.GetAttribute(data.IDChainDefinitions.Item2.LastAttribute.UUID, data.IDChainDefinitions.Item2.LastAttribute.GetRelatedType(dbContext.DBTypeManager), dbContext));
 
                                             var tempSimpleOperationResult = this.SimpleOperation(leftValue, rightValue, typeOfBinExpr);
                                             if (tempSimpleOperationResult.Failed)
@@ -870,7 +818,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
                                             var tempOperatorResult = tempSimpleOperationResult.Value;
 
-                                            if ((Boolean)(tempOperatorResult as AtomValue).Value.Value)
+                                            if ((Boolean)(tempOperatorResult as ValueDefinition).Value.Value)
                                             {
                                                 //found sth that is really true
 
@@ -957,29 +905,25 @@ namespace sones.GraphDB.QueryLanguage.Operators
             return new Exceptional<bool>(true);
         }
 
-        private Exceptional<Boolean> GetComplexMatch(IEnumerable<Tuple<GraphDBType, AttributeIndex>> myIDX, Dictionary<DBObjectStream, IOperationValue> operands, DBObjectCache dbObjectCache, IDNode primIDNode, IDNode operandIDNode, DBContext dbContext, TypesOfAssociativity associativity, ref IExpressionGraph resultGraph, SessionSettings mySessionToken)
+        private Exceptional<Boolean> GetComplexMatch(IEnumerable<Tuple<GraphDBType, AAttributeIndex>> myIDX, Dictionary<DBObjectStream, AOperationDefinition> operands, DBObjectCache dbObjectCache, IDChainDefinition primIDNode, IDChainDefinition operandIDNode, DBContext dbContext, TypesOfAssociativity associativity, ref IExpressionGraph resultGraph, SessionSettings mySessionToken)
         {
-            LevelKey primLevelKey = CreateLevelKey(primIDNode);
-            LevelKey operandLevelKey = CreateLevelKey(operandIDNode);
+            LevelKey primLevelKey = CreateLevelKey(primIDNode, dbContext.DBTypeManager);
+            LevelKey operandLevelKey = CreateLevelKey(operandIDNode, dbContext.DBTypeManager);
 
             foreach (var aIDX in myIDX)
             {
-                if (aIDX.Item2.IsUuidIndex)
+                if (aIDX.Item2 is UUIDIndex)
                 {
-                    #region Guid idx
+                    #region UUID idx
+
+                    var currentIndexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(aIDX.Item2.IndexRelatedTypeUUID);
 
                     foreach (var aOperand in operands)
                     {
 
-                        var idxRef = aIDX.Item2.GetIndexReference(dbContext.DBIndexManager);
-                        if (!idxRef.Success)
+                        foreach (var _ObjectUUIDs in ((UUIDIndex)aIDX.Item2).GetAllUUIDs(currentIndexRelatedType, dbContext))
                         {
-                            return new Exceptional<bool>(idxRef);
-                        }
-
-                        foreach (var _ObjectUUIDs in idxRef.Value.Values())
-                        {
-                            var DBObjectStream = dbObjectCache.LoadDBObjectStream(aIDX.Item1, _ObjectUUIDs.FirstOrDefault());
+                            var DBObjectStream = dbObjectCache.LoadDBObjectStream(aIDX.Item1, _ObjectUUIDs);
                             if (DBObjectStream.Failed)
                             {
                                 return new Exceptional<bool>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
@@ -988,23 +932,23 @@ namespace sones.GraphDB.QueryLanguage.Operators
                             if (IsValidDBObjectStreamForBinExpr(DBObjectStream.Value, primIDNode.LastAttribute, dbContext.DBTypeManager))
                             {
                                 var aCtype = GraphDBTypeMapper.ConvertPandora2CSharp(primIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
-                                Object dbos = GetDbos(primIDNode, DBObjectStream.Value, dbContext, mySessionToken, dbObjectCache);
+                                AObject dbos = GetDbos(primIDNode, DBObjectStream.Value, dbContext, mySessionToken, dbObjectCache);
 
-                                Exceptional<IOperationValue> tempResult;
+                                Exceptional<AOperationDefinition> tempResult;
                                 if (aCtype == TypesOfOperatorResult.SetOfDBObjects)
                                 {
-                                    tempResult = this.SimpleOperation(new TupleValue(aCtype, dbos, primIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager)), aOperand.Value, TypesOfBinaryExpression.Complex);
+                                    tempResult = this.SimpleOperation(new TupleDefinition(aCtype, dbos, primIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager)), aOperand.Value, TypesOfBinaryExpression.Complex);
                                 }
                                 else
                                 {
-                                    tempResult = this.SimpleOperation(new AtomValue(aCtype, dbos), aOperand.Value, TypesOfBinaryExpression.Complex);
+                                    tempResult = this.SimpleOperation(new ValueDefinition(aCtype, dbos), aOperand.Value, TypesOfBinaryExpression.Complex);
 
                                 }
 
                                 if (tempResult.Failed)
                                     return new Exceptional<bool>(tempResult);
 
-                                var tempOperatorResult = (AtomValue)tempResult.Value;
+                                var tempOperatorResult = ((ValueDefinition)tempResult.Value);
 
                                 if ((Boolean)tempOperatorResult.Value.Value)
                                 {
@@ -1035,42 +979,6 @@ namespace sones.GraphDB.QueryLanguage.Operators
                 else
                 {
                     return new Exceptional<bool>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-                    //TODO:
-                    //#region attribute idx
-
-                    //foreach (var aOperand in operands)
-                    //{
-                    //    var idxOper = this.IndexSingleOperation(idx, aOperand.Item2, TypesOfBinaryExpression.Complex);
-
-                    //    foreach (var _ObjectUUID in idxOper)
-                    //    {
-                    //        switch (associativity)
-                    //        {
-                    //            case TypesOfAssociativity.Neutral:
-                    //            case TypesOfAssociativity.Left:
-
-                    //                IntegrateInGraph(aOperand.Item1, resultGraph, operandLevelKey, myTypeManager,dbObjectCache);
-
-                    //                break;
-                    //            case TypesOfAssociativity.Right:
-
-                    //                var tempDBO = dbObjectCache.LoadDBObjectStream(primIDNode.LastAttribute.RelatedPandoraType, _ObjectUUID);
-                    //                if(tempDBO.Failed)
-                    //                {
-                    //                    throw new NotImplementedException();
-                    //                }
-
-                    //                IntegrateInGraph(tempDBO.Value, resultGraph, primLevelKey, myTypeManager, dbObjectCache);
-
-                    //                break;
-                    //            default:
-
-                    //                return new Exceptional<bool>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-                    //        }
-                    //    }
-                    //}
-
-                    //#endregion
                 }
             }
 
@@ -1078,11 +986,11 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
         }
 
-        private Exceptional<IExpressionGraph> GetComplexAtom(DBContext myTypeManager, Dictionary<DBObjectStream, IOperationValue> operandsPrim, Dictionary<DBObjectStream, IOperationValue> operandsComparism, IDNode iDNode, DBObjectCache dbObjectCache, ref IExpressionGraph result)
+        private Exceptional<IExpressionGraph> GetComplexAtom(DBContext dbContext, Dictionary<DBObjectStream, AOperationDefinition> operandsPrim, Dictionary<DBObjectStream, AOperationDefinition> operandsComparism, IDChainDefinition myIDChainDefinition, DBObjectCache dbObjectCache, ref IExpressionGraph result)
         {
             #region data
 
-            LevelKey myLevelKey = CreateLevelKey(iDNode);
+            LevelKey myLevelKey = CreateLevelKey(myIDChainDefinition, dbContext.DBTypeManager);
 
             #endregion
 
@@ -1094,9 +1002,9 @@ namespace sones.GraphDB.QueryLanguage.Operators
                     if (tempResult.Failed)
                         return new Exceptional<IExpressionGraph>(tempResult);
 
-                    if ((Boolean)((AtomValue)tempResult.Value).Value.Value)
+                    if ((Boolean)((ValueDefinition)tempResult.Value).Value.Value)
                     {
-                        IntegrateInGraph(left.Key, result, myLevelKey, myTypeManager,dbObjectCache);
+                        IntegrateInGraph(left.Key, result, myLevelKey, dbContext,dbObjectCache);
                         break;
                     }
                 }
@@ -1130,11 +1038,11 @@ namespace sones.GraphDB.QueryLanguage.Operators
         /// <param name="errors">A list of errors.</param>
         /// <param name="resultGraph">The IExpressionGraph that serves as result.</param>
         /// <returns>True if the method succeeded</returns>
-        private Exceptional<Boolean> MatchData(DataContainer data, DBContext dbContext, DBObjectCache dbObjectCache, TypesOfBinaryExpression typeOfBinExpr, IEnumerable<Tuple<GraphDBType, AttributeIndex>> idx, IExpressionGraph resultGraph, SessionSettings mySessionToken)
+        private Exceptional<Boolean> MatchData(DataContainer data, DBContext dbContext, DBObjectCache dbObjectCache, TypesOfBinaryExpression typeOfBinExpr, IEnumerable<Tuple<GraphDBType, AAttributeIndex>> idx, IExpressionGraph resultGraph, SessionSettings mySessionToken)
         {
             #region data
 
-            LevelKey myLevelKey = CreateLevelKey(data.IdNodes.Item1);
+            LevelKey myLevelKey = CreateLevelKey(data.IDChainDefinitions.Item1, dbContext.DBTypeManager);
 
             #endregion
 
@@ -1142,23 +1050,16 @@ namespace sones.GraphDB.QueryLanguage.Operators
             {
                 #region Execution
 
-                if (aIDX.Item2.IsUuidIndex && (data.IdNodes.Item1.LastAttribute != dbContext.DBTypeManager.GetGUIDTypeAttribute()))
+                if (aIDX.Item2 is UUIDIndex && (data.IDChainDefinitions.Item1.LastAttribute != dbContext.DBTypeManager.GetUUIDTypeAttribute()))
                 {
-                    #region Guid idx - check ALL DBOs
+                    #region UUID idx - check ALL DBOs
 
-                    var idxRef = aIDX.Item2.GetIndexReference(dbContext.DBIndexManager);
-                    if (!idxRef.Success)
-                    {
-                        return new Exceptional<bool>(idxRef);
-                    }
+                    var IndexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(aIDX.Item2.IndexRelatedTypeUUID);
 
-                    foreach (var _ObjectUUIDs in idxRef.Value.Values())
+                    var result = IntegrateUUID(data, dbContext, dbObjectCache, typeOfBinExpr, resultGraph, mySessionToken, myLevelKey, dbObjectCache.LoadListOfDBObjectStreams(aIDX.Item1, ((UUIDIndex)aIDX.Item2).GetAllUUIDs(IndexRelatedType, dbContext)));
+                    if (result.Failed)
                     {
-                        var result = IntegrateUUID(data, dbContext, dbObjectCache, typeOfBinExpr, resultGraph, mySessionToken, myLevelKey, dbObjectCache.LoadListOfDBObjectStreams(aIDX.Item1, _ObjectUUIDs));
-                        if (result.Failed)
-                        {
-                            return new Exceptional<bool>(result);
-                        }
+                        return new Exceptional<bool>(result);
                     }
 
                     if (resultGraph.ContainsLevelKey(myLevelKey))
@@ -1185,7 +1086,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
                     #region Get operationValue and type
 
-                    var operationValue = (IOperationValue)data.Operands.Item1;
+                    var operationValue = (AOperationDefinition)data.Operands.Item1;
 
                     #endregion
 
@@ -1196,7 +1097,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
                         return new Exceptional<bool>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "Currently it is not implemented to use compound indices."));
                     }
 
-                    var interestingUUIDsByIdx = IndexSingleOperation(aIDX.Item2, operationValue, data.IdNodes.Item1.LastAttribute.UUID, typeOfBinExpr, dbContext.DBIndexManager);
+                    var interestingUUIDsByIdx = IndexSingleOperation(aIDX.Item2, operationValue, data.IDChainDefinitions.Item1.LastAttribute.UUID, typeOfBinExpr, dbContext);
 
 
                     #region integrate in graph
@@ -1205,7 +1106,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
                     if (runMT)
                     {
-                        Parallel.ForEach(dbObjectCache.LoadListOfDBObjectStreams(data.IdNodes.Item1.LastType, interestingUUIDsByIdx), aDBO =>
+                        Parallel.ForEach(dbObjectCache.LoadListOfDBObjectStreams(data.IDChainDefinitions.Item1.LastType, interestingUUIDsByIdx), aDBO =>
                         {
                             IntegrateInGraph(aDBO.Value, resultGraph, myLevelKey, dbContext, dbObjectCache);
                         }
@@ -1213,7 +1114,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
                     }
                     else
                     {
-                        foreach (var aDBO in dbObjectCache.LoadListOfDBObjectStreams(data.IdNodes.Item1.LastType, interestingUUIDsByIdx))
+                        foreach (var aDBO in dbObjectCache.LoadListOfDBObjectStreams(data.IDChainDefinitions.Item1.LastType, interestingUUIDsByIdx))
                         {
                             IntegrateInGraph(aDBO.Value, resultGraph, myLevelKey, dbContext, dbObjectCache);
                         }
@@ -1252,11 +1153,11 @@ namespace sones.GraphDB.QueryLanguage.Operators
             return true;
         }
 
-        private void CleanLowerLevel(LevelKey myLevelKey, DBContext myTypeManager, DBObjectCache dbObjectCache, IExpressionGraph myGraph)
+        private void CleanLowerLevel(LevelKey myLevelKey, DBContext dbContext, DBObjectCache dbObjectCache, IExpressionGraph myGraph)
         {
             if (myLevelKey.Level > 0)
             {
-                var previousLevelKey = myLevelKey.GetPredecessorLevel();
+                var previousLevelKey = myLevelKey.GetPredecessorLevel(dbContext.DBTypeManager);
                 HashSet<ObjectUUID> toBeDeletedNodes = new HashSet<ObjectUUID>();
 
                 foreach (var aLowerDBO in myGraph.Select(previousLevelKey, null, false))
@@ -1266,7 +1167,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
                         throw new GraphDBException(new Error_ExpressionGraphInternal(new System.Diagnostics.StackTrace(true), "Could not load DBObjectStream from lower level."));
                     }
 
-                    foreach (var aReferenceUUID in ((IReferenceEdge)aLowerDBO.Value.GetAttribute(myLevelKey.LastEdge.AttrUUID)).GetAllUUIDs())
+                    foreach (var aReferenceUUID in ((IReferenceEdge)aLowerDBO.Value.GetAttribute(myLevelKey.LastEdge.AttrUUID)).GetAllReferenceIDs())
                     {
                         if (!myGraph.GetLevel(myLevelKey.Level).ExpressionLevels[myLevelKey].Nodes.ContainsKey(aReferenceUUID))
                         {
@@ -1294,7 +1195,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
                     return new Exceptional<object>(aDBO);
                 }
 
-                if (IsValidDBObjectStreamForBinExpr(aDBO.Value, data.IdNodes.Item1.LastAttribute, dbContext.DBTypeManager))
+                if (IsValidDBObjectStreamForBinExpr(aDBO.Value, data.IDChainDefinitions.Item1.LastAttribute, dbContext.DBTypeManager))
                 {
                     //check and integrate
                     var result = CheckAndIntegrateDBObjectStream(data, dbContext, dbObjectCache, typeOfBinExpr, resultGraph, aDBO.Value, myLevelKey, mySessionToken);
@@ -1309,38 +1210,30 @@ namespace sones.GraphDB.QueryLanguage.Operators
         }
 
 
-        private LevelKey CreateLevelKey(IDNode iDNode)
+        private LevelKey CreateLevelKey(IDChainDefinition myIDChainDefinition, DBTypeManager myTypeManager)
         {
-            if (iDNode.Level == 0)
+            if (myIDChainDefinition.Level == 0)
             {
-                return new LevelKey(new List<EdgeKey>() { new EdgeKey(iDNode.Edges[0].TypeUUID, null) }, 0);
+                return new LevelKey(new List<EdgeKey>() { new EdgeKey(myIDChainDefinition.Edges[0].TypeUUID, null) }, myTypeManager);
             }
             else
             {
-                if (iDNode.IDNodeParts.Count > iDNode.Edges.Count)
+                if (myIDChainDefinition.Last() is ChainPartFuncDefinition)
                 {
-                    //there must be a function
-                    if (iDNode.IDNodeParts.Last() is IDNodeFunc)
-                    {
-                        // the funtion in the last idnode part processes the last attribute
+                    // the funtion in the last idnode part processes the last attribute
 
-                        if (iDNode.Level == 1)
-                        {
-                            return new LevelKey(new List<EdgeKey>() { new EdgeKey(iDNode.Edges[0].TypeUUID, null) }, 0);
-                        }
-                        else
-                        {
-                            return new LevelKey(iDNode.Edges.Take(iDNode.Level - 1), iDNode.Level - 1);
-                        }
+                    if (myIDChainDefinition.Level == 1)
+                    {
+                        return new LevelKey(new List<EdgeKey>() { new EdgeKey(myIDChainDefinition.Edges[0].TypeUUID, null) }, myTypeManager);
                     }
                     else
                     {
-                        throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "Currently it is not implemented to have a funtion in between two edges."));
+                        return new LevelKey(myIDChainDefinition.Edges.Take(myIDChainDefinition.Level - 1), myTypeManager);
                     }
                 }
                 else
                 {
-                    return new LevelKey(iDNode.Edges.Take(iDNode.Level), iDNode.Level);
+                    return new LevelKey(myIDChainDefinition.Edges.Take(myIDChainDefinition.Level), myTypeManager);
                 }
             }
         }
@@ -1384,7 +1277,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
         {
           
             //get the operand
-            var operand = GetOperand(myData.IdNodes.Item1, myData.Extraordinaries.Item1, myTypeManager, myDBObjectStream, myQueryCache, mySessionToken);
+            var operand = GetOperand(myData.IDChainDefinitions.Item1, myData.Extraordinaries.Item1, myTypeManager, myDBObjectStream, myQueryCache, mySessionToken);
 
             if(operand == null)
             {
@@ -1397,19 +1290,19 @@ namespace sones.GraphDB.QueryLanguage.Operators
                 return new Exceptional<object>(operand);
             }
 
-            Exceptional<IOperationValue> tempSimpleOperationResult;
+            Exceptional<AOperationDefinition> tempSimpleOperationResult;
 
             switch (myTypeOfBinExpr)
             {
 
                 case TypesOfBinaryExpression.LeftComplex:
 
-                    tempSimpleOperationResult = this.SimpleOperation(operand.Value, (IOperationValue)myData.Operands.Item1, myTypeOfBinExpr);
+                    tempSimpleOperationResult = this.SimpleOperation(operand.Value, ((AOperationDefinition)myData.Operands.Item1), myTypeOfBinExpr);
 
                     break;
                 case TypesOfBinaryExpression.RightComplex:
 
-                    tempSimpleOperationResult = this.SimpleOperation((IOperationValue)myData.Operands.Item1, operand.Value, myTypeOfBinExpr);
+                    tempSimpleOperationResult = this.SimpleOperation(((AOperationDefinition)myData.Operands.Item1), operand.Value, myTypeOfBinExpr);
 
                     break;
 
@@ -1425,7 +1318,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
                 return new Exceptional<object>(tempSimpleOperationResult);
             }
 
-            var tempOperatorResult = (AtomValue)tempSimpleOperationResult.Value;
+            var tempOperatorResult = ((ValueDefinition)tempSimpleOperationResult.Value);
 
             if ((Boolean)tempOperatorResult.Value.Value)
             {
@@ -1444,60 +1337,66 @@ namespace sones.GraphDB.QueryLanguage.Operators
         /// <summary>
         /// This method extracts an IOperationValue out of a DBObjectStream.
         /// </summary>
-        /// <param name="myIDNode">The corresponding IDNode.</param>
+        /// <param name="myIDChainDefinition">The corresponding IDNode.</param>
         /// <param name="myExtraordinary">Sth extraordinary like an aggregate or function call.</param>
         /// <param name="dbContext">The TypeManager of the database.</param>
         /// <param name="myDBObjectStream">The DBObjectStream.</param>
         /// <returns>An IOperationValue.</returns>
-        private Exceptional<IOperationValue> GetOperand(IDNode myIDNode, Object myExtraordinary, DBContext dbContext, DBObjectStream myDBObjectStream, DBObjectCache dbObjectCache, SessionSettings mySessionToken)
+        private Exceptional<AOperationDefinition> GetOperand(IDChainDefinition myIDChainDefinition, AExpressionDefinition myExtraordinary, DBContext dbContext, DBObjectStream myDBObjectStream, DBObjectCache dbObjectCache, SessionSettings mySessionToken)
         {
-            var aCtype = GraphDBTypeMapper.ConvertPandora2CSharp(myIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
-            Object dbos = GetDbos(myIDNode, myDBObjectStream, dbContext, mySessionToken, dbObjectCache);
+            var aCtype = GraphDBTypeMapper.ConvertPandora2CSharp(myIDChainDefinition.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
+            AObject dbos = GetDbos(myIDChainDefinition, myDBObjectStream, dbContext, mySessionToken, dbObjectCache);
 
             if (dbos == null)
             {
                 return null;
             }
-            
-            IOperationValue operand = null;
+
+            AOperationDefinition operand = null;
 
             if (myExtraordinary != null)
             {
                 #region extraordinary
 
-                if (myExtraordinary is AggregateNode)
+                if (myExtraordinary is AggregateDefinition)
                 {
-                    var aggrNode = (AggregateNode)myExtraordinary;
+                    var aggrNode = ((AggregateDefinition)myExtraordinary).ChainPartAggregateDefinition;
+
+                    aggrNode.Validate(dbContext);
 
                     //result of aggregate
-                    var pResult = aggrNode.Aggregate.Aggregate(dbos, myIDNode.LastAttribute, dbContext, dbObjectCache, mySessionToken);
+                    var pResult = aggrNode.Aggregate.Aggregate(dbos, myIDChainDefinition.LastAttribute, dbContext, dbObjectCache, mySessionToken);
                     if (pResult.Failed)
-                        return new Exceptional<IOperationValue>(pResult);
+                        return new Exceptional<AOperationDefinition>(pResult);
 
                     aCtype = aggrNode.Aggregate.TypeOfResult;
-                    operand = new AtomValue(aggrNode.Aggregate.TypeOfResult, pResult.Value);
+                    operand = new ValueDefinition(aggrNode.Aggregate.TypeOfResult, pResult.Value);
                 }
                 else
                 {
-                    if (myExtraordinary is FuncCallNode)
+                    if (myExtraordinary is IDChainDefinition)
                     {
-                        var funcCallNode = (FuncCallNode)myExtraordinary;
-                        funcCallNode.CallingAttribute = myIDNode.LastAttribute;
-                        funcCallNode.CallingObject = dbos;
+                        var chainFunc = (myExtraordinary as IDChainDefinition).First(id => id is ChainPartFuncDefinition) as ChainPartFuncDefinition;
+
+                        chainFunc.Validate(dbContext);
+
+                        var func = chainFunc.Function;
+                        func.CallingAttribute = myIDChainDefinition.LastAttribute;
+                        func.CallingObject = dbos;
                         //result of function
 
-                        var pResult = funcCallNode.Execute(myIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager), myDBObjectStream, myIDNode.Reference.Item1, dbContext, myIDNode.LastAttribute.GetRelatedType(dbContext.DBTypeManager), dbObjectCache, mySessionToken);
+                        var pResult = chainFunc.Execute(myIDChainDefinition.LastAttribute.GetDBType(dbContext.DBTypeManager), myDBObjectStream, myIDChainDefinition.Reference.Item1, dbContext, dbObjectCache);
                         if (pResult.Failed)
-                            return new Exceptional<IOperationValue>(pResult);
+                            return new Exceptional<AOperationDefinition>(pResult);
 
                         //aCtype = funcCallNode.Function.TypeOfResult;
                         //aCtype = ((FuncParameter)pResult.Value).TypeOfOperatorResult;
-                        operand = new AtomValue(((FuncParameter)pResult.Value).Value);
-                        aCtype = operand.TypeOfValue;
+                        operand = new ValueDefinition(((FuncParameter)pResult.Value).Value);
+                        aCtype = (operand as ValueDefinition).Value.Type;
                     }
                     else
                     {
-                        return new Exceptional<IOperationValue>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                    return new Exceptional<AOperationDefinition>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                     }
                 }
 
@@ -1509,39 +1408,43 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
                 if (aCtype == TypesOfOperatorResult.SetOfDBObjects)
                 {
-                    operand = new TupleValue(aCtype, dbos, myIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager));
+                    operand = new TupleDefinition(aCtype, dbos, myIDChainDefinition.LastAttribute.GetDBType(dbContext.DBTypeManager));
                 }
                 else
                 {
                     if (dbos is AListBaseEdgeType)
                     {
-                        operand = new TupleValue(aCtype, dbos, myIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager));
+                        operand = new TupleDefinition(aCtype, dbos, myIDChainDefinition.LastAttribute.GetDBType(dbContext.DBTypeManager));
+                    }
+                    else if (dbos is ADBBaseObject)
+                    {
+                        operand = new ValueDefinition(dbos as ADBBaseObject);
                     }
                     else
                     {
-                        operand = new AtomValue(aCtype, dbos);
+                        operand = new ValueDefinition(aCtype, dbos);
                     }
                 }
 
                 #endregion
             }
-            return new Exceptional<IOperationValue>(operand);
+            return new Exceptional<AOperationDefinition>(operand);
         }
 
-        private object GetDbos(IDNode myIDNode, DBObjectStream myDBObjectStream, DBContext dbContext, SessionSettings mySessionToken, DBObjectCache dbObjectCache)
+        private AObject GetDbos(IDChainDefinition myIDChainDefinition, DBObjectStream myDBObjectStream, DBContext dbContext, SessionSettings mySessionToken, DBObjectCache dbObjectCache)
         {
-            if (myIDNode.LastAttribute.IsBackwardEdge)
+            if (myIDChainDefinition.LastAttribute.IsBackwardEdge)
             {
-                var contBackwardExcept = myDBObjectStream.ContainsBackwardEdge(myIDNode.LastAttribute.BackwardEdgeDefinition, dbContext, dbObjectCache, myIDNode.LastAttribute.GetRelatedType(dbContext.DBTypeManager));
+                var contBackwardExcept = myDBObjectStream.ContainsBackwardEdge(myIDChainDefinition.LastAttribute.BackwardEdgeDefinition, dbContext, dbObjectCache, myIDChainDefinition.LastAttribute.GetRelatedType(dbContext.DBTypeManager));
 
                 if (contBackwardExcept.Failed)
                     throw new GraphDBException(contBackwardExcept.Errors);
 
                 if (contBackwardExcept.Value)
                 {
-                    var beStream = dbObjectCache.LoadDBBackwardEdgeStream(myIDNode.LastType, myDBObjectStream.ObjectUUID).Value;
-                    if (beStream.ContainsBackwardEdge(myIDNode.LastAttribute.BackwardEdgeDefinition))
-                        return beStream.GetBackwardEdgeUUIDs(myIDNode.LastAttribute.BackwardEdgeDefinition);
+                    var beStream = dbObjectCache.LoadDBBackwardEdgeStream(myIDChainDefinition.LastType, myDBObjectStream.ObjectUUID).Value;
+                    if (beStream.ContainsBackwardEdge(myIDChainDefinition.LastAttribute.BackwardEdgeDefinition))
+                        return beStream.GetBackwardEdges(myIDChainDefinition.LastAttribute.BackwardEdgeDefinition);
                     else
                         return null;
                 }
@@ -1552,20 +1455,20 @@ namespace sones.GraphDB.QueryLanguage.Operators
             }
             else
             {
-                if (myIDNode.LastAttribute.KindOfType == KindsOfType.SpecialAttribute)
+                if (myIDChainDefinition.LastAttribute.KindOfType == KindsOfType.SpecialAttribute)
                 {
-                    return myDBObjectStream.GetAttribute(myIDNode.LastAttribute.UUID, myIDNode.LastAttribute.GetRelatedType(dbContext.DBTypeManager), dbContext);
+                    return myDBObjectStream.GetAttribute(myIDChainDefinition.LastAttribute.UUID, myIDChainDefinition.LastAttribute.GetRelatedType(dbContext.DBTypeManager), dbContext);
                 }
                 else
                 {
-                    return myDBObjectStream.GetAttribute(myIDNode.LastAttribute.UUID);
+                    return myDBObjectStream.GetAttribute(myIDChainDefinition.LastAttribute.UUID);
                 }
             }
         }
 
         private bool IsValidDBObjectStreamForBinExpr(DBObjectStream DBObjectStream, TypeAttribute myTypeAttribute, DBTypeManager myDBTypeManager)
         {
-            if (DBObjectStream.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBTypeManager), null) || myTypeAttribute.IsBackwardEdge)
+            if (DBObjectStream.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBTypeManager)) || myTypeAttribute.IsBackwardEdge)
             {
                 return true;
             }
@@ -1607,26 +1510,26 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
         #region SimpleOperation Methods
 
-        public override Exceptional<IOperationValue> SimpleOperation(IOperationValue left, IOperationValue right, TypesOfBinaryExpression typeOfBinExpr)
+        public override Exceptional<AOperationDefinition> SimpleOperation(AOperationDefinition left, AOperationDefinition right, TypesOfBinaryExpression typeOfBinExpr)
         {
-            if (left is AtomValue && right is AtomValue)
-                return SimpleOperation((AtomValue)left, (AtomValue)right);
-            else if (left is AtomValue && right is TupleValue)
-                return SimpleOperation((AtomValue)left, (TupleValue)right);
-            else if (left is TupleValue && right is AtomValue)
-                return SimpleOperation((TupleValue)left, (AtomValue)right);
-            else if (left is TupleValue && right is TupleValue)
-                return SimpleOperation((TupleValue)left, (TupleValue)right);
+            if (left is ValueDefinition && right is ValueDefinition)
+                return SimpleOperation((ValueDefinition)left, (ValueDefinition)right);
+            else if (left is ValueDefinition && right is TupleDefinition)
+                return SimpleOperation((ValueDefinition)left, (TupleDefinition)right);
+            else if (left is TupleDefinition && right is ValueDefinition)
+                return SimpleOperation((TupleDefinition)left, (ValueDefinition)right);
+            else if (left is TupleDefinition && right is TupleDefinition)
+                return SimpleOperation((TupleDefinition)left, (TupleDefinition)right);
 
-            return new Exceptional<IOperationValue>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+            return new Exceptional<AOperationDefinition>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
 
-        protected Exceptional<IOperationValue> SimpleOperation(AtomValue left, AtomValue right)
+        protected Exceptional<AOperationDefinition> SimpleOperation(ValueDefinition left, ValueDefinition right)
         {
 
             #region Data
 
-            AtomValue resultObject = null;
+            ValueDefinition resultObject = null;
 
             #endregion
 
@@ -1634,40 +1537,40 @@ namespace sones.GraphDB.QueryLanguage.Operators
             ADBBaseObject rightObj = right.Value;
 
             if (!GraphDBTypeMapper.ConvertToBestMatchingType(ref leftObj, ref rightObj).Value)
-                return new Exceptional<IOperationValue>(new Error_DataTypeDoesNotMatch(leftObj.ObjectName, rightObj.ObjectName));
+                return new Exceptional<AOperationDefinition>(new Error_DataTypeDoesNotMatch(leftObj.ObjectName, rightObj.ObjectName));
             //return new Exceptional<IOperationValue>(new PandoraError(ErrorCode.DataTypeDoesNotMatchValue, (leftObj.ObjectName + " != " + rightObj.ToString())));
 
             var resultValue = Compare(leftObj, rightObj);
-            resultObject = new AtomValue(TypesOfOperatorResult.Boolean, (object)resultValue.Value);
+            resultObject = new ValueDefinition(TypesOfOperatorResult.Boolean, (object)resultValue.Value);
 
-            return new Exceptional<IOperationValue>(resultObject);
+            return new Exceptional<AOperationDefinition>(resultObject);
 
         }
 
-        protected Exceptional<IOperationValue> SimpleOperation(AtomValue left, TupleValue right)
+        protected Exceptional<AOperationDefinition> SimpleOperation(ValueDefinition left, TupleDefinition right)
         {
 
             #region Data
 
-            AtomValue resultObject = null;
+            ValueDefinition resultObject = null;
             Object resultValue = false;
 
             #endregion
 
             ADBBaseObject leftObj = left.Value;
             //foreach (ADBBaseObject rightObj in right.Values)
-            for (Int32 i=0; i < right.Values.Count; i++)
+            foreach(var  val in right)
             {
-                ADBBaseObject rightObj = right.Values[i];
+                ADBBaseObject rightObj = (val.Value as ValueDefinition).Value;
 
                 if (!GraphDBTypeMapper.ConvertToBestMatchingType(ref leftObj, ref rightObj).Value)
                 {
-                    return new Exceptional<IOperationValue>(new Error_DataTypeDoesNotMatch(leftObj.Type.ToString(), rightObj.Type.ToString()));
+                    return new Exceptional<AOperationDefinition>(new Error_DataTypeDoesNotMatch(leftObj.Type.ToString(), rightObj.Type.ToString()));
                 }
 
                 var comp = Compare(left.Value, rightObj);
                 if (comp.Failed)
-                    return new Exceptional<IOperationValue>(comp);
+                    return new Exceptional<AOperationDefinition>(comp);
 
                 if (comp.Value)
                 {
@@ -1679,36 +1582,36 @@ namespace sones.GraphDB.QueryLanguage.Operators
                     break;
                 }
             }
-            resultObject = new AtomValue(TypesOfOperatorResult.Boolean, (object)resultValue);
+            resultObject = new ValueDefinition(TypesOfOperatorResult.Boolean, (object)resultValue);
 
-            return new Exceptional<IOperationValue>(resultObject);
+            return new Exceptional<AOperationDefinition>(resultObject);
 
         }
 
-        protected Exceptional<IOperationValue> SimpleOperation(TupleValue left, AtomValue right)
+        protected Exceptional<AOperationDefinition> SimpleOperation(TupleDefinition left, ValueDefinition right)
         {
 
             #region Data
 
-            AtomValue resultObject = null;
+            ValueDefinition resultObject = null;
             Object resultValue = false;
 
             #endregion
 
             ADBBaseObject rightObj = right.Value;
             //foreach (ADBBaseObject leftObj in left.Values)
-            for(Int32 i=0; i< left.Values.Count; i++)
+            foreach(var val in left)
             {
-                ADBBaseObject leftObj = left.Values[i];
+                ADBBaseObject leftObj = (val.Value as ValueDefinition).Value;
 
                 if (!GraphDBTypeMapper.ConvertToBestMatchingType(ref leftObj, ref rightObj).Value)
                 {
-                    return new Exceptional<IOperationValue>(new Error_DataTypeDoesNotMatch(leftObj.Type.ToString(), rightObj.Type.ToString()));
+                    return new Exceptional<AOperationDefinition>(new Error_DataTypeDoesNotMatch(leftObj.Type.ToString(), rightObj.Type.ToString()));
                 }
 
                 var comp = Compare(leftObj, right.Value);
                 if (comp.Failed)
-                    return new Exceptional<IOperationValue>(comp);
+                    return new Exceptional<AOperationDefinition>(comp);
 
                 if (comp.Value)
                 {
@@ -1720,39 +1623,39 @@ namespace sones.GraphDB.QueryLanguage.Operators
                     break;
                 }
             }
-            resultObject = new AtomValue(TypesOfOperatorResult.Boolean, (object)resultValue);
+            resultObject = new ValueDefinition(TypesOfOperatorResult.Boolean, (object)resultValue);
 
-            return new Exceptional<IOperationValue>(resultObject);
+            return new Exceptional<AOperationDefinition>(resultObject);
 
         }
 
-        protected Exceptional<IOperationValue> SimpleOperation(TupleValue left, TupleValue right)
+        protected Exceptional<AOperationDefinition> SimpleOperation(TupleDefinition left, TupleDefinition right)
         {
 
             #region Data
 
-            AtomValue resultObject = null;
+            ValueDefinition resultObject = null;
             Object resultValue = false;
 
             #endregion
 
             //foreach (ADBBaseObject leftObj in left.Values)
-            for (Int32 i=0; i < left.Values.Count; i++)
+            foreach (var valLeft in left)
             {
-                ADBBaseObject leftObj = left.Values[i];
+                ADBBaseObject leftObj = (valLeft.Value as ValueDefinition).Value;
                 //foreach (ADBBaseObject rightObj in right.Values)
-                for (Int32 j=0; j < right.Values.Count; j++)
+                foreach(var valRight in right)
                 {
-                    ADBBaseObject rightObj = right.Values[i];
+                    ADBBaseObject rightObj = (valRight.Value as ValueDefinition).Value;
 
                     if (!GraphDBTypeMapper.ConvertToBestMatchingType(ref leftObj, ref rightObj).Value)
                     {
-                        return new Exceptional<IOperationValue>(new Error_DataTypeDoesNotMatch(leftObj.Type.ToString(), rightObj.Type.ToString()));
+                        return new Exceptional<AOperationDefinition>(new Error_DataTypeDoesNotMatch(leftObj.Type.ToString(), rightObj.Type.ToString()));
                     }
                     
                     var res = Compare(leftObj, rightObj);
                     if (res.Failed)
-                        return new Exceptional<IOperationValue>(res);
+                        return new Exceptional<AOperationDefinition>(res);
 
                     if (res.Value)
                     {
@@ -1767,25 +1670,25 @@ namespace sones.GraphDB.QueryLanguage.Operators
                 if (!(Boolean)resultValue)
                     break;
             }
-            resultObject = new AtomValue(TypesOfOperatorResult.Boolean, (object)resultValue);
+            resultObject = new ValueDefinition(TypesOfOperatorResult.Boolean, (object)resultValue);
 
-            return new Exceptional<IOperationValue>(resultObject);
+            return new Exceptional<AOperationDefinition>(resultObject);
 
         }
 
         protected abstract Exceptional<Boolean> Compare(ADBBaseObject myLeft, ADBBaseObject myRight);
 
-        private IEnumerable<ObjectUUID> IndexSingleOperation(AttributeIndex myIndex, IOperationValue myOperationValue, AttributeUUID myAttributeUUID, TypesOfBinaryExpression typeOfBinExpr, DBIndexManager indexManager)
+        private IEnumerable<ObjectUUID> IndexSingleOperation(AAttributeIndex myIndex, AOperationDefinition myOperationValue, AttributeUUID myAttributeUUID, TypesOfBinaryExpression typeOfBinExpr, DBContext dbContext)
         {
-            if (myOperationValue is AtomValue)
+            if (myOperationValue is ValueDefinition)
             {
-                return IndexSingleOperation(myIndex, ((AtomValue)myOperationValue).Value, myAttributeUUID, typeOfBinExpr, indexManager);
+                return IndexSingleOperation(myIndex, ((ValueDefinition)myOperationValue).Value, myAttributeUUID, typeOfBinExpr, dbContext);
             }
             else
             {
-                if (myOperationValue is TupleValue)
+                if (myOperationValue is TupleDefinition)
                 {
-                    return IndexOperation(myIndex, myOperationValue as TupleValue, typeOfBinExpr, indexManager);
+                    return IndexOperation(myIndex, (myOperationValue as TupleDefinition), typeOfBinExpr, dbContext);
                 }
                 else
                 {
@@ -1795,30 +1698,21 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
         }
 
-        public virtual IEnumerable<ObjectUUID> IndexOperationReloaded(AttributeIndex myIndex, List<Tuple<AttributeUUID, ADBBaseObject>> myOperationValues, TypesOfBinaryExpression typeOfBinExpr)
+        public virtual IEnumerable<ObjectUUID> IndexOperationReloaded(AAttributeIndex myIndex, List<Tuple<AttributeUUID, ADBBaseObject>> myOperationValues, TypesOfBinaryExpression typeOfBinExpr)
         {
             throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
 
 
-        public virtual IEnumerable<ObjectUUID> IndexOperation(AttributeIndex myIndex, TupleValue myOperationValues, TypesOfBinaryExpression typeOfBinExpr, DBIndexManager dbIndexManager)
+        public virtual IEnumerable<ObjectUUID> IndexOperation(AAttributeIndex myIndex, TupleDefinition myOperationValues, TypesOfBinaryExpression typeOfBinExpr, DBContext dbContext)
         {
             throw new GraphDBException(new Error_InvalidIndexOperation(myIndex.IndexName));
         }
 
-        public virtual IEnumerable<ObjectUUID> IndexSingleOperation(AttributeIndex myIndex, ADBBaseObject myOperationValue, AttributeUUID myAttributeUUID, TypesOfBinaryExpression typeOfBinExpr, DBIndexManager indexManager)
+        public virtual IEnumerable<ObjectUUID> IndexSingleOperation(AAttributeIndex myIndex, ADBBaseObject myOperationValue, AttributeUUID myAttributeUUID, TypesOfBinaryExpression typeOfBinExpr, DBContext dbContext)
         {
-
-            var idxRef = myIndex.GetIndexReference(indexManager);
-            if (idxRef.Failed)
+            foreach (var keyValPair in myIndex.GetKeyValues(dbContext.DBTypeManager.GetTypeByUUID(myIndex.IndexRelatedTypeUUID), dbContext))
             {
-                throw new GraphDBException(idxRef.Errors);
-            }
-
-            foreach (var keyValPair in idxRef.Value)
-            {
-                //ADBBaseObject indexKey = myOperationValue.Clone(keyValPair.Key);
-                //PandoraTypeMapper.ConvertToBestMatchingType(ref myOperationValue, ref indexKey);
                 var res = Compare(keyValPair.Key.IndexKeyValues[0], myOperationValue);
 
                 if (res.Failed)
@@ -1848,26 +1742,25 @@ namespace sones.GraphDB.QueryLanguage.Operators
         {
             #region IDNodes
 
-            private Tuple<IDNode, IDNode> _idNodes;
-
-            /// <summary>
-            /// Tuple of IDNodes (in most cases the left and right one)
-            /// </summary>
-            public Tuple<IDNode, IDNode> IdNodes
+            private Tuple<IDChainDefinition, IDChainDefinition> _IDChainDefinitions;
+            public Tuple<IDChainDefinition, IDChainDefinition> IDChainDefinitions
             {
-                get { return _idNodes; }
+                get
+                {
+                    return _IDChainDefinitions;
+                }
             }
 
             #endregion
 
             #region Operands
 
-            private Tuple<Object, Object> _operands;
+            private Tuple<AExpressionDefinition, AExpressionDefinition> _operands;
 
             /// <summary>
-            /// Tuple of operands (in most cases atom or tuple values)
+            /// Tuple of operands (in most cases ValueDefinition or tupleDefinition)
             /// </summary>
-            public Tuple<Object, Object> Operands
+            public Tuple<AExpressionDefinition, AExpressionDefinition> Operands
             {
                 get { return _operands; }
             }
@@ -1876,12 +1769,12 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
             #region Extraordinaries
 
-            private Tuple<Object, Object> _extraordinaries;
+            private Tuple<AExpressionDefinition, AExpressionDefinition> _extraordinaries;
 
             /// <summary>
             /// Extraordinaries are things like aggregates or functions
             /// </summary>
-            public Tuple<Object, Object> Extraordinaries
+            public Tuple<AExpressionDefinition, AExpressionDefinition> Extraordinaries
             {
                 get { return _extraordinaries; }
             }
@@ -1896,12 +1789,12 @@ namespace sones.GraphDB.QueryLanguage.Operators
             /// <param name="IdNodes">The IDNodes of the DataContainer.</param>
             /// <param name="Operands">The Operands of the DataContainer.</param>
             /// <param name="Extraordinaries">The Extraordinaries of the DataContainer.</param>
-            public DataContainer(Tuple<IDNode, IDNode> IdNodes, Tuple<Object, Object> Operands, Tuple<Object, Object> Extraordinaries)
+            public DataContainer(Tuple<IDChainDefinition, IDChainDefinition> myIDChainDefinition, Tuple<AExpressionDefinition, AExpressionDefinition> Operands, Tuple<AExpressionDefinition, AExpressionDefinition> Extraordinaries)
             {
-                _idNodes = IdNodes;
                 _operands = Operands;
                 _extraordinaries = Extraordinaries;
-            }
+                _IDChainDefinitions = myIDChainDefinition;
+           }
 
             #endregion
         }

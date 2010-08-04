@@ -30,26 +30,27 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
+using sones.GraphFS;
+using sones.GraphFS.Events;
+using sones.GraphFS.Caches;
+using sones.GraphFS.DataStructures;
+using sones.GraphFS.Errors;
+using sones.GraphFS.Events;
+using sones.GraphFS.Exceptions;
+using sones.GraphFS.InternalObjects;
+using sones.GraphFS.Notification;
+using sones.GraphFS.Objects;
+using sones.GraphFS.Transactions;
+
 using sones.Lib;
+using sones.Lib.Session;
+using sones.Lib.ErrorHandling;
+using sones.Lib.DataStructures;
+using sones.Lib.DataStructures.Indices;
 
 using sones.Notifications;
-using sones.Lib.DataStructures;
-
-using sones.GraphFS.Caches;
-using sones.GraphFS.Notification;
 
 using sones.StorageEngines;
-using sones.GraphFS.DataStructures;
-using sones.GraphFS.Objects;
-using sones.GraphFS.Exceptions;
-using sones.Lib.ErrorHandling;
-using sones.GraphFS.Errors;
-using sones.GraphFS.InternalObjects;
-using sones.GraphFS;
-using sones.GraphFS.Session;
-using sones.Lib.Session;
-using sones.GraphFS.Transactions;
-using sones.Lib.DataStructures.Indices;
 
 #endregion
 
@@ -57,8 +58,8 @@ namespace sones
 {
 
     /// <summary>
-    /// AGraphFS - Version 1.0
-    /// AGraphFS is an abstract implementation of the IGraphFS interface
+    /// This is an abstract implementation of the IGraphFS interface and
+    /// many other file system will extend this implementation.
     /// </summary>
 
     public abstract class AGraphFS : IGraphFS
@@ -67,48 +68,228 @@ namespace sones
 
         #region Data
 
-        protected ForestUUID              _ForestUUID;
-
-        protected String                  _FileSystemDescription;
-        protected AccessModeTypes         _AccessMode;
-
-        //protected NotificationDispatcher  _NotificationDispatcher;
-
-        protected String                  _ChangedRootDirectoryPrefix;
-
-        protected Regex                   _MoreThanOnePathSeperatorRegExpr = new Regex("\\" + FSPathConstants.PathDelimiter + "\\" + FSPathConstants.PathDelimiter);
-
-        protected GraphFSLookuptable      _GraphFSLookuptable;
-
-        protected const UInt64            NUMBER_OF_DEFAULT_DIRECTORYENTRIES = 6;
+        protected           ForestUUID              _ForestUUID;
+        protected           String                  _ChangedRootDirectoryPrefix;
+        protected readonly  Regex                   _MoreThanOnePathSeperatorRegExpr;
+        protected readonly  GraphFSLookuptable      _GraphFSLookuptable;
+        protected const     UInt64                  NUMBER_OF_DEFAULT_DIRECTORYENTRIES = 6;
 
         #endregion
 
         #region Properties
 
+        #region FileSystemDescription
+
+        public String FileSystemDescription { get; set; }
+
+        #endregion
+
+        #region NotificationSettings
+
+        public NotificationSettings NotificationSettings { get; set; }
+
+        #endregion
+
+        #region NotificationDispatcher
+
+        public NotificationDispatcher NotificationDispatcher { get; set; }
+
+        #endregion
+
+        #region ObjectCacheSettings
+
+        public ObjectCacheSettings ObjectCacheSettings { get; set; }
+
+        #endregion
+
+        #endregion
+
+        #region Events
+
+        #region OnExceptionOccurred(myEventArgs)
+
+        public event ExceptionOccuredEvent OnExceptionOccurred;
+
+        protected void OnExceptionOccured(Object mySender, ExceptionOccuredEventArgs myEventArgs)
+        {
+            Debug.WriteLine("[!CRITICAL Exception][" + mySender.GetType().FullName + "] " + myEventArgs.Exception.Message + Environment.NewLine + myEventArgs.Exception.StackTrace);
+            // if (OnExceptionOccurred != null)
+            OnExceptionOccurred(mySender, myEventArgs);
+        }
+
+        #endregion
+
+
+        #region OnLoad/OnLoadEvent(myEventArgs)
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject is
+        /// ready to be loaded.
+        /// </summary>
+        public event FSEventHandlers.OnLoadEventHandler OnLoad;
+
+        /// <summary>
+        /// Invoke the OnLoad event, called whenever a AFSObject
+        /// is ready to be loaded.
+        /// </summary>
+        /// <param name="e">EventArgs</param>
+        public virtual void OnLoadEvent(EventArgs myEventArgs)
+        {
+            if (OnLoad != null)
+                OnLoad(this, myEventArgs);
+        }
+
+        #endregion
+
+        #region OnLoaded/OnLoadedEvent(myEventArgs)
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject
+        /// was successfully loaded.
+        /// </summary>
+        public event FSEventHandlers.OnLoadedEventHandler OnLoaded;
+
+        /// <summary>
+        /// Invoke the OnLoaded event, called whenever a AFSObject
+        /// was successfully loaded.
+        /// </summary>
+        /// <param name="e">EventArgs</param>
+        public virtual void OnLoadedEvent(EventArgs myEventArgs)
+        {
+            if (OnLoaded != null)
+                OnLoaded(this, myEventArgs);
+        }
+
+        #endregion
+
+        #region OnSave/OnSaveEvent(myEventArgs)
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject
+        /// is ready to be saved.
+        /// </summary>
+        public event FSEventHandlers.OnSaveEventHandler OnSave;
+
+        /// <summary>
+        /// Invoke the OnSave event, called whenever a AFSObject
+        /// is ready to be saved.
+        /// </summary>
+        /// <param name="e">EventArgs</param>
+        public virtual void OnSaveEvent(EventArgs myEventArgs)
+        {
+            if (OnSave != null)
+                OnSave(this, myEventArgs);
+        }
+
+        #endregion
+
+        #region OnSaved/OnSavedEvent(myEventArgs)
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject
+        /// was successfully saved on disc.
+        /// </summary>
+        public event FSEventHandlers.OnSavedEventHandler OnSaved;
+
+        /// <summary>
+        /// Invoke the OnSaved event, called whenever a AFSObject
+        /// was successfully saved on disc.
+        /// </summary>
+        /// <param name="e">EventArgs</param>
+        public virtual void OnSavedEvent(EventArgs myEventArgs)
+        {
+            if (OnSaved != null)
+                OnSaved(this, myEventArgs);
+        }
+
+        #endregion
+
+        #region OnRemove/OnRemoveEvent(myEventArgs)
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject
+        /// is ready to be removed.
+        /// </summary>
+        public event FSEventHandlers.OnRemoveEventHandler OnRemove;
+
+        /// <summary>
+        /// Invoke the OnSave event, called whenever a AFSObject
+        /// is ready to be removed.
+        /// </summary>
+        /// <param name="e">EventArgs</param>
+        public virtual void OnRemoveEvent(EventArgs myEventArgs)
+        {
+            if (OnRemove != null)
+                OnRemove(this, myEventArgs);
+        }
+
+        #endregion
+
+        #region OnRemoved/OnRemovedEvent(myEventArgs)
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject
+        /// was successfully removed.
+        /// </summary>
+        public event FSEventHandlers.OnRemovedEventHandler OnRemoved;
+
+        /// <summary>
+        /// Invoke the OnRemoved event, called whenever a AFSObject
+        /// was successfully removed.
+        /// </summary>
+        /// <param name="e">EventArgs</param>
+        public virtual void OnRemovedEvent(EventArgs myEventArgs)
+        {
+            if (OnRemoved != null)
+                OnRemoved(this, myEventArgs);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Constructor(s)
+
+        #region AGraphFS()
+
+        public AGraphFS()
+        {
+            _ForestUUID                         = ForestUUID.NewUUID;
+            FileSystemUUID                      = FileSystemUUID.NewUUID;
+            FileSystemDescription               = "";
+            AccessMode                          = AccessModeTypes.rw;
+            ParentFileSystem                    = null;
+            _GraphFSLookuptable                 = new GraphFSLookuptable();
+            NotificationSettings                = new NotificationSettings();
+            _MoreThanOnePathSeperatorRegExpr    = new Regex("\\" + FSPathConstants.PathDelimiter + "\\" + FSPathConstants.PathDelimiter);
+        }
+
+        #endregion
+
+        #endregion
+
+
+        #region Information Methods
+
         #region FileSystemUUID
 
-        protected FileSystemUUID _FileSystemUUID;
+        public FileSystemUUID FileSystemUUID { get; protected set; }
 
-        public FileSystemUUID FileSystemUUID
-        {
+        #endregion
 
-            get
-            {
-                return _FileSystemUUID;
-            }
+        #region AccessMode
 
-            set
-            {
+        public AccessModeTypes AccessMode { get; protected set; }
 
-                _FileSystemUUID = value;
+        #endregion
 
-                //if (_NotificationDispatcher != null)
-                //    _NotificationDispatcher.SenderID = _FileSystemUUID;
+        #region IsMounted
 
-            }
-
-        }
+        /// <summary>
+        /// Returns true if the file system was mounted correctly
+        /// </summary>
+        /// <returns>true if the file system was mounted correctly</returns>
+        public abstract Boolean IsMounted { get; }
 
         #endregion
 
@@ -118,102 +299,25 @@ namespace sones
 
         #endregion
 
-        #region NotificationSettings
 
-        protected NotificationSettings _NotificationSettings;
+        #region TraverseChildFSs(myFunc, myDepth, mySessionToken)
 
-        public NotificationSettings NotificationSettings
+        public IEnumerable<Object> TraverseChildFSs(Func<IGraphFS, UInt64, IEnumerable<Object>> myFunc, UInt64 myDepth, SessionToken mySessionToken)
         {
 
-            get
-            {
-                return _NotificationSettings;
-            }
+            var _List = new List<Object>();
 
-            set
-            {
-                _NotificationSettings = value;
-            }
+            foreach (var _ChildFS in _GraphFSLookuptable.ChildFSs)
+                _List.AddRange(myFunc(_ChildFS, myDepth - 1));
+
+            return _List;
 
         }
 
         #endregion
 
-        #region NotificationDispatcher
 
-        protected NotificationDispatcher _NotificationDispatcher;
-
-        public NotificationDispatcher NotificationDispatcher
-        {
-
-            get
-            {
-                return _NotificationDispatcher;
-            }
-
-            set
-            {
-                _NotificationDispatcher = value;
-            }
-
-        }
-
-        #endregion
-
-        #region ObjectCacheSettings
-
-        protected ObjectCacheSettings _ObjectCacheSettings;
-
-        public ObjectCacheSettings ObjectCacheSettings
-        {
-
-            get
-            {
-                return _ObjectCacheSettings;
-            }
-
-            set
-            {
-                _ObjectCacheSettings = value;
-            }
-
-        }
-
-        #endregion
-
-        #endregion
-
-        #region Constructor
-
-        #region AGraphFS()
-
-        public AGraphFS()
-        {
-            _ForestUUID             = ForestUUID.NewUUID;
-            _FileSystemUUID         = FileSystemUUID.NewUUID;
-            _AccessMode             = AccessModeTypes.rw;
-            _GraphFSLookuptable            = new GraphFSLookuptable();
-            _NotificationSettings   = new NotificationSettings();
-        }
-
-        #endregion
-
-        #endregion
-
-        #region Information Methods
-
-        #region isMounted
-
-        /// <summary>
-        /// Returns true if the file system was mounted correctly
-        /// </summary>
-        /// <returns>true if the file system was mounted correctly</returns>
-        public abstract Boolean isMounted { get; }
-
-        #endregion
-
-
-        #region GetFileSystemUUID()
+        #region GetFileSystemUUID(mySessionToken)
 
         /// <summary>
         /// Returns the UUID of this file system
@@ -222,16 +326,17 @@ namespace sones
         public FileSystemUUID GetFileSystemUUID(SessionToken mySessionToken)
         {
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            // Will cause exceptions!
+            //if (!IsMounted)
+            //    throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
-            return _FileSystemUUID;
+            return FileSystemUUID;
 
         }
 
         #endregion
 
-        #region GetFileSystemUUID(myObjectLocation)
+        #region GetFileSystemUUID(myObjectLocation, mySessionToken)
 
         /// <summary>
         /// Returns the UUID of the file system at the given ObjectLocation
@@ -241,8 +346,8 @@ namespace sones
         public FileSystemUUID GetFileSystemUUID(ObjectLocation myObjectLocation, SessionToken mySessionToken)
         {
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
             return GetChildFileSystem(myObjectLocation, true, mySessionToken).GetFileSystemUUID(mySessionToken);
 
@@ -250,46 +355,30 @@ namespace sones
 
         #endregion
 
-        #region GetFileSystemUUIDs(myRecursiveOperation)
+        #region GetFileSystemUUIDs(myDepth, mySessionToken)
 
         /// <summary>
-        /// Returns a (recursive) list of FileSystemUUIDs of all mounted file systems
+        /// Returns a recursive list of FileSystemUUIDs of all mounted file systems
         /// </summary>
-        /// <param name="myRecursiveOperation">Recursive operation?</param>
+        /// <param name="myDepth">Depth</param>
         /// <returns>A (recursive) list of FileSystemUUIDs of all mounted file systems</returns>
-        public IEnumerable<FileSystemUUID> GetFileSystemUUIDs(Boolean myRecursiveOperation, SessionToken mySessionToken)
+        public IEnumerable<FileSystemUUID> GetFileSystemUUIDs(UInt64 myDepth, SessionToken mySessionToken)
         {
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            var _List = new List<FileSystemUUID>() { GetFileSystemUUID(mySessionToken) };
 
-            var _ListOfFileSystemUUIDs = new List<FileSystemUUID>();
+            if (myDepth > 0)
+                foreach (var _Items in TraverseChildFSs((ChildFS, Depth) => ChildFS.GetFileSystemUUIDs(Depth, mySessionToken), myDepth, mySessionToken))
+                    _List.Add(_Items as FileSystemUUID);
 
-            if (myRecursiveOperation)
-                foreach (var _IPandoraFS in _GraphFSLookuptable.ChildFSs)
-                {
-
-                    if (_IPandoraFS == this)
-                        _ListOfFileSystemUUIDs.Add(GetFileSystemUUID(mySessionToken));
-
-                    else
-                        foreach (var lala in _IPandoraFS.GetFileSystemUUIDs(myRecursiveOperation, mySessionToken))
-                            _ListOfFileSystemUUIDs.Add(lala);
-
-                }
-
-            else
-                foreach (var _IPandoraFS in _GraphFSLookuptable.ChildFSs)
-                    _ListOfFileSystemUUIDs.Add(_IPandoraFS.GetFileSystemUUID(mySessionToken));
-
-            return _ListOfFileSystemUUIDs;
+            return _List;
 
         }
 
         #endregion
 
 
-        #region GetFileSystemDescription
+        #region GetFileSystemDescription(mySessionToken)
 
         /// <summary>
         /// Returns the Name or a description of this file system.
@@ -298,16 +387,16 @@ namespace sones
         public String GetFileSystemDescription(SessionToken mySessionToken)
         {
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
-            return _FileSystemDescription;
+            return FileSystemDescription;
 
         }
 
         #endregion
 
-        #region GetFileSystemDescription(myObjectLocation, SessionToken mySessionToken)
+        #region GetFileSystemDescription(myObjectLocation, mySessionToken)
 
         /// <summary>
         /// Returns the Name or a description of the file system at the given ObjectLocation
@@ -317,8 +406,8 @@ namespace sones
         public String GetFileSystemDescription(ObjectLocation myObjectLocation, SessionToken mySessionToken)
         {
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
             return GetChildFileSystem(myObjectLocation, true, mySessionToken).GetFileSystemDescription(mySessionToken);
 
@@ -326,46 +415,30 @@ namespace sones
 
         #endregion
 
-        #region GetFileSystemDescriptions(myRecursiveOperation, SessionToken mySessionToken)
+        #region GetFileSystemDescriptions(myDepth, mySessionToken)
 
         /// <summary>
-        /// Returns a (recursive) list of FileSystemDescriptions of all mounted file systems
+        /// Returns a recursive list of FileSystemDescriptions of all mounted file systems
         /// </summary>
-        /// <param name="myRecursiveOperation">Recursive operation?</param>
+        /// <param name="myDepth">Depth</param>
         /// <returns>A (recursive) list of FileSystemDescriptions of all mounted file systems</returns>
-        public IEnumerable<String> GetFileSystemDescriptions(Boolean myRecursiveOperation, SessionToken mySessionToken)
+        public IEnumerable<String> GetFileSystemDescriptions(UInt64 myDepth, SessionToken mySessionToken)
         {
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            var _List = new List<String>() { GetFileSystemDescription(mySessionToken) };
 
-            var _ListOfFileSystemDescriptions = new List<String>();
+            if (myDepth > 0)
+                foreach (var _Items in TraverseChildFSs((ChildFS, Depth) => ChildFS.GetFileSystemDescriptions(Depth, mySessionToken), myDepth, mySessionToken))
+                    _List.Add(_Items as String);
 
-            if (myRecursiveOperation)
-                foreach (var _IPandoraFS in _GraphFSLookuptable.ChildFSs)
-                {
-
-                    if (_IPandoraFS == this)
-                        _ListOfFileSystemDescriptions.Add(GetFileSystemDescription(mySessionToken));
-
-                    else
-                        foreach (var _ListOfRecursiveFileSystemDescriptions in _IPandoraFS.GetFileSystemDescriptions(myRecursiveOperation, mySessionToken))
-                            _ListOfFileSystemDescriptions.Add(_ListOfRecursiveFileSystemDescriptions);
-
-                }
-
-            else
-                foreach (var _IPandoraFS in _GraphFSLookuptable.ChildFSs)
-                    _ListOfFileSystemDescriptions.Add(_IPandoraFS.GetFileSystemDescription(mySessionToken));
-
-            return _ListOfFileSystemDescriptions;
+            return _List;
 
         }
 
         #endregion
 
 
-        #region SetFileSystemDescription(myFileSystemDescription)
+        #region SetFileSystemDescription(myFileSystemDescription, mySessionToken)
 
         /// <summary>
         /// Sets the Name or a description of this file system.
@@ -374,16 +447,16 @@ namespace sones
         public void SetFileSystemDescription(String myFileSystemDescription, SessionToken mySessionToken)
         {
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
-            _FileSystemDescription = myFileSystemDescription;
+            FileSystemDescription = myFileSystemDescription;
 
         }
 
         #endregion
 
-        #region SetFileSystemDescription(myObjectLocation, myFileSystemDescription, SessionToken mySessionToken)
+        #region SetFileSystemDescription(myObjectLocation, myFileSystemDescription, mySessionToken)
 
         /// <summary>
         /// Sets the Name or a description of the file system at the given ObjectLocation
@@ -398,19 +471,19 @@ namespace sones
         #endregion
 
 
-        #region GetNumberOfBytes(SessionToken mySessionToken)
+        #region GetNumberOfBytes(mySessionToken)
 
         public abstract UInt64 GetNumberOfBytes(SessionToken mySessionToken);
 
         #endregion
 
-        #region GetNumberOfBytes(myObjectLocation, SessionToken mySessionToken)
+        #region GetNumberOfBytes(myObjectLocation, mySessionToken)
 
         public UInt64 GetNumberOfBytes(ObjectLocation myObjectLocation, SessionToken mySessionToken)
         {
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
             return GetChildFileSystem(myObjectLocation, true, mySessionToken).GetNumberOfBytes(mySessionToken);
 
@@ -418,13 +491,13 @@ namespace sones
 
         #endregion
 
-        #region GetNumberOfBytes(myRecursiveOperation, SessionToken mySessionToken)
+        #region GetNumberOfBytes(myRecursiveOperation, mySessionToken)
 
         public IEnumerable<UInt64> GetNumberOfBytes(Boolean myRecursiveOperation, SessionToken mySessionToken)
         {
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
             var _ListOfNumberOfBytes = new List<UInt64>();
 
@@ -452,19 +525,19 @@ namespace sones
         #endregion
 
 
-        #region GetNumberOfFreeBytes(SessionToken mySessionToken)
+        #region GetNumberOfFreeBytes(mySessionToken)
 
         public abstract UInt64 GetNumberOfFreeBytes(SessionToken mySessionToken);
 
         #endregion
 
-        #region GetNumberOfFreeBytes(myObjectLocation, SessionToken mySessionToken)
+        #region GetNumberOfFreeBytes(myObjectLocation, mySessionToken)
 
         public UInt64 GetNumberOfFreeBytes(ObjectLocation myObjectLocation, SessionToken mySessionToken)
         {
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
             return GetChildFileSystem(myObjectLocation, true, mySessionToken).GetNumberOfFreeBytes(mySessionToken);
 
@@ -472,13 +545,13 @@ namespace sones
 
         #endregion
 
-        #region GetNumberOfFreeBytes(myRecursiveOperation, SessionToken mySessionToken)
+        #region GetNumberOfFreeBytes(myRecursiveOperation, mySessionToken)
 
         public IEnumerable<UInt64> GetNumberOfFreeBytes(Boolean myRecursiveOperation, SessionToken mySessionToken)
         {
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
             var _ListOfNumberOfFreeBytes = new List<UInt64>();
 
@@ -506,27 +579,27 @@ namespace sones
         #endregion
 
 
-        #region GetAccessMode(SessionToken mySessionToken)
+        #region GetAccessMode(mySessionToken)
 
         public AccessModeTypes GetAccessMode(SessionToken mySessionToken)
         {
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
-            return _AccessMode;
+            return AccessMode;
 
         }
 
         #endregion
 
-        #region GetAccessMode(myObjectLocation)
+        #region GetAccessMode(myObjectLocation, mySessionToken)
 
         public AccessModeTypes GetAccessMode(ObjectLocation myObjectLocation, SessionToken mySessionToken)
         {
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
             return GetChildFileSystem(myObjectLocation, true, mySessionToken).GetAccessMode(mySessionToken);
 
@@ -534,13 +607,13 @@ namespace sones
 
         #endregion
 
-        #region GetAccessModes(myRecursiveOperation, SessionToken mySessionToken)
+        #region GetAccessModes(myRecursiveOperation, mySessionToken)
 
         public IEnumerable<AccessModeTypes> GetAccessModes(Boolean myRecursiveOperation, SessionToken mySessionToken)
         {
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
             var _ListOfAccessModes = new List<AccessModeTypes>();
 
@@ -571,22 +644,7 @@ namespace sones
 
         #region ParentFileSystem
 
-        protected IGraphFS _ParentFileSystem;
-
-        public IGraphFS ParentFileSystem
-        {
-
-            get
-            {
-                return _ParentFileSystem;
-            }
-
-            set
-            {
-                _ParentFileSystem = value;
-            }
-
-        }
+        public IGraphFS ParentFileSystem { get; set; }
 
         #endregion
 
@@ -595,8 +653,8 @@ namespace sones
         public IGraphFS GetChildFileSystem(ObjectLocation myObjectLocation, Boolean myRecursive, SessionToken mySessionToken)
         {
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
             var _PathLength = Int32.MinValue;
             IGraphFS _ChildIPandoraFS = this;
@@ -733,22 +791,85 @@ namespace sones
         /// <param name="myStorageLocation">A StorageLocation (device or filename) the file system can be read from</param>
         /// <param name="myMountPoint">The location the file system should be mounted at</param>
         /// <param name="myFSAccessMode">The access mode of the file system to mount</param>
-        public Exceptional MountFileSystem(String myStorageLocation, ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode, SessionToken mySessionToken)
+        public Exceptional MountFileSystem(IGraphFS myIGraphFS, ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode, SessionToken mySessionToken)
         {
-
-            throw new NotImplementedException("Please do not use this method at the moment!");
 
             #region Pre-Mounting checks
 
             // Check if the root filesystem is mounted
-            if (!isMounted)
+            if (!IsMounted)
             {
+
+                //if (myMountPoint.Equals(FSPathConstants.PathDelimiter))
+                //    return MountFileSystem(myStorageLocation, myFSAccessMode, mySessionToken);
+
+                throw new PandoraFSException_MountFileSystemFailed("Please mount a (root) file system first!");
+
+            }
+
+            // Remove an ending FSPathConstants.PathDelimiter: "/Volumes/test/" -> "/Volumes/test"
+            if ((myMountPoint.Length > FSPathConstants.PathDelimiter.Length) && (myMountPoint.EndsWith(FSPathConstants.PathDelimiter)))
+                myMountPoint = new ObjectLocation(myMountPoint.Substring(0, myMountPoint.Length - FSPathConstants.PathDelimiter.Length));
+
+            #endregion
+
+
+            var _ChildIPandoraFS = GetChildFileSystem(myMountPoint, false, mySessionToken);
+
+            if (_ChildIPandoraFS == this)
+            {
+
+                // Check if the _exact_ _MountPoint is already used by another filesystem
+                foreach (var _Mountpoint in _GraphFSLookuptable.Mountpoints)
+                    if (myMountPoint.Equals(_Mountpoint))
+                        throw new PandoraFSException_MountFileSystemFailed("This mountpoint is already in use!");
+
+                // Check if the directory mentioned in the _MountPoint is existend
+
+
+                //// Register this file system as parent file system
+                myIGraphFS.ParentFileSystem = this;
+
+                //// Register the mountedFS object in the list of ChildFileSystems
+                _GraphFSLookuptable.Set(myMountPoint, myIGraphFS);
+
+
+            }
+
+            else
+                _ChildIPandoraFS.MountFileSystem(myIGraphFS, GetObjectLocationOnChildFileSystem(myMountPoint, mySessionToken), myFSAccessMode, mySessionToken);
+
+            return new Exceptional();
+
+        }
+
+        #endregion
+
+        #region MountFileSystem(myStorageLocation, myMountPoint, myFSAccessMode, SessionToken mySessionToken)
+
+        /// <summary>
+        /// This method will mount the file system from a StorageLocation serving
+        /// the file system into the given ObjectLocation using the given file system
+        /// access mode. If the mountpoint is located within another file system this
+        /// file system will be called to process this request in a recursive way.
+        /// </summary>
+        /// <param name="myStorageLocation">A StorageLocation (device or filename) the file system can be read from</param>
+        /// <param name="myMountPoint">The location the file system should be mounted at</param>
+        /// <param name="myFSAccessMode">The access mode of the file system to mount</param>
+        public Exceptional MountFileSystem(String myStorageLocation, ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode, SessionToken mySessionToken)
+        {
+
+            #region Pre-Mounting checks
+
+            // Check if the root filesystem is mounted
+            if (!IsMounted)
+            {
+
                 if (myMountPoint.Equals(FSPathConstants.PathDelimiter))
-                {
                     return MountFileSystem(myStorageLocation, myFSAccessMode, mySessionToken);
-                }
-                else
-                    throw new PandoraFSException_MountFileSystemFailed("Please mount a (root) file system first!");
+
+                throw new PandoraFSException_MountFileSystemFailed("Please mount a (root) file system first!");
+
             }
 
             // Remove an ending FSPathConstants.PathDelimiter: "/Volumes/test/" -> "/Volumes/test"
@@ -762,11 +883,11 @@ namespace sones
             if (_ChildIPandoraFS == this)
             {
 
-                if (myMountPoint.Equals(FSPathConstants.PathDelimiter))
-                    MountFileSystem(myStorageLocation, myFSAccessMode, mySessionToken);
+                //if (myMountPoint.Equals(FSPathConstants.PathDelimiter))
+                //    MountFileSystem(myStorageLocation, myFSAccessMode, mySessionToken);
 
-                else
-                {
+                //else
+                //{
 
                     #region Checks against other mounted filesystems
 
@@ -803,7 +924,7 @@ namespace sones
 
                     ////ParentMountedFS = FindMountedFileSystemByPath(myMountPoint);
 
-                    //// Register thsi file system as parent file system
+                    //// Register this file system as parent file system
                     //newFSObject.ParentFileSystem = this;
 
                     //// Register the mountedFS object in the list of ChildFileSystems
@@ -811,7 +932,7 @@ namespace sones
 
                     #endregion
 
-                }
+                //}
 
             }
 
@@ -824,7 +945,14 @@ namespace sones
 
         #endregion
 
-        public abstract Exceptional RemountFileSystem(AccessModeTypes myFSAccessMode, SessionToken mySessionToken);
+        #region RemountFileSystem(myFSAccessMode, mySessionToken)
+
+        public Exceptional RemountFileSystem(AccessModeTypes myFSAccessMode, SessionToken mySessionToken)
+        {
+            return RemountFileSystem(ObjectLocation.Root, myFSAccessMode, mySessionToken);
+        }
+
+        #endregion
 
         #region RemountFileSystem(myMountPoint, myFSAccessMode, mySessionToken)
 
@@ -835,7 +963,30 @@ namespace sones
 
         #endregion
 
-        public abstract Exceptional UnmountFileSystem(SessionToken mySessionToken);
+        #region UnmountFileSystem(mySessionToken)
+
+        public virtual Exceptional UnmountFileSystem(SessionToken mySessionToken)
+        {
+
+            if (!IsMounted)
+                throw new GraphFSException("Please mount a file system first!");
+
+            // There is at least one (this file system itself) file system!
+            if (_GraphFSLookuptable.ChildFSs.LongCount() > 1)
+                throw new PandoraFSException_UnmountFileSystemFailed("There are still mounted child file systems!");
+
+            // Reset all global variables
+            _GraphFSLookuptable.Clear();
+            ParentFileSystem        = null;
+            FileSystemUUID          = new FileSystemUUID(0);
+            FileSystemDescription   = null;
+            //_NotificationDispatcher.Dispose();
+
+            return Exceptional.OK;
+
+        }
+
+        #endregion
 
         #region UnmountFileSystem(myMountPoint, mySessionToken)
 
@@ -849,6 +1000,11 @@ namespace sones
 
         #region UnmountAllFileSystems(mySessionToken)
 
+        /// <summary>
+        /// Will recursively unmount all file systems
+        /// </summary>
+        /// <param name="mySessionToken"></param>
+        /// <returns></returns>
         public Exceptional UnmountAllFileSystems(SessionToken mySessionToken)
         {
 
@@ -878,20 +1034,33 @@ namespace sones
 
         #endregion
 
-        public abstract Exceptional ChangeRootDirectory(String myChangeRootPrefix, SessionToken mySessionToken);
+        #region ChangeRootDirectory(myChangeRootPrefix, mySessionToken)
+
+        /// <summary>
+        /// Restricts the access to this file system to the given "/ChangeRootPrefix".
+        /// This might be of interesst for security and safety purposes.
+        /// </summary>
+        /// <param name="myChangeRootPrefix">the location of this object (ObjectPath and ObjectName) of the new file system root</param>
+        /// <param name="mySessionToken"></param>
+        public Exceptional ChangeRootDirectory(String myChangeRootPrefix, SessionToken mySessionToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
 
         #endregion
 
         
         #region INode and ObjectLocator methods
 
-        #region (protected) GetINode_protected(myObjectLocation, mySessionToken)
+        #region (protected) GetINode_protected(myObjectLocation)
 
-        protected Exceptional<INode> GetINode_protected(ObjectLocation myObjectLocation, SessionToken mySessionToken)
+        protected Exceptional<INode> GetINode_protected(ObjectLocation myObjectLocation)
         {
 
             var _Exceptional = new Exceptional<INode>();
-            var _ObjectLocatorExceptional = GetObjectLocator(myObjectLocation, mySessionToken);
+            var _ObjectLocatorExceptional = GetObjectLocator_protected(myObjectLocation);
 
             if (_ObjectLocatorExceptional.Success && _ObjectLocatorExceptional.Value != null && _ObjectLocatorExceptional.Value.INodeReference != null)
                 _Exceptional.Value = _ObjectLocatorExceptional.Value.INodeReference;
@@ -909,14 +1078,14 @@ namespace sones
 
         public Exceptional<INode> GetINode(ObjectLocation myObjectLocation, SessionToken mySessionToken)
         {
-            return GetINode_protected(myObjectLocation, mySessionToken);
+            return GetINode_protected(myObjectLocation);
         }
 
         #endregion
 
-        #region (private) GetObjectLocator_private(myObjectLocation, mySessionToken)
+        #region (private) GetObjectLocator_protected(myObjectLocation)
 
-        protected abstract Exceptional<ObjectLocator> GetObjectLocator_protected(ObjectLocation myObjectLocation, SessionToken mySessionToken);
+        protected abstract Exceptional<ObjectLocator> GetObjectLocator_protected(ObjectLocation myObjectLocation);
 
         #endregion
 
@@ -925,7 +1094,7 @@ namespace sones
         public Exceptional<ObjectLocator> GetObjectLocator(ObjectLocation myObjectLocation, SessionToken mySessionToken)
         {
 
-            return GetObjectLocator_protected(myObjectLocation, mySessionToken);
+            return GetObjectLocator_protected(myObjectLocation);
 
             //var _Exceptional = new Exceptional<ObjectLocator>();
 
@@ -942,7 +1111,13 @@ namespace sones
 
         #endregion
 
-        #region Cache handling
+        #region (protected) ObjectCache handling
+
+        public abstract ObjectCacheSettings GetObjectCacheSettings(SessionToken mySessionToken);
+        public abstract ObjectCacheSettings GetObjectCacheSettings(ObjectLocation myObjectLocation, SessionToken mySessionToken);
+
+        public abstract void SetObjectCacheSettings(ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken);
+        public abstract void SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken);
 
         protected abstract void CacheAdd(ObjectLocation myObjectLocation, ObjectLocator myObjectLocator, Boolean myIsPinned);
         protected abstract void CacheAdd(CacheUUID myCacheUUID, AFSObject myAPandoraObject, Boolean myIsPinned);
@@ -953,34 +1128,103 @@ namespace sones
 
         #endregion
 
-        #region FSObject specific methods
+
+
+        #region AFSObject specific methods
+
+        protected abstract Exceptional StoreAFSObject_protected(ObjectLocation myObjectLocation, AFSObject myAPandoraObject, Boolean myAllowOverwritting, SessionToken mySessionToken);
+        protected abstract Exceptional<AFSObject> LoadAFSObject_protected (ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, AFSObject myAFSObject);
+
+
+        #region LockObject_protected(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectLock, myObjectLockType, myLockingTime)
+
+        protected Boolean LockObject_protected(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime)
+        {
+
+            Debug.Assert(myObjectLocation   != null);
+            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
+            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
+            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
+
+            return false;
+
+        }
+
+        #endregion
 
         #region LockObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectLock, myObjectLockType, myLockingTime, mySessionToken)
 
         public Boolean LockObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime, SessionToken mySessionToken)
         {
-            return false;
+
+            Debug.Assert(myObjectLocation   != null);
+            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
+            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
+            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
+
+            return LockObject_protected(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectLock, myObjectLockType, myLockingTime);
+
         }
 
         #endregion
 
 
-        public Exceptional<PT> GetOrCreateObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new()
+
+        #region GetOrCreateFSObject_protected<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures)
+
+        protected Exceptional<PT> GetOrCreateFSObject_protected<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures) where PT : AFSObject, new()
         {
-            return GetOrCreateObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, new Func<PT>(delegate { return new PT(); }), mySessionToken);
+
+            Debug.Assert(myObjectLocation   != null);
+            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
+            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
+            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
+
+            return GetOrCreateFSObject_protected<PT>(myObjectLocation,
+                                           myObjectStream,
+                                           myObjectEdition,
+                                           myObjectRevisionID,
+                                           myObjectCopy,
+                                           myIgnoreIntegrityCheckFailures,
+                                           new Func<PT>(delegate { return new PT(); }));
+
         }
 
-        #region GetOrCreateObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myIgnoreIntegrityCheckFailures, mySessionToken)
+        #endregion
 
-        public Exceptional<PT> GetOrCreateObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken) where PT : AFSObject
+        #region GetOrCreateFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, mySessionToken)
+
+        public Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new()
         {
+
+            Debug.Assert(myObjectLocation   != null);
+            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
+            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
+            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
+
+            return GetOrCreateFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, new Func<PT>(delegate { return new PT(); }), mySessionToken);
+
+        }
+
+        #endregion
+
+        #region GetOrCreateObject_protected<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myIgnoreIntegrityCheckFailures)
+
+        protected Exceptional<PT> GetOrCreateFSObject_protected<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc) where PT : AFSObject
+        {
+
+            Debug.Assert(myObjectLocation   != null);
+            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
+            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
+            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
+            Debug.Assert(myFunc             != null);
 
             lock (this)
             {
 
                 #region Get an existing Object...
 
-                var _Exceptional = GetObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc, mySessionToken);
+                var _Exceptional = GetFSObject_protected<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc);
 
                 #endregion
 
@@ -1025,21 +1269,74 @@ namespace sones
 
         #endregion
 
+        #region GetOrCreateObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myIgnoreIntegrityCheckFailures, mySessionToken)
 
-        //protected abstract Exceptional<PT> LoadObject_protected<PT>(ObjectLocator myObjectLocator, ObjectRevision myObjectRevision, Boolean myIgnoreIntegrityCheckFailures) where PT : AFSObject, new();
-        protected abstract Exceptional<AFSObject> LoadAFSObject_protected(ObjectLocator myObjectLocator, ObjectRevision myObjectRevision, Boolean myIgnoreIntegrityCheckFailures, AFSObject myAFSObject);
-
-
-        public Exceptional<PT> GetObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new()
+        public Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken) where PT : AFSObject
         {
-            return GetObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, new Func<PT>(delegate { return new PT(); }), mySessionToken);
+
+            Debug.Assert(myObjectLocation   != null);
+            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
+            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
+            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
+
+            //ToDo: Check mySessionToken!
+
+            return GetOrCreateFSObject_protected<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc);
+
         }
 
+        #endregion
 
-        #region GetObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, mySessionToken)
 
-        public Exceptional<PT> GetObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken) where PT : AFSObject
+
+        #region GetFSObject_protected<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures)
+
+        protected Exceptional<PT> GetFSObject_protected<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures) where PT : AFSObject, new()
         {
+
+            Debug.Assert(myObjectLocation   != null);
+            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
+            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
+            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
+
+            return GetFSObject_protected<PT>(myObjectLocation,
+                                             myObjectStream,
+                                             myObjectEdition,
+                                             myObjectRevisionID,
+                                             myObjectCopy,
+                                             myIgnoreIntegrityCheckFailures,
+                                             new Func<PT>(delegate { return new PT(); }));
+
+        }
+
+        #endregion
+
+        #region GetFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, mySessionToken)
+
+        public Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new()
+        {
+
+            Debug.Assert(myObjectLocation   != null);
+            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
+            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
+            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
+
+            return GetFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, new Func<PT>(delegate { return new PT(); }), mySessionToken);
+
+        }
+
+        #endregion
+
+        #region GetFSObject_protected<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures)
+
+        protected Exceptional<PT> GetFSObject_protected<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc) where PT : AFSObject
+        {
+
+            Debug.Assert(myObjectLocation   != null);
+            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
+            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
+            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
+            Debug.Assert(myFunc             != null);
 
             lock (this)
             {
@@ -1056,7 +1353,14 @@ namespace sones
                 }
 
                 if (myObjectStream == null)
+                {
+                    
+                    if (newT.ObjectStream == null)
+                        return new Exceptional<PT>(new GraphFSError("newT.ObjectStream == null!"));
+
                     myObjectStream = newT.ObjectStream;
+
+                }
 
                 if (myObjectEdition == null)
                     myObjectEdition = FSConstants.DefaultEdition;
@@ -1072,7 +1376,7 @@ namespace sones
                 try
                 {
 
-                    var _ObjectLocatorExceptional = GetObjectLocator_protected(myObjectLocation, mySessionToken).
+                    var _ObjectLocatorExceptional = GetObjectLocator_protected(myObjectLocation).
                         WhenFailed<ObjectLocator>(e => e.PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation)));
 
                     if (_ObjectLocatorExceptional.Failed)
@@ -1083,52 +1387,77 @@ namespace sones
 
                         #region Resolve ObjectStream, -Edition and -RevisionID
 
-                        if (_ObjectLocatorExceptional.Value.ContainsKey(myObjectStream))
+                        // Will use tryget(...) internally!
+                        _ObjectStream = _ObjectLocatorExceptional.Value[myObjectStream];
+                        if (_ObjectStream == null) return new Exceptional<PT>(new GraphFSError("ObjectStream '" + myObjectStream + "' not found!"));
+
+                        // Will use tryget(...) internally!
+                        _ObjectEdition = _ObjectStream[myObjectEdition];
+                        if (_ObjectEdition == null) return new Exceptional<PT>(new GraphFSError("ObjectEdition '" + myObjectEdition + "' not found!"));
+
+                        if (_ObjectEdition.IsDeleted)
+                            return new Exceptional<PT>(new GraphFSError_ObjectNotFound(myObjectLocation));
+
+                        // If nothing specified => Return the LatestRevision
+                        if (myObjectRevisionID == null || myObjectRevisionID.UUID == null)
                         {
-
-                            _ObjectStream = _ObjectLocatorExceptional.Value[myObjectStream];
-
-                            if (_ObjectStream != null)
-                            {
-
-                                if (_ObjectStream.ContainsKey(myObjectEdition))
-                                {
-
-                                    _ObjectEdition = _ObjectStream[myObjectEdition];
-
-                                    if (_ObjectEdition != null)
-                                    {
-
-                                        if (_ObjectEdition.IsDeleted)
-                                            return new Exceptional<PT>(new GraphFSError_ObjectNotFound(myObjectLocation));
-
-                                        // If nothing specified => Return the LatestRevision
-                                        if (myObjectRevisionID == null || myObjectRevisionID.UUID == null)
-                                        {
-                                            _ObjectRevision    = _ObjectEdition.LatestRevision;
-                                            myObjectRevisionID = _ObjectEdition.LatestRevisionID;
-                                        }
-
-                                        else
-                                        {
-                                            _ObjectRevision = _ObjectEdition[myObjectRevisionID];
-                                        }
-
-                                    }
-                                    else
-                                        return new Exceptional<PT>(new GraphFSError_NoObjectRevisionsFound(myObjectLocation, myObjectStream, myObjectEdition));
-
-                                }
-                                else
-                                    return new Exceptional<PT>(new GraphFSError_ObjectEditionNotFound(myObjectLocation, myObjectEdition, myObjectStream));
-
-                            }
-                            else
-                                return new Exceptional<PT>(new GraphFSError_NoObjectEditionsFound(myObjectLocation, myObjectStream));
-
+                            _ObjectRevision    = _ObjectEdition.LatestRevision;
+                            myObjectRevisionID = _ObjectEdition.LatestRevisionID;
                         }
+
                         else
-                            return new Exceptional<PT>(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
+                        {
+                            // Will use tryget(...) internally!
+                            _ObjectRevision = _ObjectEdition[myObjectRevisionID];
+                            if (_ObjectRevision == null) return new Exceptional<PT>(new GraphFSError("ObjectRevision '" + myObjectRevisionID + "' not found!"));
+                        }
+
+                        //if (_ObjectLocatorExceptional.Value.ContainsKey(myObjectStream))
+                        //{
+
+                        //    _ObjectStream = _ObjectLocatorExceptional.Value[myObjectStream];
+
+                        //    if (_ObjectStream != null)
+                        //    {
+
+                        //        if (_ObjectStream.ContainsKey(myObjectEdition))
+                        //        {
+
+                        //            _ObjectEdition = _ObjectStream[myObjectEdition];
+
+                        //            if (_ObjectEdition != null)
+                        //            {
+
+                        //                if (_ObjectEdition.IsDeleted)
+                        //                    return new Exceptional<PT>(new GraphFSError_ObjectNotFound(myObjectLocation));
+
+                        //                // If nothing specified => Return the LatestRevision
+                        //                if (myObjectRevisionID == null || myObjectRevisionID.UUID == null)
+                        //                {
+                        //                    _ObjectRevision    = _ObjectEdition.LatestRevision;
+                        //                    myObjectRevisionID = _ObjectEdition.LatestRevisionID;
+                        //                }
+
+                        //                else
+                        //                {
+                        //                    _ObjectRevision = _ObjectEdition[myObjectRevisionID];
+                        //                }
+
+                        //            }
+                        //            else
+                        //                return new Exceptional<PT>(new GraphFSError_NoObjectRevisionsFound(myObjectLocation, myObjectStream, myObjectEdition));
+
+                        //        }
+                        //        else
+                        //            return new Exceptional<PT>(new GraphFSError_ObjectEditionNotFound(myObjectLocation, myObjectEdition, myObjectStream));
+
+                        //    }
+                        //    else
+                        //        return new Exceptional<PT>(new GraphFSError_NoObjectEditionsFound(myObjectLocation, myObjectStream));
+
+                        //}
+                        //else
+                        //    return new Exceptional<PT>(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
 
                         #endregion
 
@@ -1169,7 +1498,7 @@ namespace sones
                                 }
 
                                 //var _LoadObjectExceptional = LoadObject_protected<PT>(_ObjectLocatorExceptional.Value, _ObjectRevision, myIgnoreIntegrityCheckFailures);
-                                var _LoadObjectExceptional = LoadAFSObject_protected(_ObjectLocatorExceptional.Value, _ObjectRevision, myIgnoreIntegrityCheckFailures, newT);
+                                var _LoadObjectExceptional = LoadAFSObject_protected(_ObjectLocatorExceptional.Value, myObjectStream, myObjectEdition, myObjectRevisionID, 0, myIgnoreIntegrityCheckFailures, newT);
 
                                 if (_LoadObjectExceptional != null && _LoadObjectExceptional.Success && _LoadObjectExceptional.Value != null)
                                 {
@@ -1219,13 +1548,36 @@ namespace sones
 
         #endregion
 
+        #region GetFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc, mySessionToken)
 
-        protected abstract Exceptional StoreAFSObject_protected(ObjectLocation myObjectLocation, AFSObject myAPandoraObject, Boolean myAllowOverwritting, SessionToken mySessionToken);
+        public Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken) where PT : AFSObject
+        {
+
+            Debug.Assert(myObjectLocation   != null);
+            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
+            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
+            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
+
+            //ToDo: Check mySessionToken!
+
+            return GetFSObject_protected<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc);
+
+        }
+
+        #endregion
+
+
 
         #region StoreFSObject(myObjectLocation, myAPandoraObject, myAllowOverwritting, SessionToken mySessionToken)
 
         public Exceptional StoreFSObject(ObjectLocation myObjectLocation, AFSObject myAFSObject, Boolean myAllowOverwritting, SessionToken mySessionToken)
         {
+
+            Debug.Assert(myObjectLocation       != null);
+            Debug.Assert(myAFSObject            != null);
+            Debug.Assert(myAFSObject.ObjectStream     != null);// => PT.ObjectStream
+            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
+            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
 
             lock (this)
             {
@@ -1234,20 +1586,24 @@ namespace sones
 
                 var _Exceptional = new Exceptional();
 
-                #region Sanity Checks and OnSaveEvent
+                #region Sanity Checks
 
-                _Exceptional.NotNullMsg("APandoraObject must not be null!", myAFSObject);
+                _Exceptional.NotNullMsg("AFSObject must not be null!", myAFSObject);
                 _Exceptional.NotNullOrEmptyMsg("The ObjectStream must not be null or its length zero!", myAFSObject.ObjectStream);
 
                 if (_Exceptional.Failed)
                     return _Exceptional;
 
-                myAFSObject.OnSaveEvent(EventArgs.Empty);
+                #endregion
 
+                #region Call OnSaveEvents on this file system and the given AFSObject
+
+                OnSaveEvent(EventArgs.Empty);
+                myAFSObject.OnSaveEvent(EventArgs.Empty);                
 
                 #endregion
 
-                #region Check/Set myAPandoraObject.ObjectStream/-Edition/-RevisionID
+                #region Check/Set myAFSObject.ObjectStream/-Edition/-RevisionID
 
                 if (myAFSObject.ObjectEdition == null)
                     myAFSObject.ObjectEdition = FSConstants.DefaultEdition;
@@ -1264,9 +1620,9 @@ namespace sones
                 {
 
                     // Will load the ParentIDirectoryObject
-                    var _APandoraObjectLocator = GetObjectLocator(myObjectLocation, mySessionToken);
+                    var _AFSObjectLocator = GetObjectLocator(myObjectLocation, mySessionToken);
 
-                    if (_APandoraObjectLocator.Failed)
+                    if (_AFSObjectLocator.Failed)
                     {
 
                         var _ParentIDirectoryObjectLocator = GetObjectLocator(new ObjectLocation(myObjectLocation.Path), mySessionToken);
@@ -1279,7 +1635,7 @@ namespace sones
 
                     }
 
-                    myAFSObject.ObjectLocatorReference = _APandoraObjectLocator.Value;
+                    myAFSObject.ObjectLocatorReference = _AFSObjectLocator.Value;
 
                     if (myAFSObject.ObjectLocatorReference == null)
                     {
@@ -1447,15 +1803,20 @@ namespace sones
 
                 StoreAFSObject_protected(myObjectLocation, myAFSObject, myAllowOverwritting, mySessionToken);
 
+                #region Call OnSavedEvents on this file system and the given AFSObject
+
+                OnSavedEvent(EventArgs.Empty);
                 myAFSObject.OnSavedEvent(EventArgs.Empty);
 
-                if (_NotificationDispatcher != null)
+                #endregion
+
+                if (NotificationDispatcher != null)
                 {
 
                     var args = new NObjectStored.Arguments(myObjectLocation, myAFSObject.ObjectStream, myAFSObject.ObjectEdition, myAFSObject.ObjectRevision);
 
                     //Console.WriteLine("Notify {0} {1} {2} {3}!", myObjectLocation, myAPandoraObject.ObjectStream, myAPandoraObject.ObjectEdition, myAPandoraObject.ObjectRevisionID);
-                    _NotificationDispatcher.SendNotification(typeof(NObjectStored), args);
+                    NotificationDispatcher.SendNotification(typeof(NObjectStored), args);
 
                 }
 
@@ -1475,8 +1836,8 @@ namespace sones
 
             #region Resolve all symlinks and call myself on a possible ChildFileSystem...
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
             //myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
 
@@ -1491,7 +1852,7 @@ namespace sones
             #endregion
 
             var _Exceptional = new Exceptional<Trinary>();
-            var _ParentDirectoryObjectExceptional = GetObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), FSConstants.DIRECTORYSTREAM, null, null, 0, false, mySessionToken);
+            var _ParentDirectoryObjectExceptional = GetFSObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), FSConstants.DIRECTORYSTREAM, null, null, 0, false, mySessionToken);
 
             if (_ParentDirectoryObjectExceptional != null && _ParentDirectoryObjectExceptional.Success && _ParentDirectoryObjectExceptional.Value != null)
                 _Exceptional.Value = _ParentDirectoryObjectExceptional.Value.ObjectExists(myObjectLocation.Name);
@@ -1516,8 +1877,8 @@ namespace sones
 
             #region Resolve all symlinks and call myself on a possible ChildFileSystem...
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
             //myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
 
@@ -1532,7 +1893,7 @@ namespace sones
             #endregion
 
             var _Exceptional = new Exceptional<Trinary>();
-            var _ParentDirectoryObjectExceptional = GetObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), FSConstants.DIRECTORYSTREAM, null, null, 0, false, mySessionToken);
+            var _ParentDirectoryObjectExceptional = GetFSObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), FSConstants.DIRECTORYSTREAM, null, null, 0, false, mySessionToken);
 
             if (_ParentDirectoryObjectExceptional != null && _ParentDirectoryObjectExceptional.Success && _ParentDirectoryObjectExceptional.Value != null)
             {
@@ -1567,10 +1928,10 @@ namespace sones
 
             #region Resolve all symlinks and call myself on a possible ChildFileSystem...
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
-            myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
+            //myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
 
             if (myObjectLocation == null)
                 return new Exceptional<Trinary>() { Value = Trinary.FALSE };
@@ -1622,10 +1983,10 @@ namespace sones
 
             #region Resolve all symlinks and call myself on a possible ChildFileSystem...
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
-            myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
+            //myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
 
             if (myObjectLocation == null)
                 return new Exceptional<Trinary>() { Value = Trinary.FALSE };
@@ -1720,7 +2081,7 @@ namespace sones
                 else
                 {
 
-                    var _ParentDirectoryObjectExceptional = GetObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), FSConstants.DIRECTORYSTREAM, null, null, 0, false, mySessionToken);
+                    var _ParentDirectoryObjectExceptional = GetFSObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), FSConstants.DIRECTORYSTREAM, null, null, 0, false, mySessionToken);
 
                     if (_ParentDirectoryObjectExceptional != null && _ParentDirectoryObjectExceptional.Success && _ParentDirectoryObjectExceptional.Value != null)
                     {
@@ -1841,10 +2202,10 @@ namespace sones
 
             #region Resolve all symlinks and call myself on a possible ChildFileSystem...
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
-            myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
+            //myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
 
             if (myObjectLocation == null)
                 throw new ArgumentNullException("myObjectLocation must not be null!");
@@ -1858,7 +2219,7 @@ namespace sones
 
             var _Exceptional = new Exceptional();
 
-            var _ParentDirectoryObjectExceptional = GetObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), FSConstants.DIRECTORYSTREAM, null, null, 0, false, mySessionToken);
+            var _ParentDirectoryObjectExceptional = GetFSObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), FSConstants.DIRECTORYSTREAM, null, null, 0, false, mySessionToken);
 
             if (_ParentDirectoryObjectExceptional != null && _ParentDirectoryObjectExceptional.Success && _ParentDirectoryObjectExceptional.Value != null)
             {
@@ -1866,7 +2227,7 @@ namespace sones
                 if (!_ParentDirectoryObjectExceptional.Value.RenameDirectoryEntry(myObjectLocation.Name, myNewObjectName))
                     _Exceptional.Push(new GraphFSError_ObjectNotFound(myObjectLocation));
 
-                var _GetObjectLocatorExceptional = GetObjectLocator_protected(myObjectLocation, mySessionToken);
+                var _GetObjectLocatorExceptional = GetObjectLocator_protected(myObjectLocation);
                 if (_GetObjectLocatorExceptional == null || _GetObjectLocatorExceptional.Failed || _GetObjectLocatorExceptional.Value == null)
                     _Exceptional.Push(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
 
@@ -1893,9 +2254,9 @@ namespace sones
 
         #region RemoveObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, mySessionToken)
 
-        protected abstract Exceptional RemoveObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, SessionToken mySessionToken);
+        protected abstract Exceptional RemoveAFSObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID);
 
-        public Exceptional RemoveObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, SessionToken mySessionToken)
+        public Exceptional RemoveFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, SessionToken mySessionToken)
         {
 
             #region GetObjectLocator
@@ -1950,7 +2311,7 @@ namespace sones
             #region Mark ObjectEdition as deleted
 
             _ObjectEdition.IsDeleted = true;
-            RemoveObject_protected(_ObjectLocator, myObjectStream, myObjectEdition, myObjectRevisionID, mySessionToken);
+            RemoveAFSObject_protected(_ObjectLocator, myObjectStream, myObjectEdition, myObjectRevisionID);
 
             //var _success = _ObjectEdition.Remove(myObjectRevisionID);
 
@@ -1977,7 +2338,7 @@ namespace sones
 
             #region Remove ObjectStream from ParentIDirectoryObject
 
-            return GetObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false, mySessionToken).
+            return GetFSObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false, mySessionToken).
                 WhenFailed<DirectoryObject>(e => e.PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path))).
                 WhenSucceded<DirectoryObject>(e =>
                 {
@@ -2004,7 +2365,7 @@ namespace sones
 
         #region EraseObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, mySessionToken)
 
-        public Exceptional EraseObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, SessionToken mySessionToken)
+        public Exceptional EraseFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, SessionToken mySessionToken)
         {
             throw new NotImplementedException();
         }
@@ -2015,8 +2376,6 @@ namespace sones
 
         #region Symlink methods
 
-        protected abstract Exceptional AddSymlink_protected(ObjectLocation myObjectLocation, ObjectLocation myTargetLocation, SessionToken mySessionToken);
-
         #region AddSymlink(myObjectLocation, myTargetLocation, mySessionToken)
 
         public Exceptional AddSymlink(ObjectLocation myObjectLocation, ObjectLocation myTargetLocation, SessionToken mySessionToken)
@@ -2024,7 +2383,8 @@ namespace sones
 
             #region Resolve all symlinks...
 
-            myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(ResolveObjectLocation(new ObjectLocation(myObjectLocation.Path), true, mySessionToken),
+            //myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(ResolveObjectLocation(new ObjectLocation(myObjectLocation.Path), true, mySessionToken),
+            myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(new ObjectLocation(myObjectLocation.Path),
                                                   DirectoryHelper.GetObjectName(myObjectLocation)));
 
             var _ChildIPandoraFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
@@ -2037,7 +2397,28 @@ namespace sones
 
             #endregion
 
-            return AddSymlink_protected(myObjectLocation, myTargetLocation, mySessionToken);
+            lock (this)
+            {
+
+                var _Exceptional = new Exceptional();
+
+                // Add symlink to ParentIDirectoryObject
+                var _ParentIDirectoryObject = GetFSObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false, mySessionToken);
+
+                if (_ParentIDirectoryObject.Failed)
+                {
+                    return _ParentIDirectoryObject.Push(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path));
+                }
+
+                if (!_ParentIDirectoryObject.Value.ObjectExists(myObjectLocation.Name))
+                {
+                    _ParentIDirectoryObject.Value.IGraphFSReference = this;
+                    _ParentIDirectoryObject.Value.AddSymlink(myObjectLocation.Name, myTargetLocation);
+                }
+
+                return _Exceptional;
+
+            }
 
         }
 
@@ -2050,10 +2431,11 @@ namespace sones
 
             #region Resolve all symlinks and call myself on a possible ChildFileSystem...
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
-            var myIParentDirectoryLocation = ResolveObjectLocation(new ObjectLocation(myObjectLocation.Path), true, mySessionToken);
+            //var myIParentDirectoryLocation = ResolveObjectLocation(new ObjectLocation(myObjectLocation.Path), true, mySessionToken);
+            var myIParentDirectoryLocation = new ObjectLocation(myObjectLocation.Path);
             if (myIParentDirectoryLocation.Length == 0)
                 return new Exceptional<Trinary>(Trinary.FALSE);
 
@@ -2072,7 +2454,7 @@ namespace sones
                 var _Exceptional = new Exceptional<Trinary>();
 
                 // Add symlink to ParentIDirectoryObject
-                var _ParentIDirectoryObject = GetObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false, mySessionToken);
+                var _ParentIDirectoryObject = GetFSObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false, mySessionToken);
 
                 if (_ParentIDirectoryObject.Failed || _ParentIDirectoryObject.Value == null)
                 {
@@ -2096,7 +2478,8 @@ namespace sones
 
             #region Resolve all symlinks...
 
-            myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(ResolveObjectLocation(new ObjectLocation(myObjectLocation.Path), true, mySessionToken),
+            //myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(ResolveObjectLocation(new ObjectLocation(myObjectLocation.Path), true, mySessionToken),
+            myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(new ObjectLocation(myObjectLocation.Path),
                                                        DirectoryHelper.GetObjectName(myObjectLocation)));
 
             IGraphFS _ChildIPandoraFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
@@ -2112,7 +2495,7 @@ namespace sones
                 var _Exceptional = new Exceptional<ObjectLocation>();
 
                 // Add symlink to ParentIDirectoryObject
-                var _ParentIDirectoryObject = GetObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false, mySessionToken);
+                var _ParentIDirectoryObject = GetFSObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false, mySessionToken);
 
                 if (_ParentIDirectoryObject.Failed || _ParentIDirectoryObject.Value == null)
                 {
@@ -2140,8 +2523,8 @@ namespace sones
 
             #region Check if the ObjectLocation is a symlink
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
             if (isSymlink(myObjectLocation, mySessionToken).Value != Trinary.TRUE)
                 throw new PandoraFSException_SymlinkCouldNotBeRemoved("Only symlinks can be removed by this method!");
@@ -2150,11 +2533,12 @@ namespace sones
 
             #region Resolve all symlinks and call myself on a possible ChildFileSystem...
 
-            if (!isMounted)
-                throw new PandoraFSException_FileSystemNotMounted("Please mount a file system first!");
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
             // Will throw an exception if the ObjectLocation could not be resolved
-            myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(ResolveObjectLocation(new ObjectLocation(myObjectLocation), true, mySessionToken),
+            //myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(ResolveObjectLocation(new ObjectLocation(myObjectLocation), true, mySessionToken),
+            myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(new ObjectLocation(myObjectLocation),
                                                        DirectoryHelper.GetObjectName(myObjectLocation)));
 
             IGraphFS _ChildIPandoraFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
@@ -2172,7 +2556,7 @@ namespace sones
             //        CommitTransaction(mySessionToken);
             //    }
             //else
-            return RemoveObject(myObjectLocation, FSConstants.SYMLINK, null, null, mySessionToken);
+            return RemoveFSObject(myObjectLocation, FSConstants.SYMLINK, null, null, mySessionToken);
 
         }
 
@@ -2249,24 +2633,27 @@ namespace sones
         public Exceptional<IDirectoryObject> CreateDirectoryObject(ObjectLocation myObjectLocation, UInt64 myBlocksize, Boolean myRecursive, SessionToken mySessionToken)
         {
 
-            var _ObjectPath = new ObjectLocation(myObjectLocation.Path);
-            var _ObjectName = myObjectLocation.Name;
+            throw new NotImplementedException();
 
-            IEnumerable<String> _ObjectStreams  = new List<String>();
-            IDirectoryObject    _ParentDir      = null;
-            IGraphFS            _PandoraFS      = this;
+            //var _ObjectPath = new ObjectLocation(myObjectLocation.Path);
+            //var _ObjectName = myObjectLocation.Name;
 
-            while (!ResolveObjectLocation(ref _ObjectPath, out _ObjectStreams, out _ObjectPath, out _ObjectName, out _ParentDir, out _PandoraFS, mySessionToken))
-            {
-                _PandoraFS.CreateDirectoryObject(new ObjectLocation(DirectoryHelper.Combine(_ParentDir.ObjectLocation, _ObjectName)), 0, mySessionToken);
-                _ObjectPath = new ObjectLocation(myObjectLocation.Path);
-                _ObjectName = myObjectLocation.Name;
-            }
+            //IEnumerable<String> _ObjectStreams  = new List<String>();
+            //IDirectoryObject    _ParentDir      = null;
+            //IGraphFS            _IGraphFS       = this;
 
-            myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(ResolveObjectLocation(new ObjectLocation(myObjectLocation.Path), true, mySessionToken),
-                                                  DirectoryHelper.GetObjectName(myObjectLocation)));
+            //while (!ResolveObjectLocation(ref _ObjectPath, out _ObjectStreams, out _ObjectPath, out _ObjectName, out _ParentDir, out _IGraphFS, mySessionToken))
+            //{
+            //    _IGraphFS.CreateDirectoryObject(new ObjectLocation(DirectoryHelper.Combine(_ParentDir.ObjectLocation, _ObjectName)), 0, mySessionToken);
+            //    _ObjectPath = new ObjectLocation(myObjectLocation.Path);
+            //    _ObjectName = myObjectLocation.Name;
+            //}
 
-            return CreateDirectoryObject(myObjectLocation, myBlocksize, mySessionToken);
+            ////myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(ResolveObjectLocation(new ObjectLocation(myObjectLocation.Path), true, mySessionToken),
+            //myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(new ObjectLocation(myObjectLocation.Path),
+            //                                      DirectoryHelper.GetObjectName(myObjectLocation)));
+
+            //return CreateDirectoryObject(myObjectLocation, myBlocksize, mySessionToken);
 
         }
 
@@ -2320,7 +2707,7 @@ namespace sones
                     return _ChildIPandoraFS.GetDirectoryListing(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), mySessionToken);
 
                 // Get DirectoryObject and return the directory listing
-                return GetObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false, mySessionToken).
+                return GetFSObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false, mySessionToken).
                        ConvertWithFunc<DirectoryObject, IEnumerable<String>>(v => v.GetDirectoryListing());
 
             }
@@ -2345,7 +2732,7 @@ namespace sones
                     return _ChildIPandoraFS.GetDirectoryListing(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myFunc, mySessionToken);
 
                 // Get DirectoryObject and return the directory listing
-                return GetObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false, mySessionToken).
+                return GetFSObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false, mySessionToken).
                        ConvertWithFunc<DirectoryObject, IEnumerable<String>>(v => v.GetDirectoryListing(myFunc));
 
             }
@@ -2371,7 +2758,7 @@ namespace sones
             Boolean _AddEntry;
 
             // Get DirectoryObject and return the filtered directory listing
-            return GetObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false, mySessionToken).
+            return GetFSObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false, mySessionToken).
                    ConvertWithFunc<DirectoryObject, IEnumerable<String>>(v => v.GetDirectoryListing(myName, myIgnoreName, myRegExpr, myObjectStreams, myIgnoreObjectStreams)).
                    WhenSucceded<IEnumerable<String>>(_Exceptional =>
                    {
@@ -2547,7 +2934,7 @@ namespace sones
                     return _ChildIPandoraFS.GetExtendedDirectoryListing(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), mySessionToken);
 
                 // Get DirectoryObject and return the extended directory listing
-                return GetObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false, mySessionToken).
+                return GetFSObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false, mySessionToken).
                        ConvertWithFunc<DirectoryObject, IEnumerable<DirectoryEntryInformation>>(v => v.GetExtendedDirectoryListing());
 
             }
@@ -2572,7 +2959,7 @@ namespace sones
                     return _ChildIPandoraFS.GetExtendedDirectoryListing(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myFunc, mySessionToken);
 
                 // Get DirectoryObject and return the extended directory listing
-                return GetObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false, mySessionToken).
+                return GetFSObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false, mySessionToken).
                        ConvertWithFunc<DirectoryObject, IEnumerable<DirectoryEntryInformation>>(v => v.GetExtendedDirectoryListing(myFunc));
 
             }
@@ -2600,7 +2987,7 @@ namespace sones
 
             #region _IDirectoryObject.GetExtendedDirectoryListing(...)
 
-            var _IDirectoryObject = (IDirectoryObject) GetObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, null, null, 0, false, mySessionToken).Value;
+            var _IDirectoryObject = (IDirectoryObject) GetFSObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, null, null, 0, false, mySessionToken).Value;
             var _DirectoryListing = _IDirectoryObject.GetExtendedDirectoryListing(myName, myIgnoreName, myRegExpr, myObjectStreams, myIgnoreObjectStreamTypes);
             var _Output = new List<DirectoryEntryInformation>(); ;
 
@@ -2888,7 +3275,7 @@ namespace sones
 
                                 var _ListOfObjectEditionsAndRevisionIDs = new List<KeyValuePair<String, RevisionID>>();
 
-                                var _SubobjectLocatorExceptional = GetObjectLocator_protected(new ObjectLocation(myObjectLocation, _DirectoryEntryInformation.Name), mySessionToken);
+                                var _SubobjectLocatorExceptional = GetObjectLocator_protected(new ObjectLocation(myObjectLocation, _DirectoryEntryInformation.Name));
 
                                 if (_SubobjectLocatorExceptional == null || _SubobjectLocatorExceptional.Failed || _SubobjectLocatorExceptional.Value == null)
                                 {
@@ -2910,7 +3297,7 @@ namespace sones
                                 foreach (var _ObjectEditionAndRevisionID in _ListOfObjectEditionsAndRevisionIDs)
                                 {
 
-                                    var _RemoveSubobjectExceptional = RemoveObject(new ObjectLocation(myObjectLocation, _DirectoryEntryInformation.Name), _StreamType, _ObjectEditionAndRevisionID.Key, _ObjectEditionAndRevisionID.Value, mySessionToken);
+                                    var _RemoveSubobjectExceptional = RemoveFSObject(new ObjectLocation(myObjectLocation, _DirectoryEntryInformation.Name), _StreamType, _ObjectEditionAndRevisionID.Key, _ObjectEditionAndRevisionID.Value, mySessionToken);
 
                                     if (_RemoveSubobjectExceptional == null || _RemoveSubobjectExceptional.Failed)
                                     {
@@ -2940,7 +3327,7 @@ namespace sones
             #region Remove the DirectoryObject itself!
 
             // To ensure optimistic concurrency: First get the latest RevisionID
-            var _ObjectLocatorExceptional = GetObjectLocator_protected(myObjectLocation, mySessionToken);
+            var _ObjectLocatorExceptional = GetObjectLocator_protected(myObjectLocation);
 
             if (_ObjectLocatorExceptional == null || _ObjectLocatorExceptional.Failed || _ObjectLocatorExceptional.Value == null)
             {
@@ -2948,7 +3335,7 @@ namespace sones
             }
 
             // Remove the $DefaultEditon and $LatestRevision
-            var _RemoveObjectExceptional = RemoveObject(myObjectLocation, FSConstants.DIRECTORYSTREAM, _ObjectLocatorExceptional.Value[FSConstants.DIRECTORYSTREAM].DefaultEditionName, _ObjectLocatorExceptional.Value[FSConstants.DIRECTORYSTREAM].DefaultEdition.LatestRevisionID, mySessionToken);
+            var _RemoveObjectExceptional = RemoveFSObject(myObjectLocation, FSConstants.DIRECTORYSTREAM, _ObjectLocatorExceptional.Value[FSConstants.DIRECTORYSTREAM].DefaultEditionName, _ObjectLocatorExceptional.Value[FSConstants.DIRECTORYSTREAM].DefaultEdition.LatestRevisionID, mySessionToken);
 
             if (_RemoveObjectExceptional == null || _RemoveObjectExceptional.Failed)
             {
@@ -2977,7 +3364,7 @@ namespace sones
 
                 if (GetDirectoryListing(myObjectLocation, mySessionToken).Value.LongCount().Equals((Int64)NUMBER_OF_DEFAULT_DIRECTORYENTRIES))
                 {
-                    return EraseObject(myObjectLocation, FSConstants.DIRECTORYSTREAM, null, null, mySessionToken);
+                    return EraseFSObject(myObjectLocation, FSConstants.DIRECTORYSTREAM, null, null, mySessionToken);
                 }
 
                 #endregion
@@ -3041,7 +3428,7 @@ namespace sones
                                 {
                                     if (!aStreamType.Equals(FSConstants.INLINEDATA))
                                     {
-                                        EraseObject(new ObjectLocation(myObjectLocation, aDirInformation.Name), aStreamType, null, null, mySessionToken);
+                                        EraseFSObject(new ObjectLocation(myObjectLocation, aDirInformation.Name), aStreamType, null, null, mySessionToken);
                                     }
                                 }
 
@@ -3060,7 +3447,7 @@ namespace sones
 
                     foreach (String aStreamType in streamTypes)
                     {
-                        EraseObject(myObjectLocation, aStreamType, null, null, mySessionToken);
+                        EraseFSObject(myObjectLocation, aStreamType, null, null, mySessionToken);
                     }
 
                     #endregion
@@ -3074,7 +3461,7 @@ namespace sones
                 if (GetDirectoryListing(myObjectLocation, mySessionToken).Value.LongCount() > (Int64)NUMBER_OF_DEFAULT_DIRECTORYENTRIES)
                     throw new PandoraFSException_DirectoryObjectIsNotEmpty("This DirectoryObject is not empty!");
 
-                return EraseObject(myObjectLocation, FSConstants.DIRECTORYSTREAM, null, null, mySessionToken);
+                return EraseFSObject(myObjectLocation, FSConstants.DIRECTORYSTREAM, null, null, mySessionToken);
 
             }
 
@@ -3096,7 +3483,7 @@ namespace sones
 
             #region Get or create MetadataObject
 
-            var _MetadataObjectExceptional = GetOrCreateObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
+            var _MetadataObjectExceptional = GetOrCreateFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
 
             if (_MetadataObjectExceptional == null || _MetadataObjectExceptional.Failed || _MetadataObjectExceptional.Value == null)
             {
@@ -3154,7 +3541,7 @@ namespace sones
         {
 
 
-            var _MetadataObjectExceptional = GetOrCreateObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken).
+            var _MetadataObjectExceptional = GetOrCreateFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken).
                                                  WhenFailed(e => e.PushT(new GraphFSError_CouldNotSetMetadata(myObjectLocation, myObjectStream, myObjectEdition)));
 
             if (_MetadataObjectExceptional.Failed)
@@ -3214,7 +3601,7 @@ namespace sones
         public Exceptional<Trinary> MetadatumExists<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey, TValue myValue, SessionToken mySessionToken)
         {
 
-            return GetObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken).
+            return GetFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken).
                        ConvertWithFunc(v => v.Contains(myKey, myValue)).
                        WhenFailed(e => e = new Exceptional<Trinary>(Trinary.FALSE));
 
@@ -3242,7 +3629,7 @@ namespace sones
         public Exceptional<Trinary> MetadataExists<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey, SessionToken mySessionToken)
         {
 
-            return GetObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken).
+            return GetFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken).
                        ConvertWithFunc(v => v.ContainsKey(myKey)).
                        WhenFailed(e => e = new Exceptional<Trinary>(Trinary.FALSE));
 
@@ -3272,7 +3659,7 @@ namespace sones
         public Exceptional<IEnumerable<TValue>> GetMetadatum<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey, SessionToken mySessionToken)
         {
 
-            return GetObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken).
+            return GetFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken).
                        ConvertWithFunc(v =>
                        {
                            var _ListOfValues = new List<TValue>();
@@ -3334,7 +3721,7 @@ namespace sones
         {
             
             var _Exceptional = new Exceptional<IEnumerable<KeyValuePair<String, TValue>>>();
-            var _MetadataObjectExceptional = GetObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
+            var _MetadataObjectExceptional = GetFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
 
             if (_MetadataObjectExceptional == null || _MetadataObjectExceptional.Failed || _MetadataObjectExceptional.Value == null)
             {
@@ -3377,7 +3764,7 @@ namespace sones
         {
 
             var _Exceptional = new Exceptional<IEnumerable<KeyValuePair<String, TValue>>>();
-            var _MetadataObjectExceptional = GetObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
+            var _MetadataObjectExceptional = GetFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
 
             if (_MetadataObjectExceptional == null || _MetadataObjectExceptional.Failed || _MetadataObjectExceptional.Value == null)
             {
@@ -3431,7 +3818,7 @@ namespace sones
         {
 
             var _Exceptional = new Exceptional();
-            var _MetadataObjectExceptional = GetObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
+            var _MetadataObjectExceptional = GetFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
 
             if (_MetadataObjectExceptional == null || _MetadataObjectExceptional.Failed || _MetadataObjectExceptional.Value == null)
             {
@@ -3464,7 +3851,7 @@ namespace sones
         {
 
             var _Exceptional = new Exceptional();
-            var _MetadataObjectExceptional = GetObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
+            var _MetadataObjectExceptional = GetFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
 
             if (_MetadataObjectExceptional == null || _MetadataObjectExceptional.Failed || _MetadataObjectExceptional.Value == null)
             {
@@ -3505,7 +3892,7 @@ namespace sones
         {
 
             var _Exceptional = new Exceptional<IEnumerable<KeyValuePair<String, TValue>>>();
-            var _MetadataObjectExceptional = GetObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
+            var _MetadataObjectExceptional = GetFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
 
             if (_MetadataObjectExceptional == null || _MetadataObjectExceptional.Failed || _MetadataObjectExceptional.Value == null)
             {
@@ -3557,7 +3944,7 @@ namespace sones
 
         public virtual Exceptional<IGraphFSStream> OpenStream(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevision, UInt64 myObjectCopy)
         {
-            throw new NotImplementedException("This method can not be used on this GraphFS implementation!");
+            throw new NotImplementedException("This method can not be used by this IGraphFS implementation!");
         }
 
         #endregion
@@ -3567,7 +3954,7 @@ namespace sones
         public virtual Exceptional<IGraphFSStream> OpenStream(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevision, UInt64 myObjectCopy,
                                            FileMode myFileMode, FileAccess myFileAccess, FileShare myFileShare, FileOptions myFileOptions, UInt64 myBufferSize)
         {
-            throw new NotImplementedException("This method can not be used on this GraphFS implementation!");
+            throw new NotImplementedException("This method can not be used by this IGraphFS implementation!");
         }
 
         #endregion
@@ -3948,10 +4335,10 @@ namespace sones
 
         #region ResolveObjectLocation(myObjectLocation, ..., SessionToken mySessionToken)
 
-        public abstract ResolveTypes ResolveObjectLocation_Internal(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, ref List<String> mySymlinkTargets, SessionToken mySessionToken);
-        public abstract ResolveTypes ResolveObjectLocationRecursive_Internal(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIPandoraFS, ref List<String> mySymlinkTargets, SessionToken mySessionToken);
-        public abstract Trinary ResolveObjectLocation(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIPandoraFS, SessionToken mySessionToken);
-        public abstract ObjectLocation ResolveObjectLocation(ObjectLocation myObjectLocation, Boolean myThrowObjectNotFoundException, SessionToken mySessionToken);
+        //public abstract ResolveTypes ResolveObjectLocation_Internal(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, ref List<String> mySymlinkTargets, SessionToken mySessionToken);
+        //public abstract ResolveTypes ResolveObjectLocationRecursive_Internal(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIPandoraFS, ref List<String> mySymlinkTargets, SessionToken mySessionToken);
+        //public abstract Trinary ResolveObjectLocation(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIPandoraFS, SessionToken mySessionToken);
+        //public abstract ObjectLocation ResolveObjectLocation(ObjectLocation myObjectLocation, Boolean myThrowObjectNotFoundException, SessionToken mySessionToken);
 
         #endregion
 
@@ -3970,7 +4357,7 @@ namespace sones
         /// <returns>The NotificationDispatcher of this file system</returns>
         public NotificationDispatcher GetNotificationDispatcher(SessionToken mySessionToken)
         {
-            return _NotificationDispatcher;
+            return NotificationDispatcher;
         }
 
         #endregion
@@ -4014,7 +4401,7 @@ namespace sones
         /// <param name="myNotificationDispatcher">A NotificationDispatcher object</param>
         public void SetNotificationDispatcher(NotificationDispatcher myNotificationDispatcher, SessionToken mySessionToken)
         {
-            _NotificationDispatcher = myNotificationDispatcher;
+            NotificationDispatcher = myNotificationDispatcher;
         }
 
         #endregion
@@ -4042,7 +4429,7 @@ namespace sones
         /// <returns>The NotificationDispatcher settings of this file system</returns>
         public NotificationSettings GetNotificationSettings(SessionToken mySessionToken)
         {
-            return _NotificationSettings;
+            return NotificationSettings;
         }
 
         #endregion
@@ -4069,7 +4456,7 @@ namespace sones
         /// <param name="myNotificationSettings">A NotificationSettings object</param>
         public void SetNotificationSettings(NotificationSettings myNotificationSettings, SessionToken mySessionToken)
         {
-            _NotificationSettings = myNotificationSettings;
+            NotificationSettings = myNotificationSettings;
         }
 
         #endregion
@@ -4091,9 +4478,7 @@ namespace sones
         #endregion
 
 
-
         #region IGraphFS Members
-
 
         bool IGraphFS.SetFileSystemDescription(string myFileSystemDescription, SessionToken mySessionToken)
         {
@@ -4105,45 +4490,14 @@ namespace sones
             throw new NotImplementedException();
         }
 
-        Exceptional IGraphFS.LockObject(ObjectLocation myObjectLocation, string myObjectStream, string myObjectEdition, RevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, ulong myLockingTime, SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-        public ObjectCacheSettings GetObjectCacheSettings(SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ObjectCacheSettings GetObjectCacheSettings(ObjectLocation myObjectLocation, SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetObjectCacheSettings(ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken)
+        Exceptional IGraphFS.LockFSObject(ObjectLocation myObjectLocation, string myObjectStream, string myObjectEdition, RevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, ulong myLockingTime, SessionToken mySessionToken)
         {
             throw new NotImplementedException();
         }
 
         #endregion
 
-    
+
     }
 
 }

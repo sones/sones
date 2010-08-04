@@ -39,7 +39,6 @@ using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.QueryLanguage.Result;
 using sones.Lib;
 using sones.Lib.ErrorHandling;
-using sones.GraphDB.QueryLanguage.Operator;
 using sones.GraphFS.DataStructures;
 
 #endregion

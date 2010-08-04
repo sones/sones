@@ -53,20 +53,6 @@ namespace sones.GraphDB.TypeManagement
 {
 
     /// <summary>
-    /// The kind of a type (Single, List)
-    /// </summary>
-    
-    public enum KindsOfType
-    {
-        SingleReference,
-        ListOfNoneReferences,
-        SetOfNoneReferences,
-        SetOfReferences,
-        //SettingAttribute,
-        SpecialAttribute
-    }
-
-    /// <summary>
     /// This class holds all information about an specific attribute of a DB type.
     /// </summary>
     
@@ -293,22 +279,22 @@ namespace sones.GraphDB.TypeManagement
         public AObject GetDefaultValue(DBContext myDBContext)
         {
 
-            if (KindOfType == KindsOfType.SingleReference)
+            switch (KindOfType)
             {
+                case KindsOfType.SetOfReferences:
+                case KindsOfType.SingleReference:
+                case KindsOfType.ListOfNoneReferences:
+                case KindsOfType.SetOfNoneReferences:
+                    return (AObject)EdgeType.GetNewInstance();
 
-                if (GetDBType(myDBContext.DBTypeManager).IsUserDefined)
-                    return (AObject) EdgeType.GetNewInstance();
+                case KindsOfType.SingleNoneReference:
+                    var val = ((ADBBaseObject)GraphDBTypeMapper.GetADBBaseObjectFromUUID(DBTypeUUID));
+                    val.SetValue(DBObjectInitializeType.Default);
+                    return val as AObject;
 
-                var val = ((ADBBaseObject) GraphDBTypeMapper.GetADBBaseObjectFromUUID(DBTypeUUID));
-                val.SetValue(DBObjectInitializeType.Default);
-                return val as AObject;
-
+                default:
+                    return null;
             }
-
-            if (KindOfType == KindsOfType.SetOfReferences)
-                return (AObject) EdgeType.GetNewInstance();
-
-            return null;
 
         }
 
@@ -415,12 +401,12 @@ namespace sones.GraphDB.TypeManagement
 
                 UUID.Serialize(ref mySerializationWriter);
                 DBTypeUUID.Serialize(ref mySerializationWriter);
-                mySerializationWriter.WriteObject((Byte)KindOfType);
+                mySerializationWriter.WriteByte((byte)KindOfType);
                 TypeCharacteristics.Serialize(ref mySerializationWriter);
-                
-                mySerializationWriter.WriteObject(Name);
 
-                mySerializationWriter.WriteObject(EdgeType != null);
+                mySerializationWriter.WriteString(Name);
+
+                mySerializationWriter.WriteBoolean(EdgeType != null);
                 if (EdgeType != null)
                     mySerializationWriter.WriteObject(EdgeType);
 
@@ -432,10 +418,9 @@ namespace sones.GraphDB.TypeManagement
                 mySerializationWriter.WriteObject(DefaultValue);
 
                 // Write Settings
-                mySerializationWriter.WriteObject((UInt32)_Settings.Count);
+                mySerializationWriter.WriteUInt32((UInt32)_Settings.Count);
                 foreach (var _KVPair in _Settings)
                     mySerializationWriter.WriteObject(_KVPair.Value);
-
             }
 
         }
@@ -459,13 +444,14 @@ namespace sones.GraphDB.TypeManagement
                     UUID.Deserialize(ref mySerializationReader);
                     DBTypeUUID = new TypeUUID();
                     DBTypeUUID.Deserialize(ref mySerializationReader);
-                    KindOfType = (KindsOfType) (Byte) mySerializationReader.ReadObject();
+                    KindOfType = (KindsOfType)mySerializationReader.ReadOptimizedByte();
                     TypeCharacteristics = new TypeCharacteristics();
                     TypeCharacteristics.Deserialize(ref mySerializationReader);
 
-                    Name = (String)mySerializationReader.ReadObject();
+                    Name = mySerializationReader.ReadString();
 
-                    var hasEdgeType = (Boolean) mySerializationReader.ReadObject();
+                    var hasEdgeType = mySerializationReader.ReadBoolean();
+
                     if (hasEdgeType)
                     {                        
                         try
@@ -483,6 +469,7 @@ namespace sones.GraphDB.TypeManagement
 
                     RelatedGraphDBTypeUUID = new TypeUUID();
                     RelatedGraphDBTypeUUID.Deserialize(ref mySerializationReader);
+
                     if (TypeCharacteristics.IsBackwardEdge)
                         BackwardEdgeDefinition = (EdgeKey) mySerializationReader.ReadObject();
 
@@ -490,7 +477,7 @@ namespace sones.GraphDB.TypeManagement
 
                     #region Read Settings
 
-                    _Capacity = (UInt32) mySerializationReader.ReadObject();
+                    _Capacity = mySerializationReader.ReadUInt32();
 
                     _Settings = new Dictionary<String, ADBSettingsBase>();
 

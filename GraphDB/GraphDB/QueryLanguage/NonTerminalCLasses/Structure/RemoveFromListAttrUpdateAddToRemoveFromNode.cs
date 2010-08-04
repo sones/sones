@@ -32,6 +32,7 @@ using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.TypeManagement;
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -42,6 +43,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     /// </summary>
     public class RemoveFromListAttrUpdateAddToRemoveFromNode : RemoveFromListAttrUpdateNode
     {
+        
         public RemoveFromListAttrUpdateAddToRemoveFromNode()
         {
 
@@ -49,27 +51,12 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         public void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
-            if (((IDNode)parseNode.ChildNodes[2].AstNode).IsValidated)
-            {
-                if (((IDNode)parseNode.ChildNodes[2].AstNode).Edges.Count > 1)
-                {
-                    //there is a IDNOde with edges greater than 1. THat means a user tried to traverse more than one edge. this is not possible during a remove
-                    throw new GraphDBException(new Error_InvalidAttribute(((IDNode)parseNode.ChildNodes[2].AstNode).ToString() + " It is not valid to traverse multiple edged while removing members of a list attribute."));
-                }
 
-                #region set Data
+            var idChain = ((IDNode)parseNode.ChildNodes[2].AstNode).IDChainDefinition;
+            var tupleDefinition = ((TupleNode)parseNode.ChildNodes[3].AstNode).TupleDefinition;
+            var AttrName = parseNode.ChildNodes[2].FirstChild.FirstChild.Token.ValueString;
+            AttributeRemoveList = new Managers.Structures.AttributeRemoveList(idChain, AttrName, tupleDefinition);
 
-                _Attribute = ((IDNode)parseNode.ChildNodes[2].AstNode).LastAttribute;
-                _AttrName = _Attribute.Name;
-
-                #endregion
-            }
-            else
-            {
-                _AttrName = parseNode.ChildNodes[2].FirstChild.FirstChild.Token.ValueString;
-            }
-
-            _tupleNode = (TupleNode)parseNode.ChildNodes[3].AstNode;
         }
     }//class
 }//namespace

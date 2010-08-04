@@ -20,11 +20,13 @@
 
 #region usings
 
-using System.Collections.Generic;
-using sones.GraphFS.DataStructures;
 using System;
+using System.Collections.Generic;
+using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.TypeManagement.PandoraTypes;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphFS.DataStructures;
+using sones.GraphDB.TypeManagement;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
@@ -37,13 +39,25 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// Get all added objectUUIDs
         /// </summary>
         /// <returns></returns>
-        IEnumerable<ObjectUUID> GetAllUUIDs();
+        IEnumerable<ObjectUUID> GetAllReferenceIDs();
 
         /// <summary>
         /// Get all uuids and their edge infos
         /// </summary>
         /// <returns></returns>
-        IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetEdges();
+        IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetAllReferenceIDsWeighted();
+
+        /// <summary>
+        /// Get all destinations of an edge
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<Exceptional<DBObjectStream>> GetAllEdgeDestinations(DBObjectCache dbObjectCache);
+
+        /// <summary>
+        /// Get all weighted destinations of an edge
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<Tuple<Exceptional<DBObjectStream>, ADBBaseObject>> GetAllEdgeDestinationsWeighted(DBObjectCache dbObjectCache);
 
         /// <summary>
         /// removes a specific reference
@@ -59,5 +73,10 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// <returns></returns>
         Boolean RemoveUUID(IEnumerable<ObjectUUID> myObjectUUIDs);
 
+        /// <summary>
+        /// Returns the typeUUID of the objects within the reference edge
+        /// </summary>
+        /// <returns></returns>
+        TypeUUID GetTypeUUIDOfReferences();
     }
 }

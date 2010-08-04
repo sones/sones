@@ -52,7 +52,7 @@ namespace sones.GraphFS.Notification
             public byte[] Serialize()
             {
                 var _SerializationWriter = new SerializationWriter();
-                _SerializationWriter.WriteObject(ThrowedException);
+                _SerializationWriter.WriteString(ThrowedException);
 
                 return _SerializationWriter.ToArray();
             }
@@ -60,7 +60,7 @@ namespace sones.GraphFS.Notification
             public void Deserialize(byte[] mySerializedBytes)
             {
                 var _SerializationReader = new SerializationReader(mySerializedBytes);
-                ThrowedException = (String)_SerializationReader.ReadObject();
+                ThrowedException = _SerializationReader.ReadString();
             }
 
             #endregion

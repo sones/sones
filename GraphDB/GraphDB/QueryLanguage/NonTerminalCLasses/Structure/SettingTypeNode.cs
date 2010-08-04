@@ -38,15 +38,20 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 {
     public class SettingTypeNode : AStructureNode
     {
-        #region Data
-        List<GraphDBType> _TypeList;
+
+        #region Properties
+
+        public List<String> Types { get; private set; }
+
         #endregion
 
         #region Constructor
+
         public SettingTypeNode()
         {
-            _TypeList = new List<GraphDBType>();
+            Types = new List<string>();
         }
+
         #endregion
 
         public void GetContent(CompilerContext context, ParseTreeNode parseNode)
@@ -58,21 +63,15 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             {
                 foreach (var Node in parseNode.ChildNodes[1].ChildNodes)
                 {
-                    GraphDBType typeOfNode = (Node.AstNode as ATypeNode).DBTypeStream as GraphDBType;
-                    if (typeOfNode != null)
+
+                    if (!Types.Contains((Node.AstNode as ATypeNode).ReferenceAndType.TypeName))
                     {
-                        if (!_TypeList.Contains(typeOfNode))
-                            _TypeList.Add(typeOfNode);
+                        Types.Add((Node.AstNode as ATypeNode).ReferenceAndType.TypeName);
                     }
+
                 }
             }
         }
 
-        #region Accessor
-
-        public List<GraphDBType> Types
-        { get { return _TypeList; } }
-
-        #endregion
     }
 }

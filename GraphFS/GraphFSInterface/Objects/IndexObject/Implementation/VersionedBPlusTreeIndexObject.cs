@@ -158,19 +158,19 @@ namespace sones.GraphFS.Objects
             {
                 #region NotificationHandling
 
-                mySerializationWriter.WriteObject(myNotificationHandling);
+                mySerializationWriter.WriteUInt64(myNotificationHandling);
 
                 #endregion
 
                 #region HistorySize
 
-                mySerializationWriter.WriteObject(_VersionedBPlusTree.HistorySize);
+                mySerializationWriter.WriteUInt64(_VersionedBPlusTree.HistorySize);
 
                 #endregion
 
                 #region Tree Order
 
-                mySerializationWriter.WriteObject(_VersionedBPlusTree.Order);
+                mySerializationWriter.WriteInt32(_VersionedBPlusTree.Order);
 
                 #endregion
 
@@ -196,7 +196,7 @@ namespace sones.GraphFS.Objects
 
                     #region write number of history entries
 
-                    mySerializationWriter.WriteObject(numberOfHistoryEntries);
+                    mySerializationWriter.WriteInt32(numberOfHistoryEntries);
 
                     #endregion
 
@@ -206,19 +206,19 @@ namespace sones.GraphFS.Objects
                     {
                         #region TimeStamp
 
-                        mySerializationWriter.WriteObject(indexValueHistory.Timestamp);
+                        mySerializationWriter.WriteUInt64(indexValueHistory.Timestamp);
 
                         #endregion
 
                         #region AddSetCount
 
-                        mySerializationWriter.WriteObject(indexValueHistory.AddSet.Count);
+                        mySerializationWriter.WriteInt32(indexValueHistory.AddSet.Count);
 
                         #endregion
 
                         #region RemSetCount
 
-                        mySerializationWriter.WriteObject(indexValueHistory.RemSet.Count);
+                        mySerializationWriter.WriteInt32(indexValueHistory.RemSet.Count);
 
                         #endregion
 
@@ -266,19 +266,19 @@ namespace sones.GraphFS.Objects
             {
                 #region NotificationHandling
 
-                UInt64 _NotificationHandling = (UInt64)mySerializationReader.ReadObject();
+                UInt64 _NotificationHandling = mySerializationReader.ReadUInt64();
 
                 #endregion
 
                 #region HistorySize
 
-                var historySize = (ulong)mySerializationReader.ReadObject();
+                var historySize = mySerializationReader.ReadUInt64();
 
                 #endregion
 
                 #region TreeOrder
 
-                var treeOrder = (int)mySerializationReader.ReadObject();
+                var treeOrder = mySerializationReader.ReadInt32();
 
                 #endregion
 
@@ -327,7 +327,7 @@ namespace sones.GraphFS.Objects
 
                     #region Number of History Entries
 
-                    var numberOfHistEntries = (int)mySerializationReader.ReadObject();
+                    var numberOfHistEntries = mySerializationReader.ReadInt32();
 
                     #endregion
 
@@ -335,19 +335,19 @@ namespace sones.GraphFS.Objects
                     {
                         #region TimeStamp
 
-                        timeStamp = (ulong)mySerializationReader.ReadObject();
+                        timeStamp = mySerializationReader.ReadUInt64();
 
                         #endregion
 
                         #region AddSetCount
 
-                        addSetCount = (int)mySerializationReader.ReadObject();
+                        addSetCount = mySerializationReader.ReadInt32();
 
                         #endregion
 
                         #region RemSetCount
 
-                        remSetCount = (int)mySerializationReader.ReadObject();
+                        remSetCount = mySerializationReader.ReadInt32();
 
                         #endregion
 
@@ -492,11 +492,11 @@ namespace sones.GraphFS.Objects
 
             #region persistency check
 
-            if (_IGraphFSReference.CheckPersistency())
+            if (_IGraphFSReference.IsPersistent())
             {
                 _IFSStream = this._IGraphFSSessionReference.Value.OpenStream(_ObjectLocation, _ObjectStream, _ObjectEdition, null, 0).Value;
                 serializeMe = true;
-            } else if (_IGraphFSSessionReference.CheckPersistency())
+            } else if (_IGraphFSSessionReference.IsPersistent())
             {
                 _IFSStream = this._IGraphFSSessionReference.Value.OpenStream(_ObjectLocation, _ObjectStream, _ObjectEdition, null, 0).Value;
                 serializeMe = true;

@@ -41,6 +41,7 @@ using sones.Lib.DataStructures.UUID;
 using sones.GraphFS.Session;
 using sones.GraphDB.QueryLanguage.Result;
 using sones.Lib.Session;
+using sones.GraphDB.Managers.Structures;
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Functions
 {
@@ -96,7 +97,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Functions
             IEnumerable<ObjectUUID> sourceDBOs = null;
             if (CallingObject is IReferenceEdge)
             {
-                sourceDBOs = (CallingObject as ASetReferenceEdgeType).GetAllUUIDs();
+                sourceDBOs = (CallingObject as ASetReferenceEdgeType).GetAllReferenceIDs();
             }
             else
             {
@@ -116,7 +117,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Functions
             // Call your own implementation of a path function and return the result, in this case it is a list of DB object (uuids)
             var resultOfPathFunction = new List<ObjectUUID>();
             
-            pResult.Value = new FuncParameter(new EdgeTypeSetOfReferences(resultOfPathFunction));
+            pResult.Value = new FuncParameter(new EdgeTypeSetOfReferences(resultOfPathFunction, CallingAttribute.DBTypeUUID));
 
             return pResult;
         }

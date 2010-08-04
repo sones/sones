@@ -33,10 +33,6 @@
 #region Usings
 
 using System;
-using System.Text;
-using System.Security.Cryptography;
-using sones.Lib;
-
 
 #endregion
 
@@ -47,143 +43,45 @@ namespace sones.Lib.Cryptography.IntegrityCheck
     /// Generates cryptographical secure hashes based on the SHA1 algorithm
     /// </summary>
 
-    
-
-    public class SHA1 : IIntegrityCheck
+    public class SHA1 : AIntegrityCheck
     {
+
+        #region Properties
 
         #region HashSize
 
-        public int HashSize
+        public override Int32 HashSize
         {
             get
             {
                 return 20;
             }
         }
+
         #endregion
 
         #region HashStringLength
-        public int HashStringLength
+
+        public override Int32 HashStringLength
         {
             get
             {
                 return 40;
             }
         }
-        #endregion
-
-
-        #region GetHashValue
-
-        public String GetHashValue(String ClearText)
-        {
-
-            if ((ClearText == null) || (ClearText.Length == 0))
-            {
-                return String.Empty;
-            }
-
-            System.Security.Cryptography.SHA1 sha1 = new SHA1CryptoServiceProvider();
-            Byte[] result = sha1.ComputeHash(Encoding.Default.GetBytes(ClearText));
-
-            return result.ToHexString(SeperatorTypes.NONE);
-
-        }
-
-        public String GetHashValue(Byte[] ClearText)
-        {
-
-            System.Security.Cryptography.SHA1 sha1 = new SHA1CryptoServiceProvider();
-            Byte[] result = sha1.ComputeHash(ClearText);
-
-            return result.ToHexString(SeperatorTypes.NONE);
-
-        }
 
         #endregion
 
-        #region GetHashValueAsByteArray
+        #endregion
 
-        public Byte[] GetHashValueAsByteArray(String ClearText)
+        #region Constructor
+
+        public SHA1()
         {
-
-            System.Security.Cryptography.SHA1 sha1 = new SHA1CryptoServiceProvider();
-            return sha1.ComputeHash(Encoding.Default.GetBytes(ClearText));
-
-        }
-
-        public Byte[] GetHashValueAsByteArray(Byte[] ClearText)
-        {
-
-            System.Security.Cryptography.SHA1 sha1 = new SHA1CryptoServiceProvider();
-            return sha1.ComputeHash(ClearText);
-
+            _Hasher = System.Security.Cryptography.SHA1.Create();
         }
 
         #endregion
-
-
-
-        #region CheckHashValue
-        /// <summary>
-        /// Checks if a Hash Value matches a given Cleartext
-        /// </summary>
-        /// <param name="ClearText">the text that needs to be checked</param>
-        /// <param name="HashValue">the hash value</param>
-        /// <returns>true if matches, false if does not match</returns>
-        public bool CheckHashValue(string ClearText, string HashValue)
-        {
-            return (GetHashValue(ClearText) == HashValue);
-        }
-
-        /// <summary>
-        /// Checks if a Hash Value matches a given Cleartext
-        /// </summary>
-        /// <param name="ClearText">the text that needs to be checked</param>
-        /// <param name="HashValue">the hash value</param>
-        /// <returns>true if matches, false if does not match</returns>
-        public bool CheckHashValue(byte[] ClearText, string HashValue)
-        {
-            return (GetHashValue(ClearText) == HashValue);
-        }
-
-        /// <summary>
-        /// Checks if a Hash Value matches a given Cleartext
-        /// </summary>
-        /// <param name="ClearText">the text that needs to be checked</param>
-        /// <param name="HashValue">the hash value</param>
-        /// <returns>true if matches, false if does not match</returns>
-        public bool CheckHashValue(byte[] ClearText, byte[] HashValue)
-        {
-
-            if (HashValue.CompareByteArray(GetHashValueAsByteArray(ClearText)) == 0)
-                return true;
-
-            return false;
-
-        }
-
-        /// <summary>
-        /// Checks if a Hash Value matches a given Cleartext
-        /// </summary>
-        /// <param name="ClearText">the text that needs to be checked</param>
-        /// <param name="HashValue">the hash value</param>
-        /// <returns>true if matches, false if does not match</returns>
-        public bool CheckHashValue(string ClearText, byte[] HashValue)
-        {
-
-            if (HashValue.CompareByteArray(GetHashValueAsByteArray(ClearText)) == 0)
-                return true;
-
-            return false;
-
-        }
-
-
-        #endregion
-
-
 
     }
 

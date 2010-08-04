@@ -41,13 +41,13 @@ using sones.GraphDB.QueryLanguage.Enums;
 using sones.GraphDB.QueryLanguage.Operators;
 
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements;
-using sones.GraphDB.QueryLanguage.Operator;
 
 using sones.Lib;
 
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.Lib.Frameworks.Irony.Scripting.Ast;
 using sones.GraphDB.Errors;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -58,11 +58,10 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     /// </summary>
     public class AddToListAttrUpdateNode : AStructureNode, IAstNodeInit
     {
+        
         #region properties
 
-        protected CollectionOfDBObjectsNode _elementsToBeAdded = null;
-        protected TypeAttribute _Attribute = null;
-        protected String _AttrName = String.Empty;
+        public AAttributeAssignOrUpdate AttributeUpdateList { get; protected set; }
 
         #endregion
 
@@ -78,19 +77,10 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
         public void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
             var content = parseNode.FirstChild.AstNode as AddToListAttrUpdateNode;
-            _elementsToBeAdded = content.ElementsToBeAdded;
-            _Attribute = content.Attribute;
-            _AttrName = content.AttributeName;
+
+            AttributeUpdateList = content.AttributeUpdateList;
+
         }
-
-        #region Accessessors
-
-        public CollectionOfDBObjectsNode ElementsToBeAdded { get { return _elementsToBeAdded; } }
-        public TypeAttribute Attribute { get { return _Attribute; } }
-        public String AttributeName { get { return _AttrName; } }
-
-        #endregion
-
 
         #region IAstNodeInit Members
 
@@ -100,5 +90,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
         }
 
         #endregion
+
     }//class
 }//namespace

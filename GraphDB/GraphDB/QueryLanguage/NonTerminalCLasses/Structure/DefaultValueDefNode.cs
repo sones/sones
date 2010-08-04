@@ -44,12 +44,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         /// <summary>
         /// The default value.
         /// </summary>
-        public Object Value { get { return _Value; } }
-        private Object _Value;
+        public Object Value { get; private set; }
 
         private void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
-            _Value = parseNode.ChildNodes[2].Token.Value;
+            Value = parseNode.ChildNodes[2].Token.Value;
         }
 
         #region IAstNodeInit Members

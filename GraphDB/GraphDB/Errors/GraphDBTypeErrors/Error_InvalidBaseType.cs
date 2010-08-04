@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sones.GraphDB.TypeManagement.PandoraTypes;
 
 namespace sones.GraphDB.Errors
 {
@@ -35,7 +36,7 @@ namespace sones.GraphDB.Errors
 
         public override string ToString()
         {
-            return String.Format("The base type \\{0}\\ must be a user defined type.", BaseTypeName);
+            return String.Format("The base type [{0}] must be a user defined type or [{1}].", BaseTypeName, DBReference.Name);
         }    
     }
 }

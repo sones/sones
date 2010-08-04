@@ -501,18 +501,18 @@ namespace sones.Lib.DataStructures.PasswordHash
 
         public void Serialize(ref SerializationWriter mySerializationWriter)
         {            
-            mySerializationWriter.WriteObject(_HashingAlgorithm);
-            mySerializationWriter.WriteObject(_Seed);
-            mySerializationWriter.WriteObject(_PasswordHash);
-            mySerializationWriter.WriteObject(_LastPasswordCheck);
+            mySerializationWriter.WriteByte((Byte)_HashingAlgorithm);
+            mySerializationWriter.Write(_Seed);
+            mySerializationWriter.Write(_PasswordHash);
+            mySerializationWriter.WriteDateTime(_LastPasswordCheck);
         }
 
         public void Deserialize(ref SerializationReader mySerializationReader)
         {
-            _HashingAlgorithm = (IntegrityCheckTypes)mySerializationReader.ReadObject();
-            _Seed = (byte[])mySerializationReader.ReadObject();
-            _PasswordHash = (byte[])mySerializationReader.ReadObject();
-            _LastPasswordCheck = (DateTime)mySerializationReader.ReadObject();
+            _HashingAlgorithm = (IntegrityCheckTypes)mySerializationReader.ReadOptimizedByte();
+            _Seed = mySerializationReader.ReadByteArray();
+            _PasswordHash = mySerializationReader.ReadByteArray();
+            _LastPasswordCheck = mySerializationReader.ReadDateTimeOptimized();
         }
 
         #endregion

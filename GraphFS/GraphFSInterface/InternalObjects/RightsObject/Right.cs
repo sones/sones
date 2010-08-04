@@ -532,10 +532,10 @@ namespace sones.GraphFS.InternalObjects
             try
             {
 
-                mySerializationWriter.WriteObject(_RightsName);
-                mySerializationWriter.WriteObject(_UUID.GetByteArray());
-                mySerializationWriter.WriteObject(_IsUserDefined);
-                mySerializationWriter.WriteObject(_ValidationScript);
+                mySerializationWriter.WriteString(_RightsName);
+                UUID.Serialize(ref mySerializationWriter);
+                mySerializationWriter.WriteBoolean(_IsUserDefined);
+                mySerializationWriter.WriteString(_ValidationScript);
 
                 isDirty = false;
 
@@ -552,10 +552,10 @@ namespace sones.GraphFS.InternalObjects
             try
             {
 
-                _RightsName         = (String) mySerializationReader.ReadObject();
-                _UUID               = new RightUUID((Byte[]) mySerializationReader.ReadObject());
-                _IsUserDefined      = (Boolean) mySerializationReader.ReadObject();
-                _ValidationScript   = (String) mySerializationReader.ReadObject();
+                _RightsName         = mySerializationReader.ReadString();
+                _UUID               = new RightUUID(mySerializationReader.ReadByteArray());
+                _IsUserDefined      = mySerializationReader.ReadBoolean();
+                _ValidationScript   = mySerializationReader.ReadString();
 
             }
 
@@ -581,10 +581,10 @@ namespace sones.GraphFS.InternalObjects
 
             try
             {
-                mySerializationWriter.WriteObject(thisObject._RightsName);
+                mySerializationWriter.WriteString(thisObject._RightsName);
                 thisObject._UUID.Serialize(ref mySerializationWriter);
-                mySerializationWriter.WriteObject(thisObject._IsUserDefined);
-                mySerializationWriter.WriteObject(thisObject._ValidationScript);
+                mySerializationWriter.WriteBoolean(thisObject._IsUserDefined);
+                mySerializationWriter.WriteString(thisObject._ValidationScript);
 
                 thisObject.isDirty = false;
 
@@ -602,11 +602,11 @@ namespace sones.GraphFS.InternalObjects
 
             try
             {
-                thisObject._RightsName = (String)mySerializationReader.ReadObject();
-                thisObject._UUID = new RightUUID();
+                thisObject._RightsName          = mySerializationReader.ReadString();
+                thisObject._UUID                = new RightUUID();
                 thisObject._UUID.Deserialize(ref mySerializationReader);
-                thisObject._IsUserDefined = (Boolean)mySerializationReader.ReadObject();
-                thisObject._ValidationScript = (String)mySerializationReader.ReadObject();
+                thisObject._IsUserDefined       = mySerializationReader.ReadBoolean();
+                thisObject._ValidationScript    = mySerializationReader.ReadString();
             }
 
             catch (Exception e)

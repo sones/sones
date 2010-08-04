@@ -64,7 +64,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
             if (parseNode.ChildNodes[2].HasChildNodes())
             {
-                String type = ((GraphDBTypeNode)parseNode.ChildNodes[2].AstNode).Name;
+                String type = ((GraphDBTypeNode)parseNode.ChildNodes[2].AstNode).DBTypeDefinition.Name;
                 _WeightedValue = (DBNumber)GraphDBTypeMapper.GetPandoraObjectFromTypeName(type); //Convert.ToDouble(parseNode.ChildNodes[2].Token.Value);
             }
             else if (parseNode.ChildNodes.Count == 3)

@@ -24,6 +24,7 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Henning Rauch</developer>
+ * <developer>Stefan Licht</developer>
  * <summary>This node is requested in case of type statement.</summary>
  */
 
@@ -41,6 +42,7 @@ using sones.Lib.Frameworks.Irony.Scripting.Ast;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -49,14 +51,12 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     /// <summary>
     /// This node is requested in case of a type statement.
     /// </summary>
-    public class ATypeNode : AStructureNode, IComparable<ATypeNode>
+    public class ATypeNode : AStructureNode
     {
 
-        #region Data
+        #region Properties
 
-        TypesOfAType _TypeOfAType;
-        String _Reference = null;
-        GraphDBType _DBTypeStream = null;
+        public TypeReferenceDefinition ReferenceAndType { get; private set; }
 
         #endregion
 
@@ -66,12 +66,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
         {
         }
 
-        public ATypeNode(GraphDBType myPandoraType)
-        {
-            _TypeOfAType = TypesOfAType.Type;
-            _DBTypeStream = myPandoraType;
-        }
-
         #endregion
 
         public void GetContent(CompilerContext context, ParseTreeNode parseNode)
@@ -79,44 +73,20 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
             var dbContext = context.IContext as DBContext;
             var typeManager = dbContext.DBTypeManager;
 
-            var tempType = typeManager.GetTypeByName(parseNode.ChildNodes[0].Token.ValueString);
+            var dbTypeName = parseNode.ChildNodes[0].Token.ValueString;
 
-            if(tempType != null)
+            if (parseNode.ChildNodes.Count == 2)
             {
-
-                _DBTypeStream = tempType;
-                _TypeOfAType = TypesOfAType.Type;
-
-                if(parseNode.ChildNodes.Count == 2)
-                {
-                    _Reference = parseNode.ChildNodes[1].Token.ValueString;
-                }
-                else
-                {
-                    _Reference = tempType.Name;
-                }
+                ReferenceAndType = new TypeReferenceDefinition(dbTypeName, parseNode.ChildNodes[1].Token.ValueString);
             }
             else
             {
-                throw new GraphDBException(new Error_TypeDoesNotExist(parseNode.ChildNodes[0].Token.ValueString));
+                ReferenceAndType = new TypeReferenceDefinition(dbTypeName, dbTypeName);
             }
+
+
         }
-
-        #region Accessors
-
-        public TypesOfAType TypeOfAType { get { return _TypeOfAType; } }
-        public GraphDBType DBTypeStream { get { return _DBTypeStream; } }
-        public String Reference { get { return _Reference; } }
-
-        public static ATypeNode GetFromReference(String myReference)
-        {
-            ATypeNode result = new ATypeNode();
-            result._Reference = myReference;
-            return result;
-        }
-
-        #endregion
-
+        
         #region Equals Overrides
 
         public override bool Equals(System.Object obj)
@@ -134,7 +104,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
                 return false;
             }
 
-            return (this._Reference == p._Reference);
+            return Equals(p);
         }
 
         public bool Equals(ATypeNode p)
@@ -145,7 +115,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
                 return false;
             }
 
-            return (this._Reference == p._Reference);
+            return (this.ReferenceAndType.Reference == p.ReferenceAndType.Reference) && (this.ReferenceAndType.TypeName == p.ReferenceAndType.TypeName);
             
         }
 
@@ -174,7 +144,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         public override int GetHashCode()
         {
-            return this._Reference.GetHashCode();
+            return this.ReferenceAndType.Reference.GetHashCode() ^ this.ReferenceAndType.TypeName.GetHashCode();
         }
 
         #endregion
@@ -183,18 +153,10 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         public override string ToString()
         {
-            return String.Concat(_Reference, ".", _DBTypeStream.ToString());
+            return String.Concat(ReferenceAndType.Reference, ".", ReferenceAndType.TypeName);
         }
 
         #endregion
 
-        #region IComparable<ATypeNode> Members
-
-        public int CompareTo(ATypeNode other)
-        {
-            return this._Reference.CompareTo(other.Reference);
-        }
-
-        #endregion
     }
 }

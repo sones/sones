@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 
 using sones.GraphFS.DataStructures;
+
 using sones.Lib.DataStructures;
 
 #endregion
@@ -37,10 +38,10 @@ namespace sones.GraphFS.Objects
 {
 
     /// <summary>
-    /// This interface defines the object ontology used within the GraphFS.
+    /// This interface defines the object ontology used within a IGraphFS.
     /// </summary>
 
-    public interface IObjectOntology : IObjectHeader, IObjectLocation
+    public interface IFSObjectOntology : IFSObjectHeader, IObjectLocation
     {
         
         // ObjectStreams
@@ -67,7 +68,7 @@ namespace sones.GraphFS.Objects
         UInt64                                  ObjectSize              { get; }
         UInt64                                  ObjectSizeOnDisc        { get; }
 
-        void CloneObjectOntology(AObjectOntology myAObjectOntology);
+        void CloneObjectOntology(AFSObjectOntology myAObjectOntology);
 
     }
 

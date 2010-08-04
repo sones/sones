@@ -24,6 +24,7 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Henning Rauch</developer>
+ * <developer>Stefan Licht</developer>
  * <summary>This node is requested in case of an AttrUpdateOrAssignListNode Node.</summary>
  */
 
@@ -42,6 +43,7 @@ using sones.GraphDB.TypeManagement.PandoraTypes;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Structures.EdgeTypes;
+using sones.GraphDB.Managers.Structures;
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 {
@@ -50,10 +52,10 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     /// </summary>
     public class AttrUpdateOrAssignListNode : AStructureNode, IAstNodeInit
     {
-        #region data
+     
+        #region Properties
 
-        private HashSet<AttributeUpdateOrAssign> _listOfUpdates = new HashSet<AttributeUpdateOrAssign>();
-        private HashSet<AttributeUpdateOrAssign> _UndefinedAttributes = new HashSet<AttributeUpdateOrAssign>();
+        public HashSet<AAttributeAssignOrUpdateOrRemove> ListOfUpdate { get; private set; }
 
         #endregion
 
@@ -61,7 +63,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         public AttrUpdateOrAssignListNode()
         {
-
+            ListOfUpdate = new HashSet<AAttributeAssignOrUpdateOrRemove>();
         }
 
         #endregion
@@ -72,116 +74,46 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
             {
                 if (aChild.AstNode is AttributeAssignNode)
                 {
+                    
                     #region attribute assign
 
                     AttributeAssignNode aAttributeAssignNode = (AttributeAssignNode)aChild.AstNode;
-                    if(aAttributeAssignNode.AttributeIDNode == null)
-                    {
-                        if (aChild.HasChildNodes())
-                        {
-                            if (aChild.ChildNodes[0].HasChildNodes())
-                            {
-                                ParseTreeNode UndefNode = aChild;
-
-                                var UndefName = UndefNode.ChildNodes[0].ChildNodes[0].Token.ValueString;
-
-                                if (UndefNode.ChildNodes[2].AstNode is SetRefNode)
-                                {
-                                    throw new GraphDBException(new Error_InvalidReferenceAssignmentOfUndefAttr());
-                                }
-
-                                if (UndefNode.ChildNodes[2].AstNode is CollectionOfDBObjectsNode)
-                                {
-                                    CollectionOfDBObjectsNode colNode = (CollectionOfDBObjectsNode)UndefNode.ChildNodes[2].AstNode;
-                                    EdgeTypeListOfBaseObjects valueList = new EdgeTypeListOfBaseObjects();
-
-                                    try
-                                    {
-                                        foreach (var tuple in colNode.TupleNodeElement.Tuple)
-                                        {
-                                            if (tuple.TypeOfValue == TypesOfOperatorResult.Unknown)
-                                                valueList.Add(GraphDBTypeMapper.GetBaseObjectFromCSharpType(tuple.Value));
-                                        }
-
-                                        if (colNode.CollectionType == CollectionType.Set)
-                                            valueList.UnionWith(valueList);
-
-                                        var keyValPair = new KeyValuePair<String, AObject>(UndefName, valueList);
-                                        _listOfUpdates.Add(new AttributeUpdateOrAssign(TypesOfUpdate.AssignAttribute, keyValPair) { IsUndefinedAttribute = true });
-
-                                    }
-                                    catch (GraphDBException e)
-                                    {
-                                        throw e;
-                                    }
-                                }
-                                else
-                                {
-                                    var typeOfExpression = UndefNode.ChildNodes[2].Term.GetType();
-                                    var UndefValue = GraphDBTypeMapper.GetPandoraObjectFromType(GraphDBTypeMapper.ConvertPandora2CSharp(typeOfExpression.Name), UndefNode.ChildNodes[2].Token.Value);
-                                    var keyValPair = new KeyValuePair<String, AObject>(UndefName, UndefValue);
-                                    _listOfUpdates.Add(new AttributeUpdateOrAssign(TypesOfUpdate.AssignAttribute, keyValPair) { IsUndefinedAttribute = true });
-                                }
-                            }
-                        }
-                    }
-                    else
-                        _listOfUpdates.Add(new AttributeUpdateOrAssign(TypesOfUpdate.AssignAttribute, aChild.AstNode));
-
+                    ListOfUpdate.Add((aChild.AstNode as AttributeAssignNode).AttributeValue);
+                  
                     #endregion
+
                 }
                 else
                 {
                     if ((aChild.AstNode is AddToListAttrUpdateNode) || (aChild.AstNode is RemoveFromListAttrUpdateNode))
                     {   
+
                         #region list update
 
                         if (aChild.AstNode is AddToListAttrUpdateNode)
                         {
-                            if (((AddToListAttrUpdateNode)aChild.AstNode).Attribute == null)
-                            {
-                                #region undefined attributes
-                                
-                                _listOfUpdates.Add(new AttributeUpdateOrAssign(TypesOfUpdate.UpdateListAttribute, aChild.AstNode) { IsUndefinedAttribute = true });
+                            ListOfUpdate.Add((aChild.AstNode as AddToListAttrUpdateNode).AttributeUpdateList);
 
-                                #endregion
-                            }
-                            else
-                            {
-                                _listOfUpdates.Add(new AttributeUpdateOrAssign(TypesOfUpdate.UpdateListAttribute, aChild.AstNode));
-                            }
                         }
                         #endregion
                                                 
                         if (aChild.AstNode is RemoveFromListAttrUpdateNode)
                         {
-                            #region list remove
-
-                            if (((RemoveFromListAttrUpdateNode)aChild.AstNode).Attribute == null)
-                            {
-                                #region undefined attributes
-
-                                _listOfUpdates.Add(new AttributeUpdateOrAssign(TypesOfUpdate.UpdateListAttribute, aChild.AstNode) { IsUndefinedAttribute = true });
-
-                                #endregion
-                            }
-                            else
-                            {
-                                _listOfUpdates.Add(new AttributeUpdateOrAssign(TypesOfUpdate.UpdateListAttribute, aChild.AstNode));
-                            }
-
-                            #endregion                        
+                            ListOfUpdate.Add((aChild.AstNode as RemoveFromListAttrUpdateNode).AttributeRemoveList);
+                     
                         }
                     }
                     else
                     {
                         if (aChild.AstNode is AttrRemoveNode)
                         {
+
                             #region remove attribute
 
-                            _listOfUpdates.Add(new AttributeUpdateOrAssign(TypesOfUpdate.RemoveAttribute, aChild.AstNode));
+                            ListOfUpdate.Add((aChild.AstNode as AttrRemoveNode).AttributeRemove);
 
                             #endregion
+
                         }
                         else
                         {
@@ -192,13 +124,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
             }
         }
 
-        #region accessors
-
-        public HashSet<AttributeUpdateOrAssign> ListOfUpdate { get { return _listOfUpdates; } }
-
-        #endregion
-
-
         #region IAstNodeInit Members
 
         public void Init(CompilerContext context, ParseTreeNode parseNode)
@@ -207,5 +132,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
         }
 
         #endregion
+
     }//class
 }//namespace

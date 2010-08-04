@@ -39,7 +39,7 @@ namespace sones.Lib.Frameworks.Irony.Parsing {
 
     /* AddedBy: sones developers */
     // EDIT: PandoraListOfReferences added, 22.07.2009, Holds the list of known References "FROM User U" -> would hold ATypeNode for U
-    public Dictionary<String, object> PandoraListOfReferences;
+    public IEnumerable<Object> PandoraListOfReferences;
     private IContext _context;
     /* Added by sones developers */
 

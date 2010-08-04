@@ -41,6 +41,8 @@ using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
 using Lib;
+using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.QueryLanguage.Operators;
 
 #endregion
 
@@ -53,9 +55,10 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     {
         #region Data
 
-        private IDNode _AttributeIDNode= null;
-        private Object _AttributeValue = null;
-        private TypesOfOperatorResult _AttributeType;
+        public AAttributeAssignOrUpdate AttributeValue { get; private set; }
+
+        private IDChainDefinition _AttributeIDNode = null;
+        //private ParseTreeNode _Node;
 
         #endregion
 
@@ -70,133 +73,77 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         private void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
-            
-            //an undefined attribute doesn't need to validate
-            if (!((IDNode)parseNode.ChildNodes[0].AstNode).IsValidated)
-                return;
-            
+
             #region get myAttributeName
 
-            _AttributeIDNode = (IDNode)parseNode.ChildNodes[0].AstNode;
+            _AttributeIDNode = ((IDNode)parseNode.ChildNodes[0].AstNode).IDChainDefinition;
 
-            #region checkIDNode
-
-            if (_AttributeIDNode.Level > 1)
-            {
-                throw new GraphDBException(new Error_InvalidAttribute(_AttributeIDNode.ToString()));
-            }
+            var attributeType = GraphDBTypeMapper.ConvertPandora2CSharp(parseNode.ChildNodes[2].Term.GetType().Name);
 
             #endregion
 
-            _AttributeType = GraphDBTypeMapper.ConvertPandora2CSharp(parseNode.ChildNodes[2].Term.GetType().Name);
+            var _Node = parseNode.ChildNodes[2];
 
-            #endregion
-
-            #region get Attribute value
-
-            //get DBContext
-
-            var dbContext = context.IContext as DBContext;
-
-            if (dbContext == null)
+            if (_Node.Token != null)
             {
-                throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                AttributeValue = new AttributeAssignOrUpdateValue(_AttributeIDNode, attributeType, _Node.Token.Value);
             }
-
-            if ((!_AttributeIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager).IsUserDefined) && (_AttributeIDNode.LastAttribute.KindOfType != KindsOfType.SetOfReferences) && (_AttributeIDNode.LastAttribute.KindOfType != KindsOfType.ListOfNoneReferences) && (_AttributeIDNode.LastAttribute.KindOfType != KindsOfType.SetOfNoneReferences))
+            else if (_Node.AstNode is BinaryExpressionNode)
             {
-                #region simple value
-                //simple values are string (quoted or not) and numbers
+                #region binary expression
 
-                if (parseNode.ChildNodes[2].Token != null)
+                AttributeValue = new AttributeAssignOrUpdateExpression(_AttributeIDNode, (_Node.AstNode as BinaryExpressionNode).BinaryExpressionDefinition);
+
+                #endregion
+            }
+            else if (_Node.AstNode is TupleNode)
+            {
+                #region Tuple
+
+                TupleNode tempTupleNode = (TupleNode)_Node.AstNode;
+
+                if (tempTupleNode.TupleDefinition.Count() == 1)
                 {
-                    _AttributeValue = parseNode.ChildNodes[2].Token.Value;
-                }
-                else
-                {
-                    if (parseNode.ChildNodes[2].AstNode is BinaryExpressionNode)
+                    if (tempTupleNode.TupleDefinition.First().Value is BinaryExpressionDefinition)
                     {
-                        #region binary expression
-
-                        _AttributeType = TypesOfOperatorResult.Expression;
-                        _AttributeValue = parseNode.ChildNodes[2].AstNode;
-
-                        #endregion
+                        AttributeValue = new AttributeAssignOrUpdateExpression(_AttributeIDNode, tempTupleNode.TupleDefinition.First().Value as BinaryExpressionDefinition);
                     }
                     else
                     {
-                        if (parseNode.ChildNodes[2].AstNode is TupleNode)
-                        {
-                            #region Tuple
-
-                            TupleNode tempTupleNode = (TupleNode)parseNode.ChildNodes[2].AstNode;
-
-                            if (tempTupleNode.Tuple.Count == 1)
-                            {
-                                if (tempTupleNode.Tuple[0].Value is BinaryExpressionNode)
-                                {
-                                    _AttributeType = TypesOfOperatorResult.Expression;
-                                    _AttributeValue = tempTupleNode.Tuple[0].Value;
-                                }
-                                else
-                                {
-                                    throw new GraphDBException(new Error_InvalidTuple("Could not extract BinaryExpressionNode from TupleNode."));
-                                }
-                            }
-                            else
-                            {
-                                throw new GraphDBException(new Error_InvalidTuple("It is not possible to have more than one binary expression in one tuple. Please check brackets."));
-                            }
-
-                            #endregion
-                        }
-                        else if (parseNode.ChildNodes[2].AstNode is SetRefNode)
-                        {
-                            throw new GraphDBException(new Error_InvalidAttributeValue(_AttributeIDNode.LastAttribute.Name, "SetRefNode"));
-                        }
-                        else
-                        {
-                            throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "Currently it is not supported to assign a \"" + parseNode.ChildNodes[2].AstNode.GetType().Name + "\" to an attribute."));
-                        }
+                        throw new GraphDBException(new Error_InvalidTuple("Could not extract BinaryExpressionNode from TupleNode."));
                     }
                 }
+                else
+                {
+                    throw new GraphDBException(new Error_InvalidTuple("It is not possible to have more than one binary expression in one tuple. Please check brackets."));
+                }
+
+                #endregion
+            }
+            else if (_Node.AstNode is IDNode)
+            {
+                throw new GraphDBException(new Error_InvalidAttributeValue(_AttributeIDNode.ToString(), (_Node.AstNode as IDNode).ToString()));
+            }
+            else if (_Node.AstNode is SetRefNode)
+            {
+                #region setref
+
+                AttributeValue = new AttributeAssignOrUpdateSetRef(_AttributeIDNode, (_Node.AstNode as SetRefNode).SetRefDefinition);
+
+                #endregion
+            }
+            else if ((_Node.AstNode is CollectionOfDBObjectsNode))
+            {
+                #region collection like list
+
+                AttributeValue = new AttributeAssignOrUpdateList((_Node.AstNode as CollectionOfDBObjectsNode).CollectionDefinition, _AttributeIDNode, true);
 
                 #endregion
             }
             else
             {
-                #region complex
-
-                if (parseNode.ChildNodes[2].AstNode is SetRefNode)
-                {
-                    #region setref
-
-                    _AttributeType = TypesOfOperatorResult.Reference;
-                    _AttributeValue = parseNode.ChildNodes[2].AstNode;
-
-                    #endregion
-                }
-                else
-                {
-                    if ((parseNode.ChildNodes[2].AstNode is CollectionOfDBObjectsNode))
-                    {
-                        #region collection like list
-                      
-                        _AttributeType = TypesOfOperatorResult.SetOfDBObjects;
-                        _AttributeValue = parseNode.ChildNodes[2].AstNode;
-
-                        #endregion
-                    }
-                    else
-                    {
-                        throw new GraphDBException(new Error_InvalidTuple(String.Format("{0} is not a valid value for attribute {1}.{2}",  parseNode.ChildNodes[2].ToString(), _AttributeIDNode.LastAttribute.Name, GenerateHelperMessage())));
-                    }
-                }
-
-                #endregion
+                throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
             }
-
-            #endregion
 
         }
 
@@ -204,10 +151,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
         {
             return string.Format(Environment.NewLine + "Try to use REF/REFERENCE (edge) or SETOF/LISTOF (hyperedge).");
         }
-
-        public IDNode AttributeIDNode { get { return _AttributeIDNode; } }
-        public TypesOfOperatorResult AttributeType { get { return _AttributeType; } }
-        public Object AttributeValue { get { return _AttributeValue; } }
 
         #region IAstNodeInit Members
 
@@ -217,5 +160,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
         }
 
         #endregion
+
     }
 }

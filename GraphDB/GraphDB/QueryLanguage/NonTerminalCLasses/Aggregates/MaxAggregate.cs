@@ -96,23 +96,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Aggregates
             return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
 
-        public override Exceptional<object> Aggregate(AttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
+        public override Exceptional<object> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
         {
+            var indexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(attributeIndex.IndexRelatedTypeUUID);
 
-            //String settingEncoding = (String)graphDBType.GetSettingValue(DBConstants.SettingUUIDEncoding, mySessionToken, dbContext.DBTypeManager).Value.Value;
-            //if (settingEncoding == null)
-            //    return new Exceptional<object>(new Error_ArgumentNullOrEmpty("settingEncoding"));
-
-            var idxRef = attributeIndex.GetIndexReference(dbContext.DBIndexManager);
-            if (!idxRef.Success)
-            {
-                return new Exceptional<object>(idxRef);
-            }
-
-            return new Exceptional<Object>((ObjectUUID)idxRef.Value.Keys().Max().IndexKeyValues[0].Value);
-
-            //return new Exceptional<object>(SpecialTypeAttribute_UUID.ConvertFromUUID((ObjectUUID)idxRef.Value.Keys().Max().IndexKeyValues[0].Value, settingEncoding));
-
+            return new Exceptional<Object>((ObjectUUID)attributeIndex.GetKeys(indexRelatedType, dbContext).Max().IndexKeyValues[0].Value);
         }
     }
 }

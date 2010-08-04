@@ -48,7 +48,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
     {
         #region Data
 
-        private HashSet<GraphDBType> _TypeSet;
+        private HashSet<String> _Types;
 
         #endregion
 
@@ -71,13 +71,13 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
         public override void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
-            _TypeSet = new HashSet<GraphDBType>();
+            _Types = new HashSet<string>();
 
             var dbTypeContext = (DBContext)context.IContext;
 
             if (parseNode.ChildNodes[2].HasChildNodes())
             {
-                parseNode.ChildNodes[2].ChildNodes[0].ChildNodes.ForEach(item => _TypeSet.Add(dbTypeContext.DBTypeManager.GetTypeByName(((ATypeNode)item.AstNode).DBTypeStream.Name)));
+                parseNode.ChildNodes[2].ChildNodes[0].ChildNodes.ForEach(item => _Types.Add(((ATypeNode)item.AstNode).ReferenceAndType.TypeName));
             }
         }
 
@@ -87,18 +87,38 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             {
                 Exceptional<Boolean> rebuildResult = null;
 
-                if (_TypeSet.Count == 0)
+                IEnumerable<GraphDBType> typesToRebuild;
+                QueryResult result = new QueryResult();
+
+                if (_Types.Count == 0)
                 {
-                    rebuildResult = transaction.GetDBContext().DBIndexManager.RebuildIndices(dbContext.DBTypeManager.GetAllTypes(false).ToDictionary(item => item.UUID));
+                    typesToRebuild = dbContext.DBTypeManager.GetAllTypes(false);
                 }
                 else
                 {
-                    rebuildResult = transaction.GetDBContext().DBIndexManager.RebuildIndices(_TypeSet.ToDictionary(item => item.UUID));
+
+                    #region Get types by name and return on error
+
+                    typesToRebuild = new HashSet<GraphDBType>();
+                    foreach (var typeName in _Types)
+                    {
+                        var type = transaction.GetDBContext().DBTypeManager.GetTypeByName(typeName);
+                        if (type == null)
+                        {
+                            return new QueryResult(new Errors.Error_TypeDoesNotExist(typeName));
+                        }
+                        (typesToRebuild as HashSet<GraphDBType>).Add(type);
+                    }
+
+                    #endregion
+
                 }
+
+                rebuildResult = transaction.GetDBContext().DBIndexManager.RebuildIndices(typesToRebuild);
 
                 if (!rebuildResult.Success)
                 {
-                    QueryResult result = new QueryResult(rebuildResult.Errors);
+                    result = new QueryResult(rebuildResult.Errors);
 
                     result.AddErrorsAndWarnings(transaction.Rollback());
 

@@ -34,6 +34,7 @@ using sones.Lib.ErrorHandling;
 
 using sones.StorageEngines;
 using sones.GraphFS.Caches;
+using sones.GraphFS.Events;
 using sones.GraphFS.InternalObjects;
 using sones.GraphFS.Objects;
 using sones.GraphFS.DataStructures;
@@ -56,9 +57,14 @@ namespace sones.GraphFS.Session
     public class GraphFSSession : IGraphFSSession
     {
 
-        #region Data
+        
 
-        private IGraphFS _IGraphFS;
+
+        #region Properties
+
+        #region IGraphFS
+
+        public IGraphFS IGraphFS { get; private set; }
 
         #endregion
 
@@ -66,30 +72,31 @@ namespace sones.GraphFS.Session
 
         public String Implemenation
         {
+
             get
             {
-                return _IGraphFS.GetType().Name;
+
+                if (IGraphFS == null)
+                    return String.Empty;
+
+                return IGraphFS.GetType().Name;
+
             }
+
         }
 
         #endregion
 
         #region SessionToken
 
-        private SessionToken _SessionToken;
+        public SessionToken SessionToken { get; private set; }
 
-        public SessionToken SessionToken
-        {
-            get
-            {
-                return _SessionToken;
-            }
-        }
+        #endregion
 
         #endregion
 
 
-        #region Constructors
+        #region Constructor(s)
 
         #region GraphFSSession(myPandoraFS, myUsername)
 
@@ -101,9 +108,9 @@ namespace sones.GraphFS.Session
         public GraphFSSession(IGraphFS myIPandoraFS, String myUsername)
         {
 
-            _IGraphFS = myIPandoraFS;
+            IGraphFS = myIPandoraFS;
             var sessionInfo = new FSSessionInfo(myUsername);            
-            _SessionToken   = new SessionToken(sessionInfo);
+            SessionToken    = new SessionToken(sessionInfo);
 
         }
 
@@ -112,11 +119,338 @@ namespace sones.GraphFS.Session
         #endregion
 
 
+        #region Events
+
+        //#region OnExceptionOccurred(myEventArgs)
+
+        //public event ExceptionOccuredEvent OnExceptionOccurred;
+
+        //protected void OnExceptionOccured(Object mySender, ExceptionOccuredEventArgs myEventArgs)
+        //{
+        //    Debug.WriteLine("[!CRITICAL Exception][" + mySender.GetType().FullName + "] " + myEventArgs.Exception.Message + Environment.NewLine + myEventArgs.Exception.StackTrace);
+        //    // if (OnExceptionOccurred != null)
+        //    OnExceptionOccurred(mySender, myEventArgs);
+        //}
+
+        //#endregion
+
+
+        //#region OnLoad/OnLoadEvent(myEventArgs)
+
+   //     public delegate void OnLoadEventHandler(Object mySender, EventArgs myEventArgs);
+
+        
+        //public event OnLoadEventHandler OnLoad;
+
+        ///// <summary>
+        ///// Invoke the OnLoad event, called whenever a AFSObject
+        ///// is ready to be loaded.
+        ///// </summary>
+        ///// <param name="e">EventArgs</param>
+        //public virtual void OnLoadEvent(EventArgs myEventArgs)
+        //{
+        //    if (OnLoad != null)
+        //        OnLoad(this, myEventArgs);
+        //}
+
+        //#endregion
+
+        //#region OnLoaded/OnLoadedEvent(myEventArgs)
+
+     //   public delegate void OnLoadedEventHandler(Object mySender, EventArgs myEventArgs);
+
+        
+        //public event OnLoadedEventHandler OnLoaded;
+
+        ///// <summary>
+        ///// Invoke the OnLoaded event, called whenever a AFSObject
+        ///// was successfully loaded.
+        ///// </summary>
+        ///// <param name="e">EventArgs</param>
+        //public virtual void OnLoadedEvent(EventArgs myEventArgs)
+        //{
+        //    if (OnLoaded != null)
+        //        OnLoaded(this, myEventArgs);
+        //}
+
+        //#endregion
+
+        //#region OnSave/OnSaveEvent(myEventArgs)
+
+     //   public delegate void OnSaveEventHandler(Object mySender, EventArgs myEventArgs);
+
+        
+        //public event OnSaveEventHandler OnSave;
+
+        ///// <summary>
+        ///// Invoke the OnSave event, called whenever a AFSObject
+        ///// is ready to be saved.
+        ///// </summary>
+        ///// <param name="e">EventArgs</param>
+        //public virtual void OnSaveEvent(EventArgs myEventArgs)
+        //{
+        //    if (OnSave != null)
+        //        OnSave(this, myEventArgs);
+        //}
+
+        //#endregion
+
+        //#region OnSaved/OnSavedEvent(myEventArgs)
+
+        //  public delegate void OnSavedEventHandler(Object mySender, EventArgs myEventArgs);
+
+        
+        //public event OnSavedEventHandler OnSaved;
+
+        ///// <summary>
+        ///// Invoke the OnSaved event, called whenever a AFSObject
+        ///// was successfully saved on disc.
+        ///// </summary>
+        ///// <param name="e">EventArgs</param>
+        //public virtual void OnSavedEvent(EventArgs myEventArgs)
+        //{
+        //    if (OnSaved != null)
+        //        OnSaved(this, myEventArgs);
+        //}
+
+        //#endregion
+
+        //#region OnRemove/OnRemoveEvent(myEventArgs)
+
+     //   public delegate void OnRemoveEventHandler(Object mySender, EventArgs myEventArgs);
+
+        ///// <summary>
+        ///// An event to be notified whenever a AFSObject
+        ///// is ready to be removed.
+        ///// </summary>
+        //public event OnRemoveEventHandler OnRemove;
+
+        ///// <summary>
+        ///// Invoke the OnSave event, called whenever a AFSObject
+        ///// is ready to be removed.
+        ///// </summary>
+        ///// <param name="e">EventArgs</param>
+        //public virtual void OnRemoveEvent(EventArgs myEventArgs)
+        //{
+        //    if (OnRemove != null)
+        //        OnRemove(this, myEventArgs);
+        //}
+
+        //#endregion
+
+        //#region OnRemoved/OnRemovedEvent(myEventArgs)
+
+      //  public delegate void OnRemovedEventHandler(Object mySender, EventArgs myEventArgs);
+
+        ///// <summary>
+        ///// An event to be notified whenever a AFSObject
+        ///// was successfully removed.
+        ///// </summary>
+        //public event OnRemovedEventHandler OnRemoved;
+
+        ///// <summary>
+        ///// Invoke the OnRemoved event, called whenever a AFSObject
+        ///// was successfully removed.
+        ///// </summary>
+        ///// <param name="e">EventArgs</param>
+        //public virtual void OnRemovedEvent(EventArgs myEventArgs)
+        //{
+        //    if (OnRemoved != null)
+        //        OnRemoved(this, myEventArgs);
+        //}
+
+
+        #region OnLoad
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject is
+        /// ready to be loaded.
+        /// </summary>
+        public event FSEventHandlers.OnLoadEventHandler OnLoad
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnLoad += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnLoad -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnLoaded
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject
+        /// was successfully loaded.
+        /// </summary>
+        public event FSEventHandlers.OnLoadedEventHandler OnLoaded
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnLoaded += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnLoaded -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnSave
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject
+        /// is ready to be saved.
+        /// </summary>
+        public event FSEventHandlers.OnSaveEventHandler OnSave
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnSave += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnSave -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnSaved
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject
+        /// was successfully saved on disc.
+        /// </summary>
+        public event FSEventHandlers.OnSavedEventHandler OnSaved
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnSaved += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnSaved -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnRemove
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject
+        /// is ready to be removed.
+        /// </summary>
+        public event FSEventHandlers.OnRemoveEventHandler OnRemove
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnRemove += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnRemove -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnSaved
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject
+        /// was successfully removed.
+        /// </summary>
+        public event FSEventHandlers.OnRemovedEventHandler OnRemoved
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnRemoved += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnRemoved -= value;
+                }
+            }
+
+        }
+
+        #endregion
+        
+        #endregion
+
+
+
+        //event EventHandler PreDrawEvent;
+
+        
+
+
+
+
+
         #region Session specific Members
 
         public IGraphFSSession CreateNewSession(String myUsername)
         {
-            return new GraphFSSession(_IGraphFS, myUsername);
+            return new GraphFSSession(IGraphFS, myUsername);
         }
 
         #endregion
@@ -126,100 +460,138 @@ namespace sones.GraphFS.Session
 
         #region Information Methods
 
-        #region IsPersistent
+        #region IsMounted
 
-        public Boolean IsPersistent { get { return _IGraphFS.IsPersistent; } }
+        public Boolean IsMounted
+        {
+
+            get
+            {
+
+                if (IGraphFS == null)
+                    return false;
+                
+                return IGraphFS.IsMounted; 
+            
+            }
+
+        }
 
         #endregion
 
-        public Boolean isMounted
+        #region IsPersistent
+
+        public Boolean IsPersistent
         {
-            get { return _IGraphFS.isMounted; }
+            
+            get
+            {
+
+                if (IGraphFS == null)
+                    return false;
+
+                return IGraphFS.IsPersistent;
+
+            }
+        
         }
 
+        #endregion
+
+
+        #region TraverseChildFSs(myFunc, myDepth, mySessionToken)
+
+        public IEnumerable<Object> TraverseChildFSs(Func<IGraphFS, UInt64, IEnumerable<Object>> myFunc, UInt64 myDepth)
+        {
+            return IGraphFS.TraverseChildFSs(myFunc, myDepth, SessionToken);
+        }
+
+        #endregion
+
+        
         public FileSystemUUID GetFileSystemUUID()
         {
-            return _IGraphFS.GetFileSystemUUID(_SessionToken);
+            return IGraphFS.GetFileSystemUUID(SessionToken);
         }
 
         public FileSystemUUID GetFileSystemUUID(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.GetFileSystemUUID(myObjectLocation, _SessionToken);
+            return IGraphFS.GetFileSystemUUID(myObjectLocation, SessionToken);
         }
 
-        public IEnumerable<FileSystemUUID> GetFileSystemUUIDs(Boolean myRecursiveOperation)
+        public IEnumerable<FileSystemUUID> GetFileSystemUUIDs(UInt64 myDepth)
         {
-            return _IGraphFS.GetFileSystemUUIDs(myRecursiveOperation, _SessionToken);
+            return IGraphFS.GetFileSystemUUIDs(myDepth, SessionToken);
         }
 
         public String GetFileSystemDescription()
         {
-            return _IGraphFS.GetFileSystemDescription(_SessionToken);
+            return IGraphFS.GetFileSystemDescription(SessionToken);
         }
 
         public String GetFileSystemDescription(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.GetFileSystemDescription(myObjectLocation, _SessionToken);
+            return IGraphFS.GetFileSystemDescription(myObjectLocation, SessionToken);
         }
 
-        public IEnumerable<String> GetFileSystemDescriptions(Boolean myRecursiveOperation)
+        public IEnumerable<String> GetFileSystemDescriptions(UInt64 myDepth)
         {
-            return _IGraphFS.GetFileSystemDescriptions(myRecursiveOperation, _SessionToken);
+            return IGraphFS.GetFileSystemDescriptions(myDepth, SessionToken);
         }
 
         public void SetFileSystemDescription(String myFileSystemDescription)
         {
-            _IGraphFS.SetFileSystemDescription(myFileSystemDescription, _SessionToken);
+            IGraphFS.SetFileSystemDescription(myFileSystemDescription, SessionToken);
         }
 
         public void SetFileSystemDescription(ObjectLocation myObjectLocation, String myFileSystemDescription)
         {
-            _IGraphFS.SetFileSystemDescription(myObjectLocation, myFileSystemDescription, _SessionToken);
+            IGraphFS.SetFileSystemDescription(myObjectLocation, myFileSystemDescription, SessionToken);
         }
 
         public UInt64 GetNumberOfBytes()
         {
-            return _IGraphFS.GetNumberOfBytes(_SessionToken);
+            return IGraphFS.GetNumberOfBytes(SessionToken);
         }
 
         public UInt64 GetNumberOfBytes(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.GetNumberOfBytes(myObjectLocation, _SessionToken);
+            return IGraphFS.GetNumberOfBytes(myObjectLocation, SessionToken);
         }
 
         public IEnumerable<UInt64> GetNumberOfBytes(Boolean myRecursiveOperation)
         {
-            return _IGraphFS.GetNumberOfBytes(myRecursiveOperation, _SessionToken);
+            return IGraphFS.GetNumberOfBytes(myRecursiveOperation, SessionToken);
         }
 
         public UInt64 GetNumberOfFreeBytes()
         {
-            return _IGraphFS.GetNumberOfFreeBytes(_SessionToken);
+            return IGraphFS.GetNumberOfFreeBytes(SessionToken);
         }
 
         public UInt64 GetNumberOfFreeBytes(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.GetNumberOfFreeBytes(myObjectLocation, _SessionToken);
+            return IGraphFS.GetNumberOfFreeBytes(myObjectLocation, SessionToken);
         }
 
         public IEnumerable<UInt64> GetNumberOfFreeBytes(Boolean myRecursiveOperation)
         {
-            return _IGraphFS.GetNumberOfFreeBytes(myRecursiveOperation, _SessionToken);
+            return IGraphFS.GetNumberOfFreeBytes(myRecursiveOperation, SessionToken);
         }
 
         public AccessModeTypes GetAccessMode()
         {
-            return _IGraphFS.GetAccessMode(_SessionToken);
+            return IGraphFS.GetAccessMode(SessionToken);
         }
 
         public AccessModeTypes GetAccessMode(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.GetAccessMode(myObjectLocation, _SessionToken);
+            return IGraphFS.GetAccessMode(myObjectLocation, SessionToken);
         }
 
         public IEnumerable<AccessModeTypes> GetAccessModes(Boolean myRecursiveOperation)
         {
-            return _IGraphFS.GetAccessModes(myRecursiveOperation, _SessionToken);
+            return IGraphFS.GetAccessModes(myRecursiveOperation, SessionToken);
         }
 
 #warning "Change to method"
@@ -227,62 +599,62 @@ namespace sones.GraphFS.Session
         {
             get
             {
-                return _IGraphFS.ParentFileSystem;
+                return IGraphFS.ParentFileSystem;
             }
             set
             {
-                _IGraphFS.ParentFileSystem = value;
+                IGraphFS.ParentFileSystem = value;
             }
         }
 
         public IEnumerable<ObjectLocation> GetChildFileSystemMountpoints(Boolean myRecursiveOperation)
         {
-            return _IGraphFS.GetChildFileSystemMountpoints(myRecursiveOperation, _SessionToken);
+            return IGraphFS.GetChildFileSystemMountpoints(myRecursiveOperation, SessionToken);
         }
 
         public IGraphFS GetChildFileSystem(ObjectLocation myObjectLocation, Boolean myRecursive)
         {
-            return _IGraphFS.GetChildFileSystem(myObjectLocation, myRecursive, _SessionToken);
+            return IGraphFS.GetChildFileSystem(myObjectLocation, myRecursive, SessionToken);
         }
 
         public NotificationDispatcher GetNotificationDispatcher()
         {
-            return _IGraphFS.GetNotificationDispatcher(_SessionToken);
+            return IGraphFS.GetNotificationDispatcher(SessionToken);
         }
 
         public NotificationDispatcher GetNotificationDispatcher(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.GetNotificationDispatcher(myObjectLocation, _SessionToken);
+            return IGraphFS.GetNotificationDispatcher(myObjectLocation, SessionToken);
         }
 
         public NotificationSettings GetNotificationSettings()
         {
-            return _IGraphFS.GetNotificationSettings(_SessionToken);
+            return IGraphFS.GetNotificationSettings(SessionToken);
         }
 
         public NotificationSettings GetNotificationSettings(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.GetNotificationSettings(myObjectLocation, _SessionToken);
+            return IGraphFS.GetNotificationSettings(myObjectLocation, SessionToken);
         }
 
         public void SetNotificationDispatcher(NotificationDispatcher myNotificationDispatcher)
         {
-            _IGraphFS.SetNotificationDispatcher(myNotificationDispatcher, _SessionToken);
+            IGraphFS.SetNotificationDispatcher(myNotificationDispatcher, SessionToken);
         }
 
         public void SetNotificationDispatcher(ObjectLocation myObjectLocation, NotificationDispatcher myNotificationDispatcher)
         {
-            _IGraphFS.SetNotificationDispatcher(myObjectLocation, myNotificationDispatcher, _SessionToken);
+            IGraphFS.SetNotificationDispatcher(myObjectLocation, myNotificationDispatcher, SessionToken);
         }
 
         public void SetNotificationSettings(NotificationSettings myNotificationSettings)
         {
-            _IGraphFS.SetNotificationSettings(myNotificationSettings, _SessionToken);
+            IGraphFS.SetNotificationSettings(myNotificationSettings, SessionToken);
         }
 
         public void SetNotificationSettings(ObjectLocation myObjectLocation, NotificationSettings myNotificationSettings)
         {
-            _IGraphFS.SetNotificationSettings(myObjectLocation, myNotificationSettings, _SessionToken);
+            IGraphFS.SetNotificationSettings(myObjectLocation, myNotificationSettings, SessionToken);
         }
 
         #endregion
@@ -291,22 +663,22 @@ namespace sones.GraphFS.Session
 
         public ObjectCacheSettings GetObjectCacheSettings()
         {
-            return _IGraphFS.GetObjectCacheSettings(_SessionToken);
+            return IGraphFS.GetObjectCacheSettings(SessionToken);
         }
 
         public ObjectCacheSettings GetObjectCacheSettings(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.GetObjectCacheSettings(myObjectLocation, _SessionToken);
+            return IGraphFS.GetObjectCacheSettings(myObjectLocation, SessionToken);
         }
 
         public void SetObjectCacheSettings(ObjectCacheSettings myObjectCacheSettings)
         {
-            _IGraphFS.SetObjectCacheSettings(myObjectCacheSettings, _SessionToken);
+            IGraphFS.SetObjectCacheSettings(myObjectCacheSettings, SessionToken);
         }
 
         public void SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings)
         {
-            _IGraphFS.SetObjectCacheSettings(myObjectLocation, myObjectCacheSettings, _SessionToken);
+            IGraphFS.SetObjectCacheSettings(myObjectLocation, myObjectCacheSettings, SessionToken);
         }
 
         #endregion
@@ -325,7 +697,7 @@ namespace sones.GraphFS.Session
             else
                 _IStorageEngines.Add(StorageEngineFactory.Instance.ActivateIStorageEngine(myStorageLocation).Value);
 
-            var _Exceptional = _IGraphFS.MakeFileSystem(_IStorageEngines, myDescription, myOverwriteExistingFileSystem, myAction, _SessionToken);
+            var _Exceptional = IGraphFS.MakeFileSystem(_IStorageEngines, myDescription, myOverwriteExistingFileSystem, myAction, SessionToken);
 
             foreach (var _IStorageEngine in _IStorageEngines)
                 _IStorageEngine.DetachStorage();
@@ -336,12 +708,12 @@ namespace sones.GraphFS.Session
 
         public void GrowFileSystem(UInt64 myNumberOfBytesToAdd)
         {
-            _IGraphFS.GrowFileSystem(myNumberOfBytesToAdd, _SessionToken);
+            IGraphFS.GrowFileSystem(myNumberOfBytesToAdd, SessionToken);
         }
 
         public void ShrinkFileSystem(UInt64 myNumberOfBytesToRemove)
         {
-            _IGraphFS.ShrinkFileSystem(myNumberOfBytesToRemove, _SessionToken);
+            IGraphFS.ShrinkFileSystem(myNumberOfBytesToRemove, SessionToken);
         }
 
         #endregion
@@ -350,57 +722,64 @@ namespace sones.GraphFS.Session
 
         public void MountFileSystem(String myStorageLocation, AccessModeTypes myFSAccessMode)
         {
-            _IGraphFS.MountFileSystem(myStorageLocation, myFSAccessMode, _SessionToken);
+            IGraphFS.MountFileSystem(myStorageLocation, myFSAccessMode, SessionToken);
+        }
+
+        public void MountFileSystem(IGraphFSSession myIGraphFSSession, ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode)
+        {
+            IGraphFS.MountFileSystem(myIGraphFSSession.IGraphFS, myMountPoint, myFSAccessMode, SessionToken);
         }
 
         public void MountFileSystem(String myStorageLocation, ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode)
         {
-            _IGraphFS.MountFileSystem(myStorageLocation, myMountPoint, myFSAccessMode, _SessionToken);
+            IGraphFS.MountFileSystem(myStorageLocation, myMountPoint, myFSAccessMode, SessionToken);
         }
 
 
         public void RemountFileSystem(AccessModeTypes myFSAccessMode)
         {
-            _IGraphFS.RemountFileSystem(myFSAccessMode, _SessionToken);
+            IGraphFS.RemountFileSystem(myFSAccessMode, SessionToken);
         }
 
         public void RemountFileSystem(ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode)
         {
-            _IGraphFS.RemountFileSystem(myMountPoint, myFSAccessMode, _SessionToken);
+            IGraphFS.RemountFileSystem(myMountPoint, myFSAccessMode, SessionToken);
         }
 
 
         public void UnmountFileSystem()
         {
-            _IGraphFS.UnmountFileSystem(_SessionToken);
+            IGraphFS.UnmountFileSystem(SessionToken);
         }
 
         public void UnmountFileSystem(ObjectLocation myMountPoint)
         {
-            _IGraphFS.UnmountFileSystem(myMountPoint, _SessionToken);
+            IGraphFS.UnmountFileSystem(myMountPoint, SessionToken);
         }
 
         public void UnmountAllFileSystems()
         {
-            _IGraphFS.UnmountAllFileSystems(_SessionToken);
+            IGraphFS.UnmountAllFileSystems(SessionToken);
         }
 
         #endregion
 
         public void ChangeRootDirectory(String myChangeRootPrefix)
         {
-            _IGraphFS.ChangeRootDirectory(myChangeRootPrefix, _SessionToken);
+            IGraphFS.ChangeRootDirectory(myChangeRootPrefix, SessionToken);
         }
 
 
         public Trinary ResolveObjectLocation(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIPandoraFS)
         {
-            return _IGraphFS.ResolveObjectLocation(ref myObjectLocation, out myObjectStreams, out myObjectPath, out myObjectName, out myIDirectoryObject, out myIPandoraFS, _SessionToken);
+            throw new NotImplementedException();
+            //return IGraphFS.ResolveObjectLocation(ref myObjectLocation, out myObjectStreams, out myObjectPath, out myObjectName, out myIDirectoryObject, out myIPandoraFS, SessionToken);
         }
 
         public String ResolveObjectLocation(ObjectLocation myObjectLocation, Boolean myThrowObjectNotFoundException)
         {
-            return _IGraphFS.ResolveObjectLocation(myObjectLocation, myThrowObjectNotFoundException, _SessionToken);
+            throw new NotImplementedException();
+            //return IGraphFS.ResolveObjectLocation(myObjectLocation, myThrowObjectNotFoundException, SessionToken);
         }
 
 
@@ -411,7 +790,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<INode> GetINode(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.GetINode(myObjectLocation, _SessionToken);
+            return IGraphFS.GetINode(myObjectLocation, SessionToken);
         }
 
         #endregion
@@ -420,7 +799,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<ObjectLocator> GetObjectLocator(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.GetObjectLocator(myObjectLocation, _SessionToken);
+            return IGraphFS.GetObjectLocator(myObjectLocation, SessionToken);
         }
 
         #endregion
@@ -429,105 +808,105 @@ namespace sones.GraphFS.Session
 
         #region Object specific methods
 
-        #region LockObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectLock, myObjectLockType, myLockingTime)
+        #region LockFSObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectLock, myObjectLockType, myLockingTime)
 
-        public Exceptional LockObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime)
+        public Exceptional LockFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime)
         {
-            return _IGraphFS.LockObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectLock, myObjectLockType, myLockingTime, _SessionToken);
+            return IGraphFS.LockFSObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectLock, myObjectLockType, myLockingTime, SessionToken);
         }
 
         #endregion
 
 
-        #region GetOrCreateObject<PT>(myObjectLocation)
+        #region GetOrCreateFSObject<PT>(myObjectLocation)
 
-        public Exceptional<PT> GetOrCreateObject<PT>(ObjectLocation myObjectLocation) where PT : AFSObject, new()
+        public Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation) where PT : AFSObject, new()
         {
-            var _APandoraObject = _IGraphFS.GetOrCreateObject<PT>(myObjectLocation, null, null, null, 0, false, _SessionToken);
-            if (_APandoraObject != null && _APandoraObject.Value != null)
-                _APandoraObject.Value.IGraphFSSessionReference = this;
-            return _APandoraObject;
+            var _AFSObject = IGraphFS.GetOrCreateFSObject<PT>(myObjectLocation, null, null, null, 0, false, SessionToken);
+            if (_AFSObject != null && _AFSObject.Value != null)
+                _AFSObject.Value.IGraphFSSessionReference = this;
+            return _AFSObject;
         }
 
         #endregion
 
-        #region GetOrCreateObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures)
+        #region GetOrCreateFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures)
 
-        public Exceptional<PT> GetOrCreateObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, ulong myObjectCopy = 0, bool myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new()
+        public Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new()
         {
 
-            var _APandoraObject = _IGraphFS.GetOrCreateObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, _SessionToken);
+            var _AFSObject = IGraphFS.GetOrCreateFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, SessionToken);
 
-            if (_APandoraObject != null && _APandoraObject.Value != null)
+            if (_AFSObject != null && _AFSObject.Value != null)
             {
-                _APandoraObject.Value.IGraphFSSessionReference = new WeakReference<IGraphFSSession>(this);
-                _APandoraObject.Value.IGraphFSReference        = new WeakReference<IGraphFS>(_IGraphFS);
+                _AFSObject.Value.IGraphFSSessionReference = new WeakReference<IGraphFSSession>(this);
+                _AFSObject.Value.IGraphFSReference        = new WeakReference<IGraphFS>(IGraphFS);
             }
 
-            return _APandoraObject;
+            return _AFSObject;
 
         }
 
         #endregion
 
-        #region GetOrCreateObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc, _SessionToken)
+        #region GetOrCreateFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc, SessionToken)
 
-        public Exceptional<PT> GetOrCreateObject<PT>(ObjectLocation myObjectLocation, string myObjectStream, Func<PT> myFunc, string myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, ulong myObjectCopy = 0, bool myIgnoreIntegrityCheckFailures = false) where PT : AFSObject
+        public Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, Func<PT> myFunc, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject
         {
-            var _APandoraObject = _IGraphFS.GetOrCreateObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc, _SessionToken);
-            if (_APandoraObject != null && _APandoraObject.Value != null)
-                _APandoraObject.Value.IGraphFSSessionReference = new WeakReference<IGraphFSSession>(this);
-            return _APandoraObject;
+            var _AFSObject = IGraphFS.GetOrCreateFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc, SessionToken);
+            if (_AFSObject != null && _AFSObject.Value != null)
+                _AFSObject.Value.IGraphFSSessionReference = new WeakReference<IGraphFSSession>(this);
+            return _AFSObject;
         }
 
         #endregion
 
 
-        #region GetObject<PT>(myObjectLocation)
+        #region GetFSObject<PT>(myObjectLocation)
 
-        public Exceptional<PT> GetObject<PT>(ObjectLocation myObjectLocation) where PT : AFSObject, new()
+        public Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation) where PT : AFSObject, new()
         {
-            var _APandoraObject = _IGraphFS.GetObject<PT>(myObjectLocation, null, null, null, 0, false, _SessionToken);
-            if (_APandoraObject != null && _APandoraObject.Value != null)
-                _APandoraObject.Value.IGraphFSSessionReference = new WeakReference<IGraphFSSession>(this);
-            return _APandoraObject;
+            var _AFSObject = IGraphFS.GetFSObject<PT>(myObjectLocation, null, null, null, 0, false, SessionToken);
+            if (_AFSObject != null && _AFSObject.Value != null)
+                _AFSObject.Value.IGraphFSSessionReference = new WeakReference<IGraphFSSession>(this);
+            return _AFSObject;
         }
 
         #endregion
 
-        #region GetObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures)
+        #region GetFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures)
 
-        public Exceptional<PT> GetObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, ulong myObjectCopy = 0, bool myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new()
+        public Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new()
         {
-            var _APandoraObject = _IGraphFS.GetObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, _SessionToken);
-            if (_APandoraObject != null && _APandoraObject.Value != null)
-                _APandoraObject.Value.IGraphFSSessionReference = new WeakReference<IGraphFSSession>(this);
-            return _APandoraObject;
+            var _AFSObject = IGraphFS.GetFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, SessionToken);
+            if (_AFSObject != null && _AFSObject.Value != null)
+                _AFSObject.Value.IGraphFSSessionReference = new WeakReference<IGraphFSSession>(this);
+            return _AFSObject;
         }
 
         #endregion
 
-        #region GetObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc, _SessionToken)
+        #region GetFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc, SessionToken)
 
-        public Exceptional<PT> GetObject<PT>(ObjectLocation myObjectLocation, string myObjectStream, Func<PT> myFunc, string myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, ulong myObjectCopy = 0, bool myIgnoreIntegrityCheckFailures = false) where PT : AFSObject
+        public Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, Func<PT> myFunc, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject
         {
-            var _APandoraObject = _IGraphFS.GetObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc, _SessionToken);
-            if (_APandoraObject != null && _APandoraObject.Value != null)
-                _APandoraObject.Value.IGraphFSSessionReference = new WeakReference<IGraphFSSession>(this);
-            return _APandoraObject;
+            var _AFSObject = IGraphFS.GetFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc, SessionToken);
+            if (_AFSObject != null && _AFSObject.Value != null)
+                _AFSObject.Value.IGraphFSSessionReference = new WeakReference<IGraphFSSession>(this);
+            return _AFSObject;
         }
 
         #endregion
 
 
-        #region StoreObject(myAPandoraObject, myAllowOverwritting)
+        #region StoreFSObject(myAFSObject, myAllowOverwritting)
 
-        public Exceptional StoreFSObject(AFSObject myAPandoraObject, Boolean myAllowOverwritting = false)
+        public Exceptional StoreFSObject(AFSObject myAFSObject, Boolean myAllowOverwritting = false)
         {
 
-            myAPandoraObject.IGraphFSSessionReference = new WeakReference<IGraphFSSession>(this);
+            myAFSObject.IGraphFSSessionReference = new WeakReference<IGraphFSSession>(this);
 
-            return _IGraphFS.StoreFSObject(myAPandoraObject.ObjectLocation, myAPandoraObject, myAllowOverwritting, _SessionToken);
+            return IGraphFS.StoreFSObject(myAFSObject.ObjectLocation, myAFSObject, myAllowOverwritting, SessionToken);
 
         }
 
@@ -538,7 +917,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<Trinary> ObjectExists(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.ObjectExists(myObjectLocation, _SessionToken);
+            return IGraphFS.ObjectExists(myObjectLocation, SessionToken);
         }
 
         #endregion
@@ -547,7 +926,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<Trinary> ObjectStreamExists(ObjectLocation myObjectLocation, String myObjectStream)
         {
-            return _IGraphFS.ObjectStreamExists(myObjectLocation, myObjectStream, _SessionToken);
+            return IGraphFS.ObjectStreamExists(myObjectLocation, myObjectStream, SessionToken);
         }
 
         #endregion
@@ -556,7 +935,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<Trinary> ObjectEditionExists(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition)
         {
-            return _IGraphFS.ObjectEditionExists(myObjectLocation, myObjectStream, myObjectEdition, _SessionToken);
+            return IGraphFS.ObjectEditionExists(myObjectLocation, myObjectStream, myObjectEdition, SessionToken);
         }
 
         #endregion
@@ -565,7 +944,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<Trinary> ObjectRevisionExists(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null)
         {
-            return _IGraphFS.ObjectRevisionExists(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, _SessionToken);
+            return IGraphFS.ObjectRevisionExists(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, SessionToken);
         }
 
         #endregion
@@ -575,7 +954,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<IEnumerable<String>> GetObjectStreams(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.GetObjectStreams(myObjectLocation, _SessionToken);
+            return IGraphFS.GetObjectStreams(myObjectLocation, SessionToken);
         }
 
         #endregion
@@ -584,7 +963,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<IEnumerable<String>> GetObjectEditions(ObjectLocation myObjectLocation, String myObjectStream)
         {
-            return _IGraphFS.GetObjectEditions(myObjectLocation, myObjectStream, _SessionToken);
+            return IGraphFS.GetObjectEditions(myObjectLocation, myObjectStream, SessionToken);
         }
 
         #endregion
@@ -593,24 +972,24 @@ namespace sones.GraphFS.Session
 
         public Exceptional<IEnumerable<RevisionID>> GetObjectRevisionIDs(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition)
         {
-            return _IGraphFS.GetObjectRevisionIDs(myObjectLocation, myObjectStream, myObjectEdition, _SessionToken);
+            return IGraphFS.GetObjectRevisionIDs(myObjectLocation, myObjectStream, myObjectEdition, SessionToken);
         }
 
         #endregion
 
 
-        #region RenameObject(myObjectLocation, myNewObjectName)
+        #region RenameFSObject(myObjectLocation, myNewObjectName)
 
-        public Exceptional RenameObject(ObjectLocation myObjectLocation, String myNewObjectName)
+        public Exceptional RenameFSObject(ObjectLocation myObjectLocation, String myNewObjectName)
         {
-            return _IGraphFS.RenameObject(myObjectLocation, myNewObjectName, _SessionToken);
+            return IGraphFS.RenameObject(myObjectLocation, myNewObjectName, SessionToken);
         }
 
         #endregion
 
-        #region RemoveObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID)
+        #region RemoveFSObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID)
 
-        public Exceptional RemoveObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null)
+        public Exceptional RemoveFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null)
         {
 
             lock (this)
@@ -621,7 +1000,7 @@ namespace sones.GraphFS.Session
                 if (myObjectEdition == null || myObjectRevisionID == null)
                 {
 
-                    return _IGraphFS.GetObjectLocator(myObjectLocation, _SessionToken).
+                    return IGraphFS.GetObjectLocator(myObjectLocation, SessionToken).
                         WhenFailed(e => e.PushT(new GraphFSError_CouldNotGetObjectLocator(myObjectLocation))).
                         WhenSucceded<ObjectLocator>(e =>
                         {
@@ -631,14 +1010,14 @@ namespace sones.GraphFS.Session
                             if (myObjectRevisionID == null)
                                 myObjectRevisionID = e.Value[myObjectStream].DefaultEdition.LatestRevisionID;
 
-                            return _IGraphFS.RemoveObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, _SessionToken).
+                            return IGraphFS.RemoveFSObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, SessionToken).
                                        Convert<ObjectLocator>();
 
                         });
 
                 }
 
-                return _IGraphFS.RemoveObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, _SessionToken);
+                return IGraphFS.RemoveFSObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, SessionToken);
 
             }
 
@@ -646,11 +1025,11 @@ namespace sones.GraphFS.Session
 
         #endregion
 
-        #region EraseObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID)
+        #region EraseFSObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID)
 
-        public Exceptional EraseObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID)
+        public Exceptional EraseFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID)
         {
-            return _IGraphFS.EraseObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, _SessionToken);
+            return IGraphFS.EraseFSObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, SessionToken);
         }
 
         #endregion
@@ -662,27 +1041,27 @@ namespace sones.GraphFS.Session
 
         public Exceptional AddSymlink(ObjectLocation myObjectLocation, ObjectLocation myTargetLocation)
         {
-            return _IGraphFS.AddSymlink(myObjectLocation, myTargetLocation, _SessionToken);
+            return IGraphFS.AddSymlink(myObjectLocation, myTargetLocation, SessionToken);
         }
 
         public Exceptional AddSymlink(ObjectLocation myObjectLocation, AFSObject myTargetAFSObject)
         {
-            return _IGraphFS.AddSymlink(myObjectLocation, myTargetAFSObject.ObjectLocation, _SessionToken);
+            return IGraphFS.AddSymlink(myObjectLocation, myTargetAFSObject.ObjectLocation, SessionToken);
         }
 
         public Exceptional<Trinary> isSymlink(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.isSymlink(myObjectLocation, _SessionToken);
+            return IGraphFS.isSymlink(myObjectLocation, SessionToken);
         }
 
         public Exceptional<ObjectLocation> GetSymlink(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.GetSymlink(myObjectLocation, _SessionToken);
+            return IGraphFS.GetSymlink(myObjectLocation, SessionToken);
         }
 
         public Exceptional RemoveSymlink(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.RemoveSymlink(myObjectLocation, _SessionToken);
+            return IGraphFS.RemoveSymlink(myObjectLocation, SessionToken);
         }
 
         #endregion
@@ -694,7 +1073,7 @@ namespace sones.GraphFS.Session
         public Exceptional<IDirectoryObject> CreateDirectoryObject(ObjectLocation myObjectLocation)
         {
 
-            var _DirectoryObject = _IGraphFS.CreateDirectoryObject(myObjectLocation, 0, _SessionToken);
+            var _DirectoryObject = IGraphFS.CreateDirectoryObject(myObjectLocation, 0, SessionToken);
             //_DirectoryObject.IGraphFSSessionReference = this;
 
             return _DirectoryObject;
@@ -708,7 +1087,7 @@ namespace sones.GraphFS.Session
         public Exceptional<IDirectoryObject> CreateDirectoryObject(ObjectLocation myObjectLocation, UInt64 myBlocksize)
         {
 
-            var _DirectoryObject = _IGraphFS.CreateDirectoryObject(myObjectLocation, myBlocksize, _SessionToken);
+            var _DirectoryObject = IGraphFS.CreateDirectoryObject(myObjectLocation, myBlocksize, SessionToken);
             //_DirectoryObject.IGraphFSSessionReference = this;
 
             return _DirectoryObject;
@@ -722,7 +1101,7 @@ namespace sones.GraphFS.Session
         public Exceptional<IDirectoryObject> CreateDirectoryObject(ObjectLocation myObjectLocation, UInt64 myBlocksize, Boolean myRecursive)
         {
 
-            var _DirectoryObject = _IGraphFS.CreateDirectoryObject(myObjectLocation, myBlocksize, myRecursive, _SessionToken);            
+            var _DirectoryObject = IGraphFS.CreateDirectoryObject(myObjectLocation, myBlocksize, myRecursive, SessionToken);            
             //_DirectoryObject.IGraphFSSessionReference = this;
 
             return _DirectoryObject;
@@ -735,7 +1114,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<Trinary> isIDirectoryObject(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.isIDirectoryObject(myObjectLocation, _SessionToken);
+            return IGraphFS.isIDirectoryObject(myObjectLocation, SessionToken);
         }
 
         #endregion
@@ -744,17 +1123,17 @@ namespace sones.GraphFS.Session
 
         public Exceptional<IEnumerable<String>> GetDirectoryListing(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.GetDirectoryListing(myObjectLocation, _SessionToken);
+            return IGraphFS.GetDirectoryListing(myObjectLocation, SessionToken);
         }
 
         public Exceptional<IEnumerable<String>> GetDirectoryListing(ObjectLocation myObjectLocation, Func<KeyValuePair<String, DirectoryEntry>, Boolean> myFunc)
         {
-            return _IGraphFS.GetDirectoryListing(myObjectLocation, myFunc, _SessionToken);
+            return IGraphFS.GetDirectoryListing(myObjectLocation, myFunc, SessionToken);
         }
 
         public Exceptional<IEnumerable<String>> GetFilteredDirectoryListing(ObjectLocation myObjectLocation, String[] myName, String[] myIgnoreName, String[] myRegExpr, List<String> myObjectStreams, List<String> myIgnoreObjectStreams, String[] mySize, String[] myCreationTime, String[] myLastModificationTime, String[] myLastAccessTime, String[] myDeletionTime)
         {
-            return _IGraphFS.GetFilteredDirectoryListing(myObjectLocation, myName, myIgnoreName, myRegExpr, myObjectStreams, myIgnoreObjectStreams, mySize, myCreationTime, myLastModificationTime, myLastAccessTime, myDeletionTime, _SessionToken);
+            return IGraphFS.GetFilteredDirectoryListing(myObjectLocation, myName, myIgnoreName, myRegExpr, myObjectStreams, myIgnoreObjectStreams, mySize, myCreationTime, myLastModificationTime, myLastAccessTime, myDeletionTime, SessionToken);
         }
 
         #endregion
@@ -763,7 +1142,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<IEnumerable<DirectoryEntryInformation>> GetExtendedDirectoryListing(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.GetExtendedDirectoryListing(myObjectLocation, _SessionToken);
+            return IGraphFS.GetExtendedDirectoryListing(myObjectLocation, SessionToken);
         }
 
         #endregion
@@ -772,7 +1151,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<IEnumerable<DirectoryEntryInformation>> GetFilteredExtendedDirectoryListing(ObjectLocation myObjectLocation, String[] myName, String[] myIgnoreName, String[] myRegExpr, List<String> myObjectStreams, List<String> myIgnoreObjectStreams, String[] mySize, String[] myCreationTime, String[] myLastModificationTime, String[] myLastAccessTime, String[] myDeletionTime)
         {
-            return _IGraphFS.GetFilteredExtendedDirectoryListing(myObjectLocation, myName, myIgnoreName, myRegExpr, myObjectStreams, myIgnoreObjectStreams, mySize, myCreationTime, myLastModificationTime, myLastAccessTime, myDeletionTime, _SessionToken);
+            return IGraphFS.GetFilteredExtendedDirectoryListing(myObjectLocation, myName, myIgnoreName, myRegExpr, myObjectStreams, myIgnoreObjectStreams, mySize, myCreationTime, myLastModificationTime, myLastAccessTime, myDeletionTime, SessionToken);
         }
 
         #endregion
@@ -781,7 +1160,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional RemoveDirectoryObject(ObjectLocation myObjectLocation, Boolean MyRemoveRecursive)
         {
-            return _IGraphFS.RemoveDirectoryObject(myObjectLocation, MyRemoveRecursive, _SessionToken);
+            return IGraphFS.RemoveDirectoryObject(myObjectLocation, MyRemoveRecursive, SessionToken);
         }
 
         #endregion
@@ -790,7 +1169,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional EraseDirectoryObject(ObjectLocation myObjectLocation, Boolean MyEraseRecursive)
         {
-            return _IGraphFS.EraseDirectoryObject(myObjectLocation, MyEraseRecursive, _SessionToken);
+            return IGraphFS.EraseDirectoryObject(myObjectLocation, MyEraseRecursive, SessionToken);
         }
 
         #endregion
@@ -803,7 +1182,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional SetMetadatum<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey, TValue myValue, IndexSetStrategy myIndexSetStrategy)
         {
-            return _IGraphFS.SetMetadatum<TValue>(myObjectLocation, myObjectStream, myObjectEdition, myKey, myValue, myIndexSetStrategy, _SessionToken);
+            return IGraphFS.SetMetadatum<TValue>(myObjectLocation, myObjectStream, myObjectEdition, myKey, myValue, myIndexSetStrategy, SessionToken);
         }
 
         #endregion
@@ -812,7 +1191,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional SetMetadata<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, IEnumerable<KeyValuePair<String, TValue>> myMetadata, IndexSetStrategy myIndexSetStrategy)
         {
-            return _IGraphFS.SetMetadata<TValue>(myObjectLocation, myObjectStream, myObjectEdition, myMetadata, myIndexSetStrategy, _SessionToken);
+            return IGraphFS.SetMetadata<TValue>(myObjectLocation, myObjectStream, myObjectEdition, myMetadata, myIndexSetStrategy, SessionToken);
         }
 
         #endregion
@@ -822,7 +1201,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<Trinary> MetadatumExists<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey, TValue myValue)
         {
-            return _IGraphFS.MetadatumExists<TValue>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myKey, myValue, _SessionToken);
+            return IGraphFS.MetadatumExists<TValue>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myKey, myValue, SessionToken);
         }
 
         #endregion
@@ -831,7 +1210,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<Trinary> MetadataExists<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey)
         {
-            return _IGraphFS.MetadataExists<TValue>(myObjectLocation, myObjectStream, myObjectEdition, myKey, _SessionToken);
+            return IGraphFS.MetadataExists<TValue>(myObjectLocation, myObjectStream, myObjectEdition, myKey, SessionToken);
         }
 
         #endregion
@@ -841,7 +1220,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<IEnumerable<TValue>> GetMetadatum<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey)
         {
-            return _IGraphFS.GetMetadatum<TValue>(myObjectLocation, myObjectStream, myObjectEdition, myKey, _SessionToken);
+            return IGraphFS.GetMetadatum<TValue>(myObjectLocation, myObjectStream, myObjectEdition, myKey, SessionToken);
         }
 
         #endregion
@@ -850,7 +1229,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<IEnumerable<KeyValuePair<String, TValue>>> GetMetadata<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition)
         {
-            return _IGraphFS.GetMetadata<TValue>(myObjectLocation, myObjectStream, myObjectEdition, _SessionToken);
+            return IGraphFS.GetMetadata<TValue>(myObjectLocation, myObjectStream, myObjectEdition, SessionToken);
         }
 
         #endregion
@@ -859,7 +1238,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<IEnumerable<KeyValuePair<String, TValue>>> GetMetadata<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myMinKey, String myMaxKey)
         {
-            return _IGraphFS.GetMetadata<TValue>(myObjectLocation, myObjectStream, myObjectEdition, myMinKey, myMaxKey, _SessionToken);
+            return IGraphFS.GetMetadata<TValue>(myObjectLocation, myObjectStream, myObjectEdition, myMinKey, myMaxKey, SessionToken);
         }
 
         #endregion
@@ -868,7 +1247,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<IEnumerable<KeyValuePair<String, TValue>>> GetMetadata<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, Func<KeyValuePair<String, TValue>, Boolean> myFunc)
         {
-            return _IGraphFS.GetMetadata<TValue>(myObjectLocation, myObjectStream, myObjectStream, myFunc, _SessionToken); ;
+            return IGraphFS.GetMetadata<TValue>(myObjectLocation, myObjectStream, myObjectStream, myFunc, SessionToken); ;
         }
 
         #endregion
@@ -878,7 +1257,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional RemoveMetadatum<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey, TValue myValue)
         {
-            return _IGraphFS.RemoveMetadatum<TValue>(myObjectLocation, myObjectStream, myObjectEdition, myKey, myValue, _SessionToken);
+            return IGraphFS.RemoveMetadatum<TValue>(myObjectLocation, myObjectStream, myObjectEdition, myKey, myValue, SessionToken);
         }
 
         #endregion
@@ -887,7 +1266,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional RemoveMetadata<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey)
         {
-            return _IGraphFS.RemoveMetadata<TValue>(myObjectLocation, myObjectStream, myObjectEdition, myKey, _SessionToken);
+            return IGraphFS.RemoveMetadata<TValue>(myObjectLocation, myObjectStream, myObjectEdition, myKey, SessionToken);
         }
 
         #endregion
@@ -896,7 +1275,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional RemoveMetadata<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, IEnumerable<KeyValuePair<String, TValue>> myMetadata)
         {
-            return _IGraphFS.RemoveMetadata(myObjectLocation, myObjectStream, myObjectEdition, myMetadata, _SessionToken);
+            return IGraphFS.RemoveMetadata(myObjectLocation, myObjectStream, myObjectEdition, myMetadata, SessionToken);
         }
 
         #endregion
@@ -905,7 +1284,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional RemoveMetadata<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, Func<KeyValuePair<String, TValue>, Boolean> myFunc)
         {
-            return _IGraphFS.RemoveMetadata(myObjectLocation, myObjectStream, myObjectEdition, myFunc, _SessionToken);
+            return IGraphFS.RemoveMetadata(myObjectLocation, myObjectStream, myObjectEdition, myFunc, SessionToken);
         }
 
         #endregion
@@ -918,7 +1297,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional SetUserMetadatum(ObjectLocation myObjectLocation, String myKey, Object myObject, IndexSetStrategy myIndexSetStrategy)
         {
-            return _IGraphFS.SetMetadatum<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myKey, myObject, IndexSetStrategy.MERGE, _SessionToken);
+            return IGraphFS.SetMetadatum<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myKey, myObject, IndexSetStrategy.MERGE, SessionToken);
         }
 
         #endregion
@@ -927,7 +1306,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional SetUserMetadata(ObjectLocation myObjectLocation, IEnumerable<KeyValuePair<String, Object>> myUserMetadata, IndexSetStrategy myIndexSetStrategy)
         {
-            return _IGraphFS.SetMetadata<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myUserMetadata, IndexSetStrategy.MERGE, _SessionToken);
+            return IGraphFS.SetMetadata<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myUserMetadata, IndexSetStrategy.MERGE, SessionToken);
         }
 
         #endregion
@@ -937,7 +1316,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<Trinary> UserMetadatumExists(ObjectLocation myObjectLocation, String myKey, Object myObject)
         {
-            return _IGraphFS.MetadatumExists<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myKey, myObject, _SessionToken);
+            return IGraphFS.MetadatumExists<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myKey, myObject, SessionToken);
         }
 
         #endregion
@@ -946,7 +1325,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<Trinary> UserMetadataExists(ObjectLocation myObjectLocation, String myKey)
         {
-            return _IGraphFS.MetadataExists<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myKey, _SessionToken);
+            return IGraphFS.MetadataExists<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myKey, SessionToken);
         }
 
         #endregion
@@ -957,7 +1336,7 @@ namespace sones.GraphFS.Session
         public Exceptional<IEnumerable<Object>> GetUserMetadatum(ObjectLocation myObjectLocation, String myKey)
         {
 
-            var _GetMetadata = _IGraphFS.GetMetadatum<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myKey, _SessionToken);
+            var _GetMetadata = IGraphFS.GetMetadatum<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myKey, SessionToken);
 
             if (_GetMetadata != null && _GetMetadata.Success && _GetMetadata.Value != null)
                 return new Exceptional<IEnumerable<Object>>() { Value = _GetMetadata.Value };
@@ -974,7 +1353,7 @@ namespace sones.GraphFS.Session
         public Exceptional<IEnumerable<KeyValuePair<String, Object>>> GetUserMetadata(ObjectLocation myObjectLocation)
         {
 
-            var _GetMetadata = _IGraphFS.GetMetadata<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, _SessionToken);
+            var _GetMetadata = IGraphFS.GetMetadata<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, SessionToken);
 
             if (_GetMetadata != null && _GetMetadata.Success && _GetMetadata.Value != null)
                 return new Exceptional<IEnumerable<KeyValuePair<String, Object>>>() { Value = _GetMetadata.Value };
@@ -991,7 +1370,7 @@ namespace sones.GraphFS.Session
         public Exceptional<IEnumerable<KeyValuePair<String, Object>>> GetUserMetadata(ObjectLocation myObjectLocation, String myMinKey, String myMaxKey)
         {
 
-            var _GetMetadata = _IGraphFS.GetMetadata<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myMinKey, myMaxKey, _SessionToken);
+            var _GetMetadata = IGraphFS.GetMetadata<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myMinKey, myMaxKey, SessionToken);
 
             if (_GetMetadata != null && _GetMetadata.Success && _GetMetadata.Value != null)
                 return new Exceptional<IEnumerable<KeyValuePair<String, Object>>>() { Value = _GetMetadata.Value };
@@ -1008,7 +1387,7 @@ namespace sones.GraphFS.Session
         public Exceptional<IEnumerable<KeyValuePair<String, Object>>> GetUserMetadata(ObjectLocation myObjectLocation, Func<KeyValuePair<String, Object>, Boolean> myFunc)
         {
 
-            var _GetMetadata = _IGraphFS.GetMetadata<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myFunc, _SessionToken); ;
+            var _GetMetadata = IGraphFS.GetMetadata<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myFunc, SessionToken); ;
 
             if (_GetMetadata != null && _GetMetadata.Success && _GetMetadata.Value != null)
                 return new Exceptional<IEnumerable<KeyValuePair<String, Object>>>() { Value = _GetMetadata.Value };
@@ -1025,7 +1404,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional RemoveUserMetadatum(ObjectLocation myObjectLocation, String myKey, Object myObject)
         {
-            return _IGraphFS.RemoveMetadatum<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myKey, myObject, _SessionToken);
+            return IGraphFS.RemoveMetadatum<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myKey, myObject, SessionToken);
         }
 
         #endregion
@@ -1034,7 +1413,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional RemoveUserMetadata(ObjectLocation myObjectLocation, String myKey)
         {
-            return _IGraphFS.RemoveMetadata<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myKey, _SessionToken);
+            return IGraphFS.RemoveMetadata<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myKey, SessionToken);
         }
 
         #endregion
@@ -1043,7 +1422,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional RemoveUserMetadata(ObjectLocation myObjectLocation, IEnumerable<KeyValuePair<String, Object>> myMetadata)
         {
-            return _IGraphFS.RemoveMetadata(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myMetadata, _SessionToken);
+            return IGraphFS.RemoveMetadata(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myMetadata, SessionToken);
         }
 
         #endregion
@@ -1052,7 +1431,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional RemoveUserMetadata(ObjectLocation myObjectLocation, Func<KeyValuePair<String, Object>, Boolean> myFunc)
         {
-            return _IGraphFS.RemoveMetadata(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myFunc, _SessionToken);
+            return IGraphFS.RemoveMetadata(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myFunc, SessionToken);
         }
 
         #endregion
@@ -1066,7 +1445,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<FileObject> GetFileObject(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.GetObject<FileObject>(myObjectLocation, FSConstants.FILESTREAM, FSConstants.DefaultEdition, null, 0, false, _SessionToken);
+            return IGraphFS.GetFSObject<FileObject>(myObjectLocation, FSConstants.FILESTREAM, FSConstants.DefaultEdition, null, 0, false, SessionToken);
         }
 
         #endregion
@@ -1075,7 +1454,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional<FileObject> GetFileObject(ObjectLocation myObjectLocation, RevisionID myRevisionID)
         {
-            return _IGraphFS.GetObject<FileObject>(myObjectLocation, FSConstants.FILESTREAM, FSConstants.DefaultEdition, myRevisionID, 0, false, _SessionToken);
+            return IGraphFS.GetFSObject<FileObject>(myObjectLocation, FSConstants.FILESTREAM, FSConstants.DefaultEdition, myRevisionID, 0, false, SessionToken);
         }
 
         #endregion
@@ -1084,7 +1463,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional StoreFileObject(ObjectLocation myObjectLocation, Byte[] myData, Boolean myAllowOverwritte)
         {
-            return _IGraphFS.StoreFSObject(myObjectLocation, new FileObject() { ObjectLocation = myObjectLocation, ObjectData = myData }, myAllowOverwritte, _SessionToken);
+            return IGraphFS.StoreFSObject(myObjectLocation, new FileObject() { ObjectLocation = myObjectLocation, ObjectData = myData }, myAllowOverwritte, SessionToken);
         }
 
         #endregion
@@ -1093,7 +1472,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional StoreFileObject(ObjectLocation myObjectLocation, String myStringData, Boolean myAllowOverwritte)
         {
-            return _IGraphFS.StoreFSObject(myObjectLocation, new FileObject() { ObjectLocation = myObjectLocation, ObjectData = UTF8Encoding.UTF8.GetBytes(myStringData) }, myAllowOverwritte, _SessionToken);
+            return IGraphFS.StoreFSObject(myObjectLocation, new FileObject() { ObjectLocation = myObjectLocation, ObjectData = UTF8Encoding.UTF8.GetBytes(myStringData) }, myAllowOverwritte, SessionToken);
         }
 
         #endregion
@@ -1104,47 +1483,47 @@ namespace sones.GraphFS.Session
 
         //public Boolean AddRightsStreamToObject(ObjectLocation myObjectLocation, AccessControlObject myRightsObject)
         //{
-        //    return _IGraphFS.AddRightsStreamToObject(myObjectLocation, myRightsObject, _SessionToken);
+        //    return IGraphFS.AddRightsStreamToObject(myObjectLocation, myRightsObject, SessionToken);
         //}
 
         //public Boolean AddEntityToRightsStreamAllowACL(ObjectLocation myObjectLocation, RightUUID myRightUUID, EntityUUID myEntitiyUUID)
         //{
-        //    return _IGraphFS.AddEntityToRightsStreamAllowACL(myObjectLocation, myRightUUID, myEntitiyUUID, _SessionToken);
+        //    return IGraphFS.AddEntityToRightsStreamAllowACL(myObjectLocation, myRightUUID, myEntitiyUUID, SessionToken);
         //}
 
         //public Boolean AddEntityToRightsStreamDenyACL(ObjectLocation myObjectLocation, RightUUID myRightUUID, EntityUUID myEntitiyUUID)
         //{
-        //    return _IGraphFS.AddEntityToRightsStreamDenyACL(myObjectLocation, myRightUUID, myEntitiyUUID, _SessionToken);
+        //    return IGraphFS.AddEntityToRightsStreamDenyACL(myObjectLocation, myRightUUID, myEntitiyUUID, SessionToken);
         //}
 
         //public Boolean RemoveEntityFromRightsStreamAllowACL(ObjectLocation myObjectLocation, RightUUID myRightUUID, EntityUUID myEntitiyUUID)
         //{
-        //    return _IGraphFS.RemoveEntityFromRightsStreamAllowACL(myObjectLocation, myRightUUID, myEntitiyUUID, _SessionToken);
+        //    return IGraphFS.RemoveEntityFromRightsStreamAllowACL(myObjectLocation, myRightUUID, myEntitiyUUID, SessionToken);
         //}
 
         //public Boolean RemoveEntityFromRightsStreamDenyACL(ObjectLocation myObjectLocation, RightUUID myRightUUID, EntityUUID myEntitiyUUID)
         //{
-        //    return _IGraphFS.RemoveEntityFromRightsStreamDenyACL(myObjectLocation, myRightUUID, myEntitiyUUID, _SessionToken);
+        //    return IGraphFS.RemoveEntityFromRightsStreamDenyACL(myObjectLocation, myRightUUID, myEntitiyUUID, SessionToken);
         //}
 
         //public Boolean ChangeAllowOverDenyOfRightsStream(ObjectLocation myObjectLocation, DefaultRuleTypes myDefaultRule)
         //{
-        //    return _IGraphFS.ChangeAllowOverDenyOfRightsStream(myObjectLocation, myDefaultRule, _SessionToken);
+        //    return IGraphFS.ChangeAllowOverDenyOfRightsStream(myObjectLocation, myDefaultRule, SessionToken);
         //}
 
         //public Boolean AddAlertToPandoraRightsAlertHandlingList(ObjectLocation myObjectLocation, NHAccessControlObject myAlert)
         //{
-        //    return _IGraphFS.AddAlertToPandoraRightsAlertHandlingList(myObjectLocation, myAlert, _SessionToken);
+        //    return IGraphFS.AddAlertToPandoraRightsAlertHandlingList(myObjectLocation, myAlert, SessionToken);
         //}
 
         //public Boolean RemoveAlertFromPandoraRightsAlertHandlingList(ObjectLocation myObjectLocation, NHAccessControlObject myAlert)
         //{
-        //    return _IGraphFS.RemoveAlertFromPandoraRightsAlertHandlingList(myObjectLocation, myAlert, _SessionToken);
+        //    return IGraphFS.RemoveAlertFromPandoraRightsAlertHandlingList(myObjectLocation, myAlert, SessionToken);
         //}
 
         //public List<Right> EvaluateRightsForEntity(ObjectLocation myObjectLocation, EntityUUID myEntityGuid, AccessControlObject myRightsObject)
         //{
-        //    return _IGraphFS.EvaluateRightsForEntity(myObjectLocation, myEntityGuid, myRightsObject, _SessionToken);
+        //    return IGraphFS.EvaluateRightsForEntity(myObjectLocation, myEntityGuid, myRightsObject, SessionToken);
         //}
 
         //#endregion
@@ -1153,72 +1532,72 @@ namespace sones.GraphFS.Session
 
         //public EntityUUID AddEntity(ObjectLocation myObjectLocation, String myLogin, String myRealname, String myDescription, Dictionary<ContactTypes, List<String>> myContacts, String myPassword, List<PublicKey> myPublicKeyList, HashSet<EntityUUID> myMembership)
         //{
-        //    return _IGraphFS.AddEntity(myObjectLocation, myLogin, myRealname, myDescription, myContacts, myPassword, myPublicKeyList, myMembership, _SessionToken);
+        //    return IGraphFS.AddEntity(myObjectLocation, myLogin, myRealname, myDescription, myContacts, myPassword, myPublicKeyList, myMembership, SessionToken);
         //}
 
         //public Trinary EntityExists(ObjectLocation myObjectLocation, EntityUUID myEntityUUID)
         //{
-        //    return _IGraphFS.EntityExists(myObjectLocation, myEntityUUID, _SessionToken);
+        //    return IGraphFS.EntityExists(myObjectLocation, myEntityUUID, SessionToken);
         //}
 
         //public EntityUUID GetEntityUUID(ObjectLocation myObjectLocation, String aName)
         //{
-        //    return _IGraphFS.GetEntityUUID(myObjectLocation, aName, _SessionToken);
+        //    return IGraphFS.GetEntityUUID(myObjectLocation, aName, SessionToken);
         //}
 
         //public Boolean RemoveEntity(ObjectLocation myObjectLocation, EntityUUID myEntityUUID)
         //{
-        //    return _IGraphFS.RemoveEntity(myObjectLocation, myEntityUUID, _SessionToken);
+        //    return IGraphFS.RemoveEntity(myObjectLocation, myEntityUUID, SessionToken);
         //}
 
         //public HashSet<EntityUUID> GetMemberships(ObjectLocation myObjectLocation, EntityUUID myEntityUUID, Boolean myRecursion)
         //{
-        //    return _IGraphFS.GetMemberships(myObjectLocation, myEntityUUID, myRecursion, _SessionToken);
+        //    return IGraphFS.GetMemberships(myObjectLocation, myEntityUUID, myRecursion, SessionToken);
         //}
 
         //public void ChangeEntityPassword(ObjectLocation myObjectLocation, EntityUUID myEntityUUID, String myOldPassword, String myNewPassword)
         //{
-        //    _IGraphFS.ChangeEntityPassword(myObjectLocation, myEntityUUID, myOldPassword, myNewPassword, _SessionToken);
+        //    IGraphFS.ChangeEntityPassword(myObjectLocation, myEntityUUID, myOldPassword, myNewPassword, SessionToken);
         //}
 
         //public void ChangeEntityPublicKeyList(ObjectLocation myObjectLocation, EntityUUID myEntityUUID, String myPassword, List<PublicKey> myNewPublicKeyList)
         //{
-        //    _IGraphFS.ChangeEntityPublicKeyList(myObjectLocation, myEntityUUID, myPassword, myNewPublicKeyList, _SessionToken);
+        //    IGraphFS.ChangeEntityPublicKeyList(myObjectLocation, myEntityUUID, myPassword, myNewPublicKeyList, SessionToken);
         //}
 
         //public void ChangeEntityAddMembership(ObjectLocation myObjectLocation, EntityUUID myEntityUUID, EntityUUID myNewMembershipUUID)
         //{
-        //     _IGraphFS.ChangeEntityAddMembership(myObjectLocation, myEntityUUID, myNewMembershipUUID, _SessionToken);
+        //     IGraphFS.ChangeEntityAddMembership(myObjectLocation, myEntityUUID, myNewMembershipUUID, SessionToken);
         //}
 
         //public void ChangeEntityRemoveMembership(ObjectLocation myObjectLocation, EntityUUID myEntityUUID, EntityUUID myNewMembershipUUID)
         //{
-        //    _IGraphFS.ChangeEntityRemoveMembership(myObjectLocation, myEntityUUID, myNewMembershipUUID, _SessionToken);
+        //    IGraphFS.ChangeEntityRemoveMembership(myObjectLocation, myEntityUUID, myNewMembershipUUID, SessionToken);
         //}
 
         //public List<PublicKey> GetEntityPublicKeyList(ObjectLocation myObjectLocation, EntityUUID myEntityUUID)
         //{
-        //    return _IGraphFS.GetEntityPublicKeyList(myObjectLocation, myEntityUUID, _SessionToken);
+        //    return IGraphFS.GetEntityPublicKeyList(myObjectLocation, myEntityUUID, SessionToken);
         //}
 
         //public Boolean AddPandoraRight(ObjectLocation myObjectLocation, String Name, String ValidationScript)
         //{
-        //    return _IGraphFS.AddPandoraRight(myObjectLocation, Name, ValidationScript, _SessionToken);
+        //    return IGraphFS.AddPandoraRight(myObjectLocation, Name, ValidationScript, SessionToken);
         //}
 
         //public Boolean RemovePandoraRight(ObjectLocation myObjectLocation, RightUUID myRightUUID)
         //{
-        //    return _IGraphFS.RemovePandoraRight(myObjectLocation, myRightUUID, _SessionToken);
+        //    return IGraphFS.RemovePandoraRight(myObjectLocation, myRightUUID, SessionToken);
         //}
 
         //public Right GetRightByName(String RightName)
         //{
-        //    return _IGraphFS.GetRightByName(RightName, _SessionToken);
+        //    return IGraphFS.GetRightByName(RightName, SessionToken);
         //}
 
         //public Boolean ContainsRightUUID(RightUUID myRightUUID)
         //{
-        //    return _IGraphFS.ContainsRightUUID(myRightUUID, _SessionToken);
+        //    return IGraphFS.ContainsRightUUID(myRightUUID, SessionToken);
         //}
 
         //#endregion
@@ -1227,7 +1606,7 @@ namespace sones.GraphFS.Session
 
         public void FlushObjectLocation(ObjectLocation myObjectLocation)
         {
-            _IGraphFS.FlushObjectLocationNew(myObjectLocation, _SessionToken);
+            IGraphFS.FlushObjectLocationNew(myObjectLocation, SessionToken);
         }
 
         #endregion
@@ -1237,13 +1616,13 @@ namespace sones.GraphFS.Session
 
         public Exceptional<IGraphFSStream> OpenStream(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevision, UInt64 myObjectCopy)
         {
-            return _IGraphFS.OpenStream(_SessionToken, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevision, myObjectCopy);
+            return IGraphFS.OpenStream(SessionToken, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevision, myObjectCopy);
         }
 
         public Exceptional<IGraphFSStream> OpenStream(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevision, UInt64 myObjectCopy,
                                            FileMode myFileMode, FileAccess myFileAccess, FileShare myFileShare, FileOptions myFileOptions, UInt64 myBufferSize)
         {
-            return _IGraphFS.OpenStream(_SessionToken, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevision, myObjectCopy,
+            return IGraphFS.OpenStream(SessionToken, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevision, myObjectCopy,
                                           myFileMode, myFileAccess, myFileShare, myFileOptions, myBufferSize);
         }
 
@@ -1269,7 +1648,7 @@ namespace sones.GraphFS.Session
 
                 return new FSTransaction(myDistributed, myLongRunning, myIsolationLevel, myName, myTimeStamp); ;
 
-            //return _IGraphFS.BeginTransaction(_SessionToken, myDistributed, myLongRunning, myIsolationLevel, myName, myTimeStamp);
+            //return IGraphFS.BeginTransaction(SessionToken, myDistributed, myLongRunning, myIsolationLevel, myName, myTimeStamp);
 
         }
 
@@ -1280,23 +1659,23 @@ namespace sones.GraphFS.Session
 
         public IEnumerable<StorageUUID> StorageUUIDs()
         {
-            return _IGraphFS.StorageUUIDs(_SessionToken);
+            return IGraphFS.StorageUUIDs(SessionToken);
         }
 
         public IEnumerable<StorageUUID> StorageUUIDs(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.StorageUUIDs(myObjectLocation, _SessionToken);
+            return IGraphFS.StorageUUIDs(myObjectLocation, SessionToken);
         }
 
 
         public IEnumerable<String> StorageDescriptions()
         {
-            return _IGraphFS.StorageDescriptions(_SessionToken);
+            return IGraphFS.StorageDescriptions(SessionToken);
         }
 
         public IEnumerable<String> StorageDescriptions(ObjectLocation myObjectLocation)
         {
-            return _IGraphFS.StorageDescriptions(myObjectLocation, _SessionToken);
+            return IGraphFS.StorageDescriptions(myObjectLocation, SessionToken);
         }
 
         #endregion

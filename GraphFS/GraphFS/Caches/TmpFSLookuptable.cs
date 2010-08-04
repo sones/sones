@@ -121,7 +121,7 @@ namespace sones.TmpFS.Caches
 
         #region GetAPandoraObject(myCacheUUID)
 
-        public AFSObject GetAPandoraObject(CacheUUID myCacheUUID)
+        public AFSObject GetAFSObject(CacheUUID myCacheUUID)
         {
 
             AFSObject _APandoraObject = null;

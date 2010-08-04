@@ -32,11 +32,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
     public class IndexTypeOptNode : AStructureNode, IAstNodeInit
     {
 
-        private String _IndexType;
-        public String IndexType
-        {
-            get { return _IndexType; }
-        }
+        public String IndexType { get; private set; }
 
         private void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
@@ -45,7 +41,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             {
                 if (dbContext.DBPluginManager.HasIndex(parseNode.ChildNodes[1].Token.ValueString))
                 {
-                    _IndexType = parseNode.ChildNodes[1].Token.ValueString;
+                    IndexType = parseNode.ChildNodes[1].Token.ValueString;
                 }
                 else
                 {
@@ -54,7 +50,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             }
             else
             {
-                _IndexType = null;
+                IndexType = null;
             }
 
         }

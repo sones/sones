@@ -45,7 +45,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
 
         String _IndexName = String.Empty;
         String _IndexEdition = null;
-        GraphDBType graphDBTypeType = null;
+        String _TypeName = null;
 
         #endregion
 
@@ -63,18 +63,13 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
         public override void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
 
-            if (parseNode.ChildNodes[1].AstNode is ATypeNode)
-            {
-                graphDBTypeType = (GraphDBType)((ATypeNode)parseNode.ChildNodes[1].AstNode).DBTypeStream;
-            }
-            else
-            {
-                throw new NotImplementedException(parseNode.ChildNodes[1].ToString());
-            }
-
+            _TypeName = ((ATypeNode)parseNode.ChildNodes[1].AstNode).ReferenceAndType.TypeName;
+       
             _IndexName = parseNode.ChildNodes[4].Token.ValueString;
             if (parseNode.ChildNodes[5].HasChildNodes())
+            {
                 _IndexEdition = parseNode.ChildNodes[5].ChildNodes[1].Token.ValueString;
+            }
         }
 
         /// <summary>
@@ -85,13 +80,18 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Drop
         /// <returns>The result of the query</returns>
         public override QueryResult Execute(IGraphDBSession graphDBSession, DBContext dbContext)
         {            
-            if (graphDBTypeType == null)
+            if (String.IsNullOrEmpty(_TypeName))
             {
                 var aError = new Error_TypeDoesNotExist("");
 
                 return new QueryResult(aError);
             }
 
+            var graphDBTypeType = dbContext.DBTypeManager.GetTypeByName(_TypeName);
+            if (graphDBTypeType == null)
+            {
+                return new QueryResult(new Error_TypeDoesNotExist(_TypeName));
+            }
 
             using (var transaction = graphDBSession.BeginTransaction())
             {

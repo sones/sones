@@ -80,9 +80,9 @@ namespace sones.Notifications.Autodiscovery.NotificationTypes
 
                 SerializationWriter writer = new SerializationWriter();
 
-                writer.WriteObject(ServiceGlobalUniqueName);
-                writer.WriteObject(ServiceUri.ToString());
-                writer.WriteObject(ServiceType);
+                writer.WriteString(ServiceGlobalUniqueName);
+                writer.WriteString(ServiceUri.ToString());
+                writer.WriteByte((Byte)ServiceType);
                
                 return writer.ToArray();
 
@@ -92,9 +92,9 @@ namespace sones.Notifications.Autodiscovery.NotificationTypes
             {
                 SerializationReader reader = new SerializationReader(mySerializedBytes);
 
-                ServiceGlobalUniqueName = (String)reader.ReadObject();
-                String _ServiceUri   = (String)reader.ReadObject();
-                ServiceType = (DiscoverableServiceType)reader.ReadObject();
+                ServiceGlobalUniqueName         = reader.ReadString();
+                String _ServiceUri              = reader.ReadString();
+                ServiceType                     = (DiscoverableServiceType)reader.ReadOptimizedByte();
 
                 if (!Uri.TryCreate(_ServiceUri,UriKind.Absolute,out ServiceUri))
                     throw new NotificationException_InvalidNotificationPayload("IP not parseable. Notification Packet invalid!");

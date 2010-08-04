@@ -54,7 +54,7 @@ namespace sones.GraphFS.DataStructures
     /// editions, revisions and copies of an object.
     /// </summary>
 
-    public class ObjectLocator : AFSStructure, IGraphFSDictionary<String, ObjectStream>, IDirectoryListing, IXMLExport
+    public class ObjectLocator : AFSStructure, IGraphFSDictionary<String, ObjectStream>, IDirectoryListing
     {
 
 
@@ -304,39 +304,39 @@ namespace sones.GraphFS.DataStructures
                 #region Write ObjectStreams
 
                 // Write the number of ObjectStreams
-                mySerializationWriter.WriteObject((UInt32) _ObjectStreams.Count);
+                mySerializationWriter.WriteUInt32((UInt32) _ObjectStreams.Count);
 
                 foreach (var __KV_String_ObjectStream in _ObjectStreams)
                 {
 
                     // Write the name of the ObjectStream
-                    mySerializationWriter.WriteObject(__KV_String_ObjectStream.Key);
+                    mySerializationWriter.WriteString(__KV_String_ObjectStream.Key);
 
                     var ___ObjectStream = __KV_String_ObjectStream.Value;
                     
                     #region Write ObjectEditions
 
                     // Write number of ObjectEditions
-                    mySerializationWriter.WriteObject((UInt32)___ObjectStream.Count);
+                    mySerializationWriter.WriteUInt32((UInt32)___ObjectStream.Count);
 
                     // Write name of the DefaultEdition
-                    mySerializationWriter.WriteObject(___ObjectStream.DefaultEditionName);
+                    mySerializationWriter.WriteString(___ObjectStream.DefaultEditionName);
 
                     foreach (var __KV_String_ObjectEdition in ___ObjectStream)
                     {
                         // Write ObjectEditions myLogin
-                        mySerializationWriter.WriteObject(__KV_String_ObjectEdition.Key);
+                        mySerializationWriter.WriteString(__KV_String_ObjectEdition.Key);
 
                         // Write IsDeleted
-                        mySerializationWriter.WriteObject(__KV_String_ObjectEdition.Value.IsDeleted);
+                        mySerializationWriter.WriteBoolean(__KV_String_ObjectEdition.Value.IsDeleted);
 
-                        mySerializationWriter.WriteObject((UInt64)__KV_String_ObjectEdition.Value.MinNumberOfRevisions);
-                        mySerializationWriter.WriteObject((UInt64)__KV_String_ObjectEdition.Value.MaxNumberOfRevisions);
-                        mySerializationWriter.WriteObject((UInt64)__KV_String_ObjectEdition.Value.MinRevisionDelta);
-                        mySerializationWriter.WriteObject((UInt64)__KV_String_ObjectEdition.Value.MaxRevisionAge);
+                        mySerializationWriter.WriteUInt64(__KV_String_ObjectEdition.Value.MinNumberOfRevisions);
+                        mySerializationWriter.WriteUInt64(__KV_String_ObjectEdition.Value.MaxNumberOfRevisions);
+                        mySerializationWriter.WriteUInt64(__KV_String_ObjectEdition.Value.MinRevisionDelta);
+                        mySerializationWriter.WriteUInt64(__KV_String_ObjectEdition.Value.MaxRevisionAge);
 
                         // Write number of ObjectRevisions
-                        mySerializationWriter.WriteObject((UInt32)__KV_String_ObjectEdition.Value.Count);
+                        mySerializationWriter.WriteUInt32((UInt32)__KV_String_ObjectEdition.Value.Count);
                         
                         #region ObjectRevisions
 
@@ -345,7 +345,7 @@ namespace sones.GraphFS.DataStructures
 
                             #region Write RevisionID
 
-                            mySerializationWriter.WriteObject((UInt64)__KV_RevisionID_ObjectRevision.Key.Timestamp);
+                            mySerializationWriter.WriteUInt64(__KV_RevisionID_ObjectRevision.Key.Timestamp);
                             __KV_RevisionID_ObjectRevision.Key.UUID.Serialize(ref mySerializationWriter);
 
                             #endregion
@@ -355,41 +355,41 @@ namespace sones.GraphFS.DataStructures
                             var ___ParentRevisionIDs = __KV_RevisionID_ObjectRevision.Value.ParentRevisionIDs;
 
                             // Write number of Parent revisions
-                            mySerializationWriter.WriteObject((UInt16) ___ParentRevisionIDs.Count);
+                            mySerializationWriter.WriteUInt32((UInt32) ___ParentRevisionIDs.Count);
 
                             foreach (var parentRevision in ___ParentRevisionIDs)
                             {
-                                mySerializationWriter.WriteObject((UInt64) parentRevision.Timestamp);
+                                mySerializationWriter.WriteUInt64(parentRevision.Timestamp);
                                 parentRevision.UUID.Serialize(ref mySerializationWriter);
                             }
 
                             #endregion
 
                             // Write Max, Min NumberOfCopies
-                            mySerializationWriter.WriteObject((UInt64) __KV_RevisionID_ObjectRevision.Value.MaxNumberOfCopies);
-                            mySerializationWriter.WriteObject((UInt64) __KV_RevisionID_ObjectRevision.Value.MinNumberOfCopies);
+                            mySerializationWriter.WriteUInt64( __KV_RevisionID_ObjectRevision.Value.MaxNumberOfCopies);
+                            mySerializationWriter.WriteUInt64(__KV_RevisionID_ObjectRevision.Value.MinNumberOfCopies);
 
                             #region Write ObjectDatastream
 
                             // Write number of ObjectCopies
-                            mySerializationWriter.WriteObject((UInt32) __KV_RevisionID_ObjectRevision.Value.Count);
+                            mySerializationWriter.WriteUInt32((UInt32) __KV_RevisionID_ObjectRevision.Value.Count);
 
                             for (var __ObjectCopyCounter = 0; __ObjectCopyCounter < __KV_RevisionID_ObjectRevision.Value.Count; __ObjectCopyCounter++)
                             {
 
                                 var ObjectStream = __KV_RevisionID_ObjectRevision.Value[__ObjectCopyCounter];
 
-                                mySerializationWriter.WriteObject((UInt16) ObjectStream.Compression.Algorithm);
-                                mySerializationWriter.WriteObject((UInt16) ObjectStream.ForwardErrorCorrection.Algorithm);
-                                mySerializationWriter.WriteObject(ObjectStream.IntegrityCheckValue);
+                                mySerializationWriter.WriteByte((Byte)ObjectStream.Compression.Algorithm);
+                                mySerializationWriter.WriteByte((Byte)ObjectStream.ForwardErrorCorrection.Algorithm);
+                                mySerializationWriter.Write(ObjectStream.IntegrityCheckValue);
                                 //ObjectStream.ObjectUUID.Serialize(ref mySerializationWriter);
-                                mySerializationWriter.WriteObject((UInt16) ObjectStream.Redundancy.Algorithm);
-                                mySerializationWriter.WriteObject(ObjectStream.ReservedLength);
-                                mySerializationWriter.WriteObject(ObjectStream.Blocksize);
+                                mySerializationWriter.WriteByte((Byte)ObjectStream.Redundancy.Algorithm);
+                                mySerializationWriter.WriteUInt64(ObjectStream.ReservedLength);
+                                mySerializationWriter.WriteUInt64(ObjectStream.Blocksize);
 
                                 #region AvailableStorageIDs
 
-                                mySerializationWriter.WriteObject((UInt16)ObjectStream.AvailableStorageUUIDs.Count);
+                                mySerializationWriter.WriteUInt32((UInt32)ObjectStream.AvailableStorageUUIDs.Count);
 
                                 foreach (var StorageUUID in ObjectStream.AvailableStorageUUIDs)
                                     StorageUUID.Serialize(ref mySerializationWriter);
@@ -402,19 +402,19 @@ namespace sones.GraphFS.DataStructures
                                 #region Write ObjectExtent
 
                                 // Write number of ObjectExtents
-                                mySerializationWriter.WriteObject((UInt32) ObjectStream.Count);
+                                mySerializationWriter.WriteUInt32((UInt32) ObjectStream.Count);
 
                                 for (var actObjectExtent = 0UL; actObjectExtent < ObjectStream.Count; actObjectExtent++)
                                 {
                                     var ObjectExtent = ObjectStream[actObjectExtent];
-                                    mySerializationWriter.WriteObject(ObjectExtent.Length);
-                                    mySerializationWriter.WriteObject(ObjectExtent.LogicalPosition);
-                                    mySerializationWriter.WriteObject(ObjectExtent.StorageUUID);
+                                    mySerializationWriter.WriteUInt64(ObjectExtent.Length);
+                                    mySerializationWriter.WriteUInt64(ObjectExtent.LogicalPosition);
+                                    ObjectExtent.StorageUUID.Serialize(ref mySerializationWriter);
                                     //ObjectExtent.StorageUUID.Serialize(ref mySerializationWriter);
-                                    mySerializationWriter.WriteObject(ObjectExtent.PhysicalPosition);
-                                    mySerializationWriter.WriteObject(ObjectExtent.NextExtent.StorageUUID);
+                                    mySerializationWriter.WriteUInt64(ObjectExtent.PhysicalPosition);
+                                    ObjectExtent.NextExtent.StorageUUID.Serialize(ref mySerializationWriter);
                                     //ObjectExtent.NextExtent.StorageUUID.Serialize(ref mySerializationWriter);
-                                    mySerializationWriter.WriteObject(ObjectExtent.NextExtent.Position);
+                                    mySerializationWriter.WriteUInt64(ObjectExtent.NextExtent.Position);
                                 }
 
                                 #endregion
@@ -439,7 +439,7 @@ namespace sones.GraphFS.DataStructures
 
             catch (Exception e)
             {
-                throw new GraphFSException("The ObjectLocator could not be deserialized!\n\n" + e);
+                throw new GraphFSException("The ObjectLocator could not be serialized!\n\n" + e);
             }
 
         }
@@ -458,18 +458,18 @@ namespace sones.GraphFS.DataStructures
 
                 _ObjectStreams = new Dictionary<String, ObjectStream>();
 
-                var __NumberOfObjectStreams = (UInt32) mySerializationReader.ReadObject();
+                var __NumberOfObjectStreams =  mySerializationReader.ReadUInt32();
 
                 for (var __ObjectStreamCounter = 0; __ObjectStreamCounter < __NumberOfObjectStreams; __ObjectStreamCounter++)
                 {
 
-                    var __ObjectStreamName = (String) mySerializationReader.ReadObject();
+                    var __ObjectStreamName = mySerializationReader.ReadString();
                     var __ObjectStream     = new ObjectStream(__ObjectStreamName);
 
                     #region Read ObjectEditions
 
-                    var __NumberOfObjectEditions = (UInt32) mySerializationReader.ReadObject();
-                    var __DefaultEditionName     = (String) mySerializationReader.ReadObject();
+                    var __NumberOfObjectEditions = mySerializationReader.ReadUInt32();
+                    var __DefaultEditionName     = mySerializationReader.ReadString();
 
                     // Set DefaultEdition within the actual ObjectStream object
                     __ObjectStream.SetAsDefaultEdition(__DefaultEditionName);
@@ -477,12 +477,12 @@ namespace sones.GraphFS.DataStructures
                     for (var __ObjectEditionCounter = 0; __ObjectEditionCounter < __NumberOfObjectEditions; __ObjectEditionCounter++)
                     {
 
-                        var ObjectEdition_Name                 = (String)  mySerializationReader.ReadObject();
-                        var ObjectEdition_IsDeleted            = (Boolean) mySerializationReader.ReadObject();
-                        var ObjectEdition_MinNumberOfRevisions = (UInt64)  mySerializationReader.ReadObject();
-                        var ObjectEdition_MaxNumberOfRevisions = (UInt64)  mySerializationReader.ReadObject();
-                        var ObjectEdition_MinRevisionDelta     = (UInt64)  mySerializationReader.ReadObject();
-                        var ObjectEdition_MaxRevisionAge       = (UInt64)  mySerializationReader.ReadObject();
+                        var ObjectEdition_Name                 = mySerializationReader.ReadString();
+                        var ObjectEdition_IsDeleted            = mySerializationReader.ReadBoolean();
+                        var ObjectEdition_MinNumberOfRevisions = mySerializationReader.ReadUInt64();
+                        var ObjectEdition_MaxNumberOfRevisions = mySerializationReader.ReadUInt64();
+                        var ObjectEdition_MinRevisionDelta     = mySerializationReader.ReadUInt64();
+                        var ObjectEdition_MaxRevisionAge       = mySerializationReader.ReadUInt64();
 
                         var __ObjectEdition = new ObjectEdition(ObjectEdition_Name)
                         {
@@ -495,36 +495,36 @@ namespace sones.GraphFS.DataStructures
 
                         #region ObjectRevisions
 
-                        var NumberOfObjectRevisions = (UInt32) mySerializationReader.ReadObject();
+                        var NumberOfObjectRevisions = mySerializationReader.ReadUInt32();
 
                         for (var __ObjectRevisionCounter = 0; __ObjectRevisionCounter < NumberOfObjectRevisions; __ObjectRevisionCounter++)
                         {
 
                             // Read actual ObjectRevisionTime
                             var _RevisionID = new RevisionID(
-                                                (UInt64) mySerializationReader.ReadObject(),
-                                                new UUID((Byte[]) mySerializationReader.ReadObject())
+                                                mySerializationReader.ReadUInt64(),
+                                                new UUID(mySerializationReader.ReadByteArray())
                                               );
 
                             #region Parent revisions
 
                             var parents = new HashSet<RevisionID>();
-                            var numberOfParentRevisions = (UInt16) mySerializationReader.ReadObject();
+                            var numberOfParentRevisions = mySerializationReader.ReadUInt32();
 
                             for(var i=0; i<numberOfParentRevisions; i++)
                             {
-                                var r = new RevisionID((UInt64) mySerializationReader.ReadObject(), new UUID((Byte[])mySerializationReader.ReadObject()));
+                                var r = new RevisionID(mySerializationReader.ReadUInt64(), new UUID(mySerializationReader.ReadByteArray()));
                                 parents.Add(r);
                             }
 
                             #endregion
 
                             // Write Max, Min NumberOfCopies
-                            var ObjectRevision_MaxNumberOfCopies = (UInt64) mySerializationReader.ReadObject();
-                            var ObjectRevision_MinNumberOfCopies = (UInt64) mySerializationReader.ReadObject();
+                            var ObjectRevision_MaxNumberOfCopies = mySerializationReader.ReadUInt64();
+                            var ObjectRevision_MinNumberOfCopies = mySerializationReader.ReadUInt64();
 
                             // Read number of ObjectStreams (aka copies)
-                            var NumberOfObjectStreamCopies       = (UInt32) mySerializationReader.ReadObject();
+                            var NumberOfObjectStreamCopies       = mySerializationReader.ReadUInt32();
 
                             var __ObjectRevision = new ObjectRevision(__ObjectStreamName)
                             {
@@ -542,20 +542,20 @@ namespace sones.GraphFS.DataStructures
                                 var __ObjectDatastream = new ObjectDatastream();
 
                                 __ObjectDatastream.Compression                        = new ObjectCompression();
-                                __ObjectDatastream.Compression.Algorithm              = (CompressionTypes) mySerializationReader.ReadObject();
+                                __ObjectDatastream.Compression.Algorithm              = (CompressionTypes)mySerializationReader.ReadOptimizedByte();
                                 __ObjectDatastream.ForwardErrorCorrection             = new ObjectFEC();
-                                __ObjectDatastream.ForwardErrorCorrection.Algorithm   = (ForwardErrorCorrectionTypes) mySerializationReader.ReadObject();
-                                __ObjectDatastream.IntegrityCheckValue                = (Byte[]) mySerializationReader.ReadObject();
+                                __ObjectDatastream.ForwardErrorCorrection.Algorithm   = (ForwardErrorCorrectionTypes)mySerializationReader.ReadOptimizedByte();
+                                __ObjectDatastream.IntegrityCheckValue                = mySerializationReader.ReadByteArray();
                                 //__ObjectDatastream.ObjectUUID                         = new ObjectUUID();
                                 //__ObjectDatastream.ObjectUUID.Deserialize(ref mySerializationReader);
                                 __ObjectDatastream.Redundancy                         = new ObjectRedundancy();
-                                __ObjectDatastream.Redundancy.Algorithm               = (RedundancyTypes) mySerializationReader.ReadObject();
-                                __ObjectDatastream.ReservedLength                     = (UInt64) mySerializationReader.ReadObject();
-                                __ObjectDatastream.Blocksize                          = (UInt64) mySerializationReader.ReadObject();
+                                __ObjectDatastream.Redundancy.Algorithm                = (RedundancyTypes)mySerializationReader.ReadOptimizedByte();
+                                __ObjectDatastream.ReservedLength                     = mySerializationReader.ReadUInt64();
+                                __ObjectDatastream.Blocksize                          = mySerializationReader.ReadUInt64();
 
                                 #region AvailableStorageIDs
 
-                                var NumberOfObjectStream_AvailableStorageIDs = (UInt16) mySerializationReader.ReadObject();
+                                var NumberOfObjectStream_AvailableStorageIDs = mySerializationReader.ReadUInt32();
 
                                 __ObjectDatastream.AvailableStorageUUIDs = new List<StorageUUID>();
 
@@ -577,20 +577,20 @@ namespace sones.GraphFS.DataStructures
                                 #region Read ObjectExtent
 
                                 // Read number of ObjectExtents
-                                var NumberOfObjectStream_Extents = (UInt32) mySerializationReader.ReadObject();
+                                var NumberOfObjectStream_Extents = mySerializationReader.ReadUInt32();
 
                                 for (var iObjectExtent = 0; iObjectExtent < NumberOfObjectStream_Extents; iObjectExtent++)
                                 {
 
                                     var ObjectExtent                    = new ObjectExtent();
-                                    ObjectExtent.Length                 = (UInt64) mySerializationReader.ReadObject();
-                                    ObjectExtent.LogicalPosition        = (UInt64) mySerializationReader.ReadObject();
-                                    ObjectExtent.StorageUUID            = (StorageUUID) mySerializationReader.ReadObject();
-                                    ObjectExtent.PhysicalPosition       = (UInt64) mySerializationReader.ReadObject();
+                                    ObjectExtent.Length                 = mySerializationReader.ReadUInt64();
+                                    ObjectExtent.LogicalPosition        = mySerializationReader.ReadUInt64();
+                                    ObjectExtent.StorageUUID            = new StorageUUID(mySerializationReader.ReadByteArray()); ;
+                                    ObjectExtent.PhysicalPosition       = mySerializationReader.ReadUInt64();
 
                                     ObjectExtent.NextExtent             = new ExtendedPosition(
-                                                                                           (StorageUUID) mySerializationReader.ReadObject(),
-                                                                                           (UInt64) mySerializationReader.ReadObject());
+                                                                                           new StorageUUID(mySerializationReader.ReadByteArray()),
+                                                                                           mySerializationReader.ReadUInt64());
 
                                     __ObjectDatastream.Add(ObjectExtent);
 
@@ -631,7 +631,7 @@ namespace sones.GraphFS.DataStructures
 
             catch (Exception e)
             {
-                throw new Exception("ObjectLocator could not be deserialized!\n\n" + e);
+                throw new GraphFSException("The ObjectLocator could not be deserialized!\n\n" + e);
             }
 
         }
@@ -1393,213 +1393,6 @@ namespace sones.GraphFS.DataStructures
                     return new DirectoryEntry { Virtual = new HashSet<String> { FSConstants.VIRTUALDIRECTORY } };
 
             return null;
-
-        }
-
-        #endregion
-
-        #endregion
-
-        #region IXMLExport Members
-
-        #region ToXML()
-
-        public XDocument ToXML()
-        {
-
-            var XML = new XDocument(
-
-                new XElement("ObjectLocator",
-                    new XAttribute("Version", _StructureVersion),
-                    new XAttribute("ObjectUUID", ObjectUUID.ToHexString(SeperatorTypes.COLON)),
-
-                new XElement("ObjectStreams",
-
-                    from _ObjectStream in _ObjectStreams select
-                    new XElement("ObjectStream",
-                        new XAttribute("Name", _ObjectStream.Key),
-                        new XAttribute("Type", "tobedone!"),
-
-                        new XElement("ObjectEditions",
-                            new XAttribute("DefaultEdition", _ObjectStream.Value.DefaultEditionName),
-
-                            from _ObjectEdition in _ObjectStream.Value select
-                            new XElement("ObjectEdition",
-                                new XAttribute("Name", _ObjectEdition.Key),
-                                new XAttribute("IsDeleted", _ObjectEdition.Value.IsDeleted),
-
-                                new XElement("ObjectRevisions",
-                                    new XAttribute("MinNumberOfRevisions", _ObjectEdition.Value.MinNumberOfRevisions),
-                                    new XAttribute("MaxNumberOfRevisions", _ObjectEdition.Value.MaxNumberOfRevisions),
-                                    new XAttribute("MinRevisionDelta", _ObjectEdition.Value.MinRevisionDelta),
-                                    new XAttribute("MaxRevisionAge", _ObjectEdition.Value.MaxRevisionAge),
-
-                                    from _ObjectRevisionsEnumerator in _ObjectEdition.Value select new XElement("ObjectRevision",
-                                        new XAttribute("RevisionID", _ObjectRevisionsEnumerator.Key),
-
-                                        new XElement("ParentRevisions",
-                                        from _ParentRevisionID in _ObjectRevisionsEnumerator.Value.ParentRevisionIDs select
-                                            new XElement("ParentRevision",
-                                                new XAttribute("RevisionID", _ParentRevisionID)
-
-                                                
-                                                
-                                                ))))))))));
-
-            return XML;
-
-
-
-//                            XMLString.AppendLine("<ParentRevisions>".SpacingLeft(16));
-
-//                            if (ObjectEditionsEnumerator.Value._ParentRevisions.Count > 0 && ObjectEditionsEnumerator.Value._ParentRevisions.ContainsKey(ObjectRevisionsEnumerator.Key))
-//                                foreach (RevisionID _ParentRevision in ObjectEditionsEnumerator.Value._ParentRevisions[ObjectRevisionsEnumerator.Key])
-//                                    XMLString.AppendFormat("<ParentRevision Timestamp=\"{0}\" />".SpacingLeft(18), _ParentRevision.ToString()); XMLString.AppendLine();
-
-//                            XMLString.AppendLine("</ParentRevisions>".SpacingLeft(16));
-
-//                            XMLString.AppendFormat("<ObjectCopies MinNumberOfCopies=\"{0}\" MaxNumberOfCopies=\"{1}\" CacheUUID=\"{2}\">".SpacingLeft(16), ObjectRevisionsEnumerator.Value.MinNumberOfCopies, ObjectRevisionsEnumerator.Value.MaxNumberOfCopies, ObjectRevisionsEnumerator.Value.CacheUUID); XMLString.AppendLine();
-
-//                            #region Write ObjectStreams
-
-////                            if (ObjectRevisionsEnumerator.Value.Co != null)
-//                                foreach (ObjectStream ObjectStream in ObjectRevisionsEnumerator.Value)
-//                                {
-
-//                                    XMLString.Append("<ObjectStream".SpacingLeft(18));
-//                                    XMLString.AppendFormat(" Algorithm=\"{0}\"",              ObjectStream.Compression);
-//                                    XMLString.AppendFormat(" ForwardErrorCorrection=\"{0}\"", ObjectStream.ForwardErrorCorrection);
-//                                    XMLString.AppendFormat(" IntegrityCheckValue=\"{0}\"",    ByteArrayHelper.ByteArrayToFormatedString(ObjectStream.IntegrityCheckValue));
-//                                    XMLString.AppendFormat(" ObjectUUID=\"{0}\"",             ObjectStream.ObjectUUID);
-//                                    XMLString.AppendFormat(" Redundancy=\"{0}\"",             ObjectStream.Redundancy);
-//                                    XMLString.AppendFormat(" ReservedLength=\"{0}\"",         ObjectStream.ReservedLength);
-//                                    XMLString.AppendFormat(" StreamLength=\"{0}\"",           ObjectStream.StreamLength);
-//                                    XMLString.AppendLine(">");
-
-//                                    #region Write AccessRights
-
-//                                    if (ObjectStream.AccessRights != null)
-//                                        if (ObjectStream.AccessRights.Count > 0)
-//                                        {
-
-//                                            XMLString.AppendLine("<AccessRights>".SpacingLeft(20));
-
-//                                            foreach (AccessRight _AccessRight in ObjectStream.AccessRights)
-//                                            {
-//                                                XMLString.AppendFormat("<AccessRight AccessFlags=\"{0}\" EncryptionParameters=\"{1}\" UserID=\"{2}\" />".SpacingLeft(20), _AccessRight.AccessFlags.ToString(), _AccessRight.EncryptionParameters.ToString(), _AccessRight.UserID); XMLString.AppendLine();
-//                                            }
-
-//                                            XMLString.AppendLine("</AccessRights>".SpacingLeft(20));
-
-//                                        }
-
-//                                        else XMLString.AppendLine("<AccessRights />".SpacingLeft(20));
-
-//                                    else XMLString.AppendLine("<AccessRights />".SpacingLeft(20));
-
-//                                    #endregion
-
-//                                    #region AvailableStorageIDs
-
-//                                    if (ObjectStream.AvailableStorageIDs != null)
-//                                        if (ObjectStream.AvailableStorageIDs.Count > 0)
-//                                        {
-
-
-//                                            XMLString.AppendLine("<AvailableStorageIDs>".SpacingLeft(20));
-
-//                                            foreach (UInt64 _StorageID in ObjectStream.AvailableStorageIDs)
-//                                            {
-//                                                XMLString.AppendFormat("<AvailableStorageID StorageID=\"{0}\">".SpacingLeft(20), _StorageID);
-//                                                XMLString.AppendLine();
-//                                            }
-
-//                                            XMLString.AppendLine("</AvailableStorageIDs>".SpacingLeft(20));
-
-//                                        }
-
-//                                        else XMLString.AppendLine("<AvailableStorageIDs />".SpacingLeft(20));
-
-//                                    else XMLString.AppendLine("<AvailableStorageIDs />".SpacingLeft(20));
-
-//                                    #endregion
-
-//                                    #region BlockIntegrityArrays
-
-//                                    //if (ObjectStream.BlockIntegrityArrays != null)
-//                                        //if (ObjectStream.BlockIntegrityArrays.Count > 0)
-//                                        //{
-
-
-//                                        //    XMLString.AppendLine("<BlockIntegrityArrays>".SpacingLeft(20));
-
-//                                        //    foreach (BlockIntegrity _BlockIntegrity in ObjectStream.BlockIntegrityArrays)
-//                                        //    {
-//                                        //        XMLString.AppendFormat("<BlockIntegrity XXX=\"{0}\">".SpacingLeft(20), _BlockIntegrity);
-//                                        //        XMLString.AppendLine();
-//                                        //    }
-
-//                                        //    XMLString.AppendLine("</BlockIntegrityArrays>".SpacingLeft(20));
-
-//                                        //}
-
-//                                        //else XMLString.AppendLine("<BlockIntegrityArrays />".SpacingLeft(20));
-
-//                                    //else
-//                                    XMLString.AppendLine("<BlockIntegrityArrays />".SpacingLeft(20));
-
-//                                    #endregion
-
-//                                    #region Write ObjectExtent
-
-//                                    XMLString.AppendLine("<Extents>".SpacingLeft(20));
-
-//                                    if (ObjectStream.Extents != null)
-//                                        foreach (ObjectExtent ObjectExtent in ObjectStream.Extents)
-//                                        {
-//                                            XMLString.Append("<Extent".SpacingLeft(22));
-//                                            XMLString.AppendFormat(" Length=\"{0}\"",               ObjectExtent.Length);
-//                                            XMLString.AppendFormat(" LogicalPosition=\"{0}\"",      ObjectExtent.LogicalPosition);
-//                                            XMLString.AppendFormat(" StorageID=\"{0}\"",            ObjectExtent.StorageID);
-//                                            XMLString.AppendFormat(" PhysicalPosition=\"{0}\"",     ObjectExtent.PhysicalPosition);
-//                                            XMLString.AppendFormat(" NextExtent_StorageID=\"{0}\"", ObjectExtent.NextExtent.StorageID);
-//                                            XMLString.AppendFormat(" NextExtent_Position=\"{0}\"",  ObjectExtent.NextExtent.Position);
-//                                            XMLString.AppendLine(" />");
-//                                        }
-
-//                                    XMLString.AppendLine("</Extents>".SpacingLeft(20));
-
-//                                    #endregion
-
-//                                    XMLString.AppendLine("</ObjectStream>".SpacingLeft(18));
-
-//                                }
-
-//                        #endregion
-
-//                        XMLString.AppendLine("</ObjectCopies>".SpacingLeft(16));
-//                        XMLString.AppendLine("</ObjectRevisions>".SpacingLeft(14));
-
-//                    }
-
-//                    #endregion
-
-//                    XMLString.AppendLine("</ObjectRevisions>".SpacingLeft(12));
-//                    XMLString.AppendLine("</ObjectEditions>".SpacingLeft(10));
-
-//                }
-
-//                #endregion
-
-//                XMLString.AppendLine("</ObjectEditions>".SpacingLeft(8));
-//                XMLString.AppendLine("</ObjectStream>".SpacingLeft(6));
-
-//            }
-
-//            XMLString.AppendLine("</ObjectStreamTypes>".SpacingLeft(4));
-//            XMLString.AppendLine("</ObjectLocator>".SpacingLeft(2));
-
-//            return XMLString.ToString();
 
         }
 

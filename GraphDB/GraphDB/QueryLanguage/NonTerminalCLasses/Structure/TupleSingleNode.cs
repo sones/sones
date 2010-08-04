@@ -25,6 +25,7 @@ using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;
+using sones.GraphDB.Managers.Structures;
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 {
@@ -41,12 +42,12 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         {
             var tupleNode = new TupleNode();
             tupleNode.Init(context, parseNode);
-            if (tupleNode.Tuple.Count != 1)
+            if (tupleNode.TupleDefinition.Count() != 1)
             {
-                throw new GraphDBException(new Error_InvalidTuple( "Only 1 element allowed but found " + tupleNode.Tuple.Count.ToString()));
+                throw new GraphDBException(new Error_InvalidTuple( "Only 1 element allowed but found " + tupleNode.TupleDefinition.Count().ToString()));
             }
 
-            _TupleElement = tupleNode.Tuple[0];
+            _TupleElement = tupleNode.TupleDefinition.First();
         }
 
         #region IAstNodeInit Members

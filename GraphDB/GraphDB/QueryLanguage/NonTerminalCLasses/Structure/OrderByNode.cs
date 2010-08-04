@@ -25,6 +25,9 @@ using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
 using sones.Lib.DataStructures;
 using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.Exceptions;
+using sones.GraphDB.Managers.Structures;
+using sones.Lib.ErrorHandling;
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 {
@@ -32,17 +35,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
     public class OrderByNode : AStructureNode, IAstNodeInit
     {
 
-        private SortDirection _OrderDirection;
-        public SortDirection OrderDirection
-        {
-            get { return _OrderDirection; }
-        }
+        public OrderByDefinition OrderByDefinition { get; private set; }
 
+        private SortDirection _OrderDirection;
         private List<OrderByAttributeDefinition> _OrderByAttributeList;
-        public List<OrderByAttributeDefinition> OrderByAttributeList
-        {
-            get { return _OrderByAttributeList; }
-        }
+       
 
         public OrderByNode() { }
 
@@ -61,13 +58,20 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
                 {
                     if (treeNode.AstNode != null && treeNode.AstNode is IDNode)
                     {
-                        _OrderByAttributeList.Add(new OrderByAttributeDefinition(((IDNode)treeNode.AstNode).Edges, ((IDNode)treeNode.AstNode).LastAttribute.Name));
+                        Exceptional validateResult = ((IDNode)treeNode.AstNode).IDChainDefinition.Validate(context.IContext as DBContext, false);
+                        if (validateResult.Failed)
+                        {
+                            throw new GraphDBException(validateResult.Errors);
+                        }
+                        _OrderByAttributeList.Add(new OrderByAttributeDefinition(((IDNode)treeNode.AstNode).IDChainDefinition.Edges, ((IDNode)treeNode.AstNode).IDChainDefinition.LastAttribute.Name));
                     }
                     else
                     {
                         _OrderByAttributeList.Add(new OrderByAttributeDefinition(null, treeNode.Token.ValueString));
                     }
                 }
+
+                OrderByDefinition = new OrderByDefinition(_OrderDirection, _OrderByAttributeList);
             }
         }
 

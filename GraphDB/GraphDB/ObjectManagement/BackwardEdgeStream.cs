@@ -122,11 +122,10 @@ namespace sones.GraphDB.ObjectManagement
         {
             if (!base.ContainsKey(myEdgeKey))
             {
-
-                base.Add(myEdgeKey, new EdgeTypeSetOfReferences());
+                base.Add(myEdgeKey, new EdgeTypeSetOfReferences(null, myEdgeKey.TypeUUID));
             }
 
-            base[myEdgeKey].Add(myObjectUUID);
+            base[myEdgeKey].Add(myObjectUUID, myEdgeKey.TypeUUID);
 
             isDirty = true;
         }
@@ -140,11 +139,11 @@ namespace sones.GraphDB.ObjectManagement
         {
             if (!base.ContainsKey(myEdgeKey))
             {
-                base.Add(myEdgeKey, new EdgeTypeSetOfReferences(myObjectUUIDs));
+                base.Add(myEdgeKey, new EdgeTypeSetOfReferences(myObjectUUIDs, myEdgeKey.TypeUUID));
             }
             else
             {
-                base[myEdgeKey].AddRange(myObjectUUIDs);
+                base[myEdgeKey].AddRange(myObjectUUIDs, myEdgeKey.TypeUUID);
             }
 
             isDirty = true;
@@ -182,7 +181,7 @@ namespace sones.GraphDB.ObjectManagement
         /// <returns></returns>
         public IEnumerable<ObjectUUID> GetBackwardEdgeUUIDs(EdgeKey myEdgeKey)
         {
-            return base[myEdgeKey].GetAllUUIDs();
+            return base[myEdgeKey].GetAllReferenceIDs();
         }
 
         public EdgeTypeSetOfReferences GetBackwardEdges(EdgeKey myEdgeKey)

@@ -44,9 +44,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     {
         #region Data
 
-        private String                  _AttributeName  = null;
-        private FuncCallNode            _FuncCallNode   = null;
-        private SelectionDelimiterNode  _DelimiterNode  = null;
+        public String AttributeName { get; private set; }
+        public FuncCallNode FuncCall { get; private set; }
+        public SelectionDelimiterNode Delimiter { get; private set; }
         
         #endregion
 
@@ -61,22 +61,18 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         public void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
         {
-            _DelimiterNode = (SelectionDelimiterNode)myParseTreeNode.FirstChild.AstNode;
+            Delimiter = (SelectionDelimiterNode)myParseTreeNode.FirstChild.AstNode;
 
             if (myParseTreeNode.ChildNodes[1].AstNode == null)
             {
                 //AttributeName
-                _AttributeName = myParseTreeNode.ChildNodes[1].Token.ValueString;
+                AttributeName = myParseTreeNode.ChildNodes[1].Token.ValueString;
             }
             else
             {
-                _FuncCallNode = (FuncCallNode)myParseTreeNode.ChildNodes[1].AstNode;
+                FuncCall = (FuncCallNode)myParseTreeNode.ChildNodes[1].AstNode;
             }
         }
-
-        public String                   AttributeName   { get { return _AttributeName; } }
-        public FuncCallNode             FuncCall        { get { return _FuncCallNode; } }
-        public SelectionDelimiterNode   Delimiter       { get { return _DelimiterNode; } }
-        
+                
     }
 }

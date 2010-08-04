@@ -29,7 +29,8 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 {
     public class HavingExpressionNode : AStructureNode, IAstNodeInit
     {
-        private BinaryExpressionNode _binExprNode = null;
+
+        public BinaryExpressionNode BinExprNode { get; private set; }
 
         public HavingExpressionNode()
         {
@@ -46,7 +47,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         {
             if (parseNode.HasChildNodes())
             {
-                _binExprNode = (BinaryExpressionNode)parseNode.ChildNodes[1].AstNode;
+                BinExprNode = (BinaryExpressionNode)parseNode.ChildNodes[1].AstNode;
             }
         }
 
@@ -54,8 +55,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         {
             return "havingClauseOpt";
         }
-
-        public BinaryExpressionNode BinExprNode { get { return _binExprNode; } }
 
         #region IAstNodeInit Members
 

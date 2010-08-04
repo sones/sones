@@ -80,6 +80,43 @@ namespace sones.GraphDB.QueryLanguage.Result
 
         #endregion
 
+        #region Success
+
+        public Boolean Success
+        {
+            get
+            {
+                return _ResultType == ResultType.Successful;
+            }
+        }
+
+        #endregion
+
+        #region PartialSuccess
+
+        public Boolean PartialSuccess
+        {
+            get
+            {
+                return _ResultType == ResultType.PartialSuccessful;
+            }
+        }
+
+        #endregion
+
+        #region Failed
+
+        public Boolean Failed
+        {
+            get
+            {
+                return _ResultType == ResultType.Failed;
+            }
+        }
+
+        #endregion
+
+
         #region Errors
 
         private List<IError> _Errors = null;

@@ -24,6 +24,7 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Dirk Bludau</developer>
+ * <developer>Stefan Licht</developer>
  * <summary></summary>
  */
 
@@ -46,6 +47,9 @@ using sones.Lib.Session;
 using sones.GraphDB.QueryLanguage.Enums;
 using sones.GraphDB.Managers;
 using sones.GraphDB.Exceptions;
+using sones.Lib;
+using sones.GraphDB.Managers.Structures;
+using System;
 
 #endregion
 
@@ -59,9 +63,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         { }
         #endregion
 
-        private ObjectManipulationManager _ObjectManipulationManager;
-        private BinaryExpressionNode _whereExpression;
-        private List<AttributeUpdateOrAssign> _attrToAssign;
+        private List<AAttributeAssignOrUpdate> _AttributeAssignList;
+        private BinaryExpressionDefinition _WhereExpression;
+        private String _Type;
 
         public override string StatementName
         {
@@ -76,14 +80,12 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         public override void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
             var dbContext = context.IContext as DBContext;
-            GraphDBType type;
             if (parseNode.HasChildNodes())
             {
                 //get type
                 if (parseNode.ChildNodes[1] != null && parseNode.ChildNodes[1].AstNode != null)
                 {
-                    type = ((ATypeNode)(parseNode.ChildNodes[1].AstNode)).DBTypeStream;
-                    _ObjectManipulationManager = new ObjectManipulationManager(dbContext.SessionSettings, type, dbContext, this);
+                    _Type = ((ATypeNode)(parseNode.ChildNodes[1].AstNode)).ReferenceAndType.TypeName;
                 }
                 else
                 {
@@ -93,32 +95,14 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
                 if (parseNode.ChildNodes[3] != null && parseNode.ChildNodes[3].HasChildNodes())
                 {
-                    var result = _ObjectManipulationManager.GetRecursiveAttributes(parseNode.ChildNodes[3], dbContext);
-                    if (result.Failed)
-                    {
-                        throw new GraphDBException(result.Errors);
-                    }
 
-                    _ObjectManipulationManager.CheckMandatoryAttributes(dbContext);
+                    _AttributeAssignList = (parseNode.ChildNodes[3].AstNode as AttrAssignListNode).AttributeAssigns;
 
-                    _attrToAssign = new List<AttributeUpdateOrAssign>();
-                    
-                    foreach(var item in _ObjectManipulationManager.AssignNodeList)
-                        _attrToAssign.Add(new AttributeUpdateOrAssign(TypesOfUpdate.AssignAttribute, item));
-
-                    foreach (var item in _ObjectManipulationManager.UndefinedAttributes)
-                        _attrToAssign.Add(new AttributeUpdateOrAssign(TypesOfUpdate.AssignAttribute, item){ IsUndefinedAttribute = true });
                 }
 
                 if (parseNode.ChildNodes[4] != null && ((WhereExpressionNode)parseNode.ChildNodes[4].AstNode).BinExprNode != null)
                 {
-                    _whereExpression = ((WhereExpressionNode)parseNode.ChildNodes[4].AstNode).BinExprNode;
-
-                    Exceptional validateResult = _whereExpression.Validate(dbContext, type);
-                    if (!validateResult.Success)
-                    {
-                        throw new GraphDBException(validateResult.Errors);
-                    }
+                    _WhereExpression = ((WhereExpressionNode)parseNode.ChildNodes[4].AstNode).BinExprNode.BinaryExpressionDefinition;
                 }
             }
         }
@@ -131,55 +115,20 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         /// <returns>The result of the query</returns>
         public override QueryResult Execute(IGraphDBSession graphDBSession, DBContext dbContext)
         {
-            IEnumerable<Exceptional<DBObjectStream>> extractedDBOs = null;
-            List<IWarning> warnings = new List<IWarning>();
 
-
+            var _ObjectManipulationManager = new ObjectManipulationManager();
             using (var transaction = graphDBSession.BeginTransaction())
             {
 
                 var dbInnerContext = transaction.GetDBContext();
 
-                if (_whereExpression != null)
+                var graphDBType = dbInnerContext.DBTypeManager.GetTypeByName(_Type);
+                if (graphDBType == null)
                 {
-                    var _whereGraphResult = _whereExpression.Calculon(dbContext, new CommonUsageGraph(dbContext), false);
-
-                    if (_whereGraphResult.Success)
-                    {
-                        extractedDBOs = _whereGraphResult.Value.Select(new LevelKey(_ObjectManipulationManager.Type), null, true);
-                    }
-                    else
-                    {
-                        return new QueryResult(_whereGraphResult.Errors);
-                    }
-
-                    #region expressionGraph error handling
-
-                    warnings.AddRange(_whereGraphResult.Value.GetWarnings());
-
-                    #endregion
-                }
-                else
-                {
-                    extractedDBOs = new List<Exceptional<DBObjectStream>>();
+                    return new QueryResult(new Error_TypeDoesNotExist(_Type));
                 }
 
-                QueryResult result;
-
-                if (extractedDBOs.Count() == 0)
-                {
-
-                    result = _ObjectManipulationManager.Insert(dbContext, true);
-                }
-                else
-                {
-                    if (extractedDBOs.Count() > 1)
-                        return new QueryResult(new Error_MultipleResults());
-
-                    result = _ObjectManipulationManager.Update(extractedDBOs, _attrToAssign, dbContext);
-                }
-
-                result.AddWarnings(warnings);
+                var result = _ObjectManipulationManager.InsertOrUpdate(dbInnerContext, graphDBType, _AttributeAssignList, _WhereExpression);
 
                 #region Commit transaction and add all Warnings and Errors
 

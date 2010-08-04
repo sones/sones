@@ -127,8 +127,24 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
+        #region OK
+
+        private static readonly ObjectLocation _Root = new ObjectLocation();
+
+        /// <summary>
+        /// This returns the root of a file system object location
+        /// </summary>
+        public static ObjectLocation Root
+        {
+            get
+            {
+                return _Root;
+            }
+        }
+
         #endregion
 
+        #endregion
 
         #region Constructors
 

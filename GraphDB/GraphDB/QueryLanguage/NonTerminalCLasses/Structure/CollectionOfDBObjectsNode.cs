@@ -53,35 +53,20 @@ using sones.GraphDB.Errors;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Session;
 using sones.Lib.Session;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 {
-    public enum CollectionType
-    {
-        Set,
-        List,
-        SetOfUUIDs
-    }
 
     /// <summary>
     /// This node is requested in case of CollectionOfDBObjectsNode statement (SETOF or LISTOF).
     /// </summary>
     public class CollectionOfDBObjectsNode : AStructureNode, IAstNodeInit
     {
-        #region Data
 
-        TupleNode _tupleNode = null;
-        public TupleNode TupleNodeElement { get { return _tupleNode; } }
-
-        CollectionType _CollectionType;
-        public CollectionType CollectionType
-        {
-            get { return _CollectionType; }
-        }
-
-        #endregion
+        public CollectionDefinition CollectionDefinition { get; private set; }
 
         #region constructor
 
@@ -95,24 +80,25 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
         private void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
             var multiplyString = parseNode.ChildNodes[0].Token.Text.ToUpper();
+            CollectionType collectionType;
 
             switch (multiplyString)
             {
                 case DBConstants.LISTOF:
 
-                    _CollectionType = CollectionType.List;
+                    collectionType = CollectionType.List;
 
                     break;
 
                 case DBConstants.SETOF:
 
-                    _CollectionType = CollectionType.Set;
+                    collectionType = CollectionType.Set;
 
                     break;
 
                 case DBConstants.SETOFUUIDS:
 
-                    _CollectionType = CollectionType.SetOfUUIDs;
+                    collectionType = CollectionType.SetOfUUIDs;
 
                     break;
                 default:
@@ -120,7 +106,16 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
                     throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
             }
 
-            _tupleNode = (TupleNode)parseNode.ChildNodes[1].AstNode;
+            var tupleNode = (TupleNode)parseNode.ChildNodes[1].AstNode;
+            if (tupleNode == null)
+            {
+                CollectionDefinition = new CollectionDefinition(collectionType, new TupleDefinition());
+            }
+            else
+            {
+                CollectionDefinition = new CollectionDefinition(collectionType, tupleNode.TupleDefinition);
+            }
+
         }
 
         #region IAstNodeInit Members
@@ -131,46 +126,5 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
         }
 
         #endregion
-
-        internal Exceptional<ASetReferenceEdgeType> GetEdge(TypeAttribute attr, GraphDBType dbType, DBContext dbContext)
-        {
-
-            if (CollectionType == CollectionType.List || !(attr.EdgeType is ASetReferenceEdgeType))
-            {
-                return new Exceptional<ASetReferenceEdgeType>(new Error_InvalidAssignOfSet(attr.Name));
-            }
-
-            #region The Edge is empty
-
-            if (TupleNodeElement == null)
-            {
-                return new Exceptional<ASetReferenceEdgeType>(attr.EdgeType.GetNewInstance() as ASetReferenceEdgeType);
-            }
-
-            #endregion
-
-            Exceptional<ASetReferenceEdgeType> uuids = null;
-            if (CollectionType == CollectionType.SetOfUUIDs)
-            {
-                uuids = TupleNodeElement.GetAsUUIDEdge(dbContext, attr);
-                if (uuids.Failed)
-                {
-                    return new Exceptional<ASetReferenceEdgeType>(uuids);
-                }
-            }
-            else
-            {
-                uuids = GetCorrespondigDBObjectGuidAsList(dbType, dbContext, TupleNodeElement, (ASetReferenceEdgeType)attr.EdgeType, dbType);
-                if (CollectionType == CollectionType.Set)
-                {
-                    if (uuids.Success)
-                    {
-                        uuids.Value.Distinction();
-                    }
-                }
-            }
-            return uuids;
-
-        }
     }
 }

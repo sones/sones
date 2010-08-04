@@ -35,6 +35,7 @@ using sones.Lib.DataStructures;
 
 using sones.StorageEngines;
 using sones.GraphFS.Caches;
+using sones.GraphFS.Events;
 using sones.GraphFS.Objects;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
@@ -55,10 +56,23 @@ namespace sones.GraphFS.Session
     public interface IGraphFSSession
     {
 
+
         #region Properties
 
+        IGraphFS     IGraphFS      { get; }
         SessionToken SessionToken  { get; }
         String       Implemenation { get; }
+
+        #endregion
+
+        #region Events
+
+        event FSEventHandlers.OnLoadEventHandler    OnLoad;
+        event FSEventHandlers.OnLoadedEventHandler  OnLoaded;
+        event FSEventHandlers.OnSaveEventHandler    OnSave;
+        event FSEventHandlers.OnSavedEventHandler   OnSaved;
+        event FSEventHandlers.OnRemoveEventHandler  OnRemove;
+        event FSEventHandlers.OnRemovedEventHandler OnRemoved;
 
         #endregion
 
@@ -70,21 +84,29 @@ namespace sones.GraphFS.Session
 
         #region Information Methods
 
+        #region IsMounted
+
+        /// <summary>
+        /// Returns true if the file system was mounted correctly
+        /// </summary>
+        /// <returns>true if the file system was mounted correctly</returns>
+        Boolean IsMounted { get; }
+
+        #endregion
+
         #region IsPersistent
 
         Boolean IsPersistent { get; }
 
         #endregion
 
-        #region isMounted
 
-        /// <summary>
-        /// Returns true if the file system was mounted correctly
-        /// </summary>
-        /// <returns>true if the file system was mounted correctly</returns>
-        Boolean isMounted { get; }
+        #region TraverseChildFSs(myFunc, myDepth)
+
+        IEnumerable<Object> TraverseChildFSs(Func<IGraphFS, UInt64, IEnumerable<Object>> myFunc, UInt64 myDepth);
 
         #endregion
+
 
         #region GetFileSystemUUID(...)
 
@@ -102,11 +124,11 @@ namespace sones.GraphFS.Session
         FileSystemUUID GetFileSystemUUID(ObjectLocation myObjectLocation);
 
         /// <summary>
-        /// Returns a (recursive) list of FileSystemUUIDs of all mounted file systems
+        /// Returns a recursive list of FileSystemUUIDs of all mounted file systems
         /// </summary>
-        /// <param name="myRecursiveOperation">Recursive operation?</param>
+        /// <param name="myDepth">Depth</param>
         /// <returns>A (recursive) list of FileSystemUUIDs of all mounted file systems</returns>
-        IEnumerable<FileSystemUUID> GetFileSystemUUIDs(Boolean myRecursiveOperation);
+        IEnumerable<FileSystemUUID> GetFileSystemUUIDs(UInt64 myDepth);
 
         #endregion
 
@@ -130,7 +152,7 @@ namespace sones.GraphFS.Session
         /// </summary>
         /// <param name="myRecursiveOperation">Recursive operation?</param>
         /// <returns>A (recursive) list of file system descriptions of all mounted file systems</returns>
-        IEnumerable<String> GetFileSystemDescriptions(Boolean myRecursiveOperation);
+        IEnumerable<String> GetFileSystemDescriptions(UInt64 myDepth);
 
         #endregion
 
@@ -427,6 +449,9 @@ namespace sones.GraphFS.Session
         /// <param name="myFSAccessMode">The access mode of the file system to mount</param>
         void MountFileSystem(String myStorageLocation, ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode);
 
+
+        void MountFileSystem(IGraphFSSession myIGraphFSSession, ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode);
+
         #endregion
 
         #region RemountFileSystem(...)
@@ -514,15 +539,15 @@ namespace sones.GraphFS.Session
 
         #region Object specific methods
 
-        Exceptional LockObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime);
+        Exceptional LockFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime);
 
-        Exceptional<PT> GetOrCreateObject<PT>(ObjectLocation myObjectLocation) where PT : AFSObject, new();
-        Exceptional<PT> GetOrCreateObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new();
-        Exceptional<PT> GetOrCreateObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, Func<PT> myFunc, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject;
+        Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation) where PT : AFSObject, new();
+        Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new();
+        Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, Func<PT> myFunc, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject;
 
-        Exceptional<PT> GetObject<PT>(ObjectLocation myObjectLocation) where PT : AFSObject, new();
-        Exceptional<PT> GetObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures= false) where PT : AFSObject, new();
-        Exceptional<PT> GetObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, Func<PT> myFunc, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject;
+        Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation) where PT : AFSObject, new();
+        Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures= false) where PT : AFSObject, new();
+        Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, Func<PT> myFunc, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject;
 
         Exceptional StoreFSObject(AFSObject myAPandoraObject, Boolean myAllowOverwritting);
 
@@ -535,9 +560,9 @@ namespace sones.GraphFS.Session
         Exceptional<IEnumerable<String>> GetObjectEditions(ObjectLocation myObjectLocation, String myObjectStream);
         Exceptional<IEnumerable<RevisionID>> GetObjectRevisionIDs(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition);
 
-        Exceptional RenameObject(ObjectLocation myObjectLocation, String myNewObjectName);
-        Exceptional RemoveObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null);
-        Exceptional EraseObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null);
+        Exceptional RenameFSObject(ObjectLocation myObjectLocation, String myNewObjectName);
+        Exceptional RemoveFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null);
+        Exceptional EraseFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null);
 
         #endregion
 

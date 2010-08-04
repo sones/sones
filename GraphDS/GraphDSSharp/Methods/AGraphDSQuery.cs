@@ -32,6 +32,7 @@ using sones.GraphDB.QueryLanguage.Result;
 using sones.GraphDB.Structures;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 
 #endregion
 
@@ -43,20 +44,38 @@ namespace sones.GraphDS.API.CSharp
 
         #region Data
 
-        internal  AGraphDSSharp _DBWrapper      = null;
-        protected StringBuilder _CommandString  = null;
+        internal  readonly AGraphDSSharp _DBWrapper      = null;
+        protected readonly StringBuilder _CommandString  = null;
 
         #endregion
 
+        #region Properties
+
+        public String Name { get; protected set; }
+
+        #endregion
+
+        #region Constructor(s)
+
+        public AGraphDSQuery(AGraphDSSharp myAGraphDSSharp)
+        {
+            _DBWrapper      = myAGraphDSSharp;
+            _CommandString  = new StringBuilder();
+        }
+
+        #endregion
+
+
         public abstract String GetGQLQuery();
 
+        #region AddToCommandString(myIEnumerable, myPrefix, myAddSeparator = false)
 
-        protected void AddToCommandString(IEnumerable<String> myIEnumerable, String myPrefix)
+        protected void AddToCommandString(IEnumerable<String> myIEnumerable, String myPrefix, Boolean myAddSeparator = false)
         {
 
-            var _Array = myIEnumerable.ToArray();
+            var _Array = myIEnumerable.ToArray();            
 
-            if (_Array.Count() > 0)
+            if (_Array.Any())
             {
 
                 _CommandString.Append(" ").Append(myPrefix).Append(" (");
@@ -67,10 +86,15 @@ namespace sones.GraphDS.API.CSharp
                     _CommandString.Append(_Array[i] + ", ");
 
                 _CommandString.Append(_Array[Anzahl - 1]).Append(")");
-
+                                
+                if(myAddSeparator)
+                    _CommandString.Append(",");
+            
             }
 
         }
+
+        #endregion
 
 
         #region Execute()
@@ -79,7 +103,7 @@ namespace sones.GraphDS.API.CSharp
         {
 
             if (_DBWrapper != null)
-                return _DBWrapper.Query(this.GetGQLQuery());
+                return _DBWrapper.Query(GetGQLQuery());
 
             throw new ArgumentNullException("_DBWrapper is null!");
 
@@ -95,7 +119,7 @@ namespace sones.GraphDS.API.CSharp
             if (_DBWrapper != null)
             {
 
-                var _QueryResult = _DBWrapper.Query(this.GetGQLQuery());
+                var _QueryResult = _DBWrapper.Query(GetGQLQuery());
 
                 if (myAction != null)
                     myAction(_QueryResult);
@@ -110,16 +134,108 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
-        #region Execute()
+        #region Execute(mySuccessAction, myFailureAction)
 
-        public SelectToObjectGraph ExecuteToObject(UInt16 myDepth)
+        public QueryResult Execute(Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction)
         {
 
             if (_DBWrapper != null)
-                //return new SelectToObject(_DBWrapper.QueryXml(this.GetGQLQuery() + " DEPTH " + myDepth));
-                return new SelectToObjectGraph(_DBWrapper.Query(this.GetGQLQuery() + " DEPTH " + myDepth));
+            {
+
+                var _QueryResult = _DBWrapper.Query(GetGQLQuery());
+
+                if (_QueryResult.Failed)
+                {
+                    if (myFailureAction != null)
+                        myFailureAction(_QueryResult);
+                }
+
+                else
+                {
+                    if (mySuccessAction != null)
+                        mySuccessAction(_QueryResult);
+                }
+
+                return _QueryResult;
+
+            }
 
             throw new ArgumentNullException("_DBWrapper is null!");
+
+        }
+
+        #endregion
+
+        #region Execute(mySuccessAction, myPartialSuccessAction, myFailureAction)
+
+        public QueryResult Execute(Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction)
+        {
+
+            if (_DBWrapper != null)
+            {
+
+                var _QueryResult = _DBWrapper.Query(GetGQLQuery());
+
+                if (_QueryResult.Success)
+                {
+                    if (mySuccessAction != null)
+                        mySuccessAction(_QueryResult);
+                }
+
+                else if (_QueryResult.PartialSuccess)
+                {
+                    if (myPartialSuccessAction != null)
+                        myPartialSuccessAction(_QueryResult);
+                }
+
+                else
+                {
+                    if (myFailureAction != null)
+                        myFailureAction(_QueryResult);
+                }
+
+                return _QueryResult;
+
+            }
+
+            throw new ArgumentNullException("_DBWrapper is null!");
+
+        }
+
+        #endregion
+
+
+        #region ExecuteToObject(myDepth)
+
+        public SelectToObjectGraph ExecuteToObject(UInt16? myDepth = null)
+        {
+
+            if (_DBWrapper == null)
+                throw new ArgumentNullException("_DBWrapper is null!");
+
+            if (myDepth == null)
+                return new SelectToObjectGraph(_DBWrapper.Query(GetGQLQuery()));
+
+            else
+                return new SelectToObjectGraph(_DBWrapper.Query(GetGQLQuery() + " DEPTH " + myDepth));
+
+        }
+
+        #endregion
+
+        #region ExecuteToObject<T>(myDepth)
+
+        public IEnumerable<T> ExecuteToObject<T>(UInt16? myDepth = null)
+        {
+
+            if (_DBWrapper == null)
+                throw new ArgumentNullException("_DBWrapper is null!");
+
+            if (myDepth == null)
+                return new SelectToObjectGraph(_DBWrapper.Query(GetGQLQuery())).ToVertexType<T>();
+
+            else
+                return new SelectToObjectGraph(_DBWrapper.Query(GetGQLQuery() + " DEPTH " + myDepth)).ToVertexType<T>();
 
         }
 

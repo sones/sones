@@ -37,6 +37,7 @@ using sones.GraphFS.DataStructures;
 using sones.GraphFS.Session;
 using sones.GraphDB.QueryLanguage.Result;
 using sones.Lib.Session;
+using sones.GraphDB.Managers.Structures;
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Functions
 {
@@ -86,7 +87,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Functions
             }
             else if (CallingObject is EdgeTypeSetOfReferences)
             {
-                var retVal = new EdgeTypeSetOfReferences((CallingObject as EdgeTypeSetOfReferences).GetTop(numOfEntries) as IEnumerable<ObjectUUID>);
+                var retVal = new EdgeTypeSetOfReferences((CallingObject as EdgeTypeSetOfReferences).GetTop(numOfEntries) as IEnumerable<ObjectUUID>, CallingAttribute.DBTypeUUID);
                 pResult.Value = new FuncParameter(retVal, CallingAttribute);
             }
             else

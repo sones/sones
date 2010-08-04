@@ -40,13 +40,13 @@ using sones.GraphDB.QueryLanguage.Enums;
 using sones.GraphDB.QueryLanguage.Operators;
 
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements;
-using sones.GraphDB.QueryLanguage.Operator;
 
 using sones.Lib;
 
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.Lib.Frameworks.Irony.Scripting.Ast;
 using sones.GraphDB.Errors;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -57,13 +57,8 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     /// </summary>
     public class RemoveFromListAttrUpdateNode : AStructureNode, IAstNodeInit
     {
-        #region properties
 
-        protected TupleNode _tupleNode;
-        protected TypeAttribute _Attribute;
-        protected String _AttrName = String.Empty;
-
-        #endregion
+        public AttributeRemoveList AttributeRemoveList { get; protected set; }
 
         #region constructor
 
@@ -77,18 +72,10 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
         public void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
             var content = parseNode.FirstChild.AstNode as RemoveFromListAttrUpdateNode;
-            _tupleNode = content.TupleNode;
-            _Attribute = content.Attribute;
-            _AttrName = content.AttributeName;
+
+            AttributeRemoveList = content.AttributeRemoveList;
+
         }
-
-        #region Accessessors
-
-        public TupleNode TupleNode { get { return _tupleNode; } }
-        public TypeAttribute Attribute { get { return _Attribute; } }
-        public String AttributeName { get { return _AttrName; } }
-
-        #endregion
 
 
         #region IAstNodeInit Members
@@ -99,5 +86,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
         }
 
         #endregion
+
     }//class
 }//namespace

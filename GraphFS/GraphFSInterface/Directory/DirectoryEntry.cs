@@ -436,28 +436,28 @@ namespace sones.GraphFS.InternalObjects
 
                 #region Write the InlineData
 
-                mySerializationWriter.WriteObject(myDirectoryEntry._InlineData);
+                mySerializationWriter.Write(myDirectoryEntry._InlineData);
 
                 #endregion
 
                 #region Write the INodePositions
 
-                mySerializationWriter.WriteObject((UInt64)myDirectoryEntry.INodePositions.Count);
+                mySerializationWriter.WriteUInt32((UInt32)myDirectoryEntry.INodePositions.Count);
 
                 foreach (var _ExtendedPosition in myDirectoryEntry.INodePositions)
                 {
                     _ExtendedPosition.StorageUUID.Serialize(ref mySerializationWriter);
-                    mySerializationWriter.WriteObject(_ExtendedPosition.Position);
+                    mySerializationWriter.WriteUInt64(_ExtendedPosition.Position);
                 }
 
                 #endregion
 
                 #region Write the ObjectStreamsList
 
-                mySerializationWriter.WriteObject((UInt64)myDirectoryEntry.ObjectStreamsList.Count);
+                mySerializationWriter.WriteUInt32((UInt32)myDirectoryEntry.ObjectStreamsList.Count);
 
                 foreach (var _ObjectStreamType in myDirectoryEntry.ObjectStreamsList)
-                    mySerializationWriter.WriteObject(_ObjectStreamType);
+                    mySerializationWriter.WriteString(_ObjectStreamType);
 
                 #endregion
 
@@ -484,13 +484,13 @@ namespace sones.GraphFS.InternalObjects
 
                 #region Read the Inlinedata
 
-                myDirectoryEntry._InlineData = (Byte[])mySerializationReader.ReadObject();
+                myDirectoryEntry._InlineData = mySerializationReader.ReadByteArray();
 
                 #endregion
 
                 #region Read the INodePositions
 
-                var _NumOfINodePositions = (UInt64)mySerializationReader.ReadObject();
+                var _NumOfINodePositions = mySerializationReader.ReadUInt32();
 
                 if (_NumOfINodePositions > 0)
                 {
@@ -498,7 +498,7 @@ namespace sones.GraphFS.InternalObjects
                     {
                         StorageUUID ID = new StorageUUID();
                         ID.Deserialize(ref mySerializationReader);
-                        myDirectoryEntry._INodePositions.Add(new ExtendedPosition(ID, (UInt64)mySerializationReader.ReadObject()));
+                        myDirectoryEntry._INodePositions.Add(new ExtendedPosition(ID, mySerializationReader.ReadUInt64()));
                     }
                 }
 
@@ -506,11 +506,13 @@ namespace sones.GraphFS.InternalObjects
 
                 #region Read the ObjectStreamsList
 
-                var _NumberOfObjectStreamTypes = (UInt64)mySerializationReader.ReadObject();
+                var _NumberOfObjectStreamTypes = mySerializationReader.ReadUInt32();
 
                 if (_NumberOfObjectStreamTypes > 0)
+                {
                     for (var j = 0UL; j < _NumberOfObjectStreamTypes; j++)
-                        myDirectoryEntry._ObjectStreamsList.Add((String)mySerializationReader.ReadObject());
+                        myDirectoryEntry._ObjectStreamsList.Add(mySerializationReader.ReadString());
+                }
 
                 #endregion
 

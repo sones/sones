@@ -34,10 +34,7 @@
 #region Usings
 
 using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Security.Cryptography;
-using sones.Lib.Cryptography.IntegrityCheck;
 
 #endregion
 
@@ -46,9 +43,9 @@ namespace sones.Lib.Cryptography.IntegrityCheck
 
     /// <summary>
     /// Generates cryptographical secure hashes based on the NULLAlgorithm algorithm
+    /// This means this class does actually nothing at all ;)
     /// </summary>
 
-    
     public class NULLAlgorithm : IIntegrityCheck
     {
 
@@ -65,53 +62,56 @@ namespace sones.Lib.Cryptography.IntegrityCheck
         #endregion
 
         #region HashStringLength
-        public int HashStringLength
+
+        public Int32 HashStringLength
         {
             get
             {
                 return 0;
             }
         }
-        #endregion
-
-        #region GetHashValue
-
-        public string GetHashValue(string ClearText)
-        {
-            return String.Empty;
-        }
-
-        public string GetHashValue(byte[] ClearText)
-        {
-            throw new NotImplementedException();
-        }
 
         #endregion
 
-        #region GetHashValueAsByteArray
+        #region GetHashValue(myClearText)
 
-        public byte[] GetHashValueAsByteArray(string ClearText)
+        public String GetHashValue(String myClearText)
         {
-            throw new NotImplementedException();
+            return myClearText;
         }
 
-        public byte[] GetHashValueAsByteArray(byte[] ClearText)
+        public String GetHashValue(Byte[] myClearText)
         {
-            return new Byte[0];
+            return Encoding.UTF8.GetString(myClearText);
+        }
+
+        #endregion
+
+        #region GetHashValueAsByteArray(myClearText)
+
+        public Byte[] GetHashValueAsByteArray(String myClearText)
+        {
+            return Encoding.UTF8.GetBytes(myClearText);
+        }
+
+        public Byte[] GetHashValueAsByteArray(Byte[] myClearText)
+        {
+            return myClearText;
         }
 
         #endregion
 
         #region CheckHashValue
+
         /// <summary>
         /// Checks if a Hash Value matches a given Cleartext
         /// </summary>
         /// <param name="ClearText">the text that needs to be checked</param>
         /// <param name="HashValue">the hash value</param>
         /// <returns>true if matches, false if does not match</returns>
-        public bool CheckHashValue(string ClearText, string HashValue)
+        public Boolean CheckHashValue(String myClearText, String myHashValue)
         {
-            return (GetHashValue(ClearText) == HashValue);
+            return (GetHashValue(myClearText) == myHashValue);
         }
 
         /// <summary>
@@ -120,9 +120,9 @@ namespace sones.Lib.Cryptography.IntegrityCheck
         /// <param name="ClearText">the text that needs to be checked</param>
         /// <param name="HashValue">the hash value</param>
         /// <returns>true if matches, false if does not match</returns>
-        public bool CheckHashValue(byte[] ClearText, string HashValue)
+        public Boolean CheckHashValue(Byte[] myClearText, String myHashValue)
         {
-            return (GetHashValue(ClearText) == HashValue);
+            return (GetHashValue(myClearText) == myHashValue);
         }
 
         /// <summary>
@@ -131,10 +131,10 @@ namespace sones.Lib.Cryptography.IntegrityCheck
         /// <param name="ClearText">the text that needs to be checked</param>
         /// <param name="HashValue">the hash value</param>
         /// <returns>true if matches, false if does not match</returns>
-        public bool CheckHashValue(byte[] ClearText, byte[] HashValue)
+        public Boolean CheckHashValue(Byte[] myClearText, Byte[] myHashValue)
         {
 
-            if (HashValue.CompareByteArray(GetHashValueAsByteArray(ClearText)) == 0)
+            if (myHashValue.CompareByteArray(GetHashValueAsByteArray(myClearText)) == 0)
                 return true;
 
             return false;
@@ -147,16 +147,15 @@ namespace sones.Lib.Cryptography.IntegrityCheck
         /// <param name="ClearText">the text that needs to be checked</param>
         /// <param name="HashValue">the hash value</param>
         /// <returns>true if matches, false if does not match</returns>
-        public bool CheckHashValue(string ClearText, byte[] HashValue)
+        public Boolean CheckHashValue(String myClearText, Byte[] myHashValue)
         {
 
-            if (HashValue.CompareByteArray(GetHashValueAsByteArray(ClearText)) == 0)
+            if (myHashValue.CompareByteArray(GetHashValueAsByteArray(myClearText)) == 0)
                 return true;
 
             return false;
 
         }
-
 
         #endregion
 

@@ -27,38 +27,26 @@ using sones.GraphDB.TypeManagement;
 using sones.GraphFS.Objects;
 using sones.Lib.ErrorHandling;
 using sones.Lib;
+using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.Errors;
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 {
     public class IndexOptOnCreateTypeMemberNode : AStructureNode
     {
 
-        #region Properties
+        #region Data
 
         private String _IndexName;
-        public String IndexName
-        {
-            get { return _IndexName; }
-        }
-
         private String _Edition;
-        public String Edition
-        {
-            get { return _Edition; }
-        }
-
         private String _IndexType;
-        public String IndexType
-        {
-            get { return _IndexType; }
-        }
+        private List<IndexAttributeDefinition> _IndexAttributeDefinitions { get; set; }
 
-        private List<IndexAttributeNode> _IndexAttributeNames;
-        public List<IndexAttributeNode> IndexAttributeNames
-        {
-            get { return _IndexAttributeNames; }
-            set { _IndexAttributeNames = value; }
-        }
+        #endregion
+
+        #region Properties
+
+        public IndexDefinition IndexDefinition { get; private set; }
 
         #endregion
 
@@ -68,7 +56,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             var grammar = GetGraphQLGrammar(context);
 
             if (parseNode.ChildNodes.Count < 1)
-                throw new ArgumentException("No index definitions found!");
+            {
+                return new Exceptional(new Error_ArgumentException("No index definitions found!"));
+            }
 
             foreach (var child in parseNode.ChildNodes)
             {
@@ -88,7 +78,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
                     }
                     else if (child.AstNode is IndexAttributeListNode)
                     {
-                        _IndexAttributeNames = (child.AstNode as IndexAttributeListNode).IndexAttributes;
+                        _IndexAttributeDefinitions = (child.AstNode as IndexAttributeListNode).IndexAttributes;
                     }
                 }
             }
@@ -96,17 +86,19 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
             #region Validation
 
-            if (_IndexAttributeNames == null || _IndexAttributeNames.Count == 0)
+            if (_IndexAttributeDefinitions.IsNullOrEmpty())
             {
-                throw new ArgumentException("No attributes given for index!");
+                return new Exceptional(new Error_ArgumentException("No attributes given for index!"));
             }
 
             if (String.IsNullOrEmpty(_IndexName))
             {
-                _IndexName = _IndexAttributeNames.Aggregate(new StringBuilder(DBConstants.IndexKeyPrefix), (result, elem) => { result.Append(String.Concat(DBConstants.IndexKeySeperator, elem.IndexAttribute)); return result; }).ToString();
+                _IndexName = _IndexAttributeDefinitions.Aggregate(new StringBuilder(DBConstants.IndexKeyPrefix), (result, elem) => { result.Append(String.Concat(DBConstants.IndexKeySeperator, elem.IndexAttribute)); return result; }).ToString();
             }
 
             #endregion
+
+            IndexDefinition = new IndexDefinition(_IndexName, _Edition, _IndexType, _IndexAttributeDefinitions);
 
             #region Check for obsolete GQL parts and return warning
 
@@ -114,8 +106,8 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             if (parseNode.ChildNodes.Count > 3 && (parseNode.ChildNodes[4].Token == null || parseNode.ChildNodes[4].Token.AsSymbol != grammar.S_ATTRIBUTES))
             {
                 return new Exceptional(new Warnings.Warning_ObsoleteGQL(
-                    String.Format("{0} {1}", grammar.S_ON.ToUpperString(), _IndexAttributeNames.ToContentString()),
-                    String.Format("{0} {1} {2}", grammar.S_ON.ToUpperString(), grammar.S_ATTRIBUTES.ToUpperString(), _IndexAttributeNames.ToContentString())));
+                    String.Format("{0} {1}", grammar.S_ON.ToUpperString(), _IndexAttributeDefinitions.ToContentString()),
+                    String.Format("{0} {1} {2}", grammar.S_ON.ToUpperString(), grammar.S_ATTRIBUTES.ToUpperString(), _IndexAttributeDefinitions.ToContentString())));
             }
 
             #endregion

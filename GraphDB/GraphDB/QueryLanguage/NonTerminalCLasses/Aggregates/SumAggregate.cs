@@ -91,53 +91,34 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Aggregates
             return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
 
-        public override Exceptional<object> Aggregate(AttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
+        public override Exceptional<object> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
         {
 
-            if (attributeIndex.IsUuidIndex)
+            if (attributeIndex is UUIDIndex)
             {
-
-                //String settingEncoding = (String)graphDBType.GetSettingValue(DBConstants.SettingUUIDEncoding, mySessionToken, dbContext.DBTypeManager).Value.Value;
-                //if (settingEncoding == null)
-                //    return new Exceptional<object>(new Error_ArgumentNullOrEmpty("settingEncoding"));
-                
-                var idxRef = attributeIndex.GetIndexReference(dbContext.DBIndexManager);
-                if (!idxRef.Success)
-                {
-                    return new Exceptional<object>(idxRef);
-                }
-
-                throw new NotImplementedException("Aggregating attribute UUID is not implemented!");
-                //return new Exceptional<Object>((from val in idxRef.Value.Values().AsParallel() select Convert.ToInt64(SpecialTypeAttribute_UUID.ConvertFromUUID(val.First(), settingEncoding.ToLower()))).Sum());
-
+                return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "Aggregating attribute UUID is not implemented!"));
             }
-
             else
             {
+                var indexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(attributeIndex.IndexRelatedTypeUUID);
+
                 // HACK: rewrite as soon as we have real attribute index keys
                 if (attributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs.Count != 1)
+                {
                     return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                }
 
                 var typeAttr = graphDBType.GetTypeAttributeByUUID(attributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs.First());
                 ADBBaseObject oneVal = typeAttr.GetADBBaseObjectType(dbContext.DBTypeManager);
 
-                //return (from val in attributeIndex.IndexReference.GetIDictionary().AsParallel() select oneVal.Clone(val.Key).Mul(oneVal.Clone(val.Value.Count)));
-                var idxRef = attributeIndex.GetIndexReference(dbContext.DBIndexManager);
-                if (!idxRef.Success)
-                {
-                    return new Exceptional<object>(idxRef);
-                }
-
-                return new Exceptional<Object>(idxRef.Value.GetIDictionary().AsParallel().Select(kv =>
+                return new Exceptional<Object>(attributeIndex.GetKeyValues(indexRelatedType, dbContext).AsParallel().Select(kv =>
                 {
                     var mul = oneVal.Clone(kv.Key);
-                    mul.Mul(oneVal.Clone(kv.Value.Count));
+                    mul.Mul(oneVal.Clone(kv.Value.Count()));
                     return mul;
 
                 }).Aggregate(oneVal.Clone(), (elem, result) => { result.Add(elem); return result; }).Value);
-                
             }
-               
         }
     }
 }

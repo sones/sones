@@ -70,17 +70,17 @@ namespace sonesExample
 
     #region Document
 
-    public class Document : DBObject
+    public class Document : DBVertex
     {
 
         [Indexed(DBIndexTypes.HashTable)]
-        public String         Name       { get; set; }
+        public String Name { get; set; }
 
         // Edges to type Website
-        public Set<Tag>       Tags       { get; set; }
+        public Set<Tag> Tags { get; set; }
 
         // Edges to type Author
-        public Set<Author>    Authors    { get; set; }
+        public Set<Author> Authors { get; set; }
 
         public Document() { }
 
@@ -90,17 +90,17 @@ namespace sonesExample
 
     #region Author
 
-    public class Author : DBObject
+    public class Author : DBVertex
     {
 
         [Indexed(DBIndexTypes.HashTable)]
-        public String         Name       { get; set; }
+        public String Name { get; set; }
 
-        public String         EMail      { get; set; }
+        public String EMail { get; set; }
 
         // Backwardedges to attribute tags of type Website
         [BackwardEdge("Authors")]
-        public Set<Document>  Writtings  { get; set; }
+        public Set<Document> Writtings { get; set; }
 
         public Author() { }
 
@@ -110,15 +110,15 @@ namespace sonesExample
 
     #region Tag
 
-    public class Tag : DBObject
+    public class Tag : DBVertex
     {
 
         [Indexed(DBIndexTypes.HashTable)]
-        public String         Name       { get; set; }
+        public String Name { get; set; }
 
         // Backwardedges to attribute tags of type Website
         [BackwardEdge("Tags")]
-        public Set<Document>  Documents  { get; set; }
+        public Set<Document> Documents { get; set; }
 
         public Tag() { }
 
@@ -191,12 +191,12 @@ namespace sonesExample
 
             #region Insert some data
 
-            _GraphDSSharp.ActionQuery(CheckResult, "INSERT INTO Tag VALUES (Name = 'good')");
-            _GraphDSSharp.ActionQuery(CheckResult, "INSERT INTO Tag VALUES (Name = 'funny')");
-            _GraphDSSharp.ActionQuery(CheckResult, "INSERT INTO Tag VALUES (Name = 'science fiction')");
+            _GraphDSSharp.Query("INSERT INTO Tag VALUES (Name = 'good')", CheckResult);
+            _GraphDSSharp.Query("INSERT INTO Tag VALUES (Name = 'funny')", CheckResult);
+            _GraphDSSharp.Query("INSERT INTO Tag VALUES (Name = 'science fiction')", CheckResult);
 
-            _GraphDSSharp.ActionQuery(CheckResult, "INSERT INTO Author VALUES (Name = 'Holger', EMail = 'holger.liebau@sones.de')");
-            _GraphDSSharp.ActionQuery(CheckResult, "INSERT INTO Author VALUES (Name = 'Achim',  EMail = 'achim@sones.de')");
+            _GraphDSSharp.Query("INSERT INTO Author VALUES (Name = 'Holger', EMail = 'holger.liebau@sones.de')", CheckResult);
+            _GraphDSSharp.Query("INSERT INTO Author VALUES (Name = 'Achim',  EMail = 'achim@sones.de')", CheckResult);
 
             #endregion
 

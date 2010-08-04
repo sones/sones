@@ -24,6 +24,7 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Henning Rauch</developer>
+ * <developer>Stefan Licht</developer>
  * <summary>This node is requested in case of an Insert statement.</summary>
  */
 
@@ -58,6 +59,9 @@ using sones.GraphFS.Session;
 using sones.Lib.Session;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 using sones.GraphDB.Managers;
+using sones.Lib;
+using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -69,7 +73,8 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
     class InsertNode : AStatement
     {
 
-        ObjectManipulationManager _ObjectManipulationManager;
+        private String _TypeName;
+        private List<AAttributeAssignOrUpdate> _AttributeAssignList;
         
         #region Properties - Statement information
 
@@ -93,6 +98,34 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
         #region public AStatement methods
 
         /// <summary>
+        /// Gets the content of a InsertStatement.
+        /// </summary>
+        /// <param name="context">CompilerContext of Irony.</param>
+        /// <param name="parseNode">The current ParseNode.</param>
+        /// <param name="typeManager">The TypeManager of the PandoraDB.</param>
+        public override void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
+        {
+
+            #region get type for name
+
+            _TypeName = GetTypeReferenceDefinitions(myCompilerContext).First().TypeName;
+
+            #endregion
+
+            #region get myAttributes
+
+            if (myParseTreeNode.ChildNodes[3].HasChildNodes())
+            {
+
+                _AttributeAssignList = ((myParseTreeNode.ChildNodes[3].ChildNodes[1].AstNode as AttrAssignListNode).AttributeAssigns);
+
+            }
+
+            #endregion
+
+        }
+
+        /// <summary>
         /// Executes the statement
         /// </summary>
         /// <param name="graphDBSession">The DBSession to start new transactions</param>
@@ -105,8 +138,21 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
             {
 
                 var dbInnerContext = transaction.GetDBContext();
+                ObjectManipulationManager _ObjectManipulationManager = new ObjectManipulationManager();
 
-                var result = _ObjectManipulationManager.Insert(dbContext);
+                var graphDBType = dbInnerContext.DBTypeManager.GetTypeByName(_TypeName);
+                if (graphDBType == null)
+                {
+                    return new QueryResult(new Error_TypeDoesNotExist(_TypeName));
+                }
+
+                var attrsResult = _ObjectManipulationManager.EvaluateAttributes(dbContext, graphDBType, _AttributeAssignList);
+                if (!attrsResult.Success)
+                {
+                    return new QueryResult(attrsResult);
+                }
+
+                var result = _ObjectManipulationManager.Insert(dbContext, graphDBType, attrsResult.Value);
 
                 #region Commit transaction and add all Warnings and Errors
 
@@ -120,45 +166,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
 
         }
 
-                
-        /// <summary>
-        /// Gets the content of a InsertStatement.
-        /// </summary>
-        /// <param name="context">CompilerContext of Irony.</param>
-        /// <param name="parseNode">The current ParseNode.</param>
-        /// <param name="typeManager">The TypeManager of the PandoraDB.</param>
-        public override void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
-        {
-            var dbContext = myCompilerContext.IContext as DBContext;
-            var typeManager = dbContext.DBTypeManager;
-
-            #region get type for name
-
-            var _Type = ((ATypeNode)myCompilerContext.PandoraListOfReferences.First().Value).DBTypeStream;
-
-            #endregion
-
-            _ObjectManipulationManager = new ObjectManipulationManager(dbContext.SessionSettings, _Type, dbContext, this);
-
-            #region get myAttributes
-
-            if (myParseTreeNode.ChildNodes[3].HasChildNodes())
-            {
-                var dbObjectCache = dbContext.DBObjectCache;
-
-                var result = _ObjectManipulationManager.GetRecursiveAttributes(myParseTreeNode.ChildNodes[3].ChildNodes[1], dbContext);
-                if (result.Failed)
-                {
-                    throw new GraphDBException(result.Errors);
-                }
-                _ObjectManipulationManager.CheckMandatoryAttributes(dbContext);
-
-                dbObjectCache = null;
-            }
-
-            #endregion
-        
-        }
 
         #endregion
 

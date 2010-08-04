@@ -41,6 +41,7 @@ using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -54,23 +55,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         #region Data
 
-        private TypesOfPandoraType _Type;
-        private String _Name = null;
-        private TypeCharacteristics _TypeCharacteristics = null;
-        
-        public TypeCharacteristics TypeCharacteristics
-        {
-            get { return _TypeCharacteristics; }
-        }
-
-        /// <summary>
-        /// The type of the edges.
-        /// </summary>
-        public AEdgeType EdgeType
-        {
-            get { return _EdgeType; }
-        }
-        AEdgeType _EdgeType;
+        public DBTypeOfAttributeDefinition DBTypeDefinition { get; private set; }
 
         #endregion
 
@@ -90,91 +75,102 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
             if (parseNode.FirstChild.Term.Name.Equals("id_simple"))
             {
+
                 #region simple id
 
-                _Type = TypesOfPandoraType.Simple;
-
-                _Name = parseNode.ChildNodes[0].Token.ValueString;
+                DBTypeDefinition = new DBTypeOfAttributeDefinition()
+                {
+                    Type = KindsOfType.UnknownSingle,
+                    Name = parseNode.ChildNodes[0].Token.ValueString
+                };
 
                 #endregion
+
             }
             else if (parseNode.FirstChild.Term.Name.ToUpper().Equals(DBConstants.DBBackwardEdge.ToUpper()))
             {
 
-                _Name = ((IDNode)parseNode.ChildNodes[2].AstNode).Reference.Item2.Name;
-                _TypeCharacteristics = new TypeCharacteristics();
+                #region BackwardedgeDefinition
+
+                var _TypeCharacteristics = new TypeCharacteristics();
                 _TypeCharacteristics.IsBackwardEdge = true;
+                DBTypeDefinition = new DBTypeOfAttributeDefinition()
+                {
+                    TypeCharacteristics = _TypeCharacteristics,
+                    Name = parseNode.ChildNodes[0].Token.ValueString
+                };
+
+                #endregion
+
             }
             else if (parseNode.FirstChild.AstNode is EdgeTypeDefNode)
             {
-                _Type = ((EdgeTypeDefNode)parseNode.FirstChild.AstNode).Type;
-                _Name = ((EdgeTypeDefNode)parseNode.FirstChild.AstNode).Name;
-                _TypeCharacteristics = ((EdgeTypeDefNode)parseNode.FirstChild.AstNode).TypeCharacteristics;
-                _EdgeType = ((EdgeTypeDefNode)parseNode.FirstChild.AstNode).EdgeType;
+
+                #region EdgeType definition
+
+                DBTypeDefinition = new DBTypeOfAttributeDefinition()
+                {
+                    Type = ((EdgeTypeDefNode)parseNode.FirstChild.AstNode).Type,
+                    Name = ((EdgeTypeDefNode)parseNode.FirstChild.AstNode).Name,
+                    TypeCharacteristics = ((EdgeTypeDefNode)parseNode.FirstChild.AstNode).TypeCharacteristics,
+                    EdgeType = ((EdgeTypeDefNode)parseNode.FirstChild.AstNode).EdgeType
+                };
+
+                #endregion
+
             }
             else if (parseNode.FirstChild.AstNode is SingleEdgeTypeDefNode)
             {
-                _Type = ((SingleEdgeTypeDefNode)parseNode.FirstChild.AstNode).Type;
-                _Name = ((SingleEdgeTypeDefNode)parseNode.FirstChild.AstNode).Name;
-                _TypeCharacteristics = ((SingleEdgeTypeDefNode)parseNode.FirstChild.AstNode).TypeCharacteristics;
-                _EdgeType = ((SingleEdgeTypeDefNode)parseNode.FirstChild.AstNode).EdgeType;
+
+                #region Single edge type definition
+
+                DBTypeDefinition = new DBTypeOfAttributeDefinition()
+                {
+                    Type = ((SingleEdgeTypeDefNode)parseNode.FirstChild.AstNode).Type,
+                    Name = ((SingleEdgeTypeDefNode)parseNode.FirstChild.AstNode).Name,
+                    TypeCharacteristics = ((SingleEdgeTypeDefNode)parseNode.FirstChild.AstNode).TypeCharacteristics,
+                    EdgeType = ((SingleEdgeTypeDefNode)parseNode.FirstChild.AstNode).EdgeType
+                };
+
+                #endregion
+
             }
             else if (parseNode.ChildNodes.Count >= 2)
             {
-                _Name = parseNode.ChildNodes[2].Token.ValueString;
-                
-                #region Type userdefined               
-                
-                Boolean isUserDefined = false;
 
-                GraphDBType DBType = typeManager.GetTypeByName(_Name);
-
-                if (DBType != null)
-                    isUserDefined = DBType.IsUserDefined;
-                else
-                    isUserDefined = true; //for the case we have a create types statement, then the type is actual unknown
-
-                #endregion
+                KindsOfType type;
 
                 #region set
                 if (parseNode.ChildNodes[0].Token.ValueString.ToUpper() == DBConstants.SET)
                 {
-                    if (isUserDefined)
-                    {
-                        _Type = TypesOfPandoraType.SetOfReferences;
-                        _EdgeType = new EdgeTypeSetOfReferences();
-                    }
-                    else
-                    {
-                        _Type = TypesOfPandoraType.SetOfNoneReferences;
-                        _EdgeType = new EdgeTypeSetOfBaseObjects();
-                    }
+                    type = KindsOfType.UnknownSet;
                 }
                 #endregion
 
                 #region list
-                if (parseNode.ChildNodes[0].Token.ValueString.ToUpper() == DBConstants.LIST)
+                else if (parseNode.ChildNodes[0].Token.ValueString.ToUpper() == DBConstants.LIST)
                 {
-                    if (!isUserDefined)
-                    {
-                        _Type = TypesOfPandoraType.ListOfNoneReferences;
-                        _EdgeType = new EdgeTypeListOfBaseObjects();
-                    }
-                    else
-                        throw new GraphDBException(new Error_ListAttributeNotAllowed(_Name));
+                    type = KindsOfType.UnknownList;
                 }
                 #endregion
 
+                else
+                {
+                    throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                }
+
+                DBTypeDefinition = new DBTypeOfAttributeDefinition()
+                {
+                    Type = type,
+                    Name = parseNode.ChildNodes[2].Token.ValueString
+                };
             }
             else
             {
                 throw new ArgumentException("Invalid pandora type definition...");
             }
         }
-
-        public TypesOfPandoraType Type { get { return _Type; } }
-
-        public String Name { get { return _Name; } }        
+  
 
     }
 }

@@ -140,7 +140,7 @@ namespace sones.GraphFS.Connectors.GraphFSCLI
                     #region LISTOF_STRINGS
 
                     case FSConstants.LISTOF_STRINGS:
-                        foreach (var _String in _IGraphFSSession.GetObject<ListOfStringsObject>(new ObjectLocation(_ObjectLocation)).Value)
+                        foreach (var _String in _IGraphFSSession.GetFSObject<ListOfStringsObject>(new ObjectLocation(_ObjectLocation)).Value)
                             WriteLine(_String);
                         break;
 
@@ -149,7 +149,7 @@ namespace sones.GraphFS.Connectors.GraphFSCLI
                     #region FILESTREAM
 
                     case FSConstants.FILESTREAM:
-                        var FileContent = Encoding.UTF8.GetString(_IGraphFSSession.GetObject<FileObject>(new ObjectLocation(_ObjectLocation), FSConstants.FILESTREAM, null, null, 0, false).Value.ObjectData);
+                        var FileContent = Encoding.UTF8.GetString(_IGraphFSSession.GetFSObject<FileObject>(new ObjectLocation(_ObjectLocation), FSConstants.FILESTREAM, null, null, 0, false).Value.ObjectData);
                         WriteLine(FileContent);
                         break;
 
@@ -158,7 +158,7 @@ namespace sones.GraphFS.Connectors.GraphFSCLI
                     #region INLINEDATA
 
                     case FSConstants.INLINEDATA:
-                        var _Inlinedata = _IGraphFSSession.GetObject<DirectoryObject>(new ObjectLocation(_ObjectPath)).Value.GetInlineData(_ObjectName);
+                        var _Inlinedata = _IGraphFSSession.GetFSObject<DirectoryObject>(new ObjectLocation(_ObjectPath)).Value.GetInlineData(_ObjectName);
 
                         if (_ObjectName.Equals(FSConstants.DotUUID))
                             WriteLine((new ObjectUUID(_Inlinedata)).ToString());

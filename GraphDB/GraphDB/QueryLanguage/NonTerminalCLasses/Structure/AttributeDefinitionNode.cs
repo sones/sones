@@ -41,6 +41,7 @@ using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -51,12 +52,6 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     /// </summary>
     public class AttributeDefinitionNode : AStructureNode
     {
-        #region Data
-
-        private String _Type = null;
-        private TypeAttribute _TypeAttribute = null;
-
-        #endregion
 
         #region constructor
 
@@ -67,92 +62,12 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         #endregion
 
+        public AttributeDefinition AttributeDefinition { get; private set; }
+
         public void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
         {
-            var dbContext = myCompilerContext.IContext as DBContext;
-            var typeManager = dbContext.DBTypeManager;
-            
-            if (dbContext.DBSettingsManager.HasSetting(myParseTreeNode.ChildNodes[1].Token.ValueString))
-                throw new GraphDBException(new Error_AttributeAlreadyExists(myParseTreeNode.ChildNodes[1].Token.ValueString));
-            
-            _TypeAttribute = new TypeAttribute();
-            
-            #region get Attribute Name
-
-            _TypeAttribute.Name = myParseTreeNode.ChildNodes[1].Token.ValueString;
-            
-            #endregion
-
-            #region get Attribute type
-
-            GraphDBTypeNode aTypeNode = (GraphDBTypeNode)myParseTreeNode.ChildNodes[0].AstNode;
-            
-            //we can not validate the type at this point, because in the bulk type creation we does not have the type
-            _Type = aTypeNode.Name;
-            
-            //if we have an default value for this attribute, then check for correct value and attribute type
-            if (myParseTreeNode.ChildNodes[2].AstNode != null)
-            {
-                AttrDefaultValueNode defaultValueNode = (AttrDefaultValueNode)myParseTreeNode.ChildNodes[2].AstNode;
-                
-                if (defaultValueNode.Value != null)
-                {
-                    if (defaultValueNode.Value is AListBaseEdgeType)
-                    {
-                        if ((aTypeNode.Type == TypesOfPandoraType.SetOfReferences || aTypeNode.Type == TypesOfPandoraType.SetOfNoneReferences) && defaultValueNode.TypeOfList == TypesOfPandoraType.ListOfNoneReferences)
-                        {
-                            throw new GraphDBException(new Error_InvalidAttrDefaultValueAssignment(_TypeAttribute.Name, TypesOfPandoraType.ListOfNoneReferences.ToString(), TypesOfPandoraType.SetOfReferences.ToString()));
-                        }
-
-                        if (defaultValueNode.TypeOfList == TypesOfPandoraType.SetOfReferences)
-                        {
-                            ((AListBaseEdgeType)defaultValueNode.Value).UnionWith((AListBaseEdgeType)defaultValueNode.Value);
-                        }
-                    }
-                    else
-                    {
-                        var attrVal = GraphDBTypeMapper.GetPandoraObjectFromTypeName(aTypeNode.Name);
-
-                        if (!attrVal.IsValidValue(defaultValueNode.Value))
-                        {
-                            throw new GraphDBException(new Error_InvalidAttrDefaultValueAssignment(_TypeAttribute.Name, _Type));
-                        }
-                    }
-                }
-
-                _TypeAttribute.DefaultValue = defaultValueNode.Value;
-            }
-
-            switch (aTypeNode.Type)
-            {
-                case TypesOfPandoraType.ListOfNoneReferences:
-                    _TypeAttribute.KindOfType = KindsOfType.ListOfNoneReferences;
-                    break;
-
-                case TypesOfPandoraType.SetOfNoneReferences:
-                    _TypeAttribute.KindOfType = KindsOfType.SetOfNoneReferences;
-                    break;
-
-                case TypesOfPandoraType.SetOfReferences:
-                    _TypeAttribute.KindOfType = KindsOfType.SetOfReferences;
-                    break;
-                
-                default:
-                    _TypeAttribute.KindOfType = KindsOfType.SingleReference;
-                    break;
-            }            
-
-            if (aTypeNode.TypeCharacteristics != null)
-                _TypeAttribute.TypeCharacteristics = aTypeNode.TypeCharacteristics;
-
-            _TypeAttribute.EdgeType = aTypeNode.EdgeType;
-            
-            #endregion
+            AttributeDefinition = new AttributeDefinition(((GraphDBTypeNode)myParseTreeNode.ChildNodes[0].AstNode).DBTypeDefinition, myParseTreeNode.ChildNodes[1].Token.ValueString, ((AttrDefaultValueNode)myParseTreeNode.ChildNodes[2].AstNode).Value);
         }
-
-        public String Name { get { return _TypeAttribute.Name; } }
-        public String Type { get { return _Type; } }
-        public TypeAttribute TypeAttribute { get { return _TypeAttribute; } }
         
     }
 }

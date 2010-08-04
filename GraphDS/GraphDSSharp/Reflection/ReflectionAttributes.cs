@@ -25,7 +25,6 @@
 #region Usings
 
 using System;
-
 using sones.GraphDB.Structures;
 
 #endregion
@@ -35,6 +34,10 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
     #region HideFromDatabase
 
+    /// <summary>
+    /// Attributes may be hidden from the database and thus
+    /// not be created or synched with the database.
+    /// </summary>
     public class HideFromDatabase : Attribute
     {
     }
@@ -43,6 +46,11 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
     #region NoAutoCreation
 
+    /// <summary>
+    /// Attributes may not be created automatically, but it
+    /// is assumed that these attributes are valid attributes
+    /// after manual creation.
+    /// </summary>
     public class NoAutoCreation : Attribute
     {
     }
@@ -51,14 +59,41 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
     #region Mandatory
 
+    /// <summary>
+    /// Mandatory attributes have to be set to a value within
+    /// an insert query.
+    /// </summary>
     public class Mandatory : Attribute
     {
     }
 
     #endregion
 
+    #region Temporary
+
+    /// <summary>
+    /// The values of temporary attributes will never be persistet
+    /// by the database and thus removed at the given moment.
+    /// </summary>
+    public class Temporary : Attribute
+    {
+
+        public TemporaryType TemporaryType { get; private set; }
+
+        public Temporary(TemporaryType myTemporaryType)
+        {
+            TemporaryType = myTemporaryType;
+        }
+
+    }
+
+    #endregion
+
     #region Default
 
+    /// <summary>
+    /// The default value of an attribute.
+    /// </summary>
     public class Default : Attribute
     {
 
@@ -75,6 +110,9 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
     #region Indexed
 
+    /// <summary>
+    /// Attributes may be indexed for a faster lookup.
+    /// </summary>
     public class Indexed : Attribute
     {
 
@@ -143,8 +181,51 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
     #endregion
 
+    #region Edgetype
+
+    //public class Edgetype : Attribute
+    //{
+
+    //    #region Properties (or Named Parameters)
+
+    //    public Type DBObject { get; set; }
+
+    //    #endregion
+
+    //    #region Constructors
+
+    //    public Edgetype(Type myType)
+    //    {
+
+    //        Type _Type = myType;
+
+    //        while (!_Type.IsAssignableFrom(typeof(DBObject)))
+    //        {
+
+    //            _Type = _Type.BaseType;
+
+    //            if (_Type == typeof(Object))
+    //                throw new Exception("'" + myType.ToString() + "' has to be assignable from DBObject!");
+
+    //        }
+
+    //        DBObject = myType;
+
+    //    }
+
+    //    #endregion
+
+    //}
+
+    #endregion
+
     #region BackwardEdge
 
+    /// <summary>
+    /// Backwardedges are a hidden and automagically maintained feature
+    /// of the database, but they may be accessed as normal attributes
+    /// on request.
+    /// </summary>
     public class BackwardEdge : Attribute
     {
 

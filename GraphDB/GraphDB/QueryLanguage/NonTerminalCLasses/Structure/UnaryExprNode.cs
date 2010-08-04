@@ -28,6 +28,7 @@ using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;
 using sones.GraphDB.QueryLanguage.Operators;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -40,6 +41,15 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
         private String _OperatorSymbol;
         private Object _Term;
+
+        #endregion
+
+        public UnaryExpressionDefinition UnaryExpressionDefinition { get; private set; }
+
+        #region Accessor
+
+        public String OperatorSymbol { get; private set; } 
+        public AExpressionDefinition Expression { get; private set; } 
 
         #endregion
 
@@ -65,18 +75,14 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
                     if (parseNode.ChildNodes[1].AstNode == null)
                         throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
 
-                    _Term = parseNode.ChildNodes[1].AstNode;
+                    Expression = GetExpressionDefinition(parseNode.ChildNodes[1]);
                 }
                 else
                     throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
             }
+
+            UnaryExpressionDefinition = new UnaryExpressionDefinition(_OperatorSymbol, Expression);
         }
-
-        #region Accessor
-
-        public String OperatorSymbol { get { return _OperatorSymbol; } }
-        public Object Term { get { return _Term; } }
-
-        #endregion
+ 
     }
 }

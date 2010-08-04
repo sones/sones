@@ -30,14 +30,12 @@
 #region Usings
 
 using System;
-using System.Text;
-using System.Linq;
-using sones.GraphDB.ObjectManagement;
 using System.Collections.Generic;
-using sones.GraphDB.TypeManagement;
-using sones.GraphDB.Exceptions;
-using sones.Lib.ErrorHandling;
+using System.Linq;
 using sones.GraphDB.Errors;
+using sones.GraphDB.Exceptions;
+using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.TypeManagement;
 using sones.Lib;
 
 #endregion
@@ -61,11 +59,11 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
 
         #endregion
 
-        private int _hashcode = int.MaxValue;
+        private int _hashcode = 0;
 
         #region Level
 
-        private int _level;
+        private int _level = 0;
 
         public int Level
         {
@@ -92,64 +90,89 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
         #endregion
 
         public LevelKey()
-            :this(new List<EdgeKey>() {}, 0)
+        { }
+
+        public LevelKey(DBTypeManager myTypeManager)
+            : this(new List<EdgeKey>() { }, myTypeManager)
         {
             //_level = 0;
             //_edges = new List<EdgeKey>() {};
         }
 
-        public LevelKey(EdgeKey myEdgeKey)
-            :this(new List<EdgeKey>() { myEdgeKey }, (myEdgeKey.AttrUUID == null) ? 0 : 1)
+        public LevelKey(EdgeKey myEdgeKey, DBTypeManager myTypeManager)
+            : this(new List<EdgeKey>() { myEdgeKey }, myTypeManager)
         {
             
         }
 
-        /// <summary>
-        /// Use with care!!! The correct level must be passed!!
-        /// Create a new LevelKey from some edges.
-        /// 
-        /// </summary>
-        /// <param name="myEdgeKey"></param>
-        /// <param name="myLevel"></param>
-        public LevelKey(IEnumerable<EdgeKey> myEdgeKey, int myLevel)
+        public LevelKey(IEnumerable<EdgeKey> myEdgeKey, DBTypeManager myTypeManager)
         {
             _edges = new List<EdgeKey>();
-            _level = myLevel;
 
-            _hashcode = CalcHashCode(myEdgeKey);
-
-            _edges.AddRange(myEdgeKey);
-
-        }
-
-        private int CalcHashCode(IEnumerable<EdgeKey> myEdgeKey)
-        {
-            int myHashCode = 0;
-
-            foreach (var aEdge in myEdgeKey)
+            foreach (var aEdgeKey in myEdgeKey)
             {
-                myHashCode += (int)(aEdge.GetHashCode() >> 32);
-            }
+                if (aEdgeKey.AttrUUID != null)
+                {
+                    var attribute = aEdgeKey.GetTypeAndAttributeInformation(myTypeManager).Item2;
 
-            return myHashCode;
+                    if (attribute.GetDBType(myTypeManager).IsUserDefined || attribute.IsBackwardEdge)
+                    {
+                        _edges.Add(aEdgeKey);
+                        _level++;
+
+                        AddHashCodeFromSingleEdge(ref _hashcode, aEdgeKey);
+                    }
+                    else
+                    {
+                        if (_level == 0)
+                        {
+                            var newEdgeKey = new EdgeKey(aEdgeKey.TypeUUID, null);
+                            _edges.Add(newEdgeKey);
+
+                            AddHashCodeFromSingleEdge(ref _hashcode, newEdgeKey);
+
+                            break;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    if (_level == 0)
+                    {
+                        _edges.Add(aEdgeKey);
+
+                        AddHashCodeFromSingleEdge(ref _hashcode, aEdgeKey);
+
+                        break;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
         }
 
-        public LevelKey(TypeUUID myTypeUUID)
-            :this(new List<EdgeKey>() {new EdgeKey(myTypeUUID, null)}, 0)
+        public LevelKey(TypeUUID myTypeUUID, DBTypeManager myTypeManager)
+            : this(new List<EdgeKey>() { new EdgeKey(myTypeUUID, null) }, myTypeManager)
         {
             
         }
 
-        public LevelKey(GraphDBType myDBTypeStream)
-            : this(myDBTypeStream.UUID)
+        public LevelKey(GraphDBType myDBTypeStream, DBTypeManager myTypeManager)
+            : this(myDBTypeStream.UUID, myTypeManager)
         { }
+
+        #region override
 
         public override int GetHashCode()
         {
             return _hashcode;
         }
-
-        #region override
 
         #region Equals Overrides
 
@@ -232,32 +255,34 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
 
         #region Operators
 
-        public static LevelKey operator +(LevelKey myLevelKey, EdgeKey myEdgeKey)
+        public LevelKey AddEdgeKey(EdgeKey myEdgeKey, DBTypeManager myTypeManager)
         {
             // an empty level
-            if (myLevelKey.Edges == null)
-                return new LevelKey(myEdgeKey);
+            if (this.Edges == null)
+            {
+                return new LevelKey(myEdgeKey, myTypeManager);
+            }
 
-            var edgeList = new List<EdgeKey>(myLevelKey.Edges);
+            var edgeList = new List<EdgeKey>(this.Edges);
 
             // if the first and only edge has a null attrUUID the new edge must have the same type!!
             if (edgeList.Count == 1 && edgeList[0].AttrUUID == null)
             {
                 if (edgeList[0].TypeUUID != myEdgeKey.TypeUUID)
                 {
-                    throw new GraphDBException(new Error_InvalidLevelKeyOperation(myLevelKey, myEdgeKey, "+"));
+                    throw new GraphDBException(new Error_InvalidLevelKeyOperation(this, myEdgeKey, "+"));
                 }
                 else
                 {
                     if (myEdgeKey.AttrUUID == null)
                     {
                         //so it must be lvl 0
-                        return new LevelKey(new List<EdgeKey>() { myEdgeKey }, 0);
+                        return new LevelKey(new List<EdgeKey>() { myEdgeKey }, myTypeManager);
                     }
                     else
                     {
                         //so it must be lvl 1
-                        return new LevelKey(new List<EdgeKey>() { myEdgeKey }, 1);
+                        return new LevelKey(new List<EdgeKey>() { myEdgeKey }, myTypeManager);
                     }
                 }
             }
@@ -266,92 +291,86 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                 if (myEdgeKey.AttrUUID != null)
                 {
                     edgeList.Add(myEdgeKey);
-                    return new LevelKey(edgeList, myLevelKey.Level + 1);
+                    return new LevelKey(edgeList, myTypeManager);
                 }
                 else
                 {
-                    return new LevelKey(edgeList, myLevelKey.Level);
+                    return new LevelKey(edgeList, myTypeManager);
                 }
             }
         }
 
-        public static LevelKey operator +(EdgeKey myKey, LevelKey myLevelKey)
+        public LevelKey AddLevelKey(LevelKey myLevelKey2, DBTypeManager myTypeManager)
         {
-            return myLevelKey + myKey;
-        }
-
-        public static LevelKey operator +(LevelKey myLevelKey1, LevelKey myLevelKey2)
-        {
-            
-            if ((myLevelKey1.Edges.IsNullOrEmpty()) && myLevelKey2.Edges.IsNullOrEmpty())
-                return new LevelKey();
-            else if (myLevelKey1.Edges.IsNullOrEmpty())
-                return new LevelKey(myLevelKey2.Edges, myLevelKey2.Level);
+            if ((this.Edges.IsNullOrEmpty()) && myLevelKey2.Edges.IsNullOrEmpty())
+                return new LevelKey(myTypeManager);
+            else if (this.Edges.IsNullOrEmpty())
+                return new LevelKey(myLevelKey2.Edges, myTypeManager);
             else if (myLevelKey2.Edges.IsNullOrEmpty())
-                return new LevelKey(myLevelKey1.Edges, myLevelKey1.Level);
+                return new LevelKey(this.Edges, myTypeManager);
 
-            if (myLevelKey1.Level == 0 && myLevelKey2.Level == 0)
+            if (this.Level == 0 && myLevelKey2.Level == 0)
             {
                 #region both are level 0 (User/null)
-                if (myLevelKey1.Edges[0].TypeUUID != myLevelKey2.Edges[0].TypeUUID) // if the types are different then something is really wrong
-                    throw new GraphDBException(new Error_InvalidLevelKeyOperation(myLevelKey1, myLevelKey2, "+"));
+                if (this.Edges[0].TypeUUID != myLevelKey2.Edges[0].TypeUUID) // if the types are different then something is really wrong
+                    throw new GraphDBException(new Error_InvalidLevelKeyOperation(this, myLevelKey2, "+"));
                 else
-                    return new LevelKey(myLevelKey1.Edges, myLevelKey1.Level);
+                    return new LevelKey(this.Edges, myTypeManager);
                 #endregion
             }
-            else if (myLevelKey1.Level == 0)
+            else if (this.Level == 0)
             {
                 #region one of them is level 0 - so we can just skip this level: User/null + User/Friends == User/Friends
-                if (myLevelKey1.Edges[0].TypeUUID != myLevelKey2.Edges[0].TypeUUID) // if the types are different then something is really wrong
-                    throw new GraphDBException(new Error_InvalidLevelKeyOperation(myLevelKey1, myLevelKey2, "+"));
+                if (this.Edges[0].TypeUUID != myLevelKey2.Edges[0].TypeUUID) // if the types are different then something is really wrong
+                    throw new GraphDBException(new Error_InvalidLevelKeyOperation(this, myLevelKey2, "+"));
                 else
-                    return new LevelKey(myLevelKey2.Edges, myLevelKey2.Level); // just return the other level
+                    return new LevelKey(myLevelKey2.Edges, myTypeManager); // just return the other level
                 #endregion
             }
             else if (myLevelKey2.Level == 0)
             {
                 #region one of them is level 0 - so we can just skip this level: User/null + User/Friends == User/Friends
-                if (myLevelKey1.Edges[0].TypeUUID != myLevelKey2.Edges[0].TypeUUID) // if the types are different then something is really wrong
-                    throw new GraphDBException(new Error_InvalidLevelKeyOperation(myLevelKey1, myLevelKey2, "+"));
+                if (this.Edges[0].TypeUUID != myLevelKey2.Edges[0].TypeUUID) // if the types are different then something is really wrong
+                    throw new GraphDBException(new Error_InvalidLevelKeyOperation(this, myLevelKey2, "+"));
                 else
-                    return new LevelKey(myLevelKey1.Edges, myLevelKey1.Level) ; // just return the other level
+                    return new LevelKey(this.Edges, myTypeManager); // just return the other level
                 #endregion
             }
 
-            var edges = new List<EdgeKey>(myLevelKey1.Edges);
+            var edges = new List<EdgeKey>(this.Edges);
             edges.AddRange(myLevelKey2.Edges);
 
-            return new LevelKey(edges, myLevelKey1.Level + myLevelKey2.Level);
+            return new LevelKey(edges, myTypeManager);
         }
 
-        public static LevelKey operator -(LevelKey myLevelKey, EdgeKey myEdgeKey)
+        public LevelKey RemoveEdgeKey(EdgeKey myEdgeKey, DBTypeManager myTypeManager)
         {
-            var edgeList = new List<EdgeKey>(myLevelKey.Edges);
+            var edgeList = new List<EdgeKey>(this.Edges);
             //edgeList.Remove(myEdgeKey);
 
             if (edgeList[edgeList.Count - 1] != myEdgeKey)
-                throw new GraphDBException(new Error_InvalidLevelKeyOperation(myLevelKey, myEdgeKey, "-"));
+                throw new GraphDBException(new Error_InvalidLevelKeyOperation(this, myEdgeKey, "-"));
 
-            return new LevelKey(edgeList.Take(edgeList.Count - 1), myLevelKey.Level - 1);
+            return new LevelKey(edgeList.Take(edgeList.Count - 1), myTypeManager);
         }
 
-        public static LevelKey operator -(LevelKey myKey, LevelKey myOtherLevelKey)
+        public LevelKey RemoveLevelKey(LevelKey myOtherLevelKey, DBTypeManager myTypeManager)
         {
-            if (myKey.Level < myOtherLevelKey.Level)
-                throw new ArgumentException("level of left (" + myKey.Level + ") operand is lower than right (" + myOtherLevelKey.Level + ") operand:", "myOtherLevelKey");
+            if (this.Level < myOtherLevelKey.Level)
+                throw new ArgumentException("level of left (" + this.Level + ") operand is lower than right (" + myOtherLevelKey.Level + ") operand:", "myOtherLevelKey");
 
-            if (!myKey.StartsWith(myOtherLevelKey, true))
+            if (!this.StartsWith(myOtherLevelKey, true))
                 throw new ArgumentException("left operand level does not starts with right operand level");
 
             if (myOtherLevelKey.Level == 0)
-                return myKey;
+                return this;
 
-            if (myKey.Level == myOtherLevelKey.Level)
-                return new LevelKey(myKey.Edges[0].TypeUUID);
+            if (this.Level == myOtherLevelKey.Level)
+                return new LevelKey(this.Edges[0].TypeUUID, myTypeManager);
 
-            var edgeList = new List<EdgeKey>(myKey.Edges);
+            var edgeList = new List<EdgeKey>(this.Edges);
 
-            return new LevelKey(myKey.Edges.Skip(myOtherLevelKey.Edges.Count), myKey.Level - myOtherLevelKey.Edges.Count);
+            return new LevelKey(this.Edges.Skip(myOtherLevelKey.Edges.Count), myTypeManager);
         }
 
         #endregion
@@ -364,22 +383,21 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
             }
         }
 
-        public LevelKey GetPredecessorLevel()
+        public LevelKey GetPredecessorLevel(DBTypeManager myTypeManager)
         {
             switch (_level)
             {
                 case 0:
 
-                    //maybe we need the LevelKey to be a class
-                    return new LevelKey();
+                    return this;
 
                 case 1:
 
-                    return new LevelKey(new List<EdgeKey>() { new EdgeKey(_edges[0].TypeUUID, null)}, 0);
+                    return new LevelKey(new List<EdgeKey>() { new EdgeKey(_edges[0].TypeUUID, null) }, myTypeManager);
 
                 default:
 
-                    return new LevelKey(_edges.Take(_edges.Count - 1), _level - 1);
+                    return new LevelKey(_edges.Take(_edges.Count - 1), myTypeManager);
             }
         }
 
@@ -412,5 +430,26 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
             }
             return true;
         }
+
+        #region private helper
+
+        private int CalcHashCode(IEnumerable<EdgeKey> myEdgeKey)
+        {
+            int myHashCode = 0;
+
+            foreach (var aEdge in myEdgeKey)
+            {
+                AddHashCodeFromSingleEdge(ref myHashCode, aEdge);
+            }
+
+            return myHashCode;
+        }
+
+        private void AddHashCodeFromSingleEdge(ref int myHashCode, EdgeKey aEdge)
+        {
+            myHashCode += (int)(aEdge.GetHashCode() >> 32);
+        }
+
+        #endregion
     }
 }

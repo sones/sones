@@ -169,7 +169,7 @@ namespace sones.GraphDB
 
         public UUID GetDatabaseUniqueID()
         {
-            return _GraphDB.GetDatabaseUniqueID();
+            return _GraphDB.GetDatabaseUUID();
         }
         
         public void Shutdown()

@@ -36,6 +36,9 @@ using sones.Lib.Frameworks.Irony.Scripting.Ast;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.QueryLanguage.Enums;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.Exceptions;
+using sones.GraphDB.Errors;
 
 #endregion
 
@@ -46,11 +49,22 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     /// </summary>
     public class SelectionListElementNode : AStructureNode, IAstNodeInit
     {
+
+        public Boolean IsAsterisk { get; private set; }
+        
         #region Data
 
         TypesOfColumnSource _TypeOfColumnSource;
-        Object _ColumnSourceValue = null;
+        AExpressionDefinition _ColumnSourceValue = null;
         String _AliasId = null;
+
+        #endregion
+
+        #region Accessors
+
+        public TypesOfColumnSource TypeOfColumnSource { get { return _TypeOfColumnSource; } }
+        public AExpressionDefinition ColumnSourceValue { get { return _ColumnSourceValue; } }
+        public String AliasId { get { return _AliasId; } }
 
         #endregion
 
@@ -65,13 +79,13 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         private void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
-            if ((parseNode.ChildNodes[0].Token != null ) && (parseNode.ChildNodes[0].Token.Text == DBConstants.ASTERISKSYMBOL))
+            if ((parseNode.ChildNodes[0].Token != null) && (parseNode.ChildNodes[0].Token.Text == DBConstants.ASTERISKSYMBOL))
             {
-                _TypeOfColumnSource = TypesOfColumnSource.Asterisk;
+                IsAsterisk = true;
             }
             else
             {
-
+                IsAsterisk = false;
                 object astNode = parseNode.ChildNodes[0].AstNode;
 
                 if (astNode == null)
@@ -105,7 +119,30 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
                     #region get value
 
-                    _ColumnSourceValue = (object)aIDNode;
+                    _ColumnSourceValue = ((IDNode)aIDNode).IDChainDefinition;
+
+                    #endregion
+
+                    #region Alias handling
+
+                    if (parseNode.ChildNodes.Count > 1)
+                    {
+                        _AliasId = parseNode.ChildNodes[2].Token.ValueString;
+                    }
+
+                    #endregion
+
+                    #endregion
+                }
+                else if (astNode is AggregateNode)
+                {
+                    #region aggregate
+
+                    _TypeOfColumnSource = TypesOfColumnSource.Aggregate;
+
+                    AggregateNode aAggregateNode = (AggregateNode)astNode;
+
+                    _ColumnSourceValue = aAggregateNode.AggregateDefinition;
 
                     #endregion
 
@@ -114,83 +151,22 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
                     if (parseNode.ChildNodes.Count.CompareTo(1) > 0)
                     {
                         _AliasId = parseNode.ChildNodes[2].Token.ValueString;
-                        if (aIDNode.IDNodeParts.FirstOrDefault() is IDNodeFunc)
-                        {
-                            (aIDNode.IDNodeParts.FirstOrDefault() as IDNodeFunc).FuncCallNode.Alias = _AliasId;
-                        }
                     }
-
-                    #endregion
+                    else
+                    {
+                        _AliasId = aAggregateNode.AggregateDefinition.ChainPartAggregateDefinition.SourceParsedString;
+                    }
 
                     #endregion
                 }
                 else
                 {
-                    if (astNode is AggregateNode)
-                    {
-                        #region aggregate
-
-                        _TypeOfColumnSource = TypesOfColumnSource.Aggregate;
-
-                        AggregateNode aAggregateNode = (AggregateNode)astNode;
-
-                        _ColumnSourceValue = (Object)aAggregateNode;
-
-                        #endregion
-
-                        #region Alias handling
-
-                        if (parseNode.ChildNodes.Count.CompareTo(1) > 0)
-                        {
-                            _AliasId = parseNode.ChildNodes[2].Token.ValueString;
-                            aAggregateNode.Alias = _AliasId;
-                        }
-                        else
-                        {
-                            _AliasId = aAggregateNode.ToString();
-                        }
-
-                        #endregion
-                    }
-                    else
-                    {
-                        if (astNode is FuncCallNode)
-                        {
-                            #region Function
-
-                            _TypeOfColumnSource = TypesOfColumnSource.Function;
-
-                            FuncCallNode aFuncCallNode = (FuncCallNode)astNode;
-
-                            #region Alias handling
-
-                            if (parseNode.ChildNodes.Count.CompareTo(1) > 0)
-                            {
-                                aFuncCallNode.Alias = parseNode.ChildNodes[2].Token.ValueString;
-                            }
-
-                            #endregion
-
-                            _ColumnSourceValue = (Object)aFuncCallNode;
-
-                            #endregion
-                        }
-                        else
-                        {
-                            throw new NotImplementedException(parseNode.ChildNodes[0].AstNode.GetType().Name);
-                        }
-                    }
+                    throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), parseNode.ChildNodes[0].AstNode.GetType().Name));
                 }
+
+
             }
         }
-
-        #region Accessors
-
-        public TypesOfColumnSource TypeOfColumnSource { get { return _TypeOfColumnSource; } }
-        public Object ColumnSourceValue { get { return _ColumnSourceValue; } }
-        public String AliasId { get { return _AliasId; } }
-
-        #endregion
 
         #region IAstNodeInit Members
 

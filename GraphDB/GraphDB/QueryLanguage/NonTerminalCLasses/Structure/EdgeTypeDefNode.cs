@@ -51,29 +51,19 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
         #region Data
 
-        public TypesOfPandoraType Type { get { return _Type; } }
-        TypesOfPandoraType _Type;
+        public KindsOfType Type { get; private set; }
 
-        public String Name { get { return _Name; } }
-        String _Name = null;
+        public String Name { get; private set; }
         
         /// <summary>
         /// The characteristics of an edge (Backward, Mandatory, Unique - valid for a combination of typeattributes
         /// </summary>
-        public TypeCharacteristics TypeCharacteristics { get { return _TypeCharacteristics; } }
-        TypeCharacteristics _TypeCharacteristics = null;
+        public TypeCharacteristics TypeCharacteristics { get; private set; }
 
         /// <summary>
         /// An edge type definition - resolved by the name and found in the typeManager EdgeTypesLookup table
         /// </summary>
-        public AEdgeType EdgeType
-        {
-            get
-            {
-                return _EdgeType;
-            }
-        }
-        AEdgeType _EdgeType;
+        public AEdgeType EdgeType{ get; private set; }
 
         #endregion
 
@@ -96,11 +86,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             if (!dbContext.DBPluginManager.HasEdgeType(parseNode.ChildNodes[2].Token.ValueString))
                 throw new GraphDBException(new Error_EdgeTypeDoesNotExist(parseNode.ChildNodes[2].Token.ValueString));
 
-            _EdgeType = dbContext.DBPluginManager.GetEdgeType(parseNode.ChildNodes[2].Token.ValueString);
+            EdgeType = dbContext.DBPluginManager.GetEdgeType(parseNode.ChildNodes[2].Token.ValueString);
 
             if (parseNode.ChildNodes[3].AstNode != null)
             {
-                _EdgeType.ApplyParams(((EdgeTypeParamsNode)parseNode.ChildNodes[3].AstNode).Parameters);
+                EdgeType.ApplyParams(((EdgeTypeParamsNode)parseNode.ChildNodes[3].AstNode).Parameters);
             }
 
             #endregion
@@ -109,66 +99,66 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             {
                 #region simple id
 
-                _Type = TypesOfPandoraType.Simple;
+                Type = KindsOfType.SingleNoneReference;
 
-                _Name = parseNode.ChildNodes[0].Token.ValueString;
+                Name = parseNode.ChildNodes[0].Token.ValueString;
 
                 #endregion
             }
             else if (parseNode.FirstChild.Term.Name.ToUpper().Equals(DBConstants.DBBackwardEdge.ToUpper()))
             {
 
-                _Name = ((IDNode)parseNode.ChildNodes[2].AstNode).Reference.Item2.Name;
-                _TypeCharacteristics = new TypeCharacteristics();
-                _TypeCharacteristics.IsBackwardEdge = true;
+                Name = ((IDNode)parseNode.ChildNodes[2].AstNode).IDChainDefinition.Reference.Item2.Name;
+                TypeCharacteristics = new TypeCharacteristics();
+                TypeCharacteristics.IsBackwardEdge = true;
             }
             else
             {
-                _Name = parseNode.ChildNodes[5].Token.ValueString;
+                Name = parseNode.ChildNodes[5].Token.ValueString;
 
                 if (parseNode.ChildNodes[0].Token.ValueString.ToUpper() == DBConstants.SET)
                 {
 
-                    GraphDBType gType = typeManager.GetTypeByName(_Name);
+                    GraphDBType gType = typeManager.GetTypeByName(Name);
 
                     if (gType != null)
                     {
                         if (gType.IsUserDefined)
                         {
-                            _Type = TypesOfPandoraType.SetOfReferences;
+                            Type = KindsOfType.SetOfReferences;
                         }
                         else
                         {
-                            _Type = TypesOfPandoraType.SetOfNoneReferences;
+                            Type = KindsOfType.SetOfNoneReferences;
                         }
                     }
                     else
-                        _Type = TypesOfPandoraType.SetOfReferences;
+                        Type = KindsOfType.SetOfReferences;
                 }
 
                 if (parseNode.ChildNodes[0].Token.ValueString.ToUpper() == DBConstants.LIST)
-                    _Type = TypesOfPandoraType.ListOfNoneReferences;
+                    Type = KindsOfType.ListOfNoneReferences;
 
                 #region Verify edge against the type LIST/SET
 
-                switch (_Type)
+                switch (Type)
                 {
-                    case TypesOfPandoraType.ListOfNoneReferences:
-                        if (!(_EdgeType is AListBaseEdgeType))
+                    case KindsOfType.ListOfNoneReferences:
+                        if (!(EdgeType is AListBaseEdgeType))
                         {
-                            throw new GraphDBException(new Error_InvalidEdgeType(_EdgeType.GetType(), typeof(AListBaseEdgeType)));
+                            throw new GraphDBException(new Error_InvalidEdgeType(EdgeType.GetType(), typeof(AListBaseEdgeType)));
                         }
                         break;
-                    case TypesOfPandoraType.SetOfReferences:
-                        if (!(_EdgeType is ASetReferenceEdgeType))
+                    case KindsOfType.SetOfReferences:
+                        if (!(EdgeType is ASetReferenceEdgeType))
                         {
-                            throw new GraphDBException(new Error_InvalidEdgeType(_EdgeType.GetType(), typeof(ASetReferenceEdgeType)));
+                            throw new GraphDBException(new Error_InvalidEdgeType(EdgeType.GetType(), typeof(ASetReferenceEdgeType)));
                         }
                         break;
-                    case TypesOfPandoraType.SetOfNoneReferences:
-                        if (!(_EdgeType is ASetBaseEdgeType))
+                    case KindsOfType.SetOfNoneReferences:
+                        if (!(EdgeType is ASetBaseEdgeType))
                         {
-                            throw new GraphDBException(new Error_InvalidEdgeType(_EdgeType.GetType(), typeof(ASetBaseEdgeType)));
+                            throw new GraphDBException(new Error_InvalidEdgeType(EdgeType.GetType(), typeof(ASetBaseEdgeType)));
                         }
                        break;
                     default:

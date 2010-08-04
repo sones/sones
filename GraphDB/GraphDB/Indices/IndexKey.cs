@@ -160,7 +160,7 @@ namespace sones.GraphDB.Indices
 
         private void Serialize(ref SerializationWriter mySerializationWriter, IndexKey myValue)
         {
-            mySerializationWriter.WriteObject(myValue.IndexKeyValues.Count);
+            mySerializationWriter.WriteUInt32((UInt32)myValue.IndexKeyValues.Count);
             foreach (var attr in myValue.IndexKeyValues)
             {
                 //attr.Serialize(ref mySerializationWriter);
@@ -170,8 +170,8 @@ namespace sones.GraphDB.Indices
 
         private object Deserialize(ref SerializationReader mySerializationReader, IndexKey myValue)
         {
-            Int32 count = (Int32)mySerializationReader.ReadObject();
-            for (Int32 i = 0; i < count; i++)
+            UInt32 count = mySerializationReader.ReadUInt32();
+            for (UInt32 i = 0; i < count; i++)
             {
                 var a = (ADBBaseObject)mySerializationReader.ReadObject();
 
@@ -312,7 +312,8 @@ namespace sones.GraphDB.Indices
 
         public void Serialize(ref SerializationWriter mySerializationWriter)
         {
-            mySerializationWriter.WriteObject(_indexKeyValues.Count);
+            mySerializationWriter.WriteUInt32((UInt32)_indexKeyValues.Count);
+
             foreach (var attr in _indexKeyValues)
             {
                 attr.Serialize(ref mySerializationWriter);
@@ -321,9 +322,10 @@ namespace sones.GraphDB.Indices
 
         public void Deserialize(ref SerializationReader mySerializationReader)
         {
-            Int32 count = (Int32)mySerializationReader.ReadObject();
+            UInt32 count = mySerializationReader.ReadUInt32();
+
             _indexKeyValues = new List<ADBBaseObject>();
-            for (Int32 i = 0; i < count; i++)
+            for (UInt32 i = 0; i < count; i++)
             {
                 var a = (ADBBaseObject)mySerializationReader.ReadObject();
 

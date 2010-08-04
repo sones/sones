@@ -73,15 +73,15 @@ namespace sones.GraphDB.Settings
         /// <param name="SettingsObjectName">the name of the settings object</param>
         /// <param name="PandoraVFSInstance">the VFS Instance that handles this Database</param>
         /// <param name="CreateIt">should the Instance Settings Metadata be created if it does not exist</param>
-        public DBInstanceSettingsManager(ObjectLocation myDatabaseRootPath, IGraphFSSession myIPandoraFS, Boolean CreateIt)
+        public DBInstanceSettingsManager(ObjectLocation myDatabaseRootPath, IGraphFSSession myIGraphFS, Boolean CreateIt)
         {
 
             #region check if no null values has been handed over
 
-            if (myIPandoraFS == null)
+            if (myIGraphFS == null)
                 throw new GraphDBException(new Error_ArgumentNullOrEmpty("myIPandoraFS"));
             else
-                _IGraphFSSession = myIPandoraFS;
+                _IGraphFSSession = myIGraphFS;
 
             _DatabaseRootPath = myDatabaseRootPath;
 
@@ -105,14 +105,14 @@ namespace sones.GraphDB.Settings
             #endregion
 
             // check if there's actually something at the Database Root Path
-            if (myIPandoraFS.isIDirectoryObject(_DatabaseRootPath).Value != Trinary.TRUE)
+            if (myIGraphFS.isIDirectoryObject(_DatabaseRootPath).Value != Trinary.TRUE)
                 throw new GraphDBException(new Error_DatabaseNotFound(_DatabaseRootPath));
 
             else
             {
 
                 // found the database root path, now check for the UserMetadata and read it in...
-                if (myIPandoraFS.ObjectStreamExists(new ObjectLocation(_DatabaseRootPath), FSConstants.USERMETADATASTREAM).Value == Trinary.TRUE)
+                if (myIGraphFS.ObjectStreamExists(new ObjectLocation(_DatabaseRootPath), FSConstants.USERMETADATASTREAM).Value == Trinary.TRUE)
                 {
                     // found it...read it
                     ReadSettings();
@@ -136,7 +136,7 @@ namespace sones.GraphDB.Settings
                         //    myIPandoraFS.SetUserMetadatum(new ObjectLocation(_DatabaseRootPath, _SettingsObjectName), Setting.Key, Setting.Value, IndexSetStrategy.REPLACE);
                         //}
 
-                        myIPandoraFS.SetUserMetadata(new ObjectLocation(_DatabaseRootPath), SerializedSettings, IndexSetStrategy.REPLACE);
+                        myIGraphFS.SetUserMetadata(new ObjectLocation(_DatabaseRootPath), SerializedSettings, IndexSetStrategy.REPLACE);
 
                         #endregion
 

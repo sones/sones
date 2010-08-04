@@ -24,6 +24,7 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Henning Rauch</developer>
+ * <developer>Stefan Licht</developer>
  * <summary>This node is requested in case of an AlterCmd node.</summary>
  */
 
@@ -31,45 +32,27 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.Lib.Frameworks.Irony.Scripting.Ast;
-using sones.Lib.Frameworks.Irony.Parsing;
-using sones.GraphDB.QueryLanguage.Enums;
+using sones.GraphDB.Managers.AlterType;
+using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
-using sones.Lib.DataStructures;
+using sones.Lib.Frameworks.Irony.Parsing;
+using sones.Lib.ErrorHandling;
+using sones.GraphDB.Exceptions;
 
 #endregion
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 {
+
+
     /// <summary>
     /// This node is requested in case of an AlterCmd node.
     /// </summary>
-    class AlterCommandNode : AStructureNode, IAstNodeInit
+    public class AlterCommandNode : AStructureNode, IAstNodeInit
     {
         #region Data
 
-        TypesOfAlterCmd _TypeOfAlterCmd;
-        Object _Value = null;
-
-        /// <summary>
-        /// The information about the BackwardEdge: &lt;Type, Attribute, Visible AttributeName&gt;
-        /// </summary>
-        public List<BackwardEdgeNode> BackwardEdgeInformation
-        {
-            get { return _BackwardEdgeInformation; }
-        }
-        private List<BackwardEdgeNode> _BackwardEdgeInformation;
-
-        #endregion
-
-        #region constructor
-
-        public AlterCommandNode()
-        {
-            _BackwardEdgeInformation = new List<BackwardEdgeNode>();
-        }
+        public AAlterTypeCommand AlterTypeCommand { get; set; }
 
         #endregion
 
@@ -79,21 +62,35 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
             if (parseNode.HasChildNodes())
             {
              
-                switch (parseNode.ChildNodes[0].Token.ValueString.ToLower())
+                switch (parseNode.ChildNodes[0].Token.Text.ToLower())
                 {
                     case "drop":
 
                         #region drop
 
+                        if (parseNode.ChildNodes[1].AstNode is Exceptional<IndexDropOnAlterType>)
+                        {
+                            var dropNodeExcept = (Exceptional<IndexDropOnAlterType>)parseNode.ChildNodes[1].AstNode;
+
+                            if (!dropNodeExcept.Success)
+                            {
+                                throw new GraphDBException(dropNodeExcept.Errors);
+                            }
+
+                            AlterTypeCommand = new AlterType_DropIndices(dropNodeExcept.Value.DropIndexList);
+
+                            break;
+                        }
+                        
                         if (parseNode.ChildNodes.Count == 2 && parseNode.ChildNodes[1].Token.Text.ToLower() == GraphQL.TERMINAL_UNIQUE.ToLower())
                         {
-                            _TypeOfAlterCmd = TypesOfAlterCmd.DropUnqiue;
+                            AlterTypeCommand = new AlterType_DropUnique();
                             break;
                         }
 
                         if (parseNode.ChildNodes.Count == 2 && parseNode.ChildNodes[1].Token.Text.ToUpper() == GraphQL.TERMINAL_MANDATORY.ToUpper())
                         {
-                            _TypeOfAlterCmd = TypesOfAlterCmd.DropMandatory;
+                            AlterTypeCommand = new AlterType_DropMandatory();
                             break;
                         }
 
@@ -103,16 +100,14 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
                         #endregion
 
-                        _TypeOfAlterCmd = TypesOfAlterCmd.Drop;
-
                         foreach (ParseTreeNode aNode in parseNode.ChildNodes[2].ChildNodes)
                         {
                             listOfToBeDroppedAttributes.Add(aNode.Token.ValueString);
                         }
 
-                        _Value = (object)listOfToBeDroppedAttributes;
+                        AlterTypeCommand = new AlterType_DropAttributes(listOfToBeDroppedAttributes);
 
-#endregion
+                        #endregion
 
                         break;
 
@@ -120,33 +115,62 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
                         #region add
 
-                        #region data
+                        if (parseNode.ChildNodes[1].AstNode is Exceptional<IndexOnCreateTypeNode>)
+                        {
+                            #region data
 
-                        List<AttributeDefinitionNode> listOfToBeAddedAttributes = new List<AttributeDefinitionNode>();
+                            var _IndexInformation = new List<Exceptional<IndexDefinition>>();
+
+                            #endregion
+
+                            #region add indices
+
+                            var idxExceptional = (Exceptional<IndexOnCreateTypeNode>)parseNode.ChildNodes[1].AstNode;
+
+                            if (!idxExceptional.Success)
+                            {
+                                throw new GraphDBException(idxExceptional.Errors);
+                            }
+
+                            _IndexInformation.AddRange(idxExceptional.Value.ListOfIndexDefinitions);
+
+                            AlterTypeCommand = new AlterType_AddIndices(_IndexInformation);
+
+                            #endregion
+                        }
+                        else
+                        {
+                            #region data
+
+                            var listOfToBeAddedAttributes = new List<AttributeDefinition>();
+                            var _BackwardEdgeInformation  = new List<BackwardEdgeDefinition>();
+
+                            #endregion
+
+                            #region add attributes
+
+                            foreach (ParseTreeNode aNode in parseNode.ChildNodes[2].ChildNodes)
+                            {
+                                if (aNode.AstNode is AttributeDefinitionNode)
+                                {
+                                    listOfToBeAddedAttributes.Add(((AttributeDefinitionNode)aNode.AstNode).AttributeDefinition);
+                                }
+                                else if (aNode.AstNode is BackwardEdgeNode)
+                                {
+                                    _BackwardEdgeInformation.Add((aNode.AstNode as BackwardEdgeNode).BackwardEdgeDefinition);
+                                }
+                                else
+                                {
+                                    throw new NotImplementedException(aNode.AstNode.GetType().ToString());
+                                }
+                            }
+
+                            AlterTypeCommand = new AlterType_AddAttributes(listOfToBeAddedAttributes, _BackwardEdgeInformation);
+
+                            #endregion
+                        }                       
 
                         #endregion
-
-                        _TypeOfAlterCmd = TypesOfAlterCmd.Add;
-
-                        foreach (ParseTreeNode aNode in parseNode.ChildNodes[2].ChildNodes)
-                        {
-                            if (aNode.AstNode is AttributeDefinitionNode)
-                            {
-                                listOfToBeAddedAttributes.Add((AttributeDefinitionNode)aNode.AstNode);
-                            }
-                            else if (aNode.AstNode is BackwardEdgeNode)
-                            {
-                                _BackwardEdgeInformation.Add((BackwardEdgeNode)aNode.AstNode);
-                            }
-                            else
-                            {
-                                throw new NotImplementedException(aNode.AstNode.GetType().ToString());
-                            }
-                        }
-
-                        _Value = (object)listOfToBeAddedAttributes;
-
-#endregion
 
                         break;
 
@@ -158,40 +182,67 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
                         {
                             if (parseNode.ChildNodes[1].Token.Text.ToUpper() == "BACKWARDEDGE")
                             {
-                                _TypeOfAlterCmd = TypesOfAlterCmd.RenameBackwardedge;
-                                _Value = new KeyValuePair<String, String>(parseNode.ChildNodes[2].Token.ValueString, parseNode.ChildNodes[4].Token.ValueString);
+                                AlterTypeCommand = new AlterType_RenameBackwardedge() { OldName = parseNode.ChildNodes[2].Token.ValueString, NewName = parseNode.ChildNodes[4].Token.ValueString };
                             }
                             else
                             {
-                                _TypeOfAlterCmd = TypesOfAlterCmd.RenameAttribute;
-                                _Value = new KeyValuePair<String, String>(parseNode.ChildNodes[2].Token.ValueString, parseNode.ChildNodes[4].Token.ValueString);
+                                AlterTypeCommand = new AlterType_RenameAttribute() { OldName = parseNode.ChildNodes[2].Token.ValueString, NewName = parseNode.ChildNodes[4].Token.ValueString };
                             }
                         }
                         else if(parseNode.ChildNodes.Count <= 3)
                         {
-                            _TypeOfAlterCmd = TypesOfAlterCmd.RenameType;
-                            _Value = (string)parseNode.ChildNodes[2].Token.ValueString;
+                            AlterTypeCommand = new AlterType_RenameType() { NewName = parseNode.ChildNodes[2].Token.ValueString };
                         }
 
                         #endregion
+
                         break;
 
                     case "comment":
 
                         #region comment
 
-                        _TypeOfAlterCmd = TypesOfAlterCmd.ChangeComment;
-                        _Value = parseNode.ChildNodes[2].Token.ValueString;
+                        AlterTypeCommand = new AlterType_ChangeComment() { NewComment = parseNode.ChildNodes[2].Token.ValueString };
 
                         #endregion
+
+                        break;
+
+                    case "undefine":
+
+                        #region data
+
+                        var listOfUndefAttributes = new List<String>();
+
+                        #endregion
+
+                        #region undefine attributes
+
+                        parseNode.ChildNodes[2].ChildNodes.ForEach(node => listOfUndefAttributes.Add(node.Token.ValueString));
+
+                        AlterTypeCommand = new AlterType_UndefineAttributes(listOfUndefAttributes);  
+
+                        #endregion
+
+
+                        break;
+
+                    case "define":
+
+                        #region data
+
+                        var listOfDefinedAttributes = new List<AttributeDefinition>();
+                        
+                        #endregion
+
+                        parseNode.ChildNodes[2].ChildNodes.ForEach(node => listOfDefinedAttributes.Add(((AttributeDefinitionNode)node.AstNode).AttributeDefinition));
+
+                        AlterTypeCommand = new AlterType_DefineAttributes(listOfDefinedAttributes);
 
                         break;
                 }
             }
         }
-
-        public TypesOfAlterCmd TypeOfAlterCmd { get { return _TypeOfAlterCmd; } }
-        public Object Value { get { return _Value; } }
 
         #region IAstNodeInit Members
 

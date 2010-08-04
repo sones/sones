@@ -234,30 +234,36 @@ namespace sones.GraphFS.Objects
                 #region QueueObject Header
 
                 // Write the type of the stored data
-                mySerializationWriter.WriteObject(typeof(T));
+                mySerializationWriter.WriteType(typeof(T));
 
                 // Write if T is IFastSerializeable 
                 if ((typeof(IFastSerialize)).IsAssignableFrom(typeof(T)))
-                    mySerializationWriter.WriteObject(true);
-
+                {
+                    mySerializationWriter.WriteBoolean(true);
+                }
                 else
-                    mySerializationWriter.WriteObject(false);
+                {
+                    mySerializationWriter.WriteBoolean(false);
+                }
 
-                mySerializationWriter.WriteObject(_MaxSizeOfQueue);
+                mySerializationWriter.WriteUInt64(_MaxSizeOfQueue);
 
                 #endregion
 
                 #region QueueObject Data
 
-                mySerializationWriter.WriteObject((UInt64) _Queue.Count);
+                mySerializationWriter.WriteUInt32((UInt32) _Queue.Count);
 
                 if ((typeof(IFastSerialize)).IsAssignableFrom(typeof(T)))
+                {
                     foreach (T _QueueItem in _Queue)
                         ((IFastSerialize)_QueueItem).Serialize(ref mySerializationWriter);
-
+                }
                 else
+                {
                     foreach (T _QueueItem in _Queue)
                         mySerializationWriter.WriteObject(_QueueItem);
+                }
 
                 #endregion
 
@@ -278,16 +284,16 @@ namespace sones.GraphFS.Objects
 
                 #region QueueObject Header
 
-                Type    TType                   = (Type)    mySerializationReader.ReadObject();
-                Boolean TIsIFastSerializeable   = (Boolean) mySerializationReader.ReadObject();
-                        _MaxSizeOfQueue         = (UInt64)  mySerializationReader.ReadObject();
+                Type TType                      = mySerializationReader.ReadTypeOptimized();
+                Boolean TIsIFastSerializeable   = mySerializationReader.ReadBoolean();
+                _MaxSizeOfQueue                 = mySerializationReader.ReadUInt64();
 
                 #endregion
 
                 #region QueueObject Data
 
                 Object  TObject;
-                UInt64  NrOfQueueEntries        = (UInt64)  mySerializationReader.ReadObject();
+                UInt32 NrOfQueueEntries         = mySerializationReader.ReadUInt32();
 
                 for (UInt64 i=0; i < NrOfQueueEntries; i++)
                 {

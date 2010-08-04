@@ -39,6 +39,8 @@ using sones.GraphDB.TypeManagement;
 using sones.GraphFS.DataStructures;
 using sones.Lib.Session;
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.GraphDB.Managers.Structures;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
@@ -66,15 +68,15 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
 
         #endregion
 
-        #region (public) Methods
+        #region abstract Methods
 
-        #region GetContent Method
+        #region abstract GetContent Method
 
         public abstract void GetContent(CompilerContext context, ParseTreeNode parseNode);
 
         #endregion
 
-        #region Evaluate Method
+        #region abstract Execute
 
         /// <summary>
         /// Executes the statement
@@ -85,16 +87,28 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
         public abstract QueryResult Execute(IGraphDBSession graphDBSession, DBContext dbContext);
 
         #endregion
-        
-        #region private helper methods
-
-        
-        #endregion
 
         #endregion
 
         #region protected methods
 
+        protected Exceptional<Dictionary<string, GraphDBType>> GetTypeReferenceLookup(DBContext myDBContext, List<TypeReferenceDefinition> myTypeReferenceDefinitions)
+        {
+            var _ReferenceTypeLookup = new Dictionary<string, GraphDBType>();
+            foreach (var trd in myTypeReferenceDefinitions)
+            {
+                var dbType = myDBContext.DBTypeManager.GetTypeByName(trd.TypeName);
+
+                if (dbType == null)
+                {
+                    return new Exceptional<Dictionary<string, GraphDBType>>(new Errors.Error_TypeDoesNotExist(trd.TypeName));
+                }
+
+                _ReferenceTypeLookup.Add(trd.Reference, dbType);
+            }
+
+            return new Exceptional<Dictionary<string, GraphDBType>>(_ReferenceTypeLookup);
+        }
 
         #endregion
     }

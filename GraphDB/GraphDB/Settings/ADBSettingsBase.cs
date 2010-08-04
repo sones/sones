@@ -187,8 +187,8 @@ namespace sones.GraphDB.Settings
 
             try
             {
-                writer.WriteObject(Name);
-                writer.WriteObject(Description);
+                writer.WriteString(Name);
+                writer.WriteString(Description);
                 OwnerID.Serialize(ref writer);
                 Type.Serialize(ref writer);
                 writer.WriteObject(Default.Value);
@@ -218,12 +218,10 @@ namespace sones.GraphDB.Settings
             #region Read Basics
             try
             {
-                Name                = (String) reader.ReadObject();
-                Description         = (String) reader.ReadObject();
-                OwnerID             = new EntityUUID();
-                OwnerID.Deserialize(ref reader);
-                Type                = new TypeUUID();
-                Type.Deserialize(ref reader);
+                Name                = reader.ReadString();
+                Description         = reader.ReadString();
+                OwnerID             = new EntityUUID(reader.ReadByteArray());                
+                Type                = new TypeUUID(reader.ReadByteArray());
                 Default.SetValue(reader.ReadObject());
                 _Value.SetValue(reader.ReadObject());            
             }
@@ -252,19 +250,19 @@ namespace sones.GraphDB.Settings
             {
                 if (myValue != null)
                 {
-                    myValue.Name = (string)mySerializationReader.ReadObject();
-                    myValue.Description = (string)mySerializationReader.ReadObject();
+                    myValue.Name = mySerializationReader.ReadString();
+                    myValue.Description = mySerializationReader.ReadString();
                     myValue.OwnerID = (EntityUUID)mySerializationReader.ReadObject();
-                    myValue.Type = (TypeUUID)mySerializationReader.ReadObject();
+                    myValue.Type = new TypeUUID(mySerializationReader.ReadByteArray());
                     myValue.Default.SetValue(mySerializationReader.ReadObject());
                     myValue._Value.SetValue(mySerializationReader.ReadObject());
                 }
                 else
                 {
-                    Name = (string)mySerializationReader.ReadObject();
-                    Description = (string)mySerializationReader.ReadObject();
+                    Name = mySerializationReader.ReadString();
+                    Description = mySerializationReader.ReadString();
                     OwnerID = (EntityUUID)mySerializationReader.ReadObject();
-                    Type = (TypeUUID)mySerializationReader.ReadObject();
+                    Type = new TypeUUID(mySerializationReader.ReadByteArray());
                     Default.SetValue(mySerializationReader.ReadObject());
                     _Value.SetValue(mySerializationReader.ReadObject());                
                 }
@@ -286,10 +284,10 @@ namespace sones.GraphDB.Settings
             {
                 if (myValue != null)
                 {
-                    mySerializationWriter.WriteObject(myValue.Name);
-                    mySerializationWriter.WriteObject(myValue.Description);
+                    mySerializationWriter.WriteString(myValue.Name);
+                    mySerializationWriter.WriteString(myValue.Description);
                     mySerializationWriter.WriteObject(myValue.OwnerID);
-                    mySerializationWriter.WriteObject(myValue.Type);
+                    myValue.Type.Serialize(ref mySerializationWriter);
                     mySerializationWriter.WriteObject(myValue.Default.Value);
                     mySerializationWriter.WriteObject(myValue._Value.Value);
 
@@ -297,10 +295,10 @@ namespace sones.GraphDB.Settings
                 }
                 else
                 {
-                    mySerializationWriter.WriteObject(Name);
-                    mySerializationWriter.WriteObject(Description);
-                    mySerializationWriter.WriteObject(OwnerID);
-                    mySerializationWriter.WriteObject(Type);
+                    mySerializationWriter.WriteString(Name);
+                    mySerializationWriter.WriteString(Description);
+                    mySerializationWriter.WriteObject(myValue.OwnerID);
+                    myValue.Type.Serialize(ref mySerializationWriter);
                     mySerializationWriter.WriteObject(Default.Value);
                     mySerializationWriter.WriteObject(_Value.Value);
                 }                

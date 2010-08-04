@@ -39,7 +39,6 @@ using sones.GraphDB.TypeManagement;
 using sones.GraphDB.QueryLanguage.Enums;
 
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements;
-using sones.GraphDB.QueryLanguage.Operator;
 
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
@@ -50,6 +49,7 @@ using sones.GraphDB.QueryLanguage.ExpressionGraph;
 using sones.GraphDB.Errors;
 using sones.GraphFS.Session;
 using sones.Lib.Session;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -58,7 +58,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
     /// <summary>
     /// This class implements an and operator.
     /// </summary>
-    class AndOperator : ABinaryBaseOperator
+    class AndOperator : ABinaryLogicalOperator
     {
         #region General comparer infos
 
@@ -80,32 +80,19 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
         #region (public) Methods
 
-        public override Exceptional<IOperationValue> SimpleOperation(IOperationValue left, IOperationValue right, TypesOfBinaryExpression myTypeOfBinaryExpression)
+        public override Exceptional<AOperationDefinition> SimpleOperation(AOperationDefinition left, AOperationDefinition right, TypesOfBinaryExpression myTypeOfBinaryExpression)
         {
-            return new Exceptional<IOperationValue>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+            return new Exceptional<AOperationDefinition>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
 
         #endregion
 
-        public override Exceptional<IExpressionGraph> TypeOperation(object myLeftValueObject, object myRightValueObject, DBContext dbContext, TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph result, Boolean aggregateAllowed = true)
+        public override Exceptional<IExpressionGraph> TypeOperation(IExpressionGraph myLeftValueObject, IExpressionGraph myRightValueObject, DBContext dbContext, TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph result, bool aggregateAllowed = true)
         {
-            #region Data
+            myLeftValueObject.IntersectWith(myRightValueObject);
 
-            IExpressionGraph left = null;
-            IExpressionGraph right = null;
-
-            #endregion
-
-            #region casting
-
-            left = (IExpressionGraph)myLeftValueObject;
-            right = (IExpressionGraph)myRightValueObject;
-
-            #endregion
-
-            left.IntersectWith(right);
-
-            return new Exceptional<IExpressionGraph>(left);
+            return new Exceptional<IExpressionGraph>(myLeftValueObject);
         }
+
     }
 }

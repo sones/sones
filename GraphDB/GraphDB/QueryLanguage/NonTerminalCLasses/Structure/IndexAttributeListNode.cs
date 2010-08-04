@@ -14,6 +14,8 @@ using System.Text;
 using System.Collections.Generic;
 
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.GraphDB.Managers.Structures;
+using sones.Lib;
 
 #endregion
 
@@ -28,7 +30,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         #region properties
 
-        private List<IndexAttributeNode> _IndexAttributes = null;
+        public List<IndexAttributeDefinition> IndexAttributes { get; private set; }
 
         #endregion
 
@@ -46,22 +48,19 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
             #region Data
 
-            _IndexAttributes = new List<IndexAttributeNode>();
+            IndexAttributes = new List<IndexAttributeDefinition>();
 
             foreach(ParseTreeNode aNode in parseNode.ChildNodes)
             {
-                _IndexAttributes.Add((IndexAttributeNode)aNode.AstNode);
+                if ((aNode.AstNode as IndexAttributeNode) != null)
+                {
+                    IndexAttributes.Add((aNode.AstNode as IndexAttributeNode).IndexAttributeDefinition);
+                }
             }
             
             #endregion
 
         }
-
-        #region Accessessors
-
-        public List<IndexAttributeNode> IndexAttributes { get { return _IndexAttributes; } }
-
-        #endregion
 
         #region IAstNodeInit Members
 
@@ -77,12 +76,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
         public override String ToString()
         {
 
-            String _returnValue = String.Empty;
-
-            for (int i=0;i<_IndexAttributes.Count-1;i++)
-                _returnValue = _returnValue + _IndexAttributes[i].ToString() + ", ";
-
-            return _returnValue + _IndexAttributes[_IndexAttributes.Count-1].ToString();
+            return IndexAttributes.ToContentString();
 
         }
 

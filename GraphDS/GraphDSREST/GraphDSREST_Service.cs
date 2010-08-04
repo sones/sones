@@ -78,11 +78,13 @@ namespace sones.GraphDS.Connectors.REST
         private static ContentType _XML             = new ContentType("application/xml");
         private static ContentType _TEXT            = new ContentType(MediaTypeNames.Text.Plain);
         private static ContentType _HTML            = new ContentType("text/html");
+        private static ContentType _GEXF            = new ContentType("application/gexf");
 
         private static ContentType _JSON_UTF8       = new ContentType("application/json")        { CharSet = "UTF-8" };
         private static ContentType _XML_UTF8        = new ContentType("application/xml")         { CharSet = "UTF-8" };
         private static ContentType _TEXT_UTF8       = new ContentType(MediaTypeNames.Text.Plain) { CharSet = "UTF-8" };
         private static ContentType _HTML_UTF8       = new ContentType("text/html")               { CharSet = "UTF-8" };
+        private static ContentType _GEXF_UTF8       = new ContentType("application/gexf")        { CharSet = "UTF-8" };
 
         private static ContentType _CSS             = new ContentType("text/css");
         private static ContentType _GIF             = new ContentType("image/gif");
@@ -123,17 +125,7 @@ namespace sones.GraphDS.Connectors.REST
         #endregion
 
 
-        #region GetWADL()
-
-        /// <summary>
-        /// Get the WADL describtion of this service
-        /// </summary>
-        public void GetWADL()
-        {
-            GetResources("GraphDSREST.wadl");
-        }
-
-        #endregion
+        #region Applications
 
         #region GetWebShell()
 
@@ -142,121 +134,26 @@ namespace sones.GraphDS.Connectors.REST
         /// </summary>
         public void GetWebShell()
         {
-            GetResources("WebShell.html");
+            GetResources("WebShell/WebShell.html");
         }
 
         #endregion
 
-        #region GetResources(myResource)
+        #region GetVisualGraph()
 
         /// <summary>
-        /// Returns resources embedded within the assembly to the user!
+        /// Send the VisualGraph HTML to the user!
         /// </summary>
-        /// <param name="myResource">The path and name </param>
-        /// <returns>an embedded resource or an error page</returns>
-        public void GetResources(String myResource)
+        public void GetVisualGraph()
         {
-
-            #region Data
-
-            var _Assembly  = Assembly.GetExecutingAssembly();
-            var _Resources = _Assembly.GetManifestResourceNames();
-            Stream _Content = null;
-
-            if (myResource.Contains("/"))
-                myResource = myResource.Replace('/', '.');
-
-            #endregion
-
-            #region Return assembly resource...
-
-            var _Header = HTTPServer.HTTPContext.ResponseHeader;
-
-            if (_Resources.Contains("GraphDSREST.WebShell." + myResource))
-            {
-
-                
-                _Content = _Assembly.GetManifestResourceStream("GraphDSREST.WebShell." + myResource);
-
-                #region Set the content type - WCF
-
-                if (WebOperationContext.Current != null)
-                {
-
-                    var _FileNameSuffix = myResource.Remove(0, myResource.LastIndexOf(".") + 1);
-
-                    switch (_FileNameSuffix)
-                    {
-                        case "css": WebOperationContext.Current.OutgoingResponse.ContentType = "text/css";  break;
-                        case "gif": WebOperationContext.Current.OutgoingResponse.ContentType = "image/gif"; break;
-                        default:    WebOperationContext.Current.OutgoingResponse.ContentType = "text/html"; break;
-                    }
-
-                }
-
-                #endregion
-
-                #region Set the content type - sones REST
-
-                if (HTTPServer.HTTPContext != null)
-                {
-
-                    var _FileNameSuffix = myResource.Remove(0, myResource.LastIndexOf(".") + 1);
-
-                    switch (_FileNameSuffix)
-                    {
-                        case "css": _Header.ContentType = _CSS;  break;
-                        case "gif": _Header.ContentType = _GIF; break;
-                        case "ico": _Header.ContentType = _ICO; break;
-                        default:    _Header.ContentType = _HTML; break;
-                    }
-
-                }
-
-                #endregion
-
-                _Header.HttpStatusCode = HTTPStatusCodes.OK;
-                _Header.CacheControl   = "no-cache";
-                _Header.ServerName     = _ServerID;
-                _Header.ContentLength  = (UInt64) _Content.Length;
-
-                HTTPServer.HTTPContext.WriteToResponseStream(_Header.ToBytes());
-                HTTPServer.HTTPContext.WriteToResponseStream(_Content);
-
-                return;
-
-            }
-
-            #endregion
-
-            #region ...or send custom Error 404 page!
-
-            else
-            {
-
-                _Content = _Assembly.GetManifestResourceStream("GraphDSREST.WebShell.Error404.html");
-
-                if (_Content == null)
-                    _Content = new MemoryStream(UTF8Encoding.UTF8.GetBytes("Error 404 - File not found!"));
-
-                _Header.HttpStatusCode = HTTPStatusCodes.NotFound;
-                _Header.CacheControl   = "no-cache";
-                _Header.ServerName     = _ServerID;
-                _Header.ContentType    = _HTML;
-                _Header.ContentLength  = (UInt64) _Content.Length;
-
-                HTTPServer.HTTPContext.WriteToResponseStream(_Header.ToBytes());
-                HTTPServer.HTTPContext.WriteToResponseStream(_Content);
-
-            }
-
-            #endregion
-
+            GetResources("VisualGraph/VisualGraph.html");
         }
 
         #endregion
 
+        #endregion
 
+        #region Queries
 
         #region ExecuteGQLQuery()
 
@@ -384,7 +281,7 @@ namespace sones.GraphDS.Connectors.REST
                     var Logging = PrintErrorToString(_QueryResult.ResultType, _QueryResult.Errors);
                     ConsoleOutputLogger.WriteLine_NotIntoLogfile(Logging);
 
-                    var _ContentType = HTTPServer.HTTPContext.RequestHeader.GetBestMatchingAcceptHeader(_HTML, _JSON, _XML, _TEXT);
+                    var _ContentType = HTTPServer.HTTPContext.RequestHeader.GetBestMatchingAcceptHeader(_HTML, _JSON, _XML, _GEXF, _TEXT);
 
                     _QueryResult.Duration = (UInt64) _StopWatch.ElapsedMilliseconds;
 
@@ -467,6 +364,32 @@ namespace sones.GraphDS.Connectors.REST
 
                     #endregion
 
+                    #region application/gexf
+
+                    else if (_ContentType.MediaType == _GEXF.MediaType)
+                    {
+
+                        var _GEXFExport = new GEXF_IO();
+
+                        var content = Encoding.UTF8.GetBytes(_GEXFExport.ExportString(_QueryResult));
+                        var _Header = HTTPServer.HTTPContext.ResponseHeader;
+
+                        _Header.HttpStatusCode  = HTTPStatusCodes.OK;
+                        _Header.CacheControl    = "no-cache";
+                        _Header.ServerName      = _ServerID;
+                        _Header.ContentLength   = content.ULongLength();
+                        _Header.ContentType     = _GEXFExport.ExportContentType;
+
+                        var HeaderBytes = _Header.ToBytes();
+                        HTTPServer.HTTPContext.WriteToResponseStream(HeaderBytes, 0, HeaderBytes.Length);
+                        HTTPServer.HTTPContext.WriteToResponseStream(content, 0, content.Length);
+
+                        return;
+
+                    }
+
+                    #endregion
+
                     #region text/plain
 
                     else if (_ContentType.MediaType == _TEXT.MediaType)
@@ -533,6 +456,105 @@ namespace sones.GraphDS.Connectors.REST
 
         #endregion
 
+        #region ExecuteCLIQuery()
+
+        public void ExecuteCLIQuery()
+        {
+
+            try
+            {
+
+                #region Check settings
+
+                var _GraphDBREST_Settings = new GraphDSREST_Settings();
+
+                if (!checkAuthentication(_GraphDBREST_Settings))
+                    throw new NotImplementedException("TODO implement: error handling checkAuth...");
+
+                #endregion
+
+                else
+                {
+
+
+                    if (HTTPServer.HTTPContext.RequestHeader.QueryString == null)
+                    {
+                        Error400_BadRequest("[Syntax Error] Please use '...cli?query'!");
+                        return;
+                    }
+
+                    var _QueryString = HTTPServer.HTTPContext.RequestHeader.QueryString[null];
+                    if (_QueryString == null)
+                    {
+                        Error400_BadRequest("[Syntax Error] Please use '...cli?query'!");
+                        return;
+                    }
+
+                    var _CLIQuery = HttpUtility.UrlDecode(_QueryString);
+
+
+
+                    if (HTTPServer.HTTPContext != null)
+                        HTTPServer.HTTPContext.ResponseHeader.ContentType = new ContentType("text/plain");
+
+                    #region Start a PandoraCLI // Please refactor me!
+
+                    sonesCLI _PandoraCLI;
+
+                    if (_GraphDBREST_Settings.Username == null)
+                        _GraphDBREST_Settings.Username = "";
+
+                    if (!_SessionSonesCLIs.ContainsKey(_GraphDBREST_Settings.Username))
+                    {
+                        _MemoryStream = new MemoryStream();
+                        _PandoraCLI = new sonesCLI(_IGraphDBSession, _IGraphFSSession, _IGraphDBSession.DatabaseRootPath, _MemoryStream, CLI_Output.Standard, typeof(AllCLICommands));
+                        _SessionSonesCLIs.Add(_GraphDBREST_Settings.Username, _PandoraCLI);
+                    }
+
+                    else
+                    {
+                        _PandoraCLI = _SessionSonesCLIs[_GraphDBREST_Settings.Username];
+                        _MemoryStream = new MemoryStream();
+                        _PandoraCLI.StreamWriter = new StreamWriter(_MemoryStream);
+                    }
+
+                    var sw = new Stopwatch();
+
+                    _PandoraCLI.ReadAndExecuteCommand(_CLIQuery);
+                    _MemoryStream.Seek(0, SeekOrigin.Begin);
+
+                    var _Header = HTTPServer.HTTPContext.ResponseHeader;
+
+                    _Header.HttpStatusCode = HTTPStatusCodes.OK;
+                    _Header.CacheControl = "no-cache";
+                    _Header.ServerName = _ServerID;
+                    _Header.ContentLength = _MemoryStream.ULength();
+                    _Header.ContentType = _XML_UTF8;
+
+                    HTTPServer.HTTPContext.WriteToResponseStream(_Header.ToBytes());
+                    HTTPServer.HTTPContext.WriteToResponseStream(_MemoryStream);
+
+                    return;
+
+
+                    #endregion
+
+                }
+
+            }
+
+            catch (Exception ex)
+            {
+                Error400_BadRequest(ex.Message + ex.StackTrace);
+            }
+
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Vertex manipulation
 
         #region StoreObject
 
@@ -643,70 +665,6 @@ namespace sones.GraphDS.Connectors.REST
         #endregion
 
         #region List...
-
-        #region GetHTMLLandingPage()
-
-        public void GetHTMLLandingPage()
-        {
-
-            var _StopWatch = new Stopwatch();
-            _StopWatch.Start();
-
-
-                var _String = HTML_IO_Extensions.HTMLBuilder(_IGraphDBSession.DatabaseRootPath, _StringBuilder =>
-                {
-
-                    _StringBuilder.Append("<p><a href=\"/WebShell\">WebShell</a></p><br /><br />");
-
-                    _IGraphFSSession.GetFilteredDirectoryListing(new ObjectLocation(_IGraphDBSession.DatabaseRootPath), null, null, null, new List<String>() {DBConstants.DBTYPESTREAM}, null, null, null, null ,null ,null).
-
-                    #region FailedAction...
-
-                        FailedAction<IEnumerable<String>>(e =>
-                                {
-
-                                    _StringBuilder.Append("ERROR");
-
-                                }).
-
-                    #endregion
-
-                    #region SuccessAction...
-
-                        SuccessAction<IEnumerable<String>>(e =>
-                                {
-
-                                    foreach (var _result in e.Value)
-                                    {
-                                        _StringBuilder.Append("<p><a href=\"/objects/").Append(_result).Append("/\">").Append(_result).Append("</a></p>");
-                                    }
-                                });
-
-                    #endregion
-
-                    _StringBuilder.Append("<b>Duration:</b>").Append(_StopWatch.ElapsedMilliseconds).Append(" ms<br />");
-
-                });
-
-
-                var content = Encoding.UTF8.GetBytes(_String);
-                var _Header = HTTPServer.HTTPContext.ResponseHeader;
-
-                _Header.HttpStatusCode  = HTTPStatusCodes.OK;
-                _Header.CacheControl    = "no-cache";
-                _Header.ServerName      = _ServerID;
-                _Header.ContentLength   = content.ULongLength();
-                _Header.ContentType     = _HTML_UTF8;
-
-                var HeaderBytes = _Header.ToBytes();
-                HTTPServer.HTTPContext.WriteToResponseStream(HeaderBytes, 0, HeaderBytes.Length);
-                HTTPServer.HTTPContext.WriteToResponseStream(content, 0, content.Length);
-
-                return;
-
-        }
-
-        #endregion
 
         #region ListObjects(myObjectType)
 
@@ -1238,7 +1196,7 @@ namespace sones.GraphDS.Connectors.REST
             var _Header = HTTPServer.HTTPContext.RequestHeader;
 
 
-            _IGraphFSSession.GetObject<FileObject>(
+            _IGraphFSSession.GetFSObject<FileObject>(
                                  new ObjectLocation(_IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName),
                                  myObjectStream, myObjectEdition, _RevisionID, 0, false).
 
@@ -1330,7 +1288,7 @@ namespace sones.GraphDS.Connectors.REST
             var _Body   = HTTPServer.HTTPContext.RequestBody;
             var _Header = HTTPServer.HTTPContext.RequestHeader;
 
-            _IGraphFSSession.RemoveObject(
+            _IGraphFSSession.RemoveFSObject(
                                 new ObjectLocation(_IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName),
                                 myObjectStream, myObjectEdition, _RevisionID).
 
@@ -1372,99 +1330,187 @@ namespace sones.GraphDS.Connectors.REST
 
         #endregion
 
+        #endregion
 
-        #region ExecuteCLIQuery()
+        #region Utilities
 
-        public void ExecuteCLIQuery()
+        #region GetResources(myResource)
+
+        /// <summary>
+        /// Returns resources embedded within the assembly to the user!
+        /// </summary>
+        /// <param name="myResource">The path and name </param>
+        /// <returns>an embedded resource or an error page</returns>
+        public void GetResources(String myResource)
         {
 
-            try
+            #region Data
+
+            var _Assembly = Assembly.GetExecutingAssembly();
+            var _Resources = _Assembly.GetManifestResourceNames();
+            Stream _Content = null;
+
+            if (myResource.Contains("/"))
+                myResource = myResource.Replace('/', '.');
+
+            #endregion
+
+            #region Return assembly resource...
+
+            var _ContentType = HTTPServer.HTTPContext.RequestHeader.GetBestMatchingAcceptHeader(_GEXF);
+            var _Header = HTTPServer.HTTPContext.ResponseHeader;
+
+            if (_Resources.Contains("GraphDSREST.resources." + myResource))
             {
 
-                #region Check settings
 
-                var _GraphDBREST_Settings = new GraphDSREST_Settings();
+                _Content = _Assembly.GetManifestResourceStream("GraphDSREST.resources." + myResource);
 
-                if (!checkAuthentication(_GraphDBREST_Settings))
-                    throw new NotImplementedException("TODO implement: error handling checkAuth...");
+                #region Set the content type - sones REST
 
-                #endregion
-
-                else
+                if (HTTPServer.HTTPContext != null)
                 {
 
+                    var _FileNameSuffix = myResource.Remove(0, myResource.LastIndexOf(".") + 1);
 
-                    if (HTTPServer.HTTPContext.RequestHeader.QueryString == null)
+                    switch (_FileNameSuffix)
                     {
-                        Error400_BadRequest("[Syntax Error] Please use '...cli?query'!");
-                        return;
+                        case "htm": _Header.ContentType = _HTML_UTF8; break;
+                        case "html": _Header.ContentType = _HTML_UTF8; break;
+                        case "css": _Header.ContentType = _CSS; break;
+                        case "gif": _Header.ContentType = _GIF; break;
+                        case "ico": _Header.ContentType = _ICO; break;
+                        case "swf": _Header.ContentType = new ContentType("application/x-shockwave-flash"); break;
+                        case "js": _Header.ContentType = new ContentType("text/javascript"); break;
+                        default: _Header.ContentType = _TEXT_UTF8; break;
                     }
-
-                    var _QueryString = HTTPServer.HTTPContext.RequestHeader.QueryString[null];
-                    if (_QueryString == null)
-                    {
-                        Error400_BadRequest("[Syntax Error] Please use '...cli?query'!");
-                        return;
-                    }
-
-                    var _CLIQuery = HttpUtility.UrlDecode(_QueryString);
-
-
-
-                    if (HTTPServer.HTTPContext != null)
-                        HTTPServer.HTTPContext.ResponseHeader.ContentType = new ContentType("text/plain");
-
-                    #region Start a PandoraCLI // Please refactor me!
-
-                    sonesCLI _PandoraCLI;
-
-                    if (_GraphDBREST_Settings.Username == null)
-                        _GraphDBREST_Settings.Username = "";
-
-                    if (!_SessionSonesCLIs.ContainsKey(_GraphDBREST_Settings.Username))
-                    {
-                        _MemoryStream   = new MemoryStream();
-                        _PandoraCLI     = new sonesCLI(_IGraphDBSession, _IGraphFSSession, _IGraphDBSession.DatabaseRootPath, _MemoryStream, CLI_Output.Standard, typeof(AllCLICommands));
-                        _SessionSonesCLIs.Add(_GraphDBREST_Settings.Username, _PandoraCLI);
-                    }
-
-                    else
-                    {
-                        _PandoraCLI     = _SessionSonesCLIs[_GraphDBREST_Settings.Username];
-                        _MemoryStream   = new MemoryStream();
-                        _PandoraCLI.StreamWriter = new StreamWriter(_MemoryStream);
-                    }
-
-                    var sw = new Stopwatch();
-
-                    _PandoraCLI.ReadAndExecuteCommand(_CLIQuery);
-                    _MemoryStream.Seek(0, SeekOrigin.Begin);
-
-                    var _Header = HTTPServer.HTTPContext.ResponseHeader;
-
-                    _Header.HttpStatusCode  = HTTPStatusCodes.OK;
-                    _Header.CacheControl    = "no-cache";
-                    _Header.ServerName      = _ServerID;
-                    _Header.ContentLength   = _MemoryStream.ULength();
-                    _Header.ContentType     = _XML_UTF8;
-
-                    HTTPServer.HTTPContext.WriteToResponseStream(_Header.ToBytes());
-                    HTTPServer.HTTPContext.WriteToResponseStream(_MemoryStream);
-
-                    return;
-
-
-                    #endregion
 
                 }
 
+                #endregion
+
+                _Header.HttpStatusCode = HTTPStatusCodes.OK;
+                _Header.CacheControl = "no-cache";
+                _Header.ServerName = _ServerID;
+                _Header.ContentLength = (UInt64)_Content.Length;
+
+                HTTPServer.HTTPContext.WriteToResponseStream(_Header.ToBytes());
+                HTTPServer.HTTPContext.WriteToResponseStream(_Content);
+
+                return;
+
             }
 
-            catch (Exception ex)
+            #endregion
+
+            #region ...or send custom Error 404 page!
+
+            else
             {
-                Error400_BadRequest(ex.Message + ex.StackTrace);
+
+                _Content = _Assembly.GetManifestResourceStream("GraphDSREST.resources.errorpages.Error404.html");
+
+                if (_Content == null)
+                    _Content = new MemoryStream(UTF8Encoding.UTF8.GetBytes("Error 404 - File not found!"));
+
+                _Header.HttpStatusCode = HTTPStatusCodes.NotFound;
+                _Header.CacheControl = "no-cache";
+                _Header.ServerName = _ServerID;
+                _Header.ContentType = _HTML;
+                _Header.ContentLength = (UInt64)_Content.Length;
+
+                HTTPServer.HTTPContext.WriteToResponseStream(_Header.ToBytes());
+                HTTPServer.HTTPContext.WriteToResponseStream(_Content);
+
             }
 
+            #endregion
+
+        }
+
+        #endregion
+
+        #region GetHTMLLandingPage()
+
+        public void GetHTMLLandingPage()
+        {
+
+            var _StopWatch = new Stopwatch();
+            _StopWatch.Start();
+
+
+                var _String = HTML_IO_Extensions.HTMLBuilder(_IGraphDBSession.DatabaseRootPath, _StringBuilder =>
+                {
+
+                    _StringBuilder.Append("<p><a href=\"/WebShell\">WebShell</a></p><br /><br />");
+
+                    _IGraphFSSession.GetFilteredDirectoryListing(new ObjectLocation(_IGraphDBSession.DatabaseRootPath), null, null, null, new List<String>() {DBConstants.DBTYPESTREAM}, null, null, null, null ,null ,null).
+
+                    #region FailedAction...
+
+                        FailedAction<IEnumerable<String>>(e =>
+                                {
+
+                                    _StringBuilder.Append("ERROR");
+
+                                }).
+
+                    #endregion
+
+                    #region SuccessAction...
+
+                        SuccessAction<IEnumerable<String>>(e =>
+                                {
+
+                                    foreach (var _result in e.Value)
+                                    {
+                                        _StringBuilder.Append("<p><a href=\"/objects/").Append(_result).Append("/\">").Append(_result).Append("</a></p>");
+                                    }
+                                });
+
+                    #endregion
+
+                    _StringBuilder.Append("<b>Duration:</b>").Append(_StopWatch.ElapsedMilliseconds).Append(" ms<br />");
+
+                });
+
+
+                var content = Encoding.UTF8.GetBytes(_String);
+                var _Header = HTTPServer.HTTPContext.ResponseHeader;
+
+                _Header.HttpStatusCode  = HTTPStatusCodes.OK;
+                _Header.CacheControl    = "no-cache";
+                _Header.ServerName      = _ServerID;
+                _Header.ContentLength   = content.ULongLength();
+                _Header.ContentType     = _HTML_UTF8;
+
+                var HeaderBytes = _Header.ToBytes();
+                HTTPServer.HTTPContext.WriteToResponseStream(HeaderBytes, 0, HeaderBytes.Length);
+                HTTPServer.HTTPContext.WriteToResponseStream(content, 0, content.Length);
+
+                return;
+
+        }
+
+        #endregion
+
+        #region GetWADL()
+
+        /// <summary>
+        /// Get the WADL description of this service
+        /// </summary>
+        public void GetWADL()
+        {
+            GetResources("GraphDSREST.wadl");
+        }
+
+        #endregion
+
+        #region GetFavicon()
+
+        public void GetFavicon()
+        {
+            GetResources("favicon.ico");
         }
 
         #endregion
@@ -1505,10 +1551,12 @@ namespace sones.GraphDS.Connectors.REST
             else if (HTTPServer.HTTPContext != null)
             {
                 HTTPServer.HTTPContext.ResponseHeader.ContentType = new System.Net.Mime.ContentType("text/plain");
-            } 
-            
+            }
+
             return new MemoryStream(Encoding.UTF8.GetBytes(new DiscordianDate().ToString()));
         }
+
+        #endregion
 
         #endregion
 
@@ -1522,6 +1570,27 @@ namespace sones.GraphDS.Connectors.REST
 
             var _Header  = HTTPServer.HTTPContext.ResponseHeader;
             var _Content = Encoding.UTF8.GetBytes("Error 400 - Bad Request : " + myErrorMessage);
+
+            _Header.HttpStatusCode  = HTTPStatusCodes.BadRequest;
+            _Header.CacheControl    = "no-cache";
+            _Header.ServerName      = _ServerID;
+            _Header.ContentLength   = _Content.ULongLength();
+            _Header.ContentType     = _TEXT_UTF8;
+
+            HTTPServer.HTTPContext.WriteToResponseStream(_Header.ToBytes());
+            HTTPServer.HTTPContext.WriteToResponseStream(_Content);
+
+        }
+
+        #endregion
+
+        #region (private) QueryFailed(myErrorMessage)
+
+        private void Error400_QueryFailed(String myErrorMessage)
+        {
+
+            var _Header  = HTTPServer.HTTPContext.ResponseHeader;
+            var _Content = Encoding.UTF8.GetBytes("Error 400 - Query Failed : " + myErrorMessage);
 
             _Header.HttpStatusCode  = HTTPStatusCodes.BadRequest;
             _Header.CacheControl    = "no-cache";
@@ -1623,17 +1692,6 @@ namespace sones.GraphDS.Connectors.REST
 
         #endregion
 
-
-        #region IGraphDSREST_Service Members
-
-        public void GetFavicon()
-        {
-
-            GetResources("favicon.ico");
-
-        }
-
-        #endregion
     }
 
 }

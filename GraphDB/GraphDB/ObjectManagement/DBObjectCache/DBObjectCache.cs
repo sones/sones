@@ -74,9 +74,14 @@ namespace sones.GraphDB.ObjectManagement
         long _currentElements;
 
         /// <summary>
-        /// Payload
+        /// DBObjectStreams
         /// </summary>
-        Dictionary<TypeUUID, ConcurrentDictionary<ObjectUUID, StefanTuple<DBObjectStream, BackwardEdgeStream>>> _cachedItems;
+        Dictionary<TypeUUID, ConcurrentDictionary<ObjectUUID, WeakReference>> _cachedDBObjectStreams;
+
+        /// <summary>
+        /// BackwardEdges
+        /// </summary>
+        Dictionary<TypeUUID, ConcurrentDictionary<ObjectUUID, WeakReference>> _cachedBackwardEdges;
 
         DBObjectManager _DBObjectManager;
 
@@ -88,7 +93,8 @@ namespace sones.GraphDB.ObjectManagement
         {
             _typeManager = myTypeManager;
             _DBObjectManager = objectManager;
-            _cachedItems = new Dictionary<TypeUUID, ConcurrentDictionary<ObjectUUID, StefanTuple<DBObjectStream, BackwardEdgeStream>>>();
+            _cachedDBObjectStreams = new Dictionary<TypeUUID, ConcurrentDictionary<ObjectUUID, WeakReference>>();
+            _cachedBackwardEdges = new Dictionary<TypeUUID, ConcurrentDictionary<ObjectUUID, WeakReference>>();
             _maxElements = myMaxElements;
             _currentElements = 0;
         }
@@ -118,29 +124,23 @@ namespace sones.GraphDB.ObjectManagement
         /// <returns>A DBObject.</returns>
         public Exceptional<DBObjectStream> LoadDBObjectStream(GraphDBType myType, ObjectUUID myObjectUUID)
         {
-            #region data
-
-            Exceptional<DBObjectStream> tempResult = null;
-
-            #endregion
-
-            ConcurrentDictionary<ObjectUUID, StefanTuple<DBObjectStream, BackwardEdgeStream>> items = null;
-            lock (_cachedItems)
+            ConcurrentDictionary<ObjectUUID, WeakReference> items = null;
+            lock (_cachedDBObjectStreams)
             {
-                if (!_cachedItems.ContainsKey(myType.UUID))
+                if (!_cachedDBObjectStreams.ContainsKey(myType.UUID))
                 {
-                    _cachedItems.Add(myType.UUID, new ConcurrentDictionary<ObjectUUID, StefanTuple<DBObjectStream, BackwardEdgeStream>>());
+                    _cachedDBObjectStreams.Add(myType.UUID, new ConcurrentDictionary<ObjectUUID, WeakReference>());
                 }
-                items = _cachedItems[myType.UUID];
+                items = _cachedDBObjectStreams[myType.UUID];
             }
 
             try
             {
                 if (_currentElements > _maxElements)
                 {
-                    if (items.ContainsKey(myObjectUUID) && (items[myObjectUUID].Item1 != null))
+                    if (items.ContainsKey(myObjectUUID))
                     {
-                        return new Exceptional<DBObjectStream>(items[myObjectUUID].Item1);
+                        return GetDBObjectStreamViaWeakReference(myObjectUUID, myType, items[myObjectUUID]);
                     }
                     else
                     {
@@ -152,40 +152,22 @@ namespace sones.GraphDB.ObjectManagement
                 {
                     #region items can be added
 
-                    var item = items.AddOrUpdate(myObjectUUID, (uuid) =>
-                    {
-                        //DBObject must be loaded from PandoraFS
-                        tempResult = LoadDBObjectInternal(myType, myObjectUUID);
-
-                        if (tempResult.Failed)
-                        {
-                            throw new GraphDBException(tempResult.Errors);
-                        }
-
-                        Interlocked.Increment(ref _currentElements);
-
-                        return new StefanTuple<DBObjectStream, BackwardEdgeStream>(tempResult.Value, null);
-                    }, (uuid, existingTuple) =>
-                    {
-
-                        if (existingTuple.Item1 == null)
+                    var aWeakReference = items.GetOrAdd(myObjectUUID, (aObjectUUID) =>
                         {
                             //DBObject must be loaded from PandoraFS
-                            tempResult = LoadDBObjectInternal(myType, myObjectUUID);
+                            var tempResult = LoadDBObjectInternal(myType, aObjectUUID);
 
                             if (tempResult.Failed)
                             {
                                 throw new GraphDBException(tempResult.Errors);
                             }
 
-                            existingTuple.Item1 = tempResult.Value;
-                        }
+                            Interlocked.Increment(ref _currentElements);
 
-                        return existingTuple;
+                            return new WeakReference(tempResult);
+                        });
 
-                    });
-
-                    return new Exceptional<DBObjectStream>(item.Item1);
+                    return GetDBObjectStreamViaWeakReference(myObjectUUID, myType, aWeakReference);
 
                     #endregion
                 }
@@ -199,12 +181,12 @@ namespace sones.GraphDB.ObjectManagement
         /// <summary>
         /// Loads an Enumaration of DBObjects (if possible from internal cache structure).
         /// </summary>
-        /// <param name="myType">The Type of the DBObjects as TypeUUID.</param>
+        /// <param name="myTypeUUID">The Type of the DBObjects as TypeUUID.</param>
         /// <param name="myListOfObjectUUID">The list of ObjectsUUIDs.</param>
         /// <returns>An Enumeratiuon of DBObjects.</returns>
-        public IEnumerable<Exceptional<DBObjectStream>> LoadListOfDBObjectStreams(TypeUUID myType, IEnumerable<ObjectUUID> myListOfObjectUUID)
+        public IEnumerable<Exceptional<DBObjectStream>> LoadListOfDBObjectStreams(TypeUUID myTypeUUID, IEnumerable<ObjectUUID> myListOfObjectUUID)
         {
-            return LoadListOfDBObjectStreams(_typeManager.GetTypeByUUID(myType), myListOfObjectUUID);
+            return LoadListOfDBObjectStreams(_typeManager.GetTypeByUUID(myTypeUUID), myListOfObjectUUID);
         }
 
         /// <summary>
@@ -227,7 +209,7 @@ namespace sones.GraphDB.ObjectManagement
 
         public IEnumerable<Exceptional<DBObjectStream>> SelectDBObjectsForLevelKey(LevelKey myLevelKey, DBContext dbContext)
         {
-            GraphDBType typeOfDBObjects;
+            GraphDBType typeOfDBObjects = null;
 
             if (myLevelKey.Level == 0)
             {
@@ -235,13 +217,10 @@ namespace sones.GraphDB.ObjectManagement
 
                 if (!typeOfDBObjects.IsAbstract)
                 {
-                    var idxRef = typeOfDBObjects.GetUUIDIndex(dbContext.DBTypeManager).GetIndexReference(dbContext.DBIndexManager);
-                    if (!idxRef.Success)
-                    {
-                        throw new GraphDBException(idxRef.Errors);
-                    }
+                    var idx = typeOfDBObjects.GetUUIDIndex(dbContext.DBTypeManager);
+                    var currentIndexType = dbContext.DBTypeManager.GetTypeByUUID(idx.IndexRelatedTypeUUID);
 
-                    foreach (var aDBO in LoadListOfDBObjectStreams(typeOfDBObjects, idxRef.Value.GetValues()))
+                    foreach (var aDBO in LoadListOfDBObjectStreams(typeOfDBObjects, idx.GetAllUUIDs(currentIndexType, dbContext)))
                     {
                         yield return aDBO;
                     }
@@ -250,13 +229,10 @@ namespace sones.GraphDB.ObjectManagement
                 {
                     foreach (var aType in _typeManager.GetAllSubtypes(typeOfDBObjects, false))
                     {
-                        var idxRef = aType.GetUUIDIndex(dbContext.DBTypeManager).GetIndexReference(dbContext.DBIndexManager);
-                        if (!idxRef.Success)
-                        {
-                            throw new GraphDBException(idxRef.Errors);
-                        }
+                        var idx = aType.GetUUIDIndex(dbContext.DBTypeManager);
+                        var currentIndexType = dbContext.DBTypeManager.GetTypeByUUID(idx.IndexRelatedTypeUUID);
 
-                        foreach (var aDBO in LoadListOfDBObjectStreams(aType, idxRef.Value.GetValues()))
+                        foreach (var aDBO in LoadListOfDBObjectStreams(aType, idx.GetAllUUIDs(currentIndexType, dbContext)))
                         {
                             yield return aDBO;
                         }
@@ -305,13 +281,10 @@ namespace sones.GraphDB.ObjectManagement
 
                 #region yield dbos
 
-                var idxRef = typeOfDBObjects.GetUUIDIndex(dbContext.DBTypeManager).GetIndexReference(dbContext.DBIndexManager);
-                if (!idxRef.Success)
-                {
-                    throw new GraphDBException(idxRef.Errors);
-                }
+                var idx = typeOfDBObjects.GetUUIDIndex(dbContext.DBTypeManager);
+                var currentIndexType = dbContext.DBTypeManager.GetTypeByUUID(idx.IndexRelatedTypeUUID);
 
-                foreach (var aDBO in LoadListOfDBObjectStreams(typeOfDBObjects, idxRef.Value.GetValues()))
+                foreach (var aDBO in LoadListOfDBObjectStreams(typeOfDBObjects, idx.GetAllUUIDs(currentIndexType, dbContext)))
                 {
                     if (IsValidDBObjectForLevelKey(aDBO, myLevelKey, typeOfDBObjects))
                     {
@@ -323,127 +296,6 @@ namespace sones.GraphDB.ObjectManagement
             yield break;
 
                 #endregion
-        }
-
-        private IEnumerable<Exceptional<DBObjectStream>> GetReferenceObjects(DBObjectStream myStartingDBObject, TypeAttribute interestingAttributeEdge, GraphDBType myStartingDBObjectType, DBTypeManager myDBTypeManager)
-        {
-            if (interestingAttributeEdge.GetDBType(myDBTypeManager).IsUserDefined || interestingAttributeEdge.IsBackwardEdge)
-            {
-                switch (interestingAttributeEdge.KindOfType)
-                {
-                    case KindsOfType.SingleReference:
-
-                        yield return LoadDBObjectStream(interestingAttributeEdge.GetDBType(myDBTypeManager), ((ASingleReferenceEdgeType)myStartingDBObject.GetAttribute(interestingAttributeEdge.UUID)).GetUUID());
-
-                        break;
-
-                    case KindsOfType.SetOfReferences:
-
-                        if (interestingAttributeEdge.IsBackwardEdge)
-                        {
-                            //get backwardEdge
-                            var beStream = LoadDBBackwardEdgeStream(myStartingDBObjectType, myStartingDBObject.ObjectUUID);
-
-                            if (beStream.Failed)
-                            {
-                                throw new GraphDBException(new Error_ExpressionGraphInternal(null, String.Format("Error while trying to get BackwardEdge of the DBObject: \"{0}\"", myStartingDBObject.ToString())));
-                            }
-
-                            if (beStream.Value.ContainsBackwardEdge(interestingAttributeEdge.BackwardEdgeDefinition))
-                            {
-                                foreach (var aBackwardEdgeObject in LoadListOfDBObjectStreams(interestingAttributeEdge.BackwardEdgeDefinition.TypeUUID, beStream.Value.GetBackwardEdgeUUIDs(interestingAttributeEdge.BackwardEdgeDefinition)))
-                                {
-                                    yield return aBackwardEdgeObject;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            foreach (var aDBOStream in LoadListOfDBObjectStreams(interestingAttributeEdge.GetDBType(myDBTypeManager), ((ASetReferenceEdgeType)myStartingDBObject.GetAttribute(interestingAttributeEdge.UUID)).GetAllUUIDs()))
-                            {
-                                yield return aDBOStream;
-                            }
-                        }
-
-                        break;
-
-                    case KindsOfType.SetOfNoneReferences:
-                    case KindsOfType.ListOfNoneReferences:
-                    default:
-                        throw new GraphDBException(new Error_ExpressionGraphInternal(new System.Diagnostics.StackTrace(true), String.Format("The attribute \"{0}\" has an invalid KindOfType \"{1}\"!", interestingAttributeEdge.Name, interestingAttributeEdge.KindOfType.ToString())));
-                }
-            }
-            else
-            {
-                throw new GraphDBException(new Error_ExpressionGraphInternal(new System.Diagnostics.StackTrace(true), String.Format("The attribute \"{0}\" is no reference attribute.", interestingAttributeEdge.Name)));
-            }
-
-            yield break;
-        }
-
-        private bool IsValidDBObjectForLevelKey(Exceptional<DBObjectStream> aDBO, LevelKey myLevelKey, GraphDBType typeOfDBO)
-        {
-            if (myLevelKey.Level == 0)
-            {
-                return true;
-            }
-            else
-            {
-                Boolean isValidDBO = false;
-
-                EdgeKey backwardEdgeKey = myLevelKey.LastEdge;
-                TypeAttribute currentAttribute = _typeManager.GetTypeByUUID(backwardEdgeKey.TypeUUID).GetTypeAttributeByUUID(backwardEdgeKey.AttrUUID);
-                IEnumerable<Exceptional<DBObjectStream>> dbobjects = null;
-                GraphDBType typeOfBackwardDBOs = null;
-
-                if (currentAttribute.IsBackwardEdge)
-                {
-                    backwardEdgeKey = currentAttribute.BackwardEdgeDefinition;
-
-                    currentAttribute = _typeManager.GetTypeByUUID(backwardEdgeKey.TypeUUID).GetTypeAttributeByUUID(backwardEdgeKey.AttrUUID);
-
-                    typeOfBackwardDBOs = currentAttribute.GetDBType(_typeManager);
-
-                    if (aDBO.Value.HasAttribute(backwardEdgeKey.AttrUUID, typeOfDBO, null))
-                    {
-                        dbobjects = GetReferenceObjects(aDBO.Value, currentAttribute, typeOfDBO, _typeManager);
-                    }
-                }
-                else
-                {
-                    BackwardEdgeStream beStreamOfDBO = LoadDBBackwardEdgeStream(typeOfDBO, aDBO.Value.ObjectUUID).Value;
-
-                    typeOfBackwardDBOs = _typeManager.GetTypeByUUID(backwardEdgeKey.TypeUUID);
-
-                    if (beStreamOfDBO.ContainsBackwardEdge(backwardEdgeKey))
-                    {
-                        dbobjects = LoadListOfDBObjectStreams(typeOfBackwardDBOs, beStreamOfDBO.GetBackwardEdgeUUIDs(backwardEdgeKey));
-                    }
-                }
-
-                if (dbobjects != null)
-                {
-                    LevelKey myLevelKeyPred = myLevelKey.GetPredecessorLevel();
-
-                    foreach (var aBackwardDBO in dbobjects)
-                    {
-                        if (aBackwardDBO.Success)
-                        {
-                            if (IsValidDBObjectForLevelKey(aBackwardDBO, myLevelKeyPred, typeOfBackwardDBOs))
-                            {
-                                isValidDBO = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    return false;
-                }
-
-                return isValidDBO;
-            }
         }
 
         #endregion
@@ -458,30 +310,23 @@ namespace sones.GraphDB.ObjectManagement
         /// <returns>A BackwardEdge</returns>
         public Exceptional<BackwardEdgeStream> LoadDBBackwardEdgeStream(GraphDBType myType, ObjectUUID myObjectUUID)
         {
-            #region data
-
-            Exceptional<BackwardEdgeStream> tempResult = null;
-
-            #endregion
-
-
-            ConcurrentDictionary<ObjectUUID, StefanTuple<DBObjectStream, BackwardEdgeStream>> items = null;
-            lock (_cachedItems)
+            ConcurrentDictionary<ObjectUUID, WeakReference> items = null;
+            lock (_cachedBackwardEdges)
             {
-                if (!_cachedItems.ContainsKey(myType.UUID))
+                if (!_cachedBackwardEdges.ContainsKey(myType.UUID))
                 {
-                    _cachedItems.Add(myType.UUID, new ConcurrentDictionary<ObjectUUID, StefanTuple<DBObjectStream, BackwardEdgeStream>>());
+                    _cachedBackwardEdges.Add(myType.UUID, new ConcurrentDictionary<ObjectUUID, WeakReference>());
                 }
-                items = _cachedItems[myType.UUID];
+                items = _cachedBackwardEdges[myType.UUID];
             }
 
             try
             {
                 if (_currentElements > _maxElements)
                 {
-                    if (items.ContainsKey(myObjectUUID) && (items[myObjectUUID].Item2 != null))
+                    if (items.ContainsKey(myObjectUUID))
                     {
-                        return new Exceptional<BackwardEdgeStream>(items[myObjectUUID].Item2);
+                        return GetBackwardEdgeStreamViaWeakReference(myObjectUUID, myType, items[myObjectUUID]);
                     }
                     else
                     {
@@ -491,10 +336,10 @@ namespace sones.GraphDB.ObjectManagement
                 }
                 else
                 {
-                    var item = items.AddOrUpdate(myObjectUUID, (uuid) =>
+                    var aWeakReference = items.GetOrAdd(myObjectUUID, (aObjectUUID) =>
                     {
                         //DBObject must be loaded from PandoraFS
-                        tempResult = LoadDBBackwardEdgeInternal(myType, myObjectUUID);
+                        var tempResult = LoadDBBackwardEdgeInternal(myType, aObjectUUID);
 
                         if (tempResult.Failed)
                         {
@@ -503,28 +348,10 @@ namespace sones.GraphDB.ObjectManagement
 
                         Interlocked.Increment(ref _currentElements);
 
-                        return new StefanTuple<DBObjectStream, BackwardEdgeStream>(null, tempResult.Value);
-                    }, (uuid, existingTuple) =>
-                    {
-
-                        if (existingTuple.Item2 == null)
-                        {
-                            //DBObject must be loaded from PandoraFS
-                            tempResult = LoadDBBackwardEdgeInternal(myType, myObjectUUID);
-
-                            if (tempResult.Failed)
-                            {
-                                throw new GraphDBException(tempResult.Errors);
-                            }
-
-                            existingTuple.Item2 = tempResult.Value;
-                        }
-
-                        return existingTuple;
-
+                        return new WeakReference(tempResult);
                     });
 
-                    return new Exceptional<BackwardEdgeStream>(item.Item2);
+                    return GetBackwardEdgeStreamViaWeakReference(myObjectUUID, myType, aWeakReference);
                 }
             }
             catch (GraphDBException ex)
@@ -603,6 +430,18 @@ namespace sones.GraphDB.ObjectManagement
             return tempResult;
         }
 
+        private Exceptional<DBObjectStream> GetDBObjectStreamViaWeakReference(ObjectUUID uuidOfDBObject, GraphDBType typeOfDBObject, WeakReference wrDBObject)
+        {
+            var aDBO = wrDBObject.Target as Exceptional<DBObjectStream>;
+            if (aDBO == null)
+            {
+                // Object was reclaimed, so get it again
+                aDBO = LoadDBObjectInternal(typeOfDBObject, uuidOfDBObject);
+            }
+
+            return aDBO;
+        }
+
         #endregion
 
         #region BackwardEdge
@@ -627,6 +466,143 @@ namespace sones.GraphDB.ObjectManagement
         private Exceptional<BackwardEdgeStream> LoadDBBackwardEdgeInternal(GraphDBType myType, ObjectUUID myObjectUUID)
         {
             return _DBObjectManager.LoadBackwardEdge(new ObjectLocation(myType.ObjectLocation, DBConstants.DBObjectsLocation, myObjectUUID.ToString()));
+        }
+
+        private Exceptional<BackwardEdgeStream> GetBackwardEdgeStreamViaWeakReference(ObjectUUID myObjectUUID, GraphDBType myType, WeakReference weakReference)
+        {
+            var aBackwardEdge = weakReference.Target as Exceptional<BackwardEdgeStream>;
+            if (aBackwardEdge == null)
+            {
+                // Object was reclaimed, so get it again
+                aBackwardEdge = LoadDBBackwardEdgeInternal(myType, myObjectUUID);
+            }
+
+            return aBackwardEdge;
+        }
+
+        #endregion
+
+        #region misc
+
+        private IEnumerable<Exceptional<DBObjectStream>> GetReferenceObjects(DBObjectStream myStartingDBObject, TypeAttribute interestingAttributeEdge, GraphDBType myStartingDBObjectType, DBTypeManager myDBTypeManager)
+        {
+            if (interestingAttributeEdge.GetDBType(myDBTypeManager).IsUserDefined || interestingAttributeEdge.IsBackwardEdge)
+            {
+                switch (interestingAttributeEdge.KindOfType)
+                {
+                    case KindsOfType.SingleReference:
+
+                        yield return LoadDBObjectStream(interestingAttributeEdge.GetDBType(myDBTypeManager), ((ASingleReferenceEdgeType)myStartingDBObject.GetAttribute(interestingAttributeEdge.UUID)).GetUUID());
+
+                        break;
+
+                    case KindsOfType.SetOfReferences:
+
+                        if (interestingAttributeEdge.IsBackwardEdge)
+                        {
+                            //get backwardEdge
+                            var beStream = LoadDBBackwardEdgeStream(myStartingDBObjectType, myStartingDBObject.ObjectUUID);
+
+                            if (beStream.Failed)
+                            {
+                                throw new GraphDBException(new Error_ExpressionGraphInternal(null, String.Format("Error while trying to get BackwardEdge of the DBObject: \"{0}\"", myStartingDBObject.ToString())));
+                            }
+
+                            if (beStream.Value.ContainsBackwardEdge(interestingAttributeEdge.BackwardEdgeDefinition))
+                            {
+                                foreach (var aBackwardEdgeObject in LoadListOfDBObjectStreams(interestingAttributeEdge.BackwardEdgeDefinition.TypeUUID, beStream.Value.GetBackwardEdgeUUIDs(interestingAttributeEdge.BackwardEdgeDefinition)))
+                                {
+                                    yield return aBackwardEdgeObject;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            foreach (var aDBOStream in LoadListOfDBObjectStreams(interestingAttributeEdge.GetDBType(myDBTypeManager), ((ASetReferenceEdgeType)myStartingDBObject.GetAttribute(interestingAttributeEdge.UUID)).GetAllReferenceIDs()))
+                            {
+                                yield return aDBOStream;
+                            }
+                        }
+
+                        break;
+
+                    case KindsOfType.SetOfNoneReferences:
+                    case KindsOfType.ListOfNoneReferences:
+                    default:
+                        throw new GraphDBException(new Error_ExpressionGraphInternal(new System.Diagnostics.StackTrace(true), String.Format("The attribute \"{0}\" has an invalid KindOfType \"{1}\"!", interestingAttributeEdge.Name, interestingAttributeEdge.KindOfType.ToString())));
+                }
+            }
+            else
+            {
+                throw new GraphDBException(new Error_ExpressionGraphInternal(new System.Diagnostics.StackTrace(true), String.Format("The attribute \"{0}\" is no reference attribute.", interestingAttributeEdge.Name)));
+            }
+
+            yield break;
+        }
+
+        private bool IsValidDBObjectForLevelKey(Exceptional<DBObjectStream> aDBO, LevelKey myLevelKey, GraphDBType typeOfDBO)
+        {
+            if (myLevelKey.Level == 0)
+            {
+                return true;
+            }
+            else
+            {
+                Boolean isValidDBO = false;
+
+                EdgeKey backwardEdgeKey = myLevelKey.LastEdge;
+                TypeAttribute currentAttribute = _typeManager.GetTypeByUUID(backwardEdgeKey.TypeUUID).GetTypeAttributeByUUID(backwardEdgeKey.AttrUUID);
+                IEnumerable<Exceptional<DBObjectStream>> dbobjects = null;
+                GraphDBType typeOfBackwardDBOs = null;
+
+                if (currentAttribute.IsBackwardEdge)
+                {
+                    backwardEdgeKey = currentAttribute.BackwardEdgeDefinition;
+
+                    currentAttribute = _typeManager.GetTypeByUUID(backwardEdgeKey.TypeUUID).GetTypeAttributeByUUID(backwardEdgeKey.AttrUUID);
+
+                    typeOfBackwardDBOs = currentAttribute.GetDBType(_typeManager);
+
+                    if (aDBO.Value.HasAttribute(backwardEdgeKey.AttrUUID, typeOfDBO))
+                    {
+                        dbobjects = GetReferenceObjects(aDBO.Value, currentAttribute, typeOfDBO, _typeManager);
+                    }
+                }
+                else
+                {
+                    BackwardEdgeStream beStreamOfDBO = LoadDBBackwardEdgeStream(typeOfDBO, aDBO.Value.ObjectUUID).Value;
+
+                    typeOfBackwardDBOs = _typeManager.GetTypeByUUID(backwardEdgeKey.TypeUUID);
+
+                    if (beStreamOfDBO.ContainsBackwardEdge(backwardEdgeKey))
+                    {
+                        dbobjects = LoadListOfDBObjectStreams(typeOfBackwardDBOs, beStreamOfDBO.GetBackwardEdgeUUIDs(backwardEdgeKey));
+                    }
+                }
+
+                if (dbobjects != null)
+                {
+                    LevelKey myLevelKeyPred = myLevelKey.GetPredecessorLevel(_typeManager);
+
+                    foreach (var aBackwardDBO in dbobjects)
+                    {
+                        if (aBackwardDBO.Success)
+                        {
+                            if (IsValidDBObjectForLevelKey(aBackwardDBO, myLevelKeyPred, typeOfBackwardDBOs))
+                            {
+                                isValidDBO = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+
+                return isValidDBO;
+            }
         }
 
         #endregion

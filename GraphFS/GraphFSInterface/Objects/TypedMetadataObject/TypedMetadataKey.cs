@@ -348,7 +348,7 @@ namespace sones.GraphFS.Objects
                 #endregion
 
                 writer.WriteObject(_Key);
-                writer.WriteObject(_Type);
+                writer.WriteType(_Type);
 
                 isDirty = false;
 
@@ -386,7 +386,7 @@ namespace sones.GraphFS.Objects
             {
 
                 _Key  = (T)    reader.ReadObject();
-                _Type = (Type) reader.ReadObject();
+                _Type = reader.ReadTypeOptimized();
 
             }
 

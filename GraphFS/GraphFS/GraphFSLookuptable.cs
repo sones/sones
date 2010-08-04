@@ -43,56 +43,21 @@ namespace sones.GraphFS
 
         #region Data
 
-        //private Dictionary<ObjectLocation, ObjectLocator>   _ObjectLocatorLookuptable;
-        //private Dictionary<CacheUUID, APandoraObject>       _APandoraObjectLookuptable;
-        private Dictionary<ObjectLocation, String>          _SymlinkLookuptable;
-        private Dictionary<ObjectLocation, IGraphFS>        _ChildFSLookuptable;
+        private readonly Dictionary<ObjectLocation, String>     _SymlinkLookuptable;
+        private readonly Dictionary<ObjectLocation, IGraphFS>   _ChildFSLookuptable;
 
         #endregion
-
 
         #region Constructor
 
         public GraphFSLookuptable()
         {
-            //_ObjectLocatorLookuptable   = new Dictionary<ObjectLocation, ObjectLocator>();
-            //_APandoraObjectLookuptable  = new Dictionary<CacheUUID, APandoraObject>();
-            _SymlinkLookuptable         = new Dictionary<ObjectLocation, String>();
-            _ChildFSLookuptable         = new Dictionary<ObjectLocation, IGraphFS>();
+            _SymlinkLookuptable = new Dictionary<ObjectLocation, String>();
+            _ChildFSLookuptable = new Dictionary<ObjectLocation, IGraphFS>();
         }
 
         #endregion
 
-
-        //#region Set(myObjectLocation, myObjectLocator)
-
-        //public void Set(ObjectLocation myObjectLocation, ObjectLocator myObjectLocator)
-        //{
-
-        //    if (_ObjectLocatorLookuptable.ContainsKey(myObjectLocation))
-        //        _ObjectLocatorLookuptable[myObjectLocation] = myObjectLocator;
-
-        //    else
-        //        _ObjectLocatorLookuptable.Add(myObjectLocation, myObjectLocator);
-
-        //}
-
-        //#endregion
-
-        //#region Set(myObjectLocation, myAPandoraObject)
-
-        //public void Set(CacheUUID myCacheUUID, APandoraObject myAPandoraObject)
-        //{
-
-        //    if (_APandoraObjectLookuptable.ContainsKey(myCacheUUID))
-        //        _APandoraObjectLookuptable[myCacheUUID] = myAPandoraObject;
-
-        //    else
-        //        _APandoraObjectLookuptable.Add(myCacheUUID, myAPandoraObject);
-
-        //}
-
-        //#endregion
 
         #region Set(myObjectLocation, mySymlinkTarget)
 
@@ -125,15 +90,6 @@ namespace sones.GraphFS
         #endregion
 
 
-        //#region HasObjectLocator(myObjectLocation)
-
-        //public Boolean HasObjectLocator(ObjectLocation myObjectLocation)
-        //{
-        //    return _ObjectLocatorLookuptable.ContainsKey(myObjectLocation);
-        //}
-
-        //#endregion
-
         #region IsSymlink(myObjectLocation)
 
         public Boolean IsSymlink(ObjectLocation myObjectLocation)
@@ -152,38 +108,6 @@ namespace sones.GraphFS
 
         #endregion
 
-
-        //#region GetObjectLocator(myObjectLocation)
-
-        //public ObjectLocator GetObjectLocator(ObjectLocation myObjectLocation)
-        //{
-
-        //    ObjectLocator _ObjectLocator = null;
-
-        //    if (_ObjectLocatorLookuptable.TryGetValue(myObjectLocation, out _ObjectLocator))
-        //        return _ObjectLocator;
-
-        //    return null;
-
-        //}
-
-        //#endregion
-
-        //#region GetAPandoraObject(myCacheUUID)
-
-        //public APandoraObject GetAPandoraObject(CacheUUID myCacheUUID)
-        //{
-
-        //    APandoraObject _APandoraObject = null;
-
-        //    if (_APandoraObjectLookuptable.TryGetValue(myCacheUUID, out _APandoraObject))
-        //        return _APandoraObject;
-
-        //    return null;
-
-        //}
-
-        //#endregion
 
         #region GetSymlink(myObjectLocation)
 
@@ -279,15 +203,16 @@ namespace sones.GraphFS
 
         #endregion
 
-        //#region Remove(myCacheUUID)
 
-        //public void Remove(CacheUUID myCacheUUID)
-        //{
-        //    _APandoraObjectLookuptable.Remove(myCacheUUID);
-        //}
+        #region Clear()
 
-        //#endregion
+        public void Clear()
+        {
+            _SymlinkLookuptable.Clear();
+            _ChildFSLookuptable.Clear();
+        }
 
+        #endregion
 
     }
 

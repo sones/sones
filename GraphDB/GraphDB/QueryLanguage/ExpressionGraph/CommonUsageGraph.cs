@@ -185,7 +185,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                 {
                     if (mySourceDBObject != null)
                     {
-                        var predecessorLevelKey = myLevelKey.GetPredecessorLevel();
+                        var predecessorLevelKey = myLevelKey.GetPredecessorLevel(_DBContext.DBTypeManager);
 
                         if (!this.ContainsLevelKey(predecessorLevelKey))
                         {
@@ -257,7 +257,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                 {
                     if (mySourceDBObject != null)
                     {
-                        var predecessorLevelKey = myLevelKey.GetPredecessorLevel();
+                        var predecessorLevelKey = myLevelKey.GetPredecessorLevel(_DBContext.DBTypeManager);
 
                         if (!this.ContainsLevelKey(predecessorLevelKey))
                         {
@@ -340,7 +340,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                 {
                     if (mySourceDBObject != null)
                     {
-                        var predecessorLevelKey = myLevelKey.GetPredecessorLevel();
+                        var predecessorLevelKey = myLevelKey.GetPredecessorLevel(_DBContext.DBTypeManager);
 
                         if (!this.ContainsLevelKey(predecessorLevelKey))
                         {
@@ -753,9 +753,9 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
 
                     referenceType = _DBContext.DBTypeManager.GetTypeByUUID(tempTypeAttribute.BackwardEdgeDefinition.TypeUUID).GetTypeAttributeByUUID(tempTypeAttribute.BackwardEdgeDefinition.AttrUUID).GetDBType(_DBContext.DBTypeManager);
 
-                    if (aDBObject.HasAttribute(tempTypeAttribute.BackwardEdgeDefinition.AttrUUID, _DBContext.DBTypeManager.GetTypeByUUID(tempTypeAttribute.BackwardEdgeDefinition.TypeUUID), null))
+                    if (aDBObject.HasAttribute(tempTypeAttribute.BackwardEdgeDefinition.AttrUUID, _DBContext.DBTypeManager.GetTypeByUUID(tempTypeAttribute.BackwardEdgeDefinition.TypeUUID)))
                     {
-                        referenceUUIDs = GetUUIDsForAttribute(aDBObject, tempTypeAttribute.BackwardEdgeDefinition.GetTypeAndAttributeInformation(_DBContext).Item2, _DBContext.DBTypeManager.GetTypeByUUID(aDBObject.TypeUUID));
+                        referenceUUIDs = GetUUIDsForAttribute(aDBObject, tempTypeAttribute.BackwardEdgeDefinition.GetTypeAndAttributeInformation(_DBContext.DBTypeManager).Item2, _DBContext.DBTypeManager.GetTypeByUUID(aDBObject.TypeUUID));
                     }
 
                     #endregion
@@ -822,7 +822,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                                         {
                                             #region fill graph
 
-                                            LevelKey newLevelKey = new LevelKey(myLevelKey.Edges.First().TypeUUID);
+                                            LevelKey newLevelKey = new LevelKey(myLevelKey.Edges.First().TypeUUID, _DBContext.DBTypeManager);
 
                                             if (currentBackwardResolution > 0)
                                             {
@@ -912,7 +912,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                 {
                     #region fill graph
 
-                    LevelKey newLevelKey = new LevelKey(myLevelKey.Edges.First().TypeUUID);
+                    LevelKey newLevelKey = new LevelKey(myLevelKey.Edges.First().TypeUUID, _DBContext.DBTypeManager);
 
                     if (currentBackwardResolution > 0)
                     {
@@ -966,7 +966,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
 
                     int desiredLevel = myPath.Level - currentBackwardResolution;
 
-                    LevelKey desiredLevelKey = new LevelKey(myPath.Edges.Take(desiredLevel), desiredLevel);
+                    LevelKey desiredLevelKey = new LevelKey(myPath.Edges.Take(desiredLevel), _DBContext.DBTypeManager);
                     AddEmptyLevel(desiredLevelKey);
 
                     _Levels[desiredLevel].AddForwardEdgeToNode(desiredLevelKey, aDBObject.ObjectUUID, new EdgeKey(myPath.Edges[desiredLevel].TypeUUID, myPath.Edges[desiredLevel].AttrUUID), source, null);
@@ -1127,7 +1127,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                         {
                             //go to every object the backwardEdge points to and remove the forward reference
 
-                            var backwardLevelKey = GetBackwardLevelKey(aComplexConnection.Key, aBackwardEdgeSet.Key);
+                            var backwardLevelKey = GetBackwardLevelKey(aComplexConnection.Key, aBackwardEdgeSet.Key, _DBContext.DBTypeManager);
 
                             if (myGraph.ContainsLevelKey(backwardLevelKey))
                             {
@@ -1161,7 +1161,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                     {
                         //go to every object the backwardEdge points to and remove the forward reference
 
-                        var backwardLevelKey = GetBackwardLevelKey(mylevelKey, aBackwardEdgeSet.Key);
+                        var backwardLevelKey = GetBackwardLevelKey(mylevelKey, aBackwardEdgeSet.Key, _DBContext.DBTypeManager);
 
                         if (myGraph.ContainsLevelKey(backwardLevelKey))
                         {
@@ -1190,7 +1190,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
             {
                 foreach (var aForwardEdgeSet in myExpressionNode.ForwardEdges)
                 {
-                    var forwardLevelKey = GetForwardLevelKey(mylevelKey, aForwardEdgeSet.Key);
+                    var forwardLevelKey = GetForwardLevelKey(mylevelKey, aForwardEdgeSet.Key, _DBContext.DBTypeManager);
 
                     if (myGraph.ContainsLevelKey(forwardLevelKey))
                     {
@@ -1220,11 +1220,11 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
             #endregion
         }
 
-        private LevelKey GetForwardLevelKey(LevelKey mylevelKey, EdgeKey edgeKey)
+        private LevelKey GetForwardLevelKey(LevelKey mylevelKey, EdgeKey edgeKey, DBTypeManager myTypeManager)
         {
             if (mylevelKey.Level == 0)
             {
-                return new LevelKey(new List<EdgeKey> { edgeKey }, 1);
+                return new LevelKey(new List<EdgeKey> { edgeKey }, myTypeManager);
             }
             else
             {
@@ -1233,15 +1233,15 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                 newEdges.AddRange(mylevelKey.Edges);
                 newEdges.Add(edgeKey);
 
-                return new LevelKey(newEdges, mylevelKey.Level + 1);
+                return new LevelKey(newEdges, myTypeManager);
             }
         }
 
-        private LevelKey GetBackwardLevelKey(LevelKey mylevelKey, EdgeKey edgeKey)
+        private LevelKey GetBackwardLevelKey(LevelKey mylevelKey, EdgeKey edgeKey, DBTypeManager myTypeManager)
         {
             if (mylevelKey.Level == 1)
             {
-                return new LevelKey(new List<EdgeKey> { edgeKey }, 0);
+                return new LevelKey(new List<EdgeKey> { edgeKey }, myTypeManager);
             }
             else
             {
@@ -1250,7 +1250,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                 newEdges.AddRange(mylevelKey.Edges.Take(mylevelKey.Level - 2));
                 newEdges.Add(edgeKey);
 
-                return new LevelKey(newEdges, mylevelKey.Level - 1);
+                return new LevelKey(newEdges, myTypeManager);
             }
 
             throw new NotImplementedException();
@@ -1324,7 +1324,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                 if (levelKey.Level > 0)
                 {
                     var nextLowerLevel = levelKey.Level - 1;
-                    var nextLowerLevelKey = levelKey.GetPredecessorLevel();
+                    var nextLowerLevelKey = levelKey.GetPredecessorLevel(_DBContext.DBTypeManager);
 
                     if (anotherGraph.Levels.ContainsKey(nextLowerLevel))
                     {
@@ -1334,7 +1334,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
 
                             if (nextLowerLevel > 0)
                             {
-                                DownFillStructureOfGraph(anotherGraph, nextLowerLevelKey.GetPredecessorLevel());
+                                DownFillStructureOfGraph(anotherGraph, nextLowerLevelKey.GetPredecessorLevel(_DBContext.DBTypeManager));
                             }
                         }
                     }
@@ -1408,13 +1408,13 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
 
                         if (currentAttribute.IsBackwardEdge)
                         {
-                            var backwardEdgeTypeInfo = currentAttribute.BackwardEdgeDefinition.GetTypeAndAttributeInformation(_DBContext);
+                            var backwardEdgeTypeInfo = currentAttribute.BackwardEdgeDefinition.GetTypeAndAttributeInformation(_DBContext.DBTypeManager);
 
                             var dbObjectStream = myNode.GetDBObjectStream(_DBObjectCache, backwardEdgeTypeInfo.Item1.UUID);
 
                             referencedType = backwardEdgeTypeInfo.Item2.GetDBType(_DBContext.DBTypeManager);
 
-                            if (dbObjectStream.HasAttribute(backwardEdgeTypeInfo.Item2.UUID, backwardEdgeTypeInfo.Item1, null))
+                            if (dbObjectStream.HasAttribute(backwardEdgeTypeInfo.Item2.UUID, backwardEdgeTypeInfo.Item1))
                             {
                                 referencedUUIDs = GetUUIDsForAttribute(dbObjectStream, backwardEdgeTypeInfo.Item2, backwardEdgeTypeInfo.Item1);
                             }
@@ -1589,10 +1589,16 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                         }
                         else
                         {
-                            foreach (var aDBOStream in _DBObjectCache.LoadListOfDBObjectStreams(interestingAttributeEdge.GetDBType(_DBContext.DBTypeManager), ((ASetReferenceEdgeType)myStartingDBObject.GetAttribute(interestingAttributeEdge.UUID)).GetAllUUIDs()))
+
+                            foreach (var aDBO in ((ASetReferenceEdgeType)myStartingDBObject.GetAttribute(interestingAttributeEdge.UUID)).GetAllEdgeDestinations(_DBContext.DBObjectCache))
                             {
-                                yield return aDBOStream;
-                            }
+                                yield return aDBO;
+                            } 
+
+                            //foreach (var aDBOStream in _DBObjectCache.LoadListOfDBObjectStreams(interestingAttributeEdge.GetDBType(_DBContext.DBTypeManager), ((ASetReferenceEdgeType)myStartingDBObject.GetAttribute(interestingAttributeEdge.UUID)).GetAllReferenceIDs()))
+                            //{
+                            //    yield return aDBOStream;
+                            //}
                         }
 
                         break;
@@ -1737,7 +1743,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                     {
                         //there is no need to extend the graph if there is no DBOBJECTStream available
 
-                        if (currentDBObject.HasAttribute(interestingAttribute.UUID, currentType, null) || interestingAttribute.IsBackwardEdge)
+                        if (currentDBObject.HasAttribute(interestingAttribute.UUID, currentType) || interestingAttribute.IsBackwardEdge)
                         {
                             #region process referenced objects
 
@@ -1827,7 +1833,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                     }
                     else
                     {
-                        foreach (var aObjectUUID in ((ASetReferenceEdgeType)currentDBObject.GetAttribute(interestingAttribute.UUID)).GetAllUUIDs())
+                        foreach (var aObjectUUID in ((ASetReferenceEdgeType)currentDBObject.GetAttribute(interestingAttribute.UUID)).GetAllReferenceIDs())
                         {
                             yield return aObjectUUID;
                         }
@@ -1837,6 +1843,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
 
                 case KindsOfType.SetOfNoneReferences:
                 case KindsOfType.ListOfNoneReferences:
+                case KindsOfType.SingleNoneReference:
                 default:
                     throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace()));
             }
@@ -1864,6 +1871,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
 
                 case KindsOfType.SetOfNoneReferences:
                 case KindsOfType.ListOfNoneReferences:
+                case KindsOfType.SingleNoneReference:
 
                     return interestingAttribute.GetDBType(_DBContext.DBTypeManager);
 
@@ -1988,17 +1996,13 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
                             #region add first level
 
 
-                            LevelKey lowestLevelKey = new LevelKey(myLevelKey.Edges[0].TypeUUID);
+                            LevelKey lowestLevelKey = new LevelKey(myLevelKey.Edges[0].TypeUUID, _DBContext.DBTypeManager);
 
                             GraphDBType lowestType = _DBContext.DBTypeManager.GetTypeByUUID(lowestLevelKey.LastEdge.TypeUUID);
-                            
-                            var idxRef = _DBContext.DBTypeManager.GetTypeByUUID(lowestLevelKey.LastEdge.TypeUUID).GetUUIDIndex(_DBContext.DBTypeManager).GetIndexReference(_DBContext.DBIndexManager);
-                            if (!idxRef.Success)
-                            {
-                                throw new GraphDBException(idxRef.Errors);
-                            }
+                            var idx = _DBContext.DBTypeManager.GetTypeByUUID(lowestLevelKey.LastEdge.TypeUUID).GetUUIDIndex(_DBContext.DBTypeManager);
+                            var indexRelatedType = _DBContext.DBTypeManager.GetTypeByUUID(idx.IndexRelatedTypeUUID);
 
-                            foreach (var aDBO in _DBObjectCache.LoadListOfDBObjectStreams(lowestType, idxRef.Value.Values().Select(item => item.First())))
+                            foreach (var aDBO in _DBObjectCache.LoadListOfDBObjectStreams(lowestType, idx.GetAllUUIDs(indexRelatedType, _DBContext)))
                             {
                                 if (aDBO.Failed)
                                 {
@@ -2025,7 +2029,7 @@ namespace sones.GraphDB.QueryLanguage.ExpressionGraph
             {
                 do
                 {
-                    myLevelKeyPred = myLevelKey.GetPredecessorLevel();
+                    myLevelKeyPred = myLevelKey.GetPredecessorLevel(_DBContext.DBTypeManager);
 
                     yield return myLevelKeyPred;
 

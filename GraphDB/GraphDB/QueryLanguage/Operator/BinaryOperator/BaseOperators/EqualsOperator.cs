@@ -36,6 +36,8 @@ using sones.GraphDB.TypeManagement.PandoraTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.TypeManagement;
+using sones.GraphDB.Exceptions;
+using sones.GraphDB.Errors;
 
 #endregion
 
@@ -70,14 +72,14 @@ namespace sones.GraphDB.QueryLanguage.Operators
             return new Exceptional<Boolean>(myLeft.CompareTo(myRight) == 0);
         }
 
-        public override IEnumerable<ObjectUUID> IndexSingleOperation(AttributeIndex myIndex, ADBBaseObject myOperationValue, AttributeUUID myAttributeUUID, TypesOfBinaryExpression typeOfBinExpr, DBIndexManager dbIndexManager)
+        public override IEnumerable<ObjectUUID> IndexSingleOperation(AAttributeIndex myIndex, ADBBaseObject myOperationValue, AttributeUUID myAttributeUUID, TypesOfBinaryExpression typeOfBinExpr, DBContext dbContext)
         {
             var myIndeyKey = new IndexKey(myAttributeUUID, myOperationValue, myIndex.IndexKeyDefinition);
-            var idxRef = myIndex.GetIndexReference(dbIndexManager);
+            var currentType = dbContext.DBTypeManager.GetTypeByUUID(myIndex.IndexRelatedTypeUUID);
 
-            if (idxRef.Value.ContainsKey(myIndeyKey))
+            if (myIndex.Contains(myIndeyKey, currentType, dbContext))
             {
-                foreach (var aUUID in idxRef.Value[myIndeyKey])
+                foreach (var aUUID in myIndex.GetValues(myIndeyKey, currentType, dbContext))
                 {
                     yield return aUUID;
                 }

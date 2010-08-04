@@ -138,13 +138,13 @@ namespace sones.GraphFS.Objects
                 
                 #region NotificationHandling
 
-                mySerializationWriter.WriteObject(myNotificationHandling);
+                mySerializationWriter.WriteUInt64(myNotificationHandling);
 
                 #endregion
 
                 #region Write KeyValuePairs
 
-                mySerializationWriter.WriteObject((UInt64) _IDictionary.Count);
+                mySerializationWriter.WriteUInt64((UInt64) _IDictionary.Count);
 
                 foreach (var _KeyValuePair in _IDictionary)
                 {                                        
@@ -184,13 +184,13 @@ namespace sones.GraphFS.Objects
                 
                 #region NotificationHandling
 
-                UInt64 _NotificationHandling = (UInt64)mySerializationReader.ReadObject();
+                UInt64 _NotificationHandling = mySerializationReader.ReadUInt64();
 
                 #endregion
 
                 #region Read KeyValuePairs
 
-                UInt64 IndexHashTableNrOfEntries = (UInt64) mySerializationReader.ReadObject();
+                UInt64 IndexHashTableNrOfEntries = mySerializationReader.ReadUInt64();
                 _IDictionary = new Dictionary<TKey, TValue>();
 
                 if (IndexHashTableNrOfEntries > 0)
@@ -204,7 +204,7 @@ namespace sones.GraphFS.Objects
                         
                         KeyObject = (TKey)mySerializationReader.ReadObject();
                         
-                        ValueObject = (TValue) mySerializationReader.ReadObject();
+                        ValueObject = (TValue)mySerializationReader.ReadObject();
 
                         // -- Add both to the internal dictionary ---------
                         _IDictionary.Add(KeyObject, ValueObject);

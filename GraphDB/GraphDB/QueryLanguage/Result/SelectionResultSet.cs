@@ -158,23 +158,6 @@ namespace sones.GraphDB.QueryLanguage.Result
 
         }
 
-        public SelectionResultSet(GraphDBType myPandoraType, IEnumerable<DBObjectReadout> myListOfDBObjectReadout, Dictionary<int, InterestingAttributes> mySelectedAttributes)
-        {
-            _Type = myPandoraType;
-            _Objects = myListOfDBObjectReadout ?? new List<DBObjectReadout>();
-            _SelectedAttributes = new Dictionary<int, Dictionary<String, String>>();
-
-            foreach (KeyValuePair<int, InterestingAttributes> lala in mySelectedAttributes)
-            {
-                _SelectedAttributes.Add(lala.Key, new Dictionary<String, String>());
-
-                foreach (InterestingAttribute intAttr in lala.Value.InterestingAttribts)
-                {
-                    _SelectedAttributes[lala.Key].Add(intAttr.AttributeName, intAttr.Alias);
-                }
-            }
-
-        }
 
         public SelectionResultSet(GraphDBType myPandoraType, IEnumerable<DBObjectReadout> myListOfDBObjectReadout, Dictionary<String, String> mySelectedAttributes)
         {
@@ -183,46 +166,6 @@ namespace sones.GraphDB.QueryLanguage.Result
 
             _SelectedAttributes = new Dictionary<int, Dictionary<String, String>>();
             _SelectedAttributes.Add(0, mySelectedAttributes);
-        }
-
-        public SelectionResultSet(GraphDBType myPandoraType, IEnumerable<DBObjectReadout> myListOfDBObjectReadout, InterestingAttributes myInterestingAttributes)
-        {
-            _Type = myPandoraType;
-            _Objects = myListOfDBObjectReadout ?? new List<DBObjectReadout>();
-            _SelectedAttributes = new Dictionary<int, Dictionary<String, String>>();
-
-            var interestingAttributes = new List<InterestingAttribute>();
-            interestingAttributes.AddRange(myInterestingAttributes.InterestingAttribts);
-            interestingAttributes.AddRange(myInterestingAttributes.AggreateNodesOfListReferences);
-            interestingAttributes.AddRange(myInterestingAttributes.AggregateNodes);
-            interestingAttributes.AddRange(myInterestingAttributes.FuncCallNode);
-
-            foreach (InterestingAttribute aInterestingAttr in interestingAttributes)
-            {
-                
-                if (aInterestingAttr.AttributeIDNode == null)
-                {
-                    if (!_SelectedAttributes.ContainsKey(0))
-                        _SelectedAttributes.Add(0, new Dictionary<String, String>());
-                        
-                    if (aInterestingAttr.InterestingNode is FuncCallNode)
-                        _SelectedAttributes[0].Add((aInterestingAttr.InterestingNode as FuncCallNode).SourceParsedString, aInterestingAttr.Alias);
-                    else
-                        _SelectedAttributes[0].Add(aInterestingAttr.AttributeName, aInterestingAttr.Alias);
-                    continue;
-                }
-                
-                if (_SelectedAttributes.ContainsKey(aInterestingAttr.AttributeIDNode.Level))
-                {
-                    _SelectedAttributes[aInterestingAttr.AttributeIDNode.Level].Add(aInterestingAttr.AttributeName, aInterestingAttr.Alias);
-                }
-                else
-                {
-                    _SelectedAttributes.Add(aInterestingAttr.AttributeIDNode.Level, new Dictionary<String, String>());
-                    _SelectedAttributes[aInterestingAttr.AttributeIDNode.Level].Add(aInterestingAttr.AttributeName, aInterestingAttr.Alias);
-                }
-            }
-
         }
 
 

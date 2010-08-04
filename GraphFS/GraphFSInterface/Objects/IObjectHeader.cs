@@ -39,7 +39,7 @@ using sones.Lib.DataStructures.WeakReference;
 namespace sones.GraphFS.Objects
 {
 
-    public interface IObjectHeader
+    public interface IFSObjectHeader
     {
 
         Boolean         isNew                       { get; set; }

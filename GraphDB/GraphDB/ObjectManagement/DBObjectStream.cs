@@ -50,6 +50,7 @@ using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
 using sones.Lib.Session;
 using sones.Lib.DataStructures.Indices;
+using sones.GraphDB.Errors.DBObjectErrors;
 
 #endregion
 
@@ -356,9 +357,18 @@ namespace sones.GraphDB.ObjectManagement
         public Exceptional<AObject> GetUndefinedAttributeValue(String myName, DBObjectManager objectManager)
         {
             var retVal = LoadUndefAttributes(this.ObjectLocation, objectManager);
-            
+
             if (retVal.Success)
-                return new Exceptional<AObject>(UndefAttributes.GetAttributeValue(myName));
+            {
+                if (!UndefAttributes.ContainsAttribute(myName))
+                {
+                    return new Exceptional<AObject>(new Error_UndefinedAttributeNotFound(myName));
+                }
+                else
+                {
+                    return new Exceptional<AObject>(UndefAttributes.GetAttributeValue(myName));
+                }
+            }
 
             return new Exceptional<AObject>(retVal);
         }
@@ -423,7 +433,7 @@ namespace sones.GraphDB.ObjectManagement
 
         #region HasAttribute(myAttributeName)
 
-        public Boolean HasAttribute(AttributeUUID myAttributeUUID, GraphDBType myType, SessionSettings mySessionSettings)
+        public Boolean HasAttribute(AttributeUUID myAttributeUUID, GraphDBType myType)
         {
             if (base.ContainsKey(myAttributeUUID) == Trinary.TRUE)
                 return true;
@@ -444,7 +454,7 @@ namespace sones.GraphDB.ObjectManagement
         {
             foreach (var aInterestingUUID in myInterestingUUIDs)
             {
-                if (HasAttribute(aInterestingUUID, myType, mySessionToken))
+                if (HasAttribute(aInterestingUUID, myType))
                 {
                     return true;
                 }

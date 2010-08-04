@@ -28,14 +28,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Collections;
-
-using sones.GraphDB.QueryLanguage.Result;
-using sones.GraphDB.TypeManagement.PandoraTypes;
 using sones.GraphDB.ObjectManagement;
-using sones.Lib.DataStructures.UUID;
+using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.PandoraTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
 
@@ -69,12 +65,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public abstract IEnumerable<DBObjectReadout> GetReadouts(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO, IEnumerable<Exceptional<DBObjectStream>> myDBObjectStreams);
 
         /// <summary>
-        /// Remove all entries which statisfies the <paramref name="match"/> predicate
-        /// </summary>
-        /// <param name="match">The predicate</param>
-        public abstract void RemoveWhere(Predicate<ObjectUUID> match);
-
-        /// <summary>
         /// This is just a helper for BackwardEdges
         /// </summary>
         /// <returns></returns>
@@ -85,22 +75,14 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// </summary>
         /// <param name="hashSet"></param>
         /// <param name="myParameters"></param>
-        public abstract void AddRange(IEnumerable<ObjectUUID> hashSet, params ADBBaseObject[] myParameters);
+        public abstract void AddRange(IEnumerable<ObjectUUID> hashSet, TypeUUID typeOfObjects, params ADBBaseObject[] myParameters);
 
         /// <summary>
         /// Adds a new value with some optional parameters
         /// </summary>
         /// <param name="myValue"></param>
         /// <param name="myParameters"></param>
-        public abstract void Add(ObjectUUID myValue, params ADBBaseObject[] myParameters);
-
-        /// <summary>
-        /// Adds some new values with some optional parameters
-        /// </summary>
-        /// <param name="myValue"></param>
-        /// <param name="myParameters"></param>
-        public abstract void Add(IEnumerable<ObjectUUID> myValue, params ADBBaseObject[] myParameters);
-               
+        public abstract void Add(ObjectUUID myValue, TypeUUID typeOfObjects, params ADBBaseObject[] myParameters);      
 
         /// <summary>
         /// Check for a containing element
@@ -116,13 +98,13 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// Get all added objectUUIDs
         /// </summary>
         /// <returns></returns>
-        public abstract IEnumerable<ObjectUUID> GetAllUUIDs();
+        public abstract IEnumerable<ObjectUUID> GetAllReferenceIDs();
         
         /// <summary>
         /// Get all uuids and their edge infos
         /// </summary>
         /// <returns></returns>
-        public abstract IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetEdges();
+        public abstract IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetAllReferenceIDsWeighted();
         
         /// <summary>
         /// removes a specific reference
@@ -136,6 +118,21 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// <param name="myObjectUUIDs">the object uuid's of the objects, that should remove</param>
         public abstract Boolean RemoveUUID(IEnumerable<ObjectUUID> myObjectUUIDs);
 
+        /// <summary>
+        /// Get all destinations of an edge
+        /// </summary>
+        /// <returns></returns>
+        public abstract IEnumerable<Exceptional<DBObjectStream>> GetAllEdgeDestinations(DBObjectCache dbObjectCache);
+
+        /// <summary>
+        /// Get all weighted destinations of an edge
+        /// </summary>
+        /// <returns></returns>
+        public abstract IEnumerable<Tuple<Exceptional<DBObjectStream>, ADBBaseObject>> GetAllEdgeDestinationsWeighted(DBObjectCache dbObjectCache);
+
+        public abstract TypeUUID GetTypeUUIDOfReferences();
+
         #endregion
+
     }
 }

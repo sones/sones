@@ -145,14 +145,15 @@ namespace sones.Notifications.Messages
         {
             SerializationWriter writer = new SerializationWriter();
             writer.WriteObject(_Class);
-            writer.WriteObject(_NotificationType);
-            writer.WriteObject(_Created_TimeStamp);
-            writer.WriteObject((UInt16)_Priority);
-            writer.WriteObject(_Arguments.Serialize());
+            writer.WriteString(_NotificationType);
+            writer.WriteInt64(_Created_TimeStamp);
+            writer.WriteByte((Byte)_Priority);
+            writer.Write(_Arguments.Serialize());
 
-            writer.WriteObject(_HandledDispatchers.Count);
+            writer.WriteUInt32((UInt32)_HandledDispatchers.Count);
+
             foreach (String str in _HandledDispatchers)
-                writer.WriteObject(str);
+                writer.WriteString(str);
             
             return writer.ToArray();
         }
@@ -160,17 +161,20 @@ namespace sones.Notifications.Messages
         private void Deserialize(Byte[] mySerializedBytes, INotificationArguments myArguments)
         {
             SerializationReader reader = new SerializationReader(mySerializedBytes);
-            _Class = (Guid)reader.ReadObject();
-            _NotificationType = (String)reader.ReadObject();
-            _Created_TimeStamp = (Int64)reader.ReadObject();
-            _Priority = (NotificationPriority)(UInt16)reader.ReadObject();
-            _Arguments = myArguments;
-            _Arguments.Deserialize((Byte[])reader.ReadObject());
 
-            Int32 _HandledDispatchersCount = (Int32)reader.ReadObject();
+            _Class = (Guid)reader.ReadObject();
+            _NotificationType = reader.ReadString();
+            _Created_TimeStamp = reader.ReadInt64();
+            _Priority = (NotificationPriority)(Byte)reader.ReadOptimizedByte();
+            _Arguments = myArguments;
+            _Arguments.Deserialize(reader.ReadByteArray());
+
+            UInt32 _HandledDispatchersCount = reader.ReadUInt32();
+
             _HandledDispatchers = new List<string>();
-            for(Int32 i = 0; i < _HandledDispatchersCount; i++)
-                _HandledDispatchers.Add((String)reader.ReadObject());
+
+            for(UInt32 i = 0; i < _HandledDispatchersCount; i++)
+                _HandledDispatchers.Add(reader.ReadString());
         }
 
         #endregion

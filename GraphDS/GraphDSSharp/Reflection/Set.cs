@@ -25,8 +25,15 @@ using System.Text;
 namespace sones.GraphDS.API.CSharp.Reflection
 {
 
-    public class Set<TValue> : HashSet<TValue>
+    public class Set<TVertexType> : HashSet<TVertexType> 
     {
+    }
+
+    public class Set<TVertexType, TEdgeType> : HashSet<TVertexType>
+        where TVertexType : DBObject
+        where TEdgeType   : DBEdge
+    {
+        //ToDo: Implement TEdgeType
     }
 
 }

@@ -47,6 +47,7 @@ using sones.GraphFS.Session;
 using sones.Lib;
 using sones.Lib.ErrorHandling;
 using sones.Lib.DataStructures.Indices;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -100,7 +101,7 @@ namespace sones.GraphDB.Indices
 
                 if (dbObjectAttributes.Count() != 0)
                 {
-                    AttributeIndex AttrIndex = null;
+                    AAttributeIndex AttrIndex = null;
 
                     foreach (var PType in myParentTypes)
                     {
@@ -110,13 +111,7 @@ namespace sones.GraphDB.Indices
                         {
                             var toBeCheckedIdxKey = GenerateIndexKeyForUniqueConstraint(toBeCheckedForUniqueConstraint, AttrIndex.IndexKeyDefinition, myPandoraType);
 
-                            var idxRef = AttrIndex.GetIndexReference(this);
-                            if (!idxRef.Success)
-                            {
-                                return new Exceptional<bool>(idxRef);
-                            }
-
-                            if (idxRef.Value.ContainsKey(toBeCheckedIdxKey))
+                            if (AttrIndex.Contains(toBeCheckedIdxKey, PType, _DBContext))
                             {
                                 return new Exceptional<Boolean>(new Error_UniqueConstrainViolation(PType.Name, AttrIndex.IndexName));
                             }
@@ -196,14 +191,14 @@ namespace sones.GraphDB.Indices
 
         }
 
-        public Exceptional<Boolean> RebuildIndices(Dictionary<TypeUUID, GraphDBType> myUserDefinedTypes)
+        public Exceptional<Boolean> RebuildIndices(IEnumerable<GraphDBType> myUserDefinedTypes)
         {
 
             #region Remove old indices
 
             foreach (var type in myUserDefinedTypes)
             {
-                foreach (var attrIdx in type.Value.GetAllAttributeIndices(true))
+                foreach (var attrIdx in type.GetAllAttributeIndices(false))
                 {
                     attrIdx.Clear(this);
                 }
@@ -211,7 +206,7 @@ namespace sones.GraphDB.Indices
             
             #endregion
 
-            foreach (var userDefinedType in myUserDefinedTypes.Values)
+            foreach (var userDefinedType in myUserDefinedTypes)
             {
                 var _ObjectLocation = new ObjectLocation(userDefinedType.ObjectLocation, DBConstants.DBObjectsLocation);
 
@@ -221,53 +216,25 @@ namespace sones.GraphDB.Indices
                     if (_DBObjectsLocationsExceptional.Success && _DBObjectsLocationsExceptional.Value != null)
                     {
 
+                        var UUIDAttributeUUID = _DBContext.DBTypeManager.GetUUIDTypeAttribute().UUID;
+
+                        var UUIDIdxIndexKey = new IndexKeyDefinition(new List<AttributeUUID>() { UUIDAttributeUUID });
+
                         foreach (var loc in _DBObjectsLocationsExceptional.Value)
                         {
+                            var dbo = _DBContext.DBObjectManager.LoadDBObject(new ObjectLocation(userDefinedType.ObjectLocation, DBConstants.DBObjectsLocation, loc));
 
-                            #region If we have only a GUID index - we do not need to load the DB Object
-
-                            var GuidUUID = _DBContext.DBTypeManager.GetGUIDTypeAttribute().UUID;
-
-                            var guidIndexKey = new IndexKeyDefinition(new List<AttributeUUID>() { GuidUUID });
-
-                            if (userDefinedType.AttributeIndices.Count == 1 && userDefinedType.AttributeIndices.ContainsKey(guidIndexKey))
+                            if (dbo.Failed)
                             {
-                                foreach (var edition in userDefinedType.AttributeIndices[guidIndexKey])
-                                {
-
-                                    //var curUUID = new ObjectUUID(ByteArrayHelper.FromHexString(loc));
-                                    var curUUID = new ObjectUUID(loc);
-
-                                    var indexKey = new IndexKey(GuidUUID, new DBReference(curUUID), edition.Value.IndexKeyDefinition);
-
-                                    var idxRef = edition.Value.GetIndexReference(this);
-                                    if (!idxRef.Success)
-                                    {
-                                        return new Exceptional<bool>(idxRef);
-                                    }
-
-                                    idxRef.Value.Add(indexKey, curUUID);
-                                }
+                                return new Exceptional<bool>(dbo);
                             }
 
-                            #endregion
-
-                            else
+                            //rebuild everything but the UUIDidx
+                            foreach (var index in userDefinedType.AttributeIndices.Where(aIDX => aIDX.Key != UUIDIdxIndexKey))
                             {
-
-                                var dbo = _DBContext.DBObjectManager.LoadDBObject(new ObjectLocation(userDefinedType.ObjectLocation, DBConstants.DBObjectsLocation, loc));
-
-                                if (dbo.Failed)
+                                foreach (var edition in index.Value.Values)
                                 {
-                                    return new Exceptional<bool>(dbo);
-                                }
-
-                                foreach (var index in userDefinedType.AttributeIndices)
-                                {
-                                    foreach (var edition in index.Value.Values)
-                                    {
-                                        edition.Insert(dbo.Value, userDefinedType, _DBContext);
-                                    }
+                                    edition.Insert(dbo.Value, userDefinedType, _DBContext);
                                 }
                             }
                         }
@@ -278,34 +245,6 @@ namespace sones.GraphDB.Indices
             }
 
             return new Exceptional<bool>(true);
-        }
-
-        public Exceptional RemoveGuidIndexEntriesOfParentTypes(GraphDBType dbType, DBIndexManager dbIndexManager)
-        {
-            List<GraphDBType> parentTypes = new List<GraphDBType> (_DBContext.DBTypeManager.GetAllParentTypes(dbType, false, false));
-
-            var idxRef = dbType.GetUUIDIndex(_DBContext.DBTypeManager).GetIndexReference(dbIndexManager);
-            if (!idxRef.Success)
-            {
-                return new Exceptional(idxRef);
-            }
-
-            foreach (var uuid in idxRef.Value)
-            {
-                foreach (var type in parentTypes)
-                {
-
-                    var typeIdxRef = type.GetUUIDIndex(_DBContext.DBTypeManager).GetIndexReference(dbIndexManager);
-                    if (!typeIdxRef.Success)
-                    {
-                        return new Exceptional(typeIdxRef);
-                    }
-                    typeIdxRef.Value.Remove(uuid.Key);
-
-                }
-            }
-
-            return Exceptional.OK;
         }
 
         #endregion
@@ -341,6 +280,7 @@ namespace sones.GraphDB.Indices
                             #region single/special
 
                             case KindsOfType.SpecialAttribute:
+                            case KindsOfType.SingleNoneReference:
                             case KindsOfType.SingleReference:
 
                                 payload.Add(aUnique, (ADBBaseObject)toBeCheckedForUniqueConstraint[aUnique]);
@@ -391,7 +331,7 @@ namespace sones.GraphDB.Indices
         internal Exceptional RemoveDBIndex(ObjectLocation myObjectLocation)
         {
 
-            return  _IGraphFSSession.RemoveObject(myObjectLocation, DBConstants.DBINDEXSTREAM);
+            return  _IGraphFSSession.RemoveFSObject(myObjectLocation, DBConstants.DBINDEXSTREAM);
 
         }
 
@@ -407,7 +347,7 @@ namespace sones.GraphDB.Indices
                 return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(new Error_IndexIsNotPersistent(myIIndexObject));
             }
 
-            var result = _IGraphFSSession.GetOrCreateObject<AFSObject>(myObjectLocation, DBConstants.DBINDEXSTREAM, () => myIIndexObject as AFSObject);
+            var result = _IGraphFSSession.GetOrCreateFSObject<AFSObject>(myObjectLocation, DBConstants.DBINDEXSTREAM, () => myIIndexObject as AFSObject);
             if (!result.Success)
             {
                 return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(result);
@@ -459,5 +399,135 @@ namespace sones.GraphDB.Indices
         }
 
         #endregion
+
+        #region Create Index
+
+        internal Exceptional<SelectionResultSet> CreateIndex(DBContext myDBContext, string myDBType, string myIndexName, string myIndexEdition, string myIndexType, List<IndexAttributeDefinition> myAttributeList)
+        {
+
+            SelectionResultSet resultOutput = null;
+            var dbObjectType = myDBContext.DBTypeManager.GetTypeByName(myDBType);
+            if (dbObjectType == null)
+            {
+                return new Exceptional<SelectionResultSet>(new Error_TypeDoesNotExist(myDBType));
+            }
+
+            #region Get IndexAttributes
+
+            var indexAttributes = new List<AttributeUUID>();
+
+            foreach (var createIndexAttributeNode in myAttributeList)
+            {
+
+                var validAttrExcept = myDBContext.DBTypeManager.AreValidAttributes(dbObjectType, createIndexAttributeNode.IndexAttribute);
+
+                if (validAttrExcept.Failed)
+                    throw new GraphDBException(validAttrExcept.Errors);
+
+                if (!validAttrExcept.Value)
+                    throw new GraphDBException(new Error_AttributeIsNotDefined(dbObjectType.Name, createIndexAttributeNode.IndexAttribute));
+
+                indexAttributes.Add(dbObjectType.GetTypeAttributeByName(createIndexAttributeNode.IndexAttribute).UUID);
+
+            }
+
+            #endregion
+
+            #region checking for reference attributes
+
+            TypeAttribute aIdxAttribute;
+            foreach (var aAttributeUUID in indexAttributes)
+            {
+                aIdxAttribute = dbObjectType.GetTypeAttributeByUUID(aAttributeUUID);
+
+                if (aIdxAttribute.GetDBType(myDBContext.DBTypeManager).IsUserDefined)
+                {
+                    return new Exceptional<SelectionResultSet>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), String.Format("Currently it is not implemented to create an index on reference attributes like {0}", aIdxAttribute.Name)));
+                }
+            }
+
+            #endregion
+
+            foreach (var item in myDBContext.DBTypeManager.GetAllSubtypes(dbObjectType))
+            {
+
+                #region Create the index
+
+                var createdIDx = item.CreateAttributeIndex(myIndexName, indexAttributes, myIndexEdition, myIndexType);
+                if (createdIDx.Failed)
+                {
+                    return new Exceptional<SelectionResultSet>(createdIDx);
+                }
+
+                else
+                {
+
+                    #region prepare readouts
+
+                    var readOut = GenerateCreateIndexResult(myDBType, myAttributeList, createdIDx.Value);
+
+                    resultOutput = new SelectionResultSet(null, new List<DBObjectReadout> { readOut });
+
+                    #endregion
+
+                }
+
+                #endregion
+
+                #region (Re)build index
+
+                var rebuildResult = myDBContext.DBIndexManager.RebuildIndex(createdIDx.Value.IndexName, createdIDx.Value.IndexEdition, item, IndexSetStrategy.MERGE);
+                if (rebuildResult.Failed)
+                {
+                    return new Exceptional<SelectionResultSet>(rebuildResult);
+                }
+
+
+                #endregion
+
+                #region Flush type
+
+                var flushResult = myDBContext.DBTypeManager.FlushType(item);
+                if (flushResult.Failed)
+                {
+                    return new Exceptional<SelectionResultSet>(flushResult);
+                }
+
+                #endregion
+
+            }
+
+            return new Exceptional<SelectionResultSet>(resultOutput);
+
+        }
+
+        private DBObjectReadout GenerateCreateIndexResult(String myDBType, List<IndexAttributeDefinition> myAttributeList, AAttributeIndex myAttributeIndex)
+        {
+
+            var payload = new Dictionary<String, Object>();
+
+            payload.Add("NAME", myAttributeIndex.IndexName);
+            payload.Add("EDITION", myAttributeIndex.IndexEdition);
+            payload.Add("INDEXTYPE", myAttributeIndex.IndexType);
+            payload.Add("ONTYPE", myDBType);
+
+            var attributes = new List<DBObjectReadout>();
+
+            foreach (var _Attribute in myAttributeList)
+            {
+                var payloadAttributes = new Dictionary<String, Object>();
+                payloadAttributes.Add("ATTRIBUTE", _Attribute.IndexAttribute);
+                attributes.Add(new DBObjectReadout(payloadAttributes));
+            }
+
+            payload.Add("ATTRIBUTES", new Edge(attributes, "ATTRIBUTE"));
+            //payload.Add("NAME", attributeIndex.IndexName)
+
+            return new DBObjectReadout(payload);
+
+        }
+
+        #endregion
+
     }
 }

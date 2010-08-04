@@ -32,13 +32,15 @@ using System.Text;
 using System.Collections.Generic;
 using sones.Lib.DataStructures;
 using sones.GraphFS.DataStructures;
+using sones.Lib.ErrorHandling;
+using sones.GraphFS.Objects;
 
 #endregion
 
 namespace sones.GraphFS
 {
 
-    public interface IGraphFSStream //: IPandoraObjectOntology
+    public interface IGraphFSStream : IFSObjectOntology, IObjectLocation
     {
 
         GraphFSStreamUUID StreamUUID { get; }
@@ -52,26 +54,7 @@ namespace sones.GraphFS
         UInt64  Position { get; }
         UInt64  Length   { get; }
 
-        #region IPandoraObjectOntology Members
-
-        ObjectLocation ObjectLocation { get; set; }
-        String ObjectName { get; }
-        String ObjectPath { get; set; }
-
-        String ObjectEdition { get; set; }
-        IDictionary<String, ObjectEdition> ObjectEditions { get; }
-
-        RevisionID ObjectRevisionID { get; set; }
-        IDictionary<RevisionID, ObjectRevision> ObjectRevisions { get; }
-
-        String ObjectStream { get; set; }
-        IDictionary<String, ObjectStream> ObjectStreams { get; }
-
-        UInt64 ObjectSize { get; }
-        UInt64 ObjectSizeOnDisc { get; }
-
-        #endregion
-
+        Exceptional Open(FileMode myFileMode, FileAccess myFileAccess, FileShare myFileShare, FileOptions myFileOptions, UInt64 myBufferSize);
 
         // Do NOT change this to UInt64!!!
         Boolean Seek(SeekOrigin myOrigin);

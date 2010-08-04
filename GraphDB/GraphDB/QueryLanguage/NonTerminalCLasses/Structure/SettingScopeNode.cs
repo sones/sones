@@ -23,6 +23,7 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Dirk Bludau</developer>
+ * <developer>Stefan Licht</developer>
  * <summary></summary>
  */
 
@@ -34,6 +35,7 @@ using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
 using sones.GraphDB.QueryLanguage.Enums;
 using sones.GraphDB.TypeManagement;
+using sones.GraphDB.Managers.Structures.Setting;
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 {
@@ -42,20 +44,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
         #region Data
 
-        TypesSettingScope _Scope;
-        public TypesSettingScope Scope
-        {
-            get { return _Scope; }
-        }
-
-        /// <summary>
-        /// This is either a SettingAttrNode or a SettingTypeNode
-        /// </summary>
-        AStructureNode _SettingNode;
-        public AStructureNode SettingNode
-        {
-            get { return _SettingNode; }
-        }
+        public ASettingDefinition SettingDefinition { get; private set; }
 
         #endregion
 
@@ -77,13 +66,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             {
                 if (parseNode.ChildNodes[0].AstNode is SettingAttrNode)
                 {
-                    _Scope = TypesSettingScope.ATTRIBUTE;
-                    _SettingNode = parseNode.ChildNodes[0].AstNode as AStructureNode;
+                    SettingDefinition = new SettingAttributeDefinition((parseNode.ChildNodes[0].AstNode as SettingAttrNode).Attributes);
                 }
                 else if (parseNode.ChildNodes[0].AstNode is SettingTypeNode)
                 {
-                    _Scope = TypesSettingScope.TYPE;
-                    _SettingNode = parseNode.ChildNodes[0].AstNode as AStructureNode;
+                    SettingDefinition = new SettingTypeDefinition((parseNode.ChildNodes[0].AstNode as SettingTypeNode).Types);
                 }
             }
             else if (parseNode.ChildNodes[0] != null)
@@ -91,14 +78,14 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
                 switch (parseNode.ChildNodes[0].Term.Name.ToUpper())
                 { 
                     case "DB":
-                        _Scope = TypesSettingScope.DB;
+                        SettingDefinition = new SettingDBDefinition();
                     break;
                     case "SESSION":
-                        _Scope = TypesSettingScope.SESSION;
+                        SettingDefinition = new SettingSessionDefinition();
                     break;
 
                     default:
-                        _Scope = TypesSettingScope.DB;
+                        SettingDefinition = new SettingDBDefinition();
                     break;
                 }
             }

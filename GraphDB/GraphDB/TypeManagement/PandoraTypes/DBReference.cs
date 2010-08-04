@@ -288,14 +288,12 @@ namespace sones.GraphDB.TypeManagement.PandoraTypes
 
         private void Serialize(ref SerializationWriter mySerializationWriter, DBReference myValue)
         {
-            //myValue._Value.Serialize(ref mySerializationWriter);
-            mySerializationWriter.WriteObject(myValue._Value);            
+            myValue._Value.Serialize(ref mySerializationWriter);
         }
 
         private object Deserialize(ref SerializationReader mySerializationReader, DBReference myValue)
-        {
-            myValue._Value = (ObjectUUID) mySerializationReader.ReadObject();
-            //myValue._Value.Deserialize(ref mySerializationReader);
+        {            
+            myValue._Value.Deserialize(ref mySerializationReader);
             return myValue;
         }
 

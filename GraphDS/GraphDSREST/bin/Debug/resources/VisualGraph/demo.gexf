@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<gexf version="1.1" xmlns="http://www.gexf.net/1.1draft">
+  
+  <graph defaultedgetype="directed" mode="static">
+    
+	<attributes class="node">
+      <attribute id="0" title="url"      type="string"></attribute>
+      <attribute id="1" title="indegree" type="string"></attribute>
+      <attribute id="2" title="frog"     type="string"></attribute>
+    </attributes>
+	
+	<attributes class="edge"></attributes>
+	
+	<nodes>
+	  
+	  <node id="3" label="BarabasiLab">
+	    <attvalues>
+		  <attvalue for="0" value="http://barabasilab.com"></attvalue>
+		  <attvalue for="1" value="1"></attvalue>
+		  <attvalue for="2" value="false"></attvalue>
+		</attvalues>
+      </node>
+	  
+	  <node id="2" label="RTGI">
+	    <attvalues>
+		  <attvalue for="0" value="http://rtgi.fr"></attvalue>
+		  <attvalue for="1" value="1"></attvalue>
+		</attvalues>
+	  </node>
+	  
+	  <node id="1" label="Webatlas">
+	    <attvalues>
+		  <attvalue for="0" value="http://webatlas.fr"></attvalue>
+		  <attvalue for="1" value="2"></attvalue>
+		</attvalues>
+	  </node>
+	  
+	  <node id="0" label="Gephi">
+	    <attvalues>
+		  <attvalue for="0" value="http://gephi.org"></attvalue>
+		  <attvalue for="1" value="1"></attvalue>
+		</attvalues>
+	  </node>
+	  
+	</nodes>
+	
+	<edges>
+	  <edge id="3" label="" source="2" target="1" weight="1.0"></edge>
+	  <edge id="2" label="" source="1" target="0" weight="1.0"></edge>
+	  <edge id="0" label="" source="0" target="1" weight="1.0"></edge>
+	  <edge id="1" label="" source="0" target="2" weight="1.0"></edge>
+	  <edge id="4" label="" source="0" target="3" weight="1.0"></edge>
+	</edges>
+	
+  </graph>
+  
+</gexf>

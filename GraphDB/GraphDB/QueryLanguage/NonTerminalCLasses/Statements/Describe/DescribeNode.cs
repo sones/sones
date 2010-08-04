@@ -23,6 +23,7 @@
  *            company="sones GmbH">
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
+ * <developer>Stefan Licht</developer>
  * <developer>Dirk Bludau</developer>
  * <summary></summary>
  */
@@ -37,6 +38,7 @@ using sones.GraphDB.QueryLanguage.Result;
 using sones.GraphDB.QueryLanguage.Enums;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements;
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.GraphDB.Managers.Structures.Describe;
 
 #endregion
 
@@ -48,8 +50,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
         #region Data
 
-        private QueryResult              _ParsingResult = null;
-        private List<SelectionResultSet> _Result        = null;
+        private ADescribeDefinition _DescribeDefinition;
 
         #endregion
 
@@ -66,18 +67,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         public override void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
         {
 
-            try
-            {
-                if (myParseTreeNode.HasChildNodes())
-                {
-                    var Scope = (ADescrNode) myParseTreeNode.ChildNodes[1].AstNode;
-                    _Result = Scope.Result;
-                }
-            }
-            catch (Exception e)
-            {
-                _ParsingResult = new QueryResult(new Error_UnknownDBError(e) );
-            }
+            _DescribeDefinition = ((ADescrNode)myParseTreeNode.ChildNodes[1].AstNode).DescribeDefinition;
 
         }
 
@@ -100,11 +90,19 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
         public override QueryResult Execute(IGraphDBSession myIGraphDBSession, DBContext myDBContext)
         {
 
-            if (_ParsingResult == null)
-                _ParsingResult = new QueryResult(_Result);
+            var result = _DescribeDefinition.GetResult(myDBContext);
+            QueryResult qresult = null;
 
-            return _ParsingResult;
+            if (result.Failed)
+            {
+                qresult = new QueryResult(result);
+            }
+            else
+            {
+                qresult = new QueryResult(result.Value);
+            }
 
+            return qresult;
         }
 
         #endregion

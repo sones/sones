@@ -165,7 +165,7 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
-        #region Constructors
+        #region Constructor(s)
 
         #region GraphDSSharp()
 
@@ -191,13 +191,13 @@ namespace sones.GraphDS.API.CSharp
         public GraphDSSharp(String myAssembly)
         {
 
-            _AssemblyTypes = new Dictionary<string, Type>();
+            _AssemblyTypes = new Dictionary<String, Type>();
 
             var assembly = Assembly.LoadFile(myAssembly);
 
-            foreach (var type in assembly.GetTypes())
+            foreach (var _Type in assembly.GetTypes())
             {
-                _AssemblyTypes.Add(type.Name, type);
+                _AssemblyTypes.Add(_Type.Name, _Type);
             }
 
         }
@@ -210,7 +210,7 @@ namespace sones.GraphDS.API.CSharp
         {
 
             if (_AssemblyTypes.ContainsKey(myTypeName))
-                return Activator.CreateInstance(_AssemblyTypes[myTypeName]) as DBObject;
+                return Activator.CreateInstance(_AssemblyTypes[myTypeName]) as DBVertex;
 
             return null;
 
@@ -227,7 +227,6 @@ namespace sones.GraphDS.API.CSharp
                 throw new ArgumentNullException();
 
             _IGraphDBSession = myIGraphDBSession;
-            //_RESTServiceClient = null;
 
             return true;
 
@@ -440,7 +439,9 @@ namespace sones.GraphDS.API.CSharp
 
                     try
                     {
+                        
                         _IGraphDBSession = new GraphDBSession(new GraphDB2(new UUID(), new ObjectLocation(DatabaseName), _IGraphFSSession, true), Username);
+
                     }
 
                     catch (Exception e)
@@ -499,10 +500,9 @@ namespace sones.GraphDS.API.CSharp
 
 
 
+        #region Query(myQuery, myAction = null, mySuccessAction = null, myPartialSuccessAction = null, myFailureAction = null)
 
-        #region Query(myQuery)
-
-        public override QueryResult Query(String myQuery)
+        public override QueryResult Query(String myQuery, Action<QueryResult> myAction = null, Action<QueryResult> mySuccessAction = null, Action<QueryResult> myPartialSuccessAction = null, Action<QueryResult> myFailureAction = null)
         {
 
             QueryResult _QueryResult = null;
@@ -534,17 +534,10 @@ namespace sones.GraphDS.API.CSharp
 
             }
 
-            // Use REST
-            //else if (_RESTServiceClient != null)
-            //{
-            //    _QueryResult = new QueryResult(_RESTServiceClient.ExecuteGQLCommand(("db=" + _GraphDB).ToBase64(), myQuery.ToBase64()).FromBase64());
-            //}
-
-            // Or fail!
             else
-            {
                 _QueryResult = new QueryResult(new Error_NotImplemented(new StackTrace(true)));
-            }
+
+            QueryResultAction(_QueryResult, myAction, mySuccessAction, myPartialSuccessAction, myFailureAction);
 
             return _QueryResult;
 
@@ -552,10 +545,6 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
-        //internal override String QueryXml(String myQuery)
-        //{
-        //    return Query(myQuery).ToXML().ToString(SaveOptions.DisableFormatting);
-        //}
 
         public override SelectToObjectGraph QuerySelect(String myQuery)
         {
@@ -563,12 +552,14 @@ namespace sones.GraphDS.API.CSharp
         }
 
 
+        #region BeginTransaction(myDistributed = false, myLongRunning = false, myIsolationLevel = IsolationLevel.Serializable, myName = "", myCreated = null)
 
         public override DBTransaction BeginTransaction(Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? myCreated = null)
         {
             return _IGraphDBSession.BeginTransaction(myDistributed, myLongRunning, myIsolationLevel, myName, myCreated);
         }
 
+        #endregion
 
     }
 

@@ -24,6 +24,7 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Henning Rauch</developer>
+ * <developer>Stefan Licht</developer>
  * <summary>This node is requested in case of an Create Types statement.</summary>
  */
 
@@ -47,6 +48,7 @@ using sones.Lib.Session;
 using sones.GraphDB.QueryLanguage.Enums;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -60,9 +62,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
 
         #region Data
 
-        //NLOG: temporarily commented
-        //private static Logger //_Logger = LogManager.GetCurrentClassLogger();
-        private List<GraphDBTypeDefinition> _ListOfTypes = null;
+        private List<GraphDBTypeDefinition> _TypeDefinitions = new List<GraphDBTypeDefinition>();
 
         #endregion
 
@@ -86,7 +86,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
 
         #endregion
 
-        #region public AStatement methods
+        #region Execute
 
         /// <summary>
         /// Executes the statement
@@ -99,8 +99,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
 
             using (var transaction = graphDBSession.BeginTransaction())
             {
+                var innerContext = transaction.GetDBContext();
 
-                var result = transaction.GetDBContext().DBTypeManager.AddBulkTypes(_ListOfTypes);
+                var result = innerContext.DBTypeManager.AddBulkTypes(_TypeDefinitions, innerContext);
 
                 if (!result.Success)
                 {
@@ -131,248 +132,56 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements
 
         }
 
-        #region private helper methods
-
-        /// <summary>
-        /// check for the extends type in create types statement
-        /// </summary>
-        /// <param name="myChildNode">the interessting extends node</param>
-        /// <param name="dbContext">the typemanager</param>
-        /// <param name="parseTreeNodeList">the list of types in the statement</param>
-        private void CheckExtends(BulkTypeListMemberNode myChildNode, DBContext dbContext, ParseTreeNodeList parseTreeNodeList)
-        {
-            #region check extend
-            if (!String.IsNullOrEmpty(myChildNode.Extends))
-            {
-                if (myChildNode.Extends != DBConstants.DBObject)
-                {
-                    GraphDBType extendType = dbContext.DBTypeManager.GetTypeByName(myChildNode.Extends);
-
-                    if (extendType == null)
-                    {
-
-                        var typeFound = from type in parseTreeNodeList where ((BulkTypeListMemberNode)type.AstNode).TypeName == myChildNode.Extends select type.AstNode;
-                        
-                        if(typeFound.IsNullOrEmpty())
-                            throw new GraphDBException(new Error_TypeDoesNotExist(myChildNode.Extends));
-                    }
-                    else
-                    {
-                        if (!extendType.IsUserDefined)
-                            throw new GraphDBException(new Error_InvalidBaseType(myChildNode.Extends));
-                    }
-                }
-            }
-            #endregion
-        }
-
-
-        /// <summary>
-        /// check for the extends type in create type statement
-        /// </summary>
-        /// <param name="myChildNode">the interessting extends node</param>
-        /// <param name="dbContext">the typemanager</param>
-        private void CheckExtends(BulkTypeNode myChildNode, DBContext dbContext)
-        {
-            #region check extend
-            if (!String.IsNullOrEmpty(myChildNode.Extends))
-            {
-                if (myChildNode.Extends != DBConstants.DBObject)
-                {
-                    GraphDBType extendType = dbContext.DBTypeManager.GetTypeByName(myChildNode.Extends);
-
-                    if (extendType == null)
-                        throw new GraphDBException(new Error_TypeDoesNotExist(myChildNode.Extends));
-
-                    if (!extendType.IsUserDefined)
-                        throw new GraphDBException(new Error_InvalidBaseType(myChildNode.Extends));
-                }
-            }
-            #endregion
-        }
-
-        /// <summary>
-        /// check for set or list
-        /// </summary>
-        /// <param name="aChildNode">the interessting ParseNode</param>
-        /// <returns></returns>
-        private Boolean CheckForSet(ParseTreeNode aChildNode)
-        {
-            if (aChildNode.HasChildNodes())
-            {
-                if (aChildNode.ChildNodes[0] != null)
-                {
-                    if (aChildNode.ChildNodes[0].HasChildNodes())
-                    {
-                        if (aChildNode.ChildNodes[0].ChildNodes[0] != null)
-                        {
-                            if (aChildNode.ChildNodes[0].ChildNodes[0].HasChildNodes())
-                            {
-                                if (aChildNode.ChildNodes[0].ChildNodes[0].ChildNodes[0].Token.ValueString.ToUpper() == DBConstants.SET)
-                                    return true;
-                            }
-                            else if (aChildNode.ChildNodes[0].ChildNodes[0].Token.ValueString.ToUpper() == DBConstants.SET)
-                                return true;
-                        }
-                    }
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// check for set constrain attributes in the create type statement
-        /// </summary>
-        /// <param name="aAttrDefNode">the interessting attribute</param>
-        /// <param name="dbContext">the typemanager</param>
-        /// <param name="myTypeName">current type name</param>
-        private void CheckForSetConstraint(ParseTreeNode aAttrDefNode, string myTypeName, DBContext dbContext)
-        {
-            GraphDBType dbType = null;
-            AttributeDefinitionNode attrDef = null;
-
-            foreach (var item in aAttrDefNode.ChildNodes)
-            {
-                foreach(var attr in item.ChildNodes)
-                {
-                    attrDef = (AttributeDefinitionNode)attr.AstNode;
-
-                    if (attrDef.Type != myTypeName)
-                    {
-                        dbType = dbContext.DBTypeManager.GetTypeByName(attrDef.Type);
-
-                        if (dbType == null)
-                            throw new GraphDBException(new Error_TypeDoesNotExist(attrDef.Type));
-
-                        if (attrDef.TypeAttribute.KindOfType == KindsOfType.SetOfReferences)
-                        {
-                            if (!CheckForSet(attr))
-                                throw new GraphDBException(new Error_ListAttributeNotAllowed(myTypeName));
-                        }
-
-                    }
-                    else if (attrDef.Type == myTypeName && attrDef.TypeAttribute.KindOfType == KindsOfType.SetOfReferences)
-                    {
-                        if (!CheckForSet(attr))
-                            throw new GraphDBException(new Error_ListAttributeNotAllowed(myTypeName));
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// check for set constrain attributes in the create types statement
-        /// </summary>
-        /// <param name="aAttrDefNode">the interessting attribute</param>
-        /// <param name="myTypeName">current type name</param>
-        /// <param name="dbContext">the typemanager</param>
-        /// <param name="typeList">type node list</param>
-        private void CheckForSetConstraint(ParseTreeNode aAttrDefNode, string myTypeName, DBContext dbContext, ParseTreeNodeList typeList)
-        {
-            GraphDBType dbType = null;
-            AttributeDefinitionNode attrDef = null;
-            Boolean isUserDefined = false;
-                        
-            foreach (var item in aAttrDefNode.ChildNodes)
-            {
-                foreach (var attr in item.ChildNodes)
-                {
-                    attrDef = (AttributeDefinitionNode)attr.AstNode;
-                    isUserDefined = false;
-
-                    if (attrDef.Type != myTypeName)
-                    {
-                        dbType = dbContext.DBTypeManager.GetTypeByName(attrDef.Type);
-
-                        if (dbType == null)
-                        {
-                            var foundType = from type in typeList where ((BulkTypeListMemberNode)type.AstNode).TypeName == attrDef.Type select type.AstNode;
-
-                            if (foundType.IsNullOrEmpty())
-                                throw new GraphDBException(new Error_TypeDoesNotExist(attrDef.Type));
-
-                            isUserDefined = true;
-                        }
-                        else
-                            isUserDefined = dbType.IsUserDefined;
-
-                        if (attrDef.TypeAttribute.KindOfType == KindsOfType.SetOfReferences && isUserDefined)
-                        {
-                            if (!CheckForSet(attr))
-                                throw new GraphDBException(new Error_ListAttributeNotAllowed(myTypeName));
-                        }
-
-                    }
-                    else if (attrDef.Type == myTypeName && attrDef.TypeAttribute.KindOfType == KindsOfType.SetOfReferences)
-                    {
-                        if (!CheckForSet(attr))
-                            throw new GraphDBException(new Error_ListAttributeNotAllowed(myTypeName));
-                    }
-                }
-            }
-        }
         #endregion
+
+        #region GetContent
 
         /// <summary>
         /// Gets the content of a CreateTypeStatement.
         /// </summary>
-        /// <param name="myCompilerContext">CompilerContext of Irony.</param>
-        /// <param name="myParseTreeNode">The current ParseNode.</param>
-        /// <param name="typeManager">The TypeManager of the PandoraDB.</param>
         public override void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
         {
 
-            var _DBContext   = myCompilerContext.IContext as DBContext;
-            var _TypeManager = _DBContext.DBTypeManager;
-
-            #region Data
-
-            _ListOfTypes = new List<GraphDBTypeDefinition>();
-
-            #endregion
-
-            try
+            if (myParseTreeNode.ChildNodes.Count > 3)
             {
 
-                if (myParseTreeNode.ChildNodes.Count > 3)
+                #region Single type
+
+                BulkTypeNode aTempNode = (BulkTypeNode)myParseTreeNode.ChildNodes[3].AstNode;
+
+                Boolean isAbstract = false;
+
+                if (myParseTreeNode.ChildNodes[1].HasChildNodes())
                 {
-
-                    BulkTypeNode aTempNode = (BulkTypeNode) myParseTreeNode.ChildNodes[3].AstNode;
-                    CheckExtends(aTempNode, _DBContext);
-                    CheckForSetConstraint(myParseTreeNode.ChildNodes[3].ChildNodes[2], aTempNode.TypeName, _DBContext);
-
-                    Boolean isAbstract = false;
-
-                    if (myParseTreeNode.ChildNodes[1].HasChildNodes())
-                        isAbstract = true;
-
-                    _ListOfTypes.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, isAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
-                    
+                    isAbstract = true;
                 }
 
-                else
+                _TypeDefinitions.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, isAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
+                
+                #endregion
+
+            }
+
+            else
+            {
+
+                #region Multi types
+
+                foreach (var _ParseTreeNode in myParseTreeNode.ChildNodes[2].ChildNodes)
                 {
-                    foreach (var _ParseTreeNode in myParseTreeNode.ChildNodes[2].ChildNodes)
+                    if (_ParseTreeNode.AstNode != null)
                     {
-                        if (_ParseTreeNode.AstNode != null)
-                        {
-                            BulkTypeListMemberNode aTempNode = (BulkTypeListMemberNode)_ParseTreeNode.AstNode;
-                            CheckExtends(aTempNode, _DBContext, myParseTreeNode.ChildNodes[2].ChildNodes);
-                            CheckForSetConstraint(_ParseTreeNode.ChildNodes[1].ChildNodes[2], aTempNode.TypeName, _DBContext, myParseTreeNode.ChildNodes[2].ChildNodes);
-                            _ListOfTypes.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, aTempNode.IsAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
-                        }
+                        BulkTypeListMemberNode aTempNode = (BulkTypeListMemberNode)_ParseTreeNode.AstNode;
+                        _TypeDefinitions.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, aTempNode.IsAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
                     }
                 }
 
+                #endregion
+
             }
 
-            catch (GraphDBException e)
-            {
-                throw new GraphDBException(e.GraphDBErrors);
-            }
 
-        }        
+        }
 
         #endregion
     

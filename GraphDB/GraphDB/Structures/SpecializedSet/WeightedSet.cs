@@ -517,11 +517,11 @@ namespace sones.GraphDB.Structures
 
             #region Write
 
-            mySerializationWriter.WriteObject((byte)_SortDirection);
+            mySerializationWriter.WriteByte((Byte)_SortDirection);
             this._DefaultWeight.ID.Serialize(ref mySerializationWriter);
             _DefaultWeight.Serialize(ref mySerializationWriter);
 
-            mySerializationWriter.WriteObject(_WeightedListEntries.Count);
+            mySerializationWriter.WriteUInt32((UInt32)_WeightedListEntries.Count);
 
             foreach (var keyValPair in _WeightedListEntries)
             {
@@ -538,7 +538,7 @@ namespace sones.GraphDB.Structures
 
             #region Read
 
-            _SortDirection = (SortDirection)mySerializationReader.ReadObject();
+            _SortDirection = (SortDirection)mySerializationReader.ReadOptimizedByte();
 
             if (_SortDirection == SortDirection.Desc)
                 _WeightedListEntriesWeights = new SortedDictionary<DBNumber, List<T>>(new SortDescendencyComparer());
@@ -552,8 +552,9 @@ namespace sones.GraphDB.Structures
             _DefaultWeight = (DBNumber)GraphDBTypeMapper.GetADBBaseObjectFromUUID(typeID, 0);
             _DefaultWeight.Deserialize(ref mySerializationReader);
 
-            Int32 _WeightedListEntriesCount = (Int32)mySerializationReader.ReadObject();
-            for (Int32 i = 0; i < _WeightedListEntriesCount; i++)
+            UInt32 _WeightedListEntriesCount = mySerializationReader.ReadUInt32();
+
+            for (UInt32 i = 0; i < _WeightedListEntriesCount; i++)
             {
                 T newT = new T();
                 ((IFastSerialize)newT).Deserialize(ref mySerializationReader);

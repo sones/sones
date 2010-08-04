@@ -121,6 +121,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\FSEventHandlers.cs" />
+    <Compile Include="Stream\GraphFSAsyncResult.cs" />
     <Compile Include="Datastructures\INode\INode.cs" />
     <Compile Include="Datastructures\UUIDs\CacheUUID.cs" />
     <Compile Include="Datastructures\UUIDs\ObjectUUID.cs" />
@@ -239,7 +241,7 @@
     <Compile Include="ObjectLocks.cs" />
     <Compile Include="ObjectLockTypes.cs" />
     <Compile Include="Datastructures\UUIDs\GraphFSStreamUUID.cs" />
-    <Compile Include="Errors\PandoraFSExceptions.cs" />
+    <Compile Include="Errors\GraphFSExceptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Datastructures\RevisionID.cs" />
     <Compile Include="Objects\DictionaryObject\Implementation\ADictionaryObject.cs" />
@@ -262,6 +264,7 @@
     <Compile Include="Session\FSSessionInfo.cs" />
     <Compile Include="Session\FSSessionSettings.cs" />
     <Compile Include="GraphFSFactory.cs" />
+    <Compile Include="Stream\GraphFSWaitHandle.cs" />
     <Compile Include="Transactions\ATransaction.cs" />
     <Compile Include="Transactions\FSTransaction.cs" />
     <Compile Include="Transactions\IsolationLevel.cs" />

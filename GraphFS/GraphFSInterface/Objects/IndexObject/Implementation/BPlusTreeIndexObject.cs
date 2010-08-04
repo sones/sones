@@ -136,14 +136,14 @@ namespace sones.GraphFS.Objects
 
                 #region NotificationHandling
 
-                mySerializationWriter.WriteObject(myNotificationHandling);
+                mySerializationWriter.WriteUInt64(myNotificationHandling);
 
                 #endregion
                 
 
                 #region Write Data
 
-                mySerializationWriter.WriteObject((UInt64)_BPlusTree.Count());
+                mySerializationWriter.WriteUInt64((UInt64)_BPlusTree.Count());
 
                 foreach (var keyValuePair in _BPlusTree)
                 {
@@ -174,13 +174,13 @@ namespace sones.GraphFS.Objects
 
                 #region NotificationHandling
 
-                UInt64 _NotificationHandling = (UInt64) mySerializationReader.ReadObject();
+                UInt64 _NotificationHandling = mySerializationReader.ReadUInt64();
 
                 #endregion                
 
                 #region Read IndexObject items
-                
-                UInt64  IndexHashTableNrOfEntries   = (UInt64)  mySerializationReader.ReadObject();
+
+                UInt64 IndexHashTableNrOfEntries = mySerializationReader.ReadUInt64();
                 Object  KeyObject;
                 Object  ValueObject;
 
@@ -193,7 +193,7 @@ namespace sones.GraphFS.Objects
                     
                     KeyObject = mySerializationReader.ReadObject();
 
-                    UInt64  IndexHashTableNrOfValues   = (UInt64)mySerializationReader.ReadObject();
+                    UInt64 IndexHashTableNrOfValues = mySerializationReader.ReadUInt64();
 
                     for (UInt64 k=0; k < IndexHashTableNrOfValues; k++)
                     {   

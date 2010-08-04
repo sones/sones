@@ -39,6 +39,7 @@ using sones.GraphDB.TypeManagement;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Aggregates;
 using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -51,11 +52,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     public class AggregateNode : FuncCallNode
     {
 
-        #region Data
-
-        private ABaseAggregate _Aggregate = null;
-
-        #endregion
+        public AggregateDefinition AggregateDefinition { get; private set; }
 
         #region constructor
 
@@ -71,9 +68,10 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
             var dbContext = context.IContext as DBContext;
 
             base.GetContent(context, parseNode);
-            _Aggregate = dbContext.DBPluginManager.GetAggregate(_FuncName);
+
+            AggregateDefinition = new AggregateDefinition(new ChainPartAggregateDefinition(base.FuncDefinition));
+
         }
 
-        public ABaseAggregate Aggregate { get { return _Aggregate; } }
     }
 }

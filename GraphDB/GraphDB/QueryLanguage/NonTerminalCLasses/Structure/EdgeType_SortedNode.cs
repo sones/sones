@@ -30,16 +30,14 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
     public class EdgeType_SortedNode : AStructureNode, IAstNodeInit
     {
 
-        private Boolean _IsSorted = false;
         public Boolean IsSorted
         {
-            get { return _IsSorted; }
+            get; private set;
         }
 
-        private SortDirection _SortDirection;
         public SortDirection SortDirection
         {
-            get { return _SortDirection; }
+            get; private set;
         }
 
         private void GetContent(CompilerContext context, ParseTreeNode parseNode)
@@ -47,11 +45,11 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             if (!parseNode.HasChildNodes())
                 return;
 
-            _IsSorted = true;
+            IsSorted = true;
             if (parseNode.ChildNodes.Count == 3 && parseNode.ChildNodes[2].Token.Text.ToUpper() == GraphQL.TERMINAL_DESC)
-                _SortDirection = SortDirection.Desc;
+                SortDirection = SortDirection.Desc;
             else
-                _SortDirection = SortDirection.Asc;
+                SortDirection = SortDirection.Asc;
         }
 
         #region IAstNodeInit Members

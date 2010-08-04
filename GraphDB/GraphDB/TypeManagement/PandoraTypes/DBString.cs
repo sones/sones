@@ -283,12 +283,12 @@ namespace sones.GraphDB.TypeManagement.PandoraTypes
 
         private void Serialize(ref SerializationWriter mySerializationWriter, DBString myValue)
         {
-            mySerializationWriter.WriteObject(myValue._Value);
+            mySerializationWriter.WriteString((String)myValue.Value);
         }
 
         private object Deserialize(ref SerializationReader mySerializationReader, DBString myValue)
         {
-            myValue._Value = (String)mySerializationReader.ReadObject();
+            myValue._Value = mySerializationReader.ReadString();
             return myValue;
         }
 

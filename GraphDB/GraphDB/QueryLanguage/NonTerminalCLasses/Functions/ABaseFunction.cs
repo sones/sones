@@ -48,6 +48,7 @@ using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
 using sones.GraphDB.Errors;
 using sones.GraphFS.Session;
 using sones.Lib.Session;
+using sones.GraphDB.Managers.Structures;
 
 namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Functions
 {

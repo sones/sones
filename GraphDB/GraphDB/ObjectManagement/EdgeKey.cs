@@ -97,9 +97,6 @@ namespace sones.GraphDB.ObjectManagement
             _isDirty = false;
         }
 
-        /// <summary>
-        /// This will create an empty DBObject
-        /// </summary>
         public EdgeKey(TypeUUID typeUUID, AttributeUUID attrUUID)
         {
             _typeUUID = typeUUID;
@@ -116,6 +113,12 @@ namespace sones.GraphDB.ObjectManagement
         public EdgeKey(TypeAttribute myTypeAttribute)
             : this(myTypeAttribute.RelatedGraphDBTypeUUID, myTypeAttribute.UUID)
         { }
+
+        public EdgeKey(TypeUUID typeUUID)
+        {
+            _typeUUID = typeUUID;
+            _isDirty = false;
+        }
 
         #endregion
 
@@ -302,9 +305,9 @@ namespace sones.GraphDB.ObjectManagement
             
         }
 
-        public Tuple<GraphDBType, TypeAttribute> GetTypeAndAttributeInformation(DBContext dbContext)
+        public Tuple<GraphDBType, TypeAttribute> GetTypeAndAttributeInformation(DBTypeManager myDBTypeManager)
         {
-            var type = dbContext.DBTypeManager.GetTypeByUUID(this.TypeUUID);
+            var type = myDBTypeManager.GetTypeByUUID(this.TypeUUID);
             if (type != null)
             {
                 return new Tuple<GraphDBType, TypeAttribute>(type, type.GetTypeAttributeByUUID(this.AttrUUID));

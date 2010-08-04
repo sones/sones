@@ -77,8 +77,8 @@ namespace sones.GraphFS.Notification
 
                 var _SerializationWriter = new SerializationWriter();
 
-                _SerializationWriter.WriteObject(ObjectLocation);
-                _SerializationWriter.WriteObject(NewDefaultRule);
+                _SerializationWriter.WriteString(ObjectLocation);
+                _SerializationWriter.WriteByte(NewDefaultRule);
 
                 return _SerializationWriter.ToArray();
 
@@ -89,8 +89,8 @@ namespace sones.GraphFS.Notification
 
                 var _SerializationReader = new SerializationReader(mySerializedBytes);
 
-                ObjectLocation = (String) _SerializationReader.ReadObject();
-                NewDefaultRule = (Byte)   _SerializationReader.ReadObject();
+                ObjectLocation = _SerializationReader.ReadString();
+                NewDefaultRule = _SerializationReader.ReadOptimizedByte();
 
             }
 

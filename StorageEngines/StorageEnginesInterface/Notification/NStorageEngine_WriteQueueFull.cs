@@ -55,7 +55,7 @@ namespace sones.StorageEngines.Notification
             public byte[] Serialize()
             {
                 var _SerializationWriter = new SerializationWriter();
-                _SerializationWriter.WriteObject(NumberOfQueueEntries);
+                _SerializationWriter.WriteUInt32(NumberOfQueueEntries);
 
                 return _SerializationWriter.ToArray();
             }
@@ -63,7 +63,7 @@ namespace sones.StorageEngines.Notification
             public void Deserialize(byte[] mySerializedBytes)
             {
                 var _SerializationReader = new SerializationReader(mySerializedBytes);
-                NumberOfQueueEntries = (UInt32)_SerializationReader.ReadObject();
+                NumberOfQueueEntries = _SerializationReader.ReadUInt32();
             }
 
             #endregion

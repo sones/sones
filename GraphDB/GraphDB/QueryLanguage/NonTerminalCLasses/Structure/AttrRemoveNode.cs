@@ -24,6 +24,7 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Henning Rauch</developer>
+ * <developer>Stefan Licht</developer>
  * <summary>This node is requested in case of an AttrRemove node.</summary>
  */
 
@@ -34,6 +35,7 @@ using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -44,9 +46,10 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
     /// </summary>
     public class AttrRemoveNode : AStructureNode, IAstNodeInit
     {
+
         #region properties
 
-        private List<String> _toBeRemovedAttributes = null;
+        public AttributeRemove AttributeRemove { get; private set; }
 
         #endregion
 
@@ -61,20 +64,15 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure
 
         public void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
-            _toBeRemovedAttributes = new List<string>();
+            var _toBeRemovedAttributes = new List<string>();
 
             foreach (ParseTreeNode aParseTreeNode in parseNode.ChildNodes[2].ChildNodes)
             {
                 _toBeRemovedAttributes.Add(aParseTreeNode.Token.ValueString);
             }
+
+            AttributeRemove = new AttributeRemove(_toBeRemovedAttributes);
         }
-
-        #region Accessessors
-
-        public List<String> ToBeRemovedAttributes { get { return _toBeRemovedAttributes; } }
-
-        #endregion
-
 
         #region IAstNodeInit Members
 

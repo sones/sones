@@ -22,9 +22,7 @@
  * AFSStructure
  * Achim Friedland, 2008 - 2009
  * 
- * The abstract class for all PandoraFS file system structures
- * 
- *  * Layout of the APandoraStructure Header:
+ *  * Layout of the AFSStructure Header:
  * -------------------------------------------------
  * IFastSerialize Header            - 4 bytes
  * 
@@ -44,9 +42,6 @@
  * Data Padding                     - q bytes
  * Additional Padding               - r bytes
  * 
- * Lead programmer:
- *      Achim Friedland
- * 
  */
 
 #region Usings
@@ -55,13 +50,14 @@ using System;
 using System.Text;
 using System.Runtime.Serialization;
 
+using sones.GraphFS.Objects;
+using sones.GraphFS.Exceptions;
+
 using sones.Lib;
 using sones.Lib.Serializer;
 using sones.Lib.Cryptography.IntegrityCheck;
 using sones.Lib.Cryptography.SymmetricEncryption;
 using sones.Lib.NewFastSerializer;
-using sones.GraphFS.Objects;
-using sones.GraphFS.Exceptions;
 
 #endregion
 
@@ -69,10 +65,10 @@ namespace sones.GraphFS.DataStructures
 {
 
     /// <summary>
-    /// The abstract class for all file system structures
+    /// The abstract class for all IGraphFS structures
     /// </summary>
 
-    public abstract class AFSStructure : AObjectHeader, IFastSerialize
+    public abstract class AFSStructure : AFSObjectHeader, IFastSerialize
     {
 
         #region Constructors
@@ -388,7 +384,7 @@ namespace sones.GraphFS.DataStructures
                 #region Deserialize Inner Object
 
                 _StructureVersion       = BitConverter.ToUInt16(reader.ReadBytesDirect(2), 0);
-                ObjectUUID              = new ObjectUUID((Byte[]) reader.ReadObject());   // n or at least 16 Bytes
+                ObjectUUID              = new ObjectUUID(reader.ReadByteArray());   // n or at least 16 Bytes
 
                 Deserialize(ref reader);
 

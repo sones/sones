@@ -164,13 +164,13 @@ namespace sones.GraphFS.Objects
 
                 #region NotificationHandling
 
-                mySerializationWriter.WriteObject(myNotificationHandling);
+                mySerializationWriter.WriteUInt64(myNotificationHandling);
 
                 #endregion
                 
                 #region Write Data
 
-                mySerializationWriter.WriteObject((UInt64)_IDictionary.Count);
+                mySerializationWriter.WriteUInt32((UInt32)_IDictionary.Count);
 
                 foreach (var keyValuePair in _IDictionary)
                 {
@@ -178,7 +178,7 @@ namespace sones.GraphFS.Objects
                     mySerializationWriter.WriteObject(keyValuePair.Key);
                     //((IFastSerialize)keyValuePair.Key).Serialize(ref mySerializationWriter);                    
 
-                    mySerializationWriter.WriteObject((UInt64) new HashSet<TValue>(keyValuePair.Value).Count);
+                    mySerializationWriter.WriteUInt32((UInt32) new HashSet<TValue>(keyValuePair.Value).Count);
 
                     foreach (TValue val in keyValuePair.Value)
                         mySerializationWriter.WriteObject(val);
@@ -208,13 +208,13 @@ namespace sones.GraphFS.Objects
 
                 #region NotificationHandling
 
-                UInt64 _NotificationHandling = (UInt64) mySerializationReader.ReadObject();
+                UInt64 _NotificationHandling = mySerializationReader.ReadUInt64();
 
                 #endregion                
 
                 #region Read IndexObject items
-                
-                UInt64  IndexHashTableNrOfEntries   = (UInt64)  mySerializationReader.ReadObject();
+
+                UInt32 IndexHashTableNrOfEntries = mySerializationReader.ReadUInt32();
                 Object  KeyObject;
                 Object  ValueObject;
 
@@ -222,16 +222,16 @@ namespace sones.GraphFS.Objects
 
                 #region Read Data
 
-                for (UInt64 i=0; i < IndexHashTableNrOfEntries; i++)
+                for (UInt32 i=0; i < IndexHashTableNrOfEntries; i++)
                 {
                     
                     KeyObject = mySerializationReader.ReadObject();
 
                     _IDictionary.Add((TKey)KeyObject, new HashSet<TValue>());
 
-                    UInt64  IndexHashTableNrOfValues   = (UInt64)mySerializationReader.ReadObject();
+                    UInt32 IndexHashTableNrOfValues = (UInt32)mySerializationReader.ReadUInt32();
 
-                    for (UInt64 k=0; k < IndexHashTableNrOfValues; k++)
+                    for (UInt32 k=0; k < IndexHashTableNrOfValues; k++)
                     {   
                          ValueObject = mySerializationReader.ReadObject();
                         _IDictionary[(TKey)KeyObject].Add((TValue)ValueObject);

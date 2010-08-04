@@ -38,6 +38,7 @@ using sones.GraphDB.Errors;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Session;
 using sones.Lib.Session;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 

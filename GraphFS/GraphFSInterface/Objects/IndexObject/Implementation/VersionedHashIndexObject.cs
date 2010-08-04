@@ -194,16 +194,20 @@ namespace sones.GraphFS.Objects
 
                 #region NotificationHandling
 
-                mySerializationWriter.WriteObject(myNotificationHandling);
+                mySerializationWriter.WriteUInt64(myNotificationHandling);
 
                 #endregion
 
                 foreach (var _KeyValuePair in _IDictionary)
+                {
                     foreach (var _Value in _KeyValuePair.Value.Values)
-                        mySerializationWriter.WriteObject((Byte)OP.ADD).
+                    {
+                        mySerializationWriter.WriteByte((Byte)OP.ADD).
                                               WriteObject(_KeyValuePair.Key).
-                                              WriteObject(_KeyValuePair.Value.LatestTimestamp).
+                                              WriteUInt64(_KeyValuePair.Value.LatestTimestamp).
                                               WriteObject(_Value);
+                    }
+                }
 
             }
 
@@ -359,7 +363,7 @@ namespace sones.GraphFS.Objects
         private void SetOnFileSystem(TKey myKey, TValue myValue, UInt64 myTimestamp, OP myOP)
         {
 
-            if (_IGraphFSReference.CheckPersistency())
+            if (_IGraphFSReference.IsPersistent())
             {
 
                 var _IFSStream = this._IGraphFSReference.Value.OpenStream(new SessionToken(new FSSessionInfo("AVersionedDictionaryObject")), _ObjectLocation, _ObjectStream, _ObjectEdition, null, 0);
@@ -375,7 +379,7 @@ namespace sones.GraphFS.Objects
 
             }
 
-            else if (_IGraphFSSessionReference.CheckPersistency())
+            else if (_IGraphFSSessionReference.IsPersistent())
             {
 
                 var _IFSStream = this._IGraphFSSessionReference.Value.OpenStream(_ObjectLocation, _ObjectStream, _ObjectEdition, null, 0);

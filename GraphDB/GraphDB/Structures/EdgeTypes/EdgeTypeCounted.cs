@@ -20,20 +20,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
-using sones.GraphDB.TypeManagement.PandoraTypes;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
-using sones.GraphDB.TypeManagement;
-using sones.Lib.Serializer;
-using sones.GraphDB.QueryLanguage.Result;
-using sones.Lib.NewFastSerializer;
-using sones.Lib.ErrorHandling;
-using sones.Lib.DataStructures.UUID;
-using sones.GraphFS.DataStructures;
+using sones.GraphDB.Errors;
+using sones.GraphDB.Exceptions;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.QueryLanguage;
+using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphFS.DataStructures;
 using sones.Lib;
+using sones.Lib.ErrorHandling;
+using sones.Lib.NewFastSerializer;
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
@@ -41,13 +39,23 @@ namespace sones.GraphDB.Structures.EdgeTypes
     public class EdgeTypeCounted : ASingleReferenceEdgeType
     {
 
-        private ObjectUUID _ObjectUUID;
+        private Reference _Reference;
         private ADBBaseObject _Count;
         private ADBBaseObject _CountBy;
+        private TypeUUID _typeOfDBObject = null;
 
         #region TypeCode 
         public override UInt32 TypeCode { get { return 451; } }
         #endregion
+
+        public EdgeTypeCounted()
+        {
+        }
+
+        public EdgeTypeCounted(TypeUUID typeOfDBObject)
+        {
+            _typeOfDBObject = typeOfDBObject;
+        }
 
         #region AEdgeType Members
 
@@ -106,19 +114,29 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return edgeTypeCounted;
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
+        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable, TypeUUID typeOfDBObjects)
         {
-            return GetNewInstance();
+            var edgeTypeCounted = new EdgeTypeCounted(typeOfDBObjects);
+            if (_Count != null)
+                edgeTypeCounted._Count = _Count.Clone();
+            if (_CountBy != null)
+                edgeTypeCounted._CountBy = _CountBy.Clone();
+            return edgeTypeCounted;
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable)
+        public override AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeOfDBObjects)
         {
-            return GetNewInstance();
+            var edgeTypeCounted = new EdgeTypeCounted(typeOfDBObjects);
+            if (_Count != null)
+                edgeTypeCounted._Count = _Count.Clone();
+            if (_CountBy != null)
+                edgeTypeCounted._CountBy = _CountBy.Clone();
+            return edgeTypeCounted;
         }
 
         public override DBObjectReadout GetReadout(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO)
         {
-            return (DBObjectReadout) new DBWeightedObjectReadout(GetAllAttributesFromDBO(_ObjectUUID).Attributes, _Count);
+            return (DBObjectReadout) new DBWeightedObjectReadout(GetAllAttributesFromDBO(_Reference.ObjectUUID).Attributes, _Count);
         }
 
         public override String GetDescribeOutput(GraphDBType myGraphDBType)
@@ -138,29 +156,38 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public override ObjectUUID GetUUID()
         {
-            return _ObjectUUID;
+            return _Reference.ObjectUUID;
         }
 
-        public override IEnumerable<ObjectUUID> GetAllUUIDs()
+        public override IEnumerable<ObjectUUID> GetAllReferenceIDs()
         {
-            yield return _ObjectUUID;
+            yield return _Reference.ObjectUUID;
 
             yield break;
         }
 
-        public override void Set(ObjectUUID myValue, params ADBBaseObject[] myParameters)
+        public override void Set(ObjectUUID myValue, TypeUUID typeOfDBObjects, params ADBBaseObject[] myParameters)
         {
             if (myValue == null)
             {
-                _ObjectUUID = null;
+                _Reference = null;
                 _Count.SetValue(DBObjectInitializeType.Default);
                 return;
             }
 
-            _ObjectUUID = myValue;
+            if (_typeOfDBObject == null)
+            {
+                _typeOfDBObject = typeOfDBObjects;
+            }
+
+            _Reference = new Reference(myValue, typeOfDBObjects);
 
             if (myParameters != null && myParameters.Count() > 0)
             {
+                if (!_Count.IsValidValue(myParameters[0].Value))
+                {
+                    throw new GraphDBException(new Error_EdgeParameterTypeMismatch(myParameters[0], _Count));
+                }
                 _Count.Add(myParameters[0]);
             }
             else
@@ -171,9 +198,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public override Boolean RemoveUUID(ObjectUUID myObjectUUID)
         {
-            if (myObjectUUID == _ObjectUUID)
+            if (myObjectUUID == _Reference.ObjectUUID)
             {
-                _ObjectUUID = null;
+                _Reference = null;
                 return true;
             }
 
@@ -184,9 +211,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
         {
             if (!myObjectUUIDs.IsNullOrEmpty())
             {
-                if (myObjectUUIDs.Contains(_ObjectUUID))
+                if (myObjectUUIDs.Contains(_Reference.ObjectUUID))
                 {
-                    _ObjectUUID = null;
+                    _Reference = null;
                     return true;
                 }
 
@@ -202,7 +229,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
             if (!(mySingleEdgeType is EdgeTypeCounted))
                 throw new ArgumentException("mySingleEdgeType is not of type EdgeTypeCounted");
 
-            _ObjectUUID = mySingleEdgeType.GetUUID();
+            _Reference = new Reference(mySingleEdgeType.GetUUID(), mySingleEdgeType.GetTypeUUIDOfReferences());
+
             _Count.Add((mySingleEdgeType as EdgeTypeCounted)._Count);
         }
 
@@ -210,9 +238,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// Get all uuids and their edge infos
         /// </summary>
         /// <returns></returns>
-        public override IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetEdges()
+        public override IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetAllReferenceIDsWeighted()
         {
-            yield return new Tuple<ObjectUUID, ADBBaseObject>(_ObjectUUID, _Count);
+            yield return new Tuple<ObjectUUID, ADBBaseObject>(_Reference.ObjectUUID, _Count);
         }
 
         #endregion
@@ -233,10 +261,26 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         private void Serialize(ref SerializationWriter mySerializationWriter, EdgeTypeCounted myValue)
         {
-            if (myValue._ObjectUUID != null)
-                myValue._ObjectUUID.Serialize(ref mySerializationWriter);
-            else
-                mySerializationWriter.WriteObject(null);
+            mySerializationWriter.WriteObject(_typeOfDBObject);
+            
+            //if (myValue._typeOfDBObject != null)
+            //{
+            //    myValue._typeOfDBObject.Serialize(ref mySerializationWriter);
+            //}
+            //else
+            //{
+            //    mySerializationWriter.WriteObject(null);
+            //}
+
+            mySerializationWriter.WriteObject(myValue._Reference);
+            //if (myValue._Reference != null)
+            //{
+            //    myValue._Reference.Serialize(ref mySerializationWriter);
+            //}
+            //else
+            //{
+            //    mySerializationWriter.WriteObject(null);
+            //}
 
             myValue._Count.ID.Serialize(ref mySerializationWriter);
             myValue._Count.Serialize(ref mySerializationWriter);
@@ -246,8 +290,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         private object Deserialize(ref SerializationReader mySerializationReader, EdgeTypeCounted myValue)
         {
-            myValue._ObjectUUID = new ObjectUUID();
-            myValue._ObjectUUID.Deserialize(ref mySerializationReader);
+            myValue._typeOfDBObject = new TypeUUID(ref mySerializationReader);
+            myValue._Reference = (Reference)mySerializationReader.ReadObject();
             TypeUUID countType = new TypeUUID(ref mySerializationReader);
             myValue._Count = GraphDBTypeMapper.GetADBBaseObjectFromUUID(countType);
             myValue._Count.Deserialize(ref mySerializationReader);
@@ -315,5 +359,23 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         #endregion
 
+        public override IEnumerable<Exceptional<DBObjectStream>> GetAllEdgeDestinations(DBObjectCache dbObjectCache)
+        {
+            yield return _Reference.GetDBObjectStream(dbObjectCache);
+
+            yield break;
+        }
+
+        public override IEnumerable<Tuple<Exceptional<DBObjectStream>, ADBBaseObject>> GetAllEdgeDestinationsWeighted(DBObjectCache dbObjectCache)
+        {
+            yield return new Tuple<Exceptional<DBObjectStream>, ADBBaseObject>(_Reference.GetDBObjectStream(dbObjectCache), _Count);
+
+            yield break;
+        }
+
+        public override TypeUUID GetTypeUUIDOfReferences()
+        {
+            return _typeOfDBObject;
+        }
     }
 }

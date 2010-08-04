@@ -77,10 +77,10 @@ namespace sones.GraphFS.Notification
 
                 var _SerializationWriter = new SerializationWriter();
 
-                _SerializationWriter.WriteObject(ObjectLocation.ToString());
-                _SerializationWriter.WriteObject(ObjectStream);
-                _SerializationWriter.WriteObject(ObjectEdition);
-                _SerializationWriter.WriteObject(ObjectRevisionID.ToString());
+                _SerializationWriter.WriteString(ObjectLocation.ToString());
+                _SerializationWriter.WriteString(ObjectStream);
+                _SerializationWriter.WriteString(ObjectEdition);
+                _SerializationWriter.WriteString(ObjectRevisionID.ToString());
 
                 return _SerializationWriter.ToArray();
 
@@ -91,10 +91,10 @@ namespace sones.GraphFS.Notification
                 
                 var _SerializationReader = new SerializationReader(mySerializedBytes);
 
-                ObjectLocation      = new ObjectLocation((String) _SerializationReader.ReadObject());
-                ObjectStream        = (String) _SerializationReader.ReadObject();
-                ObjectEdition       = (String) _SerializationReader.ReadObject();
-                ObjectRevisionID    = new RevisionID((String) _SerializationReader.ReadObject());
+                ObjectLocation      = new ObjectLocation(_SerializationReader.ReadString());
+                ObjectStream        = _SerializationReader.ReadString();
+                ObjectEdition       = _SerializationReader.ReadString();
+                ObjectRevisionID    = new RevisionID(_SerializationReader.ReadString());
 
             }
 

@@ -43,6 +43,7 @@ using sones.Lib.Frameworks.CLIrony.Compiler;
 using sones.GraphDB;
 using sones.GraphFS.Session;
 using sones.GraphDB.TypeManagement;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -172,7 +173,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Entity
 
-                dbContext.DBTypeManager.AddType("Entity", DBConstants.DBBaseObject, new Dictionary<TypeAttribute, String>(), "");
+                dbContext.DBTypeManager.AddType("Entity", DBConstants.DBBaseObject, new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Entity", "label", DBConstants.DBString);
                 dbContext.DBTypeManager.AddAttributeToType("Entity", "comment", DBConstants.DBString);
                 //dbContext.DBTypeManager.AddAttributeToType("Entity", "locatedIn", "Location");
@@ -181,15 +182,15 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Abstract
 
-                dbContext.DBTypeManager.AddType("Abstract", "Entity", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Abstract", "Entity", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region BusinessAbstraction
 
-                dbContext.DBTypeManager.AddType("BusinessAbstraction", "Abstract", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("BusinessAbstraction", "Abstract", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region IndustrySector
 
-                dbContext.DBTypeManager.AddType("IndustrySector", "BusinessAbstraction", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("IndustrySector", "BusinessAbstraction", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("IndustrySector", "subSectorOf", "IndustrySector");
                 dbContext.DBTypeManager.AddAttributeToType("IndustrySector", "hasCode", DBConstants.DBString);
 
@@ -197,7 +198,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Market
 
-                dbContext.DBTypeManager.AddType("Market", "BusinessAbstraction", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Market", "BusinessAbstraction", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -205,11 +206,11 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region UserAbstraction
 
-                dbContext.DBTypeManager.AddType("UserAbstraction", "Abstract", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("UserAbstraction", "Abstract", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region KissNoFrogUser
 
-                dbContext.DBTypeManager.AddType("KissNoFrogUser", "UserAbstraction", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("KissNoFrogUser", "UserAbstraction", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("KissNoFrogUser", "hasMeetingLowerAge", DBConstants.DBInteger);
                 dbContext.DBTypeManager.AddAttributeToType("KissNoFrogUser", "hasMeetingUpperAge", DBConstants.DBInteger);
                 //dbContext.DBTypeManager.AddAttributeToType("KissNoFrogUser", "hasTags", "LIST<Tag>");
@@ -223,7 +224,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region KissNoFrogVisitor
 
-                dbContext.DBTypeManager.AddType("KissNoFrogVisitor", "KissNoFrogUser", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("KissNoFrogVisitor", "KissNoFrogUser", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("KissNoFrogVisitor", "whenVisited", DBConstants.DBDateTime);
 
                 #endregion
@@ -234,15 +235,15 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region ContactInformation
 
-                dbContext.DBTypeManager.AddType("ContactInformation", "Abstract", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("ContactInformation", "Abstract", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region Adress
 
-                dbContext.DBTypeManager.AddType("Adress", "ContactInformation", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Adress", "ContactInformation", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region PostalAdress
 
-                dbContext.DBTypeManager.AddType("PostalAdress", "Adress", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("PostalAdress", "Adress", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -250,33 +251,33 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region InternetAdress
 
-                dbContext.DBTypeManager.AddType("InternetAdress", "ContactInformation", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("InternetAdress", "ContactInformation", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region EMail
 
-                dbContext.DBTypeManager.AddType("EMail", "InternetAdress", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("EMail", "InternetAdress", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region IPAdress
 
-                dbContext.DBTypeManager.AddType("IPAdress", "InternetAdress", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("IPAdress", "InternetAdress", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region InternetDomain
 
-                dbContext.DBTypeManager.AddType("InternetDomain", "InternetAdress", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("InternetDomain", "InternetAdress", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region WebPage
 
-                dbContext.DBTypeManager.AddType("WebPage", "InternetAdress", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("WebPage", "InternetAdress", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region HomePage
 
-                dbContext.DBTypeManager.AddType("HomePage", "WebPage", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("HomePage", "WebPage", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -286,7 +287,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region PhoneNumber
 
-                dbContext.DBTypeManager.AddType("PhoneNumber", "ContactInformation", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("PhoneNumber", "ContactInformation", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -294,11 +295,11 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region GeneralTerm
 
-                dbContext.DBTypeManager.AddType("GeneralTerm", "Abstract", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("GeneralTerm", "Abstract", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region Tag
 
-                dbContext.DBTypeManager.AddType("Tag", "GeneralTerm", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Tag", "GeneralTerm", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -306,11 +307,11 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Leisure
 
-                dbContext.DBTypeManager.AddType("Leisure", "Abstract", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Leisure", "Abstract", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region FulltxtLeisure
 
-                dbContext.DBTypeManager.AddType("FulltxtLeisure", "Leisure", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("FulltxtLeisure", "Leisure", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -318,41 +319,41 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Language
 
-                dbContext.DBTypeManager.AddType("Language", "Abstract", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Language", "Abstract", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region SocialAbstraction
 
-                dbContext.DBTypeManager.AddType("SocialAbstraction", "Abstract", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("SocialAbstraction", "Abstract", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region Art
 
-                dbContext.DBTypeManager.AddType("Art", "SocialAbstraction", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Art", "SocialAbstraction", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Money
 
-                dbContext.DBTypeManager.AddType("Money", "SocialAbstraction", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Money", "SocialAbstraction", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Profession
 
-                dbContext.DBTypeManager.AddType("Profession", "SocialAbstraction", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Profession", "SocialAbstraction", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region ResearchArea
 
-                dbContext.DBTypeManager.AddType("ResearchArea", "SocialAbstraction", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("ResearchArea", "SocialAbstraction", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Sport
 
-                dbContext.DBTypeManager.AddType("Sport", "SocialAbstraction", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Sport", "SocialAbstraction", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -360,47 +361,47 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region TemporalAbstraction
 
-                dbContext.DBTypeManager.AddType("TemporalAbstraction", "Abstract", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("TemporalAbstraction", "Abstract", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region CalendarMonth
 
-                dbContext.DBTypeManager.AddType("CalendarMonth", "TemporalAbstraction", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("CalendarMonth", "TemporalAbstraction", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region DayOfMonth
 
-                dbContext.DBTypeManager.AddType("DayOfMonth", "TemporalAbstraction", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("DayOfMonth", "TemporalAbstraction", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region DayOfWeek
 
-                dbContext.DBTypeManager.AddType("DayOfWeek", "TemporalAbstraction", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("DayOfWeek", "TemporalAbstraction", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region DayTime
 
-                dbContext.DBTypeManager.AddType("DayTime", "TemporalAbstraction", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("DayTime", "TemporalAbstraction", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Festival
 
-                dbContext.DBTypeManager.AddType("Festival", "TemporalAbstraction", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Festival", "TemporalAbstraction", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Season
 
-                dbContext.DBTypeManager.AddType("Season", "TemporalAbstraction", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Season", "TemporalAbstraction", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region TimeZone
 
-                dbContext.DBTypeManager.AddType("TimeZone", "TemporalAbstraction", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("TimeZone", "TemporalAbstraction", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -408,18 +409,18 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Topic
 
-                dbContext.DBTypeManager.AddType("Topic", "Abstract", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Topic", "Abstract", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Topic", "isSubTopicOf", "Topic");
 
                 #endregion
 
                 #region NaturalPhenomenon
 
-                dbContext.DBTypeManager.AddType("NaturalPhenomenon", "Abstract", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("NaturalPhenomenon", "Abstract", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region SexualOrientation
 
-                dbContext.DBTypeManager.AddType("SexualOrientation", "NaturalPhenomenon", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("SexualOrientation", "NaturalPhenomenon", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -429,34 +430,34 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Happening
 
-                dbContext.DBTypeManager.AddType("Happening", "Entity", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Happening", "Entity", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Happening", "startTime", DBConstants.DBDateTime);
                 dbContext.DBTypeManager.AddAttributeToType("Happening", "endTime", DBConstants.DBDateTime);
 
                 #region Event
 
-                dbContext.DBTypeManager.AddType("Event", "Happening", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Event", "Happening", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region Accident
 
-                dbContext.DBTypeManager.AddType("Accident", "Event", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Accident", "Event", new Dictionary<AttributeDefinition, string>(), "");
 
 
                 #endregion
 
                 #region ArtPerformace
 
-                dbContext.DBTypeManager.AddType("ArtPerformace", "Event", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("ArtPerformace", "Event", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Meeting
 
-                dbContext.DBTypeManager.AddType("Meeting", "Event", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Meeting", "Event", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region KNFMeeting
 
-                dbContext.DBTypeManager.AddType("KNFMeeting", "Meeting", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("KNFMeeting", "Meeting", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("KNFMeeting", "ageLowerBound", DBConstants.DBInteger);
                 dbContext.DBTypeManager.AddAttributeToType("KNFMeeting", "ageUpperBound", DBConstants.DBInteger);
                 dbContext.DBTypeManager.AddAttributeToType("KNFMeeting", "isVisible", DBConstants.DBBoolean);
@@ -466,13 +467,13 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region BoardMeeting
 
-                dbContext.DBTypeManager.AddType("BoardMeeting", "Meeting", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("BoardMeeting", "Meeting", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region OfficialPoliticalMeeting
 
-                dbContext.DBTypeManager.AddType("OfficialPoliticalMeeting", "Meeting", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("OfficialPoliticalMeeting", "Meeting", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -480,35 +481,35 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region MilitaryConflict
 
-                dbContext.DBTypeManager.AddType("MilitaryConflict", "Event", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("MilitaryConflict", "Event", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Project
 
-                dbContext.DBTypeManager.AddType("Project", "Event", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Project", "Event", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region SportEvent
 
-                dbContext.DBTypeManager.AddType("SportEvent", "Event", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("SportEvent", "Event", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region OlympicGames
 
-                dbContext.DBTypeManager.AddType("OlympicGames", "SportEvent", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("OlympicGames", "SportEvent", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region SportGame
 
-                dbContext.DBTypeManager.AddType("SportGame", "SportEvent", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("SportGame", "SportEvent", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Tournament
 
-                dbContext.DBTypeManager.AddType("Tournament", "SportEvent", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Tournament", "SportEvent", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -519,11 +520,11 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Situation
 
-                dbContext.DBTypeManager.AddType("Situation", "Happening", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Situation", "Happening", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region JobPosition
 
-                dbContext.DBTypeManager.AddType("JobPosition", "Situation", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("JobPosition", "Situation", new Dictionary<AttributeDefinition, string>(), "");
                 //dbContext.DBTypeManager.AddAttributeToType("JobPosition", "withinOrganization", "Organization");
                 //dbContext.DBTypeManager.AddAttributeToType("JobPosition", "heldFrom", "Person");
                 //dbContext.DBTypeManager.AddAttributeToType("JobPosition", "heldto", "Person");
@@ -531,17 +532,17 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region BoardMember
 
-                dbContext.DBTypeManager.AddType("BoardMember", "JobPosition", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("BoardMember", "JobPosition", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Employee
 
-                dbContext.DBTypeManager.AddType("Employee", "JobPosition", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Employee", "JobPosition", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region Manager
 
-                dbContext.DBTypeManager.AddType("Manager", "Employee", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Manager", "Employee", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -549,33 +550,33 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Leader
 
-                dbContext.DBTypeManager.AddType("Leader", "JobPosition", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Leader", "JobPosition", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region Chairman
 
-                dbContext.DBTypeManager.AddType("Chairman", "Leader", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Chairman", "Leader", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Executive
 
-                dbContext.DBTypeManager.AddType("Executive", "Leader", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Executive", "Leader", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region CEO
 
-                dbContext.DBTypeManager.AddType("CEO", "Executive", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("CEO", "Executive", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Minister
 
-                dbContext.DBTypeManager.AddType("Minister", "Executive", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Minister", "Executive", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Premier
 
-                dbContext.DBTypeManager.AddType("Premier", "Executive", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Premier", "Executive", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -583,7 +584,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region President
 
-                dbContext.DBTypeManager.AddType("President", "Leader", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("President", "Leader", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -591,13 +592,13 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region MemberOfParliament
 
-                dbContext.DBTypeManager.AddType("MemberOfParliament", "JobPosition", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("MemberOfParliament", "JobPosition", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region OfficialPosition
 
-                dbContext.DBTypeManager.AddType("OfficialPosition", "JobPosition", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("OfficialPosition", "JobPosition", new Dictionary<AttributeDefinition, string>(), "");
                 //dbContext.DBTypeManager.AddAttributeToType("OfficialPosition", "officialPositionIn", "Location");
 
                 #endregion
@@ -606,7 +607,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Role
 
-                dbContext.DBTypeManager.AddType("Role", "Situation", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Role", "Situation", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Role", "roleIn", "LIST<Happening>");
                 //dbContext.DBTypeManager.AddAttributeToType("Role", "roleHolder", "LIST<Object>"); //loaded 
 
@@ -616,35 +617,35 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region TimeInterval
 
-                dbContext.DBTypeManager.AddType("TimeInterval", "Happening", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("TimeInterval", "Happening", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region CalendarYear
 
-                dbContext.DBTypeManager.AddType("CalendarYear", "TimeInterval", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("CalendarYear", "TimeInterval", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Date
 
-                dbContext.DBTypeManager.AddType("Date", "TimeInterval", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Date", "TimeInterval", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Month
 
-                dbContext.DBTypeManager.AddType("Month", "TimeInterval", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Month", "TimeInterval", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Quarter
 
-                dbContext.DBTypeManager.AddType("Quarter", "TimeInterval", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Quarter", "TimeInterval", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Week
 
-                dbContext.DBTypeManager.AddType("Week", "TimeInterval", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Week", "TimeInterval", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -654,32 +655,32 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Object
 
-                dbContext.DBTypeManager.AddType("Object", "Entity", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Object", "Entity", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Object", "hasContactInfo", "ContactInformation");
                 //dbContext.DBTypeManager.AddAttributeToType("Object", "isOwnedBy", "Agent");
 
                 #region Account
 
-                dbContext.DBTypeManager.AddType("Account", "Object", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Account", "Object", new Dictionary<AttributeDefinition, string>(), "");
                 //dbContext.DBTypeManager.AddAttributeToType("Account", "accountProvider", "Agent");
 
                 #endregion
 
                 #region Agent
 
-                dbContext.DBTypeManager.AddType("Agent", "Object", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Agent", "Object", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Agent", "involvedIn", "LIST<Happening>");
                 dbContext.DBTypeManager.AddAttributeToType("Agent", "isLegalEntity", DBConstants.DBBoolean);
                 dbContext.DBTypeManager.AddAttributeToType("Agent", "partiallyControls", "LIST<Object>");
 
                 #region Group
 
-                dbContext.DBTypeManager.AddType("Group", "Agent", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Group", "Agent", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Group", "hasMember", "LIST<Agent>");
 
                 #region Organization
 
-                dbContext.DBTypeManager.AddType("Organization", "Group", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Organization", "Group", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Organization", "childOrganizationOf", "Organization");
                 dbContext.DBTypeManager.AddAttributeToType("Organization", "doingBusinessAs", DBConstants.DBString);
                 //dbContext.DBTypeManager.AddAttributeToType("Organization", "establishedIn", "Location");
@@ -689,37 +690,37 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Charity
 
-                dbContext.DBTypeManager.AddType("Charity", "Organization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Charity", "Organization", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region CommercialOrganization
 
-                dbContext.DBTypeManager.AddType("CommercialOrganization", "Organization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("CommercialOrganization", "Organization", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("CommercialOrganization", "activeInSector", "IndustrySector");
                 dbContext.DBTypeManager.AddAttributeToType("CommercialOrganization", "hasShareholder", "LIST<Agent>");
 
                 #region Company
 
-                dbContext.DBTypeManager.AddType("Company", "CommercialOrganization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Company", "CommercialOrganization", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region Airline
 
-                dbContext.DBTypeManager.AddType("Airline", "Company", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Airline", "Company", new Dictionary<AttributeDefinition, string>(), "");
 
 
                 #endregion
 
                 #region Bank
 
-                dbContext.DBTypeManager.AddType("Bank", "Company", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Bank", "Company", new Dictionary<AttributeDefinition, string>(), "");
 
 
                 #endregion
 
                 #region Telecom
 
-                dbContext.DBTypeManager.AddType("Telecom", "Company", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Telecom", "Company", new Dictionary<AttributeDefinition, string>(), "");
 
 
                 #endregion
@@ -730,23 +731,23 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Division
 
-                dbContext.DBTypeManager.AddType("Division", "Organization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Division", "Organization", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region EducationalOrganization
 
-                dbContext.DBTypeManager.AddType("EducationalOrganization", "Organization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("EducationalOrganization", "Organization", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region School
 
-                dbContext.DBTypeManager.AddType("School", "EducationalOrganization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("School", "EducationalOrganization", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region University
 
-                dbContext.DBTypeManager.AddType("University", "EducationalOrganization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("University", "EducationalOrganization", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -754,18 +755,18 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region GovernmentOrganization
 
-                dbContext.DBTypeManager.AddType("GovernmentOrganization", "Organization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("GovernmentOrganization", "Organization", new Dictionary<AttributeDefinition, string>(), "");
                 //dbContext.DBTypeManager.AddAttributeToType("GovernmentOrganization", "ofCountry", "Country");
 
                 #region Government
 
-                dbContext.DBTypeManager.AddType("Government", "GovernmentOrganization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Government", "GovernmentOrganization", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Ministry
 
-                dbContext.DBTypeManager.AddType("Ministry", "GovernmentOrganization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Ministry", "GovernmentOrganization", new Dictionary<AttributeDefinition, string>(), "");
                 //dbContext.DBTypeManager.AddAttributeToType("Ministry", "hasMinister", "LIST<Person>");
 
                 #endregion
@@ -774,23 +775,23 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region InternationalOrganization
 
-                dbContext.DBTypeManager.AddType("InternationalOrganization", "Organization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("InternationalOrganization", "Organization", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region PoliticalEntity
 
-                dbContext.DBTypeManager.AddType("PoliticalEntity", "Organization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("PoliticalEntity", "Organization", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region Parliament
 
-                dbContext.DBTypeManager.AddType("Parliament", "PoliticalEntity", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Parliament", "PoliticalEntity", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region PoliticalParty
 
-                dbContext.DBTypeManager.AddType("PoliticalParty", "PoliticalEntity", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("PoliticalParty", "PoliticalEntity", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -798,23 +799,23 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region ReligiousOrganization
 
-                dbContext.DBTypeManager.AddType("ReligiousOrganization", "Organization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("ReligiousOrganization", "Organization", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region ResearchOrganization
 
-                dbContext.DBTypeManager.AddType("ResearchOrganization", "Organization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("ResearchOrganization", "Organization", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region Institute
 
-                dbContext.DBTypeManager.AddType("Institute", "ResearchOrganization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Institute", "ResearchOrganization", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 //#region University
 
-                //dbContext.DBTypeManager.AddType("University", "ResearchOrganization", new Dictionary<TypeAttribute, string>(), "");
+                //dbContext.DBTypeManager.AddType("University", "ResearchOrganization", new Dictionary<AttributeDefinition, string>(), "");
 
                 //#endregion
 
@@ -822,17 +823,17 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region SportOrganization
 
-                dbContext.DBTypeManager.AddType("SportOrganization", "Organization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("SportOrganization", "Organization", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region SportClub
 
-                dbContext.DBTypeManager.AddType("SportClub", "SportOrganization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("SportClub", "SportOrganization", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region SportsFederation
 
-                dbContext.DBTypeManager.AddType("SportsFederation", "SportOrganization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("SportsFederation", "SportOrganization", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -840,14 +841,14 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region StockExchange
 
-                dbContext.DBTypeManager.AddType("StockExchange", "Organization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("StockExchange", "Organization", new Dictionary<AttributeDefinition, string>(), "");
 
 
                 #endregion
 
                 #region Team
 
-                dbContext.DBTypeManager.AddType("Team", "Organization", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Team", "Organization", new Dictionary<AttributeDefinition, string>(), "");
 
 
                 #endregion
@@ -858,7 +859,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Person
 
-                dbContext.DBTypeManager.AddType("Person", "Agent", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Person", "Agent", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Person", "hasProfession", "LIST<Profession>");
                 dbContext.DBTypeManager.AddAttributeToType("Person", "hasPosition", "LIST<JobPosition>");
                 dbContext.DBTypeManager.AddAttributeToType("Person", "isBossOf", "LIST<Person>");
@@ -869,13 +870,13 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Man
 
-                dbContext.DBTypeManager.AddType("Man", "Person", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Man", "Person", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Woman
 
-                dbContext.DBTypeManager.AddType("Woman", "Person", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Woman", "Person", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -885,26 +886,26 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Brand
 
-                dbContext.DBTypeManager.AddType("Brand", "Object", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Brand", "Object", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region MediaBrand
 
-                dbContext.DBTypeManager.AddType("MediaBrand", "Brand", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("MediaBrand", "Brand", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region PeriodicalPublication
 
-                dbContext.DBTypeManager.AddType("PeriodicalPublication", "MediaBrand", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("PeriodicalPublication", "MediaBrand", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("PeriodicalPublication", "hasISSN", DBConstants.DBString);
 
                 #region Magazine
 
-                dbContext.DBTypeManager.AddType("Magazine", "PeriodicalPublication", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Magazine", "PeriodicalPublication", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Newspaper
 
-                dbContext.DBTypeManager.AddType("Newspaper", "PeriodicalPublication", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Newspaper", "PeriodicalPublication", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -914,13 +915,13 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region RatioStation
 
-                dbContext.DBTypeManager.AddType("RatioStation", "MediaBrand", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("RatioStation", "MediaBrand", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region TVChannel
 
-                dbContext.DBTypeManager.AddType("TVChannel", "MediaBrand", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("TVChannel", "MediaBrand", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -932,14 +933,14 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Currency
 
-                dbContext.DBTypeManager.AddType("Currency", "Object", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Currency", "Object", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Currency", "hasUnit", DBConstants.DBString);
 
                 #endregion
 
                 #region Location
 
-                dbContext.DBTypeManager.AddType("Location", "Object", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Location", "Object", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Location", "hasUniversity", "LIST<University>");
                 dbContext.DBTypeManager.AddAttributeToType("Location", "latitude", DBConstants.DBDouble);
                 dbContext.DBTypeManager.AddAttributeToType("Location", "longitude", DBConstants.DBDouble);
@@ -949,39 +950,39 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Facility
 
-                dbContext.DBTypeManager.AddType("Facility", "Location", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Facility", "Location", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region Building
 
-                dbContext.DBTypeManager.AddType("Building", "Facility", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Building", "Facility", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Monument
 
-                dbContext.DBTypeManager.AddType("Monument", "Facility", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Monument", "Facility", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region ReligiousLocation
 
-                dbContext.DBTypeManager.AddType("ReligiousLocation", "Facility", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("ReligiousLocation", "Facility", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region TransportFacility
 
-                dbContext.DBTypeManager.AddType("TransportFacility", "Facility", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("TransportFacility", "Facility", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region Airport
 
-                dbContext.DBTypeManager.AddType("Airport", "TransportFacility", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Airport", "TransportFacility", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Bridge
 
-                dbContext.DBTypeManager.AddType("Bridge", "TransportFacility", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Bridge", "TransportFacility", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -991,35 +992,35 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region GlobalRegion
 
-                dbContext.DBTypeManager.AddType("GlobalRegion", "Location", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("GlobalRegion", "Location", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region LandRegion
 
-                dbContext.DBTypeManager.AddType("LandRegion", "Location", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("LandRegion", "Location", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region Continent
 
-                dbContext.DBTypeManager.AddType("Continent", "LandRegion", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Continent", "LandRegion", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Island
 
-                dbContext.DBTypeManager.AddType("Island", "LandRegion", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Island", "LandRegion", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Mountain
 
-                dbContext.DBTypeManager.AddType("Mountain", "LandRegion", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Mountain", "LandRegion", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Valley
 
-                dbContext.DBTypeManager.AddType("Valley", "LandRegion", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Valley", "LandRegion", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -1027,19 +1028,19 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region NonGeographicalLocation
 
-                dbContext.DBTypeManager.AddType("NonGeographicalLocation", "Location", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("NonGeographicalLocation", "Location", new Dictionary<AttributeDefinition, string>(), "");
 
 
                 #endregion
 
                 #region PoliticalRegion
 
-                dbContext.DBTypeManager.AddType("PoliticalRegion", "Location", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("PoliticalRegion", "Location", new Dictionary<AttributeDefinition, string>(), "");
                 //dbContext.DBTypeManager.AddAttributeToType("PoliticalRegion", "hasCapital", "Capital");
 
                 #region Country
 
-                dbContext.DBTypeManager.AddType("Country", "PoliticalRegion", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Country", "PoliticalRegion", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Country", "hasCurrency", "Currency");
                 dbContext.DBTypeManager.AddAttributeToType("Country", "hasGovernment", "GovernmentOrganization");
 
@@ -1047,25 +1048,25 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region County
 
-                dbContext.DBTypeManager.AddType("County", "PoliticalRegion", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("County", "PoliticalRegion", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region MilitaryAreas
 
-                dbContext.DBTypeManager.AddType("MilitaryAreas", "PoliticalRegion", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("MilitaryAreas", "PoliticalRegion", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Province
 
-                dbContext.DBTypeManager.AddType("Province", "PoliticalRegion", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Province", "PoliticalRegion", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region UrbanDistrict
 
-                dbContext.DBTypeManager.AddType("UrbanDistrict", "PoliticalRegion", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("UrbanDistrict", "PoliticalRegion", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -1073,26 +1074,26 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region PopulatedPlace
 
-                dbContext.DBTypeManager.AddType("PopulatedPlace", "Location", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("PopulatedPlace", "Location", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region City
 
-                dbContext.DBTypeManager.AddType("City", "PopulatedPlace", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("City", "PopulatedPlace", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("City", "hasAirport", "Airport");
 
                 #region Capital
 
-                dbContext.DBTypeManager.AddType("Capital", "City", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Capital", "City", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region CountryCapital
 
-                dbContext.DBTypeManager.AddType("CountryCapital", "Capital", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("CountryCapital", "Capital", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region LocalCapital
 
-                dbContext.DBTypeManager.AddType("LocalCapital", "Capital", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("LocalCapital", "Capital", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -1104,23 +1105,23 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region WaterRegion
 
-                dbContext.DBTypeManager.AddType("WaterRegion", "Location", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("WaterRegion", "Location", new Dictionary<AttributeDefinition, string>(), "");
 
                 #region Lake
 
-                dbContext.DBTypeManager.AddType("Lake", "WaterRegion", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Lake", "WaterRegion", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Sea
 
-                dbContext.DBTypeManager.AddType("Sea", "WaterRegion", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Sea", "WaterRegion", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Stream
 
-                dbContext.DBTypeManager.AddType("Stream", "WaterRegion", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Stream", "WaterRegion", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -1130,30 +1131,30 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region PieceOfArt
 
-                dbContext.DBTypeManager.AddType("PieceOfArt", "Object", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("PieceOfArt", "Object", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Product
 
-                dbContext.DBTypeManager.AddType("Product", "Object", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Product", "Object", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Product", "producedBy", "LIST<Agent>");
 
                 #region CarModel
 
-                dbContext.DBTypeManager.AddType("CarModel", "Product", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("CarModel", "Product", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region MediaProduct
 
-                dbContext.DBTypeManager.AddType("MediaProduct", "Product", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("MediaProduct", "Product", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region WeaponModelOrSystem
 
-                dbContext.DBTypeManager.AddType("WeaponModelOrSystem", "Product", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("WeaponModelOrSystem", "Product", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -1161,21 +1162,21 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Service
 
-                dbContext.DBTypeManager.AddType("Service", "Object", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Service", "Object", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Service", "opteratedBy", "LIST<Agent>");
 
                 #endregion
 
                 #region Statement
 
-                dbContext.DBTypeManager.AddType("Statement", "Object", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Statement", "Object", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Statement", "statedBy", "Agent");
                 dbContext.DBTypeManager.AddAttributeToType("Statement", "validFrom", DBConstants.DBDateTime);
                 dbContext.DBTypeManager.AddAttributeToType("Statement", "validUntil", DBConstants.DBDateTime);
 
                 #region InformationResource
 
-                dbContext.DBTypeManager.AddType("InformationResource", "Statement", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("InformationResource", "Statement", new Dictionary<AttributeDefinition, string>(), "");
                 //dbContext.DBTypeManager.AddAttributeToType("InformationResource", "compliantWithSchema", "DataSchema");
                 //dbContext.DBTypeManager.AddAttributeToType("InformationResource", "derivedFromSource", "InformationResource");
                 dbContext.DBTypeManager.AddAttributeToType("InformationResource", "hasContributor", "LIST<Agent>");
@@ -1191,57 +1192,57 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region DataSchema
 
-                dbContext.DBTypeManager.AddType("DataSchema", "InformationResource", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("DataSchema", "InformationResource", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Dataset
 
-                dbContext.DBTypeManager.AddType("Dataset", "InformationResource", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Dataset", "InformationResource", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Document
 
-                dbContext.DBTypeManager.AddType("Document", "InformationResource", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Document", "InformationResource", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Document", "documentAbstract", DBConstants.DBString);
                 dbContext.DBTypeManager.AddAttributeToType("Document", "documentSubTitle", DBConstants.DBString);
 
                 #region Contract
 
-                dbContext.DBTypeManager.AddType("Contract", "Document", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Contract", "Document", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Message
 
-                dbContext.DBTypeManager.AddType("Message", "Document", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Message", "Document", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region PublishedMaterial
 
-                dbContext.DBTypeManager.AddType("PublishedMaterial", "Document", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("PublishedMaterial", "Document", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("PublishedMaterial", "hasPublisher", "Agent");
                 dbContext.DBTypeManager.AddAttributeToType("PublishedMaterial", "datePublished", DBConstants.DBDateTime);
 
                 #region Announcement
 
-                dbContext.DBTypeManager.AddType("Announcement", "PublishedMaterial", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Announcement", "PublishedMaterial", new Dictionary<AttributeDefinition, string>(), "");
 
 
                 #endregion
 
                 #region Article
 
-                dbContext.DBTypeManager.AddType("Article", "PublishedMaterial", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Article", "PublishedMaterial", new Dictionary<AttributeDefinition, string>(), "");
                 //dbContext.DBTypeManager.AddAttributeToType("Article", "publishedWithin", "ResourceCollection");
 
                 #endregion
 
                 #region Book
 
-                dbContext.DBTypeManager.AddType("Book", "PublishedMaterial", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Book", "PublishedMaterial", new Dictionary<AttributeDefinition, string>(), "");
                 dbContext.DBTypeManager.AddAttributeToType("Book", "ISBN", DBConstants.DBString);
 
                 #endregion
@@ -1250,7 +1251,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Report
 
-                dbContext.DBTypeManager.AddType("Report", "Document", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Report", "Document", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -1258,13 +1259,13 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Patent
 
-                dbContext.DBTypeManager.AddType("Patent", "InformationResource", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Patent", "InformationResource", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region ResourceCollection
 
-                dbContext.DBTypeManager.AddType("ResourceCollection", "InformationResource", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("ResourceCollection", "InformationResource", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -1272,13 +1273,13 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Offer
 
-                dbContext.DBTypeManager.AddType("Offer", "Statement", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Offer", "Statement", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
                 #region Order
 
-                dbContext.DBTypeManager.AddType("Order", "Statement", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Order", "Statement", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 
@@ -1286,7 +1287,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 #region Vehicle
 
-                dbContext.DBTypeManager.AddType("Vehicle", "Object", new Dictionary<TypeAttribute, string>(), "");
+                dbContext.DBTypeManager.AddType("Vehicle", "Object", new Dictionary<AttributeDefinition, string>(), "");
 
                 #endregion
 

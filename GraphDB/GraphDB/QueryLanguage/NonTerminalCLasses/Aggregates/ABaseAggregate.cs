@@ -88,7 +88,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Aggregates
         /// <returns>The Value of the PandoraResult contains the plain result of the aggregate</returns>
         public abstract Exceptional<Object> Aggregate(IEnumerable<Exceptional<ObjectUUID>> myObjectStreams, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken);
 
-        public abstract Exceptional<Object> Aggregate(AttributeIndex attributeIndex, GraphDBType graphDBType, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken);
+        public abstract Exceptional<Object> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken);
 
         #endregion
 
@@ -127,7 +127,7 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Aggregates
             }
             else if (myDBObject is DBObjectStream)
             {
-                if (((DBObjectStream)myDBObject).HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetDBType(dbContext.DBTypeManager), mySessionToken))
+                if (((DBObjectStream)myDBObject).HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetDBType(dbContext.DBTypeManager)))
                     return Aggregate(((DBObjectStream)myDBObject).GetAttribute(myTypeAttribute.UUID), myTypeAttribute, dbContext, myDBObjectCache, mySessionToken);
                 else
                     return new Exceptional<object>((object)null);

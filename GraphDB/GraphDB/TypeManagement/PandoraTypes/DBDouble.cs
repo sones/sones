@@ -210,7 +210,7 @@ namespace sones.GraphDB.TypeManagement.PandoraTypes
                 return false;
             }
 
-            return (myObject.ToString() == newValue.ToString());
+            return true;// (myObject.ToString() == newValue.ToString());
         }
 
         public override bool IsValidValue(Object myValue)
@@ -289,12 +289,12 @@ namespace sones.GraphDB.TypeManagement.PandoraTypes
 
         private void Serialize(ref SerializationWriter mySerializationWriter, DBDouble myValue)
         {
-            mySerializationWriter.WriteObject(myValue._Value);
+            mySerializationWriter.WriteDouble((Double)myValue.Value);
         }
 
         private object Deserialize(ref SerializationReader mySerializationReader, DBDouble myValue)
         {
-            myValue._Value = (Double)mySerializationReader.ReadObject();
+            myValue._Value = mySerializationReader.ReadDouble();
             return myValue;
         }
 

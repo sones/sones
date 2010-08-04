@@ -136,6 +136,9 @@ namespace sones.Lib
 
         #endregion
 
+
+        
+
         #region IEnumerable<T>
 
         public static UInt64 ULongCount<T>(this IEnumerable<T> myIEnumerable)
@@ -169,7 +172,12 @@ namespace sones.Lib
             if (myIEnumerable == null)
                 return false;
 
-            return (myIEnumerable.Count<T>() == myNumberOfElements);
+            var rator = myIEnumerable.GetEnumerator();
+
+            while (myNumberOfElements > 0 && rator.MoveNext())
+                myNumberOfElements--;
+
+            return (myNumberOfElements == 0 && !rator.MoveNext());
                
         }
 
@@ -259,6 +267,25 @@ namespace sones.Lib
 
         }
 
+
+        public static String ToAggregatedString<T>(this IEnumerable<T> myEnumerable, Func<T, String> stringRepresentation)
+        {
+
+            if (myEnumerable == null || myEnumerable.Count() == 0)
+                return String.Empty;
+
+            var _StringBuilder = new StringBuilder();
+
+            foreach (var _Item in myEnumerable)
+            {
+                _StringBuilder.Append(stringRepresentation(_Item) + ", ");
+            }
+            _StringBuilder.Length = _StringBuilder.Length - 2;
+
+            return _StringBuilder.ToString();
+
+        }
+
         public static IEnumerable<T> TakeULong<T>(this IEnumerable<T> myEnumerable, UInt64 count)
         {
 
@@ -295,11 +322,14 @@ namespace sones.Lib
 
         public static UInt64 ULongLength(this Array myArray)
         {
+            if (myArray == null) return 0;
+            return (UInt64) myArray.LongLength;
+        }
 
-            var _ReturnValue = myArray.LongLength;
-
-            return (_ReturnValue >= 0) ? (UInt64) _ReturnValue : 0;
-
+        public static UInt64 ULongCount(this Array myArray)
+        {
+            if (myArray == null) return 0;
+            return (UInt64) myArray.LongLength;
         }
 
         #endregion
@@ -319,6 +349,11 @@ namespace sones.Lib
 
         #endregion
 
+        public static UInt64 ULongCount(this Byte[] myByteArray)
+        {
+            if (myByteArray == null) return 0;
+            return myByteArray.ULongLength();
+        }
 
         #region ToUTF8String()
 
@@ -532,8 +567,8 @@ namespace sones.Lib
 
             var _ReturnValue = new StringBuilder();
 
-            foreach (var _Items in myList)
-                _ReturnValue.Append(_Items + ", ");
+            foreach (var _Item in myList)
+                _ReturnValue.Append(_Item + ", ");
 
             // Cut the last ", " off
             _ReturnValue.Length = _ReturnValue.Length - 2;
@@ -758,27 +793,41 @@ namespace sones.Lib
             return (myDict == null) || (myDict.Count == 0);
         }
 
+        public static void AddRange<TKey, TValue>(this IDictionary<TKey, TValue> myDict, IDictionary<TKey, TValue> myOtherDict)
+        {
+            foreach (var keyVal in myOtherDict)
+            {
+                myDict.Add(keyVal);
+            }
+        }
+
         #endregion
 
         #region StringBuilder
 
-        public static void Indent(this StringBuilder stringbuilder, int width, char character = ' ')
+        public static void Indent(this StringBuilder myStringBuilder, int myWidth, char myCharacter = ' ')
         {
-            stringbuilder.Append("".PadLeft(width, character));
+            myStringBuilder.Append("".PadLeft(myWidth, myCharacter));
         }
 
         /// <summary>
-        /// Removes the last characters of the length of <paramref name="delimiter"/> without checking them.
+        /// Removes the last characters of the length of <paramref name="mySuffix"/> without checking them.
         /// </summary>
-        /// <param name="stringbuilder"></param>
-        /// <param name="delimiter"></param>
-        public static void RemoveEnding(this StringBuilder stringbuilder, String delimiter)
+        /// <param name="myStringBuilder"></param>
+        /// <param name="mySuffix"></param>
+        public static void RemoveSuffix(this StringBuilder myStringBuilder, String mySuffix)
         {
-            if (stringbuilder.Length > delimiter.Length)
-            {
-                stringbuilder.Remove(stringbuilder.Length - delimiter.Length, 2);
-            }
+            if (myStringBuilder.Length > mySuffix.Length)
+                myStringBuilder.Remove(myStringBuilder.Length - mySuffix.Length, mySuffix.Length);
         }
+
+        public static void RemoveEnding(this StringBuilder myStringBuilder, Int32 myLength)
+        {
+            if (myStringBuilder.Length > myLength)
+                myStringBuilder.Remove(myStringBuilder.Length - myLength, myLength);
+        }
+
+
         #endregion
 
         #region Exception
@@ -799,6 +848,22 @@ namespace sones.Lib
             }
 
             return ret.ToString();
+        }
+
+        #endregion
+
+        #region UNIXTime conversion
+
+        private static DateTime _UNIXEpoch = new DateTime(1970, 1, 1, 0, 0, 0);
+    
+        public static Double ToUnixTimeStamp(this DateTime myDateTime)  
+        {
+            return Math.Floor((myDateTime - _UNIXEpoch).TotalSeconds);
+        }  
+  
+        public static DateTime FromUnixTimeStamp(this Double myTimestamp)  
+        {  
+            return _UNIXEpoch.AddSeconds(myTimestamp);
         }
 
         #endregion

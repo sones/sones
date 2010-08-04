@@ -47,50 +47,14 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
-        #region Properties
-
-        public String Name { get; private set; }
-
-        #endregion
-
         #region Constructors
 
-        #region CreateIndexQuery()
+        #region CreateIndexQuery(myAGraphDSSharp, myIndexName)
 
-        public CreateIndexQuery()
+        public CreateIndexQuery(AGraphDSSharp myAGraphDSSharp, String myIndexName = null)
+            : base(myAGraphDSSharp)
         {
-            Name            = "";
-            _CommandString  = new StringBuilder();
-        }
-
-        #endregion
-
-        #region CreateIndexQuery(myIndexName)
-
-        public CreateIndexQuery(String myIndexName)
-            : this()
-        {
-            Name            = myIndexName;
-        }
-
-        #endregion
-
-        #region CreateIndexQuery(myIGraphDBSession)
-
-        public CreateIndexQuery(AGraphDSSharp myIGraphDBSession)
-            : this()
-        {
-            _DBWrapper = myIGraphDBSession;
-        }
-
-        #endregion
-
-        #region CreateIndexQuery(myIGraphDBSession, myIndexName)
-
-        public CreateIndexQuery(AGraphDSSharp myIGraphDBSession, String myIndexName)
-            : this(myIndexName)
-        {
-            _DBWrapper = myIGraphDBSession;
+            Name = myIndexName;
         }
 
         #endregion
@@ -98,11 +62,11 @@ namespace sones.GraphDS.API.CSharp
         #endregion
 
 
-        #region On(myTypeName)
+        #region OnVertex(myTypeName)
 
-        public CreateIndexQuery On(String myTypeName)
+        public CreateIndexQuery OnVertex(String myTypeName)
         {
-            _OnString = "ON TYPE " + myTypeName;
+            _OnString = "ON VERTEX " + myTypeName;
             return this;
         }
 
@@ -166,7 +130,7 @@ namespace sones.GraphDS.API.CSharp
             if (_OnString == null)
                 throw new ArgumentException("Invalid CREATE INDEX command!");
 
-            if (Name == "")
+            if (Name == null || Name == "")
             {
 
                 _CommandString.Append("IDX_");

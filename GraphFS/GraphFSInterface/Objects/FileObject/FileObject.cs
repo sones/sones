@@ -174,8 +174,8 @@ namespace sones.GraphFS.Objects
 
             try
             {
-                mySerializationWriter.WriteObject(_ContentType);
-                mySerializationWriter.WriteObject(_ObjectData);
+                mySerializationWriter.WriteString(_ContentType);
+                mySerializationWriter.Write(_ObjectData);
             }
 
             catch (SerializationException e)
@@ -200,8 +200,8 @@ namespace sones.GraphFS.Objects
 
                 //var b = mySerializationReader.BaseStream.Read(_ObjectData, 0, (int)_count);
 
-                _ContentType   = (String) mySerializationReader.ReadObject();
-                _ObjectData = (Byte[]) mySerializationReader.ReadObject();
+                _ContentType = mySerializationReader.ReadString();
+                _ObjectData  = mySerializationReader.ReadByteArray();
 
             }
 

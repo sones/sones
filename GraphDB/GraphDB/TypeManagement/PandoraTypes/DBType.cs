@@ -35,6 +35,7 @@ using System.Text;
 using sones.Lib.NewFastSerializer;
 using sones.GraphDB.QueryLanguage.Enums;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
+using sones.GraphDB.Managers.Structures;
 
 namespace sones.GraphDB.TypeManagement.PandoraTypes
 {
@@ -98,7 +99,9 @@ namespace sones.GraphDB.TypeManagement.PandoraTypes
                     if (value is DBType)
                         _Value = ((DBType)value)._Value;
                     else if (value is IDNode)
-                        _Value = ((IDNode)value).LastType;
+                        _Value = ((IDNode)value).IDChainDefinition.LastType;
+                    else if (value is IDChainDefinition)
+                        _Value = ((IDChainDefinition)value).LastType;
                     else
                         _Value = null;
                 else

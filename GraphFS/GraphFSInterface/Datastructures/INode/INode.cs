@@ -54,7 +54,7 @@ namespace sones.GraphFS.DataStructures
     /// It has a fixed length of 256 byte!
     /// </summary>
 
-    public class INode : AFSStructure, IXMLExport
+    public class INode : AFSStructure
     {
 
 
@@ -253,7 +253,6 @@ namespace sones.GraphFS.DataStructures
             {
                 return _DeletionTime;
             }
-
         }
 
         #endregion
@@ -602,50 +601,6 @@ namespace sones.GraphFS.DataStructures
         #endregion
 
 
-
-        #region IXMLExport Members
-
-        #region ToXML()
-
-        public XDocument ToXML()
-        {
-
-            var XML = new XDocument(
-
-                new XElement("INode",
-                    new XAttribute("Version",                   _StructureVersion),
-                    new XAttribute("ObjectUUID",                ObjectUUID),
-
-                    new XElement("CreationTime",                _CreationTime),
-                    new XElement("LastAccessTime",              _LastAccessTime),
-                    new XElement("LastModificationTime",        _LastModificationTime),
-                    new XElement("DeletionTime",                _DeletionTime),
-                    new XElement("ReferenceCount",              _ReferenceCount),
-                    new XElement("ObjectSize",                  _ObjectSize),
-                    new XElement("IntegrityCheckAlgorithm",     _IntegrityCheckAlgorithm),
-                    new XElement("EncryptionAlgorithm",         _EncryptionAlgorithm),
-
-                    new XElement("ObjectLocatorPosition",
-                        new XAttribute("Length",                _ObjectLocatorLength),
-                        new XAttribute("NumberOfCopies",        _ObjectLocatorCopies),
-
-                        from _ExtendedPosition in ObjectLocatorPositions select new XElement("ExtendedPosition",
-                            new XAttribute("StorageID",             _ExtendedPosition.StorageUUID),
-                            new XAttribute("Position",              _ExtendedPosition.Position)))
-                
-                )
-
-            );
-
-            return XML;
-
-        }
-
-        #endregion
-
-        #endregion
-
-
         #region IFastSerialize Member
 
         #region isDirty - Overwrite APandoraStructure property
@@ -686,51 +641,51 @@ namespace sones.GraphFS.DataStructures
 
                 #region Write Common attributes
 
-                mySerializationWriter.WriteObject(_CreationTime);
-                mySerializationWriter.WriteObject(_LastAccessTime);
-                mySerializationWriter.WriteObject(_LastModificationTime);
-                mySerializationWriter.WriteObject(_DeletionTime);
-                mySerializationWriter.WriteObject(_ObjectSize);
+                mySerializationWriter.WriteUInt64(_CreationTime);
+                mySerializationWriter.WriteUInt64(_LastAccessTime);
+                mySerializationWriter.WriteUInt64(_LastModificationTime);
+                mySerializationWriter.WriteUInt64(_DeletionTime);
+                mySerializationWriter.WriteUInt64(_ObjectSize);
 
                 #endregion
 
                 #region Object Safety and Security
 
-                mySerializationWriter.WriteObject( (UInt16) _IntegrityCheckAlgorithm);
-                mySerializationWriter.WriteObject( (UInt16) _EncryptionAlgorithm);
+                mySerializationWriter.WriteByte((Byte)_IntegrityCheckAlgorithm);
+                mySerializationWriter.WriteByte((Byte)_EncryptionAlgorithm);
 
                 #endregion
 
                 #region Write list of ObjectLocatorPositions
 
-                mySerializationWriter.WriteObject(_ObjectLocatorLength);
-                mySerializationWriter.WriteObject(_ObjectLocatorCopies);
+                mySerializationWriter.WriteUInt64(_ObjectLocatorLength);
+                mySerializationWriter.WriteUInt64(_ObjectLocatorCopies);
 
-                mySerializationWriter.WriteObject( (UInt16) Math.Min(_ObjectLocatorPositions.Count, MaxNumberOfObjectLocatorPositions));
+                mySerializationWriter.WriteUInt16((UInt16)Math.Min(_ObjectLocatorPositions.Count, MaxNumberOfObjectLocatorPositions));
 
                 for (int i=0; i < Math.Min(_ObjectLocatorPositions.Count, MaxNumberOfObjectLocatorPositions - 1); i++)
                 {
-                    mySerializationWriter.WriteObject(_ObjectLocatorPositions[i].StorageUUID.GetByteArray());
-                    mySerializationWriter.WriteObject(_ObjectLocatorPositions[i].Position);
+                    _ObjectLocatorPositions[i].StorageUUID.Serialize(ref mySerializationWriter);
+                    mySerializationWriter.WriteUInt64(_ObjectLocatorPositions[i].Position);
                 }
 
                 #endregion
 
                 #region Write list of INodePositions
 
-                mySerializationWriter.WriteObject( (UInt16) Math.Min(_INodePositions.Count, MaxNumberOfINodePositions));
+                mySerializationWriter.WriteUInt16((UInt16)Math.Min(_INodePositions.Count, MaxNumberOfINodePositions));
 
                 for (int i=0; i < Math.Min(_INodePositions.Count, MaxNumberOfINodePositions - 1); i++)
                 {
-                    mySerializationWriter.WriteObject(_INodePositions[i].StorageUUID.GetByteArray());
-                    mySerializationWriter.WriteObject(_INodePositions[i].Position);
+                    _INodePositions[i].StorageUUID.Serialize(ref mySerializationWriter);
+                    mySerializationWriter.WriteUInt64(_INodePositions[i].Position);
                 }
 
                 #endregion
 
                 #region Write State
 
-                mySerializationWriter.WriteObject((Byte)_ObjectLocatorStates);
+                mySerializationWriter.WriteByte((Byte)_ObjectLocatorStates);
 
                 #endregion
 
@@ -755,47 +710,47 @@ namespace sones.GraphFS.DataStructures
 
                 #region Read Common attributes
 
-                _CreationTime                   = (UInt64)                      mySerializationReader.ReadObject();
-                _LastModificationTime           = (UInt64)                      mySerializationReader.ReadObject();
-                _LastAccessTime                 = (UInt64)                      mySerializationReader.ReadObject();
-                _DeletionTime                   = (UInt64)                      mySerializationReader.ReadObject();
-                _ObjectSize                     = (UInt64)                      mySerializationReader.ReadObject();
+                _CreationTime                   =           mySerializationReader.ReadUInt64();
+                _LastModificationTime           =           mySerializationReader.ReadUInt64();
+                _LastAccessTime                 =           mySerializationReader.ReadUInt64();
+                _DeletionTime                   =           mySerializationReader.ReadUInt64();
+                _ObjectSize                     =           mySerializationReader.ReadUInt64();
 
                 #endregion
 
                 #region Object Safety and Security
 
-                _IntegrityCheckAlgorithm        = (IntegrityCheckTypes)      mySerializationReader.ReadObject();
-                _EncryptionAlgorithm            = (SymmetricEncryptionTypes) mySerializationReader.ReadObject();
+                _IntegrityCheckAlgorithm        =           (IntegrityCheckTypes)mySerializationReader.ReadOptimizedByte();
+                _EncryptionAlgorithm            =           (SymmetricEncryptionTypes)mySerializationReader.ReadOptimizedByte();
 
                 #endregion
 
                 #region Read list of ObjectLocatorPositions
 
-                _ObjectLocatorLength            = (UInt64)                      mySerializationReader.ReadObject();
-                _ObjectLocatorCopies            = (UInt64)                      mySerializationReader.ReadObject();
+                _ObjectLocatorLength            =           mySerializationReader.ReadUInt64();
+                _ObjectLocatorCopies            =           mySerializationReader.ReadUInt64();
 
-                NumberOfObjectLocatorPositions  = (UInt16)                      mySerializationReader.ReadObject();
-                _ObjectLocatorPositions         = new List<ExtendedPosition>();
+                NumberOfObjectLocatorPositions  =           mySerializationReader.ReadUInt16();
+                _ObjectLocatorPositions         =           new List<ExtendedPosition>();
 
                 for (int i = 1; i <= NumberOfObjectLocatorPositions; i++)
-                    _ObjectLocatorPositions.Add(new ExtendedPosition(new StorageUUID((Byte[]) mySerializationReader.ReadObject()), (UInt64) mySerializationReader.ReadObject()));
+                    _ObjectLocatorPositions.Add(new ExtendedPosition(new StorageUUID(mySerializationReader.ReadByteArray()), mySerializationReader.ReadUInt64()));
 
                 #endregion
 
                 #region Read list of INodePositions
 
-                NumberOfINodePositions          = (UInt16)                     mySerializationReader.ReadObject();
-                _INodePositions                 = new List<ExtendedPosition>();
+                NumberOfINodePositions          =           mySerializationReader.ReadUInt16();
+                _INodePositions                 =           new List<ExtendedPosition>();
 
                 for (int i = 1; i <= NumberOfINodePositions; i++)
-                    _INodePositions.Add(new ExtendedPosition(new StorageUUID((Byte[])mySerializationReader.ReadObject()), (UInt64)mySerializationReader.ReadObject()));
+                    _INodePositions.Add(new ExtendedPosition(new StorageUUID(mySerializationReader.ReadByteArray()), mySerializationReader.ReadUInt64()));
 
                 #endregion
 
                 #region Read State
 
-                _ObjectLocatorStates = (ObjectLocatorStates) (Byte) mySerializationReader.ReadObject();
+                _ObjectLocatorStates = (ObjectLocatorStates)mySerializationReader.ReadOptimizedByte();
 
                 #endregion
 
@@ -811,8 +766,6 @@ namespace sones.GraphFS.DataStructures
         }
 
         #endregion
-
-
 
     }
 

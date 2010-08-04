@@ -83,11 +83,14 @@ namespace sones.GraphFS.DataStructures
         #endregion
 
 
-        #region NewUUID()
+        #region NewUUID
 
-        public new static GraphFSStreamUUID NewUUID()
+        public new static GraphFSStreamUUID NewUUID
         {
-            return new GraphFSStreamUUID(Guid.NewGuid().ToByteArray());
+            get
+            {
+                return new GraphFSStreamUUID(Guid.NewGuid().ToByteArray());
+            }
         }
 
         #endregion

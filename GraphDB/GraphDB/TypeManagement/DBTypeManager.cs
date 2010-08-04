@@ -19,30 +19,33 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using sones.GraphFS.Objects;
-using sones.GraphFS.DataStructures;
-using sones.GraphFS.Session;
-using sones.GraphDB.Indices;
-using sones.GraphDB.Settings;
-using sones.GraphDB.Plugin;
-using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.Exceptions;
-using sones.Lib.ErrorHandling;
+
 using sones.GraphDB.Errors;
+using sones.GraphDB.Exceptions;
+using sones.GraphDB.Indices;
+using sones.GraphDB.Managers.AlterType;
+using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.Plugin;
+using sones.GraphDB.QueryLanguage.Enums;
+using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Settings;
+using sones.GraphDB.Structures;
+using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement.PandoraTypes;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
-using sones.Lib.DataStructures;
-using sones.GraphFS;
-using sones.GraphDB.Structures;
-using sones.GraphDB.QueryLanguage.Result;
 using sones.GraphDB.Warnings;
-using sones.GraphDB.Structures.EdgeTypes;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+using sones.GraphFS;
+using sones.GraphFS.DataStructures;
+using sones.GraphFS.InternalObjects;
+using sones.GraphFS.Objects;
+using sones.GraphFS.Session;
 using sones.Lib;
-using sones.GraphDB.QueryLanguage.Enums;
-using System.Diagnostics;
+using sones.Lib.DataStructures;
+using sones.Lib.ErrorHandling;
+
 
 namespace sones.GraphDB.TypeManagement
 {
@@ -164,7 +167,7 @@ namespace sones.GraphDB.TypeManagement
         /// <returns></returns>
         private ListOfStringsObject LoadListOfTypeLocations(ObjectLocation myDatabaseRootPath)
         {
-            var listOfLocations = _IGraphFSSession.GetOrCreateObject<ListOfStringsObject>(new ObjectLocation(myDatabaseRootPath, DBConstants.DBTypeLocations), FSConstants.LISTOF_STRINGS, null, null, 0, false);
+            var listOfLocations = _IGraphFSSession.GetOrCreateFSObject<ListOfStringsObject>(new ObjectLocation(myDatabaseRootPath, DBConstants.DBTypeLocations), FSConstants.LISTOF_STRINGS, null, null, 0, false);
 
             if (listOfLocations.Failed)
             {
@@ -212,7 +215,9 @@ namespace sones.GraphDB.TypeManagement
             #region DBReference - The base of all user defined database types
             // DBObject is a child of DBBaseObject
 
+            // == DBObject!
             var typeDBReference = new GraphDBType(DBReference.UUID, myDatabaseLocation, DBReference.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all user defined database types");
+
 
             #region UUID special Attribute
 
@@ -352,6 +357,22 @@ namespace sones.GraphDB.TypeManagement
 
             #endregion
 
+            #region DBVertex
+
+            var typeDBVertex = new GraphDBType(new TypeUUID(DBConstants.DBVertexID), myDatabaseLocation, DBConstants.DBVertexName, DBReference.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all user defined database vertices");
+
+            _SystemTypes.Add(typeDBVertex.UUID, typeDBVertex);
+
+            #endregion
+
+            #region DBEdge
+
+            var typeDBEdge = new GraphDBType(new TypeUUID(DBConstants.DBEdgeID), myDatabaseLocation, DBConstants.DBEdgeName, DBReference.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all user defined database edges");
+
+            _SystemTypes.Add(typeDBEdge.UUID, typeDBEdge);
+
+            #endregion
+
             #region Build-in basic database types
             // These are children of DBBaseObject
 
@@ -374,6 +395,7 @@ namespace sones.GraphDB.TypeManagement
                 _TypesNameLookUpTable.Add(ptype.Name, ptype);            
 
             return LoadUserDefinedDatabaseTypes(myRebuildIndices);
+
         }
 
         #endregion
@@ -422,7 +444,7 @@ namespace sones.GraphDB.TypeManagement
                     return new Exceptional<Boolean>(new Error_TypeAlreadyExist(DirectoryHelper.GetObjectName(_ActualObjectLocation)));
 
                 //ListOfDatabaseTypes.Add(new PandoraType(_IGraphFS2Session, _ActualObjectLocation, true, this));
-                var pt = _IGraphFSSession.GetObject<GraphDBType>(_ActualObjectLocation);
+                var pt = _IGraphFSSession.GetFSObject<GraphDBType>(_ActualObjectLocation);
 
                 if (pt.Failed)
                     return new Exceptional(pt);
@@ -453,7 +475,7 @@ namespace sones.GraphDB.TypeManagement
             // Uncomment as soon as index is serializeable
             if (myRebuildIndices)
             {
-                return _DBContext.DBIndexManager.RebuildIndices(_UserDefinedTypes);
+                return _DBContext.DBIndexManager.RebuildIndices(_UserDefinedTypes.Values);
             }
 
             return Exceptional.OK;
@@ -516,7 +538,7 @@ namespace sones.GraphDB.TypeManagement
             {
                 //Todo: add notification here (the user has to be informed about the detailed circumstances)
 
-                GraphDBError aError = new Error_AttributeDoesNotExists(myTypeOfDBObject.Name, myAttributeUUID.ToHexString());
+                GraphDBError aError = new Error_AttributeIsNotDefined(myTypeOfDBObject.Name, myAttributeUUID.ToHexString());
 
                 return new Exceptional<ResultType>(aError);
             }
@@ -723,7 +745,7 @@ namespace sones.GraphDB.TypeManagement
             }
             else
             {
-                return new Exceptional<Boolean>(new Error_AttributeDoesNotExists(myType.Name, oldName));
+                return new Exceptional<Boolean>(new Error_AttributeIsNotDefined(myType.Name, oldName));
             }
 
             #endregion
@@ -791,7 +813,7 @@ namespace sones.GraphDB.TypeManagement
             }
             else
             {
-                return new Exceptional<ResultType>(new Error_AttributeDoesNotExists(aUserType.Name, typeAttribute.Name));
+                return new Exceptional<ResultType>(new Error_AttributeIsNotDefined(aUserType.Name, typeAttribute.Name));
             }
 
             #endregion
@@ -858,7 +880,7 @@ namespace sones.GraphDB.TypeManagement
             }
             else
             {
-                retVal = new Exceptional<ResultType>(new Error_AttributeDoesNotExists(attributeName));
+                retVal = new Exceptional<ResultType>(new Error_AttributeIsNotDefined(attributeName));
             }
 
             return retVal;
@@ -967,7 +989,7 @@ namespace sones.GraphDB.TypeManagement
         /// <param name="TypeList">List of PandoraType definitions that should 
         /// be added to the TypeManager</param>
         /// <returns>List of PandoraError</returns>
-        public Exceptional<QueryResult> AddBulkTypes(List<GraphDBTypeDefinition> TypeList)
+        public Exceptional<QueryResult> AddBulkTypes(List<GraphDBTypeDefinition> TypeList, DBContext currentContext)
         {
 
             #region Input Exceptions
@@ -1050,7 +1072,7 @@ namespace sones.GraphDB.TypeManagement
 
                 #endregion
 
-                var backwardEdgesToBeAddedAfterwards = new Dictionary<GraphDBType, List<BackwardEdgeNode>>();
+                var backwardEdgesToBeAddedAfterwards = new Dictionary<GraphDBType, List<BackwardEdgeDefinition>>();
 
                 #region Validate the previously added types and add the attributes and backwardEdges
 
@@ -1061,6 +1083,8 @@ namespace sones.GraphDB.TypeManagement
                     #region Check and set parent
 
                     GraphDBType parentType;
+
+                    #region Verify base type existence
 
                     if (aType.ParentTypeUUID == null)
                     {
@@ -1077,41 +1101,55 @@ namespace sones.GraphDB.TypeManagement
                         parentType = aType.GetParentType(this);
                     }
 
-                    var parentTypeExcept = HasParentType(parentType.UUID, DBBaseObject.UUID);
-                    
-                    if(!parentTypeExcept.Success)
+                    #endregion
+
+                    #region Verify that the type inherit DBReference
+
+                    var parentTypeExcept = HasParentType(parentType.UUID, DBReference.UUID);
+
+                    if (parentTypeExcept.Failed)
+                    {
                         return new Exceptional<QueryResult>(parentTypeExcept);
-                    
+                    }
+
                     if (!parentTypeExcept.Value)
                     {
                         RemoveRecentlyAddedTypes(addedTypes);
-                        return new Exceptional<QueryResult>(new Error_InvalidDerive("The type " + aType.Name + " can not be added, because all user defined types must be subtypes of PandoraObject."));
+                        return new Exceptional<QueryResult>(new Error_InvalidBaseType(parentType.Name));
                     }
+
+                    #endregion
 
                     #endregion
 
                     #region check and set type of attributes
 
-                    foreach (KeyValuePair<TypeAttribute, String> attribute in aTypeDef.Attributes)
+                    foreach (var attributeDef in aTypeDef.Attributes)
                     {
-                        if (attribute.Key.Name == aType.Name)
+                        var attribute = attributeDef.Key.CreateTypeAttribute(currentContext, addedTypes);
+                        if (attribute.Failed)
                         {
-                            RemoveRecentlyAddedTypes(addedTypes);
-                            return new Exceptional<QueryResult>(new Error_InvalidAttributeName("The attribute " + attribute.Key.Name + " can not be added, because it has the same name as its related type."));
+                            return new Exceptional<QueryResult>(attribute);
                         }
 
-                        GraphDBType attrType = GetTypeByName(attribute.Value);
+                        if (attribute.Value.Name == aType.Name)
+                        {
+                            RemoveRecentlyAddedTypes(addedTypes);
+                            return new Exceptional<QueryResult>(new Error_InvalidAttributeName("The attribute " + attribute.Value.Name + " can not be added, because it has the same name as its related type."));
+                        }
+
+                        GraphDBType attrType = GetTypeByName(attributeDef.Value);
                         if (attrType == null)
                         {
-                            attrType = addedTypes.Where(item => item.Name == attribute.Value).FirstOrDefault();
+                            attrType = addedTypes.Where(item => item.Name == attributeDef.Value).FirstOrDefault();
                             if (attrType == null)
                             {
                                 RemoveRecentlyAddedTypes(addedTypes);
-                                return new Exceptional<QueryResult>(new Error_TypeDoesNotExist(attribute.Value));
+                                return new Exceptional<QueryResult>(new Error_TypeDoesNotExist(attributeDef.Value));
                             }
                         }
 
-                        TypeAttribute newAttr = attribute.Key;
+                        TypeAttribute newAttr = attribute.Value;
 
                         newAttr.DBTypeUUID = attrType.UUID;
                         newAttr.RelatedGraphDBTypeUUID = aType.UUID;
@@ -1119,7 +1157,7 @@ namespace sones.GraphDB.TypeManagement
                         #region we had not defined a special EdgeType - for single reference attributes we need to set the EdgeTypeSingle NOW!
 
                         if (newAttr.KindOfType == KindsOfType.SingleReference && attrType.IsUserDefined && newAttr.EdgeType == null)
-                            newAttr.EdgeType = new EdgeTypeSingleReference();
+                            newAttr.EdgeType = new EdgeTypeSingleReference(null, newAttr.DBTypeUUID);
 
                         #endregion
 
@@ -1267,13 +1305,13 @@ namespace sones.GraphDB.TypeManagement
                             }
                             var index = indexExceptional.Value;
 
-                            if (!index.IndexAttributeNames.All(node => aType.GetTypeAttributeByName(node.IndexAttribute) != null))
+                            if (!index.IndexAttributeDefinitions.All(node => aType.GetTypeAttributeByName(node.IndexAttribute) != null))
                             {
                                 RemoveRecentlyAddedTypes(addedTypes);
-                                return new Exceptional<QueryResult>(new Error_AttributeDoesNotExists(aType.Name, aType.Name));
+                                return new Exceptional<QueryResult>(new Error_AttributeIsNotDefined(aType.Name, aType.Name));
                             }
 
-                            List<AttributeUUID> indexAttrs = new List<AttributeUUID>(index.IndexAttributeNames.Select(node => aType.GetTypeAttributeByName(node.IndexAttribute).UUID));
+                            List<AttributeUUID> indexAttrs = new List<AttributeUUID>(index.IndexAttributeDefinitions.Select(node => aType.GetTypeAttributeByName(node.IndexAttribute).UUID));
 
                             foreach (var item in GetAllSubtypes(aType))
                             {
@@ -1287,11 +1325,13 @@ namespace sones.GraphDB.TypeManagement
 
                     #endregion
 
-                    // GUID index                    
-                    var createIndexExcept = aType.CreateUniqueAttributeIndex(SpecialTypeAttribute_UUID.AttributeName, GetGUIDTypeAttribute().UUID, DBConstants.DEFAULTINDEX);
+                    //UUID index                    
+                    var createIndexExcept = aType.CreateUUIDIndex(_DBContext, GetUUIDTypeAttribute().UUID);
 
                     if (!createIndexExcept.Success)
+                    {
                         return new Exceptional<QueryResult>(createIndexExcept);
+                    }
 
                     List<AttributeUUID> UniqueIDs = aType.GetAllUniqueAttributes(true, this);
                     
@@ -1306,7 +1346,6 @@ namespace sones.GraphDB.TypeManagement
                 }
 
                 #endregion
-
 
                 #region flush to fs
 
@@ -1386,7 +1425,7 @@ namespace sones.GraphDB.TypeManagement
 
         #region CreateBackwardEdgeAttribute(myBackwardEdgeNode, myDBTypeStream)
 
-        public Exceptional<TypeAttribute> CreateBackwardEdgeAttribute(BackwardEdgeNode myBackwardEdgeNode, GraphDBType myDBTypeStream)
+        public Exceptional<TypeAttribute> CreateBackwardEdgeAttribute(BackwardEdgeDefinition myBackwardEdgeNode, GraphDBType myDBTypeStream)
         {
 
             var edgeType      = GetTypeByName(myBackwardEdgeNode.TypeName);
@@ -1397,7 +1436,7 @@ namespace sones.GraphDB.TypeManagement
             var edgeAttribute = edgeType.GetTypeAttributeByName(myBackwardEdgeNode.TypeAttributeName);
 
             if (edgeAttribute == null)
-                return new Exceptional<TypeAttribute>(new Error_AttributeDoesNotExists(edgeType.Name, myBackwardEdgeNode.TypeAttributeName));
+                return new Exceptional<TypeAttribute>(new Error_AttributeIsNotDefined(edgeType.Name, myBackwardEdgeNode.TypeAttributeName));
 
             if (!edgeAttribute.GetDBType(this).IsUserDefined)
                 return new Exceptional<TypeAttribute>(new Error_BackwardEdgesForNotReferenceAttributeTypesAreNotAllowed(myBackwardEdgeNode.TypeAttributeName));
@@ -1427,11 +1466,11 @@ namespace sones.GraphDB.TypeManagement
 
         #region AddType(myTypeName, myParentType, myAttributes)
 
-        private Exceptional<GraphDBType> AddingType(String myTypeName, String myParentType, Dictionary<TypeAttribute, String> myAttributes, Boolean myIsAbstract, String myComment)
+        private Exceptional<GraphDBType> AddingType(String myTypeName, String myParentType, Dictionary<AttributeDefinition, String> myAttributes, Boolean myIsAbstract, String myComment)
         {
             var ptd = new GraphDBTypeDefinition(myTypeName, myParentType, false, myAttributes, null, null, myComment);
 
-            var errors = AddBulkTypes(new List<GraphDBTypeDefinition>(new[] { ptd }));
+            var errors = AddBulkTypes(new List<GraphDBTypeDefinition>(new[] { ptd }), _DBContext);
 
             if (errors.Failed)
                 return new Exceptional<GraphDBType>(errors);
@@ -1446,7 +1485,7 @@ namespace sones.GraphDB.TypeManagement
         /// <param name="Type">The type to be added.</param>
         /// <param name="myParentType">parent types of the type which should be added</param>
         /// <param name="myIsAbstract">flag for an abstract type</param>
-        public Exceptional<GraphDBType> AddType(String myTypeName, String myParentType, Dictionary<TypeAttribute, String> myAttributes, Boolean myIsAbstract, String myComment)
+        public Exceptional<GraphDBType> AddType(String myTypeName, String myParentType, Dictionary<AttributeDefinition, String> myAttributes, Boolean myIsAbstract, String myComment)
         {
             return AddingType(myTypeName, myParentType, myAttributes, myIsAbstract, myComment);
         }
@@ -1455,9 +1494,20 @@ namespace sones.GraphDB.TypeManagement
         /// Adds the given type to the list of types.
         /// </summary>
         /// <param name="Type">The type to be added.</param>
-        public Exceptional<GraphDBType> AddType(String myTypeName, String myParentType, Dictionary<TypeAttribute, String> myAttributes, String myComment)
+        public Exceptional<GraphDBType> AddType(String myTypeName, String myParentType, Dictionary<AttributeDefinition, String> myAttributes, String myComment)
         {
             return AddingType(myTypeName, myParentType, myAttributes, false, myComment);
+        }
+
+        [Obsolete("Change TypeAttribute to AttributeDefinition in all tests!")]
+        public Exceptional<GraphDBType> AddType(String myTypeName, String myParentType, Dictionary<TypeAttribute, string> myAttributes, String myComment)
+        {
+            var attrs = new Dictionary<AttributeDefinition, String>();
+            foreach (var val in myAttributes)
+            {
+                attrs.Add(new AttributeDefinition(new DBTypeOfAttributeDefinition() { Name = val.Value, Type = val.Key.KindOfType, TypeCharacteristics = val.Key.TypeCharacteristics }, val.Key.Name, null), val.Value);
+            }
+            return AddingType(myTypeName, myParentType, attrs, false, myComment);
         }
 
         #endregion
@@ -1702,12 +1752,6 @@ namespace sones.GraphDB.TypeManagement
 
             foreach (var toBeDeletedTypes in toDelete)
             {
-
-                if (toBeDeletedTypes.ParentTypeUUID != null)
-                {
-                    _DBContext.DBIndexManager.RemoveGuidIndexEntriesOfParentTypes(toBeDeletedTypes, _DBContext.DBIndexManager);
-                }
-
                 #region remove from userdefined types
 
                 if (!_UserDefinedTypes.Remove(toBeDeletedTypes.UUID))
@@ -1766,7 +1810,7 @@ namespace sones.GraphDB.TypeManagement
             using (var _Transaction = _IGraphFSSession.BeginTransaction())
             {
 
-                var removeObjectExcept = _IGraphFSSession.RemoveObject(typeDir, DBConstants.DBTYPESTREAM, null, null);
+                var removeObjectExcept = _IGraphFSSession.RemoveFSObject(typeDir, DBConstants.DBTYPESTREAM, null, null);
 
                 if (removeObjectExcept.Failed)
                 {
@@ -1848,6 +1892,34 @@ namespace sones.GraphDB.TypeManagement
 
         #endregion
 
+        #region Alter type methods
+
+        internal Exceptional<QueryResult> AlterType(DBContext dbInnerContext, GraphDBType atype, AAlterTypeCommand alterTypeCommand)
+        {
+            var result = alterTypeCommand.Execute(dbInnerContext, atype);
+
+            if (!result.Success)
+            {
+                var retVal = new Exceptional<QueryResult>(result);
+                return retVal;
+            }
+            else
+            {   
+                SelectionResultSet resultReadout = alterTypeCommand.CreateReadout(dbInnerContext, atype);
+
+                if (resultReadout != null)
+                {
+                    Exceptional<QueryResult>  retVal = new Exceptional<QueryResult>(new QueryResult(resultReadout));
+                    retVal.AddErrorsAndWarnings(result);
+
+                    return retVal;
+                }
+                
+                return new Exceptional<QueryResult>(result);
+            }
+        }
+
+        #endregion
 
         #region Some Gettings
 
@@ -2096,7 +2168,7 @@ namespace sones.GraphDB.TypeManagement
 
         #region GetGUIDTypeAttribute
 
-        public TypeAttribute GetGUIDTypeAttribute()
+        public TypeAttribute GetUUIDTypeAttribute()
         {
             return _GUIDTypeAttribute;
         }
@@ -2105,5 +2177,9 @@ namespace sones.GraphDB.TypeManagement
 
         #endregion
 
+        public Exceptional<DirectoryObject> GetObjectsDirectory(GraphDBType myTypeOfDBObject)
+        {
+            return _IGraphFSSession.GetFSObject<DirectoryObject>(new ObjectLocation(myTypeOfDBObject.ObjectLocation, DBConstants.DBObjectsLocation));
+        }
     }
 }

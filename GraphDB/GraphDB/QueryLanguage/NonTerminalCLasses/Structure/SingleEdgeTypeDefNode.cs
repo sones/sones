@@ -51,8 +51,8 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
 
         #region Data
 
-        public TypesOfPandoraType Type { get { return _Type; } }
-        TypesOfPandoraType _Type;
+        public KindsOfType Type { get { return _Type; } }
+        KindsOfType _Type;
 
         public String Name { get { return _Name; } }
         String _Name = null;
@@ -106,7 +106,14 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure
             #endregion
 
             _Name = parseNode.ChildNodes[3].Token.ValueString;
-            _Type = TypesOfPandoraType.Simple;
+            if (_EdgeType is ASingleReferenceEdgeType)
+            {
+                _Type = KindsOfType.SingleReference;
+            }
+            else
+            {
+                _Type = KindsOfType.UnknownSingle;
+            }
 
         }
 

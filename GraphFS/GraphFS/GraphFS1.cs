@@ -73,11 +73,7 @@ namespace sones
 
         public GraphFS1()
         {
-            //_ForestUUID             = ForestUUID.NewUUID;
-            //_FileSystemUUID         = FileSystemUUID.NewUUID;
-            //_AccessMode             = AccessModeTypes.rw;
             _TmpFSLookuptable       = new TmpFSLookuptable();
-            //_NotificationSettings   = new NotificationSettings();
         }
 
         #endregion
@@ -99,7 +95,7 @@ namespace sones
         /// Returns true if the file system was mounted correctly
         /// </summary>
         /// <returns>true if the file system was mounted correctly</returns>
-        public override Boolean isMounted
+        public override Boolean IsMounted
         {
             get
             {
@@ -130,254 +126,45 @@ namespace sones
         #endregion
 
 
-        #region CacheSettings
+        #region (protected) ObjectCache handling
 
-        #region GetObjectCacheSettings(SessionToken mySessionToken)
+        #region GetObjectCacheSettings(mySessionToken)
 
-        public ObjectCacheSettings GetObjectCacheSettings(SessionToken mySessionToken)
+        public override ObjectCacheSettings GetObjectCacheSettings(SessionToken mySessionToken)
+        {
+            return ObjectCacheSettings;
+        }
+
+        #endregion
+
+        #region GetObjectCacheSettings(myObjectLocation, mySessionToken)
+
+        public override ObjectCacheSettings GetObjectCacheSettings(ObjectLocation myObjectLocation, SessionToken mySessionToken)
         {
             throw new NotImplementedException();
         }
 
         #endregion
 
-        #region GetObjectCacheSettings(myObjectLocation, SessionToken mySessionToken)
 
-        public ObjectCacheSettings GetObjectCacheSettings(ObjectLocation myObjectLocation, SessionToken mySessionToken)
+        #region SetObjectCacheSettings(myObjectCacheSettings, mySessionToken)
+
+        public override void SetObjectCacheSettings(ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken)
+        {
+            ObjectCacheSettings = myObjectCacheSettings;
+        }
+
+        #endregion
+
+        #region SetObjectCacheSettings(myObjectLocation, myObjectCacheSettings, mySessionToken)
+
+        public override void SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken)
         {
             throw new NotImplementedException();
         }
 
         #endregion
 
-
-        #region SetObjectCacheSettings(myObjectCacheSettings, SessionToken mySessionToken)
-
-        public void SetObjectCacheSettings(ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken)
-        {
-            _ObjectCacheSettings = myObjectCacheSettings;
-        }
-
-        #endregion
-
-        #region SetObjectCacheSettings(myObjectLocation, myObjectCacheSettings, SessionToken mySessionToken)
-
-        public void SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #endregion
-
-
-
-
-        #region Make-/Grow-/ShrinkFileSystem
-
-        #region MakeFileSystem(myIStorageEngines, myDescription, myOverwriteExistingFileSystem, myAction, SessionToken mySessionToken)
-
-        /// <summary>
-        /// This initialises a IPandoraFS in a given device or file using the given sizes
-        /// </summary>
-        /// <param name="myIStorageEngines">a device or filename where to store the file system data</param>
-        /// <param name="myDescription">a distinguishable Name or description for the file system (can be changed later)</param>
-        /// <param name="myNumberOfBytes">the size of the file system in byte</param>
-        /// <param name="myOverwriteExistingFileSystem">overwrite an existing file system [yes|no]</param>
-        /// <returns>the UUID of the new file system</returns>
-        public override Exceptional<FileSystemUUID> MakeFileSystem(IEnumerable<IStorageEngine> myIStorageEngines, String myDescription, Boolean myOverwriteExistingFileSystem, Action<Double> myAction, SessionToken mySessionToken)
-        {
-
-            //#region Checks
-
-            //if (isMounted)
-            //    throw new PandoraFSException("You can not call MakeFileSystem(...) on a mounted file system!");
-
-            //#endregion
-
-            //lock (this)
-            //{
-
-            //    #region Generate new FileSystemUUID, if it was not given before
-
-            //    if (FileSystemUUID.Length == 0)
-            //        FileSystemUUID = new FileSystemUUID();
-
-            //    #endregion
-
-            //    #region Instantiate the NotificationDispatcher
-
-            //    _NotificationDispatcher = new NotificationDispatcher(FileSystemUUID, _NotificationSettings);
-
-            //    #endregion
-
-            //}
-
-            //return FileSystemUUID;
-
-            return new Exceptional<FileSystemUUID>() { Value = _FileSystemUUID };
-
-        }
-
-        #endregion
-
-        #region GrowFileSystem(myNumberOfBytesToAdd, SessionToken mySessionToken)
-
-        /// <summary>
-        /// This enlarges the size of a IPandoraFS
-        /// </summary>
-        /// <param name="myNumberOfBytesToAdd">the number of bytes to add to the size of the current file system</param>
-        public override Exceptional<UInt64> GrowFileSystem(UInt64 myNumberOfBytesToAdd, SessionToken mySessionToken)
-        {
-            return new Exceptional<UInt64>();
-        }
-
-        #endregion
-
-        #region ShrinkFileSystem(myNumberOfBytesToRemove, SessionToken mySessionToken)
-
-        /// <summary>
-        /// This reduces the size of a IPandoraFS
-        /// </summary>
-        /// <param name="myNumberOfBytesToRemove">the number of bytes to remove from the size of the current file system</param>
-        public override Exceptional<UInt64> ShrinkFileSystem(UInt64 myNumberOfBytesToRemove, SessionToken mySessionToken)
-        {
-            return new Exceptional<UInt64>();
-        }
-
-        #endregion
-
-        #endregion
-
-        #region MountFileSystem
-
-        #region MountFileSystem(myStorageLocation, myFSAccessMode, myNotificationDispatcher, SessionToken mySessionToken)
-
-        public override Exceptional MountFileSystem(String myStorageLocation, AccessModeTypes myFSAccessMode, SessionToken mySessionToken)
-        {
-
-            if (_GraphFSLookuptable == null)
-                _GraphFSLookuptable = new GraphFSLookuptable();
-
-            if (_TmpFSLookuptable == null)
-                _TmpFSLookuptable = new TmpFSLookuptable();
-
-            var _RootDirectoryLocator = new ObjectLocator()
-            {
-                ObjectLocation = new ObjectLocation()
-            };
-
-            var _RootDirectoryObject = new DirectoryObject()
-            {
-                ObjectLocation = new ObjectLocation()
-            };
-
-            // Add special directories to the RootDirectory
-            _RootDirectoryObject.AddObjectStream(FSConstants.DotLink,       FSConstants.VIRTUALDIRECTORY);
-            _RootDirectoryObject.AddObjectStream(FSConstants.DotDotLink,    FSConstants.VIRTUALDIRECTORY);
-            _RootDirectoryObject.AddObjectStream(FSConstants.DotMetadata,   FSConstants.VIRTUALDIRECTORY);
-            _RootDirectoryObject.AddObjectStream(FSConstants.DotSystem,     FSConstants.VIRTUALDIRECTORY);
-            _RootDirectoryObject.AddObjectStream(FSConstants.DotStreams,    FSConstants.VIRTUALDIRECTORY);
-            _RootDirectoryObject.StoreInlineData(FSConstants.DotUUID,       _RootDirectoryObject.ObjectUUID.GetByteArray(), true);
-            _RootDirectoryObject.AddObjectStream(FSConstants.DotFS,         FSConstants.VIRTUALDIRECTORY);
-            _RootDirectoryObject.AddObjectStream(FSConstants.DotForest,     FSConstants.VIRTUALDIRECTORY);
-
-            // Prepare the ObjectLocator
-            _RootDirectoryLocator.Add(FSConstants.DIRECTORYSTREAM, null);
-            _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM] = new ObjectStream();
-            _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM].Add(FSConstants.DefaultEdition, null);
-            _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition] = new ObjectEdition();
-            _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition].Add(new RevisionID(FileSystemUUID), null);
-            _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition][_RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition].LatestRevisionID] = new ObjectRevision(FSConstants.DIRECTORYSTREAM);
-            
-            var _CacheUUID = _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition].LatestRevision.CacheUUID;
-
-            // Store both within the Lookuptable
-            _TmpFSLookuptable.Set(_RootDirectoryLocator.ObjectLocation, _RootDirectoryLocator);
-            _TmpFSLookuptable.Set(_CacheUUID, _RootDirectoryObject);
-
-            return new Exceptional();
-
-        }
-
-        #endregion
-
-        #region RemountFileSystem(myFSAccessMode, SessionToken mySessionToken)
-
-        public override Exceptional RemountFileSystem(AccessModeTypes myFSAccessMode, SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region UnmountFileSystem(SessionToken mySessionToken)
-
-        public override Exceptional UnmountFileSystem(SessionToken mySessionToken)
-        {
-
-            if (!isMounted)
-                throw new GraphFSException("Please mount a file system first!");
-
-            // There is at least one (this file system itself) file system!
-            if (_GraphFSLookuptable.ChildFSs.LongCount() > 1)
-                throw new PandoraFSException_UnmountFileSystemFailed("There are still mounted child file systems!");
-
-            #region Reset all global variables
-
-            _ParentFileSystem = null;
-
-            FileSystemUUID = new FileSystemUUID(0);
-            _FileSystemDescription = null;
-            _GraphFSLookuptable = null;
-
-            #endregion
-
-            return new Exceptional();
-
-        }
-
-        #endregion
-
-        #region ChangeRootDirectory(myChangeRootPrefix, SessionToken mySessionToken)
-
-        public override Exceptional ChangeRootDirectory(String myChangeRootPrefix, SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #endregion
-
-
-
-
-
-        #region INode and ObjectLocator methods
-
-        #region (protected) GetObjectLocator_protected(myObjectLocation)
-
-        protected override Exceptional<ObjectLocator> GetObjectLocator_protected(ObjectLocation myObjectLocation, SessionToken mySessionToken)
-        {
-
-            var _Exceptional = new Exceptional<ObjectLocator>();
-
-            _Exceptional.Value = _TmpFSLookuptable.GetObjectLocator(myObjectLocation);
-
-            if (_Exceptional.Value == null)
-                _Exceptional.PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
-
-            return _Exceptional;
-            
-        }
-
-        #endregion
-
-        #endregion
-
-        #region (protected) Cache handling
 
         #region (protected) CacheAdd(myObjectLocation, myObjectLocator, myIsPinned)
 
@@ -403,7 +190,7 @@ namespace sones
         {
 
             var _Exceptional = new Exceptional<PT>();
-            _Exceptional.Value = (PT)_TmpFSLookuptable.GetAPandoraObject(myCacheUUID);
+            _Exceptional.Value = (PT)_TmpFSLookuptable.GetAFSObject(myCacheUUID);
 
             if (_Exceptional == null || _Exceptional.Failed || _Exceptional.Value == null)
                 _Exceptional.PushT(new GraphFSError("Could not get object with UUID '" + myCacheUUID.ToString() + "' from ObjectCache!"));
@@ -448,6 +235,187 @@ namespace sones
         #endregion
 
         #endregion
+
+
+
+
+        #region Make-/Grow-/ShrinkFileSystem
+
+        #region MakeFileSystem(myIStorageEngines, myDescription, myOverwriteExistingFileSystem, myAction, SessionToken mySessionToken)
+
+        /// <summary>
+        /// This initialises a IPandoraFS in a given device or file using the given sizes
+        /// </summary>
+        /// <param name="myIStorageEngines">a device or filename where to store the file system data</param>
+        /// <param name="myDescription">a distinguishable Name or description for the file system (can be changed later)</param>
+        /// <param name="myNumberOfBytes">the size of the file system in byte</param>
+        /// <param name="myOverwriteExistingFileSystem">overwrite an existing file system [yes|no]</param>
+        /// <returns>the UUID of the new file system</returns>
+        public override Exceptional<FileSystemUUID> MakeFileSystem(IEnumerable<IStorageEngine> myIStorageEngines, String myDescription, Boolean myOverwriteExistingFileSystem, Action<Double> myAction, SessionToken mySessionToken)
+        {
+
+            //#region Checks
+
+            //if (IsMounted)
+            //    throw new GraphFSException("You can not call MakeFileSystem(...) on a mounted file system!");
+
+            //#endregion
+
+            //lock (this)
+            //{
+
+            //    #region Generate new FileSystemUUID, if it was not given before
+
+            //    if (FileSystemUUID.Length == 0)
+            //        FileSystemUUID = new FileSystemUUID();
+
+            //    #endregion
+
+            //    #region Instantiate the NotificationDispatcher
+
+            //    _NotificationDispatcher = new NotificationDispatcher(FileSystemUUID, _NotificationSettings);
+
+            //    #endregion
+
+            //}
+
+            //return FileSystemUUID;
+
+            return new Exceptional<FileSystemUUID>() { Value = FileSystemUUID };
+
+        }
+
+        #endregion
+
+        #region GrowFileSystem(myNumberOfBytesToAdd, SessionToken mySessionToken)
+
+        /// <summary>
+        /// This enlarges the size of a IPandoraFS
+        /// </summary>
+        /// <param name="myNumberOfBytesToAdd">the number of bytes to add to the size of the current file system</param>
+        public override Exceptional<UInt64> GrowFileSystem(UInt64 myNumberOfBytesToAdd, SessionToken mySessionToken)
+        {
+            return new Exceptional<UInt64>();
+        }
+
+        #endregion
+
+        #region ShrinkFileSystem(myNumberOfBytesToRemove, SessionToken mySessionToken)
+
+        /// <summary>
+        /// This reduces the size of a IPandoraFS
+        /// </summary>
+        /// <param name="myNumberOfBytesToRemove">the number of bytes to remove from the size of the current file system</param>
+        public override Exceptional<UInt64> ShrinkFileSystem(UInt64 myNumberOfBytesToRemove, SessionToken mySessionToken)
+        {
+            return new Exceptional<UInt64>();
+        }
+
+        #endregion
+
+        #endregion
+
+        #region MountFileSystem
+
+        #region MountFileSystem(myStorageLocation, myFSAccessMode, myNotificationDispatcher, SessionToken mySessionToken)
+
+        public override Exceptional MountFileSystem(String myStorageLocation, AccessModeTypes myFSAccessMode, SessionToken mySessionToken)
+        {
+
+            if (_TmpFSLookuptable == null)
+                _TmpFSLookuptable = new TmpFSLookuptable();
+
+            var _RootDirectoryLocator = new ObjectLocator()
+            {
+                ObjectLocation = new ObjectLocation()
+            };
+
+            var _RootDirectoryObject = new DirectoryObject()
+            {
+                ObjectLocation = new ObjectLocation()
+            };
+
+            // Add special directories to the RootDirectory
+            _RootDirectoryObject.AddObjectStream(FSConstants.DotLink,       FSConstants.VIRTUALDIRECTORY);
+            _RootDirectoryObject.AddObjectStream(FSConstants.DotDotLink,    FSConstants.VIRTUALDIRECTORY);
+            _RootDirectoryObject.AddObjectStream(FSConstants.DotMetadata,   FSConstants.VIRTUALDIRECTORY);
+            _RootDirectoryObject.AddObjectStream(FSConstants.DotSystem,     FSConstants.VIRTUALDIRECTORY);
+            _RootDirectoryObject.AddObjectStream(FSConstants.DotStreams,    FSConstants.VIRTUALDIRECTORY);
+            _RootDirectoryObject.StoreInlineData(FSConstants.DotUUID,       _RootDirectoryObject.ObjectUUID.GetByteArray(), true);
+            _RootDirectoryObject.AddObjectStream(FSConstants.DotFS,         FSConstants.VIRTUALDIRECTORY);
+            _RootDirectoryObject.AddObjectStream(FSConstants.DotForest,     FSConstants.VIRTUALDIRECTORY);
+
+            // Prepare the ObjectLocator
+            _RootDirectoryLocator.Add(FSConstants.DIRECTORYSTREAM, null);
+            _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM] = new ObjectStream();
+            _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM].Add(FSConstants.DefaultEdition, null);
+            _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition] = new ObjectEdition();
+            _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition].Add(new RevisionID(FileSystemUUID), null);
+            _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition][_RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition].LatestRevisionID] = new ObjectRevision(FSConstants.DIRECTORYSTREAM);
+            
+            var _CacheUUID = _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition].LatestRevision.CacheUUID;
+
+            // Store both within the Lookuptable
+            _TmpFSLookuptable.Set(_RootDirectoryLocator.ObjectLocation, _RootDirectoryLocator);
+            _TmpFSLookuptable.Set(_CacheUUID, _RootDirectoryObject);
+
+            return new Exceptional();
+
+        }
+
+        #endregion
+
+        
+
+        #region UnmountFileSystem(SessionToken mySessionToken)
+
+        public override Exceptional UnmountFileSystem(SessionToken mySessionToken)
+        {
+
+            lock (this)
+            {
+
+                var _Exceptional = base.UnmountFileSystem(mySessionToken);
+
+                _TmpFSLookuptable = null;
+
+                return _Exceptional;
+
+            }
+
+        }
+
+        #endregion
+
+        #endregion
+
+
+
+
+
+        #region INode and ObjectLocator methods
+
+        #region (protected) GetObjectLocator_protected(myObjectLocation)
+
+        protected override Exceptional<ObjectLocator> GetObjectLocator_protected(ObjectLocation myObjectLocation)
+        {
+
+            var _Exceptional = new Exceptional<ObjectLocator>();
+
+            _Exceptional.Value = _TmpFSLookuptable.GetObjectLocator(myObjectLocation);
+
+            if (_Exceptional.Value == null)
+                _Exceptional.PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
+
+            return _Exceptional;
+            
+        }
+
+        #endregion
+
+        #endregion
+
+        
 
         #region Object specific methods
 
@@ -572,10 +540,8 @@ namespace sones
 
         //#endregion
 
-        //protected override Exceptional<PT> LoadObject_protected<PT>(ObjectLocator myObjectLocator, ObjectRevision myObjectRevision, Boolean myIgnoreIntegrityCheckFailures)
-        protected override Exceptional<AFSObject> LoadAFSObject_protected(ObjectLocator myObjectLocator, ObjectRevision myObjectRevision, Boolean myIgnoreIntegrityCheckFailures, AFSObject myAFSObject)
+        protected override Exceptional<AFSObject> LoadAFSObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, AFSObject myAFSObject)
         {
-            //return new Exceptional<PT>();
             return new Exceptional<AFSObject>();
         }
 
@@ -628,7 +594,7 @@ namespace sones
 
                 #region Handle ParentIDirectoryObject
 
-                return GetObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false, mySessionToken).
+                return GetFSObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false, mySessionToken).
                     WhenFailed<DirectoryObject>(e => e.PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path))).
                     WhenSucceded<DirectoryObject>(_ParentDirectoryObject =>
                     {
@@ -697,52 +663,16 @@ namespace sones
 
         #endregion
 
-        protected override Exceptional RemoveObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, SessionToken mySessionToken)
+        protected override Exceptional RemoveAFSObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID)
         {
             return Exceptional.OK;
         }
 
         #region EraseObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, mySessionToken)
 
-        public Exceptional EraseObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, SessionToken mySessionToken)
+        public Exceptional EraseFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, SessionToken mySessionToken)
         {
             throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #endregion
-
-        #region Symlink methods
-
-        #region (protected) AddSymlink_protected(myObjectLocation, myTargetLocation, mySessionToken)
-
-        protected override Exceptional AddSymlink_protected(ObjectLocation myObjectLocation, ObjectLocation myTargetLocation, SessionToken mySessionToken)
-        {
-
-            lock (this)
-            {
-
-                var _Exceptional = new Exceptional();
-
-                // Add symlink to ParentIDirectoryObject
-                var _ParentIDirectoryObject = GetObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false, mySessionToken);
-
-                if (_ParentIDirectoryObject.Failed)
-                {
-                    return _ParentIDirectoryObject.Push(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path));
-                }
-
-                if (!_ParentIDirectoryObject.Value.ObjectExists(myObjectLocation.Name))
-                {
-                    //_ParentIDirectoryObject.Value.IPandoraFSReference = this;
-                    _ParentIDirectoryObject.Value.AddSymlink(myObjectLocation.Name, myTargetLocation);
-                }
-
-                return _Exceptional;
-
-            }
-
         }
 
         #endregion
@@ -883,12 +813,6 @@ namespace sones
         //#endregion
 
 
-        public void FlushObjectLocationNew(ObjectLocation myObjectLocation, SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-
         #region IGraphFS Members
 
         public Exceptional<IMetadataObject<TValue>> CreateMetadataObject<TValue>(ObjectLocation myObjectLocation, string myObjectStream, string myObjectEdition, SessionToken mySessionToken)
@@ -938,69 +862,6 @@ namespace sones
 
         #endregion
 
-
-        #region ResolveObjectLocation(myObjectLocation, ..., SessionToken mySessionToken)
-
-        #region ResolveObjectLocation_Internal(ref myObjectLocation, out myObjectStreams, out myObjectPath, out myObjectName, out myParentIDirectoryObject, ref mySymlinkTargets, SessionToken mySessionToken)
-
-        public override ResolveTypes ResolveObjectLocation_Internal(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, ref List<String> mySymlinkTargets, SessionToken mySessionToken)
-        {
-
-            myObjectStreams     = new List<String>();
-            myObjectPath        = new ObjectLocation();
-            myObjectName        = "";
-            myIDirectoryObject  = new DirectoryObject();
-            
-            return ResolveTypes.OK;
-
-        }
-
-        #endregion
-
-        #region ResolveObjectLocationRecursive_Internal(ref myObjectLocation, out myObjectStreams, out myObjectPath, out myObjectName, out myIDirectoryObject, out myIGraphFSSession, ref mySymlinkTargets, SessionToken mySessionToken)
-
-        public override ResolveTypes ResolveObjectLocationRecursive_Internal(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIPandoraFS, ref List<String> mySymlinkTargets, SessionToken mySessionToken)
-        {
-
-            myObjectStreams     = new List<String>();
-            myObjectPath        = new ObjectLocation();
-            myObjectName        = "";
-            myIDirectoryObject  = new DirectoryObject();
-            myIPandoraFS        = this;
-            
-            return ResolveTypes.OK;
-
-        }
-
-        #endregion
-
-        #region ResolveObjectLocation(ref myObjectLocation, out myObjectStream, out myObjectPath, out myObjectName, out myIDirectoryObject, out myIGraphFSSession, SessionToken mySessionToken)
-
-        public override Trinary ResolveObjectLocation(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIPandoraFS, SessionToken mySessionToken)
-        {
-
-            myObjectStreams     = new List<String>();
-            myObjectPath        = new ObjectLocation();
-            myObjectName        = "";
-            myIDirectoryObject  = new DirectoryObject();
-            myIPandoraFS        = this;
-            
-            return Trinary.FALSE;
-
-        }
-
-        #endregion
-
-        #region ResolveObjectLocation(myObjectLocation, myThrowObjectNotFoundException, SessionToken mySessionToken)
-
-        public override ObjectLocation ResolveObjectLocation(ObjectLocation myObjectLocation, Boolean myThrowObjectNotFoundException, SessionToken mySessionToken)
-        {
-            return myObjectLocation;
-        }
-
-        #endregion
-
-        #endregion
 
     }
 

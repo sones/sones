@@ -22,9 +22,9 @@
  * AObjectHeader
  * Achim Friedland, 2008 - 2010
  * 
- * The abstract class for all PandoraFS file system structures
+ * The abstract class for all IGraphFS file system structures
  * 
- *  * Layout of the APandoraStructure Header:
+ *  * Layout of the AFSObjectStructure Header:
  * -------------------------------------------------
  * IFastSerialize Header            - 4 bytes
  * 
@@ -44,9 +44,6 @@
  * Data Padding                     - q bytes
  * Additional Padding               - r bytes
  * 
- * Lead programmer:
- *      Achim Friedland
- * 
  */
 
 #region Usings
@@ -54,12 +51,12 @@
 using System;
 using System.Collections.Generic;
 
-using sones.Lib.Serializer;
-using sones.Lib.DataStructures.Timestamp;
 using sones.GraphFS.Session;
 using sones.GraphFS.DataStructures;
-using sones.Lib.DataStructures.UUID;
+
 using sones.Lib.Session;
+using sones.Lib.Serializer;
+using sones.Lib.DataStructures.Timestamp;
 using sones.Lib.DataStructures.WeakReference;
 
 #endregion
@@ -68,10 +65,10 @@ namespace sones.GraphFS.Objects
 {
 
     /// <summary>
-    /// The abstract class for all GraphFS structures
+    /// The abstract class for all IGraphFS structures
     /// </summary>
 
-    public abstract class AObjectHeader : IObjectHeader
+    public abstract class AFSObjectHeader : IFSObjectHeader
     {
 
         #region Data 
@@ -513,16 +510,16 @@ namespace sones.GraphFS.Objects
 
         #endregion
 
-        #region Constructors
+        #region Constructor(s)
 
-        #region APandoraHeader()
+        #region AFSObjectHeader()
 
         /// <summary>
-        /// This will set all important variables within this APandoraStructure.
+        /// This will set all important variables within this AFSObjectStructure.
         /// This will especially create a new ObjectUUID and mark the
         /// APandoraStructure as "new" and "dirty".
         /// </summary>
-        public AObjectHeader()
+        public AFSObjectHeader()
         {
 
             // Members of APandoraStructure
@@ -541,14 +538,14 @@ namespace sones.GraphFS.Objects
 
         #endregion
 
-        #region APandoraHeader(myObjectUUID)
+        #region AFSObjectHeader(myObjectUUID)
 
         /// <summary>
-        /// This will set all important variables within this APandoraStructure.
+        /// This will set all important variables within this AFSObjectStructure.
         /// Additionally it sets the ObjectUUID to the given value and marks
         /// the APandoraStructure as "new" and "dirty".
         /// </summary>
-        public AObjectHeader(ObjectUUID myObjectUUID)
+        public AFSObjectHeader(ObjectUUID myObjectUUID)
             : this()
         {
             ObjectUUID              = myObjectUUID;

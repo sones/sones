@@ -24,6 +24,7 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Dirk Bludau</developer>
+ * <developer>Stefan Licht</developer>
  * <summary></summary>
  */
 
@@ -51,6 +52,9 @@ using sones.Lib.Session;
 using sones.GraphDB.QueryLanguage.Enums;
 using sones.GraphDB.Managers;
 using sones.GraphDB.Exceptions;
+using sones.Lib;
+using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+using sones.GraphDB.Managers.Structures;
 
 
 #endregion
@@ -59,8 +63,9 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.InsertOrRepl
 {
     public class InsertOrReplaceNode : AStatement
     {
-        private ObjectManipulationManager _ObjectManipulationManager;
-        private BinaryExpressionNode _whereExpression;
+        private BinaryExpressionDefinition _WhereExpression;
+        private List<AAttributeAssignOrUpdate> _AttributeAssignList;
+        private String _Type;
 
         #region Constructor
 
@@ -81,17 +86,13 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.InsertOrRepl
 
         public override void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
-            var dbContext = context.IContext as DBContext;
-            var typeManager = dbContext.DBTypeManager;
-            GraphDBType type;
 
             if (parseNode.HasChildNodes())
             {
                 //get type
                 if (parseNode.ChildNodes[1] != null && parseNode.ChildNodes[1].AstNode != null)
                 {
-                    type = ((ATypeNode)(parseNode.ChildNodes[1].AstNode)).DBTypeStream;
-                    _ObjectManipulationManager = new ObjectManipulationManager(dbContext.SessionSettings, type, dbContext, this);
+                    _Type = ((ATypeNode)(parseNode.ChildNodes[1].AstNode)).ReferenceAndType.TypeName;
                 }
                 else
                 {
@@ -100,24 +101,15 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.InsertOrRepl
 
                 if (parseNode.ChildNodes[3] != null && parseNode.ChildNodes[3].HasChildNodes())
                 {
-                    var result = _ObjectManipulationManager.GetRecursiveAttributes(parseNode.ChildNodes[3], dbContext);
-                    if (result.Failed)
-                    {
-                        throw new GraphDBException(result.Errors);
-                    }
 
-                    _ObjectManipulationManager.CheckMandatoryAttributes(dbContext);
+                    _AttributeAssignList = (parseNode.ChildNodes[3].AstNode as AttrAssignListNode).AttributeAssigns;
+
                 }
 
                 if (parseNode.ChildNodes[4] != null && ((WhereExpressionNode)parseNode.ChildNodes[4].AstNode).BinExprNode != null)
                 {
-                    _whereExpression = ((WhereExpressionNode)parseNode.ChildNodes[4].AstNode).BinExprNode;
+                    _WhereExpression = ((WhereExpressionNode)parseNode.ChildNodes[4].AstNode).BinExprNode.BinaryExpressionDefinition;
 
-                    Exceptional validateResult = _whereExpression.Validate(dbContext, type);
-                    if (!validateResult.Success)
-                    {
-                        throw new GraphDBException(validateResult.Errors);
-                    }
                 }
             }   
         }
@@ -133,80 +125,22 @@ namespace sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.InsertOrRepl
   
             #region Data
 
-            IEnumerable<Exceptional<DBObjectStream>> extractedDBOs = null;
-            List<IWarning> warnings = new List<IWarning>();
+            var objectManipulationManager = new ObjectManipulationManager();
 
             #endregion
-
 
             using (var transaction = graphDBSession.BeginTransaction())
             {
 
                 var dbInnerContext = transaction.GetDBContext();
 
-
-                if (_whereExpression != null)
+                var graphDBType = dbInnerContext.DBTypeManager.GetTypeByName(_Type);
+                if (graphDBType == null)
                 {
-                    var _whereGraphResult = _whereExpression.Calculon(dbContext, new CommonUsageGraph(dbContext), false);
-
-                    if (_whereGraphResult.Success)
-                    {
-                        extractedDBOs = _whereGraphResult.Value.Select(new LevelKey(_ObjectManipulationManager.Type), null, true);
-                    }
-                    else
-                    {
-                        return new QueryResult(_whereGraphResult.Errors);
-                    }
-
-                    #region expressionGraph error handling
-
-                    warnings.AddRange(_whereGraphResult.Value.GetWarnings());
-
-                    #endregion
-
-                }
-                else
-                {
-                    extractedDBOs = new List<Exceptional<DBObjectStream>>();
+                    return new QueryResult(new Error_TypeDoesNotExist(_Type));
                 }
 
-                var count = extractedDBOs.Count();
-
-                if (count > 1)
-                {
-                    return new QueryResult(new Error_MultipleResults());
-                }
-                else
-                {
-                    if (count == 1)
-                    {
-                        #region delete
-
-                        IEnumerable<GraphDBType> parentTypes = dbContext.DBTypeManager.GetAllParentTypes(_ObjectManipulationManager.Type, true, false);
-                        Exceptional<Boolean> checkUniqueVal = null;
-
-                        var assingedAttrs = _ObjectManipulationManager.Attributes.ToDictionary(key => key.Key.Definition.UUID, value => value.Value);
-
-                        checkUniqueVal = dbContext.DBIndexManager.CheckUniqueConstraint(_ObjectManipulationManager.Type, parentTypes, assingedAttrs);
-                        if (checkUniqueVal.Failed)
-                            return new QueryResult(checkUniqueVal.Errors);
-
-                        var DeleteResult = _ObjectManipulationManager.DeleteDBObjects(_ObjectManipulationManager.Type, null, extractedDBOs, dbContext);
-
-                        if (DeleteResult.Failed)
-                        {
-                            return new QueryResult(DeleteResult.Errors);
-                        }
-
-                        #endregion
-                    }
-                }
-
-                //Insert
-                var result = _ObjectManipulationManager.Insert(dbContext, false);
-
-                //if there were any warnings during this process, the need to be added
-                result.AddWarnings(warnings);
+                var result = objectManipulationManager.InsertOrReplace(dbInnerContext, graphDBType, _AttributeAssignList, _WhereExpression);
 
                 #region Commit transaction and add all Warnings and Errors
 

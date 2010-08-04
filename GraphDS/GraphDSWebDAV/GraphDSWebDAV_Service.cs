@@ -205,7 +205,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                     var isFile = _IGraphFSSession.ObjectStreamExists(new ObjectLocation(header.Destination), FSConstants.FILESTREAM);
                     if (isFile.Success && isFile.Value == Trinary.TRUE)
                     {
-                        _IGraphFSSession.RemoveObject(new ObjectLocation(header.Destination), FSConstants.FILESTREAM, null, null);
+                        _IGraphFSSession.RemoveFSObject(new ObjectLocation(header.Destination), FSConstants.FILESTREAM, null, null);
                         respHeader = CreateHeader(HTTPStatusCodes.NoContent, content.ULongLength());
                     }
                     else
@@ -586,7 +586,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                     if (_IGraphFSSession.ObjectStreamExists(new ObjectLocation(FSConstants.FILESTREAM), NewLocation).Value != Trinary.TRUE)
                     {
 
-                        AFSObject FileObject = _IGraphFSSession.GetObject<FileObject>(new ObjectLocation(header.Destination), FSConstants.FILESTREAM, null, null, 0, false).Value;
+                        AFSObject FileObject = _IGraphFSSession.GetFSObject<FileObject>(new ObjectLocation(header.Destination), FSConstants.FILESTREAM, null, null, 0, false).Value;
                         FileObject.ObjectLocation = new ObjectLocation(NewLocation);
                         _IGraphFSSession.StoreFSObject(FileObject, true);
 
@@ -651,7 +651,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                         //_IGraphFSSession.CreateDirectoryObject(new ObjectLocation(NewLocation));
                         //_IGraphFSSession.RemoveDirectoryObject(new ObjectLocation(Header.Destination), true);
 
-                        _IGraphFSSession.RenameObject(new ObjectLocation(header.Destination), new ObjectLocation(NewLocation).Name);
+                        _IGraphFSSession.RenameFSObject(new ObjectLocation(header.Destination), new ObjectLocation(NewLocation).Name);
 
                         // TODO: Remove old Directory
                         //_PandoraVFS.DeleteDirectoryObject(Header.Destination);
@@ -684,7 +684,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                         //_IGraphFSSession.StoreObject(FileObject, Overwrite);
                         //_IGraphFSSession.RemoveObject(new ObjectLocation(Header.Destination), FSConstants.FILESTREAM, null, null);
 
-                        _IGraphFSSession.RenameObject(new ObjectLocation(header.Destination), new ObjectLocation(NewLocation).Name);
+                        _IGraphFSSession.RenameFSObject(new ObjectLocation(header.Destination), new ObjectLocation(NewLocation).Name);
 
                         respHeader = CreateHeader(HTTPStatusCodes.Created, content.ULongLength(), new ContentType(MediaTypeNames.Text.Plain + "; charset=utf-8"));
                         respHeader.Headers.Add("Location", header.GetFullHTTPHost() + NewLocation);
@@ -1026,13 +1026,13 @@ namespace sones.GraphDS.Connectors.WebDAV
         private Byte[] CreateGetFileResponse(HTTPHeader header, params string[] properties)
         {
 
-            return _IGraphFSSession.GetObject<FileObject>(new ObjectLocation(header.Destination), FSConstants.FILESTREAM, null, null, 0, false).Value.ObjectData;
+            return _IGraphFSSession.GetFSObject<FileObject>(new ObjectLocation(header.Destination), FSConstants.FILESTREAM, null, null, 0, false).Value.ObjectData;
 
         }
 
         private Byte[] CreateGetInlineDataResponse(params string[] properties)
         {
-            DirectoryObject DirectoryObject = _IGraphFSSession.GetObject<DirectoryObject>(new ObjectLocation(properties[0]), FSConstants.DIRECTORYSTREAM, null, null, 0, false).Value;
+            DirectoryObject DirectoryObject = _IGraphFSSession.GetFSObject<DirectoryObject>(new ObjectLocation(properties[0]), FSConstants.DIRECTORYSTREAM, null, null, 0, false).Value;
 
             return Encoding.ASCII.GetBytes(DirectoryObject.GetInlineData(properties[1]).ToHexString());
 
@@ -1070,7 +1070,7 @@ namespace sones.GraphDS.Connectors.WebDAV
             if (S_INVALID_DIRECTORIES.Contains(String.Concat("|", DirectoryHelper.GetObjectName(header.Destination), "|")))
                 IsLegalDir = false;
 
-            var directoryObjectR = _IGraphFSSession.GetObject<DirectoryObject>(new ObjectLocation(header.Destination), FSConstants.DIRECTORYSTREAM, null, null, 0, false);
+            var directoryObjectR = _IGraphFSSession.GetFSObject<DirectoryObject>(new ObjectLocation(header.Destination), FSConstants.DIRECTORYSTREAM, null, null, 0, false);
             // uncommented because _IGraphFSSession.isIDirectoryObject is odd
             //if (IsLegalDir && _IGraphFSSession.isIDirectoryObject(new ObjectLocation(header.Destination)) == Trinary.TRUE)
             if (IsLegalDir && directoryObjectR.Success)
@@ -1093,7 +1093,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                         {
                             try
                             {
-                                IDirectoryObject CurDirectoryObject = _IGraphFSSession.GetObject<DirectoryObject>(new ObjectLocation(ObjectDestination), FSConstants.DIRECTORYSTREAM, null, null, 0, false).Value;
+                                IDirectoryObject CurDirectoryObject = _IGraphFSSession.GetFSObject<DirectoryObject>(new ObjectLocation(ObjectDestination), FSConstants.DIRECTORYSTREAM, null, null, 0, false).Value;
                                 String HRef = header.FullHTTPDestinationPath() + (header.FullHTTPDestinationPath().EndsWith("/") ? "" : FSPathConstants.PathDelimiter) + actualDirectoryEntry.Name;
                                 XmlElement XmlElement = CreateResponseElement_Dir(header, XmlDocument, HRef, actualDirectoryEntry.Name, CurDirectoryObject, propfindProperties);
                                 Root.AppendChild(XmlElement);
@@ -1107,7 +1107,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                         {
                             String HRef = header.FullHTTPDestinationPath() + (header.FullHTTPDestinationPath().EndsWith("/") ? "" : FSPathConstants.PathDelimiter) + actualDirectoryEntry.Name;
                             //INode INode = _IGraphFSSession.ExportINode(new ObjectLocation(ObjectDestination));
-                            UInt64 Size = (UInt64)_IGraphFSSession.GetObject<FileObject>(new ObjectLocation(ObjectDestination), FSConstants.FILESTREAM, null, null, 0, false).Value.ObjectData.Length;
+                            UInt64 Size = (UInt64)_IGraphFSSession.GetFSObject<FileObject>(new ObjectLocation(ObjectDestination), FSConstants.FILESTREAM, null, null, 0, false).Value.ObjectData.Length;
                             XmlElement ResponseElement_File = CreateResponseElement_File(header, XmlDocument, HRef, actualDirectoryEntry.Name, System.Net.Mime.MediaTypeNames.Text.Plain, Size, propfindProperties);
                             Root.AppendChild(ResponseElement_File);
                         }
@@ -1668,7 +1668,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                     }
                     else if (destinationObjectStreamTypes.Contains(FSConstants.FILESTREAM))
                     {
-                        Props.Add(PropfindProperties.Getcontentlength.ToString(), _IGraphFSSession.GetObject<FileObject>(new ObjectLocation(header.Destination), FSConstants.FILESTREAM, null, null, 0, false).Value.ObjectData.Length.ToString());
+                        Props.Add(PropfindProperties.Getcontentlength.ToString(), _IGraphFSSession.GetFSObject<FileObject>(new ObjectLocation(header.Destination), FSConstants.FILESTREAM, null, null, 0, false).Value.ObjectData.Length.ToString());
                     }
 
                     //if ((myPropfindProperties == PropfindProperties.NONE) || ((myPropfindProperties & PropfindProperties.Getlastmodified) == PropfindProperties.Getlastmodified))

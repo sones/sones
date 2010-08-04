@@ -35,12 +35,12 @@ using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Indices;
 using sones.GraphDB.QueryLanguage.Enums;
-using sones.GraphDB.QueryLanguage.Operator;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.PandoraTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -73,63 +73,63 @@ namespace sones.GraphDB.QueryLanguage.Operators
         #region SimpleOperation Methods
 
 
-        public override Exceptional<IOperationValue> SimpleOperation(IOperationValue left, IOperationValue right, TypesOfBinaryExpression myTypeOfBinaryExpression)
+        public override Exceptional<AOperationDefinition> SimpleOperation(AOperationDefinition left, AOperationDefinition right, TypesOfBinaryExpression myTypeOfBinaryExpression)
         {
-            if (left is AtomValue && right is AtomValue)
-                return SimpleOperation((AtomValue)left, (AtomValue)right);
-            else if (left is AtomValue && right is TupleValue)
-                return SimpleOperation((AtomValue)left, (TupleValue)right);
+            if (left is ValueDefinition && right is ValueDefinition)
+                return SimpleOperation((ValueDefinition)left, (ValueDefinition)right);
+            else if (left is ValueDefinition && right is TupleDefinition)
+                return SimpleOperation((ValueDefinition)left, (TupleDefinition)right);
             // [1,3,5] IN 5 <-- makes no sence
             //else if (left is TupleValue && right is AtomValue)
             //    return SimpleOperation((TupleValue)left, (AtomValue)right);
-            else if (left is TupleValue && right is TupleValue)
-                return SimpleOperation((TupleValue)left, (TupleValue)right);
+            else if (left is TupleDefinition && right is TupleDefinition)
+                return SimpleOperation((TupleDefinition)left, (TupleDefinition)right);
 
-            return new Exceptional<IOperationValue>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+            return new Exceptional<AOperationDefinition>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
 
         #endregion
 
-        protected new Exceptional<IOperationValue> SimpleOperation(AtomValue left, AtomValue right)
+        protected new Exceptional<AOperationDefinition> SimpleOperation(ValueDefinition left, ValueDefinition right)
         {
 
             #region Data
 
-            AtomValue resultObject = null;
+            ValueDefinition resultObject = null;
 
             #endregion
 
             var resultValue = Compare(left.Value, right.Value);
             if (resultValue.Failed)
-                return new Exceptional<IOperationValue>(resultValue);
+                return new Exceptional<AOperationDefinition>(resultValue);
 
 
-            resultObject = new AtomValue(TypesOfOperatorResult.Boolean, (object)resultValue);
+            resultObject = new ValueDefinition(TypesOfOperatorResult.Boolean, (object)resultValue);
 
-            return new Exceptional<IOperationValue>(resultObject);
+            return new Exceptional<AOperationDefinition>(resultObject);
 
         }
 
-        public override object GetValidTupleReloaded(TupleNode aTupleNode, DBContext dbContext)
+        public override AOperationDefinition GetValidTupleReloaded(TupleDefinition aTupleNode, DBContext dbContext)
         {
             return CreateTupleValue(aTupleNode);
         }
 
-        protected new Exceptional<IOperationValue> SimpleOperation(AtomValue left, TupleValue right)
+        protected new Exceptional<AOperationDefinition> SimpleOperation(ValueDefinition left, TupleDefinition right)
         {
 
             #region Data
 
-            AtomValue resultObject = null;
+            ValueDefinition resultObject = null;
             Object resultValue = false;
 
             #endregion
 
-            foreach (ADBBaseObject val in right.Values)
+            foreach (var val in right)
             {
-                var comp = Compare(left.Value, val);
+                var comp = Compare(left.Value, (val.Value as ValueDefinition).Value);
                 if (comp.Failed)
-                    return new Exceptional<IOperationValue>(comp);
+                    return new Exceptional<AOperationDefinition>(comp);
 
                 if (!comp.Value)
                 {
@@ -142,29 +142,29 @@ namespace sones.GraphDB.QueryLanguage.Operators
                 }
             }
 
-            resultObject = new AtomValue(TypesOfOperatorResult.Boolean, (object)resultValue);
+            resultObject = new ValueDefinition(TypesOfOperatorResult.Boolean, (object)resultValue);
 
-            return new Exceptional<IOperationValue>(resultObject);
+            return new Exceptional<AOperationDefinition>(resultObject);
 
         }
 
-        protected new Exceptional<IOperationValue> SimpleOperation(TupleValue left, TupleValue right)
+        protected new Exceptional<AOperationDefinition> SimpleOperation(TupleDefinition left, TupleDefinition right)
         {
 
             #region Data
 
-            AtomValue resultObject = null;
+            ValueDefinition resultObject = null;
             Object resultValue = false;
 
             #endregion
 
-            foreach (ADBBaseObject leftVal in left.Values)
+            foreach (var leftVal in left)
             {
-                foreach (ADBBaseObject rightVal in right.Values)
+                foreach (var rightVal in right)
                 {
-                    var comp = Compare(leftVal, rightVal);
+                    var comp = Compare((leftVal.Value as ValueDefinition).Value, (rightVal.Value as ValueDefinition).Value);
                     if (comp.Failed)
-                        return new Exceptional<IOperationValue>(comp);
+                        return new Exceptional<AOperationDefinition>(comp);
 
                     if (!comp.Value)
                     {
@@ -179,9 +179,9 @@ namespace sones.GraphDB.QueryLanguage.Operators
                 if ((Boolean)resultValue) break;
             }
 
-            resultObject = new AtomValue(TypesOfOperatorResult.Boolean, (object)resultValue);
+            resultObject = new ValueDefinition(TypesOfOperatorResult.Boolean, (object)resultValue);
 
-            return new Exceptional<IOperationValue>(resultObject);
+            return new Exceptional<AOperationDefinition>(resultObject);
 
         }
 
@@ -195,22 +195,16 @@ namespace sones.GraphDB.QueryLanguage.Operators
         }
 
 
-        public override IEnumerable<ObjectUUID> IndexSingleOperation(AttributeIndex myIndex, ADBBaseObject myOperationValue, AttributeUUID myAttributeUUID, TypesOfBinaryExpression typeOfBinExpr, DBIndexManager indexManager)
+        public override IEnumerable<ObjectUUID> IndexSingleOperation(AAttributeIndex myIndex, ADBBaseObject myOperationValue, AttributeUUID myAttributeUUID, TypesOfBinaryExpression typeOfBinExpr, DBContext dbContext)
         {
-            var idxRef = myIndex.GetIndexReference(indexManager);
-            if (idxRef.Failed)
-            {
-                throw new GraphDBException(idxRef.Errors);
-            }
-            var idxRefVal = idxRef.Value;
-            
             IndexKey lookup = new IndexKey(myAttributeUUID, myOperationValue, myIndex.IndexKeyDefinition);
+            var currentType = dbContext.DBTypeManager.GetTypeByUUID(myIndex.IndexRelatedTypeUUID);
 
-            if (idxRefVal.ContainsKey(lookup))
+            if (myIndex.Contains(lookup, currentType, dbContext))
             {
-                var interestingUUIDs = idxRefVal[lookup];
+                var interestingUUIDs = myIndex.GetValues(lookup, currentType, dbContext);
 
-                foreach (var aIndexValue in idxRefVal.GetIDictionary().Select(kv => kv.Value))
+                foreach (var aIndexValue in myIndex.GetAllValues(currentType, dbContext))
                 {
                     foreach (var aUUID in aIndexValue)
                     {
@@ -223,7 +217,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
             }
             else
             {
-                foreach (var aIndexValue in idxRefVal.GetIDictionary().Select(kv => kv.Value))
+                foreach (var aIndexValue in myIndex.GetKeyValues(currentType, dbContext).Select(kv => kv.Value))
                 {
                     foreach (var aUUID in aIndexValue)
                     {
@@ -241,7 +235,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
             {
                 case TypesOfBinaryExpression.LeftComplex:
 
-                    if (data.Operands.Item1 is TupleValue)
+                    if (data.Operands.Item1 is TupleDefinition)
                     {
                         return true;
                     }
@@ -252,7 +246,7 @@ namespace sones.GraphDB.QueryLanguage.Operators
 
                 case TypesOfBinaryExpression.RightComplex:
 
-                    if (data.Operands.Item1 is AtomValue)
+                    if (data.Operands.Item1 is ValueDefinition)
                     {
                         return true;
                     }
