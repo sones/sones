@@ -43,7 +43,7 @@ using Newtonsoft.Json.Linq;
 
 using sones.GraphDB;
 using sones.GraphDB.Errors;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Objects;
@@ -56,6 +56,7 @@ using sones.Lib.SimpleLogger;
 using sones.Networking;
 using sones.Networking.HTTP;
 using sones.GraphDS.API.CSharp;
+using sones.GraphDB.GraphQL;
 
 #endregion
 
@@ -73,6 +74,7 @@ namespace sones.GraphDS.Connectors.REST
         private        IGraphFSSession              _IGraphFSSession;
         private        Dictionary<String, sonesCLI> _SessionSonesCLIs;
         private        MemoryStream                 _MemoryStream;
+        private        GraphQLQuery                     _GraphQLQuery;
 
         private static ContentType _JSON            = new ContentType("application/json");
         private static ContentType _XML             = new ContentType("application/xml");
@@ -117,6 +119,7 @@ namespace sones.GraphDS.Connectors.REST
         {
             _IGraphDBSession  = myIGraphDBSession;
             _IGraphFSSession  = myIGraphFSSession;
+            _GraphQLQuery = new GraphQLQuery(_IGraphDBSession.DBPluginManager);
             _SessionSonesCLIs = new Dictionary<String, sonesCLI>();
         }
 
@@ -235,7 +238,7 @@ namespace sones.GraphDS.Connectors.REST
                                 while ((line = streamReader.ReadLine()) != null)
                                 {
                                     ConsoleOutputLogger.WriteLine(line);
-                                    QueryResult newResult = _IGraphDBSession.Query(line);
+                                    QueryResult newResult = _GraphQLQuery.Query(line, _IGraphDBSession);
 
                                     QueryResults.Add(newResult);
                                     String Logging2 = PrintErrorToString(newResult.ResultType, newResult.Errors);
@@ -274,7 +277,7 @@ namespace sones.GraphDS.Connectors.REST
                     else
                     {
                         _StopWatch.Start();
-                        _QueryResult = _IGraphDBSession.Query(_GQLQuery);
+                        _QueryResult = _GraphQLQuery.Query(_GQLQuery, _IGraphDBSession);
                         _StopWatch.Stop();
                     }
 
@@ -583,15 +586,15 @@ namespace sones.GraphDS.Connectors.REST
 
             #region Parse RevisionID
 
-            RevisionID _RevisionID = null;
+            ObjectRevisionID _RevisionID = null;
 
             try
             {
 
                 if (myObjectRevision.IsNullOrEmpty() || myObjectRevision == "null")
-                    _RevisionID = new RevisionID(_IGraphFSSession.GetFileSystemUUID());
+                    _RevisionID = new ObjectRevisionID(_IGraphFSSession.GetFileSystemUUID());
                 else
-                    _RevisionID = new RevisionID(myObjectRevision);
+                    _RevisionID = new ObjectRevisionID(myObjectRevision);
 
             }
             catch (Exception)
@@ -621,7 +624,7 @@ namespace sones.GraphDS.Connectors.REST
                                                ObjectLocation   = new ObjectLocation(_IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName),
                                                ObjectStream     = myObjectStream,
                                                ObjectEdition    = myObjectEdition,
-                                               ObjectRevision   = _RevisionID,
+                                               ObjectRevisionID   = _RevisionID,
                                                ObjectData       = _Body,
                                                ContentType      = _Header.ContentType.ToString()
                                            }, true).
@@ -675,13 +678,13 @@ namespace sones.GraphDS.Connectors.REST
 
             QueryResult _QueryResult;
 
-            _QueryResult = _IGraphDBSession.Query("SETTING DB SET ('TYPE'     = 'true')");
-            _QueryResult = _IGraphDBSession.Query("SETTING DB SET ('UUID'     = 'true')");
-            _QueryResult = _IGraphDBSession.Query("SETTING DB SET ('EDITION'  = 'true')");
-            _QueryResult = _IGraphDBSession.Query("SETTING DB SET ('REVISION' = 'true')");
+            _QueryResult = _GraphQLQuery.Query("SETTING DB SET ('TYPE'     = 'true')", _IGraphDBSession);
+            _QueryResult = _GraphQLQuery.Query("SETTING DB SET ('UUID'     = 'true')", _IGraphDBSession);
+            _QueryResult = _GraphQLQuery.Query("SETTING DB SET ('EDITION'  = 'true')", _IGraphDBSession);
+            _QueryResult = _GraphQLQuery.Query("SETTING DB SET ('REVISION' = 'true')", _IGraphDBSession);
             
             _StopWatch.Start();
-            _QueryResult = _IGraphDBSession.Query("FROM " + myObjectType + " SELECT TYPE,UUID,EDITION,REVISION,* DEPTH 1");
+            _QueryResult = _GraphQLQuery.Query("FROM " + myObjectType + " SELECT TYPE,UUID,EDITION,REVISION,* DEPTH 1", _IGraphDBSession);
             _StopWatch.Stop();
 
             var _ContentType = HTTPServer.HTTPContext.RequestHeader.GetBestMatchingAcceptHeader(_HTML, _JSON, _XML, _TEXT);
@@ -1072,7 +1075,7 @@ namespace sones.GraphDS.Connectors.REST
 
                 #region Failed!
 
-                FailedAction<IEnumerable<RevisionID>>(e =>
+                FailedAction<IEnumerable<ObjectRevisionID>>(e =>
                     {
 
                         _Header.HttpStatusCode = HTTPStatusCodes.NotFound;
@@ -1091,7 +1094,7 @@ namespace sones.GraphDS.Connectors.REST
 
                 #region Success
 
-                SuccessAction<IEnumerable<RevisionID>>(e =>
+                SuccessAction<IEnumerable<ObjectRevisionID>>(e =>
                     {
 
                         var    RevisionIDs = new StringBuilder();
@@ -1188,9 +1191,9 @@ namespace sones.GraphDS.Connectors.REST
         {
 
             
-            RevisionID _RevisionID = null;
+            ObjectRevisionID _RevisionID = null;
             if (myObjectRevision != null)
-                _RevisionID = new RevisionID(myObjectRevision);
+                _RevisionID = new ObjectRevisionID(myObjectRevision);
 
             var _Body   = HTTPServer.HTTPContext.RequestBody;
             var _Header = HTTPServer.HTTPContext.RequestHeader;
@@ -1259,11 +1262,11 @@ namespace sones.GraphDS.Connectors.REST
 
             #region Parse RevisionID
 
-            RevisionID _RevisionID = null;
+            ObjectRevisionID _RevisionID = null;
 
             try
             {
-                _RevisionID = new RevisionID(myObjectRevision);
+                _RevisionID = new ObjectRevisionID(myObjectRevision);
             }
             catch (Exception)
             {

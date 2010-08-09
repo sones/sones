@@ -3,18 +3,15 @@
  * (c) Stefan Licht, 2010
  */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
-using sones.GraphDB.QueryLanguage.Enums;
+
+#region Usings
+
 using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.TypeManagement;
 using sones.Lib.ErrorHandling;
-using sones.GraphDB.QueryLanguage.Result;
-using sones.GraphDB.Errors;
 
+#endregion
 
 namespace sones.GraphDB.Managers.Structures
 {

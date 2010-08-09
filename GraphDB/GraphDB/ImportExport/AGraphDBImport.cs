@@ -10,13 +10,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.Lib.ErrorHandling;
-using sones.Lib.Frameworks.Irony.Parsing;
+
 using sones.GraphDB.Errors;
 using System.IO;
 using System.Net;
-using sones.GraphDB.QueryLanguage.Result;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Import;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements;
+using sones.GraphDB.Structures.Result;
+using sones.GraphDB.Structures;
+
 
 #endregion
 
@@ -31,9 +31,9 @@ namespace sones.GraphDB.ImportExport
 
         public abstract string ImportFormat { get; }
 
-        public abstract QueryResult Import(IEnumerable<String> lines, IGraphDBSession graphDBSession, UInt32 parallelTasks = 1, IEnumerable<string> comments = null, UInt64? offset = null, UInt64? limit = null, VerbosityTypes verbosityType = VerbosityTypes.Errors);
+        public abstract QueryResult Import(IEnumerable<String> lines, IGraphDBSession graphDBSession, DBContext myDBContext, UInt32 parallelTasks = 1, IEnumerable<string> comments = null, UInt64? offset = null, UInt64? limit = null, VerbosityTypes verbosityType = VerbosityTypes.Errors);
 
-        internal QueryResult Import(String location, IGraphDBSession graphDBSession, UInt32 parallelTasks = 1, IEnumerable<string> comments = null, UInt64? offset = null, UInt64? limit = null, VerbosityTypes verbosityType = VerbosityTypes.Errors)
+        public QueryResult Import(String location, IGraphDBSession graphDBSession, DBContext myDBContext, UInt32 parallelTasks = 1, IEnumerable<string> comments = null, UInt64? offset = null, UInt64? limit = null, VerbosityTypes verbosityType = VerbosityTypes.Errors)
         {
 
             IEnumerable<String> lines = null;
@@ -64,7 +64,7 @@ namespace sones.GraphDB.ImportExport
 
             #region Start import using the AGraphDBImport implementation
 
-            return Import(lines, graphDBSession, parallelTasks, comments, offset, limit, verbosityType);
+            return Import(lines, graphDBSession, myDBContext, parallelTasks, comments, offset, limit, verbosityType);
 
             #endregion
 

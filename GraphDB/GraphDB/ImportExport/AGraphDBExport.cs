@@ -11,11 +11,11 @@ using System.IO;
 using System.Net;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Interfaces;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.TypeManagement;
 using sones.Lib;
 using sones.Lib.ErrorHandling;
-using sones.GraphDB.QueryLanguage;
 
 #endregion
 
@@ -51,7 +51,7 @@ namespace sones.GraphDB.ImportExport
 
         public abstract Exceptional Export(DBContext myDBContext, IDumpable myGrammar, IEnumerable<GraphDBType> myTypes, DumpTypes myDumpType, VerbosityTypes verbosityType = VerbosityTypes.Errors);
 
-        internal QueryResult Export(String destination, DBContext myDBContext, IDumpable myGrammar, IEnumerable<String> myTypes, DumpTypes myDumpType, VerbosityTypes verbosityType = VerbosityTypes.Errors)
+        public QueryResult Export(String destination, DBContext myDBContext, IDumpable myGrammar, IEnumerable<String> myTypes, DumpTypes myDumpType, VerbosityTypes verbosityType = VerbosityTypes.Errors)
         {
             _Destination = destination;
 

@@ -35,7 +35,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 
 using sones.Lib.Serializer;
 using sones.Lib.Settings;
@@ -44,7 +44,7 @@ using sones.GraphFS.DataStructures;
 using sones.Lib.DataStructures.UUID;
 using sones.GraphFS.Exceptions;
 using sones.Lib.ErrorHandling;
-using sones.GraphDB.QueryLanguage.Enums;
+using sones.GraphDB.Structures.Enums;
 
 #endregion
 
@@ -347,7 +347,7 @@ namespace sones.GraphDB.Settings
         /// <param name="type">The type where the setting should be set</param>
         /// <param name="attribute">The attribute where the setting should be set</param>
         /// <returns>True for success. Otherwise false.</returns>
-        public abstract Exceptional<bool> Set(DBContext context, TypesSettingScope scope, GraphDBType type = null, TypeAttribute attribute = null);
+        public abstract Exceptional Set(DBContext context, TypesSettingScope scope, GraphDBType type = null, TypeAttribute attribute = null);
         
         /// <summary>
         /// Gets a setting

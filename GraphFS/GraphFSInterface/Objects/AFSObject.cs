@@ -39,7 +39,6 @@ using sones.GraphFS.DataStructures;
 using sones.GraphFS.Exceptions;
 using sones.Lib.ErrorHandling;
 using sones.GraphFS.Errors;
-using sones.Lib.ErrorHandling;
 using sones.GraphFS.Events;
 
 #endregion
@@ -158,7 +157,7 @@ namespace sones.GraphFS.Objects
 
         #region SaveAs(myObjectLocation, myObjectStream, myObjectEditon, myObjectRevisionID)
 
-        public void SaveAs(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEditon, RevisionID myObjectRevisionID)
+        public void SaveAs(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEditon, ObjectRevisionID myObjectRevisionID)
         {
 
             if (myObjectLocation == null || myObjectLocation.Length < FSPathConstants.PathDelimiter.Length)
@@ -276,128 +275,128 @@ namespace sones.GraphFS.Objects
 
         #region AFSObject Events
 
-        #region OnLoad/OnLoadEvent(myEventArgs)
+        #region OnLoad/OnLoadEvent(myObjectLocation, myObjectStream, myObjectEdition, myRevisionID)
 
         /// <summary>
         /// An event to be notified whenever a AFSObject is
         /// ready to be loaded.
         /// </summary>
-        public event FSEventHandlers.OnLoadEventHandler OnLoad;
+        public event GraphFSEventHandlers.OnLoadEventHandler OnLoad;
 
         /// <summary>
         /// Invoke the OnLoad event, called whenever a AFSObject
         /// is ready to be loaded.
         /// </summary>
         /// <param name="e">EventArgs</param>
-        public virtual void OnLoadEvent(EventArgs myEventArgs)
+        public virtual void OnLoadEvent(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myRevisionID)
         {
             if (OnLoad != null)
-                OnLoad(this, myEventArgs);
+                OnLoad(myObjectLocation, myObjectStream, myObjectEdition, myRevisionID);
         }
 
         #endregion
 
-        #region OnLoaded/OnLoadedEvent(myEventArgs)
+        #region OnLoaded/OnLoadedEvent(myObjectLocator, myAFSObject)
 
         /// <summary>
         /// An event to be notified whenever a AFSObject
         /// was successfully loaded.
         /// </summary>
-        public event FSEventHandlers.OnLoadedEventHandler OnLoaded;
+        public event GraphFSEventHandlers.OnLoadedEventHandler OnLoaded;
 
         /// <summary>
         /// Invoke the OnLoaded event, called whenever a AFSObject
         /// was successfully loaded.
         /// </summary>
         /// <param name="e">EventArgs</param>
-        public virtual void OnLoadedEvent(EventArgs myEventArgs)
+        public virtual void OnLoadedEvent(ObjectLocator myObjectLocator, AFSObject myAFSObject)
         {
             if (OnLoaded != null)
-                OnLoaded(this, myEventArgs);
+                OnLoaded(myObjectLocator, myAFSObject);
         }
 
         #endregion
 
-        #region OnSave/OnSaveEvent(myEventArgs)
+        #region OnSave/OnSaveEvent(myObjectLocation, myAFSObject)
 
         /// <summary>
         /// An event to be notified whenever a AFSObject
         /// is ready to be saved.
         /// </summary>
-        public event FSEventHandlers.OnSaveEventHandler OnSave;
+        public event GraphFSEventHandlers.OnSaveEventHandler OnSave;
 
         /// <summary>
         /// Invoke the OnSave event, called whenever a AFSObject
         /// is ready to be saved.
         /// </summary>
         /// <param name="e">EventArgs</param>
-        public virtual void OnSaveEvent(EventArgs myEventArgs)
+        public virtual void OnSaveEvent(ObjectLocation myObjectLocation, AFSObject myAFSObject)
         {
             if (OnSave != null)
-                OnSave(this, myEventArgs);
+                OnSave(myObjectLocation, myAFSObject);
         }
 
         #endregion
 
-        #region OnSaved/OnSavedEvent(myEventArgs)
+        #region OnSaved/OnSavedEvent(myObjectLocation, myAFSObject, myOldObjectRevisionID)
 
         /// <summary>
         /// An event to be notified whenever a AFSObject
         /// was successfully saved on disc.
         /// </summary>
-        public event FSEventHandlers.OnSavedEventHandler OnSaved;
+        public event GraphFSEventHandlers.OnSavedEventHandler OnSaved;
 
         /// <summary>
         /// Invoke the OnSaved event, called whenever a AFSObject
         /// was successfully saved on disc.
         /// </summary>
         /// <param name="e">EventArgs</param>
-        public virtual void OnSavedEvent(EventArgs myEventArgs)
+        public virtual void OnSavedEvent(ObjectLocator myObjectLocator, AFSObject myAFSObject, ObjectRevisionID myOldObjectRevisionID)
         {
             if (OnSaved != null)
-                OnSaved(this, myEventArgs);
+                OnSaved(myObjectLocator, myAFSObject, myOldObjectRevisionID);
         }
 
         #endregion
 
-        #region OnRemove/OnRemoveEvent(myEventArgs)
+        #region OnRemove/OnRemoveEvent(myObjectLocation, myObjectStream, myObjectEdition, myRevisionID)
 
         /// <summary>
         /// An event to be notified whenever a AFSObject
         /// is ready to be removed.
         /// </summary>
-        public event FSEventHandlers.OnRemoveEventHandler OnRemove;
+        public event GraphFSEventHandlers.OnRemoveEventHandler OnRemove;
 
         /// <summary>
         /// Invoke the OnSave event, called whenever a AFSObject
         /// is ready to be removed.
         /// </summary>
         /// <param name="e">EventArgs</param>
-        public virtual void OnRemoveEvent(EventArgs myEventArgs)
+        public virtual void OnRemoveEvent(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myRevisionID)
         {
             if (OnRemove != null)
-                OnRemove(this, myEventArgs);
+                OnRemove(myObjectLocation, myObjectStream, myObjectEdition, myRevisionID);
         }
 
         #endregion
 
-        #region OnRemoved/OnRemovedEvent(myEventArgs)
+        #region OnRemoved/OnRemovedEvent(myObjectLocator, myObjectStream, myObjectEdition, myRevisionID)
 
         /// <summary>
         /// An event to be notified whenever a AFSObject
         /// was successfully removed.
         /// </summary>
-        public event FSEventHandlers.OnRemovedEventHandler OnRemoved;
+        public event GraphFSEventHandlers.OnRemovedEventHandler OnRemoved;
 
         /// <summary>
         /// Invoke the OnRemoved event, called whenever a AFSObject
         /// was successfully removed.
         /// </summary>
         /// <param name="e">EventArgs</param>
-        public virtual void OnRemovedEvent(EventArgs myEventArgs)
+        public virtual void OnRemovedEvent(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myRevisionID)
         {
             if (OnRemoved != null)
-                OnRemoved(this, myEventArgs);
+                OnRemoved(myObjectLocator, myObjectStream, myObjectEdition, myRevisionID);
         }
 
         #endregion

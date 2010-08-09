@@ -28,21 +28,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphDB.TypeManagement;
-using sones.Lib.Serializer;
-using sones.GraphDB.TypeManagement.PandoraTypes;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
-using sones.GraphDB.QueryLanguage.Result;
-using sones.Lib.NewFastSerializer;
-using sones.Lib.ErrorHandling;
-using sones.Lib.DataStructures.UUID;
-using sones.GraphFS.DataStructures;
-using sones.GraphDB.Exceptions;
-using sones.GraphDB.ObjectManagement;
-using sones.Lib;
 using System.Diagnostics;
+using System.Linq;
+using sones.GraphDB.Exceptions;
+using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.Structures.Result;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphFS.DataStructures;
+using sones.Lib;
+using sones.Lib.ErrorHandling;
+using sones.Lib.NewFastSerializer;
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
@@ -53,7 +50,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
     public class EdgeTypeSingleReference : ASingleReferenceEdgeType
     {
         private Tuple<ObjectUUID, Reference> _ObjectUUID;
-        private TypeUUID _typeOfDBObjects;
         
         #region TypeCode
         public override UInt32 TypeCode { get { return 455; } }
@@ -71,7 +67,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
             {
                 _ObjectUUID = new Tuple<ObjectUUID, Reference>(dbos, new Reference(dbos, myTypeOfDBObject));
             }
-            _typeOfDBObjects = myTypeOfDBObject;
         }
 
 
@@ -87,7 +82,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             get { return new EdgeTypeUUID(10); }
         }
 
-        public override void ApplyParams(params EdgeTypeParamNode[] myParams)
+        public override void ApplyParams(params EdgeTypeParamDefinition[] myParams)
         {
 
         }
@@ -97,7 +92,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return new EdgeTypeSingleReference();
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable, TypeUUID typeOfObjects)
+        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
         {
             if (iEnumerable.FirstOrDefault() == null || _ObjectUUID.Item1 != iEnumerable.First().Value.ObjectUUID)
             {
@@ -106,7 +101,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
             else
             {
                 var newInst = GetNewInstance() as EdgeTypeSingleReference;
-                newInst.Set(_ObjectUUID.Item1, typeOfObjects);
+
+                newInst.Set(_ObjectUUID.Item1, iEnumerable.First().Value.TypeUUID);
                 return newInst;
             }
         }
@@ -171,14 +167,13 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public override void Set(ObjectUUID myValue, TypeUUID typeOfDBObject, params ADBBaseObject[] myParameters)
         {
             _ObjectUUID = new Tuple<ObjectUUID, Reference>(myValue, new Reference(myValue, typeOfDBObject));
-            _typeOfDBObjects = typeOfDBObject;
         }
 
         public override void Merge(ASingleReferenceEdgeType mySingleEdgeType)
         {
-            var aUUID = mySingleEdgeType.GetUUID();
+            var aReference = mySingleEdgeType.GetAllReferences().FirstOrDefault();
 
-            _ObjectUUID = new Tuple<ObjectUUID, Reference>(aUUID, new Reference(aUUID, mySingleEdgeType.GetTypeUUIDOfReferences()));
+            _ObjectUUID = new Tuple<ObjectUUID, Reference>(aReference.ObjectUUID, aReference);
         }
 
         public override DBObjectReadout GetReadout(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO)
@@ -189,6 +184,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public override IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetAllReferenceIDsWeighted()
         {
             yield return new Tuple<ObjectUUID, ADBBaseObject>(_ObjectUUID.Item1, null);
+
+            yield break;
         }
 
         #endregion
@@ -209,31 +206,25 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         private void Serialize(ref SerializationWriter mySerializationWriter, EdgeTypeSingleReference myValue)
         {
-            mySerializationWriter.WriteObject(myValue._typeOfDBObjects);
             if (myValue._ObjectUUID != null)
             {
-                mySerializationWriter.WriteObject(myValue._ObjectUUID.Item1.GetByteArray());
+                mySerializationWriter.WriteObject(myValue._ObjectUUID.Item2);
             }
             else
             {
                 mySerializationWriter.WriteObject(null);
-            
+
             }
 
         }
 
         private object Deserialize(ref SerializationReader mySerializationReader, EdgeTypeSingleReference myValue)
         {
-            myValue._typeOfDBObjects = (TypeUUID)mySerializationReader.ReadObject();
-            var value = mySerializationReader.ReadByteArray();
-            if (value == null)
+            var reference = (Reference)mySerializationReader.ReadObject();
+
+            if (reference != null)
             {
-                myValue._ObjectUUID = null;
-            }
-            else
-            {
-                var newUUID = new ObjectUUID(value);
-                myValue._ObjectUUID = new Tuple<ObjectUUID, Reference>(newUUID, new Reference(newUUID, myValue._typeOfDBObjects));
+                myValue._ObjectUUID = new Tuple<ObjectUUID, Reference>(reference.ObjectUUID, reference);
             }
 
             return myValue;
@@ -366,10 +357,13 @@ namespace sones.GraphDB.Structures.EdgeTypes
             yield break;
         }
 
-        public override TypeUUID GetTypeUUIDOfReferences()
+        public override IEnumerable<Reference> GetAllReferences()
         {
-            return _typeOfDBObjects;
+            yield return _ObjectUUID.Item2;
+
+            yield break;
         }
+
     }
 }
 

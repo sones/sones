@@ -161,6 +161,15 @@ namespace sones.Lib.ErrorHandling
             _IErrors.Push(myIError);
         }
 
+        public Exceptional(IEnumerable<IError> myIErrors)
+            : this()
+        {
+            foreach (var err in myIErrors)
+            {
+                _IErrors.Push(err);
+            }
+        }
+
         #endregion
 
         #region Exceptional(myIWarning)

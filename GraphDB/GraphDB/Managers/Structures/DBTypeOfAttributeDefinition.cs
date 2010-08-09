@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.QueryLanguage.Enums;
+using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.Structures.EdgeTypes;
 
@@ -32,7 +32,8 @@ namespace sones.GraphDB.Managers.Structures
         public String Name { get; set; }
 
         public TypeCharacteristics TypeCharacteristics { get; set; }
-        public AEdgeType EdgeType { get; set; }
+        public String EdgeType { get; set; }
+        public EdgeTypeParamDefinition[] Parameters { get; set; }
 
         public DBTypeOfAttributeDefinition()
         {

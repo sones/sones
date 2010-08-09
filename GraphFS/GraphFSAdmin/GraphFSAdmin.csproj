@@ -101,7 +101,7 @@
     </ProjectReference>
     <ProjectReference Include="..\GraphFS\GraphFS.csproj">
       <Project>{97235BF0-C3C4-4B4C-9583-0869CD3632AC}</Project>
-      <Name>GraphFS</Name>
+      <Name>GraphFS %28Dependencies\GraphFS\GraphFS%29</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

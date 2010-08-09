@@ -35,7 +35,7 @@ using sones.Lib.Serializer;
 using sones.Lib.NewFastSerializer;
 using sones.Lib.DataStructures;
 
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;

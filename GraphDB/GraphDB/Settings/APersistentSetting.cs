@@ -35,8 +35,8 @@ using sones.Lib.ErrorHandling;
 using System;
 using sones.GraphFS.DataStructures;
 using sones.Lib.DataStructures.UUID;
-using sones.GraphDB.TypeManagement.PandoraTypes;
-using sones.GraphDB.QueryLanguage.Enums;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphDB.Structures.Enums;
 using sones.Lib.Settings;
 using sones.GraphDB.Errors;
 
@@ -64,7 +64,7 @@ namespace sones.GraphDB.Settings
         {            
         }
 
-        public override Exceptional<bool> Set(DBContext context, TypesSettingScope scope, GraphDBType type = null, TypeAttribute attribute = null)
+        public override Exceptional Set(DBContext context, TypesSettingScope scope, GraphDBType type = null, TypeAttribute attribute = null)
         {
 
             switch (scope)
@@ -72,14 +72,14 @@ namespace sones.GraphDB.Settings
                 case TypesSettingScope.DB:
                     #region db
 
-                    return context.DBSettingsManager.SetPersistentDBSetting(this);
+                    return context.DBSettingsManager.SetPersistentDBSetting(context, this);
 
                     #endregion
 
                 case TypesSettingScope.SESSION:
                     #region session
 
-                    return new Exceptional<bool>(context.SessionSettings.SetSessionSetting(this));
+                    return context.SessionSettings.SetSessionSetting(this);
 
                     #endregion
 
@@ -91,7 +91,7 @@ namespace sones.GraphDB.Settings
                         return type.SetPersistentSetting(this.Name, this, context.DBTypeManager);
                     }
 
-                    return new Exceptional<bool>(new Error_CouldNotSetSetting(this, scope));
+                    return new Exceptional(new Error_CouldNotSetSetting(this, scope));
 
                     #endregion
 
@@ -103,12 +103,12 @@ namespace sones.GraphDB.Settings
                         return attribute.SetPersistentSetting(this.Name, this, context.DBTypeManager);
                     }
 
-                    return new Exceptional<bool>(new Error_CouldNotSetSetting(this, scope, type, attribute));
+                    return new Exceptional(new Error_CouldNotSetSetting(this, scope, type, attribute));
                     #endregion
 
                 default:
 
-                    return new Exceptional<bool>(new Error_NotImplemented(new System.Diagnostics.StackTrace()));
+                    return new Exceptional(new Error_NotImplemented(new System.Diagnostics.StackTrace()));
             }
         }
 
@@ -164,7 +164,7 @@ namespace sones.GraphDB.Settings
                 case TypesSettingScope.DB:
                     #region db
 
-                    return new Exceptional<bool>(context.DBSettingsManager.RemovePersistentDBSetting(this.Name));
+                    return new Exceptional<bool>(context.DBSettingsManager.RemovePersistentDBSetting(context, this.Name));
 
                     #endregion
 

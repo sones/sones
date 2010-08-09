@@ -12,7 +12,7 @@ using System.Net.Mime;
 using System.Collections.Generic;
 
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 
 using sones.Lib;
 

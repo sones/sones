@@ -68,11 +68,7 @@ namespace sones.Lib.Frameworks.Irony.Parsing {
         Options |= CompilerOptions.GrammarDebugging;
        #endif    
     }
-    public CompilerContext(Compiler compiler, IContext context)
-        : this(compiler)
-    {
-        this._context = context;  
-    }
+
     #endregion
 
     #region Helper methods: GetParserState
@@ -154,15 +150,6 @@ namespace sones.Lib.Frameworks.Irony.Parsing {
       CurrentParseTree.Errors.Add(new SyntaxError(location, message, state, exception));
     }
     /* Changed by sones developers */
-    #endregion
-
-    #region Token
-
-    public IContext IContext
-    {
-        get { return _context;  }
-    }
-
     #endregion
 
   }//class

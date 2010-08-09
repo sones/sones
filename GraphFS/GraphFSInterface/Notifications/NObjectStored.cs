@@ -55,14 +55,14 @@ namespace sones.GraphFS.Notification
             public ObjectLocation   ObjectLocation      { get; private set; }
             public String           ObjectStream        { get; private set; }
             public String           ObjectEdition       { get; private set; }
-            public RevisionID       ObjectRevisionID    { get; private set; }
+            public ObjectRevisionID       ObjectRevisionID    { get; private set; }
 
             public Arguments()
             {
                 ObjectLocation = new ObjectLocation(FSPathConstants.PathDelimiter);
             }
 
-            public Arguments(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID)
+            public Arguments(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID)
             {
                 ObjectLocation      = myObjectLocation;
                 ObjectStream        = myObjectStream;
@@ -94,7 +94,7 @@ namespace sones.GraphFS.Notification
                 ObjectLocation      = new ObjectLocation(_SerializationReader.ReadString());
                 ObjectStream        = _SerializationReader.ReadString();
                 ObjectEdition       = _SerializationReader.ReadString();
-                ObjectRevisionID    = new RevisionID(_SerializationReader.ReadString());
+                ObjectRevisionID    = new ObjectRevisionID(_SerializationReader.ReadString());
 
             }
 
@@ -110,12 +110,12 @@ namespace sones.GraphFS.Notification
         public ObjectLocation   ObjectLocation      { get; private set; }
         public String           ObjectStream        { get; private set; }
         public String           ObjectEdition       { get; private set; }
-        public RevisionID       ObjectRevisionID    { get; private set; }
+        public ObjectRevisionID       ObjectRevisionID    { get; private set; }
 
         public NObjectStored()
         { }
 
-        public NObjectStored(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID)
+        public NObjectStored(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID)
         {
             ObjectLocation      = myObjectLocation;
             ObjectStream        = myObjectStream;

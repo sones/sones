@@ -19,7 +19,7 @@
 
 #region Usings
 using System;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.Lib.NewFastSerializer;
 using sones.Lib.Settings;
 

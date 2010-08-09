@@ -15,7 +15,7 @@ using sones.GraphDB.TypeManagement;
 using sones.GraphFS.DataStructures;
 using sones.Lib.DataStructures.Indices;
 using sones.Lib.ErrorHandling;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using System.Collections.Generic;
 
 #endregion

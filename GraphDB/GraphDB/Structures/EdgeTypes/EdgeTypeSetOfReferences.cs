@@ -20,20 +20,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
+using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib;
 using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
-using System.Diagnostics;
+
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
@@ -41,7 +40,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
     public class EdgeTypeSetOfReferences : ASetReferenceEdgeType
     {
         private Dictionary<ObjectUUID, Reference> _ObjectUUIDs = null;
-        private TypeUUID _typeOfDBObjects;
 
         #region TypeCode
         public override UInt32 TypeCode { get { return 452; } }
@@ -57,7 +55,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
             Debug.Assert(typeOfDBObjects != null);
 
             _ObjectUUIDs = new Dictionary<ObjectUUID, Reference>();
-            _typeOfDBObjects = typeOfDBObjects;
 
             if (dbos != null)
             {
@@ -80,7 +77,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             get { return new EdgeTypeUUID(1000); }
         }
 
-        public override void ApplyParams(params EdgeTypeParamNode[] myParams)
+        public override void ApplyParams(params EdgeTypeParamDefinition[] myParams)
         {
 
         }
@@ -97,7 +94,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public override String GetGDDL(GraphDBType myGraphDBType)
         {
-            return String.Concat(GraphQL.TERMINAL_SET, GraphQL.TERMINAL_LT, myGraphDBType.Name, GraphQL.TERMINAL_GT);
+            return String.Concat("SET", "<", myGraphDBType.Name, ">");
         }
 
         #endregion
@@ -130,11 +127,11 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
             if (anotherEdge != null)
             {
-                foreach (var aUUID in anotherEdge.GetAllReferenceIDs())
+                foreach (var aReference in anotherEdge.GetAllReferences())
                 {
-                    if (!_ObjectUUIDs.ContainsKey(aUUID))
+                    if (!_ObjectUUIDs.ContainsKey(aReference.ObjectUUID))
                     {
-                        _ObjectUUIDs.Add(aUUID, new Reference(aUUID, _typeOfDBObjects));
+                        _ObjectUUIDs.Add(aReference.ObjectUUID, aReference);
                     }
                 }
             }
@@ -198,11 +195,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public override void AddRange(IEnumerable<ObjectUUID> hashSet, TypeUUID typeOfDBObjects, params ADBBaseObject[] myParameters)
         {
-            if (_typeOfDBObjects == null)
-            {
-                _typeOfDBObjects = typeOfDBObjects;
-            }
-
             foreach (var aUUID in hashSet)
             {
                 if (!_ObjectUUIDs.ContainsKey(aUUID))
@@ -214,11 +206,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public override void Add(ObjectUUID myValue, TypeUUID typeOfDBObjects, params ADBBaseObject[] myParameters)
         {
-            if (_typeOfDBObjects == null)
-            {
-                _typeOfDBObjects = typeOfDBObjects;
-            }
-
             if (!_ObjectUUIDs.ContainsKey(myValue))
             {
                 _ObjectUUIDs.Add(myValue, new Reference(myValue, typeOfDBObjects));
@@ -245,9 +232,16 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return false;
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable, TypeUUID typeOfObjects)
+        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
         {
-            return new EdgeTypeSetOfReferences(iEnumerable.Select(aDBO => aDBO.Value.ObjectUUID), typeOfObjects);
+            var newEdge = new EdgeTypeSetOfReferences();
+
+            foreach (var aDBO in iEnumerable)
+            {
+                newEdge.Add(aDBO.Value.ObjectUUID, aDBO.Value.TypeUUID);
+            }
+            
+            return newEdge;
         }
 
         public override AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeOfObjects)
@@ -283,23 +277,21 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         private void Serialize(ref SerializationWriter mySerializationWriter, EdgeTypeSetOfReferences myValue)
         {
-            mySerializationWriter.WriteObject(myValue._typeOfDBObjects);
             mySerializationWriter.WriteInt32(myValue._ObjectUUIDs.Count);
             foreach (var obj in myValue._ObjectUUIDs)
             {
-                obj.Key.Serialize(ref mySerializationWriter);
+                obj.Value.Serialize(ref mySerializationWriter);
             }
         }
 
         private object Deserialize(ref SerializationReader mySerializationReader, EdgeTypeSetOfReferences myValue)
         {
-            myValue._typeOfDBObjects = (TypeUUID)mySerializationReader.ReadObject();
-            var count = (Int32)mySerializationReader.ReadInt32();
+            var count = mySerializationReader.ReadInt32();
             for (Int32 i = 0; i < count; i++)
             {
-                ObjectUUID obj = new ObjectUUID();
-                obj.Deserialize(ref mySerializationReader);
-                myValue._ObjectUUIDs.Add(obj, new Reference(obj, myValue._typeOfDBObjects));
+                Reference aRef = new Reference();
+                aRef.Deserialize(ref mySerializationReader);
+                myValue._ObjectUUIDs.Add(aRef.ObjectUUID, aRef);
             }
             return myValue;
         }
@@ -384,9 +376,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return _ObjectUUIDs.Select(kv => new Tuple<Exceptional<DBObjectStream>, ADBBaseObject>(kv.Value.GetDBObjectStream(dbObjectCache), null));
         }
 
-        public override TypeUUID GetTypeUUIDOfReferences()
+        public override IEnumerable<Reference> GetAllReferences()
         {
-            return _typeOfDBObjects;
+            return _ObjectUUIDs.Select(kv => kv.Value);
         }
     }
 }

@@ -38,7 +38,7 @@ using sones.Lib.CLI;
 using System.Text.RegularExpressions;
 using sones.GraphFS.Session;
 using sones.GraphDB;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 
 #endregion
 

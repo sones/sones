@@ -33,12 +33,13 @@ using System.Collections.Generic;
 
 using sones.GraphFS.Transactions;
 using sones.GraphFS.DataStructures;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Transactions;
 using sones.GraphDB.Structures;
 using sones.GraphDS.API.CSharp.Reflection;
 using sones.Lib;
 using sones.GraphDS.API.CSharp.Linq;
+using sones.GraphFS.Events;
 
 #endregion
 
@@ -109,6 +110,7 @@ namespace sones.GraphDS.API.CSharp
         #region Query<T>(myQuery, myAction = null, mySuccessAction = null, myPartialSuccessAction = null, myFailureAction = null)
 
         public IEnumerable<T> Query<T>(String myQuery, Action<QueryResult> myAction = null, Action<QueryResult> mySuccessAction = null, Action<QueryResult> myPartialSuccessAction = null, Action<QueryResult> myFailureAction = null)
+            where T : DBObject, new()
         {
             return new SelectToObjectGraph(Query(myQuery, myAction, mySuccessAction, myPartialSuccessAction, myFailureAction)).ToVertexType<T>();
         }
@@ -1014,7 +1016,7 @@ namespace sones.GraphDS.API.CSharp
 
             myDBObjectOfT.UUID          = myQueryResult["UUID"]     as ObjectUUID;
             myDBObjectOfT.Edition       = myQueryResult["EDITION"]  as String;
-            myDBObjectOfT.RevisionID    = myQueryResult["REVISION"] as RevisionID;
+            myDBObjectOfT.RevisionID    = myQueryResult["REVISION"] as ObjectRevisionID;
 
         }
 

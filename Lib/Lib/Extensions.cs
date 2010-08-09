@@ -135,10 +135,7 @@ namespace sones.Lib
         #endregion
 
         #endregion
-
-
         
-
         #region IEnumerable<T>
 
         public static UInt64 ULongCount<T>(this IEnumerable<T> myIEnumerable)
@@ -856,14 +853,14 @@ namespace sones.Lib
 
         private static DateTime _UNIXEpoch = new DateTime(1970, 1, 1, 0, 0, 0);
     
-        public static Double ToUnixTimeStamp(this DateTime myDateTime)  
+        public static Int64 ToUnixTimeStamp(this DateTime myDateTime)  
         {
-            return Math.Floor((myDateTime - _UNIXEpoch).TotalSeconds);
+            return myDateTime.Subtract(_UNIXEpoch).Ticks;
         }  
   
-        public static DateTime FromUnixTimeStamp(this Double myTimestamp)  
-        {  
-            return _UNIXEpoch.AddSeconds(myTimestamp);
+        public static DateTime FromUnixTimeStamp(this Int64 myTimestamp)  
+        {
+            return _UNIXEpoch.AddTicks(myTimestamp);
         }
 
         #endregion

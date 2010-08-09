@@ -38,10 +38,11 @@ using sones.Lib.CLI;
 using sones.Lib.ErrorHandling;
 using sones.Lib.Frameworks.CLIrony.Compiler;
 
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Structures;
+using sones.GraphDB.GraphQL;
 
 #endregion
 
@@ -64,7 +65,9 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
             if (myWithOutput)
                 Write(myQueryString + " => ");
 
-            var _QueryResult = myIPandoraDBSession.Query(myQueryString);
+            var gqlQuery = new GraphQLQuery(myIPandoraDBSession.DBPluginManager);
+
+            var _QueryResult = gqlQuery.Query(myQueryString, myIPandoraDBSession);
 
             if (myWithOutput)
                 WriteLine(_QueryResult.ResultType.ToString());

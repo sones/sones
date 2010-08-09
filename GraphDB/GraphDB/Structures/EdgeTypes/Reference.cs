@@ -42,8 +42,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public Reference()
         {
-            _dbObject = new WeakReference(null);
-            ObjectUUID = null;
+            //_dbObject = new WeakReference(null);
+            //ObjectUUID = null;
         }
 
         public Reference(ObjectUUID myObjectUUID, TypeUUID typeOfDBObjects, Exceptional<DBObjectStream> myDBObject = null)
@@ -74,6 +74,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 Debug.Assert(_typeOfDBObjects != null);
                 // Object was reclaimed, so get it again
                 aDBO = myDBObjectCache.LoadDBObjectStream(_typeOfDBObjects, ObjectUUID);
+
+                _dbObject.Target = aDBO;
             }
 
             return aDBO;
@@ -151,7 +153,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public override string ToString()
         {
-            return String.Format("ObjectUUID: {0}", ObjectUUID.ToString());
+            return String.Format("ObjectUUID: {0}, TypeUUID: {1}", ObjectUUID.ToString(), _typeOfDBObjects.ToString());
         }
 
         #endregion
@@ -208,14 +210,17 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public void Serialize(ref SerializationWriter mySerializationWriter)
         {
-            mySerializationWriter.WriteObject(_typeOfDBObjects);
-            mySerializationWriter.WriteObject(ObjectUUID);
+            _typeOfDBObjects.Serialize(ref mySerializationWriter);
+
+            ObjectUUID.Serialize(ref mySerializationWriter);
         }
 
         public void Deserialize(ref SerializationReader mySerializationReader)
         {
-            _typeOfDBObjects = (TypeUUID)mySerializationReader.ReadObject();
-            ObjectUUID = (ObjectUUID)mySerializationReader.ReadObject();
+            _typeOfDBObjects = new TypeUUID(ref mySerializationReader);
+
+            ObjectUUID = new ObjectUUID();
+            ObjectUUID.Deserialize(ref mySerializationReader);
 
             _hashCode = ObjectUUID.GetHashCode();
 

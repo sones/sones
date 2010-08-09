@@ -9,10 +9,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Aggregates;
+using sones.GraphDB.Aggregates;
 using sones.Lib.ErrorHandling;
 
 #endregion

@@ -34,7 +34,7 @@ namespace sones.GraphDB.Warnings
     /// <summary>
     /// This class will "transport" an warning (with the help of an exception) from Irony to the DB
     /// </summary>
-    class GraphDBWarningException : ApplicationException
+    public class GraphDBWarningException : ApplicationException
     {
         public IWarning GraphDBWarning { get; set; }
 

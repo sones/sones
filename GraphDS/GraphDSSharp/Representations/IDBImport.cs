@@ -26,7 +26,7 @@
 
 using System;
 using System.Net.Mime;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 
 #endregion
 

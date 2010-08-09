@@ -34,7 +34,7 @@ using sones.GraphDS.API.CSharp;
 using sones.GraphDS.Connectors.REST;
 using sones.Networking.HTTP;
 using System.Net;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using System.Xml.Linq;
 
 #endregion

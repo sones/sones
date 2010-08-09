@@ -29,9 +29,9 @@
 using System;
 using System.Collections.Generic;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
 
@@ -99,6 +99,12 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// </summary>
         /// <returns></returns>
         public abstract IEnumerable<ObjectUUID> GetAllReferenceIDs();
+
+        /// <summary>
+        /// Get all added references
+        /// </summary>
+        /// <returns></returns>
+        public abstract IEnumerable<Reference> GetAllReferences();
         
         /// <summary>
         /// Get all uuids and their edge infos
@@ -129,8 +135,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// </summary>
         /// <returns></returns>
         public abstract IEnumerable<Tuple<Exceptional<DBObjectStream>, ADBBaseObject>> GetAllEdgeDestinationsWeighted(DBObjectCache dbObjectCache);
-
-        public abstract TypeUUID GetTypeUUIDOfReferences();
 
         #endregion
 

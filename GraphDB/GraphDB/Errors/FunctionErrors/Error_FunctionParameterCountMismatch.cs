@@ -22,7 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Functions;
+using sones.GraphDB.Functions;
 
 namespace sones.GraphDB.Errors
 {

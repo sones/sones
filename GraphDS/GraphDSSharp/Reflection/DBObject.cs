@@ -106,7 +106,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
         public String       Edition     { get; set; }
 
         [HideFromDatabase]
-        public RevisionID   RevisionID  { get; set; }
+        public ObjectRevisionID   RevisionID  { get; set; }
 
         [HideFromDatabase]
         public virtual String Comment   { get; set; }

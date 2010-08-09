@@ -3,10 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.Lib.DataStructures;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+using sones.GraphDB.ObjectManagement;
+
 
 namespace sones.GraphDB.Managers.Structures
 {
+
+    public class OrderByAttributeDefinition
+    {
+        public IDChainDefinition IDChainDefinition { get; private set; }
+
+        /// <summary>
+        /// in case of an as, this would be the as-string.
+        /// if there has been no as-option, the name of the last attribute of the IDNode is used
+        /// </summary>
+        public String AsOrderByString { get; set; }
+
+        public OrderByAttributeDefinition(IDChainDefinition myIDChainDefinition, String myAsOrderByString)
+        {
+            IDChainDefinition = myIDChainDefinition;
+            AsOrderByString = myAsOrderByString;
+        }
+    }
+
     public class OrderByDefinition
     {
 

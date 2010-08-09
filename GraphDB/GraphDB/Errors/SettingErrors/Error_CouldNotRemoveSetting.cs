@@ -24,7 +24,7 @@ using System.Linq;
 using System.Text;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.Settings;
-using sones.GraphDB.QueryLanguage.Enums;
+using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.TypeManagement;
 
 namespace sones.GraphDB.Errors

@@ -63,9 +63,9 @@ namespace sones.GraphFS.DataStructures
 
         #region RevisionID
 
-        private RevisionID _RevisionID;
+        private ObjectRevisionID _RevisionID;
 
-        public RevisionID RevisionID
+        public ObjectRevisionID RevisionID
         {
             get
             {
@@ -77,12 +77,12 @@ namespace sones.GraphFS.DataStructures
 
         #region ParentRevisionIDs
 
-        private HashSet<RevisionID> _ParentRevisionIDs;
+        private HashSet<ObjectRevisionID> _ParentRevisionIDs;
 
         /// <summary>
         /// Parent Revisions
         /// </summary>
-        public HashSet<RevisionID> ParentRevisionIDs
+        public HashSet<ObjectRevisionID> ParentRevisionIDs
         {
 
             get
@@ -94,7 +94,7 @@ namespace sones.GraphFS.DataStructures
             {
 
                 if (value == null)
-                    _ParentRevisionIDs = new HashSet<RevisionID>();
+                    _ParentRevisionIDs = new HashSet<ObjectRevisionID>();
 
                 _ParentRevisionIDs = value;
 
@@ -244,8 +244,8 @@ namespace sones.GraphFS.DataStructures
             _ObjectName             = "";
             _ObjectLocation         = null;
 
-            _RevisionID             = new RevisionID(UUID.NewUUID);
-            _ParentRevisionIDs      = new HashSet<RevisionID>();
+            _RevisionID             = new ObjectRevisionID(UUID.NewUUID);
+            _ParentRevisionIDs      = new HashSet<ObjectRevisionID>();
             _MinNumberOfCopies      = FSConstants.MIN_NUMBER_OF_COPIES;
             _MaxNumberOfCopies      = FSConstants.MAX_NUMBER_OF_COPIES;
             _ObjectStream           = myObjectStream;
@@ -267,7 +267,7 @@ namespace sones.GraphFS.DataStructures
         /// </summary>
         /// <param name="myObjectStream"></param>
         /// <param name="myRevisionID"></param>
-        public ObjectRevision(String myObjectStream, RevisionID myRevisionID)
+        public ObjectRevision(String myObjectStream, ObjectRevisionID myRevisionID)
             : this(myObjectStream)
         {
             _RevisionID = myRevisionID;
@@ -296,7 +296,7 @@ namespace sones.GraphFS.DataStructures
 
             ObjectLocation          = myObjectRevision.ObjectLocation;
 
-            _ParentRevisionIDs      = (myObjectRevision.RevisionID == null) ? new HashSet<RevisionID>() : new HashSet<RevisionID>() { myObjectRevision.RevisionID };
+            _ParentRevisionIDs      = (myObjectRevision.RevisionID == null) ? new HashSet<ObjectRevisionID>() : new HashSet<ObjectRevisionID>() { myObjectRevision.RevisionID };
             _MinNumberOfCopies      = myObjectRevision.MinNumberOfCopies;
             _MaxNumberOfCopies      = myObjectRevision.MaxNumberOfCopies;
             _ObjectStream           = myObjectRevision.ObjectStream;

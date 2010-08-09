@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
+
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.TypeManagement;

@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{B7A88819-4276-495A-A7E9-E6947C936397}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>sones.GraphDB.GraphQL</RootNamespace>
+    <AssemblyName>GraphQL</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Errors\Error_GqlSyntax.cs" />
+    <Compile Include="Errors\Error_IronyCompiler.cs" />
+    <Compile Include="GraphQLQuery.cs" />
+    <Compile Include="GraphQueryLanguage.cs" />
+    <Compile Include="IronyExtensions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StatementNodes\AlterType\AlterTypeNode.cs" />
+    <Compile Include="StatementNodes\AStatement.cs" />
+    <Compile Include="StatementNodes\Create\CreateIndexNode.cs" />
+    <Compile Include="StatementNodes\Create\CreateTypesNode.cs" />
+    <Compile Include="StatementNodes\Delete\DeleteNode.cs" />
+    <Compile Include="StatementNodes\Describe\ADescrNode.cs" />
+    <Compile Include="StatementNodes\Describe\DescrAggrNode.cs" />
+    <Compile Include="StatementNodes\Describe\DescrAggrsNode.cs" />
+    <Compile Include="StatementNodes\Describe\DescrEdgeNode.cs" />
+    <Compile Include="StatementNodes\Describe\DescrEdgesNode.cs" />
+    <Compile Include="StatementNodes\Describe\DescrFuncNode.cs" />
+    <Compile Include="StatementNodes\Describe\DescrFunctionsNode.cs" />
+    <Compile Include="StatementNodes\Describe\DescribeNode.cs" />
+    <Compile Include="StatementNodes\Describe\DescrIdxNode.cs" />
+    <Compile Include="StatementNodes\Describe\DescrIdxsNode.cs" />
+    <Compile Include="StatementNodes\Describe\DescrSettingsItemsNode.cs" />
+    <Compile Include="StatementNodes\Describe\DescrSettingsNode.cs" />
+    <Compile Include="StatementNodes\Describe\DescrSettItemNode.cs" />
+    <Compile Include="StatementNodes\Describe\DescrSettNode.cs" />
+    <Compile Include="StatementNodes\Describe\DescrTypeNode.cs" />
+    <Compile Include="StatementNodes\Describe\DescrTypesNode.cs" />
+    <Compile Include="StatementNodes\Drop\DropIndexNode.cs" />
+    <Compile Include="StatementNodes\Drop\DropTypeNode.cs" />
+    <Compile Include="StatementNodes\Dump\DumpFormatNode.cs" />
+    <Compile Include="StatementNodes\Dump\DumpNode.cs" />
+    <Compile Include="StatementNodes\Dump\DumpTypeNode.cs" />
+    <Compile Include="StatementNodes\Import\CommentsNode.cs" />
+    <Compile Include="StatementNodes\Import\ImportNode.cs" />
+    <Compile Include="StatementNodes\Import\ParallelTasksNode.cs" />
+    <Compile Include="StatementNodes\Import\VerbosityNode.cs" />
+    <Compile Include="StatementNodes\InsertOrReplace\InsertOrReplaceNode.cs" />
+    <Compile Include="StatementNodes\InsertOrUpdate\InsertOrUpdateNode.cs" />
+    <Compile Include="StatementNodes\Insert\InsertNode.cs" />
+    <Compile Include="StatementNodes\RebuildIndices\RebuildIndicesNode.cs" />
+    <Compile Include="StatementNodes\Replace\ReplaceNode.cs" />
+    <Compile Include="StatementNodes\Select\SelectNode.cs" />
+    <Compile Include="StatementNodes\Setting\SettingNode.cs" />
+    <Compile Include="StatementNodes\Transaction\BeginTransactionNode.cs" />
+    <Compile Include="StatementNodes\Transaction\CommitRollbackTransactionNode.cs" />
+    <Compile Include="StatementNodes\Truncate\TruncateNode.cs" />
+    <Compile Include="StatementNodes\Update\UpdateNode.cs" />
+    <Compile Include="StructureNodes\AddToListAttrUpdateAddToNode.cs" />
+    <Compile Include="StructureNodes\AddToListAttrUpdateNode.cs" />
+    <Compile Include="StructureNodes\AddToListAttrUpdateOperatorNode.cs" />
+    <Compile Include="StructureNodes\AggregateNode.cs" />
+    <Compile Include="StructureNodes\AlterCmdNode.cs" />
+    <Compile Include="StructureNodes\AStructureNode.cs" />
+    <Compile Include="StructureNodes\AttrAssignListNode.cs" />
+    <Compile Include="StructureNodes\AttrDefaultValueNode.cs" />
+    <Compile Include="StructureNodes\AttributeAssignNode.cs" />
+    <Compile Include="StructureNodes\AttributeDefinitionNode.cs" />
+    <Compile Include="StructureNodes\AttrRemoveNode.cs" />
+    <Compile Include="StructureNodes\AttrUpdateOrAssignListNode.cs" />
+    <Compile Include="StructureNodes\ATypeNode.cs" />
+    <Compile Include="StructureNodes\BackwardEdgeNode.cs" />
+    <Compile Include="StructureNodes\BackwardEdgesNode.cs" />
+    <Compile Include="StructureNodes\BinaryExpressionNode.cs" />
+    <Compile Include="StructureNodes\BulkTypeListMemberNode.cs" />
+    <Compile Include="StructureNodes\BulkTypeNode.cs" />
+    <Compile Include="StructureNodes\CollectionOfDBObjectsNode.cs" />
+    <Compile Include="StructureNodes\DefaultValueDefNode.cs" />
+    <Compile Include="StructureNodes\EdgeInformationNode.cs" />
+    <Compile Include="StructureNodes\EdgeTraversalNode.cs" />
+    <Compile Include="StructureNodes\EdgeTypeDefNode.cs" />
+    <Compile Include="StructureNodes\EdgeTypeParamNode.cs" />
+    <Compile Include="StructureNodes\EdgeTypeParamsNode.cs" />
+    <Compile Include="StructureNodes\EdgeType_SortedNode.cs" />
+    <Compile Include="StructureNodes\EditionOptNode.cs" />
+    <Compile Include="StructureNodes\ExpressionNode.cs" />
+    <Compile Include="StructureNodes\ExpressionOfAListNode.cs" />
+    <Compile Include="StructureNodes\FuncCallNode.cs" />
+    <Compile Include="StructureNodes\GraphDBTypeNode.cs" />
+    <Compile Include="StructureNodes\HavingExpressionNode.cs" />
+    <Compile Include="StructureNodes\IDNode.cs" />
+    <Compile Include="StructureNodes\IndexAttributeListNode.cs" />
+    <Compile Include="StructureNodes\IndexAttributeNode.cs" />
+    <Compile Include="StructureNodes\IndexDropOnAlterType.cs" />
+    <Compile Include="StructureNodes\IndexNameOptNode.cs" />
+    <Compile Include="StructureNodes\IndexOnCreateTypeNode.cs" />
+    <Compile Include="StructureNodes\IndexOptOnCreateTypeMemberNode.cs" />
+    <Compile Include="StructureNodes\IndexTypeOptNode.cs" />
+    <Compile Include="StructureNodes\LimitNode.cs" />
+    <Compile Include="StructureNodes\ListPropertyAssign_WeightedNode.cs" />
+    <Compile Include="StructureNodes\MandatoryOptNode.cs" />
+    <Compile Include="StructureNodes\OffsetNode.cs" />
+    <Compile Include="StructureNodes\OrderByNode.cs" />
+    <Compile Include="StructureNodes\ParametersNode.cs" />
+    <Compile Include="StructureNodes\PartialSelectStmtNode.cs" />
+    <Compile Include="StructureNodes\RemoveFromListAttrUpdateAddToOperatorNode.cs" />
+    <Compile Include="StructureNodes\RemoveFromListAttrUpdateAddToRemoveFromNode.cs" />
+    <Compile Include="StructureNodes\RemoveFromListAttrUpdateNode.cs" />
+    <Compile Include="StructureNodes\SelectionDelimiterNode.cs" />
+    <Compile Include="StructureNodes\SelectionListElementNode.cs" />
+    <Compile Include="StructureNodes\SelectOutputOptNode.cs" />
+    <Compile Include="StructureNodes\SetRefNode.cs" />
+    <Compile Include="StructureNodes\SettingAttrNode.cs" />
+    <Compile Include="StructureNodes\SettingOperationNode.cs" />
+    <Compile Include="StructureNodes\SettingScopeNode.cs" />
+    <Compile Include="StructureNodes\SettingTypeNode.cs" />
+    <Compile Include="StructureNodes\SingleEdgeTypeDefNode.cs" />
+    <Compile Include="StructureNodes\TupleNode.cs" />
+    <Compile Include="StructureNodes\TupleSingleNode.cs" />
+    <Compile Include="StructureNodes\TypeListNode.cs" />
+    <Compile Include="StructureNodes\UnaryExprNode.cs" />
+    <Compile Include="StructureNodes\UniqueAttributesOptNode.cs" />
+    <Compile Include="StructureNodes\uniqueOptNode.cs" />
+    <Compile Include="StructureNodes\WhereExpressionNode.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\GraphFS\GraphFSInterface\GraphFSInterface.csproj">
+      <Project>{B23FDA3D-8229-4CDD-91FD-9AFD7301D315}</Project>
+      <Name>GraphFSInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lib\Irony\Irony.csproj">
+      <Project>{CDD9C45F-F285-4A80-B39F-3B1B8B7B5214}</Project>
+      <Name>Irony</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lib\Lib\Lib.csproj">
+      <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
+      <Name>Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GraphDB\GraphDB.csproj">
+      <Project>{32A56958-2C05-44C6-B661-2A2C6610E073}</Project>
+      <Name>GraphDB %28Dependencies\GraphDB\GraphDB%29</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

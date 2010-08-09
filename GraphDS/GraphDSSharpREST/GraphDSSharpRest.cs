@@ -15,7 +15,7 @@ using System.Net;
 using System.Text;
 using System.Web;
 
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Transactions;
 using sones.GraphFS.Transactions;
 

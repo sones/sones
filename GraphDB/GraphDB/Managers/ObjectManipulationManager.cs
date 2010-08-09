@@ -36,13 +36,13 @@ using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage.Enums;
-using sones.GraphDB.QueryLanguage.ExpressionGraph;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Enums;
+using sones.GraphDB.Structures.ExpressionGraph;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Settings;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 using sones.GraphDB.Warnings;
 using sones.GraphFS.DataStructures;
@@ -436,7 +436,7 @@ namespace sones.GraphDB.Managers
 
         #region InsertOrReplace
 
-        internal QueryResult InsertOrReplace(DBContext myDBContext, GraphDBType myGraphDBType, List<AAttributeAssignOrUpdate> myAttributeAssignList, BinaryExpressionDefinition myBinaryExpressionDefinition = null)
+        public QueryResult InsertOrReplace(DBContext myDBContext, GraphDBType myGraphDBType, List<AAttributeAssignOrUpdate> myAttributeAssignList, BinaryExpressionDefinition myBinaryExpressionDefinition = null)
         {
 
             List<IWarning> warnings = new List<IWarning>();
@@ -1041,16 +1041,14 @@ namespace sones.GraphDB.Managers
                     return new Exceptional<Boolean>(new Error_TypeDoesNotExist(""));
                 }
 
-                foreach (var objID in item.Value.GetAllReferenceIDs())
+                foreach (var objID in item.Value.GetAllEdgeDestinations(dbContext.DBObjectCache))
                 {
-                    var dbObj = dbContext.DBObjectCache.LoadDBObjectStream(type, objID);
-
-                    if (dbObj.Failed)
+                    if (objID.Failed)
                     {
-                        return new Exceptional<Boolean>(dbObj);
+                        return new Exceptional<Boolean>(objID);
                     }
 
-                    var attr = dbObj.Value.GetAttribute(item.Key.AttrUUID);
+                    var attr = objID.Value.GetAttribute(item.Key.AttrUUID);
 
                     if (attr is IReferenceEdge)
                     {
@@ -1061,7 +1059,7 @@ namespace sones.GraphDB.Managers
 
                             if (attr is ASingleReferenceEdgeType)
                             {
-                                dbObj.Value.RemoveAttribute(item.Key.AttrUUID);
+                                objID.Value.RemoveAttribute(item.Key.AttrUUID);
                             }
 
                             #endregion
@@ -1072,7 +1070,7 @@ namespace sones.GraphDB.Managers
                         }
                     }
 
-                    var flushExcept = dbContext.DBObjectManager.FlushDBObject(dbObj.Value);
+                    var flushExcept = dbContext.DBObjectManager.FlushDBObject(objID.Value);
 
                     if (!flushExcept.Success)
                         return new Exceptional<bool>(flushExcept.Errors.First());
@@ -1244,7 +1242,7 @@ namespace sones.GraphDB.Managers
 
         #region EvaluateAttributes
 
-        internal Exceptional<ManipulationAttributes> EvaluateAttributes(DBContext myDBContext, GraphDBType myGraphDBType, List<AAttributeAssignOrUpdate> myAttributeAssigns)
+        public Exceptional<ManipulationAttributes> EvaluateAttributes(DBContext myDBContext, GraphDBType myGraphDBType, List<AAttributeAssignOrUpdate> myAttributeAssigns)
         {
 
             var result = GetRecursiveAttributes(myAttributeAssigns, myDBContext, myGraphDBType);

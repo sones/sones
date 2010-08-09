@@ -42,7 +42,7 @@ using sones.GraphDB.Settings;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.DataStructures.Settings;
 
 using sones.Notifications;
@@ -183,7 +183,7 @@ namespace sones.GraphDB
         #region Public Methods
 
         #region Query(QueryScript, myGraphDBSession, myQueryManager)
-
+        /*
         /// <summary>
         /// 
         /// </summary>
@@ -259,7 +259,7 @@ namespace sones.GraphDB
             var qs = myQueryScript.ToUpper();
             return qs.Contains("TRANSACTION") && (qs.StartsWith("BEGIN") || qs.StartsWith("COMMIT") || qs.StartsWith("ROLLBACK"));
         }
-
+        */
         #endregion
                 
 

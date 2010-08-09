@@ -22,9 +22,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
-using sones.GraphDB.QueryLanguage.Operators;
-using sones.GraphDB.QueryLanguage.Enums;
+
+using sones.GraphDB.Structures.Operators;
+using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.Managers.Structures;
 
 namespace sones.GraphDB.Errors

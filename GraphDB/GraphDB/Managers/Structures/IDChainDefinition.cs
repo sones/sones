@@ -9,20 +9,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+
+
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.Errors;
 using sones.GraphDB.TypeManagement;
 using sones.Lib;
 using sones.GraphDB.Exceptions;
-using sones.GraphDB.QueryLanguage.Enums;
+using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage.ExpressionGraph;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Functions;
-using sones.GraphDB.TypeManagement.PandoraTypes;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Aggregates;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.ExpressionGraph;
+using sones.GraphDB.Functions;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphDB.Aggregates;
+using sones.GraphDB.Structures.Result;
 
 #endregion
 
@@ -235,7 +235,7 @@ namespace sones.GraphDB.Managers.Structures
                         }
                         else
                         {
-                            if ((tempIDChain.LastAttribute == null) && tempIDChain.IsAsterisk)
+                            if ((tempIDChain.LastAttribute == null) && (tempIDChain.SelectType != TypesOfSelect.None))
                             {
                                 #region IDNode with asterisk
 
@@ -416,10 +416,12 @@ namespace sones.GraphDB.Managers.Structures
             }
 
             var val = (myValue as ValueDefinition).Value.Value;
+
             if (!myParameter.DBType.IsValidValue(val))
             {
                 return new Exceptional<FuncParameter>(new Error_FunctionParameterTypeMismatch(myParameter.DBType.Value.GetType(), val.GetType()));
             }
+
             myParameter.DBType.SetValue(val);
 
             return new Exceptional<FuncParameter>(new FuncParameter(myParameter.DBType, myTypeAttribute));
@@ -496,12 +498,12 @@ namespace sones.GraphDB.Managers.Structures
 
         #region Properties
 
-        public Boolean      IsValidated         { get; private set; }
-        public AIDChainPart RootPart            { get; private set; }
-        public Exceptional  ValidateResult      { get; private set; }
-        public Boolean      IsAsterisk          { get; private set; }
-        public String       UndefinedAttribute  { get; private set; }
-        public LevelKey     LevelKey            { get; private set; }
+        public Boolean          IsValidated         { get; private set; }
+        public AIDChainPart     RootPart            { get; private set; }
+        public Exceptional      ValidateResult      { get; private set; }
+        public TypesOfSelect    SelectType          { get; private set; }        
+        public String           UndefinedAttribute  { get; private set; }
+        public LevelKey         LevelKey            { get; private set; }
 
         #region LastType
 
@@ -608,9 +610,9 @@ namespace sones.GraphDB.Managers.Structures
 
         #region Data
 
-        private String                      _IDChainString;
+        private String                          _IDChainString;
         private List<TypeReferenceDefinition>  _References;
-        private List<EdgeKey>               _Edges = new List<EdgeKey>();
+        private List<EdgeKey>                   _Edges = new List<EdgeKey>();
 
         #endregion
 
@@ -633,13 +635,13 @@ namespace sones.GraphDB.Managers.Structures
         /// Creates an validated asterisk chain for the given type.
         /// </summary>
         /// <param name="myIDChainPart">The type chain part.</param>
-        public IDChainDefinition(ChainPartTypeOrAttributeDefinition myIDChainPart)
+        public IDChainDefinition(ChainPartTypeOrAttributeDefinition myIDChainPart, TypesOfSelect mySelType)
         {
             RootPart = myIDChainPart;
 
             IsValidated = true;
             _Edges = new List<EdgeKey>();
-            IsAsterisk = true;
+            SelectType = mySelType;
             ValidateResult = new Exceptional();
             LevelKey = new LevelKey();
         }
@@ -756,7 +758,7 @@ namespace sones.GraphDB.Managers.Structures
                 _LastType = _Reference.Item2;
                 _Edges = new List<EdgeKey>();
                 _Edges.Add(new EdgeKey(_LastType.UUID, null));
-                IsAsterisk = true;
+                SelectType = TypesOfSelect.Asterisk;
                 ValidateResult = new Exceptional();
                 LevelKey = new LevelKey(_Edges, myDBContext.DBTypeManager);
                 return ValidateResult;
@@ -775,6 +777,7 @@ namespace sones.GraphDB.Managers.Structures
                     var funcPart = (curPart as ChainPartFuncDefinition);
                     var funcValidateResult = funcPart.Validate(myDBContext);
                     ValidateResult.Push(funcValidateResult);
+
                     if (ValidateResult.Failed)
                     {
                         return ValidateResult;
@@ -865,7 +868,7 @@ namespace sones.GraphDB.Managers.Structures
 
                             if (curPart.Next == null) // we just have an type definition
                             {
-                                IsAsterisk = true;
+                                SelectType = TypesOfSelect.Asterisk;
                                 _Edges.Add(new EdgeKey(_LastType.UUID));
                             }
 

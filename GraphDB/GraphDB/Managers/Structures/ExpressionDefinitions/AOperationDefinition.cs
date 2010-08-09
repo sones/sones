@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.QueryLanguage.Operators;
+using sones.GraphDB.Structures.Operators;
 
 #endregion
 

@@ -1,5 +1,26 @@
 sones GraphDB 1.2 (developer) Changelog:
 
+09.08.2010
+- some cleanUp
+- some ToString upgrades for Reference class
+- in case of an abstract type edge the real type of the dbObjects is stored within the reference
+- moved CreateAbstractTypeEnvironment method to ATestBase
+- minor Rhom/Minus fix
+- bugfixing in SelectResultManager
+- fixed select * bug
+- implement select # and select -
+- some edge-serialisation tweaks
+- removed TypeUUID from Edges
+- Some QueryQL clean'ups... 
+- Updated GraphFSEventHandlers/GraphDBEventHandlers
+- GraphQL project to query DB via GQL
+- some more GetAllEdgeDestinations integration
+- Added possibility to subscribe to FSEvents from GraphDS 
+- Implemented OnLoad/Loaded/Save/Saved/Remove/Removed within A...
+- integrated GetAllEdgeDestinations in RemoveBackwardEdges method
+- fixed weakReferences within Reference and DBObjectCache class +upgraded WeakReference test
+- ToUNIXDate, FromUNIXDate and EXISTS function
+
 03.08.2010
 - fastSerializer refactoring and optimization
 - Added LinqQuerable, LinqQueryProver for _very basic_ linq support without complex queries like WHERE-clauses 

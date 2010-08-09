@@ -121,7 +121,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Events\FSEventHandlers.cs" />
+    <Compile Include="Events\GraphFSEventHandlers.cs" />
     <Compile Include="Stream\GraphFSAsyncResult.cs" />
     <Compile Include="Datastructures\INode\INode.cs" />
     <Compile Include="Datastructures\UUIDs\CacheUUID.cs" />
@@ -161,7 +161,7 @@
     <Compile Include="Errors\General\GraphFSError_NoINodePositionsForReading.cs" />
     <Compile Include="Errors\General\GraphFSError_ObjectNotFound.cs" />
     <Compile Include="Datastructures\FSConstants.cs" />
-    <Compile Include="FSExtensions.cs" />
+    <Compile Include="GraphFSExtensions.cs" />
     <Compile Include="InternalObjects\AccessControlObject\AccessControlObject.cs" />
     <Compile Include="InternalObjects\AccessControlObject\DefaultRuleTypes.cs" />
     <Compile Include="InternalObjects\AccessControlObject\NHAccessControlObject.cs" />
@@ -243,7 +243,7 @@
     <Compile Include="Datastructures\UUIDs\GraphFSStreamUUID.cs" />
     <Compile Include="Errors\GraphFSExceptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Datastructures\RevisionID.cs" />
+    <Compile Include="Datastructures\ObjectLocator\ObjectRevisionID.cs" />
     <Compile Include="Objects\DictionaryObject\Implementation\ADictionaryObject.cs" />
     <Compile Include="Objects\DictionaryObject\Implementation\AVersionedDictionaryObject.cs" />
     <Compile Include="Objects\DictionaryObject\Implementation\DictionaryObject.cs" />

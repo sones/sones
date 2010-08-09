@@ -21,12 +21,13 @@
 using System;
 using System.Collections.Generic;
 using sones.GraphDB.Indices;
-using sones.GraphDB.QueryLanguage.ExpressionGraph;
-using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
+using sones.GraphDB.Structures.ExpressionGraph;
+
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.Managers.Structures;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Functions;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Aggregates;
+using sones.GraphDB.Functions;
+using sones.GraphDB.Aggregates;
+using sones.GraphDB.Structures.Enums;
 
 namespace sones.GraphDB.Managers.Select
 {
@@ -42,12 +43,12 @@ namespace sones.GraphDB.Managers.Select
         #region Properties
 
         public IDChainDefinition RelatedIDChainDefinition { get; set; }
-        public String Alias { get; set; }
-        public EdgeList EdgeList { get; protected set; }
-        public LevelKey LevelKey { get; protected set; }
-        public Boolean IsGroupedOrAggregated { get; protected set; }
-        public Boolean IsAsterisk { get; protected set; }
-        public TypeAttribute Element { get; set; }
+        public String Alias                     { get; set; }
+        public EdgeList EdgeList                { get; protected set; }
+        public LevelKey LevelKey                { get; protected set; }
+        public Boolean IsGroupedOrAggregated    { get; protected set; }
+        public TypesOfSelect Selection          { get; protected set; }        
+        public TypeAttribute Element            { get; set; }
 
         #endregion
 
@@ -55,9 +56,9 @@ namespace sones.GraphDB.Managers.Select
 
         public SelectionElement() { }
 
-        public SelectionElement(Boolean myIsAsterisk)
+        public SelectionElement(TypesOfSelect mySelType)
         {
-            IsAsterisk = myIsAsterisk;
+            Selection = mySelType;
         }
 
         public SelectionElement(string myAlias, IDChainDefinition myRelatedIDChainDefinition)
@@ -112,16 +113,16 @@ namespace sones.GraphDB.Managers.Select
 
         public SelectionElementFunction(SelectionElement mySelectionElement, ChainPartFuncDefinition myFunction, List<AExpressionDefinition> myParameters)
         {
-            this.Alias = mySelectionElement.Alias;
-            this.EdgeList = mySelectionElement.EdgeList;
-            this.Element = mySelectionElement.Element;
-            this.IsAsterisk = mySelectionElement.IsAsterisk;
-            this.IsGroupedOrAggregated = mySelectionElement.IsGroupedOrAggregated;
-            this.LevelKey = mySelectionElement.LevelKey;
-            this.RelatedIDChainDefinition = mySelectionElement.RelatedIDChainDefinition;
+            this.Alias                      = mySelectionElement.Alias;
+            this.EdgeList                   = mySelectionElement.EdgeList;
+            this.Element                    = mySelectionElement.Element;
+            this.Selection                  = mySelectionElement.Selection;
+            this.IsGroupedOrAggregated      = mySelectionElement.IsGroupedOrAggregated;
+            this.LevelKey                   = mySelectionElement.LevelKey;
+            this.RelatedIDChainDefinition   = mySelectionElement.RelatedIDChainDefinition;
 
-            Function = myFunction;
-            Parameters = myParameters;
+            Function                        = myFunction;
+            Parameters                      = myParameters;
         }
 
     }

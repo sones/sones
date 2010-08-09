@@ -10,7 +10,7 @@ using System.Text;
 
 #endregion
 
-namespace sones.GraphDB.QueryLanguage.Result
+namespace sones.GraphDB.Structures.Result
 {
 
     /// <summary>

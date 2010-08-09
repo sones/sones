@@ -9,9 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.QueryLanguage.Operators;
-using sones.GraphDB.TypeManagement.PandoraTypes;
-using sones.GraphDB.QueryLanguage.Enums;
+using sones.GraphDB.Structures.Operators;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphDB.Structures.Enums;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.Errors;
 

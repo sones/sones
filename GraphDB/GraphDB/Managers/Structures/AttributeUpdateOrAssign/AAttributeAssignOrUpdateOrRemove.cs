@@ -3,22 +3,18 @@
  * (c) Stefan Licht, 2010
  */
 
+#region Usings
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.Lib.ErrorHandling;
+using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
-using sones.GraphDB.QueryLanguage.Enums;
-using sones.GraphDB.Exceptions;
-using sones.GraphDB.Errors;
-using sones.GraphDB.QueryLanguage.ExpressionGraph;
 using sones.GraphFS.DataStructures;
-using System.Diagnostics;
-using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.Lib.ErrorHandling;
+
+#endregion
 
 namespace sones.GraphDB.Managers.Structures
 {
@@ -75,7 +71,7 @@ namespace sones.GraphDB.Managers.Structures
 
                 if (aUserDefinedAttribute.Value is IReferenceEdge)
                 {
-                    listOfObjects = myDBContext.DBObjectCache.LoadListOfDBObjectStreams(typeOFAttribute, ((IReferenceEdge)aUserDefinedAttribute.Value).GetAllReferenceIDs());
+                    listOfObjects = ((IReferenceEdge)aUserDefinedAttribute.Value).GetAllEdgeDestinations(myDBContext.DBObjectCache);
                 }
                 else
                 {

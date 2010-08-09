@@ -26,14 +26,18 @@
  * <summary>This abstract class should be implemented for all single reference edges. It will store just an ObjectUUID. The complementary of this for not reference types are all ADBBaseObject implementations.</summary>
  */
 
+#region usings
+
 using System;
 using System.Collections.Generic;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage.Result;
-using sones.GraphDB.TypeManagement.PandoraTypes;
-using sones.GraphFS.DataStructures;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
+
+#endregion
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
@@ -78,6 +82,12 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public abstract IEnumerable<ObjectUUID> GetAllReferenceIDs();
 
         /// <summary>
+        /// The Reference of the value
+        /// </summary>
+        /// <returns></returns>
+        public abstract IEnumerable<Reference> GetAllReferences();
+
+        /// <summary>
         /// Get all uuids and their edge infos
         /// </summary>
         /// <returns></returns>
@@ -108,8 +118,5 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public abstract IEnumerable<Tuple<Exceptional<DBObjectStream>, ADBBaseObject>> GetAllEdgeDestinationsWeighted(DBObjectCache dbObjectCache);
 
         #endregion
-
-
-        public abstract TypeUUID GetTypeUUIDOfReferences();
     }
 }

@@ -37,14 +37,14 @@ using sones.GraphFS.DataStructures;
 using sones.GraphFS.Errors;
 using sones.GraphDB.Structures;
 using sones.GraphDB.Errors;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.Objects;
 using sones.GraphFS.Session;
 using sones.Lib.DataStructures.Indices;
-using sones.GraphDB.QueryLanguage.Enums;
+using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Managers.Structures.Setting;
 
 #endregion
@@ -97,21 +97,47 @@ namespace sones.GraphDB.Settings
 
         #endregion
 
+        private Exceptional VerifyReadWriteOperationIsValid(DBContext myDBContext, String myOperation = "")
+        {
+            var isReadOnlySettingValue = GetSettingValue(new SettingReadonly().Name, myDBContext, TypesSettingScope.DB);
+            if (isReadOnlySettingValue.Failed)
+            {
+                return new Exceptional(isReadOnlySettingValue);
+            }
+
+            if ((isReadOnlySettingValue.Value as DBBoolean).GetValue())
+            {
+                return new Exceptional(new Error_ReadOnlyViolation(myOperation));
+            }
+
+            return Exceptional.OK;
+        }
+
         #region public methods
 
         #region SetPersistentDBSetting(mySetting)
 
-        public Exceptional<bool> SetPersistentDBSetting(ADBSettingsBase mySetting)
+        public Exceptional SetPersistentDBSetting(DBContext myDBContext, ADBSettingsBase mySetting)
         {
+
+            #region Verify that DB is not set to readonly
+
+            var readWriteCheck = VerifyReadWriteOperationIsValid(myDBContext, mySetting.Name);
+            if (readWriteCheck.Failed)
+            {
+                return new Exceptional(readWriteCheck);
+            }
+
+            #endregion
 
             var _SetMetadatumExceptional = _IGraphFSSession.SetMetadatum<ADBSettingsBase>(_DBSettingsLocation, FSConstants.SETTINGSSTREAM, FSConstants.DefaultEdition, mySetting.Name, mySetting, IndexSetStrategy.REPLACE);
 
             if (_SetMetadatumExceptional != null && _SetMetadatumExceptional.Success)
             {
-                return new Exceptional<bool>(true);
+                return Exceptional.OK;
             }
 
-            return _SetMetadatumExceptional.Convert<bool>().PushT(new Error_SettingCouldNotBeSet(mySetting.Name));
+            return _SetMetadatumExceptional.Push(new Error_SettingCouldNotBeSet(mySetting.Name));
 
         }
 
@@ -137,8 +163,19 @@ namespace sones.GraphDB.Settings
 
         #region RemoveDBSetting(mySettingName)
 
-        public Exceptional<bool> RemovePersistentDBSetting(String mySettingName)
+        public Exceptional<bool> RemovePersistentDBSetting(DBContext myDBContext, String mySettingName)
         {
+
+            #region Verify that DB is not set to readonly
+
+            var readWriteCheck = VerifyReadWriteOperationIsValid(myDBContext, mySettingName);
+            if (readWriteCheck.Failed)
+            {
+                return new Exceptional<bool>(readWriteCheck);
+            }
+
+            #endregion
+
             var _RemoveMetadatumExceptional = _IGraphFSSession.RemoveMetadata<ADBSettingsBase>(_DBSettingsLocation, FSConstants.SETTINGSSTREAM, FSConstants.DefaultEdition, mySettingName);
 
             if (_RemoveMetadatumExceptional == null || _RemoveMetadatumExceptional.Failed)
@@ -230,18 +267,20 @@ namespace sones.GraphDB.Settings
         /// <param name="_ActScope">The actual scope</param>
         /// <param name="type">A database type</param>
         /// <param name="attribute">A type attribute</param>
-        public void SetSetting(string settingName, ADBBaseObject aDBBaseObject, DBContext context, TypesSettingScope _ActScope, GraphDBType type = null, TypeAttribute attribute = null)
+        public Exceptional SetSetting(string settingName, ADBBaseObject aDBBaseObject, DBContext context, TypesSettingScope _ActScope, GraphDBType type = null, TypeAttribute attribute = null)
         {
             if (AllSettingsByName.ContainsKey(settingName))
             {
                 var currentSetting = (ADBSettingsBase)AllSettingsByName[settingName].Clone();
+
                 currentSetting.Value = aDBBaseObject;
-                currentSetting.Set(context, _ActScope, type, attribute);
+                return currentSetting.Set(context, _ActScope, type, attribute);
             }
             else
             {
-                throw new GraphDBException(new Error_SettingDoesNotExist(settingName));
+                return new Exceptional(new Error_SettingDoesNotExist(settingName));
             }
+
         }
 
         /// <summary>

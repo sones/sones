@@ -23,11 +23,11 @@ using System.Linq;
 using System.Text;
 using sones.GraphDB.Errors;
 using sones.Lib.ErrorHandling;
-using sones.GraphDB.TypeManagement.PandoraTypes;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.Exceptions;
-using sones.Lib.Frameworks.Irony.Parsing;
+
 using sones.GraphFS.DataStructures;
 using sones.GraphDB.Structures;
 using sones.GraphDB.TypeManagement;
@@ -179,38 +179,6 @@ namespace sones.GraphDB
 
             else
                 throw new GraphDBException(new Errors.Error_NotImplemented(new System.Diagnostics.StackTrace(true), theObject.GetType().ToString()));
-        }
-
-        #endregion
-
-        #region Irony: ParseTreeNode, SymbolTerminal
-
-        public static String ToStringChildnodesIncluded(this ParseTreeNode parseTreeNode)
-        {
-            var retString = new StringBuilder();
-            if (parseTreeNode != null)
-            {
-                retString.Append(parseTreeNode.ToString() + ":");
-                if (parseTreeNode.HasChildNodes())
-                {
-                    foreach (var child in parseTreeNode.ChildNodes)
-                    {
-                        retString.Append(child.ToString() + ", ");
-                    }
-                }
-            }
-
-            return retString.ToString();
-        }
-
-        public static string ToUpperString(this SymbolTerminal symbolTerminal)
-        {
-            return symbolTerminal.ToString().ToUpper();
-        }
-
-        public static string ToString(this SymbolTerminal symbolTerminal)
-        {
-            return symbolTerminal.ToString().ToUpper();
         }
 
         #endregion

@@ -31,7 +31,7 @@ using System.Collections.Generic;
 
 using sones.GraphFS.DataStructures;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.Lib;
 
 #endregion

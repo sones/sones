@@ -65,12 +65,18 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
             if (myPandoraDB != null)
             {
-                foreach (var _PandoraType in myPandoraDB.GetDBContext().DBTypeManager.GetAllTypes())
+
+                using (var transaction = myPandoraDB.BeginTransaction())
                 {
-                    if (_PandoraType.Name.StartsWith(CurrentStringLiteral))
+
+                    foreach (var _PandoraType in transaction.GetDBContext().DBTypeManager.GetAllTypes())
                     {
-                        possiblePandoraTypes.Add(_PandoraType.Name);
+                        if (_PandoraType.Name.StartsWith(CurrentStringLiteral))
+                        {
+                            possiblePandoraTypes.Add(_PandoraType.Name);
+                        }
                     }
+
                 }
 
             }

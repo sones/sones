@@ -12,7 +12,7 @@ using System.Collections.Generic;
 
 using sones.GraphDB.Structures;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDS.API.CSharp.Reflection;
 using sones.Lib;
 

@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.ObjectManagement;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.TypeManagement;
@@ -15,8 +15,8 @@ using sones.Lib;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;
 using sones.GraphFS.DataStructures;
-using sones.GraphDB.QueryLanguage.Enums;
-using sones.GraphDB.QueryLanguage.ExpressionGraph;
+using sones.GraphDB.Structures.Enums;
+using sones.GraphDB.Structures.ExpressionGraph;
 using sones.GraphDB.Structures.EdgeTypes;
 
 namespace sones.GraphDB.Managers.Structures

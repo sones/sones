@@ -167,9 +167,10 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
         private void LoadTheProtonOntology(GraphDBSession DB, Object myIPandoraFS)
         {
-            var dbContext = DB.GetDBContext();
             using (var _Transaction = DB.BeginTransaction())
             {
+
+                var dbContext = _Transaction.GetDBContext();
 
                 #region Entity
 

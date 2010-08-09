@@ -32,7 +32,7 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
+
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.TypeManagement;

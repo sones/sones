@@ -109,6 +109,10 @@
       <Project>{32A56958-2C05-44C6-B661-2A2C6610E073}</Project>
       <Name>GraphDB</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\GraphDB\ImportExportGQL\GraphQLImportExport.csproj">
+      <Project>{3F0E3C18-6B9C-4F27-AD00-104DE47F2D5D}</Project>
+      <Name>GraphQLImportExport</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\GraphDS\GraphDSCLI\GraphDSCLI.csproj">
       <Project>{0A4A8E31-9ED5-4581-932F-62BAF97C36DD}</Project>
       <Name>GraphDSCLI</Name>

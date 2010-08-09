@@ -33,7 +33,7 @@ using System.Diagnostics;
 
 using sones.GraphDB;
 using sones.GraphFS.Session;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures;
 
 #endregion
@@ -98,7 +98,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
             if (query.Length != 0)
             {
                 //execute query
-                QueryResult myQueryResult = dbSession.Query(query);
+                QueryResult myQueryResult = QueryDB(query, dbSession);
 
                 WriteLine(query);
 

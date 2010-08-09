@@ -20,16 +20,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using sones.GraphDB.TypeManagement.PandoraTypes;
-using sones.GraphDB.TypeManagement;
-using sones.Lib.Serializer;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
-using sones.Lib.NewFastSerializer;
-using sones.Lib.ErrorHandling;
+using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
+using sones.Lib.ErrorHandling;
+using sones.Lib.NewFastSerializer;
+
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
@@ -60,7 +58,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             get { return new EdgeTypeUUID(101); }
         }
 
-        public override void ApplyParams(params EdgeTypeParamNode[] myParams)
+        public override void ApplyParams(params EdgeTypeParamDefinition[] myParams)
         {
 
         }
@@ -70,7 +68,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return new EdgeTypeListOfBaseObjects();
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable, TypeUUID typeOfDBObjects)
+        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
         {
             return GetNewInstance();
         }
@@ -87,7 +85,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public override String GetGDDL(GraphDBType myGraphDBType)
         {
-            return String.Concat(GraphQL.TERMINAL_LIST, GraphQL.TERMINAL_LT, myGraphDBType.Name, GraphQL.TERMINAL_GT);
+            return String.Concat("LIST", "<", myGraphDBType.Name, ">");
         }
 
         #endregion

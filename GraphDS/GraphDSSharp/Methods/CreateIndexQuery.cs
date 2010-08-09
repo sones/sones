@@ -27,7 +27,7 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures;
 
 #endregion

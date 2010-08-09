@@ -50,7 +50,7 @@ namespace sones.GraphFS.Errors
         public ObjectLocation ObjectLocation    { get; private set; }
         public String         ObjectStream      { get; private set; }
         public String         ObjectEdition     { get; private set; }
-        public RevisionID     ObjectRevisionID  { get; private set; }
+        public ObjectRevisionID     ObjectRevisionID  { get; private set; }
 
         #endregion
 
@@ -58,7 +58,7 @@ namespace sones.GraphFS.Errors
 
         #region GraphFSError_CouldNotOverwritteRevision(myObjectLocation, myObjectStream)
 
-        public GraphFSError_CouldNotOverwriteRevision(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID)
+        public GraphFSError_CouldNotOverwriteRevision(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID)
         {
             ObjectLocation      = myObjectLocation;
             ObjectStream        = myObjectStream;

@@ -30,42 +30,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using sones.GraphDB.Errors;
+using Lib;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Indices;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Aggregates;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Functions;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
-using sones.GraphDB.QueryLanguage.Operators;
-using sones.GraphDB.QueryLanguage.Result;
-using sones.GraphDB.Settings;
-using sones.GraphDB.Structures;
-using sones.GraphDB.Structures.EdgeTypes;
-using sones.GraphDB.TypeManagement.PandoraTypes;
-using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
-using sones.GraphDB.Warnings;
-using sones.GraphFS;
-using sones.GraphFS.DataStructures;
-using sones.GraphFS.Errors;
-using sones.GraphFS.Exceptions;
-using sones.GraphFS.Objects;
-using sones.GraphFS.Session;
-using sones.Lib;
-using sones.Lib.DataStructures;
-using sones.Lib.DataStructures.UUID;
-using sones.Lib.ErrorHandling;
-using sones.Lib.Serializer;
-using System.Text;
 using sones.GraphDB.Plugin;
-using sones.Lib.Session;
-using Lib;
-using sones.GraphDB.Managers;
-using sones.GraphDB.Transactions;
-using sones.GraphDB.TypeManagement;
 using sones.GraphDB.Session;
+using sones.GraphDB.Settings;
+using sones.GraphDB.TypeManagement;
+using sones.GraphFS.DataStructures;
+using sones.GraphFS.Session;
 
 
 #endregion
@@ -173,12 +147,12 @@ namespace sones.GraphDB
         /// </summary>
         /// <param name="myIPandoraDBSession">The filesystem where the information is stored.</param>
         /// <param name="DatabaseRootPath">The database root path.</param>
-        public DBContext(IGraphFSSession graphFSSession, ObjectLocation myDatabaseRootPath, EntityUUID myUserID, Dictionary<String, ADBSettingsBase> myDBSettings, Boolean myRebuildIndices, DBSessionSettings sessionSettings = null)
+        public DBContext(IGraphFSSession graphFSSession, ObjectLocation myDatabaseRootPath, EntityUUID myUserID, Dictionary<String, ADBSettingsBase> myDBSettings, Boolean myRebuildIndices, DBPluginManager myDBPluginManager, DBSessionSettings sessionSettings = null)
         {
 
-            _DBTypeManager      = new TypeManagement.DBTypeManager(graphFSSession, myDatabaseRootPath, myUserID, myDBSettings, this);
+            _DBPluginManager    = myDBPluginManager;
 
-            _DBPluginManager    = new DBPluginManager(myUserID);
+            _DBTypeManager      = new TypeManagement.DBTypeManager(graphFSSession, myDatabaseRootPath, myUserID, myDBSettings, this);
             _DBSettingsManager  = new DBSettingsManager(_DBPluginManager.Settings, myDBSettings, graphFSSession, new ObjectLocation(myDatabaseRootPath.Name, DBConstants.DBSettingsLocation));
             _DBObjectManager    = new DBObjectManager(this, graphFSSession);
             _DBIndexManager     = new DBIndexManager(graphFSSession, this);

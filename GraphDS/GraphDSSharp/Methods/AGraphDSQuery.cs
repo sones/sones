@@ -28,11 +28,12 @@ using System;
 using System.Text;
 using System.Linq;
 
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures;
 using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
+using sones.GraphDS.API.CSharp.Reflection;
 
 #endregion
 
@@ -226,6 +227,7 @@ namespace sones.GraphDS.API.CSharp
         #region ExecuteToObject<T>(myDepth)
 
         public IEnumerable<T> ExecuteToObject<T>(UInt16? myDepth = null)
+            where T : DBObject, new()
         {
 
             if (_DBWrapper == null)

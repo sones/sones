@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage.ExpressionGraph;
+using sones.GraphDB.Structures.ExpressionGraph;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;
 using sones.Lib;

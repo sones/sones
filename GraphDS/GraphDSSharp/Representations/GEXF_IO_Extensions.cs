@@ -11,7 +11,7 @@ using System.Xml.Linq;
 using System.Collections.Generic;
 
 using sones.Lib;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using System.IO;
 using System.Xml;
 using System.Text;

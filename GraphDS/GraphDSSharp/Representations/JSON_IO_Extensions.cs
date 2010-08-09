@@ -26,7 +26,7 @@
 
 using System;
 using Newtonsoft.Json.Linq;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 
 #endregion
 

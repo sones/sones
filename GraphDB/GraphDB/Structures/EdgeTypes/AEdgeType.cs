@@ -28,9 +28,9 @@
 
 using System;
 using System.Collections.Generic;
+using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.TypeManagement;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
@@ -59,7 +59,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// Apply the given <paramref name="myParams"/> to the EdgeType
         /// </summary>
         /// <param name="myParams">A array ob parameters</param>
-        public abstract void ApplyParams(params EdgeTypeParamNode[] myParams);
+        public abstract void ApplyParams(params EdgeTypeParamDefinition[] myParams);
 
         public new abstract String ToString();
 
@@ -87,7 +87,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// </summary>
         /// <param name="iEnumerable"></param>
         /// <returns></returns>
-        public abstract AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable, TypeUUID typeOfObjects);
+        public abstract AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable);
 
         /// <summary>
         /// Creates a new instance of this edge from the passed data.

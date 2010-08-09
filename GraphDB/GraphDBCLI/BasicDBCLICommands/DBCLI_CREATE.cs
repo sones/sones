@@ -37,7 +37,7 @@ using sones.Lib.Frameworks.CLIrony.Compiler;
 using sones.Lib.CLI;
 using sones.GraphFS.Session;
 using sones.GraphDB;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 
 #endregion
 
@@ -139,7 +139,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
             {
                 String QueryInputString = myInputString.Replace("'", "");
 
-                HandleQueryResult(_IPandoraDBSession.Query(QueryInputString), true);
+                HandleQueryResult(QueryDB(QueryInputString, _IPandoraDBSession), true);
             }
             else
             {

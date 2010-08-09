@@ -28,10 +28,11 @@
 using System;
 
 using sones.GraphDB;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures;
 
 using sones.Lib.CLI;
+using sones.GraphDB.GraphQL;
 
 #endregion
 
@@ -53,7 +54,8 @@ namespace sones.GraphFS.Connectors.GraphDSCLI
             if (myWithOutput)
                 Write(myQueryString + " => ");
 
-            var _QueryResult = myIGraphDBSession.Query(myQueryString);
+            var GQLQuery = new GraphQLQuery(myIGraphDBSession.DBPluginManager);
+            var _QueryResult = GQLQuery.Query(myQueryString, myIGraphDBSession);
 
             if (myWithOutput)
                 WriteLine(_QueryResult.ResultType.ToString());

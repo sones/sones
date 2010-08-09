@@ -43,8 +43,9 @@ using System.Diagnostics;
 
 using sones.GraphDB;
 using sones.GraphFS.Session;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures;
+using sones.GraphDB.GraphQL;
 
 #endregion
 
@@ -90,6 +91,8 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
             var _IGraphFS2Session = myIGraphFS2Session as IGraphFSSession;
             var _IPandoraDBSession = myIPandoraDBSession as IGraphDBSession;
 
+            var gqlQuery = new GraphQLQuery(_IPandoraDBSession.DBPluginManager);
+
             Boolean isSuccessful = true;
             int numberOfStatement = 1;
             Stopwatch sw = new Stopwatch();
@@ -107,7 +110,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
                 sw.Start();
                 while ((line = reader.ReadLine()) != null)
                 {
-                    if (!ExecuteAQuery(line.Trim(), _IPandoraDBSession))
+                    if (!ExecuteAQuery(line.Trim(), _IPandoraDBSession, gqlQuery))
                     {
                         WriteLine("Error while executing query: \"" + line + "\"");
 
@@ -149,12 +152,12 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
             }
         }
 
-        private bool ExecuteAQuery(string query, IGraphDBSession dbSession)
+        private bool ExecuteAQuery(string query, IGraphDBSession dbSession, GraphQLQuery myGQLQuery)
         {
             if (query.Length != 0)
             {
                 //execute query
-                QueryResult myQueryResult = dbSession.Query(query);
+                QueryResult myQueryResult = myGQLQuery.Query(query, dbSession);
 
                 WriteLine(query);
 

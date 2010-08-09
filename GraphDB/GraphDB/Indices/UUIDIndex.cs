@@ -16,7 +16,7 @@ using sones.GraphDB.Exceptions;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Objects;

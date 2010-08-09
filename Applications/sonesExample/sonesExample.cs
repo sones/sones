@@ -26,8 +26,7 @@ using System.Diagnostics;
 using System.ServiceModel;
 using System.IdentityModel.Selectors;
 using System.IdentityModel.Tokens;
-
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures;
 using sones.GraphDS.API.CSharp;
 using sones.GraphDS.API.CSharp.Notifications;

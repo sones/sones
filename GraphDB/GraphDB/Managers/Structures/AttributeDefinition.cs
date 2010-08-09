@@ -12,12 +12,12 @@ using System.Text;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;
-using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
-using sones.GraphDB.QueryLanguage.Result;
+
+
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures.EdgeTypes;
-using sones.GraphDB.QueryLanguage.Enums;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.Structures.Enums;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.Lib.ErrorHandling;
 
 #endregion
@@ -68,35 +68,96 @@ namespace sones.GraphDB.Managers.Structures
 
             #endregion
 
+            var graphDBType = typeManager.GetTypeByName(AttributeType.Name);
+            var isReferenceEdge = false;
+
+            #region Userdefined type
+
+            if (graphDBType == null)
+            {
+                //maybe there is an attribute with a new DBType
+                if (newTypes != null)
+                {
+                    var newType = newTypes.Where(item => item.Name == AttributeType.Name).FirstOrDefault();
+                    if (newType != null)
+                    {
+                        graphDBType = newType;
+                        isReferenceEdge = true;
+                    }
+                    else
+                    {
+                        return new Exceptional<TypeAttribute>(new Error_TypeDoesNotExist(AttributeType.Name));
+                    }
+                }
+                else
+                {
+                    return new Exceptional<TypeAttribute>(new Error_TypeDoesNotExist(AttributeType.Name));
+                }
+            }
+            else
+            {
+                if (graphDBType.IsUserDefined)
+                {
+                    isReferenceEdge = true;
+                }
+            }
+
+
+            #endregion
+
             #region Edge validation
 
-            if (AttributeType.EdgeType == null && AttributeType.Type != KindsOfType.SingleNoneReference) // currently we don't have any edge for SingleNoneReference
+            if (!String.IsNullOrEmpty(AttributeType.EdgeType))
             {
 
-                #region No special edge - get the default edge
-
-                var graphDBType = typeManager.GetTypeByName(AttributeType.Name);
-                if (graphDBType == null || graphDBType.IsUserDefined) // This must be a user defined type - on bulk type creation the type does not exist currently
+                if (!currentDBContext.DBPluginManager.HasEdgeType(AttributeType.EdgeType))
                 {
+                    return new Exceptional<TypeAttribute>(new Error_EdgeTypeDoesNotExist(AttributeType.EdgeType));
+                }
 
-                    #region Userdefined type
+                _TypeAttribute.EdgeType = currentDBContext.DBPluginManager.GetEdgeType(AttributeType.EdgeType);
+                _TypeAttribute.EdgeType.ApplyParams(AttributeType.Parameters);
 
-                    if (graphDBType == null)
+                #region Validate edge type
+
+                if (isReferenceEdge)
+                {
+                    if (_TypeAttribute.EdgeType is ASetReferenceEdgeType)
                     {
-                        //maybe there is an attribute with a new DBType
-                        if (newTypes != null)
-                        {
-                            var newType = newTypes.Where(item => item.Name == AttributeType.Name).FirstOrDefault();
-                            if (newType != null)
-                            {
-                                graphDBType = newType;
-                            }
-                            else
-                            {
-                                throw new GraphDBException(new Error_TypeDoesNotExist(AttributeType.Name));
-                            }
-                        }
+                        _TypeAttribute.KindOfType = KindsOfType.SetOfReferences;
                     }
+                    else if (_TypeAttribute.EdgeType is ASingleReferenceEdgeType)
+                    {
+                        _TypeAttribute.KindOfType = KindsOfType.SingleReference;
+                    }
+                    else
+                    {
+                        return new Exceptional<TypeAttribute>(new Error_InvalidEdgeType(_TypeAttribute.EdgeType.GetType(), typeof(ASetReferenceEdgeType), typeof(ASingleReferenceEdgeType)));
+                    }
+                }
+                else
+                {
+                    if (_TypeAttribute.EdgeType is ASetBaseEdgeType)
+                    {
+                        _TypeAttribute.KindOfType = KindsOfType.SetOfNoneReferences;
+                    }
+                    else if (_TypeAttribute.EdgeType is AListBaseEdgeType)
+                    {
+                        _TypeAttribute.KindOfType = KindsOfType.ListOfNoneReferences;
+                    }
+                    {
+                        return new Exceptional<TypeAttribute>(new Error_InvalidEdgeType(_TypeAttribute.EdgeType.GetType(), typeof(ASetBaseEdgeType), typeof(AListBaseEdgeType)));
+                    }
+                }
+
+                #endregion
+
+            }
+            else
+            {
+
+                if (isReferenceEdge)
+                {
 
                     if (AttributeType.Type == KindsOfType.UnknownList)
                     {
@@ -104,20 +165,18 @@ namespace sones.GraphDB.Managers.Structures
                     }
                     else if (AttributeType.Type == KindsOfType.UnknownSet)
                     {
-                        AttributeType.Type = KindsOfType.SetOfReferences;
-                        AttributeType.EdgeType = new EdgeTypeSetOfReferences(null, graphDBType.UUID);
+                        _TypeAttribute.KindOfType = KindsOfType.SetOfReferences;
+                        _TypeAttribute.EdgeType = new EdgeTypeSetOfReferences(null, graphDBType.UUID);
                     }
                     else if (AttributeType.Type == KindsOfType.UnknownSingle)
                     {
-                        AttributeType.Type = KindsOfType.SingleReference;
-                        AttributeType.EdgeType = new EdgeTypeSingleReference(null, graphDBType.UUID);
+                        _TypeAttribute.KindOfType = KindsOfType.SingleReference;
+                        _TypeAttribute.EdgeType = new EdgeTypeSingleReference(null, graphDBType.UUID);
                     }
                     else
                     {
                         //return new Exceptional<TypeAttribute>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                     }
-
-                    #endregion
 
                 }
                 else
@@ -127,72 +186,23 @@ namespace sones.GraphDB.Managers.Structures
 
                     if (AttributeType.Type == KindsOfType.UnknownList)
                     {
-                        AttributeType.Type = KindsOfType.ListOfNoneReferences;
-                        AttributeType.EdgeType = new EdgeTypeListOfBaseObjects();
+                        _TypeAttribute.KindOfType = KindsOfType.ListOfNoneReferences;
+                        _TypeAttribute.EdgeType = new EdgeTypeListOfBaseObjects();
                     }
                     else if (AttributeType.Type == KindsOfType.UnknownSet)
                     {
-                        AttributeType.Type = KindsOfType.SetOfNoneReferences;
-                        AttributeType.EdgeType = new EdgeTypeSetOfBaseObjects();
+                        _TypeAttribute.KindOfType = KindsOfType.SetOfNoneReferences;
+                        _TypeAttribute.EdgeType = new EdgeTypeSetOfBaseObjects();
                     }
                     else if (AttributeType.Type == KindsOfType.UnknownSingle)
                     {
-                        AttributeType.Type = KindsOfType.SingleNoneReference;
+                        _TypeAttribute.KindOfType = KindsOfType.SingleNoneReference;
                     }
                     else
                     {
                         //return new Exceptional<TypeAttribute>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                     }
 
-                    #endregion
-
-                }
-
-                #endregion
-
-            }
-            else if (AttributeType.EdgeType != null)
-            {
-
-                #region Validate edge
-
-                var graphDBType = typeManager.GetTypeByName(AttributeType.Name);
-                if (graphDBType == null || graphDBType.IsUserDefined) // This must be a user defined type - on bulk type creation the type does not exist currently
-                {
-                    switch (AttributeType.Type)
-                    {
-                        case KindsOfType.SingleReference:
-                            if (!(AttributeType.EdgeType is ASingleReferenceEdgeType))
-                            {
-                                return new Exceptional<TypeAttribute>(new Error_InvalidEdgeType(AttributeType.EdgeType.GetType(), typeof(ASingleReferenceEdgeType)));
-                            }
-                            break;
-                        case KindsOfType.SetOfReferences:
-                            if (!(AttributeType.EdgeType is ASetReferenceEdgeType))
-                            {
-                                return new Exceptional<TypeAttribute>(new Error_InvalidEdgeType(AttributeType.EdgeType.GetType(), typeof(ASetReferenceEdgeType)));
-                            }
-                            break;
-                        case KindsOfType.SetOfNoneReferences:
-                            if (!(AttributeType.EdgeType is ASetBaseEdgeType))
-                            {
-                                return new Exceptional<TypeAttribute>(new Error_InvalidEdgeType(AttributeType.EdgeType.GetType(), typeof(ASetBaseEdgeType)));
-                            }
-                            break;
-                        case KindsOfType.ListOfNoneReferences:
-                            if (!(AttributeType.EdgeType is AListBaseEdgeType))
-                            {
-                                return new Exceptional<TypeAttribute>(new Error_InvalidEdgeType(AttributeType.EdgeType.GetType(), typeof(AListBaseEdgeType)));
-                            }
-                            break;
-                        case KindsOfType.SingleNoneReference:
-                        default:
-                            if (AttributeType.EdgeType != null)
-                            {
-                                return new Exceptional<TypeAttribute>(new Error_InvalidEdgeType(AttributeType.EdgeType.GetType()));
-                            }
-                            break;
-                    }
                 }
 
                 #endregion
@@ -211,9 +221,9 @@ namespace sones.GraphDB.Managers.Structures
             {
                 if (DefaultValue is AEdgeType)
                 {
-                    if (AttributeType.EdgeType.EdgeTypeUUID != (DefaultValue as AEdgeType).EdgeTypeUUID)
+                    if (_TypeAttribute.EdgeType.EdgeTypeUUID != (DefaultValue as AEdgeType).EdgeTypeUUID)
                     {
-                        throw new GraphDBException(new Error_InvalidAttrDefaultValueAssignment(_TypeAttribute.Name, (DefaultValue as AEdgeType).EdgeTypeName, AttributeType.EdgeType.EdgeTypeName));
+                        throw new GraphDBException(new Error_InvalidAttrDefaultValueAssignment(_TypeAttribute.Name, (DefaultValue as AEdgeType).EdgeTypeName, _TypeAttribute.EdgeType.EdgeTypeName));
                     }
                 }
                 else if (DefaultValue is ADBBaseObject)
@@ -229,14 +239,11 @@ namespace sones.GraphDB.Managers.Structures
                 _TypeAttribute.DefaultValue = DefaultValue;
             }
 
-            _TypeAttribute.KindOfType = AttributeType.Type;
-
             if (AttributeType.TypeCharacteristics != null)
             {
                 _TypeAttribute.TypeCharacteristics = AttributeType.TypeCharacteristics;
             }
 
-            _TypeAttribute.EdgeType = AttributeType.EdgeType;
 
             #endregion
 

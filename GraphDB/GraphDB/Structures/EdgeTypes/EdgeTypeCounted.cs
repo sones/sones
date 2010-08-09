@@ -22,16 +22,16 @@ using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
+using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib;
 using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
+
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
@@ -42,7 +42,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
         private Reference _Reference;
         private ADBBaseObject _Count;
         private ADBBaseObject _CountBy;
-        private TypeUUID _typeOfDBObject = null;
 
         #region TypeCode 
         public override UInt32 TypeCode { get { return 451; } }
@@ -50,11 +49,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public EdgeTypeCounted()
         {
-        }
-
-        public EdgeTypeCounted(TypeUUID typeOfDBObject)
-        {
-            _typeOfDBObject = typeOfDBObject;
         }
 
         #region AEdgeType Members
@@ -69,16 +63,16 @@ namespace sones.GraphDB.Structures.EdgeTypes
             get { return new EdgeTypeUUID(11); }
         }
 
-        public override void ApplyParams(params EdgeTypeParamNode[] myParams)
+        public override void ApplyParams(params EdgeTypeParamDefinition[] myParams)
         {
 
             if (myParams.Count() == 0)
-                throw new ArgumentException("EdgeTypeCounted: Expected at least 1 parameter for edge type counted!");
+                throw new GraphDBException(new Error_EdgeParameterCountMismatch(EdgeTypeName, 0, 1));
 
             // The first parameter has to be the type
-            if (myParams[0].Type != EdgeTypeParamNode.ParamType.PandoraType)
+            if (myParams[0].Type != ParamType.PandoraType)
             {
-                throw new ArgumentException("EdgeTypeCounted: The first parameter has to be the type 'Integer', 'Double, etc");
+                throw new GraphDBException(new Error_DataTypeDoesNotMatch(myParams[0].Type.ToString(), "BaseType like 'Integer', 'Double, etc"));
             }
             else
             {
@@ -90,10 +84,17 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
             #region Get default node if exists
 
-            if (myParams.Any(p => p.Type == EdgeTypeParamNode.ParamType.DefaultValueDef))
+            if (myParams.Any(p => p.Type == ParamType.DefaultValueDef))
             {
-                var def = (from p in myParams where p.Type == EdgeTypeParamNode.ParamType.DefaultValueDef select p).First();
-                _CountBy.SetValue(def.Param);
+                var def = (from p in myParams where p.Type == ParamType.DefaultValueDef select p).First();
+                if (_CountBy.IsValidValue(def.Param))
+                {
+                    _CountBy.SetValue(def.Param);
+                }
+                else
+                {
+                    throw new GraphDBException(new Error_DataTypeDoesNotMatch(_CountBy.ObjectName, def.Param.GetType().Name));
+                }
             }
             else
             {
@@ -114,9 +115,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return edgeTypeCounted;
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable, TypeUUID typeOfDBObjects)
+        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
         {
-            var edgeTypeCounted = new EdgeTypeCounted(typeOfDBObjects);
+            var edgeTypeCounted = new EdgeTypeCounted();
             if (_Count != null)
                 edgeTypeCounted._Count = _Count.Clone();
             if (_CountBy != null)
@@ -126,7 +127,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public override AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeOfDBObjects)
         {
-            var edgeTypeCounted = new EdgeTypeCounted(typeOfDBObjects);
+            var edgeTypeCounted = new EdgeTypeCounted();
             if (_Count != null)
                 edgeTypeCounted._Count = _Count.Clone();
             if (_CountBy != null)
@@ -147,7 +148,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public override String GetGDDL(GraphDBType myGraphDBType)
         {
-            return String.Concat(EdgeTypeName.ToUpper(), GraphQL.TERMINAL_BRACKET_LEFT, _Count.ObjectName, ", ", "DEFAULT=", _CountBy.Value.ToString(), GraphQL.TERMINAL_BRACKET_RIGHT, GraphQL.TERMINAL_LT, myGraphDBType.Name, GraphQL.TERMINAL_GT);
+            return String.Concat(EdgeTypeName.ToUpper(), "(", _Count.ObjectName, ", ", "DEFAULT=", _CountBy.Value.ToString(), ")", "<", myGraphDBType.Name, ">");
         }
 
         #endregion
@@ -166,6 +167,13 @@ namespace sones.GraphDB.Structures.EdgeTypes
             yield break;
         }
 
+        public override IEnumerable<Reference> GetAllReferences()
+        {
+            yield return _Reference;
+
+            yield break;
+        }
+
         public override void Set(ObjectUUID myValue, TypeUUID typeOfDBObjects, params ADBBaseObject[] myParameters)
         {
             if (myValue == null)
@@ -173,11 +181,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 _Reference = null;
                 _Count.SetValue(DBObjectInitializeType.Default);
                 return;
-            }
-
-            if (_typeOfDBObject == null)
-            {
-                _typeOfDBObject = typeOfDBObjects;
             }
 
             _Reference = new Reference(myValue, typeOfDBObjects);
@@ -229,7 +232,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
             if (!(mySingleEdgeType is EdgeTypeCounted))
                 throw new ArgumentException("mySingleEdgeType is not of type EdgeTypeCounted");
 
-            _Reference = new Reference(mySingleEdgeType.GetUUID(), mySingleEdgeType.GetTypeUUIDOfReferences());
+            var reference = mySingleEdgeType.GetAllReferences().FirstOrDefault();
+
+            _Reference = reference;
 
             _Count.Add((mySingleEdgeType as EdgeTypeCounted)._Count);
         }
@@ -261,27 +266,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         private void Serialize(ref SerializationWriter mySerializationWriter, EdgeTypeCounted myValue)
         {
-            mySerializationWriter.WriteObject(_typeOfDBObject);
-            
-            //if (myValue._typeOfDBObject != null)
-            //{
-            //    myValue._typeOfDBObject.Serialize(ref mySerializationWriter);
-            //}
-            //else
-            //{
-            //    mySerializationWriter.WriteObject(null);
-            //}
-
             mySerializationWriter.WriteObject(myValue._Reference);
-            //if (myValue._Reference != null)
-            //{
-            //    myValue._Reference.Serialize(ref mySerializationWriter);
-            //}
-            //else
-            //{
-            //    mySerializationWriter.WriteObject(null);
-            //}
-
             myValue._Count.ID.Serialize(ref mySerializationWriter);
             myValue._Count.Serialize(ref mySerializationWriter);
             myValue._CountBy.ID.Serialize(ref mySerializationWriter);
@@ -290,7 +275,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         private object Deserialize(ref SerializationReader mySerializationReader, EdgeTypeCounted myValue)
         {
-            myValue._typeOfDBObject = new TypeUUID(ref mySerializationReader);
             myValue._Reference = (Reference)mySerializationReader.ReadObject();
             TypeUUID countType = new TypeUUID(ref mySerializationReader);
             myValue._Count = GraphDBTypeMapper.GetADBBaseObjectFromUUID(countType);
@@ -371,11 +355,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
             yield return new Tuple<Exceptional<DBObjectStream>, ADBBaseObject>(_Reference.GetDBObjectStream(dbObjectCache), _Count);
 
             yield break;
-        }
-
-        public override TypeUUID GetTypeUUIDOfReferences()
-        {
-            return _typeOfDBObject;
         }
     }
 }

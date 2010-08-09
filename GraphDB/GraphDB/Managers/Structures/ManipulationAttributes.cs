@@ -7,9 +7,9 @@
 
 using System;
 using System.Collections.Generic;
-using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements;
-using sones.GraphDB.QueryLanguage.Result;
+
+
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 using sones.GraphDB.Managers.Structures;

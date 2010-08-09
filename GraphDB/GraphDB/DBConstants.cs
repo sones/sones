@@ -44,6 +44,8 @@ namespace sones.GraphDB
     public static class DBConstants
     {
         public static String ASTERISKSYMBOL                     = "*";
+        public static String MINUSSYMBOL                        = "-";
+        public static String RHOMBSYMBOL                        = "#";
 
         public static String DBTYPESTREAM                       = "DBTYPESTREAM";
         public static String DbGraphType                        = "DBType";

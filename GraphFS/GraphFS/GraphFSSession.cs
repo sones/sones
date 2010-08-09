@@ -57,8 +57,6 @@ namespace sones.GraphFS.Session
     public class GraphFSSession : IGraphFSSession
     {
 
-        
-
 
         #region Properties
 
@@ -95,30 +93,6 @@ namespace sones.GraphFS.Session
 
         #endregion
 
-
-        #region Constructor(s)
-
-        #region GraphFSSession(myPandoraFS, myUsername)
-
-        /// <summary>
-        /// This will create a new PandoraFS session on an existing PandoraFS and will verify the given credentials
-        /// </summary>
-        /// <param name="myPandoraFS"></param>
-        /// <param name="myUsername"></param>
-        public GraphFSSession(IGraphFS myIPandoraFS, String myUsername)
-        {
-
-            IGraphFS = myIPandoraFS;
-            var sessionInfo = new FSSessionInfo(myUsername);            
-            SessionToken    = new SessionToken(sessionInfo);
-
-        }
-
-        #endregion
-
-        #endregion
-
-
         #region Events
 
         //#region OnExceptionOccurred(myEventArgs)
@@ -135,138 +109,13 @@ namespace sones.GraphFS.Session
         //#endregion
 
 
-        //#region OnLoad/OnLoadEvent(myEventArgs)
-
-   //     public delegate void OnLoadEventHandler(Object mySender, EventArgs myEventArgs);
-
-        
-        //public event OnLoadEventHandler OnLoad;
-
-        ///// <summary>
-        ///// Invoke the OnLoad event, called whenever a AFSObject
-        ///// is ready to be loaded.
-        ///// </summary>
-        ///// <param name="e">EventArgs</param>
-        //public virtual void OnLoadEvent(EventArgs myEventArgs)
-        //{
-        //    if (OnLoad != null)
-        //        OnLoad(this, myEventArgs);
-        //}
-
-        //#endregion
-
-        //#region OnLoaded/OnLoadedEvent(myEventArgs)
-
-     //   public delegate void OnLoadedEventHandler(Object mySender, EventArgs myEventArgs);
-
-        
-        //public event OnLoadedEventHandler OnLoaded;
-
-        ///// <summary>
-        ///// Invoke the OnLoaded event, called whenever a AFSObject
-        ///// was successfully loaded.
-        ///// </summary>
-        ///// <param name="e">EventArgs</param>
-        //public virtual void OnLoadedEvent(EventArgs myEventArgs)
-        //{
-        //    if (OnLoaded != null)
-        //        OnLoaded(this, myEventArgs);
-        //}
-
-        //#endregion
-
-        //#region OnSave/OnSaveEvent(myEventArgs)
-
-     //   public delegate void OnSaveEventHandler(Object mySender, EventArgs myEventArgs);
-
-        
-        //public event OnSaveEventHandler OnSave;
-
-        ///// <summary>
-        ///// Invoke the OnSave event, called whenever a AFSObject
-        ///// is ready to be saved.
-        ///// </summary>
-        ///// <param name="e">EventArgs</param>
-        //public virtual void OnSaveEvent(EventArgs myEventArgs)
-        //{
-        //    if (OnSave != null)
-        //        OnSave(this, myEventArgs);
-        //}
-
-        //#endregion
-
-        //#region OnSaved/OnSavedEvent(myEventArgs)
-
-        //  public delegate void OnSavedEventHandler(Object mySender, EventArgs myEventArgs);
-
-        
-        //public event OnSavedEventHandler OnSaved;
-
-        ///// <summary>
-        ///// Invoke the OnSaved event, called whenever a AFSObject
-        ///// was successfully saved on disc.
-        ///// </summary>
-        ///// <param name="e">EventArgs</param>
-        //public virtual void OnSavedEvent(EventArgs myEventArgs)
-        //{
-        //    if (OnSaved != null)
-        //        OnSaved(this, myEventArgs);
-        //}
-
-        //#endregion
-
-        //#region OnRemove/OnRemoveEvent(myEventArgs)
-
-     //   public delegate void OnRemoveEventHandler(Object mySender, EventArgs myEventArgs);
-
-        ///// <summary>
-        ///// An event to be notified whenever a AFSObject
-        ///// is ready to be removed.
-        ///// </summary>
-        //public event OnRemoveEventHandler OnRemove;
-
-        ///// <summary>
-        ///// Invoke the OnSave event, called whenever a AFSObject
-        ///// is ready to be removed.
-        ///// </summary>
-        ///// <param name="e">EventArgs</param>
-        //public virtual void OnRemoveEvent(EventArgs myEventArgs)
-        //{
-        //    if (OnRemove != null)
-        //        OnRemove(this, myEventArgs);
-        //}
-
-        //#endregion
-
-        //#region OnRemoved/OnRemovedEvent(myEventArgs)
-
-      //  public delegate void OnRemovedEventHandler(Object mySender, EventArgs myEventArgs);
-
-        ///// <summary>
-        ///// An event to be notified whenever a AFSObject
-        ///// was successfully removed.
-        ///// </summary>
-        //public event OnRemovedEventHandler OnRemoved;
-
-        ///// <summary>
-        ///// Invoke the OnRemoved event, called whenever a AFSObject
-        ///// was successfully removed.
-        ///// </summary>
-        ///// <param name="e">EventArgs</param>
-        //public virtual void OnRemovedEvent(EventArgs myEventArgs)
-        //{
-        //    if (OnRemoved != null)
-        //        OnRemoved(this, myEventArgs);
-        //}
-
-
         #region OnLoad
 
         /// <summary>
         /// An event to be notified whenever a AFSObject is
         /// ready to be loaded.
         /// </summary>
-        public event FSEventHandlers.OnLoadEventHandler OnLoad
+        public event GraphFSEventHandlers.OnLoadEventHandler OnLoad
         {
 
             add
@@ -295,7 +144,7 @@ namespace sones.GraphFS.Session
         /// An event to be notified whenever a AFSObject
         /// was successfully loaded.
         /// </summary>
-        public event FSEventHandlers.OnLoadedEventHandler OnLoaded
+        public event GraphFSEventHandlers.OnLoadedEventHandler OnLoaded
         {
 
             add
@@ -324,7 +173,7 @@ namespace sones.GraphFS.Session
         /// An event to be notified whenever a AFSObject
         /// is ready to be saved.
         /// </summary>
-        public event FSEventHandlers.OnSaveEventHandler OnSave
+        public event GraphFSEventHandlers.OnSaveEventHandler OnSave
         {
 
             add
@@ -353,7 +202,7 @@ namespace sones.GraphFS.Session
         /// An event to be notified whenever a AFSObject
         /// was successfully saved on disc.
         /// </summary>
-        public event FSEventHandlers.OnSavedEventHandler OnSaved
+        public event GraphFSEventHandlers.OnSavedEventHandler OnSaved
         {
 
             add
@@ -382,7 +231,7 @@ namespace sones.GraphFS.Session
         /// An event to be notified whenever a AFSObject
         /// is ready to be removed.
         /// </summary>
-        public event FSEventHandlers.OnRemoveEventHandler OnRemove
+        public event GraphFSEventHandlers.OnRemoveEventHandler OnRemove
         {
 
             add
@@ -411,7 +260,7 @@ namespace sones.GraphFS.Session
         /// An event to be notified whenever a AFSObject
         /// was successfully removed.
         /// </summary>
-        public event FSEventHandlers.OnRemovedEventHandler OnRemoved
+        public event GraphFSEventHandlers.OnRemovedEventHandler OnRemoved
         {
 
             add
@@ -433,17 +282,30 @@ namespace sones.GraphFS.Session
         }
 
         #endregion
-        
+
         #endregion
 
+        #region Constructor(s)
 
+        #region GraphFSSession(myPandoraFS, myUsername)
 
-        //event EventHandler PreDrawEvent;
+        /// <summary>
+        /// This will create a new PandoraFS session on an existing PandoraFS and will verify the given credentials
+        /// </summary>
+        /// <param name="myPandoraFS"></param>
+        /// <param name="myUsername"></param>
+        public GraphFSSession(IGraphFS myIPandoraFS, String myUsername)
+        {
 
-        
+            IGraphFS = myIPandoraFS;
+            var sessionInfo = new FSSessionInfo(myUsername);            
+            SessionToken    = new SessionToken(sessionInfo);
 
+        }
 
+        #endregion
 
+        #endregion
 
 
         #region Session specific Members
@@ -810,7 +672,7 @@ namespace sones.GraphFS.Session
 
         #region LockFSObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectLock, myObjectLockType, myLockingTime)
 
-        public Exceptional LockFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime)
+        public Exceptional LockFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime)
         {
             return IGraphFS.LockFSObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectLock, myObjectLockType, myLockingTime, SessionToken);
         }
@@ -832,7 +694,7 @@ namespace sones.GraphFS.Session
 
         #region GetOrCreateFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures)
 
-        public Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new()
+        public Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new()
         {
 
             var _AFSObject = IGraphFS.GetOrCreateFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, SessionToken);
@@ -851,7 +713,7 @@ namespace sones.GraphFS.Session
 
         #region GetOrCreateFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc, SessionToken)
 
-        public Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, Func<PT> myFunc, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject
+        public Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, Func<PT> myFunc, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject
         {
             var _AFSObject = IGraphFS.GetOrCreateFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc, SessionToken);
             if (_AFSObject != null && _AFSObject.Value != null)
@@ -876,7 +738,7 @@ namespace sones.GraphFS.Session
 
         #region GetFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures)
 
-        public Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new()
+        public Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new()
         {
             var _AFSObject = IGraphFS.GetFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, SessionToken);
             if (_AFSObject != null && _AFSObject.Value != null)
@@ -888,7 +750,7 @@ namespace sones.GraphFS.Session
 
         #region GetFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc, SessionToken)
 
-        public Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, Func<PT> myFunc, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject
+        public Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, Func<PT> myFunc, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject
         {
             var _AFSObject = IGraphFS.GetFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc, SessionToken);
             if (_AFSObject != null && _AFSObject.Value != null)
@@ -942,7 +804,7 @@ namespace sones.GraphFS.Session
 
         #region ObjectRevisionExists(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID)
 
-        public Exceptional<Trinary> ObjectRevisionExists(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null)
+        public Exceptional<Trinary> ObjectRevisionExists(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null)
         {
             return IGraphFS.ObjectRevisionExists(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, SessionToken);
         }
@@ -970,7 +832,7 @@ namespace sones.GraphFS.Session
 
         #region GetObjectRevisionIDs(myObjectLocation, myObjectStream, myObjectEdition)
 
-        public Exceptional<IEnumerable<RevisionID>> GetObjectRevisionIDs(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition)
+        public Exceptional<IEnumerable<ObjectRevisionID>> GetObjectRevisionIDs(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition)
         {
             return IGraphFS.GetObjectRevisionIDs(myObjectLocation, myObjectStream, myObjectEdition, SessionToken);
         }
@@ -989,7 +851,7 @@ namespace sones.GraphFS.Session
 
         #region RemoveFSObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID)
 
-        public Exceptional RemoveFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, RevisionID myObjectRevisionID = null)
+        public Exceptional RemoveFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null)
         {
 
             lock (this)
@@ -1027,7 +889,7 @@ namespace sones.GraphFS.Session
 
         #region EraseFSObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID)
 
-        public Exceptional EraseFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID)
+        public Exceptional EraseFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID)
         {
             return IGraphFS.EraseFSObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, SessionToken);
         }
@@ -1452,7 +1314,7 @@ namespace sones.GraphFS.Session
 
         #region GetFileObject(myObjectLocation, myRevisionID)
 
-        public Exceptional<FileObject> GetFileObject(ObjectLocation myObjectLocation, RevisionID myRevisionID)
+        public Exceptional<FileObject> GetFileObject(ObjectLocation myObjectLocation, ObjectRevisionID myRevisionID)
         {
             return IGraphFS.GetFSObject<FileObject>(myObjectLocation, FSConstants.FILESTREAM, FSConstants.DefaultEdition, myRevisionID, 0, false, SessionToken);
         }
@@ -1614,12 +1476,12 @@ namespace sones.GraphFS.Session
 
         #region Stream
 
-        public Exceptional<IGraphFSStream> OpenStream(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevision, UInt64 myObjectCopy)
+        public Exceptional<IGraphFSStream> OpenStream(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevision, UInt64 myObjectCopy)
         {
             return IGraphFS.OpenStream(SessionToken, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevision, myObjectCopy);
         }
 
-        public Exceptional<IGraphFSStream> OpenStream(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevision, UInt64 myObjectCopy,
+        public Exceptional<IGraphFSStream> OpenStream(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevision, UInt64 myObjectCopy,
                                            FileMode myFileMode, FileAccess myFileAccess, FileShare myFileShare, FileOptions myFileOptions, UInt64 myBufferSize)
         {
             return IGraphFS.OpenStream(SessionToken, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevision, myObjectCopy,

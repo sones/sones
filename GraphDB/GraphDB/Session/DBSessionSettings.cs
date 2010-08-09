@@ -32,6 +32,7 @@ using sones.GraphFS.Session;
 using sones.Lib.Session;
 using sones.GraphDB.Settings;
 using sones.GraphDB.TypeManagement;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
@@ -235,7 +236,7 @@ namespace sones.GraphDB.Session
         /// </summary>
         /// <param name="setting">The setting to be set</param>
         /// <returns>True for success</returns>
-        public bool SetDBSetting(ADBSettingsBase setting)
+        public Exceptional SetDBSetting(ADBSettingsBase setting)
         {
             lock (_SessionSettingsDB)
             {
@@ -249,7 +250,7 @@ namespace sones.GraphDB.Session
                 }    
             }
 
-            return true;
+            return Exceptional.OK;
         }
 
         /// <summary>
@@ -257,7 +258,7 @@ namespace sones.GraphDB.Session
         /// </summary>
         /// <param name="setting">The setting to be set</param>
         /// <returns>True for success</returns>
-        public bool SetSessionSetting(ADBSettingsBase setting)
+        public Exceptional SetSessionSetting(ADBSettingsBase setting)
         {
             lock (_SessionSettingsSession)
             {
@@ -270,8 +271,7 @@ namespace sones.GraphDB.Session
                     _SessionSettingsSession.Add(setting.Name, setting);
                 }
             }
-
-            return true;
+            return Exceptional.OK;
         }
 
         /// <summary>
@@ -280,7 +280,7 @@ namespace sones.GraphDB.Session
         /// <param name="setting">The setting to be set</param>
         /// <param name="typeUUID">The name of the type</param>
         /// <returns>True for success</returns>
-        public bool SetTypeSetting(ADBSettingsBase setting, TypeUUID typeUUID)
+        public Exceptional SetTypeSetting(ADBSettingsBase setting, TypeUUID typeUUID)
         {
             lock (_SessionSettingsType)
             {
@@ -302,7 +302,7 @@ namespace sones.GraphDB.Session
                 }    
             }
 
-            return true;
+            return Exceptional.OK;
         }
 
         /// <summary>
@@ -312,7 +312,7 @@ namespace sones.GraphDB.Session
         /// <param name="typeUUID">The name of the type</param>
         /// <param name="attributeName">The name of the attribute</param>
         /// <returns>True for success</returns>
-        public bool SetAttributeSetting(ADBSettingsBase setting, TypeUUID typeUUID, AttributeUUID attributeUUID)
+        public Exceptional SetAttributeSetting(ADBSettingsBase setting, TypeUUID typeUUID, AttributeUUID attributeUUID)
         {
             lock (_SessionSettingsTypeAttribute)
             {
@@ -343,7 +343,7 @@ namespace sones.GraphDB.Session
                 }
             }
 
-            return true;
+            return Exceptional.OK;
         }
 
         /// <summary>

@@ -464,13 +464,13 @@ namespace sones.GraphFS.Objects
         #region ObjectRevision
 
         [NonSerialized]
-        protected RevisionID _ObjectRevisionID = null;
+        protected ObjectRevisionID _ObjectRevisionID = null;
 
         /// <summary>
         /// The RevisionID of this file system object
         /// </summary>
         [NotIFastSerialized]
-        public RevisionID ObjectRevision
+        public ObjectRevisionID ObjectRevisionID
         {
 
             get
@@ -499,7 +499,7 @@ namespace sones.GraphFS.Objects
         /// Stores the mapping between a RevisionID and the associated ObjectRevision
         /// </summary>
         [NotIFastSerialized]
-        public IDictionary<RevisionID, ObjectRevision> ObjectRevisions
+        public IDictionary<ObjectRevisionID, ObjectRevision> ObjectRevisions
         {            
             get
             {
@@ -509,7 +509,7 @@ namespace sones.GraphFS.Objects
                         if (ObjectLocatorReference[_ObjectStream].ContainsKey(_ObjectEdition))
                             return ObjectLocatorReference[_ObjectStream][_ObjectEdition].ToDictionary(key => key.Key, value => value.Value);
 
-                return new Dictionary<RevisionID, ObjectRevision>();
+                return new Dictionary<ObjectRevisionID, ObjectRevision>();
 
             }
         }
@@ -626,7 +626,7 @@ namespace sones.GraphFS.Objects
         /// return the parent revision id's
         /// </summary>
         [NotIFastSerialized]
-        public HashSet<RevisionID> ParentRevisionIDs
+        public HashSet<ObjectRevisionID> ParentRevisionIDs
         {
             get
             {
@@ -774,7 +774,7 @@ namespace sones.GraphFS.Objects
             // Members of IFSObjectOntology
             _ObjectStream               = myAObjectOntology.ObjectStream;
             _ObjectEdition              = myAObjectOntology.ObjectEdition;
-            _ObjectRevisionID           = myAObjectOntology.ObjectRevision;
+            _ObjectRevisionID           = myAObjectOntology.ObjectRevisionID;
 
             _ObjectSize                 = myAObjectOntology.ObjectSize;
             _ObjectSizeOnDisc           = myAObjectOntology.ObjectSizeOnDisc;

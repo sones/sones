@@ -5,28 +5,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using sones.GraphDB.Errors;
-using sones.GraphDB.Exceptions;
-using sones.GraphDB.Query.Helpers;
-using sones.GraphDB.QueryLanguage.Enums;
-using sones.GraphDB.QueryLanguage.ExpressionGraph;
-using sones.GraphDB.QueryLanguage.NonTerminalClasses.Statements;
-using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
-using sones.GraphDB.QueryLanguage.Operators;
-using sones.GraphDB.QueryLanguage.Result;
-using sones.GraphDB.Settings;
+using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.Structures.ExpressionGraph;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.TypeManagement;
 using sones.Lib;
 using sones.Lib.DataStructures;
 using sones.Lib.ErrorHandling;
-using sones.Lib.Frameworks.Irony.Parsing;
-using System.Threading.Tasks;
-using sones.GraphDB.Managers.Structures;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Aggregates;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Statements.Select;
+using sones.GraphDB.Structures.Enums;
 
 namespace sones.GraphDB.Managers.Select
 {
@@ -35,12 +23,18 @@ namespace sones.GraphDB.Managers.Select
 
         #region ExecuteSelect
 
+        public QueryResult ExecuteSelect(DBContext myDBContext, SelectDefinition mySelectDefinition)
+        {
+            return ExecuteSelect(myDBContext, mySelectDefinition.SelectedElements, mySelectDefinition.TypeList, mySelectDefinition.WhereExpressionDefinition, mySelectDefinition.GroupByIDs,
+                mySelectDefinition.Having, mySelectDefinition.OrderByDefinition, mySelectDefinition.Limit, mySelectDefinition.Offset, mySelectDefinition.ResolutionDepth);
+        }
+
         /// <summary>
         /// Execute the current select and return a List of SelectionListElementResults
         /// </summary>
         /// <param name="myDBContext"></param>
         /// <param name="mySelectedElements">The selected elements and their optional alias as String</param>
-        /// <param name="myTypeList">The type and reference list. This is obligatory for the validation. </param>
+        /// <param name="myTypeList">The dictionary hold al reference and corresponding type definition (U,User or C,Car). </param>
         /// <param name="myWhereExpressionDefinition">An optional where expression.</param>
         /// <param name="myGroupBy">An optional group by.</param>
         /// <param name="myHaving">An optional having.</param>
@@ -49,7 +43,7 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="myOffset">An optional offset.</param>
         /// <param name="myResolutionDepth">The resolution depth. Either set to a positive value or an setting is used.</param>
         /// <returns></returns>
-        public Exceptional<List<SelectionResultSet>> ExecuteSelect(DBContext myDBContext, Dictionary<AExpressionDefinition, String> mySelectedElements, Dictionary<String,GraphDBType> myTypeList,
+        public QueryResult ExecuteSelect(DBContext myDBContext, Dictionary<AExpressionDefinition, String> mySelectedElements, List<TypeReferenceDefinition> myTypeList,
             BinaryExpressionDefinition myWhereExpressionDefinition = null, List<IDChainDefinition> myGroupBy = null, BinaryExpressionDefinition myHaving = null, 
             OrderByDefinition myOrderByDefinition = null, UInt64? myLimit = null, UInt64? myOffset = null, Int64 myResolutionDepth = -1)
         {
@@ -63,10 +57,25 @@ namespace sones.GraphDB.Managers.Select
 
             #endregion
 
-            var createSelectResultManagerResult = CreateResultManager(myDBContext, mySelectedElements, myTypeList, myGroupBy, myHaving);
+            #region Resolve types
+
+            var typeList = new Dictionary<String, GraphDBType>();
+            foreach (var type in myTypeList)
+            {
+                var t = myDBContext.DBTypeManager.GetTypeByName(type.TypeName);
+                if (t == null)
+                {
+                    return new QueryResult(new Error_TypeDoesNotExist(type.TypeName));
+                }
+                typeList.Add(type.Reference, t);
+            }
+
+            #endregion
+
+            var createSelectResultManagerResult = CreateResultManager(myDBContext, mySelectedElements, typeList, myGroupBy, myHaving);
             if (createSelectResultManagerResult.Failed)
             {
-                return new Exceptional<List<SelectionResultSet>>(createSelectResultManagerResult);
+                return new QueryResult(createSelectResultManagerResult);
             }
             var selectResultManager = createSelectResultManagerResult.Value;
 
@@ -78,7 +87,7 @@ namespace sones.GraphDB.Managers.Select
                 var tempExprGraph = GetExpressionGraphFromWhere(myDBContext, myWhereExpressionDefinition);
                 if (tempExprGraph.Failed)
                 {
-                    return new Exceptional<List<SelectionResultSet>>(tempExprGraph);
+                    return new QueryResult(tempExprGraph);
                 }
                 exprGraph = tempExprGraph.Value;
                 selectResultManager.ExpressionGraph = exprGraph;
@@ -95,7 +104,7 @@ namespace sones.GraphDB.Managers.Select
 
             #region  Go through each type end create the selectionListResults
             /// For multitype selections we need to create seperate selectionListResults
-            foreach (var typeRef in myTypeList)
+            foreach (var typeRef in typeList)
             {
 
                 IEnumerable<DBObjectReadout> dbObjectReadouts = new List<DBObjectReadout>();
@@ -104,7 +113,7 @@ namespace sones.GraphDB.Managers.Select
 
                 var initGroupingOrAggregateResult = selectResultManager.InitGroupingOrAggregate(typeRef.Key, typeRef.Value);
                 if (initGroupingOrAggregateResult.Failed)
-                    return new Exceptional<List<SelectionResultSet>>(initGroupingOrAggregateResult.Errors);
+                    return new QueryResult(initGroupingOrAggregateResult.Errors);
 
                 #endregion
 
@@ -117,14 +126,16 @@ namespace sones.GraphDB.Managers.Select
                 #region Create an IEnumerable of Readouts for this typeNode
 
                 var result = selectResultManager.Examine(myResolutionDepth, typeRef.Key, typeRef.Value, isInterestingWhere, myDBContext.DBObjectCache, myDBContext.SessionSettings, ref dbObjectReadouts);
+
                 if (result.Failed)
-                    return new Exceptional<List<SelectionResultSet>>(result);
+                    return new QueryResult(result);
 
                 #endregion
 
                 #region If this type did not returned any result, we wont add it to the result
 
                 Boolean isValidTypeForSelect = result.Value;
+
                 if (!isValidTypeForSelect)
                     continue;
 
@@ -143,6 +154,31 @@ namespace sones.GraphDB.Managers.Select
                 if (myOrderByDefinition != null)
                 {
 
+                    foreach (var attrDef in myOrderByDefinition.OrderByAttributeList)
+                    {
+                        if (attrDef.IDChainDefinition != null)
+                        {
+                            var validateResult = attrDef.IDChainDefinition.Validate(myDBContext, true);
+                            if (validateResult.Failed)
+                            {
+                                return new QueryResult(validateResult);
+                            }
+
+                            if (String.IsNullOrEmpty(attrDef.AsOrderByString))
+                            {
+
+                                if (attrDef.IDChainDefinition.IsUndefinedAttribute)
+                                {
+                                    attrDef.AsOrderByString = attrDef.IDChainDefinition.UndefinedAttribute;
+                                }
+                                else
+                                {
+                                    attrDef.AsOrderByString = attrDef.IDChainDefinition.LastAttribute.Name;
+                                }
+                            }
+                        }
+                    }
+
                     #region ORDER BY
 
                     var toSort = dbObjectReadouts.ToList();
@@ -151,6 +187,8 @@ namespace sones.GraphDB.Managers.Select
                         Int32 retVal = 0;
                         foreach (var attrDef in myOrderByDefinition.OrderByAttributeList)
                         {
+
+
                             if (dbo1.Attributes.ContainsKey(attrDef.AsOrderByString) && dbo2.Attributes.ContainsKey(attrDef.AsOrderByString))
                             {
                                 retVal = ((IComparable)dbo1.Attributes[attrDef.AsOrderByString]).CompareTo(dbo2.Attributes[attrDef.AsOrderByString]);
@@ -230,7 +268,7 @@ namespace sones.GraphDB.Managers.Select
 
             #endregion
 
-            return new Exceptional<List<SelectionResultSet>>(selectionListResults);
+            return new QueryResult(selectionListResults);
 
         }
 
@@ -251,28 +289,29 @@ namespace sones.GraphDB.Managers.Select
 
                     #region IDChainDefinition
 
-                    IDChainDefinition idChainSelection = (IDChainDefinition)selection.Key;
-                    
-                    Exceptional validateResult = idChainSelection.Validate(dbContext, false);
-                    exceptional.Push(validateResult);
+                    var idChainSelection = (selection.Key as IDChainDefinition);
 
+                    Exceptional validateException = idChainSelection.Validate(dbContext, false);
+
+                    exceptional.Push(validateException);
                     if (exceptional.Failed)
                     {
                         return new Exceptional<SelectResultManager>(exceptional);
                     }
 
-                    if (idChainSelection.IsAsterisk)
+                    if (idChainSelection.SelectType != TypesOfSelect.None)
                     {
 
-                        #region Asterisk
+                        #region Asterisk, Minus, Rhomb
 
                         //there's no limitation
                         foreach (var typeRef in _TypeList)
                         {
-                            _SelectResultManager.AddAsteriskToSelection(typeRef.Key, typeRef.Value);
+                            _SelectResultManager.AddSelectionType(typeRef.Key, typeRef.Value, idChainSelection.SelectType);
                         }
 
                         #endregion
+
                         continue;
                     }
 
@@ -309,9 +348,9 @@ namespace sones.GraphDB.Managers.Select
                         {
                             exceptional.Push(_SelectResultManager.AddElementToSelection(selection.Value, reference, idChainSelection, false));
                         }
-                        else if (idChainSelection.IsAsterisk)
+                        else if (idChainSelection.SelectType != TypesOfSelect.None)
                         {
-                            exceptional.Push(_SelectResultManager.AddAsteriskToSelection(reference, theType));
+                            exceptional.Push(_SelectResultManager.AddSelectionType(reference, theType, idChainSelection.SelectType));
                         }
                         else
                         {

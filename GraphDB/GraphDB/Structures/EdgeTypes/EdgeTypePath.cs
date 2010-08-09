@@ -30,14 +30,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures;
+
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
+using sones.GraphDB.Managers.Structures;
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
@@ -74,7 +75,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public override EdgeTypeUUID EdgeTypeUUID { get { return new EdgeTypeUUID("1002"); } }
 
-        public override void ApplyParams(params EdgeTypeParamNode[] myParams)
+        public override void ApplyParams(params EdgeTypeParamDefinition[] myParams)
         {
             throw new NotImplementedException();
         }
@@ -84,7 +85,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             throw new NotImplementedException();
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable, TypeUUID typeUUID)
+        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
         {
             throw new NotImplementedException();
         }
@@ -96,7 +97,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public override String GetGDDL(GraphDBType myGraphDBType)
         {
-            return String.Concat(EdgeTypeName.ToUpper(), GraphQL.TERMINAL_LT, myGraphDBType.Name, GraphQL.TERMINAL_GT);
+            return String.Concat(EdgeTypeName.ToUpper(), "<", myGraphDBType.Name, ">");
         }
 
         public override String GetDescribeOutput(GraphDBType myGraphDBType)
@@ -300,9 +301,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
             throw new NotImplementedException();
         }
 
-        public override TypeUUID GetTypeUUIDOfReferences()
+        public override IEnumerable<Reference> GetAllReferences()
         {
-            return _typeOfObjects.UUID;
+            throw new NotImplementedException();
         }
     }
 }

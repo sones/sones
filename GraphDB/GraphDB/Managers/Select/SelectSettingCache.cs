@@ -34,14 +34,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.Settings;
 using sones.GraphDB.TypeManagement;
 
 using sones.GraphFS.Session;
 using sones.Lib.Session;
 using sones.Lib.DataStructures.UUID;
-using sones.GraphDB.QueryLanguage.Enums;
+using sones.GraphDB.Structures.Enums;
 #endregion
 
 namespace sones.GraphDB.Managers.Select

@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 using sones.Lib.CLI;
 
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphFS.Connectors.GraphDSCLI;
 
 #endregion

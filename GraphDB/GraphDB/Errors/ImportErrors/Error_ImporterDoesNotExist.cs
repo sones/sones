@@ -5,18 +5,18 @@ using System.Text;
 
 namespace sones.GraphDB.Errors
 {
-    public class Error_ImporterDoesNotExist : GraphDBError
+    public class Error_ExporterDoesNotExist : GraphDBError
     {
-        public String ImportFormat { get; private set; }
+        public String ExportFormat { get; private set; }
 
-        public Error_ImporterDoesNotExist(String myImportFormat)
+        public Error_ExporterDoesNotExist(String myExportFormat)
         {
-            ImportFormat = myImportFormat;
+            ExportFormat = myExportFormat;
         }
 
         public override string ToString()
         {
-            return ImportFormat;
+            return ExportFormat;
         }
     }
 }

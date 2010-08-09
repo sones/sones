@@ -73,12 +73,12 @@ namespace sones
 
         #region Events
 
-        event FSEventHandlers.OnLoadEventHandler    OnLoad;
-        event FSEventHandlers.OnLoadedEventHandler  OnLoaded;
-        event FSEventHandlers.OnSaveEventHandler    OnSave;
-        event FSEventHandlers.OnSavedEventHandler   OnSaved;
-        event FSEventHandlers.OnRemoveEventHandler  OnRemove;
-        event FSEventHandlers.OnRemovedEventHandler OnRemoved;
+        event GraphFSEventHandlers.OnLoadEventHandler    OnLoad;
+        event GraphFSEventHandlers.OnLoadedEventHandler  OnLoaded;
+        event GraphFSEventHandlers.OnSaveEventHandler    OnSave;
+        event GraphFSEventHandlers.OnSavedEventHandler   OnSaved;
+        event GraphFSEventHandlers.OnRemoveEventHandler  OnRemove;
+        event GraphFSEventHandlers.OnRemovedEventHandler OnRemoved;
 
         #endregion
 
@@ -371,27 +371,27 @@ namespace sones
 
         #region GraphObject specific methods
 
-        Exceptional LockFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime, SessionToken mySessionToken);
+        Exceptional LockFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime, SessionToken mySessionToken);
 
-        Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new();
-        Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken) where PT : AFSObject;
-        Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new();
-        Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken) where PT : AFSObject;
+        Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new();
+        Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken) where PT : AFSObject;
+        Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new();
+        Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken) where PT : AFSObject;
 
         Exceptional StoreFSObject(ObjectLocation myObjectLocation, AFSObject myAPandoraObject, Boolean myAllowOverwritting, SessionToken mySessionToken);
 
         Exceptional<Trinary> ObjectExists         (ObjectLocation myObjectLocation, SessionToken mySessionToken);
         Exceptional<Trinary> ObjectStreamExists   (ObjectLocation myObjectLocation, String myObjectStream, SessionToken mySessionToken);
         Exceptional<Trinary> ObjectEditionExists  (ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, SessionToken mySessionToken);
-        Exceptional<Trinary> ObjectRevisionExists (ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, SessionToken mySessionToken);
+        Exceptional<Trinary> ObjectRevisionExists (ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, SessionToken mySessionToken);
 
         Exceptional<IEnumerable<String>>     GetObjectStreams     (ObjectLocation myObjectLocation, SessionToken mySessionToken);
         Exceptional<IEnumerable<String>>     GetObjectEditions    (ObjectLocation myObjectLocation, String myObjectStream, SessionToken mySessionToken);
-        Exceptional<IEnumerable<RevisionID>> GetObjectRevisionIDs (ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, SessionToken mySessionToken);
+        Exceptional<IEnumerable<ObjectRevisionID>> GetObjectRevisionIDs (ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, SessionToken mySessionToken);
 
         Exceptional RenameObject(ObjectLocation myObjectLocation, String myNewObjectName, SessionToken mySessionToken);
-        Exceptional RemoveFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, SessionToken mySessionToken);
-        Exceptional EraseFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, SessionToken mySessionToken);
+        Exceptional RemoveFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, SessionToken mySessionToken);
+        Exceptional EraseFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, SessionToken mySessionToken);
 
         #endregion
 
@@ -899,9 +899,9 @@ namespace sones
 
         #region Stream
 
-        Exceptional<IGraphFSStream> OpenStream(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevision, UInt64 myObjectCopy);
+        Exceptional<IGraphFSStream> OpenStream(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevision, UInt64 myObjectCopy);
 
-        Exceptional<IGraphFSStream> OpenStream(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevision, UInt64 myObjectCopy,
+        Exceptional<IGraphFSStream> OpenStream(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevision, UInt64 myObjectCopy,
                                     FileMode myFileMode, FileAccess myFileAccess, FileShare myFileShare, FileOptions myFileOptions, UInt64 myBufferSize);
 
         #endregion

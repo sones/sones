@@ -79,7 +79,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
             _CancelCommand = false;
             //var _IGraphFS2Session = myIGraphFS2Session as IGraphFSSession;
-            var _IPandoraDBSession = myIPandoraDBSession as IGraphDBSession;
+            var _IPandoraDBSession = myIPandoraDBSession as GraphDBSession;
 
             if (_IPandoraDBSession == null)
             {
@@ -89,70 +89,73 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
             var typeInterestedIn = myOptions.ElementAt(1).Value[0].Option;
 
-
-            var _ActualType = _IPandoraDBSession.GetDBContext().DBTypeManager.GetTypeByName(typeInterestedIn);
-
-            while (_ActualType != null)
+            using (var transaction = _IPandoraDBSession.BeginTransaction())
             {
 
-                if (_ActualType.UUID.ToString().Length > 4)
-                    WriteLine("(by " + _ActualType.Name + " [UUID: " + _ActualType.UUID.ToString().Substring(0, 4) + "..])");
-                else
-                    WriteLine("(by " + _ActualType.Name + " [UUID: " + _ActualType.UUID.ToString() + "])");
+                var _ActualType = transaction.GetDBContext().DBTypeManager.GetTypeByName(typeInterestedIn);
 
-                if (!_ActualType.Attributes.Count.Equals(0))
+                while (_ActualType != null)
                 {
-                    var maxLengthName = _ActualType.Attributes.Values.Max(a => a.Name.Length);
-                    foreach (var _TypeAttribute in _ActualType.Attributes.Values)
+
+                    if (_ActualType.UUID.ToString().Length > 4)
+                        WriteLine("(by " + _ActualType.Name + " [UUID: " + _ActualType.UUID.ToString().Substring(0, 4) + "..])");
+                    else
+                        WriteLine("(by " + _ActualType.Name + " [UUID: " + _ActualType.UUID.ToString() + "])");
+
+                    if (!_ActualType.Attributes.Count.Equals(0))
                     {
-                        StringBuilder sb = new StringBuilder();
-
-                        sb.Append(_TypeAttribute.Name.PadRight(maxLengthName + 3));
-                        sb.Append("");
-
-                        if (_TypeAttribute.TypeCharacteristics.IsBackwardEdge)
+                        var maxLengthName = _ActualType.Attributes.Values.Max(a => a.Name.Length);
+                        foreach (var _TypeAttribute in _ActualType.Attributes.Values)
                         {
-                            sb.Append("BACKWARDEDGE<");
-                            var beTypeAttr = _IPandoraDBSession.GetDBContext().DBTypeManager.GetTypeAttributeByEdge(_TypeAttribute.BackwardEdgeDefinition);
-                            sb.Append(beTypeAttr.GetRelatedType(_IPandoraDBSession.GetDBContext().DBTypeManager).Name + "." + beTypeAttr.Name);
-                            sb.Append(">");
-                        }
-                        else
-                        {
+                            StringBuilder sb = new StringBuilder();
 
-                            if (_TypeAttribute.KindOfType == KindsOfType.ListOfNoneReferences)
-                                sb.Append("LIST<");
+                            sb.Append(_TypeAttribute.Name.PadRight(maxLengthName + 3));
+                            sb.Append("");
 
-                            if (_TypeAttribute.KindOfType == KindsOfType.SetOfReferences || _TypeAttribute.KindOfType == KindsOfType.SetOfNoneReferences)
-                                sb.Append("SET<");
-
-                            sb.Append(_IPandoraDBSession.GetDBContext().DBTypeManager.GetTypeByUUID(_TypeAttribute.DBTypeUUID).Name);
-
-                            if (_TypeAttribute.KindOfType == KindsOfType.ListOfNoneReferences || _TypeAttribute.KindOfType == KindsOfType.SetOfNoneReferences || _TypeAttribute.KindOfType == KindsOfType.SetOfReferences)
+                            if (_TypeAttribute.TypeCharacteristics.IsBackwardEdge)
+                            {
+                                sb.Append("BACKWARDEDGE<");
+                                var beTypeAttr = transaction.GetDBContext().DBTypeManager.GetTypeAttributeByEdge(_TypeAttribute.BackwardEdgeDefinition);
+                                sb.Append(beTypeAttr.GetRelatedType(transaction.GetDBContext().DBTypeManager).Name + "." + beTypeAttr.Name);
                                 sb.Append(">");
+                            }
+                            else
+                            {
+
+                                if (_TypeAttribute.KindOfType == KindsOfType.ListOfNoneReferences)
+                                    sb.Append("LIST<");
+
+                                if (_TypeAttribute.KindOfType == KindsOfType.SetOfReferences || _TypeAttribute.KindOfType == KindsOfType.SetOfNoneReferences)
+                                    sb.Append("SET<");
+
+                                sb.Append(transaction.GetDBContext().DBTypeManager.GetTypeByUUID(_TypeAttribute.DBTypeUUID).Name);
+
+                                if (_TypeAttribute.KindOfType == KindsOfType.ListOfNoneReferences || _TypeAttribute.KindOfType == KindsOfType.SetOfNoneReferences || _TypeAttribute.KindOfType == KindsOfType.SetOfReferences)
+                                    sb.Append(">");
+                            }
+
+                            sb.Append(" ");
+                            sb.Append(_TypeAttribute.TypeCharacteristics.ToString());
+
+                            sb.Append(" [UUID: ");
+                            sb.Append(_TypeAttribute.UUID.ToString().Substring(0, 4));
+                            sb.Append("..]");
+
+                            WriteLine(sb.ToString());
                         }
-
-                        sb.Append(" ");
-                        sb.Append(_TypeAttribute.TypeCharacteristics.ToString());
-
-                        sb.Append(" [UUID: ");
-                        sb.Append(_TypeAttribute.UUID.ToString().Substring(0, 4));
-                        sb.Append("..]");
-
-                        WriteLine(sb.ToString());
                     }
+
+                    else
+                        WriteLine("No myAttributes for this type.");
+
+                    WriteLine(Environment.NewLine);
+
+                    if (_ActualType.ParentTypeUUID == null)
+                        break;
+
+                    _ActualType = transaction.GetDBContext().DBTypeManager.GetTypeByUUID(_ActualType.ParentTypeUUID);
+
                 }
-
-                else
-                    WriteLine("No myAttributes for this type.");
-
-                WriteLine(Environment.NewLine);
-
-                if (_ActualType.ParentTypeUUID == null)
-                    break;
-
-                _ActualType = _IPandoraDBSession.GetDBContext().DBTypeManager.GetTypeByUUID(_ActualType.ParentTypeUUID);
-
             }
 
         }

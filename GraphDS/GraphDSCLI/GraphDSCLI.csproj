@@ -90,6 +90,10 @@
       <Project>{32A56958-2C05-44C6-B661-2A2C6610E073}</Project>
       <Name>GraphDB</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\GraphDB\GraphQL\GraphQL.csproj">
+      <Project>{B7A88819-4276-495A-A7E9-E6947C936397}</Project>
+      <Name>GraphQL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\GraphFS\GraphFSCLI\GraphFSCLI.csproj">
       <Project>{89669EC0-286E-4ABC-980D-D991A3407666}</Project>
       <Name>GraphFSCLI</Name>

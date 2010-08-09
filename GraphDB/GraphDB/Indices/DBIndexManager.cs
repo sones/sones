@@ -35,10 +35,10 @@ using System.Text;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Errors;
 using sones.GraphFS.Exceptions;
@@ -402,7 +402,7 @@ namespace sones.GraphDB.Indices
 
         #region Create Index
 
-        internal Exceptional<SelectionResultSet> CreateIndex(DBContext myDBContext, string myDBType, string myIndexName, string myIndexEdition, string myIndexType, List<IndexAttributeDefinition> myAttributeList)
+        public Exceptional<SelectionResultSet> CreateIndex(DBContext myDBContext, string myDBType, string myIndexName, string myIndexEdition, string myIndexType, List<IndexAttributeDefinition> myAttributeList)
         {
 
             SelectionResultSet resultOutput = null;
@@ -419,19 +419,33 @@ namespace sones.GraphDB.Indices
             foreach (var createIndexAttributeNode in myAttributeList)
             {
 
-                var validAttrExcept = myDBContext.DBTypeManager.AreValidAttributes(dbObjectType, createIndexAttributeNode.IndexAttribute);
+                var validateResult = createIndexAttributeNode.IndexAttribute.Validate(myDBContext, false, dbObjectType);
+                if (validateResult.Failed)
+                {
+                    return new Exceptional<SelectionResultSet>(validateResult);
+                }
+                var attrName = createIndexAttributeNode.IndexAttribute.LastAttribute.Name;
+
+                var validAttrExcept = myDBContext.DBTypeManager.AreValidAttributes(dbObjectType, attrName);
 
                 if (validAttrExcept.Failed)
                     throw new GraphDBException(validAttrExcept.Errors);
 
                 if (!validAttrExcept.Value)
-                    throw new GraphDBException(new Error_AttributeIsNotDefined(dbObjectType.Name, createIndexAttributeNode.IndexAttribute));
+                    throw new GraphDBException(new Error_AttributeIsNotDefined(dbObjectType.Name, attrName));
 
-                indexAttributes.Add(dbObjectType.GetTypeAttributeByName(createIndexAttributeNode.IndexAttribute).UUID);
+                indexAttributes.Add(createIndexAttributeNode.IndexAttribute.LastAttribute.UUID);
 
             }
 
             #endregion
+
+
+            if (String.IsNullOrEmpty(myIndexName))
+            {
+                myIndexName = myAttributeList.Aggregate(new StringBuilder(DBConstants.IndexKeyPrefix), (result, elem) => { result.Append(String.Concat(DBConstants.IndexKeySeperator, elem.IndexAttribute.LastAttribute.Name)); return result; }).ToString();
+            }
+
 
             #region checking for reference attributes
 
@@ -453,7 +467,7 @@ namespace sones.GraphDB.Indices
 
                 #region Create the index
 
-                var createdIDx = item.CreateAttributeIndex(myIndexName, indexAttributes, myIndexEdition, myIndexType);
+                var createdIDx = item.CreateAttributeIndex(myDBContext, myIndexName, indexAttributes, myIndexEdition, myIndexType);
                 if (createdIDx.Failed)
                 {
                     return new Exceptional<SelectionResultSet>(createdIDx);

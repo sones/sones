@@ -206,7 +206,7 @@ namespace sones.GraphFS.DataStructures
 
             _ObjectCopy.Set(myListOfObjectStreams);
             //HACK: ParentRevisions set to 0!
-            var tmpID = new RevisionID((UInt64) myINode.ModificationTime.Ticks, myForestUUID);
+            var tmpID = new ObjectRevisionID((UInt64) myINode.ModificationTime.Ticks, myForestUUID);
             _ObjectRevision.Add(tmpID , _ObjectCopy);
 
             var _ObjectEdition   = new ObjectStream(myObjectStream, myObjectEdition, _ObjectRevision);
@@ -260,7 +260,7 @@ namespace sones.GraphFS.DataStructures
 
             _ObjectCopy.Set(myListOfObjectStreams);
             //HACK: ParentRevisions set to 0!
-            var tmpID = new RevisionID((UInt64) myINode.ModificationTime.Ticks, myForestUUID);
+            var tmpID = new ObjectRevisionID((UInt64) myINode.ModificationTime.Ticks, myForestUUID);
             _ObjectRevision.Add(tmpID , _ObjectCopy);
 
             var _ObjectEdition   = new ObjectStream(myObjectStream, myObjectEdition, _ObjectRevision);
@@ -501,19 +501,19 @@ namespace sones.GraphFS.DataStructures
                         {
 
                             // Read actual ObjectRevisionTime
-                            var _RevisionID = new RevisionID(
+                            var _RevisionID = new ObjectRevisionID(
                                                 mySerializationReader.ReadUInt64(),
                                                 new UUID(mySerializationReader.ReadByteArray())
                                               );
 
                             #region Parent revisions
 
-                            var parents = new HashSet<RevisionID>();
+                            var parents = new HashSet<ObjectRevisionID>();
                             var numberOfParentRevisions = mySerializationReader.ReadUInt32();
 
                             for(var i=0; i<numberOfParentRevisions; i++)
                             {
-                                var r = new RevisionID(mySerializationReader.ReadUInt64(), new UUID(mySerializationReader.ReadByteArray()));
+                                var r = new ObjectRevisionID(mySerializationReader.ReadUInt64(), new UUID(mySerializationReader.ReadByteArray()));
                                 parents.Add(r);
                             }
 

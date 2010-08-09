@@ -23,7 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.Indices;
 
 namespace sones.GraphDB.Errors

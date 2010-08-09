@@ -23,7 +23,7 @@
 using System;
 using System.Collections.Generic;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.GraphDB.TypeManagement;
 using sones.Lib.ErrorHandling;
@@ -40,6 +40,12 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// </summary>
         /// <returns></returns>
         IEnumerable<ObjectUUID> GetAllReferenceIDs();
+
+        /// <summary>
+        /// Get all references
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<Reference> GetAllReferences();
 
         /// <summary>
         /// Get all uuids and their edge infos
@@ -72,11 +78,5 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// <param name="myObjectUUIDs">the object uuid's of the objects, that should remove</param>
         /// <returns></returns>
         Boolean RemoveUUID(IEnumerable<ObjectUUID> myObjectUUIDs);
-
-        /// <summary>
-        /// Returns the typeUUID of the objects within the reference edge
-        /// </summary>
-        /// <returns></returns>
-        TypeUUID GetTypeUUIDOfReferences();
     }
 }

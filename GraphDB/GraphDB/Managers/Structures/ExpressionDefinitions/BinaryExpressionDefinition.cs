@@ -9,19 +9,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
-using sones.GraphDB.QueryLanguage.Operators;
+
+using sones.GraphDB.Structures.Operators;
 using sones.Lib.ErrorHandling;
-using sones.GraphDB.QueryLanguage.Enums;
+using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.PandoraTypes;
-using sones.GraphDB.QueryLanguage.ExpressionGraph;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphDB.Structures.ExpressionGraph;
 using System.Threading.Tasks;
 using sones.Lib;
+using sones.GraphDB.Managers.Select;
 
 #endregion
 
@@ -122,7 +123,12 @@ namespace sones.GraphDB.Managers.Structures
                 }
                 else
                 {
-                    _Left = AssignCorrectTuple((_Left as TupleDefinition), Operator, myDBContext);
+                    var correctTuple = AssignCorrectTuple((_Left as TupleDefinition), Operator, myDBContext);
+                    if (correctTuple.Failed)
+                    {
+                        return new Exceptional(correctTuple);
+                    }
+                    _Left = correctTuple.Value;
                     TypeOfBinaryExpression = TypesOfBinaryExpression.RightComplex;
                 }
 
@@ -214,7 +220,12 @@ namespace sones.GraphDB.Managers.Structures
                 }
                 else
                 {
-                    _Right = AssignCorrectTuple((_Right as TupleDefinition), Operator, myDBContext);
+                    var correctTuple = AssignCorrectTuple((_Right as TupleDefinition), Operator, myDBContext);
+                    if (correctTuple.Failed)
+                    {
+                        return new Exceptional(correctTuple);
+                    }
+                    _Right = correctTuple.Value;
                     if (TypeOfBinaryExpression == TypesOfBinaryExpression.RightComplex)
                     {
                         TypeOfBinaryExpression = TypesOfBinaryExpression.Atom;
@@ -469,15 +480,80 @@ namespace sones.GraphDB.Managers.Structures
         }
 
         /// <summary>
-        /// 
+        /// This will check all tupe value. If it contains only one value it will be converted to a ValueDefinition. If it contains a SelectDefinition it will be executed and the result added to the tuple.
         /// </summary>
         /// <param name="myTupleDefinition"></param>
         /// <param name="myOperator"></param>
         /// <param name="myDBContext"></param>
         /// <returns></returns>
-        private AOperationDefinition AssignCorrectTuple(TupleDefinition myTupleDefinition, ABinaryOperator myOperator, DBContext myDBContext)
+        private Exceptional<AOperationDefinition> AssignCorrectTuple(TupleDefinition myTupleDefinition, ABinaryOperator myOperator, DBContext myDBContext)
         {
-            return myOperator.GetValidTupleReloaded(myTupleDefinition, myDBContext);
+            var retVal = new TupleDefinition(myTupleDefinition.KindOfTuple);
+            var validTuple = myOperator.GetValidTupleReloaded(myTupleDefinition, myDBContext);
+
+            if (validTuple is TupleDefinition)
+            {
+                foreach (var tupleVal in (validTuple as TupleDefinition))
+                {
+                    if (tupleVal.Value is ValueDefinition)
+                    {
+                        retVal.AddElement(tupleVal);
+                    }
+                    else if (tupleVal.Value is SelectDefinition)
+                    {
+
+                        #region partial select
+
+                        var selectManager = new SelectManager();
+                        var qresult = selectManager.ExecuteSelect(myDBContext, (tupleVal.Value as SelectDefinition));
+                        if (qresult.Failed)
+                        {
+                            return new Exceptional<AOperationDefinition>(qresult.Errors);
+                        }
+
+                        foreach (SelectionResultSet aSelResult in qresult.Results)
+                        {
+                            //Hack:
+                            int lowestSelectedLevel = (from aSelectionForReference in aSelResult.SelectedAttributes select aSelectionForReference.Key).Min();
+
+                            String attrName = aSelResult.SelectedAttributes[lowestSelectedLevel].First().Value;
+                            TypeAttribute curAttr = aSelResult.Type.GetTypeAttributeByName(attrName);
+
+                            var dbTypeOfAttribute = curAttr.GetDBType(myDBContext.DBTypeManager);
+
+                            var aTypeOfOperatorResult = GraphDBTypeMapper.ConvertPandora2CSharp(dbTypeOfAttribute.Name);
+
+                            foreach (DBObjectReadout dbo in aSelResult.Objects)
+                            {
+                                if (!(dbo.Attributes.ContainsKey(attrName)))
+                                    continue;
+
+                                if (curAttr != null)
+                                {
+                                    var val = new ValueDefinition(aTypeOfOperatorResult, dbo.Attributes[attrName]);
+                                    retVal.AddElement(new TupleElement(aTypeOfOperatorResult, val));
+                                }
+                                else
+                                {
+                                    return new Exceptional<AOperationDefinition>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                                }
+                            }
+                        }
+
+                        #endregion
+                    }
+                    else
+                    {
+                        return new Exceptional<AOperationDefinition>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                    }
+                }
+            }
+            else
+            {
+                return new Exceptional<AOperationDefinition>(validTuple);
+            }
+
+            return new Exceptional<AOperationDefinition>(retVal);
         }
 
         /// <summary>

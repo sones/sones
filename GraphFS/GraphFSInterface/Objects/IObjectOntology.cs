@@ -56,8 +56,8 @@ namespace sones.GraphFS.Objects
         UInt64                                  MinNumberOfRevisions    { get; set; }
         UInt64                                  NumberOfRevisions       { get; }
         UInt64                                  MaxNumberOfRevisions    { get; set; }
-        IDictionary<RevisionID, ObjectRevision> ObjectRevisions         { get; }
-        RevisionID                              ObjectRevision          { get; set; }
+        IDictionary<ObjectRevisionID, ObjectRevision> ObjectRevisions         { get; }
+        ObjectRevisionID                              ObjectRevisionID          { get; set; }
 
         // ObjectCopies
         UInt64                                  MinNumberOfCopies       { get; set; }

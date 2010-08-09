@@ -350,7 +350,7 @@ namespace sones
             _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM] = new ObjectStream();
             _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM].Add(FSConstants.DefaultEdition, null);
             _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition] = new ObjectEdition();
-            _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition].Add(new RevisionID(FileSystemUUID), null);
+            _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition].Add(new ObjectRevisionID(FileSystemUUID), null);
             _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition][_RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition].LatestRevisionID] = new ObjectRevision(FSConstants.DIRECTORYSTREAM);
             
             var _CacheUUID = _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition].LatestRevision.CacheUUID;
@@ -540,7 +540,7 @@ namespace sones
 
         //#endregion
 
-        protected override Exceptional<AFSObject> LoadAFSObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, AFSObject myAFSObject)
+        protected override Exceptional<AFSObject> LoadAFSObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, AFSObject myAFSObject)
         {
             return new Exceptional<AFSObject>();
         }
@@ -560,7 +560,7 @@ namespace sones
                 #region Write on TmpDisc!
 
                 _TmpFSLookuptable.Set(myObjectLocation, myAFSObject.ObjectLocatorReference);
-                _TmpFSLookuptable.Set(_ObjectEdition1[myAFSObject.ObjectRevision].CacheUUID, myAFSObject);
+                _TmpFSLookuptable.Set(_ObjectEdition1[myAFSObject.ObjectRevisionID].CacheUUID, myAFSObject);
 
                 #endregion
 
@@ -611,7 +611,7 @@ namespace sones
                             var _OldMinNumberOfCopies   = _OldRevision.MinNumberOfCopies;
                             var _OldMaxNumberOfCopies   = _OldRevision.MaxNumberOfCopies;
 
-                            _ParentDirectoryObject.Value.ObjectRevision = new RevisionID(_ForestUUID);
+                            _ParentDirectoryObject.Value.ObjectRevisionID = new ObjectRevisionID(_ForestUUID);
 
                             var _NewRevision = new ObjectRevision(_ParentDirectoryObject.Value.ObjectStream)
                                                             {
@@ -621,7 +621,7 @@ namespace sones
 
                             _NewRevision.CacheUUID = _OldRevision.CacheUUID;
 
-                            _ObjectEdition.Add(_ParentDirectoryObject.Value.ObjectRevision, _NewRevision);
+                            _ObjectEdition.Add(_ParentDirectoryObject.Value.ObjectRevisionID, _NewRevision);
 
                             #endregion
 
@@ -663,14 +663,14 @@ namespace sones
 
         #endregion
 
-        protected override Exceptional RemoveAFSObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID)
+        protected override Exceptional RemoveAFSObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID)
         {
             return Exceptional.OK;
         }
 
         #region EraseObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, mySessionToken)
 
-        public Exceptional EraseFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, SessionToken mySessionToken)
+        public Exceptional EraseFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, SessionToken mySessionToken)
         {
             throw new NotImplementedException();
         }
@@ -697,7 +697,7 @@ namespace sones
 
         #region OpenStream(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevision, myObjectCopy)
 
-        public IGraphFSStream OpenStream(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevision, UInt64 myObjectCopy)
+        public IGraphFSStream OpenStream(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevision, UInt64 myObjectCopy)
         {
             return null;
         }
@@ -706,7 +706,7 @@ namespace sones
 
         #region OpenStream(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevision, myObjectCopy, myFileMode, myFileAccess, myFileShare, myFileOptions, myBufferSize)
 
-        public IGraphFSStream OpenStream(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevision, UInt64 myObjectCopy,
+        public IGraphFSStream OpenStream(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevision, UInt64 myObjectCopy,
                                          FileMode myFileMode, FileAccess myFileAccess, FileShare myFileShare, FileOptions myFileOptions, UInt64 myBufferSize)
         {
             throw new NotImplementedException();

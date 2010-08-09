@@ -25,7 +25,7 @@ using System.Text;
 
 namespace sones.GraphDB.Errors
 {
-    class Error_FunctionParameterTypeMismatch : GraphDBFunctionError
+    public class Error_FunctionParameterTypeMismatch : GraphDBFunctionError
     {
         public Type ExpectedType { get; private set; }
         public Type CurrentType { get; private set; }

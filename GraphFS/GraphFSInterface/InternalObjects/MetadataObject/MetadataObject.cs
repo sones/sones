@@ -147,7 +147,7 @@ namespace sones.GraphFS.InternalObjects
         /// <param name="myObjectStream">the ObjectStream</param>
         /// <param name="myObjectEdition">the ObjectEdition</param>
         /// <param name="myObjectRevision">the RevisionID of the APandoraObject</param>
-        public MetadataObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID)
+        public MetadataObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID)
             : this(myObjectLocation, myObjectStream, myObjectEdition)
         {
 
@@ -176,7 +176,7 @@ namespace sones.GraphFS.InternalObjects
         /// </summary>
         /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested file within the file system</param>
         /// <param name="myObjectRevision">the RevisionID of the APandoraObject</param>
-        public MetadataObject(ObjectLocation myObjectLocation, RevisionID myObjectRevisionID)
+        public MetadataObject(ObjectLocation myObjectLocation, ObjectRevisionID myObjectRevisionID)
             : this(myObjectLocation)
         {
 

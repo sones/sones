@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.Errors;
@@ -18,6 +18,7 @@ using sones.GraphDB.Errors;
 
 namespace sones.GraphDB.Managers.Structures.Describe
 {
+
     public class DescribeEdgeDefinition : ADescribeDefinition
     {
 
@@ -114,4 +115,5 @@ namespace sones.GraphDB.Managers.Structures.Describe
         #endregion
 
     }
+
 }

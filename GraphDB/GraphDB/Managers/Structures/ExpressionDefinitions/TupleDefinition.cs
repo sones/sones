@@ -9,17 +9,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.QueryLanguage.Operators;
+using sones.GraphDB.Structures.Operators;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.QueryLanguage.Enums;
+using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.Structures.EdgeTypes;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.Errors;
 using sones.GraphFS.DataStructures;
 using sones.GraphDB.Exceptions;
-using sones.GraphDB.QueryLanguage.ExpressionGraph;
+using sones.GraphDB.Structures.ExpressionGraph;
 using System.Diagnostics;
+using sones.GraphDB.Managers.Select;
 
 #endregion
 
@@ -58,7 +59,7 @@ namespace sones.GraphDB.Managers.Structures
             {
                 foreach (var obj in (AListBaseEdgeType)myObject)
                 {
-                    TupleElements.Add(new TupleElement(new ValueDefinition(obj as sones.GraphDB.TypeManagement.PandoraTypes.ADBBaseObject)));
+                    TupleElements.Add(new TupleElement(new ValueDefinition(obj as sones.GraphDB.TypeManagement.BasicTypes.ADBBaseObject)));
                 }
             }
             else
@@ -121,12 +122,73 @@ namespace sones.GraphDB.Managers.Structures
 
         #endregion
 
-        internal void ConvertToAttributeType(TypeAttribute typeAttribute, DBContext myTypeManager)
+        internal Exceptional ConvertToAttributeType(TypeAttribute typeAttribute, DBContext myDBContext)
         {
+
+            var newTuple = new List<TupleElement>();
+
             for (int i = 0; i < TupleElements.Count; i++)
             {
-                TupleElements[i] = new TupleElement(new ValueDefinition(GraphDBTypeMapper.GetADBBaseObjectFromUUID(typeAttribute.DBTypeUUID, (TupleElements[i].Value as ValueDefinition).Value.Value)));
+                var tupleEl = TupleElements[i].Value;
+
+                if (tupleEl is SelectDefinition)
+                {
+
+                    #region partial select
+
+                    var selectManager = new SelectManager();
+                    var qresult = selectManager.ExecuteSelect(myDBContext, (tupleEl as SelectDefinition));
+                    if (qresult.Failed)
+                    {
+                        return new Exceptional(qresult.Errors);
+                    }
+
+                    foreach (SelectionResultSet aSelResult in qresult.Results)
+                    {
+                        //Hack:
+                        int lowestSelectedLevel = (from aSelectionForReference in aSelResult.SelectedAttributes select aSelectionForReference.Key).Min();
+
+                        String attrName = aSelResult.SelectedAttributes[lowestSelectedLevel].First().Value;
+                        TypeAttribute curAttr = aSelResult.Type.GetTypeAttributeByName(attrName);
+
+                        var dbTypeOfAttribute = curAttr.GetDBType(myDBContext.DBTypeManager);
+
+                        var aTypeOfOperatorResult = GraphDBTypeMapper.ConvertPandora2CSharp(dbTypeOfAttribute.Name);
+
+                        foreach (DBObjectReadout dbo in aSelResult.Objects)
+                        {
+                            if (!(dbo.Attributes.ContainsKey(attrName)))
+                                continue;
+
+                            if (curAttr != null)
+                            {
+                                var val = new ValueDefinition(aTypeOfOperatorResult, dbo.Attributes[attrName]);
+                                newTuple.Add(new TupleElement(aTypeOfOperatorResult, val));
+                            }
+                            else
+                            {
+                                throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                            }
+                        }
+                    }
+
+                    #endregion
+
+                }
+                else if (TupleElements[i].Value is ValueDefinition)
+                {
+                    newTuple.Add(new TupleElement(new ValueDefinition(GraphDBTypeMapper.GetADBBaseObjectFromUUID(typeAttribute.DBTypeUUID, (TupleElements[i].Value as ValueDefinition).Value.Value))));
+                }
+                else
+                {
+                    return new Exceptional(new Error_InvalidTuple(TupleElements[i].Value.GetType().Name));
+                }
+
             }
+
+            TupleElements = newTuple;
+
+            return Exceptional.OK;
         }
 
         internal Exceptional<ASingleReferenceEdgeType> GetAsUUIDSingleEdge(DBContext dbContext, TypeAttribute attr)
@@ -247,7 +309,14 @@ namespace sones.GraphDB.Managers.Structures
 
                             if (_graphResult.Success)
                             {
-                                _referenceEdge.AddRange(_graphResult.Value.SelectUUIDs(new LevelKey(validationType, dbContext.DBTypeManager), null, true), validationType.UUID, aTupleElement.Parameters.ToArray());
+                                foreach (var aDBO in _graphResult.Value.Select(new LevelKey(validationType, dbContext.DBTypeManager), null, true))
+                                {
+                                    if (aDBO.Failed)
+                                    {
+                                        return new Exceptional<ASetReferenceEdgeType>(aDBO);
+                                    }
+                                    _referenceEdge.Add(aDBO.Value.ObjectUUID, aDBO.Value.TypeUUID, aTupleElement.Parameters.ToArray());
+                                }
                             }
                             else
                             {
@@ -270,7 +339,6 @@ namespace sones.GraphDB.Managers.Structures
                                 {
                                     #region get partial results
 
-                                    HashSet<ObjectUUID> partialResults = new HashSet<ObjectUUID>();
                                     BinaryExpressionDefinition tempNode = null;
 
                                     foreach (TupleElement aElement in aTupleNode)
@@ -286,7 +354,14 @@ namespace sones.GraphDB.Managers.Structures
 
                                         if (tempGraphResult.Success)
                                         {
-                                            partialResults.UnionWith(tempGraphResult.Value.SelectUUIDs(new LevelKey(validationType, dbContext.DBTypeManager), null, true));
+                                            foreach (var aDBO in tempGraphResult.Value.Select(new LevelKey(validationType, dbContext.DBTypeManager), null, true))
+                                            {
+                                                if (aDBO.Failed)
+                                                {
+                                                    return new Exceptional<ASetReferenceEdgeType>(aDBO);
+                                                }
+                                                _referenceEdge.Add(aDBO.Value.ObjectUUID, aDBO.Value.TypeUUID, aTupleElement.Parameters.ToArray());
+                                            }
                                         }
                                         else
                                         {
@@ -295,8 +370,6 @@ namespace sones.GraphDB.Managers.Structures
                                     }
 
                                     #endregion
-
-                                    _referenceEdge.AddRange(partialResults, myType.UUID, aTupleElement.Parameters.ToArray());
                                 }
                                 else
                                 {

@@ -7,12 +7,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
-using sones.GraphDB.QueryLanguage.Enums;
+
+using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.TypeManagement;
 using sones.Lib.ErrorHandling;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Errors;
 
 

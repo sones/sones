@@ -33,9 +33,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.QueryLanguage.Enums;
-using sones.GraphDB.TypeManagement.PandoraTypes;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Enums;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Managers.Structures;
 
 #endregion

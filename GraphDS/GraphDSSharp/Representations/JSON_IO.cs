@@ -33,7 +33,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.ObjectManagement;
 
 #endregion

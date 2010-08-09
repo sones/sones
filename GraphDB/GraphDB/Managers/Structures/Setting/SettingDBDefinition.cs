@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Settings;
-using sones.GraphDB.QueryLanguage.Enums;
+using sones.GraphDB.Structures.Enums;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.Errors;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.TypeManagement;
 
 namespace sones.GraphDB.Managers.Structures.Setting
@@ -49,7 +49,11 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
             foreach (var pSetting in mySettingValues)
             {
-                _DBContext.DBSettingsManager.SetSetting(pSetting.Key, GetValueForSetting(_DBContext.DBSettingsManager.AllSettingsByName[pSetting.Key], pSetting.Value), _DBContext, TypesSettingScope.DB);
+                var setSettingResult = _DBContext.DBSettingsManager.SetSetting(pSetting.Key, GetValueForSetting(_DBContext.DBSettingsManager.AllSettingsByName[pSetting.Key], pSetting.Value), _DBContext, TypesSettingScope.DB);
+                if (setSettingResult.Failed)
+                {
+                    return new Exceptional<List<SelectionResultSet>>(setSettingResult);
+                }
             }
 
             List<DBObjectReadout> resultingReadouts = new List<DBObjectReadout>();

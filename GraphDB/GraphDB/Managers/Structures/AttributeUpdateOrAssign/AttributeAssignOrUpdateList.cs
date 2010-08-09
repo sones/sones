@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.Errors;

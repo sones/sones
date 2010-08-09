@@ -37,7 +37,7 @@ using System.Text;
 using sones.Lib.Settings;
 using sones.Lib.NewFastSerializer;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.Lib.DataStructures.UUID;
 using sones.GraphFS.DataStructures;
 

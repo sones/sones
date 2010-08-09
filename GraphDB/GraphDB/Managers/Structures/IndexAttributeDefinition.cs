@@ -19,7 +19,7 @@ namespace sones.GraphDB.Managers.Structures
 
         #region Properties
 
-        public String IndexAttribute { get; private set; }
+        public IDChainDefinition IndexAttribute { get; private set; }
         public String OrderDirection { get; private set; }
         public String IndexType { get; private set; }
 
@@ -27,7 +27,7 @@ namespace sones.GraphDB.Managers.Structures
 
         #region Ctor
 
-        public IndexAttributeDefinition(string myIndexAttribute, string myIndexType, string myOrderDirection)
+        public IndexAttributeDefinition(IDChainDefinition myIndexAttribute, string myIndexType, string myOrderDirection)
         {
             IndexAttribute = myIndexAttribute;
             IndexType = myIndexType;

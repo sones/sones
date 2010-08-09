@@ -119,7 +119,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
             var QueryInputString = myInputString.Replace("'", "");
 
-            HandleQueryResult(_IPandoraDBSession.Query(QueryInputString), true);
+            HandleQueryResult(QueryDB(QueryInputString, _IPandoraDBSession), true);
            
         }
 

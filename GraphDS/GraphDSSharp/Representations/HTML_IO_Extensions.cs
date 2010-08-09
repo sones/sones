@@ -8,7 +8,7 @@
 using System;
 using System.Text;
 
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 
 #endregion
 

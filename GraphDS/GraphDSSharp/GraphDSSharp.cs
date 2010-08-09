@@ -42,7 +42,7 @@ using sones.GraphFS.DataStructures;
 using sones.GraphDB;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Transactions;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Result;
 
 using sones.GraphDS.API.CSharp.Reflection;
 
@@ -52,6 +52,8 @@ using sones.Lib.ErrorHandling;
 
 using sones.Notifications;
 using System.Xml.Linq;
+using sones.GraphDB.GraphQL;
+using sones.GraphFS.Events;
 
 #endregion
 
@@ -66,7 +68,6 @@ namespace sones.GraphDS.API.CSharp
 
         #region Data
 
-        //protected String                    _GraphDB            = null;
         protected IGraphFS                  _IGraphFS           = null;
         private   Dictionary<String, Type>  _AssemblyTypes;
         private   String                    _RestURL            = null;
@@ -131,34 +132,198 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
+        #region GQLQuery
+
+        protected GraphQLQuery _GQLQuery;
+        
+        #endregion
+
         #region IGraphFSSession
 
-        protected IGraphDBSession _IGraphDBSession = null;
-
-        public IGraphFSSession IGraphFSSession
-        {
-            get
-            {
-                return _IGraphFSSession;
-            }
-            set
-            {
-                _IGraphFSSession = value;
-            }
-        }
+        public IGraphFSSession IGraphFSSession { get; private set; }
 
         #endregion
 
         #region IGraphDBSession
 
-        protected IGraphFSSession _IGraphFSSession = null;
+        public IGraphDBSession IGraphDBSession { get; private set; }
 
-        public IGraphDBSession IGraphDBSession
+        #endregion
+
+        #endregion
+
+        #region Events
+
+        #region OnLoad
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject is
+        /// ready to be loaded.
+        /// </summary>
+        public event GraphFSEventHandlers.OnLoadEventHandler OnLoad
         {
-            get
+
+            add
             {
-                return _IGraphDBSession;
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnLoad += value;
+                }
             }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnLoad -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnLoaded
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject
+        /// was successfully loaded.
+        /// </summary>
+        public event GraphFSEventHandlers.OnLoadedEventHandler OnLoaded
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnLoaded += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnLoaded -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnSave
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject
+        /// is ready to be saved.
+        /// </summary>
+        public event GraphFSEventHandlers.OnSaveEventHandler OnSave
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnSave += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnSave -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnSaved
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject
+        /// was successfully saved on disc.
+        /// </summary>
+        public event GraphFSEventHandlers.OnSavedEventHandler OnSaved
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnSaved += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnSaved -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnRemove
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject
+        /// is ready to be removed.
+        /// </summary>
+        public event GraphFSEventHandlers.OnRemoveEventHandler OnRemove
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnRemove += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnRemove -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnSaved
+
+        /// <summary>
+        /// An event to be notified whenever a AFSObject
+        /// was successfully removed.
+        /// </summary>
+        public event GraphFSEventHandlers.OnRemovedEventHandler OnRemoved
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnRemoved += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnRemoved -= value;
+                }
+            }
+
         }
 
         #endregion
@@ -226,7 +391,7 @@ namespace sones.GraphDS.API.CSharp
             if (myIGraphDBSession == null)
                 throw new ArgumentNullException();
 
-            _IGraphDBSession = myIGraphDBSession;
+            IGraphDBSession = myIGraphDBSession;
 
             return true;
 
@@ -300,9 +465,9 @@ namespace sones.GraphDS.API.CSharp
                         NotificationDispatcher = NotificationDispatcher
                     };
 
-                    _IGraphFSSession = new GraphFSSession(_IGraphFS, Username);
+                    IGraphFSSession = new GraphFSSession(_IGraphFS, Username);
 
-                    _IGraphFSSession.MountFileSystem("TmpFS", AccessModeTypes.rw);
+                    IGraphFSSession.MountFileSystem("TmpFS", AccessModeTypes.rw);
 
                 }
 
@@ -358,12 +523,12 @@ namespace sones.GraphDS.API.CSharp
                     //        NotificationSettings = NotificationSettings
                     //    };
 
-                    _IGraphFSSession = new GraphFSSession(_IGraphFS, Username);
+                    IGraphFSSession = new GraphFSSession(_IGraphFS, Username);
 
                     if (myOverwritte)
-                        _IGraphFSSession.MakeFileSystem(_StorageLocations.OrderBy(x => x).ToList()[0], "GraphFS for database " + DatabaseName, FileSystemSize, true, myAction);
+                        IGraphFSSession.MakeFileSystem(_StorageLocations.OrderBy(x => x).ToList()[0], "GraphFS for database " + DatabaseName, FileSystemSize, true, myAction);
 
-                    _IGraphFSSession.MountFileSystem(_StorageLocations.OrderBy(x => x).ToList()[0], AccessModeTypes.rw);
+                    IGraphFSSession.MountFileSystem(_StorageLocations.OrderBy(x => x).ToList()[0], AccessModeTypes.rw);
                 
                 }
 
@@ -378,7 +543,8 @@ namespace sones.GraphDS.API.CSharp
 
             try
             {
-                _IGraphDBSession = new GraphDBSession(new GraphDB2(new UUID(), new ObjectLocation(DatabaseName), _IGraphFSSession, true), Username);
+                IGraphDBSession = new GraphDBSession(new GraphDB2(new UUID(), new ObjectLocation(DatabaseName), IGraphFSSession, true), Username);
+                _GQLQuery = new GraphQLQuery(IGraphDBSession.DBPluginManager);
             }
 
             catch (Exception e)
@@ -411,9 +577,9 @@ namespace sones.GraphDS.API.CSharp
                         NotificationSettings = NotificationSettings
                     };
 
-                    _IGraphFSSession = new GraphFSSession(_IGraphFS, Username);
+                    IGraphFSSession = new GraphFSSession(_IGraphFS, Username);
 
-                    _IGraphFSSession.MountFileSystem("TmpFS", AccessModeTypes.rw);
+                    IGraphFSSession.MountFileSystem("TmpFS", AccessModeTypes.rw);
 
                 }
 
@@ -432,15 +598,15 @@ namespace sones.GraphDS.API.CSharp
                     _IGraphFS.ObjectCacheSettings = ObjectCacheSettings;
                     _IGraphFS.NotificationSettings = NotificationSettings;
 
-                    _IGraphFSSession = new GraphFSSession(_IGraphFS, Username);
+                    IGraphFSSession = new GraphFSSession(_IGraphFS, Username);
 
-                    _IGraphFSSession.MountFileSystem(_StorageLocations.OrderBy(x => x).ToList()[0], AccessModeTypes.rw);
+                    IGraphFSSession.MountFileSystem(_StorageLocations.OrderBy(x => x).ToList()[0], AccessModeTypes.rw);
 
 
                     try
                     {
                         
-                        _IGraphDBSession = new GraphDBSession(new GraphDB2(new UUID(), new ObjectLocation(DatabaseName), _IGraphFSSession, true), Username);
+                        IGraphDBSession = new GraphDBSession(new GraphDB2(new UUID(), new ObjectLocation(DatabaseName), IGraphFSSession, true), Username);
 
                     }
 
@@ -475,13 +641,13 @@ namespace sones.GraphDS.API.CSharp
                 if (ShutdownEvent != null)
                     ShutdownEvent(this, EventArgs.Empty);
 
-                _IGraphDBSession.Shutdown();
-                _IGraphFSSession.UnmountAllFileSystems();
+                IGraphDBSession.Shutdown();
+                IGraphFSSession.UnmountAllFileSystems();
 
-                _IGraphDBSession = null;
-                _IGraphFSSession = null;
+                IGraphDBSession = null;
+                IGraphFSSession = null;
 
-                //_IGraphFSSession.GetNotificationDispatcher().Dispose();
+                //IGraphFSSession.GetNotificationDispatcher().Dispose();
 
             }
 
@@ -508,9 +674,9 @@ namespace sones.GraphDS.API.CSharp
             QueryResult _QueryResult = null;
 
             // Use embedded reference
-            if (_IGraphDBSession != null)
+            if (IGraphDBSession != null)
             {
-                _QueryResult = _IGraphDBSession.Query(myQuery);
+                _QueryResult = _GQLQuery.Query(myQuery, IGraphDBSession);
             }
 
             else if (!String.IsNullOrEmpty(_RestURL))
@@ -556,7 +722,7 @@ namespace sones.GraphDS.API.CSharp
 
         public override DBTransaction BeginTransaction(Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? myCreated = null)
         {
-            return _IGraphDBSession.BeginTransaction(myDistributed, myLongRunning, myIsolationLevel, myName, myCreated);
+            return IGraphDBSession.BeginTransaction(myDistributed, myLongRunning, myIsolationLevel, myName, myCreated);
         }
 
         #endregion

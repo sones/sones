@@ -18,7 +18,7 @@ using sones.Lib.CLI;
 
 #endregion
 
-namespace sones.GraphDB.QueryLanguage.Result
+namespace sones.GraphDB.Structures.Result
 {
 
     /// <summary>

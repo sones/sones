@@ -22,23 +22,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using GraphAlgorithms.PathAlgorithm.BreadthFirstSearch;
-using sones.GraphDB.Exceptions;
-using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage.Enums;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Functions;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
-using sones.GraphDB.Structures.EdgeTypes;
-using sones.GraphDB.TypeManagement.PandoraTypes;
-using sones.Lib.DataStructures;
-using sones.Lib.ErrorHandling;
-
-using sones.GraphDB.TypeManagement;
-using sones.Lib.DataStructures.UUID;
 using sones.GraphDB.Errors;
-using sones.GraphFS.DataStructures;
-using sones.GraphFS.Session;
-using sones.Lib.Session;
+using sones.GraphDB.Exceptions;
 using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.Functions;
+using sones.GraphDB.Structures.EdgeTypes;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphFS.DataStructures;
+using sones.Lib.ErrorHandling;
 
 #endregion
 

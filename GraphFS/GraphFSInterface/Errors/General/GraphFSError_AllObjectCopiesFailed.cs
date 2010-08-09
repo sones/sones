@@ -50,7 +50,7 @@ namespace sones.GraphFS.Errors
         public ObjectLocation ObjectLocation { get; private set; }
         public String         ObjectStream   { get; private set; }
         public String         ObjectEdition  { get; private set; }
-        public RevisionID     RevisionID     { get; private set; }
+        public ObjectRevisionID     RevisionID     { get; private set; }
 
         #endregion
 
@@ -58,7 +58,7 @@ namespace sones.GraphFS.Errors
 
         #region GraphFSError_AllObjectCopiesFailed(myObjectLocation, myObjectStream, myObjectEdition, myRevisionID)
 
-        public GraphFSError_AllObjectCopiesFailed(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myRevisionID)
+        public GraphFSError_AllObjectCopiesFailed(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myRevisionID)
         {
             ObjectLocation  = myObjectLocation;
             ObjectStream    = myObjectStream;

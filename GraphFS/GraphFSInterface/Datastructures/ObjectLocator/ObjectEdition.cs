@@ -53,13 +53,13 @@ namespace sones.GraphFS.DataStructures
     /// oldest and latest object revision.
     /// </summary>
 
-    public class ObjectEdition : IGraphFSDictionary<RevisionID, ObjectRevision>, IDirectoryListing
+    public class ObjectEdition : IGraphFSDictionary<ObjectRevisionID, ObjectRevision>, IDirectoryListing
     {
 
 
         #region Data
 
-        private SortedDictionary<RevisionID, ObjectRevision>    _ObjectRevisions;
+        private SortedDictionary<ObjectRevisionID, ObjectRevision>    _ObjectRevisions;
         //private StefanTuple<RevisionID, ObjectRevision, UUID>   _TransactionRevision;
         //private Object                                          _TransactionLockObject      = new Object();
 
@@ -227,7 +227,7 @@ namespace sones.GraphFS.DataStructures
             _ObjectName             = "";
             _ObjectLocation         = null;
 
-            _ObjectRevisions        = new SortedDictionary<RevisionID, ObjectRevision>();
+            _ObjectRevisions        = new SortedDictionary<ObjectRevisionID, ObjectRevision>();
 
             _ObjectEditionName      = "";
             _IsDeleted              = false;
@@ -262,7 +262,7 @@ namespace sones.GraphFS.DataStructures
         /// <param name="myObjectEditionName"></param>
         /// <param name="myRevisionID"></param>
         /// <param name="myObjectCopies"></param>
-        public ObjectEdition(String myObjectEditionName, RevisionID myRevisionID, ObjectRevision myObjectCopies)
+        public ObjectEdition(String myObjectEditionName, ObjectRevisionID myRevisionID, ObjectRevision myObjectCopies)
             : this(myObjectEditionName)
         {
             SetRevision(myRevisionID, myObjectCopies);
@@ -277,7 +277,7 @@ namespace sones.GraphFS.DataStructures
 
         #region SetRevision(myRevisionID, myObjectRevision)
 
-        public void SetRevision(RevisionID myRevisionID, ObjectRevision myObjectRevision)
+        public void SetRevision(ObjectRevisionID myRevisionID, ObjectRevision myObjectRevision)
         {
 
             ObjectRevision _ObjectRevision = null;
@@ -296,7 +296,7 @@ namespace sones.GraphFS.DataStructures
         /// Returns a list of all stored RevisionIDs
         /// </summary>
         /// <returns>a list of all stored RevisionIDs</returns>
-        public IEnumerable<RevisionID> GetListOfRevisionIDs()
+        public IEnumerable<ObjectRevisionID> GetListOfRevisionIDs()
         {
             return from _RevisionID in _ObjectRevisions.Keys select _RevisionID;
         }
@@ -326,7 +326,7 @@ namespace sones.GraphFS.DataStructures
         /// Returns the latest revision timestamp.
         /// </summary>
         /// <returns>the latest revision timestamp</returns>
-        public RevisionID LatestRevisionID
+        public ObjectRevisionID LatestRevisionID
         {
             get
             {
@@ -348,7 +348,7 @@ namespace sones.GraphFS.DataStructures
         /// Returns the latest ObjectRevision for the given RevisionID
         /// </summary>
         /// <returns>the latest ObjectRevision for the given RevisionID</returns>
-        public ObjectRevision GetObjectRevisionByNearestRevisionID(RevisionID myRevisionID)
+        public ObjectRevision GetObjectRevisionByNearestRevisionID(ObjectRevisionID myRevisionID)
         {
             return this[GetNearestRevisionID(myRevisionID)];
         }
@@ -361,13 +361,13 @@ namespace sones.GraphFS.DataStructures
         /// Returns the nearest RevisionID for the given RevisionID
         /// </summary>
         /// <returns>the nearest object RevisionID for the given RevisionID</returns>
-        public RevisionID GetNearestRevisionID(RevisionID myRevisionID)
+        public ObjectRevisionID GetNearestRevisionID(ObjectRevisionID myRevisionID)
         {
 
             if (myRevisionID == null)
                 return null;
 
-            IOrderedEnumerable<RevisionID> _ListOfRevisionIDs = null;
+            IOrderedEnumerable<ObjectRevisionID> _ListOfRevisionIDs = null;
 
             if (_ObjectRevisions != null)
                 _ListOfRevisionIDs = (from _RevisionID in _ObjectRevisions.Keys select _RevisionID).OrderByDescending(key => key);
@@ -428,7 +428,7 @@ namespace sones.GraphFS.DataStructures
         /// Returns the oldest RevisionID.
         /// </summary>
         /// <returns>the oldest RevisionID</returns>
-        public RevisionID SecondOldestRevisionID
+        public ObjectRevisionID SecondOldestRevisionID
         {
             get
             {
@@ -468,7 +468,7 @@ namespace sones.GraphFS.DataStructures
         /// Returns the oldest RevisionID.
         /// </summary>
         /// <returns>the oldest RevisionID</returns>
-        public RevisionID OldestRevisionID
+        public ObjectRevisionID OldestRevisionID
         {
             get
             {
@@ -490,10 +490,10 @@ namespace sones.GraphFS.DataStructures
         /// Returns a list of child revisions
         /// </summary>
         /// <returns>a list of child revisions</returns>
-        public IEnumerable<RevisionID> GetChildRevisions(RevisionID myRevisionID)
+        public IEnumerable<ObjectRevisionID> GetChildRevisions(ObjectRevisionID myRevisionID)
         {
 
-            var _ListOfChildRevisionIDs = new HashSet<RevisionID>();
+            var _ListOfChildRevisionIDs = new HashSet<ObjectRevisionID>();
 
             foreach (var _KeyValuePair in _ObjectRevisions)
             {
@@ -514,7 +514,7 @@ namespace sones.GraphFS.DataStructures
         /// </summary>
         /// <param name="myRevisionID">Starting with this RevisionID</param>
         /// <returns>The number of parents of the longest path</returns>
-        public UInt64 GetMaxPathLength(RevisionID myRevisionID)
+        public UInt64 GetMaxPathLength(ObjectRevisionID myRevisionID)
         {
             return GetMaxPathLength(myRevisionID, 1);
         }
@@ -523,14 +523,14 @@ namespace sones.GraphFS.DataStructures
 
         #region GetMaxPathLength(myRevisionID, myDepth)
 
-        private UInt64 GetMaxPathLength(RevisionID myRevisionID, UInt64 myDepth)
+        private UInt64 GetMaxPathLength(ObjectRevisionID myRevisionID, UInt64 myDepth)
         {
 
             if (_ObjectRevisions == null)
                 return 0;
 
             ObjectRevision _ObjectRevision = null;
-            IEnumerable<RevisionID> _ListOfParentRevisionIDs = null;
+            IEnumerable<ObjectRevisionID> _ListOfParentRevisionIDs = null;
 
             if (_ObjectRevisions.TryGetValue(myRevisionID, out _ObjectRevision))
                 _ListOfParentRevisionIDs = _ObjectRevision.ParentRevisionIDs;
@@ -695,7 +695,7 @@ namespace sones.GraphFS.DataStructures
 
         #region Add(myRevisionID, myObjectRevision)
 
-        public Boolean Add(RevisionID myRevisionID, ObjectRevision myObjectRevision)
+        public Boolean Add(ObjectRevisionID myRevisionID, ObjectRevision myObjectRevision)
         {
 
             lock (this)
@@ -712,7 +712,7 @@ namespace sones.GraphFS.DataStructures
                 if (_LatestRevisionID != null && myObjectRevision != null)
                 {
                     if (myObjectRevision.ParentRevisionIDs == null)
-                        myObjectRevision.ParentRevisionIDs = new HashSet<RevisionID>() { _LatestRevisionID };
+                        myObjectRevision.ParentRevisionIDs = new HashSet<ObjectRevisionID>() { _LatestRevisionID };
                     else
                         myObjectRevision.ParentRevisionIDs.Add(_LatestRevisionID);
                 }
@@ -729,7 +729,7 @@ namespace sones.GraphFS.DataStructures
 
         #region Add(myKeyValuePair)
 
-        public Boolean Add(KeyValuePair<RevisionID, ObjectRevision> myKeyValuePair)
+        public Boolean Add(KeyValuePair<ObjectRevisionID, ObjectRevision> myKeyValuePair)
         {
             return Add(myKeyValuePair.Key, myKeyValuePair.Value);
         }
@@ -739,7 +739,7 @@ namespace sones.GraphFS.DataStructures
 
         #region this[myRevisionID]
 
-        public ObjectRevision this[RevisionID myRevisionID]
+        public ObjectRevision this[ObjectRevisionID myRevisionID]
         {
 
             get
@@ -774,7 +774,7 @@ namespace sones.GraphFS.DataStructures
 
         #region ContainsKey(myRevisionID)
 
-        public Boolean ContainsKey(RevisionID myRevisionID)
+        public Boolean ContainsKey(ObjectRevisionID myRevisionID)
         {
             return _ObjectRevisions.ContainsKey(myRevisionID);
         }
@@ -783,7 +783,7 @@ namespace sones.GraphFS.DataStructures
 
         #region Contains(myKeyValuePair)
 
-        public Boolean Contains(KeyValuePair<RevisionID, ObjectRevision> myKeyValuePair)
+        public Boolean Contains(KeyValuePair<ObjectRevisionID, ObjectRevision> myKeyValuePair)
         {
 
             ObjectRevision _ObjectRevision;
@@ -800,7 +800,7 @@ namespace sones.GraphFS.DataStructures
 
         #region Keys
 
-        public IEnumerable<RevisionID> Keys
+        public IEnumerable<ObjectRevisionID> Keys
         {
             get
             {
@@ -837,7 +837,7 @@ namespace sones.GraphFS.DataStructures
 
         #region Remove(myRevisionID)
 
-        public Boolean Remove(RevisionID myRevisionID)
+        public Boolean Remove(ObjectRevisionID myRevisionID)
         {
             return _ObjectRevisions.Remove(myRevisionID);
         }
@@ -846,7 +846,7 @@ namespace sones.GraphFS.DataStructures
 
         #region Remove(myKeyValuePair)
 
-        public Boolean Remove(KeyValuePair<RevisionID, ObjectRevision> myKeyValuePair)
+        public Boolean Remove(KeyValuePair<ObjectRevisionID, ObjectRevision> myKeyValuePair)
         {
 
             ObjectRevision _ObjectRevision;
@@ -875,7 +875,7 @@ namespace sones.GraphFS.DataStructures
 
         #region IEnumerable<KeyValuePair<RevisionID, ObjectCopies>> Members
 
-        public IEnumerator<KeyValuePair<RevisionID, ObjectRevision>> GetEnumerator()
+        public IEnumerator<KeyValuePair<ObjectRevisionID, ObjectRevision>> GetEnumerator()
         {
             return _ObjectRevisions.GetEnumerator();
         }

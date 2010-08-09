@@ -48,11 +48,7 @@ namespace sones.Lib.Frameworks.Irony.Parsing {
 
     public ParseTree Parse(String source)
     {
-        return Parse(source, null);
-    }
-    public ParseTree Parse(String source, IContext context)
-    {
-      return Parse(new CompilerContext(this, context), source, "<Source>");
+      return Parse(new CompilerContext(this), source, "<Source>");
     }
 
     public ParseTree Parse(CompilerContext context, string sourceText, string fileName) {

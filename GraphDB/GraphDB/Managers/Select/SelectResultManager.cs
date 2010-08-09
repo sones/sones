@@ -27,31 +27,29 @@
  * <summary>This will create the result of any kind of select - working on an IExpressionGraph.</summary>
  */
 
+#region Usings
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using sones.GraphFS.DataStructures;
-using sones.Lib.DataStructures.UUID;
-using sones.GraphFS.Session;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
+using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.QueryLanguage.Enums;
-using sones.GraphDB.QueryLanguage.ExpressionGraph;
-using sones.GraphDB.QueryLanguage.NonTerminalClasses.Structure;
-using sones.GraphDB.QueryLanguage.NonTerminalCLasses.Structure;
-using sones.GraphDB.QueryLanguage.Result;
+using sones.GraphDB.Structures.Enums;
+using sones.GraphDB.Structures.ExpressionGraph;
+using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Settings;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.PandoraTypes;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
+using sones.GraphFS.DataStructures;
 using sones.Lib;
 using sones.Lib.ErrorHandling;
-using System.Text;
 using sones.Lib.Session;
-using sones.GraphDB;
-using sones.GraphDB.Managers.Structures;
+
+#endregion
 
 namespace sones.GraphDB.Managers.Select
 {
@@ -279,21 +277,22 @@ namespace sones.GraphDB.Managers.Select
         #region Adding elements to selection
 
         /// <summary>
-        /// Adds the typeNode as an asterisk *
+        /// Adds the typeNode as an asterisk *, rhomb # or minus -
         /// </summary>
         /// <param name="typeNode"></param>
-        public Exceptional AddAsteriskToSelection(String myReference, GraphDBType myType)
+        public Exceptional AddSelectionType(String myReference, GraphDBType myType, TypesOfSelect mySelType)
         {
-            var selElem = new SelectionElement(true);
+            var selElem = new SelectionElement(mySelType);
 
             if (!_Selections.ContainsKey(myReference))
                 _Selections.Add(myReference, new Dictionary<EdgeList, List<SelectionElement>>());
 
             var level = new EdgeList(new EdgeKey(myType.UUID, null));
+
             if (!_Selections[myReference].ContainsKey(level))
                 _Selections[myReference].Add(level, new List<SelectionElement>());
 
-            if (!_Selections[myReference][level].Exists(item => item.IsAsterisk))
+            if (!_Selections[myReference][level].Exists(item => item.Selection == mySelType))
             {
                 _Selections[myReference][level].Add(selElem);
             }
@@ -685,14 +684,14 @@ namespace sones.GraphDB.Managers.Select
 
             foreach (var attrSel in attributeSelections)
             {
-                if (attrSel.IsAsterisk)
+                if (attrSel.Selection != TypesOfSelect.None)
                 {
 
-                    #region Asterisk (*) selection
+                    #region Asterisk (*), Rhomb (#), Minus (-) selection
 
                     Depth = GetDepth(myDepth, 0, type, null, _SessionToken);
 
-                    AddAttributesByDBO(ref Attributes, type, myDBObject, Depth, myLevelKey, myReference, myUsingGraph);
+                    AddAttributesByDBO(ref Attributes, type, myDBObject, Depth, myLevelKey, myReference, myUsingGraph, attrSel.Selection);
 
                     #endregion
 
@@ -1169,7 +1168,7 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="myEdgeList"></param>
         /// <param name="reference"></param>
         /// <param name="myUsingGraph"></param>
-        private void AddAttributesByDBO(ref Dictionary<string, object> attributes, GraphDBType type, DBObjectStream myDBObject, long depth, EdgeList myEdgeList, string reference, bool myUsingGraph)
+        private void AddAttributesByDBO(ref Dictionary<string, object> attributes, GraphDBType type, DBObjectStream myDBObject, long depth, EdgeList myEdgeList, string reference, bool myUsingGraph, TypesOfSelect mySelType)
         {
 
             #region Get all attributes which are stored at the DBO
@@ -1180,6 +1179,7 @@ namespace sones.GraphDB.Managers.Select
                 #region Check whether the attribute is still exist in the type - if not, continue
 
                 var typeAttr = type.GetTypeAttributeByUUID(attr.Key);
+
                 if (typeAttr == null)
                     continue;
 
@@ -1187,23 +1187,32 @@ namespace sones.GraphDB.Managers.Select
 
                 if (attr.Value is ADBBaseObject)
                 {
-                    attributes.Add(typeAttr.Name, (attr.Value as ADBBaseObject).GetReadoutValue());
+                    if (mySelType != TypesOfSelect.Minus)
+                    {
+                        attributes.Add(typeAttr.Name, (attr.Value as ADBBaseObject).GetReadoutValue());
+                    }
                 }
                 else if (attr.Value is AListBaseEdgeType)
                 {
-                    attributes.Add(typeAttr.Name, (attr.Value as AListBaseEdgeType).GetReadoutValues());
+                    if (mySelType != TypesOfSelect.Minus)
+                    {
+                        attributes.Add(typeAttr.Name, (attr.Value as AListBaseEdgeType).GetReadoutValues());
+                    }
                 }
                 else if (attr.Value is ASetReferenceEdgeType || attr.Value is ASingleReferenceEdgeType)
                 {
-                    // Since we can define special depth (via setting) for attributes we need to check them now
-                    depth = GetDepth(-1, depth, type, typeAttr, _SessionToken);
-                    if (depth > 0)
+                    if (mySelType == TypesOfSelect.Minus || mySelType == TypesOfSelect.Asterisk)
                     {
-                        attributes.Add(typeAttr.Name, ResolveAttributeValue(typeAttr, attr.Value, depth - 1, myEdgeList, myDBObject, reference, myUsingGraph));
-                    }
-                    else
-                    {
-                        attributes.Add(typeAttr.Name, GetNotResolvedReferenceAttributeValue(myDBObject, typeAttr, type, myEdgeList, myUsingGraph, _DBContext));
+                        // Since we can define special depth (via setting) for attributes we need to check them now
+                        depth = GetDepth(-1, depth, type, typeAttr, _SessionToken);
+                        if (depth > 0)
+                        {
+                            attributes.Add(typeAttr.Name, ResolveAttributeValue(typeAttr, attr.Value, depth - 1, myEdgeList, myDBObject, reference, myUsingGraph));
+                        }
+                        else
+                        {
+                            attributes.Add(typeAttr.Name, GetNotResolvedReferenceAttributeValue(myDBObject, typeAttr, type, myEdgeList, myUsingGraph, _DBContext));
+                        }
                     }
                 }
                 else
@@ -1215,55 +1224,63 @@ namespace sones.GraphDB.Managers.Select
 
             #region Get all backwardEdge attributes
 
-            foreach (var beAttr in GetBackwardEdgeAttributes(type))
+            if (mySelType == TypesOfSelect.Minus || mySelType == TypesOfSelect.Asterisk)
             {
-                if (depth > 0)
+                foreach (var beAttr in GetBackwardEdgeAttributes(type))
                 {
-                    var bes = myDBObject.GetBackwardEdges(beAttr.BackwardEdgeDefinition, _DBContext, _DBObjectCache, beAttr.GetDBType(_DBContext.DBTypeManager));
-
-                    if (bes.Failed)
-                        throw new GraphDBException(bes.Errors);
-
-                    if (bes.Value != null) // otherwise the DBO does not have any
-                        attributes.Add(beAttr.Name, ResolveAttributeValue(beAttr, bes.Value, depth - 1, myEdgeList, myDBObject, reference, myUsingGraph));
-                }
-                else
-                {
-                    var notResolvedBEs = GetNotResolvedBackwardEdgeReferenceAttributeValue(myDBObject, beAttr, beAttr.BackwardEdgeDefinition, myEdgeList, myUsingGraph, _DBContext);
-                    if (notResolvedBEs != null)
+                    if (depth > 0)
                     {
-                        attributes.Add(beAttr.Name, notResolvedBEs);
+                        var bes = myDBObject.GetBackwardEdges(beAttr.BackwardEdgeDefinition, _DBContext, _DBObjectCache, beAttr.GetDBType(_DBContext.DBTypeManager));
+
+                        if (bes.Failed)
+                            throw new GraphDBException(bes.Errors);
+
+                        if (bes.Value != null) // otherwise the DBO does not have any
+                            attributes.Add(beAttr.Name, ResolveAttributeValue(beAttr, bes.Value, depth - 1, myEdgeList, myDBObject, reference, myUsingGraph));
+                    }
+                    else
+                    {
+                        var notResolvedBEs = GetNotResolvedBackwardEdgeReferenceAttributeValue(myDBObject, beAttr, beAttr.BackwardEdgeDefinition, myEdgeList, myUsingGraph, _DBContext);
+                        if (notResolvedBEs != null)
+                        {
+                            attributes.Add(beAttr.Name, notResolvedBEs);
+                        }
                     }
                 }
             }
-
             #endregion
 
             #region Get all untyped attributes from DBO - to be done
 
-            var undefAttrException = myDBObject.GetUndefinedAttributes(_DBContext.DBObjectManager);
+            if (mySelType == TypesOfSelect.Asterisk || mySelType == TypesOfSelect.Rhomb)
+            {
+                var undefAttrException = myDBObject.GetUndefinedAttributes(_DBContext.DBObjectManager);
 
-            if (undefAttrException.Failed)
-                throw new GraphDBException(undefAttrException.Errors);
+                if (undefAttrException.Failed)
+                    throw new GraphDBException(undefAttrException.Errors);
 
-            foreach (var undefAttr in undefAttrException.Value)
-                attributes.Add(undefAttr.Key, undefAttr.Value.GetReadoutValue());
+                foreach (var undefAttr in undefAttrException.Value)
+                    attributes.Add(undefAttr.Key, undefAttr.Value.GetReadoutValue());
+            }
 
             #endregion
 
             #region Add special attributes
 
-            foreach (var specialAttr in GetSpecialAttributes(type))
+            if (mySelType == TypesOfSelect.Asterisk)
             {
-                if (!attributes.ContainsKey(specialAttr.Name))
+                foreach (var specialAttr in GetSpecialAttributes(type))
                 {
-                    var result = (specialAttr as ASpecialTypeAttribute).ExtractValue(myDBObject, type, _DBContext);
-                    if (result.Failed)
+                    if (!attributes.ContainsKey(specialAttr.Name))
                     {
-                        throw new GraphDBException(result.Errors);
-                    }
+                        var result = (specialAttr as ASpecialTypeAttribute).ExtractValue(myDBObject, type, _DBContext);
+                        if (result.Failed)
+                        {
+                            throw new GraphDBException(result.Errors);
+                        }
 
-                    attributes.Add(specialAttr.Name, result.Value.GetReadoutValue());
+                        attributes.Add(specialAttr.Name, result.Value.GetReadoutValue());
+                    }
                 }
             }
 
@@ -1674,7 +1691,7 @@ namespace sones.GraphDB.Managers.Select
 
                 #region Get all attributes from the DBO if nothing special was selected
 
-                AddAttributesByDBO(ref Attributes, typeOfAttribute, aDBObject, myDepth, myLevelKey, reference, myUsingGraph);
+                AddAttributesByDBO(ref Attributes, typeOfAttribute, aDBObject, myDepth, myLevelKey, reference, myUsingGraph, TypesOfSelect.Asterisk);
 
                 #endregion
 
@@ -1909,12 +1926,40 @@ namespace sones.GraphDB.Managers.Select
                             if (!retVal.ContainsKey(selElem.Element.Name))
                                 retVal.Add(selElem.Element.Name, selElem.Alias);
                         }
-                        else if (selElem.IsAsterisk)
+                        else if (selElem.Selection != TypesOfSelect.None)
                         {
-                            foreach (var attr in _DBContext.DBTypeManager.GetTypeByUUID(sel.Key.Edges[0].TypeUUID).GetAllAttributes(_DBContext))
-                            {
-                                if (!retVal.ContainsKey(attr.Name))
-                                    retVal.Add(attr.Name, attr.Name);
+                            var attributes = _DBContext.DBTypeManager.GetTypeByUUID(sel.Key.Edges[0].TypeUUID).GetAllAttributes(_DBContext);
+
+                            switch(selElem.Selection)
+                            {   
+                                case TypesOfSelect.Minus:
+                                    foreach (var attr in attributes)
+                                    {
+                                        if (!retVal.ContainsKey(attr.Name) && (attr.IsBackwardEdge || attr.GetDBType(_DBContext.DBTypeManager).IsUserDefined))
+                                        {
+                                            retVal.Add(attr.Name, attr.Name);
+                                        }
+                                    }
+
+                                    break;
+
+                                case TypesOfSelect.Rhomb:
+                                    foreach (var attr in attributes)
+                                    {
+                                        if (!retVal.ContainsKey(attr.Name) && (!attr.GetDBType(_DBContext.DBTypeManager).IsUserDefined) && (attr.KindOfType != KindsOfType.SpecialAttribute))
+                                        {
+                                            retVal.Add(attr.Name, attr.Name);
+                                        }
+                                    }
+                                    break;
+                                
+                                case TypesOfSelect.Asterisk:
+                                    foreach (var attr in attributes)
+                                    {
+                                        if (!retVal.ContainsKey(attr.Name))
+                                            retVal.Add(attr.Name, attr.Name);
+                                    }
+                                    break;
                             }
                         }
 
