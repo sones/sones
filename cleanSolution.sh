@@ -9,5 +9,6 @@
 ./clearDirectory.sh Libraries *.dll *.exe *.mdb *.pdb *.FilesWrittenAbsolute.txt  *.cache *.FileListAbsolute.txt *.vspscc *.vssscc *.tlog
 ./clearDirectory.sh Notifications *.dll *.exe *.mdb *.pdb *.FilesWrittenAbsolute.txt *.cache *.FileListAbsolute.txt *.vspscc *.vssscc *.tlog
 ./clearDirectory.sh StorageEngines *.dll *.exe *.mdb *.pdb *.FilesWrittenAbsolute.txt *.cache *.FileListAbsolute.txt *.vspscc *.vssscc *.tlog
+./clearDirectory.sh GraphIO *.dll *.exe *.mdb *.pdb *.FilesWrittenAbsolute.txt *.cache *.FileListAbsolute.txt *.vspscc *.vssscc *.tlog
 
 rm -r GraphDS/GraphDSREST/obj/Debug

@@ -1,5 +1,5 @@
 This is the readme file of the sones GraphDB Open Source Edition version 1.1 - Last updated 
-on 12th of July 2010
+on 18th of August 2010
 (C) sones GmbH 2007 - 2010
 
 The sones is an object-orientated graph data storage for a large amount of highly connected semi-structured data
@@ -34,18 +34,18 @@ http://www.microsoft.com/express/Downloads/Download-2010.aspx
 
 You need Mono as a .NET runtime platform on all operating systems that are not Windows.
 
-Important Notice: Currently you need a specific version of Mono to compile and run this software. This version is
-Revision 158624 which is downloadable from the official Mono subversion repository using these commands:
+Important Notice: You will need the most current version of Mono to compile and run this software. To get this version 
+follow the instructions for your operating system ( http://developers.sones.de/wiki/doku.php?id=installation:mono )
 
-svn co -r 158624 svn://anonsvn.mono-project.com/source/trunk/mono
-svn co -r 158624 svn://anonsvn.mono-project.com/source/trunk/mcs
-svn co -r 158624 svn://anonsvn.mono-project.com/source/trunk/libgdiplus
+In short you'll have to do this:
 
 after having done that you can use this command:
 
-./autogen.sh --with-large-heap=yes --with-profile4=yes
+./autogen.sh --with-large-heap=yes --with-profile4=yes --prefix=/opt/mono
 
-to generate the build scripts which then can be used to start the build process using this command:
+(where /opt/mono is the directory the new mono version will be installed to)
+
+to build mono run the command:
 
 make
 
