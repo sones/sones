@@ -90,7 +90,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
         /// <param name="myEdge">the edge</param>
         /// <param name="myEdgeName">edge name</param>
         /// <returns>list of readouts with the information</returns>
-        private IEnumerable<DBObjectReadout> GenerateOutput(AEdgeType myEdge, String myEdgeName)
+        private IEnumerable<DBObjectReadout> GenerateOutput(IEdgeType myEdge, String myEdgeName)
         {
 
             string Temp = "";

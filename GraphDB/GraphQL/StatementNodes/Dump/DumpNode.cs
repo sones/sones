@@ -74,8 +74,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Dump
         public override QueryResult Execute(IGraphDBSession myIGraphDBSession)
         {
 
-            return myIGraphDBSession.Export(_DumpFormat.ToString().ToUpper(), _DumpDestination, _DumpableGrammar, _TypesToDump, _DumpType);
-
+            var qresult = myIGraphDBSession.Export(_DumpFormat.ToString().ToUpper(), _DumpDestination, _DumpableGrammar, _TypesToDump, _DumpType);
+            qresult.AddErrorsAndWarnings(ParsingResult);
+            return qresult;
         }
 
     }

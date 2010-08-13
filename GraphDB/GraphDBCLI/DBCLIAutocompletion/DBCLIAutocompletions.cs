@@ -24,8 +24,8 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Henning Rauch</developer>
- * <summary>The abstract class for PandoraDB autocompletions of 
- * the PandoraCLI.</summary>
+ * <summary>The abstract class for GraphDB autocompletions of 
+ * the GraphCLI.</summary>
  */
 
 #region Usings
@@ -41,8 +41,8 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 {
 
     /// <summary>
-    /// The abstract class for PandoraDB autocompletions of 
-    /// the PandoraCLI.
+    /// The abstract class for GraphDB autocompletions of 
+    /// the GraphCLI.
     /// </summary>
 
     public abstract class ADBCLIAutocompletions : AllCLIAutocompletions

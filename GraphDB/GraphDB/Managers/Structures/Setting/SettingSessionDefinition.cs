@@ -49,7 +49,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
             foreach (var pSetting in mySettingValues)
             {
                 var setSettingResult = _DBContext.DBSettingsManager.SetSetting(pSetting.Key, GetValueForSetting(_DBContext.DBSettingsManager.AllSettingsByName[pSetting.Key], pSetting.Value), _DBContext, TypesSettingScope.SESSION);
-                if (setSettingResult.Failed)
+                if (setSettingResult.Failed())
                 {
                     return new Exceptional<List<SelectionResultSet>>(setSettingResult);
                 }
@@ -66,7 +66,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
             foreach (var Setting in mySettings)
             {
                 var removeResult = _DBContext.DBSettingsManager.RemoveSetting(_DBContext, Setting.Key.ToUpper(), TypesSettingScope.SESSION);
-                if (removeResult.Failed)
+                if (removeResult.Failed())
                 {
                     return new Exceptional<List<SelectionResultSet>>(removeResult);
                 }

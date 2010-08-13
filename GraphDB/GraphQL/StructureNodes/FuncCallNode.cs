@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – FuncCallNode" />
+﻿/* <id name="GraphDB – FuncCallNode" />
  * <copyright file="FuncCallNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.

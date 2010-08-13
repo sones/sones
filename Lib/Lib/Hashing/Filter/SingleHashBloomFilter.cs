@@ -43,10 +43,12 @@ using System.Collections;
  * 
  * Complexity of Add and Contains is O(k).
  */
-namespace Lib.Hashing.Filter
+namespace sones.Lib.Hashing.Filter
 {
+
     public class SingleHashBloomFilter<T> : AFilter<T>
     {
+
         #region private members
 
         /// <summary>
@@ -147,7 +149,6 @@ namespace Lib.Hashing.Filter
         
         #endregion
 
-        
-
     }
+
 }

@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – CreateIndexAttributeList Node" />
+﻿/* <id name="GraphDB – CreateIndexAttributeList Node" />
  * <copyright file="CreateIndexAttributeListNode.cs
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.

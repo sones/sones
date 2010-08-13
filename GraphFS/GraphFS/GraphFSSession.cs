@@ -26,24 +26,24 @@
 
 using System;
 using System.IO;
+using System.Text;
 using System.Collections.Generic;
 
-using sones.Notifications;
-using sones.Lib.DataStructures;
-using sones.Lib.ErrorHandling;
-
-using sones.StorageEngines;
 using sones.GraphFS.Caches;
-using sones.GraphFS.Events;
-using sones.GraphFS.InternalObjects;
-using sones.GraphFS.Objects;
-using sones.GraphFS.DataStructures;
 using sones.GraphFS.Errors;
-using sones.Lib.Session;
+using sones.GraphFS.Events;
+using sones.GraphFS.Objects;
 using sones.GraphFS.Transactions;
-using System.Text;
+using sones.GraphFS.DataStructures;
+using sones.GraphFS.InternalObjects;
+
+using sones.Lib.Session;
+using sones.Lib.ErrorHandling;
+using sones.Lib.DataStructures;
 using sones.Lib.DataStructures.Indices;
 using sones.Lib.DataStructures.WeakReference;
+
+using sones.Notifications;
 
 #endregion
 
@@ -56,7 +56,6 @@ namespace sones.GraphFS.Session
 
     public class GraphFSSession : IGraphFSSession
     {
-
 
         #region Properties
 
@@ -109,10 +108,12 @@ namespace sones.GraphFS.Session
         //#endregion
 
 
+        #region AFSObject handling
+
         #region OnLoad
 
         /// <summary>
-        /// An event to be notified whenever a AFSObject is
+        /// An event to be notified whenever an AFSObject is
         /// ready to be loaded.
         /// </summary>
         public event GraphFSEventHandlers.OnLoadEventHandler OnLoad
@@ -141,7 +142,7 @@ namespace sones.GraphFS.Session
         #region OnLoaded
 
         /// <summary>
-        /// An event to be notified whenever a AFSObject
+        /// An event to be notified whenever an AFSObject
         /// was successfully loaded.
         /// </summary>
         public event GraphFSEventHandlers.OnLoadedEventHandler OnLoaded
@@ -167,10 +168,40 @@ namespace sones.GraphFS.Session
 
         #endregion
 
+        #region OnLoadedAsync
+
+        /// <summary>
+        /// An event to be notified asynchronously whenever
+        /// an AFSObject was successfully loaded.
+        /// </summary>
+        public event GraphFSEventHandlers.OnLoadedAsyncEventHandler OnLoadedAsync
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnLoadedAsync += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnLoadedAsync -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+
         #region OnSave
 
         /// <summary>
-        /// An event to be notified whenever a AFSObject
+        /// An event to be notified whenever an AFSObject
         /// is ready to be saved.
         /// </summary>
         public event GraphFSEventHandlers.OnSaveEventHandler OnSave
@@ -199,7 +230,7 @@ namespace sones.GraphFS.Session
         #region OnSaved
 
         /// <summary>
-        /// An event to be notified whenever a AFSObject
+        /// An event to be notified whenever an AFSObject
         /// was successfully saved on disc.
         /// </summary>
         public event GraphFSEventHandlers.OnSavedEventHandler OnSaved
@@ -224,11 +255,41 @@ namespace sones.GraphFS.Session
         }
 
         #endregion
+        
+        #region OnSavedAsync
+
+        /// <summary>
+        /// An event to be notified asynchronously whenever
+        /// an AFSObject was successfully saved on disc.
+        /// </summary>
+        public event GraphFSEventHandlers.OnSavedAsyncEventHandler OnSavedAsync
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnSavedAsync += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnSavedAsync -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
 
         #region OnRemove
 
         /// <summary>
-        /// An event to be notified whenever a AFSObject
+        /// An event to be notified whenever an AFSObject
         /// is ready to be removed.
         /// </summary>
         public event GraphFSEventHandlers.OnRemoveEventHandler OnRemove
@@ -254,10 +315,10 @@ namespace sones.GraphFS.Session
 
         #endregion
 
-        #region OnSaved
+        #region OnRemoved
 
         /// <summary>
-        /// An event to be notified whenever a AFSObject
+        /// An event to be notified whenever an AFSObject
         /// was successfully removed.
         /// </summary>
         public event GraphFSEventHandlers.OnRemovedEventHandler OnRemoved
@@ -283,21 +344,318 @@ namespace sones.GraphFS.Session
 
         #endregion
 
+        #region OnRemovedAsync
+
+        /// <summary>
+        /// An event to be notified whenever asynchronously
+        /// an AFSObject was successfully removed.
+        /// </summary>
+        public event GraphFSEventHandlers.OnRemovedAsyncEventHandler OnRemovedAsync
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnRemovedAsync += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnRemovedAsync -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Transaction handling
+
+        #region OnTransactionStart
+
+        /// <summary>
+        /// An event to be notified whenever a transaction starts.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionStartEventHandler OnTransactionStart
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionStart += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionStart -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnTransactionStarted
+
+        /// <summary>
+        /// An event to be notified whenever a transaction
+        /// was started.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionStartedEventHandler OnTransactionStarted
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionStarted += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionStarted -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnTransactionStartedAsync
+
+        /// <summary>
+        /// An event to be notified asynchronously whenever
+        /// a transaction started.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionStartedAsyncEventHandler OnTransactionStartedAsync
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionStartedAsync += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionStartedAsync -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+
+        #region OnTransactionCommit
+
+        /// <summary>
+        /// An event to be notified whenever a transaction
+        /// will be committed.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionCommitEventHandler OnTransactionCommit
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionCommit += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionCommit -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnTransactionCommitted
+
+        /// <summary>
+        /// An event to be notified whenever a transaction
+        /// was be committed.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionCommittedEventHandler OnTransactionCommitted
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionCommitted += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionCommitted -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnTransactionCommittedAsync
+
+        /// <summary>
+        /// An event to be notified asynchronously whenever
+        /// a transaction was be committed.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionCommittedAsyncEventHandler OnTransactionCommittedAsync
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionCommittedAsync += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionCommittedAsync -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+
+        #region OnTransactionRollback
+
+        /// <summary>
+        /// An event to be notified whenever a transaction
+        /// will be rollbacked.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionRollbackEventHandler OnTransactionRollback
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionRollback += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionRollback -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnTransactionRollbacked
+
+        /// <summary>
+        /// An event to be notified whenever a transaction
+        /// was rollbacked.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionRollbackedEventHandler OnTransactionRollbacked
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionRollbacked += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionRollbacked -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnTransactionRollbackedAsync
+
+        /// <summary>
+        /// An event to be notified whenever asynchronously
+        /// a transaction was rollbacked.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionRollbackedAsyncEventHandler OnTransactionRollbackedAsync
+        {
+
+            add
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionRollbackedAsync += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFS)
+                {
+                    IGraphFS.OnTransactionRollbackedAsync -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #endregion
+
         #endregion
 
         #region Constructor(s)
 
-        #region GraphFSSession(myPandoraFS, myUsername)
+        #region GraphFSSession(myGraphFS, myUsername)
 
         /// <summary>
-        /// This will create a new PandoraFS session on an existing PandoraFS and will verify the given credentials
+        /// This will create a new GraphFS session on an existing GraphFS and will verify the given credentials
         /// </summary>
-        /// <param name="myPandoraFS"></param>
+        /// <param name="myGraphFS"></param>
         /// <param name="myUsername"></param>
-        public GraphFSSession(IGraphFS myIPandoraFS, String myUsername)
+        public GraphFSSession(IGraphFS myIGraphFS, String myUsername)
         {
 
-            IGraphFS = myIPandoraFS;
+            IGraphFS = myIGraphFS;
             var sessionInfo = new FSSessionInfo(myUsername);            
             SessionToken    = new SessionToken(sessionInfo);
 
@@ -523,24 +881,24 @@ namespace sones.GraphFS.Session
 
         #region ObjectCache
 
-        public ObjectCacheSettings GetObjectCacheSettings()
+        public Exceptional<ObjectCacheSettings> GetObjectCacheSettings()
         {
             return IGraphFS.GetObjectCacheSettings(SessionToken);
         }
 
-        public ObjectCacheSettings GetObjectCacheSettings(ObjectLocation myObjectLocation)
+        public Exceptional<ObjectCacheSettings> GetObjectCacheSettings(ObjectLocation myObjectLocation)
         {
             return IGraphFS.GetObjectCacheSettings(myObjectLocation, SessionToken);
         }
 
-        public void SetObjectCacheSettings(ObjectCacheSettings myObjectCacheSettings)
+        public Exceptional SetObjectCacheSettings(ObjectCacheSettings myObjectCacheSettings)
         {
-            IGraphFS.SetObjectCacheSettings(myObjectCacheSettings, SessionToken);
+            return IGraphFS.SetObjectCacheSettings(myObjectCacheSettings, SessionToken);
         }
 
-        public void SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings)
+        public Exceptional SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings)
         {
-            IGraphFS.SetObjectCacheSettings(myObjectLocation, myObjectCacheSettings, SessionToken);
+            return IGraphFS.SetObjectCacheSettings(myObjectLocation, myObjectCacheSettings, SessionToken);
         }
 
         #endregion
@@ -549,22 +907,29 @@ namespace sones.GraphFS.Session
 
         public Exceptional<FileSystemUUID> MakeFileSystem(String myStorageLocation, String myDescription, UInt64 myNumberOfBytes, Boolean myOverwriteExistingFileSystem, Action<Double> myAction)
         {
+            return IGraphFS.MakeFileSystem(new List<String>(){ myStorageLocation }, myDescription, myNumberOfBytes, myOverwriteExistingFileSystem, myAction, SessionToken);
+        }
 
-            var _MKFSBufferSize  = 1 * 1024 * 1024u;
-            var _IStorageEngines = new List<IStorageEngine>();
+        public Exceptional<FileSystemUUID> MakeFileSystem(IEnumerable<String> myStorageLocations, String myDescription, UInt64 myNumberOfBytes, Boolean myOverwriteExistingFileSystem, Action<Double> myAction)
+        {
 
-            if (myOverwriteExistingFileSystem)
-                _IStorageEngines.Add(StorageEngineFactory.Instance.CreateIStorageEngine(myStorageLocation, myNumberOfBytes, _MKFSBufferSize, myOverwriteExistingFileSystem, myAction));
-            
-            else
-                _IStorageEngines.Add(StorageEngineFactory.Instance.ActivateIStorageEngine(myStorageLocation).Value);
+            return IGraphFS.MakeFileSystem(myStorageLocations, myDescription, myNumberOfBytes, myOverwriteExistingFileSystem, myAction, SessionToken);
 
-            var _Exceptional = IGraphFS.MakeFileSystem(_IStorageEngines, myDescription, myOverwriteExistingFileSystem, myAction, SessionToken);
+            //var _MKFSBufferSize  = 1 * 1024 * 1024u;
+            //var _IStorageEngines = new List<IStorageEngine>();
 
-            foreach (var _IStorageEngine in _IStorageEngines)
-                _IStorageEngine.DetachStorage();
+            //if (myOverwriteExistingFileSystem)
+            //    _IStorageEngines.Add(StorageEngineFactory.Instance.CreateIStorageEngine(myStorageLocation, myNumberOfBytes, _MKFSBufferSize, myOverwriteExistingFileSystem, myAction));
 
-            return _Exceptional;
+            //else
+            //    _IStorageEngines.Add(StorageEngineFactory.Instance.ActivateIStorageEngine(myStorageLocation).Value);
+
+            //var _Exceptional = IGraphFS.MakeFileSystem(_IStorageEngines, myDescription, myNumberOfBytes, myOverwriteExistingFileSystem, myAction, SessionToken);
+
+            //foreach (var _IStorageEngine in _IStorageEngines)
+            //    _IStorageEngine.DetachStorage();
+
+            //return _Exceptional;
 
         }
 
@@ -632,10 +997,10 @@ namespace sones.GraphFS.Session
         }
 
 
-        public Trinary ResolveObjectLocation(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIPandoraFS)
+        public Trinary ResolveObjectLocation(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIGraphFS)
         {
             throw new NotImplementedException();
-            //return IGraphFS.ResolveObjectLocation(ref myObjectLocation, out myObjectStreams, out myObjectPath, out myObjectName, out myIDirectoryObject, out myIPandoraFS, SessionToken);
+            //return IGraphFS.ResolveObjectLocation(ref myObjectLocation, out myObjectStreams, out myObjectPath, out myObjectName, out myIDirectoryObject, out myIGraphFS, SessionToken);
         }
 
         public String ResolveObjectLocation(ObjectLocation myObjectLocation, Boolean myThrowObjectNotFoundException)
@@ -768,7 +1133,7 @@ namespace sones.GraphFS.Session
 
             myAFSObject.IGraphFSSessionReference = new WeakReference<IGraphFSSession>(this);
 
-            return IGraphFS.StoreFSObject(myAFSObject.ObjectLocation, myAFSObject, myAllowOverwritting, SessionToken);
+            return IGraphFS.StoreAFSObject(myAFSObject.ObjectLocation, myAFSObject, myAllowOverwritting, SessionToken);
 
         }
 
@@ -1200,7 +1565,7 @@ namespace sones.GraphFS.Session
 
             var _GetMetadata = IGraphFS.GetMetadatum<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myKey, SessionToken);
 
-            if (_GetMetadata != null && _GetMetadata.Success && _GetMetadata.Value != null)
+            if (_GetMetadata.Success() && _GetMetadata.Value != null)
                 return new Exceptional<IEnumerable<Object>>() { Value = _GetMetadata.Value };
 
             else
@@ -1217,7 +1582,7 @@ namespace sones.GraphFS.Session
 
             var _GetMetadata = IGraphFS.GetMetadata<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, SessionToken);
 
-            if (_GetMetadata != null && _GetMetadata.Success && _GetMetadata.Value != null)
+            if (_GetMetadata.Success() && _GetMetadata.Value != null)
                 return new Exceptional<IEnumerable<KeyValuePair<String, Object>>>() { Value = _GetMetadata.Value };
 
             else
@@ -1234,7 +1599,7 @@ namespace sones.GraphFS.Session
 
             var _GetMetadata = IGraphFS.GetMetadata<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myMinKey, myMaxKey, SessionToken);
 
-            if (_GetMetadata != null && _GetMetadata.Success && _GetMetadata.Value != null)
+            if (_GetMetadata.Success() && _GetMetadata.Value != null)
                 return new Exceptional<IEnumerable<KeyValuePair<String, Object>>>() { Value = _GetMetadata.Value };
 
             else
@@ -1251,7 +1616,7 @@ namespace sones.GraphFS.Session
 
             var _GetMetadata = IGraphFS.GetMetadata<Object>(myObjectLocation, FSConstants.USERMETADATASTREAM, FSConstants.DefaultEdition, myFunc, SessionToken); ;
 
-            if (_GetMetadata != null && _GetMetadata.Success && _GetMetadata.Value != null)
+            if (_GetMetadata.Success() && _GetMetadata.Value != null)
                 return new Exceptional<IEnumerable<KeyValuePair<String, Object>>>() { Value = _GetMetadata.Value };
 
             else
@@ -1325,7 +1690,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional StoreFileObject(ObjectLocation myObjectLocation, Byte[] myData, Boolean myAllowOverwritte)
         {
-            return IGraphFS.StoreFSObject(myObjectLocation, new FileObject() { ObjectLocation = myObjectLocation, ObjectData = myData }, myAllowOverwritte, SessionToken);
+            return IGraphFS.StoreAFSObject(myObjectLocation, new FileObject() { ObjectLocation = myObjectLocation, ObjectData = myData }, myAllowOverwritte, SessionToken);
         }
 
         #endregion
@@ -1334,7 +1699,7 @@ namespace sones.GraphFS.Session
 
         public Exceptional StoreFileObject(ObjectLocation myObjectLocation, String myStringData, Boolean myAllowOverwritte)
         {
-            return IGraphFS.StoreFSObject(myObjectLocation, new FileObject() { ObjectLocation = myObjectLocation, ObjectData = UTF8Encoding.UTF8.GetBytes(myStringData) }, myAllowOverwritte, SessionToken);
+            return IGraphFS.StoreAFSObject(myObjectLocation, new FileObject() { ObjectLocation = myObjectLocation, ObjectData = UTF8Encoding.UTF8.GetBytes(myStringData) }, myAllowOverwritte, SessionToken);
         }
 
         #endregion
@@ -1373,14 +1738,14 @@ namespace sones.GraphFS.Session
         //    return IGraphFS.ChangeAllowOverDenyOfRightsStream(myObjectLocation, myDefaultRule, SessionToken);
         //}
 
-        //public Boolean AddAlertToPandoraRightsAlertHandlingList(ObjectLocation myObjectLocation, NHAccessControlObject myAlert)
+        //public Boolean AddAlertToGraphRightsAlertHandlingList(ObjectLocation myObjectLocation, NHAccessControlObject myAlert)
         //{
-        //    return IGraphFS.AddAlertToPandoraRightsAlertHandlingList(myObjectLocation, myAlert, SessionToken);
+        //    return IGraphFS.AddAlertToGraphRightsAlertHandlingList(myObjectLocation, myAlert, SessionToken);
         //}
 
-        //public Boolean RemoveAlertFromPandoraRightsAlertHandlingList(ObjectLocation myObjectLocation, NHAccessControlObject myAlert)
+        //public Boolean RemoveAlertFromGraphRightsAlertHandlingList(ObjectLocation myObjectLocation, NHAccessControlObject myAlert)
         //{
-        //    return IGraphFS.RemoveAlertFromPandoraRightsAlertHandlingList(myObjectLocation, myAlert, SessionToken);
+        //    return IGraphFS.RemoveAlertFromGraphRightsAlertHandlingList(myObjectLocation, myAlert, SessionToken);
         //}
 
         //public List<Right> EvaluateRightsForEntity(ObjectLocation myObjectLocation, EntityUUID myEntityGuid, AccessControlObject myRightsObject)
@@ -1442,14 +1807,14 @@ namespace sones.GraphFS.Session
         //    return IGraphFS.GetEntityPublicKeyList(myObjectLocation, myEntityUUID, SessionToken);
         //}
 
-        //public Boolean AddPandoraRight(ObjectLocation myObjectLocation, String Name, String ValidationScript)
+        //public Boolean AddGraphRight(ObjectLocation myObjectLocation, String Name, String ValidationScript)
         //{
-        //    return IGraphFS.AddPandoraRight(myObjectLocation, Name, ValidationScript, SessionToken);
+        //    return IGraphFS.AddGraphRight(myObjectLocation, Name, ValidationScript, SessionToken);
         //}
 
-        //public Boolean RemovePandoraRight(ObjectLocation myObjectLocation, RightUUID myRightUUID)
+        //public Boolean RemoveGraphRight(ObjectLocation myObjectLocation, RightUUID myRightUUID)
         //{
-        //    return IGraphFS.RemovePandoraRight(myObjectLocation, myRightUUID, SessionToken);
+        //    return IGraphFS.RemoveGraphRight(myObjectLocation, myRightUUID, SessionToken);
         //}
 
         //public Right GetRightByName(String RightName)
@@ -1519,15 +1884,15 @@ namespace sones.GraphFS.Session
 
         #region StorageEngine Maintenance
 
-        public IEnumerable<StorageUUID> StorageUUIDs()
-        {
-            return IGraphFS.StorageUUIDs(SessionToken);
-        }
+        //public IEnumerable<StorageUUID> StorageUUIDs()
+        //{
+        //    return IGraphFS.StorageUUIDs(SessionToken);
+        //}
 
-        public IEnumerable<StorageUUID> StorageUUIDs(ObjectLocation myObjectLocation)
-        {
-            return IGraphFS.StorageUUIDs(myObjectLocation, SessionToken);
-        }
+        //public IEnumerable<StorageUUID> StorageUUIDs(ObjectLocation myObjectLocation)
+        //{
+        //    return IGraphFS.StorageUUIDs(myObjectLocation, SessionToken);
+        //}
 
 
         public IEnumerable<String> StorageDescriptions()

@@ -94,9 +94,9 @@ namespace sones.GraphFS.Exceptions
 
     #region MakeFileSystem
 
-    public class PandoraFSException_MakeFilesystemFailedAlreadyMounted : GraphFSException
+    public class GraphFSException_MakeFilesystemFailedAlreadyMounted : GraphFSException
     {
-        public PandoraFSException_MakeFilesystemFailedAlreadyMounted(String message)
+        public GraphFSException_MakeFilesystemFailedAlreadyMounted(String message)
             : base(message)
         {
             // do nothing extra
@@ -107,54 +107,54 @@ namespace sones.GraphFS.Exceptions
 
     #region ForestDirectory
 
-    public class PandoraFSException_ForestDirectory_UUIDCouldNotBeRead : GraphFSException
+    public class GraphFSException_ForestDirectory_UUIDCouldNotBeRead : GraphFSException
     {
-        public PandoraFSException_ForestDirectory_UUIDCouldNotBeRead(String message)
+        public GraphFSException_ForestDirectory_UUIDCouldNotBeRead(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_ForestDirectory_AllocationMapCouldNotBeRead : GraphFSException
+    public class GraphFSException_ForestDirectory_AllocationMapCouldNotBeRead : GraphFSException
     {
-        public PandoraFSException_ForestDirectory_AllocationMapCouldNotBeRead(String message)
+        public GraphFSException_ForestDirectory_AllocationMapCouldNotBeRead(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_ForestDirectory_defaultFSCouldNotBeRead : GraphFSException
+    public class GraphFSException_ForestDirectory_defaultFSCouldNotBeRead : GraphFSException
     {
-        public PandoraFSException_ForestDirectory_defaultFSCouldNotBeRead(String message)
+        public GraphFSException_ForestDirectory_defaultFSCouldNotBeRead(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_RootDirectory_UUIDCouldNotBeRead : GraphFSException
+    public class GraphFSException_RootDirectory_UUIDCouldNotBeRead : GraphFSException
     {
-        public PandoraFSException_RootDirectory_UUIDCouldNotBeRead(String message)
+        public GraphFSException_RootDirectory_UUIDCouldNotBeRead(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_RootDirectory_EntityObjectCouldNotBeLoaded : GraphFSException
+    public class GraphFSException_RootDirectory_EntityObjectCouldNotBeLoaded : GraphFSException
     {
-        public PandoraFSException_RootDirectory_EntityObjectCouldNotBeLoaded(String message)
+        public GraphFSException_RootDirectory_EntityObjectCouldNotBeLoaded(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_RootDirectory_RightsObjectCouldNotBeLoaded : GraphFSException
+    public class GraphFSException_RootDirectory_RightsObjectCouldNotBeLoaded : GraphFSException
     {
-        public PandoraFSException_RootDirectory_RightsObjectCouldNotBeLoaded(String message)
+        public GraphFSException_RootDirectory_RightsObjectCouldNotBeLoaded(String message)
             : base(message)
         {
             // do nothing extra
@@ -162,18 +162,18 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSException_RootDirectory_RightsIndexObjectCouldNotBeLoaded : GraphFSException
+    public class GraphFSException_RootDirectory_RightsIndexObjectCouldNotBeLoaded : GraphFSException
     {
-        public PandoraFSException_RootDirectory_RightsIndexObjectCouldNotBeLoaded(String message)
+        public GraphFSException_RootDirectory_RightsIndexObjectCouldNotBeLoaded(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_RootDirectoryNotFoundWithinTheObjectCache : GraphFSException
+    public class GraphFSException_RootDirectoryNotFoundWithinTheObjectCache : GraphFSException
     {
-        public PandoraFSException_RootDirectoryNotFoundWithinTheObjectCache(String message)
+        public GraphFSException_RootDirectoryNotFoundWithinTheObjectCache(String message)
             : base(message)
         {
             // do nothing extra
@@ -194,27 +194,27 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSException_MountFileSystemFailed : GraphFSException
+    public class GraphFSException_MountFileSystemFailed : GraphFSException
     {
-        public PandoraFSException_MountFileSystemFailed(String message)
+        public GraphFSException_MountFileSystemFailed(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_MountFileSystemFailed_DirectoryIsAMountpoint : GraphFSException
+    public class GraphFSException_MountFileSystemFailed_DirectoryIsAMountpoint : GraphFSException
     {
-        public PandoraFSException_MountFileSystemFailed_DirectoryIsAMountpoint(String message)
+        public GraphFSException_MountFileSystemFailed_DirectoryIsAMountpoint(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_UnmountFileSystemFailed : GraphFSException
+    public class GraphFSException_UnmountFileSystemFailed : GraphFSException
     {
-        public PandoraFSException_UnmountFileSystemFailed(String message)
+        public GraphFSException_UnmountFileSystemFailed(String message)
             : base(message)
         {
             // do nothing extra
@@ -226,9 +226,9 @@ namespace sones.GraphFS.Exceptions
 
     #region AllocationMapObject
 
-    public class PandoraFSAllocationMapException : GraphFSException
+    public class GraphFSAllocationMapException : GraphFSException
     {
-        public PandoraFSAllocationMapException(String message)
+        public GraphFSAllocationMapException(String message)
             : base(message)
         {
             // do nothing extra
@@ -236,9 +236,9 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSAllocationMapException_AllocationFailed : PandoraFSAllocationMapException
+    public class GraphFSAllocationMapException_AllocationFailed : GraphFSAllocationMapException
     {
-        public PandoraFSAllocationMapException_AllocationFailed(String message)
+        public GraphFSAllocationMapException_AllocationFailed(String message)
             : base(message)
         {
             // do nothing extra
@@ -246,9 +246,9 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSAllocationMapException_DeallocationFailed : PandoraFSAllocationMapException
+    public class GraphFSAllocationMapException_DeallocationFailed : GraphFSAllocationMapException
     {
-        public PandoraFSAllocationMapException_DeallocationFailed(String message)
+        public GraphFSAllocationMapException_DeallocationFailed(String message)
             : base(message)
         {
             // do nothing extra
@@ -256,9 +256,9 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSAllocationMapException_NumberTooLarge : PandoraFSAllocationMapException
+    public class GraphFSAllocationMapException_NumberTooLarge : GraphFSAllocationMapException
     {
-        public PandoraFSAllocationMapException_NumberTooLarge(String message)
+        public GraphFSAllocationMapException_NumberTooLarge(String message)
             : base(message)
         {
             // do nothing extra
@@ -266,9 +266,9 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSAllocationMapException_NoFreeBytesFound : PandoraFSAllocationMapException
+    public class GraphFSAllocationMapException_NoFreeBytesFound : GraphFSAllocationMapException
     {
-        public PandoraFSAllocationMapException_NoFreeBytesFound(String message)
+        public GraphFSAllocationMapException_NoFreeBytesFound(String message)
             : base(message)
         {
             // do nothing extra
@@ -276,9 +276,9 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSAllocationMapException_NotEnoughFreeBytes : PandoraFSAllocationMapException
+    public class GraphFSAllocationMapException_NotEnoughFreeBytes : GraphFSAllocationMapException
     {
-        public PandoraFSAllocationMapException_NotEnoughFreeBytes(String message)
+        public GraphFSAllocationMapException_NotEnoughFreeBytes(String message)
             : base(message)
         {
             // do nothing extra
@@ -286,9 +286,9 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSAllocationMapException_NumberOfBytesMustBeGreaterThanZero : PandoraFSAllocationMapException
+    public class GraphFSAllocationMapException_NumberOfBytesMustBeGreaterThanZero : GraphFSAllocationMapException
     {
-        public PandoraFSAllocationMapException_NumberOfBytesMustBeGreaterThanZero(String message)
+        public GraphFSAllocationMapException_NumberOfBytesMustBeGreaterThanZero(String message)
             : base(message)
         {
             // do nothing extra
@@ -296,9 +296,9 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSAllocationMapException_CouldNotAllocateAsSingleExtent : PandoraFSAllocationMapException
+    public class GraphFSAllocationMapException_CouldNotAllocateAsSingleExtent : GraphFSAllocationMapException
     {
-        public PandoraFSAllocationMapException_CouldNotAllocateAsSingleExtent(String message)
+        public GraphFSAllocationMapException_CouldNotAllocateAsSingleExtent(String message)
             : base(message)
         {
             // do nothing extra
@@ -306,9 +306,9 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSAllocationMapException_NoPreAllocationFound : PandoraFSAllocationMapException
+    public class GraphFSAllocationMapException_NoPreAllocationFound : GraphFSAllocationMapException
     {
-        public PandoraFSAllocationMapException_NoPreAllocationFound(String message)
+        public GraphFSAllocationMapException_NoPreAllocationFound(String message)
             : base(message)
         {
             // do nothing extra
@@ -316,9 +316,9 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSAllocationMapException_PreAllocatedSizeOverflow : PandoraFSAllocationMapException
+    public class GraphFSAllocationMapException_PreAllocatedSizeOverflow : GraphFSAllocationMapException
     {
-        public PandoraFSAllocationMapException_PreAllocatedSizeOverflow(String message)
+        public GraphFSAllocationMapException_PreAllocatedSizeOverflow(String message)
             : base(message)
         {
             // do nothing extra
@@ -326,9 +326,9 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSAllocationMapException_AddToFreeExtents : PandoraFSAllocationMapException
+    public class GraphFSAllocationMapException_AddToFreeExtents : GraphFSAllocationMapException
     {
-        public PandoraFSAllocationMapException_AddToFreeExtents(String message)
+        public GraphFSAllocationMapException_AddToFreeExtents(String message)
             : base(message)
         {
             // do nothing extra
@@ -336,20 +336,9 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSAllocationMapException_ExtentNotFoundWithinFreeExtentsByStartPosition : PandoraFSAllocationMapException
+    public class GraphFSAllocationMapException_ExtentNotFoundWithinFreeExtentsByStartPosition : GraphFSAllocationMapException
     {
-        public PandoraFSAllocationMapException_ExtentNotFoundWithinFreeExtentsByStartPosition(String message)
-            : base(message)
-        {
-            // do nothing extra
-        }
-    }
-
-
-
-    public class PandoraFSAllocationMapException_ExtentNotFoundWithinFreeExtentsByLength : PandoraFSAllocationMapException
-    {
-        public PandoraFSAllocationMapException_ExtentNotFoundWithinFreeExtentsByLength(String message)
+        public GraphFSAllocationMapException_ExtentNotFoundWithinFreeExtentsByStartPosition(String message)
             : base(message)
         {
             // do nothing extra
@@ -358,9 +347,9 @@ namespace sones.GraphFS.Exceptions
 
 
 
-    public class PandoraFSAllocationMapException_AddToListOfStartPositions : PandoraFSAllocationMapException
+    public class GraphFSAllocationMapException_ExtentNotFoundWithinFreeExtentsByLength : GraphFSAllocationMapException
     {
-        public PandoraFSAllocationMapException_AddToListOfStartPositions(String message)
+        public GraphFSAllocationMapException_ExtentNotFoundWithinFreeExtentsByLength(String message)
             : base(message)
         {
             // do nothing extra
@@ -369,9 +358,9 @@ namespace sones.GraphFS.Exceptions
 
 
 
-    public class PandoraFSAllocationMapException_RemoveFromListOfStartPositions : PandoraFSAllocationMapException
+    public class GraphFSAllocationMapException_AddToListOfStartPositions : GraphFSAllocationMapException
     {
-        public PandoraFSAllocationMapException_RemoveFromListOfStartPositions(String message)
+        public GraphFSAllocationMapException_AddToListOfStartPositions(String message)
             : base(message)
         {
             // do nothing extra
@@ -380,9 +369,9 @@ namespace sones.GraphFS.Exceptions
 
 
 
-    public class PandoraFSAllocationMapException_CouldNotAllocate : PandoraFSAllocationMapException
+    public class GraphFSAllocationMapException_RemoveFromListOfStartPositions : GraphFSAllocationMapException
     {
-        public PandoraFSAllocationMapException_CouldNotAllocate(String message)
+        public GraphFSAllocationMapException_RemoveFromListOfStartPositions(String message)
             : base(message)
         {
             // do nothing extra
@@ -390,9 +379,10 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSException_AllocationMapCouldNotBeDeserialized : PandoraFSAllocationMapException
+
+    public class GraphFSAllocationMapException_CouldNotAllocate : GraphFSAllocationMapException
     {
-        public PandoraFSException_AllocationMapCouldNotBeDeserialized(String message)
+        public GraphFSAllocationMapException_CouldNotAllocate(String message)
             : base(message)
         {
             // do nothing extra
@@ -400,18 +390,28 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSAllocationMapException_FreeExtentsListsInconsistency : PandoraFSAllocationMapException
+    public class GraphFSException_AllocationMapCouldNotBeDeserialized : GraphFSAllocationMapException
     {
-        public PandoraFSAllocationMapException_FreeExtentsListsInconsistency(String message)
+        public GraphFSException_AllocationMapCouldNotBeDeserialized(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSAllocationMapException_CouldNotShrinkAllocationMap : PandoraFSAllocationMapException
+
+    public class GraphFSAllocationMapException_FreeExtentsListsInconsistency : GraphFSAllocationMapException
     {
-        public PandoraFSAllocationMapException_CouldNotShrinkAllocationMap(String message)
+        public GraphFSAllocationMapException_FreeExtentsListsInconsistency(String message)
+            : base(message)
+        {
+            // do nothing extra
+        }
+    }
+
+    public class GraphFSAllocationMapException_CouldNotShrinkAllocationMap : GraphFSAllocationMapException
+    {
+        public GraphFSAllocationMapException_CouldNotShrinkAllocationMap(String message)
             : base(message)
         {
             // do nothing extra
@@ -423,36 +423,36 @@ namespace sones.GraphFS.Exceptions
 
     #region INode and ObjectLocator Exceptions
 
-    public class PandoraFSException_INodeCouldNotBeDeserialized : GraphFSException
+    public class GraphFSException_INodeCouldNotBeDeserialized : GraphFSException
     {
-        public PandoraFSException_INodeCouldNotBeDeserialized(String message)
+        public GraphFSException_INodeCouldNotBeDeserialized(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_InvalidINodePositions : GraphFSException
+    public class GraphFSException_InvalidINodePositions : GraphFSException
     {
-        public PandoraFSException_InvalidINodePositions(String message)
+        public GraphFSException_InvalidINodePositions(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_InvalidIndex : GraphFSException
+    public class GraphFSException_InvalidIndex : GraphFSException
     {
-        public PandoraFSException_InvalidIndex(String message)
+        public GraphFSException_InvalidIndex(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_ObjectLocatorCouldNotBeDeserialized : GraphFSException
+    public class GraphFSException_ObjectLocatorCouldNotBeDeserialized : GraphFSException
     {
-        public PandoraFSException_ObjectLocatorCouldNotBeDeserialized(String message)
+        public GraphFSException_ObjectLocatorCouldNotBeDeserialized(String message)
             : base(message)
         {
             // do nothing extra
@@ -466,27 +466,27 @@ namespace sones.GraphFS.Exceptions
 
     #region Object/Symlink not found
 
-    public class PandoraFSException_ObjectNotFound : GraphFSException
+    public class GraphFSException_ObjectNotFound : GraphFSException
     {
-        public PandoraFSException_ObjectNotFound(String message)
+        public GraphFSException_ObjectNotFound(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_SymlinkNotFound : PandoraFSException_ObjectNotFound
+    public class GraphFSException_SymlinkNotFound : GraphFSException_ObjectNotFound
     {
-        public PandoraFSException_SymlinkNotFound(String message)
+        public GraphFSException_SymlinkNotFound(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_FileObjectNotFound : PandoraFSException_ObjectNotFound
+    public class GraphFSException_FileObjectNotFound : GraphFSException_ObjectNotFound
     {
-        public PandoraFSException_FileObjectNotFound(String message)
+        public GraphFSException_FileObjectNotFound(String message)
             : base(message)
         {
             // do nothing extra
@@ -497,81 +497,81 @@ namespace sones.GraphFS.Exceptions
 
     #region ObjectSTREAMs_NotFound
 
-    public class PandoraFSException_DIRECTORYSTREAM_NotFound : PandoraFSException_ObjectNotFound
+    public class GraphFSException_DIRECTORYSTREAM_NotFound : GraphFSException_ObjectNotFound
     {
-        public PandoraFSException_DIRECTORYSTREAM_NotFound(String message)
+        public GraphFSException_DIRECTORYSTREAM_NotFound(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_VIRTUALDIRECTORY_NotFound : PandoraFSException_ObjectNotFound
+    public class GraphFSException_VIRTUALDIRECTORY_NotFound : GraphFSException_ObjectNotFound
     {
-        public PandoraFSException_VIRTUALDIRECTORY_NotFound(String message)
+        public GraphFSException_VIRTUALDIRECTORY_NotFound(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_FILESTREAM_NotFound : PandoraFSException_ObjectNotFound
+    public class GraphFSException_FILESTREAM_NotFound : GraphFSException_ObjectNotFound
     {
-        public PandoraFSException_FILESTREAM_NotFound(String message)
+        public GraphFSException_FILESTREAM_NotFound(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_SYSTEMMETADATASTREAM_NotFound : PandoraFSException_ObjectNotFound
+    public class GraphFSException_SYSTEMMETADATASTREAM_NotFound : GraphFSException_ObjectNotFound
     {
-        public PandoraFSException_SYSTEMMETADATASTREAM_NotFound(String message)
+        public GraphFSException_SYSTEMMETADATASTREAM_NotFound(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_USERMETADATASTREAM_NotFound : PandoraFSException_ObjectNotFound
+    public class GraphFSException_USERMETADATASTREAM_NotFound : GraphFSException_ObjectNotFound
     {
-        public PandoraFSException_USERMETADATASTREAM_NotFound(String message)
+        public GraphFSException_USERMETADATASTREAM_NotFound(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_PreviewObjectNotFound : PandoraFSException_ObjectNotFound
+    public class GraphFSException_PreviewObjectNotFound : GraphFSException_ObjectNotFound
     {
-        public PandoraFSException_PreviewObjectNotFound(String message)
+        public GraphFSException_PreviewObjectNotFound(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_BlockIntegrityObjectNotFound : PandoraFSException_ObjectNotFound
+    public class GraphFSException_BlockIntegrityObjectNotFound : GraphFSException_ObjectNotFound
     {
-        public PandoraFSException_BlockIntegrityObjectNotFound(String message)
+        public GraphFSException_BlockIntegrityObjectNotFound(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_AccessControllObjectNotFound : PandoraFSException_ObjectNotFound
+    public class GraphFSException_AccessControllObjectNotFound : GraphFSException_ObjectNotFound
     {
-        public PandoraFSException_AccessControllObjectNotFound(String message)
+        public GraphFSException_AccessControllObjectNotFound(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_ObjectHasNoInlineData : PandoraFSException_ObjectNotFound
+    public class GraphFSException_ObjectHasNoInlineData : GraphFSException_ObjectNotFound
     {
-        public PandoraFSException_ObjectHasNoInlineData(String message)
+        public GraphFSException_ObjectHasNoInlineData(String message)
             : base(message)
         {
             // do nothing extra
@@ -582,90 +582,90 @@ namespace sones.GraphFS.Exceptions
 
     #region ObjectAlreadyExists
 
-    public class PandoraFSException_ObjectAlreadyExists : GraphFSException
+    public class GraphFSException_ObjectAlreadyExists : GraphFSException
     {
-        public PandoraFSException_ObjectAlreadyExists(String message)
+        public GraphFSException_ObjectAlreadyExists(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_ObjectStreamAlreadyExists : PandoraFSException_ObjectAlreadyExists
+    public class GraphFSException_ObjectStreamAlreadyExists : GraphFSException_ObjectAlreadyExists
     {
-        public PandoraFSException_ObjectStreamAlreadyExists(String message)
+        public GraphFSException_ObjectStreamAlreadyExists(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_SymlinkAlreadyExists : PandoraFSException_ObjectAlreadyExists
+    public class GraphFSException_SymlinkAlreadyExists : GraphFSException_ObjectAlreadyExists
     {
-        public PandoraFSException_SymlinkAlreadyExists(String message)
+        public GraphFSException_SymlinkAlreadyExists(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_DirectoryObjectAlreadyExists : PandoraFSException_ObjectAlreadyExists
+    public class GraphFSException_DirectoryObjectAlreadyExists : GraphFSException_ObjectAlreadyExists
     {
-        public PandoraFSException_DirectoryObjectAlreadyExists(String message)
+        public GraphFSException_DirectoryObjectAlreadyExists(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_DeviceBusy : GraphFSException
+    public class GraphFSException_DeviceBusy : GraphFSException
     {
-        public PandoraFSException_DeviceBusy(String message)
+        public GraphFSException_DeviceBusy(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_FileObjectAlreadyExists : PandoraFSException_ObjectAlreadyExists
+    public class GraphFSException_FileObjectAlreadyExists : GraphFSException_ObjectAlreadyExists
     {
-        public PandoraFSException_FileObjectAlreadyExists(String message)
+        public GraphFSException_FileObjectAlreadyExists(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_UserMetadataObjectAlreadyExists : PandoraFSException_ObjectAlreadyExists
+    public class GraphFSException_UserMetadataObjectAlreadyExists : GraphFSException_ObjectAlreadyExists
     {
-        public PandoraFSException_UserMetadataObjectAlreadyExists(String message)
+        public GraphFSException_UserMetadataObjectAlreadyExists(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_SystemMetadataObjectAlreadyExists : PandoraFSException_ObjectAlreadyExists
+    public class GraphFSException_SystemMetadataObjectAlreadyExists : GraphFSException_ObjectAlreadyExists
     {
-        public PandoraFSException_SystemMetadataObjectAlreadyExists(String message)
+        public GraphFSException_SystemMetadataObjectAlreadyExists(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_BlockIntegrityObjectAlreadyExists : PandoraFSException_ObjectAlreadyExists
+    public class GraphFSException_BlockIntegrityObjectAlreadyExists : GraphFSException_ObjectAlreadyExists
     {
-        public PandoraFSException_BlockIntegrityObjectAlreadyExists(String message)
+        public GraphFSException_BlockIntegrityObjectAlreadyExists(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_AccessControllObjectAlreadyExists : PandoraFSException_ObjectAlreadyExists
+    public class GraphFSException_AccessControllObjectAlreadyExists : GraphFSException_ObjectAlreadyExists
     {
-        public PandoraFSException_AccessControllObjectAlreadyExists(String message)
+        public GraphFSException_AccessControllObjectAlreadyExists(String message)
             : base(message)
         {
             // do nothing extra
@@ -676,9 +676,9 @@ namespace sones.GraphFS.Exceptions
 
     #region ObjectStreamNotAllowed
 
-    public class PandoraFSException_ObjectStreamNotAllowed : GraphFSException
+    public class GraphFSException_ObjectStreamNotAllowed : GraphFSException
     {
-        public PandoraFSException_ObjectStreamNotAllowed(String message)
+        public GraphFSException_ObjectStreamNotAllowed(String message)
             : base(message)
         {
             // do nothing extra
@@ -689,9 +689,9 @@ namespace sones.GraphFS.Exceptions
 
     #region UnknownObjectStream
 
-    public class PandoraFSException_UnknownObjectStream : GraphFSException
+    public class GraphFSException_UnknownObjectStream : GraphFSException
     {
-        public PandoraFSException_UnknownObjectStream(String message)
+        public GraphFSException_UnknownObjectStream(String message)
             : base(message)
         {
             // do nothing extra
@@ -700,11 +700,11 @@ namespace sones.GraphFS.Exceptions
 
     #endregion
 
-    #region PandoraFSException_ObjectIsNotASymlink
+    #region GraphFSException_ObjectIsNotASymlink
 
-    public class PandoraFSException_ObjectIsNotASymlink : GraphFSException
+    public class GraphFSException_ObjectIsNotASymlink : GraphFSException
     {
-        public PandoraFSException_ObjectIsNotASymlink(String message)
+        public GraphFSException_ObjectIsNotASymlink(String message)
             : base(message)
         {
             // do nothing extra
@@ -713,11 +713,11 @@ namespace sones.GraphFS.Exceptions
 
     #endregion
 
-    #region PandoraFSException_NoPositionsForReading
+    #region GraphFSException_NoPositionsForReading
 
-    public class PandoraFSException_NoPositionsForReading : GraphFSException
+    public class GraphFSException_NoPositionsForReading : GraphFSException
     {
-        public PandoraFSException_NoPositionsForReading(String message)
+        public GraphFSException_NoPositionsForReading(String message)
             : base(message)
         {
             // do nothing extra
@@ -730,9 +730,9 @@ namespace sones.GraphFS.Exceptions
 
     #region SuperblockObject Exceptions
 
-    public class PandoraFSException_SuperblockCouldNotBeDeserialized : GraphFSException
+    public class GraphFSException_SuperblockCouldNotBeDeserialized : GraphFSException
     {
-        public PandoraFSException_SuperblockCouldNotBeDeserialized(String message)
+        public GraphFSException_SuperblockCouldNotBeDeserialized(String message)
             : base(message)
         {
             // do nothing extra
@@ -743,11 +743,11 @@ namespace sones.GraphFS.Exceptions
 
     #region ObjectSafety and Security
 
-    #region PandoraFS Information Header Exception
+    #region GraphFS Information Header Exception
 
-    public class PandoraFSInformationHeaderException : GraphFSException
+    public class GraphFSInformationHeaderException : GraphFSException
     {
-        public PandoraFSInformationHeaderException(String message)
+        public GraphFSInformationHeaderException(String message)
             : base(message)
         {
             // do nothing extra
@@ -756,27 +756,27 @@ namespace sones.GraphFS.Exceptions
 
     #region Integrity Check
 
-    public class PandoraFSException_IntegrityCheckFailed : PandoraFSInformationHeaderException
+    public class GraphFSException_IntegrityCheckFailed : GraphFSInformationHeaderException
     {
-        public PandoraFSException_IntegrityCheckFailed(String message)
+        public GraphFSException_IntegrityCheckFailed(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_InvalidInformationHeader : PandoraFSInformationHeaderException
+    public class GraphFSException_InvalidInformationHeader : GraphFSInformationHeaderException
     {
-        public PandoraFSException_InvalidInformationHeader(String message)
+        public GraphFSException_InvalidInformationHeader(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_InvalidIntegrityCheckLengthField : PandoraFSInformationHeaderException
+    public class GraphFSException_InvalidIntegrityCheckLengthField : GraphFSInformationHeaderException
     {
-        public PandoraFSException_InvalidIntegrityCheckLengthField(String message)
+        public GraphFSException_InvalidIntegrityCheckLengthField(String message)
             : base(message)
         {
             // do nothing extra
@@ -787,9 +787,9 @@ namespace sones.GraphFS.Exceptions
 
     #region Encryption
 
-    public class PandoraFSException_InvalidEncryptionParametersLengthField : PandoraFSInformationHeaderException
+    public class GraphFSException_InvalidEncryptionParametersLengthField : GraphFSInformationHeaderException
     {
-        public PandoraFSException_InvalidEncryptionParametersLengthField(String message)
+        public GraphFSException_InvalidEncryptionParametersLengthField(String message)
             : base(message)
         {
             // do nothing extra
@@ -797,9 +797,9 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSException_InvalidDataPaddingLengthField : PandoraFSInformationHeaderException
+    public class GraphFSException_InvalidDataPaddingLengthField : GraphFSInformationHeaderException
     {
-        public PandoraFSException_InvalidDataPaddingLengthField(String message)
+        public GraphFSException_InvalidDataPaddingLengthField(String message)
             : base(message)
         {
             // do nothing extra
@@ -807,9 +807,9 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSException_InvalidAdditionalPaddingLengthField : PandoraFSInformationHeaderException
+    public class GraphFSException_InvalidAdditionalPaddingLengthField : GraphFSInformationHeaderException
     {
-        public PandoraFSException_InvalidAdditionalPaddingLengthField(String message)
+        public GraphFSException_InvalidAdditionalPaddingLengthField(String message)
             : base(message)
         {
             // do nothing extra
@@ -817,18 +817,18 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSException_InformationHeaderPaddingTooSmall : PandoraFSInformationHeaderException
+    public class GraphFSException_InformationHeaderPaddingTooSmall : GraphFSInformationHeaderException
     {
-        public PandoraFSException_InformationHeaderPaddingTooSmall(String message)
+        public GraphFSException_InformationHeaderPaddingTooSmall(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_InformationHeaderPaddingTooLarge : PandoraFSInformationHeaderException
+    public class GraphFSException_InformationHeaderPaddingTooLarge : GraphFSInformationHeaderException
     {
-        public PandoraFSException_InformationHeaderPaddingTooLarge(String message)
+        public GraphFSException_InformationHeaderPaddingTooLarge(String message)
             : base(message)
         {
             // do nothing extra
@@ -839,11 +839,11 @@ namespace sones.GraphFS.Exceptions
 
     #endregion
 
-    #region PandoraFSException_IllegalRevisionTime
+    #region GraphFSException_IllegalRevisionTime
 
-    public class PandoraFSException_IllegalRevisionTime : GraphFSException
+    public class GraphFSException_IllegalRevisionTime : GraphFSException
     {
-        public PandoraFSException_IllegalRevisionTime(String message)
+        public GraphFSException_IllegalRevisionTime(String message)
             : base(message)
         {
             // do nothing extra
@@ -856,18 +856,18 @@ namespace sones.GraphFS.Exceptions
 
     #region EntitiesObject Exceptions
 
-    public class PandoraFSException_EntityObjectCouldNotBeDeserialized : GraphFSException
+    public class GraphFSException_EntityObjectCouldNotBeDeserialized : GraphFSException
     {
-        public PandoraFSException_EntityObjectCouldNotBeDeserialized(String message)
+        public GraphFSException_EntityObjectCouldNotBeDeserialized(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_EntityCouldNotBeDeserialized : GraphFSException
+    public class GraphFSException_EntityCouldNotBeDeserialized : GraphFSException
     {
-        public PandoraFSException_EntityCouldNotBeDeserialized(String message)
+        public GraphFSException_EntityCouldNotBeDeserialized(String message)
             : base(message)
         {
             // do nothing extra
@@ -878,18 +878,18 @@ namespace sones.GraphFS.Exceptions
 
     #region AccessControlObject Exceptions
 
-    public class PandoraFSException_AccessControlObjectCouldNotBeDeserialized : GraphFSException
+    public class GraphFSException_AccessControlObjectCouldNotBeDeserialized : GraphFSException
     {
-        public PandoraFSException_AccessControlObjectCouldNotBeDeserialized(String message)
+        public GraphFSException_AccessControlObjectCouldNotBeDeserialized(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_RightsIncexObjectHasNotBeenLoaded : GraphFSException
+    public class GraphFSException_RightsIncexObjectHasNotBeenLoaded : GraphFSException
     {
-        public PandoraFSException_RightsIncexObjectHasNotBeenLoaded(String message)
+        public GraphFSException_RightsIncexObjectHasNotBeenLoaded(String message)
             : base(message)
         {
             // do nothing extra
@@ -899,9 +899,9 @@ namespace sones.GraphFS.Exceptions
     #endregion
 
 
-    public class PandoraFSException_APandoraStructureCouldNotBeDeserialized : GraphFSException
+    public class GraphFSException_AGraphStructureCouldNotBeDeserialized : GraphFSException
     {
-        public PandoraFSException_APandoraStructureCouldNotBeDeserialized(String message)
+        public GraphFSException_AGraphStructureCouldNotBeDeserialized(String message)
             : base(message)
         {
             // do nothing extra
@@ -909,28 +909,18 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSException_RevisionIDCouldNotBeDeserialized : GraphFSException
+    public class GraphFSException_RevisionIDCouldNotBeDeserialized : GraphFSException
     {
-        public PandoraFSException_RevisionIDCouldNotBeDeserialized(String message)
+        public GraphFSException_RevisionIDCouldNotBeDeserialized(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_ObjectStreamMappingCouldNotBeDeserialized : GraphFSException
+    public class GraphFSException_ObjectStreamMappingCouldNotBeDeserialized : GraphFSException
     {
-        public PandoraFSException_ObjectStreamMappingCouldNotBeDeserialized(String message)
-            : base(message)
-        {
-            // do nothing extra
-        }
-    }
-
-
-    public class PandoraFSException_EntityNotFound : GraphFSException
-    {
-        public PandoraFSException_EntityNotFound(String message)
+        public GraphFSException_ObjectStreamMappingCouldNotBeDeserialized(String message)
             : base(message)
         {
             // do nothing extra
@@ -938,9 +928,9 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSException_EntityPasswordInvalid : GraphFSException
+    public class GraphFSException_EntityNotFound : GraphFSException
     {
-        public PandoraFSException_EntityPasswordInvalid(String message)
+        public GraphFSException_EntityNotFound(String message)
             : base(message)
         {
             // do nothing extra
@@ -948,9 +938,9 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSException_EntityPublicKeyInvalid : GraphFSException
+    public class GraphFSException_EntityPasswordInvalid : GraphFSException
     {
-        public PandoraFSException_EntityPublicKeyInvalid(String message)
+        public GraphFSException_EntityPasswordInvalid(String message)
             : base(message)
         {
             // do nothing extra
@@ -958,9 +948,19 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSException_RightNotFound : GraphFSException
+    public class GraphFSException_EntityPublicKeyInvalid : GraphFSException
     {
-        public PandoraFSException_RightNotFound(String message)
+        public GraphFSException_EntityPublicKeyInvalid(String message)
+            : base(message)
+        {
+            // do nothing extra
+        }
+    }
+
+
+    public class GraphFSException_RightNotFound : GraphFSException
+    {
+        public GraphFSException_RightNotFound(String message)
             : base(message)
         {
             // do nothing extra
@@ -971,18 +971,18 @@ namespace sones.GraphFS.Exceptions
 
     #region Object Caching
 
-    public class PandoraFSException_ObjectAlreadyCached : GraphFSException
+    public class GraphFSException_ObjectAlreadyCached : GraphFSException
     {
-        public PandoraFSException_ObjectAlreadyCached(String message)
+        public GraphFSException_ObjectAlreadyCached(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_ObjectDoesNotImplementIFastSerialize : GraphFSException
+    public class GraphFSException_ObjectDoesNotImplementIFastSerialize : GraphFSException
     {
-        public PandoraFSException_ObjectDoesNotImplementIFastSerialize(String message)
+        public GraphFSException_ObjectDoesNotImplementIFastSerialize(String message)
             : base(message)
         {
             // do nothing extra
@@ -993,9 +993,9 @@ namespace sones.GraphFS.Exceptions
 
     #region WebDAV
 
-    public class PandoraFSException_NoMountedFS : GraphFSException
+    public class GraphFSException_NoMountedFS : GraphFSException
     {
-        public PandoraFSException_NoMountedFS(String message)
+        public GraphFSException_NoMountedFS(String message)
             : base(message)
         {
             // do nothing extra
@@ -1007,37 +1007,18 @@ namespace sones.GraphFS.Exceptions
 
 
 
-    public class PandoraFSException_SymlinkCouldNotBeDeleted : GraphFSException
+    public class GraphFSException_SymlinkCouldNotBeDeleted : GraphFSException
     {
-        public PandoraFSException_SymlinkCouldNotBeDeleted(String message)
+        public GraphFSException_SymlinkCouldNotBeDeleted(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_SymlinkCouldNotBeRemoved : GraphFSException
+    public class GraphFSException_SymlinkCouldNotBeRemoved : GraphFSException
     {
-        public PandoraFSException_SymlinkCouldNotBeRemoved(String message)
-            : base(message)
-        {
-            // do nothing extra
-        }
-    }
-
-
-    public class PandoraFSException_ObjectCouldNotBeDeserialized : GraphFSException
-    {
-        public PandoraFSException_ObjectCouldNotBeDeserialized(String message)
-            : base(message)
-        {
-            // do nothing extra
-        }
-    }
-
-    public class PandoraFSException_FileObjectCouldNotBeDeserialized : PandoraFSException_ObjectCouldNotBeDeserialized
-    {
-        public PandoraFSException_FileObjectCouldNotBeDeserialized(String message)
+        public GraphFSException_SymlinkCouldNotBeRemoved(String message)
             : base(message)
         {
             // do nothing extra
@@ -1045,10 +1026,18 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-
-    public class PandoraFSException_DirectoryObjectIsNotEmpty : GraphFSException
+    public class GraphFSException_ObjectCouldNotBeDeserialized : GraphFSException
     {
-        public PandoraFSException_DirectoryObjectIsNotEmpty(String message)
+        public GraphFSException_ObjectCouldNotBeDeserialized(String message)
+            : base(message)
+        {
+            // do nothing extra
+        }
+    }
+
+    public class GraphFSException_FileObjectCouldNotBeDeserialized : GraphFSException_ObjectCouldNotBeDeserialized
+    {
+        public GraphFSException_FileObjectCouldNotBeDeserialized(String message)
             : base(message)
         {
             // do nothing extra
@@ -1056,9 +1045,10 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSException_ObjectStreamNotFound : GraphFSException
+
+    public class GraphFSException_DirectoryObjectIsNotEmpty : GraphFSException
     {
-        public PandoraFSException_ObjectStreamNotFound(String message)
+        public GraphFSException_DirectoryObjectIsNotEmpty(String message)
             : base(message)
         {
             // do nothing extra
@@ -1066,9 +1056,19 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSException_CircularSymlinksDetected : GraphFSException
+    public class GraphFSException_ObjectStreamNotFound : GraphFSException
     {
-        public PandoraFSException_CircularSymlinksDetected(String message)
+        public GraphFSException_ObjectStreamNotFound(String message)
+            : base(message)
+        {
+            // do nothing extra
+        }
+    }
+
+
+    public class GraphFSException_CircularSymlinksDetected : GraphFSException
+    {
+        public GraphFSException_CircularSymlinksDetected(String message)
             : base(message)
         {
             // do nothing extra
@@ -1079,9 +1079,9 @@ namespace sones.GraphFS.Exceptions
 
     #region Parser Exceptions
 
-    public class PandoraFSException_ParseError : GraphFSException
+    public class GraphFSException_ParseError : GraphFSException
     {
-        public PandoraFSException_ParseError(String message)
+        public GraphFSException_ParseError(String message)
             : base(message)
         {
             // do nothing extra
@@ -1089,45 +1089,45 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSException_ParsedSizeIsInvalid : PandoraFSException_ParseError
+    public class GraphFSException_ParsedSizeIsInvalid : GraphFSException_ParseError
     {
-        public PandoraFSException_ParsedSizeIsInvalid(String message)
+        public GraphFSException_ParsedSizeIsInvalid(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_ParsedCreationTimeIsInvalid : PandoraFSException_ParseError
+    public class GraphFSException_ParsedCreationTimeIsInvalid : GraphFSException_ParseError
     {
-        public PandoraFSException_ParsedCreationTimeIsInvalid(String message)
+        public GraphFSException_ParsedCreationTimeIsInvalid(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_ParsedLastAccessTimeIsInvalid : PandoraFSException_ParseError
+    public class GraphFSException_ParsedLastAccessTimeIsInvalid : GraphFSException_ParseError
     {
-        public PandoraFSException_ParsedLastAccessTimeIsInvalid(String message)
+        public GraphFSException_ParsedLastAccessTimeIsInvalid(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_ParsedLastModificationTimeIsInvalid : PandoraFSException_ParseError
+    public class GraphFSException_ParsedLastModificationTimeIsInvalid : GraphFSException_ParseError
     {
-        public PandoraFSException_ParsedLastModificationTimeIsInvalid(String message)
+        public GraphFSException_ParsedLastModificationTimeIsInvalid(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_ParsedDeletionTimeIsInvalid : PandoraFSException_ParseError
+    public class GraphFSException_ParsedDeletionTimeIsInvalid : GraphFSException_ParseError
     {
-        public PandoraFSException_ParsedDeletionTimeIsInvalid(String message)
+        public GraphFSException_ParsedDeletionTimeIsInvalid(String message)
             : base(message)
         {
             // do nothing extra
@@ -1137,9 +1137,9 @@ namespace sones.GraphFS.Exceptions
     #endregion
 
 
-    //public class PandoraFSException_InlineDataAndINodePositionsAtTheSameTimeAreInvalid : PandoraFSException
+    //public class GraphFSException_InlineDataAndINodePositionsAtTheSameTimeAreInvalid : GraphFSException
     //{
-    //    public PandoraFSException_InlineDataAndINodePositionsAtTheSameTimeAreInvalid(String message)
+    //    public GraphFSException_InlineDataAndINodePositionsAtTheSameTimeAreInvalid(String message)
     //        : base(message)
     //    {
     //        // do nothing extra
@@ -1147,9 +1147,9 @@ namespace sones.GraphFS.Exceptions
     //}
 
 
-    //public class PandoraFSException_ObjectEditionAlreadyExists : PandoraFSException
+    //public class GraphFSException_ObjectEditionAlreadyExists : GraphFSException
     //{
-    //    public PandoraFSException_ObjectEditionAlreadyExists(String message)
+    //    public GraphFSException_ObjectEditionAlreadyExists(String message)
     //        : base(message)
     //    {
     //        // do nothing extra
@@ -1157,9 +1157,9 @@ namespace sones.GraphFS.Exceptions
     //}
 
 
-    //public class PandoraFSException_ObjectStreamTypeFactoryError : PandoraFSException
+    //public class GraphFSException_ObjectStreamTypeFactoryError : GraphFSException
     //{
-    //    public PandoraFSException_ObjectStreamTypeFactoryError(String message)
+    //    public GraphFSException_ObjectStreamTypeFactoryError(String message)
     //        : base(message)
     //    {
     //        // do nothing extra
@@ -1167,9 +1167,9 @@ namespace sones.GraphFS.Exceptions
     //}
 
 
-    //public class PandoraFSException_ObjectStreamTypeFactory_DuplicateObjectStream : PandoraFSException_ObjectStreamTypeFactoryError
+    //public class GraphFSException_ObjectStreamTypeFactory_DuplicateObjectStream : GraphFSException_ObjectStreamTypeFactoryError
     //{
-    //    public PandoraFSException_ObjectStreamTypeFactory_DuplicateObjectStream(String message)
+    //    public GraphFSException_ObjectStreamTypeFactory_DuplicateObjectStream(String message)
     //        : base(message)
     //    {
     //        // do nothing extra
@@ -1178,9 +1178,9 @@ namespace sones.GraphFS.Exceptions
 
 
 
-    public class PandoraFSException_TypeParametersDiffer : GraphFSException
+    public class GraphFSException_TypeParametersDiffer : GraphFSException
     {
-        public PandoraFSException_TypeParametersDiffer(String message)
+        public GraphFSException_TypeParametersDiffer(String message)
             : base(message)
         {
             // do nothing extra
@@ -1188,36 +1188,36 @@ namespace sones.GraphFS.Exceptions
     }
 
 
-    public class PandoraFSException_NoTransactionFound : GraphFSException
+    public class GraphFSException_NoTransactionFound : GraphFSException
     {
-        public PandoraFSException_NoTransactionFound(String message)
+        public GraphFSException_NoTransactionFound(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_RevisionAlreadyHoldTransaction : GraphFSException
+    public class GraphFSException_RevisionAlreadyHoldTransaction : GraphFSException
     {
-        public PandoraFSException_RevisionAlreadyHoldTransaction(String message)
+        public GraphFSException_RevisionAlreadyHoldTransaction(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_LocationAlreadyHoldTransaction : GraphFSException
+    public class GraphFSException_LocationAlreadyHoldTransaction : GraphFSException
     {
-        public PandoraFSException_LocationAlreadyHoldTransaction(String message)
+        public GraphFSException_LocationAlreadyHoldTransaction(String message)
             : base(message)
         {
             // do nothing extra
         }
     }
 
-    public class PandoraFSException_IndexKeyAlreadyExist : GraphFSException
+    public class GraphFSException_IndexKeyAlreadyExist : GraphFSException
     {
-        public PandoraFSException_IndexKeyAlreadyExist(String message)
+        public GraphFSException_IndexKeyAlreadyExist(String message)
             : base(message)
         {
             // do nothing extra
@@ -1227,9 +1227,9 @@ namespace sones.GraphFS.Exceptions
     #region FastSerializeTypeSurrogate
 
 
-    public class PandoraFSException_FastSerializeSurrogateTypeCodeExist : GraphFSException
+    public class GraphFSException_FastSerializeSurrogateTypeCodeExist : GraphFSException
     {
-        public PandoraFSException_FastSerializeSurrogateTypeCodeExist(String message)
+        public GraphFSException_FastSerializeSurrogateTypeCodeExist(String message)
             : base(message)
         {
             // do nothing extra

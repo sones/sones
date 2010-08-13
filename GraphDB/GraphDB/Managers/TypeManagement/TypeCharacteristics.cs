@@ -53,7 +53,7 @@ namespace sones.GraphDB.TypeManagement
         public Boolean IsBackwardEdge { get; set; }
 
         /// <summary>
-        /// If set to true, all object of the RelatedPandoraType with this attribute a unique for this RelatedPandoraType.
+        /// If set to true, all object of the RelatedGraphType with this attribute a unique for this RelatedGraphType.
         /// If more attribute are set to UNIQUE, all together are unique.
         /// </summary>
         public Boolean IsUnique { get; set; }

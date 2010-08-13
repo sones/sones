@@ -1,0 +1,17 @@
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/bin/Debug/GraphDBInterface.dll
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/bin/Debug/GraphDBInterface.dll.mdb
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/bin/Debug/GraphDB.dll
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/bin/Debug/GraphDB.dll.mdb
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/bin/Debug/GraphFSInterface.dll
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/bin/Debug/GraphFSInterface.dll.mdb
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/bin/Debug/Lib.dll
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/bin/Debug/Lib.dll.mdb
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/bin/Debug/StorageEnginesInterface.dll
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/bin/Debug/StorageEnginesInterface.dll.mdb
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/bin/Debug/GraphIO.dll
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/bin/Debug/Notifications.dll
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/bin/Debug/Notifications.dll.mdb
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/bin/Debug/Networking.dll
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/bin/Debug/Networking.dll.mdb
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/bin/Debug/XML_IO.dll
+/home/henning/sonesGithub/sones/GraphIO/XML_IO/obj/Debug/XML_IO.dll

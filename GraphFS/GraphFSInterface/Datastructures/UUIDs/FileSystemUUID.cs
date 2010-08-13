@@ -80,6 +80,21 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
+        #region FileSystemUUID(myUUID)
+
+        /// <summary>
+        /// Generates a UUID based on the content of myUUID
+        /// </summary>
+        /// <param name="myUUID">A UUID</param>
+        public FileSystemUUID(UUID myUUID)
+        {
+            var _ByteArray = myUUID.GetByteArray();
+            _UUID = new Byte[_ByteArray.LongLength];
+            Array.Copy(_ByteArray, 0, _UUID, 0, _ByteArray.LongLength);
+        }
+
+        #endregion
+
         #endregion
 
         #region NewUUID

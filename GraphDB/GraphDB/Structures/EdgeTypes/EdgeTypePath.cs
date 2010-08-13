@@ -30,7 +30,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.Structures;
 
 using sones.GraphDB.Structures.Result;
 using sones.GraphDB.TypeManagement;
@@ -39,13 +38,14 @@ using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
 using sones.GraphDB.Managers.Structures;
+using sones.Lib;
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
     /// <summary>
     /// Sepecial edge to store paths and create the readout of them
     /// </summary>
-    public class EdgeTypePath : ASetReferenceEdgeType
+    public class EdgeTypePath : ASetOfReferencesEdgeType
     {
 
         #region TypeCode
@@ -80,17 +80,17 @@ namespace sones.GraphDB.Structures.EdgeTypes
             throw new NotImplementedException();
         }
 
-        public override AEdgeType GetNewInstance()
+        public override IEdgeType GetNewInstance()
         {
             throw new NotImplementedException();
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
+        public override IReferenceEdge GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
         {
             throw new NotImplementedException();
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeUUID)
+        public override IReferenceEdge GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeUUID)
         {
             throw new NotImplementedException();
         }
@@ -112,10 +112,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
             throw new NotImplementedException();
         }
 
-        public override IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetAllReferenceIDsWeighted()
-        {
-            throw new NotImplementedException();
-        }
 
         public override IEnumerable<DBObjectReadout> GetReadouts(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO)
         {
@@ -206,17 +202,19 @@ namespace sones.GraphDB.Structures.EdgeTypes
             throw new NotImplementedException();
         }
 
-        public override System.Collections.IEnumerable GetAll()
+        public override IListOrSetEdgeType GetTopAsEdge(ulong myNumOfEntries)
         {
-            throw new NotImplementedException();
+
+            if (!_Paths.CountIsGreaterOrEquals((int)myNumOfEntries))
+            {
+                myNumOfEntries = _Paths.ULongCount();
+            }
+
+            return new EdgeTypePath(_Paths.Take((int)myNumOfEntries), _pathAttribute, _typeOfObjects);
+
         }
 
-        public override System.Collections.IEnumerable GetTop(ulong myNumOfEntries)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void UnionWith(AEdgeType myAListEdgeType)
+        public override void UnionWith(IListOrSetEdgeType myAListEdgeType)
         {
             throw new NotImplementedException();
         }
@@ -227,11 +225,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
         }
 
         public override void Clear()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override System.Collections.IEnumerator GetEnumerator()
         {
             throw new NotImplementedException();
         }
@@ -292,11 +285,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
         #endregion
 
         public override IEnumerable<Exceptional<DBObjectStream>> GetAllEdgeDestinations(DBObjectCache dbObjectCache)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IEnumerable<Tuple<Exceptional<DBObjectStream>, ADBBaseObject>> GetAllEdgeDestinationsWeighted(DBObjectCache dbObjectCache)
         {
             throw new NotImplementedException();
         }

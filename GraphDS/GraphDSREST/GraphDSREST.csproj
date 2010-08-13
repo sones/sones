@@ -161,6 +161,30 @@
       <Project>{B23FDA3D-8229-4CDD-91FD-9AFD7301D315}</Project>
       <Name>GraphFSInterface</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\GEXF_IO\GEXF_IO.csproj">
+      <Project>{5C819A2C-5CA4-402E-9235-F44774378F56}</Project>
+      <Name>GEXF_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\GraphIO\GraphIO.csproj">
+      <Project>{624BBB9D-89BE-43CE-8B8C-18BE729F4B11}</Project>
+      <Name>GraphIO %28Dependencies\GraphIO\GraphIO%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\HTML_IO\HTML_IO.csproj">
+      <Project>{0A2471D6-AECF-4271-91C4-189C0B8469B2}</Project>
+      <Name>HTML_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\JSON_IO\JSON_IO.csproj">
+      <Project>{FC8A47E3-2699-4123-9517-0A3D325F5DEC}</Project>
+      <Name>JSON_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\TEXT_IO\TEXT_IO.csproj">
+      <Project>{90E0D6D5-6527-4DE9-8DC4-C88B79A2B1C5}</Project>
+      <Name>TEXT_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\XML_IO\XML_IO.csproj">
+      <Project>{9FCA399E-33F4-40A0-9987-76C5763F23FF}</Project>
+      <Name>XML_IO</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Libraries\Newtonsoft.Json\Newtonsoft.Json.csproj">
       <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
       <Name>Newtonsoft.Json</Name>

@@ -21,7 +21,7 @@
 /* PandoraLib - INotification
  * (c) Stefan Licht, 2009
  * 
- * The interface for all Pandora Notification systems. Each client who subscribe to
+ * The interface for all Graph Notification systems. Each client who subscribe to
  * any type of Notification must implement this interface. If the client subscribes 
  * to more than one NotificationType, the HandleNotification must switch the correct 
  * NotificationType before handles it.
@@ -46,7 +46,7 @@ namespace sones.Notifications
 {
 
     /// <summary>
-    /// The interface for all Pandora file systems
+    /// The interface for all Graph file systems
     /// </summary>
     public interface INotification
     {

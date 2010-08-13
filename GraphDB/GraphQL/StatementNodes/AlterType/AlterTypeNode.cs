@@ -59,7 +59,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes
         /// </summary>
         /// <param name="myCompilerContext">CompilerContext of Irony.</param>
         /// <param name="myParseTreeNode">The current ParseNode.</param>
-        /// <param name="myTypeManager">The TypeManager of the PandoraDB.</param>
+        /// <param name="myTypeManager">The TypeManager of the GraphDB.</param>
         public override void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
         {
             
@@ -76,6 +76,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes
                     if (alterCmds.AstNode != null)
                     {
                         var alterCommand = (AlterCommandNode)alterCmds.AstNode;
+                        ParsingResult.Push(alterCommand.ParsingResult);
 
                         if (alterCommand.AlterTypeCommand != null)
                         {
@@ -117,8 +118,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes
         public override QueryResult Execute(IGraphDBSession graphDBSession)
         {
 
-            return graphDBSession.AlterType(_TypeName, _AlterTypeCommand);
-
+            var qresult = graphDBSession.AlterType(_TypeName, _AlterTypeCommand);
+            qresult.AddErrorsAndWarnings(ParsingResult);
+            return qresult;
         }
 
         #endregion

@@ -61,9 +61,9 @@ namespace sones.Lib.Settings
         //void Serialize(sones.Lib.NewFastSerializer.SerializationWriter writer, object value);
         
         Boolean     SupportsType(Type myType);
-        //sones.Pandora.Database.TypeManagement.TypeUUID Type { get; }
+        //sones.Graph.Database.TypeManagement.TypeUUID Type { get; }
         UInt32      TypeCode        { get; }
-        //sones.Pandora.Database.TypeManagement.PandoraTypes.ADBBaseObject Value { get; set; }
+        //sones.Graph.Database.TypeManagement.GraphTypes.ADBBaseObject Value { get; set; }
     }
 
 }

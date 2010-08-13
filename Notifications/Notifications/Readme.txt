@@ -1,6 +1,6 @@
 Every Notificationtype which is public and should be accessible inside the UI goes in here. 
 
-DO NOT ADD A REFERENCE TO PANDORAFS OR PANDORADB!
+DO NOT ADD A REFERENCE TO GraphFS OR GraphDB!
 
 IP Adress/Port usage
 

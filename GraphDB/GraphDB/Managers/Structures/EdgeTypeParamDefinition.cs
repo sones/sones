@@ -8,7 +8,7 @@ namespace sones.GraphDB.Managers.Structures
 
     public enum ParamType
     {
-        PandoraType,
+        GraphType,
         Value,
         DefaultValueDef,
         Sort

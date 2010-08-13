@@ -18,31 +18,26 @@
 */
 
 
+
+#region
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphDB.Structures.Enums;
+using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.Structures.EdgeTypes;
+using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.Lib.ErrorHandling;
-using sones.GraphDB.TypeManagement;
 
-using sones.GraphDB.Structures;
-using sones.GraphDB.Structures.EdgeTypes;
-using sones.GraphDB.ObjectManagement;
-
-using sones.GraphDB.Errors;
-using sones.Lib.DataStructures.UUID;
-using sones.GraphFS.DataStructures;
-using sones.GraphFS.Session;
-using sones.GraphDB.Structures.Result;
-using sones.Lib.Session;
-using sones.GraphDB.Managers.Structures;
+#endregion
 
 namespace sones.GraphDB.Functions
 {
+
+    /// <summary>
+    /// Will return the top elements of an edge.
+    /// </summary>
     public class TopFunc : ABaseFunction
     {
+
         public override string FunctionName
         {
             get { return "TOP"; }
@@ -63,9 +58,11 @@ namespace sones.GraphDB.Functions
             Parameters.Add(new ParameterValue("NumOfEntries", new DBUInt64()));
         }
 
-        public override bool ValidateWorkingBase(TypeAttribute workingBase, DBTypeManager typeManager)
+        public override bool ValidateWorkingBase(IObject workingBase, DBTypeManager typeManager)
         {
-            if (workingBase != null && workingBase.EdgeType is AListEdgeType)
+
+            if (((workingBase is DBTypeAttribute) && (workingBase as DBTypeAttribute).GetValue().EdgeType is IListOrSetEdgeType)
+                || workingBase is IListOrSetEdgeType)
             {
                 return true;
             }
@@ -73,30 +70,28 @@ namespace sones.GraphDB.Functions
             {
                 return false;
             }
+
+        }
+
+        public override IObject GetReturnType(IObject workingBase, DBTypeManager typeManager)
+        {
+            return workingBase;
         }
 
         public override Exceptional<FuncParameter> ExecFunc(DBContext dbContext, params FuncParameter[] myParams)
         {
+
             var pResult = new Exceptional<FuncParameter>();
 
             ulong numOfEntries = (myParams[0].Value as DBUInt64).GetValue();
 
-            if (CallingObject is EdgeTypeWeightedList)
-            {
-                pResult.Value = new FuncParameter(((EdgeTypeWeightedList)CallingObject).GetTopAsWeightedSet(numOfEntries), CallingAttribute);
-            }
-            else if (CallingObject is EdgeTypeSetOfReferences)
-            {
-                var retVal = new EdgeTypeSetOfReferences((CallingObject as EdgeTypeSetOfReferences).GetTop(numOfEntries) as IEnumerable<ObjectUUID>, CallingAttribute.DBTypeUUID);
-                pResult.Value = new FuncParameter(retVal, CallingAttribute);
-            }
-            else
-            {
-                return pResult.PushT(new Error_FunctionParameterTypeMismatch(typeof(ASetReferenceEdgeType), CallingObject.GetType()));
-            }
+            var retVal = (IEdgeType)(CallingObject as IListOrSetEdgeType).GetTopAsEdge(numOfEntries);
+            pResult.Value = new FuncParameter(retVal, CallingAttribute);
 
             return pResult;
+
         }
 
     }
+
 }

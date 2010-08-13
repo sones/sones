@@ -77,11 +77,47 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DBConstants.cs" />
+    <Compile Include="DBIndexTypes.cs" />
+    <Compile Include="NewAPI\DBObjectReadout.cs" />
+    <Compile Include="Errors\Error_DatabaseNotFound.cs" />
+    <Compile Include="Errors\Error_FileNotFound.cs" />
+    <Compile Include="Errors\Error_Logic.cs" />
+    <Compile Include="Errors\Error_MandatoryConstraintViolation.cs" />
+    <Compile Include="Errors\Error_NotImplemented.cs" />
+    <Compile Include="Errors\Error_ReadOnlyViolation.cs" />
+    <Compile Include="Errors\Error_UniqueConstrainViolation.cs" />
+    <Compile Include="Errors\Error_UnknownDBError.cs" />
+    <Compile Include="Errors\GraphDBError.cs" />
+    <Compile Include="Events\DBVertexEventHandlers.cs" />
+    <Compile Include="Events\GraphDBEventHandlers.cs" />
+    <Compile Include="Exceptions\Exceptions.cs" />
+    <Compile Include="IGraphDB.cs" />
+    <Compile Include="Licensing\FeatureIDs.cs" />
+    <Compile Include="Licensing\FeatureLicenseProcessor.cs" />
+    <Compile Include="Licensing\LicensedFeatures.cs" />
+    <Compile Include="NewAPI\DBPath.cs" />
+    <Compile Include="NewAPI\ReflectionAttributes.cs" />
+    <Compile Include="NewAPI\TraversalOperation.cs" />
+    <Compile Include="NewAPI\TraversalState.cs" />
     <Compile Include="Notifications\NDatabaseMisc.cs" />
     <Compile Include="Notifications\NotificationGroupDatabase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="NewAPI\DBEdge.cs" />
+    <Compile Include="NewAPI\DBObject.cs" />
+    <Compile Include="NewAPI\DBVertex.cs" />
+    <Compile Include="Result\QueryResultQuantity.cs" />
+    <Compile Include="NewAPI\Set.cs" />
+    <Compile Include="Result\ResultTypeEnum.cs" />
+    <Compile Include="Result\SimpleResult.cs" />
+    <Compile Include="Warnings\GraphDBWarning.cs" />
+    <Compile Include="Warnings\GraphDBWarningException.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\GraphFS\GraphFSInterface\GraphFSInterface.csproj">
+      <Project>{B23FDA3D-8229-4CDD-91FD-9AFD7301D315}</Project>
+      <Name>GraphFSInterface</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Lib\Irony\Irony.csproj">
       <Project>{CDD9C45F-F285-4A80-B39F-3B1B8B7B5214}</Project>
       <Name>Irony</Name>
@@ -115,6 +151,9 @@
   <ItemGroup>
     <Content Include="AdditionalLicenses.txt" />
     <Content Include="license.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Linq\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

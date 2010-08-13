@@ -155,7 +155,7 @@ namespace sones.GraphDB.Structures.Operators
 
                     //foreach (var aRightValue in right)
                     //{
-                    //    anotherValues.Add(GraphDBTypeMapper.GetPandoraObjectFromType(left.TypeOfOperatorResult, (aRightValue.Value as ValueDefinition).Value.Value));
+                    //    anotherValues.Add(GraphDBTypeMapper.GetGraphObjectFromType(left.TypeOfOperatorResult, (aRightValue.Value as ValueDefinition).Value.Value));
                     //}
 
                     foreach (var aLeft in left)
@@ -176,7 +176,7 @@ namespace sones.GraphDB.Structures.Operators
 
                     //foreach (var aLeftValue in left.TupleValue.GetAllValues())
                     //{
-                    //    anotherValues.Add(GraphDBTypeMapper.GetPandoraObjectFromType(right.TupleValue.TypeOfValue, aLeftValue));
+                    //    anotherValues.Add(GraphDBTypeMapper.GetGraphObjectFromType(right.TupleValue.TypeOfValue, aLeftValue));
                     //}
 
                     foreach (var aAnother in left)

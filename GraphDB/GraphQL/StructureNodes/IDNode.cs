@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – ID node" />
+﻿/* <id name="GraphDB – ID node" />
  * <copyright file="IDNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.

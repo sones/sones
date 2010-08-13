@@ -19,6 +19,7 @@
 
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using sones.GraphDB.Indices;
 using sones.GraphDB.Structures.ExpressionGraph;
@@ -42,13 +43,14 @@ namespace sones.GraphDB.Managers.Select
 
         #region Properties
 
-        public IDChainDefinition RelatedIDChainDefinition { get; set; }
-        public String Alias                     { get; set; }
-        public EdgeList EdgeList                { get; protected set; }
-        public LevelKey LevelKey                { get; protected set; }
-        public Boolean IsGroupedOrAggregated    { get; protected set; }
-        public TypesOfSelect Selection          { get; protected set; }        
-        public TypeAttribute Element            { get; set; }
+        public IDChainDefinition RelatedIDChainDefinition   { get; set; }
+        public String   Alias                               { get; set; }
+        public TypeUUID TypeID                              { get; protected set; }
+        public EdgeList EdgeList                            { get; protected set; }
+        public LevelKey LevelKey                            { get; protected set; }
+        public Boolean IsGroupedOrAggregated                { get; protected set; }
+        public TypesOfSelect Selection                      { get; protected set; }        
+        public TypeAttribute Element                        { get; set; }
 
         #endregion
 
@@ -56,9 +58,10 @@ namespace sones.GraphDB.Managers.Select
 
         public SelectionElement() { }
 
-        public SelectionElement(TypesOfSelect mySelType)
+        public SelectionElement(TypesOfSelect mySelType, TypeUUID myTypeID = null)
         {
             Selection = mySelType;
+            TypeID = myTypeID;
         }
 
         public SelectionElement(string myAlias, IDChainDefinition myRelatedIDChainDefinition)
@@ -83,12 +86,18 @@ namespace sones.GraphDB.Managers.Select
         /// <returns></returns>
         public Boolean IsReferenceToSkip(EdgeList myEdgeList)
         {
-            if (Element != null)
+            if (Element != null && !(this is SelectionElementFunction))
             {
                 if (Element.KindOfType == KindsOfType.SetOfReferences || Element.KindOfType == KindsOfType.SingleReference)
                 {
                     if (RelatedIDChainDefinition.Edges.Count > myEdgeList.Edges.Count) // if the IDNode is only one level above we can't skip this selection elemen because it is the last one: U.Friends 
+                    {
                         return true;
+                    }
+                    else if (RelatedIDChainDefinition.Edges.Count == myEdgeList.Edges.Count && RelatedIDChainDefinition.IsUndefinedAttribute)
+                    {
+                        return true;
+                    }
                     else
                     {
                         return false;
@@ -110,6 +119,7 @@ namespace sones.GraphDB.Managers.Select
 
         public ChainPartFuncDefinition Function { get; private set; }
         public List<AExpressionDefinition> Parameters { get; private set; }
+        public SelectionElementFunction FollowingFunction { get; private set; }
 
         public SelectionElementFunction(SelectionElement mySelectionElement, ChainPartFuncDefinition myFunction, List<AExpressionDefinition> myParameters)
         {
@@ -123,6 +133,38 @@ namespace sones.GraphDB.Managers.Select
 
             Function                        = myFunction;
             Parameters                      = myParameters;
+        }
+
+        public void AddFollowingFunction(SelectionElementFunction myFollowingFunction)
+        {
+            var curFunc = this;
+            while (curFunc.FollowingFunction != null)
+            {
+                curFunc = curFunc.FollowingFunction;
+            }
+            curFunc.FollowingFunction = myFollowingFunction;
+        }
+
+        public override bool Equals(object obj)
+        {
+
+            if (!(obj is SelectionElementFunction))
+            {
+                return false;
+            }
+
+            var otherSelElF = (obj as SelectionElementFunction);
+
+            return Alias == otherSelElF.Alias && EdgeList.Equals(otherSelElF.EdgeList) && Element.Equals(otherSelElF.Element)
+                && Selection == otherSelElF.Selection && IsGroupedOrAggregated == otherSelElF.IsGroupedOrAggregated && LevelKey == otherSelElF.LevelKey
+                && Function.FuncName == otherSelElF.Function.FuncName && FollowingFunction == otherSelElF.FollowingFunction
+                && Parameters.Count == otherSelElF.Parameters.Count && Parameters.All(p => otherSelElF.Parameters.Contains(p));
+                
+        }
+
+        public override int GetHashCode()
+        {
+            return Alias.GetHashCode() ^ EdgeList.GetHashCode() ^ Element.GetHashCode() ^ Selection.GetHashCode() ^ IsGroupedOrAggregated.GetHashCode() ^ LevelKey.GetHashCode() ^ Function.FuncName.GetHashCode();
         }
 
     }

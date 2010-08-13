@@ -27,25 +27,31 @@
  * <summary>The aggregate MAX.<summary>
  */
 
+#region Usings
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Indices;
 using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.Structures.Result;
-using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
-using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
-
 using sones.Lib.Session;
+
+#endregion
 
 namespace sones.GraphDB.Aggregates
 {
+
+    /// <summary>
+    /// The aggregate MAX
+    /// </summary>
     public class MaxAggregate : ABaseAggregate
     {
 
@@ -86,7 +92,7 @@ namespace sones.GraphDB.Aggregates
             return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
 
-        public override Exceptional<Object> Aggregate(AListEdgeType myAListEdgeType, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
+        public override Exceptional<Object> Aggregate(IListOrSetEdgeType myAListEdgeType, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
         {
             return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
@@ -102,5 +108,7 @@ namespace sones.GraphDB.Aggregates
 
             return new Exceptional<Object>((ObjectUUID)attributeIndex.GetKeys(indexRelatedType, dbContext).Max().IndexKeyValues[0].Value);
         }
+
     }
+
 }

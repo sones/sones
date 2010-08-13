@@ -1,5 +1,34 @@
 sones GraphDB 1.2 (developer) Changelog:
 
+13.08.2010
+- implemented AttributeUUID to be a UInt16
+- Changed Exceptional.Success|Failed to extension methods in order to check if
+Exceptional == null; null -> Failed - Add...
+- Fixed bug 554 - Warning on ExecDBScript usage
+- AGraphFS improvemens; Added MediaRSS_IO
+- Added minimalistic IGraphDB... but still to much internal datastructures
+involved!
+- select, group and order undefined attributes
+- Bugfix for tuple of tuple of tuple ... in where expression
+- Some SetBackwardEdges enhancements
+- Type independent concatenated functions
+- Fixed .../gql?... CSS-bug
+- Added IGraphIO, IGraphObjectsIO for I/O of FSObjects 
+- Added Serialized_IO in order to replace IFastSerialize in the f...
+- GraphDS Clean'ups
+- Moved DBVertex, DBEdge, DBPath, ...  from GraphDSSharp to GraphDBInterface
+- Moved public GraphDB stuff from GraphDB to GraphDBInterface
+- Removed StorageEngine related stuff from GraphFSSession
+- Small AutoDiscovery.cs bugfixes
+- Lib bugfixes
+- Bug fix in select for using graph
+- Removed obsolete GraphFS projects
+- JSON_IO bugfix
+- Moved all ToXML/ToJSON/ToHTML/etc.pp into their own GraphIO solution
+- Third part of Attributes on functions
+- Added GraphIO projects
+- Some AGraphFS and StorageEngines bugfixes
+
 09.08.2010
 - some cleanUp
 - some ToString upgrades for Reference class

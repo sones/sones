@@ -44,7 +44,7 @@ namespace sones.GraphFS.InternalObjects
 {
 
     /// <summary>
-    /// The abstract class for all pandora metadata objects
+    /// The abstract class for all Graph metadata objects
     /// and virtual metadata objects.
     /// </summary>
     public class MetadataObject<TValue> : AIndexObject<String, TValue>, IMetadataObject<TValue>, IDirectoryListing
@@ -61,10 +61,10 @@ namespace sones.GraphFS.InternalObjects
         public MetadataObject()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion   = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream       = FSConstants.DIRECTORYSTREAM;
 
             // Object specific data...
@@ -146,7 +146,7 @@ namespace sones.GraphFS.InternalObjects
         /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested file within the file system</param>
         /// <param name="myObjectStream">the ObjectStream</param>
         /// <param name="myObjectEdition">the ObjectEdition</param>
-        /// <param name="myObjectRevision">the RevisionID of the APandoraObject</param>
+        /// <param name="myObjectRevision">the RevisionID of the AGraphObject</param>
         public MetadataObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID)
             : this(myObjectLocation, myObjectStream, myObjectEdition)
         {
@@ -175,7 +175,7 @@ namespace sones.GraphFS.InternalObjects
         /// This will create a MetadataObject with the given ObjectLocation and ObjectRevisionID.
         /// </summary>
         /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested file within the file system</param>
-        /// <param name="myObjectRevision">the RevisionID of the APandoraObject</param>
+        /// <param name="myObjectRevision">the RevisionID of the AGraphObject</param>
         public MetadataObject(ObjectLocation myObjectLocation, ObjectRevisionID myObjectRevisionID)
             : this(myObjectLocation)
         {
@@ -223,7 +223,7 @@ namespace sones.GraphFS.InternalObjects
         #endregion
 
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         #region Clone()
 
@@ -658,21 +658,21 @@ namespace sones.GraphFS.InternalObjects
 
         #region IDirectoryObject Members
 
-        #region IPandoraFSReference
+        #region IGraphFSReference
 
-        private IGraphFS _IPandoraFSReference;
+        private IGraphFS _IGraphFSReference;
 
         public IGraphFS IGraphFSReference
         {
 
             get
             {
-                return _IPandoraFSReference;
+                return _IGraphFSReference;
             }
 
             set
             {
-                _IPandoraFSReference = value;
+                _IGraphFSReference = value;
             }
 
         }

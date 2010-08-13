@@ -65,8 +65,8 @@ namespace sones.GraphDB.Managers.Structures
         /// <summary>
         /// returns a guid which matches the tupleNode of the setref object.
         /// </summary>
-        /// <param name="TypeOfAttribute">PandoraType of the attribute.</param>
-        /// <param name="dbContext">The TypeManager of the PandoraDatabase</param>
+        /// <param name="TypeOfAttribute">GraphType of the attribute.</param>
+        /// <param name="dbContext">The TypeManager of the GraphDatabase</param>
         /// <returns>A Guid.</returns>
         public IEnumerable<Exceptional<DBObjectStream>> GetCorrespondigDBObjects(GraphDBType TypeOfAttribute, DBContext dbContext, GraphDBType validationType)
         {
@@ -107,7 +107,7 @@ namespace sones.GraphDB.Managers.Structures
                             //ValidateBinaryExpression(aUniqueExpr, TypeOfAttribute, dbContext);
 
                             var validateResult = aUniqueExpr.Validate(dbContext, TypeOfAttribute);
-                            if (validateResult.Failed)
+                            if (validateResult.Failed())
                             {
                                 throw new GraphDBException(validateResult.Errors);
                             }
@@ -116,7 +116,7 @@ namespace sones.GraphDB.Managers.Structures
                             //{
                             var aResult = aUniqueExpr.Calculon(dbContext, new CommonUsageGraph(dbContext));
 
-                            if (aResult.Success)
+                            if (aResult.Success())
                             {
                                 foreach (var dbo in aResult.Value.Select(new LevelKey(TypeOfAttribute, dbContext.DBTypeManager), null, false))
                                     yield return dbo;
@@ -156,7 +156,7 @@ namespace sones.GraphDB.Managers.Structures
 
                                         var aResult = tempNode.Calculon(dbContext, new CommonUsageGraph(dbContext));
 
-                                        if (aResult.Success)
+                                        if (aResult.Success())
                                         {
                                             foreach (var dbo in aResult.Value.Select(new LevelKey(TypeOfAttribute, dbContext.DBTypeManager), null, false))
                                                 yield return dbo;
@@ -289,7 +289,7 @@ namespace sones.GraphDB.Managers.Structures
                     //Logger.Warn("REF/REFERENCE is null because of an expression without any results! Skip adding this attribute.");
                     return new Exceptional<ASingleReferenceEdgeType>(new Error_ReferenceAssignment_EmptyValue(typeAttribute.Name));
                 }
-                else if (dboToAdd.Failed)
+                else if (dboToAdd.Failed())
                 {
                     return new Exceptional<ASingleReferenceEdgeType>(dboToAdd);
                 }
@@ -370,18 +370,18 @@ namespace sones.GraphDB.Managers.Structures
         /// <param name="tupleElementList">List of tuple elements</param>
         /// <param name="myAttributes">myAttributes of the type</param>
         /// <returns>True if valid or otherwise false</returns>
-        private bool IsValidTupleNode(List<TupleElement> tupleElementList, GraphDBType myPandoraType, DBContext dbContext)
+        private bool IsValidTupleNode(List<TupleElement> tupleElementList, GraphDBType myGraphType, DBContext dbContext)
         {
             foreach (TupleElement aTupleElement in tupleElementList)
             {
                 if (aTupleElement.Value is BinaryExpressionDefinition)
                 {
-                    var validateResult = ((BinaryExpressionDefinition)aTupleElement.Value).Validate(dbContext, myPandoraType);
-                    if (validateResult.Failed)
+                    var validateResult = ((BinaryExpressionDefinition)aTupleElement.Value).Validate(dbContext, myGraphType);
+                    if (validateResult.Failed())
                     {
                         throw new GraphDBException(validateResult.Errors);
                     }
-                    //if (!IsValidBinaryExpressionNode((BinaryExpressionDefinition)aTupleElement.Value, myPandoraType))
+                    //if (!IsValidBinaryExpressionNode((BinaryExpressionDefinition)aTupleElement.Value, myGraphType))
                     //{
                     //    return false;
                     //}

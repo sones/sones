@@ -1,18 +1,19 @@
-﻿#region Usings
+﻿
+#region Usings
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sones.GraphDB.Managers.Structures;
-using sones.Lib.ErrorHandling;
-using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
 namespace sones.GraphDB.Functions
 {
+
+    /// <summary>
+    /// Return true if an DBObject contains this attribute.
+    /// </summary>
     public class Exists : ABaseFunction
     {
 
@@ -22,7 +23,6 @@ namespace sones.GraphDB.Functions
         { }
 
         #endregion
-
 
         #region ABaseFunction
 
@@ -36,7 +36,7 @@ namespace sones.GraphDB.Functions
             return "Return true if an DBObject contains this attribute.";
         }
 
-        public override bool ValidateWorkingBase(TypeAttribute workingBase, DBTypeManager typeManager)
+        public override bool ValidateWorkingBase(IObject workingBase, DBTypeManager typeManager)
         {
             if (workingBase != null)
             {
@@ -50,13 +50,14 @@ namespace sones.GraphDB.Functions
 
         public override Exceptional<FuncParameter> ExecFunc(DBContext dbContext, params FuncParameter[] myParams)
         {
-            if(CallingObject != null)
+            if (CallingObject != null)
                 return new Exceptional<FuncParameter>(new FuncParameter(new DBBoolean(true)));
             else
                 return new Exceptional<FuncParameter>(new FuncParameter(new DBBoolean(false)));
-
         }
 
         #endregion
+
     }
+
 }

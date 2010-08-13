@@ -39,7 +39,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
         private String _Comment = ""; //the name of the type that should be extended
         private Dictionary<AttributeDefinition, String> _Attributes = new Dictionary<AttributeDefinition, String>(); //the dictionayry of attribute definitions
         private List<BackwardEdgeDefinition> _BackwardEdgeInformation;
-        private List<Exceptional<IndexDefinition>> _Indices;    
+        private List<IndexDefinition> _Indices;    
 
         #endregion
 
@@ -50,7 +50,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
         public String Comment { get { return _Comment; } }
         public Dictionary<AttributeDefinition, String> Attributes { get { return _Attributes; } }
         public List<BackwardEdgeDefinition> BackwardEdges { get { return _BackwardEdgeInformation; } }
-        public List<Exceptional<IndexDefinition>> Indices { get { return _Indices; } }
+        public List<IndexDefinition> Indices { get { return _Indices; } }
 
         #endregion
 
@@ -80,7 +80,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
             }
             else
             {
-                //if there is no extend a Type is alwayse inheritated by PandoraObject
+                //if there is no extend a Type is alwayse inheritated by GraphObject
                 _Extends = DBReference.Name;
             }
 
@@ -151,53 +151,13 @@ namespace sones.GraphDB.GraphQL.StructureNodes
             {
                 if (parseNode.ChildNodes[6].ChildNodes[0].HasChildNodes())
                 {
-                    var idxCreateNode = (Exceptional<IndexOnCreateTypeNode>)parseNode.ChildNodes[6].ChildNodes[0].AstNode;
+                    var idxCreateNode = (IndexOnCreateTypeNode)parseNode.ChildNodes[6].ChildNodes[0].AstNode;
+                    ParsingResult.Push(idxCreateNode.ParsingResult);
 
-                    if (!idxCreateNode.Success)
-                    {
-                        throw new GraphDBException(idxCreateNode.Errors);
-                    }
-
-                    _Indices = new List<Exceptional<IndexDefinition>>();
+                    _Indices = new List<IndexDefinition>();
                     
-                    foreach(var idx in idxCreateNode.Value.ListOfIndexDefinitions)
+                    foreach(var idx in idxCreateNode.ListOfIndexDefinitions)
                     {
-                        //bool IsValidIDXAttr = false;
-
-                        //foreach (var aAttr in _Attributes)
-                        //{
-                        //    if(idx.Value.IndexAttributeDefinitions.Exists(item => item.IndexAttribute == aAttr.Key.AttributeName))
-                        //    {
-                        //        IsValidIDXAttr = true;
-                        //        break;
-                        //    }
-                        //}
-
-                        //if (!IsValidIDXAttr)
-                        //{
-                        //    if (!_Extends.IsNullOrEmpty())
-                        //    {
-                        //        var extendsType = typeManager.GetTypeByName(_Extends);
-
-                        //        if (extendsType != null)
-                        //        {
-                        //            foreach (var idxAttr in idx.Value.IndexAttributeDefinitions)
-                        //            {
-                        //                if (extendsType.GetTypeAttributeByName(idxAttr.IndexAttribute) != null)
-                        //                {
-                        //                    IsValidIDXAttr = true;
-                        //                    break;
-                        //                }
-                        //            }
-                        //        }
-                        //    }
-                        //}
-
-                        //if (!IsValidIDXAttr)
-                        //{
-                        //    throw new GraphDBException(new Error_IndexCreationError(idx.Value.IndexName, idx.Value.Edition, ""));
-                        //}
-
                         _Indices.Add(idx);
                     }
                 }

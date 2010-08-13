@@ -28,19 +28,19 @@
 //using sones.Lib.DataStructures;
 //using sones.Lib.Networking.Telnet;
 
-//namespace sones.Lib.PandoraCLI
+//namespace sones.Lib.GraphCLI
 //{
 //    public class CLITelnetDaemon
 //    {
 
-//        private TCPSocketListener<TelnetServer<PandoraCLI>> CLITelnetListener;
+//        private TCPSocketListener<TelnetServer<GraphCLI>> CLITelnetListener;
 
-//        public CLITelnetDaemon(UInt16 myTelnetPort, object myPandoraVFS, String myPath, params Type[] myCommandTypes)
+//        public CLITelnetDaemon(UInt16 myTelnetPort, object myGraphVFS, String myPath, params Type[] myCommandTypes)
 //        {
 //            Tuple<Object, String, Type[]> tupel = new Tuple<object, string, Type[]>
-//                (myPandoraVFS, myPath, myCommandTypes);
+//                (myGraphVFS, myPath, myCommandTypes);
 
-//            CLITelnetListener = new TCPSocketListener<TelnetServer<PandoraCLI>>(myTelnetPort);
+//            CLITelnetListener = new TCPSocketListener<TelnetServer<GraphCLI>>(myTelnetPort);
 
 //            CLITelnetListener.SetDataObject(tupel);
 //            CLITelnetListener.ClientTimeout = 60 * 1000;

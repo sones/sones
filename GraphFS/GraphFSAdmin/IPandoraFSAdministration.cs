@@ -1,5 +1,5 @@
-﻿/* <id Name="PandoraFS - Administration Interface" />
- * <copyright file="IPandoraFSAdministration.cs"
+﻿/* <id Name="GraphFS - Administration Interface" />
+ * <copyright file="IGraphFSAdministration.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
@@ -39,10 +39,10 @@ namespace sones.GraphFS.Administration
     /// this is just an Interface declaration that contains needed method needed by the
     /// Administration Interface
     /// 
-    /// An Administration Interface is exported over WCF and may be implemented by PandoraFS
+    /// An Administration Interface is exported over WCF and may be implemented by GraphFS
     /// </summary>
     [ServiceContract()]
-    public interface IPandoraFSAdministration
+    public interface IGraphFSAdministration
     {
         /// <summary>
         /// Initiates the shutdown of this filesystem.

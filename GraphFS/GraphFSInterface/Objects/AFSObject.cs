@@ -53,226 +53,9 @@ namespace sones.GraphFS.Objects
     public abstract class AFSObject : AFSObjectOntology, IFastSerialize
     {
 
+
         // A delegate type for hooking up change notifications.
         
-
-
-        #region Constructors
-
-        #region AFSObject()
-
-        /// <summary>
-        /// This will set all important variables within this AFSObject.
-        /// This will especially create a new ObjectUUID and mark the
-        /// AFSObject as "new" and "dirty".
-        /// </summary>
-        public AFSObject()
-        {
-
-            _ObjectName         = "";
-            _ObjectPath         = "";
-            _ObjectLocation     = null;
-            _ObjectStream       = null;
-
-            _ObjectSize         = 0;
-            _ObjectSizeOnDisc   = 0;
-
-            // Generate a new ObjectUUID
-            if (ObjectUUID.Length == 0)
-                ObjectUUID = new ObjectUUID();
-
-        }
-
-        #endregion
-
-        #region AFSObject(myObjectUUID)
-
-        /// <summary>
-        /// This will set all important variables within this AFSObject.
-        /// Additionally it sets the ObjectUUID to the given value and marks
-        /// the AFSObject as "new" and "dirty".
-        /// </summary>
-        public AFSObject(ObjectUUID myObjectUUID)
-        {
-
-            _ObjectName         = "";
-            _ObjectPath         = "";
-            _ObjectLocation     = null;
-            _ObjectStream       = null;
-
-            _ObjectSize         = 0;
-            _ObjectSizeOnDisc   = 0;
-
-            // Members of APandoraStructure
-            ObjectUUID          = myObjectUUID;
-
-        }
-
-        #endregion
-
-        #endregion
-
-
-        #region Load/Save/SaveAs/Remove/Erase
-
-        //#region Load(myObjectLocation, myObjectStream, myObjectEditon, myObjectRevisionID, myObjectCopy)
-
-        //public void Load(String myObjectLocation, String myObjectStream, String myObjectEditon, RevisionID myObjectRevisionID, Int32 myObjectCopy)
-        //{
-        //}
-
-        //#endregion
-
-        #region Save()
-
-        public Exceptional Save()
-        {
-
-            if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
-                return _IGraphFSSessionReference.Value.StoreFSObject(this, true);
-
-            return new Exceptional(new GraphFSError("No file system given!"));
-
-        }
-
-        #endregion
-
-        #region SaveAs(myObjectLocation)
-
-        public void SaveAs(ObjectLocation myObjectLocation)
-        {
-
-            if (myObjectLocation == null || myObjectLocation.Length < FSPathConstants.PathDelimiter.Length)
-                throw new ArgumentNullException("myObjectLocation must not be null or its length be zero!");
-
-            if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
-            {
-                _ObjectLocation = myObjectLocation;
-                Save();
-            }
-
-        }
-
-        #endregion
-
-        #region SaveAs(myObjectLocation, myObjectStream, myObjectEditon, myObjectRevisionID)
-
-        public void SaveAs(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEditon, ObjectRevisionID myObjectRevisionID)
-        {
-
-            if (myObjectLocation == null || myObjectLocation.Length < FSPathConstants.PathDelimiter.Length)
-                throw new ArgumentNullException("myObjectLocation must not be null or its length be zero!");
-
-            if (myObjectStream == null || myObjectStream.Length == 0)
-                throw new ArgumentNullException("myObjectStream must not be null or its length be zero!");
-
-            if (myObjectEditon == null || myObjectEditon.Length == 0)
-                throw new ArgumentNullException("myObjectEditon must not be null or its length be zero!");
-
-            if (myObjectRevisionID == null)
-                throw new ArgumentNullException("myObjectRevisionID must not be null!");
-
-            if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
-            {
-
-                _ObjectStream       = myObjectStream;
-                _ObjectLocation     = myObjectLocation;
-                _ObjectEdition      = myObjectEditon;
-                _ObjectRevisionID   = myObjectRevisionID;
-
-                Save();
-
-            }
-
-        }
-
-        #endregion
-
-        //#region SaveAs(myIGraphFSSession, myObjectLocation, myObjectStream, myObjectEditon, myObjectRevisionID)
-
-        //public void SaveAs(IGraphFSSession myIGraphFSSession, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEditon, RevisionID myObjectRevisionID)
-        //{
-
-        //    if (myObjectLocation == null || myObjectLocation.Length < FSPathConstants.PathDelimiter.Length)
-        //        throw new ArgumentNullException("myObjectLocation must not be null or its length be zero!");
-
-        //    if (myObjectStream == null || myObjectStream.Length == 0)
-        //        throw new ArgumentNullException("myObjectStream must not be null or its length be zero!");
-
-        //    if (myObjectEditon == null || myObjectEditon.Length == 0)
-        //        throw new ArgumentNullException("myObjectEditon must not be null or its length be zero!");
-
-        //    if (myObjectRevisionID == null)
-        //        throw new ArgumentNullException("myObjectRevisionID must not be null!");
-
-        //    if (_FSSessionReference != null)
-        //    {
-
-        //        _ObjectStream       = myObjectStream;
-        //        _ObjectLocation     = myObjectLocation;
-        //        _ObjectEdition      = myObjectEditon;
-        //        _ObjectRevisionID   = myObjectRevisionID;
-
-        //        Save();
-
-        //    }
-
-        //}
-
-        //#endregion
-
-        #region Rename(myNewObjectname)
-
-        public Exceptional Rename(String myNewObjectName)
-        {
-
-            if (myNewObjectName == null || myNewObjectName.Length < FSPathConstants.PathDelimiter.Length)
-                throw new ArgumentNullException("Invalid ObjectName!");
-
-            if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
-            {
-
-                var _Exceptional = _IGraphFSSessionReference.Value.RenameFSObject(this.ObjectLocation, myNewObjectName);
-
-                if (_Exceptional.Success)
-                {
-                    this._ObjectName = myNewObjectName;
-                    this._ObjectLocation = new ObjectLocation(DirectoryHelper.Combine(_ObjectPath, _ObjectName));
-                }
-
-                return _Exceptional;
-            
-            }
-
-            return new Exceptional();
-
-        }
-
-        #endregion
-
-        #region Remove()
-
-        public void Remove()
-        {
-            if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
-                _IGraphFSSessionReference.Value.RemoveFSObject(_ObjectLocation, _ObjectStream, _ObjectEdition, _ObjectRevisionID);
-        }
-
-        #endregion
-
-        #region Erase()
-
-        public void Erase()
-        {
-            if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
-                _IGraphFSSessionReference.Value.EraseFSObject(_ObjectLocation, _ObjectStream, _ObjectEdition, _ObjectRevisionID);
-        }
-
-        #endregion
-
-        #endregion
-
-
         #region AFSObject Events
 
         #region OnLoad/OnLoadEvent(myObjectLocation, myObjectStream, myObjectEdition, myRevisionID)
@@ -403,11 +186,230 @@ namespace sones.GraphFS.Objects
 
         #endregion
 
+        #region Constructors
+
+        #region AFSObject()
+
+        /// <summary>
+        /// This will set all important variables within this AFSObject.
+        /// This will especially create a new ObjectUUID and mark the
+        /// AFSObject as "new" and "dirty".
+        /// </summary>
+        public AFSObject()
+        {
+
+            _ObjectName         = "";
+            _ObjectPath         = "";
+            _ObjectLocation     = null;
+            _ObjectStream       = null;
+
+            _ObjectSize         = 0;
+            _ObjectSizeOnDisc   = 0;
+
+            // Generate a new ObjectUUID
+            if (ObjectUUID.Length == 0)
+                ObjectUUID = new ObjectUUID();
+
+        }
+
+        #endregion
+
+        #region AFSObject(myObjectUUID)
+
+        /// <summary>
+        /// This will set all important variables within this AFSObject.
+        /// Additionally it sets the ObjectUUID to the given value and marks
+        /// the AFSObject as "new" and "dirty".
+        /// </summary>
+        public AFSObject(ObjectUUID myObjectUUID)
+        {
+
+            _ObjectName         = "";
+            _ObjectPath         = "";
+            _ObjectLocation     = null;
+            _ObjectStream       = null;
+
+            _ObjectSize         = 0;
+            _ObjectSizeOnDisc   = 0;
+
+            // Members of AGraphStructure
+            ObjectUUID          = myObjectUUID;
+
+        }
+
+        #endregion
+
+        #endregion
+
+
+        #region Load/Save/SaveAs/Remove/Erase
+
+        //#region Load(myObjectLocation, myObjectStream, myObjectEditon, myObjectRevisionID, myObjectCopy)
+
+        //public void Load(String myObjectLocation, String myObjectStream, String myObjectEditon, RevisionID myObjectRevisionID, Int32 myObjectCopy)
+        //{
+        //}
+
+        //#endregion
+
+        #region Save()
+
+        public Exceptional Save()
+        {
+
+            if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
+                return _IGraphFSSessionReference.Value.StoreFSObject(this, true);
+
+            return new Exceptional(new GraphFSError("No file system given!"));
+
+        }
+
+        #endregion
+
+        #region SaveAs(myObjectLocation)
+
+        public void SaveAs(ObjectLocation myObjectLocation)
+        {
+
+            if (myObjectLocation == null || myObjectLocation.Length < FSPathConstants.PathDelimiter.Length)
+                throw new ArgumentNullException("myObjectLocation must not be null or its length be zero!");
+
+            if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
+            {
+                _ObjectLocation = myObjectLocation;
+                Save();
+            }
+
+        }
+
+        #endregion
+
+        #region SaveAs(myObjectLocation, myObjectStream, myObjectEditon, myObjectRevisionID)
+
+        public void SaveAs(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEditon, ObjectRevisionID myObjectRevisionID)
+        {
+
+            if (myObjectLocation == null || myObjectLocation.Length < FSPathConstants.PathDelimiter.Length)
+                throw new ArgumentNullException("myObjectLocation must not be null or its length be zero!");
+
+            if (myObjectStream == null || myObjectStream.Length == 0)
+                throw new ArgumentNullException("myObjectStream must not be null or its length be zero!");
+
+            if (myObjectEditon == null || myObjectEditon.Length == 0)
+                throw new ArgumentNullException("myObjectEditon must not be null or its length be zero!");
+
+            if (myObjectRevisionID == null)
+                throw new ArgumentNullException("myObjectRevisionID must not be null!");
+
+            if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
+            {
+
+                _ObjectStream       = myObjectStream;
+                _ObjectLocation     = myObjectLocation;
+                _ObjectEdition      = myObjectEditon;
+                _ObjectRevisionID   = myObjectRevisionID;
+
+                Save();
+
+            }
+
+        }
+
+        #endregion
+
+        //#region SaveAs(myIGraphFSSession, myObjectLocation, myObjectStream, myObjectEditon, myObjectRevisionID)
+
+        //public void SaveAs(IGraphFSSession myIGraphFSSession, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEditon, RevisionID myObjectRevisionID)
+        //{
+
+        //    if (myObjectLocation == null || myObjectLocation.Length < FSPathConstants.PathDelimiter.Length)
+        //        throw new ArgumentNullException("myObjectLocation must not be null or its length be zero!");
+
+        //    if (myObjectStream == null || myObjectStream.Length == 0)
+        //        throw new ArgumentNullException("myObjectStream must not be null or its length be zero!");
+
+        //    if (myObjectEditon == null || myObjectEditon.Length == 0)
+        //        throw new ArgumentNullException("myObjectEditon must not be null or its length be zero!");
+
+        //    if (myObjectRevisionID == null)
+        //        throw new ArgumentNullException("myObjectRevisionID must not be null!");
+
+        //    if (_FSSessionReference != null)
+        //    {
+
+        //        _ObjectStream       = myObjectStream;
+        //        _ObjectLocation     = myObjectLocation;
+        //        _ObjectEdition      = myObjectEditon;
+        //        _ObjectRevisionID   = myObjectRevisionID;
+
+        //        Save();
+
+        //    }
+
+        //}
+
+        //#endregion
+
+        #region Rename(myNewObjectname)
+
+        public Exceptional Rename(String myNewObjectName)
+        {
+
+            if (myNewObjectName == null || myNewObjectName.Length < FSPathConstants.PathDelimiter.Length)
+                throw new ArgumentNullException("Invalid ObjectName!");
+
+            if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
+            {
+
+                var _Exceptional = _IGraphFSSessionReference.Value.RenameFSObject(this.ObjectLocation, myNewObjectName);
+
+                if (_Exceptional.Success())
+                {
+                    this._ObjectName = myNewObjectName;
+                    this._ObjectLocation = new ObjectLocation(DirectoryHelper.Combine(_ObjectPath, _ObjectName));
+                }
+
+                return _Exceptional;
+            
+            }
+
+            return new Exceptional();
+
+        }
+
+        #endregion
+
+        #region Remove()
+
+        public void Remove()
+        {
+            if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
+                _IGraphFSSessionReference.Value.RemoveFSObject(_ObjectLocation, _ObjectStream, _ObjectEdition, _ObjectRevisionID);
+        }
+
+        #endregion
+
+        #region Erase()
+
+        public void Erase()
+        {
+            if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
+                _IGraphFSSessionReference.Value.EraseFSObject(_ObjectLocation, _ObjectStream, _ObjectEdition, _ObjectRevisionID);
+        }
+
+        #endregion
+
+        #endregion
+
+
+        
+
         #region OP
 
         /// <summary>
         /// used for serializing
         /// </summary>
+        [Obsolete("Move me to a better place!")]
         protected enum OP
         {
             ADD,
@@ -415,6 +417,7 @@ namespace sones.GraphFS.Objects
         }
 
         #endregion
+
 
         #region New (De-)Serialization and Cloning
 
@@ -440,7 +443,7 @@ namespace sones.GraphFS.Objects
             Int32 EncryptionParameters_Length = 0;
             Byte DataPadding_Length = 0;
             Int32 AdditionalPadding_Length = 0;
-            Byte[] _TmpSerializedAPandoraStructure = null;
+            Byte[] _TmpSerializedAGraphStructure = null;
 
             #endregion
 
@@ -499,7 +502,7 @@ namespace sones.GraphFS.Objects
 
                 #endregion
 
-                _TmpSerializedAPandoraStructure = writer.ToArray();
+                _TmpSerializedAGraphStructure = writer.ToArray();
 
                 #region Encrypt
                 #endregion
@@ -509,11 +512,11 @@ namespace sones.GraphFS.Objects
                 if (myIntegrityCheckAlgorithm != null && IntegrityCheckValue_Length > 0)
                 {
 
-                    IntegrityCheckValue = myIntegrityCheckAlgorithm.GetHashValueAsByteArray(_TmpSerializedAPandoraStructure);
+                    IntegrityCheckValue = myIntegrityCheckAlgorithm.GetHashValueAsByteArray(_TmpSerializedAGraphStructure);
 
                     // If the returned array is shorter than expected => pad with 0x00
                     // And if it is longer just copy the number of expected bytes
-                    Array.Copy(IntegrityCheckValue, 0, _TmpSerializedAPandoraStructure, IntegrityCheckValue_Position, IntegrityCheckValue.Length);
+                    Array.Copy(IntegrityCheckValue, 0, _TmpSerializedAGraphStructure, IntegrityCheckValue_Position, IntegrityCheckValue.Length);
 
                 }
 
@@ -522,12 +525,12 @@ namespace sones.GraphFS.Objects
                 isDirty = false;
 
                 if (myCacheSerializeData)
-                    _SerializedAPandoraStructure = _TmpSerializedAPandoraStructure;
+                    _SerializedAGraphStructure = _TmpSerializedAGraphStructure;
 
 
-                _EstimatedSize = (UInt64)_TmpSerializedAPandoraStructure.LongLength;
+                _EstimatedSize = (UInt64)_TmpSerializedAGraphStructure.LongLength;
 
-                return _TmpSerializedAPandoraStructure;
+                return _TmpSerializedAGraphStructure;
 
             }
 
@@ -563,10 +566,10 @@ namespace sones.GraphFS.Objects
             #region Check if data is larger than the minimum allowed size
 
             if (mySerializedData == null)
-                throw new PandoraFSException_InvalidInformationHeader("The information header is invalid!");
+                throw new GraphFSException_InvalidInformationHeader("The information header is invalid!");
 
             if (mySerializedData.Length < 8)
-                throw new PandoraFSException_InvalidInformationHeader("The information header is invalid!");
+                throw new GraphFSException_InvalidInformationHeader("The information header is invalid!");
 
             #endregion
 
@@ -591,12 +594,12 @@ namespace sones.GraphFS.Objects
                 IntegrityCheckValue_Length = _SerializationReader.ReadByte() << 3;
 
                 if (IntegrityCheckValue_Length > mySerializedData.Length - HeaderLength)
-                    throw new PandoraFSException_InvalidIntegrityCheckLengthField("The length of the integrity check value is invalid!");
+                    throw new GraphFSException_InvalidIntegrityCheckLengthField("The length of the integrity check value is invalid!");
 
                 // HACK: Remeber that a IntegrityCheckValue of 0 will circumvent the whole integrity checking!
                 if (myIntegrityCheckAlgorithm != null)
                     if ((IntegrityCheckValue_Length > 0) && (IntegrityCheckValue_Length != myIntegrityCheckAlgorithm.HashSize))
-                        throw new PandoraFSException_InvalidIntegrityCheckLengthField("The length of the integrity check value is " + IntegrityCheckValue_Length + ", but " + myIntegrityCheckAlgorithm.HashSize + " was expected!");
+                        throw new GraphFSException_InvalidIntegrityCheckLengthField("The length of the integrity check value is " + IntegrityCheckValue_Length + ", but " + myIntegrityCheckAlgorithm.HashSize + " was expected!");
 
                 #endregion
 
@@ -606,7 +609,7 @@ namespace sones.GraphFS.Objects
                 EncryptionParameters_Length = _SerializationReader.ReadByte() << 3;
 
                 if (EncryptionParameters_Length > mySerializedData.Length - HeaderLength - IntegrityCheckValue_Length)
-                    throw new PandoraFSException_InvalidEncryptionParametersLengthField("The length of the encryption parameters is invalid!");
+                    throw new GraphFSException_InvalidEncryptionParametersLengthField("The length of the encryption parameters is invalid!");
 
                 #endregion
 
@@ -616,7 +619,7 @@ namespace sones.GraphFS.Objects
                 AdditionalPadding_Length = (Int32)(256 * _SerializationReader.ReadByte() + _SerializationReader.ReadByte()) << 3;
 
                 if ((HeaderLength + IntegrityCheckValue_Length + EncryptionParameters_Length + AdditionalPadding_Length) >= mySerializedData.Length)
-                    throw new PandoraFSException_InvalidAdditionalPaddingLengthField("The length of the additional padding is invalid!");
+                    throw new GraphFSException_InvalidAdditionalPaddingLengthField("The length of the additional padding is invalid!");
 
                 _SerializationReader.ReadBytesDirect(2);  // Read reserved bytes
 
@@ -653,7 +656,7 @@ namespace sones.GraphFS.Objects
 
                     // Compare read and actual IntegrityCheckValue
                     if (IntegrityCheckValue.CompareByteArray(actualIntegrityCheckValue) != 0 && myIgnoreIntegrityCheckFailures == false)
-                        throw new PandoraFSException_IntegrityCheckFailed(String.Concat("The IntegrityCheck failed as ", actualIntegrityCheckValue.ToHexString(), " is not equal to the expected ", IntegrityCheckValue.ToHexString()));
+                        throw new GraphFSException_IntegrityCheckFailed(String.Concat("The IntegrityCheck failed as ", actualIntegrityCheckValue.ToHexString(), " is not equal to the expected ", IntegrityCheckValue.ToHexString()));
 
                 }
 
@@ -672,7 +675,7 @@ namespace sones.GraphFS.Objects
                 // Decrypt Data, sooon...!
 
                 //if ( (UInt64) DataPadding_Length >= EncryptedData_Length)
-                //    throw new PandoraFSException_InvalidDataPaddingLengthField("The length of the data padding is invalid!");
+                //    throw new GraphFSException_InvalidDataPaddingLengthField("The length of the data padding is invalid!");
 
                 //DecryptedData = new Byte[EncryptedData_Length - (UInt64) DataPadding_Length];
                 //Array.Copy(EncryptedData, 0, DecryptedData, 0, (Int64) (EncryptedData_Length - (UInt64) DataPadding_Length));
@@ -693,18 +696,18 @@ namespace sones.GraphFS.Objects
 
             }
 
-            catch (PandoraFSException_IntegrityCheckFailed e)
+            catch (GraphFSException_IntegrityCheckFailed e)
             {
-                throw new PandoraFSException_IntegrityCheckFailed("The APandoraStructure could not be deserialized as its integrity is corrupted!\n\n" + e);
+                throw new GraphFSException_IntegrityCheckFailed("The AGraphStructure could not be deserialized as its integrity is corrupted!\n\n" + e);
             }
 
             catch (Exception e)
             {
-                throw new PandoraFSException_APandoraStructureCouldNotBeDeserialized("The APandoraStructure could not be deserialized!\n\n" + e);
+                throw new GraphFSException_AGraphStructureCouldNotBeDeserialized("The AGraphStructure could not be deserialized!\n\n" + e);
             }
 
-            _SerializedAPandoraStructure = mySerializedData;
-            _EstimatedSize = (UInt64)_SerializedAPandoraStructure.LongLength;
+            _SerializedAGraphStructure = mySerializedData;
+            _EstimatedSize = (UInt64)_SerializedAGraphStructure.LongLength;
 
             return new Exceptional();
 
@@ -715,7 +718,7 @@ namespace sones.GraphFS.Objects
         #region (abstract) SerializeInnerObject(ref mySerializationWriter)
 
         /// <summary>
-        /// This method will serialize this APandoraStructure
+        /// This method will serialize this AGraphStructure
         /// </summary>
         /// <param name="mySerializationWriter">An SerializationWriter to write the serialized bytes to</param>
         public abstract void Serialize(ref SerializationWriter mySerializationWriter);
@@ -725,7 +728,7 @@ namespace sones.GraphFS.Objects
         #region (abstract) DeserializeInnerObject(ref mySerializationReader)
 
         /// <summary>
-        /// This method will deserialize the content of the given array of bytes into this APandoraStructure
+        /// This method will deserialize the content of the given array of bytes into this AGraphStructure
         /// </summary>
         /// <param name="mySerializationReader">An SerializationReader to read the serialized bytes from</param>
         public abstract void Deserialize(ref SerializationReader mySerializationReader);
@@ -780,7 +783,7 @@ namespace sones.GraphFS.Objects
 
         /// <summary>
         /// This will call the normal Deserialize method and afterwards it will
-        /// copy the content of all APandoraStructure and AAFSObject properties
+        /// copy the content of all AGraphStructure and AAFSObject properties
         /// to the clone.
         /// </summary>
         /// <param name="mySerializedData">The fastserialized object as an array of bytes</param>
@@ -797,7 +800,7 @@ namespace sones.GraphFS.Objects
 
         /// <summary>
         /// This will call the normal Deserialize method and afterwards it will
-        /// copy the content of all APandoraStructure and AAFSObject properties
+        /// copy the content of all AGraphStructure and AAFSObject properties
         /// to the clone.
         /// </summary>
         /// <param name="mySerializedData">The fastserialized object as an array of bytes</param>
@@ -809,6 +812,8 @@ namespace sones.GraphFS.Objects
         }
 
         #endregion
+
+
     }
 
 }

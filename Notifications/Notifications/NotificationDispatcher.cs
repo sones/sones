@@ -226,9 +226,9 @@ namespace sones.Notifications
 
         private Dictionary<String,Type> _NotificationTypesLookupTable;
 
-        private PandoraThreadPool _BridgeSendThreadPool;
+        private GraphThreadPool _BridgeSendThreadPool;
         //private SmartThreadPool _BridgeSendThreadPool;
-        private PandoraThreadPool _SendMessageThreadPool;
+        private GraphThreadPool _SendMessageThreadPool;
         //private SmartThreadPool _SendMessageThreadPool;
 
         /// <summary>
@@ -335,9 +335,9 @@ namespace sones.Notifications
 
             if (_NotificationSettings.StartBrigde)
             {
-                _BridgeSendThreadPool = new PandoraThreadPool("BridgeSendThreadPool <" + Encoding.UTF8.GetString(mySenderID.GetByteArray()) + ">");
+                _BridgeSendThreadPool = new GraphThreadPool("BridgeSendThreadPool <" + Encoding.UTF8.GetString(mySenderID.GetByteArray()) + ">");
                 //_BridgeSendThreadPool       = new SmartThreadPool(1000, 2, Environment.ProcessorCount);
-                _SendMessageThreadPool = new PandoraThreadPool("SendMessageThreadPool <" + Encoding.UTF8.GetString(mySenderID.GetByteArray()) + ">");
+                _SendMessageThreadPool = new GraphThreadPool("SendMessageThreadPool <" + Encoding.UTF8.GetString(mySenderID.GetByteArray()) + ">");
                 //_SendMessageThreadPool      = new SmartThreadPool(1000, 2, Environment.ProcessorCount);
 
                 _BridgeSendThreadPool.OnWorkerThreadException += new WorkerThreadExceptionHandler(ThreadPool_OnWorkerThreadException);
@@ -528,7 +528,7 @@ namespace sones.Notifications
 
                 if (_SendMessageThreadPool == null)
                 {
-                    _SendMessageThreadPool = new PandoraThreadPool("SendMessageThreadPool <" + "__" + ">");
+                    _SendMessageThreadPool = new GraphThreadPool("SendMessageThreadPool <" + "__" + ">");
                     //_SendMessageThreadPool      = new SmartThreadPool(1000, 2, Environment.ProcessorCount);
 
                     _SendMessageThreadPool.OnWorkerThreadException += new WorkerThreadExceptionHandler(ThreadPool_OnWorkerThreadException);
@@ -657,7 +657,7 @@ namespace sones.Notifications
 
             if (_BridgeSendThreadPool == null)
             {
-                _BridgeSendThreadPool = new PandoraThreadPool("BridgeSendThreadPool <" + "__" + ">");
+                _BridgeSendThreadPool = new GraphThreadPool("BridgeSendThreadPool <" + "__" + ">");
                 //_BridgeSendThreadPool       = new SmartThreadPool(1000, 2, Environment.ProcessorCount);
                 _BridgeSendThreadPool.OnWorkerThreadException += new WorkerThreadExceptionHandler(ThreadPool_OnWorkerThreadException);
             }
@@ -1057,7 +1057,7 @@ namespace sones.Notifications
             if (mySendMulticast && _Bridge != null && NotificationTypesNamesLookupTable.ContainsKey(message.NotificationType))
             {
                 var sendTupel = new StefanTuple<NotificationMessage, ANotificationType>(message, NotificationTypesNamesLookupTable[message.NotificationType]);
-                _BridgeSendThreadPool.QueueWorkItem(new PandoraThreadPool.ThreadPoolEntry(new WaitCallback(_Bridge.Send), sendTupel));
+                _BridgeSendThreadPool.QueueWorkItem(new GraphThreadPool.ThreadPoolEntry(new WaitCallback(_Bridge.Send), sendTupel));
                 //_BridgeSendThreadPool.QueueWorkItem(new Action<Object>(_Bridge.Send), sendTupel);
                 //Console.WriteLine("Send multicast!");
             }
@@ -1162,7 +1162,7 @@ namespace sones.Notifications
                     //    deb += " sp: " + _SentPriorities[i] + " mq: " + ((_MessageQueues.ContainsKey((PriorityTypes)i) ? _MessageQueues[(PriorityTypes)i].Count.ToString() : "\t"));
                     //System.Diagnostics.Debug.WriteLine("QueueWorkItem prio: " + currentMessageEntry.Message.Priority + deb);
 
-                    Boolean addedSuccessfully = _SendMessageThreadPool.QueueWorkItem(new PandoraThreadPool.ThreadPoolEntry(new ParameterizedThreadStart(SendNotificationCallback), currentMessageEntry));
+                    Boolean addedSuccessfully = _SendMessageThreadPool.QueueWorkItem(new GraphThreadPool.ThreadPoolEntry(new ParameterizedThreadStart(SendNotificationCallback), currentMessageEntry));
                     //Boolean addedSuccessfully = true;
                     //_SendMessageThreadPool.QueueWorkItem(new Action<Object>(SendNotificationCallback), currentMessageEntry);
 

@@ -56,7 +56,7 @@ namespace sones.StorageEngines.Caches
 
         #region Data
 
-        public  FileStream        PandoraFSFileStream;
+        public  FileStream        GraphFSFileStream;
         private List<QueueEntry>  _ReadQueue;
         private Thread            _ReaderThread;
         private bool              ShutdownReaderThread          = false;
@@ -182,7 +182,7 @@ namespace sones.StorageEngines.Caches
         {
 
             _WriteQueueLock        = myWriteQueueLock;
-            PandoraFSFileStream    = null;
+            GraphFSFileStream    = null;
             ShutdownReaderThread   = false;
             _ReadQueue             = new List<QueueEntry>();
             _ReaderThread          = new Thread(new ThreadStart(ReadQueueThread));
@@ -223,8 +223,8 @@ namespace sones.StorageEngines.Caches
             if (!myInputFileStream.CanRead)
                 throw new QueueManagerException("[ReadQueue] Can not read from the underlying filesystem!");
 
-            if (PandoraFSFileStream == null)
-                PandoraFSFileStream = myInputFileStream;
+            if (GraphFSFileStream == null)
+                GraphFSFileStream = myInputFileStream;
             else
                 throw new QueueManagerException("[ReadQueue] This ReadQueueManager is already initialised!");
 
@@ -248,7 +248,7 @@ namespace sones.StorageEngines.Caches
 
             #region Sleep until FileStream was attached or thread was ended
 
-            while (PandoraFSFileStream == null && !ShutdownReaderThread)
+            while (GraphFSFileStream == null && !ShutdownReaderThread)
             {
 
                 try
@@ -301,7 +301,7 @@ namespace sones.StorageEngines.Caches
 
             // TODO: actually make use of the read queue...
 
-            if (!PandoraFSFileStream.CanRead)
+            if (!GraphFSFileStream.CanRead)
                 throw new QueueManagerException("Cannot read. Maybe nothing is mounted.");
 
             // CORRECTION: Check if the current StartPosition is still in the WriteQueue - Prevent Readqueue from reading not yet written positions
@@ -312,10 +312,10 @@ namespace sones.StorageEngines.Caches
                 Thread.Sleep(1); // or read next in queue
             }
             */
-            lock (PandoraFSFileStream)
+            lock (GraphFSFileStream)
             {
-                PandoraFSFileStream.Seek( (long) ReadEntry.RWQueueStreams[0].PhysicalPosition, 0);
-                Int32 HowMany = PandoraFSFileStream.Read(Output, 0, (Int32)ReadEntry.RWQueueStreams[0].Length);
+                GraphFSFileStream.Seek( (long) ReadEntry.RWQueueStreams[0].PhysicalPosition, 0);
+                Int32 HowMany = GraphFSFileStream.Read(Output, 0, (Int32)ReadEntry.RWQueueStreams[0].Length);
 
                 if (_BytesRead + (UInt64) HowMany < 0)
                     _BytesRead = 0;
@@ -345,7 +345,7 @@ namespace sones.StorageEngines.Caches
 
             // TODO: actually make use of the read queue...
 
-            if (!PandoraFSFileStream.CanRead)
+            if (!GraphFSFileStream.CanRead)
                 throw new QueueManagerException("Cannot read. Maybe nothing is mounted.");
 
             // CORRECTION: Check if the current StartPosition is still in the WriteQueue - Prevent Readqueue from reading not yet written positions
@@ -357,10 +357,10 @@ namespace sones.StorageEngines.Caches
             }
              * */
 
-            lock (PandoraFSFileStream)
+            lock (GraphFSFileStream)
             {
-                PandoraFSFileStream.Seek((long)StartPosition, 0);
-                Int32 HowMany = PandoraFSFileStream.Read(Output, 0, (Int32)Length);
+                GraphFSFileStream.Seek((long)StartPosition, 0);
+                Int32 HowMany = GraphFSFileStream.Read(Output, 0, (Int32)Length);
 
                 if (_BytesRead + (UInt64) HowMany < 0)
                     _BytesRead = 0;

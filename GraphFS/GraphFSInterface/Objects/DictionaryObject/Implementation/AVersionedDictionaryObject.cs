@@ -125,10 +125,10 @@ namespace sones.GraphFS.Objects
         public AVersionedDictionaryObject(IDictionary<TKey, TValue> myIDictionaryType)
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion           = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream               = FSConstants.DEFAULT_INDEXSTREAM;
 
 
@@ -176,7 +176,7 @@ namespace sones.GraphFS.Objects
         #endregion
 
 
-        #region Members of APandoraStructure
+        #region Members of AGraphStructure
 
         #region SerializeInnerObject(ref mySerializationWriter)
 
@@ -275,10 +275,10 @@ namespace sones.GraphFS.Objects
                 #region Read Key- and ValueTypes
                 
                 /*if (_IndexKeyType != typeof(TKey))
-                    throw new PandoraFSException_TypeParametersDiffer("Type parameter TKey of IndexObject_HashTable<" + typeof(TKey).ToString() + ", " + typeof(TValue).ToString() + "> is different from the serialized IndexObject_HashTable<" + _IndexKeyType.ToString() + ", " + _IndexValueType.ToString() + ">!");
+                    throw new GraphFSException_TypeParametersDiffer("Type parameter TKey of IndexObject_HashTable<" + typeof(TKey).ToString() + ", " + typeof(TValue).ToString() + "> is different from the serialized IndexObject_HashTable<" + _IndexKeyType.ToString() + ", " + _IndexValueType.ToString() + ">!");
 
                 if (_IndexValueType != typeof(TValue) && (!(typeof(TValue) is Object)))
-                    throw new PandoraFSException_TypeParametersDiffer("Type parameter PT of IndexObject_HashTable<" + typeof(TKey).ToString() + ", " + typeof(TValue).ToString() + "> is different from the serialized IndexObject_HashTable<" + _IndexKeyType.ToString() + ", " + _IndexValueType.ToString() + ">!");*/
+                    throw new GraphFSException_TypeParametersDiffer("Type parameter PT of IndexObject_HashTable<" + typeof(TKey).ToString() + ", " + typeof(TValue).ToString() + "> is different from the serialized IndexObject_HashTable<" + _IndexKeyType.ToString() + ", " + _IndexValueType.ToString() + ">!");*/
 
                 #endregion
 
@@ -407,15 +407,15 @@ namespace sones.GraphFS.Objects
 
             else if (_IGraphFSSessionReference.IsPersistent())
             {
-            //    var _IPandoraStream = this._FSSessionReference.OpenStream(_ObjectLocation, _ObjectStream, _ObjectEdition, null, 0);
+            //    var _IGraphStream = this._FSSessionReference.OpenStream(_ObjectLocation, _ObjectStream, _ObjectEdition, null, 0);
 
             //    var _AppendingData = new SerializationWriter().WriteObject(myKey)
             //                                                  .WriteObject(myTimestamp)
             //                                                  .WriteObject(myValue)
             //                                                  .ToArray();
 
-            //    _IPandoraStream.Write(_AppendingData, SeekOrigin.End);
-            //    _IPandoraStream.Close();
+            //    _IGraphStream.Write(_AppendingData, SeekOrigin.End);
+            //    _IGraphStream.Close();
 
             }
 
@@ -910,15 +910,15 @@ namespace sones.GraphFS.Objects
 
             else if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive && _IGraphFSSessionReference.Value.IsPersistent)
             {
-                //    var _IPandoraStream = this._FSSessionReference.OpenStream(_ObjectLocation, _ObjectStream, _ObjectEdition, null, 0);
+                //    var _IGraphStream = this._FSSessionReference.OpenStream(_ObjectLocation, _ObjectStream, _ObjectEdition, null, 0);
 
                 //    var _AppendingData = new SerializationWriter().WriteObject(myKey)
                 //                                                  .WriteObject(myTimestamp)
                 //                                                  .WriteObject(null)
                 //                                                  .ToArray();
 
-                //    _IPandoraStream.Write(_AppendingData, SeekOrigin.End);
-                //    _IPandoraStream.Close();
+                //    _IGraphStream.Write(_AppendingData, SeekOrigin.End);
+                //    _IGraphStream.Close();
 
             }
 

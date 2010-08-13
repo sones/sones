@@ -25,7 +25,7 @@
  * </copyright>
  * <developer>Henning Rauch</developer>
  * <summary>This class implements the autocompletion
- * for actual PandoraTypes.</summary>
+ * for actual GraphTypes.</summary>
  */
 
 #region Usings
@@ -43,15 +43,15 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
     /// <summary>
     /// This class implements the autocompletion
-    /// for actual PandoraTypes.
+    /// for actual GraphTypes.
     /// </summary>
 
-    public class StringLiteralPandoraType : ADBCLIAutocompletions
+    public class StringLiteralGraphType : ADBCLIAutocompletions
     {
 
         #region properties
 
-        public override String Name { get { return "stringLiteralPandoraType"; } }
+        public override String Name { get { return "stringLiteralGraphType"; } }
 
         #endregion
 
@@ -60,20 +60,20 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
         public override List<String> Complete(ref object PVFSObject, ref object PDBObject, ref String CurrentPath, string CurrentStringLiteral)
         {
 
-            var myPandoraDB = PDBObject as GraphDBSession;
-            var possiblePandoraTypes = new List<String>();
+            var myGraphDB = PDBObject as GraphDBSession;
+            var possibleGraphTypes = new List<String>();
 
-            if (myPandoraDB != null)
+            if (myGraphDB != null)
             {
 
-                using (var transaction = myPandoraDB.BeginTransaction())
+                using (var transaction = myGraphDB.BeginTransaction())
                 {
 
-                    foreach (var _PandoraType in transaction.GetDBContext().DBTypeManager.GetAllTypes())
+                    foreach (var _GraphType in transaction.GetDBContext().DBTypeManager.GetAllTypes())
                     {
-                        if (_PandoraType.Name.StartsWith(CurrentStringLiteral))
+                        if (_GraphType.Name.StartsWith(CurrentStringLiteral))
                         {
-                            possiblePandoraTypes.Add(_PandoraType.Name);
+                            possibleGraphTypes.Add(_GraphType.Name);
                         }
                     }
 
@@ -81,7 +81,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
             }
 
-            return possiblePandoraTypes;
+            return possibleGraphTypes;
             
         }
 

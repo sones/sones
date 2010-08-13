@@ -87,12 +87,12 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         }
 
-        public override AEdgeType GetNewInstance()
+        public override IEdgeType GetNewInstance()
         {
             return new EdgeTypeSingleReference();
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
+        public override IReferenceEdge GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
         {
             if (iEnumerable.FirstOrDefault() == null || _ObjectUUID.Item1 != iEnumerable.First().Value.ObjectUUID)
             {
@@ -107,7 +107,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             }
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeOfObjects)
+        public override IReferenceEdge GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeOfObjects)
         {
             if (iEnumerable.FirstOrDefault() == null || _ObjectUUID.Item1 != iEnumerable.First())
             {
@@ -130,35 +130,12 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return _ObjectUUID.Item1;
         }
 
-        public override IEnumerable<ObjectUUID> GetAllReferenceIDs()
-        {
-            yield return _ObjectUUID.Item1;
-
-            yield break;
-        }
-
         public override bool RemoveUUID(ObjectUUID myObjectUUID)
         {
             if (_ObjectUUID.Item1 == myObjectUUID)
             {
                 _ObjectUUID = null;
                 return true;
-            }
-
-            return false;
-        }
-
-        public override bool RemoveUUID(IEnumerable<ObjectUUID> myObjectUUIDs)
-        {
-            if (!myObjectUUIDs.IsNullOrEmpty())
-            {
-                if (myObjectUUIDs.Contains(_ObjectUUID.Item1))
-                {
-                    _ObjectUUID = null;
-                    return true;
-                }
-
-                return false;
             }
 
             return false;
@@ -179,13 +156,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public override DBObjectReadout GetReadout(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO)
         {
             return GetAllAttributesFromDBO(_ObjectUUID.Item1);
-        }
-
-        public override IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetAllReferenceIDsWeighted()
-        {
-            yield return new Tuple<ObjectUUID, ADBBaseObject>(_ObjectUUID.Item1, null);
-
-            yield break;
         }
 
         #endregion
@@ -346,13 +316,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public override IEnumerable<Exceptional<DBObjectStream>> GetAllEdgeDestinations(DBObjectCache dbObjectCache)
         {
             yield return _ObjectUUID.Item2.GetDBObjectStream(dbObjectCache);
-
-            yield break;
-        }
-
-        public override IEnumerable<Tuple<Exceptional<DBObjectStream>, ADBBaseObject>> GetAllEdgeDestinationsWeighted(DBObjectCache dbObjectCache)
-        {
-            yield return new Tuple<Exceptional<DBObjectStream>, ADBBaseObject>(_ObjectUUID.Item2.GetDBObjectStream(dbObjectCache), null);
 
             yield break;
         }

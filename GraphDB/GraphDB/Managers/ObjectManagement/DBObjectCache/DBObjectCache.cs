@@ -24,7 +24,7 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Henning Rauch</developer>
- * <summary>The DBObject cache is the interface to the DBObjects stored in PandoraFS. 
+ * <summary>The DBObject cache is the interface to the DBObjects stored in GraphFS. 
  * It is used to store all DBObjects and BackwardEdges that are used within a query.
  * So, DBObjects are only catched once during a query.<summary>
  */
@@ -49,7 +49,7 @@ namespace sones.GraphDB.ObjectManagement
 {
 
     /// <summary>
-    /// The DBObject cache is the interface to the DBObjects stored in PandoraFS. 
+    /// The DBObject cache is the interface to the DBObjects stored in GraphFS. 
     /// It is used to store all DBObjects and BackwardEdges that are used within a query.
     /// So, DBObjects are only catched once during a query.
     /// </summary>
@@ -59,7 +59,7 @@ namespace sones.GraphDB.ObjectManagement
         #region Properties
 
         /// <summary>
-        /// used for loading DBObjects and BackwardEdges from PandoraFS
+        /// used for loading DBObjects and BackwardEdges from GraphFS
         /// </summary>
         DBTypeManager _typeManager;
 
@@ -106,7 +106,7 @@ namespace sones.GraphDB.ObjectManagement
         #region DBObjectStream
 
         /// <summary>
-        /// Loads a DBObject from internal cache structure or PandoraFS (if it is not present in cache)
+        /// Loads a DBObject from internal cache structure or GraphFS (if it is not present in cache)
         /// </summary>
         /// <param name="myType">The type of the DBObject as TypeUUID.</param>
         /// <param name="myObjectUUID">The UUID of the DBObject.</param>
@@ -117,7 +117,7 @@ namespace sones.GraphDB.ObjectManagement
         }
 
         /// <summary>
-        /// Loads a DBObject from internal cache structure or PandoraFS (if it is not present in cache)
+        /// Loads a DBObject from internal cache structure or GraphFS (if it is not present in cache)
         /// </summary>
         /// <param name="myType">The type of the DBObject as DBTypeStream.</param>
         /// <param name="myObjectUUID">The UUID of the DBObject.</param>
@@ -154,10 +154,10 @@ namespace sones.GraphDB.ObjectManagement
 
                     var aWeakReference = items.GetOrAdd(myObjectUUID, (aObjectUUID) =>
                         {
-                            //DBObject must be loaded from PandoraFS
+                            //DBObject must be loaded from GraphFS
                             var tempResult = LoadDBObjectInternal(myType, aObjectUUID);
 
-                            if (tempResult.Failed)
+                            if (tempResult.Failed())
                             {
                                 throw new GraphDBException(tempResult.Errors);
                             }
@@ -303,7 +303,7 @@ namespace sones.GraphDB.ObjectManagement
         #region BackwardEdge
 
         /// <summary>
-        /// Loads a DBBackwardEdge from internal cache structure or PandoraFS (if it is not present in cache)
+        /// Loads a DBBackwardEdge from internal cache structure or GraphFS (if it is not present in cache)
         /// </summary>
         /// <param name="myType">The Type of the DBObjects as DBTypeStream.</param>
         /// <param name="myObjectUUID">The UUID of the corresponding DBObject.</param>
@@ -338,10 +338,10 @@ namespace sones.GraphDB.ObjectManagement
                 {
                     var aWeakReference = items.GetOrAdd(myObjectUUID, (aObjectUUID) =>
                     {
-                        //DBObject must be loaded from PandoraFS
+                        //DBObject must be loaded from GraphFS
                         var tempResult = LoadDBBackwardEdgeInternal(myType, aObjectUUID);
 
-                        if (tempResult.Failed)
+                        if (tempResult.Failed())
                         {
                             throw new GraphDBException(tempResult.Errors);
                         }
@@ -361,7 +361,7 @@ namespace sones.GraphDB.ObjectManagement
         }
 
         /// <summary>
-        /// Loads a DBBackwardEdge from internal cache structure or PandoraFS (if it is not present in cache)
+        /// Loads a DBBackwardEdge from internal cache structure or GraphFS (if it is not present in cache)
         /// </summary>
         /// <param name="myType">The Type of the DBObjects as TypeUUID.</param>
         /// <param name="myObjectUUID">The UUID of the corresponding DBObject.</param>
@@ -380,7 +380,7 @@ namespace sones.GraphDB.ObjectManagement
         #region DBObject
 
         /// <summary>
-        /// Internal method for loading a DBObject from PandoraFS.
+        /// Internal method for loading a DBObject from GraphFS.
         /// </summary>
         /// <param name="myType">The Type of the DBObjects as TypeUUID.</param>
         /// <param name="myObjectUUID">The UUID of the DBObject.</param>
@@ -391,9 +391,9 @@ namespace sones.GraphDB.ObjectManagement
         }
 
         /// <summary>
-        /// Internal method for loading a DBObject from PandoraFS.
+        /// Internal method for loading a DBObject from GraphFS.
         /// </summary>
-        /// <param name="myType">The Type of the DBObjects as PandoraType.</param>
+        /// <param name="myType">The Type of the DBObjects as GraphType.</param>
         /// <param name="myObjectUUID">The UUID of the DBObject.</param>
         /// <returns>An DBObject</returns>
         private Exceptional<DBObjectStream> LoadDBObjectInternal(GraphDBType myType, ObjectUUID myObjectUUID)
@@ -403,7 +403,7 @@ namespace sones.GraphDB.ObjectManagement
 
             #region Try all subTypes - as long as the Symlink alternativ does not work
 
-            if (tempResult.Failed)
+            if (tempResult.Failed())
             {
 
                 var exceptional = new Exceptional<DBObjectStream>(tempResult);
@@ -413,7 +413,7 @@ namespace sones.GraphDB.ObjectManagement
                 foreach (var type in _typeManager.GetAllSubtypes(myType, false))
                 {
                     tempResult = LoadDBObjectInternal(type, myObjectUUID);
-                    if (tempResult.Success)
+                    if (tempResult.Success())
                         break;
                     else
                         exceptional = new Exceptional<DBObjectStream>(tempResult);
@@ -421,7 +421,7 @@ namespace sones.GraphDB.ObjectManagement
 
                 #endregion
 
-                if (tempResult.Failed)
+                if (tempResult.Failed())
                     return exceptional;
             }
 
@@ -449,7 +449,7 @@ namespace sones.GraphDB.ObjectManagement
         #region BackwardEdge
 
         /// <summary>
-        /// Internal method for loading a DBBackwardEdge from PandoraFS. 
+        /// Internal method for loading a DBBackwardEdge from GraphFS. 
         /// </summary>
         /// <param name="myType">The Type of the DBObjects as TypeUUID.</param>
         /// <param name="myObjectUUID">The UUID of the corresponding DBObject.</param>
@@ -460,9 +460,9 @@ namespace sones.GraphDB.ObjectManagement
         }
 
         /// <summary>
-        /// Internal method for loading a DBBackwardEdge from PandoraFS. 
+        /// Internal method for loading a DBBackwardEdge from GraphFS. 
         /// </summary>
-        /// <param name="myType">The Type of the DBObjects as PandoraType.</param>
+        /// <param name="myType">The Type of the DBObjects as GraphType.</param>
         /// <param name="myObjectUUID">The UUID of the corresponding DBObject.</param>
         /// <returns>A BackwardEdge</returns>
         private Exceptional<BackwardEdgeStream> LoadDBBackwardEdgeInternal(GraphDBType myType, ObjectUUID myObjectUUID)
@@ -505,7 +505,7 @@ namespace sones.GraphDB.ObjectManagement
                             //get backwardEdge
                             var beStream = LoadDBBackwardEdgeStream(myStartingDBObjectType, myStartingDBObject.ObjectUUID);
 
-                            if (beStream.Failed)
+                            if (beStream.Failed())
                             {
                                 throw new GraphDBException(new Error_ExpressionGraphInternal(null, String.Format("Error while trying to get BackwardEdge of the DBObject: \"{0}\"", myStartingDBObject.ToString())));
                             }
@@ -520,7 +520,7 @@ namespace sones.GraphDB.ObjectManagement
                         }
                         else
                         {
-                            foreach (var aDBOStream in LoadListOfDBObjectStreams(interestingAttributeEdge.GetDBType(myDBTypeManager), ((ASetReferenceEdgeType)myStartingDBObject.GetAttribute(interestingAttributeEdge.UUID)).GetAllReferenceIDs()))
+                            foreach (var aDBOStream in LoadListOfDBObjectStreams(interestingAttributeEdge.GetDBType(myDBTypeManager), ((ASetOfReferencesEdgeType)myStartingDBObject.GetAttribute(interestingAttributeEdge.UUID)).GetAllReferenceIDs()))
                             {
                                 yield return aDBOStream;
                             }
@@ -588,7 +588,7 @@ namespace sones.GraphDB.ObjectManagement
 
                     foreach (var aBackwardDBO in dbobjects)
                     {
-                        if (aBackwardDBO.Success)
+                        if (aBackwardDBO.Success())
                         {
                             if (IsValidDBObjectForLevelKey(aBackwardDBO, myLevelKeyPred, typeOfBackwardDBOs))
                             {

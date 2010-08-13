@@ -18,7 +18,7 @@ namespace sones.GraphDB.Managers.Structures
     public class BackwardEdgeDefinition
     {
 
-        public BackwardEdgeDefinition(string myAttributeName, string myTypeName, string myTypeAttributeName, AEdgeType myEdgeType)
+        public BackwardEdgeDefinition(string myAttributeName, string myTypeName, string myTypeAttributeName, IEdgeType myEdgeType)
         {
             AttributeName = myAttributeName;
             TypeName = myTypeName;
@@ -46,7 +46,7 @@ namespace sones.GraphDB.Managers.Structures
         /// <summary>
         /// The Type of the edge, currently EdgeTypeList or EdgeTypeWeightedList
         /// </summary>
-        public AEdgeType EdgeType { get; private set; }
+        public IEdgeType EdgeType { get; private set; }
 
         #endregion
     

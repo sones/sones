@@ -37,7 +37,7 @@ namespace sones.GraphDB.Errors
 
         public override string ToString()
         {
-            return String.Format("The type " + GraphDBType.Name + " could not be removed from PandoraFS.");
+            return String.Format("The type " + GraphDBType.Name + " could not be removed from GraphFS.");
         }
     }
 }

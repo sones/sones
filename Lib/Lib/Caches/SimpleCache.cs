@@ -27,9 +27,7 @@ using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 
-using sones.Libraries.Caches;
-
-namespace sones.Libraries.Caches
+namespace sones.Lib.Caches
 {
 
     /// <summary>

@@ -108,10 +108,10 @@ namespace sones.GraphFS.Objects
         public FileObject()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion   = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream       = FSConstants.FILESTREAM;
 
             // Object specific data...
@@ -148,7 +148,7 @@ namespace sones.GraphFS.Objects
         #endregion
 
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         #region Clone()
 
@@ -207,7 +207,7 @@ namespace sones.GraphFS.Objects
 
             catch (Exception e)
             {
-                throw new PandoraFSException_FileObjectCouldNotBeDeserialized("The FileObject could not be deserialized!\n\n" + e);
+                throw new GraphFSException_FileObjectCouldNotBeDeserialized("The FileObject could not be deserialized!\n\n" + e);
             }
 
         }

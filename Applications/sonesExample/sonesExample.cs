@@ -40,6 +40,8 @@ using sones.Networking.HTTP;
 using sones.Notifications;
 using sones.Notifications.Messages;
 using System.Net;
+using System.Threading;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -131,22 +133,36 @@ namespace sonesExample
 
     public class sonesExampleClass
     {
+        private bool quiet = false;
+
         #region CheckResult(myQueryResult)
 
         private void CheckResult(QueryResult myQueryResult)
         {
+            if (!quiet)
+            {
             if (myQueryResult.ResultType != ResultType.Successful)
                 Console.WriteLine("{0} => {1}", myQueryResult.Query, myQueryResult.Errors.First().Message);
 
             else
                 Console.WriteLine("{0}", myQueryResult.Query);
-
+            }
         }
 
         #endregion
 
-        public sonesExampleClass()
+        public sonesExampleClass(String[] myArgs)
         {
+           
+
+            if (myArgs.Count() > 0)
+            {
+                foreach (String parameter in myArgs)
+                {
+                    if (parameter.ToUpper() == "--Q")
+                        quiet = true;
+                }
+            }
 
             #region Init NotificationDispatcher
             var _NotificationSettings = new NotificationSettings()
@@ -224,28 +240,37 @@ namespace sonesExample
             #endregion
 
             #region Some helping lines...
-            Console.WriteLine();
-            Console.WriteLine("This small example demonstrates how to start a sones GraphDB");
-            Console.WriteLine("Instance and it's several services:");
-            Console.WriteLine("   * REST Service is started at http://localhost:9975");
-            Console.WriteLine("      * access it directly like in this example: ");
-            Console.WriteLine("           http://localhost:9975/gql?DESCRIBE%20TYPES");
-            Console.WriteLine("      * if you want JSON Output add ACCEPT: application/json ");
-            Console.WriteLine("        to the client request header (or application/xml or");
-            Console.WriteLine("        application/text)");
-            Console.WriteLine("   * we recommend to use the AJAX WebShell. ");
-            Console.WriteLine("        Browse to http://localhost:9975/WebShell and use");
-            Console.WriteLine("        the username \"test\" and password \"test\"");
-            Console.WriteLine("   * Additionally a WebDAV service is started on port 9978.");
-            Console.WriteLine();
+            if (!quiet)
+            {
+                Console.WriteLine();
+                Console.WriteLine("This small example demonstrates how to start a sones GraphDB");
+                Console.WriteLine("Instance and it's several services:");
+                Console.WriteLine("   * If you want to suppress console output add --Q as a");
+                Console.WriteLine("     parameter.");
+                Console.WriteLine("   * REST Service is started at http://localhost:9975");
+                Console.WriteLine("      * access it directly like in this example: ");
+                Console.WriteLine("           http://localhost:9975/gql?DESCRIBE%20TYPES");
+                Console.WriteLine("      * if you want JSON Output add ACCEPT: application/json ");
+                Console.WriteLine("        to the client request header (or application/xml or");
+                Console.WriteLine("        application/text)");
+                Console.WriteLine("   * we recommend to use the AJAX WebShell. ");
+                Console.WriteLine("        Browse to http://localhost:9975/WebShell and use");
+                Console.WriteLine("        the username \"test\" and password \"test\"");
+                Console.WriteLine("   * Additionally a WebDAV service is started on port 9978.");
+                Console.WriteLine();
+            }
             #endregion
 
 
             #region Start the GraphDS command line interface
 
-
-
-            _GraphDSSharp.OpenCLI();
+            if (!quiet)
+                _GraphDSSharp.OpenCLI();
+            else
+                while (true)
+                { 
+                    Thread.Sleep(1000);
+                }
 
             #endregion
 
@@ -268,7 +293,7 @@ namespace sonesExample
 
         static void Main(String[] myArgs)
         {
-            var _WebDAVHosting = new sonesExampleClass();
+            var _WebDAVHosting = new sonesExampleClass(myArgs);
         }
 
     }

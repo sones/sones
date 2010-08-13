@@ -27,21 +27,17 @@
  * <summary>DBBackwardEdge contains all BackwardEdgdes of an particular DBObject.<summary>
  */
 
+#region Usings
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using sones.GraphDB.TypeManagement;
-using sones.GraphDB.Exceptions;
-using sones.GraphDB.Structures;
 using sones.GraphDB.Structures.EdgeTypes;
-using sones.Lib.Serializer;
-using sones.Lib.NewFastSerializer;
-using sones.Lib.DataStructures;
-using sones.GraphFS.Objects;
-using sones.Lib.DataStructures.UUID;
 using sones.GraphFS.DataStructures;
+using sones.GraphFS.Objects;
+using sones.Lib.DataStructures;
+using sones.Lib.NewFastSerializer;
+
+#endregion
 
 namespace sones.GraphDB.ObjectManagement
 {
@@ -54,10 +50,10 @@ namespace sones.GraphDB.ObjectManagement
         public BackwardEdgeStream()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream = DBConstants.DBBACKWARDEDGESTREAM;
 
             // Object specific data...

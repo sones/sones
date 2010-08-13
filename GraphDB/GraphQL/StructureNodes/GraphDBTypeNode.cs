@@ -1,11 +1,11 @@
-﻿/* <id name="PandoraDB – PandoraType node" />
- * <copyright file="PandoraTypeNode.cs
+﻿/* <id name="GraphDB – GraphType node" />
+ * <copyright file="GraphTypeNode.cs
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Henning Rauch</developer>
  * <developer>Stefan Licht</developer>
- * <summary>This node is requested in case of PandoratType statement.</summary>
+ * <summary>This node is requested in case of GraphtType statement.</summary>
  */
 
 #region Usings
@@ -26,7 +26,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 {
 
     /// <summary>
-    /// This node is requested in case of a PandoraType statement.
+    /// This node is requested in case of a GraphType statement.
     /// </summary>
     public class GraphDBTypeNode : AStructureNode
     {
@@ -150,7 +150,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
             else
             {
-                throw new ArgumentException("Invalid pandora type definition...");
+                throw new ArgumentException("Invalid Graph type definition...");
             }
 
         }

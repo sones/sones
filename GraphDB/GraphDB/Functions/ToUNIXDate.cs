@@ -1,4 +1,5 @@
-﻿#region Usings
+﻿
+#region Usings
 
 using System;
 using System.Collections.Generic;
@@ -11,11 +12,17 @@ using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.Errors;
 using sones.Lib.DataStructures.Timestamp;
+using sones.GraphDB.Structures.Result;
+using System.Diagnostics;
 
 #endregion
 
 namespace sones.GraphDB.Functions
 {
+
+    /// <summary>
+    /// Convert the datetime value to the unix datetime format.
+    /// </summary>
     public class ToUNIXDate : ABaseFunction
     {
 
@@ -35,20 +42,25 @@ namespace sones.GraphDB.Functions
 
         public override string GetDescribeOutput()
         {
-            return "Convert the datetime value to the unix datime format.";
+            return "Convert the datetime value to the unix datetime format.";
         }
 
-        public override bool ValidateWorkingBase(TypeAttribute workingBase, DBTypeManager typeManager)
+        public override bool ValidateWorkingBase(IObject workingBase, DBTypeManager typeManager)
         {
-            if (workingBase != null)
+            if (workingBase is DBUInt64 || workingBase is DBDateTime)
             {
-                if (workingBase.GetDBType(typeManager).IsUserDefined)
+                return true;
+            }
+            else if (workingBase is DBTypeAttribute)
+            {
+                if ((workingBase as DBTypeAttribute).GetValue().GetDBType(typeManager).UUID == DBUInt64.UUID
+                 || (workingBase as DBTypeAttribute).GetValue().GetDBType(typeManager).UUID == DBDateTime.UUID)
                 {
-                    return false;
+                    return true;
                 }
                 else
                 {
-                    return true;
+                    return false;
                 }
             }
             else
@@ -57,37 +69,38 @@ namespace sones.GraphDB.Functions
             }
         }
 
+        public override IObject GetReturnType(IObject myWorkingBase, DBTypeManager myTypeManager)
+        {
+            return new DBInt64();
+        }
+
         public override Exceptional<FuncParameter> ExecFunc(DBContext dbContext, params FuncParameter[] myParams)
         {
             Exceptional<FuncParameter> result = new Exceptional<FuncParameter>();
 
-            if (CallingObject != null)
+            if (CallingObject is DBUInt64)
             {
-                if (CallingObject is DBUInt64)
+                try
                 {
-                    try
-                    {
-                        var dtValue = new DateTime(System.Convert.ToInt64(((DBUInt64)CallingObject).Value));
-                        result.Value = new FuncParameter(new DBInt64(dtValue.ToUnixTimeStamp()));
-                    }
-                    catch (Exception e)
-                    {
-                        return new Exceptional<FuncParameter>(new Error_UnknownDBError(e.Message));
-                    }
+                    var dtValue = new DateTime(System.Convert.ToInt64(((DBUInt64)CallingObject).Value));
+                    result.Value = new FuncParameter(new DBInt64(dtValue.ToUnixTimeStamp()));
+                }
+                catch (Exception e)
+                {
+                    return new Exceptional<FuncParameter>(new Error_UnknownDBError(e.Message));
+                }
 
-                    return result;
-                }
-                else if (CallingObject is DBDateTime)
-                {
-                    result.Value = new FuncParameter(new DBInt64(((DateTime)((DBDateTime)CallingObject).Value).ToUnixTimeStamp()));
-                }
-                else
-                {
-                    return new Exceptional<FuncParameter>(new Error_FunctionParameterTypeMismatch(typeof(DBDateTime), CallingObject.GetType()));
-                }
+                return result;
+            }
+            else if (CallingObject is DBDateTime)
+            {
+                result.Value = new FuncParameter(new DBInt64(((DateTime)((DBDateTime)CallingObject).Value).ToUnixTimeStamp()));
             }
             else
-                return new Exceptional<FuncParameter>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+            {
+                Debug.Assert(false); // this should never happen due to the ValidateWorkingBase method
+                return new Exceptional<FuncParameter>(new Error_FunctionParameterTypeMismatch(typeof(DBDateTime), CallingObject.GetType()));
+            }
 
             return result;
         }

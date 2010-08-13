@@ -41,10 +41,10 @@ namespace sones.GraphDB.Managers.Structures
 
         #region override AAttributeAssignOrUpdateOrRemove.Update
 
-        public override Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>> Update(DBContext myDBContext, DBObjectStream myDBObjectStream, GraphDBType myGraphDBType)
+        public override Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>> Update(DBContext myDBContext, DBObjectStream myDBObjectStream, GraphDBType myGraphDBType)
         {
 
-            Dictionary<String, Tuple<TypeAttribute, AObject>> attrsForResult = new Dictionary<String, Tuple<TypeAttribute, AObject>>();
+            Dictionary<String, Tuple<TypeAttribute, IObject>> attrsForResult = new Dictionary<String, Tuple<TypeAttribute, IObject>>();
 
             #region AttributeRemove
 
@@ -52,9 +52,9 @@ namespace sones.GraphDB.Managers.Structures
 
             var undefAttrsExcept = myDBObjectStream.GetUndefinedAttributes(myDBContext.DBObjectManager);
 
-            if (undefAttrsExcept.Failed)
+            if (undefAttrsExcept.Failed())
             {
-                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(undefAttrsExcept);
+                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(undefAttrsExcept);
             }
 
 
@@ -79,19 +79,19 @@ namespace sones.GraphDB.Managers.Structures
             
             if (!unknowAttrs.IsNullOrEmpty())
             {
-                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(new Error_InvalidUndefinedAttributes(unknowAttrs));
+                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(new Error_InvalidUndefinedAttributes(unknowAttrs));
             }
 
             foreach (var aAttribute in undefAttrsToRemove)
             {
                 var removeExcept = myDBContext.DBObjectManager.RemoveUndefinedAttribute(aAttribute, myDBObjectStream);
 
-                if (removeExcept.Failed)
+                if (removeExcept.Failed())
                 {
-                    return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(removeExcept);
+                    return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(removeExcept);
                 }
 
-                attrsForResult.Add(aAttribute, new Tuple<TypeAttribute, AObject>(null, null));
+                attrsForResult.Add(aAttribute, new Tuple<TypeAttribute, IObject>(null, null));
             }
 
             //if (!undefAttrsToRemove.IsNullOrEmpty())
@@ -103,9 +103,9 @@ namespace sones.GraphDB.Managers.Structures
 
             var applyRemoveResult = ApplyRemoveAttribute(defAttrsToRemove, myDBContext, myDBObjectStream, myGraphDBType);
 
-            if (applyRemoveResult.Failed)
+            if (applyRemoveResult.Failed())
             {
-                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(applyRemoveResult);
+                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(applyRemoveResult);
             }
 
             if (applyRemoveResult.Value.Count > 0)
@@ -116,7 +116,7 @@ namespace sones.GraphDB.Managers.Structures
 
                 foreach (var attr in applyRemoveResult.Value)
                 {
-                    attrsForResult.Add(attr.Name, new Tuple<TypeAttribute, AObject>(attr, null));
+                    attrsForResult.Add(attr.Name, new Tuple<TypeAttribute, IObject>(attr, null));
                 }
 
                 #endregion
@@ -127,7 +127,7 @@ namespace sones.GraphDB.Managers.Structures
 
             #endregion
 
-            return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(attrsForResult);
+            return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(attrsForResult);
 
         }
 

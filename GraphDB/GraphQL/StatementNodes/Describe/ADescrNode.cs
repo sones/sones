@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – ADescrNode" />
+﻿/* <id name="GraphDB – ADescrNode" />
  * <copyright file="ADescrNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.

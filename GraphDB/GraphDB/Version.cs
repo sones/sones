@@ -33,7 +33,7 @@ using System.Text;
 namespace sones.GraphDB
 {
     /// <summary>
-    /// The version information of this Pandora Database build
+    /// The version information of this Graph Database build
     /// </summary>
     public static class Version
     {
@@ -45,7 +45,7 @@ namespace sones.GraphDB
         { 
             get
             {
-                return "PandoraDatabase Revision " + VersionMajor + "." + VersionMinor + " (Build " + BuildNumber + ")";
+                return "GraphDatabase Revision " + VersionMajor + "." + VersionMinor + " (Build " + BuildNumber + ")";
             }
         }
     }

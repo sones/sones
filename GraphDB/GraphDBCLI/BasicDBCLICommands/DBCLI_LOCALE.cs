@@ -74,11 +74,11 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
         #region Execute Command
 
-        public override void Execute(ref object myIGraphFS2Session, ref object myIPandoraDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
+        public override void Execute(ref object myIGraphFS2Session, ref object myIGraphDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
         {
             
             var _IGraphFS2Session = myIGraphFS2Session as IGraphFSSession;
-            var _IPandoraDBSession = myIPandoraDBSession as IGraphDBSession;
+            var _IGraphDBSession = myIGraphDBSession as IGraphDBSession;
 
             Stopwatch sw = new Stopwatch();
             String locale = myOptions.ElementAt(1).Value[0].Option;

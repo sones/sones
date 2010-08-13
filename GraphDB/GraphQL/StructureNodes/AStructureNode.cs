@@ -15,6 +15,7 @@ using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.GraphQL.StructureNodes;
 
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
@@ -26,6 +27,12 @@ namespace sones.GraphDB.GraphQL.StructureNodes
     /// </summary>
     public abstract class AStructureNode
     {
+
+        #region Protected properties
+
+        public Exceptional ParsingResult { get; private set; }
+
+        #endregion
 
         #region protected helper methods
 
@@ -78,7 +85,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
         protected List<TypeReferenceDefinition> GetTypeReferenceDefinitions(CompilerContext context)
         {
-            return ((List<TypeReferenceDefinition>)context.PandoraListOfReferences);
+            return ((List<TypeReferenceDefinition>)context.GraphListOfReferences);
         }
 
         #endregion
@@ -88,6 +95,15 @@ namespace sones.GraphDB.GraphQL.StructureNodes
         public GraphQL.GraphQueryLanguage GetGraphQLGrammar(CompilerContext context)
         {
             return context.Compiler.Language.Grammar as GraphQL.GraphQueryLanguage;
+        }
+
+        #endregion
+
+        #region Ctor
+
+        public AStructureNode()
+        {
+            ParsingResult = new Exceptional();
         }
 
         #endregion

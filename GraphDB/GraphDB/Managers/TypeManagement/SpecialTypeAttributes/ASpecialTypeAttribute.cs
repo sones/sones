@@ -53,6 +53,6 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
         /// <param name="graphDBType"></param>
         /// <param name="sessionInfos"></param>
         /// <returns>The extracted value</returns>
-        public abstract Exceptional<AObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext);
+        public abstract Exceptional<IObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext);
     }
 }

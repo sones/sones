@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – DBInt32" />
+﻿/* <id name="GraphDB – DBInt32" />
  * <copyright file="DBInt32.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -91,77 +91,77 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
 
         #region Operations
 
-        public static DBInt32 operator +(DBInt32 myPandoraObjectA, Int32 myValue)
+        public static DBInt32 operator +(DBInt32 myGraphObjectA, Int32 myValue)
         {
-            myPandoraObjectA.Value = (Int32)myPandoraObjectA.Value + myValue;
-            return myPandoraObjectA;
+            myGraphObjectA.Value = (Int32)myGraphObjectA.Value + myValue;
+            return myGraphObjectA;
         }
 
-        public static DBInt32 operator -(DBInt32 myPandoraObjectA, Int32 myValue)
+        public static DBInt32 operator -(DBInt32 myGraphObjectA, Int32 myValue)
         {
-            myPandoraObjectA.Value = (Int32)myPandoraObjectA.Value - myValue;
-            return myPandoraObjectA;
+            myGraphObjectA.Value = (Int32)myGraphObjectA.Value - myValue;
+            return myGraphObjectA;
         }
 
-        public static DBInt32 operator *(DBInt32 myPandoraObjectA, Int32 myValue)
+        public static DBInt32 operator *(DBInt32 myGraphObjectA, Int32 myValue)
         {
-            myPandoraObjectA.Value = (Int32)myPandoraObjectA.Value * myValue;
-            return myPandoraObjectA;
+            myGraphObjectA.Value = (Int32)myGraphObjectA.Value * myValue;
+            return myGraphObjectA;
         }
 
-        public static DBInt32 operator /(DBInt32 myPandoraObjectA, Int32 myValue)
+        public static DBInt32 operator /(DBInt32 myGraphObjectA, Int32 myValue)
         {
-            myPandoraObjectA.Value = (Int32)myPandoraObjectA.Value / myValue;
-            return myPandoraObjectA;
+            myGraphObjectA.Value = (Int32)myGraphObjectA.Value / myValue;
+            return myGraphObjectA;
         }
 
-        public override ADBBaseObject Add(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Add(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
 
-            Int32 valA = Convert.ToInt32(myPandoraObjectA.Value);
-            Int32 valB = Convert.ToInt32(myPandoraObjectB.Value);
+            Int32 valA = Convert.ToInt32(myGraphObjectA.Value);
+            Int32 valB = Convert.ToInt32(myGraphObjectB.Value);
             return new DBInt32(valA + valB);
         }
 
-        public override ADBBaseObject Sub(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Sub(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            Int32 valA = Convert.ToInt32(myPandoraObjectA.Value);
-            Int32 valB = Convert.ToInt32(myPandoraObjectB.Value);
+            Int32 valA = Convert.ToInt32(myGraphObjectA.Value);
+            Int32 valB = Convert.ToInt32(myGraphObjectB.Value);
             return new DBInt32(valA - valB);
         }
 
-        public override ADBBaseObject Mul(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Mul(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            Int32 valA = Convert.ToInt32(myPandoraObjectA.Value);
-            Int32 valB = Convert.ToInt32(myPandoraObjectB.Value);
+            Int32 valA = Convert.ToInt32(myGraphObjectA.Value);
+            Int32 valB = Convert.ToInt32(myGraphObjectB.Value);
             return new DBInt32(valA * valB);
         }
 
-        public override ADBBaseObject Div(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Div(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            Int32 valA = Convert.ToInt32(myPandoraObjectA.Value);
-            Int32 valB = Convert.ToInt32(myPandoraObjectB.Value);
+            Int32 valA = Convert.ToInt32(myGraphObjectA.Value);
+            Int32 valB = Convert.ToInt32(myGraphObjectB.Value);
             return new DBInt32(valA / valB);
         }
 
-        public override void Add(ADBBaseObject myPandoraObject)
+        public override void Add(ADBBaseObject myGraphObject)
         {
-            _Value += Convert.ToInt32(myPandoraObject.Value);
+            _Value += Convert.ToInt32(myGraphObject.Value);
         }
 
-        public override void Sub(ADBBaseObject myPandoraObject)
+        public override void Sub(ADBBaseObject myGraphObject)
         {
-            _Value -= Convert.ToInt32(myPandoraObject.Value);
+            _Value -= Convert.ToInt32(myGraphObject.Value);
         }
 
-        public override void Mul(ADBBaseObject myPandoraObject)
+        public override void Mul(ADBBaseObject myGraphObject)
         {
-            _Value *= Convert.ToInt32(myPandoraObject.Value);
+            _Value *= Convert.ToInt32(myGraphObject.Value);
         }
 
-        public override void Div(ADBBaseObject myPandoraObject)
+        public override void Div(ADBBaseObject myGraphObject)
         {
-            _Value /= Convert.ToInt32(myPandoraObject.Value);
+            _Value /= Convert.ToInt32(myGraphObject.Value);
         }
 
         #endregion

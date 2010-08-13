@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB DBList DBList" />
+﻿/* <id name="GraphDB DBList DBList" />
  * <copyright file="DBDouble.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -89,70 +89,70 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         #region Operations
 
         [Obsolete("Operator '+' cannot be applied to operands of type 'Object' and 'Object'")]
-        public static DBEdge operator +(DBEdge myPandoraObjectA, Object myValue)
+        public static DBEdge operator +(DBEdge myGraphObjectA, Object myValue)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '-' cannot be applied to operands of type 'Object' and 'Object'")]
-        public static DBEdge operator -(DBEdge myPandoraObjectA, Object myValue)
+        public static DBEdge operator -(DBEdge myGraphObjectA, Object myValue)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '*' cannot be applied to operands of type 'Object' and 'Object'")]
-        public static DBEdge operator *(DBEdge myPandoraObjectA, Object myValue)
+        public static DBEdge operator *(DBEdge myGraphObjectA, Object myValue)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '/' cannot be applied to operands of type 'Object' and 'Object'")]
-        public static DBEdge operator /(DBEdge myPandoraObjectA, Object myValue)
+        public static DBEdge operator /(DBEdge myGraphObjectA, Object myValue)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '+' cannot be applied to operands of type 'Object' and 'Object'")]
-        public override ADBBaseObject Add(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Add(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '-' cannot be applied to operands of type 'Object' and 'Object'")]
-        public override ADBBaseObject Sub(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Sub(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '*' cannot be applied to operands of type 'Object' and 'Object'")]
-        public override ADBBaseObject Mul(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Mul(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '/' cannot be applied to operands of type 'Object' and 'Object'")]
-        public override ADBBaseObject Div(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Div(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '+' cannot be applied to operands of type 'Object' and 'Object'")]
-        public override void Add(ADBBaseObject myPandoraObject)
+        public override void Add(ADBBaseObject myGraphObject)
         {
         }
 
         [Obsolete("Operator '-' cannot be applied to operands of type 'Object' and 'Object'")]
-        public override void Sub(ADBBaseObject myPandoraObject)
+        public override void Sub(ADBBaseObject myGraphObject)
         {
         }
 
         [Obsolete("Operator '*' cannot be applied to operands of type 'Object' and 'Object'")]
-        public override void Mul(ADBBaseObject myPandoraObject)
+        public override void Mul(ADBBaseObject myGraphObject)
         {
         }
 
         [Obsolete("Operator '/' cannot be applied to operands of type 'Object' and 'Object'")]
-        public override void Div(ADBBaseObject myPandoraObject)
+        public override void Div(ADBBaseObject myGraphObject)
         {
         }
 
@@ -163,7 +163,7 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         public static Boolean IsValid(Object myObject)
         {
             return (myObject != null &&
-                (myObject is DBEdge || myObject is EdgeTypeWeightedList || myObject is EdgeTypeSetOfReferences || myObject is HashSet<ObjectUUID> || myObject is IEnumerable<Exceptional<DBObjectStream>>));
+                (myObject is DBEdge || myObject is EdgeTypeWeighted || myObject is EdgeTypeSetOfReferences || myObject is HashSet<ObjectUUID> || myObject is IEnumerable<Exceptional<DBObjectStream>>));
         }
 
         public override bool IsValidValue(Object myValue)

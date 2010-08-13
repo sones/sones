@@ -68,7 +68,7 @@ namespace sones.Lib.CLI
 
             USEHISTORY_Options.Rule = stringLiteralExternalEntry
                                         | USEHISTORY_Default_Option;
-            USEHISTORY_Options.PandoraOptions.Add(PandoraOption.IsOption);
+            USEHISTORY_Options.GraphOptions.Add(GraphOption.IsOption);
 
             _CommandNonTerminals.Add(USEHISTORY_Options);
 
@@ -84,7 +84,7 @@ namespace sones.Lib.CLI
 
         #region Execute Command
 
-        public override void Execute(ref object myIGraphFSSession, ref object myIPandoraDBSession, ref String myCurrentPath, Dictionary<string, List<AbstractCLIOption>> myOptions, string myInputString)
+        public override void Execute(ref object myIGraphFSSession, ref object myIGraphDBSession, ref String myCurrentPath, Dictionary<string, List<AbstractCLIOption>> myOptions, string myInputString)
         {
             //lulu
         }

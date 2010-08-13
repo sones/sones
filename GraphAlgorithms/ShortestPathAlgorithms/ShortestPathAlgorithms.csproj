@@ -115,10 +115,6 @@
       <Project>{B23FDA3D-8229-4CDD-91FD-9AFD7301D315}</Project>
       <Name>GraphFSInterface</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\GraphFS\GraphFS\GraphFS.csproj">
-      <Project>{97235BF0-C3C4-4B4C-9583-0869CD3632AC}</Project>
-      <Name>GraphFS</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Lib\Lib\Lib.csproj">
       <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
       <Name>Lib</Name>
@@ -126,10 +122,6 @@
     <ProjectReference Include="..\..\StorageEngines\StorageEnginesInterface\StorageEnginesInterface.csproj">
       <Project>{F3BF32FF-7113-4DE6-801B-BB234A76539B}</Project>
       <Name>StorageEnginesInterface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\StorageEngines\StorageEngines\StorageEngines.csproj">
-      <Project>{274DBD0D-0D7A-4A6F-B193-15238E89BE81}</Project>
-      <Name>StorageEngines %28Dependencies\StorageEngines\StorageEngines%29</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

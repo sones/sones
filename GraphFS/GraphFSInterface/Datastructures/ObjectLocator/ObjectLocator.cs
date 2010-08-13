@@ -74,7 +74,7 @@ namespace sones.GraphFS.DataStructures
         public ObjectLocator()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion           = 1;
 
             // ObjectLocator specific Data
@@ -291,7 +291,7 @@ namespace sones.GraphFS.DataStructures
         #endregion
 
 
-        #region APandoraObject Members
+        #region AGraphObject Members
 
         #region SerializeInnerObject(ref mySerializationWriter)
 
@@ -1020,7 +1020,7 @@ namespace sones.GraphFS.DataStructures
         protected String _ObjectPath;
 
         /// <summary>
-        /// Stores the ObjectPath of this APandoraObject. Changing this
+        /// Stores the ObjectPath of this AGraphObject. Changing this
         /// property will automagically change the myObjectLocation property.
         /// </summary>
         [NotIFastSerialized]
@@ -1053,7 +1053,7 @@ namespace sones.GraphFS.DataStructures
         protected String _ObjectName;
 
         /// <summary>
-        /// Stores the ObjectName of this APandoraObject. Changing this
+        /// Stores the ObjectName of this AGraphObject. Changing this
         /// property will automagically change the myObjectLocation property.
         /// </summary>
         [NotIFastSerialized]
@@ -1087,7 +1087,7 @@ namespace sones.GraphFS.DataStructures
 
         /// <summary>
         /// Stores the complete ObjectLocation (ObjectPath and ObjectName) of
-        /// this APandoraObject. Changing this property will automagically
+        /// this AGraphObject. Changing this property will automagically
         /// change the ObjectPath and ObjectName property.
         /// </summary>
         [NotIFastSerialized]
@@ -1121,21 +1121,21 @@ namespace sones.GraphFS.DataStructures
 
         #region IDirectoryListing Members
 
-        #region IPandoraFSReference
+        #region IGraphFSReference
 
-        private IGraphFS _IPandoraFSReference;
+        private IGraphFS _IGraphFSReference;
 
         public IGraphFS IGraphFSReference
         {
 
             get
             {
-                return _IPandoraFSReference;
+                return _IGraphFSReference;
             }
 
             set
             {
-                _IPandoraFSReference = value;
+                _IGraphFSReference = value;
             }
 
         }

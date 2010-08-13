@@ -100,7 +100,7 @@ namespace sones.GraphDB.Structures.Operators
             #endregion
 
             var resultValue = Compare(left.Value, right.Value);
-            if (resultValue.Failed)
+            if (resultValue.Failed())
                 return new Exceptional<AOperationDefinition>(resultValue);
 
 
@@ -128,7 +128,7 @@ namespace sones.GraphDB.Structures.Operators
             foreach (var val in right)
             {
                 var comp = Compare(left.Value, (val.Value as ValueDefinition).Value);
-                if (comp.Failed)
+                if (comp.Failed())
                     return new Exceptional<AOperationDefinition>(comp);
 
                 if (!comp.Value)
@@ -163,7 +163,7 @@ namespace sones.GraphDB.Structures.Operators
                 foreach (var rightVal in right)
                 {
                     var comp = Compare((leftVal.Value as ValueDefinition).Value, (rightVal.Value as ValueDefinition).Value);
-                    if (comp.Failed)
+                    if (comp.Failed())
                         return new Exceptional<AOperationDefinition>(comp);
 
                     if (!comp.Value)

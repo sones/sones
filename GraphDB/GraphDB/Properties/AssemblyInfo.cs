@@ -38,4 +38,5 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("GraphDBTests")]
 [assembly: InternalsVisibleTo("GraphDSTests")]
 [assembly: InternalsVisibleTo("GraphDBTestHelper")]
+[assembly: InternalsVisibleTo("GraphDBBenchmarks")]
 

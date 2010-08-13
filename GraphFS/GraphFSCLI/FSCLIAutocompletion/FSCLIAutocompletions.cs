@@ -24,8 +24,8 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Henning Rauch</developer>
- * <summary>The abstract class for PandoraFS autocompletions of 
- * the PandoraCLI.</summary>
+ * <summary>The abstract class for GraphFS autocompletions of 
+ * the GraphCLI.</summary>
  */
 
 #region Usings
@@ -42,7 +42,7 @@ namespace sones.GraphFS.Connectors.GraphFSCLI
 
     /// <summary>
     /// The abstract class for in-build autocompletions of 
-    /// the PandoraCLI.
+    /// the GraphCLI.
     /// </summary>
 
     public abstract class AGraphFSCLIAutocompletions : AllCLIAutocompletions

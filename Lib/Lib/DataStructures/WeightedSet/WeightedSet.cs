@@ -468,7 +468,7 @@ namespace sones.Libraries.Datastructures
 
         //    TypeUUID typeID = new TypeUUID();
         //    typeID.Deserialize(ref mySerializationReader);
-        //    _DefaultWeight = (N) PandoraTypeMapper.GetADBBaseObjectFromUUID(typeID, 0);
+        //    _DefaultWeight = (N) GraphTypeMapper.GetADBBaseObjectFromUUID(typeID, 0);
         //    _DefaultWeight.Deserialize(ref mySerializationReader);
 
         //    Int32 _WeightedListEntriesCount = (Int32)mySerializationReader.ReadObject();

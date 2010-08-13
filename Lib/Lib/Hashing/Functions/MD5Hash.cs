@@ -25,7 +25,7 @@ using System.Text;
 using System.Security.Cryptography;
 
 
-namespace Lib.Hashing.Functions
+namespace sones.Lib.Hashing.Functions
 {
     public class MD5Hash : IHashFunction
     {

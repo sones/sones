@@ -21,7 +21,7 @@
 /* PandoraFS - IDictionaryObject
  * Achim Friedland, 2008 - 2009
  * 
- * The interface for all pandora directory objects and virtual
+ * The interface for all Graph directory objects and virtual
  * directory objects.
  * 
  * Lead programmer:
@@ -49,14 +49,14 @@ namespace sones.GraphFS.Objects
 {
 
     /// <summary>
-    /// The interface for all pandora directory objects and virtual
+    /// The interface for all Graph directory objects and virtual
     /// directory objects.
     /// </summary>
 
     public interface IDirectoryObject : IDirectoryListing //: IQueryable<DirectoryEntry>
     {
 
-        #region Members of APandoraHeader
+        #region Members of AGraphHeader
 
         Boolean       isNew                   { get; set; }
         ObjectUUID    ObjectUUID              { get; }
@@ -141,7 +141,7 @@ namespace sones.GraphFS.Objects
 
         #region Clone()
 
-        //APandoraObject Clone();
+        //AGraphObject Clone();
 
         #endregion
 

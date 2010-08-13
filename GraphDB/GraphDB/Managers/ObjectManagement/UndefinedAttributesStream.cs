@@ -32,29 +32,28 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using sones.GraphFS.Objects;
+using sones.GraphDB.TypeManagement;
 using sones.GraphFS.DataStructures;
+using sones.GraphFS.Objects;
 using sones.Lib.DataStructures;
 using sones.Lib.NewFastSerializer;
-using sones.GraphDB.TypeManagement;
-using sones.GraphDB.Structures.Result;
 
 #endregion
 
 namespace sones.GraphDB.ObjectManagement
 {
-    public class UndefinedAttributesStream : ADictionaryObject<String, AObject>
+
+    public class UndefinedAttributesStream : ADictionaryObject<String, IObject>
     {
 
         #region constructor
 
         public UndefinedAttributesStream()
         {
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream = DBConstants.UNDEFATTRIBUTESSTREAM;
 
             // Object specific data...
@@ -64,7 +63,7 @@ namespace sones.GraphDB.ObjectManagement
                 ObjectUUID = base.ObjectUUID;
         }
 
-        public UndefinedAttributesStream(Dictionary<String, AObject> myUndefAttributes, ObjectLocation myObjectLocation)
+        public UndefinedAttributesStream(Dictionary<String, IObject> myUndefAttributes, ObjectLocation myObjectLocation)
             : this()
         {
             if (myObjectLocation == null || myObjectLocation.Length < FSPathConstants.PathDelimiter.Length)
@@ -125,7 +124,7 @@ namespace sones.GraphDB.ObjectManagement
         /// </summary>
         /// <param name="myName">the name of the attribute</param>
         /// <param name="myValue">the value for the attribute</param>
-        public void AddAttribute(String myName, AObject myValue)
+        public void AddAttribute(String myName, IObject myValue)
         {
             if (base.Add(myName, myValue) == 0)
             {
@@ -139,7 +138,7 @@ namespace sones.GraphDB.ObjectManagement
         /// add an dictionary of attributes to the stream
         /// </summary>
         /// <param name="myAttributes">dictionary of attributes with name and value</param>
-        public void AddAttribute(IDictionary<String, AObject> myAttributes)
+        public void AddAttribute(IDictionary<String, IObject> myAttributes)
         {
             myAttributes.ToList().ForEach(item => AddAttribute(item.Key, item.Value));
         }
@@ -163,7 +162,7 @@ namespace sones.GraphDB.ObjectManagement
         /// return an enumerator with undefined attributes
         /// </summary>
         /// <returns></returns>        
-        public new IEnumerator<KeyValuePair<String, AObject>> GetEnumerator()
+        public new IEnumerator<KeyValuePair<String, IObject>> GetEnumerator()
         {
             return base.GetEnumerator();
         }
@@ -173,7 +172,7 @@ namespace sones.GraphDB.ObjectManagement
         /// </summary>
         /// <param name="myName">attribute name</param>
         /// <returns></returns>
-        public AObject GetAttributeValue(String myName)
+        public IObject GetAttributeValue(String myName)
         {
             if (ContainsAttribute(myName))
                 return base[myName];
@@ -185,7 +184,7 @@ namespace sones.GraphDB.ObjectManagement
         /// return a dictionary of all undefined attributes
         /// </summary>
         /// <returns></returns>
-        public IDictionary<String, AObject> GetAllAttributes()
+        public IDictionary<String, IObject> GetAllAttributes()
         {
             return base.GetIDictionary();
         }

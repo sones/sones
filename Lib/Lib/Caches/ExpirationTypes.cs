@@ -28,7 +28,7 @@
  * 
  * */
 
-namespace sones.Libraries.Caches
+namespace sones.Lib.Caches
 {
 
     public enum ExpirationTypes : byte

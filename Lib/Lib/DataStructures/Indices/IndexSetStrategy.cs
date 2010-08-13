@@ -32,7 +32,7 @@ namespace sones.Lib.DataStructures.Indices
         MERGE,
         /// <summary>
         /// The index entry have to be unique.
-        /// Throws PandoraFSException_IndexKeyAlreadyExist if key already exist.
+        /// Throws GraphFSException_IndexKeyAlreadyExist if key already exist.
         /// </summary>
         UNIQUE
     }

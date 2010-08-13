@@ -43,38 +43,6 @@ namespace sones.Lib.ErrorHandling
 
         #region Properties
 
-        #region Succeess
-
-        /// <summary>
-        /// Is true, if there were no errors
-        /// </summary>
-        public Boolean Success
-        {
-            get
-            {
-                CheckForErrors = true;  //HACK: Rethink this!
-                return !Failed && Warnings.IsNullOrEmpty();
-            }
-        }
-
-        #endregion
-
-        #region Failed
-
-        /// <summary>
-        /// Is true, if there were at least one error
-        /// </summary>
-        public Boolean Failed
-        {
-            get
-            {
-                CheckForErrors = true;  //HACK: Rethink this!
-                return !_IErrors.IsNullOrEmpty();
-            }
-        }
-
-        #endregion
-
         #region IErrors
 
         protected Stack<IError> _IErrors;
@@ -624,7 +592,7 @@ namespace sones.Lib.ErrorHandling
         public override String ToString()
         {
 
-            if (Success)
+            if (!_IErrors.Any())
             {
 
                 if (_Value != null)

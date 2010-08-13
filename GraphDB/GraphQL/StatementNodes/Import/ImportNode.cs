@@ -66,7 +66,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Import
         public override QueryResult Execute(IGraphDBSession graphDBSession)
         {
 
-            return graphDBSession.Import(ImportFormat, SourceLocation, ParallelTasks, Comments, Offset, Limit, VerbosityType);
+            var qresult = graphDBSession.Import(ImportFormat, SourceLocation, ParallelTasks, Comments, Offset, Limit, VerbosityType);
+            qresult.AddErrorsAndWarnings(ParsingResult);
+            return qresult;
 
         }
 

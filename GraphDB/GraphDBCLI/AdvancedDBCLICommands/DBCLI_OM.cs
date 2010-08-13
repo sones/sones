@@ -93,18 +93,18 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
             #region BNF rules
 
-            OM.PandoraOptions.Add(PandoraOption.IsCommandRoot);
+            OM.GraphOptions.Add(GraphOption.IsCommandRoot);
 
             OM_Action.Rule = StoreSymbol + OM_Store_options
                                 | LoadSymbol + OM_Load_options;
-            OM_Action.PandoraOptions.Add(PandoraOption.IsOption);
+            OM_Action.GraphOptions.Add(GraphOption.IsOption);
 
             OM_Load_options.Rule = OM_ProtonString
                                     | stringLiteralExternalEntry;
-            OM_Load_options.PandoraOptions.Add(PandoraOption.IsOption);
+            OM_Load_options.GraphOptions.Add(GraphOption.IsOption);
 
             OM_Store_options.Rule = stringLiteralExternalEntry;
-            OM_Store_options.PandoraOptions.Add(PandoraOption.IsOption);
+            OM_Store_options.GraphOptions.Add(GraphOption.IsOption);
 
             #endregion
 
@@ -128,14 +128,14 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
         #region Execute Command
 
-        public override void Execute(ref object myIGraphFS2Session, ref object myIPandoraDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
+        public override void Execute(ref object myIGraphFS2Session, ref object myIGraphDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
         {
 
             _CancelCommand = false;
             var _IGraphFS2Session = myIGraphFS2Session as IGraphFSSession;
-            var _IPandoraDBSession = myIPandoraDBSession as IGraphDBSession;
+            var _IGraphDBSession = myIGraphDBSession as IGraphDBSession;
 
-            if (_IGraphFS2Session == null || _IPandoraDBSession == null)
+            if (_IGraphFS2Session == null || _IGraphDBSession == null)
             {
                 WriteLine("No OM database instance started...");
                 return;
@@ -148,7 +148,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
                     switch (myOptions.ElementAt(2).Value[0].Option)
                     {
                         case "proton":
-                            LoadTheProtonOntology((GraphDBSession)myIPandoraDBSession, myIGraphFS2Session);
+                            LoadTheProtonOntology((GraphDBSession)myIGraphDBSession, myIGraphFS2Session);
                             break;
 
                         default:
@@ -165,7 +165,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
         }
 
-        private void LoadTheProtonOntology(GraphDBSession DB, Object myIPandoraFS)
+        private void LoadTheProtonOntology(GraphDBSession DB, Object myIGraphFS)
         {
             using (var _Transaction = DB.BeginTransaction())
             {
@@ -1297,7 +1297,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
                 #endregion
 
                 //Todo: this should be done automatically
-                #region LazyAttributes and PandoraTypes
+                #region LazyAttributes and GraphTypes
 
                 dbContext.DBTypeManager.AddAttributeToType("Role", "roleHolder", "LIST<Object>");
                 dbContext.DBTypeManager.AddAttributeToType("OfficialPosition", "officialPositionIn", "Location");

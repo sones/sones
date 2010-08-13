@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – BeginTransactionNode" />
+﻿/* <id name="GraphDB – BeginTransactionNode" />
  * <copyright file="BeginTransactionNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -19,7 +19,7 @@ using sones.GraphDB.Exceptions;
 using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.GraphQL.StatementNodes;
 using sones.GraphDB.Structures.Result;
-
+using sones.Lib.ErrorHandling;
 using sones.Lib.Frameworks.Irony.Parsing;
 
 #endregion
@@ -181,7 +181,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Transaction
             var qr = new QueryResult();
             var dbTransaction = graphDBSession.BeginTransaction(IsDistributed, IsLongRunning, Isolation, Name, TimeStamp);
 
-            if (dbTransaction.Success)
+            if (dbTransaction.Success())
             {
                 var readoutVals = new Dictionary<String, Object>();
                 readoutVals.Add("UUID", dbTransaction.UUID.ToHexString());
@@ -199,6 +199,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Transaction
             {
                 qr.AddErrorsAndWarnings(dbTransaction);
             }
+            qr.AddErrorsAndWarnings(ParsingResult);
 
             return qr;
         }

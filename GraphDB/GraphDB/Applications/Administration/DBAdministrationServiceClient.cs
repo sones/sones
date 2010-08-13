@@ -39,11 +39,11 @@
 //    {
 //        /// <summary>
 //        /// Connects to an DB Administration Service Host and returns a 
-//        /// IPandoraDBSession Interface to it.
+//        /// IGraphDBSession Interface to it.
 //        /// </summary>
 //        /// <param name="ServiceURL">the URL to connect, starting with net.tcp://, for example: net.tcp://localhost:8112</param>
-//        /// <returns>an IPandoraDBSession</returns>
-//        public static IPandoraDBSession ConnectToAdministrationServiceHost(String ServiceURL)
+//        /// <returns>an IGraphDBSession</returns>
+//        public static IGraphDBSession ConnectToAdministrationServiceHost(String ServiceURL)
 //        {
 //            NetTcpBinding binding = new NetTcpBinding(SecurityMode.None);
 //            binding.ReceiveTimeout = TimeSpan.MaxValue;
@@ -56,7 +56,7 @@
 //            //binding.Security.Mode = SecurityMode.TransportWithMessageCredential;
 //            #endregion
 
-//            ChannelFactory<IPandoraDBSession> factory = new ChannelFactory<IPandoraDBSession>(binding);
+//            ChannelFactory<IGraphDBSession> factory = new ChannelFactory<IGraphDBSession>(binding);
 //            //factory.Credentials.ClientCertificate.SetCertificate(StoreLocation.CurrentUser, StoreName.My, X509FindType.FindByIssuerName, "SONES GmbH - Mail CA");
 
 //            return factory.CreateChannel(new EndpointAddress(ServiceURL));

@@ -78,10 +78,10 @@ namespace sones.GraphFS.Objects
         public QueueObject()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion        = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream        = FSConstants.QUEUESTREAM;
 
             // Object specific data...
@@ -128,7 +128,7 @@ namespace sones.GraphFS.Objects
         #endregion
 
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         #endregion
 
@@ -205,7 +205,7 @@ namespace sones.GraphFS.Objects
         #endregion
 
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         #region Clone()
 

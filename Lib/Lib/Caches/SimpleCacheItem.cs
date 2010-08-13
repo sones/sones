@@ -23,7 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace sones.Libraries.Caches
+namespace sones.Lib.Caches
 {
 
     public class SimpleCacheItem<TKey, TValue>

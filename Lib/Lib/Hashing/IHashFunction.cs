@@ -23,7 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Lib.Hashing
+namespace sones.Lib.Hashing
 {
     public interface IHashFunction
     {

@@ -37,6 +37,7 @@ using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.TypeManagement;
 
 #endregion
 
@@ -46,7 +47,7 @@ namespace sones.GraphDB.Managers.Structures
     public class UndefinedAttributeDefinition
     {
         public String AttributeName { get; set; }
-        public AObject AttributeValue { get; set; }
+        public IObject AttributeValue { get; set; }
     }
 
 }

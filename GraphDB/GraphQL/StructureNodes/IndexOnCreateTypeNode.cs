@@ -18,9 +18,9 @@ namespace sones.GraphDB.GraphQL.StructureNodes
     public class IndexOnCreateTypeNode : AStructureNode
     {
 
-        #region Data
+        #region Properties
 
-        private List<Exceptional<IndexDefinition>> _ListOfIndices;
+        public List<IndexDefinition> ListOfIndexDefinitions { get; private set; }
 
         #endregion
 
@@ -31,37 +31,31 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
         #endregion
 
-        public Exceptional GetContent(CompilerContext context, ParseTreeNode parseNode)
+        public void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
 
-            _ListOfIndices = new List<Exceptional<IndexDefinition>>();
+            ListOfIndexDefinitions = new List<IndexDefinition>();
 
-            if (parseNode.ChildNodes[1].AstNode is Exceptional<IndexOptOnCreateTypeMemberNode>)
+            if (parseNode.ChildNodes[1].AstNode is IndexOptOnCreateTypeMemberNode)
             {
-                var aIDX = (Exceptional<IndexOptOnCreateTypeMemberNode>)parseNode.ChildNodes[1].AstNode;
+                var aIDX = (IndexOptOnCreateTypeMemberNode)parseNode.ChildNodes[1].AstNode;
+                ParsingResult.Push(aIDX.ParsingResult);
 
-                var idx = (parseNode.ChildNodes[1].AstNode as Exceptional<IndexOptOnCreateTypeMemberNode>).ConvertWithFunc<IndexOptOnCreateTypeMemberNode, IndexDefinition>(i => i.IndexDefinition);
-                _ListOfIndices.Add(idx);
+                ListOfIndexDefinitions.Add(aIDX.IndexDefinition);
             }
 
             else
             {
-                var idcs = parseNode.ChildNodes[1].ChildNodes.Select(child => ((Exceptional<IndexOptOnCreateTypeMemberNode>)child.AstNode).ConvertWithFunc<IndexOptOnCreateTypeMemberNode, IndexDefinition>(i => i.IndexDefinition));
-                _ListOfIndices.AddRange(idcs);
+                var idcs = parseNode.ChildNodes[1].ChildNodes.Select(child =>
+                {
+                    ParsingResult.Push(((IndexOptOnCreateTypeMemberNode)child.AstNode).ParsingResult);
+                    return ((IndexOptOnCreateTypeMemberNode)child.AstNode).IndexDefinition;
+                });
+                ListOfIndexDefinitions.AddRange(idcs);
             }
 
-            return Exceptional.OK;
-
         }
 
-        #region Accessors
-
-        public List<Exceptional<IndexDefinition>> ListOfIndexDefinitions
-        {
-            get { return _ListOfIndices; }
-        }
-
-        #endregion
 
     }
 

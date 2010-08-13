@@ -52,6 +52,7 @@ namespace sones.StorageEngines
         public AStorageEngine()
         {
             _StorageUUID = StorageUUID.NewUUID;
+            _Description = "";
         }
 
         #endregion

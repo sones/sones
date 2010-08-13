@@ -58,8 +58,8 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
             // Command name and description
             InitCommand("CREATE",
-                        "Inserts new Objects into an instance of the PandoraDB or creates an index on attributes of a type",
-                        "Inserts new Objects into an instance of the PandoraDB or creates an index on attributes of a type");
+                        "Inserts new Objects into an instance of the GraphDB or creates an index on attributes of a type",
+                        "Inserts new Objects into an instance of the GraphDB or creates an index on attributes of a type");
 
             #region BNF rule
 
@@ -88,12 +88,12 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
             CREATETYPE_Action.Rule = EXTENDS_Action
                                         | ATTRIBUTES;
 
-            EXTENDS_Action.Rule = EXTENDSSymbol + PandoraTypeNT + ATTRIBUTES;
+            EXTENDS_Action.Rule = EXTENDSSymbol + GraphTypeNT + ATTRIBUTES;
 
             ATTRIBUTES.Rule = ATTRIBUTES_Symbol + BracketRoundOpenSymbol + ATTRIBUTE_list;
 
-            ATTRIBUTE_list.Rule = PandoraTypeNT + stringLiteral + CommaSymbol + ATTRIBUTE_list
-                                | PandoraTypeNT + stringLiteral + BracketRoundCloseSymbol;
+            ATTRIBUTE_list.Rule = GraphTypeNT + stringLiteral + CommaSymbol + ATTRIBUTE_list
+                                | GraphTypeNT + stringLiteral + BracketRoundCloseSymbol;
 
             #region Non-terminal integration
 
@@ -122,28 +122,28 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
         #region Execute Command
 
-        public override void Execute(ref object myIGraphFS2Session, ref object myIPandoraDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
+        public override void Execute(ref object myIGraphFS2Session, ref object myIGraphDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
         {
 
             _CancelCommand = false;
             var _IGraphFS2Session = myIGraphFS2Session as IGraphFSSession;
-            var _IPandoraDBSession = myIPandoraDBSession as IGraphDBSession;
+            var _IGraphDBSession = myIGraphDBSession as IGraphDBSession;
 
-            if (_IGraphFS2Session == null || _IPandoraDBSession == null)
+            if (_IGraphFS2Session == null || _IGraphDBSession == null)
             {
                 WriteLine("No database instance started...");
                 return;
             }
 
-            if (_IPandoraDBSession != null)
+            if (_IGraphDBSession != null)
             {
                 String QueryInputString = myInputString.Replace("'", "");
 
-                HandleQueryResult(QueryDB(QueryInputString, _IPandoraDBSession), true);
+                HandleQueryResult(QueryDB(QueryInputString, _IGraphDBSession), true);
             }
             else
             {
-                Console.WriteLine("No PandoraDB instance started...");
+                Console.WriteLine("No GraphDB instance started...");
             }
 
         }

@@ -125,10 +125,10 @@ namespace sones.GraphFS.Objects
         public VersionedHashIndexObject(IDictionary<TKey, TValue> myIDictionary)
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion       = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream           = FSConstants.DEFAULT_INDEXSTREAM;
 
             // Construct new _IDictionary...
@@ -173,7 +173,7 @@ namespace sones.GraphFS.Objects
         #endregion
 
 
-        #region Members of APandoraStructure
+        #region Members of AGraphStructure
 
         #region SerializeInnerObject(ref mySerializationWriter)
 

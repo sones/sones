@@ -114,34 +114,6 @@ namespace sones.GraphDB.GraphQL.StructureNodes
                     Type = KindsOfType.ListOfNoneReferences;
                 }
 
-                #region Verify edge against the type LIST/SET
-
-                switch (Type)
-                {
-                    case KindsOfType.ListOfNoneReferences:
-                        if (!(EdgeType is AListBaseEdgeType))
-                        {
-                            throw new GraphDBException(new Error_InvalidEdgeType(EdgeType.GetType(), typeof(AListBaseEdgeType)));
-                        }
-                        break;
-                    case KindsOfType.SetOfReferences:
-                        if (!(EdgeType is ASetReferenceEdgeType))
-                        {
-                            throw new GraphDBException(new Error_InvalidEdgeType(EdgeType.GetType(), typeof(ASetReferenceEdgeType)));
-                        }
-                        break;
-                    case KindsOfType.SetOfNoneReferences:
-                        if (!(EdgeType is ASetBaseEdgeType))
-                        {
-                            throw new GraphDBException(new Error_InvalidEdgeType(EdgeType.GetType(), typeof(ASetBaseEdgeType)));
-                        }
-                       break;
-                    default:
-                        break;
-                }
-                
-
-                #endregion
 
             }
 

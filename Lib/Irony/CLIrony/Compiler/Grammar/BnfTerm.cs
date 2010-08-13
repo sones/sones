@@ -54,7 +54,7 @@ namespace sones.Lib.Frameworks.CLIrony.Compiler {
     //used for autocompletion description
     public string Description;
     public TermOptions Options;
-    public List<PandoraOption> PandoraOptions = new List<PandoraOption>();
+    public List<GraphOption> GraphOptions = new List<GraphOption>();
     protected Grammar Grammar;
     public int Precedence = AstNode.NoPrecedence;
 

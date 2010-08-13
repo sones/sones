@@ -24,10 +24,11 @@ using System.Linq;
 using System.Text;
 using System.Collections;
 
-namespace Lib.Hashing.Filter
+namespace sones.Lib.Hashing.Filter
 {
     public abstract class AFilter<T>
     {
+
         #region private members
 
         protected BitArray _BitArray;
@@ -250,6 +251,7 @@ namespace Lib.Hashing.Filter
         }
 
         #endregion
+    
     }
 
 }

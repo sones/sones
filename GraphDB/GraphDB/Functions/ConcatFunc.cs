@@ -18,26 +18,27 @@
 */
 
 
+
+#region
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.TypeManagement.BasicTypes;
-
-using sones.Lib.ErrorHandling;
-using sones.GraphDB.ObjectManagement;
-
-using sones.GraphDB.TypeManagement;
-using sones.GraphFS.Session;
-using sones.GraphDB.Structures.Result;
-using sones.Lib.Session;
 using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.Lib.ErrorHandling;
+
+#endregion
 
 namespace sones.GraphDB.Functions
 {
+
+    /// <summary>
+    /// This will concatenate some strings. This function can be used as type independent to concatenate
+    /// string values or as type dependent to concatenate an attribute output with other strings.
+    /// </summary>
     public class ConcatFunc : ABaseFunction
     {
+
         public override string FunctionName
         {
             get { return "CONCAT"; }
@@ -57,23 +58,25 @@ namespace sones.GraphDB.Functions
             Parameters.Add(new ParameterValue("StringPart", new DBString(), true));
         }
 
-        public override bool ValidateWorkingBase(TypeAttribute workingBase, DBTypeManager typeManager)
+        public override bool ValidateWorkingBase(IObject workingBase, DBTypeManager typeManager)
         {
-            if (workingBase != null)
+            if (workingBase is DBString || ((workingBase is DBTypeAttribute) && (workingBase as DBTypeAttribute).GetValue().GetDBType(typeManager).UUID == DBString.UUID))
             {
-                if (workingBase.GetDBType(typeManager).IsUserDefined)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return true; // valid for string
+            }
+            else if (workingBase == null)
+            {
+                return true; // valid without a workingBase
             }
             else
             {
-                return true;
+                return false;
             }
+        }
+
+        public override IObject GetReturnType(IObject myWorkingBase, DBTypeManager myTypeManager)
+        {
+            return new DBString();
         }
 
         public override Exceptional<FuncParameter> ExecFunc(DBContext dbContext, params FuncParameter[] myParams)
@@ -85,7 +88,9 @@ namespace sones.GraphDB.Functions
             if (CallingObject != null)
             {
                 if (CallingObject is DBString)
+                {
                     resString.Append((CallingObject as DBString).GetValue());
+                }
             }
 
             foreach (FuncParameter fp in myParams)
@@ -98,5 +103,7 @@ namespace sones.GraphDB.Functions
 
             return result;
         }
+
     }
+
 }

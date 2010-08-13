@@ -81,7 +81,7 @@ namespace sones.GraphFS.DataStructures
         public INode()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion             = actualStructureVersion;
             _IntegrityCheckValue          = null;
             _EncryptionParameters         = null;
@@ -122,6 +122,20 @@ namespace sones.GraphFS.DataStructures
             : this()
         {
             ObjectUUID = myObjectUUID;
+        }
+
+        #endregion
+
+        #region INode(mySerializedData)
+
+        /// <summary>
+        /// A constructor of the INode used for fast deserializing
+        /// </summary>
+        /// <param name="mySerializedData">A bunch of bytes[] containing the serialized INode</param>
+        public INode(Byte[] mySerializedData)
+        {
+            Deserialize(mySerializedData);
+            _isNew = false;
         }
 
         #endregion
@@ -603,7 +617,7 @@ namespace sones.GraphFS.DataStructures
 
         #region IFastSerialize Member
 
-        #region isDirty - Overwrite APandoraStructure property
+        #region isDirty - Overwrite AGraphStructure property
 
         [NotIFastSerialized]
         public new Boolean isDirty
@@ -758,7 +772,7 @@ namespace sones.GraphFS.DataStructures
             
             catch (Exception e)
             {
-                throw new PandoraFSException_INodeCouldNotBeDeserialized("INode could not be deserialized!\n\n" + e);
+                throw new GraphFSException_INodeCouldNotBeDeserialized("INode could not be deserialized!\n\n" + e);
             }
 
             //isDirty = true;       // this is not useful!

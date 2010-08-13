@@ -112,7 +112,7 @@ namespace sones.GraphDB.Structures.Operators
 
                 complexIDNode = (IDChainDefinition)myComplexValue;
                 var validateResult = complexIDNode.Validate(dbContext, false);
-                if (validateResult.Failed)
+                if (validateResult.Failed())
                 {
                     return new Exceptional<DataContainer>(validateResult);
                 }
@@ -130,7 +130,7 @@ namespace sones.GraphDB.Structures.Operators
                             return new Exceptional<DataContainer>(new Error_FunctionDoesNotExist(fcn.FuncName));
 
                         Exceptional<FuncParameter> pResult = fcn.Function.ExecFunc(dbContext);
-                        if (pResult.Failed)
+                        if (pResult.Failed())
                         {
                             return new Exceptional<DataContainer>(pResult);
                         }
@@ -159,6 +159,11 @@ namespace sones.GraphDB.Structures.Operators
                     {
                         try
                         {
+                            if (complexIDNode.IsUndefinedAttribute)
+                            {
+                                throw new GraphDBException(new Error_AttributeIsNotDefined(complexIDNode.UndefinedAttribute));
+                            }
+                            
                             simpleValue = GetCorrectValueDefinition(complexIDNode.LastAttribute, complexIDNode.LastType, ((ValueDefinition)mySimpleValue), dbContext, mySessionToken);
                         }
                         catch (FormatException)
@@ -177,7 +182,7 @@ namespace sones.GraphDB.Structures.Operators
                         //else if (mySimpleValue is TupleNode)
                         //{
                         //    var simpleValE = (mySimpleValue as TupleNode).GetAsTupleValue(dbContext, complexIDNode.LastAttribute);
-                        //    if (!simpleValE.Success)
+                        //    if (!simpleValE.Success())
                         //    {
                         //        return new Exceptional<DataContainer>(simpleValE);
                         //    }
@@ -257,7 +262,7 @@ namespace sones.GraphDB.Structures.Operators
 
         private ValueDefinition GetCorrectValueDefinition(TypeAttribute typeAttribute, GraphDBType graphDBType, ValueDefinition myValueDefinition, DBContext dbContext, SessionSettings mySessionsInfos)
         {
-
+            
             if (typeAttribute.IsBackwardEdge)
             {
                 return GetCorrectValueDefinition(dbContext.DBTypeManager.GetTypeByUUID(typeAttribute.BackwardEdgeDefinition.TypeUUID).GetTypeAttributeByUUID(typeAttribute.BackwardEdgeDefinition.AttrUUID), graphDBType, myValueDefinition, dbContext, mySessionsInfos);
@@ -269,7 +274,7 @@ namespace sones.GraphDB.Structures.Operators
                     //var uuid = SpecialTypeAttribute_UUID.ConvertToUUID(atomValue.Value.Value.ToString(), graphDBType, mySessionsInfos, dbContext.DBTypeManager);
 
 
-                    //if (uuid.Failed)
+                    //if (uuid.Failed())
                     //{
                     //    throw new GraphDBException(uuid.Errors);
                     //}
@@ -343,7 +348,7 @@ namespace sones.GraphDB.Structures.Operators
                     #region Get LeftComplex data
 
                     data = ExtractData(myLeftValueObject, myRightValueObject, ref typeOfBinExpr, dbContext.DBObjectCache, dbContext.SessionSettings, dbContext, aggregateAllowed);
-                    if (!data.Success)
+                    if (!data.Success())
                     {
                         return new Exceptional<IExpressionGraph>(data);
                     }
@@ -357,7 +362,7 @@ namespace sones.GraphDB.Structures.Operators
                     #region Get RightComplex data
 
                     data = ExtractData(myRightValueObject, myLeftValueObject, ref typeOfBinExpr, dbContext.DBObjectCache, dbContext.SessionSettings, dbContext, aggregateAllowed);
-                    if (!data.Success)
+                    if (!data.Success())
                     {
                         return new Exceptional<IExpressionGraph>(data);
                     }
@@ -371,13 +376,13 @@ namespace sones.GraphDB.Structures.Operators
                     #region Get Complex data
 
                     var leftData = ExtractData(myLeftValueObject, myRightValueObject, ref typeOfBinExpr, dbContext.DBObjectCache, dbContext.SessionSettings, dbContext, aggregateAllowed);
-                    if (!leftData.Success)
+                    if (!leftData.Success())
                     {
                         return new Exceptional<IExpressionGraph>(leftData);
                     }
 
                     var rightData = ExtractData(myRightValueObject, myLeftValueObject, ref typeOfBinExpr, dbContext.DBObjectCache, dbContext.SessionSettings, dbContext, aggregateAllowed);
-                    if (!rightData.Success)
+                    if (!rightData.Success())
                     {
                         return new Exceptional<IExpressionGraph>(rightData);
                     }
@@ -426,7 +431,7 @@ namespace sones.GraphDB.Structures.Operators
 
             #region handle errors
 
-            if (data.Failed)
+            if (data.Failed())
             {
                 return new Exceptional<IExpressionGraph>(data);
             }
@@ -521,7 +526,7 @@ namespace sones.GraphDB.Structures.Operators
                 return new Exceptional<IExpressionGraph>(new Error_InvalidBinaryExpression(this, data.Value.IDChainDefinitions, data.Value.Operands, typeOfBinExpr));
             }
 
-            if (matchDataResult != null && matchDataResult.Failed)
+            if (matchDataResult != null && matchDataResult.Failed())
                 return new Exceptional<IExpressionGraph>(matchDataResult);
             else
                 return new Exceptional<IExpressionGraph>(resultGr);
@@ -611,7 +616,7 @@ namespace sones.GraphDB.Structures.Operators
                     foreach (var aObjectUUID_Left in currentLeftIdx.GetAllUUIDs(currentIndexRelatedType, dbContext))
                     {
                         var leftDBObject = dbObjectCache.LoadDBObjectStream(aLeftIDX.Item1, aObjectUUID_Left);
-                        if (leftDBObject.Failed)
+                        if (leftDBObject.Failed())
                         {
                             throw new NotImplementedException();
                         }
@@ -619,7 +624,7 @@ namespace sones.GraphDB.Structures.Operators
                         if (IsValidDBObjectStreamForBinExpr(leftDBObject.Value, data.IDChainDefinitions.Item1.LastAttribute, dbContext.DBTypeManager))
                         {
                             var oper = GetOperand(data.IDChainDefinitions.Item1, data.Extraordinaries.Item1, dbContext, leftDBObject.Value, dbObjectCache, mySessionToken);
-                            if (oper.Failed)
+                            if (oper.Failed())
                                 return new Exceptional<bool>(oper);
 
                             if (oper != null)
@@ -666,7 +671,7 @@ namespace sones.GraphDB.Structures.Operators
                     foreach (var aObjectUUID_Right in currentRightIdx.GetAllUUIDs(currentIndexRelatedType, dbContext))
                     {
                         var rightDBObject = dbObjectCache.LoadDBObjectStream(aRightIDX.Item1, aObjectUUID_Right);
-                        if (rightDBObject.Failed)
+                        if (rightDBObject.Failed())
                         {
                             throw new NotImplementedException();
                         }
@@ -674,7 +679,7 @@ namespace sones.GraphDB.Structures.Operators
                         if (IsValidDBObjectStreamForBinExpr(rightDBObject.Value, data.IDChainDefinitions.Item2.LastAttribute, dbContext.DBTypeManager))
                         {
                             var oper = GetOperand(data.IDChainDefinitions.Item2, data.Extraordinaries.Item2, dbContext, rightDBObject.Value, dbObjectCache, mySessionToken);
-                            if (oper.Failed)
+                            if (oper.Failed())
                                 return new Exceptional<bool>(oper);
 
                             if (oper != null)
@@ -771,7 +776,7 @@ namespace sones.GraphDB.Structures.Operators
                         foreach (var aLeftUUID in ObjectUUIDs_left)
                         {
                             var leftDBObject = dbObjectCache.LoadDBObjectStream(leftIndices.First().Item1, aLeftUUID);
-                            if (leftDBObject.Failed)
+                            if (leftDBObject.Failed())
                             {
                                 return new Exceptional<bool>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                             }
@@ -785,7 +790,7 @@ namespace sones.GraphDB.Structures.Operators
                                     {
 
                                         var rightDBObject = dbObjectCache.LoadDBObjectStream(rightIndices.First().Item1, aRightUUID);
-                                        if (rightDBObject.Failed)
+                                        if (rightDBObject.Failed())
                                         {
                                             return new Exceptional<bool>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                                         }
@@ -794,8 +799,8 @@ namespace sones.GraphDB.Structures.Operators
                                         {
                                             //everything is valid
 
-                                            var leftType = GraphDBTypeMapper.ConvertPandora2CSharp(data.IDChainDefinitions.Item1.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
-                                            var rightType = GraphDBTypeMapper.ConvertPandora2CSharp(data.IDChainDefinitions.Item2.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
+                                            var leftType = GraphDBTypeMapper.ConvertGraph2CSharp(data.IDChainDefinitions.Item1.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
+                                            var rightType = GraphDBTypeMapper.ConvertGraph2CSharp(data.IDChainDefinitions.Item2.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
 
                                             AOperationDefinition leftValue;
                                             AOperationDefinition rightValue;
@@ -813,7 +818,7 @@ namespace sones.GraphDB.Structures.Operators
                                                 rightValue = new ValueDefinition(rightType, rightDBObject.Value.GetAttribute(data.IDChainDefinitions.Item2.LastAttribute.UUID, data.IDChainDefinitions.Item2.LastAttribute.GetRelatedType(dbContext.DBTypeManager), dbContext));
 
                                             var tempSimpleOperationResult = this.SimpleOperation(leftValue, rightValue, typeOfBinExpr);
-                                            if (tempSimpleOperationResult.Failed)
+                                            if (tempSimpleOperationResult.Failed())
                                                 return new Exceptional<bool>(tempSimpleOperationResult);
 
                                             var tempOperatorResult = tempSimpleOperationResult.Value;
@@ -924,15 +929,15 @@ namespace sones.GraphDB.Structures.Operators
                         foreach (var _ObjectUUIDs in ((UUIDIndex)aIDX.Item2).GetAllUUIDs(currentIndexRelatedType, dbContext))
                         {
                             var DBObjectStream = dbObjectCache.LoadDBObjectStream(aIDX.Item1, _ObjectUUIDs);
-                            if (DBObjectStream.Failed)
+                            if (DBObjectStream.Failed())
                             {
                                 return new Exceptional<bool>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                             }
 
                             if (IsValidDBObjectStreamForBinExpr(DBObjectStream.Value, primIDNode.LastAttribute, dbContext.DBTypeManager))
                             {
-                                var aCtype = GraphDBTypeMapper.ConvertPandora2CSharp(primIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
-                                AObject dbos = GetDbos(primIDNode, DBObjectStream.Value, dbContext, mySessionToken, dbObjectCache);
+                                var aCtype = GraphDBTypeMapper.ConvertGraph2CSharp(primIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
+                                IObject dbos = GetDbos(primIDNode, DBObjectStream.Value, dbContext, mySessionToken, dbObjectCache);
 
                                 Exceptional<AOperationDefinition> tempResult;
                                 if (aCtype == TypesOfOperatorResult.SetOfDBObjects)
@@ -945,7 +950,7 @@ namespace sones.GraphDB.Structures.Operators
 
                                 }
 
-                                if (tempResult.Failed)
+                                if (tempResult.Failed())
                                     return new Exceptional<bool>(tempResult);
 
                                 var tempOperatorResult = ((ValueDefinition)tempResult.Value);
@@ -999,7 +1004,7 @@ namespace sones.GraphDB.Structures.Operators
                 foreach (var right in operandsComparism)
                 {
                     var tempResult = this.SimpleOperation(left.Value, right.Value, TypesOfBinaryExpression.Atom);
-                    if (tempResult.Failed)
+                    if (tempResult.Failed())
                         return new Exceptional<IExpressionGraph>(tempResult);
 
                     if ((Boolean)((ValueDefinition)tempResult.Value).Value.Value)
@@ -1057,7 +1062,7 @@ namespace sones.GraphDB.Structures.Operators
                     var IndexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(aIDX.Item2.IndexRelatedTypeUUID);
 
                     var result = IntegrateUUID(data, dbContext, dbObjectCache, typeOfBinExpr, resultGraph, mySessionToken, myLevelKey, dbObjectCache.LoadListOfDBObjectStreams(aIDX.Item1, ((UUIDIndex)aIDX.Item2).GetAllUUIDs(IndexRelatedType, dbContext)));
-                    if (result.Failed)
+                    if (result.Failed())
                     {
                         return new Exceptional<bool>(result);
                     }
@@ -1162,7 +1167,7 @@ namespace sones.GraphDB.Structures.Operators
 
                 foreach (var aLowerDBO in myGraph.Select(previousLevelKey, null, false))
                 {
-                    if(aLowerDBO.Failed)
+                    if(aLowerDBO.Failed())
                     {
                         throw new GraphDBException(new Error_ExpressionGraphInternal(new System.Diagnostics.StackTrace(true), "Could not load DBObjectStream from lower level."));
                     }
@@ -1190,7 +1195,7 @@ namespace sones.GraphDB.Structures.Operators
         {
             foreach (var aDBO in myDBObjects)
             {
-                if (aDBO.Failed)
+                if (aDBO.Failed())
                 {
                     return new Exceptional<object>(aDBO);
                 }
@@ -1199,7 +1204,7 @@ namespace sones.GraphDB.Structures.Operators
                 {
                     //check and integrate
                     var result = CheckAndIntegrateDBObjectStream(data, dbContext, dbObjectCache, typeOfBinExpr, resultGraph, aDBO.Value, myLevelKey, mySessionToken);
-                    if(!result.Success)
+                    if(!result.Success())
                     {
                         return new Exceptional<object>(result);
                     }
@@ -1285,7 +1290,7 @@ namespace sones.GraphDB.Structures.Operators
             }
 
 
-            if (operand.Failed)
+            if (operand.Failed())
             {
                 return new Exceptional<object>(operand);
             }
@@ -1313,7 +1318,7 @@ namespace sones.GraphDB.Structures.Operators
                     throw new ArgumentException();
             }
 
-            if (tempSimpleOperationResult.Failed)
+            if (tempSimpleOperationResult.Failed())
             {
                 return new Exceptional<object>(tempSimpleOperationResult);
             }
@@ -1344,8 +1349,8 @@ namespace sones.GraphDB.Structures.Operators
         /// <returns>An IOperationValue.</returns>
         private Exceptional<AOperationDefinition> GetOperand(IDChainDefinition myIDChainDefinition, AExpressionDefinition myExtraordinary, DBContext dbContext, DBObjectStream myDBObjectStream, DBObjectCache dbObjectCache, SessionSettings mySessionToken)
         {
-            var aCtype = GraphDBTypeMapper.ConvertPandora2CSharp(myIDChainDefinition.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
-            AObject dbos = GetDbos(myIDChainDefinition, myDBObjectStream, dbContext, mySessionToken, dbObjectCache);
+            var aCtype = GraphDBTypeMapper.ConvertGraph2CSharp(myIDChainDefinition.LastAttribute.GetDBType(dbContext.DBTypeManager).Name);
+            IObject dbos = GetDbos(myIDChainDefinition, myDBObjectStream, dbContext, mySessionToken, dbObjectCache);
 
             if (dbos == null)
             {
@@ -1366,7 +1371,7 @@ namespace sones.GraphDB.Structures.Operators
 
                     //result of aggregate
                     var pResult = aggrNode.Aggregate.Aggregate(dbos, myIDChainDefinition.LastAttribute, dbContext, dbObjectCache, mySessionToken);
-                    if (pResult.Failed)
+                    if (pResult.Failed())
                         return new Exceptional<AOperationDefinition>(pResult);
 
                     aCtype = aggrNode.Aggregate.TypeOfResult;
@@ -1386,7 +1391,7 @@ namespace sones.GraphDB.Structures.Operators
                         //result of function
 
                         var pResult = chainFunc.Execute(myIDChainDefinition.LastAttribute.GetDBType(dbContext.DBTypeManager), myDBObjectStream, myIDChainDefinition.Reference.Item1, dbContext, dbObjectCache);
-                        if (pResult.Failed)
+                        if (pResult.Failed())
                             return new Exceptional<AOperationDefinition>(pResult);
 
                         //aCtype = funcCallNode.Function.TypeOfResult;
@@ -1412,7 +1417,7 @@ namespace sones.GraphDB.Structures.Operators
                 }
                 else
                 {
-                    if (dbos is AListBaseEdgeType)
+                    if (dbos is AListOfBaseEdgeType)
                     {
                         operand = new TupleDefinition(aCtype, dbos, myIDChainDefinition.LastAttribute.GetDBType(dbContext.DBTypeManager));
                     }
@@ -1431,13 +1436,13 @@ namespace sones.GraphDB.Structures.Operators
             return new Exceptional<AOperationDefinition>(operand);
         }
 
-        private AObject GetDbos(IDChainDefinition myIDChainDefinition, DBObjectStream myDBObjectStream, DBContext dbContext, SessionSettings mySessionToken, DBObjectCache dbObjectCache)
+        private IObject GetDbos(IDChainDefinition myIDChainDefinition, DBObjectStream myDBObjectStream, DBContext dbContext, SessionSettings mySessionToken, DBObjectCache dbObjectCache)
         {
             if (myIDChainDefinition.LastAttribute.IsBackwardEdge)
             {
                 var contBackwardExcept = myDBObjectStream.ContainsBackwardEdge(myIDChainDefinition.LastAttribute.BackwardEdgeDefinition, dbContext, dbObjectCache, myIDChainDefinition.LastAttribute.GetRelatedType(dbContext.DBTypeManager));
 
-                if (contBackwardExcept.Failed)
+                if (contBackwardExcept.Failed())
                     throw new GraphDBException(contBackwardExcept.Errors);
 
                 if (contBackwardExcept.Value)
@@ -1538,7 +1543,7 @@ namespace sones.GraphDB.Structures.Operators
 
             if (!GraphDBTypeMapper.ConvertToBestMatchingType(ref leftObj, ref rightObj).Value)
                 return new Exceptional<AOperationDefinition>(new Error_DataTypeDoesNotMatch(leftObj.ObjectName, rightObj.ObjectName));
-            //return new Exceptional<IOperationValue>(new PandoraError(ErrorCode.DataTypeDoesNotMatchValue, (leftObj.ObjectName + " != " + rightObj.ToString())));
+            //return new Exceptional<IOperationValue>(new GraphError(ErrorCode.DataTypeDoesNotMatchValue, (leftObj.ObjectName + " != " + rightObj.ToString())));
 
             var resultValue = Compare(leftObj, rightObj);
             resultObject = new ValueDefinition(TypesOfOperatorResult.Boolean, (object)resultValue.Value);
@@ -1569,7 +1574,7 @@ namespace sones.GraphDB.Structures.Operators
                 }
 
                 var comp = Compare(left.Value, rightObj);
-                if (comp.Failed)
+                if (comp.Failed())
                     return new Exceptional<AOperationDefinition>(comp);
 
                 if (comp.Value)
@@ -1610,7 +1615,7 @@ namespace sones.GraphDB.Structures.Operators
                 }
 
                 var comp = Compare(leftObj, right.Value);
-                if (comp.Failed)
+                if (comp.Failed())
                     return new Exceptional<AOperationDefinition>(comp);
 
                 if (comp.Value)
@@ -1654,7 +1659,7 @@ namespace sones.GraphDB.Structures.Operators
                     }
                     
                     var res = Compare(leftObj, rightObj);
-                    if (res.Failed)
+                    if (res.Failed())
                         return new Exceptional<AOperationDefinition>(res);
 
                     if (res.Value)
@@ -1715,7 +1720,7 @@ namespace sones.GraphDB.Structures.Operators
             {
                 var res = Compare(keyValPair.Key.IndexKeyValues[0], myOperationValue);
 
-                if (res.Failed)
+                if (res.Failed())
                 {
                     throw new GraphDBException(res.Push(new Error_InvalidIndexOperation(myIndex.IndexName, keyValPair.Key.IndexKeyValues[0].Value, myOperationValue.Value)).Errors);
                 }

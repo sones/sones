@@ -30,13 +30,13 @@ namespace sones.GraphDB.TypeManagement
     public class GraphDBTypeMapper
     {
 
-        public static TypesOfOperatorResult PandoraInteger          = TypesOfOperatorResult.Int64;
-        public static TypesOfOperatorResult PandoraInt32            = TypesOfOperatorResult.Int32;
-        public static TypesOfOperatorResult PandoraUnsignedInteger  = TypesOfOperatorResult.UInt64;
-        public static TypesOfOperatorResult PandoraString           = TypesOfOperatorResult.String;
-        public static TypesOfOperatorResult PandoraDouble           = TypesOfOperatorResult.Double;
-        public static TypesOfOperatorResult PandoraDateTime         = TypesOfOperatorResult.DateTime;
-        public static TypesOfOperatorResult PandoraBoolean          = TypesOfOperatorResult.Boolean;
+        public static TypesOfOperatorResult GraphInteger          = TypesOfOperatorResult.Int64;
+        public static TypesOfOperatorResult GraphInt32            = TypesOfOperatorResult.Int32;
+        public static TypesOfOperatorResult GraphUnsignedInteger  = TypesOfOperatorResult.UInt64;
+        public static TypesOfOperatorResult GraphString           = TypesOfOperatorResult.String;
+        public static TypesOfOperatorResult GraphDouble           = TypesOfOperatorResult.Double;
+        public static TypesOfOperatorResult GraphDateTime         = TypesOfOperatorResult.DateTime;
+        public static TypesOfOperatorResult GraphBoolean          = TypesOfOperatorResult.Boolean;
 
         public static Boolean IsBasicType(String typeName)
         {
@@ -81,14 +81,14 @@ namespace sones.GraphDB.TypeManagement
         }
 
         /// <summary>
-        /// Checks if the name of the attribute is valid for a certain PandoraType.
+        /// Checks if the name of the attribute is valid for a certain GraphType.
         /// </summary>
-        /// <param name="PandoraTypeName">The PandoraType.</param>
+        /// <param name="GraphTypeName">The GraphType.</param>
         /// <param name="myAttributeName">Name of the attribute.</param>
         /// <param name="typeOfAttributeValue">Kind of attribute value.</param>
-        /// <param name="typeManager">The TypeManager of the PandoraDB</param>
+        /// <param name="typeManager">The TypeManager of the GraphDB</param>
         /// <returns></returns>
-        public static bool IsAValidAttributeType(GraphDBType aPandoraType, TypesOfOperatorResult typeOfAttributeValue, DBContext typeManager, Object myValue)
+        public static bool IsAValidAttributeType(GraphDBType aGraphType, TypesOfOperatorResult typeOfAttributeValue, DBContext typeManager, Object myValue)
         {
 
             #region Data
@@ -103,11 +103,11 @@ namespace sones.GraphDB.TypeManagement
 
             if (typeOfAttributeValue == TypesOfOperatorResult.Unknown)
             {
-                isValid = GraphDBTypeMapper.GetPandoraObjectFromTypeName(aPandoraType.Name).IsValidValue(myValue);
+                isValid = GraphDBTypeMapper.GetGraphObjectFromTypeName(aGraphType.Name).IsValidValue(myValue);
             }
             else
             {
-                isValid = (GraphDBTypeMapper.ConvertPandora2CSharp(aPandoraType.Name) == typeOfAttributeValue || aPandoraType.IsUserDefined);
+                isValid = (GraphDBTypeMapper.ConvertGraph2CSharp(aGraphType.Name) == typeOfAttributeValue || aGraphType.IsUserDefined);
             }
 
             #endregion
@@ -118,35 +118,35 @@ namespace sones.GraphDB.TypeManagement
 
         }
 
-        public static TypesOfOperatorResult ConvertCSharp2Pandora(Type myType)
+        public static TypesOfOperatorResult ConvertCSharp2Graph(Type myType)
         {
 
             if (myType == typeof(Int16))
-                return PandoraInteger;
+                return GraphInteger;
 
             if (myType == typeof(Int32) || myType == typeof(Int64))
-                return PandoraInt32;
+                return GraphInt32;
 
             if (myType == typeof(UInt16) || myType == typeof(UInt32) || myType == typeof(UInt64))
-                return PandoraUnsignedInteger;
+                return GraphUnsignedInteger;
 
             if (myType == typeof(Double))
-                return PandoraDouble;
+                return GraphDouble;
 
             if (myType == typeof(String))
-                return PandoraString;
+                return GraphString;
 
             if (myType == typeof(Boolean))
-                return PandoraBoolean;
+                return GraphBoolean;
 
             if (myType == typeof(DateTime))
-                return PandoraDateTime;
+                return GraphDateTime;
 
             return TypesOfOperatorResult.Unknown;
 
         }
         
-        public static TypesOfOperatorResult ConvertPandora2CSharp(TypeAttribute attributeDefinition, GraphDBType typeOfAttribute)
+        public static TypesOfOperatorResult ConvertGraph2CSharp(TypeAttribute attributeDefinition, GraphDBType typeOfAttribute)
         {
 
             if (typeOfAttribute.IsUserDefined)
@@ -167,25 +167,25 @@ namespace sones.GraphDB.TypeManagement
                 {
 
                     case DBConstants.DBInteger:
-                        return PandoraInteger;
+                        return GraphInteger;
 
                     case DBConstants.DBInt32:
-                        return PandoraInt32;
+                        return GraphInt32;
 
                     case DBConstants.DBUnsignedInteger:
-                        return PandoraUnsignedInteger;
+                        return GraphUnsignedInteger;
 
                     case DBConstants.DBString:
-                        return PandoraString;
+                        return GraphString;
 
                     case DBConstants.DBDouble:
-                        return PandoraDouble;
+                        return GraphDouble;
 
                     case DBConstants.DBDateTime:
-                        return PandoraDateTime;
+                        return GraphDateTime;
 
                     case DBConstants.DBBoolean:
-                        return PandoraBoolean;
+                        return GraphBoolean;
 
                     case "NumberLiteral":
                         return TypesOfOperatorResult.Unknown;
@@ -205,7 +205,7 @@ namespace sones.GraphDB.TypeManagement
 
         }
 
-        public static TypesOfOperatorResult ConvertPandora2CSharp(String typeName)
+        public static TypesOfOperatorResult ConvertGraph2CSharp(String typeName)
         {
             if (!IsBasicType(typeName))
             {
@@ -228,25 +228,25 @@ namespace sones.GraphDB.TypeManagement
                 {
 
                     case DBConstants.DBInteger:
-                        return PandoraInteger;
+                        return GraphInteger;
 
                     case DBConstants.DBInt32:
-                        return PandoraInt32;
+                        return GraphInt32;
 
                     case DBConstants.DBUnsignedInteger:
-                        return PandoraUnsignedInteger;
+                        return GraphUnsignedInteger;
 
                     case DBConstants.DBString:
-                        return PandoraString;
+                        return GraphString;
 
                     case DBConstants.DBDouble:
-                        return PandoraDouble;
+                        return GraphDouble;
 
                     case DBConstants.DBDateTime:
-                        return PandoraDateTime;
+                        return GraphDateTime;
 
                     case DBConstants.DBBoolean:
-                        return PandoraBoolean;
+                        return GraphBoolean;
 
                     case "NumberLiteral":
                     case "StringLiteral":
@@ -282,15 +282,15 @@ namespace sones.GraphDB.TypeManagement
             }
         }
 
-        public static ADBBaseObject GetPandoraObjectFromTypeName(String myTypeName)
+        public static ADBBaseObject GetGraphObjectFromTypeName(String myTypeName)
         {
-            return GetPandoraObjectFromTypeName(myTypeName, null);
+            return GetGraphObjectFromTypeName(myTypeName, null);
         }
 
 
-        public static ADBBaseObject GetEmptyPandoraObjectFromType(TypesOfOperatorResult myTypeOfValue)
+        public static ADBBaseObject GetEmptyGraphObjectFromType(TypesOfOperatorResult myTypeOfValue)
         {
-            return GetPandoraObjectFromType(myTypeOfValue, null);
+            return GetGraphObjectFromType(myTypeOfValue, null);
         }
 
         public static ADBBaseObject GetADBBaseObjectFromUUID(TypeUUID myUUID, Object myValue)
@@ -369,10 +369,10 @@ namespace sones.GraphDB.TypeManagement
         
         public static ADBBaseObject GetBaseObjectFromCSharpType(Object myValue)
         {
-            return GetPandoraObjectFromType(ConvertCSharp2Pandora(myValue.GetType()), myValue);
+            return GetGraphObjectFromType(ConvertCSharp2Graph(myValue.GetType()), myValue);
         }
 
-        public static ADBBaseObject GetPandoraObjectFromType(TypesOfOperatorResult myTypeOfValue, Object myValue)
+        public static ADBBaseObject GetGraphObjectFromType(TypesOfOperatorResult myTypeOfValue, Object myValue)
         {
 
             switch (myTypeOfValue)
@@ -461,9 +461,9 @@ namespace sones.GraphDB.TypeManagement
             }
         }
 
-        public static ADBBaseObject GetPandoraObjectFromTypeName(String myTypeName, Object myValue)
+        public static ADBBaseObject GetGraphObjectFromTypeName(String myTypeName, Object myValue)
         {
-            return GetPandoraObjectFromType(ConvertPandora2CSharp(myTypeName), myValue);
+            return GetGraphObjectFromType(ConvertGraph2CSharp(myTypeName), myValue);
         }
 
         public static Exceptional<Boolean> ConvertToBestMatchingType(ref ADBBaseObject myDBBaseObjectA, ref ADBBaseObject myDBBaseObjectB)

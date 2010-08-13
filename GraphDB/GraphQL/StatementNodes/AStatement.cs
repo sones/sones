@@ -1,10 +1,10 @@
-﻿/* <id name=”PandoraLib – abstract statement class” />
+﻿/* <id name=”GraphLib – abstract statement class” />
  * <copyright file=”AStatement.cs”
  *            company=”sones GmbH”>
  * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Henning Rauch</developer>
- * <summary>The abstract class for all statements in PandoraDB.</summary>
+ * <summary>The abstract class for all statements in GraphDB.</summary>
  */
 
 #region usings
@@ -27,7 +27,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes
 {
 
     /// <summary>
-    /// The abstract class for all statements in PandoraDB.
+    /// The abstract class for all statements in GraphDB.
     /// </summary>
     public abstract class AStatement : AStructureNode
     {
@@ -44,6 +44,12 @@ namespace sones.GraphDB.GraphQL.StatementNodes
 
         public abstract String StatementName { get; }
         public abstract TypesOfStatements TypeOfStatement { get; }
+
+        #endregion
+
+        #region Protected properties
+
+        protected Exceptional ParsingResult { get; private set; }
 
         #endregion
 
@@ -66,6 +72,15 @@ namespace sones.GraphDB.GraphQL.StatementNodes
         public abstract QueryResult Execute(IGraphDBSession graphDBSession);
 
         #endregion
+
+        #endregion
+
+        #region Ctor
+
+        public AStatement()
+        {
+            ParsingResult = new Exceptional();
+        } 
 
         #endregion
     

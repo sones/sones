@@ -44,22 +44,22 @@ namespace sones.GraphDB.Managers.Structures
 
         #region override AAttributeAssignOrUpdateOrRemove.Update
 
-        public override Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>> Update(DBContext myDBContext, DBObjectStream myDBObjectStream, GraphDBType myGraphDBType)
+        public override Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>> Update(DBContext myDBContext, DBObjectStream myDBObjectStream, GraphDBType myGraphDBType)
         {
 
-            Dictionary<String, Tuple<TypeAttribute, AObject>> attrsForResult = new Dictionary<String, Tuple<TypeAttribute, AObject>>();
+            Dictionary<String, Tuple<TypeAttribute, IObject>> attrsForResult = new Dictionary<String, Tuple<TypeAttribute, IObject>>();
 
             #region AttributeRemoveList
 
             #region data
 
             Exceptional validateResult = AttributeIDChain.Validate(myDBContext, false);
-            if (validateResult.Failed)
+            if (validateResult.Failed())
             {
-                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(validateResult);
+                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(validateResult);
             }
 
-            AListEdgeType _elementsToBeRemoved;
+            ASetOfReferencesEdgeType _elementsToBeRemoved;
             EdgeTypeListOfBaseObjects undefAttrList;
 
             #endregion
@@ -70,17 +70,17 @@ namespace sones.GraphDB.Managers.Structures
             {
                 var loadExcept = LoadUndefAttributes(AttributeName, myDBContext, myDBObjectStream);
 
-                if (loadExcept.Failed)
-                    return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(loadExcept);
+                if (loadExcept.Failed())
+                    return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(loadExcept);
 
                 if (!loadExcept.Value.ContainsKey(AttributeName))
                 {
-                    attrsForResult.Add(AttributeName, new Tuple<TypeAttribute, AObject>(null, null));
-                    return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(attrsForResult);
+                    attrsForResult.Add(AttributeName, new Tuple<TypeAttribute, IObject>(null, null));
+                    return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(attrsForResult);
                 }
 
                 if (!(loadExcept.Value[AttributeName] is EdgeTypeListOfBaseObjects))
-                    return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(new Error_InvalidAttributeKind());
+                    return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(new Error_InvalidAttributeKind());
 
                 undefAttrList = (EdgeTypeListOfBaseObjects)loadExcept.Value[AttributeName];
 
@@ -91,8 +91,8 @@ namespace sones.GraphDB.Managers.Structures
 
                 myDBContext.DBObjectManager.AddUndefinedAttribute(AttributeName, undefAttrList, myDBObjectStream);
 
-                attrsForResult.Add(AttributeName, new Tuple<TypeAttribute, AObject>(null, null));
-                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(attrsForResult);
+                attrsForResult.Add(AttributeName, new Tuple<TypeAttribute, IObject>(null, null));
+                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(attrsForResult);
             }
 
             #endregion
@@ -101,11 +101,11 @@ namespace sones.GraphDB.Managers.Structures
 
             try
             {
-                _elementsToBeRemoved = (AListEdgeType)(TupleDefinition.GetCorrespondigDBObjectUUIDAsList(myGraphDBType, myDBContext, AttributeIDChain.LastAttribute.EdgeType.GetNewInstance(), AttributeIDChain.LastAttribute.GetDBType(myDBContext.DBTypeManager)).Value);
+                _elementsToBeRemoved = (ASetOfReferencesEdgeType)(TupleDefinition.GetCorrespondigDBObjectUUIDAsList(myGraphDBType, myDBContext, AttributeIDChain.LastAttribute.EdgeType.GetNewInstance(), AttributeIDChain.LastAttribute.GetDBType(myDBContext.DBTypeManager)).Value);
             }
             catch (Exception e)
             {
-                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(new Error_UnknownDBError(e));
+                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(new Error_UnknownDBError(e));
             }
 
             #endregion
@@ -114,14 +114,14 @@ namespace sones.GraphDB.Managers.Structures
 
             if (_elementsToBeRemoved == null)
             {
-                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(new Error_UpdateAttributeNoElements(AttributeIDChain.LastAttribute));
+                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(new Error_UpdateAttributeNoElements(AttributeIDChain.LastAttribute));
             }
 
             if (myDBObjectStream.HasAttribute(AttributeIDChain.LastAttribute.UUID, AttributeIDChain.LastAttribute.GetRelatedType(myDBContext.DBTypeManager)))
             {
-                ASetReferenceEdgeType edge = (ASetReferenceEdgeType)myDBObjectStream.GetAttribute(AttributeIDChain.LastAttribute.UUID);
+                ASetOfReferencesEdgeType edge = (ASetOfReferencesEdgeType)myDBObjectStream.GetAttribute(AttributeIDChain.LastAttribute.UUID);
 
-                foreach (var aUUID in (_elementsToBeRemoved as ASetReferenceEdgeType).GetAllReferenceIDs())
+                foreach (var aUUID in (_elementsToBeRemoved as ASetOfReferencesEdgeType).GetAllReferenceIDs())
                 {
                     edge.RemoveUUID(aUUID);
                 }
@@ -138,15 +138,15 @@ namespace sones.GraphDB.Managers.Structures
 
                 #endregion
 
-                attrsForResult.Add(AttributeIDChain.LastAttribute.Name, new Tuple<TypeAttribute, AObject>(AttributeIDChain.LastAttribute, edge));
-                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(attrsForResult);
+                attrsForResult.Add(AttributeIDChain.LastAttribute.Name, new Tuple<TypeAttribute, IObject>(AttributeIDChain.LastAttribute, edge));
+                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(attrsForResult);
             }
 
             #endregion
 
             #endregion
 
-            return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(attrsForResult);
+            return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(attrsForResult);
 
         }
 

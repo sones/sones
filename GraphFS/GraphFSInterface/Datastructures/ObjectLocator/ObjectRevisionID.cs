@@ -436,7 +436,7 @@ namespace sones.GraphFS.DataStructures
 
             catch (Exception e)
             {
-                throw new PandoraFSException_RevisionIDCouldNotBeDeserialized("RevisionID could not be deserialized!\n\n" + e);
+                throw new GraphFSException_RevisionIDCouldNotBeDeserialized("RevisionID could not be deserialized!\n\n" + e);
             }
         }
 

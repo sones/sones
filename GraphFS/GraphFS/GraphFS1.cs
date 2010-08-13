@@ -30,23 +30,21 @@ using System.Linq;
 using System.Diagnostics;
 using System.Collections.Generic;
 
-using sones.StorageEngines;
-
-using sones.TmpFS.Caches;
+using sones.GraphFS;
 using sones.GraphFS.Caches;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Objects;
 using sones.GraphFS.Exceptions;
 using sones.GraphFS.Errors;
 using sones.GraphFS.InternalObjects;
-using sones.GraphFS;
 using sones.GraphFS.Session;
+
+using sones.StorageEngines;
 
 using sones.Lib;
 using sones.Lib.DataStructures;
 using sones.Lib.ErrorHandling;
 using sones.Lib.Session;
-using sones.Lib.ErrorHandling;
 using sones.Lib.DataStructures.Indices;
 
 #endregion
@@ -61,19 +59,20 @@ namespace sones
     {
 
 
-        #region Data
+        //#region Data
 
-        private TmpFSLookuptable _TmpFSLookuptable;
+        //private ObjectStore _ObjectCache;
 
-        #endregion
+        //#endregion
 
         #region Constructor
 
-        #region TmpFS()
+        #region GraphFS1()
 
         public GraphFS1()
+            : base(new ObjectStore())
         {
-            _TmpFSLookuptable       = new TmpFSLookuptable();
+          //  _ObjectCache       = new ObjectStore();
         }
 
         #endregion
@@ -126,132 +125,20 @@ namespace sones
         #endregion
 
 
-        #region (protected) ObjectCache handling
-
-        #region GetObjectCacheSettings(mySessionToken)
-
-        public override ObjectCacheSettings GetObjectCacheSettings(SessionToken mySessionToken)
-        {
-            return ObjectCacheSettings;
-        }
-
-        #endregion
-
-        #region GetObjectCacheSettings(myObjectLocation, mySessionToken)
-
-        public override ObjectCacheSettings GetObjectCacheSettings(ObjectLocation myObjectLocation, SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-
-        #region SetObjectCacheSettings(myObjectCacheSettings, mySessionToken)
-
-        public override void SetObjectCacheSettings(ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken)
-        {
-            ObjectCacheSettings = myObjectCacheSettings;
-        }
-
-        #endregion
-
-        #region SetObjectCacheSettings(myObjectLocation, myObjectCacheSettings, mySessionToken)
-
-        public override void SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-
-        #region (protected) CacheAdd(myObjectLocation, myObjectLocator, myIsPinned)
-
-        protected override void CacheAdd(ObjectLocation myObjectLocation, ObjectLocator myObjectLocator, Boolean myIsPinned)
-        {
-            _TmpFSLookuptable.Set(myObjectLocation, myObjectLocator);
-        }
-
-        #endregion
-
-        #region (protected) CacheAdd(myCacheUUID, myAPandoraObject, myIsPinned)
-
-        protected override void CacheAdd(CacheUUID myCacheUUID, AFSObject myAPandoraObject, Boolean myIsPinned)
-        {
-            _TmpFSLookuptable.Set(myCacheUUID, myAPandoraObject);
-        }
-
-        #endregion
-
-        #region (protected) CacheGet<PT>(myCacheUUID)
-
-        protected override Exceptional<PT> CacheGet<PT>(CacheUUID myCacheUUID)
-        {
-
-            var _Exceptional = new Exceptional<PT>();
-            _Exceptional.Value = (PT)_TmpFSLookuptable.GetAFSObject(myCacheUUID);
-
-            if (_Exceptional == null || _Exceptional.Failed || _Exceptional.Value == null)
-                _Exceptional.PushT(new GraphFSError("Could not get object with UUID '" + myCacheUUID.ToString() + "' from ObjectCache!"));
-
-            return _Exceptional;
-
-        }
-
-        #endregion
-
-        #region (protected) CacheMove(myOldObjectLocation, myNewObjectLocation, myRecursiveDecaching)
-
-        protected override void CacheMove(ObjectLocation myOldObjectLocation, ObjectLocation myNewObjectLocation, Boolean myRecursiveDecaching)
-        {
-            lock (_TmpFSLookuptable)
-            {
-                _TmpFSLookuptable.Move(myOldObjectLocation, myNewObjectLocation, myRecursiveDecaching);
-            }
-        }
-
-        #endregion
-
-        #region (protected) CacheRemove(myObjectLocation, myRecursiveDecaching)
-
-        protected override void CacheRemove(ObjectLocation myObjectLocation, Boolean myRecursiveDecaching)
-        {
-            lock (_TmpFSLookuptable)
-            {
-                _TmpFSLookuptable.Remove(myObjectLocation, myRecursiveDecaching);
-            }
-        }
-
-        #endregion
-
-        #region (protected) CacheRemove(myCacheUUID)
-
-        protected override void CacheRemove(CacheUUID myCacheUUID)
-        {
-            _TmpFSLookuptable.Remove(myCacheUUID);
-        }
-
-        #endregion
-
-        #endregion
-
-
-
 
         #region Make-/Grow-/ShrinkFileSystem
 
-        #region MakeFileSystem(myIStorageEngines, myDescription, myOverwriteExistingFileSystem, myAction, SessionToken mySessionToken)
+        #region MakeFileSystem(myStorageLocations, myDescription, myNumberOfBytes, myOverwriteExistingFileSystem, myAction, mySessionToken)
 
         /// <summary>
-        /// This initialises a IPandoraFS in a given device or file using the given sizes
+        /// This initialises a IGraphFS in a given device or file using the given sizes
         /// </summary>
-        /// <param name="myIStorageEngines">a device or filename where to store the file system data</param>
+        /// <param name="myStorageLocations">a device or filename where to store the file system data</param>
         /// <param name="myDescription">a distinguishable Name or description for the file system (can be changed later)</param>
         /// <param name="myNumberOfBytes">the size of the file system in byte</param>
         /// <param name="myOverwriteExistingFileSystem">overwrite an existing file system [yes|no]</param>
         /// <returns>the UUID of the new file system</returns>
-        public override Exceptional<FileSystemUUID> MakeFileSystem(IEnumerable<IStorageEngine> myIStorageEngines, String myDescription, Boolean myOverwriteExistingFileSystem, Action<Double> myAction, SessionToken mySessionToken)
+        public override Exceptional<FileSystemUUID> MakeFileSystem(IEnumerable<String> myStorageLocations, String myDescription, UInt64 myNumberOfBytes, Boolean myOverwriteExistingFileSystem, Action<Double> myAction, SessionToken mySessionToken)
         {
 
             //#region Checks
@@ -290,7 +177,7 @@ namespace sones
         #region GrowFileSystem(myNumberOfBytesToAdd, SessionToken mySessionToken)
 
         /// <summary>
-        /// This enlarges the size of a IPandoraFS
+        /// This enlarges the size of a IGraphFS
         /// </summary>
         /// <param name="myNumberOfBytesToAdd">the number of bytes to add to the size of the current file system</param>
         public override Exceptional<UInt64> GrowFileSystem(UInt64 myNumberOfBytesToAdd, SessionToken mySessionToken)
@@ -303,7 +190,7 @@ namespace sones
         #region ShrinkFileSystem(myNumberOfBytesToRemove, SessionToken mySessionToken)
 
         /// <summary>
-        /// This reduces the size of a IPandoraFS
+        /// This reduces the size of a IGraphFS
         /// </summary>
         /// <param name="myNumberOfBytesToRemove">the number of bytes to remove from the size of the current file system</param>
         public override Exceptional<UInt64> ShrinkFileSystem(UInt64 myNumberOfBytesToRemove, SessionToken mySessionToken)
@@ -322,8 +209,7 @@ namespace sones
         public override Exceptional MountFileSystem(String myStorageLocation, AccessModeTypes myFSAccessMode, SessionToken mySessionToken)
         {
 
-            if (_TmpFSLookuptable == null)
-                _TmpFSLookuptable = new TmpFSLookuptable();
+            Debug.Assert(_ObjectCache != null);
 
             var _RootDirectoryLocator = new ObjectLocator()
             {
@@ -356,8 +242,8 @@ namespace sones
             var _CacheUUID = _RootDirectoryLocator[FSConstants.DIRECTORYSTREAM][FSConstants.DefaultEdition].LatestRevision.CacheUUID;
 
             // Store both within the Lookuptable
-            _TmpFSLookuptable.Set(_RootDirectoryLocator.ObjectLocation, _RootDirectoryLocator);
-            _TmpFSLookuptable.Set(_CacheUUID, _RootDirectoryObject);
+            _ObjectCache.StoreObjectLocator(_RootDirectoryLocator);
+            _ObjectCache.StoreAFSObject(_CacheUUID, _RootDirectoryObject);
 
             return new Exceptional();
 
@@ -377,7 +263,7 @@ namespace sones
 
                 var _Exceptional = base.UnmountFileSystem(mySessionToken);
 
-                _TmpFSLookuptable = null;
+                _ObjectCache.Clear();
 
                 return _Exceptional;
 
@@ -400,9 +286,7 @@ namespace sones
         protected override Exceptional<ObjectLocator> GetObjectLocator_protected(ObjectLocation myObjectLocation)
         {
 
-            var _Exceptional = new Exceptional<ObjectLocator>();
-
-            _Exceptional.Value = _TmpFSLookuptable.GetObjectLocator(myObjectLocation);
+            var _Exceptional = _ObjectCache.GetObjectLocator(myObjectLocation);
 
             if (_Exceptional.Value == null)
                 _Exceptional.PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
@@ -419,163 +303,51 @@ namespace sones
 
         #region Object specific methods
 
-        //#region GetAPandoraObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, mySessionToken)
-
-        //public Exceptional<PT> GetObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, RevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : APandoraObject, new()
-        //{
-
-        //    lock (this)
-        //    {
-
-        //        Exceptional<PT> _Exceptional = new Exceptional<PT>();
-
-        //        try
-        //        {
-
-        //            #region Input validation
-
-        //            if (myObjectLocation == null || myObjectLocation.Length == 0)
-        //                throw new ArgumentNullException("The parameter myObjectLocator must not be null or its length zero!");
-
-        //            if (myObjectStream == null)
-        //            {
-        //                var newT = new PT();
-        //                myObjectStream = newT.ObjectStream;
-        //            }
-
-        //            if (myObjectEdition == null)
-        //                myObjectEdition = FSConstants.DefaultEdition;
-
-        //            #endregion
-
-        //            #region Data
-
-        //            INode           _INode          = null;
-        //            ObjectStream    _ObjectStream   = null;
-        //            ObjectEdition   _ObjectEdition  = null;
-        //            ObjectRevision  _ObjectRevision = null;
-
-        //            #endregion
-
-        //            #region Resolve ObjectStream, -Edition and -RevisionID
-
-        //            var _ObjectLocator = _TmpFSLookuptable.GetObjectLocator(myObjectLocation);
-
-        //            if (_ObjectLocator != null)
-        //            {
-
-        //                if (_ObjectLocator.ContainsKey(myObjectStream))
-        //                {
-
-        //                    _ObjectStream = _ObjectLocator[myObjectStream];
-
-        //                    if (_ObjectStream != null)
-        //                    {
-
-        //                        if (_ObjectStream.ContainsKey(myObjectEdition))
-        //                        {
-
-        //                            _ObjectEdition = _ObjectStream[myObjectEdition];
-
-        //                            if (_ObjectEdition != null)
-        //                            {
-
-        //                                // If nothing specified => Return the LatestRevision
-        //                                if (myObjectRevisionID == null || myObjectRevisionID.UUID == null)
-        //                                {
-        //                                    _ObjectRevision = _ObjectEdition.LatestRevision;
-        //                                    myObjectRevisionID = _ObjectEdition.LatestRevisionID;
-        //                                }
-
-        //                                else
-        //                                {
-        //                                    _ObjectRevision = _ObjectEdition[myObjectRevisionID];
-        //                                }
-
-        //                            }
-        //                            else
-        //                                return new Exceptional<PT>(new GraphFSError_NoObjectRevisionsFound(myObjectLocation, myObjectStream, myObjectEdition));
-
-        //                        }
-        //                        else
-        //                            return new Exceptional<PT>(new GraphFSError_ObjectEditionNotFound(myObjectLocation, myObjectEdition, myObjectStream));
-
-        //                    }
-        //                    else
-        //                        return new Exceptional<PT>(new GraphFSError_NoObjectEditionsFound(myObjectLocation, myObjectStream));
-
-        //                }
-        //                else
-        //                    return new Exceptional<PT>(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
-
-
-        //                if (_ObjectRevision != null)
-        //                {
-
-        //                    // Get APandoraObject from Cache
-        //                    _Exceptional.Value = (PT) _TmpFSLookuptable.GetAPandoraObject(_ObjectRevision.CacheUUID);
-
-        //                }
-
-        //            }
-
-        //            #endregion
-                    
-        //            else
-        //                _Exceptional.Add(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
-
-        //        }
-
-        //        catch (Exception e)
-        //        {
-        //            _Exceptional.Add(new GraphFSError(e.Message));
-        //            return _Exceptional.Value;
-        //        }
-
-        //        return _Exceptional.Value;
-
-        //    }
-
-        //}
-
-        //#endregion
+        #region (protected) LoadAFSObject_protected(myObjectLocator, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myAFSObject)
 
         protected override Exceptional<AFSObject> LoadAFSObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, AFSObject myAFSObject)
         {
             return new Exceptional<AFSObject>();
         }
 
+        #endregion
 
-        #region StoreAFSObject_protected(myObjectLocation, myAFSObject, myAllowOverwritting, mySessionToken)
+        #region (protected) StoreAFSObject_Layer2_protected(myObjectLocation, myAFSObject, myAllowOverwritting, mySessionToken)
 
-        protected override Exceptional StoreAFSObject_protected(ObjectLocation myObjectLocation, AFSObject myAFSObject, Boolean myAllowOverwritting, SessionToken mySessionToken)
+        protected override Exceptional StoreAFSObject_Layer2_protected(ObjectLocation myObjectLocation, AFSObject myAFSObject, Boolean myAllowOverwritting)
         {
+
+            Debug.Assert(IsMounted);
+            Debug.Assert(myAFSObject.INodeReference                         != null);
+            Debug.Assert(myAFSObject.ObjectLocatorReference                 != null);
+            Debug.Assert(myAFSObject.ObjectLocatorReference.ObjectLocation  != null);
+            Debug.Assert(myAFSObject.ObjectStream                           != null);
+            Debug.Assert(myAFSObject.ObjectEdition                          != null);
+            Debug.Assert(myAFSObject.ObjectRevisionID                       != null);
 
             lock (this)
             {
 
                 var _Exceptional    = new Exceptional();
-                var _ObjectEdition1 = myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition];
-
+                
                 #region Write on TmpDisc!
 
-                _TmpFSLookuptable.Set(myObjectLocation, myAFSObject.ObjectLocatorReference);
-                _TmpFSLookuptable.Set(_ObjectEdition1[myAFSObject.ObjectRevisionID].CacheUUID, myAFSObject);
+                var _ObjectEdition1 = myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition];
+                _ObjectCache.StoreObjectLocator(myAFSObject.ObjectLocatorReference);
+                _ObjectCache.StoreAFSObject(_ObjectEdition1[myAFSObject.ObjectRevisionID].CacheUUID, myAFSObject);
 
                 #endregion
-
 
                 // Do a fake allocation to indicate that this "are" objects on a disc
                 myAFSObject.ObjectLocatorReference.INodeReference.INodePositions.Add(new ExtendedPosition(0, 0));
 
-
                 #region Remove obsolete ObjectRevisions
 
-                //while (myAPandoraObject.ObjectLocatorReference[myAPandoraObject.ObjectStream][myAPandoraObject.ObjectEdition].MaxNumberOfRevisions <
-                //       myAPandoraObject.ObjectLocatorReference[myAPandoraObject.ObjectStream][myAPandoraObject.ObjectEdition].GetMaxPathLength(
-                //       myAPandoraObject.ObjectLocatorReference[myAPandoraObject.ObjectStream][myAPandoraObject.ObjectEdition].LatestRevisionID))
+                //while (myAGraphObject.ObjectLocatorReference[myAGraphObject.ObjectStream][myAGraphObject.ObjectEdition].MaxNumberOfRevisions <
+                //       myAGraphObject.ObjectLocatorReference[myAGraphObject.ObjectStream][myAGraphObject.ObjectEdition].GetMaxPathLength(
+                //       myAGraphObject.ObjectLocatorReference[myAGraphObject.ObjectStream][myAGraphObject.ObjectEdition].LatestRevisionID))
                 //{
-                //    DeleteOldestObjectRevision(myAPandoraObject.ObjectLocatorReference, myAPandoraObject.ObjectStream, myAPandoraObject.ObjectEdition, mySessionToken);
+                //    DeleteOldestObjectRevision(myAGraphObject.ObjectLocatorReference, myAGraphObject.ObjectStream, myAGraphObject.ObjectEdition, mySessionToken);
                 //}
 
                 while (_ObjectEdition1.ULongCount() > _ObjectEdition1.MaxNumberOfRevisions)
@@ -594,7 +366,7 @@ namespace sones
 
                 #region Handle ParentIDirectoryObject
 
-                return GetFSObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false, mySessionToken).
+                return GetFSObject_protected<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false).
                     WhenFailed<DirectoryObject>(e => e.PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path))).
                     WhenSucceded<DirectoryObject>(_ParentDirectoryObject =>
                     {
@@ -625,9 +397,9 @@ namespace sones
 
                             #endregion
 
-                            //_ParentIDirectoryObject.Value.IPandoraFSReference = this;
+                            //_ParentIDirectoryObject.Value.IGraphFSReference = this;
                             if (myAFSObject.INodeReference.INodePositions.Count == 0)
-                                Debug.Write("myAPandoraObject.INodeReference.INodePositions.Count == 0");
+                                Debug.Write("myAGraphObject.INodeReference.INodePositions.Count == 0");
 
                             _ParentDirectoryObject.Value.AddObjectStream(myObjectLocation.Name, myAFSObject.ObjectStream, myAFSObject.INodeReference.INodePositions);
 
@@ -663,16 +435,20 @@ namespace sones
 
         #endregion
 
+        #region (protected) RemoveAFSObject_protected(myObjectLocator, myObjectStream, myObjectEdition, myObjectRevisionID)
+
         protected override Exceptional RemoveAFSObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID)
         {
             return Exceptional.OK;
         }
 
-        #region EraseObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, mySessionToken)
+        #endregion
 
-        public Exceptional EraseFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, SessionToken mySessionToken)
+        #region (protected) EraseAFSObject_protected(myObjectLocator, myObjectStream, myObjectEdition, myObjectRevisionID)
+
+        protected override Exceptional EraseAFSObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID)
         {
-            throw new NotImplementedException();
+            return Exceptional.OK;
         }
 
         #endregion
@@ -682,18 +458,27 @@ namespace sones
 
         #region (protected) CreateDirectoryObject_protected(myObjectLocation, myBlocksize)
 
-        protected override IDirectoryObject CreateDirectoryObject_protected(ObjectLocation myObjectLocation, UInt64 myBlocksize)
+        protected override Exceptional<IDirectoryObject> InitDirectoryObject_protected(ObjectLocation myObjectLocation, UInt64 myBlocksize)
         {
-            return new DirectoryObject()
+
+            Debug.Assert(IsMounted);
+            Debug.Assert(myObjectLocation != null);
+
+            var _Exceptional = new Exceptional<IDirectoryObject>();
+
+            _Exceptional.Value = new DirectoryObject()
             {
                 ObjectLocation = myObjectLocation,
-                Blocksize      = myBlocksize
+                Blocksize = myBlocksize
             };
+
+            return _Exceptional;
+        
         }
 
         #endregion
 
-        #region PandoraStream methods
+        #region GraphStream methods
 
         #region OpenStream(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevision, myObjectCopy)
 

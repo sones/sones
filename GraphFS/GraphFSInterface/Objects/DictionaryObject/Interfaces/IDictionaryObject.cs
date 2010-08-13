@@ -44,7 +44,7 @@ namespace sones.GraphFS.Objects
         where TKey : IComparable
     {
 
-        #region Members of APandoraHeader
+        #region Members of AGraphHeader
 
         Boolean       isNew                   { get; set; }
         INode         INodeReference          { get; set; }
@@ -53,7 +53,7 @@ namespace sones.GraphFS.Objects
 
         #endregion
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         ObjectLocation  ObjectLocation          { get; set; }
         String          ObjectPath              { get; set; }

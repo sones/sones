@@ -25,37 +25,14 @@
 #region Usings
 
 using System;
+
+using sones.GraphDB.NewAPI;
 using sones.GraphDB.Structures;
 
 #endregion
 
 namespace sones.GraphDS.API.CSharp.Reflection
 {
-
-    #region HideFromDatabase
-
-    /// <summary>
-    /// Attributes may be hidden from the database and thus
-    /// not be created or synched with the database.
-    /// </summary>
-    public class HideFromDatabase : Attribute
-    {
-    }
-
-    #endregion
-
-    #region NoAutoCreation
-
-    /// <summary>
-    /// Attributes may not be created automatically, but it
-    /// is assumed that these attributes are valid attributes
-    /// after manual creation.
-    /// </summary>
-    public class NoAutoCreation : Attribute
-    {
-    }
-
-    #endregion
 
     #region Mandatory
 
@@ -65,26 +42,6 @@ namespace sones.GraphDS.API.CSharp.Reflection
     /// </summary>
     public class Mandatory : Attribute
     {
-    }
-
-    #endregion
-
-    #region Temporary
-
-    /// <summary>
-    /// The values of temporary attributes will never be persistet
-    /// by the database and thus removed at the given moment.
-    /// </summary>
-    public class Temporary : Attribute
-    {
-
-        public TemporaryType TemporaryType { get; private set; }
-
-        public Temporary(TemporaryType myTemporaryType)
-        {
-            TemporaryType = myTemporaryType;
-        }
-
     }
 
     #endregion
@@ -118,8 +75,8 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region Properties (or named parameters)
 
-        public String IndexName  { get; set; }
-        public String IndexType  { get; set; }
+        public String IndexName { get; set; }
+        public String IndexType { get; set; }
         public String IndexOrder { get; set; }
 
         #endregion
@@ -128,51 +85,51 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         public Indexed()
         {
-            IndexName  = "";
+            IndexName = "";
             IndexOrder = "";
-            IndexType  = "";
+            IndexType = "";
         }
 
         public Indexed(String myIndexType)
         {
-            IndexName  = "";
+            IndexName = "";
             IndexOrder = "";
-            IndexType  = myIndexType;
+            IndexType = myIndexType;
         }
 
         public Indexed(DBIndexTypes myDBIndexType)
         {
-            IndexName  = "";
+            IndexName = "";
             IndexOrder = "";
-            IndexType  = Enum.GetName(typeof(DBIndexTypes), myDBIndexType);
+            IndexType = Enum.GetName(typeof(DBIndexTypes), myDBIndexType);
         }
 
         public Indexed(String myIndexName, String myIndexType)
         {
-            IndexName  = myIndexName;
+            IndexName = myIndexName;
             IndexOrder = "";
-            IndexType  = myIndexType;
+            IndexType = myIndexType;
         }
 
         public Indexed(String myIndexName, DBIndexTypes myDBIndexType)
         {
-            IndexName  = myIndexName;
+            IndexName = myIndexName;
             IndexOrder = "";
-            IndexType  = Enum.GetName(typeof(DBIndexTypes), myDBIndexType);
+            IndexType = Enum.GetName(typeof(DBIndexTypes), myDBIndexType);
         }
 
         public Indexed(String myIndexName, String myIndexOrder, String myIndexType)
         {
-            IndexName  = myIndexName;
+            IndexName = myIndexName;
             IndexOrder = myIndexOrder;
-            IndexType  = myIndexType;
+            IndexType = myIndexType;
         }
 
         public Indexed(String myIndexName, String myIndexOrder, DBIndexTypes myDBIndexType)
         {
-            IndexName  = myIndexName;
+            IndexName = myIndexName;
             IndexOrder = myIndexOrder;
-            IndexType  = Enum.GetName(typeof(DBIndexTypes), myDBIndexType);
+            IndexType = Enum.GetName(typeof(DBIndexTypes), myDBIndexType);
         }
 
         #endregion
@@ -248,6 +205,27 @@ namespace sones.GraphDS.API.CSharp.Reflection
         }
 
         #endregion
+
+    }
+
+    #endregion
+
+
+    #region Temporary
+
+    /// <summary>
+    /// The values of temporary attributes will never be persistet
+    /// by the database and thus removed at the given moment.
+    /// </summary>
+    public class Temporary : Attribute
+    {
+
+        public TemporaryType TemporaryType { get; private set; }
+
+        public Temporary(TemporaryType myTemporaryType)
+        {
+            TemporaryType = myTemporaryType;
+        }
 
     }
 

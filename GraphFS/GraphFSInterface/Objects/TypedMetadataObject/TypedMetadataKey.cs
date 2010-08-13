@@ -392,7 +392,7 @@ namespace sones.GraphFS.Objects
 
             catch (Exception e)
             {
-                throw new PandoraFSException_EntityCouldNotBeDeserialized("Right could not be deserialized!\n\n" + e);
+                throw new GraphFSException_EntityCouldNotBeDeserialized("Right could not be deserialized!\n\n" + e);
             }
 
         }

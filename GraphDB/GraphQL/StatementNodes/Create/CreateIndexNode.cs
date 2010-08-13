@@ -17,6 +17,7 @@ using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures;
 
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
@@ -64,10 +65,13 @@ namespace sones.GraphDB.GraphQL.StatementNodes
         /// </summary>
         /// <param name="myCompilerContext">CompilerContext of Irony.</param>
         /// <param name="myParseTreeNode">The current ParseNode.</param>
-        /// <param name="typeManager">The TypeManager of the PandoraDB.</param>
+        /// <param name="typeManager">The TypeManager of the GraphDB.</param>
         public override void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
         {
 
+            var grammar = GetGraphQLGrammar(myCompilerContext);
+
+            var childNum = 0;
             foreach (var child in myParseTreeNode.ChildNodes)
             {
                 if (child.AstNode != null)
@@ -83,6 +87,11 @@ namespace sones.GraphDB.GraphQL.StatementNodes
                     else if (child.AstNode is ATypeNode)
                     {
                         _DBType = (child.AstNode as ATypeNode).ReferenceAndType.TypeName;
+
+                        if (myParseTreeNode.ChildNodes[childNum - 1].Token.AsSymbol == grammar.S_ON)
+                        {
+                            ParsingResult.Push(new Warnings.Warning_ObsoleteGQL("CREATE INDEX ... ON", "CREATE INDEX ... ON [TYPE | VERTEX]"));
+                        }
                     }
                     else if (child.AstNode is IndexAttributeListNode)
                     {
@@ -93,7 +102,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes
                         _IndexType = (child.AstNode as IndexTypeOptNode).IndexType;
                     }
                 }
+                childNum++;
             }
+
 
         }
 
@@ -110,7 +121,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes
         public override QueryResult Execute(IGraphDBSession myIGraphDBSession)
         {
 
-            return myIGraphDBSession.CreateIndex(_DBType, _IndexName, _IndexEdition, _IndexType, _AttributeList);
+            var createIdxResult = myIGraphDBSession.CreateIndex(_DBType, _IndexName, _IndexEdition, _IndexType, _AttributeList);
+            createIdxResult.AddErrorsAndWarnings(ParsingResult);
+            return createIdxResult;
 
         }
 

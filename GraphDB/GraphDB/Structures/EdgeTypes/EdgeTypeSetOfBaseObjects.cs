@@ -28,75 +28,35 @@ using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
+using System.Collections;
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
-    
-    public class EdgeTypeSetOfBaseObjects : AListBaseEdgeType
+
+    public class EdgeTypeSetOfBaseObjects : ASetOfBaseEdgeType
     {
 
+        #region Data
+
         HashSet<ADBBaseObject> _Objects;
+
+        #endregion
+
+        #region Ctors
 
         public EdgeTypeSetOfBaseObjects()
         {
             _Objects = new HashSet<ADBBaseObject>();
         }
 
-        #region TypeCode
-        public override UInt32 TypeCode { get { return 458; } }
-        #endregion
-
-        #region AEdgeType Members
-
-        public override string EdgeTypeName
+        public EdgeTypeSetOfBaseObjects(IEnumerable<ADBBaseObject> myObjects)
         {
-            get { return "SetOfBaseObjects"; }
-        }
-
-        public override EdgeTypeUUID EdgeTypeUUID
-        {
-            get { return new EdgeTypeUUID(100); }
-        }
-
-        public override void ApplyParams(params EdgeTypeParamDefinition[] myParams)
-        {
-
-        }
-
-        public override AEdgeType GetNewInstance()
-        {
-            return new EdgeTypeSetOfBaseObjects();
-        }
-
-        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
-        {
-            return GetNewInstance();
-        }
-
-        public override AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeOfObjects)
-        {
-            return GetNewInstance();
-        }
-
-        public override String GetDescribeOutput(GraphDBType myGraphDBType)
-        {
-            return "";
-        }
-
-        public override String GetGDDL(GraphDBType myGraphDBType)
-        {
-            return String.Concat("SET", "<", myGraphDBType.Name, ">");
+            _Objects = new HashSet<ADBBaseObject>(myObjects);
         }
 
         #endregion
 
-
-        #region AListEdgeType Members
-
-        public override void Clear()
-        {
-            _Objects.Clear();
-        }
+        #region IListOrSetEdgeType Members
 
         public override ulong Count()
         {
@@ -106,56 +66,85 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 return 0;
         }
 
-        public override System.Collections.IEnumerable GetAll()
+        public override IListOrSetEdgeType GetTopAsEdge(ulong myNumOfEntries)
         {
-            return _Objects;
+
+            if (_Objects.Count < (int)myNumOfEntries)
+            {
+                myNumOfEntries = (ulong)_Objects.Count;
+            }
+
+            return new EdgeTypeSetOfBaseObjects(_Objects.Take((int)myNumOfEntries));
         }
 
-        public override System.Collections.IEnumerable GetTop(ulong myNumOfEntries)
-        {
-            return _Objects.Take((Int32)myNumOfEntries);
-        }
-
-        public override void UnionWith(AEdgeType myAListEdgeType)
+        public override void UnionWith(IListOrSetEdgeType myAListEdgeType)
         {
             _Objects.UnionWith((myAListEdgeType as EdgeTypeSetOfBaseObjects)._Objects);
         }
-
 
         public override void Distinction()
         {
             _Objects = new HashSet<ADBBaseObject>(_Objects.Distinct());
         }
 
-        public override IEnumerable<ADBBaseObject> GetBaseObjects()
+        public override void Clear()
         {
-            return _Objects;
+            _Objects.Clear();
         }
 
         #endregion
 
         #region IBaseEdge Members
 
+        public override IEnumerable<ADBBaseObject> GetBaseObjects()
+        {
+            return _Objects;
+        }
+
+        /// <summary>
+        /// Adds a new value with some optional parameters
+        /// </summary>
+        /// <param name="myValue"></param>
+        /// <param name="myParameters"></param>
         public override void Add(ADBBaseObject myValue, params ADBBaseObject[] myParameters)
         {
             _Objects.Add((ADBBaseObject)myValue);
         }
 
+        /// <summary>
+        /// Adds a new value with some optional parameters
+        /// </summary>
+        /// <param name="myValue"></param>
+        /// <param name="myParameters"></param>
         public override void AddRange(IEnumerable<ADBBaseObject> myValue, params ADBBaseObject[] myParameters)
         {
             _Objects.UnionWith(myValue);
         }
 
-        public override bool Contains(ADBBaseObject myValue)
-        {
-            return _Objects.Contains((ADBBaseObject)myValue);
-        }
-
+        /// <summary>
+        /// Remove a value
+        /// </summary>
+        /// <param name="myValue"></param>
+        /// <returns></returns>
         public override Boolean Remove(ADBBaseObject myValue)
         {
             return _Objects.Remove((ADBBaseObject)myValue);
         }
 
+        /// <summary>
+        /// Check for a containing element
+        /// </summary>
+        /// <param name="myValue"></param>
+        /// <returns></returns>
+        public override bool Contains(ADBBaseObject myValue)
+        {
+            return _Objects.Contains((ADBBaseObject)myValue);
+        }
+
+        /// <summary>
+        /// Returns all values. Use this for all not reference ListEdgeType.
+        /// </summary>
+        /// <returns></returns>
         public override IEnumerable<Object> GetReadoutValues()
         {
             return (from o in _Objects select o.Value).ToList();
@@ -175,11 +164,36 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         #endregion
 
-        #region IEnumerable Members
+        #region IEdgeType Members
 
-        public override System.Collections.IEnumerator GetEnumerator()
+        public override string EdgeTypeName
         {
-            return _Objects.GetEnumerator();
+            get { return "SetOfBaseObjects"; }
+        }
+
+        public override EdgeTypeUUID EdgeTypeUUID
+        {
+            get { return new EdgeTypeUUID(100); }
+        }
+
+        public override void ApplyParams(params EdgeTypeParamDefinition[] myParams)
+        {
+
+        }
+
+        public override String GetDescribeOutput(GraphDBType myGraphDBType)
+        {
+            return "";
+        }
+
+        public override String GetGDDL(GraphDBType myGraphDBType)
+        {
+            return String.Concat("SET", "<", myGraphDBType.Name, ">");
+        }
+
+        public override IEdgeType GetNewInstance()
+        {
+            return new EdgeTypeSetOfBaseObjects();
         }
 
         #endregion
@@ -188,15 +202,22 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public override void Serialize(ref SerializationWriter mySerializationWriter)
         {
-            Serialize(ref mySerializationWriter, this);    
+            Serialize(ref mySerializationWriter, this);
         }
 
         public override void Deserialize(ref SerializationReader mySerializationReader)
         {
-            Deserialize(ref mySerializationReader, this);    
+            Deserialize(ref mySerializationReader, this);
         }
 
         #endregion
+
+        #region IFastSerializationTypeSurrogate Members
+
+        public override bool SupportsType(Type type)
+        {
+            return this.GetType() == type;
+        }
 
         private void Serialize(ref SerializationWriter mySerializationWriter, EdgeTypeSetOfBaseObjects myValue)
         {
@@ -224,12 +245,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return myValue;
         }
 
-        #region IFastSerializationTypeSurrogate
-        public override bool SupportsType(Type type)
-        {
-            return this.GetType() == type;
-        }
-
         public override void Serialize(SerializationWriter writer, object value)
         {
             EdgeTypeSetOfBaseObjects thisObject = (EdgeTypeSetOfBaseObjects)value;
@@ -239,15 +254,21 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public override object Deserialize(SerializationReader reader, Type type)
         {
             EdgeTypeSetOfBaseObjects thisObject = (EdgeTypeSetOfBaseObjects)Activator.CreateInstance(type);
-            return Deserialize(ref reader, thisObject);            
+            return Deserialize(ref reader, thisObject);
         }
+
+        public override UInt32 TypeCode { get { return 458; } }
 
         #endregion
 
-        public override string ToString()
+        #region IEnumerable<ADBBaseObject> Members
+
+        public override IEnumerator<ADBBaseObject> GetEnumerator()
         {
-            return EdgeTypeUUID.ToString() + "," + EdgeTypeName;
+            return GetBaseObjects().GetEnumerator();
         }
+
+        #endregion
 
         #region Equals
 
@@ -290,5 +311,11 @@ namespace sones.GraphDB.Structures.EdgeTypes
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            return EdgeTypeUUID.ToString() + "," + EdgeTypeName;
+        }
+
     }
 }

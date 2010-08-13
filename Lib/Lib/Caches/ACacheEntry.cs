@@ -27,7 +27,7 @@ using sones.Lib.DataStructures.Timestamp;
 using sones.Lib.DataStructures;
 
 
-namespace sones.Libraries.Caches
+namespace sones.Lib.Caches
 {
 
     public abstract class ACacheEntry
@@ -40,7 +40,7 @@ namespace sones.Libraries.Caches
         #region StreamCacheEntry(myExpirationType, mySlidingExpirationTimeSpan, myAbsoluteExpirationTimeSpan)
 
         /// <summary>
-        /// The basic constructor of the CachedAPandoraObject
+        /// The basic constructor of the CachedAGraphObject
         /// </summary>
         public ACacheEntry(ExpirationTypes myExpirationType, TimeSpan mySlidingExpirationTimeSpan, TimeSpan myAbsoluteExpirationTimeSpan)
         {
@@ -97,7 +97,7 @@ namespace sones.Libraries.Caches
         #region IsDirty
 
         /// <summary>
-        /// This boolean signals if the status or content of the associated PandoraObject
+        /// This boolean signals if the status or content of the associated GraphObject
         /// was changed since it was moved to the cache and therefore needs to be written
         /// to disc again
         /// </summary>

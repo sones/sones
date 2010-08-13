@@ -29,7 +29,7 @@ namespace sones.GraphDB.Managers.Structures
 
         #region abstract Update
 
-        public abstract Exceptional<Dictionary<String, Tuple<TypeAttribute, AObject>>> Update(DBContext myDBContext, DBObjectStream myDBObjectStream, GraphDBType myGraphDBType);
+        public abstract Exceptional<Dictionary<String, Tuple<TypeAttribute, IObject>>> Update(DBContext myDBContext, DBObjectStream myDBObjectStream, GraphDBType myGraphDBType);
 
         #endregion
 
@@ -58,7 +58,7 @@ namespace sones.GraphDB.Managers.Structures
 
                 #endregion
 
-                #region get PandoraType of Attribute
+                #region get GraphType of Attribute
 
                 attributesOfType = aType.Attributes[aUserDefinedAttribute.Key];
 
@@ -80,14 +80,14 @@ namespace sones.GraphDB.Managers.Structures
 
                 foreach (var aDBObject in listOfObjects)
                 {
-                    if (aDBObject.Failed)
+                    if (aDBObject.Failed())
                     {
                         return new Exceptional(aDBObject);
                     }
 
                     var removeExcept = myDBContext.DBObjectManager.RemoveBackwardEdge(aDBObject.Value, myTypeUUID, aUserDefinedAttribute.Key, myObjectUUIDReference);
 
-                    if (removeExcept.Failed)
+                    if (removeExcept.Failed())
                     {
                         return new Exceptional(removeExcept);
                     }
@@ -104,14 +104,14 @@ namespace sones.GraphDB.Managers.Structures
 
         #region Load undefined attributes
 
-        protected Exceptional<IDictionary<String, AObject>> LoadUndefAttributes(String myName, DBContext dbContext, DBObjectStream myObjStream)
+        protected Exceptional<IDictionary<String, IObject>> LoadUndefAttributes(String myName, DBContext dbContext, DBObjectStream myObjStream)
         {
             var loadExcept = myObjStream.GetUndefinedAttributes(dbContext.DBObjectManager);
 
-            if (loadExcept.Failed)
-                return new Exceptional<IDictionary<string, AObject>>(loadExcept);
+            if (loadExcept.Failed())
+                return new Exceptional<IDictionary<string, IObject>>(loadExcept);
 
-            return new Exceptional<IDictionary<string, AObject>>(loadExcept.Value);
+            return new Exceptional<IDictionary<string, IObject>>(loadExcept.Value);
         }
 
         #endregion

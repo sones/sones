@@ -52,9 +52,9 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
             return new Exceptional(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
 
-        public override Exceptional<AObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
+        public override Exceptional<IObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
         {
-            return new Exceptional<AObject>(new DBUInt64(dbObjectStream.NumberOfCopies));
+            return new Exceptional<IObject>(new DBUInt64(dbObjectStream.NumberOfCopies));
         }
 
     }

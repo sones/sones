@@ -24,7 +24,7 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Henning Rauch</developer>
- * <summary>Inserts new Objects into the PandoraDB</summary>
+ * <summary>Inserts new Objects into the GraphDB</summary>
  */
 
 #region Usings
@@ -46,7 +46,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 {
 
     /// <summary>
-    /// Inserts new Objects into the PandoraDB
+    /// Inserts new Objects into the GraphDB
     /// </summary>
 
     public class DBCLI_INSERT : AllBasicDBCLICommands
@@ -59,8 +59,8 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
             // Command name and description
             InitCommand("INSERT",
-                        "Inserts new Objects into an instance of the PandoraDB",
-                        "Inserts new Objects into an instance of the PandoraDB");
+                        "Inserts new Objects into an instance of the GraphDB",
+                        "Inserts new Objects into an instance of the GraphDB");
 
             #region BNF rule
 
@@ -81,7 +81,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
             AttrAssignList.Rule = AttrAssign + comma + AttrAssignList
                                    | AttrAssign;
 
-            AttrAssignList.PandoraOptions.Add(PandoraOption.IsStructuralObject);
+            AttrAssignList.GraphOptions.Add(GraphOption.IsStructuralObject);
 
             StringOrNumber.Rule = stringLiteral | numberLiteral;
 
@@ -90,7 +90,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
                                 | stringLiteral + gleich + SETOF + stringLiteral
                                 | stringLiteral + gleich + SETREF + stringLiteral;
 
-            AttrAssignList.PandoraOptions.Add(PandoraOption.IsOption);
+            AttrAssignList.GraphOptions.Add(GraphOption.IsOption);
 
             #endregion
 
@@ -100,14 +100,14 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
         #region Execute Command
 
-        public override void Execute(ref object myIGraphFS2Session, ref object myIPandoraDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
+        public override void Execute(ref object myIGraphFS2Session, ref object myIGraphDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
         {
 
             _CancelCommand = false;
             var _IGraphFS2Session = myIGraphFS2Session as IGraphFSSession;
-            var _IPandoraDBSession = myIPandoraDBSession as IGraphDBSession;
+            var _IGraphDBSession = myIGraphDBSession as IGraphDBSession;
 
-            if (_IGraphFS2Session == null || _IPandoraDBSession == null)
+            if (_IGraphFS2Session == null || _IGraphDBSession == null)
             {
                 WriteLine("No database instance started...");
                 return;
@@ -118,7 +118,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
             myInputString = Regex.Replace(myInputString, "[INSERT|insert]+ [INTO|into]+ (\')(.*?)(\') [VALUES|values]+", "INSERT INTO $2 VALUES");
             myInputString = Regex.Replace(myInputString, "([\\(|,]+)(\\s*)(\')(.*?)(\')(\\s*)=", "$1 $4 =");
 
-            _QueryResult = QueryDB(myInputString, _IPandoraDBSession);
+            _QueryResult = QueryDB(myInputString, _IGraphDBSession);
 
 
         }

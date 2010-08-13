@@ -21,6 +21,7 @@ using sones.GraphDB.Exceptions;
 using sones.GraphDB.Structures.ExpressionGraph;
 using System.Diagnostics;
 using sones.GraphDB.Managers.Select;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
@@ -49,15 +50,15 @@ namespace sones.GraphDB.Managers.Structures
             KindOfTuple = kindOfTuple;
         }
 
-        public TupleDefinition(TypesOfOperatorResult myTypesOfOperatorResult, AObject myObject, GraphDBType myPandoraType, KindOfTuple kindOfTuple = KindOfTuple.Inclusive)
+        public TupleDefinition(TypesOfOperatorResult myTypesOfOperatorResult, IObject myObject, GraphDBType myGraphType, KindOfTuple kindOfTuple = KindOfTuple.Inclusive)
             : this()
         {
             TypeOfOperatorResult = myTypesOfOperatorResult;
             KindOfTuple = kindOfTuple;
 
-            if (myObject is AListBaseEdgeType)
+            if (myObject is IBaseEdge)
             {
-                foreach (var obj in (AListBaseEdgeType)myObject)
+                foreach (var obj in (IBaseEdge)myObject)
                 {
                     TupleElements.Add(new TupleElement(new ValueDefinition(obj as sones.GraphDB.TypeManagement.BasicTypes.ADBBaseObject)));
                 }
@@ -153,7 +154,7 @@ namespace sones.GraphDB.Managers.Structures
 
                         var dbTypeOfAttribute = curAttr.GetDBType(myDBContext.DBTypeManager);
 
-                        var aTypeOfOperatorResult = GraphDBTypeMapper.ConvertPandora2CSharp(dbTypeOfAttribute.Name);
+                        var aTypeOfOperatorResult = GraphDBTypeMapper.ConvertGraph2CSharp(dbTypeOfAttribute.Name);
 
                         foreach (DBObjectReadout dbo in aSelResult.Objects)
                         {
@@ -213,16 +214,16 @@ namespace sones.GraphDB.Managers.Structures
             return new Exceptional<ASingleReferenceEdgeType>(edge);
         }
 
-        internal Exceptional<ASetReferenceEdgeType> GetAsUUIDEdge(DBContext dbContext, TypeAttribute attr)
+        internal Exceptional<ASetOfReferencesEdgeType> GetAsUUIDEdge(DBContext dbContext, TypeAttribute attr)
         {
-            var edge = attr.EdgeType.GetNewInstance() as ASetReferenceEdgeType;
+            var edge = attr.EdgeType.GetNewInstance() as ASetOfReferencesEdgeType;
 
             foreach (TupleElement aTupleElement in TupleElements)
             {
 
                 if (!(aTupleElement.Value is ValueDefinition))
                 {
-                    return new Exceptional<ASetReferenceEdgeType>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                    return new Exceptional<ASetOfReferencesEdgeType>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                 }
                 else
                 {
@@ -233,7 +234,16 @@ namespace sones.GraphDB.Managers.Structures
 
             }
 
-            return new Exceptional<ASetReferenceEdgeType>(edge);
+            return new Exceptional<ASetOfReferencesEdgeType>(edge);
+        }
+
+        public TupleDefinition Simplyfy()
+        {
+            if (TupleElements.Count == 1 && TupleElements[0].Value is TupleDefinition)
+            {
+                return (TupleElements[0].Value as TupleDefinition).Simplyfy();
+            }
+            return this;
         }
 
         /// <summary>
@@ -242,18 +252,18 @@ namespace sones.GraphDB.Managers.Structures
         /// <param name="tupleElementList">List of tuple elements</param>
         /// <param name="myAttributes">myAttributes of the type</param>
         /// <returns>True if valid or otherwise false</returns>
-        internal bool IsValidTupleNode(List<TupleElement> tupleElementList, GraphDBType myPandoraType, DBContext dbContext)
+        internal bool IsValidTupleNode(List<TupleElement> tupleElementList, GraphDBType myGraphType, DBContext dbContext)
         {
             foreach (TupleElement aTupleElement in tupleElementList)
             {
                 if (aTupleElement.Value is BinaryExpressionDefinition)
                 {
-                    var validateResult = ((BinaryExpressionDefinition)aTupleElement.Value).Validate(dbContext, myPandoraType);
-                    if (validateResult.Failed)
+                    var validateResult = ((BinaryExpressionDefinition)aTupleElement.Value).Validate(dbContext, myGraphType);
+                    if (validateResult.Failed())
                     {
                         throw new GraphDBException(validateResult.Errors);
                     }
-                    //if (!IsValidBinaryExpressionNode((BinaryExpressionDefinition)aTupleElement.Value, myPandoraType))
+                    //if (!IsValidBinaryExpressionNode((BinaryExpressionDefinition)aTupleElement.Value, myGraphType))
                     //{
                     //    return false;
                     //}
@@ -271,14 +281,14 @@ namespace sones.GraphDB.Managers.Structures
         /// <summary>
         /// returns a list of guids which match the tupleNode of the ListOfDBObjects object.
         /// </summary>
-        /// <param name="TypeOfAttribute">PandoraType of the attribute.</param>
-        /// <param name="dbContext">The TypeManager of the PandoraDatabase</param>
+        /// <param name="TypeOfAttribute">GraphType of the attribute.</param>
+        /// <param name="dbContext">The TypeManager of the GraphDatabase</param>
         /// <returns>A List of Guids.</returns>
-        public Exceptional<ASetReferenceEdgeType> GetCorrespondigDBObjectUUIDAsList(GraphDBType myType, DBContext dbContext, AEdgeType mySourceEdge, GraphDBType validationType)
+        public Exceptional<ASetOfReferencesEdgeType> GetCorrespondigDBObjectUUIDAsList(GraphDBType myType, DBContext dbContext, IEdgeType mySourceEdge, GraphDBType validationType)
         {
             #region data
 
-            ASetReferenceEdgeType _referenceEdge = (ASetReferenceEdgeType)mySourceEdge.GetNewInstance();
+            ASetOfReferencesEdgeType _referenceEdge = (ASetOfReferencesEdgeType)mySourceEdge.GetNewInstance();
 
             #endregion
 
@@ -300,27 +310,27 @@ namespace sones.GraphDB.Managers.Structures
                             var aUniqueExpr = (BinaryExpressionDefinition)aTupleElement.Value;
 
                             var validationResult = aUniqueExpr.Validate(dbContext, validationType);
-                            if (validationResult.Failed)
+                            if (validationResult.Failed())
                             {
-                                return new Exceptional<ASetReferenceEdgeType>(validationResult);
+                                return new Exceptional<ASetOfReferencesEdgeType>(validationResult);
                             }
 
                             var _graphResult = aUniqueExpr.Calculon(dbContext, new CommonUsageGraph(dbContext));
 
-                            if (_graphResult.Success)
+                            if (_graphResult.Success())
                             {
                                 foreach (var aDBO in _graphResult.Value.Select(new LevelKey(validationType, dbContext.DBTypeManager), null, true))
                                 {
-                                    if (aDBO.Failed)
+                                    if (aDBO.Failed())
                                     {
-                                        return new Exceptional<ASetReferenceEdgeType>(aDBO);
+                                        return new Exceptional<ASetOfReferencesEdgeType>(aDBO);
                                     }
                                     _referenceEdge.Add(aDBO.Value.ObjectUUID, aDBO.Value.TypeUUID, aTupleElement.Parameters.ToArray());
                                 }
                             }
                             else
                             {
-                                return new Exceptional<ASetReferenceEdgeType>(_graphResult);
+                                return new Exceptional<ASetOfReferencesEdgeType>(_graphResult);
                             }
 
                             #endregion
@@ -345,27 +355,27 @@ namespace sones.GraphDB.Managers.Structures
                                     {
                                         tempNode = (BinaryExpressionDefinition)aElement.Value;
 
-                                        if (ValidateBinaryExpression(tempNode, validationType, dbContext).Failed)
+                                        if (ValidateBinaryExpression(tempNode, validationType, dbContext).Failed())
                                         {
-                                            return new Exceptional<ASetReferenceEdgeType>(new Error_InvalidBinaryExpression(tempNode));
+                                            return new Exceptional<ASetOfReferencesEdgeType>(new Error_InvalidBinaryExpression(tempNode));
                                         }
 
                                         var tempGraphResult = tempNode.Calculon(dbContext, new CommonUsageGraph(dbContext));
 
-                                        if (tempGraphResult.Success)
+                                        if (tempGraphResult.Success())
                                         {
                                             foreach (var aDBO in tempGraphResult.Value.Select(new LevelKey(validationType, dbContext.DBTypeManager), null, true))
                                             {
-                                                if (aDBO.Failed)
+                                                if (aDBO.Failed())
                                                 {
-                                                    return new Exceptional<ASetReferenceEdgeType>(aDBO);
+                                                    return new Exceptional<ASetOfReferencesEdgeType>(aDBO);
                                                 }
                                                 _referenceEdge.Add(aDBO.Value.ObjectUUID, aDBO.Value.TypeUUID, aTupleElement.Parameters.ToArray());
                                             }
                                         }
                                         else
                                         {
-                                            return new Exceptional<ASetReferenceEdgeType>(tempGraphResult);
+                                            return new Exceptional<ASetOfReferencesEdgeType>(tempGraphResult);
                                         }
                                     }
 
@@ -378,7 +388,7 @@ namespace sones.GraphDB.Managers.Structures
                             }
                             else
                             {
-                                return new Exceptional<ASetReferenceEdgeType>(new Error_NotImplemented(new StackTrace(true), "Error while checking the elements of ListOfDBObjects. A tupleElement is not a BinaryExpression or a Tuple."));
+                                return new Exceptional<ASetOfReferencesEdgeType>(new Error_NotImplemented(new StackTrace(true), "Error while checking the elements of ListOfDBObjects. A tupleElement is not a BinaryExpression or a Tuple."));
                                 //throw new GraphDBException(new Error_SetOfAssignment("Error while checking the elements of ListOfDBObjects. A tupleElement is not a BinaryExpression or a Tuple."));
                             }
 
@@ -390,13 +400,13 @@ namespace sones.GraphDB.Managers.Structures
 
                     default:
 
-                        return new Exceptional<ASetReferenceEdgeType>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                        return new Exceptional<ASetOfReferencesEdgeType>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                 }
             }
 
             #endregion
 
-            return new Exceptional<ASetReferenceEdgeType>(_referenceEdge);
+            return new Exceptional<ASetOfReferencesEdgeType>(_referenceEdge);
         }
 
 

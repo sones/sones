@@ -71,7 +71,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                 {
                     //load from DB
                     currentDBObject = myObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myTypeManager), uuid);
-                    if (currentDBObject.Failed)
+                    if (currentDBObject.Failed())
                     {
                         throw new NotImplementedException();
                     }
@@ -92,7 +92,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
         public static void ShowDBObject(ObjectUUID myObjectUUID, DBTypeManager myTypeManager, TypeAttribute myTypeAttribute, DBObjectCache myObjectCache)
         {
             var currentDBObject = myObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myTypeManager), myObjectUUID);
-            if (currentDBObject.Failed)
+            if (currentDBObject.Failed())
             {
                 throw new NotImplementedException();
             }

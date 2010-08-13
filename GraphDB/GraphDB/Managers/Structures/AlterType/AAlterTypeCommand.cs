@@ -315,7 +315,7 @@ namespace sones.GraphDB.Managers.AlterType
                 //Hack: remove myAttributes in DBObjects
                 var aTempResult = dbContext.DBTypeManager.RemoveAttributeFromType(graphDBType.Name, aAttributeName, dbContext.DBTypeManager);
 
-                if (aTempResult.Failed)
+                if (aTempResult.Failed())
                 {
                     return aTempResult;
                 }
@@ -357,7 +357,7 @@ namespace sones.GraphDB.Managers.AlterType
             {
                 var dropIdxExcept = graphDBType.RemoveIndex(index.Key, index.Value, dbContext.DBTypeManager);
 
-                if (!dropIdxExcept.Success)
+                if (!dropIdxExcept.Success())
                 {
                     retExceptional.AddErrorsAndWarnings(dropIdxExcept);
                 }
@@ -379,9 +379,9 @@ namespace sones.GraphDB.Managers.AlterType
     public class AlterType_AddIndices : AAlterTypeCommand
     {
 
-        private List<Exceptional<IndexDefinition>> _IdxDefinitionList;
+        private List<IndexDefinition> _IdxDefinitionList;
 
-        public AlterType_AddIndices(List<Exceptional<IndexDefinition>> listOfIndices)
+        public AlterType_AddIndices(List<IndexDefinition> listOfIndices)
         {
             _IdxDefinitionList = listOfIndices;
         }
@@ -408,38 +408,26 @@ namespace sones.GraphDB.Managers.AlterType
         {
 
             var retExceptional = new Exceptional();
-            
-            foreach(var idxDef in _IdxDefinitionList)
+
+            foreach (var idxDef in _IdxDefinitionList)
             {
-                if(!idxDef.Success)
+
+                var checkIdx = CheckIndexTypeReference(idxDef.IndexAttributeDefinitions, graphDBType);
+
+                if (!checkIdx.Success())
                 {
-                    retExceptional.AddErrorsAndWarnings(idxDef);
+                    retExceptional.AddErrorsAndWarnings(checkIdx);
                 }
-                else 
+                else
                 {
-                    try
-                    {
-                        var checkIdx = CheckIndexTypeReference(idxDef.Value.IndexAttributeDefinitions, graphDBType);
+                    var result = dbContext.DBIndexManager.CreateIndex(dbContext, graphDBType.Name, idxDef.IndexName, idxDef.Edition, idxDef.IndexType, idxDef.IndexAttributeDefinitions);
 
-                        if (!checkIdx.Success)
-                        {
-                            retExceptional.AddErrorsAndWarnings(checkIdx);
-                        }
-                        else
-                        {
-                            var result = dbContext.DBIndexManager.CreateIndex(dbContext, graphDBType.Name, idxDef.Value.IndexName, idxDef.Value.Edition, idxDef.Value.IndexType, idxDef.Value.IndexAttributeDefinitions);
-
-                            if (!result.Success)
-                            {
-                                retExceptional.AddErrorsAndWarnings(result);
-                            }
-                        }
-                    }
-                    catch (Exception e)
+                    if (!result.Success())
                     {
-                        return new Exceptional(new Error_UnknownDBError(e));
+                        retExceptional.AddErrorsAndWarnings(result);
                     }
                 }
+
             }
             
             return retExceptional;
@@ -462,19 +450,19 @@ namespace sones.GraphDB.Managers.AlterType
                 {
                     var payloadPerIndex = new Dictionary<string, object>();                   
 
-                    payloadPerIndex.Add("NAME", idxDef.Value.IndexName);
-                    payloadPerIndex.Add("EDITION", idxDef.Value.Edition);
-                    payloadPerIndex.Add("INDEXTYPE", idxDef.Value.IndexType);
+                    payloadPerIndex.Add("NAME", idxDef.IndexName);
+                    payloadPerIndex.Add("EDITION", idxDef.Edition);
+                    payloadPerIndex.Add("INDEXTYPE", idxDef.IndexType);
 
-                    if (idxDef.Value.IndexAttributeDefinitions.Count == 1)
+                    if (idxDef.IndexAttributeDefinitions.Count == 1)
                     {
-                        payloadPerIndex.Add("ATTRIBUTE", idxDef.Value.IndexAttributeDefinitions[0].IndexAttribute);
+                        payloadPerIndex.Add("ATTRIBUTE", idxDef.IndexAttributeDefinitions[0].IndexAttribute);
                     }
                     else
                     {
                         String attributes = String.Empty;
 
-                        idxDef.Value.IndexAttributeDefinitions.ForEach(item => attributes += item.IndexAttribute + " ");
+                        idxDef.IndexAttributeDefinitions.ForEach(item => attributes += item.IndexAttribute + " ");
                         payloadPerIndex.Add("ATTRIBUTES", attributes);
                     }
 
@@ -541,7 +529,7 @@ namespace sones.GraphDB.Managers.AlterType
             {
 
                 var typeAttributeExceptional = aAttributeDefinition.CreateTypeAttribute(dbContext);
-                if (typeAttributeExceptional.Failed)
+                if (typeAttributeExceptional.Failed())
                 {
                     return typeAttributeExceptional;
                 }
@@ -570,9 +558,9 @@ namespace sones.GraphDB.Managers.AlterType
                     }
                     #endregion
 
-                    var aTempResult = dbContext.DBTypeManager.AddAttributeToType(graphDBType.Name, typeAttribute.Name, typeAttribute);
+                    var aTempResult = dbContext.DBTypeManager.AddAttributeToType(graphDBType, typeAttribute);
 
-                    if (!aTempResult.Success)
+                    if (!aTempResult.Success())
                     {
                         return aTempResult;
                     }
@@ -599,7 +587,7 @@ namespace sones.GraphDB.Managers.AlterType
 
                     var typeAttribute = dbContext.DBTypeManager.CreateBackwardEdgeAttribute(beDef, graphDBType);
 
-                    if (typeAttribute.Failed)
+                    if (typeAttribute.Failed())
                     {
                         return new Exceptional(typeAttribute);
                     }
@@ -609,9 +597,9 @@ namespace sones.GraphDB.Managers.AlterType
 
                     try
                     {
-                        var aTempResult = dbContext.DBTypeManager.AddAttributeToType(graphDBType.Name, beDef.AttributeName, typeAttribute.Value);
+                        var aTempResult = dbContext.DBTypeManager.AddAttributeToType(graphDBType, typeAttribute.Value);
 
-                        if (aTempResult.Failed)
+                        if (aTempResult.Failed())
                         {
                             return aTempResult;
                         }
@@ -723,7 +711,7 @@ namespace sones.GraphDB.Managers.AlterType
             {
                 var createExcept = attr.CreateTypeAttribute(dbContext);
 
-                if (!createExcept.Success)
+                if (!createExcept.Success())
                 {
                     retExcept.AddErrorsAndWarnings(createExcept);
                 }
@@ -750,11 +738,11 @@ namespace sones.GraphDB.Managers.AlterType
                 createExcept.Value.DBTypeUUID = attrType.UUID;
                 createExcept.Value.RelatedGraphDBTypeUUID = graphDBType.UUID;                
 
-                graphDBType.AddAttribute(createExcept.Value);
+                graphDBType.AddAttribute(createExcept.Value, dbContext.DBTypeManager, true);
 
                 var flushExcept = dbContext.DBTypeManager.FlushType(graphDBType);
 
-                if (!flushExcept.Success)
+                if (!flushExcept.Success())
                 {
                     retExcept.AddErrorsAndWarnings(flushExcept);
                 }
@@ -766,7 +754,7 @@ namespace sones.GraphDB.Managers.AlterType
 
             foreach (var item in dbobjects)
             {
-                if (!item.Success)
+                if (!item.Success())
                 {
                     retExcept.AddErrorsAndWarnings(item);
                 }
@@ -774,18 +762,18 @@ namespace sones.GraphDB.Managers.AlterType
                 {
                     var undefAttrExcept = item.Value.GetUndefinedAttributes(dbContext.DBObjectManager);
 
-                    if (!undefAttrExcept.Success)
+                    if (!undefAttrExcept.Success())
                     {
                         retExcept.AddErrorsAndWarnings(undefAttrExcept);
                     }
 
                     foreach (var attr in listOfTypeAttributes)
                     { 
-                        AObject value;
+                        IObject value;
 
                         if (undefAttrExcept.Value.TryGetValue(attr.Key.Name, out value))
                         {
-                            var typeOfOperator = GraphDBTypeMapper.ConvertPandora2CSharp(attr.Value.Name);
+                            var typeOfOperator = GraphDBTypeMapper.ConvertGraph2CSharp(attr.Value.Name);
 
                             if (GraphDBTypeMapper.IsAValidAttributeType(attr.Value, typeOfOperator, dbContext, value))
                             {
@@ -793,14 +781,14 @@ namespace sones.GraphDB.Managers.AlterType
 
                                 var removeExcept = item.Value.RemoveUndefinedAttribute(attr.Key.Name, dbContext.DBObjectManager);
 
-                                if (!removeExcept.Success)
+                                if (!removeExcept.Success())
                                 {
                                     retExcept.AddErrorsAndWarnings(removeExcept);
                                 }
 
                                 var flushExcept = dbContext.DBObjectManager.FlushDBObject(item.Value);
 
-                                if (!flushExcept.Success)
+                                if (!flushExcept.Success())
                                 {
                                     retExcept.AddErrorsAndWarnings(flushExcept);
                                 }
@@ -875,7 +863,7 @@ namespace sones.GraphDB.Managers.AlterType
 
             foreach (var item in dbobjects)
             {
-                if (!item.Success)
+                if (!item.Success())
                 {
                     retExcept.AddErrorsAndWarnings(item);
                 }
@@ -889,14 +877,14 @@ namespace sones.GraphDB.Managers.AlterType
                             
                             var addExcept = item.Value.AddUndefinedAttribute(attr.Name, attrVal, dbContext.DBObjectManager);
 
-                            if (!addExcept.Success)
+                            if (!addExcept.Success())
                                 retExcept.AddErrorsAndWarnings(addExcept);
                             
                             item.Value.RemoveAttribute(attr.UUID);
 
                             var saveExcept = dbContext.DBObjectManager.FlushDBObject(item.Value);
 
-                            if (!saveExcept.Success)
+                            if (!saveExcept.Success())
                                 retExcept.AddErrorsAndWarnings(saveExcept);
                         }
                     }
@@ -925,7 +913,7 @@ namespace sones.GraphDB.Managers.AlterType
                 {
                     var remExcept = graphDBType.RemoveIndex(idx.IndexName, idx.IndexEdition, dbContext.DBTypeManager);
 
-                    if(!remExcept.Success)
+                    if(!remExcept.Success())
                     {
                         retExcept.AddErrorsAndWarnings(remExcept);
                     }
@@ -936,7 +924,7 @@ namespace sones.GraphDB.Managers.AlterType
                 
                 var flushExcept = dbContext.DBTypeManager.FlushType(graphDBType);
 
-                if (!flushExcept.Success)
+                if (!flushExcept.Success())
                 {
                     retExcept.AddErrorsAndWarnings(flushExcept);
                 }

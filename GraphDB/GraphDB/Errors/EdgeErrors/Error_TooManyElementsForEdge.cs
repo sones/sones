@@ -29,9 +29,9 @@ namespace sones.GraphDB.Errors
     public class Error_TooManyElementsForEdge : GraphDBEdgeError
     {
         public UInt64 CurrentElements { get; private set; }
-        public AEdgeType EdgeType { get; private set; }
+        public IEdgeType EdgeType { get; private set; }
 
-        public Error_TooManyElementsForEdge(AEdgeType edgeType, UInt64 currentElements)
+        public Error_TooManyElementsForEdge(IEdgeType edgeType, UInt64 currentElements)
         {
             CurrentElements = currentElements;
             EdgeType = edgeType;

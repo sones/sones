@@ -4,8 +4,8 @@ sones.Lib.Frameworks.Irony.Parsing.CompilerContext
 
 Line 37:
 	/* Added by sones developers */
-    // EDIT: PandoraListOfReferences added, 22.07.2009, Holds the list of known References "FROM User U" -> would hold ATypeNode for U
-    public List<object> PandoraListOfReferences;
+    // EDIT: GraphListOfReferences added, 22.07.2009, Holds the list of known References "FROM User U" -> would hold ATypeNode for U
+    public List<object> GraphListOfReferences;
     /* Added by sones developers */
     
 Line 130:

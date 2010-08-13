@@ -51,7 +51,7 @@ namespace sones.GraphFS
 
             #region Data
 
-            const String _DefaultImplementation = "OnDiscFS3";
+            const String _DefaultImplementation = "DiscGraphFS3";
 
             #endregion
 

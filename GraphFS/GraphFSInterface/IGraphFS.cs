@@ -52,7 +52,7 @@ namespace sones
 {
 
     /// <summary>
-    /// The interface for all Pandora file systems. Each method that gets exported to the WCF Administration Userland
+    /// The interface for all Graph file systems. Each method that gets exported to the WCF Administration Userland
     /// should be marked with . Please keep in mind that these methods should only take primitive
     /// parameters and return data structures that can be serialized and deserialized with .NET Serializers.
     /// (so preferably they also return just primitives)
@@ -72,13 +72,32 @@ namespace sones
         #endregion
 
         #region Events
+        
+        // AFSObject handling
+        event GraphFSEventHandlers.OnLoadEventHandler                       OnLoad;
+        event GraphFSEventHandlers.OnLoadedEventHandler                     OnLoaded;
+        event GraphFSEventHandlers.OnLoadedAsyncEventHandler                OnLoadedAsync;
 
-        event GraphFSEventHandlers.OnLoadEventHandler    OnLoad;
-        event GraphFSEventHandlers.OnLoadedEventHandler  OnLoaded;
-        event GraphFSEventHandlers.OnSaveEventHandler    OnSave;
-        event GraphFSEventHandlers.OnSavedEventHandler   OnSaved;
-        event GraphFSEventHandlers.OnRemoveEventHandler  OnRemove;
-        event GraphFSEventHandlers.OnRemovedEventHandler OnRemoved;
+        event GraphFSEventHandlers.OnSaveEventHandler                       OnSave;
+        event GraphFSEventHandlers.OnSavedEventHandler                      OnSaved;
+        event GraphFSEventHandlers.OnSavedAsyncEventHandler                 OnSavedAsync;
+        
+        event GraphFSEventHandlers.OnRemoveEventHandler                     OnRemove;
+        event GraphFSEventHandlers.OnRemovedEventHandler                    OnRemoved;
+        event GraphFSEventHandlers.OnRemovedAsyncEventHandler               OnRemovedAsync;
+
+        // Transactions
+        event GraphFSEventHandlers.OnTransactionStartEventHandler           OnTransactionStart;
+        event GraphFSEventHandlers.OnTransactionStartedEventHandler         OnTransactionStarted;
+        event GraphFSEventHandlers.OnTransactionStartedAsyncEventHandler    OnTransactionStartedAsync;
+
+        event GraphFSEventHandlers.OnTransactionCommitEventHandler          OnTransactionCommit;
+        event GraphFSEventHandlers.OnTransactionCommittedEventHandler       OnTransactionCommitted;
+        event GraphFSEventHandlers.OnTransactionCommittedAsyncEventHandler  OnTransactionCommittedAsync;
+
+        event GraphFSEventHandlers.OnTransactionRollbackEventHandler        OnTransactionRollback;
+        event GraphFSEventHandlers.OnTransactionRollbackedEventHandler      OnTransactionRollbacked;
+        event GraphFSEventHandlers.OnTransactionRollbackedAsyncEventHandler OnTransactionRollbackedAsync;
 
         #endregion
 
@@ -261,12 +280,12 @@ namespace sones
         /// <summary>
         /// This initialises a GraphFS in a given device or file using the given sizes
         /// </summary>
-        /// <param name="myIStorageEngines">a device or filename where to store the file system data</param>
+        /// <param name="myStorageLocations">a device or filename where to store the file system data</param>
         /// <param name="myDescription">a distinguishable Name or description for the file system (can be changed later)</param>
         /// <param name="myNumberOfBytes">the size of the file system in byte</param>
         /// <param name="myOverwriteExistingFileSystem">overwrite an existing file system [yes|no]</param>
         /// <returns>the UUID of the new file system</returns>
-        Exceptional<FileSystemUUID> MakeFileSystem(IEnumerable<IStorageEngine> myIStorageEngines, String myDescription, Boolean myOverwriteExistingFileSystem, Action<Double> myAction, SessionToken mySessionToken);
+        Exceptional<FileSystemUUID> MakeFileSystem(IEnumerable<String> myStorageLocations, String myDescription, UInt64 myNumberOfBytes, Boolean myOverwriteExistingFileSystem, Action<Double> myAction, SessionToken mySessionToken);
 
         /// <summary>
         /// This enlarges the size of a GraphFS
@@ -378,7 +397,7 @@ namespace sones
         Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new();
         Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken) where PT : AFSObject;
 
-        Exceptional StoreFSObject(ObjectLocation myObjectLocation, AFSObject myAPandoraObject, Boolean myAllowOverwritting, SessionToken mySessionToken);
+        Exceptional StoreAFSObject(ObjectLocation myObjectLocation, AFSObject myAGraphObject, Boolean myAllowOverwritting, SessionToken mySessionToken);
 
         Exceptional<Trinary> ObjectExists         (ObjectLocation myObjectLocation, SessionToken mySessionToken);
         Exceptional<Trinary> ObjectStreamExists   (ObjectLocation myObjectLocation, String myObjectStream, SessionToken mySessionToken);
@@ -586,7 +605,7 @@ namespace sones
         ///// <param name="myObjectLocation">The object location.</param>
         ///// <param name="myAlert">The alert that should be added.</param>
         ///// <returns>True for success or otherwise false.</returns>
-        //bool AddAlertToPandoraRightsAlertHandlingList(ObjectLocation myObjectLocation, NHAccessControlObject myAlert, SessionToken mySessionToken);
+        //bool AddAlertToGraphRightsAlertHandlingList(ObjectLocation myObjectLocation, NHAccessControlObject myAlert, SessionToken mySessionToken);
 
         ///// <summary>
         ///// Removes an alert from a ACCESSCONTROLSTREAM.
@@ -594,7 +613,7 @@ namespace sones
         ///// <param name="myObjectLocation">The object location.</param>
         ///// <param name="myAlert">The alert that should be removed.</param>
         ///// <returns>True for success or otherwise false.</returns>
-        //bool RemoveAlertFromPandoraRightsAlertHandlingList(ObjectLocation myObjectLocation, NHAccessControlObject myAlert, SessionToken mySessionToken);
+        //bool RemoveAlertFromGraphRightsAlertHandlingList(ObjectLocation myObjectLocation, NHAccessControlObject myAlert, SessionToken mySessionToken);
 
         //#endregion
 
@@ -606,7 +625,7 @@ namespace sones
 
         //#region Index Maintenance
 
-        ////void CreateIndexObject<T1, T2, T3>(ObjectLocation myObjectLocation) where T1 : APandoraObject, IIndexObject<T2, T3>, new() where T2 : IComparable;
+        ////void CreateIndexObject<T1, T2, T3>(ObjectLocation myObjectLocation) where T1 : AGraphObject, IIndexObject<T2, T3>, new() where T2 : IComparable;
         //IIndexObject<TKey, TValue> CreateIndexObject<TKey, TValue>(ObjectLocation myObjectLocation, IndexObjectTypes myIndexObjectType, SessionToken mySessionToken) where TKey : IComparable;
 
         //IIndexObject<TKey, TValue> CreateIndex<TKey, TValue>(ObjectLocation myObjectLocation, IndexObjectTypes myIndexObjectType, Boolean myScaleableIndex, SessionToken mySessionToken) where TKey : IComparable;
@@ -807,7 +826,7 @@ namespace sones
         ///// <param name="myLogin">The Name of the right. Cannot be null or empty.</param>
         ///// <param name="myValidationScript">The validation script for evaluating the access of an entity. Can be null or empty.</param>
         ///// <returns>True for success or otherwise false.</returns>
-        //bool AddPandoraRight(ObjectLocation myObjectLocation, String Name, String ValidationScript, SessionToken mySessionToken);
+        //bool AddGraphRight(ObjectLocation myObjectLocation, String Name, String ValidationScript, SessionToken mySessionToken);
 
         ///// <summary>
         ///// This method removes a Right from the GraphFS. It is 
@@ -816,7 +835,7 @@ namespace sones
         ///// <param name="myObjectLocation">The object location.</param>
         ///// <param name="RightUUID">The UUID of the right.</param>
         ///// <returns>True for success or otherwise false</returns>
-        //bool RemovePandoraRight(ObjectLocation myObjectLocation, RightUUID myRightUUID, SessionToken mySessionToken);
+        //bool RemoveGraphRight(ObjectLocation myObjectLocation, RightUUID myRightUUID, SessionToken mySessionToken);
 
         ///// <summary>
         ///// Returns a Right correspondig to its Name.
@@ -912,28 +931,28 @@ namespace sones
         /// Returns the ObjectCache settings of this file system
         /// </summary>
         /// <returns>The ObjectCache settings of this file system</returns>
-        ObjectCacheSettings GetObjectCacheSettings(SessionToken mySessionToken);
+        Exceptional<ObjectCacheSettings> GetObjectCacheSettings(SessionToken mySessionToken);
 
         /// <summary>
         /// Returns the ObjectCache settings of the file system at the given ObjectLocation
         /// </summary>
         /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
         /// <returns>The ObjectCache settings of the file system at the given ObjectLocation</returns>
-        ObjectCacheSettings GetObjectCacheSettings(ObjectLocation myObjectLocation, SessionToken mySessionToken);
+        Exceptional<ObjectCacheSettings> GetObjectCacheSettings(ObjectLocation myObjectLocation, SessionToken mySessionToken);
 
 
         /// <summary>
         /// Sets the ObjectCache settings of this file system
         /// </summary>
         /// <param name="myNotificationSettings">A ObjectCacheSettings object</param>
-        void SetObjectCacheSettings(ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken);
+        Exceptional SetObjectCacheSettings(ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken);
 
         /// <summary>
         /// Sets the ObjectCache settings of the file system at the given ObjectLocation
         /// </summary>
         /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
         /// <param name="myNotificationSettings">A ObjectCacheSettings object</param>
-        void SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken);
+        Exceptional SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken);
 
         #endregion
 

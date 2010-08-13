@@ -13,6 +13,8 @@ using sones.Lib.CLI;
 
 using sones.GraphDB.Structures.Result;
 using sones.GraphFS.Connectors.GraphDSCLI;
+using sones.GraphIO;
+using sones.GraphIO.TEXT;
 
 #endregion
 
@@ -46,11 +48,11 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
         #region Execute Command
 
-        public override void Execute(ref object myIGraphFS2Session, ref object myIPandoraDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
+        public override void Execute(ref object myIGraphFS2Session, ref object myIGraphDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
         {
 
             _CancelCommand = false;
-            var _IGraphDBSession = myIPandoraDBSession as IGraphDBSession;
+            var _IGraphDBSession = myIGraphDBSession as IGraphDBSession;
             QueryResult _QueryResult;
 
             if (_IGraphDBSession == null)

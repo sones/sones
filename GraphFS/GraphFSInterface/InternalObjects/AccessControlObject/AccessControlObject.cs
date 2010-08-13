@@ -99,7 +99,7 @@ namespace sones.GraphFS.InternalObjects
 
         /// <summary>
         /// the dictionary of rights with corresponding ACLs that allow the 
-        /// access to an object in the PandoraFS
+        /// access to an object in the GraphFS
         /// </summary>
         public Dictionary<RightUUID, HashSet<EntityUUID>> AllowACL
         {
@@ -119,7 +119,7 @@ namespace sones.GraphFS.InternalObjects
 
         /// <summary>
         /// the dictionary of rights with corresponding ACLs that denies the 
-        /// access to an object in the PandoraFS
+        /// access to an object in the GraphFS
         /// </summary>
         public Dictionary<RightUUID, HashSet<EntityUUID>> DenyACL
         {
@@ -168,10 +168,10 @@ namespace sones.GraphFS.InternalObjects
         public AccessControlObject()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion   = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream = FSConstants.ACCESSCONTROLSTREAM;
 
             // Object specific data...
@@ -187,8 +187,8 @@ namespace sones.GraphFS.InternalObjects
         /// </summary>
         /// <param name="myObjectLocation">the location of the AccessControlObject (constisting of the ObjectPath and ObjectName) within the file system</param>
         /// <param name="myDefaultRule">This property defines the priority of allowing and denying.</param>
-        /// <param name="myAllowACL">The dictionary of rights with corresponding ACLs that allow the access to an object in the PandoraFS.</param>
-        /// <param name="myDenyACL">The dictionary of rights with corresponding ACLs that denies the access to an object in the PandoraFS.</param>
+        /// <param name="myAllowACL">The dictionary of rights with corresponding ACLs that allow the access to an object in the GraphFS.</param>
+        /// <param name="myDenyACL">The dictionary of rights with corresponding ACLs that denies the access to an object in the GraphFS.</param>
         /// <param name="myNotificationHandling">the NotificationHandling bitfield</param>
         public AccessControlObject(ObjectLocation myObjectLocation, DefaultRuleTypes myDefaultRule, Dictionary<RightUUID, HashSet<EntityUUID>> myAllowACL, Dictionary<RightUUID, HashSet<EntityUUID>> myDenyACL, NHAccessControlObject myNotificationHandling)
         {
@@ -232,7 +232,7 @@ namespace sones.GraphFS.InternalObjects
         #endregion
 
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         #region Clone()
 
@@ -613,7 +613,7 @@ namespace sones.GraphFS.InternalObjects
 
             catch (Exception e)
             {
-                throw new PandoraFSException_AccessControlObjectCouldNotBeDeserialized("AccessControlObject could not be deserialized!\n\n" + e);
+                throw new GraphFSException_AccessControlObjectCouldNotBeDeserialized("AccessControlObject could not be deserialized!\n\n" + e);
             }
 
         }

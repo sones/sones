@@ -1,5 +1,4 @@
-﻿
-#region Usings
+﻿#region Usings
 
 using System;
 using System.Linq;
@@ -97,9 +96,9 @@ namespace sones.GraphDB.GraphQL
 
                 if (aTree.Errors.Exists(item => item.Exception is GraphDBException))
                 {
-                    foreach (var aPandoraError in aTree.Errors.Where(item => item.Exception is GraphDBException))
+                    foreach (var aGraphError in aTree.Errors.Where(item => item.Exception is GraphDBException))
                     {
-                        errors.AddRange((aPandoraError.Exception as GraphDBException).GraphDBErrors);
+                        errors.AddRange((aGraphError.Exception as GraphDBException).GraphDBErrors);
                     }
                 }
                 else

@@ -58,7 +58,7 @@ namespace sones.GraphDB.ImportExport
             #region Open destination
 
             var openStreamResult = OpenStream(destination);
-            if (!openStreamResult.Success)
+            if (!openStreamResult.Success())
             {
                 return new QueryResult(openStreamResult);
             }
@@ -74,14 +74,14 @@ namespace sones.GraphDB.ImportExport
             #region Close destination
 
             var closeStreamResult = CloseStream();
-            if (!closeStreamResult.Success)
+            if (!closeStreamResult.Success())
             {
                 return new QueryResult(openStreamResult);
             }
 
             #endregion
 
-            if (!result.Success)
+            if (!result.Success())
             {
                 return new QueryResult(result);
             }

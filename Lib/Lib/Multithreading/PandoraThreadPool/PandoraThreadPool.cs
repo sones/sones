@@ -46,7 +46,7 @@ namespace sones.Lib.Threading
     /// <summary>
     /// This is a simple dynamic ThreadPool.
     /// </summary>
-    public class PandoraThreadPool : IDisposable
+    public class GraphThreadPool : IDisposable
     {
 
         public event WorkerThreadExceptionHandler OnWorkerThreadException;
@@ -115,7 +115,7 @@ namespace sones.Lib.Threading
         /// <summary>
         /// This will set the number of worker threads to Environment.ProcessorCount
         /// </summary>
-        public PandoraThreadPool(String myPoolName)
+        public GraphThreadPool(String myPoolName)
             : this(myPoolName, Environment.ProcessorCount)
         { }
         
@@ -123,7 +123,7 @@ namespace sones.Lib.Threading
         /// This will define the maximum number of worker threads. But at least Environment.ProcessorCount.
         /// </summary>
         /// <param name="myMaxNumberOfParallelThreads">The maximum number of worker threads</param>
-        public PandoraThreadPool(String myPoolName, Int32 myMaxNumberOfParallelThreads)
+        public GraphThreadPool(String myPoolName, Int32 myMaxNumberOfParallelThreads)
             : this(myPoolName, Environment.ProcessorCount, myMaxNumberOfParallelThreads)
         {
         }
@@ -132,7 +132,7 @@ namespace sones.Lib.Threading
         /// This will define the maximum number of worker threads. But at least Environment.ProcessorCount.
         /// </summary>
         /// <param name="myMaxNumberOfParallelThreads">The maximum number of worker threads</param>
-        public PandoraThreadPool(String myPoolName, Int32 myMinNumberOfParallelThreads, Int32 myMaxNumberOfParallelThreads)
+        public GraphThreadPool(String myPoolName, Int32 myMinNumberOfParallelThreads, Int32 myMaxNumberOfParallelThreads)
         {
             if (myMinNumberOfParallelThreads > myMaxNumberOfParallelThreads)
             {
@@ -170,13 +170,13 @@ namespace sones.Lib.Threading
             
             if (_Disposed) throw new InvalidOperationException("Cannot queue item for a disposed pool.");
 
-            //System.Diagnostics.Debug.WriteLine("[PandoraThreadPool] BusyWorkers: " + _BusyWorkers + " in Queue: "
+            //System.Diagnostics.Debug.WriteLine("[GraphThreadPool] BusyWorkers: " + _BusyWorkers + " in Queue: "
               //  + _ThreadEntries.Count + " FreeWorkers: " + _FreeWorkers + " CurThreads: " + _ParallelThreadWorkers.Count + " T:" + DateTime.Now.Ticks);
 
             if (_WorkerThreads < _MaxNumberOfParallelThreads && _FreeWorkers == 0 && _WorkerThreads < _Workitems)
             {
                 AddWorkerThread();
-                //System.Diagnostics.Debug.WriteLine("[PandoraThreadPool] Spawn New Thread: BusyWorkers: " + _BusyWorkers + " in Queue: " + _ThreadEntries.Count + " FreeWorkers: " + _FreeWorkers);
+                //System.Diagnostics.Debug.WriteLine("[GraphThreadPool] Spawn New Thread: BusyWorkers: " + _BusyWorkers + " in Queue: " + _ThreadEntries.Count + " FreeWorkers: " + _FreeWorkers);
             }
             // all workers are free and nothing to do, shutdown one worker
             else if (_FreeWorkers == _WorkerThreads && _WorkerThreads > _MinNumberOfParallelThreads)

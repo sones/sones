@@ -26,7 +26,6 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Truncate
         #region Data
 
         private String _TypeName = ""; //the name of the type that should be dropped
-        private List<IWarning> _Warnings = new List<IWarning>();
 
         #endregion
 
@@ -50,9 +49,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Truncate
             _TypeName = myParseTreeNode.ChildNodes.Last().Token.ValueString;
             if (myParseTreeNode.ChildNodes[1].Token == null || myParseTreeNode.ChildNodes[1].Token.AsSymbol != grammar.S_TYPE)
             {
-                _Warnings.Add(new Warnings.Warning_ObsoleteGQL(
-                    String.Format("{0} {1}", grammar.S_TRUNCATE.ToUpperString(), _TypeName),
-                    String.Format("{0} {1} {2}", grammar.S_TRUNCATE.ToUpperString(), grammar.S_TYPE.ToUpperString(), _TypeName)));
+                ParsingResult.Push(new Warnings.Warning_ObsoleteGQL(
+                    String.Format("TRUNCATE {0}", _TypeName),
+                    String.Format("TRUNCATE TYPE {0}", _TypeName)));
             }
 
         }
@@ -67,7 +66,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Truncate
         {
 
             var qresult = myIGraphDBSession.Truncate(_TypeName);
-            qresult.AddWarnings(_Warnings);
+            qresult.AddErrorsAndWarnings(ParsingResult);
             return qresult;
 
         }

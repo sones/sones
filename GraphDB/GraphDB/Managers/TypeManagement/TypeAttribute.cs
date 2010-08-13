@@ -65,7 +65,7 @@ namespace sones.GraphDB.TypeManagement
         #region Data
 
         private GraphDBType _GraphDBType        = null;
-        private GraphDBType _RelatedPandoraType = null;
+        private GraphDBType _RelatedGraphType = null;
 
         #endregion
 
@@ -157,13 +157,13 @@ namespace sones.GraphDB.TypeManagement
 
         #region EdgeType
 
-        public AEdgeType EdgeType { get; set; }
+        public IEdgeType EdgeType { get; set; }
 
         #endregion
 
         #region DefaultValue
 
-        public AObject DefaultValue { get; set; }
+        public IObject DefaultValue { get; set; }
 
         #endregion
 
@@ -175,6 +175,11 @@ namespace sones.GraphDB.TypeManagement
 
         public TypeAttribute()
             : this(new AttributeUUID())
+        {
+        }
+
+        public TypeAttribute(UInt16 myID)
+            : this(new AttributeUUID(myID))
         {
         }
 
@@ -229,7 +234,7 @@ namespace sones.GraphDB.TypeManagement
 
             var FlushExcept = myDBTypeManager.FlushType(GetRelatedType(myDBTypeManager));
 
-            if (FlushExcept.Failed)
+            if (FlushExcept.Failed())
                 return new Exceptional(FlushExcept);
 
             return Exceptional.OK;
@@ -247,7 +252,7 @@ namespace sones.GraphDB.TypeManagement
 
             var FlushExcept = myDBTypeManager.FlushType(GetRelatedType(myDBTypeManager));
 
-            if (FlushExcept.Failed)
+            if (FlushExcept.Failed())
                 return new Exceptional<Boolean>(FlushExcept);
 
             return new Exceptional<Boolean>(true);
@@ -276,7 +281,7 @@ namespace sones.GraphDB.TypeManagement
 
         #region GetDefaultValue(myDBContext)
 
-        public AObject GetDefaultValue(DBContext myDBContext)
+        public IObject GetDefaultValue(DBContext myDBContext)
         {
 
             switch (KindOfType)
@@ -285,12 +290,12 @@ namespace sones.GraphDB.TypeManagement
                 case KindsOfType.SingleReference:
                 case KindsOfType.ListOfNoneReferences:
                 case KindsOfType.SetOfNoneReferences:
-                    return (AObject)EdgeType.GetNewInstance();
+                    return (IObject)EdgeType.GetNewInstance();
 
                 case KindsOfType.SingleNoneReference:
                     var val = ((ADBBaseObject)GraphDBTypeMapper.GetADBBaseObjectFromUUID(DBTypeUUID));
                     val.SetValue(DBObjectInitializeType.Default);
-                    return val as AObject;
+                    return val as IObject;
 
                 default:
                     return null;
@@ -306,7 +311,7 @@ namespace sones.GraphDB.TypeManagement
         {
 
             if (GraphDBTypeMapper.IsBasicType(GetDBType(myDBTypeManager).Name))
-                return GraphDBTypeMapper.GetPandoraObjectFromTypeName(GetDBType(myDBTypeManager).Name);
+                return GraphDBTypeMapper.GetGraphObjectFromTypeName(GetDBType(myDBTypeManager).Name);
 
             return null;
 
@@ -333,16 +338,16 @@ namespace sones.GraphDB.TypeManagement
         public GraphDBType GetRelatedType(DBTypeManager myDBTypeManager)
         {
 
-            if (_RelatedPandoraType == null)
+            if (_RelatedGraphType == null)
             {
                 //if (!IsBackwardEdge)
-                    _RelatedPandoraType = myDBTypeManager.GetTypeByUUID(RelatedGraphDBTypeUUID);
+                    _RelatedGraphType = myDBTypeManager.GetTypeByUUID(RelatedGraphDBTypeUUID);
 
                 //else
-                //    _RelatedPandoraType = myDBTypeManager.GetTypeByUUID(BackwardEdgeDefinition.TypeUUID);
+                //    _RelatedGraphType = myDBTypeManager.GetTypeByUUID(BackwardEdgeDefinition.TypeUUID);
             }
 
-            return _RelatedPandoraType;
+            return _RelatedGraphType;
 
         }
 
@@ -456,7 +461,7 @@ namespace sones.GraphDB.TypeManagement
                     {                        
                         try
                         {
-                            EdgeType = (AEdgeType) mySerializationReader.ReadObject();
+                            EdgeType = (IEdgeType) mySerializationReader.ReadObject();
                         }
                         catch(Exception ex)
                         {
@@ -473,7 +478,7 @@ namespace sones.GraphDB.TypeManagement
                     if (TypeCharacteristics.IsBackwardEdge)
                         BackwardEdgeDefinition = (EdgeKey) mySerializationReader.ReadObject();
 
-                    DefaultValue = (AObject) mySerializationReader.ReadObject();
+                    DefaultValue = (IObject) mySerializationReader.ReadObject();
 
                     #region Read Settings
 

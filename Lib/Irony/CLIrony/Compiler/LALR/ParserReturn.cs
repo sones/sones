@@ -1,4 +1,4 @@
-/* <id name=”PandoraLib – Autocompletion ReturnValue” />
+/* <id name=”GraphLib – Autocompletion ReturnValue” />
  * <copyright file=”ParserReturn.cs”
  *            company=”sones GmbH”>
  * Copyright (c) sones GmbH 2007-2010

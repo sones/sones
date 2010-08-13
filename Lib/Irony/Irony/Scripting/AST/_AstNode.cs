@@ -205,7 +205,7 @@ namespace sones.Lib.Frameworks.Irony.Scripting.Ast {
     // and setting this reference to the appropriate implementation during compile time. 
     public NodeEvaluate Evaluate;
 
-    public virtual Dictionary<String, Object> PandoraEvaluate(Dictionary<String, Object> context)
+    public virtual Dictionary<String, Object> GraphEvaluate(Dictionary<String, Object> context)
     {
         return null;
     }

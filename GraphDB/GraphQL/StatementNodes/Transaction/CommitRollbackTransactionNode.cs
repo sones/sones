@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – CommitRollbackTransactionNode" />
+﻿/* <id name="GraphDB – CommitRollbackTransactionNode" />
  * <copyright file="CommitRollbackTransactionNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -19,11 +19,13 @@ using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Transactions;
 
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
 namespace sones.GraphDB.GraphQL.StatementNodes.Transaction
 {
+
     public enum CommandType
     { 
         Commit,
@@ -129,7 +131,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Transaction
                 dbTransaction = graphDBSession.RollbackTransaction();
             }
 
-            if (dbTransaction.Success)
+            if (dbTransaction.Success())
             {
                 var readoutVals = new Dictionary<String, Object>();
                 readoutVals.Add("UUID", dbTransaction.UUID.ToHexString());
@@ -148,6 +150,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Transaction
             {
                 qr.AddErrorsAndWarnings(dbTransaction);
             }
+            qr.AddErrorsAndWarnings(ParsingResult);
 
             return qr;
         }

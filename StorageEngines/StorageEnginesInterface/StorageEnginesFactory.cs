@@ -26,6 +26,7 @@
 #region Usings
 
 using System;
+using System.Linq;
 
 using sones.Lib;
 using sones.Lib.Singleton;
@@ -64,7 +65,7 @@ namespace sones.StorageEngines
                 {
                     try
                     {
-                        var _IStorageEngine = (IStorageEngine)Activator.CreateInstance(t);
+                        var _IStorageEngine = (IStorageEngine) Activator.CreateInstance(t);
                         return _IStorageEngine.URIPrefix;
                     }
                     catch
@@ -167,7 +168,6 @@ namespace sones.StorageEngines
             }
 
             #endregion
-
 
         }
 

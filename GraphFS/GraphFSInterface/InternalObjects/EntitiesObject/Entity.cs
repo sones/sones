@@ -361,7 +361,7 @@ namespace sones.GraphFS.InternalObjects
             #endregion
 
             if (_PasswordHash.CheckPassword(myPassword))
-                throw new PandoraFSException_EntityPasswordInvalid("The realname could not be changed as the password is invalid!");
+                throw new GraphFSException_EntityPasswordInvalid("The realname could not be changed as the password is invalid!");
 
             _Realname = myNewRealname;
 
@@ -390,7 +390,7 @@ namespace sones.GraphFS.InternalObjects
             #endregion
 
             if (_PasswordHash.CheckPassword(myPassword))
-                throw new PandoraFSException_EntityPasswordInvalid("The description could not be changed as the password is invalid!");
+                throw new GraphFSException_EntityPasswordInvalid("The description could not be changed as the password is invalid!");
 
             _Realname = myNewDescription;
 
@@ -419,7 +419,7 @@ namespace sones.GraphFS.InternalObjects
             #endregion
 
             if (_PasswordHash.CheckPassword(myPassword))
-                throw new PandoraFSException_EntityPasswordInvalid("The contact list could not be changed as the password is invalid!");
+                throw new GraphFSException_EntityPasswordInvalid("The contact list could not be changed as the password is invalid!");
 
             _Contacts = myNewContactList;
 
@@ -464,7 +464,7 @@ namespace sones.GraphFS.InternalObjects
             #endregion
 
             if (_PasswordHash.CheckPassword(myPassword))
-                throw new PandoraFSException_EntityPasswordInvalid("The public key could not be changed as the password is invalid!");
+                throw new GraphFSException_EntityPasswordInvalid("The public key could not be changed as the password is invalid!");
 
             _PublicKeyList = myNewPublicKeyList;
 
@@ -1157,7 +1157,7 @@ namespace sones.GraphFS.InternalObjects
 
         //    catch (Exception e)
         //    {
-        //        throw new PandoraFSException_EntityCouldNotBeDeserialized("Entity could not be deserialized!\n\n" + e);
+        //        throw new GraphFSException_EntityCouldNotBeDeserialized("Entity could not be deserialized!\n\n" + e);
         //    }
 
         //}
@@ -1294,7 +1294,7 @@ namespace sones.GraphFS.InternalObjects
 
             catch (Exception e)
             {
-                throw new PandoraFSException_EntityCouldNotBeDeserialized("Entity could not be deserialized!\n\n" + e);
+                throw new GraphFSException_EntityCouldNotBeDeserialized("Entity could not be deserialized!\n\n" + e);
             }
         }
 
@@ -1443,7 +1443,7 @@ namespace sones.GraphFS.InternalObjects
 
             catch (Exception e)
             {
-                throw new PandoraFSException_EntityCouldNotBeDeserialized("Entity could not be deserialized!\n\n" + e);
+                throw new GraphFSException_EntityCouldNotBeDeserialized("Entity could not be deserialized!\n\n" + e);
             }
 
             return thisObject;

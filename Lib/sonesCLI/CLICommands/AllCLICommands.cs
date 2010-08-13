@@ -149,7 +149,7 @@ namespace sones.Lib.CLI
 
         private NumberLiteral _numberLiteral = new NumberLiteral("numberLiteral", NumberFlags.IntOnly);
         protected StringLiteral stringLiteral = new StringLiteral("stringLiteral", "'", StringFlags.AllowsDoubledQuote);
-        private StringLiteral _stringLiteral_IPandoraFS = new StringLiteral("stringLiteral_IPandoraFS", "'", StringFlags.AllowsDoubledQuote);
+        private StringLiteral _stringLiteral_IGraphFS = new StringLiteral("stringLiteral_IGraphFS", "'", StringFlags.AllowsDoubledQuote);
         private StringLiteral _stringLiteral_ExternalEntry = new StringLiteral("stringLiteral_ExternalEntry", "'", StringFlags.AllowsDoubledQuote);
         
         #endregion
@@ -195,9 +195,9 @@ namespace sones.Lib.CLI
 
                 foreach (NonTerminal aNonTerminal in _CommandNonTerminals)
                 {
-                    if (!aNonTerminal.PandoraOptions.Contains(PandoraOption.IsOption))
+                    if (!aNonTerminal.GraphOptions.Contains(GraphOption.IsOption))
                     {
-                        aNonTerminal.PandoraOptions.Add(PandoraOption.IsStructuralObject);
+                        aNonTerminal.GraphOptions.Add(GraphOption.IsStructuralObject);
                     }
                 }
 
@@ -272,7 +272,7 @@ namespace sones.Lib.CLI
                                     |   Protocol_Ftp
                                     |   Protocol_Http
                                     |   Protocol_Sftp;
-                _Protocol.PandoraOptions.Add(PandoraOption.IsStructuralObject);
+                _Protocol.GraphOptions.Add(GraphOption.IsStructuralObject);
                 return _Protocol;
 
             }
@@ -290,7 +290,7 @@ namespace sones.Lib.CLI
                                         |   Eq_Less
                                         |   Eq_Greater
                                         |   Eq_Equals;
-                _Equalisator.PandoraOptions.Add(PandoraOption.IsStructuralObject);
+                _Equalisator.GraphOptions.Add(GraphOption.IsStructuralObject);
                 return _Equalisator;
 
             }
@@ -307,7 +307,7 @@ namespace sones.Lib.CLI
                                             | MultiplicatorSizeMega
                                             | MultiplicatorSizeGiga
                                             | MultiplicatorSizeTera;
-                _MultiplicatorSize.PandoraOptions.Add(PandoraOption.IsStructuralObject);
+                _MultiplicatorSize.GraphOptions.Add(GraphOption.IsStructuralObject);
                 return _MultiplicatorSize;
 
             }
@@ -323,7 +323,7 @@ namespace sones.Lib.CLI
                 _DateTimeGrammar.Rule =     TimeGrammar
                                         |   DateGrammar
                                         |   TimeGrammar + DateGrammar;
-                _DateTimeGrammar.PandoraOptions.Add(PandoraOption.IsStructuralObject);
+                _DateTimeGrammar.GraphOptions.Add(GraphOption.IsStructuralObject);
                 return _DateTimeGrammar;
 
             }
@@ -355,7 +355,7 @@ namespace sones.Lib.CLI
                 _DateGrammar.Rule = numberLiteral + DotSymbol + numberLiteral + DotSymbol + numberLiteral
                                     |   DateToday
                                     |   DateYesterday;
-                _DateGrammar.PandoraOptions.Add(PandoraOption.IsStructuralObject);
+                _DateGrammar.GraphOptions.Add(GraphOption.IsStructuralObject);
                 _DateGrammar.IsUsedForAutocompletion = true;
                 _DateGrammar.Description = "Date (Day.Month.Year) | " + DateToday.Name + " | " + DateYesterday.Name;
 
@@ -373,7 +373,7 @@ namespace sones.Lib.CLI
 
                 _LinkedStringList.Rule =        stringLiteral + OrSymbol + _LinkedStringList
                                             |   stringLiteral + SemicolonSymbol;
-                _LinkedStringList.PandoraOptions.Add(PandoraOption.IsStructuralObject);
+                _LinkedStringList.GraphOptions.Add(GraphOption.IsStructuralObject);
 
                 return _LinkedStringList;
 
@@ -386,10 +386,10 @@ namespace sones.Lib.CLI
 
             get
             {
-                _stringLiteral_IPandoraFS.Description = "DIRECTORY \t (Autocompletion for PVFS directories.)";
-                _stringLiteral_IPandoraFS.PandoraOptions.Add(PandoraOption.IsUsedForAutocompletion);
+                _stringLiteral_IGraphFS.Description = "DIRECTORY \t (Autocompletion for PVFS directories.)";
+                _stringLiteral_IGraphFS.GraphOptions.Add(GraphOption.IsUsedForAutocompletion);
 
-                return _stringLiteral_IPandoraFS;
+                return _stringLiteral_IGraphFS;
             }
 
         }
@@ -400,7 +400,7 @@ namespace sones.Lib.CLI
             get
             {
                 _stringLiteral_ExternalEntry.Description = "DIRECTORY \t (Autocompletion for external directories.)";
-                _stringLiteral_ExternalEntry.PandoraOptions.Add(PandoraOption.IsUsedForAutocompletion);
+                _stringLiteral_ExternalEntry.GraphOptions.Add(GraphOption.IsUsedForAutocompletion);
 
                 return _stringLiteral_ExternalEntry;
 
@@ -449,7 +449,7 @@ namespace sones.Lib.CLI
         {
 
             CLICommandNonTerminal.Rule = myBnfExpression;
-            CLICommandNonTerminal.PandoraOptions.Add(PandoraOption.IsCommandRoot);
+            CLICommandNonTerminal.GraphOptions.Add(GraphOption.IsCommandRoot);
 
             #region Todo: via reflection
 
@@ -542,11 +542,11 @@ namespace sones.Lib.CLI
 
         #endregion
 
-        #region SetCLIReference(PandoraCLI myPandoraCLI)
+        #region SetCLIReference(GraphCLI myGraphCLI)
 
-        public void SetCLIReference(sonesCLI myPandoraCLI)
+        public void SetCLIReference(sonesCLI myGraphCLI)
         {
-            graphCLI = myPandoraCLI;
+            graphCLI = myGraphCLI;
         }
 
         #endregion

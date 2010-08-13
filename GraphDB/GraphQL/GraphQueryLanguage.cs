@@ -48,6 +48,7 @@ using sones.Lib;
 using sones.Lib.ErrorHandling;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.Lib.Frameworks.Irony.Scripting.Ast;
+using sones.GraphDB.GraphQL.Structure;
 
 #endregion
 
@@ -83,12 +84,21 @@ namespace sones.GraphDB.GraphQL
 
         #region Properties
 
+        #region NonTerminals
+
+        public NonTerminal BNF_TypesOrVertices { get; private set; }
+
+        #endregion
+
+        #region SymbolTerminals
+
         public SymbolTerminal S_CREATE                          { get; private set; }
         public SymbolTerminal S_comma                           { get; private set; }
         public SymbolTerminal S_dot                             { get; private set; }
         public SymbolTerminal S_ASTERISK                        { get; private set; }
         public SymbolTerminal S_RHOMB                           { get; private set; }
         public SymbolTerminal S_MINUS                           { get; private set; }
+        public SymbolTerminal S_AD                              { get; private set; }
         public SymbolTerminal S_colon                           { get; private set; }
 
         #region Brackets
@@ -249,6 +259,10 @@ namespace sones.GraphDB.GraphQL
         public SymbolTerminal S_GQL             { get; private set; }
         public SymbolTerminal S_CSV             { get; private set; }
 
+
+
+        #endregion
+
         #endregion
 
         #endregion
@@ -327,6 +341,8 @@ namespace sones.GraphDB.GraphQL
             S_ASTERISK                        = Symbol("*");
             S_MINUS                           = Symbol("-");
             S_RHOMB                           = Symbol("#");
+            S_AD                              = Symbol("@");
+           
             S_colon                           = Symbol(":");
             S_BRACKET_LEFT                    = Symbol(TERMINAL_BRACKET_LEFT);
             S_BRACKET_RIGHT                   = Symbol(TERMINAL_BRACKET_RIGHT);
@@ -489,7 +505,7 @@ namespace sones.GraphDB.GraphQL
             var InsertStmt                  = new NonTerminal("InsertStmt", CreateInsertStatementNode);
             var updateStmt                  = new NonTerminal("updateStmt", CreateUpdateStatementNode);
             var deleteStmt                  = new NonTerminal("deleteStmt", CreateDeleteStatementNode);
-            var SelectStmtPandora           = new NonTerminal("SelectStmtPandora", CreateSelectStatementNode);
+            var SelectStmtGraph           = new NonTerminal("SelectStmtGraph", CreateSelectStatementNode);
             var parSelectStmt               = new NonTerminal("parSelectStmt", CreatePartialSelectStmtNode);
             var createTypesStmt             = new NonTerminal("createTypesStmt", CreateCreateTypesStatementNode);
             var insertorupdateStmt          = new NonTerminal("insertorupdateStmt", CreateInsertOrUpdateStatementNode);
@@ -548,6 +564,7 @@ namespace sones.GraphDB.GraphQL
             var selectionList               = new NonTerminal("selectionList");
             var selectionListElement        = new NonTerminal("selectionListElement", typeof(SelectionListElementNode));
             selectionSource                 = new NonTerminal("selectionSource");
+            var selByType                   = new NonTerminal("selByType", CreateSelByTypeNode);
             var asOpt                       = new NonTerminal("asOpt");
             var aliasOpt                    = new NonTerminal("aliasOpt");
             var aliasOptName                = new NonTerminal("aliasOptName");
@@ -579,7 +596,7 @@ namespace sones.GraphDB.GraphQL
             var notOpt                      = new NonTerminal("notOpt");
 
             var typeOrVertex                = new NonTerminal("typeOrVertex");
-            var typesOrVertices             = new NonTerminal("typesOrVertices");
+            BNF_TypesOrVertices             = new NonTerminal("typesOrVertices");
 
             var GraphDBType                 = new NonTerminal(DBConstants.GraphDBType, CreateGraphDBTypeNode);
             var AttributeList               = new NonTerminal("AttributeList");
@@ -759,7 +776,7 @@ namespace sones.GraphDB.GraphQL
             //BNF Rules
             this.Root = singlestmt;
 
-            singlestmt.Rule = SelectStmtPandora
+            singlestmt.Rule = SelectStmtGraph
                             | InsertStmt
                             | alterStmt
                             | updateStmt
@@ -894,7 +911,7 @@ namespace sones.GraphDB.GraphQL
 
             #endregion
 
-            #region PandoraType
+            #region GraphType
 
             //                 SET<                   WEIGHTED  (Double, DEFAULT=2, SORTED=DESC)<   [idsimple]  >>
             EdgeTypeDef.Rule = S_SET + S_ListTypePrefix + Id_simple + S_BRACKET_LEFT + EdgeTypeParams + S_BRACKET_RIGHT + S_ListTypePrefix + Id_simple + S_ListTypePostfix + S_ListTypePostfix;
@@ -976,7 +993,7 @@ namespace sones.GraphDB.GraphQL
 
             #endregion
 
-            parSelectStmt.Rule = S_BRACKET_LEFT + SelectStmtPandora + S_BRACKET_RIGHT;
+            parSelectStmt.Rule = S_BRACKET_LEFT + SelectStmtGraph + S_BRACKET_RIGHT;
 
             unExpr.Rule = unOp + term;
 
@@ -1027,7 +1044,7 @@ namespace sones.GraphDB.GraphQL
             //BNF_FuncCall.Rule = Empty;
 
 
-            BNF_FunArgs.Rule =      SelectStmtPandora 
+            BNF_FunArgs.Rule =      SelectStmtGraph 
                             |   BNF_ExprList;
 
             #endregion
@@ -1092,11 +1109,11 @@ namespace sones.GraphDB.GraphQL
 
             #region CREATE TYPE(S)
 
-            createTypesStmt.Rule    = S_CREATE + typesOrVertices + bulkTypeList
+            createTypesStmt.Rule    = S_CREATE + BNF_TypesOrVertices + bulkTypeList
                                     | S_CREATE + abstractOpt + typeOrVertex + bulkType;
 
             typeOrVertex.Rule       = S_TYPE | S_VERTEX;
-            typesOrVertices.Rule    = S_TYPES | S_VERTICES;
+            BNF_TypesOrVertices.Rule    = S_TYPES | S_VERTICES;
 
             bulkTypeList.Rule       = MakePlusRule(bulkTypeList, S_comma, bulkTypeListMember);
 
@@ -1144,7 +1161,7 @@ namespace sones.GraphDB.GraphQL
 
             #endregion
 
-            #region ALTER TYPE
+            #region ALTER TYPE/VERTEX
 
             alterStmt.Rule = S_ALTER + typeOrVertex + Id_simple + alterCmdList + uniquenessOpt + mandatoryOpt;
 
@@ -1177,8 +1194,8 @@ namespace sones.GraphDB.GraphQL
 
             #region SELECT
 
-            SelectStmtPandora.Rule = S_FROM + TypeList + S_SELECT + selList + whereClauseOpt + groupClauseOpt + havingClauseOpt + orderClauseOpt + MatchingClause + offsetOpt + limitOpt + resolutionDepthOpt + selectOutputOpt;
-            SelectStmtPandora.Description = "The select statement is used to query the database and retrieve one or more types of objects in the database.\n";
+            SelectStmtGraph.Rule = S_FROM + TypeList + S_SELECT + selList + whereClauseOpt + groupClauseOpt + havingClauseOpt + orderClauseOpt + MatchingClause + offsetOpt + limitOpt + resolutionDepthOpt + selectOutputOpt;
+            SelectStmtGraph.Description = "The select statement is used to query the database and retrieve one or more types of objects in the database.\n";
 
             MatchingClause.Rule =       Empty
                                     |   MatchingClause + Matching;
@@ -1201,10 +1218,16 @@ namespace sones.GraphDB.GraphQL
 
             selectionList.Rule = MakePlusRule(selectionList, S_comma, selectionListElement);            
 
-            selectionListElement.Rule =    S_ASTERISK 
+            selectionListElement.Rule =     S_ASTERISK 
                                         |   S_RHOMB 
-                                        |   S_MINUS 
-                                        |   selectionSource + aliasOpt; 
+                                        |   S_MINUS
+                                        |   TERMINAL_LT 
+                                        |   TERMINAL_GT
+                                        |   selByType
+                                        |   selectionSource + aliasOpt;
+
+            selByType.Rule = Empty
+                            | S_AD + Id_simple;
 
             aliasOptName.Rule = Id_simple | string_literal;
 
@@ -1493,7 +1516,7 @@ namespace sones.GraphDB.GraphQL
 
             dumpType.Rule           = Empty | S_ALL | S_GDDL | S_GDML;      // If empty => create both
             dumpFormat.Rule         = Empty | S_AS + S_GQL;                 // If empty => create GQL
-            typeOptionalList.Rule   = Empty | typesOrVertices + TypeList;
+            typeOptionalList.Rule   = Empty | BNF_TypesOrVertices + TypeList;
 
             dumpDestination.Rule    = Empty | S_INTO + location_literal | S_TO + location_literal;
 
@@ -1543,7 +1566,7 @@ namespace sones.GraphDB.GraphQL
                 , BNF_ExprList, BNF_AggregateArg,
                 ExtendedExpressionList,
                 BNF_ImportFormat, BNF_FuncCall, BNF_Aggregate, verbosityTypes,
-                typeOrVertex, typesOrVertices);
+                typeOrVertex, BNF_TypesOrVertices);
 
             #endregion
         
@@ -1556,7 +1579,9 @@ namespace sones.GraphDB.GraphQL
         private void CreateTypeList(CompilerContext context, ParseTreeNode parseNode)
         {
             var node = new TypeListNode();
+
             node.GetContent(context, parseNode);
+
             parseNode.AstNode = node;
         }
 
@@ -1564,20 +1589,27 @@ namespace sones.GraphDB.GraphQL
         {
             var Node = new IndexOnCreateTypeNode();
 
-            parseNode.AstNode = new Exceptional<IndexOnCreateTypeNode>(Node).Push(Node.GetContent(context, parseNode));
+            Node.GetContent(context, parseNode);
+
+            parseNode.AstNode = Node;
         }
 
         private void CreateDropIndicesNode(CompilerContext context, ParseTreeNode parseNode)
         {
             var Node = new IndexDropOnAlterType();
 
-            parseNode.AstNode = new Exceptional<IndexDropOnAlterType>(Node).Push(Node.GetContent(context, parseNode));
+            Node.GetContent(context, parseNode);
+
+            parseNode.AstNode = Node;
         }
 
         private void CreateIndexOptOnCreateTypeMemberNode(CompilerContext context, ParseTreeNode parseNode)
         {
             var node = new IndexOptOnCreateTypeMemberNode();
-            parseNode.AstNode = new Exceptional<IndexOptOnCreateTypeMemberNode>(node).Push(node.GetContent(context, parseNode));
+
+            node.GetContent(context, parseNode);
+
+            parseNode.AstNode = node;
         }
 
         private void CreateAttrAssignListNode(CompilerContext context, ParseTreeNode parseNode)
@@ -1600,11 +1632,11 @@ namespace sones.GraphDB.GraphQL
 
         private void CreateGraphDBTypeNode(CompilerContext context, ParseTreeNode parseNode)
         {
-            GraphDBTypeNode aPandoraTypeNode = new GraphDBTypeNode();
+            GraphDBTypeNode aGraphTypeNode = new GraphDBTypeNode();
 
-            aPandoraTypeNode.GetContent(context, parseNode);
+            aGraphTypeNode.GetContent(context, parseNode);
 
-            parseNode.AstNode = (object)aPandoraTypeNode;
+            parseNode.AstNode = (object)aGraphTypeNode;
         }
  
         private void CreateBulkTypeListMemberNode(CompilerContext context, ParseTreeNode parseNode)
@@ -1779,6 +1811,15 @@ namespace sones.GraphDB.GraphQL
             parseNode.AstNode = (object)aSelectStatementNode;
         }
 
+        private void CreateSelByTypeNode(CompilerContext context, ParseTreeNode parseNode)
+        {
+            var aSelByTypeNode = new SelByTypeNode();
+
+            aSelByTypeNode.GetContent(context, parseNode);
+
+            parseNode.AstNode = (object)aSelByTypeNode;
+        }
+
         private void CreateATypeNode(CompilerContext context, ParseTreeNode parseNode)
         {
             ATypeNode aATypeNode = new ATypeNode();
@@ -1787,12 +1828,12 @@ namespace sones.GraphDB.GraphQL
 
             parseNode.AstNode = (object)aATypeNode;
 
-            if (context.PandoraListOfReferences == null)
-                context.PandoraListOfReferences = new List<TypeReferenceDefinition>();
+            if (context.GraphListOfReferences == null)
+                context.GraphListOfReferences = new List<TypeReferenceDefinition>();
 
-            if (aATypeNode.ReferenceAndType.Reference != null && !(context.PandoraListOfReferences as List<TypeReferenceDefinition>).Contains(aATypeNode.ReferenceAndType))
+            if (aATypeNode.ReferenceAndType.Reference != null && !(context.GraphListOfReferences as List<TypeReferenceDefinition>).Contains(aATypeNode.ReferenceAndType))
             {
-                (context.PandoraListOfReferences as List<TypeReferenceDefinition>).Add(aATypeNode.ReferenceAndType);
+                (context.GraphListOfReferences as List<TypeReferenceDefinition>).Add(aATypeNode.ReferenceAndType);
             }
         }
 
@@ -2486,7 +2527,7 @@ namespace sones.GraphDB.GraphQL
                 foreach (var aDBO in dbContext.DBObjectCache.LoadListOfDBObjectStreams(graphDBType, UUIDIdx.GetAllUUIDs(graphDBType, dbContext)))
                 {
 
-                    if (!aDBO.Success)
+                    if (!aDBO.Success())
                     {
                         exceptional.AddErrorsAndWarnings(aDBO);
                     }
@@ -2495,7 +2536,7 @@ namespace sones.GraphDB.GraphQL
 
                         var gdmlExceptional = CreateGraphDMLforDBObject(myDumpFormat, dbContext, graphDBType, aDBO.Value);
 
-                        if (!gdmlExceptional.Success)
+                        if (!gdmlExceptional.Success())
                         {
                             exceptional.AddErrorsAndWarnings(aDBO);
                         }
@@ -2533,7 +2574,7 @@ namespace sones.GraphDB.GraphQL
 
             var defAttrsDML = CreateGraphDMLforDBObjectDefinedAttributes(myDumpFormat, myDBObjectStream.GetAttributes(), myGraphDBType, myDBObjectStream, myDBContext);
 
-            if (!defAttrsDML.Success)
+            if (!defAttrsDML.Success())
             {
                 return defAttrsDML;
             }
@@ -2546,7 +2587,7 @@ namespace sones.GraphDB.GraphQL
 
             var undefAttrs = myDBObjectStream.GetUndefinedAttributes(myDBContext.DBObjectManager);
 
-            if (!undefAttrs.Success)
+            if (!undefAttrs.Success())
             {
                 return new Exceptional<String>(undefAttrs);
             }
@@ -2556,7 +2597,7 @@ namespace sones.GraphDB.GraphQL
 
                 Exceptional<String> undefAttrsDML = CreateGraphDMLforDBObjectUndefinedAttributes(myDumpFormat, undefAttrs.Value, myGraphDBType, myDBObjectStream);
 
-                if (!undefAttrsDML.Success)
+                if (!undefAttrsDML.Success())
                 {
                     return undefAttrsDML;
                 }
@@ -2574,7 +2615,7 @@ namespace sones.GraphDB.GraphQL
 
         }
 
-        private Exceptional<String> CreateGraphDMLforDBObjectDefinedAttributes(DumpFormats myDumpFormat, IDictionary<AttributeUUID, AObject> myAttributes, GraphDBType myGraphDBType, DBObjectStream myDBObjectStream, DBContext myDBContext)
+        private Exceptional<String> CreateGraphDMLforDBObjectDefinedAttributes(DumpFormats myDumpFormat, IDictionary<AttributeUUID, IObject> myAttributes, GraphDBType myGraphDBType, DBObjectStream myDBObjectStream, DBContext myDBContext)
         {
 
             var stringBuilder = new StringBuilder();
@@ -2595,8 +2636,9 @@ namespace sones.GraphDB.GraphQL
                 if (typeAttribute.GetDBType(myDBContext.DBTypeManager).IsUserDefined)
                 {
 
-                    #region SetOfReferences
-                    if (attribute.Value is ASetReferenceEdgeType)
+                    #region IReferenceEdge
+
+                    if (attribute.Value is ASetOfReferencesEdgeType)
                     {
 
                         #region Create edge GDML
@@ -2607,23 +2649,52 @@ namespace sones.GraphDB.GraphQL
 
                         #region Create an assignment content - if edge does not contain any elements create an empty one
 
-                        if ((attribute.Value as ASetReferenceEdgeType).GetAllReferenceIDsWeighted().CountIsGreater(0))
+                        if ((attribute.Value as ASetOfReferencesEdgeType).GetAllReferenceIDs().CountIsGreater(0))
                         {
 
-                            #region Create attribute assignments
-
-                            foreach (var val in (attribute.Value as ASetReferenceEdgeType).GetAllReferenceIDsWeighted())
+                            if (attribute.Value is ASetOfReferencesWithInfoEdgeType)
                             {
-                                stringBuilder.Append(String.Concat("'", val.Item1.ToString(), "'"));
-                                if (val.Item2 != null)
-                                {
-                                    stringBuilder.Append(String.Concat(S_colon, S_BRACKET_LEFT, CreateGraphDMLforADBBaseObject(myDumpFormat, val.Item2), S_BRACKET_RIGHT));
-                                }
-                                stringBuilder.Append(delimiter);
-                            }
-                            stringBuilder.RemoveSuffix(delimiter);
 
-                            #endregion
+                                #region Create attribute assignments
+
+                                foreach (var val in (attribute.Value as ASetOfReferencesWithInfoEdgeType).GetAllReferenceIDsWeighted())
+                                {
+                                    stringBuilder.Append(String.Concat("'", val.Item1.ToString(), "'"));
+                                    if (val.Item2 != null)
+                                    {
+                                        stringBuilder.Append(String.Concat(S_colon, S_BRACKET_LEFT, CreateGraphDMLforADBBaseObject(myDumpFormat, val.Item2), S_BRACKET_RIGHT));
+                                    }
+                                    stringBuilder.Append(delimiter);
+                                }
+                                stringBuilder.RemoveSuffix(delimiter);
+
+                                #endregion
+
+                            }
+                            else
+                            {
+
+                                #region Create an assignment content - if edge does not contain any elements create an empty one
+
+                                if ((attribute.Value as ASetOfReferencesEdgeType).GetAllReferenceIDs().CountIsGreater(0))
+                                {
+
+                                    #region Create attribute assignments
+
+                                    foreach (var val in (attribute.Value as ASetOfReferencesEdgeType).GetAllReferenceIDs())
+                                    {
+                                        stringBuilder.Append(String.Concat("'", val.ToString(), "'"));
+                                        stringBuilder.Append(delimiter);
+                                    }
+                                    stringBuilder.RemoveSuffix(delimiter);
+
+                                    #endregion
+
+                                }
+
+                                #endregion
+
+                            }
 
                         }
 
@@ -2669,7 +2740,7 @@ namespace sones.GraphDB.GraphQL
                     if (typeAttribute.KindOfType == KindsOfType.ListOfNoneReferences)
                     {
                         stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_LISTOF.ToUpperString(), " ", S_BRACKET_LEFT));
-                        foreach (var val in (attribute.Value as AListBaseEdgeType))
+                        foreach (var val in (attribute.Value as IBaseEdge))
                         {
                             stringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
                         }
@@ -2684,7 +2755,7 @@ namespace sones.GraphDB.GraphQL
                     else if (typeAttribute.KindOfType == KindsOfType.SetOfNoneReferences)
                     {
                         stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_SETOF.ToUpperString(), " ", S_BRACKET_LEFT));
-                        foreach (var val in (attribute.Value as AListBaseEdgeType))
+                        foreach (var val in (attribute.Value as IBaseEdge))
                         {
                             stringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
                         }
@@ -2725,7 +2796,7 @@ namespace sones.GraphDB.GraphQL
 
         }
 
-        private Exceptional<String> CreateGraphDMLforDBObjectUndefinedAttributes(DumpFormats myDumpFormat, IDictionary<String, AObject> myAttributes, GraphDBType myGraphDBType, DBObjectStream myDBObjectStream)
+        private Exceptional<String> CreateGraphDMLforDBObjectUndefinedAttributes(DumpFormats myDumpFormat, IDictionary<String, IObject> myAttributes, GraphDBType myGraphDBType, DBObjectStream myDBObjectStream)
         {
 
             var stringBuilder = new StringBuilder();
@@ -2745,12 +2816,12 @@ namespace sones.GraphDB.GraphQL
 
                 #region ..or, it is a List or Set, since the Set constraint was already verified we can use a list
 
-                else if (attribute.Value is AListBaseEdgeType)
+                else if (attribute.Value is IBaseEdge)
                 {
 
                     stringBuilder.Append(String.Concat(attribute.Key, " = ", S_LISTOF.ToUpperString(), " ", S_BRACKET_LEFT));
 
-                    foreach (var val in (attribute.Value as AListBaseEdgeType))
+                    foreach (var val in (attribute.Value as IBaseEdge))
                     {
                         stringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
                     }
@@ -2935,7 +3006,7 @@ namespace sones.GraphDB.GraphQL
             throw new NotImplementedException();
         }
 
-        public void SetEdges(IEnumerable<AEdgeType> edges)
+        public void SetEdges(IEnumerable<IEdgeType> edges)
         {
             throw new NotImplementedException();
         }

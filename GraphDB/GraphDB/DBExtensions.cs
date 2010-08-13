@@ -136,7 +136,7 @@ namespace sones.GraphDB
             //if we reach this code, no other superclass contains an attribute with this name, so add it!
             TypeAttribute ta = new TypeAttribute() { DBTypeUUID = attrType.UUID, Name = attributeName, KindOfType = kindOfType };
 
-            return typeManager.AddAttributeToType(targetClass, attributeName, ta);
+            return typeManager.AddAttributeToType(typeManager.GetTypeByName(targetClass), ta);
 
         }
 
@@ -146,7 +146,7 @@ namespace sones.GraphDB
 
         #region AObject
 
-        public static Object GetReadoutValue(this AObject theObject)
+        public static Object GetReadoutValue(this IObject theObject)
         {
             if (theObject == null)
                 return null;
@@ -165,17 +165,14 @@ namespace sones.GraphDB
                 }*/
             }
 
-            else if (theObject is ASetReferenceEdgeType)
-                return ((ASetReferenceEdgeType)theObject).GetAll();
+            else if (theObject is ASetOfReferencesEdgeType)
+                return ((ASetOfReferencesEdgeType)theObject).GetAllReferenceIDs();
 
             else if (theObject is ASingleReferenceEdgeType)
                 return ((ASingleReferenceEdgeType)theObject).GetUUID();
 
-            else if (theObject is AListBaseEdgeType)
-                return (theObject as AListBaseEdgeType).GetReadoutValues();
-
-            else if (theObject is ASetBaseEdgeType)
-                return (theObject as ASetBaseEdgeType).GetReadoutValues();
+            else if (theObject is IBaseEdge)
+                return (theObject as IBaseEdge).GetReadoutValues();
 
             else
                 throw new GraphDBException(new Errors.Error_NotImplemented(new System.Diagnostics.StackTrace(true), theObject.GetType().ToString()));

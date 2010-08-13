@@ -22,7 +22,7 @@
  * (c) Daniel Kirstenpfad, 2009
  * 
  * Implements a class which can announce services within
- * a specified Pandora Notification Multicast Group
+ * a specified Graph Notification Multicast Group
  * 
  * Lead programmer:
  *      Daniel Kirstenpfad

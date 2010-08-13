@@ -37,7 +37,7 @@ using sones.Lib.NewFastSerializer;
 namespace sones.GraphDB.Structures.EdgeTypes
 {
     
-    public class EdgeTypeSetOfReferences : ASetReferenceEdgeType
+    public class EdgeTypeSetOfReferences : ASetOfReferencesEdgeType
     {
         private Dictionary<ObjectUUID, Reference> _ObjectUUIDs = null;
 
@@ -65,6 +65,17 @@ namespace sones.GraphDB.Structures.EdgeTypes
             }
         }
 
+        public EdgeTypeSetOfReferences(IEnumerable<KeyValuePair<ObjectUUID, Reference>> dbos)
+        {
+
+            _ObjectUUIDs = new Dictionary<ObjectUUID, Reference>();
+            foreach (var dbo in dbos)
+            {
+                _ObjectUUIDs.Add(dbo.Key, dbo.Value);
+            }
+
+        }
+
         #region AEdgeType Members
 
         public override string EdgeTypeName
@@ -82,7 +93,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         }
 
-        public override AEdgeType GetNewInstance()
+        public override IEdgeType GetNewInstance()
         {
             return new EdgeTypeSetOfReferences();
         }
@@ -106,14 +117,26 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return _ObjectUUIDs.ULongCount();
         }
 
-        public override IEnumerable GetAll()
-        {
-            return new HashSet<ObjectUUID>(_ObjectUUIDs.Select(item => item.Key));
-        }
+        //public override IEnumerable GetAll()
+        //{
+        //    return new HashSet<ObjectUUID>(_ObjectUUIDs.Select(item => item.Key));
+        //}
 
-        public override IEnumerable GetTop(ulong myNumOfEntries)
+        //public override IEnumerable GetTop(ulong myNumOfEntries)
+        //{
+        //    return _ObjectUUIDs.Take((Int32)myNumOfEntries).Select(item => item.Key);
+        //}
+
+        public override IListOrSetEdgeType GetTopAsEdge(ulong myNumOfEntries)
         {
-            return _ObjectUUIDs.Take((Int32)myNumOfEntries).Select(item => item.Key);
+
+            if (_ObjectUUIDs.Count < (int)myNumOfEntries)
+            {
+                myNumOfEntries = (ulong)_ObjectUUIDs.Count;
+            }
+
+            return new EdgeTypeSetOfReferences(_ObjectUUIDs.Take((int)myNumOfEntries));
+
         }
 
         public override void Clear()
@@ -121,9 +144,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
             _ObjectUUIDs.Clear();
         }
 
-        public override void UnionWith(AEdgeType myAEdgeType)
+        public override void UnionWith(IListOrSetEdgeType myAEdgeType)
         {
-            var anotherEdge = myAEdgeType as ASetReferenceEdgeType;
+            var anotherEdge = myAEdgeType as ASetOfReferencesEdgeType;
 
             if (anotherEdge != null)
             {
@@ -174,7 +197,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             foreach (var dbo in myObjectUUIDs)
             {
 
-                if (dbo.Failed)
+                if (dbo.Failed())
                     throw new GraphDBException(dbo.Errors);
                 /* If we had a function like TOP(1) the GetAllAttributesFromDBO might not contains elements which are in myObjectUUIDs (which is coming from the where)*/
                 if (_ObjectUUIDs.ContainsKey(dbo.Value.ObjectUUID))
@@ -232,7 +255,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return false;
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
+        public override IReferenceEdge GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
         {
             var newEdge = new EdgeTypeSetOfReferences();
 
@@ -244,14 +267,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return newEdge;
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeOfObjects)
+        public override IReferenceEdge GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeOfObjects)
         {
             return new EdgeTypeSetOfReferences(iEnumerable, typeOfObjects);
-        }
-
-        public override IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetAllReferenceIDsWeighted()
-        {
-            return _ObjectUUIDs.Select(aKV => new Tuple<ObjectUUID, ADBBaseObject>(aKV.Key, null));
         }
 
         #endregion
@@ -319,14 +337,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         #endregion
 
-        #region IEnumerable Members
-
-        public override System.Collections.IEnumerator GetEnumerator()
-        {
-            return _ObjectUUIDs.GetEnumerator();
-        }
-
-        #endregion
 
         #region Equals
 
@@ -369,11 +379,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public override IEnumerable<Exceptional<DBObjectStream>> GetAllEdgeDestinations(DBObjectCache dbObjectCache)
         {
             return _ObjectUUIDs.Select(kv => kv.Value.GetDBObjectStream(dbObjectCache));
-        }
-
-        public override IEnumerable<Tuple<Exceptional<DBObjectStream>, ADBBaseObject>> GetAllEdgeDestinationsWeighted(DBObjectCache dbObjectCache)
-        {
-            return _ObjectUUIDs.Select(kv => new Tuple<Exceptional<DBObjectStream>, ADBBaseObject>(kv.Value.GetDBObjectStream(dbObjectCache), null));
         }
 
         public override IEnumerable<Reference> GetAllReferences()

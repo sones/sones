@@ -65,7 +65,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Update
         public override QueryResult Execute(IGraphDBSession myIGraphDBSession)
         {
 
-            return myIGraphDBSession.Update(_TypeName, _listOfUpdates, _WhereExpression);
+            var qresult = myIGraphDBSession.Update(_TypeName, _listOfUpdates, _WhereExpression);
+            qresult.AddErrorsAndWarnings(ParsingResult);
+            return qresult;
 
         }
 
@@ -74,7 +76,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Update
         /// </summary>
         /// <param name="context">CompilerContext of Irony.</param>
         /// <param name="parseNode">The current ParseNode.</param>
-        /// <param name="typeManager">The TypeManager of the PandoraDB.</param>
+        /// <param name="typeManager">The TypeManager of the GraphDB.</param>
         public override void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
         {
 
@@ -99,7 +101,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Update
             if (myParseTreeNode.ChildNodes[4].HasChildNodes())
             {
                 var tempWhereNode = (WhereExpressionNode) myParseTreeNode.ChildNodes[4].AstNode;
-                _WhereExpression = tempWhereNode.BinExprNode.BinaryExpressionDefinition;
+                _WhereExpression = tempWhereNode.BinaryExpressionDefinition;
 
             }
 

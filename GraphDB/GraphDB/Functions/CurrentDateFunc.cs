@@ -30,27 +30,22 @@
 #region Usings
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.TypeManagement.BasicTypes;
-
-using sones.Lib.ErrorHandling;
-using sones.GraphDB.ObjectManagement;
-
-using sones.GraphDB.TypeManagement;
-using sones.GraphFS.Session;
-using sones.GraphDB.Structures.Result;
-using sones.Lib.Session;
 using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
 namespace sones.GraphDB.Functions
 {
+
+    /// <summary>
+    /// Returns the current date and time.
+    /// </summary>
     public class CurrentDateFunc : ABaseFunction
     {
+
         public override string FunctionName
         {
             get { return "CURRENTDATE"; }
@@ -70,7 +65,12 @@ namespace sones.GraphDB.Functions
            
         }
 
-        public override bool ValidateWorkingBase(TypeAttribute workingBase, DBTypeManager typeManager)
+        public override IObject GetReturnType(IObject myWorkingBase, DBTypeManager myTypeManager)
+        {
+            return new DBDateTime();
+        }
+
+        public override bool ValidateWorkingBase(IObject workingBase, DBTypeManager typeManager)
         {
             if (workingBase != null)
             {
@@ -86,5 +86,7 @@ namespace sones.GraphDB.Functions
         {
             return new Exceptional<FuncParameter>(new FuncParameter(new DBDateTime(DateTime.Now)));
         }
+
     }
+
 }

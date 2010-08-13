@@ -160,7 +160,7 @@ namespace sones.GraphDB.Managers.Structures
                 {
 
                     var validateResult = ((BinaryExpressionDefinition)Parameters[i]).Validate(dbContext);
-                    if (validateResult.Failed)
+                    if (validateResult.Failed())
                     {
                         return new Exceptional<FuncParameter>(validateResult);
                     }
@@ -169,7 +169,7 @@ namespace sones.GraphDB.Managers.Structures
 
                     var calculatedGraphResult = ((BinaryExpressionDefinition)Parameters[i]).Calculon(dbContext, new CommonUsageGraph(dbContext));
 
-                    if (calculatedGraphResult.Failed)
+                    if (calculatedGraphResult.Failed())
                     {
                         return new Exceptional<FuncParameter>(calculatedGraphResult);
                     }
@@ -180,7 +180,7 @@ namespace sones.GraphDB.Managers.Structures
 
                     validationOutput = ValidateAndAddParameter(currentParameter, extractedDBOs, null);
 
-                    if (validationOutput.Failed)
+                    if (validationOutput.Failed())
                     {
                         return new Exceptional<FuncParameter>(validationOutput);
                     }
@@ -208,7 +208,7 @@ namespace sones.GraphDB.Managers.Structures
                         var tempIDChain = (IDChainDefinition)Parameters[i];
 
                         var validateResult = tempIDChain.Validate(dbContext, false);
-                        if (validateResult.Failed)
+                        if (validateResult.Failed())
                         {
                             return new Exceptional<FuncParameter>(validateResult);
                         }
@@ -221,7 +221,7 @@ namespace sones.GraphDB.Managers.Structures
 
                             validationOutput = ValidateAndAddParameter(currentParameter, tempIDChain.LastAttribute, null);
 
-                            if (validationOutput.Failed)
+                            if (validationOutput.Failed())
                             {
                                 return new Exceptional<FuncParameter>(validationOutput);
                             }
@@ -243,7 +243,7 @@ namespace sones.GraphDB.Managers.Structures
 
                                 validationOutput = ValidateAndAddParameter(currentParameter, tempIDChain, null);
 
-                                if (validationOutput.Failed)
+                                if (validationOutput.Failed())
                                 {
                                     return new Exceptional<FuncParameter>(validationOutput);
                                 }
@@ -265,7 +265,7 @@ namespace sones.GraphDB.Managers.Structures
                                     TypeAttribute typeAttr = dbContext.DBTypeManager.GetTypeAttributeByEdge(tempIDChain.LastAttribute.BackwardEdgeDefinition);
                                     var dbos = myDBObject.GetBackwardEdges(tempIDChain.LastAttribute.BackwardEdgeDefinition, dbContext, dbObjectCache, tempIDChain.LastAttribute.GetDBType(dbContext.DBTypeManager));
 
-                                    if (dbos.Failed)
+                                    if (dbos.Failed())
                                         return new Exceptional<FuncParameter>(dbos);
 
                                     if (dbos.Value == null)
@@ -275,7 +275,7 @@ namespace sones.GraphDB.Managers.Structures
 
                                     validationOutput = ValidateAndAddParameter(currentParameter, dbos.Value, tempIDChain.LastAttribute);
 
-                                    if (validationOutput.Failed)
+                                    if (validationOutput.Failed())
                                     {
                                         return new Exceptional<FuncParameter>(validationOutput);
                                     }
@@ -298,7 +298,7 @@ namespace sones.GraphDB.Managers.Structures
 
                                         validationOutput = ValidateAndAddParameter(currentParameter, myDBObject.GetAttribute(tempIDChain.LastAttribute.UUID, tempIDChain.LastType, dbContext), tempIDChain.LastAttribute);
 
-                                        if (validationOutput.Failed)
+                                        if (validationOutput.Failed())
                                         {
                                             return new Exceptional<FuncParameter>(validationOutput);
                                         }
@@ -328,7 +328,7 @@ namespace sones.GraphDB.Managers.Structures
 
                         validationOutput = ValidateAndAddParameter(currentParameter, Parameters[i], null);
 
-                        if (validationOutput.Failed)
+                        if (validationOutput.Failed())
                         {
                             return new Exceptional<FuncParameter>(validationOutput);
                         }
@@ -504,6 +504,7 @@ namespace sones.GraphDB.Managers.Structures
         public TypesOfSelect    SelectType          { get; private set; }        
         public String           UndefinedAttribute  { get; private set; }
         public LevelKey         LevelKey            { get; private set; }
+        public String           TypeName            { get; private set; }
 
         #region LastType
 
@@ -606,6 +607,18 @@ namespace sones.GraphDB.Managers.Structures
         
         #endregion
 
+        #region Content string
+
+        public String ContentString
+        {
+            get
+            {
+                return _IDChainString;
+            }
+        }
+
+        #endregion
+
         #endregion
 
         #region Data
@@ -635,14 +648,20 @@ namespace sones.GraphDB.Managers.Structures
         /// Creates an validated asterisk chain for the given type.
         /// </summary>
         /// <param name="myIDChainPart">The type chain part.</param>
-        public IDChainDefinition(ChainPartTypeOrAttributeDefinition myIDChainPart, TypesOfSelect mySelType)
+        public IDChainDefinition(ChainPartTypeOrAttributeDefinition myIDChainPart, TypesOfSelect mySelType, String myTypeName = null)
         {
             RootPart = myIDChainPart;
 
-            IsValidated = true;
-            _Edges = new List<EdgeKey>();
+            IsValidated = true;            
             SelectType = mySelType;
+
+            if (SelectType == TypesOfSelect.Ad)
+            {
+                TypeName = myTypeName;
+            }
+
             ValidateResult = new Exceptional();
+            _Edges = new List<EdgeKey>();
             LevelKey = new LevelKey();
         }
         
@@ -743,7 +762,7 @@ namespace sones.GraphDB.Managers.Structures
             ValidateResult = new Exceptional();
 
             int _HashCode = 0;
-
+            IObject funcWorkingBase = null;
             var curPart = RootPart;
 
             if (curPart == null)
@@ -761,10 +780,11 @@ namespace sones.GraphDB.Managers.Structures
                 SelectType = TypesOfSelect.Asterisk;
                 ValidateResult = new Exceptional();
                 LevelKey = new LevelKey(_Edges, myDBContext.DBTypeManager);
+
                 return ValidateResult;
             }
 
-            while (curPart != null && ValidateResult.Success)
+            while (curPart != null && ValidateResult.Success())
             {
 
                 #region Go through each part and try to fill lastType, lastAttribute etc...
@@ -778,19 +798,49 @@ namespace sones.GraphDB.Managers.Structures
                     var funcValidateResult = funcPart.Validate(myDBContext);
                     ValidateResult.Push(funcValidateResult);
 
-                    if (ValidateResult.Failed)
+                    if (ValidateResult.Failed())
                     {
                         return ValidateResult;
                     }
 
-                    if (curPart.Next != null)
-                    {
-                        return ValidateResult.Push(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "Currently it is not implemented to have a funtion in between two edges."));
-                    }
+                    //if (curPart.Next != null)
+                    //{
+                    //    return ValidateResult.Push(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "Currently it is not implemented to have a funtion in between two edges."));
+                    //}
 
-                    if (!funcPart.Function.ValidateWorkingBase(_LastAttribute, myDBContext.DBTypeManager))
+                    //if (funcWorkingBase == null) // the first time, it is null and should be set to the _LastAttribute
+                    //{
+                    //    funcWorkingBase = new DBTypeAttribute(_LastAttribute);
+                    //}
+
+                    if (!funcPart.Function.ValidateWorkingBase(funcWorkingBase, myDBContext.DBTypeManager))
                     {
                         return ValidateResult.Push(new Error_InvalidFunctionBase(_LastAttribute, funcPart.FuncName));
+                    }
+
+                    var returnType = funcPart.Function.GetReturnType(new DBTypeAttribute(_LastAttribute), myDBContext.DBTypeManager);
+                    if (returnType != null)
+                    {
+                        if (returnType is DBTypeAttribute)
+                        {
+                            _LastAttribute = (returnType as DBTypeAttribute).GetValue();
+                            _LastType = GetDBTypeByAttribute(myDBContext, _LastAttribute);
+                        }
+                        else if (returnType is DBType)
+                        {
+                            _LastAttribute = null;
+                            _LastType = (returnType as DBType).GetValue();
+                        }
+                        else if (returnType is ADBBaseObject)
+                        {
+                            _LastAttribute = null;
+                            _LastType = myDBContext.DBTypeManager.GetTypeByName((returnType as ADBBaseObject).ObjectName);
+                        }
+                        else
+                        {
+                            return new Exceptional(new Error_InvalidFunctionReturnType(funcPart.FuncName, returnType.GetType(), typeof(DBTypeAttribute), typeof(DBType), typeof(ADBBaseObject)));
+                        }
+                        funcWorkingBase = returnType;
                     }
 
                     #endregion
@@ -808,14 +858,7 @@ namespace sones.GraphDB.Managers.Structures
 
                         #region The previous attribute was seems to be an reference attribute
 
-                        if (_LastAttribute.IsBackwardEdge)
-                        {
-                            _LastType = myDBContext.DBTypeManager.GetTypeByUUID(_LastAttribute.BackwardEdgeDefinition.TypeUUID);
-                        }
-                        else if (_LastAttribute.GetDBType(myDBContext.DBTypeManager).IsUserDefined)
-                        {
-                            _LastType = _LastAttribute.GetDBType(myDBContext.DBTypeManager);
-                        }
+                        _LastType = GetDBTypeByAttribute(myDBContext, _LastAttribute);
 
                         typeOrAttr.DBType = _LastType;
                         typeOrAttr.TypeAttribute = typeOrAttr.DBType.GetTypeAttributeByName(typeOrAttr.TypeOrAttributeName);
@@ -1016,11 +1059,10 @@ namespace sones.GraphDB.Managers.Structures
                         _LastAttribute = typeOrAttr.TypeAttribute;
 
                         if (_LastAttribute == null)
-                        {
-
+                        {   
+                            
                             if (curPart.Next != null || !allowUndefinedAttributes)
-                            {
-
+                            {                                
                                 #region Calling an attribute on an undefined attribute is not allowed - so we assume a typo
 
                                 ValidateResult.Push(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
@@ -1030,7 +1072,7 @@ namespace sones.GraphDB.Managers.Structures
 
                             }
                             else
-                            {
+                            {   
                                 UndefinedAttribute = typeOrAttr.TypeOrAttributeName;
                             }
 
@@ -1048,6 +1090,8 @@ namespace sones.GraphDB.Managers.Structures
 
                     #endregion
 
+                    funcWorkingBase = new DBTypeAttribute(_LastAttribute);
+
                 }
 
                 curPart = curPart.Next;
@@ -1060,6 +1104,20 @@ namespace sones.GraphDB.Managers.Structures
 
             return ValidateResult;
 
+        }
+
+        private GraphDBType GetDBTypeByAttribute(DBContext myDBContext, TypeAttribute _LastAttribute)
+        {
+
+            if (_LastAttribute.IsBackwardEdge)
+            {
+                return myDBContext.DBTypeManager.GetTypeByUUID(_LastAttribute.BackwardEdgeDefinition.TypeUUID);
+            }
+            else
+            {
+                return _LastAttribute.GetDBType(myDBContext.DBTypeManager);
+            }
+        
         }
 
         /// <summary>
@@ -1084,7 +1142,7 @@ namespace sones.GraphDB.Managers.Structures
         {
             return _IDChainString +
                 ((IsValidated) ? " [validated] " : " [notValidated] ") +
-                ((ValidateResult == null || ValidateResult.Success) ? "" : ValidateResult.GetErrorsAsString())
+                ((ValidateResult == null || ValidateResult.Success()) ? "" : ValidateResult.GetErrorsAsString())
                 ;
         }
 
@@ -1118,6 +1176,29 @@ namespace sones.GraphDB.Managers.Structures
         }
 
         #endregion
+
+        public override bool Equals(object obj)
+        {
+
+            if (!(obj is IDChainDefinition))
+            {
+                return false;
+            }
+            var otherChain = (obj as IDChainDefinition);
+
+            return _IDChainString != otherChain._IDChainString;
+
+        }
+
+        public override int GetHashCode()
+        {
+            if (_IDChainString == null)
+            {
+                return 0;
+            }
+            return _IDChainString.GetHashCode();
+        }
+
     }
 
 

@@ -48,7 +48,7 @@ namespace sones.GraphFS.Objects
 
         #endregion
 
-        #region Members of APandoraHeader
+        #region Members of AGraphHeader
 
         Boolean       isNew                   { get; set; }
         INode         INodeReference          { get; set; }

@@ -49,7 +49,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 {
 
     /// <summary>
-    /// Returns myAttributes of a given PandoraType
+    /// Returns myAttributes of a given GraphType
     /// </summary>
 
     public class DBCLI_DBTYPEINFO : AllAdvancedDBCLICommands
@@ -62,11 +62,11 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
             // Command name and description
             InitCommand("DBTYPEINFO",
-                        "Returns myAttributes of a given PandoraType",
-                        "Returns myAttributes of a given PandoraType");
+                        "Returns myAttributes of a given GraphType",
+                        "Returns myAttributes of a given GraphType");
 
             // BNF rule
-            CreateBNFRule(CLICommandSymbolTerminal + PandoraTypeNT);
+            CreateBNFRule(CLICommandSymbolTerminal + GraphTypeNT);
 
         }
 
@@ -74,14 +74,14 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
         #region Execute Command
 
-        public override void Execute(ref object myIGraphFS2Session, ref object myIPandoraDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
+        public override void Execute(ref object myIGraphFS2Session, ref object myIGraphDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
         {
 
             _CancelCommand = false;
             //var _IGraphFS2Session = myIGraphFS2Session as IGraphFSSession;
-            var _IPandoraDBSession = myIPandoraDBSession as GraphDBSession;
+            var _IGraphDBSession = myIGraphDBSession as GraphDBSession;
 
-            if (_IPandoraDBSession == null)
+            if (_IGraphDBSession == null)
             {
                 WriteLine("No database instance started...");
                 return;
@@ -89,7 +89,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
             var typeInterestedIn = myOptions.ElementAt(1).Value[0].Option;
 
-            using (var transaction = _IPandoraDBSession.BeginTransaction())
+            using (var transaction = _IGraphDBSession.BeginTransaction())
             {
 
                 var _ActualType = transaction.GetDBContext().DBTypeManager.GetTypeByName(typeInterestedIn);

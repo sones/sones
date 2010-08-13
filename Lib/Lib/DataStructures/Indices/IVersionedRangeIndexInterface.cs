@@ -32,7 +32,7 @@ using System.Text;
 
 #endregion
 
-namespace Lib.DataStructures.Indices
+namespace sones.Lib.DataStructures.Indices
 {
     interface IVersionedRangeIndexInterface<TKey, TValue>
     {

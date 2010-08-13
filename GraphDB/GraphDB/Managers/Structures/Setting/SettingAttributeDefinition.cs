@@ -53,7 +53,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
                 {
 
                     var validateResult = idChain.Validate(context, false, type);
-                    if (validateResult.Failed)
+                    if (validateResult.Failed())
                     {
                         return new Exceptional<List<SelectionResultSet>>(validateResult);
                     }
@@ -106,7 +106,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
                 {
 
                     var validateResult = idChain.Validate(_DBContext, false, type);
-                    if (validateResult.Failed)
+                    if (validateResult.Failed())
                     {
                         return new Exceptional<List<SelectionResultSet>>(validateResult);
                     }
@@ -116,7 +116,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
                         if (_DBContext.DBSettingsManager.HasSetting(pSetting.Key.ToUpper()))
                         {
                             var setSettingResult = _DBContext.DBSettingsManager.SetSetting(pSetting.Key.ToUpper(), GetValueForSetting(_DBContext.DBSettingsManager.AllSettingsByName[pSetting.Key.ToUpper()], pSetting.Value), _DBContext, TypesSettingScope.ATTRIBUTE, type, idChain.LastAttribute);
-                            if (setSettingResult.Failed)
+                            if (setSettingResult.Failed())
                             {
                                 return new Exceptional<List<SelectionResultSet>>(setSettingResult);
                             }
@@ -152,7 +152,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
                 {
 
                     Exceptional validateResult = idChain.Validate(_DBContext, false);
-                    if (validateResult.Failed)
+                    if (validateResult.Failed())
                     {
                         return new Exceptional<List<SelectionResultSet>>(validateResult);
                     }
@@ -160,7 +160,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
                     foreach (var Setting in mySettings)
                     {
                         var removeResult = idChain.LastAttribute.RemovePersistentSetting(Setting.Key.ToUpper(), _DBContext.DBTypeManager);
-                        if (removeResult.Failed)
+                        if (removeResult.Failed())
                         {
                             return new Exceptional<List<SelectionResultSet>>(removeResult);
                         }

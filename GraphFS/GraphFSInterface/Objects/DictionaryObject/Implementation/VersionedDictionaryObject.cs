@@ -131,7 +131,7 @@ namespace sones.GraphFS.Objects
         #endregion
 
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         #region Clone()
 

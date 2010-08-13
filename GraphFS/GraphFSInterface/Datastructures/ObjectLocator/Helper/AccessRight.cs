@@ -41,11 +41,11 @@
 //using System.Runtime.Serialization.Formatters.Binary;
 
 
-//using sones.Pandora.Storage.PandoraFS.Objects;
+//using sones.Graph.Storage.GraphFS.Objects;
 
 //#endregion
 
-//namespace sones.Pandora.Storage.PandoraFS.Datastructures
+//namespace sones.Graph.Storage.GraphFS.Datastructures
 //{
 
 //    /// <summary>

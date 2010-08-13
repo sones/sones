@@ -39,22 +39,22 @@ namespace sones.GraphDB.Managers.Structures
 
         #region override AAttributeAssignOrUpdate.GetValueForAttribute
 
-        public override Exceptional<AObject> GetValueForAttribute(DBObjectStream aDBObject, DBContext dbContext, GraphDBType _Type)
+        public override Exceptional<IObject> GetValueForAttribute(DBObjectStream aDBObject, DBContext dbContext, GraphDBType _Type)
         {
 
             #region Expression
 
             var validateResult = BinaryExpressionDefinition.Validate(dbContext, _Type);
-            if (validateResult.Failed)
+            if (validateResult.Failed())
             {
-                return new Exceptional<AObject>(validateResult);
+                return new Exceptional<IObject>(validateResult);
             }
 
             var value = BinaryExpressionDefinition.SimpleExecution(aDBObject, dbContext);
 
             #endregion
 
-            return new Exceptional<AObject>(value);
+            return new Exceptional<IObject>(value);
 
         }
         

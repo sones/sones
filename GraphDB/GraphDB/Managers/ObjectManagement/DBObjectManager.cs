@@ -82,57 +82,57 @@ namespace sones.GraphDB.ObjectManagement
 
         #region DBO 
 
-        #region CreateNewDBObject(myPandoraType, myDBObjectAttributes)
+        #region CreateNewDBObject(myGraphType, myDBObjectAttributes)
 
         /// <summary>
-        /// Creates a new DBObject of a given PandoraType inserts its UUID into all indices of the given PandoraType.
+        /// Creates a new DBObject of a given GraphType inserts its UUID into all indices of the given GraphType.
         /// </summary>
-        /// <param name="myPandoraType">The PandoraType of the DBObject to create</param>
+        /// <param name="myGraphType">The GraphType of the DBObject to create</param>
         /// <param name="myDBObjectAttributes">A dictionary of attributes for the new DBObject</param>
         /// <param name="myCheckUniqueness">check for unique constraints</param>
         /// <returns>The UUID of the new DBObject</returns>
-        public Exceptional<DBObjectStream> CreateNewDBObject(GraphDBType myPandoraType, Dictionary<String, AObject> myDBObjectAttributes, Dictionary<String, AObject> myUndefAttributes, SessionSettings myToken, Boolean myCheckUniqueness)
+        public Exceptional<DBObjectStream> CreateNewDBObject(GraphDBType myGraphType, Dictionary<String, IObject> myDBObjectAttributes, Dictionary<String, IObject> myUndefAttributes, SessionSettings myToken, Boolean myCheckUniqueness)
         {
-            Dictionary<AttributeUUID, AObject> _attrs = myDBObjectAttributes.ToDictionary(key => myPandoraType.GetTypeAttributeByName(key.Key).UUID, value => value.Value);
-            return CreateNewDBObject(myPandoraType, _attrs, myUndefAttributes, null, myToken, myCheckUniqueness);
+            Dictionary<AttributeUUID, IObject> _attrs = myDBObjectAttributes.ToDictionary(key => myGraphType.GetTypeAttributeByName(key.Key).UUID, value => value.Value);
+            return CreateNewDBObject(myGraphType, _attrs, myUndefAttributes, null, myToken, myCheckUniqueness);
         }
 
         #endregion
 
-        #region CreateNewDBObject(myPandoraType, myDBObjectAttributes, myExtractSettings)
+        #region CreateNewDBObject(myGraphType, myDBObjectAttributes, myExtractSettings)
 
         /// <summary>
-        /// Creates a new DBObject of a given PandoraType inserts its UUID into all indices of the given PandoraType.
+        /// Creates a new DBObject of a given GraphType inserts its UUID into all indices of the given GraphType.
         /// </summary>
-        /// <param name="myGraphDBType">The PandoraType of the DBObject to create</param>
+        /// <param name="myGraphDBType">The GraphType of the DBObject to create</param>
         /// <param name="myDBObjectAttributes">A dictionary of attributes for the new DBObject</param>
         /// <param name="myExtractSettings">Special values which should be set to a object</param>
         /// <returns>The UUID of the new DBObject</returns>
-        public Exceptional<DBObjectStream> CreateNewDBObject(GraphDBType myGraphDBType, Dictionary<String, AObject> myDBObjectAttributes, Dictionary<String, AObject> myUndefAttributes, Dictionary<ASpecialTypeAttribute, Object> mySpecialTypeAttributes, SessionSettings mySessionSettings, Boolean myCheckUniqueness)
+        public Exceptional<DBObjectStream> CreateNewDBObject(GraphDBType myGraphDBType, Dictionary<String, IObject> myDBObjectAttributes, Dictionary<String, IObject> myUndefAttributes, Dictionary<ASpecialTypeAttribute, Object> mySpecialTypeAttributes, SessionSettings mySessionSettings, Boolean myCheckUniqueness)
         {
-            Dictionary<AttributeUUID, AObject> _attrs = myDBObjectAttributes.ToDictionary(key => myGraphDBType.GetTypeAttributeByName(key.Key).UUID, value => value.Value);
+            Dictionary<AttributeUUID, IObject> _attrs = myDBObjectAttributes.ToDictionary(key => myGraphDBType.GetTypeAttributeByName(key.Key).UUID, value => value.Value);
             return CreateNewDBObject(myGraphDBType, _attrs, myUndefAttributes, mySpecialTypeAttributes, mySessionSettings, myCheckUniqueness);
         }
 
         #endregion
 
-        #region CreateNewDBObject(myPandoraType, myDBObjectAttributes)
+        #region CreateNewDBObject(myGraphType, myDBObjectAttributes)
         
         /// <summary>
-        /// Creates a new DBObject of a given PandoraType inserts its UUID into all indices of the given PandoraType.
+        /// Creates a new DBObject of a given GraphType inserts its UUID into all indices of the given GraphType.
         /// </summary>
-        /// <param name="myGraphDBType">The PandoraType of the DBObject to create</param>
+        /// <param name="myGraphDBType">The GraphType of the DBObject to create</param>
         /// <param name="myDBObjectAttributes">A dictionary of attributes for the new DBObject</param>
         /// <param name="mySpecialTypeAttributes">Special values which should be set to a object</param>
         /// <param name="myCheckUniqueness">check for unique constraints</param> 
         /// <returns>The UUID of the new DBObject</returns>
-        public Exceptional<DBObjectStream> CreateNewDBObject(GraphDBType myGraphDBType, Dictionary<AttributeUUID, AObject> myDBObjectAttributes, Dictionary<String, AObject> myUndefAttributes, Dictionary<ASpecialTypeAttribute, Object> mySpecialTypeAttributes, SessionSettings mySessionSettings, Boolean myCheckUniqueness)
+        public Exceptional<DBObjectStream> CreateNewDBObject(GraphDBType myGraphDBType, Dictionary<AttributeUUID, IObject> myDBObjectAttributes, Dictionary<String, IObject> myUndefAttributes, Dictionary<ASpecialTypeAttribute, Object> mySpecialTypeAttributes, SessionSettings mySessionSettings, Boolean myCheckUniqueness)
         {
 
             #region Input validation
 
             if (myGraphDBType == null)
-                return new Exceptional<DBObjectStream>(new Error_ArgumentNullOrEmpty("The parameter myPandoraType must not be null!"));
+                return new Exceptional<DBObjectStream>(new Error_ArgumentNullOrEmpty("The parameter myGraphType must not be null!"));
 
             if (myDBObjectAttributes == null)
                 return new Exceptional<DBObjectStream>(new Error_ArgumentNullOrEmpty("The parameter myDBObjectAttributes must not be null!"));
@@ -145,7 +145,7 @@ namespace sones.GraphDB.ObjectManagement
                 var parentTypes = _DBContext.DBTypeManager.GetAllParentTypes(myGraphDBType, true, false);
                 var CheckVal = _DBContext.DBIndexManager.CheckUniqueConstraint(myGraphDBType, parentTypes, myDBObjectAttributes);
 
-                if (CheckVal.Failed)
+                if (CheckVal.Failed())
                     return new Exceptional<DBObjectStream>(CheckVal);
             }
 
@@ -167,7 +167,7 @@ namespace sones.GraphDB.ObjectManagement
                     if (specialAttr.Key is SpecialTypeAttribute_UUID)
                     {
                         var result = specialAttr.Key.ApplyTo(NewDBObject, specialAttr.Value);
-                        if (result.Failed)
+                        if (result.Failed())
                         {
                             return new Exceptional<DBObjectStream>(result);
                         }
@@ -178,7 +178,7 @@ namespace sones.GraphDB.ObjectManagement
                     else
                     {
                         var result = specialAttr.Key.ApplyTo(NewDBObject, specialAttr.Value);
-                        if (result.Failed)
+                        if (result.Failed())
                         {
                             return new Exceptional<DBObjectStream>(result);
                         }
@@ -194,7 +194,7 @@ namespace sones.GraphDB.ObjectManagement
 
             var objectExistsResult = ObjectExistsOnFS(NewDBObject);
 
-            if (objectExistsResult.Failed)
+            if (objectExistsResult.Failed())
                 return new Exceptional<DBObjectStream>(objectExistsResult);
             
             while (objectExistsResult.Value == Trinary.TRUE)
@@ -209,7 +209,7 @@ namespace sones.GraphDB.ObjectManagement
 
                 objectExistsResult = ObjectExistsOnFS(NewDBObject);
 
-                if (objectExistsResult.Failed)
+                if (objectExistsResult.Failed())
                     return new Exceptional<DBObjectStream>(objectExistsResult);
 
             }
@@ -225,14 +225,14 @@ namespace sones.GraphDB.ObjectManagement
             //NLOG: temporarily commented
             ////_Logger.Trace("CreateNewDBObject flushed " + NewDBObject.ObjectUUID.ToString());
 
-            if (flushResult.Failed)
+            if (flushResult.Failed())
                 return new Exceptional<DBObjectStream>(flushResult);
 
             #region Check for existing object - might be removed at some time
 
             var exists = ObjectExistsOnFS(NewDBObject);
 
-            if (exists.Failed)
+            if (exists.Failed())
                 return new Exceptional<DBObjectStream>(exists);
 
             if (exists.Value != Trinary.TRUE)
@@ -242,7 +242,7 @@ namespace sones.GraphDB.ObjectManagement
 
             #endregion
             
-            #region Add UUID of the new DBObject to all indices of myPandoraType
+            #region Add UUID of the new DBObject to all indices of myGraphType
 
             foreach (var type in _DBContext.DBTypeManager.GetAllParentTypes(myGraphDBType, true, false))
             {
@@ -267,7 +267,7 @@ namespace sones.GraphDB.ObjectManagement
                 {
                     var addExcept = NewDBObject.AddUndefinedAttribute(item.Key, item.Value, this);
 
-                    if (addExcept.Failed)
+                    if (addExcept.Failed())
                     {
                         return new Exceptional<DBObjectStream>(addExcept);
                     }
@@ -284,7 +284,7 @@ namespace sones.GraphDB.ObjectManagement
         {
             var objectExistException = _IGraphFSSession.ObjectStreamExists(NewDBObject.ObjectLocation, DBConstants.DBOBJECTSTREAM);
 
-            if (objectExistException.Failed)
+            if (objectExistException.Failed())
                 return new Exceptional<Trinary>(objectExistException);
 
             return new Exceptional<Trinary>(objectExistException.Value);
@@ -297,7 +297,7 @@ namespace sones.GraphDB.ObjectManagement
         /// <summary>
         /// Loads a DBObject from filesystem.
         /// </summary>
-        /// <param name="myPandoraType">The PandoraType of the DBObject (for path resolution).</param>
+        /// <param name="myGraphType">The GraphType of the DBObject (for path resolution).</param>
         /// <param name="myUUID">The unique identifier of the DBObject</param>
         /// <returns>The requested DBObject or null.</returns>
         public Exceptional<DBObjectStream> LoadDBObject(GraphDBType myGraphDBType, ObjectUUID myUUID)
@@ -326,7 +326,7 @@ namespace sones.GraphDB.ObjectManagement
             
             var _GetObjectExceptional = _IGraphFSSession.GetFSObject<DBObjectStream>(myObjectLocation, DBConstants.DBOBJECTSTREAM, null, null, 0, false);
 
-            if (_GetObjectExceptional == null || _GetObjectExceptional.Failed || _GetObjectExceptional.Value == null)
+            if (_GetObjectExceptional == null || _GetObjectExceptional.Failed() || _GetObjectExceptional.Value == null)
             {
                 return _GetObjectExceptional.Convert<DBObjectStream>().PushT(new Error_LoadObject(myObjectLocation));
             }
@@ -371,7 +371,7 @@ namespace sones.GraphDB.ObjectManagement
         /// <summary>
         /// Removes a DBObject.
         /// </summary>
-        /// <param name="myPandoraType">The Type of the DBObject that is to be removed.</param>
+        /// <param name="myGraphType">The Type of the DBObject that is to be removed.</param>
         /// <param name="myDBObject">The UUID of the DBObject.</param>
         public Exceptional RemoveDBObject(GraphDBType myTypeOfDBObject, DBObjectStream myDBObject, DBObjectCache myDBObjectCache, SessionSettings myToken)
         {
@@ -413,7 +413,7 @@ namespace sones.GraphDB.ObjectManagement
             #region Remove DBOBJECTSTREAM
 
             var _RemoveObjectExceptional = _IGraphFSSession.RemoveObjectIfExists(myDBObjectLocation, DBConstants.DBOBJECTSTREAM);
-            if (_RemoveObjectExceptional.Failed)
+            if (_RemoveObjectExceptional.Failed())
             {
                 return _RemoveObjectExceptional;
             }
@@ -423,7 +423,7 @@ namespace sones.GraphDB.ObjectManagement
             #region Remove DBBACKWARDEDGESTREAM
 
             _RemoveObjectExceptional = _IGraphFSSession.RemoveObjectIfExists(myDBObjectLocation, DBConstants.DBBACKWARDEDGESTREAM);
-            if (_RemoveObjectExceptional.Failed)
+            if (_RemoveObjectExceptional.Failed())
             {
                 return _RemoveObjectExceptional;
             }
@@ -433,7 +433,7 @@ namespace sones.GraphDB.ObjectManagement
             #region Remove UNDEFATTRIBUTESSTREAM
 
             _RemoveObjectExceptional = _IGraphFSSession.RemoveObjectIfExists(myDBObjectLocation, DBConstants.UNDEFATTRIBUTESSTREAM);
-            if (_RemoveObjectExceptional.Failed)
+            if (_RemoveObjectExceptional.Failed())
             {
                 return _RemoveObjectExceptional;
             }
@@ -462,7 +462,7 @@ namespace sones.GraphDB.ObjectManagement
 
             using (var _Exceptional = (new SettingMaxCacheItems()).Get(dbContext, TypesSettingScope.DB))
             {
-                if (_Exceptional.Success && _Exceptional.Value != null)
+                if (_Exceptional.Success() && _Exceptional.Value != null)
                     _SettingMaxCacheItems = (long)_Exceptional.Value.Value.Value;
             }
 
@@ -484,14 +484,14 @@ namespace sones.GraphDB.ObjectManagement
 
             var existExcept = _IGraphFSSession.ObjectStreamExists(myAttributeLocation, DBConstants.UNDEFATTRIBUTESSTREAM);
 
-            if (existExcept.Failed)
+            if (existExcept.Failed())
                 return new Exceptional<UndefinedAttributesStream>(existExcept);
 
             if (existExcept.Value == Trinary.TRUE)
             {
                 var loadException = _IGraphFSSession.GetFSObject<UndefinedAttributesStream>(myAttributeLocation, DBConstants.UNDEFATTRIBUTESSTREAM, null, null, 0, false);
 
-                if (loadException.Failed)
+                if (loadException.Failed())
                     return new Exceptional<UndefinedAttributesStream>(loadException);
 
                 retAttributes = loadException.Value;
@@ -510,14 +510,14 @@ namespace sones.GraphDB.ObjectManagement
             {
                 var storeExcept = _IGraphFSSession.StoreFSObject(UndefAttributes, true);
 
-                if (storeExcept == null || storeExcept.Failed)
+                if (storeExcept == null || storeExcept.Failed())
                     return new Exceptional<Boolean>(storeExcept);
             }
 
             return new Exceptional<bool>(true);
         }    
 
-        public Exceptional<Boolean> AddUndefinedAttribute(String myName, AObject myValue, DBObjectStream myObject)
+        public Exceptional<Boolean> AddUndefinedAttribute(String myName, IObject myValue, DBObjectStream myObject)
         {
             return myObject.AddUndefinedAttribute(myName, myValue, this);
         }
@@ -541,14 +541,14 @@ namespace sones.GraphDB.ObjectManagement
 
             var existExcept = _IGraphFSSession.ObjectStreamExists(myEdgeLocation, DBConstants.DBBACKWARDEDGESTREAM);
 
-            if (existExcept.Failed)
+            if (existExcept.Failed())
                 return new Exceptional<BackwardEdgeStream>(existExcept);
 
             if (existExcept.Value == Trinary.TRUE)
             {
                 var loadException = _IGraphFSSession.GetFSObject<BackwardEdgeStream>(myEdgeLocation, DBConstants.DBBACKWARDEDGESTREAM, null, null, 0, false);
 
-                if (loadException.Failed)
+                if (loadException.Failed())
                     return new Exceptional<BackwardEdgeStream>(loadException);
 
                 retDBBackwardEdge = loadException.Value;
@@ -572,7 +572,7 @@ namespace sones.GraphDB.ObjectManagement
             //var beLocation = DBObjectStream.GetObjectLocation(_DBContext.DBTypeManager.GetTypeByUUID(typeOfBESource), uuid);
             var loadExcept = _DBContext.DBObjectCache.LoadDBBackwardEdgeStream(typeOfBESource, uuid); // LoadBackwardEdge(beLocation);
 
-            if (loadExcept.Failed)
+            if (loadExcept.Failed())
             {
                 return new Exceptional(loadExcept);
             }

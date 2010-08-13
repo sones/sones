@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – WhereExpressionNode" />
+﻿/* <id name="GraphDB – WhereExpressionNode" />
  * <copyright file="WhereExpressionNode.cs
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -11,6 +11,8 @@
 #region Usings
 
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.GraphDB.Exceptions;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -20,7 +22,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
     public class WhereExpressionNode : AStructureNode
     {
 
-        private BinaryExpressionNode _binExprNode = null;
+        public BinaryExpressionDefinition BinaryExpressionDefinition { get; private set; }
 
         public WhereExpressionNode()
         { }
@@ -31,7 +33,20 @@ namespace sones.GraphDB.GraphQL.StructureNodes
         {
             if (myParseTreeNode.HasChildNodes())
             {
-                _binExprNode = (BinaryExpressionNode) myParseTreeNode.ChildNodes[1].AstNode;
+
+                if (myParseTreeNode.ChildNodes[1].AstNode is TupleNode && (myParseTreeNode.ChildNodes[1].AstNode as TupleNode).TupleDefinition.TupleElements.Count == 1)
+                {
+                    var tuple = (myParseTreeNode.ChildNodes[1].AstNode as TupleNode).TupleDefinition.Simplyfy();
+                    BinaryExpressionDefinition = (tuple.TupleElements[0].Value as BinaryExpressionDefinition);
+                }
+                else if (myParseTreeNode.ChildNodes[1].AstNode is BinaryExpressionNode)
+                {
+                    BinaryExpressionDefinition = ((BinaryExpressionNode)myParseTreeNode.ChildNodes[1].AstNode).BinaryExpressionDefinition;
+                }
+                //else
+                //{
+                //    throw new GraphDBException(new Errors.Error_GqlSyntax("Invalid tuple for where expression"));
+                //}
             }
         }
 
@@ -42,7 +57,6 @@ namespace sones.GraphDB.GraphQL.StructureNodes
             return "whereClauseOpt";
         }
 
-        public BinaryExpressionNode BinExprNode { get { return _binExprNode; } }
 
     }
 

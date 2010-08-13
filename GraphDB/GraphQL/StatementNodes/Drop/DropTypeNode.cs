@@ -50,8 +50,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Drop
         public override QueryResult Execute(IGraphDBSession graphDBSession)
         {
 
-            return graphDBSession.DropType(_TypeName);
-
+            var qresult = graphDBSession.DropType(_TypeName);
+            qresult.AddErrorsAndWarnings(ParsingResult);
+            return qresult;
         }
 
     }

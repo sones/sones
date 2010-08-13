@@ -32,12 +32,13 @@ using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
+using sones.GraphDB.Structures.Result;
 
 #endregion
 
 namespace sones.GraphDB
 {
-    public class GraphFunc : ABaseFunction
+    public class PathFunc : ABaseFunction
     {
         public override string FunctionName
         {
@@ -53,7 +54,7 @@ namespace sones.GraphDB
 
         #endregion
 
-        public GraphFunc()
+        public PathFunc()
         {
             /// these are the starting edges and TypeAttribute.
             /// This is not the starting DBObject but just the content of the attribute defined by TypeAttribute!!!
@@ -64,25 +65,25 @@ namespace sones.GraphDB
             Parameters.Add(new ParameterValue("AllPaths", new DBBoolean()));
         }
 
-        public override bool ValidateWorkingBase(TypeAttribute workingBase, DBTypeManager typeManager)
+        public override bool ValidateWorkingBase(IObject workingBase, DBTypeManager typeManager)
         {
-            if (workingBase != null)
+            if (workingBase is DBTypeAttribute)
             {
-                if (workingBase.TypeCharacteristics.IsBackwardEdge)
+
+                var workingTypeAttribute = (workingBase as DBTypeAttribute).GetValue();
+                if (workingTypeAttribute.TypeCharacteristics.IsBackwardEdge)
+                {
+                    return true;
+                }
+                else if (workingTypeAttribute.GetDBType(typeManager).IsUserDefined)
                 {
                     return true;
                 }
                 else
                 {
-                    if (workingBase.GetDBType(typeManager).IsUserDefined)
-                    {
-                        return true;
-                    }
-                    else
-                    {
-                        return false;
-                    }
+                    return false;
                 }
+
             }
             else
             {
@@ -137,7 +138,7 @@ namespace sones.GraphDB
                 throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
 
             var dbObject = destDBOs.First();
-            if (dbObject.Failed)
+            if (dbObject.Failed())
             {
                 throw new GraphDBException(dbObject.Errors);
             }
@@ -150,7 +151,7 @@ namespace sones.GraphDB
                 //paths = new BreadthFirstSearch().Find(typeAttribute, typeManager, cache, mySourceDBObject, dbObject, onlyShortestPath, allPaths, maxDepth, maxPathLength);
 
                 //bidirectional BFS
-                paths = new BidirectionalBFS().Find(typeAttribute, dbContext, CallingDBObjectStream as DBObjectStream, dbObject.Value, onlyShortestPath, allPaths, maxDepth, maxPathLength);
+                paths = new BidirectionalBFS().Find(typeAttribute, dbContext, CallingDBObjectStream as DBObjectStream, CallingObject as IReferenceEdge, dbObject.Value, onlyShortestPath, allPaths, maxDepth, maxPathLength);
             }
             else //use uni-directional search for "shortest path and all paths up to given depth"
             {
@@ -158,7 +159,7 @@ namespace sones.GraphDB
                 //paths = new BreadthFirstSearch().Find(typeAttribute, dbContext.DBTypeManager, dbContext.DBObjectCache, CallingDBObjectStream as DBObjectStream, dbObject.Value, onlyShortestPath, allPaths, maxDepth, maxPathLength);
 
                 //bidirectional BFS
-                paths = new BidirectionalBFS().Find(typeAttribute, dbContext, CallingDBObjectStream as DBObjectStream, dbObject.Value, onlyShortestPath, allPaths, maxDepth, maxPathLength);
+                paths = new BidirectionalBFS().Find(typeAttribute, dbContext, CallingDBObjectStream as DBObjectStream, CallingObject as IReferenceEdge, dbObject.Value, onlyShortestPath, allPaths, maxDepth, maxPathLength);
             }
 
             //This variable will be returned

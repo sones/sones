@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – CreateTypes astnode" />
+﻿/* <id name="GraphDB – CreateTypes astnode" />
  * <copyright file="CreateTypesNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -69,8 +69,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes
         public override QueryResult Execute(IGraphDBSession graphDBSession)
         {
 
-            return graphDBSession.CreateTypes(_TypeDefinitions);
-
+            var qresult = graphDBSession.CreateTypes(_TypeDefinitions);
+            qresult.AddErrorsAndWarnings(ParsingResult);
+            return qresult;
         }
 
         #endregion
@@ -89,6 +90,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes
                 #region Single type
 
                 BulkTypeNode aTempNode = (BulkTypeNode)myParseTreeNode.ChildNodes[3].AstNode;
+                ParsingResult.Push(aTempNode.ParsingResult);
 
                 Boolean isAbstract = false;
 
@@ -113,6 +115,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes
                     if (_ParseTreeNode.AstNode != null)
                     {
                         BulkTypeListMemberNode aTempNode = (BulkTypeListMemberNode)_ParseTreeNode.AstNode;
+                        ParsingResult.Push(aTempNode.ParsingResult);
                         _TypeDefinitions.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, aTempNode.IsAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
                     }
                 }

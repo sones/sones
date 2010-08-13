@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – DBInt64" />
+﻿/* <id name="GraphDB – DBInt64" />
  * <copyright file="DBInt64.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -109,77 +109,77 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
 
         #region Operations
 
-        public static DBInt64 operator +(DBInt64 myPandoraObjectA, Int64 myValue)
+        public static DBInt64 operator +(DBInt64 myGraphObjectA, Int64 myValue)
         {
-            myPandoraObjectA.Value = (Int64)myPandoraObjectA.Value + myValue;
-            return myPandoraObjectA;
+            myGraphObjectA.Value = (Int64)myGraphObjectA.Value + myValue;
+            return myGraphObjectA;
         }
 
-        public static DBInt64 operator -(DBInt64 myPandoraObjectA, Int64 myValue)
+        public static DBInt64 operator -(DBInt64 myGraphObjectA, Int64 myValue)
         {
-            myPandoraObjectA.Value = (Int64)myPandoraObjectA.Value - myValue;
-            return myPandoraObjectA;
+            myGraphObjectA.Value = (Int64)myGraphObjectA.Value - myValue;
+            return myGraphObjectA;
         }
 
-        public static DBInt64 operator *(DBInt64 myPandoraObjectA, Int64 myValue)
+        public static DBInt64 operator *(DBInt64 myGraphObjectA, Int64 myValue)
         {
-            myPandoraObjectA.Value = (Int64)myPandoraObjectA.Value * myValue;
-            return myPandoraObjectA;
+            myGraphObjectA.Value = (Int64)myGraphObjectA.Value * myValue;
+            return myGraphObjectA;
         }
 
-        public static DBInt64 operator /(DBInt64 myPandoraObjectA, Int64 myValue)
+        public static DBInt64 operator /(DBInt64 myGraphObjectA, Int64 myValue)
         {
-            myPandoraObjectA.Value = (Int64)myPandoraObjectA.Value / myValue;
-            return myPandoraObjectA;
+            myGraphObjectA.Value = (Int64)myGraphObjectA.Value / myValue;
+            return myGraphObjectA;
         }
 
-        public override ADBBaseObject Add(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Add(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
 
-            Int64 valA = Convert.ToInt64(myPandoraObjectA.Value);
-            Int64 valB = Convert.ToInt64(myPandoraObjectB.Value);
+            Int64 valA = Convert.ToInt64(myGraphObjectA.Value);
+            Int64 valB = Convert.ToInt64(myGraphObjectB.Value);
             return new DBInt64(valA + valB);
         }
 
-        public override ADBBaseObject Sub(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Sub(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            Int64 valA = Convert.ToInt64(myPandoraObjectA.Value);
-            Int64 valB = Convert.ToInt64(myPandoraObjectB.Value);
+            Int64 valA = Convert.ToInt64(myGraphObjectA.Value);
+            Int64 valB = Convert.ToInt64(myGraphObjectB.Value);
             return new DBInt64(valA - valB);
         }
 
-        public override ADBBaseObject Mul(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Mul(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            Int64 valA = Convert.ToInt64(myPandoraObjectA.Value);
-            Int64 valB = Convert.ToInt64(myPandoraObjectB.Value);
+            Int64 valA = Convert.ToInt64(myGraphObjectA.Value);
+            Int64 valB = Convert.ToInt64(myGraphObjectB.Value);
             return new DBInt64(valA * valB);
         }
 
-        public override ADBBaseObject Div(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Div(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            Int64 valA = Convert.ToInt64(myPandoraObjectA.Value);
-            Int64 valB = Convert.ToInt64(myPandoraObjectB.Value);
+            Int64 valA = Convert.ToInt64(myGraphObjectA.Value);
+            Int64 valB = Convert.ToInt64(myGraphObjectB.Value);
             return new DBInt64(valA / valB);
         }
 
-        public override void Add(ADBBaseObject myPandoraObject)
+        public override void Add(ADBBaseObject myGraphObject)
         {
-            _Value += Convert.ToInt64(myPandoraObject.Value);
+            _Value += Convert.ToInt64(myGraphObject.Value);
         }
 
-        public override void Sub(ADBBaseObject myPandoraObject)
+        public override void Sub(ADBBaseObject myGraphObject)
         {
-            _Value -= Convert.ToInt64(myPandoraObject.Value);
+            _Value -= Convert.ToInt64(myGraphObject.Value);
         }
 
-        public override void Mul(ADBBaseObject myPandoraObject)
+        public override void Mul(ADBBaseObject myGraphObject)
         {
-            _Value *= Convert.ToInt64(myPandoraObject.Value);
+            _Value *= Convert.ToInt64(myGraphObject.Value);
         }
 
-        public override void Div(ADBBaseObject myPandoraObject)
+        public override void Div(ADBBaseObject myGraphObject)
         {
-            _Value /= Convert.ToInt64(myPandoraObject.Value);
+            _Value /= Convert.ToInt64(myGraphObject.Value);
         }
 
         #endregion

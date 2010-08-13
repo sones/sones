@@ -67,10 +67,10 @@ namespace sones.GraphDB.Settings
 
         #region constructor
 
-        public DBSettingsManager(Dictionary<String, ADBSettingsBase> myReflectorSettings, Dictionary<String, ADBSettingsBase> myDBSettings, IGraphFSSession myIPandoraFS, ObjectLocation mySettingsLocation)
+        public DBSettingsManager(Dictionary<String, ADBSettingsBase> myReflectorSettings, Dictionary<String, ADBSettingsBase> myDBSettings, IGraphFSSession myIGraphFS, ObjectLocation mySettingsLocation)
         {
 
-            _IGraphFSSession    = myIPandoraFS;
+            _IGraphFSSession    = myIGraphFS;
             _DBSettingsLocation = mySettingsLocation;
 
             AllSettingsByName = new Dictionary<string, ADBSettingsBase>();
@@ -100,7 +100,7 @@ namespace sones.GraphDB.Settings
         private Exceptional VerifyReadWriteOperationIsValid(DBContext myDBContext, String myOperation = "")
         {
             var isReadOnlySettingValue = GetSettingValue(new SettingReadonly().Name, myDBContext, TypesSettingScope.DB);
-            if (isReadOnlySettingValue.Failed)
+            if (isReadOnlySettingValue.Failed())
             {
                 return new Exceptional(isReadOnlySettingValue);
             }
@@ -123,7 +123,7 @@ namespace sones.GraphDB.Settings
             #region Verify that DB is not set to readonly
 
             var readWriteCheck = VerifyReadWriteOperationIsValid(myDBContext, mySetting.Name);
-            if (readWriteCheck.Failed)
+            if (readWriteCheck.Failed())
             {
                 return new Exceptional(readWriteCheck);
             }
@@ -132,7 +132,7 @@ namespace sones.GraphDB.Settings
 
             var _SetMetadatumExceptional = _IGraphFSSession.SetMetadatum<ADBSettingsBase>(_DBSettingsLocation, FSConstants.SETTINGSSTREAM, FSConstants.DefaultEdition, mySetting.Name, mySetting, IndexSetStrategy.REPLACE);
 
-            if (_SetMetadatumExceptional != null && _SetMetadatumExceptional.Success)
+            if (_SetMetadatumExceptional != null && _SetMetadatumExceptional.Success())
             {
                 return Exceptional.OK;
             }
@@ -149,7 +149,7 @@ namespace sones.GraphDB.Settings
         {
             var _GetMetadatumExceptional = _IGraphFSSession.GetMetadatum<ADBSettingsBase>(_DBSettingsLocation, FSConstants.SETTINGSSTREAM, FSConstants.DefaultEdition, mySettingName);
 
-            if (_GetMetadatumExceptional == null || _GetMetadatumExceptional.Failed || _GetMetadatumExceptional.Value == null || _GetMetadatumExceptional.Value.Count() == 0)
+            if (_GetMetadatumExceptional == null || _GetMetadatumExceptional.Failed() || _GetMetadatumExceptional.Value == null || _GetMetadatumExceptional.Value.Count() == 0)
             {
                 return new Exceptional<ADBSettingsBase>();
             }
@@ -169,7 +169,7 @@ namespace sones.GraphDB.Settings
             #region Verify that DB is not set to readonly
 
             var readWriteCheck = VerifyReadWriteOperationIsValid(myDBContext, mySettingName);
-            if (readWriteCheck.Failed)
+            if (readWriteCheck.Failed())
             {
                 return new Exceptional<bool>(readWriteCheck);
             }
@@ -178,7 +178,7 @@ namespace sones.GraphDB.Settings
 
             var _RemoveMetadatumExceptional = _IGraphFSSession.RemoveMetadata<ADBSettingsBase>(_DBSettingsLocation, FSConstants.SETTINGSSTREAM, FSConstants.DefaultEdition, mySettingName);
 
-            if (_RemoveMetadatumExceptional == null || _RemoveMetadatumExceptional.Failed)
+            if (_RemoveMetadatumExceptional == null || _RemoveMetadatumExceptional.Failed())
             {
                 return _RemoveMetadatumExceptional.Convert<bool>().PushT(new Error_SettingDoesNotExist(mySettingName));
             }
@@ -230,7 +230,7 @@ namespace sones.GraphDB.Settings
             {
                 var interestingSetting = AllSettingsByUUID[settingUUID].Get(dbContext, typesOfSettingScope, type, attribute);
 
-                if (!interestingSetting.Success)
+                if (!interestingSetting.Success())
                 {
                     return new Exceptional<ADBBaseObject>(interestingSetting);
                 }
@@ -309,7 +309,7 @@ namespace sones.GraphDB.Settings
             {
                 var interestingSetting = AllSettingsByName[settingName].Get(context, scope, type, attribute);
 
-                if (!interestingSetting.Success)
+                if (!interestingSetting.Success())
                 {
                     return new Exceptional<ADBSettingsBase>(interestingSetting);
                 }
@@ -364,7 +364,7 @@ namespace sones.GraphDB.Settings
             {
                 var interestingSetting = AllSettingsByUUID[settingUUID].Get(context, scope, type, attribute);
 
-                if (!interestingSetting.Success)
+                if (!interestingSetting.Success())
                 {
                     return new Exceptional<ADBSettingsBase>(interestingSetting);
                 }
@@ -415,7 +415,7 @@ namespace sones.GraphDB.Settings
             foreach (var aSetting in AllSettingsByName)
             {
                 var aExtractedSetting = GetSetting(aSetting.Key, _DBContext, typesSettingScope, type, attribute, includingDefaults);
-                if (!aExtractedSetting.Success)
+                if (!aExtractedSetting.Success())
                 {
                     throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace()));
                 }
@@ -424,7 +424,7 @@ namespace sones.GraphDB.Settings
                 {
                     /*
                     var currentDBSetting = aExtractedSetting.Value.Get(_DBContext, TypesSettingScope.DB);
-                    if (currentDBSetting.Failed)
+                    if (currentDBSetting.Failed())
                     {
                         throw new GraphDBException(currentDBSetting.Errors);
                     }
@@ -483,7 +483,7 @@ namespace sones.GraphDB.Settings
                     #region GET
 
                     var extractDataResult = mySettingDefinition.ExtractData(mySettings, myDBContext);
-                    if (extractDataResult.Failed)
+                    if (extractDataResult.Failed())
                     {
                         return new QueryResult(extractDataResult);
                     }
@@ -496,7 +496,7 @@ namespace sones.GraphDB.Settings
                     #region SET
 
                     var setDataResult = mySettingDefinition.SetData(mySettings, myDBContext);
-                    if (setDataResult.Failed)
+                    if (setDataResult.Failed())
                     {
                         return new QueryResult(setDataResult);
                     }
@@ -509,7 +509,7 @@ namespace sones.GraphDB.Settings
                     #region REMOVE
 
                     var removeDataResult = mySettingDefinition.RemoveData(mySettings, myDBContext);
-                    if (removeDataResult.Failed)
+                    if (removeDataResult.Failed())
                     {
                         return new QueryResult(removeDataResult);
                     }

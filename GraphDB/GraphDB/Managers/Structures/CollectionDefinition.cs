@@ -51,38 +51,38 @@ namespace sones.GraphDB.Managers.Structures
         /// <param name="myGraphDBType"></param>
         /// <param name="myDBContext"></param>
         /// <returns></returns>
-        public Exceptional<ASetReferenceEdgeType> GetEdge(TypeAttribute myTypeAttribute, GraphDBType myGraphDBType, DBContext myDBContext)
+        public Exceptional<ASetOfReferencesEdgeType> GetEdge(TypeAttribute myTypeAttribute, GraphDBType myGraphDBType, DBContext myDBContext)
         {
 
-            if (CollectionType == CollectionType.List || !(myTypeAttribute.EdgeType is ASetReferenceEdgeType))
+            if (CollectionType == CollectionType.List || !(myTypeAttribute.EdgeType is ASetOfReferencesEdgeType))
             {
-                return new Exceptional<ASetReferenceEdgeType>(new Error_InvalidAssignOfSet(myTypeAttribute.Name));
+                return new Exceptional<ASetOfReferencesEdgeType>(new Error_InvalidAssignOfSet(myTypeAttribute.Name));
             }
 
             #region The Edge is empty
 
             if (TupleDefinition == null)
             {
-                return new Exceptional<ASetReferenceEdgeType>(myTypeAttribute.EdgeType.GetNewInstance() as ASetReferenceEdgeType);
+                return new Exceptional<ASetOfReferencesEdgeType>(myTypeAttribute.EdgeType.GetNewInstance() as ASetOfReferencesEdgeType);
             }
 
             #endregion
 
-            Exceptional<ASetReferenceEdgeType> uuids = null;
+            Exceptional<ASetOfReferencesEdgeType> uuids = null;
             if (CollectionType == CollectionType.SetOfUUIDs)
             {
                 uuids = TupleDefinition.GetAsUUIDEdge(myDBContext, myTypeAttribute);
-                if (uuids.Failed)
+                if (uuids.Failed())
                 {
-                    return new Exceptional<ASetReferenceEdgeType>(uuids);
+                    return new Exceptional<ASetOfReferencesEdgeType>(uuids);
                 }
             }
             else
             {
-                uuids = TupleDefinition.GetCorrespondigDBObjectUUIDAsList(myGraphDBType, myDBContext, (ASetReferenceEdgeType)myTypeAttribute.EdgeType, myGraphDBType);
+                uuids = TupleDefinition.GetCorrespondigDBObjectUUIDAsList(myGraphDBType, myDBContext, (ASetOfReferencesEdgeType)myTypeAttribute.EdgeType, myGraphDBType);
                 if (CollectionType == CollectionType.Set)
                 {
-                    if (uuids.Success)
+                    if (uuids.Success())
                     {
                         uuids.Value.Distinction();
                     }

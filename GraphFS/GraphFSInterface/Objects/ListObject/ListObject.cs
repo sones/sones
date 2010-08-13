@@ -74,10 +74,10 @@ namespace sones.GraphFS.Objects
         public ListObject()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion        = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream           = "LIST_OF_...";
 
             // Object specific data...
@@ -122,7 +122,7 @@ namespace sones.GraphFS.Objects
         #endregion
 
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         #region Clone()
 
@@ -563,7 +563,7 @@ namespace sones.GraphFS.Objects
                 Type ListType = mySerializationReader.ReadTypeOptimized();
 
                 if (ListType != typeof(T))
-                    throw new PandoraFSException_TypeParametersDiffer("Type parameter PT of List<PT> is different from the serialized ListType<" + ListType.ToString() + ">!");
+                    throw new GraphFSException_TypeParametersDiffer("Type parameter PT of List<PT> is different from the serialized ListType<" + ListType.ToString() + ">!");
 
                 #endregion
 

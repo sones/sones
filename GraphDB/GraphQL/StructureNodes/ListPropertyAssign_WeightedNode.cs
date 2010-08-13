@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – ListPropertyAssign_WeightedNode" />
+﻿/* <id name="GraphDB – ListPropertyAssign_WeightedNode" />
  * <copyright file="ListPropertyAssign_WeightedNode.cs
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -50,7 +50,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
             if (parseNode.ChildNodes[2].HasChildNodes())
             {
                 String type = ((GraphDBTypeNode)parseNode.ChildNodes[2].AstNode).DBTypeDefinition.Name;
-                _WeightedValue = (DBNumber)GraphDBTypeMapper.GetPandoraObjectFromTypeName(type); //Convert.ToDouble(parseNode.ChildNodes[2].Token.Value);
+                _WeightedValue = (DBNumber)GraphDBTypeMapper.GetGraphObjectFromTypeName(type); //Convert.ToDouble(parseNode.ChildNodes[2].Token.Value);
             }
             else if (parseNode.ChildNodes.Count == 3)
             {

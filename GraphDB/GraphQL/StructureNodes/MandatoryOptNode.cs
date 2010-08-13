@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – Mandatory OptNode" />
+﻿/* <id name="GraphDB – Mandatory OptNode" />
  * <copyright file="MandatoryOptNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.

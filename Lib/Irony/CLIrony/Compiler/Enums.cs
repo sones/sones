@@ -53,7 +53,7 @@ namespace sones.Lib.Frameworks.CLIrony.Compiler {
     IsTransient = 0x0400,  // Transient non-terminal - should be removed from the AST tree. 
   }
 
-  public enum PandoraOption
+  public enum GraphOption
   {
       None = 0,
       IsStructuralObject = 0x01,

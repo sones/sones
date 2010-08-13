@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – DBBoolean" />
+﻿/* <id name="GraphDB – DBBoolean" />
  * <copyright file="DBBoolean.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -92,63 +92,63 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
 
         #region Operations
 
-        public static DBBoolean operator +(DBBoolean myPandoraObjectA, Boolean myValue)
+        public static DBBoolean operator +(DBBoolean myGraphObjectA, Boolean myValue)
         {
             throw new NotImplementedException();
         }
 
-        public static DBBoolean operator -(DBBoolean myPandoraObjectA, Boolean myValue)
+        public static DBBoolean operator -(DBBoolean myGraphObjectA, Boolean myValue)
         {
             throw new NotImplementedException();
         }
 
-        public static DBBoolean operator *(DBBoolean myPandoraObjectA, Boolean myValue)
+        public static DBBoolean operator *(DBBoolean myGraphObjectA, Boolean myValue)
         {
             throw new NotImplementedException();
         }
 
-        public static DBBoolean operator /(DBBoolean myPandoraObjectA, Boolean myValue)
+        public static DBBoolean operator /(DBBoolean myGraphObjectA, Boolean myValue)
         {
             throw new NotImplementedException();
         }
 
-        public override ADBBaseObject Add(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Add(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
 
             throw new NotImplementedException();
         }
 
-        public override ADBBaseObject Sub(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Sub(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
             throw new NotImplementedException();
         }
 
-        public override ADBBaseObject Mul(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Mul(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
             throw new NotImplementedException();
         }
 
-        public override ADBBaseObject Div(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Div(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
             throw new NotImplementedException();
         }
 
-        public override void Add(ADBBaseObject myPandoraObject)
+        public override void Add(ADBBaseObject myGraphObject)
         {
             throw new NotImplementedException();
         }
 
-        public override void Sub(ADBBaseObject myPandoraObject)
+        public override void Sub(ADBBaseObject myGraphObject)
         {
             throw new NotImplementedException();
         }
 
-        public override void Mul(ADBBaseObject myPandoraObject)
+        public override void Mul(ADBBaseObject myGraphObject)
         {
             throw new NotImplementedException();
         }
 
-        public override void Div(ADBBaseObject myPandoraObject)
+        public override void Div(ADBBaseObject myGraphObject)
         {
             throw new NotImplementedException();
         }

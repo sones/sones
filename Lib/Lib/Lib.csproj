@@ -77,11 +77,11 @@
     <Compile Include="DataStructures\BPlusTree\IBPlusTree.cs" />
     <Compile Include="DataStructures\BPlusTree\InnerNode.cs" />
     <Compile Include="DataStructures\BPlusTree\LeafNode.cs" />
-    <Compile Include="DataStructures\BPlusTree\MVCC_poc\BPlusTree_MVCC.cs" />
-    <Compile Include="DataStructures\BPlusTree\MVCC_poc\InnerNode_MVCC.cs" />
-    <Compile Include="DataStructures\BPlusTree\MVCC_poc\LeafNode_MVCC.cs" />
-    <Compile Include="DataStructures\BPlusTree\MVCC_poc\Node_MVCC.cs" />
+    <Compile Include="DataStructures\BPlusTree\MVCC_poc\IndexView.cs" />
     <Compile Include="DataStructures\BPlusTree\MVCC_poc\VersionedBPlusTree_MVCC.cs" />
+    <Compile Include="DataStructures\BPlusTree\MVCC_poc\VersionedInnerNode.cs" />
+    <Compile Include="DataStructures\BPlusTree\MVCC_poc\VersionedLeafNode.cs" />
+    <Compile Include="DataStructures\BPlusTree\MVCC_poc\AVersionedNode.cs" />
     <Compile Include="DataStructures\BPlusTree\Node.cs" />
     <Compile Include="DataStructures\BPlusTree\Versioned\VersionedBPlusTree.cs" />
     <Compile Include="DataStructures\BPlusTree\Versioned\IVersionedBPlusTree.cs" />
@@ -147,13 +147,13 @@
     <Compile Include="FastSerializer\IFastSerializer.cs" />
     <Compile Include="GenericEnum.cs" />
     <Compile Include="Hashing\Filter\AFilter.cs" />
+    <Compile Include="Hashing\ConsistentHashing.cs" />
     <Compile Include="Hashing\Filter\MultiHashBloomFilter.cs" />
     <Compile Include="Hashing\Filter\SingleHashBloomFilter.cs" />
     <Compile Include="Hashing\Functions\MD5Hash.cs" />
     <Compile Include="Hashing\Functions\MurmurHash2.cs" />
     <Compile Include="Hashing\Functions\SHA1Hash.cs" />
     <Compile Include="Hashing\IHashFunction.cs" />
-    <Compile Include="IContext.cs" />
     <Compile Include="KeyValuePairSerializer\KeyValuePairSerializer.cs" />
     <Compile Include="MIMEType\MIMEType.cs" />
     <Compile Include="MinMaxDictionary.cs" />
@@ -172,7 +172,6 @@
     <Compile Include="Reflection\AutoDiscovery.cs" />
     <Compile Include="Reflection\AutoDiscoveryError.cs" />
     <Compile Include="RessourceLock.cs" />
-    <Compile Include="Result\Enum\ResultTypeEnum.cs" />
     <Compile Include="SeperatorTypes.cs" />
     <Compile Include="Session\ISessionInfo.cs" />
     <Compile Include="Session\SessionSettings.cs" />
@@ -184,7 +183,6 @@
     <Compile Include="UnitTestHelper\DynamicUnitTestHelper.cs" />
     <Compile Include="UnitTestHelper\UnitTestHelper.cs" />
     <Compile Include="Version.cs" />
-    <Compile Include="XML\IXMLExport.cs" />
     <Compile Include="XML\PandoraXMLValidation.cs" />
     <Compile Include="XML\XMLValidationTypes.cs" />
   </ItemGroup>

@@ -6,7 +6,7 @@
       <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
-    <InheritanceLine Type="sones.GraphFS.DataStructures.APandoraStructure" FixedFromPoint="true" FixedToPoint="true">
+    <InheritanceLine Type="sones.GraphFS.DataStructures.AGraphStructure" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="1.812" Y="4.75" />
         <Point X="1.812" Y="4.04" />
@@ -111,11 +111,11 @@
     <TypeIdentifier />
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="sones.GraphFS.DataStructures.APandoraStructure">
+  <Class Name="sones.GraphFS.DataStructures.AGraphStructure">
     <Position X="0.5" Y="4.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACBAAAAAAAAAAAAAABA=</HashCode>
-      <FileName>Datastructures\APandoraStructure.cs</FileName>
+      <FileName>Datastructures\AGraphStructure.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>

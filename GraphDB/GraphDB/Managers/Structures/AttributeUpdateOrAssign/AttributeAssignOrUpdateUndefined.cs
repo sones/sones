@@ -41,36 +41,36 @@ namespace sones.GraphDB.Managers.Structures
 
         #region override AAttributeAssignOrUpdate.GetValueForAttribute
 
-        public override Exceptional<AObject> GetValueForAttribute(DBObjectStream aDBObject, DBContext dbContext, GraphDBType _Type)
+        public override Exceptional<IObject> GetValueForAttribute(DBObjectStream aDBObject, DBContext dbContext, GraphDBType _Type)
         {
-            return new Exceptional<AObject>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+            return new Exceptional<IObject>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
         
         #endregion
 
         #region override AAttributeAssignOrUpdateOrRemove.Update
 
-        public override Exceptional<Dictionary<String, Tuple<TypeAttribute, AObject>>> Update(DBContext myDBContext, DBObjectStream myDBObjectStream, GraphDBType myGraphDBType)
+        public override Exceptional<Dictionary<String, Tuple<TypeAttribute, IObject>>> Update(DBContext myDBContext, DBObjectStream myDBObjectStream, GraphDBType myGraphDBType)
         {
-            Dictionary<String, Tuple<TypeAttribute, AObject>> attrsForResult = new Dictionary<String, Tuple<TypeAttribute, AObject>>();
+            Dictionary<String, Tuple<TypeAttribute, IObject>> attrsForResult = new Dictionary<String, Tuple<TypeAttribute, IObject>>();
 
             #region undefined attributes
 
             //TODO: change this to a more handling thing than KeyValuePair
             var addExcept = myDBContext.DBObjectManager.AddUndefinedAttribute(UndefinedAttribute.AttributeName, UndefinedAttribute.AttributeValue, myDBObjectStream);
 
-            if (addExcept.Failed)
+            if (addExcept.Failed())
             {
-                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(addExcept);
+                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(addExcept);
             }
 
             //sthChanged = true;
 
-            attrsForResult.Add(UndefinedAttribute.AttributeName, new Tuple<TypeAttribute, AObject>(null, UndefinedAttribute.AttributeValue));
+            attrsForResult.Add(UndefinedAttribute.AttributeName, new Tuple<TypeAttribute, IObject>(null, UndefinedAttribute.AttributeValue));
 
             #endregion
 
-            return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(attrsForResult);
+            return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(attrsForResult);
 
         }
 

@@ -74,43 +74,26 @@
   <ItemGroup>
     <Compile Include="AGraphDSSharp.cs" />
     <Compile Include="CodeGeneration\CodeGenerator.cs" />
+    <Compile Include="FluentInterface\FluentExtensions.cs" />
     <Compile Include="GraphDSSharp.cs" />
     <Compile Include="Errors\GraphDSSharpExceptions.cs" />
-    <Compile Include="Linq\LinqQueryProvider.cs" />
     <Compile Include="Linq\LinqQueryable.cs" />
+    <Compile Include="Linq\LinqQueryProvider.cs" />
     <Compile Include="Linq\TypeSystem.cs" />
-    <Compile Include="Methods\AlterVertexQuery.cs" />
-    <Compile Include="Methods\AGraphDSQuery.cs" />
-    <Compile Include="Methods\CreateTypeQuery.cs" />
-    <Compile Include="Methods\CreateEdgeQuery.cs" />
-    <Compile Include="Methods\CreateIndexQuery.cs" />
-    <Compile Include="Methods\CreateVertexQuery.cs" />
-    <Compile Include="Methods\SelectQuery.cs" />
-    <Compile Include="Methods\SelectToObject.cs" />
+    <Compile Include="FluentInterface\AlterVertexQuery.cs" />
+    <Compile Include="FluentInterface\AFluentQuery.cs" />
+    <Compile Include="FluentInterface\CreateTypeQuery.cs" />
+    <Compile Include="FluentInterface\CreateEdgeQuery.cs" />
+    <Compile Include="FluentInterface\CreateIndexQuery.cs" />
+    <Compile Include="FluentInterface\CreateVertexQuery.cs" />
+    <Compile Include="FluentInterface\SelectQuery.cs" />
+    <Compile Include="SelectToObject.cs" />
     <Compile Include="Notifications\NGraphDSReady.cs" />
     <Compile Include="Notifications\NGraphDS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Reflection\DBVertex.cs" />
-    <Compile Include="Reflection\TemporaryType.cs" />
-    <Compile Include="Traversal\TraversalState.cs" />
-    <Compile Include="Traversal\TraversalOperation.cs" />
-    <Compile Include="Traversal\Path.cs" />
-    <Compile Include="Reflection\DBEdge.cs" />
+    <Compile Include="Reflection\ReflectionExtensions.cs" />
     <Compile Include="Reflection\ReflectionAttributes.cs" />
-    <Compile Include="Reflection\DBObject.cs" />
-    <Compile Include="Reflection\Set.cs" />
-    <Compile Include="Representations\GEXF_IO_Extensions.cs" />
-    <Compile Include="Representations\GEXF_IO.cs" />
-    <Compile Include="Representations\HTML_IO_Extensions.cs" />
-    <Compile Include="Representations\TEXT_IO.cs" />
-    <Compile Include="Representations\TEXT_IO_Extensions.cs" />
-    <Compile Include="Representations\XML_IO.cs" />
-    <Compile Include="Representations\IDBImport.cs" />
-    <Compile Include="Representations\JSON_IO.cs" />
-    <Compile Include="Representations\IDBExport.cs" />
-    <Compile Include="Representations\HTML_IO.cs" />
-    <Compile Include="Representations\JSON_IO_Extensions.cs" />
-    <Compile Include="Representations\XML_IO_Extensions.cs" />
+    <Compile Include="Reflection\TemporaryType.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -157,6 +140,18 @@
     <ProjectReference Include="..\..\GraphFS\GraphFS\GraphFS.csproj">
       <Project>{97235BF0-C3C4-4B4C-9583-0869CD3632AC}</Project>
       <Name>GraphFS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\GraphIO\GraphIO.csproj">
+      <Project>{624BBB9D-89BE-43CE-8B8C-18BE729F4B11}</Project>
+      <Name>GraphIO %28Dependencies\GraphIO\GraphIO%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\JSON_IO\JSON_IO.csproj">
+      <Project>{FC8A47E3-2699-4123-9517-0A3D325F5DEC}</Project>
+      <Name>JSON_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\XML_IO\XML_IO.csproj">
+      <Project>{9FCA399E-33F4-40A0-9987-76C5763F23FF}</Project>
+      <Name>XML_IO</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\Newtonsoft.Json\Newtonsoft.Json.csproj">
       <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>

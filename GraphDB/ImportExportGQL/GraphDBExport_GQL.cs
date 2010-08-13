@@ -35,14 +35,14 @@ namespace sones.GraphDB.ImportExport
 
                 var graphDDL = myGrammar.ExportGraphDDL(DumpFormats.GQL, myDBContext, myTypes);
 
-                if (!graphDDL.Success)
+                if (!graphDDL.Success())
                 {
                     return new Exceptional(graphDDL);
                 }
 
                 //dumpReadout.Add("GDDL", graphDDL.Value);
                 var writeResult = Write(DumpTypes.GDDL, graphDDL.Value);
-                if (!writeResult.Success)
+                if (!writeResult.Success())
                 {
                     return writeResult;
                 }
@@ -54,14 +54,14 @@ namespace sones.GraphDB.ImportExport
 
                 var graphDML = myGrammar.ExportGraphDML(DumpFormats.GQL, myDBContext, myTypes);
 
-                if (!graphDML.Success)
+                if (!graphDML.Success())
                 {
                     return new Exceptional(graphDML);
                 }
 
                 //dumpReadout.Add("GDML", _GraphDML.Value);
                 var writeResult = Write(DumpTypes.GDML, graphDML.Value);
-                if (!writeResult.Success)
+                if (!writeResult.Success())
                 {
                     return writeResult;
                 }

@@ -38,7 +38,7 @@ namespace sones.GraphFS
 
             var objExists = myIGraphFSSession.ObjectStreamExists(myObjectLocation, myObjectStream);
 
-            if (objExists.Failed)
+            if (objExists.Failed())
             {
                 return new Exceptional(objExists);
             }

@@ -156,7 +156,7 @@ namespace sones.GraphDS.Connectors.WebDAV
 
                 var _CreateDirectoryExceptional = _IGraphFSSession.CreateDirectoryObject(new ObjectLocation(header.Destination));
 
-                if (_CreateDirectoryExceptional == null || _CreateDirectoryExceptional.Failed)
+                if (_CreateDirectoryExceptional == null || _CreateDirectoryExceptional.Failed())
                 {
                     respHeader = CreateHeader(HTTPStatusCodes.FailedDependency, content.ULongLength(), new ContentType(MediaTypeNames.Text.Plain + "; charset=utf-8"));
                 }
@@ -194,7 +194,7 @@ namespace sones.GraphDS.Connectors.WebDAV
             if (_IGraphFSSession.ObjectExists(new ObjectLocation(header.Destination)).Value == Trinary.TRUE)
             {
                 var isDir = _IGraphFSSession.isIDirectoryObject(new ObjectLocation(header.Destination));
-                if (isDir.Success && isDir.Value == Trinary.TRUE)
+                if (isDir.Success() && isDir.Value == Trinary.TRUE)
                 {
                     _IGraphFSSession.RemoveDirectoryObject(new ObjectLocation(header.Destination), true);
                     respHeader = CreateHeader(HTTPStatusCodes.NoContent, content.ULongLength());
@@ -203,7 +203,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                 {
 
                     var isFile = _IGraphFSSession.ObjectStreamExists(new ObjectLocation(header.Destination), FSConstants.FILESTREAM);
-                    if (isFile.Success && isFile.Value == Trinary.TRUE)
+                    if (isFile.Success() && isFile.Value == Trinary.TRUE)
                     {
                         _IGraphFSSession.RemoveFSObject(new ObjectLocation(header.Destination), FSConstants.FILESTREAM, null, null);
                         respHeader = CreateHeader(HTTPStatusCodes.NoContent, content.ULongLength());
@@ -318,13 +318,13 @@ namespace sones.GraphDS.Connectors.WebDAV
                 {
                     FileExists = _IGraphFSSession.ObjectStreamExists(new ObjectLocation(FSConstants.FILESTREAM), header.Destination);
                 }
-                catch (PandoraFSException_ObjectNotFound E)
+                catch (GraphFSException_ObjectNotFound E)
                 {
                     //_Logger.ErrorException(Header.Destination, E);
                     respHeader = CreateHeader(HTTPStatusCodes.Conflict, content.ULongLength(), new ContentType(MediaTypeNames.Text.Plain + "; charset=utf-8"));
                 }
 
-                if (FileExists != null && FileExists.Success && FileExists.Value != Trinary.TRUE)
+                if (FileExists.Success() && FileExists.Value != Trinary.TRUE)
                 {
 
                     #region Store file
@@ -654,7 +654,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                         _IGraphFSSession.RenameFSObject(new ObjectLocation(header.Destination), new ObjectLocation(NewLocation).Name);
 
                         // TODO: Remove old Directory
-                        //_PandoraVFS.DeleteDirectoryObject(Header.Destination);
+                        //_GraphVFS.DeleteDirectoryObject(Header.Destination);
 
                         respHeader = CreateHeader(HTTPStatusCodes.Created, content.ULongLength(), new ContentType(MediaTypeNames.Text.Plain + "; charset=utf-8"));
                         respHeader.Headers.Add("Location", header.GetFullHTTPHost() + NewLocation);
@@ -679,7 +679,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                     if (_IGraphFSSession.ObjectStreamExists(new ObjectLocation(NewLocation), FSConstants.FILESTREAM).Value != Trinary.TRUE)
                     {
 
-                        //APandoraObject FileObject = _IGraphFSSession.GetObject<FileObject>(new ObjectLocation(Header.Destination), FSConstants.FILESTREAM, null, null, 0, false);
+                        //AGraphObject FileObject = _IGraphFSSession.GetObject<FileObject>(new ObjectLocation(Header.Destination), FSConstants.FILESTREAM, null, null, 0, false);
                         //FileObject.ObjectLocation = new ObjectLocation(NewLocation);
                         //_IGraphFSSession.StoreObject(FileObject, Overwrite);
                         //_IGraphFSSession.RemoveObject(new ObjectLocation(Header.Destination), FSConstants.FILESTREAM, null, null);
@@ -743,7 +743,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                 if (_IGraphFSSession.ObjectStreamExists(new ObjectLocation(header.Destination), FSConstants.FILESTREAM).Value != Trinary.TRUE)
                     _IGraphFSSession.StoreFSObject(new FileObject() { ObjectLocation = new ObjectLocation(header.Destination), ObjectData = new Byte[0] }, true);
 
-                //sones.Pandora.Lib.Networking 
+                //sones.Graph.Lib.Networking 
                 content = CreateLockResponse(header, body, header.GetDepth());
 
                 respHeader = CreateHeader(HTTPStatusCodes.OK, content.ULongLength(), new ContentType(MediaTypeNames.Text.Plain + "; charset=utf-8"));
@@ -842,7 +842,7 @@ namespace sones.GraphDS.Connectors.WebDAV
             {
 
                 var streams = _IGraphFSSession.GetObjectStreams(new ObjectLocation(header.Destination));
-                if (streams.Failed)
+                if (streams.Failed())
                 {
                     return null;
                 }
@@ -1073,7 +1073,7 @@ namespace sones.GraphDS.Connectors.WebDAV
             var directoryObjectR = _IGraphFSSession.GetFSObject<DirectoryObject>(new ObjectLocation(header.Destination), FSConstants.DIRECTORYSTREAM, null, null, 0, false);
             // uncommented because _IGraphFSSession.isIDirectoryObject is odd
             //if (IsLegalDir && _IGraphFSSession.isIDirectoryObject(new ObjectLocation(header.Destination)) == Trinary.TRUE)
-            if (IsLegalDir && directoryObjectR.Success)
+            if (IsLegalDir && directoryObjectR.Success())
             {
                 #region root elements
 
@@ -1128,13 +1128,13 @@ namespace sones.GraphDS.Connectors.WebDAV
                             var _CreationTime = DateTime.Now;
                             var _LastModificationTime = DateTime.Now;
 
-                            var _APandoraObject = DirectoryObject as AFSObject;
+                            var _AGraphObject = DirectoryObject as AFSObject;
 
-                            if (_APandoraObject != null)
-                                if (_APandoraObject.INodeReference != null)
+                            if (_AGraphObject != null)
+                                if (_AGraphObject.INodeReference != null)
                                 {
-                                    _CreationTime = new DateTime((Int64)_APandoraObject.INodeReference.CreationTime);
-                                    _LastModificationTime = new DateTime((Int64)_APandoraObject.INodeReference.LastModificationTime);
+                                    _CreationTime = new DateTime((Int64)_AGraphObject.INodeReference.CreationTime);
+                                    _LastModificationTime = new DateTime((Int64)_AGraphObject.INodeReference.LastModificationTime);
                                 }
 
                             Root.AppendChild(

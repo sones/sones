@@ -37,7 +37,7 @@ using System.Reflection;
 using sones.Lib;
 using sones.Notifications;
 using sones.StorageEngines;
-using sones.Libraries.Caches;
+using sones.Lib.Caches;
 using sones.StorageEngines.Caches;
 
 #endregion
@@ -83,20 +83,21 @@ namespace sones.StorageEngines.MemoryStorage
 
         #endregion
 
-        #region MemoryStorage(myStorage, myNumberOfBytes, myBufferSize, myOverwriteExistingFilesystem, myAction)
+        #region MemoryStorage(myStorageLocation, myNumberOfBytes, myBufferSize, myOverwriteExistingFilesystem, myAction)
 
         /// <summary>
         /// Constructor for creating a new MemoryStorage
         /// </summary>
-        /// <param name="myStorage">An identification of the MemoryStorage, e.g. memory://myMemoryStorage</param>
+        /// <param name="myStorageLocation">An identification of the MemoryStorage, e.g. memory://myMemoryStorage</param>
         /// <param name="myNumberOfBytes">The initial size of the memory stream in byte.</param>
         /// <param name="myBufferSize">The size of the internal buffer during formating the memory stream.</param>
         /// <param name="myOverwriteExistingFilesystem">Delete an existing memory stream?</param>
         /// <param name="myAction">An action called to indicate to progress on formating the memory stream.</param>
-        public MemoryStorage(String myStorage, UInt64 myNumberOfBytes, UInt32 myBufferSize, Boolean myOverwriteExistingFilesystem, Action<Double> myAction)
+        public MemoryStorage(String myStorageLocation, UInt64 myNumberOfBytes, UInt32 myBufferSize, Boolean myOverwriteExistingFilesystem, Action<Double> myAction)
         {
-            FormatStorage(myStorage, myNumberOfBytes, myBufferSize, myOverwriteExistingFilesystem, myAction);
-            AttachStorage(myStorage);
+            _StorageLocation = myStorageLocation;
+            FormatStorage(myStorageLocation, myNumberOfBytes, myBufferSize, myOverwriteExistingFilesystem, myAction);
+            AttachStorage(myStorageLocation);
         }
 
         #endregion

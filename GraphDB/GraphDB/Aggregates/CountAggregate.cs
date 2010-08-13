@@ -27,30 +27,31 @@
  * <summary>The aggregate COUNT.<summary>
  */
 
+#region Usings
+
 using System;
-using System.Linq;
-using System.Text;
 using System.Collections.Generic;
-
+using System.Linq;
+using sones.GraphDB.Indices;
 using sones.GraphDB.ObjectManagement;
-
+using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.Structures.Result;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.Structures;
-using sones.GraphDB.Structures.EdgeTypes;
-using sones.Lib.ErrorHandling;
-using sones.Lib.DataStructures.UUID;
-using sones.GraphDB.Errors;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
-using sones.GraphFS.Session;
-using sones.Lib.Session;
-using sones.GraphDB.Indices;
 using sones.Lib;
+using sones.Lib.ErrorHandling;
+using sones.Lib.Session;
+
+#endregion
 
 namespace sones.GraphDB.Aggregates
 {
+
+    /// <summary>
+    /// The aggregate COUNT
+    /// </summary>
     public class CountAggregate : ABaseAggregate
     {
 
@@ -87,7 +88,7 @@ namespace sones.GraphDB.Aggregates
             return new Exceptional<Object>(myUInt64.Value);
         }
 
-        public override Exceptional<Object> Aggregate(AListEdgeType myAListEdgeType, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
+        public override Exceptional<Object> Aggregate(IListOrSetEdgeType myAListEdgeType, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
         {
             UInt64 count = myAListEdgeType.Count();
             return new Exceptional<Object>(count);
@@ -125,5 +126,7 @@ namespace sones.GraphDB.Aggregates
                 #endregion
             }
         }
+
     }
+
 }

@@ -42,7 +42,7 @@
 //namespace sones.GraphDB.Applications.Administration
 //{
 //    /// <summary>
-//    ///  This is a server implementation for the IPandoraDBSession Admninistration wcf service interface host.
+//    ///  This is a server implementation for the IGraphDBSession Admninistration wcf service interface host.
 //    /// </summary>
 //    public class DBAdministrationServiceHost
 //    {
@@ -108,13 +108,13 @@
 //        /// <summary>
 //        /// Start the interface
 //        /// </summary>
-//        /// <param name="myIPandoraDBSession">An instance of IPandoraDBSession</param>
-//        public void Start(IPandoraDBSession myIPandoraDBSession/*, String myEndpointPath*/)
+//        /// <param name="myIGraphDBSession">An instance of IGraphDBSession</param>
+//        public void Start(IGraphDBSession myIGraphDBSession/*, String myEndpointPath*/)
 //        {
-//            if (myIPandoraDBSession== null)
-//                throw new ArgumentNullException("IPandoraDBSession has to be an instance.");
+//            if (myIGraphDBSession== null)
+//                throw new ArgumentNullException("IGraphDBSession has to be an instance.");
 
-//            _ServiceHost = new ServiceHost(myIPandoraDBSession, _BaseAddress);
+//            _ServiceHost = new ServiceHost(myIGraphDBSession, _BaseAddress);
 
 //            try
 //            {
@@ -143,10 +143,10 @@
 //                */
 //                #endregion
 
-//                _ServiceHost.AddServiceEndpoint(typeof(IPandoraDBSession), binding, _BaseAddress);
+//                _ServiceHost.AddServiceEndpoint(typeof(IGraphDBSession), binding, _BaseAddress);
 //                _ServiceHost.Open(new TimeSpan(0,1,0));
 
-//                _AdministrationServiceAnnouncer = new Announcer(myIPandoraDBSession.GetDatabaseUniqueID().ToString(), _BaseAddress, DiscoverableServiceType.Database);
+//                _AdministrationServiceAnnouncer = new Announcer(myIGraphDBSession.GetDatabaseUniqueID().ToString(), _BaseAddress, DiscoverableServiceType.Database);
 //            }
 //            catch (CommunicationException ce)
 //            {

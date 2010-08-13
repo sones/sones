@@ -37,16 +37,16 @@ namespace sones.GraphDB.Managers.Structures
 
         #region abstract GetValueForAttribute
 
-        public abstract Exceptional<AObject> GetValueForAttribute(DBObjectStream aDBObject, DBContext dbContext, GraphDBType myGraphDBType);
+        public abstract Exceptional<IObject> GetValueForAttribute(DBObjectStream aDBObject, DBContext dbContext, GraphDBType myGraphDBType);
 
         #endregion
 
         #region Update
 
-        public override Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>> Update(DBContext myDBContext, DBObjectStream myDBObjectStream, GraphDBType myGraphDBType)
+        public override Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>> Update(DBContext myDBContext, DBObjectStream myDBObjectStream, GraphDBType myGraphDBType)
         {
 
-            Dictionary<String, Tuple<TypeAttribute, AObject>> attrsForResult = new Dictionary<String, Tuple<TypeAttribute, AObject>>();
+            Dictionary<String, Tuple<TypeAttribute, IObject>> attrsForResult = new Dictionary<String, Tuple<TypeAttribute, IObject>>();
 
             if (base.AttributeIDChain.IsUndefinedAttribute)
             {
@@ -55,9 +55,9 @@ namespace sones.GraphDB.Managers.Structures
 
                 var applyResult = ApplyAssignUndefinedAttribute(myDBContext, myDBObjectStream, myGraphDBType);
 
-                if (applyResult.Failed)
+                if (applyResult.Failed())
                 {
-                    return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(applyResult);
+                    return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(applyResult);
                 }
 
                 if (applyResult.Value != null)
@@ -66,14 +66,16 @@ namespace sones.GraphDB.Managers.Structures
 
                     #region Add to queryResult
 
-                    attrsForResult.Add(applyResult.Value.Item1, new Tuple<TypeAttribute, AObject>(applyResult.Value.Item2, applyResult.Value.Item3));
+                    attrsForResult.Add(applyResult.Value.Item1, new Tuple<TypeAttribute, IObject>(applyResult.Value.Item2, applyResult.Value.Item3));
 
                     #endregion
+                
                 }
 
                 #endregion
 
             }
+
             else
             {
 
@@ -81,9 +83,9 @@ namespace sones.GraphDB.Managers.Structures
 
                 var applyResult = ApplyAssignAttribute(this, myDBContext, myDBObjectStream, myGraphDBType);
 
-                if (applyResult.Failed)
+                if (applyResult.Failed())
                 {
-                    return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(applyResult);
+                    return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(applyResult);
                 }
 
                 if (applyResult.Value != null)
@@ -92,77 +94,78 @@ namespace sones.GraphDB.Managers.Structures
 
                     #region Add to queryResult
 
-                    attrsForResult.Add(applyResult.Value.Item1, new Tuple<TypeAttribute, AObject>(applyResult.Value.Item2, applyResult.Value.Item3));
+                    attrsForResult.Add(applyResult.Value.Item1, new Tuple<TypeAttribute, IObject>(applyResult.Value.Item2, applyResult.Value.Item3));
 
                     #endregion
+                
                 }
 
                 #endregion
             
             }
 
-            return new Exceptional<Dictionary<string, Tuple<TypeAttribute, AObject>>>(attrsForResult);
+            return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(attrsForResult);
 
         }
 
 
         #region override AAttributeAssignOrUpdateOrRemove.Update
 
-        private Exceptional<Tuple<String, TypeAttribute, AObject>> ApplyAssignUndefinedAttribute(DBContext myDBContext, DBObjectStream myDBObjectStream, GraphDBType myGraphDBType)
+        private Exceptional<Tuple<String, TypeAttribute, IObject>> ApplyAssignUndefinedAttribute(DBContext myDBContext, DBObjectStream myDBObjectStream, GraphDBType myGraphDBType)
         {
-            Dictionary<String, Tuple<TypeAttribute, AObject>> attrsForResult = new Dictionary<String, Tuple<TypeAttribute, AObject>>();
+            Dictionary<String, Tuple<TypeAttribute, IObject>> attrsForResult = new Dictionary<String, Tuple<TypeAttribute, IObject>>();
 
             #region undefined attributes
 
             var newValue = GetValueForAttribute(myDBObjectStream, myDBContext, myGraphDBType);
-            if (newValue.Failed)
+            if (newValue.Failed())
             {
-                return new Exceptional<Tuple<string, TypeAttribute, AObject>>(newValue);
+                return new Exceptional<Tuple<string, TypeAttribute, IObject>>(newValue);
             }
 
             if (myDBObjectStream.ContainsUndefinedAttribute(AttributeIDChain.UndefinedAttribute, myDBContext.DBObjectManager))
             {
                 var removeResult =myDBObjectStream.RemoveUndefinedAttribute(AttributeIDChain.UndefinedAttribute, myDBContext.DBObjectManager);
-                if (removeResult.Failed)
+                if (removeResult.Failed())
                 {
-                    return new Exceptional<Tuple<string, TypeAttribute, AObject>>(removeResult);
+                    return new Exceptional<Tuple<string, TypeAttribute, IObject>>(removeResult);
                 }
             }
 
             //TODO: change this to a more handling thing than KeyValuePair
             var addExcept = myDBContext.DBObjectManager.AddUndefinedAttribute(AttributeIDChain.UndefinedAttribute, newValue.Value, myDBObjectStream);
 
-            if (addExcept.Failed)
+            if (addExcept.Failed())
             {
-                return new Exceptional<Tuple<String, TypeAttribute, AObject>>(addExcept);
+                return new Exceptional<Tuple<String, TypeAttribute, IObject>>(addExcept);
             }
 
             //sthChanged = true;
 
-            attrsForResult.Add(AttributeIDChain.UndefinedAttribute, new Tuple<TypeAttribute, AObject>(null, newValue.Value));
+            attrsForResult.Add(AttributeIDChain.UndefinedAttribute, new Tuple<TypeAttribute, IObject>(null, newValue.Value));
 
             #endregion
 
-            return new Exceptional<Tuple<String, TypeAttribute, AObject>>(new Tuple<String, TypeAttribute, AObject>(AttributeIDChain.UndefinedAttribute, AttributeIDChain.LastAttribute, newValue.Value));
+            return new Exceptional<Tuple<String, TypeAttribute, IObject>>(new Tuple<String, TypeAttribute, IObject>(AttributeIDChain.UndefinedAttribute, AttributeIDChain.LastAttribute, newValue.Value));
 
         }
 
         #endregion
 
-        internal Exceptional<Tuple<String, TypeAttribute, AObject>> ApplyAssignAttribute(AAttributeAssignOrUpdate myAAttributeAssign, DBContext myDBContext, DBObjectStream myDBObject, GraphDBType myGraphDBType)
+        internal Exceptional<Tuple<String, TypeAttribute, IObject>> ApplyAssignAttribute(AAttributeAssignOrUpdate myAAttributeAssign, DBContext myDBContext, DBObjectStream myDBObject, GraphDBType myGraphDBType)
         {
 
             System.Diagnostics.Debug.Assert(myAAttributeAssign != null);
 
             //get value for assignement
             var aValue = myAAttributeAssign.GetValueForAttribute(myDBObject, myDBContext, myGraphDBType);
-            if (aValue.Failed)
+            if (aValue.Failed())
             {
-                return new Exceptional<Tuple<String, TypeAttribute, AObject>>(aValue);
+                return new Exceptional<Tuple<String, TypeAttribute, IObject>>(aValue);
             }
 
             object oldValue = null;
-            AObject newValue = aValue.Value;
+            IObject newValue = aValue.Value;
 
             if (myDBObject.HasAttribute(myAAttributeAssign.AttributeIDChain.LastAttribute.UUID, myGraphDBType))
             {
@@ -177,25 +180,25 @@ namespace sones.GraphDB.Managers.Structures
                         var typeOfCollection = ((AttributeAssignOrUpdateList)myAAttributeAssign).CollectionDefinition.CollectionType;
 
                         if (typeOfCollection == CollectionType.List)
-                            return new Exceptional<Tuple<String, TypeAttribute, AObject>>(new Error_InvalidAssignOfSet(myAAttributeAssign.AttributeIDChain.LastAttribute.Name));
+                            return new Exceptional<Tuple<String, TypeAttribute, IObject>>(new Error_InvalidAssignOfSet(myAAttributeAssign.AttributeIDChain.LastAttribute.Name));
 
                         var removeRefExcept = RemoveBackwardEdgesOnReferences(myAAttributeAssign, (IReferenceEdge)oldValue, myDBObject, myDBContext);
 
-                        if (!removeRefExcept.Success)
-                            return new Exceptional<Tuple<String, TypeAttribute, AObject>>(removeRefExcept.Errors.First());
+                        if (!removeRefExcept.Success())
+                            return new Exceptional<Tuple<String, TypeAttribute, IObject>>(removeRefExcept.Errors.First());
 
-                        newValue = (ASetReferenceEdgeType)newValue;
+                        newValue = (ASetOfReferencesEdgeType)newValue;
                         break;
 
                     case KindsOfType.SetOfNoneReferences:
                     case KindsOfType.ListOfNoneReferences:
-                        newValue = (AListBaseEdgeType)newValue;
+                        newValue = (IBaseEdge)newValue;
                         break;
 
                     case KindsOfType.SingleNoneReference:
                         if (!(oldValue as ADBBaseObject).IsValidValue((newValue as ADBBaseObject).Value))
                         {
-                            return new Exceptional<Tuple<string, TypeAttribute, AObject>>(new Error_DataTypeDoesNotMatch((oldValue as ADBBaseObject).ObjectName, (newValue as ADBBaseObject).ObjectName));
+                            return new Exceptional<Tuple<string, TypeAttribute, IObject>>(new Error_DataTypeDoesNotMatch((oldValue as ADBBaseObject).ObjectName, (newValue as ADBBaseObject).ObjectName));
                         }
                         newValue = (oldValue as ADBBaseObject).Clone((newValue as ADBBaseObject).Value);
                         break;
@@ -205,8 +208,8 @@ namespace sones.GraphDB.Managers.Structures
                         {
                             removeRefExcept = RemoveBackwardEdgesOnReferences(myAAttributeAssign, (IReferenceEdge)oldValue, myDBObject, myDBContext);
 
-                            if (!removeRefExcept.Success)
-                                return new Exceptional<Tuple<String, TypeAttribute, AObject>>(removeRefExcept.Errors.First());
+                            if (!removeRefExcept.Success())
+                                return new Exceptional<Tuple<String, TypeAttribute, IObject>>(removeRefExcept.Errors.First());
 
                             ((ASingleReferenceEdgeType)oldValue).Merge((ASingleReferenceEdgeType)newValue);
                             newValue = (ASingleReferenceEdgeType)oldValue;
@@ -214,7 +217,7 @@ namespace sones.GraphDB.Managers.Structures
                         break;
 
                     default:
-                        return new Exceptional<Tuple<String, TypeAttribute, AObject>>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                        return new Exceptional<Tuple<String, TypeAttribute, IObject>>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                 }
 
                 #endregion
@@ -223,8 +226,8 @@ namespace sones.GraphDB.Managers.Structures
 
             var alterExcept = myDBObject.AlterAttribute(myAAttributeAssign.AttributeIDChain.LastAttribute.UUID, newValue);
 
-            if (alterExcept.Failed)
-                return new Exceptional<Tuple<string, TypeAttribute, AObject>>(alterExcept);
+            if (alterExcept.Failed())
+                return new Exceptional<Tuple<string, TypeAttribute, IObject>>(alterExcept);
 
             if (!alterExcept.Value)
             {
@@ -235,19 +238,19 @@ namespace sones.GraphDB.Managers.Structures
 
             if (myAAttributeAssign.AttributeIDChain.LastAttribute.GetDBType(myDBContext.DBTypeManager).IsUserDefined)
             {
-                Dictionary<AttributeUUID, AObject> userdefinedAttributes = new Dictionary<AttributeUUID, AObject>();
+                Dictionary<AttributeUUID, IObject> userdefinedAttributes = new Dictionary<AttributeUUID, IObject>();
                 userdefinedAttributes.Add(myAAttributeAssign.AttributeIDChain.LastAttribute.UUID, newValue);
 
                 var omm = new ObjectManipulationManager();
                 var setBackEdges = omm.SetBackwardEdges(myGraphDBType, userdefinedAttributes, myDBObject.ObjectUUID, myDBContext);
 
-                if (setBackEdges.Failed)
-                    return new Exceptional<Tuple<string, TypeAttribute, AObject>>(setBackEdges);
+                if (setBackEdges.Failed())
+                    return new Exceptional<Tuple<string, TypeAttribute, IObject>>(setBackEdges);
             }
 
             #endregion
 
-            return new Exceptional<Tuple<String, TypeAttribute, AObject>>(new Tuple<String, TypeAttribute, AObject>(myAAttributeAssign.AttributeIDChain.LastAttribute.Name, myAAttributeAssign.AttributeIDChain.LastAttribute, newValue));
+            return new Exceptional<Tuple<String, TypeAttribute, IObject>>(new Tuple<String, TypeAttribute, IObject>(myAAttributeAssign.AttributeIDChain.LastAttribute.Name, myAAttributeAssign.AttributeIDChain.LastAttribute, newValue));
         }
 
         protected Exceptional<Boolean> RemoveBackwardEdgesOnReferences(AAttributeAssignOrUpdate myAAttributeAssign, IReferenceEdge myReference, DBObjectStream myDBObject, DBContext myDBContext)
@@ -256,12 +259,12 @@ namespace sones.GraphDB.Managers.Structures
             {
                 var streamExcept = myDBContext.DBObjectCache.LoadDBObjectStream(myAAttributeAssign.AttributeIDChain.LastAttribute.GetDBType(myDBContext.DBTypeManager), (ObjectUUID)item);
 
-                if (!streamExcept.Success)
+                if (!streamExcept.Success())
                     return new Exceptional<Boolean>(streamExcept.Errors.First());
 
                 var removeExcept = myDBContext.DBObjectManager.RemoveBackwardEdge(streamExcept.Value, myAAttributeAssign.AttributeIDChain.LastAttribute.RelatedGraphDBTypeUUID, myAAttributeAssign.AttributeIDChain.LastAttribute.UUID, myDBObject.ObjectUUID);
 
-                if (!removeExcept.Success)
+                if (!removeExcept.Success())
                     return new Exceptional<Boolean>(removeExcept.Errors.First());
             }
 

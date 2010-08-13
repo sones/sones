@@ -22,7 +22,7 @@
  * StorageEngineExceptions
  * Achim Friedland, 2008 - 2009
  * 
- * This is a class for all PandoraFSExceptions
+ * This is a class for all GraphFSExceptions
  * 
  * Lead programmer:
  *      Achim Friedland

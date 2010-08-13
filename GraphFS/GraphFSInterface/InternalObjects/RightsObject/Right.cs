@@ -22,7 +22,7 @@
  * (c) Henning Rauch, 2009
  *     Achim Friedland, 2009
  *  
- * The Right class represents an access right within the PandoraFS.
+ * The Right class represents an access right within the GraphFS.
  * 
  * Lead programmer:
  *      Achim Friedland
@@ -47,7 +47,7 @@ namespace sones.GraphFS.InternalObjects
 {
 
     /// <summary>
-    /// The Right class represents an access right within the PandoraFS.
+    /// The Right class represents an access right within the GraphFS.
     /// </summary>
     
     [AllowNonEmptyConstructor]
@@ -520,7 +520,7 @@ namespace sones.GraphFS.InternalObjects
 
         //    catch (Exception e)
         //    {
-        //        throw new PandoraFSException_EntityCouldNotBeDeserialized("Right could not be deserialized!\n\n" + e);
+        //        throw new GraphFSException_EntityCouldNotBeDeserialized("Right could not be deserialized!\n\n" + e);
         //    }
 
         //}
@@ -561,7 +561,7 @@ namespace sones.GraphFS.InternalObjects
 
             catch (Exception e)
             {
-                throw new PandoraFSException_EntityCouldNotBeDeserialized("Right could not be deserialized!\n\n" + e);
+                throw new GraphFSException_EntityCouldNotBeDeserialized("Right could not be deserialized!\n\n" + e);
             }
         }
 
@@ -611,7 +611,7 @@ namespace sones.GraphFS.InternalObjects
 
             catch (Exception e)
             {
-                throw new PandoraFSException_EntityCouldNotBeDeserialized("Right could not be deserialized!\n\n" + e);
+                throw new GraphFSException_EntityCouldNotBeDeserialized("Right could not be deserialized!\n\n" + e);
             }
 
             return thisObject;

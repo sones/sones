@@ -73,10 +73,10 @@ namespace sones.GraphFS.InternalObjects
         public RightsObject()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion   = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream   = FSConstants.RIGHTSSTREAM;
 
             // Object specific data...
@@ -108,7 +108,7 @@ namespace sones.GraphFS.InternalObjects
         #endregion
 
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         #region Clone()
 

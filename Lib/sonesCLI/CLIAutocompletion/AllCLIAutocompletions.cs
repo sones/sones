@@ -25,7 +25,7 @@
  * </copyright>
  * <developer>Henning Rauch</developer>
  * <summary>The abstract class for all autocompletions of 
- * the PandoraCLI.</summary>
+ * the GraphCLI.</summary>
  */
 
 #region Usings
@@ -46,7 +46,7 @@ namespace sones.Lib.CLI
 
         /// <summary>
         /// The abstract class for all autocompletions of 
-        /// the PandoraCLI.
+        /// the GraphCLI.
         /// </summary>
 
         #region Data        

@@ -64,16 +64,16 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
             UUID = AttributeUUID;
         }
 
-        public override Exceptional<AObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
+        public override Exceptional<IObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
         {
             var myType = dbContext.DBTypeManager.GetTypeByUUID(dbObjectStream.TypeUUID);
             if (myType != null)
             {
-                return new Exceptional<AObject>(new DBString(myType.Name));
+                return new Exceptional<IObject>(new DBString(myType.Name));
             }
             else
             {
-                return new Exceptional<AObject>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                return new Exceptional<IObject>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
             }
         }
 

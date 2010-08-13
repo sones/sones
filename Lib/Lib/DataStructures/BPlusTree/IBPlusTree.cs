@@ -63,7 +63,7 @@ namespace sones.Lib.DataStructures.BPlusTree
         #region best match
 
         /// <summary>
-        /// Method returns the value for the best match of the key. 
+        /// Method returns the value for the best match (nearest neighbour) of the key. 
         /// 
         /// Exact match returns the corresponding set of values.
         /// LowerThan means that if the key is not in the tree, the key which would be

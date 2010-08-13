@@ -48,8 +48,8 @@ namespace sones.Lib.ErrorHandling
     {
 
         // Properties
-        Boolean             Success { get; }
-        Boolean             Failed  { get; }
+        //Boolean             Success { get; }
+        //Boolean             Failed  { get; }
         IEnumerable<IError> Errors  { get; }
 
         // Methods

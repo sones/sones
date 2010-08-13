@@ -118,7 +118,7 @@ namespace sones.GraphFS.Objects
         #endregion
 
         
-        #region Members of APandoraStructure
+        #region Members of AGraphStructure
 
         #region Serialize(ref mySerializationWriter)
 

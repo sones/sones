@@ -121,6 +121,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\ExceptionOccuredEvent.cs" />
+    <Compile Include="Events\IDirectoryEventHandlers.cs" />
     <Compile Include="Events\GraphFSEventHandlers.cs" />
     <Compile Include="Stream\GraphFSAsyncResult.cs" />
     <Compile Include="Datastructures\INode\INode.cs" />
@@ -196,7 +198,7 @@
     <Compile Include="Datastructures\ObjectLocator\TypeDefs\RedundancyTypes.cs" />
     <Compile Include="Datastructures\TypeDefs\AccessFlagsType.cs" />
     <Compile Include="Datastructures\TypeDefs\Flags.cs" />
-    <Compile Include="Datastructures\TypeDefs\PandoraFSResult.cs" />
+    <Compile Include="Datastructures\TypeDefs\GraphFSResult.cs" />
     <Compile Include="Datastructures\ObjectCacheSettings.cs" />
     <Compile Include="Datastructures\ResolveTypes.cs" />
     <Compile Include="Datastructures\UUIDs\FileSystemUUID.cs" />
@@ -293,9 +295,7 @@
   <ItemGroup>
     <None Include="Datastructures\ObjectLocator\ObjectLocator.cd" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Session\UUIDs\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>

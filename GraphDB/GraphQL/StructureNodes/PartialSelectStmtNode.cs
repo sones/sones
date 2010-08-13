@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – Partial select statement node" />
+﻿/* <id name="GraphDB – Partial select statement node" />
  * <copyright file="PartialSelectStmtNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.

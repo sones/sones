@@ -24,7 +24,7 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Henning Rauch</developer>
- * <summary>Starts and quits a given PandoraDB.</summary>
+ * <summary>Starts and quits a given GraphDB.</summary>
  */
 
 #region Usings
@@ -48,32 +48,32 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 {
 
     /// <summary>
-    /// Starts and quits a given PandoraDB
+    /// Starts and quits a given GraphDB
     /// </summary>
 
-    public class DBCLI_PANDORADB : AllBasicDBCLICommands
+    public class DBCLI_GraphDB : AllBasicDBCLICommands
     {
 
         #region Constructor
 
-        public DBCLI_PANDORADB()
+        public DBCLI_GraphDB()
         {
 
             // Command name and description
-            InitCommand("PANDORADB",
-                        "Starts and quits a given PandoraDB",
-                        "Starts and quits a given PandoraDB");
+            InitCommand("GraphDB",
+                        "Starts and quits a given GraphDB",
+                        "Starts and quits a given GraphDB");
 
-            NonTerminal PANDORADB_Action = new NonTerminal("PANDORADB_Action");
+            NonTerminal GraphDB_Action = new NonTerminal("GraphDB_Action");
 
             // BNF rule
-            CreateBNFRule(CLICommandSymbolTerminal + PANDORADB_Action);
+            CreateBNFRule(CLICommandSymbolTerminal + GraphDB_Action);
 
-            PANDORADB_Action.Rule = StartSymbol + stringLiteralPVFS
+            GraphDB_Action.Rule = StartSymbol + stringLiteralPVFS
                                     | StopSymbol;
-            //PANDORADB_Action.PandoraOptions.Add(PandoraOption.IsOption);
+            //GraphDB_Action.GraphOptions.Add(GraphOption.IsOption);
             
-            _CommandNonTerminals.Add(PANDORADB_Action);
+            _CommandNonTerminals.Add(GraphDB_Action);
 
         }
 
@@ -81,14 +81,14 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
         #region Execute Command
 
-        public override void Execute(ref object myIGraphFS2Session, ref object myIPandoraDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
+        public override void Execute(ref object myIGraphFS2Session, ref object myIGraphDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
         {
 
             _CancelCommand = false;
             var _IGraphFS2Session = myIGraphFS2Session as IGraphFSSession;
-            var _IPandoraDBSession = myIPandoraDBSession as IGraphDBSession;
+            var _IGraphDBSession = myIGraphDBSession as IGraphDBSession;
 
-            if (_IGraphFS2Session == null || _IPandoraDBSession == null)
+            if (_IGraphFS2Session == null || _IGraphDBSession == null)
             {
                 WriteLine("No OM database instance started...");
                 return;
@@ -99,31 +99,31 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
                 //we have a start
                 if (_IGraphFS2Session != null)
                 {
-                    if (_IPandoraDBSession == null)
+                    if (_IGraphDBSession == null)
                     {
-                        var internalPandoraDB = new GraphDB2(new UUID(), new ObjectLocation(myOptions.ElementAt(2).Value[0].Option), _IGraphFS2Session, true);
-                        var DB = new GraphDBSession(internalPandoraDB, _IGraphFS2Session.SessionToken.SessionInfo.Username);
+                        var internalGraphDB = new GraphDB2(new UUID(), new ObjectLocation(myOptions.ElementAt(2).Value[0].Option), _IGraphFS2Session, true);
+                        var DB = new GraphDBSession(internalGraphDB, _IGraphFS2Session.SessionToken.SessionInfo.Username);
                     }
                     else
                     {
-                        Console.WriteLine("PandoraDB instance could not be started, because you already started a PandoraDB.");
+                        Console.WriteLine("GraphDB instance could not be started, because you already started a GraphDB.");
                     }
                 }
                 else
                 {
-                    Console.WriteLine("PandoraDB instance could not be started, because you do not have a PandoraVFS mounted.");
+                    Console.WriteLine("GraphDB instance could not be started, because you do not have a GraphVFS mounted.");
                 }
             }
             else
             {
 
-                if (_IPandoraDBSession != null)
+                if (_IGraphDBSession != null)
                 {
-                    _IPandoraDBSession.Shutdown();
+                    _IGraphDBSession.Shutdown();
                 }
                 else
                 {
-                    Console.WriteLine("No PandoraDB instance started...");
+                    Console.WriteLine("No GraphDB instance started...");
                 }
             }
         }

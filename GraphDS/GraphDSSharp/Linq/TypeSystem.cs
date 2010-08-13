@@ -3,7 +3,7 @@
 //using System.Linq;
 //using System.Text;
 
-//namespace sones.GraphDS.API.CSharp.Linq
+//namespace sones.GraphDB.Linq
 //{
 
 //    internal static class TypeSystem

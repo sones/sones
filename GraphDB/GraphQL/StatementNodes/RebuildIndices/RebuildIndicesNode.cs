@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – RebuildIndicesNode Node" />
+﻿/* <id name="GraphDB – RebuildIndicesNode Node" />
  * <copyright file="RebuildIndicesNode.cs
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -65,7 +65,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes.RebuildIndices
         public override QueryResult Execute(IGraphDBSession graphDBSession)
         {
 
-            return graphDBSession.RebuilIndices(_Types);
+            var qresult = graphDBSession.RebuilIndices(_Types);
+            qresult.AddErrorsAndWarnings(ParsingResult);
+            return qresult;
 
         }
     

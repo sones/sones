@@ -577,7 +577,7 @@ namespace sones.Lib
         //public static void Insert<T>(this List<T> theList, IComparable value)
         //{
         //    int toInserAfter = -1;
-        //    toInserAfter = theList.PandoraBinarySearch(value);
+        //    toInserAfter = theList.GraphBinarySearch(value);
         //    theList.Insert(toInserAfter+1, (T)value);
         //}
 
@@ -663,7 +663,7 @@ namespace sones.Lib
         //    //    return false;
         //}
 
-        //public static int PandoraBinarySearch<T>(this List<T> theList, IComparable value)
+        //public static int GraphBinarySearch<T>(this List<T> theList, IComparable value)
         //{
         //    //if (typeof(T) is IComparable)
         //    //{
@@ -687,13 +687,13 @@ namespace sones.Lib
         //        //recursion here
         //        else if (medianValue.CompareTo(value) > 0) //median is greater => search in the lower Part
         //        {
-        //            return PandoraBinarySearch(theList.GetRange(0, medianIdx), value);
+        //            return GraphBinarySearch(theList.GetRange(0, medianIdx), value);
 
         //        }
         //        //and here
         //        else
         //        {
-        //            return medianIdx + 1 + PandoraBinarySearch(theList.GetRange(medianIdx + 1, theList.Count / 2), value);
+        //            return medianIdx + 1 + GraphBinarySearch(theList.GetRange(medianIdx + 1, theList.Count / 2), value);
 
         //        }
         //    //}

@@ -25,21 +25,25 @@
 #region Usings
 
 using System;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 
-using sones.GraphFS.Transactions;
-using sones.GraphFS.DataStructures;
+using sones.GraphDB.NewAPI;
+using sones.GraphDB.Structures;
 using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Transactions;
-using sones.GraphDB.Structures;
-using sones.GraphDS.API.CSharp.Reflection;
-using sones.Lib;
+
 using sones.GraphDS.API.CSharp.Linq;
-using sones.GraphFS.Events;
+using sones.GraphDS.API.CSharp.Reflection;
+
+using sones.GraphFS.DataStructures;
+using sones.GraphFS.Transactions;
+
+using sones.Lib;
+using sones.GraphDS.API.CSharp.Fluent;
 
 #endregion
 
@@ -50,9 +54,9 @@ namespace sones.GraphDS.API.CSharp
     {
 
 
-        #region (protected) QueryResultAction(myQueryResult, myAction, mySuccessAction, myPartialSuccessAction, myFailureAction)
+        #region QueryResultAction(myQueryResult, myAction, mySuccessAction, myPartialSuccessAction, myFailureAction)
 
-        protected void QueryResultAction(QueryResult myQueryResult, Action<QueryResult> myAction = null, Action<QueryResult> mySuccessAction = null, Action<QueryResult> myPartialSuccessAction = null, Action<QueryResult> myFailureAction = null)
+        public void QueryResultAction(QueryResult myQueryResult, Action<QueryResult> myAction = null, Action<QueryResult> mySuccessAction = null, Action<QueryResult> myPartialSuccessAction = null, Action<QueryResult> myFailureAction = null)
         {
 
             if (mySuccessAction         != null && myQueryResult.Success)
@@ -129,342 +133,6 @@ namespace sones.GraphDS.API.CSharp
 
 
 
-        #region CreateTypes (DBVertices and DBEdges)
-
-        #region CreateTypes(params myType)
-
-        /// <summary>
-        /// Creates all given types extending DBObject, thus DBVertex and DBEdge.
-        /// May be used within the GraphDSSharp reflection interface to create a
-        /// DBVertex or DBEdge based on an annotated class.
-        /// </summary>
-        /// <param name="myAction"></param>
-        /// <param name="myTypes"></param>
-        /// <returns></returns>
-        public QueryResult CreateTypes(params Type[] myTypes)
-        {
-            // ToDo: Allow to create DBEdges!
-            var a = myTypes.Select(type => Activator.CreateInstance(type) as DBVertex).Where(dbvertex => dbvertex != null).ToArray();
-            return CreateVertices(a);
-        }
-
-        #endregion
-
-        #region CreateTypes(myAction, params myType)
-
-        public QueryResult CreateTypes(Action<QueryResult> myAction, params Type[] myTypes)
-        {
-
-            var _QueryResult = CreateTypes(myTypes);
-
-            QueryResultAction(_QueryResult, myAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region CreateTypes(mySuccessAction, myFailureAction, params myType)
-
-        public QueryResult CreateTypes(Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, params Type[] myTypes)
-        {
-
-            var _QueryResult = CreateTypes(myTypes);
-
-            QueryResultAction(_QueryResult, mySuccessAction, myFailureAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region CreateTypes(mySuccessAction, myPartialSuccessAction, myFailureAction, params myType)
-
-        public QueryResult CreateTypes(Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, params Type[] myTypes)
-        {
-
-            var _QueryResult = CreateTypes(myTypes);
-
-            QueryResultAction(_QueryResult, mySuccessAction, myPartialSuccessAction, myFailureAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #endregion
-
-
-        #region CreateVertex/-Vertices
-
-        #region CreateVertex(myVertexTypeName, myIsAbstract)
-
-        public CreateVertexQuery CreateVertex(String myVertexTypeName, Boolean myIsAbstract = false)
-        {
-            return new CreateVertexQuery(this, myVertexTypeName, myIsAbstract);
-        }
-
-        #endregion
-
-
-        #region CreateVertices(params myDBVertices)
-
-        public QueryResult CreateVertices(params DBVertex[] myDBVertices)
-        {
-
-            var _CreateTypesQuery       = new StringBuilder("CREATE VERTICES ");
-            var _CreateIndiciesQueries  = new List<String>();
-
-            foreach (var _DBVertex in myDBVertices)
-            {
-
-                _CreateTypesQuery.Append(_DBVertex.CreateTypeQuery.Replace("CREATE VERTEX ", "") + ", ");
-
-                if (_DBVertex.CreateIndicesQueries != null)
-                    _CreateIndiciesQueries.AddRange(_DBVertex.CreateIndicesQueries);
-
-            }
-
-            _CreateTypesQuery.RemoveEnding(2);
-
-            var _QueryResult = Query(_CreateTypesQuery.ToString());
-
-            if (_QueryResult.Failed)
-                return _QueryResult;
-
-            foreach (var _CreateIndexQuery in _CreateIndiciesQueries)
-            {
-
-                _QueryResult = Query(_CreateIndexQuery);
-
-                if (_QueryResult.Failed)
-                    return _QueryResult;
-
-            }
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region CreateVertices(myAction, params myDBVertices)
-
-        public QueryResult CreateVertices(Action<QueryResult> myAction, params DBVertex[] myDBVertices)
-        {
-
-            var _CreateTypesQuery       = new StringBuilder("CREATE VERTICES ");
-            var _CreateIndiciesQueries  = new List<String>();
-
-            foreach (var _DBVertex in myDBVertices)
-            {
-
-                _CreateTypesQuery.Append(_DBVertex.CreateTypeQuery.Replace("CREATE VERTEX ", "") + ", ");
-
-                if (_DBVertex.CreateIndicesQueries != null)
-                    _CreateIndiciesQueries.AddRange(_DBVertex.CreateIndicesQueries);
-
-            }
-
-            _CreateTypesQuery.RemoveEnding(2);
-
-            var _QueryResult = Query(_CreateTypesQuery.ToString());
-
-            QueryResultAction(_QueryResult, myAction);
-
-            if (_QueryResult.Failed)
-                return _QueryResult;
-
-            foreach (var _CreateIndexQuery in _CreateIndiciesQueries)
-            {
-
-                _QueryResult = Query(_CreateIndexQuery);
-
-                QueryResultAction(_QueryResult, myAction);
-
-                if (_QueryResult.Failed)
-                    return _QueryResult;
-
-            }
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region CreateVertices(mySuccessAction, myFailureAction, params myDBVertices)
-
-        public QueryResult CreateVertices(Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, params DBVertex[] myDBVertices)
-        {
-
-            var _CreateTypesQuery = new StringBuilder("CREATE VERTICES ");
-            var _CreateIndiciesQueries = new List<String>();
-
-            foreach (var _DBVertex in myDBVertices)
-            {
-
-                _CreateTypesQuery.Append(_DBVertex.CreateTypeQuery.Replace("CREATE VERTEX ", "") + ", ");
-
-                if (_DBVertex.CreateIndicesQueries != null)
-                    _CreateIndiciesQueries.AddRange(_DBVertex.CreateIndicesQueries);
-
-            }
-
-            _CreateTypesQuery.RemoveEnding(2);
-
-            var _QueryResult = Query(_CreateTypesQuery.ToString());
-
-            QueryResultAction(_QueryResult, mySuccessAction, myFailureAction);
-
-            if (_QueryResult.Failed)
-                return _QueryResult;
-
-            foreach (var _CreateIndexQuery in _CreateIndiciesQueries)
-            {
-
-                _QueryResult = Query(_CreateIndexQuery);
-
-                QueryResultAction(_QueryResult, mySuccessAction, myFailureAction);
-
-                if (_QueryResult.Failed)
-                    return _QueryResult;
-
-            }
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region CreateVertices(mySuccessAction, myPartialSuccessAction, myFailureAction, params myDBVertices)
-
-        public QueryResult CreateVertices(Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, params DBVertex[] myDBVertices)
-        {
-
-            var _CreateTypesQuery = new StringBuilder("CREATE VERTICES ");
-            var _CreateIndiciesQueries = new List<String>();
-
-            foreach (var _DBVertex in myDBVertices)
-            {
-
-                _CreateTypesQuery.Append(_DBVertex.CreateTypeQuery.Replace("CREATE VERTEX ", "") + ", ");
-
-                if (_DBVertex.CreateIndicesQueries != null)
-                    _CreateIndiciesQueries.AddRange(_DBVertex.CreateIndicesQueries);
-
-            }
-
-            _CreateTypesQuery.RemoveEnding(2);
-
-            var _QueryResult = Query(_CreateTypesQuery.ToString());
-
-            QueryResultAction(_QueryResult, mySuccessAction, myPartialSuccessAction, myFailureAction);
-
-            if (_QueryResult.Failed)
-                return _QueryResult;
-
-            foreach (var _CreateIndexQuery in _CreateIndiciesQueries)
-            {
-
-                _QueryResult = Query(_CreateIndexQuery);
-
-                QueryResultAction(_QueryResult, mySuccessAction, myPartialSuccessAction, myFailureAction);
-
-                if (_QueryResult.Failed)
-                    return _QueryResult;
-
-            }
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-
-        #region CreateVertices(params myCreateVerticesQuery)
-
-        public QueryResult CreateVertices(params CreateVertexQuery[] myCreateVerticesQueries)
-        {
-
-            var _CreateTypesQuery = new StringBuilder("CREATE VERTICES ");
-            String tmp = null;
-
-            foreach (var CreateTypeQuery in myCreateVerticesQueries)
-            {
-
-                if (CreateTypeQuery._IsAbstract)
-                {
-                    tmp = " ABSTRACT ";
-                    tmp += CreateTypeQuery.GetGQLQuery().Replace("CREATE ABSTRACT VERTEX ", "") + ", ";
-                    _CreateTypesQuery.Append(tmp);
-                }
-                else
-                {
-                    _CreateTypesQuery.Append(CreateTypeQuery.GetGQLQuery().Replace("CREATE VERTEX ", "") + ", ");
-                }
-
-            }
-
-            _CreateTypesQuery.RemoveEnding(2);
-
-            return Query(_CreateTypesQuery.ToString());
-
-        }
-
-        #endregion
-
-        #region CreateVertices(myAction, params myCreateVerticesQueries)
-
-        public QueryResult CreateVertices(Action<QueryResult> myAction, params CreateVertexQuery[] myCreateVerticesQueries)
-        {
-
-            var _QueryResult = CreateVertices(myCreateVerticesQueries);
-
-            QueryResultAction(_QueryResult, myAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region CreateVertices(mySuccessAction, myFailureAction, params myCreateVerticesQueries)
-
-        public QueryResult CreateVertices(Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, params CreateVertexQuery[] myCreateVerticesQueries)
-        {
-
-            var _QueryResult = CreateVertices(myCreateVerticesQueries);
-
-            QueryResultAction(_QueryResult, mySuccessAction, myFailureAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region CreateVertices(mySuccessAction, myPartialSuccessAction, myFailureAction, params myCreateVerticesQueries)
-
-        public QueryResult CreateVertices(Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, params CreateVertexQuery[] myCreateVerticesQueries)
-        {
-
-            var _QueryResult = CreateVertices(myCreateVerticesQueries);
-
-            QueryResultAction(_QueryResult, mySuccessAction, myPartialSuccessAction, myFailureAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #endregion
 
         #region AlterVertex/-Vertices
 
@@ -595,183 +263,6 @@ namespace sones.GraphDS.API.CSharp
         public CreateEdgeQuery CreateEdge(String myVertexTypeName, Boolean hyperEdge = false, Boolean abstractEdge = false)
         {
             return new CreateEdgeQuery(this, myVertexTypeName, hyperEdge, abstractEdge);
-        }
-
-        #endregion
-
-
-        #region CreateEdges(params myDBEdges)
-
-        public QueryResult CreateEdges(params DBEdge[] myDBEdges)
-        {
-
-            var _CreateTypesQuery = new StringBuilder("CREATE EDGES ");
-            var _CreateIndiciesQueries = new List<String>();
-
-            foreach (var _DBEdge in myDBEdges)
-            {
-
-                _CreateTypesQuery.Append(_DBEdge.CreateTypeQuery.Replace("CREATE EDGE ", "") + ", ");
-
-                if (_DBEdge.CreateIndicesQueries != null)
-                    _CreateIndiciesQueries.AddRange(_DBEdge.CreateIndicesQueries);
-
-            }
-
-            _CreateTypesQuery.RemoveEnding(2);
-
-            var _QueryResult = Query(_CreateTypesQuery.ToString());
-
-            if (_QueryResult.Failed)
-                return _QueryResult;
-
-            foreach (var _CreateIndexQuery in _CreateIndiciesQueries)
-            {
-
-                _QueryResult = Query(_CreateIndexQuery);
-
-                if (_QueryResult.Failed)
-                    return _QueryResult;
-
-            }
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region CreateEdges(myAction, params myDBEdges)
-
-        public QueryResult CreateEdges(Action<QueryResult> myAction, params DBEdge[] myDBEdges)
-        {
-
-            var _CreateTypesQuery = new StringBuilder("CREATE EDGES ");
-            var _CreateIndiciesQueries = new List<String>();
-
-            foreach (var _DBVertex in myDBEdges)
-            {
-
-                _CreateTypesQuery.Append(_DBVertex.CreateTypeQuery.Replace("CREATE EDGE ", "") + ", ");
-
-                if (_DBVertex.CreateIndicesQueries != null)
-                    _CreateIndiciesQueries.AddRange(_DBVertex.CreateIndicesQueries);
-
-            }
-
-            _CreateTypesQuery.RemoveEnding(2);
-
-            var _QueryResult = Query(_CreateTypesQuery.ToString());
-
-            QueryResultAction(_QueryResult, myAction);
-
-            if (_QueryResult.Failed)
-                return _QueryResult;
-
-            foreach (var _CreateIndexQuery in _CreateIndiciesQueries)
-            {
-
-                _QueryResult = Query(_CreateIndexQuery);
-
-                QueryResultAction(_QueryResult, myAction);
-
-                if (_QueryResult.Failed)
-                    return _QueryResult;
-
-            }
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region CreateEdges(mySuccessAction, myFailureAction, params myDBEdges)
-
-        public QueryResult CreateEdges(Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, params DBEdge[] myDBEdges)
-        {
-
-            var _CreateTypesQuery = new StringBuilder("CREATE EDGES ");
-            var _CreateIndiciesQueries = new List<String>();
-
-            foreach (var _DBVertex in myDBEdges)
-            {
-
-                _CreateTypesQuery.Append(_DBVertex.CreateTypeQuery.Replace("CREATE EDGE ", "") + ", ");
-
-                if (_DBVertex.CreateIndicesQueries != null)
-                    _CreateIndiciesQueries.AddRange(_DBVertex.CreateIndicesQueries);
-
-            }
-
-            _CreateTypesQuery.RemoveEnding(2);
-
-            var _QueryResult = Query(_CreateTypesQuery.ToString());
-
-            QueryResultAction(_QueryResult, mySuccessAction, myFailureAction);
-
-            if (_QueryResult.Failed)
-                return _QueryResult;
-
-            foreach (var _CreateIndexQuery in _CreateIndiciesQueries)
-            {
-
-                _QueryResult = Query(_CreateIndexQuery);
-
-                QueryResultAction(_QueryResult, mySuccessAction, myFailureAction);
-
-                if (_QueryResult.Failed)
-                    return _QueryResult;
-
-            }
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region CreateEdges(mySuccessAction, myPartialSuccessAction, myFailureAction, params myDBEdges)
-
-        public QueryResult CreateEdges(Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, params DBVertex[] myDBEdges)
-        {
-
-            var _CreateTypesQuery = new StringBuilder("CREATE EDGES ");
-            var _CreateIndiciesQueries = new List<String>();
-
-            foreach (var _DBVertex in myDBEdges)
-            {
-
-                _CreateTypesQuery.Append(_DBVertex.CreateTypeQuery.Replace("CREATE EDGE ", "") + ", ");
-
-                if (_DBVertex.CreateIndicesQueries != null)
-                    _CreateIndiciesQueries.AddRange(_DBVertex.CreateIndicesQueries);
-
-            }
-
-            _CreateTypesQuery.RemoveEnding(2);
-
-            var _QueryResult = Query(_CreateTypesQuery.ToString());
-
-            QueryResultAction(_QueryResult, mySuccessAction, myPartialSuccessAction, myFailureAction);
-
-            if (_QueryResult.Failed)
-                return _QueryResult;
-
-            foreach (var _CreateIndexQuery in _CreateIndiciesQueries)
-            {
-
-                _QueryResult = Query(_CreateIndexQuery);
-
-                QueryResultAction(_QueryResult, mySuccessAction, myPartialSuccessAction, myFailureAction);
-
-                if (_QueryResult.Failed)
-                    return _QueryResult;
-
-            }
-
-            return _QueryResult;
-
         }
 
         #endregion
@@ -1010,11 +501,19 @@ namespace sones.GraphDS.API.CSharp
             //Debug.Assert(myQueryResult["EDITION"]   != null);
             Debug.Assert(myQueryResult["REVISION"]  != null);
 
-            Debug.Assert(myQueryResult["UUID"]      as ObjectUUID != null);
+            //Debug.Assert(myQueryResult["UUID"]      as ObjectUUID != null);
             //Debug.Assert(myQueryResult["EDITION"]       as String != null);
             //Debug.Assert(myQueryResult["REVISION"]      as RevisionID != null); //ToDo: REVISION is String NOT RevisionID!!!
 
-            myDBObjectOfT.UUID          = myQueryResult["UUID"]     as ObjectUUID;
+            if (myQueryResult["UUID"] is ObjectUUID)
+            {
+                myDBObjectOfT.UUID = myQueryResult["UUID"] as ObjectUUID;
+            }
+            else
+            {
+                myDBObjectOfT.UUID = new ObjectUUID(myQueryResult["UUID"].ToString());
+            }
+
             myDBObjectOfT.Edition       = myQueryResult["EDITION"]  as String;
             myDBObjectOfT.RevisionID    = myQueryResult["REVISION"] as ObjectRevisionID;
 
@@ -1024,84 +523,85 @@ namespace sones.GraphDS.API.CSharp
 
         #region Insert(myAction, myDBObjects)
 
-        public DBObject[] Insert(Action<QueryResult> myAction, params DBObject[] myDBObjects)
+        public DBVertex[] Insert(Action<QueryResult> myAction, params DBVertex[] myDBVertices)
         {
 
-            if (myDBObjects == null)
+            if (myDBVertices == null)
                 throw new ArgumentNullException();
 
-            if (!myDBObjects.Any())
+            if (!myDBVertices.Any())
                 throw new ArgumentException();
 
             QueryResult _QueryResult = null;
 
-            if (myDBObjects != null)
+            if (myDBVertices != null)
             {
-                foreach (var _DBObject in myDBObjects)
+                foreach (var _DBVertex in myDBVertices)
                 {
 
-                    _QueryResult = Query("INSERT INTO " + _DBObject.GetType().Name + " VALUES (" + _DBObject.GetInsertValues(", ") + ")", myAction);
+                    _QueryResult = Query("INSERT INTO " + _DBVertex.GetType().Name + " VALUES (" + _DBVertex.GetInsertValues(", ") + ")", myAction);
 
                     if (_QueryResult.ResultType != ResultType.Failed)
-                        SetReturnValues(_DBObject, _QueryResult);
+                        SetReturnValues(_DBVertex, _QueryResult);
 
                 }
             }
 
-            return myDBObjects;
+            return myDBVertices;
 
         }
 
         #endregion 
 
-        #region Insert<T>(myAction, myDBObjectOfT)
+        #region Insert<T>(myAction, myDBVertexOfT)
 
-        public T Insert<T>(Action<QueryResult> myAction, T myDBObjectOfT) where T : DBObject
+        public T Insert<T>(Action<QueryResult> myAction, T myDBVertexOfT) where T : DBVertex
         {
 
-            if (myDBObjectOfT == null)
+            if (myDBVertexOfT == null)
                 throw new ArgumentNullException();
 
-            var _QueryResult = Query("INSERT INTO " + typeof(T).Name + " VALUES (" + myDBObjectOfT.GetInsertValues(", ") + ")", myAction);
+            var _GQLQuery    = "INSERT INTO " + typeof(T).Name + " VALUES (" + myDBVertexOfT.GetInsertValues(", ") + ")";
+            var _QueryResult = Query(_GQLQuery, myAction);
 
             if (_QueryResult.ResultType != ResultType.Failed)
-                SetReturnValues(myDBObjectOfT, _QueryResult);
+                SetReturnValues(myDBVertexOfT, _QueryResult);
 
-            return myDBObjectOfT;
+            return myDBVertexOfT;
 
         }
 
         #endregion
 
-        #region Insert<T>(myAction, myDBObjectsOfT)
+        #region Insert<T>(myAction, myDBVerticesOfT)
 
-        public T[] Insert<T>(Action<QueryResult> myAction, params T[] myDBObjectsOfT) where T : DBObject
+        public T[] Insert<T>(Action<QueryResult> myAction, params T[] myDBVerticesOfT) where T : DBVertex
         {
 
-            if (myDBObjectsOfT == null)
+            if (myDBVerticesOfT == null)
                 throw new ArgumentNullException();
 
-            if (!myDBObjectsOfT.Any())
+            if (!myDBVerticesOfT.Any())
                 throw new ArgumentException();
 
             QueryResult _QueryResult = null;
 
-            if (myDBObjectsOfT != null)
+            if (myDBVerticesOfT != null)
             {
 
-                foreach (var _DBObject in myDBObjectsOfT)
+                foreach (var _DBVertex in myDBVerticesOfT)
                 {
 
-                    _QueryResult = Query("INSERT INTO " + typeof(T).Name + " VALUES (" + _DBObject.GetInsertValues(", ") + ")", myAction);
+                    _QueryResult = Query("INSERT INTO " + typeof(T).Name + " VALUES (" + _DBVertex.GetInsertValues(", ") + ")", myAction);
 
                     if (_QueryResult.ResultType != ResultType.Failed)
-                        SetReturnValues(_DBObject, _QueryResult);
+                        SetReturnValues(_DBVertex, _QueryResult);
 
                 }
 
             }
 
-            return myDBObjectsOfT;
+            return myDBVerticesOfT;
 
         }
 
@@ -1460,14 +960,14 @@ namespace sones.GraphDS.API.CSharp
         /// <param name="myStopEvaluator">Will stop the traversal on a condition</param>
         /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
         /// <returns></returns>
-        public T Traverse<T>(DBVertex                               myStartVertex,
-                             TraversalOperation                     TraversalOperation  = TraversalOperation.BreathFirst,
-                             Func<Path, DBEdge, Boolean>            myFollowThisEdge    = null,
-                             Func<Path, DBEdge, DBVertex, Boolean>  myFollowThisPath    = null,
-                             Func<Path, Boolean>                    myMatchEvaluator    = null,
-                             Action<Path>                           myMatchAction       = null,
-                             Func<TraversalState, Boolean>          myStopEvaluator     = null,
-                             Func<IEnumerable<Path>, T>             myWhenFinished      = null)
+        public T Traverse<T>(DBVertex                                 myStartVertex,
+                             TraversalOperation                       TraversalOperation  = TraversalOperation.BreathFirst,
+                             Func<DBPath, DBEdge, Boolean>            myFollowThisEdge    = null,
+                             Func<DBPath, DBEdge, DBVertex, Boolean>  myFollowThisPath    = null,
+                             Func<DBPath, Boolean>                    myMatchEvaluator    = null,
+                             Action<DBPath>                           myMatchAction       = null,
+                             Func<TraversalState, Boolean>            myStopEvaluator     = null,
+                             Func<IEnumerable<DBPath>, T>             myWhenFinished      = null)
         {
             throw new NotImplementedException();
         }

@@ -69,8 +69,9 @@ namespace sones.GraphDB.GraphQL.StructureNodes
         public override QueryResult Execute(IGraphDBSession myIGraphDBSession)
         {
 
-            return myIGraphDBSession.Describe(_DescribeDefinition);
-            
+            var qresult = myIGraphDBSession.Describe(_DescribeDefinition);
+            qresult.AddErrorsAndWarnings(ParsingResult);
+            return qresult;
         }
 
         #endregion

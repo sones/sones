@@ -24,23 +24,24 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Stefan Licht</developer>
- * <summary>
- *  This class handles the transactions for stateless connections like rest. For a transactionUUID you can get the corresponding DBTransaction
- * </summary>
  */
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sones.GraphDB.Transactions;
 using sones.GraphFS.DataStructures;
-using sones.Libraries.Caches;
+using sones.Lib.Caches;
 
 namespace sones.GraphDB.Managers
 {
+
+    /// <summary>
+    /// This class handles the transactions for stateless connections like rest.
+    /// For a transactionUUID you can get the corresponding DBTransaction
+    /// </summary>
     public class DBTransactionManager : ASimpleCache<TransactionUUID, DBTransaction>
     {
+
         public DBTransactionManager()
             : base("DBTransactionManager", new CacheSettings(), new Dictionary<TransactionUUID, SimpleCacheItem<TransactionUUID, DBTransaction>>())
         {
@@ -77,5 +78,7 @@ namespace sones.GraphDB.Managers
         {
             return base.Remove(transactionUUID, true, true);
         }
+
     }
+
 }

@@ -19,6 +19,7 @@
 
 
 /* <id name="sones GraphDB – TypesOfBinaryExpression Enum" />
+/* <id name="GraphDB – TypesOfBinaryExpression Enum" />
  * <copyright file="TypesOfBinaryExpression.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH 2007-2010

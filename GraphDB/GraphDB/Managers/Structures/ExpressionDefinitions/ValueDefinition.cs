@@ -36,13 +36,13 @@ namespace sones.GraphDB.Managers.Structures
 
         public ValueDefinition(TypesOfOperatorResult TypeOfValue, Object myValue)
         {
-            Value = GraphDBTypeMapper.GetPandoraObjectFromType(TypeOfValue, myValue);
+            Value = GraphDBTypeMapper.GetGraphObjectFromType(TypeOfValue, myValue);
             IsDefined = true;
         }
 
         public ValueDefinition(TypesOfOperatorResult TypeOfValue, ADBBaseObject myValue)
         {
-            Value = GraphDBTypeMapper.GetPandoraObjectFromType(TypeOfValue, myValue.Value);
+            Value = GraphDBTypeMapper.GetGraphObjectFromType(TypeOfValue, myValue.Value);
             IsDefined = true;
         }
 
@@ -64,7 +64,7 @@ namespace sones.GraphDB.Managers.Structures
             IsDefined = false;
         }
 
-        public ValueDefinition(AObject myValue)
+        public ValueDefinition(IObject myValue)
         {
 
             if (myValue is ADBBaseObject)

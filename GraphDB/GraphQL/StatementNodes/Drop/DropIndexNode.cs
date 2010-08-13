@@ -61,8 +61,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Drop
                 return new QueryResult(aError);
             }
 
-            return graphDBSession.DropIndex(_TypeName, _IndexName, _IndexEdition);
-
+            var qresult = graphDBSession.DropIndex(_TypeName, _IndexName, _IndexEdition);
+            qresult.AddErrorsAndWarnings(ParsingResult);
+            return qresult;
         }
 
     }

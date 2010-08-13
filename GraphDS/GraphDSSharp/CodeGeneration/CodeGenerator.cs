@@ -33,6 +33,7 @@ using sones.GraphDB;
 using sones.GraphDB.TypeManagement;
 using sones.Lib;
 using System.Text;
+using sones.GraphDS.API.CSharp.Fluent;
 
 #endregion
 
@@ -75,13 +76,13 @@ namespace sones.GraphDS.API.CSharp
             _CompilerParameters.OutputAssembly          = myDLL;
             _CompilerParameters.GenerateInMemory        = false;
             _CompilerParameters.TreatWarningsAsErrors   = false;
-            _CompilerParameters.ReferencedAssemblies.Add("PandoraFS.dll");
-            _CompilerParameters.ReferencedAssemblies.Add("PandoraLIB.dll");
+            _CompilerParameters.ReferencedAssemblies.Add("GraphFS.dll");
+            _CompilerParameters.ReferencedAssemblies.Add("GraphLIB.dll");
 
             //HACK: Using the TypeManager is EVIL!!!
             dynamic _DynamicUnitTestHelper = new DynamicUnitTestHelper((GraphDBSession)myGraphDSSharp.IGraphDBSession);
             var _TypeManager = (DBTypeManager)_DynamicUnitTestHelper.TypeManager;
-            //var _TypeManager = (DBTypeManager) UnitTestHelper.GetPrivateField("_PandoraDB.TypeManager", (GraphDBSession) myIGraphDBSession);
+            //var _TypeManager = (DBTypeManager) UnitTestHelper.GetPrivateField("_GraphDB.TypeManager", (GraphDBSession) myIGraphDBSession);
 
             var _StringBuilder = new StringBuilder();
 

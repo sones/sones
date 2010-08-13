@@ -30,19 +30,19 @@ using System.IO;
 using System.ServiceModel;
 using System.Collections.Generic;
 
-using sones.Notifications;
-using sones.Lib.DataStructures;
-
-using sones.StorageEngines;
 using sones.GraphFS.Caches;
 using sones.GraphFS.Events;
 using sones.GraphFS.Objects;
-using sones.GraphFS.DataStructures;
-using sones.Lib.ErrorHandling;
-using sones.GraphFS.InternalObjects;
-using sones.Lib.Session;
 using sones.GraphFS.Transactions;
+using sones.GraphFS.DataStructures;
+using sones.GraphFS.InternalObjects;
+
+using sones.Lib.Session;
+using sones.Lib.ErrorHandling;
+using sones.Lib.DataStructures;
 using sones.Lib.DataStructures.Indices;
+
+using sones.Notifications;
 
 #endregion
 
@@ -50,7 +50,7 @@ namespace sones.GraphFS.Session
 {
 
     /// <summary>
-    /// The session interface for all Pandora file systems
+    /// The session interface for all Graph file systems
     /// </summary>
 
     public interface IGraphFSSession
@@ -66,13 +66,32 @@ namespace sones.GraphFS.Session
         #endregion
 
         #region Events
+        
+        // AFSObject handling
+        event GraphFSEventHandlers.OnLoadEventHandler                       OnLoad;
+        event GraphFSEventHandlers.OnLoadedEventHandler                     OnLoaded;
+        event GraphFSEventHandlers.OnLoadedAsyncEventHandler                OnLoadedAsync;
 
-        event GraphFSEventHandlers.OnLoadEventHandler    OnLoad;
-        event GraphFSEventHandlers.OnLoadedEventHandler  OnLoaded;
-        event GraphFSEventHandlers.OnSaveEventHandler    OnSave;
-        event GraphFSEventHandlers.OnSavedEventHandler   OnSaved;
-        event GraphFSEventHandlers.OnRemoveEventHandler  OnRemove;
-        event GraphFSEventHandlers.OnRemovedEventHandler OnRemoved;
+        event GraphFSEventHandlers.OnSaveEventHandler                       OnSave;
+        event GraphFSEventHandlers.OnSavedEventHandler                      OnSaved;
+        event GraphFSEventHandlers.OnSavedAsyncEventHandler                 OnSavedAsync;
+        
+        event GraphFSEventHandlers.OnRemoveEventHandler                     OnRemove;
+        event GraphFSEventHandlers.OnRemovedEventHandler                    OnRemoved;
+        event GraphFSEventHandlers.OnRemovedAsyncEventHandler               OnRemovedAsync;
+
+        // Transaction handling
+        event GraphFSEventHandlers.OnTransactionStartEventHandler           OnTransactionStart;
+        event GraphFSEventHandlers.OnTransactionStartedEventHandler         OnTransactionStarted;
+        event GraphFSEventHandlers.OnTransactionStartedAsyncEventHandler    OnTransactionStartedAsync;
+
+        event GraphFSEventHandlers.OnTransactionCommitEventHandler          OnTransactionCommit;
+        event GraphFSEventHandlers.OnTransactionCommittedEventHandler       OnTransactionCommitted;
+        event GraphFSEventHandlers.OnTransactionCommittedAsyncEventHandler  OnTransactionCommittedAsync;
+
+        event GraphFSEventHandlers.OnTransactionRollbackEventHandler        OnTransactionRollback;
+        event GraphFSEventHandlers.OnTransactionRollbackedEventHandler      OnTransactionRollbacked;
+        event GraphFSEventHandlers.OnTransactionRollbackedAsyncEventHandler OnTransactionRollbackedAsync;
 
         #endregion
 
@@ -259,7 +278,7 @@ namespace sones.GraphFS.Session
 
         #region ChildFileSystems
 
-        //Dictionary<String, IPandoraFS> ChildFileSystems { get; }
+        //Dictionary<String, IGraphFS> ChildFileSystems { get; }
         IEnumerable<ObjectLocation> GetChildFileSystemMountpoints(Boolean myRecursiveOperation);
 
         IGraphFS GetChildFileSystem(ObjectLocation myObjectLocation, Boolean myRecursive);
@@ -347,46 +366,32 @@ namespace sones.GraphFS.Session
 
         #region ObjectCache
 
-        ///// <summary>
-        ///// Returns the ObjectCache of this file system
-        ///// </summary>
-        ///// <returns>The ObjectCache of this file system</returns>
-        //ObjectCache GetObjectCache();
-
-        ///// <summary>
-        ///// Returns the ObjectCache of the file system at the given ObjectLocation
-        ///// </summary>
-        ///// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        ///// <returns>The ObjectCache of the file system at the given ObjectLocation</returns>
-        //ObjectCache GetObjectCache(ObjectLocation myObjectLocation);
-
-
         /// <summary>
         /// Returns the ObjectCache settings of this file system
         /// </summary>
         /// <returns>The ObjectCache settings of this file system</returns>
-        ObjectCacheSettings GetObjectCacheSettings();
+        Exceptional<ObjectCacheSettings> GetObjectCacheSettings();
 
         /// <summary>
         /// Returns the ObjectCache settings of the file system at the given ObjectLocation
         /// </summary>
         /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
         /// <returns>The ObjectCache settings of the file system at the given ObjectLocation</returns>
-        ObjectCacheSettings GetObjectCacheSettings(ObjectLocation myObjectLocation);
+        Exceptional<ObjectCacheSettings> GetObjectCacheSettings(ObjectLocation myObjectLocation);
 
 
         /// <summary>
         /// Sets the ObjectCache settings of this file system
         /// </summary>
         /// <param name="myNotificationSettings">A ObjectCacheSettings object</param>
-        void SetObjectCacheSettings(ObjectCacheSettings myObjectCacheSettings);
+        Exceptional SetObjectCacheSettings(ObjectCacheSettings myObjectCacheSettings);
 
         /// <summary>
         /// Sets the ObjectCache settings of the file system at the given ObjectLocation
         /// </summary>
         /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
         /// <param name="myNotificationSettings">A ObjectCacheSettings object</param>
-        void SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings);
+        Exceptional SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings);
 
         #endregion
 
@@ -395,22 +400,24 @@ namespace sones.GraphFS.Session
 
         #region MakeFileSystem(myStorageLocation, myDescription, ...)
 
+        Exceptional<FileSystemUUID> MakeFileSystem(String myStorageLocation, String myDescription, UInt64 myNumberOfBytes, Boolean myOverwriteExistingFileSystem, Action<Double> myAction);
+
         /// <summary>
-        /// This initialises a IPandoraFS in a given device or file using the given sizes
+        /// This initialises a IGraphFS in a given device or file using the given sizes
         /// </summary>
-        /// <param name="myStorageLocation">a device or filename where to store the file system data</param>
+        /// <param name="myStorageLocations">a device or filename where to store the file system data</param>
         /// <param name="myDescription">a distinguishable Name or description for the file system (can be changed later)</param>
         /// <param name="myNumberOfBytes">the size of the file system in byte</param>
         /// <param name="myOverwriteExistingFileSystem">overwrite an existing file system [yes|no]</param>
         /// <returns>the UUID of the new file system</returns>
-        Exceptional<FileSystemUUID> MakeFileSystem(String myStorageLocation, String myDescription, UInt64 myNumberOfBytes, Boolean myOverwriteExistingFileSystem, Action<Double> myAction);
+        Exceptional<FileSystemUUID> MakeFileSystem(IEnumerable<String> myStorageLocations, String myDescription, UInt64 myNumberOfBytes, Boolean myOverwriteExistingFileSystem, Action<Double> myAction);
 
         #endregion
 
         #region GrowFileSystem(myNumberOfBytesToAdd)
 
         /// <summary>
-        /// This enlarges the size of a IPandoraFS
+        /// This enlarges the size of a IGraphFS
         /// </summary>
         /// <param name="myNumberOfBytesToAdd">the number of bytes to add to the size of the current file system</param>
         void GrowFileSystem(UInt64 myNumberOfBytesToAdd);
@@ -420,7 +427,7 @@ namespace sones.GraphFS.Session
         #region ShrinkFileSystem
 
         /// <summary>
-        /// This reduces the size of a IPandoraFS
+        /// This reduces the size of a IGraphFS
         /// </summary>
         /// <param name="myNumberOfBytesToRemove">the number of bytes to remove from the size of the current file system</param>
         void ShrinkFileSystem(UInt64 myNumberOfBytesToRemove);
@@ -431,7 +438,7 @@ namespace sones.GraphFS.Session
         #region MountFileSystem(myStorageLocation, ...)
 
         /// <summary>
-        /// Mounts a IPandoraFS from a device or filename serving the file system with an existing Notification dispatcher
+        /// Mounts a IGraphFS from a device or filename serving the file system with an existing Notification dispatcher
         /// </summary>
         /// <param name="myStorage">a device or filename serving the file system</param>
         /// <param name="myFSAccessMode">the access mode of this file system (read/write, read-only, ...)</param>
@@ -457,13 +464,13 @@ namespace sones.GraphFS.Session
         #region RemountFileSystem(...)
 
         /// <summary>
-        /// Remounts a IPandoraFS
+        /// Remounts a IGraphFS
         /// </summary>
         /// <param name="myFSAccessMode">the mode the file system should be opend (see AccessModeTypes)</param>
         void RemountFileSystem(AccessModeTypes myFSAccessMode);
 
         /// <summary>
-        /// Remounts a IPandoraFS
+        /// Remounts a IGraphFS
         /// </summary>
         /// <param name="myMountPoint">the location of the file system within the virtual file system</param>
         /// <param name="myFSAccessMode">the mode the file system should be opend (see AccessModeTypes)</param>
@@ -474,18 +481,18 @@ namespace sones.GraphFS.Session
         #region UnmountFileSystem(...)
 
         /// <summary>
-        /// Unmounts a IPandoraFS by flushing all caches and shutting down all managers, finally closing the file system
+        /// Unmounts a IGraphFS by flushing all caches and shutting down all managers, finally closing the file system
         /// </summary>
         void UnmountFileSystem();
 
         /// <summary>
-        /// Unmounts a IPandoraFS by flushing all caches and shutting down all managers, finally closing the file
+        /// Unmounts a IGraphFS by flushing all caches and shutting down all managers, finally closing the file
         /// </summary>
         /// <param name="myMountPoint">the location of the file system within the virtual file system</param>
         void UnmountFileSystem(ObjectLocation myMountPoint);
 
         /// <summary>
-        /// Unmounts all PandoraFSs by flushing all caches and shutting down all managers, finally closing all files
+        /// Unmounts all GraphFSs by flushing all caches and shutting down all managers, finally closing all files
         /// </summary>
         void UnmountAllFileSystems();
 
@@ -509,9 +516,9 @@ namespace sones.GraphFS.Session
         #region ResolveAndVerifyObjectLocation(...)
 
         //ResolveTypes ResolveObjectLocation_Internal(ref ObjectLocation myObjectLocation, out List<String> myObjectStreams, out String myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, ref List<String> mySymlinkTargets);
-        //ResolveTypes ResolveObjectLocationRecursive_Internal(ref ObjectLocation myObjectLocation, out List<String> myObjectStreams, out String myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IPandoraFS myIPandoraFS, ref List<String> mySymlinkTargets);
+        //ResolveTypes ResolveObjectLocationRecursive_Internal(ref ObjectLocation myObjectLocation, out List<String> myObjectStreams, out String myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIGraphFS, ref List<String> mySymlinkTargets);
 
-        Trinary ResolveObjectLocation(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIPandoraFS);
+        Trinary ResolveObjectLocation(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIGraphFS);
         String ResolveObjectLocation(ObjectLocation myObjectLocation, Boolean myThrowObjectNotFoundException);
 
         #endregion
@@ -549,7 +556,7 @@ namespace sones.GraphFS.Session
         Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures= false) where PT : AFSObject, new();
         Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, Func<PT> myFunc, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject;
 
-        Exceptional StoreFSObject(AFSObject myAPandoraObject, Boolean myAllowOverwritting);
+        Exceptional StoreFSObject(AFSObject myAGraphObject, Boolean myAllowOverwritting);
 
         Exceptional<Trinary> ObjectExists(ObjectLocation myObjectLocatio);
         Exceptional<Trinary> ObjectStreamExists(ObjectLocation myObjectLocation, String myObjectStream);
@@ -820,7 +827,7 @@ namespace sones.GraphFS.Session
         ///// <param name="myObjectLocation">The object location.</param>
         ///// <param name="myAlert">The alert that should be added.</param>
         ///// <returns>True for success or otherwise false.</returns>
-        //bool AddAlertToPandoraRightsAlertHandlingList(ObjectLocation myObjectLocation, NHAccessControlObject myAlert);
+        //bool AddAlertToGraphRightsAlertHandlingList(ObjectLocation myObjectLocation, NHAccessControlObject myAlert);
 
         ///// <summary>
         ///// Removes an alert from a ACCESSCONTROLSTREAM.
@@ -828,7 +835,7 @@ namespace sones.GraphFS.Session
         ///// <param name="myObjectLocation">The object location.</param>
         ///// <param name="myAlert">The alert that should be removed.</param>
         ///// <returns>True for success or otherwise false.</returns>
-        //bool RemoveAlertFromPandoraRightsAlertHandlingList(ObjectLocation myObjectLocation, NHAccessControlObject myAlert);
+        //bool RemoveAlertFromGraphRightsAlertHandlingList(ObjectLocation myObjectLocation, NHAccessControlObject myAlert);
 
         //#endregion
 
@@ -840,7 +847,7 @@ namespace sones.GraphFS.Session
 
         //#region Index Maintenance
 
-        ////void CreateIndexObject<T1, T2, T3>(ObjectLocation myObjectLocation) where T1 : APandoraObject, IIndexObject<T2, T3>, new() where T2 : IComparable;
+        ////void CreateIndexObject<T1, T2, T3>(ObjectLocation myObjectLocation) where T1 : AGraphObject, IIndexObject<T2, T3>, new() where T2 : IComparable;
         //IIndexObject<TKey, TValue> CreateIndexObject<TKey, TValue>(ObjectLocation myObjectLocation, IndexObjectTypes myIndexObjectType) where TKey : IComparable;
 
         ///// <summary>
@@ -1029,7 +1036,7 @@ namespace sones.GraphFS.Session
         //#region Rights ObjectIndex Maintenance
 
         ///// <summary>
-        ///// This method adds a Right to the IPandoraFS. All 
+        ///// This method adds a Right to the IGraphFS. All 
         ///// Rights that are added via this method are treated as 
         ///// userdefined rights. Additionally it is possible to add 
         ///// a validation script which is evaluated while trying to 
@@ -1039,16 +1046,16 @@ namespace sones.GraphFS.Session
         ///// <param name="myLogin">The Name of the right. Cannot be null or empty.</param>
         ///// <param name="myValidationScript">The validation script for evaluating the access of an entity. Can be null or empty.</param>
         ///// <returns>True for success or otherwise false.</returns>
-        //bool AddPandoraRight(ObjectLocation myObjectLocation, String Name, String ValidationScript);
+        //bool AddGraphRight(ObjectLocation myObjectLocation, String Name, String ValidationScript);
 
         ///// <summary>
-        ///// This method removes a Right from the IPandoraFS. It is 
+        ///// This method removes a Right from the IGraphFS. It is 
         ///// not possible to remove a non userdefined right.
         ///// </summary>
         ///// <param name="myObjectLocation">The object location.</param>
         ///// <param name="RightUUID">The UUID of the right.</param>
         ///// <returns>True for success or otherwise false</returns>
-        //bool RemovePandoraRight(ObjectLocation myObjectLocation, RightUUID myRightUUID);
+        //bool RemoveGraphRight(ObjectLocation myObjectLocation, RightUUID myRightUUID);
 
         ///// <summary>
         ///// Returns a Right correspondig to its Name.
@@ -1071,18 +1078,18 @@ namespace sones.GraphFS.Session
 
         #region StorageEngine Maintenance
 
-        /// <summary>
-        /// Returns a list of all StorageUUIDs associated with this file system
-        /// </summary>
-        /// <returns>A list of all StorageUUIDs associated with this file system</returns>
-        IEnumerable<StorageUUID> StorageUUIDs();
+        ///// <summary>
+        ///// Returns a list of all StorageUUIDs associated with this file system
+        ///// </summary>
+        ///// <returns>A list of all StorageUUIDs associated with this file system</returns>
+        //IEnumerable<StorageUUID> StorageUUIDs();
 
-        /// <summary>
-        /// Returns a list of all StorageUUIDs associated with the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <returns>A list of all StorageUUIDs associated with the file system at the given ObjectLocation</returns>
-        IEnumerable<StorageUUID> StorageUUIDs(ObjectLocation myObjectLocation);
+        ///// <summary>
+        ///// Returns a list of all StorageUUIDs associated with the file system at the given ObjectLocation
+        ///// </summary>
+        ///// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
+        ///// <returns>A list of all StorageUUIDs associated with the file system at the given ObjectLocation</returns>
+        //IEnumerable<StorageUUID> StorageUUIDs(ObjectLocation myObjectLocation);
 
         /// <summary>
         /// Returns a list of descriptions for the storage engines associated with this file system

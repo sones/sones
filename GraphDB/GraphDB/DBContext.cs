@@ -30,7 +30,6 @@
 
 using System;
 using System.Collections.Generic;
-using Lib;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Indices;
 using sones.GraphDB.ObjectManagement;
@@ -40,7 +39,8 @@ using sones.GraphDB.Settings;
 using sones.GraphDB.TypeManagement;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Session;
-
+using sones.Lib;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
@@ -54,7 +54,7 @@ namespace sones.GraphDB
     /// - start each time with an empty Cache, TypeManager, etc to load these data based on the transaction timestamp
     /// </summary>
 
-    public class DBContext : IContext
+    public class DBContext
     {
 
         #region Data
@@ -145,7 +145,7 @@ namespace sones.GraphDB
         /// <summary>
         /// The constructor.
         /// </summary>
-        /// <param name="myIPandoraDBSession">The filesystem where the information is stored.</param>
+        /// <param name="myIGraphDBSession">The filesystem where the information is stored.</param>
         /// <param name="DatabaseRootPath">The database root path.</param>
         public DBContext(IGraphFSSession graphFSSession, ObjectLocation myDatabaseRootPath, EntityUUID myUserID, Dictionary<String, ADBSettingsBase> myDBSettings, Boolean myRebuildIndices, DBPluginManager myDBPluginManager, DBSessionSettings sessionSettings = null)
         {
@@ -163,7 +163,7 @@ namespace sones.GraphDB
             //init types
             var initExcept = _DBTypeManager.Init(graphFSSession, myDatabaseRootPath, myRebuildIndices);
 
-            if (initExcept.Failed)
+            if (initExcept.Failed())
             {
                 throw new GraphDBException(initExcept.Errors);
             }

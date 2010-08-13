@@ -170,12 +170,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
             {
                 if (!this.ContainsLevelKey(myLevelKey))
                 {
-                    //the graph does not contain the LevelKey, so create it
-                    #region create LevelKey
-
-                    GenerateLevel(myLevelKey);
-
-                    #endregion
+                    return false;
                 }
 
                 if (myLevelKey.Level == 0)
@@ -278,7 +273,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
 
                             foreach (var aDBO in _DBObjectCache.LoadListOfDBObjectStreams(myType, this._Levels[predecessorLevelKey.Level].ExpressionLevels[predecessorLevelKey].Nodes[mySourceDBObject.ObjectUUID].ForwardEdges[myLevelKey.LastEdge].Select(item => item.Destination)))
                             {
-                                if (aDBO.Failed)
+                                if (aDBO.Failed())
                                 {
                                     AddWarning(new Warning_CouldNotLoadDBObject(aDBO.Errors, new System.Diagnostics.StackTrace(true)));
                                 }
@@ -767,7 +762,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
 
                     beStream = _DBObjectCache.LoadDBBackwardEdgeStream(tempTypeAttribute.GetDBType(_DBContext.DBTypeManager), aDBObject.ObjectUUID);
 
-                    if (beStream.Failed)
+                    if (beStream.Failed())
                     {
                         throw new GraphDBException(new Error_CouldNotLoadBackwardEdge(aDBObject, tempTypeAttribute, beStream.Errors));
                     }
@@ -801,7 +796,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                     {
                         tempDbo = _DBObjectCache.LoadDBObjectStream(referenceType, aReferenceUUID);
 
-                        if (!tempDbo.Success)
+                        if (!tempDbo.Success())
                         {
                             #region error
 
@@ -1435,7 +1430,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                                 //load the backward edge stream
                                 var currentBackwardEdgeStream = _DBObjectCache.LoadDBBackwardEdgeStream(currentAttribute.GetDBType(_DBContext.DBTypeManager), myNode.GetObjectUUID());
 
-                                if (currentBackwardEdgeStream.Failed)
+                                if (currentBackwardEdgeStream.Failed())
                                 {
                                     throw new GraphDBException(new Error_CouldNotLoadBackwardEdge(myNode.GetDBObjectStream(_DBObjectCache, currentAttribute.GetRelatedType(_DBContext.DBTypeManager).UUID), currentAttribute, currentBackwardEdgeStream.Errors));
                                 }
@@ -1469,7 +1464,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                             {
                                 referencedDBObject = _DBObjectCache.LoadDBObjectStream(referencedType, aReferenceObjectUUID);
 
-                                if (!referencedDBObject.Success)
+                                if (!referencedDBObject.Success())
                                 {
                                     #region error
 
@@ -1575,7 +1570,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                             //get backwardEdge
                             var beStream = _DBObjectCache.LoadDBBackwardEdgeStream(myStartingDBObjectType, myStartingDBObject.ObjectUUID);
 
-                            if (beStream.Failed)
+                            if (beStream.Failed())
                             {
                                 throw new GraphDBException(new Error_CouldNotLoadBackwardEdge(myStartingDBObject, interestingAttributeEdge, beStream.Errors));
                             }
@@ -1591,7 +1586,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                         else
                         {
 
-                            foreach (var aDBO in ((ASetReferenceEdgeType)myStartingDBObject.GetAttribute(interestingAttributeEdge.UUID)).GetAllEdgeDestinations(_DBContext.DBObjectCache))
+                            foreach (var aDBO in ((ASetOfReferencesEdgeType)myStartingDBObject.GetAttribute(interestingAttributeEdge.UUID)).GetAllEdgeDestinations(_DBContext.DBObjectCache))
                             {
                                 yield return aDBO;
                             } 
@@ -1752,7 +1747,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                             {
                                 var aReferenceStream = _DBObjectCache.LoadDBObjectStream(typeOfReferencedObjects, aReferenceUUID);
 
-                                if (aReferenceStream.Failed)
+                                if (aReferenceStream.Failed())
                                 {
                                     if (invalidReferenceSetting == null)
                                     {
@@ -1819,7 +1814,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                         //get backwardEdge
                         var beStream = _DBObjectCache.LoadDBBackwardEdgeStream(myCurrentDBObjectType, currentDBObject.ObjectUUID);
 
-                        if (beStream.Failed)
+                        if (beStream.Failed())
                         {
                             throw new GraphDBException(new Error_CouldNotLoadBackwardEdge(currentDBObject, interestingAttribute, beStream.Errors));
                         }
@@ -1834,7 +1829,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                     }
                     else
                     {
-                        foreach (var aObjectUUID in ((ASetReferenceEdgeType)currentDBObject.GetAttribute(interestingAttribute.UUID)).GetAllReferenceIDs())
+                        foreach (var aObjectUUID in ((ASetOfReferencesEdgeType)currentDBObject.GetAttribute(interestingAttribute.UUID)).GetAllReferenceIDs())
                         {
                             yield return aObjectUUID;
                         }
@@ -2005,7 +2000,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
 
                             foreach (var aDBO in _DBObjectCache.LoadListOfDBObjectStreams(lowestType, idx.GetAllUUIDs(indexRelatedType, _DBContext)))
                             {
-                                if (aDBO.Failed)
+                                if (aDBO.Failed())
                                 {
                                     AddWarning(new Warning_CouldNotLoadDBObject(aDBO.Errors, new System.Diagnostics.StackTrace(true)));
                                 }

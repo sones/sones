@@ -116,16 +116,16 @@ namespace sones.GraphDB.GraphQL.StructureNodes
                 else
                 {
                     typeOfExpression = aExpressionNode.Term.GetType();
-                    var val = new ValueDefinition(GraphDBTypeMapper.ConvertPandora2CSharp(typeOfExpression.Name), aExpressionNode.Token.Value);
-                    TupleDefinition.AddElement(new TupleElement(GraphDBTypeMapper.ConvertPandora2CSharp(typeOfExpression.Name), val));
+                    var val = new ValueDefinition(GraphDBTypeMapper.ConvertGraph2CSharp(typeOfExpression.Name), aExpressionNode.Token.Value);
+                    TupleDefinition.AddElement(new TupleElement(GraphDBTypeMapper.ConvertGraph2CSharp(typeOfExpression.Name), val));
                     continue;
                 }
 
                 #endregion
 
-                var aTypeOfOperatorResult = GraphDBTypeMapper.ConvertPandora2CSharp(typeOfExpression.Name);
+                var aTypeOfOperatorResult = GraphDBTypeMapper.ConvertGraph2CSharp(typeOfExpression.Name);
 
-                if (GraphDBTypeMapper.ConvertPandora2CSharp(typeOfExpression.Name) == TypesOfOperatorResult.NotABasicType)
+                if (GraphDBTypeMapper.ConvertGraph2CSharp(typeOfExpression.Name) == TypesOfOperatorResult.NotABasicType)
                 {
                     #region NotABasicType
 
@@ -184,7 +184,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
                                         //    var dbTypeOfAttribute = curAttr.GetDBType(DBcontext.DBTypeManager);
 
-                                        //    aTypeOfOperatorResult = GraphDBTypeMapper.ConvertPandora2CSharp(dbTypeOfAttribute.Name);
+                                        //    aTypeOfOperatorResult = GraphDBTypeMapper.ConvertGraph2CSharp(dbTypeOfAttribute.Name);
 
                                         //    foreach (DBObjectReadout dbo in aSelResult.Objects)
                                         //    {

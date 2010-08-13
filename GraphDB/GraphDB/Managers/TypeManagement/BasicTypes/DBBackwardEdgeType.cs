@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB DBBackwardEdgeType" />
+﻿/* <id name="GraphDB DBBackwardEdgeType" />
  * <copyright file="DBBackwardEdgeType.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -91,70 +91,70 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         #region Operations
 
         [Obsolete("Operator '+' cannot be applied to operands of type 'DBBackwardEdgeType' and 'DBBackwardEdgeType'")]
-        public static DBBackwardEdgeType operator +(DBBackwardEdgeType myPandoraObjectA, String myValue)
+        public static DBBackwardEdgeType operator +(DBBackwardEdgeType myGraphObjectA, String myValue)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '-' cannot be applied to operands of type 'DBBackwardEdgeType' and 'DBBackwardEdgeType'")]
-        public static DBBackwardEdgeType operator -(DBBackwardEdgeType myPandoraObjectA, String myValue)
+        public static DBBackwardEdgeType operator -(DBBackwardEdgeType myGraphObjectA, String myValue)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '*' cannot be applied to operands of type 'DBBackwardEdgeType' and 'DBBackwardEdgeType'")]
-        public static DBBackwardEdgeType operator *(DBBackwardEdgeType myPandoraObjectA, String myValue)
+        public static DBBackwardEdgeType operator *(DBBackwardEdgeType myGraphObjectA, String myValue)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '/' cannot be applied to operands of type 'DBBackwardEdgeType' and 'DBBackwardEdgeType'")]
-        public static DBBackwardEdgeType operator /(DBBackwardEdgeType myPandoraObjectA, String myValue)
+        public static DBBackwardEdgeType operator /(DBBackwardEdgeType myGraphObjectA, String myValue)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '+' cannot be applied to operands of type 'DBBackwardEdgeType' and 'DBBackwardEdgeType'")]
-        public override ADBBaseObject Add(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Add(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '-' cannot be applied to operands of type 'DBBackwardEdgeType' and 'DBBackwardEdgeType'")]
-        public override ADBBaseObject Sub(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Sub(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '*' cannot be applied to operands of type 'DBBackwardEdgeType' and 'DBBackwardEdgeType'")]
-        public override ADBBaseObject Mul(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Mul(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '/' cannot be applied to operands of type 'DBBackwardEdgeType' and 'DBBackwardEdgeType'")]
-        public override ADBBaseObject Div(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Div(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '+' cannot be applied to operands of type 'DBBackwardEdgeType' and 'DBBackwardEdgeType'")]
-        public override void Add(ADBBaseObject myPandoraObject)
+        public override void Add(ADBBaseObject myGraphObject)
         {
         }
 
         [Obsolete("Operator '-' cannot be applied to operands of type 'DBBackwardEdgeType' and 'DBBackwardEdgeType'")]
-        public override void Sub(ADBBaseObject myPandoraObject)
+        public override void Sub(ADBBaseObject myGraphObject)
         {
         }
 
         [Obsolete("Operator '*' cannot be applied to operands of type 'DBBackwardEdgeType' and 'DBBackwardEdgeType'")]
-        public override void Mul(ADBBaseObject myPandoraObject)
+        public override void Mul(ADBBaseObject myGraphObject)
         {
         }
 
         [Obsolete("Operator '/' cannot be applied to operands of type 'DBBackwardEdgeType' and 'DBBackwardEdgeType'")]
-        public override void Div(ADBBaseObject myPandoraObject)
+        public override void Div(ADBBaseObject myGraphObject)
         {
         }
 

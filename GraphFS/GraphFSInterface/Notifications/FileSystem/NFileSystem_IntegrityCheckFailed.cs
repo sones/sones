@@ -21,7 +21,7 @@
 /* PandoraLib - NIntegrityCheckFailed
  * (c) Stefan Licht, 2009
  * 
- * Notifies about an PandoraFSException_IntegrityCheckFailed exception throwed by InformationHeader.VerifyAndDecrypt(...)
+ * Notifies about an GraphFSException_IntegrityCheckFailed exception throwed by InformationHeader.VerifyAndDecrypt(...)
  * 
  * Lead programmer:
  *      Stefan Licht
@@ -40,7 +40,7 @@ using sones.Lib.NewFastSerializer;
 namespace sones.GraphFS.Notification
 {
     /// <summary>
-    /// Notifies about an PandoraFSException_IntegrityCheckFailed exception throwed by InformationHeader.VerifyAndDecrypt(...)
+    /// Notifies about an GraphFSException_IntegrityCheckFailed exception throwed by InformationHeader.VerifyAndDecrypt(...)
     /// </summary>
     public class NFileSystem_IntegrityCheckFailed : NFileSystem
     {
@@ -92,7 +92,7 @@ namespace sones.GraphFS.Notification
 
         public override string Description
         {
-            get { return "Notifies about an PandoraFSException_IntegrityCheckFailed exception"; }
+            get { return "Notifies about an GraphFSException_IntegrityCheckFailed exception"; }
         }
 
         public override INotificationArguments GetEmptyArgumentInstance()

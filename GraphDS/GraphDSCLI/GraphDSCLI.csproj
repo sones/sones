@@ -102,6 +102,14 @@
       <Project>{B23FDA3D-8229-4CDD-91FD-9AFD7301D315}</Project>
       <Name>GraphFSInterface</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\GraphIO\GraphIO.csproj">
+      <Project>{624BBB9D-89BE-43CE-8B8C-18BE729F4B11}</Project>
+      <Name>GraphIO %28Dependencies\GraphIO\GraphIO%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\TEXT_IO\TEXT_IO.csproj">
+      <Project>{90E0D6D5-6527-4DE9-8DC4-C88B79A2B1C5}</Project>
+      <Name>TEXT_IO</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Lib\Irony\Irony.csproj">
       <Project>{CDD9C45F-F285-4A80-B39F-3B1B8B7B5214}</Project>
       <Name>Irony</Name>

@@ -66,7 +66,7 @@ namespace sones.GraphDB.Structures.Result
             Attributes = myAttributes;
         }
 
-        public DBObjectReadout(IDictionary<AttributeUUID, AObject> myAttributes, GraphDBType myTypeOfDBObject)
+        public DBObjectReadout(IDictionary<AttributeUUID, IObject> myAttributes, GraphDBType myTypeOfDBObject)
         {
             Attributes = myAttributes.ToDictionary(
                             key   => myTypeOfDBObject.GetTypeAttributeByUUID(key.Key).Name,

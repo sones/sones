@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – ReplaceNode" />
+﻿/* <id name="GraphDB – ReplaceNode" />
  * <copyright file="ReplaceNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -73,7 +73,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Replace
         public override QueryResult Execute(IGraphDBSession graphDBSession)
         {
 
-            return graphDBSession.Replace(_TypeName, _AttributeAssignList, _whereExpression);
+            var qresult = graphDBSession.Replace(_TypeName, _AttributeAssignList, _whereExpression);
+            qresult.AddErrorsAndWarnings(ParsingResult);
+            return qresult;
 
         }
 

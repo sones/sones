@@ -81,10 +81,10 @@ namespace sones.GraphFS.Objects
         public BPlusTreeIndexObject()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion       = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream           = FSConstants.DEFAULT_INDEXSTREAM;
 
             _BPlusTree = new BPlusTree<TKey, TValue>();
@@ -115,7 +115,7 @@ namespace sones.GraphFS.Objects
         #endregion
 
 
-        #region Members of APandoraStructure
+        #region Members of AGraphStructure
 
         #region Serialize(ref mySerializationWriter)
 

@@ -28,6 +28,6 @@ namespace sones.GraphDB.ObjectManagement
 {
     public class DBObjectGroup : DBObjectStream
     {
-        public List<DBObjectStream> CorrespondingDBObjects;
+        public List<DBObjectStream> GrouppedVertices;
     }
 }

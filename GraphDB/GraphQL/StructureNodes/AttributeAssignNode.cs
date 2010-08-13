@@ -55,7 +55,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
             _AttributeIDNode = ((IDNode)parseNode.ChildNodes[0].AstNode).IDChainDefinition;
 
-            var attributeType = GraphDBTypeMapper.ConvertPandora2CSharp(parseNode.ChildNodes[2].Term.GetType().Name);
+            var attributeType = GraphDBTypeMapper.ConvertGraph2CSharp(parseNode.ChildNodes[2].Term.GetType().Name);
 
             #endregion
 

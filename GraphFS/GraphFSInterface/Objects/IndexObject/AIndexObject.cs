@@ -59,7 +59,7 @@ namespace sones.GraphFS.Objects
         #region IGraphFSReference
 
         /// <summary>
-        /// IPandoraFSReference
+        /// IGraphFSReference
         /// </summary>
         public new WeakReference<IGraphFS> IGraphFSReference
         {

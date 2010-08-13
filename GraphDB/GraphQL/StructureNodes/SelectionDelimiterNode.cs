@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – aggregate node" />
+﻿/* <id name="GraphDB – aggregate node" />
  * <copyright file="AggregateNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.

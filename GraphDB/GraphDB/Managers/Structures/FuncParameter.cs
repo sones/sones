@@ -10,8 +10,8 @@ namespace sones.GraphDB.Managers.Structures
 
     public struct FuncParameter
     {
-        private AObject _Value;
-        public AObject Value
+        private IObject _Value;
+        public IObject Value
         {
             get { return _Value; }
         }
@@ -22,13 +22,13 @@ namespace sones.GraphDB.Managers.Structures
             get { return _TypeAttribute; }
         }
 
-        public FuncParameter(AObject myValue, TypeAttribute myTypeAttribute)
+        public FuncParameter(IObject myValue, TypeAttribute myTypeAttribute)
         {
             _Value = myValue;
             _TypeAttribute = myTypeAttribute;
         }
 
-        public FuncParameter(AObject myValue)
+        public FuncParameter(IObject myValue)
             : this(myValue, null)
         { }
     }

@@ -80,14 +80,14 @@ namespace sones.GraphFS.Objects
 
         #region Properties
 
-        #region isNew - indicates that this APandoraStructure is new
+        #region isNew - indicates that this AGraphStructure is new
 
         [NonSerialized]
         protected Boolean _isNew = false;
 
         /// <summary>
-        /// Indicates that this APandoraStructure was newly created.
-        /// This is e.g. evaluated within StoreAPandoraObject_private(...) and will
+        /// Indicates that this AGraphStructure was newly created.
+        /// This is e.g. evaluated within StoreAGraphObject_private(...) and will
         /// lead to a new revision of the ParentDirectoyObject.
         /// </summary>
         [NotIFastSerialized]
@@ -201,14 +201,14 @@ namespace sones.GraphFS.Objects
 
         #endregion
 
-        #region INodeReference - A reference to the INode of this PandoraStructure
+        #region INodeReference - A reference to the INode of this GraphStructure
 
         [NonSerialized]
         [NotIFastSerialized]
         protected INode _INodeReference;
 
         /// <summary>
-        /// A reference to the INode of this PandoraStructure.
+        /// A reference to the INode of this GraphStructure.
         /// Purpose: Give fast access to the information stored within the INode
         /// </summary>
         [NotIFastSerialized]
@@ -230,14 +230,14 @@ namespace sones.GraphFS.Objects
 
         #endregion
 
-        #region ObjectLocatorReference - A reference to the ObjectLocator of this PandoraStructure
+        #region ObjectLocatorReference - A reference to the ObjectLocator of this GraphStructure
 
         [NonSerialized]
         [NotIFastSerialized]
         protected ObjectLocator _ObjectLocatorReference;
 
         /// <summary>
-        /// A reference to the ObjectLocator of this PandoraStructure.
+        /// A reference to the ObjectLocator of this GraphStructure.
         /// Purpose: Give fast access to the information stored within the ObjectLocator
         /// </summary>
         [NotIFastSerialized]
@@ -290,7 +290,7 @@ namespace sones.GraphFS.Objects
         protected WeakReference<IGraphFS> _IGraphFSReference;
 
         /// <summary>
-        /// IPandoraFSReference
+        /// IGraphFSReference
         /// </summary>
         public WeakReference<IGraphFS> IGraphFSReference
         {
@@ -335,27 +335,27 @@ namespace sones.GraphFS.Objects
         #endregion
 
 
-        #region SerializedAPandoraStructure - in-memory only
+        #region SerializedAGraphStructure - in-memory only
 
         [NonSerialized]
         [NotIFastSerialized]
-        protected Byte[] _SerializedAPandoraStructure;
+        protected Byte[] _SerializedAGraphStructure;
 
         /// <summary>
-        /// The APandoraStructure serialized into an array of bytes
+        /// The AGraphStructure serialized into an array of bytes
         /// </summary>
         [NotIFastSerialized]
-        public Byte[] SerializedAPandoraStructure
+        public Byte[] SerializedAGraphStructure
         {
 
             get
             {
-                return _SerializedAPandoraStructure;
+                return _SerializedAGraphStructure;
             }
 
             set
             {
-                _SerializedAPandoraStructure  = value;
+                _SerializedAGraphStructure  = value;
             }
 
         }
@@ -368,7 +368,7 @@ namespace sones.GraphFS.Objects
         protected UInt64 _EstimatedSize;
 
         /// <summary>
-        /// The estimated size of this APandoraStructure for preallocation
+        /// The estimated size of this AGraphStructure for preallocation
         /// </summary>
         public UInt64 EstimatedSize
         {
@@ -517,12 +517,12 @@ namespace sones.GraphFS.Objects
         /// <summary>
         /// This will set all important variables within this AFSObjectStructure.
         /// This will especially create a new ObjectUUID and mark the
-        /// APandoraStructure as "new" and "dirty".
+        /// AGraphStructure as "new" and "dirty".
         /// </summary>
         public AFSObjectHeader()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _isNew                   = true;
             _StructureVersion        = 1;
             _IntegrityCheckValue     = null;
@@ -543,7 +543,7 @@ namespace sones.GraphFS.Objects
         /// <summary>
         /// This will set all important variables within this AFSObjectStructure.
         /// Additionally it sets the ObjectUUID to the given value and marks
-        /// the APandoraStructure as "new" and "dirty".
+        /// the AGraphStructure as "new" and "dirty".
         /// </summary>
         public AFSObjectHeader(ObjectUUID myObjectUUID)
             : this()

@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace sones.GraphDS.API.CSharp.Reflection
+namespace sones.GraphDB.NewAPI
 {
 
-    public enum TraversalOperation
+    public enum TemporaryType
     {
-        BreathFirst,
-        DepthFirst
+        EndOfTransaction,
+        EndOfSession,
+        EndOfApplication
     }
 
 }

@@ -44,6 +44,7 @@ using sones.Lib.CLI;
 using sones.Lib.DataStructures;
 using sones.GraphFS.Session;
 using sones.GraphFS.DataStructures;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
@@ -77,7 +78,7 @@ namespace sones.GraphFS.Connectors.GraphFSCLI
 
         #region Execute Command
 
-        public override void Execute(ref object myIGraphFSSession, ref object myIPandoraDBSession, ref String myCurrentPath, Dictionary<string, List<AbstractCLIOption>> myOptions, string myInputString)
+        public override void Execute(ref object myIGraphFSSession, ref object myIGraphDBSession, ref String myCurrentPath, Dictionary<string, List<AbstractCLIOption>> myOptions, string myInputString)
         {
 
             var _IGraphFSSession = myIGraphFSSession as IGraphFSSession;
@@ -90,7 +91,7 @@ namespace sones.GraphFS.Connectors.GraphFSCLI
 
             var _GetExtendedDirectoryListingExceptional = ((IGraphFSSession)_IGraphFSSession).GetExtendedDirectoryListing(new ObjectLocation(myCurrentPath));
 
-            if (_GetExtendedDirectoryListingExceptional != null && _GetExtendedDirectoryListingExceptional.Success && _GetExtendedDirectoryListingExceptional.Value != null)
+            if (_GetExtendedDirectoryListingExceptional.Success() && _GetExtendedDirectoryListingExceptional.Value != null)
             {
                 foreach (var _DirectoryEntry in _GetExtendedDirectoryListingExceptional.Value)
                 {

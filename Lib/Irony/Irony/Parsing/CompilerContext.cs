@@ -15,7 +15,6 @@ using System.Collections.Generic;
 using System.Text;
 using sones.Lib.Frameworks.Irony.Diagnostics;
 using sones.Lib.Session;
-using Lib;
 
 namespace sones.Lib.Frameworks.Irony.Parsing {
 
@@ -38,9 +37,9 @@ namespace sones.Lib.Frameworks.Irony.Parsing {
   public class CompilerContext {
 
     /* AddedBy: sones developers */
-    // EDIT: PandoraListOfReferences added, 22.07.2009, Holds the list of known References "FROM User U" -> would hold ATypeNode for U
-    public IEnumerable<Object> PandoraListOfReferences;
-    private IContext _context;
+    // EDIT: GraphListOfReferences added, 22.07.2009, Holds the list of known References "FROM User U" -> would hold ATypeNode for U
+    public IEnumerable<Object> GraphListOfReferences;
+  //  private IContext _context;
     /* Added by sones developers */
 
     public CompilerOptions Options;

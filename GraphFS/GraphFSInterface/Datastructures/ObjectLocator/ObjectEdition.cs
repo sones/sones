@@ -576,7 +576,7 @@ namespace sones.GraphFS.DataStructures
         //    lock (_TransactionLockObject)
         //    {
         //        if (_TransactionRevision != null && _TransactionRevision.Item3 != myTransactionUUID)
-        //            throw new PandoraFSException_RevisionAlreadyHoldTransaction(_TransactionRevision.Item1.ToString());
+        //            throw new GraphFSException_RevisionAlreadyHoldTransaction(_TransactionRevision.Item1.ToString());
 
         //        _TransactionRevision = new StefanTuple<RevisionID, ObjectRevision, UUID>(myRevisionTimestamp, myObjectCopy, myTransactionUUID);
         //    }
@@ -604,7 +604,7 @@ namespace sones.GraphFS.DataStructures
         //    lock (_TransactionLockObject)
         //    {
         //        if (_TransactionRevision == null)
-        //            throw new PandoraFSException_NoTransactionFound("");
+        //            throw new GraphFSException_NoTransactionFound("");
 
         //        //System.Diagnostics.Debug.WriteLine("[Transaction] CommitTransaction : " + _TransactionRevision.TupelElement1 + " uuid: " + _TransactionRevision.TupelElement2.CacheUUID);
 
@@ -623,7 +623,7 @@ namespace sones.GraphFS.DataStructures
         //    lock (_TransactionLockObject)
         //    {
         //        if (_TransactionRevision == null)
-        //            throw new PandoraFSException_NoTransactionFound("");
+        //            throw new GraphFSException_NoTransactionFound("");
 
         //        //System.Diagnostics.Debug.WriteLine("[Transaction] RollbackTransaction : " + _TransactionRevision.TupelElement1 + " uuid: " + _TransactionRevision.TupelElement2.CacheUUID);
 
@@ -645,7 +645,7 @@ namespace sones.GraphFS.DataStructures
         //    {
         //        if (_TransactionRevision == null)
         //            return null;
-        //        //    throw new PandoraFSException_NoTransactionFound("");
+        //        //    throw new GraphFSException_NoTransactionFound("");
 
         //        return _TransactionRevision.Item2;
 
@@ -665,7 +665,7 @@ namespace sones.GraphFS.DataStructures
         //    get
         //    {
         //        if (_TransactionRevision == null)
-        //            throw new PandoraFSException_NoTransactionFound("");
+        //            throw new GraphFSException_NoTransactionFound("");
 
         //        return _TransactionRevision.Item1;
         //    }
@@ -971,21 +971,21 @@ namespace sones.GraphFS.DataStructures
 
         #region IDirectoryListing Members
 
-        #region IPandoraFSReference
+        #region IGraphFSReference
 
-        private IGraphFS _IPandoraFSReference;
+        private IGraphFS _IGraphFSReference;
 
         public IGraphFS IGraphFSReference
         {
 
             get
             {
-                return _IPandoraFSReference;
+                return _IGraphFSReference;
             }
 
             set
             {
-                _IPandoraFSReference = value;
+                _IGraphFSReference = value;
             }
 
         }

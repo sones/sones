@@ -60,10 +60,10 @@ namespace sones.GraphFS.Objects
         public ListOfStringsObject()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion   = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream       = FSConstants.LISTOF_STRINGS;
 
             // Object specific data...
@@ -145,7 +145,7 @@ namespace sones.GraphFS.Objects
         /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested file within the file system</param>
         /// <param name="myObjectStream">the ObjectStream</param>
         /// <param name="myObjectEdition">the ObjectEdition</param>
-        /// <param name="myObjectRevision">the RevisionID of the APandoraObject</param>
+        /// <param name="myObjectRevision">the RevisionID of the AGraphObject</param>
         public ListOfStringsObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID)
             : this(myObjectLocation, myObjectStream, myObjectEdition)
         {
@@ -174,7 +174,7 @@ namespace sones.GraphFS.Objects
         /// This will create a ListOfStringsObject with the given ObjectLocation and ObjectRevisionID.
         /// </summary>
         /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested file within the file system</param>
-        /// <param name="myObjectRevision">the RevisionID of the APandoraObject</param>
+        /// <param name="myObjectRevision">the RevisionID of the AGraphObject</param>
         public ListOfStringsObject(ObjectLocation myObjectLocation, ObjectRevisionID myObjectRevisionID)
             : this(myObjectLocation)
         {
@@ -222,7 +222,7 @@ namespace sones.GraphFS.Objects
         #endregion
 
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         #region Clone()
 

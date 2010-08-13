@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – RemoveFromListAttrUpdate Node" />
+﻿/* <id name="GraphDB – RemoveFromListAttrUpdate Node" />
  * <copyright file="RemoveFromListAttrUpdateNode.cs
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.

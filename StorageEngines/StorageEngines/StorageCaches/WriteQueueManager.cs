@@ -73,7 +73,7 @@ namespace sones.StorageEngines.Caches
 
         #region Data
 
-        FileStream                PandoraFSFileStream;
+        FileStream                GraphFSFileStream;
         private List<QueueEntry>  WriteQueue;
         private Thread            _WriterThread;
 
@@ -231,7 +231,7 @@ namespace sones.StorageEngines.Caches
         {
 
             _WriteQueueLock         = myWriteQueueLock;
-            PandoraFSFileStream     = null;
+            GraphFSFileStream     = null;
             ShutdownWriterThread    = false;
             WriteQueue              = new List<QueueEntry>();
             _WriterThread           = new Thread(new ThreadStart(WriteQueueThread));
@@ -273,8 +273,8 @@ namespace sones.StorageEngines.Caches
             if (!myInputFileStream.CanWrite)
                 throw new QueueManagerException("[WriteQueue] Can not write to the underlying filesystem!");
 
-            if (PandoraFSFileStream == null)
-                PandoraFSFileStream = myInputFileStream;
+            if (GraphFSFileStream == null)
+                GraphFSFileStream = myInputFileStream;
 
             else
                 throw new QueueManagerException("[WriteQueue] This WriteQueueManager is already initialised!");
@@ -302,7 +302,7 @@ namespace sones.StorageEngines.Caches
 
             #region Sleep until FileStream was attached or thread was ended
 
-            while (PandoraFSFileStream == null && !ShutdownWriterThread)
+            while (GraphFSFileStream == null && !ShutdownWriterThread)
             {
 
                 try
@@ -349,7 +349,7 @@ namespace sones.StorageEngines.Caches
 
 //                    Console.WriteLine("Number of entries: " + WriteQueue.Count);
 
-                    lock (PandoraFSFileStream)
+                    lock (GraphFSFileStream)
                     {
 
                         foreach (ObjectStream myObjectStream in actualQueueElement.Streams)
@@ -364,8 +364,8 @@ namespace sones.StorageEngines.Caches
                                 // If yes, write at once..
                                 if (myExtent.LogicalPosition + myExtent.Length <= Int32.MaxValue)
                                 {
-                                    PandoraFSFileStream.Seek( (Int64) myExtent.PhysicalPosition, 0);
-                                    PandoraFSFileStream.Write(actualQueueElement.Data, (Int32) myExtent.LogicalPosition, (Int32) Math.Min(myExtent.Length, (UInt64) actualQueueElement.Data.Length - myExtent.LogicalPosition));
+                                    GraphFSFileStream.Seek( (Int64) myExtent.PhysicalPosition, 0);
+                                    GraphFSFileStream.Write(actualQueueElement.Data, (Int32) myExtent.LogicalPosition, (Int32) Math.Min(myExtent.Length, (UInt64) actualQueueElement.Data.Length - myExtent.LogicalPosition));
                                     _BytesWritten += myExtent.Length;
 //                                    Debug.WriteLine("[WriteQueue] Writing " + myExtent.Length + " bytes at position " + myExtent.PhysicalPosition);
                                 }
@@ -383,15 +383,15 @@ namespace sones.StorageEngines.Caches
                                     for (Int32 i = 0; i < Major; i++)
                                     {
                                         actualQueueElement.Data.CopyTo(tmpData, i * Divisor);
-                                        PandoraFSFileStream.Seek( (Int64) myExtent.PhysicalPosition + i * Divisor, 0);
-                                        PandoraFSFileStream.Write(tmpData, 0, Divisor);
+                                        GraphFSFileStream.Seek( (Int64) myExtent.PhysicalPosition + i * Divisor, 0);
+                                        GraphFSFileStream.Write(tmpData, 0, Divisor);
                                         _BytesWritten += (UInt64) Divisor;
                                     }
 
                                     // Write the rest of the data
                                     actualQueueElement.Data.CopyTo(tmpData, Major * Divisor);
-                                    PandoraFSFileStream.Seek( (Int64) myExtent.PhysicalPosition + Major * Divisor, 0);
-                                    PandoraFSFileStream.Write(tmpData, 0, Minor);
+                                    GraphFSFileStream.Seek( (Int64) myExtent.PhysicalPosition + Major * Divisor, 0);
+                                    GraphFSFileStream.Write(tmpData, 0, Minor);
                                     _BytesWritten += (UInt64) Minor;
 
                                 }
@@ -525,7 +525,7 @@ namespace sones.StorageEngines.Caches
 
             #region Sleep until FileStream was attached or thread was ended
 
-            while (PandoraFSFileStream == null && !ShutdownWriterThread)
+            while (GraphFSFileStream == null && !ShutdownWriterThread)
             {
 
                 try
@@ -630,7 +630,7 @@ namespace sones.StorageEngines.Caches
 
 //                    Debug.WriteLine("[WriteQueueThread] Number of entries: " + WriteQueue.Count);
 
-                    lock (PandoraFSFileStream)
+                    lock (GraphFSFileStream)
                     {
 
                       
@@ -645,8 +645,8 @@ namespace sones.StorageEngines.Caches
                             // If yes, write at once..
                             if (_ObjectExtent.LogicalPosition + _ObjectExtent.Length <= Int32.MaxValue)
                             {
-                                PandoraFSFileStream.Seek((Int64)_ObjectExtent.PhysicalPosition, 0);
-                                PandoraFSFileStream.Write(actualQueueElement.Data, (Int32)_ObjectExtent.LogicalPosition, (Int32)Math.Min(_ObjectExtent.Length, (UInt64)actualQueueElement.Data.Length - _ObjectExtent.LogicalPosition));
+                                GraphFSFileStream.Seek((Int64)_ObjectExtent.PhysicalPosition, 0);
+                                GraphFSFileStream.Write(actualQueueElement.Data, (Int32)_ObjectExtent.LogicalPosition, (Int32)Math.Min(_ObjectExtent.Length, (UInt64)actualQueueElement.Data.Length - _ObjectExtent.LogicalPosition));
                                 _BytesWritten += _ObjectExtent.Length;
 //                                    Debug.WriteLine("[WriteQueue] Writing " + myExtent.Length + " bytes at position " + myExtent.PhysicalPosition);
                             }
@@ -664,15 +664,15 @@ namespace sones.StorageEngines.Caches
                                 for (Int32 i = 0; i < Major; i++)
                                 {
                                     actualQueueElement.Data.CopyTo(tmpData, i * Divisor);
-                                    PandoraFSFileStream.Seek((Int64)_ObjectExtent.PhysicalPosition + i * Divisor, 0);
-                                    PandoraFSFileStream.Write(tmpData, 0, Divisor);
+                                    GraphFSFileStream.Seek((Int64)_ObjectExtent.PhysicalPosition + i * Divisor, 0);
+                                    GraphFSFileStream.Write(tmpData, 0, Divisor);
                                     _BytesWritten += (UInt64)Divisor;
                                 }
 
                                 // Write the rest of the data
                                 actualQueueElement.Data.CopyTo(tmpData, Major * Divisor);
-                                PandoraFSFileStream.Seek((Int64)_ObjectExtent.PhysicalPosition + Major * Divisor, 0);
-                                PandoraFSFileStream.Write(tmpData, 0, Minor);
+                                GraphFSFileStream.Seek((Int64)_ObjectExtent.PhysicalPosition + Major * Divisor, 0);
+                                GraphFSFileStream.Write(tmpData, 0, Minor);
                                 _BytesWritten += (UInt64)Minor;
 
                             }
@@ -923,9 +923,9 @@ namespace sones.StorageEngines.Caches
         private void PhysicalFlush()
         {
 
-            lock (PandoraFSFileStream) 
+            lock (GraphFSFileStream) 
             {
-                PandoraFSFileStream.Flush();
+                GraphFSFileStream.Flush();
             }
 
         }

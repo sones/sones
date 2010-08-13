@@ -27,6 +27,8 @@
  * <summary>The aggregate Min.<summary>
  */
 
+#region usings
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,13 +40,18 @@ using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
-using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
 using sones.Lib.Session;
 
+#endregion
+
 namespace sones.GraphDB.Aggregates
 {
+
+    /// <summary>
+    /// The aggregate Min
+    /// </summary>
     public class MinAggregate : ABaseAggregate
     {
 
@@ -91,7 +98,7 @@ namespace sones.GraphDB.Aggregates
             return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
 
-        public override Exceptional<Object> Aggregate(AListEdgeType myAListEdgeType, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
+        public override Exceptional<Object> Aggregate(IListOrSetEdgeType myAListEdgeType, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
         {
             return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
@@ -107,5 +114,7 @@ namespace sones.GraphDB.Aggregates
 
             return new Exceptional<Object>((ObjectUUID)attributeIndex.GetKeys(indexRelatedType, dbContext).Min().IndexKeyValues[0].Value);
         }
+
     }
+
 }

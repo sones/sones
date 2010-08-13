@@ -22,7 +22,7 @@ namespace sones.GraphDB.Interfaces
         void SetFunctions       (IEnumerable<ABaseFunction>     functions);
         void SetOperators       (IEnumerable<ABinaryOperator>   operators);
         void SetSettings        (IEnumerable<ADBSettingsBase>   settings);
-        void SetEdges           (IEnumerable<AEdgeType>         edges);
+        void SetEdges           (IEnumerable<IEdgeType>         edges);
         void SetIndices         (IEnumerable<IVersionedIndexObject<IndexKey, ObjectUUID>> indices);
         void SetGraphDBImporter (IEnumerable<AGraphDBImport>    graphDBImporter);
 

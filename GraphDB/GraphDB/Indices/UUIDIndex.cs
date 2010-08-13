@@ -521,7 +521,7 @@ namespace sones.GraphDB.Indices
         {
             var directoryException = dbContext.DBTypeManager.GetObjectsDirectory(myTypeOfDBObject);
 
-            if (directoryException.Failed)
+            if (directoryException.Failed())
             {
                 throw new GraphDBException(new Error_CouldNotGetIndexReference(directoryException.Errors, IndexName, IndexEdition));
             }

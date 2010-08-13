@@ -27,26 +27,25 @@
  * <summary>This function represents the well known substring function with a start position and a length<summary>
  */
 
+#region Usings
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.TypeManagement.BasicTypes;
-
-using sones.Lib.ErrorHandling;
-using sones.GraphDB.ObjectManagement;
-
-using sones.GraphDB.TypeManagement;
-using sones.GraphFS.Session;
-using sones.GraphDB.Structures.Result;
-using sones.Lib.Session;
 using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.Lib.ErrorHandling;
+
+#endregion
 
 namespace sones.GraphDB.Functions
 {
+
+    /// <summary>
+    /// This function represents the well known substring function with a start position and a length
+    /// </summary>
     public class SubstringFunc : ABaseFunction
     {
+
         public override string FunctionName
         {
             get { return "SUBSTRING"; }
@@ -67,11 +66,15 @@ namespace sones.GraphDB.Functions
             Parameters.Add(new ParameterValue("Length", new DBInt32()));
         }
 
-        public override bool ValidateWorkingBase(TypeAttribute workingBase, DBTypeManager typeManager)
+        public override bool ValidateWorkingBase(IObject workingBase, DBTypeManager typeManager)
         {
             if (workingBase != null)
             {
-                if (workingBase.GetDBType(typeManager).IsUserDefined)
+                if (workingBase is ADBBaseObject)
+                {
+                    return true;
+                }
+                else if ((workingBase is DBTypeAttribute) && (workingBase as DBTypeAttribute).GetValue().GetDBType(typeManager).IsUserDefined)
                 {
                     return false;
                 }
@@ -98,5 +101,7 @@ namespace sones.GraphDB.Functions
                 return new Exceptional<FuncParameter>(new Errors.Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
             }
         }
+
     }
+
 }

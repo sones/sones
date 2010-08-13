@@ -80,10 +80,10 @@ namespace sones.GraphFS.InternalObjects
         public BlockIntegrityObject()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion   = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream   = FSConstants.BLOCKINTEGRITYSTREAM;
 
             // Object specific data...
@@ -115,7 +115,7 @@ namespace sones.GraphFS.InternalObjects
         #endregion
 
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         #endregion
 
@@ -177,7 +177,7 @@ namespace sones.GraphFS.InternalObjects
         #endregion
 
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         #region Clone()
 

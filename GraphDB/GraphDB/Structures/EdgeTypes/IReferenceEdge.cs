@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.GraphDB.TypeManagement;
 using sones.Lib.ErrorHandling;
@@ -32,9 +31,23 @@ using sones.Lib.ErrorHandling;
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
-    public interface IReferenceEdge
+
+    public interface IReferenceEdge : IEdgeType
     {
-        
+
+        /// <summary>
+        /// Check for a containing element
+        /// </summary>
+        /// <param name="myValue"></param>
+        /// <returns></returns>
+        Boolean Contains(ObjectUUID myValue);
+
+        /// <summary>
+        /// This is just a helper for BackwardEdges
+        /// </summary>
+        /// <returns></returns>
+        ObjectUUID FirstOrDefault();
+
         /// <summary>
         /// Get all added objectUUIDs
         /// </summary>
@@ -48,22 +61,14 @@ namespace sones.GraphDB.Structures.EdgeTypes
         IEnumerable<Reference> GetAllReferences();
 
         /// <summary>
-        /// Get all uuids and their edge infos
-        /// </summary>
-        /// <returns></returns>
-        IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetAllReferenceIDsWeighted();
-
-        /// <summary>
         /// Get all destinations of an edge
         /// </summary>
         /// <returns></returns>
         IEnumerable<Exceptional<DBObjectStream>> GetAllEdgeDestinations(DBObjectCache dbObjectCache);
 
-        /// <summary>
-        /// Get all weighted destinations of an edge
-        /// </summary>
-        /// <returns></returns>
-        IEnumerable<Tuple<Exceptional<DBObjectStream>, ADBBaseObject>> GetAllEdgeDestinationsWeighted(DBObjectCache dbObjectCache);
+        IReferenceEdge GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable);
+
+        IReferenceEdge GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeOfObjects);
 
         /// <summary>
         /// removes a specific reference
@@ -78,5 +83,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// <param name="myObjectUUIDs">the object uuid's of the objects, that should remove</param>
         /// <returns></returns>
         Boolean RemoveUUID(IEnumerable<ObjectUUID> myObjectUUIDs);
+
     }
+
 }

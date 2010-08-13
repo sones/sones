@@ -123,12 +123,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AGraphFS.cs" />
-    <Compile Include="Events\ExceptionOccuredEvent.cs" />
-    <Compile Include="GraphFSLookuptable.cs" />
+    <Compile Include="IObjectCache.cs" />
+    <Compile Include="MountpointLookup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GraphFSSession.cs" />
-    <Compile Include="Caches\PandoraFSLookup.cs" />
-    <Compile Include="Caches\TmpFSLookuptable.cs" />
+    <Compile Include="ObjectStore.cs" />
     <Compile Include="GraphFS1.cs" />
     <Compile Include="Version.cs" />
   </ItemGroup>
@@ -154,9 +153,7 @@
       <Name>GraphFSInterface</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Datastructures\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>

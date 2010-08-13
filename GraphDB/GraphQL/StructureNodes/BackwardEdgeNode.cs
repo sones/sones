@@ -47,7 +47,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
         /// <summary>
         /// The Type of the edge
         /// </summary>
-        private AEdgeType _EdgeType;
+        private IEdgeType _EdgeType;
 
         #endregion
 

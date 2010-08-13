@@ -18,35 +18,30 @@
 */
 
 
+#region
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-
+using sones.GraphDB.Errors;
+using sones.GraphDB.Exceptions;
+using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.Structures.EdgeTypes;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
 
-using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.TypeManagement.BasicTypes;
-using sones.GraphDB.TypeManagement;
-
-using sones.GraphDB.Structures;
-using sones.GraphDB.Structures.EdgeTypes;
-
-using sones.GraphDB.Exceptions;
-using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.Errors;
-using sones.GraphFS.DataStructures;
-using sones.Lib.DataStructures.UUID;
-using sones.GraphFS.Session;
-using sones.GraphDB.Structures.Result;
-using sones.Lib.Session;
-using sones.GraphDB.Managers.Structures;
+#endregion
 
 namespace sones.GraphDB.Functions
 {
+
+    /// <summary>
+    /// Just a dummy simple path function. It does nothing.
+    /// </summary>
     public class SimplePathFunc : ABaseFunction
     {
+
         public override string FunctionName
         {
             get { return "SIMPLEPATH"; } // The name of the function which is the same you use in the select
@@ -67,11 +62,17 @@ namespace sones.GraphDB.Functions
             Parameters.Add(new ParameterValue("MaxDepth", new DBInt64())); // a int64 parameter for the max depth
         }
 
-        public override bool ValidateWorkingBase(TypeAttribute workingBase, DBTypeManager typeManager)
+        public override bool ValidateWorkingBase(IObject workingBase, DBTypeManager typeManager)
         {
-            if (workingBase != null)
+            if (workingBase is DBTypeAttribute)
             {
-                if (workingBase.GetDBType(typeManager).IsUserDefined)
+
+                var workingTypeAttribute = (workingBase as DBTypeAttribute).GetValue();
+                if (workingTypeAttribute.TypeCharacteristics.IsBackwardEdge)
+                {
+                    return true;
+                }
+                else if (workingTypeAttribute.GetDBType(typeManager).IsUserDefined)
                 {
                     return true;
                 }
@@ -79,6 +80,7 @@ namespace sones.GraphDB.Functions
                 {
                     return false;
                 }
+
             }
             else
             {
@@ -97,18 +99,18 @@ namespace sones.GraphDB.Functions
             IEnumerable<ObjectUUID> sourceDBOs = null;
             if (CallingObject is IReferenceEdge)
             {
-                sourceDBOs = (CallingObject as ASetReferenceEdgeType).GetAllReferenceIDs();
+                sourceDBOs = (CallingObject as ASetOfReferencesEdgeType).GetAllReferenceIDs();
             }
             else
             {
-                throw new GraphDBException(new Error_InvalidEdgeType(CallingAttribute.EdgeType.GetType(), typeof(ASetReferenceEdgeType), typeof(ASingleReferenceEdgeType)));
+                throw new GraphDBException(new Error_InvalidEdgeType(CallingAttribute.EdgeType.GetType(), typeof(ASetOfReferencesEdgeType), typeof(ASingleReferenceEdgeType)));
             }
 
             // The destination DBObjects which are passed with the first parameter
             var destDBOs = (myParams[0].Value as DBEdge).GetDBObjects();
             if (destDBOs == null)
             {
-                throw new GraphDBException(new Error_InvalidEdgeType(CallingAttribute.EdgeType.GetType(), typeof(ASetReferenceEdgeType), typeof(ASingleReferenceEdgeType)));
+                throw new GraphDBException(new Error_InvalidEdgeType(CallingAttribute.EdgeType.GetType(), typeof(ASetOfReferencesEdgeType), typeof(ASingleReferenceEdgeType)));
             }
 
             // The depth which is passed as the second parameter

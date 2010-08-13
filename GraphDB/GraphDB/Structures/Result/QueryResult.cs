@@ -34,16 +34,10 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
-using System.Xml.Linq;
-using Newtonsoft.Json.Linq;
 using sones.GraphDB.Errors;
-using sones.GraphDB.Structures;
 using sones.GraphDB.Warnings;
 using sones.Lib;
-using sones.Lib.CLI;
 using sones.Lib.ErrorHandling;
-using sones.Lib.XML;
-
 
 #endregion
 
@@ -429,7 +423,7 @@ namespace sones.GraphDB.Structures.Result
 
                                 List<T> _ReturnValue = new List<T>();
 
-                                foreach (DBObjectReadout _DBObjectReadout in _Results[mySelectionElement].Objects)
+                                foreach (var _DBObjectReadout in _Results[mySelectionElement].Objects)
                                     if (_DBObjectReadout.Attributes != null)
                                         if (_DBObjectReadout.Attributes.ContainsKey(myAttribute))
                                         {
@@ -542,95 +536,6 @@ namespace sones.GraphDB.Structures.Result
         #endregion
 
 
-        #region ToSimpleResult
-
-        public SimpleResult ToSimpleResult()
-        {
-            return this.ToSimpleResult(0);
-        }
-
-        #endregion
-
-        #region ToSimpleResult(mySelectionListNumber)
-
-        public SimpleResult ToSimpleResult(int mySelectionListNumber)
-        {
-
-            var sResult = new SimpleResult();
-
-            if (this.ResultType != ResultType.Successful)
-            {
-
-                sResult.iResultType = SimpleResult.Failed;
-
-                var errors = this.Errors.ToList();
-                sResult.Errors = new List<String>();
-                
-                foreach (var error in errors)
-                    sResult.Errors.Add(error.ToString());
-
-                return sResult;
-
-            }
-
-            if (this.Results == null || _Results.Count == 0) { return sResult; }
-
-            SelectionResultSet table = _Results[mySelectionListNumber];
-            var lData = table.Objects;
-            int iNr = 0;
-            int iCount = 0;
-            IDictionary<String, Object> dict = null;
-            Object[] oLineData = null;
-
-            sResult.Header = new List<KeyValuePair<String, Object>>();
-
-            foreach (var _DBObjectReadout in lData)
-            {
-
-                dict = _DBObjectReadout.Attributes;
-                if (iNr == 0)
-                {
-                    foreach (KeyValuePair<String, Object> attribute in dict)
-                    {
-                        sResult.Header.Add(new KeyValuePair<String, Object>(attribute.Key, attribute.Value));
-
-                        //if (attribute.Value is String)        type = ""; 
-                        //else if (attribute.Value is int)      type = 0; 
-                        //else if (attribute.Value is double)   type = 0D; 
-                        //else if (attribute.Value is DateTime) type = DateTime.Now; 
-                        //else Console.WriteLine(attribute.Value.ToString());
-
-                        //sResult.Header.Add(new KeyValuePair<String, Object>(attribute.Key, type));
-
-                        iNr++;
-                    }
-                    sResult.Data = new List<object[]>();
-                }
-                if (iNr == 0) break;  // no attributes ???
-
-                oLineData = new object[iNr];
-                iCount = 0;
-                
-                foreach (var data in dict)
-                {
-                    if (iCount == iNr) break; // reached array end.....should not happen
-                    oLineData[iCount] = data.Value;
-                    iCount++;
-                }
-                
-                sResult.Data.Add(oLineData);
-
-            }
-
-            sResult.iResultType = SimpleResult.Successful;
-            // end values to be filled
-            
-            return sResult;
-
-        }
-        #endregion
-
-
         #region AddWarning(myIWarning)
 
         public void AddWarning(IWarning myIWarning)
@@ -736,6 +641,7 @@ namespace sones.GraphDB.Structures.Result
         #endregion
 
         #endregion
+
 
         #region IEnumerable<DBObjectReadout> Members
 

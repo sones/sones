@@ -51,20 +51,20 @@ namespace sones.GraphDB.Managers.Structures
 
         #region override AAttributeAssignOrUpdate.GetValueForAttribute
 
-        public override Exceptional<AObject> GetValueForAttribute(DBObjectStream aDBObject, DBContext dbContext, GraphDBType _Type)
+        public override Exceptional<IObject> GetValueForAttribute(DBObjectStream aDBObject, DBContext dbContext, GraphDBType _Type)
         {
 
             #region reference
 
             var validationResult = AttributeIDChain.Validate(dbContext, true, _Type);
-            if (validationResult.Failed)
+            if (validationResult.Failed())
             {
-                return new Exceptional<AObject>(validationResult);
+                return new Exceptional<IObject>(validationResult);
             }
 
             if (AttributeIDChain.IsUndefinedAttribute)
             {
-                return new Exceptional<AObject>(new Error_InvalidReferenceAssignmentOfUndefAttr());
+                return new Exceptional<IObject>(new Error_InvalidReferenceAssignmentOfUndefAttr());
             }
 
             // if we have a Userdefined Type, than all assignments will work on this type
@@ -79,15 +79,15 @@ namespace sones.GraphDB.Managers.Structures
 
             foreach (var dbo in dbos)
             {
-                if (dbo.Failed)
-                    return new Exceptional<AObject>(dbo);
+                if (dbo.Failed())
+                    return new Exceptional<IObject>(dbo);
 
                 (value as ASingleReferenceEdgeType).Set(dbo.Value.ObjectUUID, AttributeIDChain.LastAttribute.DBTypeUUID, SetRefDefinition.Parameters);
             }
 
             #endregion
 
-            return new Exceptional<AObject>(value);
+            return new Exceptional<IObject>(value);
 
         } 
 

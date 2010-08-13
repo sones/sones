@@ -38,14 +38,14 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
         #endregion
 
-        public Exceptional GetContent(CompilerContext context, ParseTreeNode parseNode)
+        public void GetContent(CompilerContext context, ParseTreeNode parseNode)
         {
 
             var grammar = GetGraphQLGrammar(context);
 
             if (parseNode.ChildNodes.Count < 1)
             {
-                return new Exceptional(new Error_ArgumentException("No index definitions found!"));
+                ParsingResult.Push(new Error_ArgumentException("No index definitions found!"));
             }
 
             foreach (var child in parseNode.ChildNodes)
@@ -83,7 +83,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
             if (_IndexAttributeDefinitions.IsNullOrEmpty())
             {
-                return new Exceptional(new Error_ArgumentException("No attributes given for index!"));
+                ParsingResult.Push(new Error_ArgumentException("No attributes given for index!"));
             }
 
             #endregion
@@ -95,14 +95,12 @@ namespace sones.GraphDB.GraphQL.StructureNodes
             // only for a detailed definition
             if (parseNode.ChildNodes.Count > 3 && (parseNode.ChildNodes[4].Token == null || parseNode.ChildNodes[4].Token.AsSymbol != grammar.S_ATTRIBUTES))
             {
-                return new Exceptional(new Warnings.Warning_ObsoleteGQL(
+                ParsingResult.Push(new Warnings.Warning_ObsoleteGQL(
                     String.Format("{0} {1}", grammar.S_ON.ToUpperString(), _IndexAttributeDefinitions.ToContentString()),
                     String.Format("{0} {1} {2}", grammar.S_ON.ToUpperString(), grammar.S_ATTRIBUTES.ToUpperString(), _IndexAttributeDefinitions.ToContentString())));
             }
 
             #endregion
-
-            return Exceptional.OK;
 
         }
 

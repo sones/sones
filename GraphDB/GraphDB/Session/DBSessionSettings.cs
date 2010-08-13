@@ -25,14 +25,11 @@
 #region Usings
 
 using System;
-using System.Text;
 using System.Collections.Generic;
-
-using sones.GraphFS.Session;
-using sones.Lib.Session;
 using sones.GraphDB.Settings;
 using sones.GraphDB.TypeManagement;
 using sones.Lib.ErrorHandling;
+using sones.Lib.Session;
 
 #endregion
 
@@ -423,6 +420,7 @@ namespace sones.GraphDB.Session
         }
 
         #endregion
+    
     }
 
 }

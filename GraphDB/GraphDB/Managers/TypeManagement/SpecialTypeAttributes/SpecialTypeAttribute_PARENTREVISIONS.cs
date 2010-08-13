@@ -54,7 +54,7 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
             return new Exceptional(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
 
-        public override Exceptional<AObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
+        public override Exceptional<IObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
         {
         
             EdgeTypeListOfBaseObjects parentRevisions = new EdgeTypeListOfBaseObjects();
@@ -62,7 +62,7 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
             foreach (var item in dbObjectStream.ParentRevisionIDs)
                 parentRevisions.Add(new DBString(item.ToString()));
 
-            return new Exceptional<AObject>(parentRevisions);
+            return new Exceptional<IObject>(parentRevisions);
 
         }
 

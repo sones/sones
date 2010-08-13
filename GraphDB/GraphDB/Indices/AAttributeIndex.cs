@@ -102,7 +102,7 @@ namespace sones.GraphDB.Indices
         #region FileSystemLocation
 
         /// <summary>
-        /// The ObjectLocation of the IndexObject within a pandora file system
+        /// The ObjectLocation of the IndexObject within a Graph file system
         /// </summary>
         public virtual ObjectLocation FileSystemLocation { get; protected set; }
         

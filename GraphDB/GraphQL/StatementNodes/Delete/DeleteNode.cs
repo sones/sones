@@ -75,7 +75,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Drop
             if (myParseTreeNode.ChildNodes[4].HasChildNodes())
             {
                 WhereExpressionNode tempWhereNode = (WhereExpressionNode)myParseTreeNode.ChildNodes[4].AstNode;
-                _WhereExpression = tempWhereNode.BinExprNode.BinaryExpressionDefinition;
+                _WhereExpression = tempWhereNode.BinaryExpressionDefinition;
 
             }
 
@@ -92,8 +92,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Drop
         public override QueryResult Execute(IGraphDBSession graphDBSession)
         {
 
-            return graphDBSession.Delete(_TypeReferenceDefinitions, _IDChainDefinitions, _WhereExpression);
-
+            var qresult = graphDBSession.Delete(_TypeReferenceDefinitions, _IDChainDefinitions, _WhereExpression);
+            qresult.AddErrorsAndWarnings(ParsingResult);
+            return qresult;
         }
 
     }

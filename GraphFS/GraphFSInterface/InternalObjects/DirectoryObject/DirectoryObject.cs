@@ -71,10 +71,10 @@ namespace sones.GraphFS.InternalObjects
             : base()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion       = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream           = FSConstants.DIRECTORYSTREAM;
 
         }
@@ -112,7 +112,7 @@ namespace sones.GraphFS.InternalObjects
         #endregion
 
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         #region Clone()
 
@@ -151,7 +151,7 @@ namespace sones.GraphFS.InternalObjects
             //if (_ObjectUUID != null)
             //    newT._ObjectUUID = _ObjectUUID.Clone();
 
-            //newT._SerializedAPandoraStructure = null;
+            //newT._SerializedAGraphStructure = null;
             //newT._StructureVersion = _StructureVersion;
             //newT._TransactionUUID = _TransactionUUID;
 
@@ -222,10 +222,10 @@ namespace sones.GraphFS.InternalObjects
                 #region Register an additional ObjectStream within the ObjectStreamList
 
                 if (!_DirectoryEntry.isVirtual)
-                    throw new PandoraFSException_ObjectStreamNotAllowed("Objectstream '" + myObjectStream.ToString() + "' could not be set as '" + myObjectName + "' is not a virtual ObjectStream!");
+                    throw new GraphFSException_ObjectStreamNotAllowed("Objectstream '" + myObjectStream.ToString() + "' could not be set as '" + myObjectName + "' is not a virtual ObjectStream!");
 
                 if (_DirectoryEntry.ObjectStreamsList.Contains(myObjectStream))
-                    throw new PandoraFSException_ObjectStreamAlreadyExists("Objectstream '" + myObjectStream.ToString() + "' already exists within '" + myObjectName + "'!");
+                    throw new GraphFSException_ObjectStreamAlreadyExists("Objectstream '" + myObjectStream.ToString() + "' already exists within '" + myObjectName + "'!");
 
                 _DirectoryEntry.ObjectStreamsList.Add(myObjectStream);
 
@@ -294,16 +294,16 @@ namespace sones.GraphFS.InternalObjects
                 #region Register an additional ObjectStream within the ObjectStreamList
 
                 if (_DirectoryEntry.isSymlink)
-                    throw new PandoraFSException_ObjectStreamNotAllowed("Objectstream '" + myObjectStream.ToString() + "' could not be set as '" + myObjectName + "' is a symlink!");
+                    throw new GraphFSException_ObjectStreamNotAllowed("Objectstream '" + myObjectStream.ToString() + "' could not be set as '" + myObjectName + "' is a symlink!");
 
                 if (_DirectoryEntry.isVirtual)
-                    throw new PandoraFSException_ObjectStreamNotAllowed("Objectstream '" + myObjectStream.ToString() + "' could not be set as '" + myObjectName + "' is a virtual ObjectStream!");
+                    throw new GraphFSException_ObjectStreamNotAllowed("Objectstream '" + myObjectStream.ToString() + "' could not be set as '" + myObjectName + "' is a virtual ObjectStream!");
 
                 if (_DirectoryEntry.hasInlineData)
-                    throw new PandoraFSException_ObjectStreamNotAllowed("Objectstream '" + myObjectStream.ToString() + "' could not be set as '" + myObjectName + "' has InlineData stored!");
+                    throw new GraphFSException_ObjectStreamNotAllowed("Objectstream '" + myObjectStream.ToString() + "' could not be set as '" + myObjectName + "' has InlineData stored!");
 
                 if (_DirectoryEntry.ObjectStreamsList.Contains(myObjectStream))
-                    throw new PandoraFSException_ObjectStreamAlreadyExists("Objectstream '" + myObjectStream.ToString() + "' already exists within '" + myObjectName + "'!");
+                    throw new GraphFSException_ObjectStreamAlreadyExists("Objectstream '" + myObjectStream.ToString() + "' already exists within '" + myObjectName + "'!");
 
                 _DirectoryEntry.ObjectStreamsList.Add(myObjectStream);
 
@@ -562,7 +562,7 @@ namespace sones.GraphFS.InternalObjects
                     base[myObjectName].InlineData = myInlineData;
 
                 else
-                    throw new PandoraFSException_ObjectAlreadyExists("Inline data could not ba added as '" + myObjectName + "' already exists!");
+                    throw new GraphFSException_ObjectAlreadyExists("Inline data could not ba added as '" + myObjectName + "' already exists!");
 
             }
 
@@ -685,7 +685,7 @@ namespace sones.GraphFS.InternalObjects
             }
 
             else
-                throw new PandoraFSException_ObjectAlreadyExists("Symlink could not ba added as '" + myObjectName + "' already exists!");
+                throw new GraphFSException_ObjectAlreadyExists("Symlink could not ba added as '" + myObjectName + "' already exists!");
 
         }
 

@@ -26,7 +26,7 @@ namespace sones.GraphFS
 {
 
     /// <summary>
-    /// The version information of this PandoraFS build
+    /// The version information of this GraphFS build
     /// </summary>
     public static class Version
     {

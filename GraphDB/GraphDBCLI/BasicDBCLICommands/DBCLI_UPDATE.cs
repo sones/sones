@@ -85,8 +85,8 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
                                         | AttrUpdate + BracketRoundCloseSymbol;
 
             AttrUpdate.Rule = AttrAssignNT
-                                | IdNT + ADDREFSymbol + PandoraTypeNT + UUIDSymbol + Eq_Equals + stringLiteral
-                                | IdNT + REMREFSymbol + PandoraTypeNT + UUIDSymbol + Eq_Equals + stringLiteral;
+                                | IdNT + ADDREFSymbol + GraphTypeNT + UUIDSymbol + Eq_Equals + stringLiteral
+                                | IdNT + REMREFSymbol + GraphTypeNT + UUIDSymbol + Eq_Equals + stringLiteral;
 
 
             #region Non-terminal integration
@@ -104,14 +104,14 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
         #region Execute Command
 
-        public override void Execute(ref object myIGraphFS2Session, ref object myIPandoraDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
+        public override void Execute(ref object myIGraphFS2Session, ref object myIGraphDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
         {
 
             _CancelCommand = false;
             var _IGraphFS2Session = myIGraphFS2Session as IGraphFSSession;
-            var _IPandoraDBSession = myIPandoraDBSession as IGraphDBSession;
+            var _IGraphDBSession = myIGraphDBSession as IGraphDBSession;
 
-            if (_IGraphFS2Session == null || _IPandoraDBSession == null)
+            if (_IGraphFS2Session == null || _IGraphDBSession == null)
             {
                 WriteLine("No OM database instance started...");
                 return;
@@ -119,7 +119,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
             var QueryInputString = myInputString.Replace("'", "");
 
-            HandleQueryResult(QueryDB(QueryInputString, _IPandoraDBSession), true);
+            HandleQueryResult(QueryDB(QueryInputString, _IGraphDBSession), true);
            
         }
 

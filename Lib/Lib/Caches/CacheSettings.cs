@@ -26,7 +26,7 @@ using sones.Lib.Serializer;
 using System.Runtime.Serialization;
 using sones.Lib.NewFastSerializer;
 
-namespace sones.Libraries.Caches
+namespace sones.Lib.Caches
 {
 
     public class CacheSettings : IFastSerialize
@@ -61,7 +61,7 @@ namespace sones.Libraries.Caches
         private ExpirationTypes _ExpirationType = ExpirationTypes.Sliding;
 
         /// <summary>
-        /// Force cleanup the cache from expired objects if the containing objects reaches X percent of MaxNumberOfCachedPandoraObjects or MaxNumberOfCachedObjectLocators - default: 0.8
+        /// Force cleanup the cache from expired objects if the containing objects reaches X percent of MaxNumberOfCachedGraphObjects or MaxNumberOfCachedObjectLocators - default: 0.8
         /// </summary>
         public Double ForceCleanPercentage
         {

@@ -16,7 +16,7 @@ using System.Text;
 
 #endregion
 
-namespace Lib.Hashing
+namespace sones.Lib.Hashing
 {
 
     public class MurmurHash2 : IHashFunction

@@ -78,12 +78,12 @@ namespace sones.GraphFS.DataStructures
         /// <summary>
         /// This will set all important variables within this AFSStructure.
         /// This will especially create a new ObjectUUID and mark the
-        /// APandoraStructure as "new" and "dirty".
+        /// AGraphStructure as "new" and "dirty".
         /// </summary>
         public AFSStructure()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _isNew                   = true;
             _StructureVersion        = 1;
             _IntegrityCheckValue     = null;
@@ -104,7 +104,7 @@ namespace sones.GraphFS.DataStructures
         /// <summary>
         /// This will set all important variables within this AFSStructure.
         /// Additionally it sets the ObjectUUID to the given value and marks
-        /// the APandoraStructure as "new" and "dirty".
+        /// the AGraphStructure as "new" and "dirty".
         /// </summary>
         public AFSStructure(ObjectUUID myObjectUUID)
             : this()
@@ -122,8 +122,8 @@ namespace sones.GraphFS.DataStructures
         #region Serialize(myIntegrityCheckAlgorithm, myEncryptionAlgorithm, myCacheSerializeData)
 
         /// <summary>
-        /// This will serialize the whole PandoraObject including the common header of an
-        /// APandoraObject and the actual PandoraObject
+        /// This will serialize the whole GraphObject including the common header of an
+        /// AGraphObject and the actual GraphObject
         /// </summary>
         /// <param name="myIntegrityCheckAlgorithm"></param>
         /// <param name="myEncryptionAlgorithm"></param>
@@ -141,7 +141,7 @@ namespace sones.GraphFS.DataStructures
             Int32   EncryptionParameters_Length     = 0;
             Byte    DataPadding_Length              = 0;
             Int32   AdditionalPadding_Length        = 0;
-            Byte[]  _TmpSerializedAPandoraStructure = null;
+            Byte[]  _TmpSerializedAGraphStructure = null;
 
             #endregion
 
@@ -161,30 +161,30 @@ namespace sones.GraphFS.DataStructures
 
                 #endregion
 
-                #region Serialize APandoraObjectHeader
+                #region Serialize AGraphObjectHeader
 
-                var APandoraObjectHeader = new Byte[HeaderLength];
+                var AGraphObjectHeader = new Byte[HeaderLength];
 
-                APandoraObjectHeader[0] = HeaderVersion;
+                AGraphObjectHeader[0] = HeaderVersion;
 
                 if (myIntegrityCheckAlgorithm != null)
                     IntegrityCheckValue_Length = myIntegrityCheckAlgorithm.HashSize;
 
                 if (IntegrityCheckValue_Length  % 8 == 0)
-                         APandoraObjectHeader[1] = (Byte)  (IntegrityCheckValue_Length  / 8);
-                    else APandoraObjectHeader[1] = (Byte) ((IntegrityCheckValue_Length  / 8) + 1);
+                         AGraphObjectHeader[1] = (Byte)  (IntegrityCheckValue_Length  / 8);
+                    else AGraphObjectHeader[1] = (Byte) ((IntegrityCheckValue_Length  / 8) + 1);
 
                 if (EncryptionParameters_Length % 8 == 0)
-                         APandoraObjectHeader[2] = (Byte)  (EncryptionParameters_Length / 8);
-                    else APandoraObjectHeader[2] = (Byte) ((EncryptionParameters_Length / 8) + 1);
+                         AGraphObjectHeader[2] = (Byte)  (EncryptionParameters_Length / 8);
+                    else AGraphObjectHeader[2] = (Byte) ((EncryptionParameters_Length / 8) + 1);
 
-                APandoraObjectHeader[3] = (Byte)(DataPadding_Length);
-                APandoraObjectHeader[4] = (Byte)(AdditionalPadding_Length / 256);
-                APandoraObjectHeader[5] = (Byte)(AdditionalPadding_Length % 256);
-                APandoraObjectHeader[6] = 0x00;
-                APandoraObjectHeader[7] = 0x00;
+                AGraphObjectHeader[3] = (Byte)(DataPadding_Length);
+                AGraphObjectHeader[4] = (Byte)(AdditionalPadding_Length / 256);
+                AGraphObjectHeader[5] = (Byte)(AdditionalPadding_Length % 256);
+                AGraphObjectHeader[6] = 0x00;
+                AGraphObjectHeader[7] = 0x00;
 
-                _SerializationWriter.WriteBytesDirect(APandoraObjectHeader);                      // 8 Bytes
+                _SerializationWriter.WriteBytesDirect(AGraphObjectHeader);                      // 8 Bytes
                 IntegrityCheckValue_Position = _SerializationWriter.BaseStream.Position;
                 _SerializationWriter.WriteBytesDirect(new Byte[IntegrityCheckValue_Length]);      // n or at least 16 Bytes
                 _SerializationWriter.WriteBytesDirect(EncryptionParameters);                      // m Bytes
@@ -200,7 +200,7 @@ namespace sones.GraphFS.DataStructures
 
                 #endregion
 
-                _TmpSerializedAPandoraStructure = _SerializationWriter.ToArray();
+                _TmpSerializedAGraphStructure = _SerializationWriter.ToArray();
 
                 #region Encrypt
                 #endregion
@@ -210,11 +210,11 @@ namespace sones.GraphFS.DataStructures
                 if (myIntegrityCheckAlgorithm != null && IntegrityCheckValue_Length > 0)
                 {
 
-                    IntegrityCheckValue = myIntegrityCheckAlgorithm.GetHashValueAsByteArray(_TmpSerializedAPandoraStructure);
+                    IntegrityCheckValue = myIntegrityCheckAlgorithm.GetHashValueAsByteArray(_TmpSerializedAGraphStructure);
   
                     // If the returned array is shorter than expected => pad with 0x00
                     // And if it is longer just copy the number of expected bytes
-                    Array.Copy(IntegrityCheckValue, 0, _TmpSerializedAPandoraStructure, IntegrityCheckValue_Position, IntegrityCheckValue.Length);
+                    Array.Copy(IntegrityCheckValue, 0, _TmpSerializedAGraphStructure, IntegrityCheckValue_Position, IntegrityCheckValue.Length);
 
                 }
 
@@ -223,12 +223,12 @@ namespace sones.GraphFS.DataStructures
                 isDirty = false;
 
                 if (myCacheSerializeData)
-                    _SerializedAPandoraStructure = _TmpSerializedAPandoraStructure;
+                    _SerializedAGraphStructure = _TmpSerializedAGraphStructure;
 
 
-                _EstimatedSize = (UInt64) _TmpSerializedAPandoraStructure.LongLength;
+                _EstimatedSize = (UInt64) _TmpSerializedAGraphStructure.LongLength;
 
-                return _TmpSerializedAPandoraStructure;
+                return _TmpSerializedAGraphStructure;
 
             }
 
@@ -264,10 +264,10 @@ namespace sones.GraphFS.DataStructures
             #region Check if data is larger than the minimum allowed size
 
             if (mySerializedData == null)
-                throw new PandoraFSException_InvalidInformationHeader("The information header is invalid!");
+                throw new GraphFSException_InvalidInformationHeader("The information header is invalid!");
 
             if (mySerializedData.Length < 8)
-                throw new PandoraFSException_InvalidInformationHeader("The information header is invalid!");
+                throw new GraphFSException_InvalidInformationHeader("The information header is invalid!");
 
             #endregion
 
@@ -292,12 +292,12 @@ namespace sones.GraphFS.DataStructures
                 IntegrityCheckValue_Length = reader.ReadByte() << 3;
 
                 if (IntegrityCheckValue_Length > mySerializedData.Length - HeaderLength)
-                    throw new PandoraFSException_InvalidIntegrityCheckLengthField("The length of the integrity check value is invalid!");
+                    throw new GraphFSException_InvalidIntegrityCheckLengthField("The length of the integrity check value is invalid!");
 
                 // HACK: Remeber that a IntegrityCheckValue of 0 will circumvent the whole integrity checking!
                 if (myIntegrityCheckAlgorithm != null)
                     if ((IntegrityCheckValue_Length > 0) && (IntegrityCheckValue_Length != myIntegrityCheckAlgorithm.HashSize))
-                        throw new PandoraFSException_InvalidIntegrityCheckLengthField("The length of the integrity check value is " + IntegrityCheckValue_Length + ", but " + myIntegrityCheckAlgorithm.HashSize + " was expected!");
+                        throw new GraphFSException_InvalidIntegrityCheckLengthField("The length of the integrity check value is " + IntegrityCheckValue_Length + ", but " + myIntegrityCheckAlgorithm.HashSize + " was expected!");
 
                 #endregion
 
@@ -307,7 +307,7 @@ namespace sones.GraphFS.DataStructures
                 EncryptionParameters_Length = reader.ReadByte() << 3;
 
                 if (EncryptionParameters_Length > mySerializedData.Length - HeaderLength - IntegrityCheckValue_Length)
-                    throw new PandoraFSException_InvalidEncryptionParametersLengthField("The length of the encryption parameters is invalid!");
+                    throw new GraphFSException_InvalidEncryptionParametersLengthField("The length of the encryption parameters is invalid!");
 
                 #endregion
 
@@ -317,7 +317,7 @@ namespace sones.GraphFS.DataStructures
                 AdditionalPadding_Length  = (Int32) (256 * reader.ReadByte() + reader.ReadByte()) << 3;
 
                 if ((HeaderLength + IntegrityCheckValue_Length + EncryptionParameters_Length + AdditionalPadding_Length) >= mySerializedData.Length)
-                    throw new PandoraFSException_InvalidAdditionalPaddingLengthField("The length of the additional padding is invalid!");
+                    throw new GraphFSException_InvalidAdditionalPaddingLengthField("The length of the additional padding is invalid!");
 
                 reader.ReadBytesDirect(2);  // Read reserved bytes
 
@@ -354,7 +354,7 @@ namespace sones.GraphFS.DataStructures
 
                     // Compare read and actual IntegrityCheckValue
                     if (IntegrityCheckValue.CompareByteArray(actualIntegrityCheckValue) != 0)
-                        throw new PandoraFSException_IntegrityCheckFailed(String.Concat("The IntegrityCheck failed as ", actualIntegrityCheckValue.ToHexString(), " is not equal to the expected ", IntegrityCheckValue.ToHexString()));
+                        throw new GraphFSException_IntegrityCheckFailed(String.Concat("The IntegrityCheck failed as ", actualIntegrityCheckValue.ToHexString(), " is not equal to the expected ", IntegrityCheckValue.ToHexString()));
 
                 }
 
@@ -373,7 +373,7 @@ namespace sones.GraphFS.DataStructures
                 // Decrypt Data, sooon...!
 
                 //if ( (UInt64) DataPadding_Length >= EncryptedData_Length)
-                //    throw new PandoraFSException_InvalidDataPaddingLengthField("The length of the data padding is invalid!");
+                //    throw new GraphFSException_InvalidDataPaddingLengthField("The length of the data padding is invalid!");
 
                 //DecryptedData = new Byte[EncryptedData_Length - (UInt64) DataPadding_Length];
                 //Array.Copy(EncryptedData, 0, DecryptedData, 0, (Int64) (EncryptedData_Length - (UInt64) DataPadding_Length));
@@ -393,18 +393,18 @@ namespace sones.GraphFS.DataStructures
 
             }
 
-            catch (PandoraFSException_IntegrityCheckFailed e)
+            catch (GraphFSException_IntegrityCheckFailed e)
             {
-                throw new PandoraFSException_IntegrityCheckFailed("The APandoraStructure could not be deserialized as its integrity is corrupted!\n\n" + e);
+                throw new GraphFSException_IntegrityCheckFailed("The AGraphStructure could not be deserialized as its integrity is corrupted!\n\n" + e);
             }
 
             catch (Exception e)
             {
-                throw new PandoraFSException_APandoraStructureCouldNotBeDeserialized("The APandoraStructure could not be deserialized!\n\n" + e);
+                throw new GraphFSException_AGraphStructureCouldNotBeDeserialized("The AGraphStructure could not be deserialized!\n\n" + e);
             }
 
-            _SerializedAPandoraStructure = mySerializedData;
-            _EstimatedSize               = (UInt64) _SerializedAPandoraStructure.LongLength;
+            _SerializedAGraphStructure = mySerializedData;
+            _EstimatedSize               = (UInt64) _SerializedAGraphStructure.LongLength;
 
         }
 
@@ -413,7 +413,7 @@ namespace sones.GraphFS.DataStructures
         #region (abstract) SerializeInnerObject(ref mySerializationWriter)
 
         /// <summary>
-        /// This method will serialize this APandoraStructure
+        /// This method will serialize this AGraphStructure
         /// </summary>
         /// <param name="mySerializationWriter">An SerializationWriter to write the serialized bytes to</param>
         public abstract void Serialize(ref SerializationWriter mySerializationWriter);
@@ -423,7 +423,7 @@ namespace sones.GraphFS.DataStructures
         #region (abstract) DeserializeInnerObject(ref mySerializationReader)
 
         /// <summary>
-        /// This method will deserialize the content of the given array of bytes into this APandoraStructure
+        /// This method will deserialize the content of the given array of bytes into this AGraphStructure
         /// </summary>
         /// <param name="mySerializationReader">An SerializationReader to read the serialized bytes from</param>
         public abstract void Deserialize(ref SerializationReader mySerializationReader);
@@ -433,9 +433,9 @@ namespace sones.GraphFS.DataStructures
         #region (abstract) Clone()
 
         /// <summary>
-        /// This will create an exact deep-copy of this APandoraStructure
+        /// This will create an exact deep-copy of this AGraphStructure
         /// </summary>
-        /// <returns>An exact deep-copy of this APandoraStructure</returns>
+        /// <returns>An exact deep-copy of this AGraphStructure</returns>
         public abstract AFSStructure Clone();
 
         #endregion

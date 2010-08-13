@@ -29,8 +29,6 @@
 #region Usings
 
 using System;
-using System.Text;
-using System.Linq;
 using System.Collections.Generic;
 
 #endregion
@@ -44,11 +42,12 @@ namespace sones.GraphDB.Structures.Result
     public class DBObjectReadoutGroup : DBObjectReadout
     {
 
-        public HashSet<DBObjectReadout> CorrespondingDBObjects;
+        public IEnumerable<DBObjectReadout> GrouppedVertices { get; protected set; }
 
-        public DBObjectReadoutGroup(IDictionary<String, Object> myAttributes)
+        public DBObjectReadoutGroup(IDictionary<String, Object> myAttributes, IEnumerable<DBObjectReadout> myGrouppedVertices)
             : base (myAttributes)
         {
+            GrouppedVertices = myGrouppedVertices;
         }
 
     }

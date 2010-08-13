@@ -20,14 +20,8 @@
 
 /*
  * CryptographyExceptions
- * Achim Friedland, 2008 - 2009
- * 
- * This is a class for all CryptographyExceptions
- * 
- * Lead programmer:
- *      Achim Friedland
- * 
- * */
+ * (c) Achim Friedland, 2008 - 2009
+ */
 
 #region Usings
 

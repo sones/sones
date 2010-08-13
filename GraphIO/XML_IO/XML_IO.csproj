@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9FCA399E-33F4-40A0-9987-76C5763F23FF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>XML_IO</RootNamespace>
+    <AssemblyName>XML_IO</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XML_IO.cs" />
+    <Compile Include="XML_IO_Extensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\GraphDB\GraphDBInterface\GraphDBInterface.csproj">
+      <Project>{72319FF7-E9D9-4AE9-AA0B-2E006442B1ED}</Project>
+      <Name>GraphDBInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphDB\GraphDB\GraphDB.csproj">
+      <Project>{32A56958-2C05-44C6-B661-2A2C6610E073}</Project>
+      <Name>GraphDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphFS\GraphFSInterface\GraphFSInterface.csproj">
+      <Project>{B23FDA3D-8229-4CDD-91FD-9AFD7301D315}</Project>
+      <Name>GraphFSInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lib\Lib\Lib.csproj">
+      <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
+      <Name>Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\StorageEngines\StorageEnginesInterface\StorageEnginesInterface.csproj">
+      <Project>{F3BF32FF-7113-4DE6-801B-BB234A76539B}</Project>
+      <Name>StorageEnginesInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GraphIO\GraphIO.csproj">
+      <Project>{624BBB9D-89BE-43CE-8B8C-18BE729F4B11}</Project>
+      <Name>GraphIO</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

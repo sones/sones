@@ -21,7 +21,7 @@
 /* PandoraLib - NPandoraObjectChanged
  * (c) Stefan Licht, 2009
  * 
- * Notifies about any changes for a particular PandoraObject.
+ * Notifies about any changes for a particular GraphObject.
  * 
  * Lead programmer:
  *      Stefan Licht
@@ -40,13 +40,13 @@ using sones.Lib.NewFastSerializer;
 namespace sones.GraphFS.Notification
 {
 
-    public class NFileSystem_PandoraObjectChanged : NFileSystem
+    public class NFileSystem_GraphObjectChanged : NFileSystem
     {
 
         public new class Arguments : INotificationArguments
         {
             public String ObjectLocation;
-            public Type PandoraObjectType;
+            public Type GraphObjectType;
 
             public Arguments() { }
 
@@ -56,7 +56,7 @@ namespace sones.GraphFS.Notification
             {
                 var _SerializationWriter = new SerializationWriter();
                 _SerializationWriter.WriteString(ObjectLocation);
-                _SerializationWriter.WriteType(PandoraObjectType);
+                _SerializationWriter.WriteType(GraphObjectType);
 
                 return _SerializationWriter.ToArray();
             }
@@ -65,7 +65,7 @@ namespace sones.GraphFS.Notification
             {
                 var _SerializationReader        = new SerializationReader(mySerializedBytes);
                 ObjectLocation                  = _SerializationReader.ReadString();
-                PandoraObjectType               = _SerializationReader.ReadTypeOptimized();
+                GraphObjectType               = _SerializationReader.ReadTypeOptimized();
             }
 
             public override string ToString()
@@ -83,10 +83,10 @@ namespace sones.GraphFS.Notification
         /// </summary>
         public String ObjectLocation { get; set; }
 
-        public NFileSystem_PandoraObjectChanged()
+        public NFileSystem_GraphObjectChanged()
         { }
 
-        public NFileSystem_PandoraObjectChanged(String myObjectLocation)
+        public NFileSystem_GraphObjectChanged(String myObjectLocation)
         {
             ObjectLocation = myObjectLocation;
         }
@@ -97,15 +97,15 @@ namespace sones.GraphFS.Notification
 
         public override bool Validate(INotificationArguments myNotificationArguments)
         {
-            //return ((NPandoraObjectChanged.Arguments)myNotificationArguments).ObjectLocation == ObjectLocation;
+            //return ((NGraphObjectChanged.Arguments)myNotificationArguments).ObjectLocation == ObjectLocation;
             if (ObjectLocation == null)
                 return true;
-            return ((NFileSystem_PandoraObjectChanged.Arguments)myNotificationArguments).ObjectLocation.StartsWith(ObjectLocation);
+            return ((NFileSystem_GraphObjectChanged.Arguments)myNotificationArguments).ObjectLocation.StartsWith(ObjectLocation);
         }
 
         public override string Description
         {
-            get { return "Notifies about any changes for a particular PandoraObject"; }
+            get { return "Notifies about any changes for a particular GraphObject"; }
         }
 
         public override INotificationArguments GetEmptyArgumentInstance()

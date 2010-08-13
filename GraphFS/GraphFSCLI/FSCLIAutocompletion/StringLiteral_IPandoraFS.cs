@@ -49,12 +49,12 @@ namespace sones.GraphFS.Connectors.GraphFSCLI
     /// for PVFS files or directories.
     /// </summary>
 
-    public class StringLiteral_IPandoraFS : AGraphFSCLIAutocompletions
+    public class StringLiteral_IGraphFS : AGraphFSCLIAutocompletions
     {
 
         #region properties
 
-        public override String Name { get { return "stringLiteral_IPandoraFS"; } }
+        public override String Name { get { return "stringLiteral_IGraphFS"; } }
 
         #endregion
 

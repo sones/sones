@@ -10,24 +10,25 @@
 #region Usings
 
 using System;
-using sones.GraphDB.Exceptions;
+using System.Diagnostics;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.TypeManagement;
 using sones.GraphFS.DataStructures;
-using sones.Lib.Serializer;
-using sones.Lib.NewFastSerializer;
 using sones.Lib.ErrorHandling;
-using System.Diagnostics;
+using sones.Lib.NewFastSerializer;
+using sones.Lib.Serializer;
 
 #endregion
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
+
     /// <summary>
     /// The actual connection to another DBObject
     /// </summary>
     public class Reference : IComparable, IComparable<Reference>, IFastSerialize, IFastSerializationTypeSurrogate
     {
+
         #region Properties
 
         public  ObjectUUID      ObjectUUID { get; private set; }
@@ -268,5 +269,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
         #endregion
 
         #endregion
+    
     }
+
 }

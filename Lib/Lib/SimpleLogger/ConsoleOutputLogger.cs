@@ -34,7 +34,7 @@ namespace sones.Lib.SimpleLogger
         private static int Max_Number_Of_Entries = 50;
         private static LinkedList<String> LoggerList = new LinkedList<String>();
         public static bool verbose = false;
-        public static String Logfilename = "Pandora.log";
+        public static String Logfilename = "Graph.log";
         public static bool writeLogfile = false;
 
         public static StreamWriter Logfile = null;

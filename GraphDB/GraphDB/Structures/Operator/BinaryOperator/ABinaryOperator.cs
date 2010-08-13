@@ -233,7 +233,7 @@ namespace sones.GraphDB.Structures.Operators
         ///// <returns>An AtomValue</returns>
         //public virtual ValueDefinition GetValueDefinition(Token token)
         //{
-        //    return new ValueDefinition(GraphDBTypeMapper.ConvertPandora2CSharp(token.Terminal.GetType().Name), token.Value);
+        //    return new ValueDefinition(GraphDBTypeMapper.ConvertGraph2CSharp(token.Terminal.GetType().Name), token.Value);
         //}
 
         //public virtual BinaryExpressionNode GetBinaryExpressionNode(UnaryExpressionNode aTreeNode, DBContext dbContext)

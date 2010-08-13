@@ -41,7 +41,7 @@ using System.Text;
  * 
  * Complexity of Add and Contains is O(k).
  */
-namespace Lib.Hashing.Filter
+namespace sones.Lib.Hashing.Filter
 {
     public class MultiHashBloomFilter<T> : AFilter<T>
     {

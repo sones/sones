@@ -80,6 +80,19 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
+        #region ForestUUID(myUUID)
+
+        /// <summary>
+        /// Generates a UUID based on the content of myUUID
+        /// </summary>
+        /// <param name="myUUID">A UUID</param>
+        public ForestUUID(UUID myUUID)
+            : base(myUUID)
+        {   
+        }
+
+        #endregion
+
         #endregion
 
         #region NewUUID

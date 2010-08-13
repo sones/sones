@@ -21,7 +21,7 @@
 /* Pandora CLI
  * (c) Henning Rauch, 2009
  * 
- * Datatype for PandoraCLI options
+ * Datatype for GraphCLI options
  * 
  * Lead programmer:
  *      Henning Rauch

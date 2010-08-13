@@ -24,22 +24,22 @@ namespace sones.GraphDB.Managers
         /// <summary>
         /// dictionary of attribute assignments
         /// </summary>
-        public Dictionary<TypeAndAttributeDefinition, AObject> Attributes { get; set; }
+        public Dictionary<TypeAndAttributeDefinition, IObject> Attributes { get; set; }
 
         /// <summary>
         /// mandatory attributes in the current insert statement
         /// </summary>
         public HashSet<AttributeUUID> MandatoryAttributes { get; set; }
         public List<AAttributeAssignOrUpdateOrRemove> AttributeToUpdateOrAssign { get; set; }
-        public Dictionary<String, AObject> UndefinedAttributes { get; set; }
+        public Dictionary<String, IObject> UndefinedAttributes { get; set; }
         public Dictionary<ASpecialTypeAttribute, Object> SpecialTypeAttributes { get; set; }
 
         public ManipulationAttributes()
         {
-            Attributes = new Dictionary<TypeAndAttributeDefinition, AObject>();
+            Attributes = new Dictionary<TypeAndAttributeDefinition, IObject>();
             MandatoryAttributes = new HashSet<AttributeUUID>();
             AttributeToUpdateOrAssign = new List<AAttributeAssignOrUpdateOrRemove>();
-            UndefinedAttributes = new Dictionary<string, AObject>();
+            UndefinedAttributes = new Dictionary<string, IObject>();
             SpecialTypeAttributes = new Dictionary<ASpecialTypeAttribute, object>();
         }
     }

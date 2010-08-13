@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – DBUInt64" />
+﻿/* <id name="GraphDB – DBUInt64" />
  * <copyright file="DBUInt64.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -100,77 +100,77 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
 
         #region Operations
 
-        public static DBUInt64 operator +(DBUInt64 myPandoraObjectA, UInt64 myValue)
+        public static DBUInt64 operator +(DBUInt64 myGraphObjectA, UInt64 myValue)
         {
-            myPandoraObjectA.Value = (UInt64)myPandoraObjectA.Value + myValue;
-            return myPandoraObjectA;
+            myGraphObjectA.Value = (UInt64)myGraphObjectA.Value + myValue;
+            return myGraphObjectA;
         }
 
-        public static DBUInt64 operator -(DBUInt64 myPandoraObjectA, UInt64 myValue)
+        public static DBUInt64 operator -(DBUInt64 myGraphObjectA, UInt64 myValue)
         {
-            myPandoraObjectA.Value = (UInt64)myPandoraObjectA.Value - myValue;
-            return myPandoraObjectA;
+            myGraphObjectA.Value = (UInt64)myGraphObjectA.Value - myValue;
+            return myGraphObjectA;
         }
 
-        public static DBUInt64 operator *(DBUInt64 myPandoraObjectA, UInt64 myValue)
+        public static DBUInt64 operator *(DBUInt64 myGraphObjectA, UInt64 myValue)
         {
-            myPandoraObjectA.Value = (UInt64)myPandoraObjectA.Value * myValue;
-            return myPandoraObjectA;
+            myGraphObjectA.Value = (UInt64)myGraphObjectA.Value * myValue;
+            return myGraphObjectA;
         }
 
-        public static DBUInt64 operator /(DBUInt64 myPandoraObjectA, UInt64 myValue)
+        public static DBUInt64 operator /(DBUInt64 myGraphObjectA, UInt64 myValue)
         {
-            myPandoraObjectA.Value = (UInt64)myPandoraObjectA.Value / myValue;
-            return myPandoraObjectA;
+            myGraphObjectA.Value = (UInt64)myGraphObjectA.Value / myValue;
+            return myGraphObjectA;
         }
 
-        public override ADBBaseObject Add(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Add(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
 
-            UInt64 valA = Convert.ToUInt64(myPandoraObjectA.Value);
-            UInt64 valB = Convert.ToUInt64(myPandoraObjectB.Value);
+            UInt64 valA = Convert.ToUInt64(myGraphObjectA.Value);
+            UInt64 valB = Convert.ToUInt64(myGraphObjectB.Value);
             return new DBUInt64(valA + valB);
         }
 
-        public override ADBBaseObject Sub(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Sub(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            UInt64 valA = Convert.ToUInt64(myPandoraObjectA.Value);
-            UInt64 valB = Convert.ToUInt64(myPandoraObjectB.Value);
+            UInt64 valA = Convert.ToUInt64(myGraphObjectA.Value);
+            UInt64 valB = Convert.ToUInt64(myGraphObjectB.Value);
             return new DBUInt64(valA - valB);
         }
 
-        public override ADBBaseObject Mul(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Mul(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            UInt64 valA = Convert.ToUInt64(myPandoraObjectA.Value);
-            UInt64 valB = Convert.ToUInt64(myPandoraObjectB.Value);
+            UInt64 valA = Convert.ToUInt64(myGraphObjectA.Value);
+            UInt64 valB = Convert.ToUInt64(myGraphObjectB.Value);
             return new DBUInt64(valA * valB);
         }
 
-        public override ADBBaseObject Div(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Div(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            UInt64 valA = Convert.ToUInt64(myPandoraObjectA.Value);
-            UInt64 valB = Convert.ToUInt64(myPandoraObjectB.Value);
+            UInt64 valA = Convert.ToUInt64(myGraphObjectA.Value);
+            UInt64 valB = Convert.ToUInt64(myGraphObjectB.Value);
             return new DBUInt64(valA / valB);
         }
 
-        public override void Add(ADBBaseObject myPandoraObject)
+        public override void Add(ADBBaseObject myGraphObject)
         {
-            _Value += Convert.ToUInt64(myPandoraObject.Value);
+            _Value += Convert.ToUInt64(myGraphObject.Value);
         }
 
-        public override void Sub(ADBBaseObject myPandoraObject)
+        public override void Sub(ADBBaseObject myGraphObject)
         {
-            _Value -= Convert.ToUInt64(myPandoraObject.Value);
+            _Value -= Convert.ToUInt64(myGraphObject.Value);
         }
 
-        public override void Mul(ADBBaseObject myPandoraObject)
+        public override void Mul(ADBBaseObject myGraphObject)
         {
-            _Value *= Convert.ToUInt64(myPandoraObject.Value);
+            _Value *= Convert.ToUInt64(myGraphObject.Value);
         }
 
-        public override void Div(ADBBaseObject myPandoraObject)
+        public override void Div(ADBBaseObject myGraphObject)
         {
-            _Value /= Convert.ToUInt64(myPandoraObject.Value);
+            _Value /= Convert.ToUInt64(myGraphObject.Value);
         }
 
         #endregion

@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – EdgeTypeDefNode" />
+﻿/* <id name="GraphDB – EdgeTypeDefNode" />
  * <copyright file="EdgeTypeDefNode.cs
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.

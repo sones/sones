@@ -25,7 +25,7 @@
  * </copyright>
  * <developer>Henning Rauch</developer>
  * <developer>Björn Elmar Macek</developer>
- * <summary>Executes a PandoraDB script</summary>
+ * <summary>Executes a GraphDB script</summary>
  */
 
 #region Usings
@@ -53,7 +53,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 {
 
     /// <summary>
-    /// Executes a PandoraDB script
+    /// Executes a GraphDB script
     /// </summary>
 
     public class DBCLI_EXECDBSCRIPT : AllBasicDBCLICommands
@@ -66,8 +66,8 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
             // Command name and description
             InitCommand("EXECDBSCRIPT",
-                        "Executes a PandoraDB script",
-                        "Executes a PandoraDB script");
+                        "Executes a GraphDB script",
+                        "Executes a GraphDB script");
 
             // BNF rule
             CreateBNFRule(CLICommandSymbolTerminal + stringLiteralExternalEntry);
@@ -85,13 +85,13 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
         #region Execute Command
 
-        public override void Execute(ref object myIGraphFS2Session, ref object myIPandoraDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
+        public override void Execute(ref object myIGraphFS2Session, ref object myIGraphDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
         {
             
             var _IGraphFS2Session = myIGraphFS2Session as IGraphFSSession;
-            var _IPandoraDBSession = myIPandoraDBSession as IGraphDBSession;
+            var _IGraphDBSession = myIGraphDBSession as IGraphDBSession;
 
-            var gqlQuery = new GraphQLQuery(_IPandoraDBSession.DBPluginManager);
+            var gqlQuery = new GraphQLQuery(_IGraphDBSession.DBPluginManager);
 
             Boolean isSuccessful = true;
             int numberOfStatement = 1;
@@ -110,7 +110,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
                 sw.Start();
                 while ((line = reader.ReadLine()) != null)
                 {
-                    if (!ExecuteAQuery(line.Trim(), _IPandoraDBSession, gqlQuery))
+                    if (!ExecuteAQuery(line.Trim(), _IGraphDBSession, gqlQuery))
                     {
                         WriteLine("Error while executing query: \"" + line + "\"");
 

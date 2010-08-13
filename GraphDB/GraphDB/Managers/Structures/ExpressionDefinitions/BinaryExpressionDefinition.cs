@@ -22,6 +22,7 @@ using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.Structures.ExpressionGraph;
 using System.Threading.Tasks;
 using sones.Lib;
+using sones.Lib.ErrorHandling;
 using sones.GraphDB.Managers.Select;
 
 #endregion
@@ -103,7 +104,7 @@ namespace sones.GraphDB.Managers.Structures
             }
             else if (_Left is IDChainDefinition)
             {
-                ValidateResult.Push((_Left as IDChainDefinition).Validate(myDBContext, false, types));
+                ValidateResult.Push((_Left as IDChainDefinition).Validate(myDBContext, true, types));
                 TypeOfBinaryExpression = TypesOfBinaryExpression.LeftComplex;
             }
             else if (_Left is TupleDefinition)
@@ -114,7 +115,7 @@ namespace sones.GraphDB.Managers.Structures
                 if (IsEncapsulatedBinaryExpression(_Left as TupleDefinition))
                 {
                     var exceptionalResult = TryGetBinexpression((_Left as TupleDefinition).First().Value, myDBContext);
-                    if (exceptionalResult.Failed)
+                    if (exceptionalResult.Failed())
                     {
                         return ValidateResult.Push(exceptionalResult);
                     }
@@ -124,7 +125,7 @@ namespace sones.GraphDB.Managers.Structures
                 else
                 {
                     var correctTuple = AssignCorrectTuple((_Left as TupleDefinition), Operator, myDBContext);
-                    if (correctTuple.Failed)
+                    if (correctTuple.Failed())
                     {
                         return new Exceptional(correctTuple);
                     }
@@ -153,7 +154,7 @@ namespace sones.GraphDB.Managers.Structures
                 #region try binexpr
 
                 var exceptionalResult = TryGetBinexpression(_Left, myDBContext);
-                if (exceptionalResult.Failed)
+                if (exceptionalResult.Failed())
                 {
                     return ValidateResult.Push(exceptionalResult);
                 }
@@ -166,7 +167,7 @@ namespace sones.GraphDB.Managers.Structures
 
             #endregion
 
-            if (ValidateResult.Failed)
+            if (ValidateResult.Failed())
             {
                 return ValidateResult;
             }
@@ -208,7 +209,7 @@ namespace sones.GraphDB.Managers.Structures
                 if (IsEncapsulatedBinaryExpression(_Right as TupleDefinition))
                 {
                     var exceptionalResult = TryGetBinexpression((_Right as TupleDefinition).First().Value, myDBContext);
-                    if (exceptionalResult.Failed)
+                    if (exceptionalResult.Failed())
                     {
                         return ValidateResult.Push(exceptionalResult);
                     }
@@ -221,7 +222,7 @@ namespace sones.GraphDB.Managers.Structures
                 else
                 {
                     var correctTuple = AssignCorrectTuple((_Right as TupleDefinition), Operator, myDBContext);
-                    if (correctTuple.Failed)
+                    if (correctTuple.Failed())
                     {
                         return new Exceptional(correctTuple);
                     }
@@ -247,7 +248,7 @@ namespace sones.GraphDB.Managers.Structures
                 #region try binexpr
 
                 var exceptionalResult = TryGetBinexpression(_Right, myDBContext);
-                if (exceptionalResult.Failed)
+                if (exceptionalResult.Failed())
                 {
                     return ValidateResult.Push(exceptionalResult);
                 }
@@ -262,7 +263,7 @@ namespace sones.GraphDB.Managers.Structures
 
             #endregion
 
-            if (ValidateResult.Failed)
+            if (ValidateResult.Failed())
             {
                 return ValidateResult;
             }
@@ -286,7 +287,7 @@ namespace sones.GraphDB.Managers.Structures
 
                     if (leftTemp != null)
                     {
-                        if (leftTemp.Failed)
+                        if (leftTemp.Failed())
                         {
                             return ValidateResult.Push(leftTemp);
                         }
@@ -306,7 +307,7 @@ namespace sones.GraphDB.Managers.Structures
 
                     if (rightTemp != null)
                     {
-                        if (rightTemp.Failed)
+                        if (rightTemp.Failed())
                         {
                             return ValidateResult.Push(rightTemp);
                         }
@@ -327,11 +328,11 @@ namespace sones.GraphDB.Managers.Structures
 
                     #region Check for errors
 
-                    if (leftTemp != null && leftTemp.Failed)
+                    if (leftTemp != null && leftTemp.Failed())
                     {
                         return ValidateResult.Push(leftTemp);
                     }
-                    if (rightTemp != null && rightTemp.Failed)
+                    if (rightTemp != null && rightTemp.Failed())
                     {
                         return ValidateResult.Push(rightTemp);
                     }
@@ -374,7 +375,7 @@ namespace sones.GraphDB.Managers.Structures
                 if ((_Left is AOperationDefinition) && (_Right is AOperationDefinition))
                 {
                     var opResult = Operator.SimpleOperation(((AOperationDefinition)_Left), ((AOperationDefinition)_Right), TypeOfBinaryExpression);
-                    if (opResult.Failed)
+                    if (opResult.Failed())
                     {
                         return ValidateResult.Push(opResult);
                     }
@@ -521,7 +522,7 @@ namespace sones.GraphDB.Managers.Structures
 
                             var dbTypeOfAttribute = curAttr.GetDBType(myDBContext.DBTypeManager);
 
-                            var aTypeOfOperatorResult = GraphDBTypeMapper.ConvertPandora2CSharp(dbTypeOfAttribute.Name);
+                            var aTypeOfOperatorResult = GraphDBTypeMapper.ConvertGraph2CSharp(dbTypeOfAttribute.Name);
 
                             foreach (DBObjectReadout dbo in aSelResult.Objects)
                             {
@@ -577,7 +578,7 @@ namespace sones.GraphDB.Managers.Structures
             if (expression.TypeOfBinaryExpression == TypesOfBinaryExpression.Atom)
             {
 
-                if (expression.ResultValue.Failed)
+                if (expression.ResultValue.Failed())
                 {
                     return expression.ResultValue;
                 }
@@ -1052,7 +1053,7 @@ namespace sones.GraphDB.Managers.Structures
             }
         }
 
-        internal AObject SimpleExecution(ObjectManagement.DBObjectStream aDBObject, DBContext dbContext)
+        internal IObject SimpleExecution(ObjectManagement.DBObjectStream aDBObject, DBContext dbContext)
         {
             SubstituteAttributeNames(this, aDBObject, dbContext);
 
@@ -1061,7 +1062,7 @@ namespace sones.GraphDB.Managers.Structures
 
         private ValueDefinition GetAtomValue(IDChainDefinition iDNode, DBObjectStream aDBObject, DBContext dbContext)
         {
-            return new ValueDefinition(GraphDBTypeMapper.ConvertPandora2CSharp(iDNode.LastAttribute.GetDBType(dbContext.DBTypeManager).Name), aDBObject.GetAttribute(iDNode.LastAttribute.UUID, iDNode.LastType, dbContext));
+            return new ValueDefinition(GraphDBTypeMapper.ConvertGraph2CSharp(iDNode.LastAttribute.GetDBType(dbContext.DBTypeManager).Name), aDBObject.GetAttribute(iDNode.LastAttribute.UUID, iDNode.LastType, dbContext));
         }
 
         /// <summary>
@@ -1165,12 +1166,12 @@ namespace sones.GraphDB.Managers.Structures
         /// <summary>
         /// This method evaluates binary expressions.
         /// </summary>
-        /// <param name="currentTypeDefinition">KeyValuePair of Reference and corresponding PandoraType.</param>
+        /// <param name="currentTypeDefinition">KeyValuePair of Reference and corresponding GraphType.</param>
         /// <param name="referenceList">List of References.</param>
-        /// <param name="dbContext">The TypeManager of the PandoraDB.</param>
+        /// <param name="dbContext">The TypeManager of the GraphDB.</param>
         /// <param name="queryCache">The current query cache.</param>
         /// <param name="resultGraph">A template of the result graph</param>
-        /// <returns>A PandoraResult container.</returns>
+        /// <returns>A GraphResult container.</returns>
         public Exceptional<IExpressionGraph> Calculon(DBContext dbContext, IExpressionGraph resultGraph, bool aggregateAllowed = true)
         {
             //a leaf expression is a expression without any recursive BinaryExpression
@@ -1251,12 +1252,12 @@ namespace sones.GraphDB.Managers.Structures
                                 return ((BinaryExpressionDefinition)this.Right).Calculon(dbContext, resultGraph.GetNewInstance(dbContext), aggregateAllowed);
                             });
 
-                            if (!leftTask.Result.Success)
+                            if (!leftTask.Result.Success())
                             {
                                 return new Exceptional<IExpressionGraph>(leftTask.Result);
                             }
 
-                            if (!rightTask.Result.Success)
+                            if (!rightTask.Result.Success())
                             {
                                 return new Exceptional<IExpressionGraph>(rightTask.Result);
                             }
@@ -1274,12 +1275,12 @@ namespace sones.GraphDB.Managers.Structures
                             var left = ((BinaryExpressionDefinition)this.Left).Calculon(dbContext, resultGraph.GetNewInstance(dbContext), aggregateAllowed);
                             var right = ((BinaryExpressionDefinition)this.Right).Calculon(dbContext, resultGraph.GetNewInstance(dbContext), aggregateAllowed);
 
-                            if (!left.Success)
+                            if (!left.Success())
                             {
                                 return new Exceptional<IExpressionGraph>(left);
                             }
 
-                            if (!right.Success)
+                            if (!right.Success())
                             {
                                 return new Exceptional<IExpressionGraph>(right);
                             }
@@ -1404,7 +1405,7 @@ namespace sones.GraphDB.Managers.Structures
                     return new Exceptional<bool>(false);
 
                 var resultValue = Operator.SimpleOperation(leftValue, ((ValueDefinition)_Right), TypeOfBinaryExpression);
-                if (resultValue.Failed)
+                if (resultValue.Failed())
                 {
                     return new Exceptional<bool>(resultValue);
                 }
@@ -1421,7 +1422,7 @@ namespace sones.GraphDB.Managers.Structures
                     return new Exceptional<bool>(false);
 
                 var resultValue = Operator.SimpleOperation(((ValueDefinition)_Left), rightValue, TypeOfBinaryExpression);
-                if (resultValue.Failed)
+                if (resultValue.Failed())
                 {
                     return new Exceptional<bool>(resultValue);
                 } 

@@ -141,6 +141,7 @@
     <Compile Include="StructureNodes\RemoveFromListAttrUpdateAddToOperatorNode.cs" />
     <Compile Include="StructureNodes\RemoveFromListAttrUpdateAddToRemoveFromNode.cs" />
     <Compile Include="StructureNodes\RemoveFromListAttrUpdateNode.cs" />
+    <Compile Include="StructureNodes\SelByTypeNode.cs" />
     <Compile Include="StructureNodes\SelectionDelimiterNode.cs" />
     <Compile Include="StructureNodes\SelectionListElementNode.cs" />
     <Compile Include="StructureNodes\SelectOutputOptNode.cs" />
@@ -171,9 +172,13 @@
       <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
       <Name>Lib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GraphDBInterface\GraphDBInterface.csproj">
+      <Project>{72319FF7-E9D9-4AE9-AA0B-2E006442B1ED}</Project>
+      <Name>GraphDBInterface</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GraphDB\GraphDB.csproj">
       <Project>{32A56958-2C05-44C6-B661-2A2C6610E073}</Project>
-      <Name>GraphDB %28Dependencies\GraphDB\GraphDB%29</Name>
+      <Name>GraphDB</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

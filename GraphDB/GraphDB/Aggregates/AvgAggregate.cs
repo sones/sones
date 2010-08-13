@@ -27,25 +27,31 @@
  * <summary>The aggregate AVG.<summary>
  */
 
+#region Usings
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Indices;
 using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.Structures.Result;
-using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
-using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
-
 using sones.Lib.Session;
+
+#endregion
 
 namespace sones.GraphDB.Aggregates
 {
+
+    /// <summary>
+    /// The aggregate AVG
+    /// </summary>
     public class AvgAggregate : ABaseAggregate
     {
 
@@ -67,26 +73,26 @@ namespace sones.GraphDB.Aggregates
 
         public override Exceptional<Object> Aggregate(IEnumerable<DBObjectReadout> myDBObjectReadouts, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
         {
-            ADBBaseObject pandoraObject = new DBDouble(DBObjectInitializeType.Default);
+            ADBBaseObject GraphObject = new DBDouble(DBObjectInitializeType.Default);
             DBUInt64 total = new DBUInt64((UInt64)0);
             foreach (DBObjectReadout dbo in myDBObjectReadouts)
             {
                 if (HasAttribute(dbo.Attributes, myTypeAttribute.Name, myTypeManager))
                 {
                     var attrVal = GetAttribute(dbo.Attributes, myTypeAttribute.Name, myTypeManager);
-                    if (pandoraObject.IsValidValue(attrVal))
+                    if (GraphObject.IsValidValue(attrVal))
                     {
-                        pandoraObject.Add(pandoraObject.Clone(attrVal));
+                        GraphObject.Add(GraphObject.Clone(attrVal));
                         total += 1;
                     }
                     else
                     {
-                        return new Exceptional<object>(new Error_DataTypeDoesNotMatch(pandoraObject.ObjectName, attrVal.GetType().Name));
+                        return new Exceptional<object>(new Error_DataTypeDoesNotMatch(GraphObject.ObjectName, attrVal.GetType().Name));
                     }
                 }
             }
-            pandoraObject.Div(total);
-            return new Exceptional<object>(pandoraObject.Value);
+            GraphObject.Div(total);
+            return new Exceptional<object>(GraphObject.Value);
         }
 
         public override Exceptional<Object> Aggregate(IEnumerable<ObjectUUID> myObjectUUIDs, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
@@ -94,7 +100,7 @@ namespace sones.GraphDB.Aggregates
             return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
 
-        public override Exceptional<Object> Aggregate(AListEdgeType myAListEdgeType, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
+        public override Exceptional<Object> Aggregate(IListOrSetEdgeType myAListEdgeType, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
         {
             return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
@@ -127,5 +133,7 @@ namespace sones.GraphDB.Aggregates
 
             return new Exceptional<object>(aADBBaseObject.Value);
         }
+
     }
+
 }

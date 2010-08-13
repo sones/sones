@@ -27,7 +27,7 @@
  * Validate method will be invoked from the Dispatcher before the Message will be 
  * created. You should use the properties defined in the class and set by the client and 
  * the Arguments which will be set from the notifying part. 
- * Check out this example: sones.Pandora.Notification.NotificationTypes.NObjectCache_ObjectLocationChanged
+ * Check out this example: sones.Graph.Notification.NotificationTypes.NObjectCache_ObjectLocationChanged
  * 
  * It should override the Arguments struct to specify any special arguments
  * which will be returned to the subscribed client. If you do not need any arguments

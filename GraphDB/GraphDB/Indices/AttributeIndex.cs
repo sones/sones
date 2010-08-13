@@ -77,14 +77,14 @@ namespace sones.GraphDB.Indices
                 }
 
                 var emptyIdx = indexManager.GetIndex(IndexType);
-                if (!emptyIdx.Success)
+                if (!emptyIdx.Success())
                 {
                     return emptyIdx;
                 }
 
                 var indexExceptional = indexManager.LoadOrCreateDBIndex(FileSystemLocation, emptyIdx.Value);
 
-                if (indexExceptional.Failed)
+                if (indexExceptional.Failed())
                 {
                     return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(indexExceptional);
                 }
@@ -144,7 +144,7 @@ namespace sones.GraphDB.Indices
             if (idxKey.IndexKeyAttributeUUIDs.Any(a =>
             {
                 var typeAttr = correspondingType.GetTypeAttributeByUUID(a);
-                if (typeAttr != null && (typeAttr.EdgeType is AListBaseEdgeType || typeAttr.EdgeType is ASetBaseEdgeType))
+                if (typeAttr != null && (typeAttr.EdgeType is IBaseEdge))
                 {
                     return true;
                 }
@@ -203,7 +203,7 @@ namespace sones.GraphDB.Indices
 
                                 var helperSet = new List<ADBBaseObject>();
                                 
-                                foreach (var aBaseObject in ((AListBaseEdgeType)myDBObject.GetAttribute(aIndexAttributeUUID, myTypeOfDBObject, dbContext)).GetAll())
+                                foreach (var aBaseObject in ((IBaseEdge)myDBObject.GetAttribute(aIndexAttributeUUID, myTypeOfDBObject, dbContext)).GetBaseObjects())
                                 {
                                     helperSet.Add((ADBBaseObject)aBaseObject);
                                 }
@@ -345,7 +345,7 @@ namespace sones.GraphDB.Indices
             #region Get index reference
 
             var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (!idxRef.Success)
+            if (!idxRef.Success())
             {
                 return new Exceptional(idxRef);
             }
@@ -427,7 +427,7 @@ namespace sones.GraphDB.Indices
             #region Get index reference
 
             var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (!idxRef.Success)
+            if (!idxRef.Success())
             {
                 return new Exceptional(idxRef);
             }
@@ -482,7 +482,7 @@ namespace sones.GraphDB.Indices
             #region Get index reference
 
             var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed)
+            if (idxRef.Failed())
             {
                 throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
             }
@@ -514,7 +514,7 @@ namespace sones.GraphDB.Indices
             #region Get index reference
 
             var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed)
+            if (idxRef.Failed())
             {
                 throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
             }
@@ -548,7 +548,7 @@ namespace sones.GraphDB.Indices
             #region Get index reference
 
             var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (!idxRef.Success)
+            if (!idxRef.Success())
             {
                 return new Exceptional(idxRef);
             }
@@ -682,7 +682,7 @@ namespace sones.GraphDB.Indices
             #region Get index reference
 
             var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed)
+            if (idxRef.Failed())
             {
                 throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
             }
@@ -709,7 +709,7 @@ namespace sones.GraphDB.Indices
             #region Get index reference
 
             var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed)
+            if (idxRef.Failed())
             {
                 throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
             }
@@ -736,7 +736,7 @@ namespace sones.GraphDB.Indices
             #region Get index reference
 
             var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed)
+            if (idxRef.Failed())
             {
                 throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
             }
@@ -768,7 +768,7 @@ namespace sones.GraphDB.Indices
             #region Get index reference
 
             var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed)
+            if (idxRef.Failed())
             {
                 throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
             }
@@ -800,7 +800,7 @@ namespace sones.GraphDB.Indices
             #region Get index reference
 
             var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed)
+            if (idxRef.Failed())
             {
                 throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
             }
@@ -827,7 +827,7 @@ namespace sones.GraphDB.Indices
             #region Get index reference
 
             var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed)
+            if (idxRef.Failed())
             {
                 throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
             }
@@ -854,7 +854,7 @@ namespace sones.GraphDB.Indices
             #region Get index reference
 
             var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed)
+            if (idxRef.Failed())
             {
                 throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.Errors, IndexName, IndexEdition));
             }

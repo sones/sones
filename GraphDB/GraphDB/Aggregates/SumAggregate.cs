@@ -27,6 +27,8 @@
  * <summary>The aggregate SUM.<summary>
  */
 
+#region
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,13 +40,18 @@ using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
-using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
 using sones.Lib.Session;
 
+#endregion
+
 namespace sones.GraphDB.Aggregates
 {
+
+    /// <summary>
+    /// The aggregate SUM
+    /// </summary>
     public class SumAggregate : ABaseAggregate
     {
 
@@ -65,15 +72,15 @@ namespace sones.GraphDB.Aggregates
 
         public override Exceptional<Object> Aggregate(IEnumerable<DBObjectReadout> myDBObjectReadouts, TypeAttribute myTypeAttribute, DBContext dbContext, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
         {
-            ADBBaseObject pandoraObject = myTypeAttribute.GetADBBaseObjectType(dbContext.DBTypeManager);
+            ADBBaseObject GraphObject = myTypeAttribute.GetADBBaseObjectType(dbContext.DBTypeManager);
             foreach (DBObjectReadout dbo in myDBObjectReadouts)
             {
                 if (HasAttribute(dbo.Attributes, myTypeAttribute.Name, dbContext))
                 {
-                    pandoraObject.Add(pandoraObject.Clone(GetAttribute(dbo.Attributes, myTypeAttribute.Name, dbContext)));
+                    GraphObject.Add(GraphObject.Clone(GetAttribute(dbo.Attributes, myTypeAttribute.Name, dbContext)));
                 }
             }
-            return new Exceptional<Object>(pandoraObject.Value);
+            return new Exceptional<Object>(GraphObject.Value);
         }
 
         public override Exceptional<Object> Aggregate(IEnumerable<ObjectUUID> myObjectUUIDs, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
@@ -81,7 +88,7 @@ namespace sones.GraphDB.Aggregates
             return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
 
-        public override Exceptional<Object> Aggregate(AListEdgeType myAListEdgeType, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
+        public override Exceptional<Object> Aggregate(IListOrSetEdgeType myAListEdgeType, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
         {
             return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
@@ -119,6 +126,9 @@ namespace sones.GraphDB.Aggregates
 
                 }).Aggregate(oneVal.Clone(), (elem, result) => { result.Add(elem); return result; }).Value);
             }
+
         }
+
     }
+
 }

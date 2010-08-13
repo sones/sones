@@ -208,6 +208,9 @@ namespace sones.GraphDB.ObjectManagement
 
         public override int GetHashCode()
         {
+            if (_attrUUID == null && _typeUUID == null)
+                return 0;
+            
             if (_attrUUID == null)
             {
                 return _typeUUID.GetHashCode();

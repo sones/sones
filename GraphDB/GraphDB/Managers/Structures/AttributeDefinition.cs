@@ -31,13 +31,13 @@ namespace sones.GraphDB.Managers.Structures
 
         public String AttributeName { get; private set; }
         public DBTypeOfAttributeDefinition AttributeType { get; private set; }
-        public AObject DefaultValue { get; private set; }
+        public IObject DefaultValue { get; private set; }
 
         #endregion
 
         #region Ctor
 
-        public AttributeDefinition(DBTypeOfAttributeDefinition attributeType, String attributeName, AObject defaultValue = null)
+        public AttributeDefinition(DBTypeOfAttributeDefinition attributeType, String attributeName, IObject defaultValue = null)
         {
 
             AttributeType = attributeType;
@@ -50,7 +50,7 @@ namespace sones.GraphDB.Managers.Structures
 
         #region CreateTypeAttribute(DBContext dbContext)
 
-        internal Exceptional<TypeAttribute> CreateTypeAttribute(DBContext currentDBContext, List<GraphDBType> newTypes = null)
+        internal Exceptional<TypeAttribute> CreateTypeAttribute(DBContext currentDBContext, List<GraphDBType> newTypes = null, UInt16 walkingNumber = 0)
         {
 
             //is this the right place?? Shouldn't this rather be checked in the usual attribute exist check?
@@ -60,7 +60,7 @@ namespace sones.GraphDB.Managers.Structures
             }
 
             var typeManager = currentDBContext.DBTypeManager;
-            var _TypeAttribute = new TypeAttribute();
+            var _TypeAttribute = new TypeAttribute(Convert.ToUInt16(walkingNumber + DBConstants.DefaultTypeAttributeIDStart));
 
             #region get Attribute Name
 
@@ -122,7 +122,7 @@ namespace sones.GraphDB.Managers.Structures
 
                 if (isReferenceEdge)
                 {
-                    if (_TypeAttribute.EdgeType is ASetReferenceEdgeType)
+                    if (_TypeAttribute.EdgeType is ASetOfReferencesEdgeType)
                     {
                         _TypeAttribute.KindOfType = KindsOfType.SetOfReferences;
                     }
@@ -132,21 +132,21 @@ namespace sones.GraphDB.Managers.Structures
                     }
                     else
                     {
-                        return new Exceptional<TypeAttribute>(new Error_InvalidEdgeType(_TypeAttribute.EdgeType.GetType(), typeof(ASetReferenceEdgeType), typeof(ASingleReferenceEdgeType)));
+                        return new Exceptional<TypeAttribute>(new Error_InvalidEdgeType(_TypeAttribute.EdgeType.GetType(), typeof(ASetOfReferencesEdgeType), typeof(ASingleReferenceEdgeType)));
                     }
                 }
                 else
                 {
-                    if (_TypeAttribute.EdgeType is ASetBaseEdgeType)
+                    if (_TypeAttribute.EdgeType is ASetOfBaseEdgeType)
                     {
                         _TypeAttribute.KindOfType = KindsOfType.SetOfNoneReferences;
                     }
-                    else if (_TypeAttribute.EdgeType is AListBaseEdgeType)
+                    else if (_TypeAttribute.EdgeType is AListOfBaseEdgeType)
                     {
                         _TypeAttribute.KindOfType = KindsOfType.ListOfNoneReferences;
                     }
                     {
-                        return new Exceptional<TypeAttribute>(new Error_InvalidEdgeType(_TypeAttribute.EdgeType.GetType(), typeof(ASetBaseEdgeType), typeof(AListBaseEdgeType)));
+                        return new Exceptional<TypeAttribute>(new Error_InvalidEdgeType(_TypeAttribute.EdgeType.GetType(), typeof(ASetOfBaseEdgeType), typeof(AListOfBaseEdgeType)));
                     }
                 }
 
@@ -219,16 +219,16 @@ namespace sones.GraphDB.Managers.Structures
             //if we have an default value for this attribute, then check for correct value and attribute type
             if (DefaultValue != null)
             {
-                if (DefaultValue is AEdgeType)
+                if (DefaultValue is IEdgeType)
                 {
-                    if (_TypeAttribute.EdgeType.EdgeTypeUUID != (DefaultValue as AEdgeType).EdgeTypeUUID)
+                    if (_TypeAttribute.EdgeType.EdgeTypeUUID != (DefaultValue as IEdgeType).EdgeTypeUUID)
                     {
-                        throw new GraphDBException(new Error_InvalidAttrDefaultValueAssignment(_TypeAttribute.Name, (DefaultValue as AEdgeType).EdgeTypeName, _TypeAttribute.EdgeType.EdgeTypeName));
+                        throw new GraphDBException(new Error_InvalidAttrDefaultValueAssignment(_TypeAttribute.Name, (DefaultValue as IEdgeType).EdgeTypeName, _TypeAttribute.EdgeType.EdgeTypeName));
                     }
                 }
                 else if (DefaultValue is ADBBaseObject)
                 {
-                    var attrVal = GraphDBTypeMapper.GetPandoraObjectFromTypeName(AttributeType.Name);
+                    var attrVal = GraphDBTypeMapper.GetGraphObjectFromTypeName(AttributeType.Name);
 
                     if (!attrVal.IsValidValue(DefaultValue))
                     {

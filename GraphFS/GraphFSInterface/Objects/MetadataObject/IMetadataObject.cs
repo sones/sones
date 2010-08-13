@@ -21,7 +21,7 @@
 /* PandoraFS - IMetadataObject
  * Achim Friedland, 2009
  * 
- * The interface for all pandora metadata objects and virtual
+ * The interface for all Graph metadata objects and virtual
  * directory objects.
  * 
  * Lead programmer:
@@ -46,14 +46,14 @@ namespace sones.GraphFS.Objects
 {
 
     /// <summary>
-    /// The interface for all pandora directory objects and virtual
+    /// The interface for all Graph directory objects and virtual
     /// directory objects.
     /// </summary>
 
     public interface IMetadataObject<TValue>
     {
 
-        #region Members of APandoraHeader
+        #region Members of AGraphHeader
 
         Boolean       isNew                   { get; set; }
         INode         INodeReference          { get; set; }
@@ -62,7 +62,7 @@ namespace sones.GraphFS.Objects
 
         #endregion
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         ObjectLocation  ObjectLocation          { get; set; }
         String          ObjectPath              { get; set; }

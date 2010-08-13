@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – Insert astnode" />
+﻿/* <id name="GraphDB – Insert astnode" />
  * <copyright file="InsertNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -63,7 +63,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Insert
         /// </summary>
         /// <param name="context">CompilerContext of Irony.</param>
         /// <param name="parseNode">The current ParseNode.</param>
-        /// <param name="typeManager">The TypeManager of the PandoraDB.</param>
+        /// <param name="typeManager">The TypeManager of the GraphDB.</param>
         public override void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
         {
 
@@ -95,7 +95,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Insert
         public override QueryResult Execute(IGraphDBSession graphDBSession)
         {
 
-            return graphDBSession.Insert(_TypeName, _AttributeAssignList);
+            var qresult = graphDBSession.Insert(_TypeName, _AttributeAssignList);
+            qresult.AddErrorsAndWarnings(ParsingResult);
+            return qresult;
 
         }
 

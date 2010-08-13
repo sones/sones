@@ -11,7 +11,7 @@ using System.Linq.Expressions;
 using System.Collections;
 using System.Collections.Generic;
 
-using sones.GraphDS.API.CSharp.Reflection;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -24,7 +24,7 @@ namespace sones.GraphDS.API.CSharp.Linq
     // Sadly constraints on T will not work, as the interface
     // IQueryProvider does not define constraints!
     // where T : DBVertex, new()
-            where T : DBObject, new()
+//////////////            where T : DBObject, new()
     {
 
         #region Data
@@ -131,14 +131,13 @@ namespace sones.GraphDS.API.CSharp.Linq
                 return _SelectToObjectGraph.ToVertexType<T>().GetEnumerator();
 
             // The user wants to receive new objects of an anonymous type
-            //if (_Type.Name.StartsWith("<>f__AnonymousType"))
-            //    return _SelectToObjectGraph.ToAnonymousType<T>().GetEnumerator();
+            if (_Type.Name.StartsWith("<>f__AnonymousType"))
+                return _SelectToObjectGraph.ToAnonymousType<T>().GetEnumerator();
 
             // The user wants to receive objects of a base type (e.g. Int32, String)
-            //ToDo: Get myAttributeName somehow from _Expression
-            //return _SelectToObjectGraph.ToDotNetObject<T>("myAttributeName").GetEnumerator();
+            // ToDo: Get myAttributeName somehow from _Expression
+            return _SelectToObjectGraph.ToDotNetObject<T>("Name").GetEnumerator();
 
-            return null;
         }
 
         #endregion

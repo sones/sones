@@ -30,7 +30,7 @@ namespace sones.Lib.BTree
     /// a data item of type T, and a list of neighbors.
     /// </summary>
     /// <typeparam name="T">The type of data contained in the Node.</typeparam>
-    /// <remarks>None of the classes in the sones.Pandora.Storage.BTree namespace use the Node class directly;
+    /// <remarks>None of the classes in the sones.Graph.Storage.BTree namespace use the Node class directly;
     /// they all derive from this class, adding necessary functionality specific to each data structure.</remarks>
 
     

@@ -82,7 +82,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
                         else
                         {
                             var descrTypeRes = GenerateTypeResult(_SettingName, type, myDBContext);
-                            if (descrTypeRes.Failed)
+                            if (descrTypeRes.Failed())
                             {
                                 return new Exceptional<List<SelectionResultSet>>(descrTypeRes);
                             }
@@ -97,7 +97,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
                         #region ATTRIBUTE
 
                         Exceptional validateResult = _SettingAttribute.Validate(myDBContext, false);
-                        if (validateResult.Failed)
+                        if (validateResult.Failed())
                         {
                             return new Exceptional<List<SelectionResultSet>>(validateResult.Errors);
                         }
@@ -110,7 +110,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
                         {
                             outputResult = GenerateAttrResult(_SettingName, _SettingAttribute.LastAttribute, myDBContext);
 
-                            if (outputResult.Failed)
+                            if (outputResult.Failed())
                             {
                                 return new Exceptional<List<SelectionResultSet>>(outputResult);
                             }
@@ -132,7 +132,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
                         {
                             outputResult = GenerateSessionResult(_SettingName, myDBContext);
 
-                            if (outputResult.Failed)
+                            if (outputResult.Failed())
                             {
                                 return new Exceptional<List<SelectionResultSet>>(outputResult);
                             }
@@ -153,7 +153,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
                         else
                         {
                             outputResult = GenerateDBResult(_SettingName, myDBContext);
-                            if (outputResult.Failed)
+                            if (outputResult.Failed())
                             {
                                 return new Exceptional<List<SelectionResultSet>>(outputResult);
                             }
@@ -198,7 +198,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
                     outputResult = GenerateStdResult(_SettingName, myDBContext);
 
-                    if (outputResult.Failed)
+                    if (outputResult.Failed())
                     {
                         return new Exceptional<List<SelectionResultSet>>(outputResult);
                     }
@@ -231,7 +231,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
         {
 
             var settingResult = myDBContext.DBSettingsManager.GetSetting(mySettingName);
-            if (settingResult.Failed)
+            if (settingResult.Failed())
             {
                 return new Exceptional<SelectionResultSet>(settingResult);
             }
@@ -256,7 +256,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
         private Exceptional<SelectionResultSet> GenerateAttrResult(string mySettingName, TypeAttribute myAttribute, DBContext myDBContext)
         {
             var setting = myDBContext.DBSettingsManager.GetSetting(mySettingName, myDBContext, TypesSettingScope.ATTRIBUTE, myAttribute.GetRelatedType(myDBContext.DBTypeManager), myAttribute);
-            if (setting.Failed)
+            if (setting.Failed())
             {
                 return new Exceptional<SelectionResultSet>(setting);
             }
@@ -294,7 +294,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
         private Exceptional<SelectionResultSet> GenerateDBResult(string mySettingName, DBContext myDBContext)
         {
             var setting = myDBContext.DBSettingsManager.GetSetting(mySettingName, myDBContext, TypesSettingScope.DB, includingDefaults: false);
-            if (setting.Failed)
+            if (setting.Failed())
             {
                 return new Exceptional<SelectionResultSet>(setting);
             }
@@ -331,7 +331,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
         private Exceptional<SelectionResultSet> GenerateSessionResult(string mySettingName, DBContext myDBContext)
         {
             var setting = myDBContext.DBSettingsManager.GetSetting(mySettingName, myDBContext, TypesSettingScope.SESSION);
-            if (setting.Failed)
+            if (setting.Failed())
             {
                 return new Exceptional<SelectionResultSet>(setting);
             }
@@ -382,7 +382,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
         {
             var _SettingItemValues = new List<SelectionResultSet>();
             var Setting = myDBContext.DBSettingsManager.GetSetting(mySettingName, myDBContext, TypesSettingScope.TYPE, myType);
-            if (Setting.Failed)
+            if (Setting.Failed())
             {
                 return new Exceptional<SelectionResultSet>(Setting);
             }

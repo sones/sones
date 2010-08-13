@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – ColumnItem node" />
+﻿/* <id name="GraphDB – ColumnItem node" />
  * <copyright file="ColumnItemNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -16,6 +16,7 @@ using sones.GraphDB.Exceptions;
 using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.Structures.Enums;
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.GraphDB.GraphQL.Structure;
 
 #endregion
 
@@ -40,9 +41,10 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
         #region Accessors
 
-        public TypesOfColumnSource TypeOfColumnSource { get { return _TypeOfColumnSource; } }
-        public AExpressionDefinition ColumnSourceValue { get { return _ColumnSourceValue; } }
-        public String AliasId { get { return _AliasId; } }
+        public TypesOfColumnSource TypeOfColumnSource   { get { return _TypeOfColumnSource; } }
+        public AExpressionDefinition ColumnSourceValue  { get { return _ColumnSourceValue; } }
+        public String AliasId                           { get { return _AliasId; } }
+        public String TypeName                          { get; private set; }
 
         #endregion
 
@@ -71,12 +73,24 @@ namespace sones.GraphDB.GraphQL.StructureNodes
                 {
                     SelType = TypesOfSelect.Minus;
                 }
+                else if (parseNode.ChildNodes[0].Token.Text == DBConstants.Comperator_Greater)
+                {
+                    SelType = TypesOfSelect.Gt;
+                }
+                else if (parseNode.ChildNodes[0].Token.Text == DBConstants.Comperator_Smaller)
+                {
+                    SelType = TypesOfSelect.Lt;
+                }
                 else
                 {
                     throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), parseNode.ChildNodes[0].Token.Text));
                 }
             }
-
+            else if (parseNode.ChildNodes[0].AstNode is SelByTypeNode)
+            {
+                SelType = TypesOfSelect.Ad;
+                TypeName = ((SelByTypeNode)parseNode.ChildNodes[0].AstNode).TypeName;
+            }
             else
             {
                 SelType = TypesOfSelect.None;

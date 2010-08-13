@@ -17,32 +17,30 @@
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#region
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.TypeManagement.BasicTypes;
-using sones.Lib.ErrorHandling;
-using sones.GraphDB.TypeManagement;
-
-using sones.GraphDB.Structures;
-using sones.GraphDB.Structures.EdgeTypes;
-using sones.GraphDB.ObjectManagement;
-
 using sones.GraphDB.Errors;
-using sones.Lib.DataStructures.UUID;
-using sones.GraphFS.DataStructures;
-using sones.GraphFS.Session;
-using sones.GraphDB.Structures.Result;
-using sones.Lib.Session;
 using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.Structures.EdgeTypes;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphFS.DataStructures;
+using sones.Lib.ErrorHandling;
+
+#endregion
 
 namespace sones.GraphDB.Functions
 {
+
+    /// <summary>
+    /// This will count the elements of an edge and return them as UInt64 value.
+    /// </summary>
     public class CountFunc : ABaseFunction
     {
+
         public override string FunctionName
         {
             get { return "COUNT"; }
@@ -61,11 +59,11 @@ namespace sones.GraphDB.Functions
         {
         }
 
-        public override bool ValidateWorkingBase(TypeAttribute workingBase, DBTypeManager typeManager)
+        public override bool ValidateWorkingBase(IObject workingBase, DBTypeManager typeManager)
         {
             if (workingBase != null)
             {
-                if (workingBase.EdgeType is AListEdgeType)
+                if ((workingBase is DBTypeAttribute) && (workingBase as DBTypeAttribute).GetValue().EdgeType is IEdgeType)
                 {
                     return true;
                 }
@@ -84,9 +82,9 @@ namespace sones.GraphDB.Functions
         {
             var pResult = new Exceptional<FuncParameter>();
 
-            if (CallingObject is AListEdgeType)
+            if (CallingObject is IListOrSetEdgeType)
             {
-                pResult.Value = new FuncParameter(new DBUInt64(((AListEdgeType)CallingObject).Count()));
+                pResult.Value = new FuncParameter(new DBUInt64(((IListOrSetEdgeType)CallingObject).Count()));
             }
             else if (CallingObject is ASingleReferenceEdgeType)
             {
@@ -98,11 +96,12 @@ namespace sones.GraphDB.Functions
             }
             else
             {
-                return pResult.PushT(new Error_FunctionParameterTypeMismatch(typeof(AListEdgeType), CallingObject.GetType()));
+                return pResult.PushT(new Error_FunctionParameterTypeMismatch(typeof(IEdgeType), CallingObject.GetType()));
             }
 
             return pResult;
         }
 
     }
+
 }

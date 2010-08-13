@@ -53,7 +53,7 @@ namespace sones.GraphDB.Managers.Select
             List<SelectionResultSet> selectionListResults = new List<SelectionResultSet>();
             List<String> alreadyUsedTypes = new List<string>();
 
-            //PandoraResult pResult = validateSelect();
+            //GraphResult pResult = validateSelect();
 
             #endregion
 
@@ -63,6 +63,7 @@ namespace sones.GraphDB.Managers.Select
             foreach (var type in myTypeList)
             {
                 var t = myDBContext.DBTypeManager.GetTypeByName(type.TypeName);
+
                 if (t == null)
                 {
                     return new QueryResult(new Error_TypeDoesNotExist(type.TypeName));
@@ -73,7 +74,8 @@ namespace sones.GraphDB.Managers.Select
             #endregion
 
             var createSelectResultManagerResult = CreateResultManager(myDBContext, mySelectedElements, typeList, myGroupBy, myHaving);
-            if (createSelectResultManagerResult.Failed)
+
+            if (createSelectResultManagerResult.Failed())
             {
                 return new QueryResult(createSelectResultManagerResult);
             }
@@ -82,13 +84,16 @@ namespace sones.GraphDB.Managers.Select
             #region Get an expressiongraph if a whereExpression exists
 
             IExpressionGraph exprGraph;
+
             if (myWhereExpressionDefinition != null)
             {
                 var tempExprGraph = GetExpressionGraphFromWhere(myDBContext, myWhereExpressionDefinition);
-                if (tempExprGraph.Failed)
+
+                if (tempExprGraph.Failed())
                 {
                     return new QueryResult(tempExprGraph);
                 }
+
                 exprGraph = tempExprGraph.Value;
                 selectResultManager.ExpressionGraph = exprGraph;
             }
@@ -112,7 +117,8 @@ namespace sones.GraphDB.Managers.Select
                 #region Check and initialize groupings & aggregates
 
                 var initGroupingOrAggregateResult = selectResultManager.InitGroupingOrAggregate(typeRef.Key, typeRef.Value);
-                if (initGroupingOrAggregateResult.Failed)
+
+                if (initGroupingOrAggregateResult.Failed())
                     return new QueryResult(initGroupingOrAggregateResult.Errors);
 
                 #endregion
@@ -127,7 +133,7 @@ namespace sones.GraphDB.Managers.Select
 
                 var result = selectResultManager.Examine(myResolutionDepth, typeRef.Key, typeRef.Value, isInterestingWhere, myDBContext.DBObjectCache, myDBContext.SessionSettings, ref dbObjectReadouts);
 
-                if (result.Failed)
+                if (result.Failed())
                     return new QueryResult(result);
 
                 #endregion
@@ -159,7 +165,7 @@ namespace sones.GraphDB.Managers.Select
                         if (attrDef.IDChainDefinition != null)
                         {
                             var validateResult = attrDef.IDChainDefinition.Validate(myDBContext, true);
-                            if (validateResult.Failed)
+                            if (validateResult.Failed())
                             {
                                 return new QueryResult(validateResult);
                             }
@@ -249,8 +255,8 @@ namespace sones.GraphDB.Managers.Select
 
                 #endregion
 
-                var selectionResult = new SelectionResultSet(typeRef.Value, dbObjectReadouts, selectResultManager.GetSelectedAttributesList());
-                selectionListResults.Add(selectionResult);
+                var selectionResult = new SelectionResultSet(typeRef.Value, dbObjectReadouts, selectResultManager.GetSelectedAttributesList());                
+                selectionListResults.Add(selectionResult);                
 
                 #endregion
             }
@@ -291,10 +297,10 @@ namespace sones.GraphDB.Managers.Select
 
                     var idChainSelection = (selection.Key as IDChainDefinition);
 
-                    Exceptional validateException = idChainSelection.Validate(dbContext, false);
+                    Exceptional validateException = idChainSelection.Validate(dbContext, true);
 
                     exceptional.Push(validateException);
-                    if (exceptional.Failed)
+                    if (exceptional.Failed())
                     {
                         return new Exceptional<SelectResultManager>(exceptional);
                     }
@@ -302,12 +308,27 @@ namespace sones.GraphDB.Managers.Select
                     if (idChainSelection.SelectType != TypesOfSelect.None)
                     {
 
-                        #region Asterisk, Minus, Rhomb
+                        #region Asterisk, Minus, Rhomb, Ad
 
                         //there's no limitation
                         foreach (var typeRef in _TypeList)
                         {
-                            _SelectResultManager.AddSelectionType(typeRef.Key, typeRef.Value, idChainSelection.SelectType);
+                            if (idChainSelection.TypeName != null)
+                            {
+                                var type = dbContext.DBTypeManager.GetTypeByName(idChainSelection.TypeName);
+
+                                if (type == null)
+                                {
+                                    return new Exceptional<SelectResultManager>(new Error_TypeDoesNotExist(idChainSelection.TypeName));    
+                                }
+                                
+                                TypeUUID typeID = type.UUID;
+                                _SelectResultManager.AddSelectionType(typeRef.Key, typeRef.Value, idChainSelection.SelectType, typeID);
+                            }
+                            else
+                            {
+                                _SelectResultManager.AddSelectionType(typeRef.Key, typeRef.Value, idChainSelection.SelectType);
+                            }
                         }
 
                         #endregion
@@ -344,24 +365,24 @@ namespace sones.GraphDB.Managers.Select
                             theType = _TypeList[reference];
                         }
 
-                        if (idChainSelection.LastAttribute != null)
-                        {
-                            exceptional.Push(_SelectResultManager.AddElementToSelection(selection.Value, reference, idChainSelection, false));
-                        }
-                        else if (idChainSelection.SelectType != TypesOfSelect.None)
+                        if (idChainSelection.SelectType != TypesOfSelect.None)
                         {
                             exceptional.Push(_SelectResultManager.AddSelectionType(reference, theType, idChainSelection.SelectType));
                         }
                         else
                         {
-                            return new Exceptional<SelectResultManager>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                            exceptional.Push(_SelectResultManager.AddElementToSelection(selection.Value, reference, idChainSelection, false));
                         }
+                        //else
+                        //{
+                        //    return new Exceptional<SelectResultManager>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                        //}
                     }
                     #endregion
 
                     #endregion
 
-                    if (exceptional.Failed)
+                    if (exceptional.Failed())
                     {
                         return new Exceptional<SelectResultManager>(exceptional);
                     }
@@ -375,7 +396,7 @@ namespace sones.GraphDB.Managers.Select
                     var aggregateSelection = selection.Key as AggregateDefinition;
 
                     var validateResult = aggregateSelection.ChainPartAggregateDefinition.Validate(dbContext);
-                    if (validateResult.Failed)
+                    if (validateResult.Failed())
                     {
                         return new Exceptional<SelectResultManager>(validateResult);
                     }
@@ -385,7 +406,7 @@ namespace sones.GraphDB.Managers.Select
                         aggregateSelection.ChainPartAggregateDefinition.Parameter, aggregateSelection);
 
                     validateResult = _SelectResultManager.AddAggregateElementToSelection(selection.Value, aggregateSelection.ChainPartAggregateDefinition.Parameter.Reference.Item1, selPartAggr);
-                    if (validateResult.Failed)
+                    if (validateResult.Failed())
                     {
                         return new Exceptional<SelectResultManager>(validateResult);
                     }
@@ -404,14 +425,17 @@ namespace sones.GraphDB.Managers.Select
 
             #region Add groupings
 
-            foreach (var group in _GroupBy)
+            if (_GroupBy.IsNotNullOrEmpty())
             {
-                var validateResult = group.Validate(dbContext, true);
-                if (validateResult.Failed)
+                foreach (var group in _GroupBy)
                 {
-                    return new Exceptional<SelectResultManager>(validateResult);
+                    var validateResult = group.Validate(dbContext, true);
+                    if (validateResult.Failed())
+                    {
+                        return new Exceptional<SelectResultManager>(validateResult);
+                    }
+                    _SelectResultManager.AddGroupElementToSelection(group.Reference.Item1, group);
                 }
-                _SelectResultManager.AddGroupElementToSelection(group.Reference.Item1, group);
             }
 
             #endregion
@@ -421,7 +445,7 @@ namespace sones.GraphDB.Managers.Select
             if (_Having != null)
             {
                 var validateResult = _Having.Validate(dbContext);
-                if (validateResult.Failed)
+                if (validateResult.Failed())
                 {
                     return new Exceptional<SelectResultManager>(validateResult);
                 }
@@ -512,7 +536,7 @@ namespace sones.GraphDB.Managers.Select
             #region exec expr
 
             var validateResult = optimizedExpr.Validate(dbContext);
-            if (validateResult.Failed)
+            if (validateResult.Failed())
             {
                 return new Exceptional<IExpressionGraph>(validateResult);
             }
@@ -522,7 +546,7 @@ namespace sones.GraphDB.Managers.Select
 
             #region evaluate result
 
-            if (calculonResult.Failed)
+            if (calculonResult.Failed())
             {
                 return new Exceptional<IExpressionGraph>(calculonResult);
             }

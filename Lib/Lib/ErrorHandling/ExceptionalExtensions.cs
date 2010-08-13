@@ -36,12 +36,43 @@ namespace sones.Lib.ErrorHandling
     public static class ExceptionalExtensions
     {
 
+
+        #region Succeess
+
+        /// <summary>
+        /// Is true, if there were no errors and warnings
+        /// </summary>
+        public static Boolean Success(this Exceptional myExceptional)
+        {
+            return !myExceptional.Failed() && (myExceptional.Warnings.Count() == 0);
+        }
+
+        #endregion
+
+        #region Failed
+
+        /// <summary>
+        /// Is true, if there were at least one error
+        /// </summary>
+        public static Boolean Failed(this Exceptional myExceptional)
+        {
+
+            if (myExceptional == null || myExceptional.Errors.Any())
+                return true;
+
+            return false;
+
+        }
+
+        #endregion
+
+
         #region When failed...
 
         public static Exceptional WhenFailed(this Exceptional myExceptional, Func<Exceptional, Exceptional> myFunc)
         {
 
-            if (myExceptional == null || myExceptional.Failed)
+            if (myExceptional.Failed())
                 if (myFunc != null)
                     return myFunc(myExceptional);
 
@@ -52,7 +83,7 @@ namespace sones.Lib.ErrorHandling
         public static Exceptional<T> WhenFailed<T>(this Exceptional<T> myExceptional, Func<Exceptional<T>, Exceptional<T>> myFunc)
         {
 
-            if (myExceptional == null || myExceptional.Failed || myExceptional.Value == null)
+            if (myExceptional.Failed() || myExceptional.Value == null)
                 if (myFunc != null)
                     return myFunc(myExceptional);
 
@@ -63,7 +94,7 @@ namespace sones.Lib.ErrorHandling
         public static Exceptional FailedAction(this Exceptional myExceptional, Action<Exceptional> myAction)
         {
 
-            if (myExceptional == null || myExceptional.Failed)
+            if (myExceptional.Failed())
                 if (myAction != null)
                     myAction(myExceptional);
 
@@ -74,7 +105,7 @@ namespace sones.Lib.ErrorHandling
         public static Exceptional<T> FailedAction<T>(this Exceptional<T> myExceptional, Action<Exceptional<T>> myAction)
         {
 
-            if (myExceptional == null || myExceptional.Failed || myExceptional.Value == null)
+            if (myExceptional.Failed() || myExceptional.Value == null)
                 if (myAction != null)
                     myAction(myExceptional);
 
@@ -89,7 +120,7 @@ namespace sones.Lib.ErrorHandling
         public static Exceptional WhenSucceded(this Exceptional myExceptional, Func<Exceptional, Exceptional> myFunc)
         {
 
-            if (myExceptional != null && myExceptional.Success)
+            if (myExceptional.Success())
                 if (myFunc != null)
                     return myFunc(myExceptional);
 
@@ -100,7 +131,7 @@ namespace sones.Lib.ErrorHandling
         public static Exceptional<T> WhenSucceded<T>(this Exceptional<T> myExceptional, Func<Exceptional<T>, Exceptional<T>> myFunc)
         {
 
-            if (myExceptional != null && myExceptional.Success && myExceptional.Value != null)
+            if (myExceptional.Success() && myExceptional.Value != null)
                 if (myFunc != null)
                     return myFunc(myExceptional);
 
@@ -111,7 +142,7 @@ namespace sones.Lib.ErrorHandling
         public static Exceptional SuccessAction(this Exceptional myExceptional, Action<Exceptional> myAction)
         {
 
-            if (myExceptional != null && myExceptional.Success)
+            if (myExceptional.Success())
                 if (myAction != null)
                     myAction(myExceptional);
 
@@ -122,7 +153,7 @@ namespace sones.Lib.ErrorHandling
         public static Exceptional<T> SuccessAction<T>(this Exceptional<T> myExceptional, Action<Exceptional<T>> myAction)
         {
 
-            if (myExceptional != null && myExceptional.Success && myExceptional.Value != null)
+            if (myExceptional.Success() && myExceptional.Value != null)
                 if (myAction != null)
                     myAction(myExceptional);
 
@@ -155,7 +186,7 @@ namespace sones.Lib.ErrorHandling
                 var _Exceptional = new Exceptional<TOut>(myExceptional);
 
                 // If Success => Generate new Exceptional.Value!
-                if (myExceptional != null && !myExceptional.Failed && myExceptional.Value != null)
+                if (myExceptional.Success() && myExceptional.Value != null)
                     _Exceptional.Value = myFunc(myExceptional.Value);
 
                 return _Exceptional;
@@ -173,7 +204,7 @@ namespace sones.Lib.ErrorHandling
         {
 
             // If Success => return value!
-            if (myExceptional != null && myExceptional.Success && myExceptional.Value != null)
+            if (myExceptional.Success() && myExceptional.Value != null)
                 return myExceptional.Value;
 
             return default(T);
@@ -203,7 +234,7 @@ namespace sones.Lib.ErrorHandling
         {
 
             // If Success => return value!
-            if (myExceptional != null && myExceptional.Success && myExceptional.Value != null)
+            if (myExceptional.Success() && myExceptional.Value != null)
                 return myExceptional.Value;
 
             return valueIfFailed;
@@ -214,7 +245,7 @@ namespace sones.Lib.ErrorHandling
         {
 
             // If Success => Transform value!
-            if (myExceptional != null && myExceptional.Success && myExceptional.Value != null)
+            if (myExceptional.Success() && myExceptional.Value != null)
                 return myFunc(myExceptional.Value);
 
             return default(TOut);

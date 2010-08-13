@@ -59,31 +59,40 @@ namespace sones.Lib.FastSerializer
                         Type[] allTypes = Assembly.LoadFrom(file.FullName).GetTypes();
                         foreach (Type type in allTypes)
                         {
-                            if (type.IsAbstract)
-                                continue;
 
-                            if (type.IsInterface)
-                                continue;
-
-                            // Not a *_Accessor class created from the tests
-                            // maybe we can get here a problem with derived types
-                            if (type.BaseType.Name == "BaseShadow")
-                                continue;
-
-                            if (typeof(IFastSerializationTypeSurrogate).IsAssignableFrom(type))
+                            try
                             {
-                                IFastSerializationTypeSurrogate SurrogateType = (IFastSerializationTypeSurrogate)Activator.CreateInstance(type);
+                                if (type.IsAbstract)
+                                    continue;
 
-                                var existingType = SerializationWriter.findSurrogateForType(SurrogateType.TypeCode);
-                                if (existingType != null && existingType.GetType() != type)
+                                if (type.IsInterface)
+                                    continue;
+
+                                // Not a *_Accessor class created from the tests
+                                // maybe we can get here a problem with derived types
+                                if (type.Module.ScopeName == "GraphDB_Accessor")
+                                    continue;
+
+                                if (typeof(IFastSerializationTypeSurrogate).IsAssignableFrom(type))
                                 {
-                                    throw new sones.Lib.Exceptions.FastSerializeSurrogateTypeCodeExistException(
-                                        "Could not add [" + type.Name + "] SurrogateForType already exists with typeCode " + SurrogateType.TypeCode
-                                        + "[" + SerializationWriter.findSurrogateForType(SurrogateType.TypeCode).GetType().Name + "]");
-                                }
+                                    IFastSerializationTypeSurrogate SurrogateType = (IFastSerializationTypeSurrogate)Activator.CreateInstance(type);
 
-                                SerializationWriter.AddSurrogateType(SurrogateType);
+                                    var existingType = SerializationWriter.findSurrogateForType(SurrogateType.TypeCode);
+                                    if (existingType != null && existingType.GetType() != type)
+                                    {
+                                        throw new sones.Lib.Exceptions.FastSerializeSurrogateTypeCodeExistException(
+                                            "Could not add [" + type.Name + "] SurrogateForType already exists with typeCode " + SurrogateType.TypeCode
+                                            + "[" + SerializationWriter.findSurrogateForType(SurrogateType.TypeCode).GetType().Name + "]");
+                                    }
+
+                                    SerializationWriter.AddSurrogateType(SurrogateType);
+                                }
                             }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine(file.Name + " failed for type [" + type + "]: " + ex.Message);
+                            }
+
                         }
                     }
                     catch (sones.Lib.Exceptions.FastSerializeSurrogateTypeCodeExistException fsstcee)

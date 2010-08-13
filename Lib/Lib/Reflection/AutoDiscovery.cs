@@ -128,6 +128,10 @@ namespace sones.Lib.Reflection
             lock (this)
             {
 
+
+                Assembly _Assembly = null;
+                Type[] _AllTypes = null;
+
                 if (myClear)
                     _DictionaryT.Clear();
 
@@ -148,7 +152,8 @@ namespace sones.Lib.Reflection
                             try
                             {
 
-                                var _AllTypes = Assembly.LoadFrom(_FileInfo.FullName).GetTypes();
+                                _Assembly = Assembly.LoadFrom(_FileInfo.FullName);
+                                _AllTypes = _Assembly.GetTypes();
 
                                 foreach (var _ActualType in _AllTypes)
                                 {
@@ -185,7 +190,7 @@ namespace sones.Lib.Reflection
                             }
                             catch (Exception e)
                             {
-                                Debug.WriteLine("Autodiscovering " + typeof(T).Name + "s failed! " + e);
+                                Debug.WriteLine("Autodiscovering " + typeof(T).Name + "s within file '" + _FileInfo.FullName + "' failed!" + Environment.NewLine + e);
                             }
 
                         }

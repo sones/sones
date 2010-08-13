@@ -43,7 +43,7 @@ using info = sones.Lib.Information;
 namespace sones.Lib.XML
 {
 
-    public class PandoraXMLValidation
+    public class GraphXMLValidation
     {
 
         #region AddValidationInformation(myValidationType, myEmbeddedXML ...)
@@ -64,10 +64,10 @@ namespace sones.Lib.XML
             if (myValidationType == XMLValidationTypes.DTD)
             {
 
-                _XMLString.AppendLine("<!DOCTYPE Pandora [");
+                _XMLString.AppendLine("<!DOCTYPE Graph [");
 
-                _XMLString.AppendLine("<!ELEMENT Pandora                 (INode|ObjectLocator)+>");
-                _XMLString.AppendLine("<!ATTLIST Pandora");
+                _XMLString.AppendLine("<!ELEMENT Graph                 (INode|ObjectLocator)+>");
+                _XMLString.AppendLine("<!ATTLIST Graph");
                 _XMLString.AppendLine("VersionString                     CDATA #REQUIRED");
                 _XMLString.AppendLine("VersionMajor                      CDATA #REQUIRED");
                 _XMLString.AppendLine("VersionMinor                      CDATA #REQUIRED");
@@ -178,7 +178,7 @@ namespace sones.Lib.XML
             #region DTD_URL
 
             else if (myValidationType == XMLValidationTypes.DTD_URL)
-                _XMLString.AppendLine("<!DOCTYPE spec SYSTEM \"http://www.sones.de/pandora/XML/DTD/PandoraXML.dtd\">");
+                _XMLString.AppendLine("<!DOCTYPE spec SYSTEM \"http://www.sones.de/Graph/XML/DTD/GraphXML.dtd\">");
 
             #endregion
 
@@ -199,14 +199,14 @@ namespace sones.Lib.XML
             #endregion
 
 
-            #region Print <Pandora ...> ... </Pandora>
+            #region Print <Graph ...> ... </Graph>
 
-            _XMLString.AppendFormat("<Pandora VersionString=\"{0}\" VersionMajor=\"{1}\" VersionMinor=\"{2}\" BuildNumber=\"{3}\">", info.Version.VersionString, info.Version.VersionMajor, info.Version.VersionMinor, info.Version.BuildNumber); _XMLString.AppendLine();
+            _XMLString.AppendFormat("<Graph VersionString=\"{0}\" VersionMajor=\"{1}\" VersionMinor=\"{2}\" BuildNumber=\"{3}\">", info.Version.VersionString, info.Version.VersionMajor, info.Version.VersionMinor, info.Version.BuildNumber); _XMLString.AppendLine();
 
             foreach (var _XElement in myXElements)
                 _XMLString.Append(_XElement.ToString());
 
-            _XMLString.AppendLine("</Pandora>");
+            _XMLString.AppendLine("</Graph>");
             _XMLString.AppendLine("");
 
             #endregion

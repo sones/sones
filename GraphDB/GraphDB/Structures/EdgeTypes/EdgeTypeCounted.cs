@@ -28,7 +28,6 @@ using sones.GraphDB.Structures.Result;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
-using sones.Lib;
 using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
 
@@ -36,7 +35,7 @@ using sones.Lib.NewFastSerializer;
 namespace sones.GraphDB.Structures.EdgeTypes
 {
     
-    public class EdgeTypeCounted : ASingleReferenceEdgeType
+    public class EdgeTypeCounted : ASingleReferenceWithInfoEdgeType
     {
 
         private Reference _Reference;
@@ -70,7 +69,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 throw new GraphDBException(new Error_EdgeParameterCountMismatch(EdgeTypeName, 0, 1));
 
             // The first parameter has to be the type
-            if (myParams[0].Type != ParamType.PandoraType)
+            if (myParams[0].Type != ParamType.GraphType)
             {
                 throw new GraphDBException(new Error_DataTypeDoesNotMatch(myParams[0].Type.ToString(), "BaseType like 'Integer', 'Double, etc"));
             }
@@ -105,7 +104,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         }
 
-        public override AEdgeType GetNewInstance()
+        public override IEdgeType GetNewInstance()
         {
             var edgeTypeCounted = new EdgeTypeCounted();
             if (_Count != null)
@@ -115,7 +114,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return edgeTypeCounted;
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
+        public override IReferenceEdge GetNewInstance(IEnumerable<Exceptional<DBObjectStream>> iEnumerable)
         {
             var edgeTypeCounted = new EdgeTypeCounted();
             if (_Count != null)
@@ -125,7 +124,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return edgeTypeCounted;
         }
 
-        public override AEdgeType GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeOfDBObjects)
+        public override IReferenceEdge GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeOfDBObjects)
         {
             var edgeTypeCounted = new EdgeTypeCounted();
             if (_Count != null)
@@ -159,14 +158,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
         {
             return _Reference.ObjectUUID;
         }
-
-        public override IEnumerable<ObjectUUID> GetAllReferenceIDs()
-        {
-            yield return _Reference.ObjectUUID;
-
-            yield break;
-        }
-
+        
         public override IEnumerable<Reference> GetAllReferences()
         {
             yield return _Reference;
@@ -210,21 +202,6 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return false;
         }
 
-        public override bool RemoveUUID(IEnumerable<ObjectUUID> myObjectUUIDs)
-        {
-            if (!myObjectUUIDs.IsNullOrEmpty())
-            {
-                if (myObjectUUIDs.Contains(_Reference.ObjectUUID))
-                {
-                    _Reference = null;
-                    return true;
-                }
-
-                return false;
-            }
-
-            return false;
-        }
 
         public override void Merge(ASingleReferenceEdgeType mySingleEdgeType)
         {
@@ -243,9 +220,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// Get all uuids and their edge infos
         /// </summary>
         /// <returns></returns>
-        public override IEnumerable<Tuple<ObjectUUID, ADBBaseObject>> GetAllReferenceIDsWeighted()
+        public override Tuple<ObjectUUID, ADBBaseObject> GetReferenceIDWeighted()
         {
-            yield return new Tuple<ObjectUUID, ADBBaseObject>(_Reference.ObjectUUID, _Count);
+            return new Tuple<ObjectUUID, ADBBaseObject>(_Reference.ObjectUUID, _Count);
         }
 
         #endregion
@@ -350,11 +327,11 @@ namespace sones.GraphDB.Structures.EdgeTypes
             yield break;
         }
 
-        public override IEnumerable<Tuple<Exceptional<DBObjectStream>, ADBBaseObject>> GetAllEdgeDestinationsWeighted(DBObjectCache dbObjectCache)
+        public override Tuple<Exceptional<DBObjectStream>, ADBBaseObject> GetEdgeDestinationWeighted(DBObjectCache dbObjectCache)
         {
-            yield return new Tuple<Exceptional<DBObjectStream>, ADBBaseObject>(_Reference.GetDBObjectStream(dbObjectCache), _Count);
-
-            yield break;
+            return new Tuple<Exceptional<DBObjectStream>, ADBBaseObject>(_Reference.GetDBObjectStream(dbObjectCache), _Count);
         }
+
+
     }
 }

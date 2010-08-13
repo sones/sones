@@ -58,7 +58,7 @@ namespace sones.GraphFS.Objects
 
         UInt64          EstimatedSize               { get; set; }
         UInt64          ReservedSize                { get; set; }
-        Byte[]          SerializedAPandoraStructure { get; set; }
+        Byte[]          SerializedAGraphStructure { get; set; }
 
         SessionToken    SessionToken                { get; set; }
 

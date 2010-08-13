@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – ADBBaseObject" />
+﻿/* <id name="GraphDB – ADBBaseObject" />
  * <copyright file="ADBBaseObject.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -28,18 +28,18 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
     }
 
 //    [Serializable]
-    public abstract class ADBBaseObject : AObject, IComparable, IFastSerialize, IFastSerializationTypeSurrogate
+    public abstract class ADBBaseObject : IObject, IComparable, IFastSerialize, IFastSerializationTypeSurrogate
     {
 
-        public abstract ADBBaseObject Add(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB);
-        public abstract ADBBaseObject Sub(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB);
-        public abstract ADBBaseObject Mul(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB);
-        public abstract ADBBaseObject Div(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB);
+        public abstract ADBBaseObject Add(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB);
+        public abstract ADBBaseObject Sub(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB);
+        public abstract ADBBaseObject Mul(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB);
+        public abstract ADBBaseObject Div(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB);
 
-        public abstract void Add(ADBBaseObject myPandoraObject);
-        public abstract void Sub(ADBBaseObject myPandoraObject);
-        public abstract void Mul(ADBBaseObject myPandoraObject);
-        public abstract void Div(ADBBaseObject myPandoraObject);
+        public abstract void Add(ADBBaseObject myGraphObject);
+        public abstract void Sub(ADBBaseObject myGraphObject);
+        public abstract void Mul(ADBBaseObject myGraphObject);
+        public abstract void Div(ADBBaseObject myGraphObject);
 
         #region IComparable Members
 
@@ -97,5 +97,42 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
                 return Value.Equals(obj);
 
         }
+        #region IFastSerialize Members
+
+        public bool isDirty
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public DateTime ModificationTime
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public abstract void Serialize(ref SerializationWriter mySerializationWriter);
+
+        public abstract void Deserialize(ref SerializationReader mySerializationReader);
+
+        #endregion
+
+        #region IFastSerializationTypeSurrogate Members
+
+        public abstract bool SupportsType(Type type);
+
+        public abstract void Serialize(SerializationWriter writer, object value);
+
+        public abstract object Deserialize(SerializationReader reader, Type type);
+
+        public abstract UInt32 TypeCode { get; }
+
+        #endregion
+
     }
 }

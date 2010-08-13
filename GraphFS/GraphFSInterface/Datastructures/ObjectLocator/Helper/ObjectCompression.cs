@@ -70,7 +70,7 @@ namespace sones.GraphFS.DataStructures
 
         #region IDirectoryListing Members
 
-        #region Members of APandoraStructure
+        #region Members of AGraphStructure
 
         #region isNew
 
@@ -166,7 +166,7 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         #region ObjectPath
 
@@ -272,21 +272,21 @@ namespace sones.GraphFS.DataStructures
         #endregion
 
 
-        #region IPandoraFSReference
+        #region IGraphFSReference
 
-        private IGraphFS _IPandoraFSReference;
+        private IGraphFS _IGraphFSReference;
 
         public IGraphFS IGraphFSReference
         {
 
             get
             {
-                return _IPandoraFSReference;
+                return _IGraphFSReference;
             }
 
             set
             {
-                _IPandoraFSReference = value;
+                _IGraphFSReference = value;
             }
 
         }

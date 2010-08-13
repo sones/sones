@@ -63,9 +63,9 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
             UUID = AttributeUUID;
         }
 
-        public override Exceptional<AObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
+        public override Exceptional<IObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
         {
-            return new Exceptional<AObject>(new DBString(dbObjectStream.ObjectRevisionID.ToString()));
+            return new Exceptional<IObject>(new DBString(dbObjectStream.ObjectRevisionID.ToString()));
         }
 
         public override Exceptional ApplyTo(DBObjectStream myNewDBObject, object myValue, params object[] myOptionalParameters)

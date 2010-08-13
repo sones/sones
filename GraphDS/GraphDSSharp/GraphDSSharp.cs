@@ -26,34 +26,32 @@
 
 using System;
 using System.IO;
-using System.Net;
 using System.Linq;
+using System.Net;
+using System.Reflection;
 using System.Diagnostics;
 using System.Collections.Generic;
-using System.Reflection;
-
-using sones.GraphFS;
-using sones.GraphFS.Caches;
-using sones.GraphFS.Session;
-using sones.GraphFS.Exceptions;
-using sones.GraphFS.Transactions;
-using sones.GraphFS.DataStructures;
 
 using sones.GraphDB;
 using sones.GraphDB.Errors;
-using sones.GraphDB.Transactions;
+using sones.GraphDB.GraphQL;
+using sones.GraphDB.NewAPI;
 using sones.GraphDB.Structures.Result;
+using sones.GraphDB.Transactions;
 
-using sones.GraphDS.API.CSharp.Reflection;
+using sones.GraphFS;
+using sones.GraphFS.Caches;
+using sones.GraphFS.DataStructures;
+using sones.GraphFS.Events;
+using sones.GraphFS.Exceptions;
+using sones.GraphFS.Session;
+using sones.GraphFS.Transactions;
 
 using sones.Lib;
-using sones.Lib.DataStructures.UUID;
 using sones.Lib.ErrorHandling;
+using sones.Lib.DataStructures.UUID;
 
 using sones.Notifications;
-using System.Xml.Linq;
-using sones.GraphDB.GraphQL;
-using sones.GraphFS.Events;
 
 #endregion
 
@@ -65,7 +63,6 @@ namespace sones.GraphDS.API.CSharp
 
         public delegate void ShutdownEventHandler(Object Sender, EventArgs e);
 
-
         #region Data
 
         protected IGraphFS                  _IGraphFS           = null;
@@ -73,7 +70,6 @@ namespace sones.GraphDS.API.CSharp
         private   String                    _RestURL            = null;
 
         public event ShutdownEventHandler ShutdownEvent;
-
 
         #endregion
 
@@ -132,32 +128,20 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
-        #region GQLQuery
-
         protected GraphQLQuery _GQLQuery;
-        
-        #endregion
-
-        #region IGraphFSSession
-
         public IGraphFSSession IGraphFSSession { get; private set; }
-
-        #endregion
-
-        #region IGraphDBSession
-
         public IGraphDBSession IGraphDBSession { get; private set; }
-
-        #endregion
 
         #endregion
 
         #region Events
 
+        #region AFSObject handling
+
         #region OnLoad
 
         /// <summary>
-        /// An event to be notified whenever a AFSObject is
+        /// An event to be notified whenever an AFSObject is
         /// ready to be loaded.
         /// </summary>
         public event GraphFSEventHandlers.OnLoadEventHandler OnLoad
@@ -186,7 +170,7 @@ namespace sones.GraphDS.API.CSharp
         #region OnLoaded
 
         /// <summary>
-        /// An event to be notified whenever a AFSObject
+        /// An event to be notified whenever an AFSObject
         /// was successfully loaded.
         /// </summary>
         public event GraphFSEventHandlers.OnLoadedEventHandler OnLoaded
@@ -212,10 +196,40 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
+        #region OnLoadedAsync
+
+        /// <summary>
+        /// An event to be notified asynchronously whenever an
+        /// AFSObject was successfully loaded.
+        /// </summary>
+        public event GraphFSEventHandlers.OnLoadedAsyncEventHandler OnLoadedAsync
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnLoadedAsync += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnLoadedAsync -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+
         #region OnSave
 
         /// <summary>
-        /// An event to be notified whenever a AFSObject
+        /// An event to be notified whenever an AFSObject
         /// is ready to be saved.
         /// </summary>
         public event GraphFSEventHandlers.OnSaveEventHandler OnSave
@@ -244,7 +258,7 @@ namespace sones.GraphDS.API.CSharp
         #region OnSaved
 
         /// <summary>
-        /// An event to be notified whenever a AFSObject
+        /// An event to be notified whenever an AFSObject
         /// was successfully saved on disc.
         /// </summary>
         public event GraphFSEventHandlers.OnSavedEventHandler OnSaved
@@ -270,10 +284,40 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
+        #region OnSavedAsync
+
+        /// <summary>
+        /// An event to be notified asynchronously whenever an
+        /// AFSObject was successfully saved on disc.
+        /// </summary>
+        public event GraphFSEventHandlers.OnSavedAsyncEventHandler OnSavedAsync
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnSavedAsync += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnSavedAsync -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+
         #region OnRemove
 
         /// <summary>
-        /// An event to be notified whenever a AFSObject
+        /// An event to be notified whenever an AFSObject
         /// is ready to be removed.
         /// </summary>
         public event GraphFSEventHandlers.OnRemoveEventHandler OnRemove
@@ -299,10 +343,10 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
-        #region OnSaved
+        #region OnRemoved
 
         /// <summary>
-        /// An event to be notified whenever a AFSObject
+        /// An event to be notified whenever an AFSObject
         /// was successfully removed.
         /// </summary>
         public event GraphFSEventHandlers.OnRemovedEventHandler OnRemoved
@@ -328,14 +372,312 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
+        #region OnRemovedAsync
+
+        /// <summary>
+        /// An event to be notified asynchronously whenever an
+        /// AFSObject was successfully removed.
+        /// </summary>
+        public event GraphFSEventHandlers.OnRemovedAsyncEventHandler OnRemovedAsync
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnRemovedAsync += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnRemovedAsync -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Transaction handling
+
+        #region OnTransactionStart
+
+        /// <summary>
+        /// An event to be notified whenever a transaction starts.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionStartEventHandler OnTransactionStart
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionStart += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionStart -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnTransactionStarted
+
+        /// <summary>
+        /// An event to be notified whenever a transaction
+        /// was started.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionStartedEventHandler OnTransactionStarted
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionStarted += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionStarted -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnTransactionStartedAsync
+
+        /// <summary>
+        /// An event to be notified asynchronously whenever
+        /// a transaction started.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionStartedAsyncEventHandler OnTransactionStartedAsync
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionStartedAsync += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionStartedAsync -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+
+        #region OnTransactionCommit
+
+        /// <summary>
+        /// An event to be notified whenever a transaction
+        /// will be committed.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionCommitEventHandler OnTransactionCommit
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionCommit += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionCommit -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnTransactionCommitted
+
+        /// <summary>
+        /// An event to be notified whenever a transaction
+        /// was be committed.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionCommittedEventHandler OnTransactionCommitted
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionCommitted += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionCommitted -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnTransactionCommittedAsync
+
+        /// <summary>
+        /// An event to be notified asynchronously whenever
+        /// a transaction was be committed.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionCommittedAsyncEventHandler OnTransactionCommittedAsync
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionCommittedAsync += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionCommittedAsync -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+
+        #region OnTransactionRollback
+
+        /// <summary>
+        /// An event to be notified whenever a transaction
+        /// will be rollbacked.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionRollbackEventHandler OnTransactionRollback
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionRollback += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionRollback -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnTransactionRollbacked
+
+        /// <summary>
+        /// An event to be notified whenever a transaction
+        /// was rollbacked.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionRollbackedEventHandler OnTransactionRollbacked
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionRollbacked += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionRollbacked -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #region OnTransactionRollbackedAsync
+
+        /// <summary>
+        /// An event to be notified whenever asynchronously
+        /// a transaction was rollbacked.
+        /// </summary>
+        public event GraphFSEventHandlers.OnTransactionRollbackedAsyncEventHandler OnTransactionRollbackedAsync
+        {
+
+            add
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionRollbackedAsync += value;
+                }
+            }
+
+            remove
+            {
+                lock (IGraphFSSession)
+                {
+                    IGraphFSSession.OnTransactionRollbackedAsync -= value;
+                }
+            }
+
+        }
+
+        #endregion
+
+        #endregion
+
         #endregion
 
         #region Constructor(s)
 
         #region GraphDSSharp()
 
-        public GraphDSSharp( )
+        public GraphDSSharp()
         {
+            FileSystemSize = 50000000;
         }
 
         #endregion
@@ -588,14 +930,14 @@ namespace sones.GraphDS.API.CSharp
                 else
                 {
 
-                    var fsException = GraphFSFactory.Instance.ActivateIGraphFS();
+                    var _FactoryException = GraphFSFactory.Instance.ActivateIGraphFS();
 
-                    if (!fsException.Success)
-                        throw new GraphDSSharpException(fsException.GetErrorsAsString());
+                    if (_FactoryException.Failed())
+                        throw new GraphDSSharpException(_FactoryException.GetErrorsAsString());
 
-                    _IGraphFS = fsException.Value;
+                    _IGraphFS = _FactoryException.Value;
 
-                    _IGraphFS.ObjectCacheSettings = ObjectCacheSettings;
+                    _IGraphFS.SetObjectCacheSettings(ObjectCacheSettings, null);
                     _IGraphFS.NotificationSettings = NotificationSettings;
 
                     IGraphFSSession = new GraphFSSession(_IGraphFS, Username);

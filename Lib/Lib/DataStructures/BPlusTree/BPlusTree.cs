@@ -1071,6 +1071,20 @@ namespace sones.Lib.DataStructures.BPlusTree
             }            
         }
 
+        public IEnumerator<KeyValuePair<TKey, HashSet<TValue>>> GetReverseEnumerator()
+        {
+            LeafNode<TKey, TValue> tmp = _RightMostLeaf;
+
+            while (tmp != null)
+            {
+                for (int i = tmp.ValueCount - 1; i >= 0; i--)
+                {
+                    yield return new KeyValuePair<TKey, HashSet<TValue>>(tmp.Keys[i], tmp.Values[i]);
+                }
+                tmp = (LeafNode<TKey, TValue>)tmp.LeftSibling;
+            }
+        }
+
         public IEnumerator<KeyValuePair<TKey, HashSet<TValue>>> GetEnumerator(Func<KeyValuePair<TKey, IEnumerable<TValue>>, bool> myFunc)
         {
             LeafNode<TKey, TValue> tmp = _LeftMostLeaf;

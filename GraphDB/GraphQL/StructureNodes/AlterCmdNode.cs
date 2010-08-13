@@ -50,16 +50,12 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
                         #region drop
 
-                        if (parseNode.ChildNodes[1].AstNode is Exceptional<IndexDropOnAlterType>)
+                        if (parseNode.ChildNodes[1].AstNode is IndexDropOnAlterType)
                         {
-                            var dropNodeExcept = (Exceptional<IndexDropOnAlterType>)parseNode.ChildNodes[1].AstNode;
+                            var dropNodeExcept = (IndexDropOnAlterType)parseNode.ChildNodes[1].AstNode;
+                            ParsingResult.Push(dropNodeExcept.ParsingResult);
 
-                            if (!dropNodeExcept.Success)
-                            {
-                                throw new GraphDBException(dropNodeExcept.Errors);
-                            }
-
-                            AlterTypeCommand = new AlterType_DropIndices(dropNodeExcept.Value.DropIndexList);
+                            AlterTypeCommand = new AlterType_DropIndices(dropNodeExcept.DropIndexList);
 
                             break;
                         }
@@ -97,24 +93,20 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
                         #region add
 
-                        if (parseNode.ChildNodes[1].AstNode is Exceptional<IndexOnCreateTypeNode>)
+                        if (parseNode.ChildNodes[1].AstNode is IndexOnCreateTypeNode)
                         {
                             #region data
 
-                            var _IndexInformation = new List<Exceptional<IndexDefinition>>();
+                            var _IndexInformation = new List<IndexDefinition>();
 
                             #endregion
 
                             #region add indices
 
-                            var idxExceptional = (Exceptional<IndexOnCreateTypeNode>)parseNode.ChildNodes[1].AstNode;
+                            var indexOnCreateTypeNode = (IndexOnCreateTypeNode)parseNode.ChildNodes[1].AstNode;
+                            ParsingResult.Push(indexOnCreateTypeNode.ParsingResult);
 
-                            if (!idxExceptional.Success)
-                            {
-                                throw new GraphDBException(idxExceptional.Errors);
-                            }
-
-                            _IndexInformation.AddRange(idxExceptional.Value.ListOfIndexDefinitions);
+                            _IndexInformation.AddRange(indexOnCreateTypeNode.ListOfIndexDefinitions);
 
                             AlterTypeCommand = new AlterType_AddIndices(_IndexInformation);
 

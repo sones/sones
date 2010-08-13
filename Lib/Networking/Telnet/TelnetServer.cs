@@ -23,8 +23,8 @@
  * 
  * Create a class which derive from ATelnetServer and start a TCPSocketListener with the 
  * generic class TelnetServer (with a generic class of your class which should implement the
- * telnet server (e.g. PandoraCLI))
- * CLITelnetListener = new TCPSocketListener<TelnetServer<PandoraCLI>>(myTelnetPort);
+ * telnet server (e.g. GraphCLI))
+ * CLITelnetListener = new TCPSocketListener<TelnetServer<GraphCLI>>(myTelnetPort);
  * 
  * To set some constructor data for the telnet server use the DataObject with
  * In your telnet server implementation of method ConnectionEstablished() you can use 

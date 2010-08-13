@@ -32,80 +32,33 @@
  * <summary>
  */
 
+#region
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using sones.GraphDB.ObjectManagement;
-
-using sones.GraphDB.TypeManagement;
-using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.Structures.Result;
-using sones.GraphDB.TypeManagement.BasicTypes;
-using sones.Lib.ErrorHandling;
-
 
 using sones.GraphDB.Errors;
-using sones.GraphFS.Session;
-using sones.Lib.Session;
 using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
+
+using sones.Lib.ErrorHandling;
+
+#endregion
 
 namespace sones.GraphDB.Functions
 {
 
     /// <summary>
-    /// A Function parameter containing the parameter name and the type.
-    /// This is used by the parameter definition in the function implementation.
+    /// This is the base function class. Each function mus derive this class and implement at least:
+    /// FunctionName: The name of the function used in the query itself
+    /// TypeOfResult: The result type of the evaluated function
+    /// SubstringFunc(): The constructor fills the _Parameters dictionary which defines the function parameters
+    /// ExecFunc(...): Is the function itself and will containing the logic. You MUST call GraphResult result =
+    /// base.ExecFunc(myParams); at the beginning to verify the parameters number and types
     /// </summary>
-    public struct ParameterValue
-    {
-        private String _Name;
-        public String Name
-        {
-            get { return _Name; }
-            set { _Name = value; }
-        }
-
-        private ADBBaseObject _DBType;
-        public ADBBaseObject DBType
-        {
-            get { return _DBType; }
-            set { _DBType = value; }
-        }
-
-        private Boolean _VariableNumOfParams;
-        public Boolean VariableNumOfParams
-        {
-            get { return _VariableNumOfParams; }
-            set { _VariableNumOfParams = value; }
-        }
-
-        /// <summary>
-        /// A single parameter
-        /// </summary>
-        /// <param name="myParameterName">The name of the parameter. Currently this is not used.</param>
-        /// <param name="myParameterDBType">The DBType of the parameter</param>
-        public ParameterValue(String myParameterName, ADBBaseObject myParameterDBType)
-        {
-            _Name = myParameterName;
-            _DBType = myParameterDBType;
-            _VariableNumOfParams = false;
-        }
-
-        /// <summary>
-        /// A single parameter
-        /// </summary>
-        /// <param name="myParameterName">The name of the parameter. Currently this is not used.</param>
-        /// <param name="myParameterDBType">The DBType of the parameter</param>
-        /// <param name="myVariableNumOfParams">True if this parameter occurs 1 or more time. This have to be the last parameter!</param>
-        public ParameterValue(String myParameterName, ADBBaseObject myParameterDBType, Boolean myVariableNumOfParams)
-        {
-            _Name = myParameterName;
-            _DBType = myParameterDBType;
-            _VariableNumOfParams = myVariableNumOfParams;
-        }
-    }
-
     public abstract class ABaseFunction
     {
 
@@ -128,9 +81,26 @@ namespace sones.GraphDB.Functions
         /// <param name="workingBase">The working base. Might be null for type independent function calls like CURRENTDATE().</param>
         /// <param name="typeManager"></param>
         /// <returns></returns>
-        public abstract bool ValidateWorkingBase(TypeAttribute workingBase, DBTypeManager typeManager);
+        public abstract bool ValidateWorkingBase(IObject myWorkingBase, DBTypeManager myTypeManager);
 
         #endregion
+
+        #region Virtual methods
+
+        /// <summary>
+        /// Get the return type of this methods. Default is null - neither attribute nor function is valid on this methods.
+        /// </summary>
+        /// <param name="myWorkingBase"></param>
+        /// <param name="myTypeManager"></param>
+        /// <returns></returns>
+        public virtual IObject GetReturnType(IObject myWorkingBase, DBTypeManager myTypeManager)
+        {
+            return null;
+        }
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// The parameters of the function.
@@ -151,6 +121,8 @@ namespace sones.GraphDB.Functions
         /// The Calling db Objectstream which contains the attribute. In case of User.Friends it is the user DBObject
         /// </summary>
         public DBObjectStream CallingDBObjectStream { get; set; }
+
+        #endregion
 
         #region (public) Methods
 
@@ -189,7 +161,7 @@ namespace sones.GraphDB.Functions
         /// 
         /// </summary>
         /// <param name="myParams">The parameters which must match the _Parameters list defined in the constructor.</param>
-        /// <returns>The Value of the PandoraResult is of type FuncParameter. The TypeAttribute of FuncParameter will contain NOT NULL if the TypeOfResult is a DBReference or DBList</returns>
+        /// <returns>The Value of the GraphResult is of type FuncParameter. The TypeAttribute of FuncParameter will contain NOT NULL if the TypeOfResult is a DBReference or DBList</returns>
         public virtual Exceptional<FuncParameter> ExecFunc(DBContext dbContext, params FuncParameter[] myParams)
         {
 
@@ -231,4 +203,5 @@ namespace sones.GraphDB.Functions
         #endregion
 
     }
+
 }

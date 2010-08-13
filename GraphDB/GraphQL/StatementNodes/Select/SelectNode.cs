@@ -142,12 +142,18 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Select
             foreach (ParseTreeNode aNode in parseNode.ChildNodes[3].ChildNodes)
             {
                 SelectionListElementNode aColumnItemNode = (SelectionListElementNode)aNode.AstNode;
+                String typeName                          = null;
 
                 if (aColumnItemNode.SelType != TypesOfSelect.None)
                 {
-                    foreach (var reference in GetTypeReferenceDefinitions(context))
+                    if(aColumnItemNode.SelType == TypesOfSelect.Ad)
                     {
-                        SelectedElements.Add(new IDChainDefinition(new ChainPartTypeOrAttributeDefinition(reference.TypeName), aColumnItemNode.SelType), null);
+                        typeName = aColumnItemNode.TypeName;
+                    }
+                    
+                    foreach (var reference in GetTypeReferenceDefinitions(context))
+                    {                        
+                        SelectedElements.Add(new IDChainDefinition(new ChainPartTypeOrAttributeDefinition(reference.TypeName), aColumnItemNode.SelType, typeName), null);
                     }
                     continue;
                 }
@@ -163,9 +169,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Select
             if (parseNode.ChildNodes[4].HasChildNodes())
             {
                 WhereExpressionNode tempWhereNode = (WhereExpressionNode)parseNode.ChildNodes[4].AstNode;
-                if (tempWhereNode.BinExprNode != null)
+                if (tempWhereNode.BinaryExpressionDefinition != null)
                 {
-                    WhereExpressionDefinition = tempWhereNode.BinExprNode.BinaryExpressionDefinition;
+                    WhereExpressionDefinition = tempWhereNode.BinaryExpressionDefinition;
                 }
             }
 
@@ -268,8 +274,10 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Select
             runThreaded = false;
 #endif
 
-            return graphDBSession.Select(SelectedElements, TypeList, WhereExpressionDefinition, GroupByIDs, Having, OrderByDefinition, Limit, Offset, ResolutionDepth, runThreaded);
-            
+            var qresult = graphDBSession.Select(SelectedElements, TypeList, WhereExpressionDefinition, GroupByIDs, Having, OrderByDefinition, Limit, Offset, ResolutionDepth, runThreaded);
+            qresult.AddErrorsAndWarnings(ParsingResult);
+            return qresult;
+
             #endregion
 
         }

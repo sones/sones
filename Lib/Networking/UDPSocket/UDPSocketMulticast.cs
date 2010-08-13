@@ -200,8 +200,8 @@ namespace sones.Networking.UDPSocket
                 Object TServerLogic                               = new TServerLogic();
                 ((AUDPSocketConnection)TServerLogic).CallerObject = _CallerObject;
 
-                PandoraThreadPool PandoraThreadPool               = new PandoraThreadPool("UDPSocketMulticast");
-                PandoraThreadPool.OnWorkerThreadException += new WorkerThreadExceptionHandler(ThreadPool_OnWorkerThreadException);
+                GraphThreadPool GraphThreadPool               = new GraphThreadPool("UDPSocketMulticast");
+                GraphThreadPool.OnWorkerThreadException += new WorkerThreadExceptionHandler(ThreadPool_OnWorkerThreadException);
 
                 //SmartThreadPool SmartThreadPool                   = new SmartThreadPool(1000, 2, Environment.ProcessorCount);
 
@@ -225,7 +225,7 @@ namespace sones.Networking.UDPSocket
                     totalRecievedBytes = new Byte[bytesRecieved];
                     Array.Copy(buffer, totalRecievedBytes, bytesRecieved);
 
-                    PandoraThreadPool.QueueWorkItem(new PandoraThreadPool.ThreadPoolEntry(new ParameterizedThreadStart(((AUDPSocketConnection)TServerLogic).DataReceived), totalRecievedBytes));
+                    GraphThreadPool.QueueWorkItem(new GraphThreadPool.ThreadPoolEntry(new ParameterizedThreadStart(((AUDPSocketConnection)TServerLogic).DataReceived), totalRecievedBytes));
                     //SmartThreadPool.QueueWorkItem(new Action<Object>(((AUDPSocketConnection)TServerLogic).DataReceived), totalRecievedBytes);
                 }
 

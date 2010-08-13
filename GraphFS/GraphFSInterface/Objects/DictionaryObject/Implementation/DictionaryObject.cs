@@ -77,10 +77,10 @@ namespace sones.GraphFS.Objects
         public DictionaryObject(IDictionary<TKey, TValue> myIDictionary)
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion   = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream       = FSConstants.DEFAULT_INDEXSTREAM;
 
             // Object specific data...
@@ -112,7 +112,7 @@ namespace sones.GraphFS.Objects
         #endregion
 
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         #region Clone()
 

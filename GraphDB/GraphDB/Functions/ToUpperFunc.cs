@@ -27,26 +27,25 @@
  * <summary>This function represents the well known ToUpper function.<summary>
  */
 
+#region Usings
+
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.TypeManagement.BasicTypes;
-
-using sones.Lib.ErrorHandling;
-using sones.GraphDB.ObjectManagement;
-
-using sones.GraphDB.TypeManagement;
-using sones.GraphFS.Session;
-using sones.GraphDB.Structures.Result;
-using sones.Lib.Session;
 using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.Lib.ErrorHandling;
+
+#endregion
 
 namespace sones.GraphDB.Functions
 {
+
+    /// <summary>
+    /// This function represents the well known ToUpper function.
+    /// </summary>
     public class ToUpperFunc : ABaseFunction
     {
+
         public override string FunctionName
         {
             get { return "TOUPPER"; }
@@ -66,17 +65,20 @@ namespace sones.GraphDB.Functions
         {
         }
 
-        public override bool ValidateWorkingBase(TypeAttribute workingBase, DBTypeManager typeManager)
+        public override bool ValidateWorkingBase(IObject workingBase, DBTypeManager typeManager)
         {
             if (workingBase != null)
             {
-                if (workingBase.GetDBType(typeManager).IsUserDefined)
+                if (workingBase is DBTypeAttribute)
                 {
-                    return false;
-                }
-                else
-                {
-                    return true;
+                    if ((workingBase as DBTypeAttribute).GetValue().GetDBType(typeManager).IsUserDefined)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
             }
             else
@@ -94,5 +96,7 @@ namespace sones.GraphDB.Functions
             else
                 return new Exceptional<FuncParameter>(new Errors.Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
+
     }
+
 }

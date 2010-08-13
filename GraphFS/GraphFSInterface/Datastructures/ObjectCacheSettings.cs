@@ -22,8 +22,8 @@ using System;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
+using sones.Lib.Caches;
 
-using sones.Libraries.Caches;
 
 namespace sones.GraphFS.Caches
 {

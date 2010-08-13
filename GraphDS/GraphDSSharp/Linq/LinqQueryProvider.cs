@@ -8,7 +8,6 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using sones.GraphDS.API.CSharp.Reflection;
 
 #endregion
 
@@ -37,7 +36,7 @@ namespace sones.GraphDS.API.CSharp.Linq
 
         #region Properties
 
-        public Type   Type      { get; private set; }
+        public Type Type { get; private set; }
         public String TypeAlias { get; private set; }
 
         #endregion
@@ -47,7 +46,7 @@ namespace sones.GraphDS.API.CSharp.Linq
         #region LinqQueryProvider(myGraphDSSharp, myType)
 
         public LinqQueryProvider(AGraphDSSharp myAGraphDSSharp, Type myType)
-            : this (myAGraphDSSharp, myType, "")
+            : this(myAGraphDSSharp, myType, "")
         {
         }
 
@@ -57,9 +56,9 @@ namespace sones.GraphDS.API.CSharp.Linq
 
         public LinqQueryProvider(AGraphDSSharp myAGraphDSSharp, Type myType, String myTypeAlias)
         {
-            _AGraphDSSharp  = myAGraphDSSharp;
-            Type            = myType;
-            TypeAlias       = myTypeAlias;
+            _AGraphDSSharp = myAGraphDSSharp;
+            Type = myType;
+            TypeAlias = myTypeAlias;
         }
 
         #endregion
@@ -79,7 +78,7 @@ namespace sones.GraphDS.API.CSharp.Linq
             if (_TypeAlias != "")
                 _TypeAlias = " " + _TypeAlias;
 
-            var _GQLQuery = "FROM " + Type.Name + _TypeAlias + " SELECT UUID, Name";
+            var _GQLQuery = "FROM " + Type.Name + _TypeAlias + " SELECT UUID, #";
 
             return _GQLQuery;
 
@@ -92,26 +91,20 @@ namespace sones.GraphDS.API.CSharp.Linq
 
         #region CreateQuery<TResult>(myExpression)
 
-        //public IQueryable<TResult> CreateQuery<TResult>(Expression myExpression)
-        //    // Sadly constraints on T will not work, as the interface
-        //    // does not define constraints!
-        //    // where T : DBVertex, new()
-        //    where TResult : DBObject, new()
-        //{
-
-        //    // Do not check types, as selction of base types or anonymous types
-        //    // would not be possible afterwards!
-
-        //    //if (!typeof(T).IsAssignableFrom(typeof(DBVertex)))
-        //    //    throw new ArgumentOutOfRangeException("Invalid type T!");
-
-        //    return (IQueryable<TResult>) new LinqQueryable<TResult>(this, myExpression);
-
-        //}
-
-        public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
+        public IQueryable<TResult> CreateQuery<TResult>(Expression myExpression)
+        // Sadly constraints on T will not work, as the interface
+        // does not define constraints!
+        // where T : DBVertex, new()
         {
-            throw new NotImplementedException();
+
+            // Do not check types, as selction of base types or anonymous types
+            // would not be possible afterwards!
+
+            //if (!typeof(T).IsAssignableFrom(typeof(DBVertex)))
+            //    throw new ArgumentOutOfRangeException("Invalid type T!");
+
+            return (IQueryable<TResult>) new LinqQueryable<TResult>(this, myExpression);
+
         }
 
         #endregion
@@ -173,7 +166,6 @@ namespace sones.GraphDS.API.CSharp.Linq
         #endregion
 
         #endregion
-
 
     }
 

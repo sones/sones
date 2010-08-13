@@ -106,7 +106,7 @@ namespace sones.GraphDB.TypeManagement
         #region ParentType
 
         /// <summary>
-        /// The parent type of this PandoraType
+        /// The parent type of this GraphType
         /// </summary>
         public TypeUUID ParentTypeUUID { get; private set; }
 
@@ -119,11 +119,6 @@ namespace sones.GraphDB.TypeManagement
         private HashSet<AttributeUUID>                      _MandatoryAttributes;
         private HashSet<AttributeUUID>                      _MandatoryParentAttributes;
 
-        /// <summary>
-        /// All attributes which are explicitly defined by the user but just show the implicit backwardedge
-        /// </summary>
-        private Dictionary<EdgeKey, AttributeUUID>          _BackwardEdgeAttributes;
-        
         #endregion
 
         #region Attributes
@@ -268,15 +263,15 @@ namespace sones.GraphDB.TypeManagement
         #region GraphDBType()
 
         /// <summary>
-        /// This will create an empty PandoraType
+        /// This will create an empty GraphType
         /// </summary>
         public GraphDBType()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion       = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream           = DBConstants.DBTYPESTREAM;
 
             // Object specific data...
@@ -295,7 +290,7 @@ namespace sones.GraphDB.TypeManagement
         /// <summary>
         /// This will create an em
         /// </summary>
-        /// <param name="myObjectLocation">the location (object myPath and Name) of the requested PandoraType within the file system</param>
+        /// <param name="myObjectLocation">the location (object myPath and Name) of the requested GraphType within the file system</param>
         public GraphDBType(ObjectLocation myObjectLocation)
             : this()
         {
@@ -315,8 +310,8 @@ namespace sones.GraphDB.TypeManagement
         /// <summary>
         /// This will create an em
         /// </summary>
-        /// <param name="myIPandoraFS"></param>
-        /// <param name="myObjectLocation">the location (object myPath and Name) of the requested PandoraType within the file system</param>
+        /// <param name="myIGraphFS"></param>
+        /// <param name="myObjectLocation">the location (object myPath and Name) of the requested GraphType within the file system</param>
         public GraphDBType(IGraphFSSession myIGraphFSSession, ObjectLocation myObjectLocation, Boolean myIsUserDefined, Boolean myIsAbstract)
             : this()
         {
@@ -331,11 +326,10 @@ namespace sones.GraphDB.TypeManagement
             _AttributeIndicesNameLookup = new Dictionary<String, IndexKeyDefinition>();
             _TypeSettings               = new Dictionary<string, ADBSettingsBase>();
             _TypeAttributeLookupTable   = new Dictionary<AttributeUUID,TypeAttribute>();
-            _BackwardEdgeAttributes     = new Dictionary<EdgeKey,AttributeUUID>();
             _MandatoryAttributes        = new HashSet<AttributeUUID>();
             _UniqueAttributes           = new List<AttributeUUID>();
 
-            LoadPandoraType(myIGraphFSSession, myObjectLocation);
+            LoadGraphType(myIGraphFSSession, myObjectLocation);
 
             _IsUserDefined = myIsUserDefined;
             _IsAbstract = myIsAbstract;
@@ -353,12 +347,12 @@ namespace sones.GraphDB.TypeManagement
             // TypeManager typeMan = TypeManager.GetInstance();
             
 
-            // PandoraType is the most abstract type, not inheriting from any type.
-            // Any type defineable is a Pandora type.
+            // GraphType is the most abstract type, not inheriting from any type.
+            // Any type defineable is a Graph type.
             // Set the parent type
             ParentTypeUUID                 = myParentType;
 
-            // PandoraType is the most abstract type.
+            // GraphType is the most abstract type.
             // It doesnt contain any special myAttributes.
             // Set the myAttributes
             _Attributes                 = myAttributes;
@@ -370,7 +364,6 @@ namespace sones.GraphDB.TypeManagement
             _IsAbstract                 = myIsAbstract;
             _Comment                    = myComment;
 
-            _BackwardEdgeAttributes     = new Dictionary<EdgeKey,AttributeUUID>();
             _TypeAttributeLookupTable   = new Dictionary<AttributeUUID, TypeAttribute>();
 
             if (myAttributes != null)
@@ -426,10 +419,10 @@ namespace sones.GraphDB.TypeManagement
         /// Creates an index for the given myAttributes by filling the given the index with the objects
         /// of this type that are already stored.</summary>
         /// <param name="myAttributeNames">The names of the myAttributes, over which the index was created.</param>
-        private Exceptional<Boolean> AddAttributeIndex(AAttributeIndex myAttributeIndex)
+        private Exceptional<Boolean> AddAttributeIndex(AAttributeIndex myAttributeIndex, DBContext myDBContext = null)
         {
 
-            // Add this index to the list of indices of this PandoraType
+            // Add this index to the list of indices of this GraphType
             lock (_AttributeIndices)
             {
 
@@ -465,7 +458,7 @@ namespace sones.GraphDB.TypeManagement
 
                     #region IndexKeyDefinition and Edition already exist
 
-                    return new Exceptional<Boolean>(new Error_IndexAlreadyExist(_AttributeIndices[myAttributeIndex.IndexKeyDefinition][myAttributeIndex.IndexEdition].IndexName));
+                    return new Exceptional<Boolean>(new Error_IndexAlreadyExistWithSameEditionAndAttribute(myDBContext, _AttributeIndices[myAttributeIndex.IndexKeyDefinition][myAttributeIndex.IndexEdition].IndexName, myAttributeIndex.IndexKeyDefinition, myAttributeIndex.IndexEdition));
 
                     #endregion
 
@@ -523,9 +516,9 @@ namespace sones.GraphDB.TypeManagement
 
         #endregion
 
-        #region LoadPandoraType(myIGraphFSSession, myObjectLocation)
+        #region LoadGraphType(myIGraphFSSession, myObjectLocation)
 
-        private void LoadPandoraType(IGraphFSSession myIGraphFSSession, ObjectLocation myObjectLocation)
+        private void LoadGraphType(IGraphFSSession myIGraphFSSession, ObjectLocation myObjectLocation)
         {
 
 
@@ -547,7 +540,7 @@ namespace sones.GraphDB.TypeManagement
             // Attributes
             var _AttributeList = myIGraphFSSession.GetUserMetadata(new ObjectLocation(myObjectLocation, DBConstants.DBAttributesLocation));
 
-            if (_AttributeList != null && _AttributeList.Success && _AttributeList.Value != null)
+            if (_AttributeList.Success() && _AttributeList.Value != null)
             {
                 foreach (var _KeyValuePair in _AttributeList.Value)
                 {
@@ -563,7 +556,7 @@ namespace sones.GraphDB.TypeManagement
             // Settings
             var _SettingList = myIGraphFSSession.GetUserMetadata(new ObjectLocation(myObjectLocation, DBConstants.DBSettingsLocation));
 
-            if (_SettingList != null && _SettingList.Success && _SettingList.Value != null)
+            if (_SettingList.Success() && _SettingList.Value != null)
             {
                 foreach (var _KeyValuePair in _SettingList.Value)
                 {
@@ -628,7 +621,7 @@ namespace sones.GraphDB.TypeManagement
         {
             var _NewUUIDIndex = new UUIDIndex(SpecialTypeAttribute_UUID.AttributeName, new IndexKeyDefinition(myUUID), this);
 
-            return new Exceptional(AddAttributeIndex(_NewUUIDIndex));
+            return new Exceptional(AddAttributeIndex(_NewUUIDIndex, _DBContext));
         }
 
         #region GetAttributeIndex methods
@@ -752,7 +745,7 @@ namespace sones.GraphDB.TypeManagement
 
                     var FlushExcept = myTypeManager.FlushType(this);
 
-                    if (FlushExcept.Failed)
+                    if (FlushExcept.Failed())
                         return new Exceptional<Boolean>(FlushExcept);
 
                     return new Exceptional<Boolean>(true);
@@ -832,9 +825,9 @@ namespace sones.GraphDB.TypeManagement
 
             var _NewAttributeIndex = new AttributeIndex(myIndexName, myIndexEdition, myAttributeUUIDs, this, myIndexType);
 
-            var CreateExcept = AddAttributeIndex(_NewAttributeIndex);
+            var CreateExcept = AddAttributeIndex(_NewAttributeIndex, myDBContext);
 
-            if (CreateExcept.Failed)
+            if (CreateExcept.Failed())
             {
                 return new Exceptional<AttributeIndex>(CreateExcept);
             }
@@ -870,18 +863,18 @@ namespace sones.GraphDB.TypeManagement
             _TypeAttributeLookupTable.Remove(attributeUUID);
         }
 
-        public void AddAttributeToLookupTable(AttributeUUID myUUID, TypeAttribute myTypeAttribute)
-        {
-            _TypeAttributeLookupTable.Add(myUUID, myTypeAttribute);
-        }
+        //public void AddAttributeToLookupTable(AttributeUUID myUUID, TypeAttribute myTypeAttribute)
+        //{
+        //    _TypeAttributeLookupTable.Add(myUUID, myTypeAttribute);
+        //}
 
-        public void AddAttributeToLookupTable(Dictionary<AttributeUUID, TypeAttribute> moreAttributes)
-        {
-            foreach (var aMoreAttribute in moreAttributes)
-            {
-                AddAttributeToLookupTable(aMoreAttribute.Key, aMoreAttribute.Value);
-            }
-        }
+        //public void AddAttributeToLookupTable(Dictionary<AttributeUUID, TypeAttribute> moreAttributes)
+        //{
+        //    foreach (var aMoreAttribute in moreAttributes)
+        //    {
+        //        AddAttributeToLookupTable(aMoreAttribute.Key, aMoreAttribute.Value);
+        //    }
+        //}
 
         /// <summary>
         /// This method gets a TypeAttribute by its UUID
@@ -1010,28 +1003,6 @@ namespace sones.GraphDB.TypeManagement
             return myTypeManager.RenameAttributeOfType(this, myBackwardEdge.Name, newName);
         }
 
-        public void AddBackwardEdgeAttribute(TypeAttribute ta)
-        {
-            if (ta.IsBackwardEdge)
-                _BackwardEdgeAttributes.Add(ta.BackwardEdgeDefinition, ta.UUID);
-        }
-
-        public void RemoveBackwardEdgeAttribute(TypeAttribute ta)
-        {
-            if (ta.IsBackwardEdge && _BackwardEdgeAttributes.ContainsKey(ta.BackwardEdgeDefinition))
-                _BackwardEdgeAttributes.Remove(ta.BackwardEdgeDefinition);
-        }
-
-        public Boolean IsBackwardEdgeAttribute(EdgeKey myEdgeKey)
-        {
-            return _BackwardEdgeAttributes.ContainsKey(myEdgeKey);
-        }
-
-        public AttributeUUID GetBackwardEdgeAttribute(EdgeKey myEdgeKey)
-        {
-            return _BackwardEdgeAttributes[myEdgeKey];
-        }
-
         /// <summary>
         /// Returns all attribute of this type and all derived types
         /// </summary>
@@ -1066,16 +1037,89 @@ namespace sones.GraphDB.TypeManagement
             yield break;
         }
 
-        public void AddAttribute(TypeAttribute myTypeAttribute)
+        public void AddAttribute(TypeAttribute myTypeAttribute, DBTypeManager myDBTypeManager, Boolean validate)
         {
-            _Attributes.Add(myTypeAttribute.UUID, myTypeAttribute);
-            _TypeAttributeLookupTable.Add(myTypeAttribute.UUID, myTypeAttribute);
+            if (validate)
+            {
+                HashSet<UInt16> occupiedIDs = new HashSet<UInt16>();
+
+                #region validate attributes
+
+                CheckAttributeAgainstOthers(_Attributes, ref myTypeAttribute, ref occupiedIDs);
+
+                #endregion
+
+                #region validate superType
+
+                var parentLookUpAttributes = myDBTypeManager.GetTypeByUUID(this.ParentTypeUUID).AttributeLookupTable;
+
+                CheckAttributeAgainstOthers(parentLookUpAttributes, ref myTypeAttribute, ref occupiedIDs);
+                CheckAttributeAgainstOthers(_Attributes, ref myTypeAttribute, ref occupiedIDs);
+
+                #endregion
+
+                #region validate subtypes
+
+                var attributesOfSubtypes = GetAttributesOfSubtypes(myDBTypeManager);
+                
+                CheckAttributeAgainstOthers(attributesOfSubtypes, ref myTypeAttribute, ref occupiedIDs);
+                CheckAttributeAgainstOthers(parentLookUpAttributes, ref myTypeAttribute, ref occupiedIDs);
+                CheckAttributeAgainstOthers(_Attributes, ref myTypeAttribute, ref occupiedIDs);
+
+                #endregion
+
+                //now we can be shure to add the attribute
+                _Attributes.Add(myTypeAttribute.UUID, myTypeAttribute);
+                _TypeAttributeLookupTable.Add(myTypeAttribute.UUID, myTypeAttribute);
+            }
+            else
+            {
+                _Attributes.Add(myTypeAttribute.UUID, myTypeAttribute);
+                _TypeAttributeLookupTable.Add(myTypeAttribute.UUID, myTypeAttribute);
+            }
         }
 
-        public void AddAttribute(AttributeUUID myUUID, TypeAttribute myTypeAttribute)
+        private void CheckAttributeAgainstOthers(Dictionary<AttributeUUID, TypeAttribute> myAttributees, ref TypeAttribute myTypeAttribute, ref HashSet<ushort> occupiedIDs)
         {
-            _Attributes.Add(myUUID, myTypeAttribute);
-            _TypeAttributeLookupTable.Add(myUUID, myTypeAttribute);
+            if (myAttributees.ContainsKey(myTypeAttribute.UUID))
+            {
+                occupiedIDs.Add(myTypeAttribute.UUID.ID);
+
+                do
+                {
+                    ChangeTypeAttributeID(ref myTypeAttribute, occupiedIDs);
+                } while (myAttributees.ContainsKey(myTypeAttribute.UUID));
+            }
+        }
+
+        private Dictionary<AttributeUUID, TypeAttribute> GetAttributesOfSubtypes(DBTypeManager myDBTypeManager)
+        {
+            var result = new Dictionary<AttributeUUID, TypeAttribute>();
+
+            foreach (var aSubType in myDBTypeManager.GetAllSubtypes(this, false))
+            {
+                foreach (var aSubTypeAttribute in aSubType.Attributes)
+                {
+                    if (!result.ContainsKey(aSubTypeAttribute.Key))
+                    {
+                        result.Add(aSubTypeAttribute.Key, aSubTypeAttribute.Value);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private void ChangeTypeAttributeID(ref TypeAttribute myTypeAttribute, HashSet<ushort> occupiedIDs)
+        {
+            UInt16 startingID = Convert.ToUInt16(myTypeAttribute.UUID.ID + 10);
+
+            while (occupiedIDs.Contains(startingID))
+            {
+                startingID++;
+            }
+
+            myTypeAttribute.UUID.SetID(startingID);
         }
 
         public void RemoveAttribute(AttributeUUID myUUID)
@@ -1126,7 +1170,7 @@ namespace sones.GraphDB.TypeManagement
 
             var FlushExcept = myTypeManager.FlushType(this);
 
-            if (FlushExcept.Failed)
+            if (FlushExcept.Failed())
                 return new Exceptional(FlushExcept);
 
             return Exceptional.OK;
@@ -1144,7 +1188,7 @@ namespace sones.GraphDB.TypeManagement
 
             var FlushExcept = myTypeManager.FlushType(this);
 
-            if (FlushExcept.Failed)
+            if (FlushExcept.Failed())
             {
                 return new Exceptional<bool>(FlushExcept);
             }
@@ -1210,25 +1254,12 @@ namespace sones.GraphDB.TypeManagement
             _MandatoryAttributes.Remove(myAttribID);
         }
 
-        public HashSet<AttributeUUID> GetMandatoryAttributesUUIDs(DBTypeManager myTypeManager)
+        public IEnumerable<AttributeUUID> GetMandatoryAttributesUUIDs(DBTypeManager myTypeManager)
         {
             foreach (var attribID in GetParentMandatoryAttr(myTypeManager))
                 _MandatoryAttributes.Add(attribID);
 
-            return _MandatoryAttributes;
-
-            // TODO: Use this instead!!!
-            /*
-            foreach (var attribID in GetParentMandatoryAttr())
-            {
-                //_MandatoryAttributes.Add(attribID);
-                yield return attribID;
-            }
-            foreach (var attribID in _MandatoryAttributes)
-            {
-                yield return attribID;
-            }
-            */
+            return _MandatoryAttributes.ToList();
         }
 
         /// <summary>
@@ -1266,7 +1297,7 @@ namespace sones.GraphDB.TypeManagement
 
                 var FlushExcept = myTypeManager.FlushType(this);
 
-                if (FlushExcept.Failed)
+                if (FlushExcept.Failed())
                     return new Exceptional<Boolean>(FlushExcept);
             }
 
@@ -1297,7 +1328,7 @@ namespace sones.GraphDB.TypeManagement
 
             var FlushExcept = myTypeManager.FlushType(this);
 
-            if (FlushExcept.Failed)
+            if (FlushExcept.Failed())
                 return new Exceptional<Boolean>(FlushExcept);
 
             return new Exceptional<Boolean>(true);
@@ -1340,7 +1371,7 @@ namespace sones.GraphDB.TypeManagement
                         {
                             var createIdxExcept = aType.CreateUniqueAttributeIndex(myDBContext, idxName, myAttribIDs, DBConstants.UNIQUEATTRIBUTESINDEX);
 
-                            if (createIdxExcept.Failed)
+                            if (createIdxExcept.Failed())
                                 return new Exceptional<Boolean>(createIdxExcept);
                         }
                     }
@@ -1367,7 +1398,7 @@ namespace sones.GraphDB.TypeManagement
                 Types._UniqueAttributes.Remove(myAttribID);
                 var removeIdxExcept = Types.RemoveIndex(Types.GetAttributeIndex(AttrList, DBConstants.UNIQUEATTRIBUTESINDEX).IndexName, DBConstants.UNIQUEATTRIBUTESINDEX, myTypeManager);
 
-                if (removeIdxExcept.Failed)
+                if (removeIdxExcept.Failed())
                     return new Exceptional<Boolean>(removeIdxExcept);
             }
 
@@ -1403,7 +1434,7 @@ namespace sones.GraphDB.TypeManagement
             {
                 var RemoveIdxExcept = RemoveIndex(mayBeUniqueIdx.IndexName, mayBeUniqueIdx.IndexEdition, myTypeManager);
 
-                if (RemoveIdxExcept.Failed)
+                if (RemoveIdxExcept.Failed())
                 {
                     return new Exceptional<ResultType>(RemoveIdxExcept);
                 }
@@ -1414,7 +1445,7 @@ namespace sones.GraphDB.TypeManagement
                     {
                         var RemoveUniqueExcept = type.RemoveUniqueAttribute(attrUUID, myTypeManager);
 
-                        if (RemoveUniqueExcept.Failed)
+                        if (RemoveUniqueExcept.Failed())
                             return new Exceptional<ResultType>(RemoveUniqueExcept);
                     }
                 }
@@ -1425,7 +1456,7 @@ namespace sones.GraphDB.TypeManagement
 
             var FlushExcept = myTypeManager.FlushType(this);
 
-            if (FlushExcept.Failed)
+            if (FlushExcept.Failed())
                 return new Exceptional<ResultType>(FlushExcept);
 
             return new Exceptional<ResultType>(ResultType.Successful);
@@ -1469,22 +1500,22 @@ namespace sones.GraphDB.TypeManagement
             String idxName = myDBContext.DBIndexManager.GetUniqueIndexName(attrUUIDs, this);
             var CreateIdxExcept = CreateUniqueAttributeIndex(myDBContext, idxName, attrUUIDs, DBConstants.UNIQUEATTRIBUTESINDEX);
 
-            if (CreateIdxExcept.Failed)
+            if (CreateIdxExcept.Failed())
                 return new Exceptional<ResultType>(CreateIdxExcept);
 
             var rebuildResult = myDBContext.DBIndexManager.RebuildIndex(idxName, DBConstants.UNIQUEATTRIBUTESINDEX, this, IndexSetStrategy.UNIQUE);
 
-            if (rebuildResult.Failed)
+            if (rebuildResult.Failed())
             {
                 //add already removed idx
                 if (mayBeUniqueIdx != null)
                 {
-                    AddAttributeIndex(mayBeUniqueIdx);
+                    AddAttributeIndex(mayBeUniqueIdx, myDBContext);
                 }
 
                 var RemoveIdxExcept = RemoveIndex(idxName, DBConstants.UNIQUEATTRIBUTESINDEX, myDBContext.DBTypeManager);
 
-                if (RemoveIdxExcept.Failed)
+                if (RemoveIdxExcept.Failed())
                     return new Exceptional<ResultType>(RemoveIdxExcept);
 
                 return rebuildResult;
@@ -1496,19 +1527,19 @@ namespace sones.GraphDB.TypeManagement
 
             var AddUniqueAttrExcept = AddUniqueAttributes(ParentUniqueIDs, myDBContext);
 
-            if (AddUniqueAttrExcept.Failed)
+            if (AddUniqueAttrExcept.Failed())
                 return new Exceptional<ResultType>(AddUniqueAttrExcept);
 
             AddUniqueAttrExcept = AddUniqueAttributes(attrUUIDs, myDBContext);
 
-            if (AddUniqueAttrExcept.Failed)
+            if (AddUniqueAttrExcept.Failed())
                 return new Exceptional<ResultType>(AddUniqueAttrExcept);
 
             #endregion
 
             var FlushExcept = myDBContext.DBTypeManager.FlushType(this);
 
-            if (FlushExcept.Failed)
+            if (FlushExcept.Failed())
                 return new Exceptional<ResultType>(FlushExcept);
 
             return new Exceptional<ResultType>(ResultType.Successful);
@@ -1616,10 +1647,19 @@ namespace sones.GraphDB.TypeManagement
 
                     foreach (var aParentType in myDBTypeManager.GetAllParentTypes(this, false, true).Where(type => type != this))
                     {
-                        AddAttributeToLookupTable(aParentType.Attributes);
+                        foreach (var aParentAttribute in aParentType.Attributes)
+                        {
+                            if (!_TypeAttributeLookupTable.ContainsKey(aParentAttribute.Key))
+                            {
+                                _TypeAttributeLookupTable.Add(aParentAttribute.Key, aParentAttribute.Value);
+                            }
+                        }
                     }
 
-                    AddAttributeToLookupTable(Attributes);
+                    foreach (var aAttribute in Attributes)
+                    {
+                        _TypeAttributeLookupTable.Add(aAttribute.Key, aAttribute.Value);
+                    }
 
                     #endregion
 
@@ -1627,12 +1667,12 @@ namespace sones.GraphDB.TypeManagement
 
                 var parentTypeExcept = myDBTypeManager.HasParentType(ParentTypeUUID, DBBaseObject.UUID);
 
-                if (parentTypeExcept.Failed)
+                if (parentTypeExcept.Failed())
                     return new Exceptional(parentTypeExcept);
 
                 if (!parentTypeExcept.Value)
                 {
-                    return new Exceptional(new Error_Logic("The type " + Name + " can not be added, because all user defined types must be subtypes of PandoraObject."));
+                    return new Exceptional(new Error_Logic("The type " + Name + " can not be added, because all user defined types must be subtypes of GraphObject."));
                 }
 
 
@@ -1699,12 +1739,12 @@ namespace sones.GraphDB.TypeManagement
                     mySerializationWriter.WriteUInt32((UInt32)_UniqueAttributes.Count);
 
                     foreach (var pValPair in _UniqueAttributes)
-                        mySerializationWriter.WriteObject(pValPair.GetByteArray());
+                        pValPair.Serialize(ref mySerializationWriter);
 
                     mySerializationWriter.WriteUInt32((UInt32)_MandatoryAttributes.Count);
 
                     foreach (var pValPair in _MandatoryAttributes)
-                        mySerializationWriter.WriteObject(pValPair.GetByteArray());
+                        pValPair.Serialize(ref mySerializationWriter);
 
 
                     #region Indices
@@ -1765,7 +1805,6 @@ namespace sones.GraphDB.TypeManagement
                     _Capacity = mySerializationReader.ReadUInt32();
                 
                     _Attributes = new Dictionary<AttributeUUID, TypeAttribute>();
-                    _BackwardEdgeAttributes = new Dictionary<EdgeKey, AttributeUUID>();
 
                     _TypeAttributeLookupTable = new Dictionary<AttributeUUID, TypeAttribute>();
 
@@ -1777,11 +1816,6 @@ namespace sones.GraphDB.TypeManagement
                         _TypeObj.Deserialize(ref mySerializationReader);
                         _Attributes.Add(_AttrAtrib, _TypeObj);
                         _TypeAttributeLookupTable.Add(_AttrAtrib, _TypeObj);
-
-                        if (_TypeObj.IsBackwardEdge)
-                        {
-                            AddBackwardEdgeAttribute(_TypeObj);
-                        }
                     }
 
                     _Capacity = mySerializationReader.ReadUInt32();
@@ -1850,7 +1884,7 @@ namespace sones.GraphDB.TypeManagement
                                 AddAttributeIndex(new AttributeIndex(indexName, idxKey, this, indexType, indexEdition));
                             }
 
-                            //if (CreateIdxExcept.Failed)
+                            //if (CreateIdxExcept.Failed())
                             //    throw new GraphDBException(CreateIdxExcept.Errors);
                         }
 
@@ -2037,6 +2071,12 @@ namespace sones.GraphDB.TypeManagement
         }
 
         #endregion
+
+
+        internal bool HasAttribute(string AttributeName)
+        {
+            return _TypeAttributeLookupTable.Exists(item => item.Value.Name == AttributeName);
+        }
     }
 
 }

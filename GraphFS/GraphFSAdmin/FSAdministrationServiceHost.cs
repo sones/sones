@@ -1,4 +1,4 @@
-﻿/* PandoraFS - FSAdministrationServiceHost
+﻿/* GraphFS - FSAdministrationServiceHost
  * (c) Daniel Kirstenpfad, 2009
  * 
  * This is an implementation of a WCF Service Host for the IGraphFSSession Administration Interface
@@ -87,7 +87,7 @@ namespace sones.GraphFS.Administration
         public void Start(IGraphFSSession myIGraphFSSession/*, String myEndpointPath*/)
         {
             if (myIGraphFSSession== null)
-                throw new ArgumentNullException("IPandoraFS has to be an instance.");
+                throw new ArgumentNullException("IGraphFS has to be an instance.");
 
             _ServiceHost = new ServiceHost(myIGraphFSSession, _BaseAddress);
 

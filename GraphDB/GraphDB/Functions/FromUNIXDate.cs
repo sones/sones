@@ -1,22 +1,25 @@
-﻿#region Usings
+﻿
+#region Usings
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using sones.GraphDB.Errors;
+using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.Lib;
 using sones.Lib.ErrorHandling;
-using sones.GraphDB.TypeManagement;
-using sones.GraphDB.Managers.Structures;
-using sones.GraphDB.TypeManagement.BasicTypes;
-using sones.GraphDB.Errors;
 
 #endregion
 
 namespace sones.GraphDB.Functions
 {
+
+    /// <summary>
+    /// Convert from unix datime format to DBDateTime format.
+    /// </summary>
     public class FromUNIXDate : ABaseFunction
     {
+
         #region constructors
 
         public FromUNIXDate()
@@ -36,18 +39,15 @@ namespace sones.GraphDB.Functions
             return "Convert from unix datime format to DBDateTime format.";
         }
 
-        public override bool ValidateWorkingBase(TypeAttribute workingBase, DBTypeManager typeManager)
+        public override bool ValidateWorkingBase(IObject workingBase, DBTypeManager typeManager)
         {
-            if (workingBase != null)
+            if (workingBase is DBInt64)
             {
-                if (workingBase.GetDBType(typeManager).IsUserDefined)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return true;
+            }
+            else if ((workingBase is DBTypeAttribute) && (workingBase as DBTypeAttribute).GetValue().GetDBType(typeManager).UUID == DBInt64.UUID)
+            {
+                return true;
             }
             else
             {
@@ -77,5 +77,7 @@ namespace sones.GraphDB.Functions
         }
 
         #endregion
+    
     }
+
 }

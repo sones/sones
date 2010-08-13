@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB DBString DBString" />
+﻿/* <id name="GraphDB DBString DBString" />
  * <copyright file="DBDouble.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -104,73 +104,73 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
 
         #region Operations
 
-        public static DBString operator +(DBString myPandoraObjectA, String myValue)
+        public static DBString operator +(DBString myGraphObjectA, String myValue)
         {
-            myPandoraObjectA.Value = (String)myPandoraObjectA.Value + myValue;
-            return myPandoraObjectA;
+            myGraphObjectA.Value = (String)myGraphObjectA.Value + myValue;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '-' cannot be applied to operands of type 'string' and 'string'")]
-        public static DBString operator -(DBString myPandoraObjectA, String myValue)
+        public static DBString operator -(DBString myGraphObjectA, String myValue)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '*' cannot be applied to operands of type 'string' and 'string'")]
-        public static DBString operator *(DBString myPandoraObjectA, String myValue)
+        public static DBString operator *(DBString myGraphObjectA, String myValue)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '/' cannot be applied to operands of type 'string' and 'string'")]
-        public static DBString operator /(DBString myPandoraObjectA, String myValue)
+        public static DBString operator /(DBString myGraphObjectA, String myValue)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
-        public override ADBBaseObject Add(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Add(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
 
-            String valA = Convert.ToString(myPandoraObjectA.Value);
-            String valB = Convert.ToString(myPandoraObjectB.Value);
+            String valA = Convert.ToString(myGraphObjectA.Value);
+            String valB = Convert.ToString(myGraphObjectB.Value);
             return new DBString(valA + valB);
         }
 
         [Obsolete("Operator '-' cannot be applied to operands of type 'string' and 'string'")]
-        public override ADBBaseObject Sub(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Sub(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '*' cannot be applied to operands of type 'string' and 'string'")]
-        public override ADBBaseObject Mul(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Mul(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '/' cannot be applied to operands of type 'string' and 'string'")]
-        public override ADBBaseObject Div(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Div(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
-        public override void Add(ADBBaseObject myPandoraObject)
+        public override void Add(ADBBaseObject myGraphObject)
         {
-            _Value += Convert.ToString(myPandoraObject.Value);
+            _Value += Convert.ToString(myGraphObject.Value);
         }
 
         [Obsolete("Operator '-' cannot be applied to operands of type 'string' and 'string'")]
-        public override void Sub(ADBBaseObject myPandoraObject)
+        public override void Sub(ADBBaseObject myGraphObject)
         {
         }
 
         [Obsolete("Operator '*' cannot be applied to operands of type 'string' and 'string'")]
-        public override void Mul(ADBBaseObject myPandoraObject)
+        public override void Mul(ADBBaseObject myGraphObject)
         {
         }
 
         [Obsolete("Operator '/' cannot be applied to operands of type 'string' and 'string'")]
-        public override void Div(ADBBaseObject myPandoraObject)
+        public override void Div(ADBBaseObject myGraphObject)
         {
         }
 

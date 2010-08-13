@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – SettingNode" />
+﻿/* <id name="GraphDB – SettingNode" />
  * <copyright file="SettingNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -75,7 +75,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Setting
         public override QueryResult Execute(IGraphDBSession graphDBSession)
         {
 
-            return graphDBSession.Setting(_TypeOfSettingOperation, _Settings, _ASettingDefinition);
+            var qresult = graphDBSession.Setting(_TypeOfSettingOperation, _Settings, _ASettingDefinition);
+            qresult.AddErrorsAndWarnings(ParsingResult);
+            return qresult;
 
         }
 

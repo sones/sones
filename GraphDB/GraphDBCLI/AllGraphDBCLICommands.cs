@@ -57,17 +57,17 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
     {
 
 
-        #region QueryDB(myQueryString, myIPandoraDBSession, myWithOutput = true)
+        #region QueryDB(myQueryString, myIGraphDBSession, myWithOutput = true)
 
-        protected QueryResult QueryDB(String myQueryString, IGraphDBSession myIPandoraDBSession, Boolean myWithOutput = true)
+        protected QueryResult QueryDB(String myQueryString, IGraphDBSession myIGraphDBSession, Boolean myWithOutput = true)
         {
 
             if (myWithOutput)
                 Write(myQueryString + " => ");
 
-            var gqlQuery = new GraphQLQuery(myIPandoraDBSession.DBPluginManager);
+            var gqlQuery = new GraphQLQuery(myIGraphDBSession.DBPluginManager);
 
-            var _QueryResult = gqlQuery.Query(myQueryString, myIPandoraDBSession);
+            var _QueryResult = gqlQuery.Query(myQueryString, myIGraphDBSession);
 
             if (myWithOutput)
                 WriteLine(_QueryResult.ResultType.ToString());
@@ -87,8 +87,8 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
         #region Terminals
 
-        private     StringLiteral   stringLiteralPandoraType        = new StringLiteral("stringLiteralPandoraType",         "'", StringFlags.AllowsDoubledQuote);
-        private     StringLiteral   stringLiteralPandoraAttribute   = new StringLiteral("stringLiteralPandoraAttribute",    "'", StringFlags.AllowsDoubledQuote);
+        private     StringLiteral   stringLiteralGraphType        = new StringLiteral("stringLiteralGraphType",         "'", StringFlags.AllowsDoubledQuote);
+        private     StringLiteral   stringLiteralGraphAttribute   = new StringLiteral("stringLiteralGraphAttribute",    "'", StringFlags.AllowsDoubledQuote);
         private     StringLiteral   stringLiteralObjectAlias        = new StringLiteral("stringLiteralObjectAlias",         "'", StringFlags.AllowsDoubledQuote);
         private     StringLiteral   stringLiteralCondition          = new StringLiteral("stringLiteralCondition",           "'", StringFlags.AllowsDoubledQuote);
 
@@ -104,8 +104,8 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
         protected   SymbolTerminal  INSERT_CommandString            = Symbol("INSERT");
         protected   SymbolTerminal  INSERT_SETREFSymbol             = Symbol("SETREF");
 
-        private     NonTerminal     _PandoraTypeNT                  = new NonTerminal(DBConstants.GraphDBType);
-        private     NonTerminal     _PandoraAttributeNT             = new NonTerminal("PandoraAttributeNT");
+        private     NonTerminal     _GraphTypeNT                  = new NonTerminal(DBConstants.GraphDBType);
+        private     NonTerminal     _GraphAttributeNT             = new NonTerminal("GraphAttributeNT");
         private     NonTerminal     _BasicTypeTermNT                = new NonTerminal("BasicTypeTerm");
         private     NonTerminal     _IdNT                           = new NonTerminal("ID");
         private     NonTerminal     _AType                          = new NonTerminal("aType");
@@ -125,8 +125,8 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
             get
             {
                 _AttrAssignNT.Rule = IdNT + Eq_Equals + BasicTypeTermNT
-                                            |   IdNT + INSERT_SETREFSymbol + PandoraTypeNT + UUIDSymbol + Eq_Equals + stringLiteral
-                                            |   IdNT + INSERT_SETREFSymbol + PandoraTypeNT + UUIDSymbol + Eq_Equals + NULLSymbol
+                                            |   IdNT + INSERT_SETREFSymbol + GraphTypeNT + UUIDSymbol + Eq_Equals + stringLiteral
+                                            |   IdNT + INSERT_SETREFSymbol + GraphTypeNT + UUIDSymbol + Eq_Equals + NULLSymbol
                                             |   IdNT + Eq_Equals + NewListSymbol; 
 
                 return _AttrAssignNT;
@@ -202,7 +202,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
         {
             get
             {
-                _AType.Rule = PandoraTypeNT + ObjectAliasNT;
+                _AType.Rule = GraphTypeNT + ObjectAliasNT;
                 return _AType;
             }
         }
@@ -211,7 +211,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
         {
             get
             {
-                _IdNT.Rule = PandoraTypeNT + DotSymbol + PandoraAttributeNT;
+                _IdNT.Rule = GraphTypeNT + DotSymbol + GraphAttributeNT;
                 return _IdNT;
             }
         }
@@ -243,7 +243,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 NonTerminal ExtraOrdinaryValues = new NonTerminal("ExtraOrdinaryValues");
                 ExtraOrdinaryValues.Rule =      NULLSymbol
-                                            |   NewListSymbol + LISTPrefixSymbol + PandoraTypeNT + LISTPostfixSymbol;
+                                            |   NewListSymbol + LISTPrefixSymbol + GraphTypeNT + LISTPostfixSymbol;
 
                 NonTerminal BasicTypeAtom = new NonTerminal("BasicTypeAtom");
                 BasicTypeAtom.Rule =        IdNT
@@ -264,14 +264,14 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
             }
         }
 
-        protected NonTerminal PandoraTypeNT
+        protected NonTerminal GraphTypeNT
         {
             get
             {
 
-                stringLiteralPandoraType.PandoraOptions.Add(PandoraOption.IsUsedForAutocompletion);
-                _PandoraTypeNT.Rule = stringLiteralPandoraType;
-                return _PandoraTypeNT;
+                stringLiteralGraphType.GraphOptions.Add(GraphOption.IsUsedForAutocompletion);
+                _GraphTypeNT.Rule = stringLiteralGraphType;
+                return _GraphTypeNT;
 
             }
         }
@@ -280,21 +280,21 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
         {
             get
             {
-                stringLiteralObjectAlias.PandoraOptions.Add(PandoraOption.IsUsedForAutocompletion);
+                stringLiteralObjectAlias.GraphOptions.Add(GraphOption.IsUsedForAutocompletion);
                 _ObjectAliasNT.Rule = stringLiteralObjectAlias;
                 return _ObjectAliasNT;
 
             }
         }
 
-        protected NonTerminal PandoraAttributeNT
+        protected NonTerminal GraphAttributeNT
         {
             get
             {
-                stringLiteralPandoraAttribute.PandoraOptions.Add(PandoraOption.IsUsedForAutocompletion);
-                _PandoraAttributeNT.Rule = stringLiteralPandoraAttribute;
+                stringLiteralGraphAttribute.GraphOptions.Add(GraphOption.IsUsedForAutocompletion);
+                _GraphAttributeNT.Rule = stringLiteralGraphAttribute;
                 
-                return _PandoraAttributeNT;
+                return _GraphAttributeNT;
 
             }
         }

@@ -24,7 +24,7 @@ using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
 
-namespace Lib.Hashing.Functions
+namespace sones.Lib.Hashing.Functions
 {
     public class SHA1Hash : IHashFunction
     {

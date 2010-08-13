@@ -22,7 +22,7 @@
  * (c) Henning Rauch, 2009
  * 
  * The "LS"-command of the grammar-based Command Line
- * Interface of the Pandora File System.
+ * Interface of the Graph File System.
  * 
  * Lead programmer:
  *      Henning Rauch
@@ -42,6 +42,7 @@ using sones.Lib.Frameworks.CLIrony.Compiler;
 
 using sones.GraphFS.Session;
 using sones.GraphFS.DataStructures;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
@@ -140,11 +141,11 @@ namespace sones.GraphFS.Connectors.GraphFSCLI
 
             #region Command Rules
 
-//            LS.PandoraOptions.Add(PandoraOption.IsCommandRoot);
+//            LS.GraphOptions.Add(GraphOption.IsCommandRoot);
 
             LS_Options.Rule = stringLiteralPVFS + LS_Option_List
                                 | LS_Option_List;
-            LS_Options.PandoraOptions.Add(PandoraOption.IsOption);
+            LS_Options.GraphOptions.Add(GraphOption.IsOption);
 
             LS_Option_List.Rule = LS_Option + LS_Option_List
                                     | LS_Option;
@@ -176,7 +177,7 @@ namespace sones.GraphFS.Connectors.GraphFSCLI
                                     | LS_Option_Long_all
                                     | LS_Option_Long_almostAll;
 
-            LS_Option_Long.PandoraOptions.Add(PandoraOption.IsOption);
+            LS_Option_Long.GraphOptions.Add(GraphOption.IsOption);
 
             SortBy.Rule = SortByName
                             | SortByDate
@@ -193,7 +194,7 @@ namespace sones.GraphFS.Connectors.GraphFSCLI
 
         #region Execute Command
 
-        public override void Execute(ref object myIGraphFSSession, ref object myIPandoraDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
+        public override void Execute(ref object myIGraphFSSession, ref object myIGraphDBSession, ref String myCurrentPath, Dictionary<String, List<AbstractCLIOption>> myOptions, String myInputString)
         {
 
             _CancelCommand = false;
@@ -207,7 +208,7 @@ namespace sones.GraphFS.Connectors.GraphFSCLI
 
             var _GetDirectoryListingExceptional = ((IGraphFSSession)_IGraphFSSession).GetDirectoryListing(new ObjectLocation(myCurrentPath));
 
-            if (_GetDirectoryListingExceptional != null && _GetDirectoryListingExceptional.Success && _GetDirectoryListingExceptional.Value != null)
+            if (_GetDirectoryListingExceptional.Success() && _GetDirectoryListingExceptional.Value != null)
             {
                 foreach (var _DirectoryEntry in _GetDirectoryListingExceptional.Value)
                 {

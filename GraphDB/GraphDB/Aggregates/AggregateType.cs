@@ -34,6 +34,10 @@ using System.Text;
 
 namespace sones.GraphDB.Aggregates
 {
+
+    /// <summary>
+    /// The valid aggregate types.
+    /// </summary>
     public enum AggregateType
     {
         SUM,
@@ -42,4 +46,5 @@ namespace sones.GraphDB.Aggregates
         MAX,
         MIN
     }
+
 }

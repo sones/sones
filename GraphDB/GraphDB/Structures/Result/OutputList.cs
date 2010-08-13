@@ -28,49 +28,76 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using sones.GraphDB.TypeManagement;
 using sones.Lib.NewFastSerializer;
 
 namespace sones.GraphDB.Structures.Result
 {
     
-    public class OutputList : AObject
+    public class OutputList : IObject
     {
-                
-        #region TypeCode
-        public override UInt32 TypeCode { get { throw new NotImplementedException(); } }
-        #endregion
-        
-        public List<AObject> List { get; set; }
+            
+        public List<IObject> List { get; set; }
         public OutputList()
         {
-            List = new List<AObject>();
+            List = new List<IObject>();
         }
 
-        public override void Serialize(ref SerializationWriter mySerializationWriter)
+        #region IFastSerialize Members
+
+        public bool isDirty
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public DateTime ModificationTime
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public void Serialize(ref SerializationWriter mySerializationWriter)
         {
             throw new NotImplementedException();
         }
 
-        public override void Deserialize(ref SerializationReader mySerializationReader)
+        public void Deserialize(ref SerializationReader mySerializationReader)
         {
             throw new NotImplementedException();
         }
 
-        public override bool SupportsType(Type type)
+        #endregion
+
+        #region IFastSerializationTypeSurrogate Members
+
+        public bool SupportsType(Type type)
         {
             throw new NotImplementedException();
         }
 
-        public override void Serialize(SerializationWriter writer, object value)
+        public void Serialize(SerializationWriter writer, object value)
         {
             throw new NotImplementedException();
         }
 
-        public override object Deserialize(SerializationReader reader, Type type)
+        public object Deserialize(SerializationReader reader, Type type)
         {
             throw new NotImplementedException();
         }
+
+        public uint TypeCode
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        #endregion
+    
     }
+
 }

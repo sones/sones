@@ -23,7 +23,6 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Henning Rauch</developer>
- * <summary>This class has been created in favour of getting compile errors when referencing a type.</summary>
  */
 
 #region usings

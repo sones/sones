@@ -476,21 +476,21 @@ namespace sones.GraphFS.DataStructures
 
         #region IDirectoryListing Members
 
-        #region IPandoraFSReference
+        #region IGraphFSReference
 
-        private IGraphFS _IPandoraFSReference;
+        private IGraphFS _IGraphFSReference;
 
         public IGraphFS IGraphFSReference
         {
 
             get
             {
-                return _IPandoraFSReference;
+                return _IGraphFSReference;
             }
 
             set
             {
-                _IPandoraFSReference = value;
+                _IGraphFSReference = value;
             }
 
         }

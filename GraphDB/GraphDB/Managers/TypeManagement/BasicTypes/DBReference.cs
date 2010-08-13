@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB DBLink DBLink" />
+﻿/* <id name="GraphDB DBLink DBLink" />
  * <copyright file="DBDouble.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -119,70 +119,70 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         #region Operations
 
         [Obsolete("Operator '+' cannot be applied to operands of type 'DBReference' and 'DBReference'")]
-        public static DBReference operator +(DBReference myPandoraObjectA, String myValue)
+        public static DBReference operator +(DBReference myGraphObjectA, String myValue)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '-' cannot be applied to operands of type 'DBReference' and 'DBReference'")]
-        public static DBReference operator -(DBReference myPandoraObjectA, String myValue)
+        public static DBReference operator -(DBReference myGraphObjectA, String myValue)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '*' cannot be applied to operands of type 'DBReference' and 'DBReference'")]
-        public static DBReference operator *(DBReference myPandoraObjectA, String myValue)
+        public static DBReference operator *(DBReference myGraphObjectA, String myValue)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '/' cannot be applied to operands of type 'DBReference' and 'DBReference'")]
-        public static DBReference operator /(DBReference myPandoraObjectA, String myValue)
+        public static DBReference operator /(DBReference myGraphObjectA, String myValue)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '+' cannot be applied to operands of type 'DBReference' and 'DBReference'")]
-        public override ADBBaseObject Add(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Add(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '-' cannot be applied to operands of type 'DBReference' and 'DBReference'")]
-        public override ADBBaseObject Sub(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Sub(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '*' cannot be applied to operands of type 'DBReference' and 'DBReference'")]
-        public override ADBBaseObject Mul(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Mul(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '/' cannot be applied to operands of type 'DBReference' and 'DBReference'")]
-        public override ADBBaseObject Div(ADBBaseObject myPandoraObjectA, ADBBaseObject myPandoraObjectB)
+        public override ADBBaseObject Div(ADBBaseObject myGraphObjectA, ADBBaseObject myGraphObjectB)
         {
-            return myPandoraObjectA;
+            return myGraphObjectA;
         }
 
         [Obsolete("Operator '+' cannot be applied to operands of type 'DBReference' and 'DBReference'")]
-        public override void Add(ADBBaseObject myPandoraObject)
+        public override void Add(ADBBaseObject myGraphObject)
         {
         }
 
         [Obsolete("Operator '-' cannot be applied to operands of type 'DBReference' and 'DBReference'")]
-        public override void Sub(ADBBaseObject myPandoraObject)
+        public override void Sub(ADBBaseObject myGraphObject)
         {
         }
 
         [Obsolete("Operator '*' cannot be applied to operands of type 'DBReference' and 'DBReference'")]
-        public override void Mul(ADBBaseObject myPandoraObject)
+        public override void Mul(ADBBaseObject myGraphObject)
         {
         }
 
         [Obsolete("Operator '/' cannot be applied to operands of type 'DBReference' and 'DBReference'")]
-        public override void Div(ADBBaseObject myPandoraObject)
+        public override void Div(ADBBaseObject myGraphObject)
         {
         }
 

@@ -70,11 +70,11 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
 
         #region Extract
 
-        public override Exceptional<AObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
+        public override Exceptional<IObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
         {
 
             //return new Exceptional<ADBBaseObject>(new DBString(dbObjectStream.ObjectUUID.ToString()));
-            return new Exceptional<AObject>(new DBReference(dbObjectStream.ObjectUUID));
+            return new Exceptional<IObject>(new DBReference(dbObjectStream.ObjectUUID));
 
             //String settingEncoding = (String)graphDBType.GetSettingValue(DBConstants.SettingUUIDEncoding, dbContext.SessionSettings, dbContext.DBTypeManager).Value.Value;
 

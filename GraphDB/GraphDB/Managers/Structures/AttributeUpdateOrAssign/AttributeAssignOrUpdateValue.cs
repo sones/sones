@@ -44,12 +44,12 @@ namespace sones.GraphDB.Managers.Structures
 
         #region override AAttributeAssignOrUpdate.GetValueForAttribute
 
-        public override Exceptional<AObject> GetValueForAttribute(DBObjectStream myDBObject, DBContext myDBContext, GraphDBType myGraphDBType)
+        public override Exceptional<IObject> GetValueForAttribute(DBObjectStream myDBObject, DBContext myDBContext, GraphDBType myGraphDBType)
         {
 
             if (AttributeIDChain.IsUndefinedAttribute)
             {
-                return new Exceptional<AObject>(GraphDBTypeMapper.GetBaseObjectFromCSharpType(Value));
+                return new Exceptional<IObject>(GraphDBTypeMapper.GetBaseObjectFromCSharpType(Value));
             }
 
 
@@ -57,11 +57,11 @@ namespace sones.GraphDB.Managers.Structures
 
             if (GraphDBTypeMapper.IsAValidAttributeType(AttributeIDChain.LastAttribute.GetDBType(myDBContext.DBTypeManager), AttributeAssignType, myDBContext, Value))
             {
-                return new Exceptional<AObject>(GraphDBTypeMapper.GetPandoraObjectFromType(AttributeAssignType, Value)); ;
+                return new Exceptional<IObject>(GraphDBTypeMapper.GetGraphObjectFromType(AttributeAssignType, Value)); ;
             }
             else
             {
-                return new Exceptional<AObject>(new Error_InvalidAttributeValue(AttributeIDChain.LastAttribute.Name, Value));
+                return new Exceptional<IObject>(new Error_InvalidAttributeValue(AttributeIDChain.LastAttribute.Name, Value));
             }
 
             #endregion

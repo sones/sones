@@ -29,7 +29,7 @@ namespace sones.Lib
     {
 
 
-        #region PandoraFSException Superclass
+        #region GraphFSException Superclass
 
         public class FastSerializeException : ApplicationException
         {

@@ -27,28 +27,37 @@
  * <summary>This is the base aggregate class. Each aggregate mus derive this class.<summary>
  */
 
+#region Usings
+
 using System;
 using System.Collections.Generic;
+
 using sones.GraphDB.Errors;
 using sones.GraphDB.Indices;
 using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.Structures.Result;
-using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
 using sones.GraphFS.DataStructures;
-using sones.Lib.ErrorHandling;
 
+using sones.Lib.ErrorHandling;
 using sones.Lib.Session;
+
+#endregion
 
 namespace sones.GraphDB.Aggregates
 {
+
+    /// <summary>
+    /// This is the base aggregate class. Each aggregate mus derive this class.
+    /// </summary>
     public abstract class ABaseAggregate
     {
 
-        public abstract String FunctionName { get; }
-        public abstract AggregateType AggregateType { get; }
-        public abstract TypesOfOperatorResult TypeOfResult { get; }
+        public abstract String                FunctionName  { get; }
+        public abstract AggregateType         AggregateType { get; }
+        public abstract TypesOfOperatorResult TypeOfResult  { get; }
     
         #region (public) Methods
 
@@ -58,7 +67,7 @@ namespace sones.GraphDB.Aggregates
         /// <param name="myDBObjectReadouts">A set of DBObjectReadout or any derived types</param>
         /// <param name="myEdgeKeysToAttributes">The edge</param>
         /// <param name="myTypeManager">TypeManager reference</param>
-        /// <returns>The Value of the PandoraResult contains the plain result of the aggregate</returns>
+        /// <returns>The Value of the GraphResult contains the plain result of the aggregate</returns>
         public abstract Exceptional<Object> Aggregate(IEnumerable<DBObjectReadout> myDBObjectReadouts, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken);
 
         /// <summary>
@@ -67,7 +76,7 @@ namespace sones.GraphDB.Aggregates
         /// <param name="myObjectUUIDs">A set of ObjectUUIDs</param>
         /// <param name="myTypeAttribute">The TypeAttribute</param>
         /// <param name="myTypeManager">TypeManager reference</param>
-        /// <returns>The Value of the PandoraResult contains the plain result of the aggregate</returns>
+        /// <returns>The Value of the GraphResult contains the plain result of the aggregate</returns>
         public abstract Exceptional<Object> Aggregate(IEnumerable<ObjectUUID> myObjectUUIDs, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken);
 
         /// <summary>
@@ -76,8 +85,8 @@ namespace sones.GraphDB.Aggregates
         /// <param name="myAListEdgeType">A ListEdgeType</param>
         /// <param name="myTypeAttribute">The TypeAttribute</param>
         /// <param name="myTypeManager">TypeManager reference</param>
-        /// <returns>The Value of the PandoraResult contains the plain result of the aggregate</returns>
-        public abstract Exceptional<Object> Aggregate(AListEdgeType myAListEdgeType, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken);
+        /// <returns>The Value of the GraphResult contains the plain result of the aggregate</returns>
+        public abstract Exceptional<Object> Aggregate(IListOrSetEdgeType myAListEdgeType, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken);
 
         /// <summary>
         /// Aggregate on a set of ObejctStreams
@@ -85,46 +94,52 @@ namespace sones.GraphDB.Aggregates
         /// <param name="myObjectStreams">A set of ObjectStreams</param>
         /// <param name="myTypeAttribute">The TypeAttribute</param>
         /// <param name="myTypeManager">TypeManager reference</param>
-        /// <returns>The Value of the PandoraResult contains the plain result of the aggregate</returns>
+        /// <returns>The Value of the GraphResult contains the plain result of the aggregate</returns>
         public abstract Exceptional<Object> Aggregate(IEnumerable<Exceptional<ObjectUUID>> myObjectStreams, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken);
 
         public abstract Exceptional<Object> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken);
 
         #endregion
 
-        protected bool HasAttribute(IDictionary<string, object> dboAttr, string attributeName, DBContext myTypeManager)
+        protected Boolean HasAttribute(IDictionary<String, Object> dboAttr, String attributeName, DBContext myTypeManager)
         {
             return dboAttr.ContainsKey(attributeName);
         }
 
-        protected object GetAttribute(IDictionary<string, object> dboAttr, string attributeName, DBContext myTypeManager)
+        protected Object GetAttribute(IDictionary<String, Object> dboAttr, String attributeName, DBContext myTypeManager)
         {
             return dboAttr[attributeName];
         }
 
         public Exceptional<Object> Aggregate(Object myDBObject, TypeAttribute myTypeAttribute, DBContext dbContext, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
         {
+
             if (myDBObject is IEnumerable<DBObjectReadout>)
             {
                 return Aggregate((IEnumerable<DBObjectReadout>)myDBObject, myTypeAttribute, dbContext, myDBObjectCache, mySessionToken);
             }
+
             // from backward edges
             else if (myDBObject is IEnumerable<ObjectUUID>)
             {
                 return Aggregate((IEnumerable<ObjectUUID>)myDBObject, myTypeAttribute, dbContext, myDBObjectCache, mySessionToken);
             }
+
             else if (myDBObject is IEnumerable<Exceptional<ObjectUUID>>) // from Expression graph
             {
                 return Aggregate((IEnumerable<Exceptional<ObjectUUID>>)myDBObject, myTypeAttribute, dbContext, myDBObjectCache, mySessionToken);
             }
-            else if (myDBObject is AListEdgeType)
+
+            else if (myDBObject is IListOrSetEdgeType)
             {
-                return Aggregate((AListEdgeType)myDBObject, myTypeAttribute, dbContext, myDBObjectCache, mySessionToken);
+                return Aggregate((IListOrSetEdgeType)myDBObject, myTypeAttribute, dbContext, myDBObjectCache, mySessionToken);
             }
+
             else if (myDBObject is AttributeIndex)
             {
                 return Aggregate((AttributeIndex)myDBObject, myTypeAttribute, dbContext, myDBObjectCache, mySessionToken);
             }
+
             else if (myDBObject is DBObjectStream)
             {
                 if (((DBObjectStream)myDBObject).HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetDBType(dbContext.DBTypeManager)))
@@ -132,10 +147,14 @@ namespace sones.GraphDB.Aggregates
                 else
                     return new Exceptional<object>((object)null);
             }
+
             else
             {
-                return new Exceptional<object>(new Error_NotImplementedAggregateTarget(myDBObject.GetType()));
+                return new Exceptional<Object>(new Error_NotImplementedAggregateTarget(myDBObject.GetType()));
             }
+
         }
+
     }
+
 }

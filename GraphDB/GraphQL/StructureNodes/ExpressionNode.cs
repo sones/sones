@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – Term node" />
+﻿/* <id name="GraphDB – Term node" />
  * <copyright file="TermNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.

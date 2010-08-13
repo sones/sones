@@ -24,7 +24,7 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Henning Rauch</developer>
- * <summary>The abstract class for all advanced commands of the grammar-based Command Line Interface of the Pandora Database.</summary>
+ * <summary>The abstract class for all advanced commands of the grammar-based Command Line Interface of the Graph Database.</summary>
  */
 
 #region Usings
@@ -40,7 +40,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
     /// <summary>
     /// The abstract class for all advanced commands of the grammar-based
-    /// Command Line Interface of the Pandora Database.
+    /// Command Line Interface of the Graph Database.
     /// </summary>
 
     public abstract class AllAdvancedDBCLICommands : AllGraphDBCLICommands

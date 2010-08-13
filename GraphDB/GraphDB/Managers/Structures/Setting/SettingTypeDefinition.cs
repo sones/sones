@@ -92,7 +92,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
                     if (_DBContext.DBSettingsManager.HasSetting(pSetting.Key.ToUpper()))
                     {
                         var setSettingResult = _DBContext.DBSettingsManager.SetSetting(pSetting.Key.ToUpper(), GetValueForSetting(_DBContext.DBSettingsManager.AllSettingsByName[pSetting.Key.ToUpper()], pSetting.Value), _DBContext, TypesSettingScope.TYPE, Type);
-                        if (setSettingResult.Failed)
+                        if (setSettingResult.Failed())
                         {
                             return new Exceptional<List<SelectionResultSet>>(setSettingResult);
                         }
@@ -126,7 +126,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
                 foreach (var Setting in mySettings)
                 {
                     var removeResult = type.RemovePersistentSetting(Setting.Key.ToUpper(), _DBContext.DBTypeManager);
-                    if (removeResult.Failed)
+                    if (removeResult.Failed())
                     {
                         return new Exceptional<List<SelectionResultSet>>(removeResult);
                     }

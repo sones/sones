@@ -88,7 +88,7 @@ namespace sones.GraphDB.Managers.Structures
 
         #region Indices
 
-        public List<Exceptional<IndexDefinition>> Indices
+        public List<IndexDefinition> Indices
         {
             get;
             private set;
@@ -123,7 +123,7 @@ namespace sones.GraphDB.Managers.Structures
 
         #region Constructor
 
-        public GraphDBTypeDefinition(String myName, String myParentType, Boolean myIsAbstract, Dictionary<AttributeDefinition, String> myAttributes, List<BackwardEdgeDefinition> myBackwardEdgeNodes = null, List<Exceptional<IndexDefinition>> myIndices = null, String myComment = null)
+        public GraphDBTypeDefinition(String myName, String myParentType, Boolean myIsAbstract, Dictionary<AttributeDefinition, String> myAttributes, List<BackwardEdgeDefinition> myBackwardEdgeNodes = null, List<IndexDefinition> myIndices = null, String myComment = null)
         {
 
             Name       = myName;

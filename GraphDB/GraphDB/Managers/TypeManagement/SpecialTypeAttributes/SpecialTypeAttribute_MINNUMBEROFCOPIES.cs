@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.Errors;
-using sones.GraphDB.Structures.Result;
 using sones.GraphDB.TypeManagement.BasicTypes;
 
 namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
@@ -48,9 +44,9 @@ namespace sones.GraphDB.TypeManagement.SpecialTypeAttributes
             return new Exceptional(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
 
-        public override Exceptional<AObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
+        public override Exceptional<IObject> ExtractValue(DBObjectStream dbObjectStream, GraphDBType graphDBType, DBContext dbContext)
         {
-            return new Exceptional<AObject>(new DBUInt64(dbObjectStream.MinNumberOfCopies));
+            return new Exceptional<IObject>(new DBUInt64(dbObjectStream.MinNumberOfCopies));
         }
 
     }

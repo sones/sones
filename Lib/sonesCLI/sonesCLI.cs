@@ -34,7 +34,7 @@ namespace sones.Lib.CLI
     {
 
         /// <summary>
-        /// A grammar-based command line interface for all Pandora
+        /// A grammar-based command line interface for all Graph
         /// subprojects.
         /// </summary>
 
@@ -50,8 +50,8 @@ namespace sones.Lib.CLI
 
         Regex                                   WhiteSpacePattern       = new Regex("[\\s]+");
         
-        Grammar                                 PandoraCLIGrammar       = new Grammar();
-        LanguageCompiler                        PandoraCLICompiler;
+        Grammar                                 GraphCLIGrammar       = new Grammar();
+        LanguageCompiler                        GraphCLICompiler;
         CompilerContext                         _CompilerContext;
         Scanner                                 _Scanner;
         SourceFile                              _SourceFile;
@@ -142,10 +142,10 @@ namespace sones.Lib.CLI
 
         #region Constructors
 
-        #region PandoraCLI()
+        #region GraphCLI()
 
         /// <summary>
-        /// This methods starts a PandoraCLI without any predefined variables.
+        /// This methods starts a GraphCLI without any predefined variables.
         /// Due to telnet usage, there will be NO StartupInformation printed
         /// </summary>
         public sonesCLI()
@@ -161,10 +161,10 @@ namespace sones.Lib.CLI
 
         #endregion
 
-        #region PandoraCLI(myCommandTypes)
+        #region GraphCLI(myCommandTypes)
 
         /// <summary>
-        /// This methods starts a PandoraCLI loading just the requested
+        /// This methods starts a GraphCLI loading just the requested
         /// command types.
         /// </summary>
         public sonesCLI(params Type[] myCommandTypes)
@@ -176,18 +176,18 @@ namespace sones.Lib.CLI
 
         #endregion
 
-        #region PandoraCLI(myPandoraVFS, myPath)
+        #region GraphCLI(myGraphVFS, myPath)
 
         /// <summary>
-        /// This methods starts a PandoraCLI using the given PandoraVFS and myPath
+        /// This methods starts a GraphCLI using the given GraphVFS and myPath
         /// </summary>
-        /// <param name="myPandoraVFS">an already defined virtual file system</param>
+        /// <param name="myGraphVFS">an already defined virtual file system</param>
         /// <param name="myPath">the location/myPath within the file system</param>
-        public sonesCLI(object myPandoraVFS, String myPath)
+        public sonesCLI(object myGraphVFS, String myPath)
             : this()
         {
 
-            _GraphFS  = myPandoraVFS;
+            _GraphFS  = myGraphVFS;
             CurrentPath = myPath;
             ShutDownOnExit = false;
             PrintStartupInformation();
@@ -196,18 +196,18 @@ namespace sones.Lib.CLI
 
         #endregion
 
-        #region PandoraCLI(myPandoraVFS, myPath, params Type[] myCommandTypes)
+        #region GraphCLI(myGraphVFS, myPath, params Type[] myCommandTypes)
 
         /// <summary>
-        /// This methods starts a PandoraCLI using the given PandoraVFS and
+        /// This methods starts a GraphCLI using the given GraphVFS and
         /// myPath loading just the requested command types.
         /// </summary>
-        /// <param name="myPandoraVFS">an already defined virtual file system</param>
+        /// <param name="myGraphVFS">an already defined virtual file system</param>
         /// <param name="myPath">the location/myPath within the file system</param>
-        public sonesCLI(object myPandoraVFS, String myPath, params Type[] myCommandTypes) 
+        public sonesCLI(object myGraphVFS, String myPath, params Type[] myCommandTypes) 
         {
 
-            _GraphFS  = myPandoraVFS;
+            _GraphFS  = myGraphVFS;
             CurrentPath = myPath;
 
             initCli(myCommandTypes);
@@ -218,19 +218,19 @@ namespace sones.Lib.CLI
 
         #region Database Constructors
 
-        #region PandoraCLI(myDatabase, myPandoraVFS, myDatabasePath)
+        #region GraphCLI(myDatabase, myGraphVFS, myDatabasePath)
 
         /// <summary>
-        /// This methods starts a PandoraCLI using the given PandoraVFS and 
-        /// passes a PandoraDB.
+        /// This methods starts a GraphCLI using the given GraphVFS and 
+        /// passes a GraphDB.
         /// </summary>
-        /// <param name="myDatabase"></param>The PandoraDB
-        /// <param name="myPandoraVFS"></param>The PandoraVFS
-        /// <param name="myDatabasePath"></param>The Path to the PandoraDB
-        public sonesCLI(object myDatabase, object myPandoraVFS, String myDatabasePath)
+        /// <param name="myDatabase"></param>The GraphDB
+        /// <param name="myGraphVFS"></param>The GraphVFS
+        /// <param name="myDatabasePath"></param>The Path to the GraphDB
+        public sonesCLI(object myDatabase, object myGraphVFS, String myDatabasePath)
             : this()
         {
-            _GraphFS = myPandoraVFS;
+            _GraphFS = myGraphVFS;
             CurrentPath = myDatabasePath;
             _GraphDB = myDatabase;
             ShutDownOnExit = false;
@@ -240,19 +240,19 @@ namespace sones.Lib.CLI
 
         #endregion
 
-        #region PandoraCLI(myDatabase, myPandoraVFS, myDatabasePath, myCommandTypes)
+        #region GraphCLI(myDatabase, myGraphVFS, myDatabasePath, myCommandTypes)
 
         /// <summary>
-        /// This methods starts a PandoraCLI using the given PandoraVFS and 
-        /// passes a PandoraDB.
+        /// This methods starts a GraphCLI using the given GraphVFS and 
+        /// passes a GraphDB.
         /// </summary>
-        /// <param name="myDatabase"></param>The PandoraDB
-        /// <param name="myPandoraVFS"></param>The PandoraVFS
-        /// <param name="myDatabasePath"></param>The path to the PandoraDB
+        /// <param name="myDatabase"></param>The GraphDB
+        /// <param name="myGraphVFS"></param>The GraphVFS
+        /// <param name="myDatabasePath"></param>The path to the GraphDB
         /// <param name="myCommandTypes"></param>The requested command types
-        public sonesCLI(object myDatabase, object myPandoraVFS, String myDatabasePath, params Type[] myCommandTypes) 
+        public sonesCLI(object myDatabase, object myGraphVFS, String myDatabasePath, params Type[] myCommandTypes) 
         {
-            _GraphFS = myPandoraVFS;
+            _GraphFS = myGraphVFS;
             CurrentPath = myDatabasePath;
             _GraphDB = myDatabase;
 
@@ -260,9 +260,9 @@ namespace sones.Lib.CLI
         }
 
 
-        public sonesCLI(object myDatabase, object myPandoraVFS, String myDatabasePath, Stream myStream, CLI_Output myCLI_Output, params Type[] myCommandTypes)
+        public sonesCLI(object myDatabase, object myGraphVFS, String myDatabasePath, Stream myStream, CLI_Output myCLI_Output, params Type[] myCommandTypes)
         {
-            _GraphFS = myPandoraVFS;
+            _GraphFS = myGraphVFS;
             CurrentPath = myDatabasePath;
             _GraphDB = myDatabase;
             _StreamWriter = new StreamWriter(myStream);
@@ -364,15 +364,15 @@ namespace sones.Lib.CLI
         private void LoadGrammar(params Type[] myCommandTypes)
         {
             FindAndRegisterCLICommands(myCommandTypes);
-            BuildPandoraCLIGrammar();
-            PandoraCLICompiler = new LanguageCompiler(PandoraCLIGrammar);
+            BuildGraphCLIGrammar();
+            GraphCLICompiler = new LanguageCompiler(GraphCLIGrammar);
 
             #region Load Autocompletion
 
             AutoCompletionTypeNames = new HashSet<string>();
-            foreach (Terminal aTerminal in PandoraCLIGrammar.Terminals)
+            foreach (Terminal aTerminal in GraphCLIGrammar.Terminals)
             {
-                if (aTerminal.PandoraOptions.Contains(PandoraOption.IsUsedForAutocompletion))
+                if (aTerminal.GraphOptions.Contains(GraphOption.IsUsedForAutocompletion))
                 {
                     AutoCompletionTypeNames.Add(aTerminal.Name);
                 }
@@ -433,14 +433,14 @@ namespace sones.Lib.CLI
 
                             if (_AddAutoCompletion)
                             {
-                                AllCLIAutocompletions _APandoraCLIAutocompletion = (AllCLIAutocompletions)Activator.CreateInstance(_ActualType);
+                                AllCLIAutocompletions _AGraphCLIAutocompletion = (AllCLIAutocompletions)Activator.CreateInstance(_ActualType);
 
-                                if (AutoCompletions.ContainsKey(_APandoraCLIAutocompletion.Name))
+                                if (AutoCompletions.ContainsKey(_AGraphCLIAutocompletion.Name))
                                     WriteLine("Duplicate autocompletion: " + _ActualType.Name);
 
                                 else
                                 {
-                                    AutoCompletions.Add(_APandoraCLIAutocompletion.Name.ToLower(), _APandoraCLIAutocompletion);
+                                    AutoCompletions.Add(_AGraphCLIAutocompletion.Name.ToLower(), _AGraphCLIAutocompletion);
                                 }
                             }
                         }//
@@ -527,28 +527,28 @@ namespace sones.Lib.CLI
                                 if ((_ActualType.Attributes & TypeAttributes.Abstract) != TypeAttributes.Abstract)
                                 {
 
-                                    var _APandoraCLICommand = (AllCLICommands) Activator.CreateInstance(_ActualType);
-                                    _APandoraCLICommand.SetCLIReference(this);
+                                    var _AGraphCLICommand = (AllCLICommands) Activator.CreateInstance(_ActualType);
+                                    _AGraphCLICommand.SetCLIReference(this);
                                     
-                                    _APandoraCLICommand.CLI_Output = _CLI_Output;
+                                    _AGraphCLICommand.CLI_Output = _CLI_Output;
 
                                     try
                                     {
                                         //lets see, if there is a valid grammar
-                                        Object o = _APandoraCLICommand.CommandGrammar;
+                                        Object o = _AGraphCLICommand.CommandGrammar;
 
-                                        if (Commands.ContainsKey(_APandoraCLICommand.Command))
+                                        if (Commands.ContainsKey(_AGraphCLICommand.Command))
                                             WriteLine("Duplicate command: " + _ActualType.Name);
 
                                         else
                                         {
                                             //                                        WriteLine("Found: " + _ActualType.Name);
-                                            Commands.Add(_APandoraCLICommand.Command, _APandoraCLICommand);
+                                            Commands.Add(_AGraphCLICommand.Command, _AGraphCLICommand);
                                         }
                                     }
                                     catch (NotImplementedException e)
                                     {
-                                        WriteLine("ERROR! The command \"{0}\" has not been specified as a BNF grammar. It will not be integrated into the PandoraCLI! " + e.Message, _APandoraCLICommand.Command);
+                                        WriteLine("ERROR! The command \"{0}\" has not been specified as a BNF grammar. It will not be integrated into the GraphCLI! " + e.Message, _AGraphCLICommand.Command);
                                     }  
                                 }
                             }
@@ -571,14 +571,14 @@ namespace sones.Lib.CLI
 
         #endregion
 
-        #region (private) BuildPandoraCLIGrammar()
+        #region (private) BuildGraphCLIGrammar()
 
-        private void BuildPandoraCLIGrammar()
+        private void BuildGraphCLIGrammar()
         {
 
             #region global grammar options
 
-            PandoraCLIGrammar.CaseSensitive = false;
+            GraphCLIGrammar.CaseSensitive = false;
 
             NonTerminal _Command = new NonTerminal("Command");
 
@@ -607,15 +607,15 @@ namespace sones.Lib.CLI
                 if (isGrammarValid)
                 {
 
-                    PandoraCLIGrammar.NonTerminals.AddRange(_aCommandGrammar.NonTerminals);
+                    GraphCLIGrammar.NonTerminals.AddRange(_aCommandGrammar.NonTerminals);
 
-                    PandoraCLIGrammar.Terminals.AddRange(_aCommandGrammar.Terminals);
+                    GraphCLIGrammar.Terminals.AddRange(_aCommandGrammar.Terminals);
 
                     _SubtreeCommandGrammarRoot.Add(_aCommandGrammar.Root);
                 }
                 else
                 {
-                    WriteLine("ERROR! The command \"{0}\" is defined by an incorrect BNF grammar. It is not integrated into the PandoraCLI!");
+                    WriteLine("ERROR! The command \"{0}\" is defined by an incorrect BNF grammar. It is not integrated into the GraphCLI!");
 
                 }
             }
@@ -640,9 +640,9 @@ namespace sones.Lib.CLI
                 }
             }
  
-            PandoraCLIGrammar.NonTerminals.Add(_Command);
+            GraphCLIGrammar.NonTerminals.Add(_Command);
 
-            PandoraCLIGrammar.Root = _Command;
+            GraphCLIGrammar.Root = _Command;
 
             #endregion
 
@@ -657,7 +657,7 @@ namespace sones.Lib.CLI
 
             if (!IsTelnetCLI)
             {
-                //Console.Title = "sones PandoraCLI v" + CLIVersion.VersionString;
+                //Console.Title = "sones GraphCLI v" + CLIVersion.VersionString;
                 Console.ForegroundColor = ConsoleColor.White;
             }
 
@@ -839,7 +839,7 @@ namespace sones.Lib.CLI
 
             foreach (AstNode aAstNOde in AllNodes)
             {
-                if (aAstNOde.Term.PandoraOptions.Contains(PandoraOption.IsStructuralObject) || aAstNOde.Term.PandoraOptions.Contains(PandoraOption.IsCommandRoot))
+                if (aAstNOde.Term.GraphOptions.Contains(GraphOption.IsStructuralObject) || aAstNOde.Term.GraphOptions.Contains(GraphOption.IsCommandRoot))
                 {
                     ToBeDeleted.Add(aAstNOde);
                 }
@@ -858,7 +858,7 @@ namespace sones.Lib.CLI
             bool _DidIEverDetectAnOption = false;
             foreach (AstNode aAstNOde in AllNodes)
             {
-                if (aAstNOde.Term.PandoraOptions.Contains(PandoraOption.IsOption))
+                if (aAstNOde.Term.GraphOptions.Contains(GraphOption.IsOption))
                 {
                     //wohoo, new Option
                     _IsNewOption = true;
@@ -1061,22 +1061,26 @@ namespace sones.Lib.CLI
             }
             else
             {
-
-                Write(" ");
-                int NumberOfLines = ((InputString.Length + CurrentPath.Length + 3) / Console.WindowWidth) + 1;
-
-                SetCursorPosition(CurrentPath.Length + 3, Console.CursorTop - NumberOfLines + 1);
-                for (int i = 0; i < InputString.Length + 1; i++)
+                try
+                {
                     Write(" ");
+                    int NumberOfLines = ((InputString.Length + CurrentPath.Length + 3) / Console.WindowWidth) + 1;
 
-                SetCursorPosition(CurrentPath.Length + 3, Console.CursorTop - NumberOfLines + 1);
+                    SetCursorPosition(CurrentPath.Length + 3, Console.CursorTop - NumberOfLines + 1);
+                    for (int i = 0; i < InputString.Length + 1; i++)
+                        Write(" ");
+
+                    SetCursorPosition(CurrentPath.Length + 3, Console.CursorTop - NumberOfLines + 1);
+                }
+                catch (Exception)
+                { }
             }
         }
         #endregion
 
-        #region (private) UsePandoraHistory (HistoryList)
+        #region (private) UseGraphHistory (HistoryList)
 
-        private void UsePandoraHistory(ref List<String> HistoryList, ConsoleKeyInfo? myInput)
+        private void UseGraphHistory(ref List<String> HistoryList, ConsoleKeyInfo? myInput)
         {
             #region Data
 
@@ -1450,9 +1454,9 @@ namespace sones.Lib.CLI
 
             #region set up of autocompletion environment
 
-            _Scanner = PandoraCLICompiler.Scanner;
+            _Scanner = GraphCLICompiler.Scanner;
 
-            _CompilerContext = new CompilerContext(PandoraCLICompiler);
+            _CompilerContext = new CompilerContext(GraphCLICompiler);
 
             #endregion
 
@@ -1466,7 +1470,7 @@ namespace sones.Lib.CLI
 
             _TokenStream = _Scanner.BeginNonDetermisticScan();
 
-            tempCompletionList = PandoraCLICompiler.Parser.GetPossibleTokens(_CompilerContext, _TokenStream, Input);
+            tempCompletionList = GraphCLICompiler.Parser.GetPossibleTokens(_CompilerContext, _TokenStream, Input);
 
             #endregion
 
@@ -1698,11 +1702,11 @@ namespace sones.Lib.CLI
 
                                 if (LoadStandardHistory)
                                 {
-                                    UsePandoraHistory(ref NothingMountedList, Input);
+                                    UseGraphHistory(ref NothingMountedList, Input);
                                 }
                                 else
                                 {
-                                    UsePandoraHistory(ref SthMountedList, Input);
+                                    UseGraphHistory(ref SthMountedList, Input);
                                 }
 
                                 #endregion
@@ -2057,9 +2061,9 @@ namespace sones.Lib.CLI
 
                 #region Prepare Command Execution
 
-                _Scanner = PandoraCLICompiler.Scanner;
+                _Scanner = GraphCLICompiler.Scanner;
 
-                _CompilerContext = new CompilerContext(PandoraCLICompiler);
+                _CompilerContext = new CompilerContext(GraphCLICompiler);
 
                 _SourceFile = new SourceFile(InputString, "Source");
 
@@ -2071,13 +2075,13 @@ namespace sones.Lib.CLI
 
                 AstNode ExecutionTree = null;
 
-                ExecutionTree = PandoraCLICompiler.Parser.ParseNonDeterministic(_CompilerContext, _TokenStream);
+                ExecutionTree = GraphCLICompiler.Parser.ParseNonDeterministic(_CompilerContext, _TokenStream);
 
                 #region Checkt if valid command is complete
 
                 if (ExecutionTree == null)
                 {
-                    MarkWrongOption(InputString, PandoraCLICompiler.Parser.GetCorrectElements(_CompilerContext, _TokenStream));
+                    MarkWrongOption(InputString, GraphCLICompiler.Parser.GetCorrectElements(_CompilerContext, _TokenStream));
                 }
                 else
                 {

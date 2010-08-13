@@ -127,7 +127,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
         /// <param name="myMaxDepth">The maximum depth to search</param>
         /// <param name="myMaxPathLength">The maximum path length which shall be analyzed</param>
         /// <returns>A HashSet which contains all found paths. Every path is represented by a List of ObjectUUIDs</returns>m>
-        public HashSet<List<ObjectUUID>> Find(TypeAttribute myTypeAttribute, DBContext myDBContext, DBObjectStream myStart, DBObjectStream myEnd, bool shortestOnly, bool findAll, byte myMaxDepth, byte myMaxPathLength)
+        public HashSet<List<ObjectUUID>> Find(TypeAttribute myTypeAttribute, DBContext myDBContext, DBObjectStream myStart, IReferenceEdge myEdge, DBObjectStream myEnd, bool shortestOnly, bool findAll, byte myMaxDepth, byte myMaxPathLength)
         {
 
             #region declarations
@@ -171,7 +171,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
             
             //check if the EdgeType is ASetReferenceEdgeType
             #region EdgeType is ASetReferenceEdgeType
-            if (myTypeAttribute.EdgeType is ASetReferenceEdgeType)
+            if (myEdge is ASetOfReferencesEdgeType)
             {
                 #region initialize variables
                 //if the maxDepth is greater then maxPathLength, then set maxDepth to maxPathLength
@@ -213,7 +213,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
                 #region check if root node has edge and target has backwardedge
                 var dbo = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), root.Key);
-                if (dbo.Failed)
+                if (dbo.Failed())
                 {
                     throw new NotImplementedException();
                 }
@@ -226,7 +226,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                 }
 
                 var be = myDBContext.DBObjectCache.LoadDBBackwardEdgeStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), target.Key);
-                if (be.Failed)
+                if (be.Failed())
                 {
                     throw new NotImplementedException();
                 }
@@ -397,14 +397,14 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
                         //load DBObject
                         currentDBObjectLeft = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), currentLeft.Key);
-                        if (currentDBObjectLeft.Failed)
+                        if (currentDBObjectLeft.Failed())
                         {
                             throw new NotImplementedException();
                         }
 
                         //load DBObject
                         currentDBObjectRight = myDBContext.DBObjectCache.LoadDBBackwardEdgeStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), new ObjectUUID(currentRight.Key.ToString().TrimStart()));
-                        if (currentDBObjectRight.Failed)
+                        if (currentDBObjectRight.Failed())
                         {
                             throw new NotImplementedException();
                         }
@@ -414,7 +414,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                             && currentDBObjectRight.Value.ContainsBackwardEdge(edgeKey))
                         {
                             //get all referenced ObjectUUIDs using the given Edge                                                
-                            var objectUUIDsLeft = (currentDBObjectLeft.Value.GetAttribute(myTypeAttribute.UUID) as ASetReferenceEdgeType).GetAllReferenceIDs();
+                            var objectUUIDsLeft = (currentDBObjectLeft.Value.GetAttribute(myTypeAttribute.UUID) as ASetOfReferencesEdgeType).GetAllReferenceIDs();
                             Node currentNodeLeft;
 
                             #region check left friends
@@ -636,7 +636,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                         else if (currentDBObjectLeft.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
                         {
                             //get all referenced ObjectUUIDs using the given Edge                                                
-                            var objectUUIDsLeft = (currentDBObjectLeft.Value.GetAttribute(myTypeAttribute.UUID) as ASetReferenceEdgeType).GetAllReferenceIDs();
+                            var objectUUIDsLeft = (currentDBObjectLeft.Value.GetAttribute(myTypeAttribute.UUID) as ASetOfReferencesEdgeType).GetAllReferenceIDs();
                             Node currentNodeLeft;
 
                             #region check left friends
@@ -882,7 +882,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
                         //load DBObject
                         currentDBObjectLeft = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), currentLeft.Key);
-                        if (currentDBObjectLeft.Failed)
+                        if (currentDBObjectLeft.Failed())
                         {
                             throw new NotImplementedException();
                         }
@@ -890,7 +890,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                         if (currentDBObjectLeft.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
                         {
                             //get all referenced ObjectUUIDs using the given Edge                                                
-                            var objectUUIDsLeft = (currentDBObjectLeft.Value.GetAttribute(myTypeAttribute.UUID) as ASetReferenceEdgeType).GetAllReferenceIDs();
+                            var objectUUIDsLeft = (currentDBObjectLeft.Value.GetAttribute(myTypeAttribute.UUID) as ASetOfReferencesEdgeType).GetAllReferenceIDs();
                             Node currentNodeLeft;
 
                             #region check left friends
@@ -1022,7 +1022,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
                         //load DBObject
                         currentDBObjectRight = myDBContext.DBObjectCache.LoadDBBackwardEdgeStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), currentRight.Key);
-                        if (currentDBObjectRight.Failed)
+                        if (currentDBObjectRight.Failed())
                         {
                             throw new NotImplementedException();
                         }
@@ -1138,7 +1138,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
             //check if the EdgeType is ASingleReferenceEdgeType
             #region EdgeType is ASingleReferenceEdgeType
-            else if (myTypeAttribute.EdgeType is ASingleReferenceEdgeType)
+            else if (myEdge is ASingleReferenceEdgeType)
             {
                 #region initialize variables
                 //if the maxDepth is greater then maxPathLength, then set maxDepth to maxPathLength
@@ -1162,7 +1162,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
                 #region check if root node has edge
                 var dbo = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), root.Key);
-                if (dbo.Failed)
+                if (dbo.Failed())
                 {
                     throw new NotImplementedException();
                 }
@@ -1205,7 +1205,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
                     //load DBObject
                     currentDBObjectLeft = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), currentLeft.Key);
-                    if (currentDBObjectLeft.Failed)
+                    if (currentDBObjectLeft.Failed())
                     {
                         throw new NotImplementedException();
                     }

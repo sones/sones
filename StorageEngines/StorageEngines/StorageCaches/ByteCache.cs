@@ -35,7 +35,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 
 using sones.Lib.DataStructures.Big;
-using sones.Libraries.Caches;
+using sones.Lib.Caches;
 
 namespace sones.StorageEngines.Caches
 {

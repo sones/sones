@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – ParametersNode node" />
+﻿/* <id name="GraphDB – ParametersNode node" />
  * <copyright file="ParametersNode.cs
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -41,7 +41,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
             {
                 foreach (var child in parseNode.ChildNodes[1].ChildNodes)
                 {
-                    _ParameterValues.Add(GraphDBTypeMapper.GetPandoraObjectFromTypeName(child.Token.Terminal.GetType().Name, child.Token.Value));
+                    _ParameterValues.Add(GraphDBTypeMapper.GetGraphObjectFromTypeName(child.Token.Terminal.GetType().Name, child.Token.Value));
                 }
             }
         }

@@ -39,7 +39,6 @@ using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
 
-
 #endregion
 
 namespace sones.GraphDB.Structures.ExpressionGraph
@@ -196,7 +195,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                 {
 
                     var tempObject = myDBObjectCache.LoadDBObjectStream(myTypeUUID, GetObjectUUID());
-                    if (tempObject.Failed)
+                    if (tempObject.Failed())
                     {
                         return null;
                     }

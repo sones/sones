@@ -74,10 +74,10 @@ namespace sones.GraphFS.InternalObjects
         public EntitiesObject()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream = FSConstants.ENTITIESSTREAM;
 
             // Object specific data...
@@ -109,7 +109,7 @@ namespace sones.GraphFS.InternalObjects
         #endregion
 
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         #region Clone()
 
@@ -142,7 +142,7 @@ namespace sones.GraphFS.InternalObjects
 
             foreach (EntityUUID _MembershipUUID in MyMembership)
                 if (base.ContainsKey(_MembershipUUID) == Trinary.FALSE)
-                    throw new PandoraFSException_EntityNotFound("The entity could not be added, as the membership includes an unkown EntityUUID: " + _MembershipUUID + "!");
+                    throw new GraphFSException_EntityNotFound("The entity could not be added, as the membership includes an unkown EntityUUID: " + _MembershipUUID + "!");
 
             #endregion
 
@@ -280,7 +280,7 @@ namespace sones.GraphFS.InternalObjects
         /// </summary>
         /// <param name="myEntityUUID">the EntityUUID of the requested entity</param>
         /// <returns>the entity with the given name</returns>
-        /// <exception cref="PandoraFSException_EntityNotFound">if no entity with the given EntityUUID could be found!</exception>
+        /// <exception cref="GraphFSException_EntityNotFound">if no entity with the given EntityUUID could be found!</exception>
         public new Entity this[EntityUUID myEntityUUID]
         {
 
@@ -290,7 +290,7 @@ namespace sones.GraphFS.InternalObjects
                 if (base.ContainsKey(myEntityUUID) == Trinary.TRUE)
                     return base[myEntityUUID];
 
-                throw new PandoraFSException_EntityNotFound("An entity with UUID '" + myEntityUUID + "' could not be found!");
+                throw new GraphFSException_EntityNotFound("An entity with UUID '" + myEntityUUID + "' could not be found!");
 
             }
 
@@ -321,7 +321,7 @@ namespace sones.GraphFS.InternalObjects
         /// </summary>
         /// <param name="myLogin">the login of the requested entity</param>
         /// <returns>the EntityUUID with the given login</returns>
-        /// <exception cref="PandoraFSException_EntityNotFound">if no entity with the given login could be found!</exception>
+        /// <exception cref="GraphFSException_EntityNotFound">if no entity with the given login could be found!</exception>
         public EntityUUID GetEntityUUID(String myLogin)
         {
 
@@ -336,7 +336,7 @@ namespace sones.GraphFS.InternalObjects
                 if (_KeyValuePair.Value.Login.Equals(myLogin))
                     return _KeyValuePair.Key;
 
-            throw new PandoraFSException_EntityNotFound("An entity with login name '" + myLogin + "' could not be found!");
+            throw new GraphFSException_EntityNotFound("An entity with login name '" + myLogin + "' could not be found!");
 
         }
 
@@ -509,7 +509,7 @@ namespace sones.GraphFS.InternalObjects
             #region  Check if the MembershipUUID is valid!
 
             if (base.ContainsKey(myMembershipUUID) != Trinary.TRUE)
-                throw new PandoraFSException_EntityNotFound("An (membership) entity with UUID '" + myMembershipUUID + "' could not be found!");
+                throw new GraphFSException_EntityNotFound("An (membership) entity with UUID '" + myMembershipUUID + "' could not be found!");
 
             #endregion
 
@@ -540,7 +540,7 @@ namespace sones.GraphFS.InternalObjects
 
             foreach (EntityUUID _MembershipUUID in myMembershipUUIDs)
                 if (base.ContainsKey(_MembershipUUID) != Trinary.TRUE)
-                    throw new PandoraFSException_EntityNotFound("An (membership) entity with UUID '" + _MembershipUUID + "' could not be found!");
+                    throw new GraphFSException_EntityNotFound("An (membership) entity with UUID '" + _MembershipUUID + "' could not be found!");
 
             #endregion
 

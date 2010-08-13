@@ -55,8 +55,8 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
                     if (GraphDBTypeMapper.IsBasicType(parseNode.ChildNodes[0].Token.ValueString))
                     {
-                        param = GraphDBTypeMapper.GetPandoraObjectFromTypeName(parseNode.ChildNodes[0].Token.ValueString);
-                        type = ParamType.PandoraType;
+                        param = GraphDBTypeMapper.GetGraphObjectFromTypeName(parseNode.ChildNodes[0].Token.ValueString);
+                        type = ParamType.GraphType;
                     }
                     
                     else

@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – ASettingAttrNode" />
+﻿/* <id name="GraphDB – ASettingAttrNode" />
  * <copyright file="ASettingAttrNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.

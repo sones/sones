@@ -1,4 +1,4 @@
-﻿/* <id name="PandoraDB – InsertOrReplaceNode" />
+﻿/* <id name="GraphDB – InsertOrReplaceNode" />
  * <copyright file="InsertOrReplaceNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -76,9 +76,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes.InsertOrReplace
 
                 }
 
-                if (parseNode.ChildNodes[4] != null && ((WhereExpressionNode)parseNode.ChildNodes[4].AstNode).BinExprNode != null)
+                if (parseNode.ChildNodes[4] != null && ((WhereExpressionNode)parseNode.ChildNodes[4].AstNode).BinaryExpressionDefinition != null)
                 {
-                    _WhereExpression = ((WhereExpressionNode)parseNode.ChildNodes[4].AstNode).BinExprNode.BinaryExpressionDefinition;
+                    _WhereExpression = ((WhereExpressionNode)parseNode.ChildNodes[4].AstNode).BinaryExpressionDefinition;
 
                 }
             }   
@@ -93,7 +93,9 @@ namespace sones.GraphDB.GraphQL.StatementNodes.InsertOrReplace
         public override QueryResult Execute(IGraphDBSession graphDBSession)
         {
 
-            return graphDBSession.InsertOrReplace(_Type, _AttributeAssignList, _WhereExpression);
+            var qresult = graphDBSession.InsertOrReplace(_Type, _AttributeAssignList, _WhereExpression);
+            qresult.AddErrorsAndWarnings(ParsingResult);
+            return qresult;
 
         }
 

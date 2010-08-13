@@ -31,7 +31,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
         #region Properties
 
-        public AObject Value { get; private set; }
+        public IObject Value { get; private set; }
         
         #endregion
 
@@ -74,7 +74,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
                 if (parseNode.ChildNodes.Count >= 3)
                 {
-                    AListBaseEdgeType ListOfDefaults;
+                    IBaseEdge ListOfDefaults;
                     var firstListObject = GraphDBTypeMapper.GetBaseObjectFromCSharpType(parseNode.ChildNodes[2].ChildNodes[0].Token.Value);
                     
 
@@ -101,7 +101,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
                 {
                     
                     var baseObject = GraphDBTypeMapper.GetBaseObjectFromCSharpType(parseNode.ChildNodes[1].Token.Value);
-                    Value = (AObject)baseObject;
+                    Value = (IObject)baseObject;
                 }
 
             }

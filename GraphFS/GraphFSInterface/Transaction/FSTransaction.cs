@@ -87,7 +87,7 @@
 //        {
 //            /*
 //            if (_TransactionDetails.ContainsKey(myObjectLocation))
-//                throw new PandoraFSException_LocationAlreadyHoldTransaction(myObjectLocation);
+//                throw new GraphFSException_LocationAlreadyHoldTransaction(myObjectLocation);
 
 //            _TransactionDetails.Add(myObjectLocation, new TransactionDetail());
 //             */
@@ -105,7 +105,7 @@
 //            if ((myObjectLocator != null && myObjectLocator.TransactionUUID != null && myObjectLocator.TransactionUUID != this.TransactionUUID)
 //                || (myINode != null && myINode.TransactionUUID != null && myINode.TransactionUUID != this.TransactionUUID))
 //            {
-//                throw new PandoraFSException_LocationAlreadyHoldTransaction(myObjectLocation);
+//                throw new GraphFSException_LocationAlreadyHoldTransaction(myObjectLocation);
 //            }
 
 //            if (_TransactionDetails.ContainsKey(myObjectLocation))
@@ -135,7 +135,7 @@
 //        public TransactionDetail GetDetail(String myObjectLocation)
 //        {
 //            if (!_TransactionDetails.ContainsKey(myObjectLocation))
-//                throw new PandoraFSException_NoTransactionFound(myObjectLocation);
+//                throw new GraphFSException_NoTransactionFound(myObjectLocation);
 
 //            return _TransactionDetails[myObjectLocation];
 //        }

@@ -17,27 +17,27 @@
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#region
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.TypeManagement.BasicTypes;
-
-using sones.Lib.ErrorHandling;
-using sones.GraphDB.ObjectManagement;
-
-using sones.GraphDB.TypeManagement;
-using sones.GraphFS.Session;
-using sones.GraphDB.Structures.Result;
-using sones.Lib.Session;
 using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.Lib.ErrorHandling;
+
+#endregion
 
 namespace sones.GraphDB.Functions
 {
+
+    /// <summary>
+    /// This function inserts one or more strings at the given position.
+    /// </summary>
     public class InsertFunc : ABaseFunction
     {
+
         public override string FunctionName
         {
             get { return "INSERT"; }
@@ -58,11 +58,11 @@ namespace sones.GraphDB.Functions
             Parameters.Add(new ParameterValue("StringPart", new DBString(), true));
         }
 
-        public override bool ValidateWorkingBase(TypeAttribute workingBase, DBTypeManager typeManager)
+        public override bool ValidateWorkingBase(IObject workingBase, DBTypeManager typeManager)
         {
             if (workingBase != null)
             {
-                if (workingBase.GetDBType(typeManager).IsUserDefined)
+                if ((workingBase is DBTypeAttribute) && (workingBase as DBTypeAttribute).GetValue().GetDBType(typeManager).IsUserDefined)
                 {
                     return false;
                 }
@@ -99,5 +99,7 @@ namespace sones.GraphDB.Functions
 
             return result;
         }
+
     }
+
 }

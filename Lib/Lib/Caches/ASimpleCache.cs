@@ -41,7 +41,7 @@ using sones.Lib.DataStructures.Timestamp;
 using sones.Lib.Serializer;
 using sones.Lib;
 
-namespace sones.Libraries.Caches
+namespace sones.Lib.Caches
 {
 
     public class ItemRemovedEventArgs<T> : EventArgs
@@ -73,7 +73,12 @@ namespace sones.Libraries.Caches
                 return _Locker_CacheItems;
             }
         }
-        
+
+        public void Clear()
+        {
+            _InternalCache.Clear();
+        }
+
         
         #region Definitions
 
@@ -109,6 +114,14 @@ namespace sones.Libraries.Caches
         protected Boolean _CacheIsClosed = false;
 
         #endregion
+
+        public Boolean IsEmpty
+        {
+            get
+            {
+                return !_InternalCache.Any();
+            }
+        }
 
         #region Constructors
 

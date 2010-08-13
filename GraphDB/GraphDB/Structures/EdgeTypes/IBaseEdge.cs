@@ -19,13 +19,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sones.GraphDB.TypeManagement.BasicTypes;
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
-    public interface IBaseEdge
+    /// <summary>
+    /// Interface for List and Set of base object
+    /// </summary>
+    public interface IBaseEdge : IEdgeType, IListOrSetEdgeType, IEnumerable<ADBBaseObject>
     {
 
         /// <summary>
@@ -68,6 +69,12 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// </summary>
         /// <returns></returns>
         IEnumerable<Tuple<ADBBaseObject, ADBBaseObject>> GetEdges();
+
+        /// <summary>
+        /// Get all data and their edge infos
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<ADBBaseObject> GetBaseObjects();
 
     }
 }

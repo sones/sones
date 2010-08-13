@@ -159,7 +159,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
             //check if root node has edge and target has backwardedge
 
             var dbObject = myDBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myTypeManager), root.Key);
-            if (dbObject.Failed)
+            if (dbObject.Failed())
             {
                 throw new NotImplementedException();
             }
@@ -172,7 +172,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
             }
 
             var be = myDBObjectCache.LoadDBBackwardEdgeStream(myTypeAttribute.GetRelatedType(myTypeManager), target.Key);
-            if (be.Failed)
+            if (be.Failed())
             {
                 throw new NotImplementedException();
             }
@@ -198,23 +198,23 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
                 //load DBObject
                 currentDBObject = myDBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myTypeManager), current.Key);
-                if (currentDBObject.Failed)
+                if (currentDBObject.Failed())
                 {
                     throw new NotImplementedException();
                 }
 
                 if (currentDBObject.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myTypeManager)))
                 {
-                    if (myTypeAttribute.EdgeType is ASetReferenceEdgeType)
+                    if (myTypeAttribute.EdgeType is ASetOfReferencesEdgeType)
                     {
                         //get all referenced ObjectUUIDs using the given Edge                                                
-                        var objectUUIDs = (currentDBObject.Value.GetAttribute(myTypeAttribute.UUID) as ASetReferenceEdgeType).GetAllReferenceIDs();
+                        var objectUUIDs = (currentDBObject.Value.GetAttribute(myTypeAttribute.UUID) as ASetOfReferencesEdgeType).GetAllReferenceIDs();
                         Node tmp;
                         
                         foreach(ObjectUUID dbo in objectUUIDs)
                         {
                             //only for debug
-                            //var tmpObject = myTypeManager.LoadDBObject(myTypeAttribute.RelatedPandoraType, dbo);
+                            //var tmpObject = myTypeManager.LoadDBObject(myTypeAttribute.RelatedGraphType, dbo);
                             
                             //create a new node and set current = parent, tmp = child                            
                             tmp = new Node(dbo, current);                           

@@ -23,25 +23,21 @@
  * Copyright (c) sones GmbH 2007-2010
  * </copyright>
  * <developer>Henning Rauch</developer>
- * <summary>The instances of this class represent a single selection in the selectionList.</summary>
  */
 
 #region Usings
 
 using System;
-using System.Text;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using sones.GraphDB.TypeManagement;
-
-
-
 using sones.Lib;
 
 #endregion
 
 namespace sones.GraphDB.Structures.Result
 {
+
     /// <summary>
     /// The instances of this class represent a single selection in the selectionList.
     /// </summary>
@@ -114,12 +110,11 @@ namespace sones.GraphDB.Structures.Result
 
         #endregion
 
-
         #region Constructor
 
-        public SelectionResultSet(GraphDBType myPandoraType, UInt64 numberOfAffectedObjects)
+        public SelectionResultSet(GraphDBType myGraphType, UInt64 numberOfAffectedObjects)
         {
-            _Type = myPandoraType;
+            _Type = myGraphType;
         }
 
         public SelectionResultSet(IEnumerable<DBObjectReadout> myListOfDBObjectReadout)
@@ -130,9 +125,10 @@ namespace sones.GraphDB.Structures.Result
             : this(new GraphDBType(), new List<DBObjectReadout>(){ myListOfDBObjectReadout })
         { }
 
-        public SelectionResultSet(GraphDBType myPandoraType, IEnumerable<DBObjectReadout> myListOfDBObjectReadout)
+        public SelectionResultSet(GraphDBType myGraphType, IEnumerable<DBObjectReadout> myListOfDBObjectReadout)
         {
-            _Type               = myPandoraType;
+
+            _Type               = myGraphType;
             _Objects            = myListOfDBObjectReadout ?? new List<DBObjectReadout>();
             _SelectedAttributes = new Dictionary<int, Dictionary<String, String>>();
             int Count = 0;
@@ -159,9 +155,9 @@ namespace sones.GraphDB.Structures.Result
         }
 
 
-        public SelectionResultSet(GraphDBType myPandoraType, IEnumerable<DBObjectReadout> myListOfDBObjectReadout, Dictionary<String, String> mySelectedAttributes)
+        public SelectionResultSet(GraphDBType myGraphType, IEnumerable<DBObjectReadout> myListOfDBObjectReadout, Dictionary<String, String> mySelectedAttributes)
         {
-            _Type                   = myPandoraType;
+            _Type                   = myGraphType;
             _Objects                = myListOfDBObjectReadout ?? new List<DBObjectReadout>();
 
             _SelectedAttributes = new Dictionary<int, Dictionary<String, String>>();
@@ -171,7 +167,6 @@ namespace sones.GraphDB.Structures.Result
 
 
         #endregion
-
 
 
         #region IEnumerable<DBObjectReadout> Members
@@ -191,6 +186,7 @@ namespace sones.GraphDB.Structures.Result
         }
 
         #endregion
+
     }
 
 }

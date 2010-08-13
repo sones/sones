@@ -35,7 +35,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
         private Boolean _IsAbstract = false;
         private Dictionary<AttributeDefinition, String> _Attributes = new Dictionary<AttributeDefinition, String>(); //the dictionayry of attribute definitions
         private List<BackwardEdgeDefinition> _BackwardEdgeInformation;
-        private List<Exceptional<IndexDefinition>> _Indices;
+        private List<IndexDefinition> _Indices;
 
         #endregion
 
@@ -47,7 +47,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
         public Boolean IsAbstract { get { return _IsAbstract; } }
         public Dictionary<AttributeDefinition, String> Attributes { get { return _Attributes; } }
         public List<BackwardEdgeDefinition> BackwardEdges { get { return _BackwardEdgeInformation; } }
-        public List<Exceptional<IndexDefinition>> Indices { get { return _Indices; } }
+        public List<IndexDefinition> Indices { get { return _Indices; } }
 
         #endregion
 

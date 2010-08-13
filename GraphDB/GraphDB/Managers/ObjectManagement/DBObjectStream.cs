@@ -34,8 +34,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using sones.GraphDB.Errors;
+using sones.GraphDB.Errors.DBObjectErrors;
 using sones.GraphDB.Exceptions;
-using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
@@ -46,22 +46,20 @@ using sones.GraphFS.Session;
 using sones.Lib.Cryptography.IntegrityCheck;
 using sones.Lib.Cryptography.SymmetricEncryption;
 using sones.Lib.DataStructures;
+using sones.Lib.DataStructures.Indices;
 using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
 using sones.Lib.Session;
-using sones.Lib.DataStructures.Indices;
-using sones.GraphDB.Errors.DBObjectErrors;
 
 #endregion
 
 namespace sones.GraphDB.ObjectManagement
 {
 
-
     /// <summary>
     /// The DBObject carries the myAttributes of a database object.
     /// </summary>
-    public class DBObjectStream : ADictionaryObject<AttributeUUID, AObject>
+    public class DBObjectStream : ADictionaryObject<AttributeUUID, IObject>
     {
 
         public static ObjectLocation GetObjectLocation(GraphDBType myGraphDBType, ObjectUUID myObjectUUID)
@@ -71,23 +69,9 @@ namespace sones.GraphDB.ObjectManagement
 
         #region Properties
 
-        #region type uuid
-
-        public TypeUUID TypeUUID { get; set; }
-
-        #endregion
-
-        #region back edge
-
-        public BackwardEdgeStream BackwardEdges { get; set; }
-
-        #endregion
-
-        #region undefined attributes
-
+        public TypeUUID                  TypeUUID        { get; set; }
+        public BackwardEdgeStream        BackwardEdges   { get; set; }
         public UndefinedAttributesStream UndefAttributes { get; set; }
-
-        #endregion
 
         #endregion
 
@@ -102,10 +86,10 @@ namespace sones.GraphDB.ObjectManagement
         public DBObjectStream()
         {
 
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             _StructureVersion = 1;
 
-            // Members of APandoraObject
+            // Members of AGraphObject
             _ObjectStream = "DBOBJECTSTREAM";
 
             // Object specific data...
@@ -143,7 +127,7 @@ namespace sones.GraphDB.ObjectManagement
         /// This will create an DBObject
         /// </summary>
         /// <param name="myObjectLocation">the location (object myPath and Name) of the requested DBObject within the file system</param>
-        public DBObjectStream(GraphDBType myDBTypeStream, Dictionary<AttributeUUID, AObject> myDBObjectAttributes)
+        public DBObjectStream(GraphDBType myDBTypeStream, Dictionary<AttributeUUID, IObject> myDBObjectAttributes)
             : this(myDBTypeStream)
         {
             if (myDBObjectAttributes == null)
@@ -182,7 +166,7 @@ namespace sones.GraphDB.ObjectManagement
         #endregion
 
 
-        #region Members of APandoraObject
+        #region Members of AGraphObject
 
         #region Clone()
 
@@ -205,7 +189,7 @@ namespace sones.GraphDB.ObjectManagement
 
         #region AddAttribute(myAttributeName, myAttributeValue)
 
-        public Exceptional<ResultType> AddAttribute(AttributeUUID myAttributeUUID, AObject myAttributeValue)
+        public Exceptional<ResultType> AddAttribute(AttributeUUID myAttributeUUID, IObject myAttributeValue)
         {
 
             #region Input validation
@@ -235,9 +219,9 @@ namespace sones.GraphDB.ObjectManagement
 
         #region GetAttribute(myAttributeName)
 
-        public AObject GetAttribute(TypeAttribute myAttribute, GraphDBType myType, DBContext dbContext)
+        public IObject GetAttribute(TypeAttribute myAttribute, GraphDBType myType, DBContext dbContext)
         {
-            AObject RetVal = null;
+            IObject RetVal = null;
 
             if (base.ContainsKey(myAttribute.UUID) == Trinary.TRUE)
                 return base[myAttribute.UUID];
@@ -245,7 +229,7 @@ namespace sones.GraphDB.ObjectManagement
             if (myAttribute is ASpecialTypeAttribute)
             {
                 var extrVal = (myAttribute as ASpecialTypeAttribute).ExtractValue(this, myType, dbContext);
-                if (extrVal.Failed)
+                if (extrVal.Failed())
                 {
                     throw new GraphDBException(extrVal.Errors);
                 }
@@ -264,9 +248,9 @@ namespace sones.GraphDB.ObjectManagement
         /// <param name="mySession">CurrentSession</param>
         /// <exception cref="KeyNotFoundException"></exception>
         /// <returns>The attribute value</returns>        
-        public AObject GetAttribute(AttributeUUID myAttributeUUID, GraphDBType myType, DBContext dbContext)
+        public IObject GetAttribute(AttributeUUID myAttributeUUID, GraphDBType myType, DBContext dbContext)
         {
-            AObject RetVal = null;
+            IObject RetVal = null;
 
             if (base.ContainsKey(myAttributeUUID) == Trinary.TRUE)
                 return base[myAttributeUUID];
@@ -276,7 +260,7 @@ namespace sones.GraphDB.ObjectManagement
             if (typeAttribute is ASpecialTypeAttribute)
             {
                 var extrVal = (typeAttribute as ASpecialTypeAttribute).ExtractValue(this, myType, dbContext);
-                if (extrVal.Failed)
+                if (extrVal.Failed())
                 {
                     throw new GraphDBException(extrVal.Errors);
                 }
@@ -286,7 +270,7 @@ namespace sones.GraphDB.ObjectManagement
             return RetVal;
         }
 
-        public AObject GetAttribute(AttributeUUID myAttributeName)
+        public IObject GetAttribute(AttributeUUID myAttributeName)
         {
             if (base.ContainsKey(myAttributeName) == Trinary.TRUE)
                 return base[myAttributeName];
@@ -305,9 +289,9 @@ namespace sones.GraphDB.ObjectManagement
         /// <param name="myAttributeName">The AttributeUUID</param>
         /// <exception cref="KeyNotFoundException"></exception>
         /// <returns>The attribute value</returns>
-        public IDictionary<AttributeUUID, AObject> GetAttributes()
+        public IDictionary<AttributeUUID, IObject> GetAttributes()
         {
-            return (IDictionary<AttributeUUID, AObject>)this.GetIDictionary();
+            return (IDictionary<AttributeUUID, IObject>)this.GetIDictionary();
         }
 
         #endregion
@@ -319,14 +303,14 @@ namespace sones.GraphDB.ObjectManagement
         /// </summary>
         /// <param name="myTypeManager">the typemanger</param>
         /// <returns></returns>
-        public Exceptional<IDictionary<String, AObject>> GetUndefinedAttributes(DBObjectManager objectManager)
+        public Exceptional<IDictionary<String, IObject>> GetUndefinedAttributes(DBObjectManager objectManager)
         {
             var retVal = LoadUndefAttributes(this.ObjectLocation, objectManager);
             
-            if (retVal.Success)
-                return new Exceptional<IDictionary<String, AObject>>(UndefAttributes.GetAllAttributes());
+            if (retVal.Success())
+                return new Exceptional<IDictionary<String, IObject>>(UndefAttributes.GetAllAttributes());
 
-            return new Exceptional<IDictionary<String, AObject>>(retVal);
+            return new Exceptional<IDictionary<String, IObject>>(retVal);
         }
 
         /// <summary>
@@ -339,7 +323,7 @@ namespace sones.GraphDB.ObjectManagement
         {
             var retVal = LoadUndefAttributes(this.ObjectLocation, objectManager);
             
-            if (retVal.Success)
+            if (retVal.Success())
                 return UndefAttributes.ContainsAttribute(myName);
 
             return new Exceptional<Boolean>(retVal).Value;
@@ -351,23 +335,23 @@ namespace sones.GraphDB.ObjectManagement
         /// <param name="myName">the attribute name</param>
         /// <param name="myTypeManager">the typemanager</param>
         /// <returns>the value for the attribute</returns>
-        public Exceptional<AObject> GetUndefinedAttributeValue(String myName, DBObjectManager objectManager)
+        public Exceptional<IObject> GetUndefinedAttributeValue(String myName, DBObjectManager objectManager)
         {
             var retVal = LoadUndefAttributes(this.ObjectLocation, objectManager);
 
-            if (retVal.Success)
+            if (retVal.Success())
             {
                 if (!UndefAttributes.ContainsAttribute(myName))
                 {
-                    return new Exceptional<AObject>(new Error_UndefinedAttributeNotFound(myName));
+                    return new Exceptional<IObject>(new Error_UndefinedAttributeNotFound(myName));
                 }
                 else
                 {
-                    return new Exceptional<AObject>(UndefAttributes.GetAttributeValue(myName));
+                    return new Exceptional<IObject>(UndefAttributes.GetAttributeValue(myName));
                 }
             }
 
-            return new Exceptional<AObject>(retVal);
+            return new Exceptional<IObject>(retVal);
         }
 
         /// <summary>
@@ -384,7 +368,7 @@ namespace sones.GraphDB.ObjectManagement
             {
                 retVal = objectManager.LoadUndefinedAttributes(myLocation);
 
-                if (retVal.Success)
+                if (retVal.Success())
                     UndefAttributes = retVal.Value;
                 else
                     return new Exceptional<UndefinedAttributesStream>(retVal);
@@ -395,16 +379,16 @@ namespace sones.GraphDB.ObjectManagement
                 return new Exceptional<UndefinedAttributesStream>(UndefAttributes);
         }
 
-        public Exceptional<Boolean> AddUndefinedAttribute(string myName, AObject myValue, DBObjectManager objectManager)
+        public Exceptional<Boolean> AddUndefinedAttribute(string myName, IObject myValue, DBObjectManager objectManager)
         {
             var retVal = LoadUndefAttributes(this.ObjectLocation, objectManager);
 
-            if (retVal.Success)
+            if (retVal.Success())
                 UndefAttributes.AddAttribute(myName, myValue);
 
             var storeExcepts = objectManager.StoreUndefinedAttributes(UndefAttributes);
 
-            if (storeExcepts.Failed)
+            if (storeExcepts.Failed())
                 return new Exceptional<bool>(storeExcepts);
 
             return new Exceptional<bool>(true);
@@ -414,12 +398,12 @@ namespace sones.GraphDB.ObjectManagement
         {
             var retVal = LoadUndefAttributes(this.ObjectLocation, objectManager);
 
-            if (retVal.Success)
+            if (retVal.Success())
                 UndefAttributes.RemoveAttribute(myName);
 
             var storeExcepts = objectManager.StoreUndefinedAttributes(UndefAttributes);
 
-            if (storeExcepts.Failed)
+            if (storeExcepts.Failed())
                 return new Exceptional<bool>(storeExcepts);
 
             return new Exceptional<bool>(true);
@@ -486,7 +470,7 @@ namespace sones.GraphDB.ObjectManagement
 
         #region AlterAttribute(myAttributeName, myAttributeValue)
 
-        public Exceptional<Boolean> AlterAttribute(AttributeUUID myAttributeName, AObject myAttributeValue)
+        public Exceptional<Boolean> AlterAttribute(AttributeUUID myAttributeName, IObject myAttributeValue)
         {
 
             #region input exceptions
@@ -532,7 +516,7 @@ namespace sones.GraphDB.ObjectManagement
         public override String ToString()
         {
             StringBuilder retVal = new StringBuilder("Attributes[" + base.GetIDictionary().Count + "]");
-            foreach (KeyValuePair<AttributeUUID, AObject> attr in base.GetIDictionary())
+            foreach (KeyValuePair<AttributeUUID, IObject> attr in base.GetIDictionary())
             {
                 retVal.AppendLine("\t  #" + attr.Key + " = " + attr.Value);
             }
@@ -562,30 +546,34 @@ namespace sones.GraphDB.ObjectManagement
 
         public Exceptional<Boolean> ContainsBackwardEdge(EdgeKey myEdgeKey, DBContext dbContext, DBObjectCache myObjectCache, GraphDBType myTypeOfDBObject)
         {
+
             if (BackwardEdges == null)
             {
                 var loadExcept = myObjectCache.LoadDBBackwardEdgeStream(dbContext.DBTypeManager.GetTypeAttributeByEdge(myEdgeKey).GetDBType(dbContext.DBTypeManager), this.ObjectUUID);
 
-                if (loadExcept.Failed)
+                if (loadExcept.Failed())
                     return new Exceptional<Boolean>(loadExcept);
 
                 BackwardEdges = loadExcept.Value;
             }
 
             return new Exceptional<bool>(BackwardEdges.ContainsBackwardEdge(myEdgeKey));
+
         }
 
-        public Exceptional<ASetReferenceEdgeType> GetBackwardEdges(EdgeKey myEdgeKey, DBContext dbContext, DBObjectCache myObjectCache, GraphDBType myTypeOfDBObject)
+        public Exceptional<ASetOfReferencesEdgeType> GetBackwardEdges(EdgeKey myEdgeKey, DBContext dbContext, DBObjectCache myObjectCache, GraphDBType myTypeOfDBObject)
         {
+
             var contBackwardExcept = ContainsBackwardEdge(myEdgeKey, dbContext, myObjectCache, myTypeOfDBObject);
 
-            if (contBackwardExcept.Failed)
-                return new Exceptional<ASetReferenceEdgeType>(contBackwardExcept);
+            if (contBackwardExcept.Failed())
+                return new Exceptional<ASetOfReferencesEdgeType>(contBackwardExcept);
             
             if (!contBackwardExcept.Value)
-                return new Exceptional<ASetReferenceEdgeType>(null as ASetReferenceEdgeType);
+                return new Exceptional<ASetOfReferencesEdgeType>(null as ASetOfReferencesEdgeType);
 
-            return new Exceptional<ASetReferenceEdgeType>(BackwardEdges.GetBackwardEdges(myEdgeKey));
+            return new Exceptional<ASetOfReferencesEdgeType>(BackwardEdges.GetBackwardEdges(myEdgeKey));
+
         }
         
         /// <summary>
@@ -599,11 +587,12 @@ namespace sones.GraphDB.ObjectManagement
         /// <param name="myGraphFS2Session"></param>
         public Exceptional<Boolean> AddBackwardEdge(TypeUUID uUIDofType, AttributeUUID uUIDofAttribute, ObjectUUID reference, DBObjectManager objectManager)
         {
+
             if (BackwardEdges == null)
             {
                 var loadExcept = objectManager.LoadBackwardEdge(this.ObjectLocation);
 
-                if (loadExcept.Failed)
+                if (loadExcept.Failed())
                     return new Exceptional<Boolean>(loadExcept);
 
                 BackwardEdges = loadExcept.Value;
@@ -615,7 +604,7 @@ namespace sones.GraphDB.ObjectManagement
 
             var storeExcept = StoreBackwardEdges(_IGraphFSSessionReference.Value);
 
-            if (storeExcept.Failed)
+            if (storeExcept.Failed())
                 return new Exceptional<bool>(storeExcept);
 
             return new Exceptional<bool>(true);
@@ -638,7 +627,7 @@ namespace sones.GraphDB.ObjectManagement
             {
                 var loadExcept = objectManager.LoadBackwardEdge(this.ObjectLocation);
 
-                if (loadExcept.Failed)
+                if (loadExcept.Failed())
                     return new Exceptional<Boolean>(loadExcept);
 
                 BackwardEdges = loadExcept.Value;
@@ -651,7 +640,7 @@ namespace sones.GraphDB.ObjectManagement
 
             var storeExcept = StoreBackwardEdges(_IGraphFSSessionReference.Value);
 
-            if (storeExcept.Failed)
+            if (storeExcept.Failed())
                 return new Exceptional<bool>(storeExcept);
 
             return new Exceptional<bool>(true);
@@ -665,7 +654,7 @@ namespace sones.GraphDB.ObjectManagement
             {
                 var storeExcept = myIGraphFS2Session.StoreFSObject(BackwardEdges, true);
 
-                if (storeExcept.Failed)
+                if (storeExcept.Failed())
                     return new Exceptional<Boolean>(storeExcept);
             }
 
@@ -674,6 +663,7 @@ namespace sones.GraphDB.ObjectManagement
         }        
 
         #endregion
+    
     }
 
 }   

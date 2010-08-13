@@ -22,7 +22,7 @@
  * WebDAVExceptions
  * Achim Friedland, 2009
  * 
- * This is a class for all Pandora WebDAVException
+ * This is a class for all Graph WebDAVException
  * 
  * Lead programmer:
  *      Achim Friedland

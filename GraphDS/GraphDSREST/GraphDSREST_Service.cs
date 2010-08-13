@@ -57,6 +57,13 @@ using sones.Networking;
 using sones.Networking.HTTP;
 using sones.GraphDS.API.CSharp;
 using sones.GraphDB.GraphQL;
+using sones.GraphIO;
+using sones.GraphIO.HTML;
+using sones.GraphIO.XML;
+using sones.GraphIO.TEXT;
+using sones.GraphIO.GEXF;
+using sones.GraphIO.JSON;
+using sones.GraphDB.Warnings;
 
 #endregion
 
@@ -273,7 +280,10 @@ namespace sones.GraphDS.Connectors.REST
 
                         #endregion
 
+                        _QueryResult.AddWarning(new Warning_ObsoleteGQL("EXECDBSCRIPT", "IMPORT FROM '<file or http ressource>' FORMAT GQL"));
+
                     }
+
                     else
                     {
                         _StopWatch.Start();
@@ -300,7 +310,7 @@ namespace sones.GraphDS.Connectors.REST
 
                             _StringBuilder.Append("<p><a href=\"/\">back...</a></p>");
 
-                            _HTMLExport.Export(_QueryResult, _StringBuilder);
+                            _StringBuilder.Append(_QueryResult.ToHTML());
 
                             //if (_QueryResult.ResultType == ResultType.Successful)
                             //{
@@ -348,7 +358,7 @@ namespace sones.GraphDS.Connectors.REST
 
                         var _XMLExport = new XML_IO();
 
-                        var content = Encoding.UTF8.GetBytes(_XMLExport.ExportString(_QueryResult));
+                        var content = _XMLExport.ExportQueryResult(_QueryResult);
                         var _Header = HTTPServer.HTTPContext.ResponseHeader;
 
                         _Header.HttpStatusCode  = HTTPStatusCodes.OK;
@@ -374,7 +384,7 @@ namespace sones.GraphDS.Connectors.REST
 
                         var _GEXFExport = new GEXF_IO();
 
-                        var content = Encoding.UTF8.GetBytes(_GEXFExport.ExportString(_QueryResult));
+                        var content = _GEXFExport.ExportQueryResult(_QueryResult);
                         var _Header = HTTPServer.HTTPContext.ResponseHeader;
 
                         _Header.HttpStatusCode  = HTTPStatusCodes.OK;
@@ -427,7 +437,7 @@ namespace sones.GraphDS.Connectors.REST
 
                         var _JSONExport = new JSON_IO();
 
-                        var content = Encoding.UTF8.GetBytes(_JSONExport.ExportString(_QueryResult));
+                        var content = _JSONExport.ExportQueryResult(_QueryResult);
                         var _Header = HTTPServer.HTTPContext.ResponseHeader;
 
                         _Header.HttpStatusCode  = HTTPStatusCodes.OK;
@@ -500,9 +510,9 @@ namespace sones.GraphDS.Connectors.REST
                     if (HTTPServer.HTTPContext != null)
                         HTTPServer.HTTPContext.ResponseHeader.ContentType = new ContentType("text/plain");
 
-                    #region Start a PandoraCLI // Please refactor me!
+                    #region Start a GraphCLI // Please refactor me!
 
-                    sonesCLI _PandoraCLI;
+                    sonesCLI _GraphCLI;
 
                     if (_GraphDBREST_Settings.Username == null)
                         _GraphDBREST_Settings.Username = "";
@@ -510,20 +520,20 @@ namespace sones.GraphDS.Connectors.REST
                     if (!_SessionSonesCLIs.ContainsKey(_GraphDBREST_Settings.Username))
                     {
                         _MemoryStream = new MemoryStream();
-                        _PandoraCLI = new sonesCLI(_IGraphDBSession, _IGraphFSSession, _IGraphDBSession.DatabaseRootPath, _MemoryStream, CLI_Output.Standard, typeof(AllCLICommands));
-                        _SessionSonesCLIs.Add(_GraphDBREST_Settings.Username, _PandoraCLI);
+                        _GraphCLI = new sonesCLI(_IGraphDBSession, _IGraphFSSession, _IGraphDBSession.DatabaseRootPath, _MemoryStream, CLI_Output.Standard, typeof(AllCLICommands));
+                        _SessionSonesCLIs.Add(_GraphDBREST_Settings.Username, _GraphCLI);
                     }
 
                     else
                     {
-                        _PandoraCLI = _SessionSonesCLIs[_GraphDBREST_Settings.Username];
+                        _GraphCLI = _SessionSonesCLIs[_GraphDBREST_Settings.Username];
                         _MemoryStream = new MemoryStream();
-                        _PandoraCLI.StreamWriter = new StreamWriter(_MemoryStream);
+                        _GraphCLI.StreamWriter = new StreamWriter(_MemoryStream);
                     }
 
                     var sw = new Stopwatch();
 
-                    _PandoraCLI.ReadAndExecuteCommand(_CLIQuery);
+                    _GraphCLI.ReadAndExecuteCommand(_CLIQuery);
                     _MemoryStream.Seek(0, SeekOrigin.Begin);
 
                     var _Header = HTTPServer.HTTPContext.ResponseHeader;
@@ -700,7 +710,7 @@ namespace sones.GraphDS.Connectors.REST
                     _StringBuilder.Append("<p><a href=\"/\">back...</a></p>");
 
                     foreach (var _DBObjectReadout in _QueryResult[0])
-                        new HTML_IO().Export(_DBObjectReadout, _StringBuilder);
+                        _StringBuilder.Append(_DBObjectReadout.ToHTML());
 
                     _StringBuilder.Append("<b>Duration:</b> ").Append(_StopWatch.ElapsedMilliseconds).Append(" ms<br />");
 

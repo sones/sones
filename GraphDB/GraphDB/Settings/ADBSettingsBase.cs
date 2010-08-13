@@ -227,7 +227,7 @@ namespace sones.GraphDB.Settings
             }
             catch (Exception e)
             {
-                throw new PandoraFSException_EntityCouldNotBeDeserialized("ADBSetting could not be deserialized!\n\n" + e);
+                throw new GraphFSException_EntityCouldNotBeDeserialized("ADBSetting could not be deserialized!\n\n" + e);
             }
             #endregion
         }
@@ -269,7 +269,7 @@ namespace sones.GraphDB.Settings
             }
             catch (Exception e)
             {
-                throw new PandoraFSException_EntityCouldNotBeDeserialized("ADBSetting could not be deserialized!\n\n" + e);
+                throw new GraphFSException_EntityCouldNotBeDeserialized("ADBSetting could not be deserialized!\n\n" + e);
             }
 
             #endregion

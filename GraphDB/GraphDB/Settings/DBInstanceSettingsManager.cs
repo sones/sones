@@ -43,7 +43,7 @@ namespace sones.GraphDB.Settings
 {
 
     /// <summary>
-    /// this class holds the setting informations of a PandoraDatabase Instance
+    /// this class holds the setting informations of a GraphDatabase Instance
     /// </summary>
     public class DBInstanceSettingsManager<T> where T: new ()
     {
@@ -64,14 +64,14 @@ namespace sones.GraphDB.Settings
 
         #region Constructor
 
-        #region SettingsManager(myDatabaseRootPath, mySettingsObjectName, myIPandoraFS, CreateIt)
+        #region SettingsManager(myDatabaseRootPath, mySettingsObjectName, myIGraphFS, CreateIt)
 
         /// <summary>
         /// Constructor of the Settings Manager
         /// </summary>
         /// <param name="DatabaseRootPath">the root Path of the Database</param>
         /// <param name="SettingsObjectName">the name of the settings object</param>
-        /// <param name="PandoraVFSInstance">the VFS Instance that handles this Database</param>
+        /// <param name="GraphVFSInstance">the VFS Instance that handles this Database</param>
         /// <param name="CreateIt">should the Instance Settings Metadata be created if it does not exist</param>
         public DBInstanceSettingsManager(ObjectLocation myDatabaseRootPath, IGraphFSSession myIGraphFS, Boolean CreateIt)
         {
@@ -79,7 +79,7 @@ namespace sones.GraphDB.Settings
             #region check if no null values has been handed over
 
             if (myIGraphFS == null)
-                throw new GraphDBException(new Error_ArgumentNullOrEmpty("myIPandoraFS"));
+                throw new GraphDBException(new Error_ArgumentNullOrEmpty("myIGraphFS"));
             else
                 _IGraphFSSession = myIGraphFS;
 
@@ -124,7 +124,7 @@ namespace sones.GraphDB.Settings
                     if (CreateIt)
                     {
 
-                        #region create an empty Database Instance Settings Data structure with default settings and store it on the PandoraFS
+                        #region create an empty Database Instance Settings Data structure with default settings and store it on the GraphFS
 
                         Content = new T();
                         var Serializer = new KeyValuePairSerializer<T>();
@@ -133,7 +133,7 @@ namespace sones.GraphDB.Settings
                         ////HACK: Do not use this!
                         //foreach (var Setting in SerializedSettings)
                         //{
-                        //    myIPandoraFS.SetUserMetadatum(new ObjectLocation(_DatabaseRootPath, _SettingsObjectName), Setting.Key, Setting.Value, IndexSetStrategy.REPLACE);
+                        //    myIGraphFS.SetUserMetadatum(new ObjectLocation(_DatabaseRootPath, _SettingsObjectName), Setting.Key, Setting.Value, IndexSetStrategy.REPLACE);
                         //}
 
                         myIGraphFS.SetUserMetadata(new ObjectLocation(_DatabaseRootPath), SerializedSettings, IndexSetStrategy.REPLACE);
@@ -167,7 +167,7 @@ namespace sones.GraphDB.Settings
             var _Exceptional = new Exceptional();
             var _UserMetadataExceptional = _IGraphFSSession.GetUserMetadata(new ObjectLocation(_DatabaseRootPath));
 
-            if (_UserMetadataExceptional != null && _UserMetadataExceptional.Success && _UserMetadataExceptional.Value != null)
+            if (_UserMetadataExceptional.Success() && _UserMetadataExceptional.Value != null)
             {
 
                 var _KeyValuePairSerializer = new KeyValuePairSerializer<T>();
@@ -200,7 +200,7 @@ namespace sones.GraphDB.Settings
             var _KeyValuePairSerializer  = new KeyValuePairSerializer<T>();
             var _UserMetadataExceptional = _IGraphFSSession.SetUserMetadata(new ObjectLocation(_DatabaseRootPath), _KeyValuePairSerializer.Serialize(Content), IndexSetStrategy.REPLACE);
 
-            if (_UserMetadataExceptional.Failed)
+            if (_UserMetadataExceptional.Failed())
             {
                 _Exceptional = _UserMetadataExceptional.Push(new GraphDBError_CouldNotWriteSettings(new ObjectLocation(_DatabaseRootPath)));
             }

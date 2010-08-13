@@ -91,9 +91,9 @@ namespace sones.GraphDB.Indices
         } 
 
 
-        public Exceptional<Boolean> CheckUniqueConstraint(GraphDBType myPandoraType, IEnumerable<GraphDBType> myParentTypes, Dictionary<AttributeUUID, AObject> toBeCheckedForUniqueConstraint)
+        public Exceptional<Boolean> CheckUniqueConstraint(GraphDBType myGraphType, IEnumerable<GraphDBType> myParentTypes, Dictionary<AttributeUUID, IObject> toBeCheckedForUniqueConstraint)
         {
-            var UniqueAttributes = myPandoraType.GetAllUniqueAttributes(true, _DBContext.DBTypeManager);
+            var UniqueAttributes = myGraphType.GetAllUniqueAttributes(true, _DBContext.DBTypeManager);
 
             if (!UniqueAttributes.IsNullOrEmpty())
             {
@@ -109,7 +109,7 @@ namespace sones.GraphDB.Indices
 
                         if (AttrIndex != null)
                         {
-                            var toBeCheckedIdxKey = GenerateIndexKeyForUniqueConstraint(toBeCheckedForUniqueConstraint, AttrIndex.IndexKeyDefinition, myPandoraType);
+                            var toBeCheckedIdxKey = GenerateIndexKeyForUniqueConstraint(toBeCheckedForUniqueConstraint, AttrIndex.IndexKeyDefinition, myGraphType);
 
                             if (AttrIndex.Contains(toBeCheckedIdxKey, PType, _DBContext))
                             {
@@ -129,7 +129,7 @@ namespace sones.GraphDB.Indices
             var objectLocation = new ObjectLocation(myDBTypeStream.ObjectLocation, DBConstants.DBObjectsLocation);
             var allDBOLocations = _IGraphFSSession.GetFilteredDirectoryListing(objectLocation, null, null, null, new List<String>(new String[] { DBConstants.DBOBJECTSTREAM }), null, null, null, null, null, null);
 
-            if (allDBOLocations.Failed && allDBOLocations.Errors.First().GetType() != typeof(GraphFSError_ObjectLocatorNotFound))
+            if (allDBOLocations.Failed() && allDBOLocations.Errors.First().GetType() != typeof(GraphFSError_ObjectLocatorNotFound))
                 return new Exceptional<ResultType>(allDBOLocations);
 
             try
@@ -145,7 +145,7 @@ namespace sones.GraphDB.Indices
                     {
                         var dbo = _DBContext.DBObjectManager.LoadDBObject(new ObjectLocation(myDBTypeStream.ObjectLocation, DBConstants.DBObjectsLocation, loc));
 
-                        if (dbo.Failed)
+                        if (dbo.Failed())
                         {
                             return new Exceptional<ResultType>(dbo);
                         }
@@ -160,7 +160,7 @@ namespace sones.GraphDB.Indices
                             if (dbo.Value.HasAtLeastOneAttribute(index.IndexKeyDefinition.IndexKeyAttributeUUIDs, myDBTypeStream, null))
                             {
                                 var insertResult = index.Insert(dbo.Value, myIndexSetStrategy, myDBTypeStream, _DBContext);
-                                if (!insertResult.Success)
+                                if (!insertResult.Success())
                                 {
                                     return new Exceptional<ResultType>(insertResult);
                                 }
@@ -176,10 +176,10 @@ namespace sones.GraphDB.Indices
                     _Exceptional.Push(_ex);
                 return _Exceptional;
             }
-            catch (PandoraFSException_IndexKeyAlreadyExist)
+            catch (GraphFSException_IndexKeyAlreadyExist)
             {
                 //NLOG: temporarily commented
-                ////_Logger.ErrorException("PandoraFSException_IndexKeyAlreadyExist", ikae);
+                ////_Logger.ErrorException("GraphFSException_IndexKeyAlreadyExist", ikae);
                 return new Exceptional<ResultType>(new Error_UniqueConstrainViolation(myDBTypeStream.Name, myIndexName));
             }
             catch
@@ -213,7 +213,7 @@ namespace sones.GraphDB.Indices
                 using (var _DBObjectsLocationsExceptional = _IGraphFSSession.GetFilteredDirectoryListing(_ObjectLocation, null, null, null, new List<String>(new String[] { DBConstants.DBOBJECTSTREAM }), null, null, null, null, null, null))
                 {
 
-                    if (_DBObjectsLocationsExceptional.Success && _DBObjectsLocationsExceptional.Value != null)
+                    if (_DBObjectsLocationsExceptional.Success() && _DBObjectsLocationsExceptional.Value != null)
                     {
 
                         var UUIDAttributeUUID = _DBContext.DBTypeManager.GetUUIDTypeAttribute().UUID;
@@ -224,7 +224,7 @@ namespace sones.GraphDB.Indices
                         {
                             var dbo = _DBContext.DBObjectManager.LoadDBObject(new ObjectLocation(userDefinedType.ObjectLocation, DBConstants.DBObjectsLocation, loc));
 
-                            if (dbo.Failed)
+                            if (dbo.Failed())
                             {
                                 return new Exceptional<bool>(dbo);
                             }
@@ -251,7 +251,7 @@ namespace sones.GraphDB.Indices
 
         #region private Helper methods
 
-        private IndexKey GenerateIndexKeyForUniqueConstraint(Dictionary<AttributeUUID, AObject> toBeCheckedForUniqueConstraint, IndexKeyDefinition myIndexKeyDefinition, GraphDBType myType)
+        private IndexKey GenerateIndexKeyForUniqueConstraint(Dictionary<AttributeUUID, IObject> toBeCheckedForUniqueConstraint, IndexKeyDefinition myIndexKeyDefinition, GraphDBType myType)
         {
             var payload = new Dictionary<AttributeUUID, ADBBaseObject>();
             TypeAttribute currentAttribute;
@@ -348,7 +348,7 @@ namespace sones.GraphDB.Indices
             }
 
             var result = _IGraphFSSession.GetOrCreateFSObject<AFSObject>(myObjectLocation, DBConstants.DBINDEXSTREAM, () => myIIndexObject as AFSObject);
-            if (!result.Success)
+            if (!result.Success())
             {
                 return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(result);
             }
@@ -420,7 +420,7 @@ namespace sones.GraphDB.Indices
             {
 
                 var validateResult = createIndexAttributeNode.IndexAttribute.Validate(myDBContext, false, dbObjectType);
-                if (validateResult.Failed)
+                if (validateResult.Failed())
                 {
                     return new Exceptional<SelectionResultSet>(validateResult);
                 }
@@ -428,7 +428,7 @@ namespace sones.GraphDB.Indices
 
                 var validAttrExcept = myDBContext.DBTypeManager.AreValidAttributes(dbObjectType, attrName);
 
-                if (validAttrExcept.Failed)
+                if (validAttrExcept.Failed())
                     throw new GraphDBException(validAttrExcept.Errors);
 
                 if (!validAttrExcept.Value)
@@ -468,7 +468,7 @@ namespace sones.GraphDB.Indices
                 #region Create the index
 
                 var createdIDx = item.CreateAttributeIndex(myDBContext, myIndexName, indexAttributes, myIndexEdition, myIndexType);
-                if (createdIDx.Failed)
+                if (createdIDx.Failed())
                 {
                     return new Exceptional<SelectionResultSet>(createdIDx);
                 }
@@ -491,7 +491,7 @@ namespace sones.GraphDB.Indices
                 #region (Re)build index
 
                 var rebuildResult = myDBContext.DBIndexManager.RebuildIndex(createdIDx.Value.IndexName, createdIDx.Value.IndexEdition, item, IndexSetStrategy.MERGE);
-                if (rebuildResult.Failed)
+                if (rebuildResult.Failed())
                 {
                     return new Exceptional<SelectionResultSet>(rebuildResult);
                 }
@@ -502,7 +502,7 @@ namespace sones.GraphDB.Indices
                 #region Flush type
 
                 var flushResult = myDBContext.DBTypeManager.FlushType(item);
-                if (flushResult.Failed)
+                if (flushResult.Failed())
                 {
                     return new Exceptional<SelectionResultSet>(flushResult);
                 }

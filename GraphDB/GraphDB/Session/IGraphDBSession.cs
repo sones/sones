@@ -42,7 +42,6 @@ using sones.Lib.DataStructures.UUID;
 using sones.Lib.ErrorHandling;
 using sones.Notifications;
 
-
 #endregion
 
 namespace sones.GraphDB

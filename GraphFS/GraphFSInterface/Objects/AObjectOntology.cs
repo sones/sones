@@ -109,7 +109,7 @@ namespace sones.GraphFS.Objects
         protected String _ObjectPath;
 
         /// <summary>
-        /// Stores the ObjectPath of this APandoraObject. Changing this
+        /// Stores the ObjectPath of this AGraphObject. Changing this
         /// property will automagically change the myObjectLocation property.
         /// </summary>
         [NotIFastSerialized]
@@ -145,7 +145,7 @@ namespace sones.GraphFS.Objects
         protected String _ObjectName;
 
         /// <summary>
-        /// Stores the ObjectName of this APandoraObject. Changing this
+        /// Stores the ObjectName of this AGraphObject. Changing this
         /// property will automagically change the myObjectLocation property.
         /// </summary>
         [NotIFastSerialized]
@@ -679,7 +679,7 @@ namespace sones.GraphFS.Objects
         protected UInt64 _ObjectSize;
 
         /// <summary>
-        /// The payload size of this APandoraObject.
+        /// The payload size of this AGraphObject.
         /// </summary>
         [NotIFastSerialized]
         public UInt64 ObjectSize
@@ -698,7 +698,7 @@ namespace sones.GraphFS.Objects
         protected UInt64 _ObjectSizeOnDisc;
 
         /// <summary>
-        /// The payload size of this APandoraObject.
+        /// The payload size of this AGraphObject.
         /// </summary>
         [NotIFastSerialized]
         public UInt64 ObjectSizeOnDisc
@@ -720,7 +720,7 @@ namespace sones.GraphFS.Objects
         /// <summary>
         /// This will set all important variables within this AFSObject.
         /// This will especially create a new ObjectUUID and mark the
-        /// APandoraObject as "new" and "dirty".
+        /// AGraphObject as "new" and "dirty".
         /// </summary>
         public AFSObjectOntology()
         {
@@ -742,12 +742,12 @@ namespace sones.GraphFS.Objects
         /// <summary>
         /// This will set all important variables within this AFSObject.
         /// Additionally it sets the ObjectUUID to the given value and marks
-        /// the APandoraObject as "new" and "dirty".
+        /// the AGraphObject as "new" and "dirty".
         /// </summary>
         public AFSObjectOntology(ObjectUUID myObjectUUID)
             : this()
         {
-            // Members of APandoraStructure
+            // Members of AGraphStructure
             ObjectUUID               = myObjectUUID;
         }
 
