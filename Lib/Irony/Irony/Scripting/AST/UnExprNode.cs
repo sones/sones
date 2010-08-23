@@ -20,7 +20,7 @@ namespace sones.Lib.Frameworks.Irony.Scripting.Ast {
   public class UnExprNode : AstNode {
     public AstNode Arg;
     public string Op;
-    CallDispatcher _dispatcher;
+    CallDispatcher _dispatcher = null;
 
 
     public UnExprNode(NodeArgs args, string op, AstNode arg) : base(args) {

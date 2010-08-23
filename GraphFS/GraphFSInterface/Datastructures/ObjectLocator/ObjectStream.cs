@@ -271,7 +271,7 @@ namespace sones.GraphFS.DataStructures
 
             }
 
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -418,7 +418,7 @@ namespace sones.GraphFS.DataStructures
 
             }
 
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

@@ -22,7 +22,6 @@ using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.Structures.ExpressionGraph;
 using System.Threading.Tasks;
 using sones.Lib;
-using sones.Lib.ErrorHandling;
 using sones.GraphDB.Managers.Select;
 
 #endregion
@@ -1437,7 +1436,7 @@ namespace sones.GraphDB.Managers.Structures
         private Exceptional<Boolean> EvaluateHaving(DBObjectReadoutGroup myDBObjectReadoutGroup, AExpressionDefinition complexValue, out String attributeName, out ValueDefinition simpleValue, DBContext dbContext)
         {
 
-            GraphDBType graphDBType = null;
+            //GraphDBType graphDBType = null;
             attributeName = null;
             simpleValue = null;
 

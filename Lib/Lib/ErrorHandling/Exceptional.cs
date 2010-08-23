@@ -506,7 +506,7 @@ namespace sones.Lib.ErrorHandling
         /// This will internal set Failed=True and Status=False
         /// </summary>
         /// <param name="myException"></param>
-        public Exceptional<TValue> Push(Exceptional myExceptional)
+        new public Exceptional<TValue> Push(Exceptional myExceptional)
         {
             lock (this)
             {

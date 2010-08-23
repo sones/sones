@@ -21,7 +21,6 @@ using sones.GraphDB.Exceptions;
 using sones.GraphDB.Structures.ExpressionGraph;
 using System.Diagnostics;
 using sones.GraphDB.Managers.Select;
-using sones.Lib.ErrorHandling;
 
 #endregion
 

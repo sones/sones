@@ -1,5 +1,9 @@
 sones GraphDB 1.2 (developer) Changelog:
 
+23.08.2010
+- fixed bug 580 (Performance Counter on Windows XP crash)
+- reduced warnings
+
 13.08.2010
 - implemented AttributeUUID to be a UInt16
 - Changed Exceptional.Success|Failed to extension methods in order to check if

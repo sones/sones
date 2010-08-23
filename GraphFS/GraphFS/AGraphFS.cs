@@ -35,7 +35,6 @@ using sones.GraphFS.Events;
 using sones.GraphFS.Caches;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Errors;
-using sones.GraphFS.Events;
 using sones.GraphFS.Exceptions;
 using sones.GraphFS.InternalObjects;
 using sones.GraphFS.Notification;
@@ -1660,7 +1659,7 @@ namespace sones
                         if (myObjectEdition != null && myObjectEdition.Length > 0)
                             _Exceptional.Value.ObjectEdition = myObjectEdition;
 
-                        if (myObjectRevisionID != null && myObjectRevisionID.Timestamp != null && myObjectRevisionID.UUID != null)
+                        if (myObjectRevisionID != null && myObjectRevisionID.Timestamp != 0 && myObjectRevisionID.UUID != null)
                             _Exceptional.Value.ObjectRevisionID = myObjectRevisionID;
 
                     }
@@ -3092,7 +3091,7 @@ namespace sones
 
             }
 
-            catch (Exception e)
+            catch (Exception)
             {
                 _Exceptional.PushT(new GraphFSError_CreateDirectoryFailed(myObjectLocation));
             }
@@ -4245,7 +4244,7 @@ namespace sones
                         {
                             _ListOfKeyValuePairs.Add(new KeyValuePair<String, TValue>(_KeyValuesPair.Key, (TValue)_KeyValuePair));
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                         }
                     }
@@ -4289,7 +4288,7 @@ namespace sones
                             if (_KeyValuesPair.Key.CompareTo(myMinKey) >= 0 && _KeyValuesPair.Key.CompareTo(myMaxKey) <= 0)
                                 _ListOfKeyValuePairs.Add(new KeyValuePair<String, TValue>(_KeyValuesPair.Key, (TValue) _KeyValuePair));
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                         }
                     }
@@ -4336,7 +4335,7 @@ namespace sones
                 {
                     _MetadataObjectExceptional.Value.Remove(myKey, myValue);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                 }
 
@@ -4369,7 +4368,7 @@ namespace sones
                 {
                     _MetadataObjectExceptional.Value.Remove(myKey);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                 }
 
@@ -4413,7 +4412,7 @@ namespace sones
                     {
                         _MetadataObjectExceptional.Value.Remove(_KeyValuesPair.Key, _KeyValuesPair.Value);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                     }
                     

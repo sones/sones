@@ -51,7 +51,6 @@ using sones.Lib.DataStructures;
 using sones.GraphFS.Objects;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Exceptions;
-using sones.GraphFS.DataStructures;
 
 #endregion
 

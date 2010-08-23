@@ -181,7 +181,7 @@ namespace sones.Lib.Caches
 
         #region Contains
 
-        public new Boolean Contains(TKey myKey)
+        public Boolean Contains(TKey myKey)
         {
             return base.ContainsKey(myKey);
         }

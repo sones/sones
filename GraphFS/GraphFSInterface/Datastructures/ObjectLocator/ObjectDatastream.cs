@@ -36,8 +36,6 @@ using sones.Lib.DataStructures;
 using sones.StorageEngines;
 using sones.GraphFS.Objects;
 using sones.GraphFS.InternalObjects;
-using sones.Lib;
-
 #endregion
 
 namespace sones.GraphFS.DataStructures

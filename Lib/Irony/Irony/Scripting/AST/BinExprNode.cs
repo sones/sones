@@ -21,7 +21,7 @@ namespace sones.Lib.Frameworks.Irony.Scripting.Ast {
     public AstNode Left;
     public string Op;
     public AstNode Right;
-    CallDispatcher _dispatcher;
+    CallDispatcher _dispatcher = null;
 
 
     public BinExprNode(NodeArgs args, AstNode left, string op, AstNode right) : base(args) {

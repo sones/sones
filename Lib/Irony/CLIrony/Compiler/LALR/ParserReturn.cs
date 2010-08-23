@@ -113,7 +113,6 @@ namespace sones.Lib.Frameworks.CLIrony.Compiler.Lalr {
         }
 
         #endregion
-
     }
 
 

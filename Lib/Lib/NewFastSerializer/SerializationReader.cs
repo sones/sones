@@ -50,8 +50,8 @@ namespace sones.Lib.NewFastSerializer
 
         #region Fields
 
-        private String[] stringTokenList;
-        private Object[] objectTokens;
+        private String[] stringTokenList = null;
+        private Object[] objectTokens = null;
         UInt64           endPosition;
 
         #endregion Fields

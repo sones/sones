@@ -1198,7 +1198,7 @@ namespace sones.Lib.Caches
 
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     //NLOG: temporarily commented
                     ////_Logger.ErrorException("", ex);

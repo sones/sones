@@ -38,7 +38,6 @@ using sones.Lib.CLI;
 using sones.Lib.DataStructures;
 using sones.GraphFS.Session;
 using sones.GraphFS.DataStructures;
-using sones.Lib.CLI;
 
 #endregion
 

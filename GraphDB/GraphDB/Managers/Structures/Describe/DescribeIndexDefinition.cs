@@ -128,7 +128,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
             _Index.Add("IsUniqueAttributeIndex", myIndex.IsUniqueAttributeIndex);
 
             return new List<DBObjectReadout>() { new DBObjectReadout(_Index) };
-
+            
         }
 
         #endregion

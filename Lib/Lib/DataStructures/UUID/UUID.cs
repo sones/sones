@@ -34,7 +34,6 @@ using System.Runtime.Serialization;
 using sones.Lib;
 using sones.Lib.Serializer;
 using sones.Lib.NewFastSerializer;
-using sones.Lib;
 
 #endregion
 

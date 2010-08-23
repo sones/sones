@@ -318,7 +318,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                 {
                     FileExists = _IGraphFSSession.ObjectStreamExists(new ObjectLocation(FSConstants.FILESTREAM), header.Destination);
                 }
-                catch (GraphFSException_ObjectNotFound E)
+                catch (GraphFSException_ObjectNotFound)
                 {
                     //_Logger.ErrorException(Header.Destination, E);
                     respHeader = CreateHeader(HTTPStatusCodes.Conflict, content.ULongLength(), new ContentType(MediaTypeNames.Text.Plain + "; charset=utf-8"));

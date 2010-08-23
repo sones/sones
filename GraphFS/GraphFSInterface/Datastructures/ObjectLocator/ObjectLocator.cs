@@ -42,7 +42,6 @@ using sones.Lib.DataStructures.UUID;
 using sones.GraphFS.Exceptions;
 using sones.GraphFS.Objects;
 using sones.GraphFS.InternalObjects;
-using sones.Lib;
 
 #endregion
 
@@ -816,7 +815,7 @@ namespace sones.GraphFS.DataStructures
 
             }
 
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -957,7 +956,7 @@ namespace sones.GraphFS.DataStructures
 
             }
 
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

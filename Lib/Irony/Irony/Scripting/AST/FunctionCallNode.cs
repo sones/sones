@@ -24,7 +24,7 @@ namespace sones.Lib.Frameworks.Irony.Scripting.Ast {
   public class FunctionCallNode : AstNode {
     public VarRefNode NameRef;
     public AstNodeList Arguments;
-    private bool _isTail;
+    private bool _isTail = false;
     //If the target method is fixed and statically bound (runtime library function for ex),
     // then this field contains the binding info for the target method
     public FunctionBindingInfo FixedTargetInfo;

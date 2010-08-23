@@ -50,8 +50,6 @@ using sones.Lib.DataStructures;
 using sones.StorageEngines;
 using sones.GraphFS.Exceptions;
 using sones.GraphFS.DataStructures;
-using sones.Lib;
-
 #endregion
 
 namespace sones.GraphFS.InternalObjects

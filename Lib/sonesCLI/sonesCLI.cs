@@ -283,7 +283,7 @@ namespace sones.Lib.CLI
                 ConsoleWindowWidth = Console.WindowWidth;
                 Console.CancelKeyPress += new ConsoleCancelEventHandler(Console_CancelKeyPress);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //NLOG: temporarily commented
                 //_Logger.ErrorException("Console not available ", ex);
@@ -322,7 +322,7 @@ namespace sones.Lib.CLI
 
             _RAMCounter = new PerformanceCounter(); 
             _RAMCounter.CategoryName = "Process";
-            _RAMCounter.CounterName = "Working Set - Private";
+            _RAMCounter.CounterName = "Working Set";
             _RAMCounter.InstanceName = Process.GetCurrentProcess().ProcessName;
 
 #endif
@@ -2193,16 +2193,18 @@ namespace sones.Lib.CLI
 
                         sw.Stop();
 
-                        if (Parameters.Count > 0 && Commands[CurrentCommand].CLI_Output != CLI_Output.Short)
+                        try
                         {
-                            WriteLine("Command took {0}ms, {1:0.0} MB RAM, {2:0.0}% CPU", sw.ElapsedMilliseconds, _RAMCounter.NextValue() / 1024 / 1024, _CPUCounter.NextValue());
+                            if (Parameters.Count > 0 && Commands[CurrentCommand].CLI_Output != CLI_Output.Short)
+                            {
+                                WriteLine("Command took {0}ms, {1:0.0} MB RAM, {2:0.0}% CPU", sw.ElapsedMilliseconds, _RAMCounter.NextValue() / 1024 / 1024, _CPUCounter.NextValue());
+                            }
                         }
-                    //}
-                    //catch (Exception e)
-                    //{
-                    //    WriteLine("Uuups... " + e.Message);
-                    //    WriteLine("StackTrace... " + e.StackTrace);
-                    //}
+                        catch (Exception e)
+                        {
+                            WriteLine("Exception occured: " + e.Message);
+                            WriteLine("StackTrace: " + e.StackTrace);
+                        }
 
                     Reset();
 

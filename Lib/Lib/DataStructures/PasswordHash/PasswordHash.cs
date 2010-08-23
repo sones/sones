@@ -42,7 +42,6 @@ using sones.Lib.Cryptography.IntegrityCheck;
 using System.Threading;
 using sones.Lib.DataStructures.Timestamp;
 using sones.Lib.NewFastSerializer;
-using sones.Lib;
 
 #endregion
 

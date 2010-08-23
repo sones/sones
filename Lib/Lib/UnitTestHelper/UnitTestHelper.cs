@@ -24,7 +24,6 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using sones.Lib.ErrorHandling;
-using sones.Lib.ErrorHandling;
 
 namespace sones.Lib
 {

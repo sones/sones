@@ -67,7 +67,7 @@ namespace sones.GraphDB.TypeManagement
 
         #region Data
 
-        private Boolean isNew = true;
+        new private Boolean isNew = true;
         private GraphDBType _ParentType = null;
 
         #endregion

@@ -961,7 +961,7 @@ namespace sones.GraphDS.API.CSharp
 
             }
 
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -993,7 +993,7 @@ namespace sones.GraphDS.API.CSharp
 
             }
 
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

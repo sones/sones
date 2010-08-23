@@ -535,7 +535,7 @@ namespace sones.StorageEngines.Caches
                     Thread.Sleep(10);
 
                 }
-                catch (ThreadInterruptedException e)
+                catch (ThreadInterruptedException)
                 {
 //                    Debug.WriteLine("[WriteQueueThread] Thread reawaken from start-up sleep (" + e + ")!");
                 }

@@ -78,7 +78,7 @@ namespace sones.GraphFS.DataStructures
 
         #region NewUUID()
 
-        public static EntityUUID NewUUID()
+        new public static EntityUUID NewUUID()
         {
             return new EntityUUID(Guid.NewGuid().ToByteArray());
         }

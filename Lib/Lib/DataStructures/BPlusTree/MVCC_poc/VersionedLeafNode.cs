@@ -285,7 +285,7 @@ namespace sones.Lib.DataStructures.BPlusTree.MVCC
                 var clonedNodeInfo  = new SiblingInfoDTO<TKey, TValue>();
                 var newLeafNodeInfo = new SiblingInfoDTO<TKey, TValue>();
 
-                VersionedLeafNode<TKey, TValue> tmp = null;
+                //VersionedLeafNode<TKey, TValue> tmp = null;
 
                 #region clonedNode Info
 
@@ -393,7 +393,7 @@ namespace sones.Lib.DataStructures.BPlusTree.MVCC
 
                 var clonedNodeInfo = new SiblingInfoDTO<TKey, TValue>();
 
-                VersionedLeafNode<TKey, TValue> tmp;
+                //VersionedLeafNode<TKey, TValue> tmp;
 
                 #region cloneNode Info
 
