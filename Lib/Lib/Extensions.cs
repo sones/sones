@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,13 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /*
  * Extension Class for several things
  * (c) Stefan Licht, 2009-2010
- * Achim Friedland, 2009-2010
+ * (c) Achim Friedland, 2009-2010
  */
 
 #region Usings
@@ -33,6 +33,8 @@ using System.Linq;
 using System.Text;
 using sones.Lib.DataStructures.UUID;
 using System.Collections;
+using System.Xml;
+using System.Reflection;
 
 
 #endregion
@@ -248,24 +250,14 @@ namespace sones.Lib
 
         }
 
-
-        public static String ToAggregatedString<T>(this IEnumerable<T> myEnumerable)
-        {
-
-            if (myEnumerable == null || myEnumerable.Count() == 0)
-                return String.Empty;
-
-            var _StringBuilder = new StringBuilder();
-
-            foreach (var _Item in myEnumerable)
-                _StringBuilder.AppendLine(_Item.ToString());
-
-            return _StringBuilder.ToString();
-
-        }
-
-
-        public static String ToAggregatedString<T>(this IEnumerable<T> myEnumerable, Func<T, String> stringRepresentation)
+        /// <summary>
+        /// For performance speedup this is a kind of dooplicated ToAggregatedString<T>(this IEnumerable<T> myEnumerable, Func<T, String> myStringRepresentation = null, String mySeperator = ", ")
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="myEnumerable"></param>
+        /// <param name="mySeperator"></param>
+        /// <returns></returns>
+        public static String ToAggregatedString<T>(this IEnumerable<T> myEnumerable, Char mySeperator = ' ')
         {
 
             if (myEnumerable == null || myEnumerable.Count() == 0)
@@ -275,9 +267,35 @@ namespace sones.Lib
 
             foreach (var _Item in myEnumerable)
             {
-                _StringBuilder.Append(stringRepresentation(_Item) + ", ");
+                _StringBuilder.Append(_Item);
+                _StringBuilder.Append(mySeperator);
             }
-            _StringBuilder.Length = _StringBuilder.Length - 2;
+            _StringBuilder.Length = _StringBuilder.Length - 1;
+
+            return _StringBuilder.ToString();
+
+        }
+
+        public static String ToAggregatedString<T>(this IEnumerable<T> myEnumerable, Func<T, String> myStringRepresentation = null, String mySeperator = ", ")
+        {
+
+            if (myEnumerable == null || myEnumerable.Count() == 0)
+                return String.Empty;
+
+            var _StringBuilder = new StringBuilder();
+
+            foreach (var _Item in myEnumerable)
+            {
+                if (myStringRepresentation != null)
+                {
+                    _StringBuilder.Append(myStringRepresentation(_Item) + mySeperator);
+                }
+                else
+                {
+                    _StringBuilder.Append(_Item + mySeperator);
+                }
+            }
+            _StringBuilder.Length = _StringBuilder.Length - mySeperator.Length;
 
             return _StringBuilder.ToString();
 
@@ -832,18 +850,14 @@ namespace sones.Lib
         public static String ToString(this Exception exception, Boolean includeInnerExceptions)
         {
             StringBuilder ret = new StringBuilder();
-            ret.AppendLine("Message: " + exception.Message);
-            ret.AppendLine("Stacktrace: " + exception.StackTrace);
+            ret.AppendLine("Exception: " + exception.ToString());
 
-            Exception innerException = exception.InnerException;
-            while (innerException != null && includeInnerExceptions)
+            if (exception.InnerException != null && includeInnerExceptions)
             {
-                ret.AppendLine("InnerException: " + innerException.Message);
-                ret.AppendLine("Stacktrace: " + exception.StackTrace);
+                ret.AppendLine("InnerException: " + exception.InnerException.ToString(true));
                 ret.AppendLine("");
-                innerException = exception.InnerException;
             }
-
+            
             return ret.ToString();
         }
 
@@ -861,6 +875,44 @@ namespace sones.Lib
         public static DateTime FromUnixTimeStamp(this Int64 myTimestamp)  
         {
             return _UNIXEpoch.AddTicks(myTimestamp);
+        }
+
+        #endregion
+
+        #region Where
+
+        public static IEnumerable<XmlElement> Where(this XmlNodeList xmlNodes, Func<XmlNode, Boolean> predicate)
+        {
+
+            foreach (var node in xmlNodes)
+            {
+                if (predicate(node as XmlElement))
+                {
+                    yield return node as XmlElement;
+                }
+            }
+            
+            yield break;
+
+        }
+
+        #endregion
+
+        #region AnonymousTypeToDictionary(myAnonymousType) {
+
+        public static IDictionary<String, Object> AnonymousTypeToDictionary(this Object myAnonymousType) {
+
+            var _Attributes = BindingFlags.Public | BindingFlags.Instance;
+            var _Dictionary = new Dictionary<String, Object>();
+            
+            foreach (var _Property in myAnonymousType.GetType().GetProperties(_Attributes)) {
+                if (_Property.CanRead) {
+                    _Dictionary.Add(_Property.Name, _Property.GetValue(myAnonymousType, null));
+                }
+            }
+
+            return _Dictionary;
+
         }
 
         #endregion

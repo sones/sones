@@ -1,13 +1,32 @@
-﻿using System;
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using sones.Lib.ErrorHandling;
-using sones.GraphDB.TypeManagement;
-using sones.GraphDB.Structures.Result;
+using sones.GraphDB.Errors;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.Structures.EdgeTypes;
-using sones.GraphDB.Errors;
+using sones.GraphDB.TypeManagement;
+using sones.Lib.ErrorHandling;
+using sones.GraphDBInterface.TypeManagement;
 
 namespace sones.GraphDB.Managers.Structures
 {
@@ -88,16 +107,25 @@ namespace sones.GraphDB.Managers.Structures
 
                     if (!loadExcept.Value.ContainsKey(AttributeIDChain.UndefinedAttribute))
                     {
-                        var addExcept = myDBContext.DBObjectManager.AddUndefinedAttribute(AttributeIDChain.UndefinedAttribute, new EdgeTypeListOfBaseObjects(), myDBObjectStream);
+
+                        undefAttrList = new EdgeTypeListOfBaseObjects();
+
+                        var addExcept = myDBContext.DBObjectManager.AddUndefinedAttribute(AttributeIDChain.UndefinedAttribute, undefAttrList, myDBObjectStream);
 
                         if (addExcept.Failed())
                             return new Exceptional<Dictionary<String, Tuple<TypeAttribute, IObject>>>(addExcept);
                     }
 
-                    if (!(loadExcept.Value[AttributeIDChain.UndefinedAttribute] is EdgeTypeListOfBaseObjects))
+                    else if (!(loadExcept.Value[AttributeIDChain.UndefinedAttribute] is EdgeTypeListOfBaseObjects))
+                    {
                         return new Exceptional<Dictionary<String, Tuple<TypeAttribute, IObject>>>(new Error_InvalidAttributeKind());
+                    }
 
-                    undefAttrList = (EdgeTypeListOfBaseObjects)loadExcept.Value[AttributeIDChain.UndefinedAttribute];
+                    else
+                    {
+                        undefAttrList = (EdgeTypeListOfBaseObjects) loadExcept.Value[AttributeIDChain.UndefinedAttribute];
+                    }
+
                 }
 
                 var elementsToBeAddedEdge = (IBaseEdge)undefAttrList.GetNewInstance();
@@ -165,7 +193,11 @@ namespace sones.GraphDB.Managers.Structures
                 }
                 else
                 {
-
+                    if (AttributeIDChain.LastAttribute.EdgeType == null)
+                    {
+                        return new Exceptional<Dictionary<String, Tuple<TypeAttribute, IObject>>>(new Error_InvalidEdgeType(AttributeIDChain.LastAttribute.GetType()));
+                    }
+                    
                     var result = CollectionDefinition.TupleDefinition.GetCorrespondigDBObjectUUIDAsList(myGraphDBType, myDBContext, AttributeIDChain.LastAttribute.EdgeType.GetNewInstance(), AttributeIDChain.LastAttribute.GetDBType(myDBContext.DBTypeManager));
                     if (result.Failed())
                     {

@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,11 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-/* <id name="sones GraphDB – BidirectionalBFS" />
+/* <id name="GraphDB � BidirectionalBFS" />
  * <copyright file="BidirectionalBFS.cs"
  *            company="sones GmbH">
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Martin Junghanns</developer>
  * <developer>Michael Woidak</developer>
@@ -100,13 +102,13 @@ using sones.GraphDB.Structures.EdgeTypes;
 using sones.Lib.DataStructures.Big;
 using sones.Lib.ErrorHandling;
 
-using GraphAlgorithms.PathAlgorithm.BFSTreeStructure;
+using sones.GraphAlgorithms.PathAlgorithm.BFSTreeStructure;
 using sones.GraphFS.DataStructures;
 using sones.GraphDB;
 
 #endregion
 
-namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
+namespace sones.GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 {
 
     public class BidirectionalBFS
@@ -129,7 +131,6 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
         /// <returns>A HashSet which contains all found paths. Every path is represented by a List of ObjectUUIDs</returns>m>
         public HashSet<List<ObjectUUID>> Find(TypeAttribute myTypeAttribute, DBContext myDBContext, DBObjectStream myStart, IReferenceEdge myEdge, DBObjectStream myEnd, bool shortestOnly, bool findAll, byte myMaxDepth, byte myMaxPathLength)
         {
-
             #region declarations
             //queue for BFS
             var queueLeft  = new Queue<Node>();
@@ -139,92 +140,144 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
             var visitedNodesLeft  = new BigDictionary<ObjectUUID, Node>();
             var visitedNodesRight = new BigDictionary<ObjectUUID, Node>();
 
-            //current depth
-            byte depthLeft = 1;
+            //set current depth left
+            byte depthLeft = 2;
+            //set current depth right
             byte depthRight = 1;
             
             //maximum depth
             byte maxDepthLeft = 0;
             byte maxDepthRight = 0;
 
+            #region initialize maxDepths
+            //if the maxDepth is greater then maxPathLength, then set maxDepth to maxPathLength
+            if (myMaxDepth > myMaxPathLength)
+            {
+                myMaxDepth = myMaxPathLength;
+            }
+
+            //set depth for left side
+            maxDepthLeft = Convert.ToByte(myMaxDepth / 2 + 1);
+
+            //if myMaxDepth is 1 maxDepthRight keeps 0, just one side is searching
+            if (myMaxDepth > 1)
+            {
+                //both sides have the same depth
+                maxDepthRight = maxDepthLeft;
+            }
+
+            //if myMaxDepth is even, one side has to search in a greater depth
+            if ((myMaxDepth % 2) == 0)
+            {
+                maxDepthRight = Convert.ToByte(maxDepthLeft - 1);
+            }
+            #endregion
+
             //shortest path length
             byte shortestPathLength = 0;
 
-            //first node in path tree, the start of the select
-            var root = new Node(myStart.ObjectUUID);
             //target node, the target of the select
             var target = new Node(myEnd.ObjectUUID);
+            var root = new Node(myStart.ObjectUUID);
+            HashSet<ObjectUUID> rootFriends = new HashSet<ObjectUUID>();
 
             //dummy node to check in which level the BFS is
             var dummyLeft = new Node();
             var dummyRight = new Node();
 
+            #region get friends of startElement and check if they are the target and valid
+            //instead of inserting only the startObject, we are using the startObject and the friends of the startObject (which could be restricted)
+            var firstUUIDs = myEdge.GetAllReferenceIDs();
+
+            for (int i = 0; i < firstUUIDs.Count(); i++)
+            {
+                var element = firstUUIDs.ElementAt(i);
+
+                if (element != null)
+                {
+                    //create a new node and set root = parent
+                    var currentNodeLeft = new Node(element); 
+                    
+                    #region check if the child is the target
+                    //start and target are conntected directly
+                    if (currentNodeLeft.Key == myEnd.ObjectUUID)
+                    {
+                        //set depthRight to zero
+                        depthRight = 0;
+
+                        //add node (which coud be the target) to startFriends (if start and target are directly connected, the target in the rootFriends list is needed)
+                        rootFriends.Add(currentNodeLeft.Key);
+
+                        shortestPathLength = Convert.ToByte(depthLeft);
+                        
+                        return new TargetAnalyzer(root, rootFriends, target, shortestPathLength, shortestOnly, findAll).getPaths();
+                    }
+                    #endregion check if the child is the target
+
+                    //check if element has edge
+                    var dbo = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), currentNodeLeft.Key);
+                    if (dbo.Failed())
+                    {
+                        continue;
+                    }
+
+                    if (!dbo.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
+                    {
+                        continue;
+                    }
+
+                    //enqueue node to start from left side
+                    queueLeft.Enqueue(currentNodeLeft);
+
+                    //add node to visitedNodes
+                    visitedNodesLeft.Add(currentNodeLeft.Key, currentNodeLeft);
+
+                    //add node to startFriends
+                    rootFriends.Add(currentNodeLeft.Key);
+                }
+            }
+            #endregion get friends of startElement and check if they are the target and valid
+
+            //elements of myEdge doesn't have edge
+            if (visitedNodesLeft.Count == 0)
+            {
+                return null;
+            }
+
+            //check if target already found
+            if (shortestPathLength != 0)
+            {
+                return new TargetAnalyzer(root, rootFriends, target, shortestPathLength, shortestOnly, findAll).getPaths();
+            }
+
+            //enqueue dummyLeft to analyze the depth of the left side
+            queueLeft.Enqueue(dummyLeft);
+                
             //holds the key of the backwardedge
             var edgeKey = new EdgeKey(myTypeAttribute);
 
             //holds the actual DBObject
             Exceptional<DBObjectStream> currentDBObjectLeft;
             Exceptional<BackwardEdgeStream> currentDBObjectRight;
-            #endregion
+            #endregion declarations
 
             #region BidirectionalBFS
-            
             //check if the EdgeType is ASetReferenceEdgeType
             #region EdgeType is ASetReferenceEdgeType
             if (myEdge is ASetOfReferencesEdgeType)
             {
                 #region initialize variables
-                //if the maxDepth is greater then maxPathLength, then set maxDepth to maxPathLength
-                if (myMaxDepth > myMaxPathLength)
-                {
-                    myMaxDepth = myMaxPathLength;
-                }
-
-                //set depth for left side
-                maxDepthLeft = Convert.ToByte(myMaxDepth / 2 + 1);
-
-                //if myMaxDepth is 1 maxDepthRight keeps 0, just one side is searching
-                if (myMaxDepth > 1)
-                {
-                    //both sides have the same depth
-                    maxDepthRight = maxDepthLeft;
-                }
-
-                //if myMaxDepth is even, one side has to search in a greater depth
-                if ((myMaxDepth % 2) == 0)
-                {
-                    maxDepthRight = Convert.ToByte(maxDepthLeft - 1);
-                }
-
-                //enqueue root node to start from left side
-                queueLeft.Enqueue(root);
                 //enqueue target node to start from right side
                 queueRight.Enqueue(target);
 
-                //enqueue dummyLeft to analyze the depth of the left side
-                queueLeft.Enqueue(dummyLeft);
                 //enqueue dummyRight to analyze the depth of the right side
                 queueRight.Enqueue(dummyRight);
 
                 //add root and target to visitedNodes
-                visitedNodesLeft.Add(root.Key, root);
                 visitedNodesRight.Add(target.Key, target);
-                #endregion
+                #endregion initialize variables
 
-                #region check if root node has edge and target has backwardedge
-                var dbo = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), root.Key);
-                if (dbo.Failed())
-                {
-                    throw new NotImplementedException();
-                }
-
-                if (!dbo.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
-                {
-                    ////_Logger.Info("Abort search! Start object has no edge!");
-                    //Console.WriteLine("No paths found!");
-                    return null;
-                }
-
+                #region check if target has backwardedge
                 var be = myDBContext.DBObjectCache.LoadDBBackwardEdgeStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), target.Key);
                 if (be.Failed())
                 {
@@ -233,33 +286,17 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
                 if (!be.Value.ContainsBackwardEdge(edgeKey))
                 {
-                    ////_Logger.Info("Abort search! End object has no backwardedge!");
-                    //Console.WriteLine("No paths found!");
                     return null;
                 }
-                #endregion
+                #endregion check if target has backwardedge
 
                 //if there is more than one object in the queue and the actual depth is less than MaxDepth
                 while (((queueLeft.Count > 0) && (queueRight.Count > 0)) && ((depthLeft <= maxDepthLeft) || (depthRight <= maxDepthRight)))
                 {
                     #region both queues contain objects and both depths are not reached
-                    #region logging
-
-                    if (queueLeft.Count % 1000 == 0)
-                    {
-                        ////_Logger.Info(queueLeft.Count + " elements in the left queue..");
-                    }
-
-                    if (queueRight.Count % 1000 == 0)
-                    {
-                        ////_Logger.Info(queueRight.Count + " elements in the right queue..");
-                    }
-
-                    #endregion
-
                     if (((queueLeft.Count > 0) && (queueRight.Count > 0)) && ((depthLeft <= maxDepthLeft) && (depthRight <= maxDepthRight)))
                     {
-                        //hold the first element of the queue
+                        //hold the actual element of the queues
                         Node currentLeft;
                         Node currentRight;
 
@@ -386,15 +423,16 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                 queueRight.Enqueue(dummyRight);
                             }
                         }
-                        #endregion
+                        #endregion check if there is a dummyNode at the beginning of a queue
 
                         #region get first nodes of the queues
                         //get the first Object of the queue
                         currentLeft = queueLeft.Dequeue();
                         //get the first Object of the queue
                         currentRight = queueRight.Dequeue();
-                        #endregion
+                        #endregion get first nodes of the queues
 
+                        #region load DBObjects
                         //load DBObject
                         currentDBObjectLeft = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), currentLeft.Key);
                         if (currentDBObjectLeft.Failed())
@@ -408,6 +446,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                         {
                             throw new NotImplementedException();
                         }
+                        #endregion load DBObjects
 
                         #region the edge and the backwardedge are existing
                         if (currentDBObjectLeft.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager))
@@ -420,16 +459,39 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                             #region check left friends
                             foreach (ObjectUUID dboLeft in objectUUIDsLeft)
                             {
-                                //create a new node and set currentLeft = parent
-                                currentNodeLeft = new Node(dboLeft, currentLeft);
-
                                 #region if the child is the target
-                                if (currentNodeLeft.Key == myEnd.ObjectUUID)
+                                if (dboLeft == myEnd.ObjectUUID)
                                 {
                                     //set currentLeft as parent of target
                                     target.addParent(currentLeft);
 
-                                    #region found match node
+                                    #region check if already visited
+                                    if (visitedNodesLeft.ContainsKey(dboLeft))
+                                    {
+                                        //set currentLeft as parent
+                                        visitedNodesLeft[dboLeft].addParent(currentLeft);
+
+                                        //set currentNodeLeft as child
+                                        currentLeft.addChild(visitedNodesLeft[dboLeft]);
+                                    }
+                                    else
+                                    {
+                                        //create a new node and set currentLeft = parent
+                                        currentNodeLeft = new Node(dboLeft, currentLeft);
+
+                                        //set currentNodeLeft as child of currentLeft
+                                        currentLeft.addChild(currentNodeLeft);
+
+                                        //never seen before
+                                        //mark the node as visited
+                                        visitedNodesLeft.Add(currentNodeLeft.Key, currentNodeLeft);
+
+                                        //and put node into the queue
+                                        queueLeft.Enqueue(currentNodeLeft);
+                                    }
+                                    #endregion check if already visited
+
+                                    #region check how much parents are searched
                                     if (shortestOnly && !findAll)
                                     {
                                         //_Logger.Info("found shortest path..starting analyzer");
@@ -443,7 +505,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                             shortestPathLength = Convert.ToByte(depthLeft + depthRight + 1);
                                         }
 
-                                        return new TargetAnalyzer(root, target, shortestPathLength, shortestOnly, findAll).getPaths();
+                                        return new TargetAnalyzer(root, rootFriends, target, shortestPathLength, shortestOnly, findAll).getPaths();
                                     }
                                     //if find all shortest paths
                                     else if (shortestOnly && findAll)
@@ -460,24 +522,26 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                         {
                                             shortestPathLength = Convert.ToByte(depthLeft + depthRight);
                                         }
-
                                     }
-                                    #endregion
+                                    #endregion check how much parents are searched
                                 }
-                                #endregion
+                                #endregion if the child is the target
                                 #region already visited
-                                else if (visitedNodesLeft.ContainsKey(currentNodeLeft.Key))
+                                else if (visitedNodesLeft.ContainsKey(dboLeft))
                                 {
                                     //set currentLeft as parent
-                                    visitedNodesLeft[currentNodeLeft.Key].addParent(currentLeft);
+                                    visitedNodesLeft[dboLeft].addParent(currentLeft);
 
                                     //set currentNodeLeft as child
-                                    currentLeft.addChild(visitedNodesLeft[currentNodeLeft.Key]);
+                                    currentLeft.addChild(visitedNodesLeft[dboLeft]);
                                 }
-                                #endregion
+                                #endregion already visited
                                 #region set as visited
                                 else
                                 {
+                                    //create a new node and set currentLeft = parent
+                                    currentNodeLeft = new Node(dboLeft, currentLeft);
+
                                     //set currentNodeLeft as child of currentLeft
                                     currentLeft.addChild(currentNodeLeft);
 
@@ -488,9 +552,9 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                     //and put node into the queue
                                     queueLeft.Enqueue(currentNodeLeft);
                                 }
-                                #endregion
+                                #endregion set as visited
                             }
-                            #endregion
+                            #endregion check left friends
 
                             //get all referenced ObjectUUIDs using the given Edge                                                
                             var objectUUIDsRight = currentDBObjectRight.Value.GetBackwardEdgeUUIDs(edgeKey);
@@ -499,20 +563,39 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                             #region check right friends
                             foreach (ObjectUUID dboRight in objectUUIDsRight)
                             {
-                                //create a new node and set current = parent, tmp = child                            
-                                currentNodeRight = new Node(dboRight);
-                                currentNodeRight.addChild(currentRight);
-
                                 #region if the child is the target
-                                if (currentNodeRight.Key == myStart.ObjectUUID)
+                                if (rootFriends.Contains(dboRight))
                                 {
-                                    //set currentNodeRight as parent of current Right
-                                    currentRight.addParent(currentNodeRight);
+                                    #region check if already visited
+                                    //mark node as visited
+                                    if (visitedNodesRight.ContainsKey(dboRight))
+                                    {
+                                        //set found children
+                                        visitedNodesRight[dboRight].addChild(currentRight);
 
+                                        currentRight.addParent(visitedNodesRight[dboRight]);
+                                    }
+                                    else
+                                    {
+                                        //create a new node and set currentRight = child                            
+                                        currentNodeRight = new Node(dboRight);
+                                        currentNodeRight.addChild(currentRight);
+
+                                        //set currentNodeRight as parent of current Right
+                                        currentRight.addParent(currentNodeRight);
+
+                                        //never seen before
+                                        //mark the node as visited
+                                        visitedNodesRight.Add(currentNodeRight.Key, currentNodeRight);
+
+                                        //and look what comes on the next level of depth
+                                        queueRight.Enqueue(currentNodeRight);
+                                    }
+                                    #endregion check if already visited
+
+                                    #region check how much paths are searched
                                     if (shortestOnly && !findAll)
                                     {
-                                        //_Logger.Info("found shortest path..starting analyzer");
-
                                         if ((depthLeft + depthRight + 1) > myMaxPathLength)
                                         {
                                             shortestPathLength = myMaxPathLength;
@@ -522,7 +605,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                             shortestPathLength = Convert.ToByte(depthLeft + depthRight + 1);
                                         }
 
-                                        return new TargetAnalyzer(root, target, shortestPathLength, shortestOnly, findAll).getPaths();
+                                        return new TargetAnalyzer(root, rootFriends, target, shortestPathLength, shortestOnly, findAll).getPaths();
                                     }
                                     //if find all shortest paths
                                     else if (shortestOnly && findAll)
@@ -539,22 +622,26 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                         {
                                             shortestPathLength = Convert.ToByte(depthLeft + depthRight);
                                         }
-
                                     }
+                                    #endregion check how much paths are searched
                                 }
-                                #endregion
+                                #endregion if the child is the target
                                 #region already visited
-                                else if (visitedNodesRight.ContainsKey(currentNodeRight.Key))
+                                else if (visitedNodesRight.ContainsKey(dboRight))
                                 {
                                     //set found children
-                                    visitedNodesRight[currentNodeRight.Key].addChild(currentRight);
+                                    visitedNodesRight[dboRight].addChild(currentRight);
 
-                                    currentRight.addParent(visitedNodesRight[currentNodeRight.Key]);
+                                    currentRight.addParent(visitedNodesRight[dboRight]);
                                 }
-                                #endregion
+                                #endregion already visited
                                 #region set as visited
                                 else
                                 {
+                                    //create a new node and set currentRight = child                            
+                                    currentNodeRight = new Node(dboRight);
+                                    currentNodeRight.addChild(currentRight);
+
                                     //set currentNodeRight as parent of current Right
                                     currentRight.addParent(currentNodeRight);
 
@@ -565,9 +652,9 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                     //and look what comes on the next level of depth
                                     queueRight.Enqueue(currentNodeRight);
                                 }
-                                #endregion
+                                #endregion set as visited
                             }
-                            #endregion
+                            #endregion check right friends
 
                             #region build intersection of visitedNodesLeft and visitedNodesRight
 
@@ -589,7 +676,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                     foundIntersect = true;
                                 }
                             }
-                            #endregion
+                            #endregion build intersection of visitedNodesLeft and visitedNodesRight
 
                             #region analyze intersection
                             //if intersection nodes existing
@@ -609,7 +696,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                         shortestPathLength = Convert.ToByte(depthLeft + depthRight + 1);
                                     }
 
-                                    return new TargetAnalyzer(root, target, shortestPathLength, shortestOnly, findAll).getPaths();
+                                    return new TargetAnalyzer(root, rootFriends, target, shortestPathLength, shortestOnly, findAll).getPaths();
                                 }
                                 //if find all shortest paths
                                 else if (shortestOnly && findAll)
@@ -622,16 +709,16 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                     {
                                         shortestPathLength = myMaxPathLength;
                                     }
-                                    else
+                                    else if (shortestPathLength == 0)
                                     {
                                         shortestPathLength = Convert.ToByte(depthLeft + depthRight + 1);
                                     }
 
                                 }
                             }
-                            #endregion
+                            #endregion analyze intersection
                         }
-                        #endregion
+                        #endregion the edge and the backwardedge are existing
                         #region only the edge exists
                         else if (currentDBObjectLeft.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
                         {
@@ -642,14 +729,38 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                             #region check left friends
                             foreach (ObjectUUID dboLeft in objectUUIDsLeft)
                             {
-                                //create a new node and set current = parent, tmp = child                            
-                                currentNodeLeft = new Node(dboLeft, currentLeft);
-
                                 #region if the child is the target
-                                if (currentNodeLeft.Key == myEnd.ObjectUUID)
+                                if (dboLeft == myEnd.ObjectUUID)
                                 {
                                     target.addParent(currentLeft);
 
+                                    #region check if already visited
+                                    if (visitedNodesLeft.ContainsKey(dboLeft))
+                                    {
+                                        //set currentLeft as parent
+                                        visitedNodesLeft[dboLeft].addParent(currentLeft);
+
+                                        //set currentNodeLeft as child
+                                        currentLeft.addChild(visitedNodesLeft[dboLeft]);
+                                    }
+                                    else
+                                    {
+                                        //create a new node and set currentLeft = parent
+                                        currentNodeLeft = new Node(dboLeft, currentLeft);
+
+                                        //set currentNodeLeft as child of currentLeft
+                                        currentLeft.addChild(currentNodeLeft);
+
+                                        //never seen before
+                                        //mark the node as visited
+                                        visitedNodesLeft.Add(currentNodeLeft.Key, currentNodeLeft);
+
+                                        //and put node into the queue
+                                        queueLeft.Enqueue(currentNodeLeft);
+                                    }
+                                    #endregion check if already visited
+
+                                    #region check how much paths are searched
                                     if (shortestOnly && !findAll)
                                     {
                                         //_Logger.Info("found shortest path..starting analyzer");
@@ -663,7 +774,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                             shortestPathLength = Convert.ToByte(depthLeft + depthRight + 1);
                                         }
 
-                                        return new TargetAnalyzer(root, target, shortestPathLength, shortestOnly, findAll).getPaths();
+                                        return new TargetAnalyzer(root, rootFriends, target, shortestPathLength, shortestOnly, findAll).getPaths();
                                     }
                                     else if (shortestOnly && findAll)
                                     {
@@ -671,13 +782,14 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
                                         shortestPathLength = Convert.ToByte(maxDepthLeft + maxDepthRight);
                                     }
+                                    #endregion check if already visited
                                 }
-                                #endregion
+                                #endregion if the child is the target
                                 #region already visited from right side
-                                else if (visitedNodesRight.ContainsKey(currentNodeLeft.Key))
+                                else if (visitedNodesRight.ContainsKey(dboLeft))
                                 {
                                     //get node
-                                    Node temp = visitedNodesRight[currentNodeLeft.Key];
+                                    Node temp = visitedNodesRight[dboLeft];
                                     //add parent new
                                     temp.addParent(currentLeft);
                                     //add as child
@@ -704,7 +816,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                             shortestPathLength = Convert.ToByte(depthLeft + depthRight + 1);
                                         }
 
-                                        return new TargetAnalyzer(root, target, shortestPathLength, shortestOnly, findAll).getPaths();
+                                        return new TargetAnalyzer(root, rootFriends, target, shortestPathLength, shortestOnly, findAll).getPaths();
                                     }
                                     else if (shortestOnly && findAll)
                                     {
@@ -713,20 +825,23 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                         shortestPathLength = Convert.ToByte(maxDepthLeft + maxDepthRight);
                                     }
                                 }
-                                #endregion
+                                #endregion already visited from right side
                                 #region already visited
-                                else if (visitedNodesLeft.ContainsKey(currentNodeLeft.Key))
+                                else if (visitedNodesLeft.ContainsKey(dboLeft))
                                 {
                                     //set found parents from left side as parents of matchNode
                                     //matchNode has now parents and children
-                                    visitedNodesLeft[currentNodeLeft.Key].addParent(currentLeft);
+                                    visitedNodesLeft[dboLeft].addParent(currentLeft);
 
-                                    currentLeft.addChild(visitedNodesLeft[currentNodeLeft.Key]);
+                                    currentLeft.addChild(visitedNodesLeft[dboLeft]);
                                 }
-                                #endregion
+                                #endregion already visited
                                 #region set as visited
                                 else
                                 {
+                                    //create a new node and set currentLeft = parent
+                                    currentNodeLeft = new Node(dboLeft, currentLeft);
+
                                     //set currentNodeLeft as child of currentLeft
                                     currentLeft.addChild(currentNodeLeft);
 
@@ -737,11 +852,11 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                     //and look what comes on the next level of depth
                                     queueLeft.Enqueue(currentNodeLeft);
                                 }
-                                #endregion
+                                #endregion set as visited
                             }
-                            #endregion
+                            #endregion check left friends
                         }
-                        #endregion
+                        #endregion only the edge exists
                         #region only the backwardedge exists
                         else if (currentDBObjectRight.Value.ContainsBackwardEdge(edgeKey))
                         {
@@ -750,93 +865,27 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                             Node currentNodeRight;
 
                             #region check right friends
-                                foreach (ObjectUUID dboRight in objectUUIDsRight)
+                            foreach (ObjectUUID dboRight in objectUUIDsRight)
+                            {
+                                #region if the child is the target
+                                if (rootFriends.Contains(dboRight))
                                 {
-                                    //create a new node and set current = parent, tmp = child                            
-                                    currentNodeRight = new Node(dboRight);
-                                    currentNodeRight.addChild(currentRight);
-
-                                    #region if the child is the target
-                                    if (currentNodeRight.Key == myStart.ObjectUUID)
-                                    {
-                                        //set currentNodeRight as parent of currentRight
-                                        currentRight.addParent(currentNodeRight);
-
-                                        if (shortestOnly && !findAll)
-                                        {
-                                            //_Logger.Info("found shortest path..starting analyzer");
-
-                                            if ((depthLeft + depthRight + 1) > myMaxPathLength)
-                                            {
-                                                shortestPathLength = myMaxPathLength;
-                                            }
-                                            else
-                                            {
-                                                shortestPathLength = Convert.ToByte(depthLeft + depthRight + 1);
-                                            }
-
-                                            return new TargetAnalyzer(root, target, shortestPathLength, shortestOnly, findAll).getPaths();
-                                        }
-                                        else if (shortestOnly && findAll)
-                                        {
-                                            maxDepthRight = depthRight;
-
-                                            shortestPathLength = Convert.ToByte(maxDepthLeft + maxDepthRight);
-                                        }
-                                    }
-                                    #endregion
-                                    #region already visited from left side
-                                    else if (visitedNodesLeft.ContainsKey(currentNodeRight.Key))
-                                    {
-                                        //get node
-                                        Node temp = visitedNodesLeft[currentNodeRight.Key];
-                                        temp.addChild(currentRight);
-                                        currentRight.addParent(temp);
-
-                                        visitedNodesLeft.Remove(temp.Key);
-                                        visitedNodesLeft.Add(temp.Key, temp);
-
-                                        if (visitedNodesRight.Remove(temp.Key))
-                                        {
-                                            visitedNodesRight.Add(temp.Key, temp);
-                                        }
-
-                                        if (shortestOnly && !findAll)
-                                        {
-                                            //_Logger.Info("found shortest path..starting analyzer");
-
-                                            if ((depthLeft + depthRight + 1) > myMaxPathLength)
-                                            {
-                                                shortestPathLength = myMaxPathLength;
-                                            }
-                                            else
-                                            {
-                                                shortestPathLength = Convert.ToByte(depthLeft + depthRight + 1);
-                                            }
-
-                                            return new TargetAnalyzer(root, target, shortestPathLength, shortestOnly, findAll).getPaths();
-                                        }
-                                        else if (shortestOnly && findAll)
-                                        {
-                                            maxDepthRight = depthRight;
-
-                                            shortestPathLength = Convert.ToByte(maxDepthLeft + maxDepthRight);
-                                        }
-                                    }
-                                    #endregion
-                                    #region already visited
-                                    else if (visitedNodesRight.ContainsKey(currentNodeRight.Key))
+                                    #region check if already visited
+                                    //mark node as visited
+                                    if (visitedNodesRight.ContainsKey(dboRight))
                                     {
                                         //set found children
-                                        visitedNodesRight[currentNodeRight.Key].addChild(currentRight);
+                                        visitedNodesRight[dboRight].addChild(currentRight);
 
-                                        currentRight.addParent(visitedNodesRight[currentNodeRight.Key]);
+                                        currentRight.addParent(visitedNodesRight[dboRight]);
                                     }
-                                    #endregion
-                                    #region set as visited
                                     else
                                     {
-                                        //set currentNodeRight as parent of currentRight
+                                        //create a new node and set currentRight = child                            
+                                        currentNodeRight = new Node(dboRight);
+                                        currentNodeRight.addChild(currentRight);
+
+                                        //set currentNodeRight as parent of current Right
                                         currentRight.addParent(currentNodeRight);
 
                                         //never seen before
@@ -846,13 +895,103 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                         //and look what comes on the next level of depth
                                         queueRight.Enqueue(currentNodeRight);
                                     }
-                                    #endregion
+                                    #endregion check if already visited
+
+                                    #region check how much paths are searched
+                                    if (shortestOnly && !findAll)
+                                    {
+                                        if ((depthLeft + depthRight + 1) > myMaxPathLength)
+                                        {
+                                            shortestPathLength = myMaxPathLength;
+                                        }
+                                        else
+                                        {
+                                            shortestPathLength = Convert.ToByte(depthLeft + depthRight + 1);
+                                        }
+
+                                        return new TargetAnalyzer(root, rootFriends, target, shortestPathLength, shortestOnly, findAll).getPaths();
+                                    }
+                                    else if (shortestOnly && findAll)
+                                    {
+                                        maxDepthRight = depthRight;
+
+                                        shortestPathLength = Convert.ToByte(maxDepthLeft + maxDepthRight);
+                                    }
+                                    #endregion check how much paths are searched
                                 }
-                                #endregion
+                                #endregion if the child is the target
+                                #region already visited from left side
+                                else if (visitedNodesLeft.ContainsKey(dboRight))
+                                {
+                                    //get node
+                                    Node temp = visitedNodesLeft[dboRight];
+                                    temp.addChild(currentRight);
+                                    currentRight.addParent(temp);
+
+                                    visitedNodesLeft.Remove(temp.Key);
+                                    visitedNodesLeft.Add(temp.Key, temp);
+
+                                    if (visitedNodesRight.Remove(temp.Key))
+                                    {
+                                        visitedNodesRight.Add(temp.Key, temp);
+                                    }
+
+                                    if (shortestOnly && !findAll)
+                                    {
+                                        //_Logger.Info("found shortest path..starting analyzer");
+
+                                        if ((depthLeft + depthRight + 1) > myMaxPathLength)
+                                        {
+                                            shortestPathLength = myMaxPathLength;
+                                        }
+                                        else
+                                        {
+                                            shortestPathLength = Convert.ToByte(depthLeft + depthRight + 1);
+                                        }
+
+                                        return new TargetAnalyzer(root, rootFriends, target, shortestPathLength, shortestOnly, findAll).getPaths();
+                                    }
+                                    else if (shortestOnly && findAll)
+                                    {
+                                        maxDepthRight = depthRight;
+
+                                        shortestPathLength = Convert.ToByte(maxDepthLeft + maxDepthRight);
+                                    }
+                                }
+                                #endregion already visited from left side
+                                #region already visited
+                                else if (visitedNodesRight.ContainsKey(dboRight))
+                                {
+                                    //set found children
+                                    visitedNodesRight[dboRight].addChild(currentRight);
+
+                                    currentRight.addParent(visitedNodesRight[dboRight]);
+                                }
+                                #endregion already visited
+                                #region set as visited
+                                else
+                                {
+                                    //create a new node and set currentRight = child                            
+                                    currentNodeRight = new Node(dboRight);
+                                    currentNodeRight.addChild(currentRight);
+
+                                    //set currentNodeRight as parent of currentRight
+                                    currentRight.addParent(currentNodeRight);
+
+                                    //never seen before
+                                    //mark the node as visited
+                                    visitedNodesRight.Add(currentNodeRight.Key, currentNodeRight);
+
+                                    //and look what comes on the next level of depth
+                                    queueRight.Enqueue(currentNodeRight);
+                                }
+                                #endregion set as visited
+                            }
+                            #endregion check right friends
                         }
-                        #endregion
+                        #endregion only the backwardedge exists
                     }
-                    #endregion
+                    #endregion  both queues contain objects and both depths are not reached
 
                     #region only left queue contain objects
                     else if ((queueLeft.Count > 0) && (depthLeft <= maxDepthLeft))
@@ -875,7 +1014,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                 continue;
                             }
                         }
-                        #endregion
+                        #endregion check if first element of queue is a dummy
 
                         //get the first Object of the queue
                         Node currentLeft = queueLeft.Dequeue();
@@ -896,14 +1035,38 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                             #region check left friends
                             foreach (ObjectUUID dboLeft in objectUUIDsLeft)
                             {
-                                //create a new node and set current = parent, tmp = child                            
-                                currentNodeLeft = new Node(dboLeft, currentLeft);
-
                                 #region if the child is the target
-                                if (currentNodeLeft.Key == myEnd.ObjectUUID)
+                                if (dboLeft == myEnd.ObjectUUID)
                                 {
                                     target.addParent(currentLeft);
 
+                                    #region check if already visited
+                                    if (visitedNodesLeft.ContainsKey(dboLeft))
+                                    {
+                                        //set currentLeft as parent
+                                        visitedNodesLeft[dboLeft].addParent(currentLeft);
+
+                                        //set currentNodeLeft as child
+                                        currentLeft.addChild(visitedNodesLeft[dboLeft]);
+                                    }
+                                    else
+                                    {
+                                        //create a new node and set currentLeft = parent
+                                        currentNodeLeft = new Node(dboLeft, currentLeft);
+
+                                        //set currentNodeLeft as child of currentLeft
+                                        currentLeft.addChild(currentNodeLeft);
+
+                                        //never seen before
+                                        //mark the node as visited
+                                        visitedNodesLeft.Add(currentNodeLeft.Key, currentNodeLeft);
+
+                                        //and put node into the queue
+                                        queueLeft.Enqueue(currentNodeLeft);
+                                    }
+                                    #endregion check if already visited
+
+                                    #region check how much paths are searched
                                     if (shortestOnly && !findAll)
                                     {
                                         //_Logger.Info("found shortest path..starting analyzer");
@@ -917,7 +1080,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                             shortestPathLength = Convert.ToByte(depthLeft + depthRight + 1);
                                         }
 
-                                        return new TargetAnalyzer(root, target, shortestPathLength, shortestOnly, findAll).getPaths();
+                                        return new TargetAnalyzer(root, rootFriends, target, shortestPathLength, shortestOnly, findAll).getPaths();
                                     }
                                     else if (shortestOnly && findAll)
                                     {
@@ -925,13 +1088,14 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
                                         shortestPathLength = Convert.ToByte(maxDepthLeft + maxDepthRight);
                                     }
+                                    #endregion check how much paths are searched
                                 }
-                                #endregion
+                                #endregion if the child is the target
                                 #region already visited from right side
-                                else if (visitedNodesRight.ContainsKey(currentNodeLeft.Key))
+                                else if (visitedNodesRight.ContainsKey(dboLeft))
                                 {
                                     //get node
-                                    Node temp = visitedNodesRight[currentNodeLeft.Key];
+                                    Node temp = visitedNodesRight[dboLeft];
                                     //add parent new
                                     temp.addParent(currentLeft);
                                     //add as child
@@ -958,29 +1122,35 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                             shortestPathLength = Convert.ToByte(depthLeft + depthRight + 1);
                                         }
 
-                                        return new TargetAnalyzer(root, target, shortestPathLength, shortestOnly, findAll).getPaths();
+                                        return new TargetAnalyzer(root, rootFriends, target, shortestPathLength, shortestOnly, findAll).getPaths();
                                     }
                                     else if (shortestOnly && findAll)
                                     {
                                         maxDepthLeft = depthLeft;
 
-                                        shortestPathLength = Convert.ToByte(maxDepthLeft + maxDepthRight);
+                                        if (shortestPathLength < (maxDepthLeft + maxDepthRight))
+                                        {
+                                            shortestPathLength = Convert.ToByte(maxDepthLeft + maxDepthRight);
+                                        }
                                     }
                                 }
-                                #endregion
+                                #endregion already visited from right side
                                 #region already visited
-                                else if (visitedNodesLeft.ContainsKey(currentNodeLeft.Key))
+                                else if (visitedNodesLeft.ContainsKey(dboLeft))
                                 {
                                     //set found parents from left side as parents of matchNode
                                     //matchNode has now parents and children
-                                    visitedNodesLeft[currentNodeLeft.Key].addParent(currentLeft);
+                                    visitedNodesLeft[dboLeft].addParent(currentLeft);
 
-                                    currentLeft.addChild(visitedNodesLeft[currentNodeLeft.Key]);
+                                    currentLeft.addChild(visitedNodesLeft[dboLeft]);
                                 }
-                                #endregion
+                                #endregion already visited
                                 #region set as visited
                                 else
                                 {
+                                    //create a new node and set currentLeft = parent
+                                    currentNodeLeft = new Node(dboLeft, currentLeft);
+
                                     currentLeft.addChild(currentNodeLeft);
 
                                     //never seen before
@@ -989,12 +1159,12 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                     //and look what comes on the next level of depth
                                     queueLeft.Enqueue(currentNodeLeft);
                                 }
-                                #endregion
+                                #endregion set as visited
                             }
-                            #endregion
+                            #endregion check left friends
                         }
                     }
-                    #endregion
+                    #endregion only left queue contain objects
 
                     #region only right queue contain objects
                     else if ((queueRight.Count > 0) && (depthRight <= maxDepthRight))
@@ -1016,7 +1186,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                 continue;
                             }
                         }
-                        #endregion
+                        #endregion check if first element of the queue is a dummy
 
                         currentRight = queueRight.Dequeue();
 
@@ -1034,108 +1204,134 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                             Node currentNodeRight;
 
                             #region check right friends
-                                foreach (ObjectUUID dboRight in objectUUIDsRight)
+                            foreach (ObjectUUID dboRight in objectUUIDsRight)
+                            {
+                                #region if the child is the target
+                                if (rootFriends.Contains(dboRight))
                                 {
-                                    //create a new node and set current = parent, tmp = child                            
-                                    currentNodeRight = new Node(dboRight);
-                                    currentNodeRight.addChild(currentRight);
-
-                                    #region if the child is the target
-                                    if (currentNodeRight.Key == myStart.ObjectUUID)
-                                    {
-                                        //set currentNodeRight as parent of currentRight
-                                        currentRight.addParent(currentNodeRight);
-
-                                        if (shortestOnly && !findAll)
-                                        {
-                                            //_Logger.Info("found shortest path..starting analyzer");
-                                            shortestPathLength = Convert.ToByte(depthLeft + depthRight);
-                                            return new TargetAnalyzer(root, target, shortestPathLength, shortestOnly, findAll).getPaths();
-                                        }
-                                        else if (shortestOnly && findAll)
-                                        {
-                                            maxDepthRight = depthRight;
-
-                                            shortestPathLength = Convert.ToByte(maxDepthLeft + maxDepthRight);
-                                        }
-                                    }
-                                    #endregion
-                                    #region already visited from left side
-                                    else if (visitedNodesLeft.ContainsKey(currentNodeRight.Key))
-                                    {
-                                        //get node
-                                        Node temp = visitedNodesLeft[currentNodeRight.Key];
-                                        temp.addChild(currentRight);
-                                        currentRight.addParent(temp);
-
-                                        visitedNodesLeft.Remove(temp.Key);
-                                        visitedNodesLeft.Add(temp.Key, temp);
-
-                                        if (visitedNodesRight.Remove(temp.Key))
-                                        {
-                                            visitedNodesRight.Add(temp.Key, temp);
-                                        }
-
-                                        if (shortestOnly && !findAll)
-                                        {
-                                            //_Logger.Info("found shortest path..starting analyzer");
-
-                                            if ((depthLeft + depthRight + 1) > myMaxPathLength)
-                                            {
-                                                shortestPathLength = myMaxPathLength;
-                                            }
-                                            else
-                                            {
-                                                shortestPathLength = Convert.ToByte(depthLeft + depthRight + 1);
-                                            }
-
-                                            return new TargetAnalyzer(root, target, shortestPathLength, shortestOnly, findAll).getPaths();
-                                        }
-                                        else if (shortestOnly && findAll)
-                                        {
-                                            maxDepthRight = depthRight;
-
-                                            shortestPathLength = Convert.ToByte(maxDepthLeft + maxDepthRight);
-                                        }
-                                    }
-                                    #endregion
-                                    #region already visited
-                                    else if (visitedNodesRight.ContainsKey(currentNodeRight.Key))
+                                    #region check if already visited
+                                    //mark node as visited
+                                    if (visitedNodesRight.ContainsKey(dboRight))
                                     {
                                         //set found children
-                                        visitedNodesRight[currentNodeRight.Key].addChild(currentRight);
+                                        visitedNodesRight[dboRight].addChild(currentRight);
 
-                                        currentRight.addParent(visitedNodesRight[currentNodeRight.Key]);
+                                        currentRight.addParent(visitedNodesRight[dboRight]);
                                     }
-                                    #endregion
-                                    #region set as visited
                                     else
                                     {
+                                        //create a new node and set currentRight = child                            
+                                        currentNodeRight = new Node(dboRight);
+                                        currentNodeRight.addChild(currentRight);
+
+                                        //set currentNodeRight as parent of current Right
                                         currentRight.addParent(currentNodeRight);
 
                                         //never seen before
                                         //mark the node as visited
                                         visitedNodesRight.Add(currentNodeRight.Key, currentNodeRight);
+
                                         //and look what comes on the next level of depth
                                         queueRight.Enqueue(currentNodeRight);
                                     }
-                                    #endregion
+                                    #endregion check if already visited
+
+                                    #region check how much paths are searched
+                                    if (shortestOnly && !findAll)
+                                    {
+                                        //_Logger.Info("found shortest path..starting analyzer");
+                                        shortestPathLength = Convert.ToByte(depthLeft + depthRight);
+                                        
+                                        return new TargetAnalyzer(root, rootFriends, target, shortestPathLength, shortestOnly, findAll).getPaths();
+                                    }
+                                    else if (shortestOnly && findAll)
+                                    {
+                                        maxDepthRight = depthRight;
+
+                                        shortestPathLength = Convert.ToByte(maxDepthLeft + maxDepthRight);
+                                    }
+                                    #endregion check how much paths are searched
                                 }
-                                #endregion
+                                #endregion if the child is the target
+                                #region already visited from left side
+                                else if (visitedNodesLeft.ContainsKey(dboRight))
+                                {
+                                    //get node
+                                    Node temp = visitedNodesLeft[dboRight];
+                                    temp.addChild(currentRight);
+                                    currentRight.addParent(temp);
+
+                                    visitedNodesLeft.Remove(temp.Key);
+                                    visitedNodesLeft.Add(temp.Key, temp);
+
+                                    if (visitedNodesRight.Remove(temp.Key))
+                                    {
+                                        visitedNodesRight.Add(temp.Key, temp);
+                                    }
+
+                                    if (shortestOnly && !findAll)
+                                    {
+                                        //_Logger.Info("found shortest path..starting analyzer");
+
+                                        if ((depthLeft + depthRight + 1) > myMaxPathLength)
+                                        {
+                                            shortestPathLength = myMaxPathLength;
+                                        }
+                                        else
+                                        {
+                                            shortestPathLength = Convert.ToByte(depthLeft + depthRight + 1);
+                                        }
+
+                                        return new TargetAnalyzer(root, rootFriends, target, shortestPathLength, shortestOnly, findAll).getPaths();
+                                    }
+                                    else if (shortestOnly && findAll)
+                                    {
+                                        maxDepthRight = depthRight;
+
+                                        shortestPathLength = Convert.ToByte(maxDepthLeft + maxDepthRight);
+                                    }
+                                }
+                                #endregion already visited from left side
+                                #region already visited
+                                else if (visitedNodesRight.ContainsKey(dboRight))
+                                {
+                                    //set found children
+                                    visitedNodesRight[dboRight].addChild(currentRight);
+
+                                    currentRight.addParent(visitedNodesRight[dboRight]);
+                                }
+                                #endregion already visited
+                                #region set as visited
+                                else
+                                {
+                                    //create a new node and set currentRight = child                            
+                                    currentNodeRight = new Node(dboRight);
+                                    currentNodeRight.addChild(currentRight);
+
+                                    currentRight.addParent(currentNodeRight);
+
+                                    //never seen before
+                                    //mark the node as visited
+                                    visitedNodesRight.Add(currentNodeRight.Key, currentNodeRight);
+                                    //and look what comes on the next level of depth
+                                    queueRight.Enqueue(currentNodeRight);
+                                }
+                                #endregion set as visited
+                            }
+                            #endregion check right friends
                         }
                     }
-                    #endregion
+                    #endregion only right queue contain objects
 
                     #region abort loop
                     else
                     {
                         break;
                     }
-                    #endregion
+                    #endregion abort loop
                 }
             }
-            #endregion
-
+            #endregion EdgeType is ASetReferenceEdgeType
             //check if the EdgeType is ASingleReferenceEdgeType
             #region EdgeType is ASingleReferenceEdgeType
             else if (myEdge is ASingleReferenceEdgeType)
@@ -1149,31 +1345,37 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
                 //set depth for left side
                 maxDepthLeft = myMaxDepth;
+                #endregion initialize variables
 
-                //enqueue root node to start from left side
-                queueLeft.Enqueue(root);
-                
-                //enqueue dummyLeft to analyze the depth of the left side
-                queueLeft.Enqueue(dummyLeft);
-                
-                //add root and target to visitedNodes
-                visitedNodesLeft.Add(root.Key, root);
-                #endregion
-
-                #region check if root node has edge
-                var dbo = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), root.Key);
-                if (dbo.Failed())
+                #region check if friends of root node have edge
+                foreach (var node in visitedNodesLeft)
                 {
-                    throw new NotImplementedException();
-                }
+                    var dbo = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), node.Key);
+                    if (dbo.Failed())
+                    {
+                        if (visitedNodesLeft.Count != 0)
+                        {
+                            visitedNodesLeft.Remove(node.Key);
+                        }
+                        else
+                        {
+                            throw new NotImplementedException();
+                        }
+                    }
 
-                if (!dbo.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
-                {
-                    ////_Logger.Info("Abort search! Start object has no edge!");
-                    //Console.WriteLine("No paths found!");
-                    return null;
+                    if (!dbo.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
+                    {
+                        if (visitedNodesLeft.Count != 0)
+                        {
+                            visitedNodesLeft.Remove(node.Key);
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    }
                 }
-                #endregion
+                #endregion check if friends of root node have edge
 
                 //if there is more than one object in the queue and the actual depth is less than MaxDepth
                 while ((queueLeft.Count > 0) && (depthLeft <= maxDepthLeft))
@@ -1197,7 +1399,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                             continue;
                         }
                     }
-                    #endregion
+                    #endregion check if first element of queue is a dummy
 
                     #region load DBObject
                     //get the first Object of the queue
@@ -1209,7 +1411,9 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                     {
                         throw new NotImplementedException();
                     }
+                    #endregion load DBObject
 
+                    #region check if currentDBObjectLeft has attribute
                     if (currentDBObjectLeft.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
                     {
                         //get referenced ObjectUUID using the given Edge                                                
@@ -1225,19 +1429,15 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                         #region if the child is the target
                         if (currentNodeLeft.Key == myEnd.ObjectUUID)
                         {
-                            #region found
-
                             //set currentLeft as parent of target
                             target.addParent(currentLeft);
 
                             //shortestPathLength is actual depth of left side plus 1 (because the depth starts with zero, but the pathLength with 1)
                             shortestPathLength = Convert.ToByte(depthLeft + 1);
                             
-                            return new TargetAnalyzer(root, target, shortestPathLength, shortestOnly, findAll).getPaths();
-
-                            #endregion
+                            return new TargetAnalyzer(root, rootFriends, target, shortestPathLength, shortestOnly, findAll).getPaths();
                         }
-                        #endregion
+                        #endregion if the child is the target
                         #region already visited
                         else if (visitedNodesLeft.ContainsKey(currentNodeLeft.Key))
                         {
@@ -1247,7 +1447,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                             //set currentNodeLeft as child
                             currentLeft.addChild(visitedNodesLeft[currentNodeLeft.Key]);
                         }
-                        #endregion
+                        #endregion already visited
                         #region set as visited
                         else
                         {
@@ -1261,28 +1461,26 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                             //and put node into the queue
                             queueLeft.Enqueue(currentNodeLeft);
                         }
-                        #endregion
+                        #endregion set as visited
 
-                        #endregion
+                        #endregion check left friend
                     }
-                    #endregion
-                    
+                    #endregion check if currentDBObjectLeft has attribute
                     #region abort loop
                     else
                     {
                         break;
                     }
-                    #endregion
+                    #endregion abort loop
                 }
             }
-            #endregion
-
+            #endregion EdgeType is ASingleReferenceEdgeType
             else 
             {
                 throw new NotImplementedException();
             }
 
-            //_Logger.Info("finished building path-graph.. starting analyzer");
+            #region start TargetAnalyzer
             if (shortestOnly && findAll)
             {
                 if (shortestPathLength > myMaxPathLength)
@@ -1290,13 +1488,15 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                     shortestPathLength = myMaxPathLength;
                 }
 
-                return new TargetAnalyzer(root, target, shortestPathLength, shortestOnly, findAll).getPaths();
+                return new TargetAnalyzer(root, rootFriends, target, shortestPathLength, shortestOnly, findAll).getPaths();
             }
             else
             {
-                return new TargetAnalyzer(root, target, myMaxPathLength, shortestOnly, findAll).getPaths();
+                return new TargetAnalyzer(root, rootFriends, target, myMaxPathLength, shortestOnly, findAll).getPaths();
             }
-            #endregion
+            #endregion start TargetAnalyzer
+
+            #endregion BidirectionalBFS
         }
     }
 }

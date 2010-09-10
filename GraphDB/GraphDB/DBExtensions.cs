@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,6 +15,7 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
 using System;
@@ -22,15 +23,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.GraphDB.Errors;
-using sones.Lib.ErrorHandling;
-using sones.GraphDB.TypeManagement.BasicTypes;
-using sones.GraphDB.Structures.Result;
-using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.Exceptions;
+using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.Structures.EdgeTypes;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphDB.Warnings;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.TypeManagement;
 
 using sones.GraphFS.DataStructures;
-using sones.GraphDB.Structures;
-using sones.GraphDB.TypeManagement;
+using sones.Lib.ErrorHandling;
 
 namespace sones.GraphDB
 {
@@ -180,6 +183,49 @@ namespace sones.GraphDB
 
         #endregion
 
+        #region QueryResult
+
+        #region GetFirstError<T>
+
+        /// <summary>
+        /// Returns the first error of the given type T
+        /// </summary>
+        /// <typeparam name="T">The type of the GraphDBError</typeparam>
+        /// <returns>Any instance of error</returns>
+        public static T GetFirstError<T>(this QueryResult myQueryResult)
+            where T : IError
+        {
+            if (myQueryResult.Errors != null && myQueryResult.Errors.Count() > 0)
+            {
+                //return Errors.GetFirstError<T>();
+                return (T)((from err in myQueryResult.Errors where err.GetType() == typeof(T) select err).FirstOrDefault());
+            }
+            return default(T);
+        }
+
+        #endregion
+
+        #region GetFirstWarning<T>
+
+        /// <summary>
+        /// Returns the first error of the given type T
+        /// </summary>
+        /// <typeparam name="T">The type of the GraphDBError</typeparam>
+        /// <returns>Any instance of error</returns>
+        public static T GetFirstWarning<T>(this QueryResult myQueryResult)
+            where T : IWarning
+        {
+            if (myQueryResult.Warnings != null && myQueryResult.Warnings.Count() > 0)
+            {
+                return (T)((from warning in myQueryResult.Warnings where warning.GetType() == typeof(T) select warning).FirstOrDefault());
+            }
+            return default(T);
+        }
+
+        #endregion
+
+
+        #endregion
 
     }
 }

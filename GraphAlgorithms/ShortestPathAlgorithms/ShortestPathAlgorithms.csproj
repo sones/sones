@@ -46,6 +46,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -81,8 +82,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AdditionalLicenses.txt" />
-    <Content Include="license.txt" />
     <Content Include="SamplePathQueries.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -109,7 +108,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\GraphDB\GraphDB\GraphDB.csproj">
       <Project>{32A56958-2C05-44C6-B661-2A2C6610E073}</Project>
-      <Name>GraphDB</Name>
+      <Name>GraphDB %28Dependencies\GraphDB\GraphDB%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GraphFS\GraphFSInterface\GraphFSInterface.csproj">
       <Project>{B23FDA3D-8229-4CDD-91FD-9AFD7301D315}</Project>

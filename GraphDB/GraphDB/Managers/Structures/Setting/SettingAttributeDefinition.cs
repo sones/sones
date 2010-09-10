@@ -1,14 +1,35 @@
-﻿using System;
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.Structures.Result;
+
 using sones.GraphDB.Settings;
 using sones.GraphDB.Structures.Enums;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.Errors;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.TypeManagement;
+using sones.GraphDBInterface.Result;
 
 namespace sones.GraphDB.Managers.Structures.Setting
 {
@@ -35,18 +56,19 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
         #region override ASettingDefinition.*
 
-        public override Exceptional<List<SelectionResultSet>> ExtractData(Dictionary<string, string> mySettingName, DBContext context)
+        public override Exceptional<SelectionResultSet> ExtractData(Dictionary<string, string> mySettingName, DBContext context)
         {
-            List<SelectionResultSet> result = new List<SelectionResultSet>();
             Dictionary<String, Object> SettingPair;
+            var SettingList = new List<DBObjectReadout>();
+
+
 
             foreach (var keyValPair in _Attributes)
             {
-
                 var type = context.DBTypeManager.GetTypeByName(keyValPair.Key);
                 if (type == null)
                 {
-                    return new Exceptional<List<SelectionResultSet>>(new Error_TypeDoesNotExist(keyValPair.Key));
+                    return new Exceptional<SelectionResultSet>(new Error_TypeDoesNotExist(keyValPair.Key));
                 }
 
                 foreach (var idChain in keyValPair.Value)
@@ -55,10 +77,9 @@ namespace sones.GraphDB.Managers.Structures.Setting
                     var validateResult = idChain.Validate(context, false, type);
                     if (validateResult.Failed())
                     {
-                        return new Exceptional<List<SelectionResultSet>>(validateResult);
+                        return new Exceptional<SelectionResultSet>(validateResult);
                     }
 
-                    var SettingList = new List<DBObjectReadout>();
                     var Entry = idChain.LastAttribute;
 
                     foreach (var pSetting in mySettingName)
@@ -73,21 +94,20 @@ namespace sones.GraphDB.Managers.Structures.Setting
                         }
                         else
                         {
-                            return new Exceptional<List<SelectionResultSet>>(new Error_SettingDoesNotExist(pSetting.Key));
+                            return new Exceptional<SelectionResultSet>(new Error_SettingDoesNotExist(pSetting.Key));
                         }
 
                         SettingPair = MakeOutputForAttribs(Setting);
                         SettingList.Add(new DBObjectReadout(SettingPair));
                     }
-                    result.Add(new SelectionResultSet(SettingList));
 
                 }
             }
 
-            return new Exceptional<List<SelectionResultSet>>(result);
+            return new Exceptional<SelectionResultSet>(new SelectionResultSet(SettingList));
         }
 
-        public override Exceptional<List<SelectionResultSet>> SetData(Dictionary<string, string> mySettingValues, DBContext _DBContext)
+        public override Exceptional<SelectionResultSet> SetData(Dictionary<string, string> mySettingValues, DBContext _DBContext)
         {
 
             List<DBObjectReadout> resultingReadouts = new List<DBObjectReadout>();
@@ -99,7 +119,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
                 var type = _DBContext.DBTypeManager.GetTypeByName(keyValPair.Key);
                 if (type == null)
                 {
-                    return new Exceptional<List<SelectionResultSet>>(new Error_TypeDoesNotExist(keyValPair.Key));
+                    return new Exceptional<SelectionResultSet>(new Error_TypeDoesNotExist(keyValPair.Key));
                 }
 
                 foreach (var idChain in keyValPair.Value)
@@ -108,7 +128,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
                     var validateResult = idChain.Validate(_DBContext, false, type);
                     if (validateResult.Failed())
                     {
-                        return new Exceptional<List<SelectionResultSet>>(validateResult);
+                        return new Exceptional<SelectionResultSet>(validateResult);
                     }
 
                     foreach (var pSetting in mySettingValues)
@@ -118,12 +138,12 @@ namespace sones.GraphDB.Managers.Structures.Setting
                             var setSettingResult = _DBContext.DBSettingsManager.SetSetting(pSetting.Key.ToUpper(), GetValueForSetting(_DBContext.DBSettingsManager.AllSettingsByName[pSetting.Key.ToUpper()], pSetting.Value), _DBContext, TypesSettingScope.ATTRIBUTE, type, idChain.LastAttribute);
                             if (setSettingResult.Failed())
                             {
-                                return new Exceptional<List<SelectionResultSet>>(setSettingResult);
+                                return new Exceptional<SelectionResultSet>(setSettingResult);
                             }
                         }
                         else
                         {
-                            return new Exceptional<List<SelectionResultSet>>(new Error_SettingDoesNotExist(pSetting.Key));
+                            return new Exceptional<SelectionResultSet>(new Error_SettingDoesNotExist(pSetting.Key));
                         }
                     }
 
@@ -132,11 +152,11 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
             }
 
-            return new Exceptional<List<SelectionResultSet>>(new List<SelectionResultSet>() { new SelectionResultSet(resultingReadouts) });
+            return new Exceptional<SelectionResultSet>(new SelectionResultSet(resultingReadouts));
 
         }
 
-        public override Exceptional<List<SelectionResultSet>> RemoveData(Dictionary<String, String> mySettings, DBContext _DBContext)
+        public override Exceptional<SelectionResultSet> RemoveData(Dictionary<String, String> mySettings, DBContext _DBContext)
         {
 
             foreach (var keyValPair in _Attributes)
@@ -145,7 +165,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
                 var graphDBType = _DBContext.DBTypeManager.GetTypeByName(keyValPair.Key);
                 if (graphDBType == null)
                 {
-                    return new Exceptional<List<SelectionResultSet>>(new Error_TypeDoesNotExist(keyValPair.Key));
+                    return new Exceptional<SelectionResultSet>(new Error_TypeDoesNotExist(keyValPair.Key));
                 }
 
                 foreach (var idChain in keyValPair.Value)
@@ -154,7 +174,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
                     Exceptional validateResult = idChain.Validate(_DBContext, false);
                     if (validateResult.Failed())
                     {
-                        return new Exceptional<List<SelectionResultSet>>(validateResult);
+                        return new Exceptional<SelectionResultSet>(validateResult);
                     }
 
                     foreach (var Setting in mySettings)
@@ -162,7 +182,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
                         var removeResult = idChain.LastAttribute.RemovePersistentSetting(Setting.Key.ToUpper(), _DBContext.DBTypeManager);
                         if (removeResult.Failed())
                         {
-                            return new Exceptional<List<SelectionResultSet>>(removeResult);
+                            return new Exceptional<SelectionResultSet>(removeResult);
                         }
                     }
 
@@ -170,7 +190,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
             }
 
-            return new Exceptional<List<SelectionResultSet>>();
+            return new Exceptional<SelectionResultSet>();
 
         }
 

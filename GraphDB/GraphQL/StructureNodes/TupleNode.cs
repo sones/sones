@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB – Tuple node" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB � Tuple node" />
  * <copyright file="TupleNode.cs
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -18,11 +38,13 @@ using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.GraphQL.StructureNodes;
 using sones.GraphDB.Structures.Operators;
-using sones.GraphDB.Structures.Result;
+
 using sones.GraphDB.Structures;
 using sones.GraphDB.TypeManagement;
 
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.GraphDB.TypeManagement.BasicTypes;
+
 
 #endregion
 
@@ -125,20 +147,20 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
                 var aTypeOfOperatorResult = GraphDBTypeMapper.ConvertGraph2CSharp(typeOfExpression.Name);
 
-                if (GraphDBTypeMapper.ConvertGraph2CSharp(typeOfExpression.Name) == TypesOfOperatorResult.NotABasicType)
+                if (GraphDBTypeMapper.ConvertGraph2CSharp(typeOfExpression.Name) == BasicType.NotABasicType)
                 {
                     #region NotABasicType
 
                     if (aExpressionNode.AstNode is ExpressionNode)
                     {
-                        aElement = new TupleElement(TypesOfOperatorResult.NotABasicType, ((ExpressionNode)aExpressionNode.AstNode).ExpressionDefinition);
+                        aElement = new TupleElement(BasicType.NotABasicType, ((ExpressionNode)aExpressionNode.AstNode).ExpressionDefinition);
                         TupleDefinition.AddElement(aElement);
                     }
                     else
                     {
                         if (aExpressionNode.AstNode is ExpressionOfAListNode)
                         {
-                            aElement = new TupleElement(TypesOfOperatorResult.NotABasicType, (((ExpressionOfAListNode)aExpressionNode.AstNode).ExpressionDefinition));
+                            aElement = new TupleElement(BasicType.NotABasicType, (((ExpressionOfAListNode)aExpressionNode.AstNode).ExpressionDefinition));
 
                             if (((ExpressionOfAListNode)aExpressionNode.AstNode).Parameters != null)
                             {
@@ -150,14 +172,14 @@ namespace sones.GraphDB.GraphQL.StructureNodes
                         {
                             if (aExpressionNode.AstNode is BinaryExpressionNode)
                             {
-                                aElement = new TupleElement(TypesOfOperatorResult.NotABasicType, (aExpressionNode.AstNode as BinaryExpressionNode).BinaryExpressionDefinition);
+                                aElement = new TupleElement(BasicType.NotABasicType, (aExpressionNode.AstNode as BinaryExpressionNode).BinaryExpressionDefinition);
                                 TupleDefinition.AddElement(aElement);
                             }
                             else
                             {
                                 if (aExpressionNode.AstNode is UnaryExpressionNode)
                                 {
-                                    aElement = new TupleElement(TypesOfOperatorResult.NotABasicType, (aExpressionNode.AstNode as UnaryExpressionNode).UnaryExpressionDefinition);
+                                    aElement = new TupleElement(BasicType.NotABasicType, (aExpressionNode.AstNode as UnaryExpressionNode).UnaryExpressionDefinition);
                                     TupleDefinition.AddElement(aElement);
                                 }
                                 else
@@ -166,7 +188,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
                                     {
                                         #region partial select
 
-                                        aElement = new TupleElement(TypesOfOperatorResult.NotABasicType, ((PartialSelectStmtNode)aExpressionNode.AstNode).SelectDefinition);
+                                        aElement = new TupleElement(BasicType.NotABasicType, ((PartialSelectStmtNode)aExpressionNode.AstNode).SelectDefinition);
                                         TupleDefinition.AddElement(aElement);
 
                                         //if (qresult.ResultType != ResultType.Successful)

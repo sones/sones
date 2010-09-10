@@ -1,4 +1,24 @@
-﻿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * JSON_IO
  * Achim 'ahzf' Friedland, 2009 - 2010
  */
@@ -14,11 +34,12 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.Structures.Result;
+
 using sones.GraphDB.ObjectManagement;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Objects;
 using System.Text;
+using sones.GraphDBInterface.Result;
 
 #endregion
 
@@ -148,6 +169,15 @@ namespace sones.GraphIO.JSON
         public Byte[] ExportAFSObject(AFSObject myAFSObject)
         {
             return null;
+        }
+
+        #endregion
+
+        #region ExportIJSON_IO(myIJSON_IO)
+
+        public Byte[] ExportIJSON_IO(IJSON_IO myIJSON_IO)
+        {
+            return new UTF8Encoding().GetBytes(myIJSON_IO.ToJSON().ToString());
         }
 
         #endregion

@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-/* <id name="GraphDB – Instantce Settings" />
+/* <id name="GraphDB � Instantce Settings" />
  * <copyright file="DBInstanceSettingsManager.cs"
  *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Daniel Kirstenpfad</developer>
  * <summary>A class which serializes and deserializes simple settings data structures</summary>
@@ -85,20 +86,20 @@ namespace sones.GraphDB.Settings
 
             _DatabaseRootPath = myDatabaseRootPath;
 
-            if (_DatabaseRootPath == "")
+            if (_DatabaseRootPath == null)
                 throw new GraphDBException(new Error_ArgumentNullOrEmpty("DatabaseRootPath"));
 
             //if (mySettingsObjectName == "")
             //    throw new GraphDBException(new Error_ArgumentNullOrEmpty("mySettingsObjectName"));
 
-            // eventually remove the last /
-            while (((String)_DatabaseRootPath)[_DatabaseRootPath.Length - 1] == FSPathConstants.PathDelimiter[0])
-            {
-                _DatabaseRootPath = new ObjectLocation(_DatabaseRootPath.Remove(_DatabaseRootPath.Length - 1, 1));
+            //// eventually remove the last /
+            //while ((_DatabaseRootPath.ToString())[_DatabaseRootPath.Length - 1] == FSPathConstants.PathDelimiter[0])
+            //{
+            //    _DatabaseRootPath = new ObjectLocation(_DatabaseRootPath.Remove(_DatabaseRootPath.Length - 1, 1));
 
-                if (_DatabaseRootPath == "")
-                    throw new GraphDBException(new Error_ArgumentNullOrEmpty("DatabaseRootPath"));
-            }
+            //    if (_DatabaseRootPath.ToString() == "")
+            //        throw new GraphDBException(new Error_ArgumentNullOrEmpty("DatabaseRootPath"));
+            //}
 
             //_SettingsObjectName = mySettingsObjectName;
 
@@ -115,7 +116,11 @@ namespace sones.GraphDB.Settings
                 if (myIGraphFS.ObjectStreamExists(new ObjectLocation(_DatabaseRootPath), FSConstants.USERMETADATASTREAM).Value == Trinary.TRUE)
                 {
                     // found it...read it
-                    ReadSettings();
+                    var readSettingsResult = ReadSettings();
+                    if (readSettingsResult.Failed())
+                    {
+                        throw new GraphDBException(readSettingsResult.Errors);
+                    }
                 }
 
                 else
@@ -136,7 +141,7 @@ namespace sones.GraphDB.Settings
                         //    myIGraphFS.SetUserMetadatum(new ObjectLocation(_DatabaseRootPath, _SettingsObjectName), Setting.Key, Setting.Value, IndexSetStrategy.REPLACE);
                         //}
 
-                        myIGraphFS.SetUserMetadata(new ObjectLocation(_DatabaseRootPath), SerializedSettings, IndexSetStrategy.REPLACE);
+                        myIGraphFS.SetUserMetadata(_DatabaseRootPath, SerializedSettings, IndexSetStrategy.REPLACE);
 
                         #endregion
 
@@ -165,7 +170,7 @@ namespace sones.GraphDB.Settings
         {
 
             var _Exceptional = new Exceptional();
-            var _UserMetadataExceptional = _IGraphFSSession.GetUserMetadata(new ObjectLocation(_DatabaseRootPath));
+            var _UserMetadataExceptional = _IGraphFSSession.GetUserMetadata(_DatabaseRootPath);
 
             if (_UserMetadataExceptional.Success() && _UserMetadataExceptional.Value != null)
             {

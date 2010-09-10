@@ -1,13 +1,13 @@
-ï»¿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,10 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-/* <id name="sones GraphDB â€“ BreadthFirstSearch" />
+
+/* <id name="GraphDB – BreadthFirstSearch" />
  * <copyright file="BreadthFirstSearch.cs"
  *            company="sones GmbH">
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Martin Junghanns</developer>
  * <developer>Michael Woidak</developer>
@@ -34,10 +37,12 @@ using System.Collections.Generic;
 using sones.Lib.DataStructures.UUID;
 using sones.GraphFS.DataStructures;
 
-namespace GraphAlgorithms.PathAlgorithm.BFSTreeStructure
+namespace sones.GraphAlgorithms.PathAlgorithm.BFSTreeStructure
 {
+
     public class Node
     {
+
         #region private members
 
         //unique identifier
@@ -59,8 +64,11 @@ namespace GraphAlgorithms.PathAlgorithm.BFSTreeStructure
         public Node()
         {
             _Key = null;
+
             _Parents = new HashSet<Node>();
+
             _Children = new HashSet<Node>();
+
             _AlreadyInPath = false;
         }
 
@@ -113,18 +121,21 @@ namespace GraphAlgorithms.PathAlgorithm.BFSTreeStructure
 
         #region public methods
 
+        /// <summary>
+        /// Fügt dem Knoten ein Child hinzu, existiert dieser schon, werden die Parents und Children des existierenden aktualisiert.
+        /// </summary>
+        /// <param name="myChild">Child welches hinzugefügt werden soll.</param>
+        /// <returns></returns>
         public bool addChild(Node myChild)
         {
             bool equal = false;
 
-            foreach (var child in _Children)
+            foreach (var thisChild in _Children)
             {
-                if (child._Key.Equals(myChild.Key))
+                //check if the node wich should be added IS already existing
+                if (thisChild._Key.Equals(myChild.Key))
                 {
                     equal = true;
-
-                    child.addChildren(myChild.Children);
-                    child.addParents(myChild.Parents);
 
                     break;
                 }
@@ -138,101 +149,106 @@ namespace GraphAlgorithms.PathAlgorithm.BFSTreeStructure
             return false;
         }
 
+        /// <summary>
+        /// Fügt eine Liste von Children hinzu.
+        /// </summary>
+        /// <param name="myChildren">Liste von Children.</param>
         public void addChildren(HashSet<Node> myChildren)
         {
-            bool equal = false;
-
             foreach (var myChild in myChildren)
             {
-                foreach (var child in _Children)
-                {
-                    if (myChild != null && child != null)
-                    {
-                        if (child._Key.Equals(myChild.Key))
-                        {
-                            equal = true;
-
-                            break;
-                        }
-                    }
-                }
-
-                if (!equal)
-                {
-                    _Children.Add(myChild);
-                    if (!myChild.Parents.Contains(this))
-                    {
-                        myChild.addParent(this);
-                    }
-                }
-                else
-                {
-                    equal = false;
-                }
+                addChild(myChild);
             }
         }
 
+        /// <summary>
+        /// Fügt dem Knoten ein Parent hinzu, existiert dieser schon, werden die Parents und Children des existierenden aktualisiert.
+        /// </summary>
+        /// <param name="myParent">Parent welcher hinzugefügt werden soll.</param>
+        /// <returns></returns>
         public bool addParent(Node myParent)
-        {
+        {            
             bool equal = false;
 
-            foreach (var parent in _Parents)
+            foreach (var thisParent in _Parents)
             {
-                if (parent._Key.Equals(myParent.Key))
+                //check if the node wich should be added IS already existing
+                if (thisParent._Key.Equals(myParent.Key))
                 {
+                    //exists
                     equal = true;
 
-                    parent.addChildren(myParent.Children);
-                    parent.addParents(myParent.Parents);
-
-                   break;
+                    break;
                 }
             }
 
+            //node is NOT already existing, add
             if (!equal)
             {
                 return _Parents.Add(myParent);
+            }
+            
+            return false;
+        }
+
+        /// <summary>
+        /// Fügt eine Liste von Parents hinzu.
+        /// </summary>
+        /// <param name="myParents">Liste von Parents.</param>
+        public void addParents(HashSet<Node> myParents)
+        {
+            foreach (var myParent in myParents)
+            {
+                addParent(myParent);
+            }
+        }
+
+        /// <summary>
+        /// Überprüft ob der angegebene Key bereits vorhanden ist.
+        /// </summary>
+        /// <param name="key">Key nach dem gesucht werden soll.</param>
+        /// <returns></returns>
+        public bool ChildrenContainsKey(ObjectUUID key)
+        {
+            foreach (var node in _Children)
+            {
+                if (node.Key.Equals(key))
+                    return true;
             }
 
             return false;
         }
 
-        public void addParents(HashSet<Node> myParents)
+        /// <summary>
+        /// Überprüft ob der angegebene Key bereits vorhanden ist.
+        /// </summary>
+        /// <param name="key">Key nach dem gesucht werden soll.</param>
+        /// <returns></returns>
+        public bool ParentsContainsKey(ObjectUUID key)
         {
-            bool equal = false;
-
-            foreach (var myParent in myParents)
+            foreach (var node in _Parents)
             {
-                foreach (var parent in _Parents)
-                {
-                    if (parent._Key.Equals(myParent.Key))
-                    {
-                        equal = true;
-                       
-                        break;
-                    }
-                }
-
-                if (!equal)
-                {
-                    _Parents.Add(myParent);
-                }
-                else
-                {
-                    equal = false;
-                }
+                if (node.Key.Equals(key))
+                    return true;
             }
+
+            return false;
         }
 
         #endregion
 
         #region Overrides
-                
+
         public override int GetHashCode()
         {
             return _Key.GetHashCode();
         }
 
+        /// <summary>
+        /// Überprüft ob Nodes identisch sind.
+        /// </summary>
+        /// <param name="obj">Objekt der überprüft werden soll. Muss vom Typ "Node" sein.</param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             if (obj is Node)
@@ -244,8 +260,9 @@ namespace GraphAlgorithms.PathAlgorithm.BFSTreeStructure
                 return false;
             }
         }
-        
+
         #endregion
 
     }
+
 }

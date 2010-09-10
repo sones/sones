@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * SelectNode
  * (c) Stefan Licht, 2009-2010
  */
@@ -16,11 +36,12 @@ using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.GraphQL.StatementNodes;
 using sones.GraphDB.GraphQL.StructureNodes;
 using sones.GraphDB.GraphQL.StructureNodes;
-using sones.GraphDB.Structures.Result;
+
 using sones.GraphDB.Settings;
 using sones.GraphDB.TypeManagement;
 using sones.Lib.ErrorHandling;
 using sones.Lib.Frameworks.Irony.Parsing;
+using sones.GraphDBInterface.Result;
 
 #endregion
 
@@ -52,9 +73,10 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Select
         public List<TypeReferenceDefinition> TypeList { get; private set; }
 
         /// <summary>
-        /// AExpressionDefinition, Alias
+        /// AExpressionDefinition, Alias, SelectValueAssignment - PBI 527
         /// </summary>
-        public Dictionary<AExpressionDefinition, String> SelectedElements { get; private set; }
+        //public Dictionary<AExpressionDefinition, String> SelectedElements { get; private set; }
+        public List<Tuple<AExpressionDefinition, String, SelectValueAssignment>> SelectedElements { get; private set; }
 
         /// <summary>
         /// Group by definitions
@@ -110,7 +132,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Select
 
             TypeList = new List<TypeReferenceDefinition>();
             GroupByIDs = new List<IDChainDefinition>();
-            SelectedElements = new Dictionary<AExpressionDefinition, string>();
+            SelectedElements = new List<Tuple<AExpressionDefinition, string, SelectValueAssignment>>();
             Limit = null;
             Offset = null;
             WhereExpressionDefinition = null;
@@ -146,19 +168,22 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Select
 
                 if (aColumnItemNode.SelType != TypesOfSelect.None)
                 {
-                    if(aColumnItemNode.SelType == TypesOfSelect.Ad)
+                    if (aColumnItemNode.SelType == TypesOfSelect.Ad)
                     {
                         typeName = aColumnItemNode.TypeName;
                     }
-                    
+
                     foreach (var reference in GetTypeReferenceDefinitions(context))
-                    {                        
-                        SelectedElements.Add(new IDChainDefinition(new ChainPartTypeOrAttributeDefinition(reference.TypeName), aColumnItemNode.SelType, typeName), null);
+                    {
+                        //SelectedElements.Add(new IDChainDefinition(new ChainPartTypeOrAttributeDefinition(reference.TypeName), aColumnItemNode.SelType, typeName), null);
+                        SelectedElements.Add(new Tuple<AExpressionDefinition, string, SelectValueAssignment>(
+                            new IDChainDefinition(new ChainPartTypeOrAttributeDefinition(reference.TypeName), aColumnItemNode.SelType, typeName), null, aColumnItemNode.ValueAssignment));
                     }
                     continue;
                 }
 
-                SelectedElements.Add(aColumnItemNode.ColumnSourceValue, aColumnItemNode.AliasId);
+                SelectedElements.Add(new Tuple<AExpressionDefinition, string, SelectValueAssignment>(
+                    aColumnItemNode.ColumnSourceValue, aColumnItemNode.AliasId, aColumnItemNode.ValueAssignment));
 
             }
 

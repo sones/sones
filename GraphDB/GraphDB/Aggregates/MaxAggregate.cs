@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,17 +15,9 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-
-/* <id Name=”sones GraphDB – MaxAggregate” />
- * <copyright file=”MaxAggregate.cs”
- *            company=”sones GmbH”>
- * Copyright (c) sones GmbH 2007-2010
- * </copyright>
- * <developer>Stefan Licht</developer>
- * <summary>The aggregate MAX.<summary>
- */
 
 #region Usings
 
@@ -37,12 +29,14 @@ using sones.GraphDB.Indices;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.Structures.Result;
+
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
-using sones.Lib.Session;
+using sones.GraphFS.Session;
+using sones.GraphDBInterface.TypeManagement;
+
 
 #endregion
 
@@ -55,59 +49,65 @@ namespace sones.GraphDB.Aggregates
     public class MaxAggregate : ABaseAggregate
     {
 
+        #region Properties
+
         public override string FunctionName
         {
             get { return "MAX"; }
         }
 
-        public override AggregateType AggregateType
-        {
-            get { return AggregateType.MAX; }
-        }
-        
-        public override TypesOfOperatorResult TypeOfResult
-        {
-            get { return TypesOfOperatorResult.Double; }
-        }
+        #endregion
 
-        public override Exceptional<Object> Aggregate(IEnumerable<DBObjectReadout> myDBObjectReadouts, TypeAttribute myTypeAttribute, DBContext dbContext, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
-        {
-            ADBBaseObject maxValue = myTypeAttribute.GetADBBaseObjectType(dbContext.DBTypeManager);
-            maxValue.SetValue(DBObjectInitializeType.MinValue);
+        #region Attribute aggregate
 
-            foreach (DBObjectReadout dbo in myDBObjectReadouts)
+        public override Exceptional<IObject> Aggregate(IEnumerable<DBObjectStream> myDBObjects, TypeAttribute myTypeAttribute, DBContext myDBContext, params Functions.ParameterValue[] myParameters)
+        {
+            var foundFirstMax = false;
+            var aggregateResult = myTypeAttribute.GetADBBaseObjectType(myDBContext.DBTypeManager);
+            foreach (var dbo in myDBObjects)
             {
-                if (HasAttribute(dbo.Attributes, myTypeAttribute.Name, dbContext))
+                var attrResult = dbo.GetAttribute(myTypeAttribute, myTypeAttribute.GetDBType(myDBContext.DBTypeManager), myDBContext);
+                if (attrResult.Failed())
                 {
-                    ADBBaseObject curVal = maxValue.Clone(GetAttribute(dbo.Attributes, myTypeAttribute.Name, dbContext));
-                    if (maxValue.CompareTo(curVal) < 0)
-                        maxValue.Value = curVal.Value;
+                    return attrResult;
+                }
+                var attr = attrResult.Value;
+
+                if (attr != null && attr is ADBBaseObject && aggregateResult.IsValidValue((attr as ADBBaseObject).Value))
+                {
+                    if (foundFirstMax == false)
+                    {
+                        aggregateResult.Value = (attr as ADBBaseObject).Value;
+                        foundFirstMax = true;
+                    }
+                    else
+                    {
+                        if (aggregateResult.CompareTo((attr as ADBBaseObject).Value) < 0)
+                        {
+                            aggregateResult.Value = (attr as ADBBaseObject).Value;
+                        }
+                    }
+                }
+                else
+                {
+                    return new Exceptional<IObject>(new Error_AggregateIsNotValidOnThisAttribute(myTypeAttribute.Name));
                 }
             }
-            return new Exceptional<object>(maxValue.Value);
+            return new Exceptional<IObject>(aggregateResult);
         }
 
-        public override Exceptional<Object> Aggregate(IEnumerable<ObjectUUID> myObjectUUIDs, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
-        {
-            return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-        }
+        #endregion
 
-        public override Exceptional<Object> Aggregate(IListOrSetEdgeType myAListEdgeType, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
-        {
-            return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-        }
+        #region Index aggregate
 
-        public override Exceptional<Object> Aggregate(IEnumerable<Exceptional<ObjectUUID>> myObjectStreams, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
-        {
-            return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-        }
-
-        public override Exceptional<object> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
+        public override Exceptional<IObject> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext)
         {
             var indexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(attributeIndex.IndexRelatedTypeUUID);
 
-            return new Exceptional<Object>((ObjectUUID)attributeIndex.GetKeys(indexRelatedType, dbContext).Max().IndexKeyValues[0].Value);
+            return new Exceptional<IObject>(attributeIndex.GetKeys(indexRelatedType, dbContext).Max().IndexKeyValues[0]);
         }
+
+        #endregion
 
     }
 

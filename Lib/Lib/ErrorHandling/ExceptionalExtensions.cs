@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /*
  * ExceptionalExtensions
- * Achim Friedland, 2009-2010
+ * (c) Achim Friedland, 2009 - 2010
  */
 
 #region Usings
@@ -37,7 +37,7 @@ namespace sones.Lib.ErrorHandling
     {
 
 
-        #region Succeess
+        #region Succeess(myExceptional)
 
         /// <summary>
         /// Is true, if there were no errors and warnings
@@ -49,7 +49,7 @@ namespace sones.Lib.ErrorHandling
 
         #endregion
 
-        #region Failed
+        #region Failed(myExceptional)
 
         /// <summary>
         /// Is true, if there were at least one error
@@ -67,14 +67,50 @@ namespace sones.Lib.ErrorHandling
         #endregion
 
 
+        #region IsValid<T>(this myExceptional)
+
+        /// <summary>
+        /// Is true, if the Exceptional&lt;T&gt; and the value of T are not
+        /// null and there had been no errors.
+        /// </summary>
+        public static Boolean IsValid<T>(this Exceptional<T> myExceptional)
+        {
+
+            if (myExceptional != null && !myExceptional.Errors.Any() && myExceptional.Value != null)
+                return true;
+
+            return false;
+
+        }
+
+        #endregion
+
+        #region IsInvalid<T>(this myExceptional)
+
+        /// <summary>
+        /// Is true, if the Exceptional&lt;T&gt; or the value of T are null
+        /// or there had been at least one error.
+        /// </summary>
+        public static Boolean IsInvalid<T>(this Exceptional<T> myExceptional)
+        {
+
+            if (myExceptional == null || myExceptional.Errors.Any() || myExceptional.Value == null)
+                return true;
+
+            return false;
+
+        }
+
+        #endregion
+
+
         #region When failed...
 
         public static Exceptional WhenFailed(this Exceptional myExceptional, Func<Exceptional, Exceptional> myFunc)
         {
 
-            if (myExceptional.Failed())
-                if (myFunc != null)
-                    return myFunc(myExceptional);
+            if (myExceptional.Failed() && myFunc != null)
+                return myFunc(myExceptional);
 
             return myExceptional;
 
@@ -83,9 +119,8 @@ namespace sones.Lib.ErrorHandling
         public static Exceptional<T> WhenFailed<T>(this Exceptional<T> myExceptional, Func<Exceptional<T>, Exceptional<T>> myFunc)
         {
 
-            if (myExceptional.Failed() || myExceptional.Value == null)
-                if (myFunc != null)
-                    return myFunc(myExceptional);
+            if (myExceptional.IsInvalid() && myFunc != null)
+                return myFunc(myExceptional);
 
             return myExceptional;
 
@@ -94,9 +129,8 @@ namespace sones.Lib.ErrorHandling
         public static Exceptional FailedAction(this Exceptional myExceptional, Action<Exceptional> myAction)
         {
 
-            if (myExceptional.Failed())
-                if (myAction != null)
-                    myAction(myExceptional);
+            if (myExceptional.Failed() && myAction != null)
+                myAction(myExceptional);
 
             return myExceptional;
 
@@ -105,9 +139,8 @@ namespace sones.Lib.ErrorHandling
         public static Exceptional<T> FailedAction<T>(this Exceptional<T> myExceptional, Action<Exceptional<T>> myAction)
         {
 
-            if (myExceptional.Failed() || myExceptional.Value == null)
-                if (myAction != null)
-                    myAction(myExceptional);
+            if (myExceptional.IsInvalid() && myAction != null)
+                myAction(myExceptional);
 
             return myExceptional;
 
@@ -120,9 +153,8 @@ namespace sones.Lib.ErrorHandling
         public static Exceptional WhenSucceded(this Exceptional myExceptional, Func<Exceptional, Exceptional> myFunc)
         {
 
-            if (myExceptional.Success())
-                if (myFunc != null)
-                    return myFunc(myExceptional);
+            if (myExceptional.Success() && myFunc != null)
+                return myFunc(myExceptional);
 
             return myExceptional;
 
@@ -131,9 +163,8 @@ namespace sones.Lib.ErrorHandling
         public static Exceptional<T> WhenSucceded<T>(this Exceptional<T> myExceptional, Func<Exceptional<T>, Exceptional<T>> myFunc)
         {
 
-            if (myExceptional.Success() && myExceptional.Value != null)
-                if (myFunc != null)
-                    return myFunc(myExceptional);
+            if (myExceptional.IsValid() && myFunc != null)
+                return myFunc(myExceptional);
 
             return myExceptional;
 
@@ -142,9 +173,8 @@ namespace sones.Lib.ErrorHandling
         public static Exceptional SuccessAction(this Exceptional myExceptional, Action<Exceptional> myAction)
         {
 
-            if (myExceptional.Success())
-                if (myAction != null)
-                    myAction(myExceptional);
+            if (myExceptional.Success() && myAction != null)
+                myAction(myExceptional);
 
             return myExceptional;
 
@@ -153,9 +183,8 @@ namespace sones.Lib.ErrorHandling
         public static Exceptional<T> SuccessAction<T>(this Exceptional<T> myExceptional, Action<Exceptional<T>> myAction)
         {
 
-            if (myExceptional.Success() && myExceptional.Value != null)
-                if (myAction != null)
-                    myAction(myExceptional);
+            if (myExceptional.IsValid() && myAction != null)
+                myAction(myExceptional);
 
             return myExceptional;
 
@@ -200,95 +229,132 @@ namespace sones.Lib.ErrorHandling
         #endregion
 
 
-        public static T ReturnValue<T>(this Exceptional<T> myExceptional)
+        #region ValueOrDefault<T>(this myExceptional)
+
+        /// <summary>
+        /// Will return the value of the Exceptional&lt;T&gt; or default(T)
+        /// if there had been at least one error.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="myExceptional"></param>
+        /// <returns></returns>
+        public static T ValueOrDefault<T>(this Exceptional<T> myExceptional)
         {
 
             // If Success => return value!
-            if (myExceptional.Success() && myExceptional.Value != null)
+            if (myExceptional.IsValid())
                 return myExceptional.Value;
 
             return default(T);
 
         }
 
+        #endregion
+
+        #region ValueOrAlternative<T>(this myExceptional, myAlternative)
+
         /// <summary>
-        /// This will always return the value. <paramref name="myAction"/> can be used to break execution via exception.
+        /// Will return the value of the Exceptional&lt;T&gt; or the given
+        /// alternative if there had been at least one error.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="myExceptional"></param>
-        /// <param name="myAction"></param>
+        /// <param name="myAlternative"></param>
         /// <returns></returns>
-        public static T ReturnValue<T>(this Exceptional<T> myExceptional, Action<Exceptional> myAction)
-        {
-
-            if (myAction != null)
-            {
-                myAction(myExceptional);
-            }
-
-            return myExceptional.Value;
-
-        }
-
-        public static T ReturnValue<T>(this Exceptional<T> myExceptional, T valueIfFailed)
+        public static T ValueOrAlternative<T>(this Exceptional<T> myExceptional, T myAlternative)
         {
 
             // If Success => return value!
-            if (myExceptional.Success() && myExceptional.Value != null)
+            if (myExceptional.IsValid())
                 return myExceptional.Value;
 
-            return valueIfFailed;
+            return myAlternative;
 
         }
 
-        public static TOut TransformValue<TIn, TOut>(this Exceptional<TIn> myExceptional, Func<TIn, TOut> myFunc)
+        #endregion
+
+
+        #region TransformValue<TIn, TOut>(this myExceptional, myTransformation)
+
+        /// <summary>
+        /// Will return the transformed value of the Exceptional&lt;T&gt; or
+        /// default(T) if there had been at least one error.
+        /// </summary>
+        /// <typeparam name="TIn"></typeparam>
+        /// <typeparam name="TOut"></typeparam>
+        /// <param name="myExceptional"></param>
+        /// <param name="myTransformation"></param>
+        /// <returns></returns>
+        public static TOut TransformValue<TIn, TOut>(this Exceptional<TIn> myExceptional, Func<TIn, TOut> myTransformation)
         {
 
             // If Success => Transform value!
-            if (myExceptional.Success() && myExceptional.Value != null)
-                return myFunc(myExceptional.Value);
+            if (myExceptional.IsValid())
+                return myTransformation(myExceptional.Value);
 
             return default(TOut);
 
         }
 
+        #endregion
+
+        #region TransformValue<TIn, TOut>(this myExceptional, myTransformation, myAlternative)
+
+        /// <summary>
+        /// Will return the transformed value of the Exceptional&lt;T&gt; or
+        /// the given alternative if there had been at least one error.
+        /// </summary>
+        /// <typeparam name="TIn"></typeparam>
+        /// <typeparam name="TOut"></typeparam>
+        /// <param name="myExceptional"></param>
+        /// <param name="myTransformation"></param>
+        /// <param name="myAlternative"></param>
+        /// <returns></returns>
+        public static TOut TransformValue<TIn, TOut>(this Exceptional<TIn> myExceptional, Func<TIn, TOut> myTransformation, TOut myAlternative)
+        {
+
+            // If Success => Transform value!
+            if (myExceptional.IsValid())
+                return myTransformation(myExceptional.Value);
+
+            return myAlternative;
+
+        }
+
+        #endregion
+
 
         #region CheckArgumentsNotNull - with error message!
 
-        public static Exceptional NotNullMsg(this Exceptional myExceptional, String myMessage, params Object[] myObjects)
+        public static Exceptional NotNullMsg(this Exceptional myExceptional, String myParameter, params Object[] myObjects)
         {
 
-            if (myMessage.IsNullOrEmpty())
-                myMessage = "Argument is null!";
-
             if (myObjects.Any(o => o == null))
-                myExceptional.Push(new ExceptionalError(myMessage));
+                myExceptional.Push(new ArgumentNullError(myParameter));
 
             return myExceptional;
 
         }
 
-        public static Exceptional<T> NotNullMsg<T>(this Exceptional<T> myExceptional, String myMessage, params Object[] myObjects)
+        public static Exceptional<T> NotNullMsg<T>(this Exceptional<T> myExceptional, String myParameter, params Object[] myObjects)
         {
 
-            if (myMessage.IsNullOrEmpty())
-                myMessage = "Argument is null!";
-
             if (myObjects.Any(o => o == null))
-                myExceptional.Push(new ExceptionalError(myMessage));
+                myExceptional.Push(new ArgumentNullError(myParameter));
 
             return myExceptional;
 
         }
 
-        public static Exceptional ArgumentsNotNullMsg(String myMessage, params Object[] myObjects)
+        public static Exceptional ArgumentsNotNullMsg(String myParameter, params Object[] myObjects)
         {
-            return new Exceptional().NotNullMsg(myMessage, myObjects);
+            return new Exceptional().NotNullMsg(myParameter, myObjects);
         }
 
-        public static Exceptional<T> ArgumentsNotNullMsg<T>(String myMessage, params Object[] myObjects)
+        public static Exceptional<T> ArgumentsNotNullMsg<T>(String myParameter, params Object[] myObjects)
         {
-            return new Exceptional<T>().NotNullMsg<T>(myMessage, myObjects);
+            return new Exceptional<T>().NotNullMsg<T>(myParameter, myObjects);
         }
 
         #endregion
@@ -299,7 +365,7 @@ namespace sones.Lib.ErrorHandling
         {
 
             if (myObjects.Any(o => o == null))
-                myExceptional.Push(new ExceptionalError("Argument is null!"));
+                myExceptional.Push(new ArgumentNullError());
 
             return myExceptional;
 
@@ -309,7 +375,7 @@ namespace sones.Lib.ErrorHandling
         {
 
             if (myObjects.Any(o => o == null))
-                myExceptional.Push(new ExceptionalError("Argument is null!"));
+                myExceptional.Push(new ArgumentNullError());
 
             return myExceptional;
 
@@ -334,7 +400,7 @@ namespace sones.Lib.ErrorHandling
         {
 
             if (myStrings.Any(o => o == null || o == ""))
-                myExceptional.Push(new ExceptionalError("String is null or empty!"));
+                myExceptional.Push(new ArgumentNullError("String"));
 
             return myExceptional;
 
@@ -344,7 +410,7 @@ namespace sones.Lib.ErrorHandling
         {
 
             if (myStrings.Any(o => o == null || o == ""))
-                myExceptional.Push(new ExceptionalError("String is null or empty!"));
+                myExceptional.Push(new ArgumentNullError("String"));
 
             return myExceptional;
         
@@ -364,43 +430,61 @@ namespace sones.Lib.ErrorHandling
 
         #region CheckStringNotNullOrEmpty - with error message
 
-        public static Exceptional NotNullOrEmptyMsg(this Exceptional myExceptional, String myMessage, params String[] myStrings)
+        public static Exceptional NotNullOrEmptyMsg(this Exceptional myExceptional, String myParameter, params String[] myStrings)
         {
 
-            if (myMessage.IsNullOrEmpty())
-                myMessage = "String is null or empty!";
+            if (myParameter.IsNullOrEmpty())
+                myParameter = "String";
 
             if (myStrings.Any(o => o == null || o == ""))
-                myExceptional.Push(new ExceptionalError(myMessage));
+                myExceptional.Push(new ArgumentNullOrEmptyError(myParameter));
 
             return myExceptional;
 
         }
 
-        public static Exceptional<T> NotNullOrEmptyMsg<T>(this Exceptional<T> myExceptional, String myMessage, params String[] myStrings)
+        public static Exceptional<T> NotNullOrEmptyMsg<T>(this Exceptional<T> myExceptional, String myParameter, params String[] myStrings)
         {
 
-            if (myMessage.IsNullOrEmpty())
-                myMessage = "String is null or empty!";
+            if (myParameter.IsNullOrEmpty())
+                myParameter = "String";
 
             if (myStrings.Any(o => o == null || o == ""))
-                myExceptional.Push(new ExceptionalError(myMessage));
+                myExceptional.Push(new ArgumentNullOrEmptyError(myParameter));
 
             return myExceptional;
 
         }
 
-        public static Exceptional StringsNotNullOrEmptyMsg(String myMessage, params String[] myStrings)
+        public static Exceptional StringsNotNullOrEmptyMsg(String myParameter, params String[] myStrings)
         {
-            return new Exceptional().NotNullOrEmptyMsg(myMessage, myStrings);
+            return new Exceptional().NotNullOrEmptyMsg(myParameter, myStrings);
         }
 
-        public static Exceptional<T> StringsNotNullOrEmptyMsg<T>(String myMessage, params String[] myStrings)
+        public static Exceptional<T> StringsNotNullOrEmptyMsg<T>(String myParameter, params String[] myStrings)
         {
-            return new Exceptional<T>().NotNullOrEmptyMsg<T>(myMessage, myStrings);
+            return new Exceptional<T>().NotNullOrEmptyMsg<T>(myParameter, myStrings);
         }
 
         #endregion
+
+
+        ///// <summary>
+        ///// This will always return the value. <paramref name="myAction"/> can be used to break execution via exception.
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="myExceptional"></param>
+        ///// <param name="myAction"></param>
+        ///// <returns></returns>
+        //public static T ReturnValue<T>(this Exceptional<T> myExceptional, Action<Exceptional> myAction)
+        //{
+
+        //    if (myAction != null)
+        //        myAction(myExceptional);
+
+        //    return myExceptional.Value;
+
+        //}
 
     }
 

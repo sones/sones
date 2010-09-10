@@ -1,4 +1,24 @@
-﻿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * JSON_IO_Extensions
  * Achim 'ahzf' Friedland, 2009 - 2010
  */
@@ -10,10 +30,12 @@ using System.Linq;
 
 using Newtonsoft.Json.Linq;
 
-using sones.GraphDB.Structures.Result;
+
 using System.Collections.Generic;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphFS.DataStructures;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.ObjectManagement;
 
 #endregion
 
@@ -100,19 +122,26 @@ namespace sones.GraphIO.JSON
                        ))));
 
             // results ------------------------------
-            _Query.Add(new JProperty("results", new JArray(
-                from _SelectionListElementResult in myQueryResult.Results
-                where _SelectionListElementResult.Objects != null
-                select
-                    from _DBObjectReadout in _SelectionListElementResult.Objects
-                    select _DBObjectReadout.ToJSON()
-                )));
+            _Query.Add(new JProperty("results", new JArray(GetJObjectsFromResult(myQueryResult.Results))));
 
             return _Query;
 
         }
 
         #endregion
+
+        private static IEnumerable<JObject> GetJObjectsFromResult(SelectionResultSet myResultSet)
+        {
+            if (myResultSet.Objects != null)
+            {
+                foreach (var aXElement in from aReadout in myResultSet.Objects select aReadout.ToJSON())
+                {
+                    yield return aXElement;
+                }
+            }
+
+            yield break;
+        }
 
         #region ToJSON(this myDBObjectReadout)
 
@@ -175,8 +204,8 @@ namespace sones.GraphIO.JSON
 
                         var _Grouped = new JArray("grouped");
 
-                        if (_GroupedDBObjects.GrouppedVertices != null)
-                            foreach (var _DBObjectReadout in _GroupedDBObjects.GrouppedVertices)
+                        if (_GroupedDBObjects.GroupedVertices != null)
+                            foreach (var _DBObjectReadout in _GroupedDBObjects.GroupedVertices)
                                 _Grouped.Add(_DBObjectReadout.ToJSON());
 
                         _DBObject.Add(_Grouped);

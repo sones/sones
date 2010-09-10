@@ -1,4 +1,24 @@
-﻿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * TEXT_IO_Extensions
  * Achim 'ahzf' Friedland, 2009-2010
  */
@@ -9,9 +29,10 @@ using System;
 using System.Linq;
 using System.Text;
 
-using sones.GraphDB.Structures.Result;
+
 using System.Collections.Generic;
 using sones.GraphDB.TypeManagement;
+using sones.GraphDBInterface.Result;
 
 #endregion
 
@@ -73,10 +94,9 @@ namespace sones.GraphIO.TEXT
                 _StringBuilder.AppendLine();
                 _StringBuilder.AppendLine(myQueryResult.Results.Count() + " result(s): ");
 
-                foreach (var _SelectionListElementResult in myQueryResult.Results)
-                    if (_SelectionListElementResult.Objects != null)
-                        foreach (var _DBObject in _SelectionListElementResult.Objects)
-                            _StringBuilder.Append(_DBObject.ToTEXT());
+                if (myQueryResult.Results.Objects != null)
+                    foreach (var _DBObject in myQueryResult.Results.Objects)
+                        _StringBuilder.Append(_DBObject.ToTEXT());
 
                 _StringBuilder.AppendLine();
 
@@ -122,7 +142,7 @@ namespace sones.GraphIO.TEXT
                     myStringBuilder.Append("\t");
 
                 myStringBuilder.Append("edgelabel: ");
-                myStringBuilder.AppendLine("weight: " + _WeightedDBObject1.Weight.ToString() + " (" + _WeightedDBObject1.Weight.Type.ToString() + ")");
+                myStringBuilder.AppendLine("weight: " + _WeightedDBObject1.Weight.ToString() + " (" + _WeightedDBObject1.TypeName + ")");
 
             }
 

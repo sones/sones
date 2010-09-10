@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,11 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
 /* 
  * AGraphDSSharp
- * Achim Friedland, 2009 - 2010
+ * (c) Achim 'ahzf' Friedland, 2009 - 2010
  */
 
 #region Usings
@@ -31,27 +32,163 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-using sones.GraphDB.NewAPI;
-using sones.GraphDB.Structures;
-using sones.GraphDB.Structures.Result;
-using sones.GraphDB.Transactions;
+using sones.GraphFS;
+using sones.GraphFS.Caches;
+using sones.GraphFS.DataStructures;
+using sones.GraphFS.Events;
+using sones.GraphFS.Objects;
+using sones.GraphFS.Session;
+using sones.GraphFS.Transactions;
 
+using sones.GraphDB;
+using sones.GraphDB.GraphQL;
+using sones.GraphDB.NewAPI;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.Transactions;
+
+using sones.GraphDS.API.CSharp.Fluent;
 using sones.GraphDS.API.CSharp.Linq;
 using sones.GraphDS.API.CSharp.Reflection;
 
-using sones.GraphFS.DataStructures;
-using sones.GraphFS.Transactions;
-
 using sones.Lib;
-using sones.GraphDS.API.CSharp.Fluent;
+using sones.Lib.ErrorHandling;
+
+using sones.Notifications;
+using sones.Lib.DataStructures;
+using System.IO;
+using sones.GraphFS.InternalObjects;
 
 #endregion
 
 namespace sones.GraphDS.API.CSharp
 {
 
-    public abstract class AGraphDSSharp
+    public abstract class AGraphDSSharp : IGraphFSSession
     {
+
+        #region Data
+
+        protected ISessionInfo  _SessionInfo;
+        protected SessionToken  _SessionToken;
+
+        #endregion
+
+        #region Properties
+
+        public String  GraphFSImplementation    { get; set; }
+        public String  DatabaseName             { get; set; }
+        public String  Username                 { get; set; }
+        public String  Password                 { get; set; }
+        public UInt64  FileSystemSize           { get; set; }
+        
+        public ObjectCacheSettings    ObjectCacheSettings    { get; set; }        
+        public NotificationSettings   NotificationSettings   { get; set; }
+        public NotificationDispatcher NotificationDispatcher { get; set; }
+
+        #region StorageLocation
+
+        public String StorageLocation
+        {
+            set
+            {
+
+                if (value == null)
+                    throw new ArgumentNullException();
+
+                // Use the property in order to set the GraphFSParametersDictionary
+                StorageLocations = new HashSet<String> { value };
+
+            }
+        }
+
+        #endregion
+
+        #region StorageLocations
+
+        public HashSet<String> _StorageLocations; 
+
+        public HashSet<String> StorageLocations
+        {
+
+            get
+            {
+                return _StorageLocations;
+            }
+
+            set
+            {
+                
+                if (value == null)
+                    throw new ArgumentNullException();
+
+                _StorageLocations = value;
+
+                if (!_IGraphFSParametersDictionary.ContainsKey("StorageLocations"))
+                    _IGraphFSParametersDictionary.Add("StorageLocations", _StorageLocations);
+                else
+                    _IGraphFSParametersDictionary["StorageLocations"] = _StorageLocations;
+
+            }
+
+        }
+
+        #endregion
+
+        #region IGraphFSParameters
+
+        protected Object                                _IGraphFSParameters;
+        protected readonly IDictionary<String, Object>  _IGraphFSParametersDictionary;
+
+        public Object IGraphFSParameters
+        {
+
+            get
+            {
+                return _IGraphFSParameters;
+            }
+
+            set
+            {
+                if (value != null)
+                {
+                    
+                    _IGraphFSParameters           = value;
+                    
+                    foreach (var _item in value.AnonymousTypeToDictionary())
+                        _IGraphFSParametersDictionary.Add(_item);
+
+                }
+            }
+        
+        }
+
+        #endregion
+
+        protected GraphQLQuery _GQLQuery;
+
+        public IGraphDBSession IGraphDBSession { get; protected set; }
+
+        #endregion
+
+        #region Events
+
+        public delegate void ShutdownEventHandler(Object Sender, EventArgs e);
+
+        public event ShutdownEventHandler ShutdownEvent;
+
+        #endregion
+
+        #region Constructor(s)
+
+        public AGraphDSSharp()
+        {
+            FileSystemSize                  = 50000000;
+            _SessionInfo                    = new FSSessionInfo("root");
+            _SessionToken                   = new SessionToken(_SessionInfo);
+            _IGraphFSParametersDictionary   = new Dictionary<String, Object>();
+        }
+
+        #endregion
 
 
         #region QueryResultAction(myQueryResult, myAction, mySuccessAction, myPartialSuccessAction, myFailureAction)
@@ -133,852 +270,303 @@ namespace sones.GraphDS.API.CSharp
 
 
 
+        #region Shutdown()
 
-        #region AlterVertex/-Vertices
-
-        #region AlterVertex(myVertexTypeName)
-
-        public AlterVertexQuery AlterVertex(String myVertexTypeName)
-        {
-            return new AlterVertexQuery(this, myVertexTypeName);
-        }
-
-        #endregion
-
-        #region AlterVertex(myCreateVertexQuery)
-
-        public AlterVertexQuery AlterVertex(CreateVertexQuery myCreateVertexQuery)
-        {
-            return new AlterVertexQuery(this, myCreateVertexQuery.Name);
-        }
-
-        #endregion
-
-
-        #region AlterVertices(params myAlterVerticesQuery)
-
-        public QueryResult AlterVertices(params AlterVertexQuery[] myAlterVerticesQueries)
+        public virtual Boolean Shutdown()
         {
 
-            QueryResult _QueryResult = null;
-
-            foreach (var _AlterVertexQuery in myAlterVerticesQueries)
+            try
             {
-                
-                _QueryResult = _AlterVertexQuery.Execute();
 
-                if (_QueryResult.Failed)
-                    return _QueryResult;
+                if (ShutdownEvent != null)
+                    ShutdownEvent(this, EventArgs.Empty);
+
+                IGraphDBSession.Shutdown();
+                IGraphFS.UnmountAllFileSystems(_SessionToken);
+
+                IGraphDBSession = null;
+                //IGraphFSSession = null;
+
+                //_IGraphFS.GetNotificationDispatcher().Dispose();
 
             }
 
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region AlterVertices(myAction, params myAlterVerticesQueries)
-
-        public QueryResult AlterVertices(Action<QueryResult> myAction, params AlterVertexQuery[] myAlterVerticesQueries)
-        {
-
-            QueryResult _QueryResult = null;
-
-            foreach (var _AlterVertexQuery in myAlterVerticesQueries)
+            catch (Exception e)
             {
-
-                _QueryResult = _AlterVertexQuery.Execute();
-
-                QueryResultAction(_QueryResult, myAction);
-
-                if (_QueryResult.Failed)
-                    return _QueryResult;
-
+                return false;
             }
 
-            return _QueryResult;
+            return true;
 
         }
 
         #endregion
 
-        #region AlterVertices(mySuccessAction, myFailureAction, params myAlterVerticesQueries)
 
-        public QueryResult AlterVertices(Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, params AlterVertexQuery[] myAlterVerticesQueries)
+        #region FS Events
+
+        public abstract event GraphFSEventHandlers.OnLoadEventHandler OnLoad;
+
+        public abstract event GraphFSEventHandlers.OnLoadedEventHandler OnLoaded;
+
+        public abstract event GraphFSEventHandlers.OnLoadedAsyncEventHandler OnLoadedAsync;
+
+        public abstract event GraphFSEventHandlers.OnSaveEventHandler OnSave;
+
+        public abstract event GraphFSEventHandlers.OnSavedEventHandler OnSaved;
+
+        public abstract event GraphFSEventHandlers.OnSavedAsyncEventHandler OnSavedAsync;
+
+        public abstract event GraphFSEventHandlers.OnRemoveEventHandler OnRemove;
+
+        public abstract event GraphFSEventHandlers.OnRemovedEventHandler OnRemoved;
+
+        public abstract event GraphFSEventHandlers.OnRemovedAsyncEventHandler OnRemovedAsync;
+
+        public abstract event GraphFSEventHandlers.OnTransactionStartEventHandler OnTransactionStart;
+
+        public abstract event GraphFSEventHandlers.OnTransactionStartedEventHandler OnTransactionStarted;
+
+        public abstract event GraphFSEventHandlers.OnTransactionStartedAsyncEventHandler OnTransactionStartedAsync;
+
+        public abstract event GraphFSEventHandlers.OnTransactionCommitEventHandler OnTransactionCommit;
+
+        public abstract event GraphFSEventHandlers.OnTransactionCommittedEventHandler OnTransactionCommitted;
+
+        public abstract event GraphFSEventHandlers.OnTransactionCommittedAsyncEventHandler OnTransactionCommittedAsync;
+
+        public abstract event GraphFSEventHandlers.OnTransactionRollbackEventHandler OnTransactionRollback;
+
+        public abstract event GraphFSEventHandlers.OnTransactionRollbackedEventHandler OnTransactionRollbacked;
+
+        public abstract event GraphFSEventHandlers.OnTransactionRollbackedAsyncEventHandler OnTransactionRollbackedAsync;
+
+        #endregion
+
+
+        #region IGraphFSSession Members
+
+        public abstract IGraphFS IGraphFS { get; protected set; }
+
+        public SessionToken SessionToken
         {
-
-            QueryResult _QueryResult = null;
-
-            foreach (var _AlterVertexQuery in myAlterVerticesQueries)
-            {
-
-                _QueryResult = _AlterVertexQuery.Execute();
-
-                QueryResultAction(_QueryResult, mySuccessAction, myFailureAction);
-
-                if (_QueryResult.Failed)
-                    return _QueryResult;
-
-            }
-
-            return _QueryResult;
-
+            get { return _SessionToken; }
         }
 
-        #endregion
+        public abstract String Implementation { get; }
 
-        #region AlterVertices(mySuccessAction, myPartialSuccessAction, myFailureAction, params myAlterVerticesQueries)
+        public abstract IGraphFSSession CreateNewSession(String myUsername);
 
-        public QueryResult AlterVertices(Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, params AlterVertexQuery[] myAlterVerticesQueries)
-        {
+        public abstract bool IsMounted { get; }
 
-            QueryResult _QueryResult = null;
+        public abstract bool IsPersistent { get; }
 
-            foreach (var _AlterVertexQuery in myAlterVerticesQueries)
-            {
+        public abstract IEnumerable<object> TraverseChildFSs(Func<IGraphFS, ulong, IEnumerable<object>> myFunc, ulong myDepth);
 
-                _QueryResult = _AlterVertexQuery.Execute();
+        public abstract FileSystemUUID GetFileSystemUUID();
 
-                QueryResultAction(_QueryResult, mySuccessAction, myPartialSuccessAction, myFailureAction);
+        public abstract FileSystemUUID GetFileSystemUUID(ObjectLocation myObjectLocation);
 
-                if (_QueryResult.Failed)
-                    return _QueryResult;
+        public abstract IEnumerable<FileSystemUUID> GetFileSystemUUIDs(ulong myDepth);
 
-            }
+        public abstract Exceptional WipeFileSystem();
 
-            return _QueryResult;
+        public abstract String GetFileSystemDescription();
 
-        }
+        public abstract String GetFileSystemDescription(ObjectLocation myObjectLocation);
 
-        #endregion
+        public abstract IEnumerable<String> GetFileSystemDescriptions(ulong myDepth);
 
-        #endregion
+        public abstract void SetFileSystemDescription(String myFileSystemDescription);
 
+        public abstract void SetFileSystemDescription(ObjectLocation myObjectLocation, String myFileSystemDescription);
 
-        #region CreateEdge/-Edges
+        public abstract ulong GetNumberOfBytes();
 
-        #region CreateVertex(myVertexTypeName, hyperEdge = false, abstractEdge = false)
+        public abstract ulong GetNumberOfBytes(ObjectLocation myObjectLocation);
 
-        public CreateEdgeQuery CreateEdge(String myVertexTypeName, Boolean hyperEdge = false, Boolean abstractEdge = false)
-        {
-            return new CreateEdgeQuery(this, myVertexTypeName, hyperEdge, abstractEdge);
-        }
+        public abstract IEnumerable<ulong> GetNumberOfBytes(bool myRecursiveOperation);
 
-        #endregion
+        public abstract ulong GetNumberOfFreeBytes();
 
+        public abstract ulong GetNumberOfFreeBytes(ObjectLocation myObjectLocation);
 
-        #region CreateEdges(params myCreateEdgesQuery)
+        public abstract IEnumerable<ulong> GetNumberOfFreeBytes(bool myRecursiveOperation);
 
-        public QueryResult CreateEdges(params CreateEdgeQuery[] myCreateEdgesQueries)
-        {
+        public abstract AccessModeTypes GetAccessMode();
 
-            var _CreateTypesQuery = new StringBuilder("CREATE Edges ");
-            String tmp = null;
+        public abstract AccessModeTypes GetAccessMode(ObjectLocation myObjectLocation);
 
-            foreach (var CreateTypeQuery in myCreateEdgesQueries)
-            {
+        public abstract IEnumerable<GraphFS.AccessModeTypes> GetAccessModes(bool myRecursiveOperation);
 
-                if (CreateTypeQuery.IsAbstract)
-                {
-                    tmp = " ABSTRACT ";
-                    tmp += CreateTypeQuery.GetGQLQuery().Replace("CREATE ABSTRACT EDGE ", "") + ", ";
-                    _CreateTypesQuery.Append(tmp);
-                }
-                else
-                {
-                    _CreateTypesQuery.Append(CreateTypeQuery.GetGQLQuery().Replace("CREATE EDGE ", "") + ", ");
-                }
+        public abstract IGraphFS ParentFileSystem { get; set; }
 
-            }
+        public abstract IEnumerable<ObjectLocation> GetChildFileSystemMountpoints(bool myRecursiveOperation);
 
-            _CreateTypesQuery.RemoveEnding(2);
+        public abstract IGraphFS GetChildFileSystem(ObjectLocation myObjectLocation, bool myRecursive);
 
-            return Query(_CreateTypesQuery.ToString());
+        public abstract Exceptional<ObjectCacheSettings> GetObjectCacheSettings();
 
-        }
+        public abstract Exceptional<ObjectCacheSettings> GetObjectCacheSettings(ObjectLocation myObjectLocation);
 
-        #endregion
+        public abstract Exceptional SetObjectCacheSettings(ObjectCacheSettings myObjectCacheSettings);
 
-        #region CreateEdges(myAction, params myCreateEdgesQueries)
+        public abstract Exceptional SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings);
 
-        public QueryResult CreateEdges(Action<QueryResult> myAction, params CreateEdgeQuery[] myCreateEdgesQueries)
-        {
+        public abstract Exceptional<FileSystemUUID> MakeFileSystem(String myDescription, ulong myNumberOfBytes, bool myOverwriteExistingFileSystem, Action<double> myAction);
 
-            var _QueryResult = CreateEdges(myCreateEdgesQueries);
+        public abstract Exceptional<UInt64> GrowFileSystem(ulong myNumberOfBytesToAdd);
 
-            QueryResultAction(_QueryResult, myAction);
+        public abstract Exceptional<UInt64> ShrinkFileSystem(ulong myNumberOfBytesToRemove);
 
-            return _QueryResult;
+        public abstract Exceptional MountFileSystem(AccessModeTypes myAccessMode);
 
-        }
+        public abstract Exceptional MountFileSystem(ObjectLocation myMountPoint, IGraphFSSession myIGraphFSSession, AccessModeTypes myFSAccessMode);
 
-        #endregion
+        public abstract Exceptional RemountFileSystem(GraphFS.AccessModeTypes myFSAccessMode);
 
-        #region CreateEdges(mySuccessAction, myFailureAction, params myCreateEdgesQueries)
+        public abstract Exceptional RemountFileSystem(ObjectLocation myMountPoint, GraphFS.AccessModeTypes myFSAccessMode);
 
-        public QueryResult CreateEdges(Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, params CreateEdgeQuery[] myCreateEdgesQueries)
-        {
+        public abstract Exceptional UnmountFileSystem();
 
-            var _QueryResult = CreateEdges(myCreateEdgesQueries);
+        public abstract Exceptional UnmountFileSystem(ObjectLocation myMountPoint);
 
-            QueryResultAction(_QueryResult, mySuccessAction, myFailureAction);
+        public abstract Exceptional UnmountAllFileSystems();
 
-            return _QueryResult;
+        public abstract Exceptional ChangeRootDirectory(String myChangeRootPrefix);
 
-        }
+        public abstract Exceptional<INode> GetINode(ObjectLocation myObjectLocation);
 
-        #endregion
+        public abstract Exceptional<ObjectLocator> GetObjectLocator(ObjectLocation myObjectLocation);
 
-        #region CreateEdges(mySuccessAction, myPartialSuccessAction, myFailureAction, params myCreateEdgesQueries)
+        public abstract Exceptional LockFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, ulong myLockingTime);
 
-        public QueryResult CreateEdges(Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, params CreateEdgeQuery[] myCreateEdgesQueries)
-        {
+        public abstract Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation) where PT : AFSObject, new();
 
-            var _QueryResult = CreateEdges(myCreateEdgesQueries);
+        public abstract Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null, ulong myObjectCopy = 0, bool myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new();
 
-            QueryResultAction(_QueryResult, mySuccessAction, myPartialSuccessAction, myFailureAction);
+        public abstract Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, Func<PT> myFunc, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null, ulong myObjectCopy = 0, bool myIgnoreIntegrityCheckFailures = false) where PT : AFSObject;
 
-            return _QueryResult;
+        public abstract Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation) where PT : GraphFS.Objects.AFSObject, new();
 
-        }
+        public abstract Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null, ulong myObjectCopy = 0, bool myIgnoreIntegrityCheckFailures = false) where PT : GraphFS.Objects.AFSObject, new();
 
-        #endregion
+        public abstract Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, Func<PT> myFunc, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null, ulong myObjectCopy = 0, bool myIgnoreIntegrityCheckFailures = false) where PT : GraphFS.Objects.AFSObject;
 
-        #endregion
+        public abstract Exceptional StoreFSObject(AFSObject myAGraphObject, bool myAllowOverwritting);
 
-        #region AlterEdge/-Edges
-        #endregion
+        public abstract Exceptional<Trinary> ObjectExists(ObjectLocation myObjectLocatio);
 
+        public abstract Exceptional<Trinary> ObjectStreamExists(ObjectLocation myObjectLocation, String myObjectStream);
 
-        #region CreateIndex/-Indices
+        public abstract Exceptional<Trinary> ObjectEditionExists(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition);
 
-        #region CreateIndex(myIndexName)
+        public abstract Exceptional<Trinary> ObjectRevisionExists(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null);
 
-        /// <summary>
-        /// Creates an index. If the name is null it will be later auto-generated!
-        /// </summary>
-        /// <param name="myIndexName">The name of the index</param>
-        /// <returns>A CreateIndexQuery object</returns>
-        public CreateIndexQuery CreateIndex(String myIndexName = null)
-        {
-            return new CreateIndexQuery(this, myIndexName);
-        }
+        public abstract Exceptional<IEnumerable<String>> GetObjectStreams(ObjectLocation myObjectLocation);
 
-        #endregion
+        public abstract Exceptional<IEnumerable<String>> GetObjectEditions(ObjectLocation myObjectLocation, String myObjectStream);
 
-        #region CreateIndex(myCreateVertexQuery)
+        public abstract Exceptional<IEnumerable<ObjectRevisionID>> GetObjectRevisionIDs(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition);
 
-        public CreateIndexQuery CreateIndex(CreateVertexQuery myCreateVertexQuery)
-        {
-            return new CreateIndexQuery(this, myCreateVertexQuery.Name);
-        }
+        public abstract Exceptional RenameFSObject(ObjectLocation myObjectLocation, String myNewObjectName);
 
-        #endregion
+        public abstract Exceptional RemoveFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null);
 
+        public abstract Exceptional EraseFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null);
 
-        #region CreateIndices(params myCreateIndexQueries)
+        public abstract Exceptional AddSymlink(ObjectLocation myObjectLocation, ObjectLocation myTargetLocation);
 
-        public QueryResult CreateIndices(params CreateIndexQuery[] myCreateIndexQueries)
-        {
+        public abstract Exceptional AddSymlink(ObjectLocation myObjectLocation, GraphFS.Objects.AFSObject myTargetAFSObject);
 
-            // myCreateVertexQuery.Name will never be null or its size zero!
-            Debug.Assert(myCreateIndexQueries != null || myCreateIndexQueries.Length == 0);
+        public abstract Exceptional<Trinary> isSymlink(ObjectLocation myObjectLocation);
 
-            QueryResult _QueryResult = null;
+        public abstract Exceptional<ObjectLocation> GetSymlink(ObjectLocation myObjectLocation);
 
-            foreach (var _CreateIndexQuery in myCreateIndexQueries)
-            {
+        public abstract Exceptional RemoveSymlink(ObjectLocation myObjectLocation);
 
-                _QueryResult = Query(_CreateIndexQuery.GetGQLQuery());
+        public abstract Exceptional<IDirectoryObject> CreateDirectoryObject(ObjectLocation myObjectLocation, UInt64 myBlocksize = 0, Boolean myRecursive = false);
 
-                if (_QueryResult.Failed)
-                    return _QueryResult;
+        public abstract Exceptional<Trinary> isIDirectoryObject(ObjectLocation myObjectLocation);
 
-            }
+        public abstract Exceptional<IEnumerable<String>> GetDirectoryListing(ObjectLocation myObjectLocation);
 
-            return _QueryResult;
+        public abstract Exceptional<IEnumerable<String>> GetDirectoryListing(ObjectLocation myObjectLocation, Func<KeyValuePair<String, GraphFS.InternalObjects.DirectoryEntry>, bool> myFunc);
 
-        }
+        public abstract Exceptional<IEnumerable<String>> GetFilteredDirectoryListing(ObjectLocation myObjectLocation, String[] myName, String[] myIgnoreName, String[] myRegExpr, List<String> myObjectStreams, List<String> myIgnoreObjectStreams, String[] mySize, String[] myCreationTime, String[] myLastModificationTime, String[] myLastAccessTime, String[] myDeletionTime);
 
-        #endregion
+        public abstract Exceptional<IEnumerable<DirectoryEntryInformation>> GetExtendedDirectoryListing(ObjectLocation myObjectLocation);
 
-        #region CreateIndices(myAction, params myCreateIndexQueries)
+        public abstract Exceptional<IEnumerable<DirectoryEntryInformation>> GetFilteredExtendedDirectoryListing(ObjectLocation myObjectLocation, String[] myName, String[] myIgnoreName, String[] myRegExpr, List<String> myObjectStreams, List<String> myIgnoreObjectStreams, String[] mySize, String[] myCreationTime, String[] myLastModificationTime, String[] myLastAccessTime, String[] myDeletionTime);
 
-        public QueryResult CreateIndices(Action<QueryResult> myAction, params CreateIndexQuery[] myCreateIndexQueries)
-        {
+        public abstract Exceptional RemoveDirectoryObject(ObjectLocation myObjectLocation, bool removeRecursive);
 
-            // myCreateVertexQuery.Name will never be null or its size zero!
-            Debug.Assert(myCreateIndexQueries != null || myCreateIndexQueries.Length == 0);
+        public abstract Exceptional EraseDirectoryObject(ObjectLocation myObjectLocation, bool eradeRecursive);
 
-            QueryResult _QueryResult = null;
+        public abstract Exceptional SetMetadatum<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey, TValue myValue, Lib.DataStructures.Indices.IndexSetStrategy myIndexSetStrategy);
 
-            foreach (var _CreateIndexQuery in myCreateIndexQueries)
-            {
+        public abstract Exceptional SetMetadata<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, IEnumerable<KeyValuePair<String, TValue>> myMetadata, Lib.DataStructures.Indices.IndexSetStrategy myIndexSetStrategy);
 
-                _QueryResult = _CreateIndexQuery.Execute();
+        public abstract Exceptional<Trinary> MetadatumExists<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey, TValue myValue);
 
-                QueryResultAction(_QueryResult, myAction);
+        public abstract Exceptional<Trinary> MetadataExists<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey);
 
-                if (_QueryResult.Failed)
-                    return _QueryResult;
+        public abstract Exceptional<IEnumerable<TValue>> GetMetadatum<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey);
 
-            }
+        public abstract Exceptional<IEnumerable<KeyValuePair<String, TValue>>> GetMetadata<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition);
 
-            return _QueryResult;
+        public abstract Exceptional<IEnumerable<KeyValuePair<String, TValue>>> GetMetadata<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myMinKey, String myMaxKey);
 
-        }
+        public abstract Exceptional<IEnumerable<KeyValuePair<String, TValue>>> GetMetadata<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, Func<KeyValuePair<String, TValue>, bool> myFunc);
 
-        #endregion
+        public abstract Exceptional RemoveMetadatum<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey, TValue myValue);
 
-        #region CreateIndices(mySuccessAction, myFailureAction, params myCreateIndexQueries)
+        public abstract Exceptional RemoveMetadata<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey);
 
-        public QueryResult CreateIndices(Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, params CreateIndexQuery[] myCreateIndexQueries)
-        {
+        public abstract Exceptional RemoveMetadata<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, IEnumerable<KeyValuePair<String, TValue>> myMetadata);
 
-            // myCreateVertexQuery.Name will never be null or its size zero!
-            Debug.Assert(myCreateIndexQueries != null || myCreateIndexQueries.Length == 0);
+        public abstract Exceptional RemoveMetadata<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, Func<KeyValuePair<String, TValue>, bool> myFunc);
 
-            QueryResult _QueryResult = null;
+        public abstract Exceptional SetUserMetadatum(ObjectLocation myObjectLocation, String myKey, object myObject, Lib.DataStructures.Indices.IndexSetStrategy myIndexSetStrategy);
 
-            foreach (var _CreateIndexQuery in myCreateIndexQueries)
-            {
+        public abstract Exceptional SetUserMetadata(ObjectLocation myObjectLocation, IEnumerable<KeyValuePair<String, object>> myUserMetadata, Lib.DataStructures.Indices.IndexSetStrategy myIndexSetStrategy);
 
-                _QueryResult = _CreateIndexQuery.Execute();
+        public abstract Exceptional<Trinary> UserMetadatumExists(ObjectLocation myObjectLocation, String myKey, object myMetadatum);
 
-                QueryResultAction(_QueryResult, mySuccessAction, myFailureAction);
+        public abstract Exceptional<Trinary> UserMetadataExists(ObjectLocation myObjectLocation, String myKey);
 
-                if (_QueryResult.Failed)
-                    return _QueryResult;
+        public abstract Exceptional<IEnumerable<object>> GetUserMetadatum(ObjectLocation myObjectLocation, String myKey);
 
-            }
+        public abstract Exceptional<IEnumerable<KeyValuePair<String, object>>> GetUserMetadata(ObjectLocation myObjectLocation);
 
-            return _QueryResult;
+        public abstract Exceptional<IEnumerable<KeyValuePair<String, object>>> GetUserMetadata(ObjectLocation myObjectLocation, String myMinKey, String myMaxKey);
 
-        }
+        public abstract Exceptional<IEnumerable<KeyValuePair<String, object>>> GetUserMetadata(ObjectLocation myObjectLocation, Func<KeyValuePair<String, object>, bool> myFunc);
 
-        #endregion
+        public abstract Exceptional RemoveUserMetadatum(ObjectLocation myObjectLocation, String myKey, object myObject);
 
-        #region CreateIndices(mySuccessAction, myPartialSuccessAction, myFailureAction, params myCreateIndexQueries)
+        public abstract Exceptional RemoveUserMetadata(ObjectLocation myObjectLocation, String myKey);
 
-        public QueryResult CreateIndices(Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, params CreateIndexQuery[] myCreateIndexQueries)
-        {
+        public abstract Exceptional RemoveUserMetadata(ObjectLocation myObjectLocation, IEnumerable<KeyValuePair<String, object>> myMetadata);
 
-            // myCreateVertexQuery.Name will never be null or its size zero!
-            Debug.Assert(myCreateIndexQueries != null || myCreateIndexQueries.Length == 0);
+        public abstract Exceptional RemoveUserMetadata(ObjectLocation myObjectLocation, Func<KeyValuePair<String, object>, bool> myFunc);
 
-            QueryResult _QueryResult = null;
+        public abstract Exceptional<FileObject> GetFileObject(ObjectLocation myObjectLocation);
 
-            foreach (var _CreateIndexQuery in myCreateIndexQueries)
-            {
+        public abstract Exceptional<FileObject> GetFileObject(ObjectLocation myObjectLocation, ObjectRevisionID myRevisionID);
 
-                _QueryResult = _CreateIndexQuery.Execute();
+        public abstract Exceptional StoreFileObject(ObjectLocation myObjectLocation, Byte[] myData, Boolean myAllowToOverwrite = false);
+        public abstract Exceptional StoreFileObject(ObjectLocation myObjectLocation, String myData, Boolean myAllowToOverwrite = false);
 
-                QueryResultAction(_QueryResult, mySuccessAction, myPartialSuccessAction, myFailureAction);
+        public abstract Exceptional<IGraphFSStream> OpenStream(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevision, ulong myObjectCopy);
 
-                if (_QueryResult.Failed)
-                    return _QueryResult;
-
-            }
-
-            return _QueryResult;
-
-        }
-
-        #endregion
+        public abstract Exceptional<IGraphFSStream> OpenStream(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevision, ulong myObjectCopy, FileMode myFileMode, FileAccess myFileAccess, FileShare myFileShare, FileOptions myFileOptions, ulong myBufferSize);
 
         #endregion
 
 
-        #region Insert(...)
-
-        #region (protected) SetReturnValues(myDBObjectOfT, myQueryResult)
-
-        protected void SetReturnValues(DBObject myDBObjectOfT, QueryResult myQueryResult)
-        {
-
-            Debug.Assert(myQueryResult["UUID"]      != null);
-            //Debug.Assert(myQueryResult["EDITION"]   != null);
-            Debug.Assert(myQueryResult["REVISION"]  != null);
-
-            //Debug.Assert(myQueryResult["UUID"]      as ObjectUUID != null);
-            //Debug.Assert(myQueryResult["EDITION"]       as String != null);
-            //Debug.Assert(myQueryResult["REVISION"]      as RevisionID != null); //ToDo: REVISION is String NOT RevisionID!!!
-
-            if (myQueryResult["UUID"] is ObjectUUID)
-            {
-                myDBObjectOfT.UUID = myQueryResult["UUID"] as ObjectUUID;
-            }
-            else
-            {
-                myDBObjectOfT.UUID = new ObjectUUID(myQueryResult["UUID"].ToString());
-            }
-
-            myDBObjectOfT.Edition       = myQueryResult["EDITION"]  as String;
-            myDBObjectOfT.RevisionID    = myQueryResult["REVISION"] as ObjectRevisionID;
-
-        }
-
-        #endregion
-
-        #region Insert(myAction, myDBObjects)
-
-        public DBVertex[] Insert(Action<QueryResult> myAction, params DBVertex[] myDBVertices)
-        {
-
-            if (myDBVertices == null)
-                throw new ArgumentNullException();
-
-            if (!myDBVertices.Any())
-                throw new ArgumentException();
-
-            QueryResult _QueryResult = null;
-
-            if (myDBVertices != null)
-            {
-                foreach (var _DBVertex in myDBVertices)
-                {
-
-                    _QueryResult = Query("INSERT INTO " + _DBVertex.GetType().Name + " VALUES (" + _DBVertex.GetInsertValues(", ") + ")", myAction);
-
-                    if (_QueryResult.ResultType != ResultType.Failed)
-                        SetReturnValues(_DBVertex, _QueryResult);
-
-                }
-            }
-
-            return myDBVertices;
-
-        }
-
-        #endregion 
-
-        #region Insert<T>(myAction, myDBVertexOfT)
-
-        public T Insert<T>(Action<QueryResult> myAction, T myDBVertexOfT) where T : DBVertex
-        {
-
-            if (myDBVertexOfT == null)
-                throw new ArgumentNullException();
-
-            var _GQLQuery    = "INSERT INTO " + typeof(T).Name + " VALUES (" + myDBVertexOfT.GetInsertValues(", ") + ")";
-            var _QueryResult = Query(_GQLQuery, myAction);
-
-            if (_QueryResult.ResultType != ResultType.Failed)
-                SetReturnValues(myDBVertexOfT, _QueryResult);
-
-            return myDBVertexOfT;
-
-        }
-
-        #endregion
-
-        #region Insert<T>(myAction, myDBVerticesOfT)
-
-        public T[] Insert<T>(Action<QueryResult> myAction, params T[] myDBVerticesOfT) where T : DBVertex
-        {
-
-            if (myDBVerticesOfT == null)
-                throw new ArgumentNullException();
-
-            if (!myDBVerticesOfT.Any())
-                throw new ArgumentException();
-
-            QueryResult _QueryResult = null;
-
-            if (myDBVerticesOfT != null)
-            {
-
-                foreach (var _DBVertex in myDBVerticesOfT)
-                {
-
-                    _QueryResult = Query("INSERT INTO " + typeof(T).Name + " VALUES (" + _DBVertex.GetInsertValues(", ") + ")", myAction);
-
-                    if (_QueryResult.ResultType != ResultType.Failed)
-                        SetReturnValues(_DBVertex, _QueryResult);
-
-                }
-
-            }
-
-            return myDBVerticesOfT;
-
-        }
-
-        #endregion
-
-        #region Insert(myAction, myGraphDBType, myAnonymousClass)
-
-        public QueryResult Insert<T>(Action<QueryResult> myAction, CreateVertexQuery myGraphDBType, T myAnonymousClass) where T : class
-        {
-
-            var                 _StringBuilder      = new StringBuilder("INSERT INTO ").Append(myGraphDBType.Name).Append(" VALUES (");
-            Object              _AttributeValue;
-            String              _StringValue;
-            IEnumerable<Object> _ListValue;
-            Boolean             _HideFromDatabase   = false;
-
-
-            foreach (var _AnonymousProperty in myAnonymousClass.GetType().GetProperties(BindingFlags.Public | BindingFlags.GetProperty | BindingFlags.Instance))
-            {
-
-                #region Check HideFromDatabase attribute
-
-                _HideFromDatabase = false;
-                foreach (var _Attribute in _AnonymousProperty.GetCustomAttributes(true))
-                {
-                    if ((_Attribute as HideFromDatabase) != null)
-                        _HideFromDatabase = true;
-                }
-
-                #endregion
-
-                if (_HideFromDatabase == false)
-                {
-
-                    _AttributeValue = _AnonymousProperty.GetValue(myAnonymousClass, null);
-
-                    if (_AttributeValue != null)
-                    {
-
-                        #region String value
-
-                        _StringValue = _AttributeValue as String;
-
-                        if (_StringValue != null)
-                        {
-                            _StringValue = "'" + _StringValue + "'";
-                            _StringBuilder.Append(_AnonymousProperty.Name).Append(" = ").Append(_StringValue).Append(", ");
-                            continue;
-                        }
-
-                        #endregion
-
-                        #region List Attributes
-
-                        _ListValue = _AttributeValue as IEnumerable<Object>;
-
-                        if (_ListValue != null && _ListValue.Count() > 0)
-                        {
-
-                            _StringBuilder.Append(_AnonymousProperty.Name).Append(" = LISTOF(");
-
-                            foreach (var _Item in _ListValue)
-                                _StringBuilder.Append("'").Append(_Item.ToString()).Append("', ");
-
-                            _StringBuilder.Length = _StringBuilder.Length - 2;
-
-                            _StringBuilder.Append("), ");
-
-                            continue;
-
-                        }
-
-                        #endregion
-
-                        _StringBuilder.Append(_AnonymousProperty.Name).Append(" = ").Append(_AttributeValue).Append(", ");
-
-                    }
-
-                }
-
-            }
-
-            _StringBuilder.Length = _StringBuilder.Length - 2;
-
-            _StringBuilder.Append(")");
-
-            return Query(_StringBuilder.ToString(), myAction);
-
-        }
-
-        #endregion
-
-        #endregion
-
-
-        #region Link
-
-        #region Link(mySubject, myCreateEdgeQuery, params myObjects)
-
-        public QueryResult Link(DBVertex mySubject, CreateEdgeQuery myCreateEdgeQuery, params DBVertex[] myObjects)
-        {
-            return new QueryResult();
-        }
-
-        #endregion
-
-        #region Link(myAction, mySubject, myCreateEdgeQuery, params myObjects)
-
-        public QueryResult Link(Action<QueryResult> myAction, DBVertex mySubject, CreateEdgeQuery myCreateEdgeQuery, params DBVertex[] myObjects)
-        {
-
-            var _QueryResult = Link(mySubject, myCreateEdgeQuery, myObjects);
-
-            QueryResultAction(_QueryResult, myAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region Link(mySuccessAction, myFailureAction, mySubject, myCreateEdgeQuery, params myObjects)
-
-        public QueryResult Link(Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, DBVertex mySubject, CreateEdgeQuery myCreateEdgeQuery, params DBVertex[] myObjects)
-        {
-
-            var _QueryResult = Link(mySubject, myCreateEdgeQuery, myObjects);
-
-            QueryResultAction(_QueryResult, mySuccessAction, myFailureAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region Link(mySuccessAction, myPartialSuccessAction, myFailureAction, mySubject, myCreateEdgeQuery, params myObjects)
-
-        public QueryResult Link(Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, DBVertex mySubject, CreateEdgeQuery myCreateEdgeQuery, params DBVertex[] myObjects)
-        {
-
-            var _QueryResult = Link(mySubject, myCreateEdgeQuery, myObjects);
-
-            QueryResultAction(_QueryResult, mySuccessAction, myPartialSuccessAction, myFailureAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-
-        #region Link(mySubject, myEdge, params myObjects)
-
-        public QueryResult Link(DBVertex mySubject, DBEdge myEdge, params DBVertex[] myObjects)
-        {
-            return new QueryResult();
-        }
-
-        #endregion
-
-        #region Link(myAction, mySubject, myEdge, params myObjects)
-
-        public QueryResult Link(Action<QueryResult> myAction, DBVertex mySubject, DBEdge myEdge, params DBVertex[] myObjects)
-        {
-
-            var _QueryResult = Link(mySubject, myEdge, myObjects);
-
-            QueryResultAction(_QueryResult, myAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region Link(mySuccessAction, myFailureAction, mySubject, myEdge, params myObjects)
-
-        public QueryResult Link(Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, DBVertex mySubject, DBEdge myEdge, params DBVertex[] myObjects)
-        {
-
-            var _QueryResult = Link(mySubject, myEdge, myObjects);
-
-            QueryResultAction(_QueryResult, mySuccessAction, myFailureAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region Link(mySuccessAction, myPartialSuccessAction, myFailureAction, mySubject, myEdge, params myObjects)
-
-        public QueryResult Link(Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, DBVertex mySubject, DBEdge myEdge, params DBVertex[] myObjects)
-        {
-
-            var _QueryResult = Link(mySubject, myEdge, myObjects);
-
-            QueryResultAction(_QueryResult, mySuccessAction, myPartialSuccessAction, myFailureAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #endregion
-
-        #region Unlink
-
-        #region Unlink(mySubject, myCreateEdgeQuery, params myObjects)
-
-        public QueryResult Unlink(DBVertex mySubject, CreateEdgeQuery myCreateEdgeQuery, params DBVertex[] myObjects)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region Unlink(myAction, mySubject, myCreateEdgeQuery, params myObjects)
-
-        public QueryResult Unlink(Action<QueryResult> myAction, DBVertex mySubject, CreateEdgeQuery myCreateEdgeQuery, params DBVertex[] myObjects)
-        {
-
-            var _QueryResult = Unlink(mySubject, myCreateEdgeQuery, myObjects);
-
-            QueryResultAction(_QueryResult, myAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region Unlink(mySuccessAction, myFailureAction, mySubject, myCreateEdgeQuery, params myObjects)
-
-        public QueryResult Unlink(Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, DBVertex mySubject, CreateEdgeQuery myCreateEdgeQuery, params DBVertex[] myObjects)
-        {
-
-            var _QueryResult = Unlink(mySubject, myCreateEdgeQuery, myObjects);
-
-            QueryResultAction(_QueryResult, mySuccessAction, myFailureAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region Unlink(mySuccessAction, myPartialSuccessAction, myFailureAction, mySubject, myCreateEdgeQuery, params myObjects)
-
-        public QueryResult Unlink(Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, DBVertex mySubject, CreateEdgeQuery myCreateEdgeQuery, params DBVertex[] myObjects)
-        {
-
-            var _QueryResult = Unlink(mySubject, myCreateEdgeQuery, myObjects);
-
-            QueryResultAction(_QueryResult, mySuccessAction, myPartialSuccessAction, myFailureAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-
-        #region Unlink(mySubject, myEdge, params myObjects)
-
-        public QueryResult Unlink(DBVertex mySubject, DBEdge myEdge, params DBVertex[] myObjects)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region Unlink(myAction, mySubject, myEdge, params myObjects)
-
-        public QueryResult Unlink(Action<QueryResult> myAction, DBVertex mySubject, DBEdge myEdge, params DBVertex[] myObjects)
-        {
-
-            var _QueryResult = Unlink(mySubject, myEdge, myObjects);
-
-            QueryResultAction(_QueryResult, myAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region Unlink(mySuccessAction, myFailureAction, mySubject, myEdge, params myObjects)
-
-        public QueryResult Unlink(Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, DBVertex mySubject, DBEdge myEdge, params DBVertex[] myObjects)
-        {
-
-            var _QueryResult = Unlink(mySubject, myEdge, myObjects);
-
-            QueryResultAction(_QueryResult, mySuccessAction, myFailureAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #region Unlink(mySuccessAction, myPartialSuccessAction, myFailureAction, mySubject, myEdge, params myObjects)
-
-        public QueryResult Unlink(Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, DBVertex mySubject, DBEdge myEdge, params DBVertex[] myObjects)
-        {
-
-            var _QueryResult = Unlink(mySubject, myEdge, myObjects);
-
-            QueryResultAction(_QueryResult, mySuccessAction, myPartialSuccessAction, myFailureAction);
-
-            return _QueryResult;
-
-        }
-
-        #endregion
-
-        #endregion
-
-
-        #region LinqQuery<T>()
-
-        public LinqQueryable<T> LinqQuery<T>()
-            where T : DBVertex, new()
-        {
-            return LinqQuery<T>("");
-        }
-
-        #endregion
-
-        #region LinqQuery<T>(myTypeAlias)
-
-        public LinqQueryable<T> LinqQuery<T>(String myTypeAlias)
-            where T : DBVertex, new()
-        {
-            return new LinqQueryable<T>(new LinqQueryProvider(this, typeof(T), myTypeAlias));
-        }
-
-        #endregion
-
-
-        #region Traverse(...)
-
-        /// <summary>
-        /// Starts a traversal and returns the found paths or an aggreagted result
-        /// </summary>
-        /// <typeparam name="T">The resulttype after applying the result transformation</typeparam>
-        /// <param name="myStartVertex">The starting vertex</param>
-        /// <param name="TraversalOperation">BreathFirst|DepthFirst</param>
-        /// <param name="myFollowThisEdge">Follow this edge? Based on its TYPE or any other property/characteristic...</param>
-        /// <param name="myFollowThisPath">Follow this path (== actual path + NEW edge + NEW dbobject? Based on edge/object UUID, TYPE or any other property/characteristic...</param>
-        /// <param name="myMatchEvaluator">Mhm, this vertex/path looks interesting!</param>
-        /// <param name="myMatchAction">Hey! I have found something interesting!</param>
-        /// <param name="myStopEvaluator">Will stop the traversal on a condition</param>
-        /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
-        /// <returns></returns>
-        public T Traverse<T>(DBVertex                                 myStartVertex,
-                             TraversalOperation                       TraversalOperation  = TraversalOperation.BreathFirst,
-                             Func<DBPath, DBEdge, Boolean>            myFollowThisEdge    = null,
-                             Func<DBPath, DBEdge, DBVertex, Boolean>  myFollowThisPath    = null,
-                             Func<DBPath, Boolean>                    myMatchEvaluator    = null,
-                             Action<DBPath>                           myMatchAction       = null,
-                             Func<TraversalState, Boolean>            myStopEvaluator     = null,
-                             Func<IEnumerable<DBPath>, T>             myWhenFinished      = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region BeginTransaction(myDistributed = false, myLongRunning = false, myIsolationLevel = IsolationLevel.Serializable, myName = "", myCreated = null)
-
-        public abstract DBTransaction BeginTransaction(Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? myCreated = null);
-
-        #endregion
+        public abstract FSTransaction BeginFSTransaction (Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? myCreated = null);
+        public abstract DBTransaction BeginTransaction   (Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? myCreated = null);
 
 
     }

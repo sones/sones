@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,14 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-
-/* PandoraFS - DirectoryEntry
- * Achim Friedland, 2008 - 2009
- * 
- * Lead programmer:
- *      Achim Friedland
+/*
+ * GraphFS - DirectoryEntry
+ * (c) Achim Friedland, 2008 - 2009
  * 
  *             |  Objects  | VirtualObjects |  Inlinedata  | Symlink
  * ---------------------------------------------------------------------
@@ -60,7 +58,6 @@ namespace sones.GraphFS.InternalObjects
     /// subdirectory. It may appear as leaf within a directory tree or
     /// within a directory hashmap.
     /// </summary>
-
        
     public class DirectoryEntry : IFastSerialize, IFastSerializationTypeSurrogate
     {
@@ -227,7 +224,7 @@ namespace sones.GraphFS.InternalObjects
 
             set
             {
-                _InlineData         = Encoding.UTF8.GetBytes(value);
+                _InlineData         = Encoding.UTF8.GetBytes(value.ToString());
                 _INodePositions.Clear();
                 _ObjectStreamsList  = new HashSet<String> { FSConstants.SYMLINK };
                 isDirty             = true;

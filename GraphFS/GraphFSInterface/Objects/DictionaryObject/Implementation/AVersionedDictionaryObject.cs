@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,16 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-
-/* PandoraFS - AVersionedDictionaryObject
- * Achim Friedland, 2009
- * 
- * Lead programmer:
- *      Achim Friedland
- * 
- * */
+/*
+ * AVersionedDictionaryObject
+ * (c) Achim Friedland, 2009 - 2010
+ */
 
 #region Usings
 
@@ -43,7 +40,7 @@ using sones.GraphFS.Session;
 
 using sones.Lib;
 using sones.Lib.BTree;
-using sones.Lib.Session;
+using sones.GraphFS.Session;
 using sones.Lib.Serializer;
 using sones.Lib.DataStructures;
 using sones.Lib.NewFastSerializer;
@@ -51,6 +48,8 @@ using sones.Lib.DataStructures.Timestamp;
 using sones.Lib.DataStructures.Indices;
 using sones.Lib.DataStructures.Dictionaries;
 using sones.Lib.DataStructures.Big;
+using sones.Lib.ErrorHandling;
+using sones.GraphFS.Exceptions;
 
 #endregion
 
@@ -393,7 +392,14 @@ namespace sones.GraphFS.Objects
             if (_IGraphFSReference.IsPersistent())
             {
 
-                var _IFSStream = this._IGraphFSReference.Value.OpenStream(new SessionToken(new FSSessionInfo("AVersionedDictionaryObject")), _ObjectLocation, _ObjectStream, _ObjectEdition, null, 0);
+                var _IFSStream = this._IGraphFSReference.Value.OpenStream(new SessionToken(new FSSessionInfo("AVersionedDictionaryObject")),
+                                                                          ObjectLocation,
+                                                                          _ObjectStream,
+                                                                          _ObjectEdition,
+                                                                          null, 0);
+
+                if (_IFSStream.Failed())
+                    throw new GraphFSException_CouldNotOpenStream(String.Format("Could not open the stream {0} (edition: {1}) in directory {2} ({3}).", _ObjectStream, _ObjectEdition, ObjectLocation + myKey.ToString(), _IFSStream.GetErrorsAsString()));
 
                 var _AppendingData = new SerializationWriter().WriteObject(myKey)
                                                               .WriteObject(myTimestamp)
@@ -896,7 +902,7 @@ namespace sones.GraphFS.Objects
             if (_IGraphFSReference != null && _IGraphFSReference.IsAlive && _IGraphFSReference.Value.IsPersistent)
             {
 
-                var _IGraphFSStream = this._IGraphFSReference.Value.OpenStream(new SessionToken(new FSSessionInfo("AVersionedDictionaryObject")), _ObjectLocation, _ObjectStream, _ObjectEdition, null, 0);
+                var _IGraphFSStream = this._IGraphFSReference.Value.OpenStream(new SessionToken(new FSSessionInfo("AVersionedDictionaryObject")), ObjectLocation, _ObjectStream, _ObjectEdition, null, 0);
 
                 var _AppendingData = new SerializationWriter().WriteObject(myKey)
                                                               .WriteObject(myTimestamp)

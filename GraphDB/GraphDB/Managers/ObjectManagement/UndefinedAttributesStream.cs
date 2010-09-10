@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,16 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-
-/* <id Name="sones GraphDB – UndefinedAttributesStream" />
- * <copyright file="UndefinedAttributesStream.cs"
- *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
- * </copyright>
- * <developer>Dirk Bludau</developer>
- * <summary>Contains undefined attributes of an particular DBObject.<summary>
+/* 
+ * UndefinedAttributesStream
+ * (c) Dirk Bludau, 2010
+ *     Achim Friedland, 2010
  */
 
 #region Usings
@@ -32,10 +29,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using sones.GraphDB.TypeManagement;
+using sones.GraphDBInterface.TypeManagement;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Objects;
 using sones.Lib.DataStructures;
+using sones.Lib.DataStructures.Indices;
 using sones.Lib.NewFastSerializer;
 
 #endregion
@@ -43,10 +41,14 @@ using sones.Lib.NewFastSerializer;
 namespace sones.GraphDB.ObjectManagement
 {
 
-    public class UndefinedAttributesStream : ADictionaryObject<String, IObject>
+    /// <summary>
+    /// Contains undefined attributes of an particular DBObject.
+    /// </summary>
+    public class UndefinedAttributesStream : AIndexObject<String, IObject>// ADictionaryObject<String, IObject>
     {
 
-        #region constructor
+
+        #region Constructor(s)
 
         public UndefinedAttributesStream()
         {
@@ -83,6 +85,79 @@ namespace sones.GraphDB.ObjectManagement
         
         #endregion
 
+
+        /// <summary>
+        /// true if the attribute is in the stream
+        /// </summary>
+        /// <param name="myName">the name of the undefined attribute</param>
+        /// <returns>an Boolean</returns>
+        public Boolean ContainsAttribute(String myName)
+        {
+            return base.ContainsKey(myName);
+        }
+
+
+        /// <summary>
+        /// add an undefined attribute to the stream without flush
+        /// </summary>
+        /// <param name="myName">the name of the attribute</param>
+        /// <param name="myValue">the value for the attribute</param>
+        public void AddAttribute(String myName, IObject myValue)
+        {
+            Set(myName, myValue, IndexSetStrategy.REPLACE);
+            isDirty = true;
+        }
+        
+
+        /// <summary>
+        /// remove an existing attribute from stream
+        /// </summary>
+        /// <param name="myName">attribute name</param>
+        /// <returns>an Boolean</returns>
+        public Boolean RemoveAttribute(String myName)
+        {
+
+            if (!ContainsAttribute(myName) || !base.Remove(myName))
+                return false;
+
+            isDirty = true;
+
+            return true;
+
+        }
+
+
+        /// <summary>
+        /// return a dictionary of all undefined attributes
+        /// </summary>
+        /// <returns></returns>
+        public IDictionary<String, IObject> GetAllAttributes()
+        {
+            return base.GetIDictionary().ToDictionary(k => k.Key, v => v.Value.First());
+        }
+
+
+        /// <summary>
+        /// return the value for an undefined attribute
+        /// </summary>
+        /// <param name="myName">attribute name</param>
+        /// <returns></returns>
+        public new IObject this[String myName]
+        {
+
+            get
+            {
+                
+                if (ContainsAttribute(myName))
+                    return base[myName].First();
+                
+                return null;
+
+            }
+
+        }
+
+
         #region Clone
 
         public override AFSObject Clone()
@@ -99,95 +174,15 @@ namespace sones.GraphDB.ObjectManagement
 
         public override void Serialize(ref SerializationWriter mySerializationWriter)
         {
-            base.Serialize(ref mySerializationWriter);    
+            base.Serialize(ref mySerializationWriter);
         }
-        
+
         public override void Deserialize(ref SerializationReader mySerializationReader)
         {
             base.Deserialize(ref mySerializationReader);
         }
 
         #endregion
-
-        /// <summary>
-        /// true if the attribute is in the stream
-        /// </summary>
-        /// <param name="myName">the name of the undefined attribute</param>
-        /// <returns>an Boolean</returns>
-        public Boolean ContainsAttribute(String myName)
-        {
-            return base.ContainsKey(myName);
-        }
-
-        /// <summary>
-        /// add an undefined attribute to the stream without flush
-        /// </summary>
-        /// <param name="myName">the name of the attribute</param>
-        /// <param name="myValue">the value for the attribute</param>
-        public void AddAttribute(String myName, IObject myValue)
-        {
-            if (base.Add(myName, myValue) == 0)
-            {
-                base.Replace(myName, base[myName], myValue);
-            }
-
-            isDirty = true;
-        }
-
-        /// <summary>
-        /// add an dictionary of attributes to the stream
-        /// </summary>
-        /// <param name="myAttributes">dictionary of attributes with name and value</param>
-        public void AddAttribute(IDictionary<String, IObject> myAttributes)
-        {
-            myAttributes.ToList().ForEach(item => AddAttribute(item.Key, item.Value));
-        }
-
-        /// <summary>
-        /// remove an existing attribute from stream
-        /// </summary>
-        /// <param name="myName">attribute name</param>
-        /// <returns>an Boolean</returns>
-        public Boolean RemoveAttribute(String myName)
-        {
-            if (!ContainsAttribute(myName) || !base.Remove(myName))
-                return false;
-
-            isDirty = true;
-
-            return true;
-        }
-
-        /// <summary>
-        /// return an enumerator with undefined attributes
-        /// </summary>
-        /// <returns></returns>        
-        public new IEnumerator<KeyValuePair<String, IObject>> GetEnumerator()
-        {
-            return base.GetEnumerator();
-        }
-
-        /// <summary>
-        /// return the value for an undefined attribute
-        /// </summary>
-        /// <param name="myName">attribute name</param>
-        /// <returns></returns>
-        public IObject GetAttributeValue(String myName)
-        {
-            if (ContainsAttribute(myName))
-                return base[myName];
-
-            return null;
-        }
-
-        /// <summary>
-        /// return a dictionary of all undefined attributes
-        /// </summary>
-        /// <returns></returns>
-        public IDictionary<String, IObject> GetAllAttributes()
-        {
-            return base.GetIDictionary();
-        }
 
 
     }

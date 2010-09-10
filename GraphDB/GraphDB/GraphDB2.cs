@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,11 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-/* <id name="sones GraphDB – Main Database Code" />
- * <copyright file="PandoraDatabase.cs"
+/* <id name="GraphDB � Main Database Code" />
+ * <copyright file="GraphDatabase.cs"
  *            company="sones GmbH">
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Daniel Kirstenpfad</developer>
  * <developer>Henning Rauch</developer>
@@ -29,10 +31,9 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-
 using sones.GraphDB.DataStructures.Settings;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
@@ -45,24 +46,21 @@ using sones.GraphDB.Managers.Structures.Describe;
 using sones.GraphDB.Managers.Structures.Setting;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.Settings;
-using sones.GraphDB.Structures;
 using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.Structures.Result;
-using sones.GraphDB.Transactions;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
-
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.Transactions;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Session;
 using sones.GraphFS.Transactions;
-
 using sones.Lib;
 using sones.Lib.DataStructures;
 using sones.Lib.DataStructures.UUID;
 using sones.Lib.ErrorHandling;
-using sones.Lib.Session;
-
 using sones.Notifications;
+using sones.GraphDB.NewAPI;
+using System.Threading;
 
 #endregion
 
@@ -163,7 +161,7 @@ namespace sones.GraphDB
                 }
                 else
                 {
-                    throw new GraphDBException(new Error_DatabaseNotFound(this._DatabaseRootPath));
+                    throw new GraphDBException(new Error_DatabaseNotFound(_DatabaseRootPath));
                 }
             }
 
@@ -409,7 +407,7 @@ namespace sones.GraphDB
 
             using (var transaction = BeginTransaction(mySessionToken, mySessionContext))
             {
-                var dbInnerContext = transaction.GetDBContext();
+                var dbInnerContext = (DBContext)transaction.GetDBContext();
 
                 #region Verify that DB is not set to readonly
 
@@ -433,6 +431,8 @@ namespace sones.GraphDB
 
                 QueryResult qr = new QueryResult();
 
+                List<DBObjectReadout> resultingDBreadouts = new List<DBObjectReadout>();
+
                 foreach (var alterTypeCmd in myAlterCommands)
                 {
                     var result = dbInnerContext.DBTypeManager.AlterType(dbInnerContext, dbType, alterTypeCmd);
@@ -440,10 +440,11 @@ namespace sones.GraphDB
 
                     if (result.Value != null)
                     {
-                        foreach (var resVal in result.Value.Results)
-                            qr.AddResult(resVal);
+                        resultingDBreadouts.AddRange(result.Value.Results.Objects);
                     }
                 }
+
+                qr.SetResult(new SelectionResultSet(resultingDBreadouts));
 
                 #region Commit transaction and add all Warnings and Errors
 
@@ -466,7 +467,7 @@ namespace sones.GraphDB
             using (var _Transaction = BeginTransaction(mySessionToken, mySessionContext))
             {
 
-                var transactionContext = _Transaction.GetDBContext();
+                DBContext transactionContext = (DBContext)_Transaction.GetDBContext();
 
                 #region Verify that DB is not set to readonly
 
@@ -495,7 +496,7 @@ namespace sones.GraphDB
 
                 if (qresult.ResultType == ResultType.Successful)
                 {
-                    qresult.AddResult(resultOutput.Value);
+                    qresult.SetResult(resultOutput.Value);
                 }
 
                 return qresult;
@@ -515,7 +516,7 @@ namespace sones.GraphDB
             using (var transaction = BeginTransaction(mySessionToken, mySessionContext))
             {
 
-                var transactionContext = transaction.GetDBContext();
+                var transactionContext = (DBContext)transaction.GetDBContext();
 
                 #region Verify that DB is not set to readonly
 
@@ -527,7 +528,7 @@ namespace sones.GraphDB
 
                 #endregion
 
-                var result = transactionContext.DBTypeManager.AddBulkTypes(myGraphDBTypeDefinitions, transaction.GetDBContext());
+                var result = transactionContext.DBTypeManager.AddBulkTypes(myGraphDBTypeDefinitions, transactionContext);
 
                 if (!result.Success())
                 {
@@ -569,7 +570,7 @@ namespace sones.GraphDB
             using (var transaction = BeginTransaction(mySessionToken, mySessionContext))
             {
 
-                var dbInnerContext = transaction.GetDBContext();
+                DBContext dbInnerContext = (DBContext)transaction.GetDBContext();
 
                 #region Verify that DB is not set to readonly
 
@@ -652,7 +653,7 @@ namespace sones.GraphDB
             using (var transaction = BeginTransaction(mySessionToken, mySessionContext))
             {
 
-                var transactionContext = transaction.GetDBContext();
+                var transactionContext = (DBContext)transaction.GetDBContext();
 
                 var result = myDescribeDefinition.GetResult(transactionContext);
                 QueryResult qresult = null;
@@ -684,7 +685,7 @@ namespace sones.GraphDB
             using (var transaction = BeginTransaction(mySessionToken, mySessionContext))
             {
 
-                var transactionContext = transaction.GetDBContext();
+                var transactionContext = (DBContext)transaction.GetDBContext();
 
                 #region Verify that DB is not set to readonly
 
@@ -734,7 +735,7 @@ namespace sones.GraphDB
             {
 
 
-                var transactionContext = transaction.GetDBContext();
+                var transactionContext = (DBContext)transaction.GetDBContext();
 
                 #region Verify that DB is not set to readonly
 
@@ -785,7 +786,7 @@ namespace sones.GraphDB
             using (var transaction = BeginTransaction(mySessionToken, mySessionContext, myIsolationLevel: GraphFS.Transactions.IsolationLevel.ReadCommitted))
             {
 
-                var transactionContext = transaction.GetDBContext();
+                DBContext transactionContext = (DBContext)transaction.GetDBContext();
 
                 if (!transactionContext.DBPluginManager.HasGraphDBExporter(myDumpFormat))
                 {
@@ -811,7 +812,7 @@ namespace sones.GraphDB
             using (var transaction = BeginTransaction(mySessionToken, mySessionContext))
             {
 
-                var transactionContext = transaction.GetDBContext();
+                DBContext transactionContext = (DBContext)transaction.GetDBContext();
 
                 #region Verify that DB is not set to readonly
 
@@ -831,7 +832,7 @@ namespace sones.GraphDB
                 var importer = transactionContext.DBPluginManager.GetGraphDBImporter(myImportFormat);
                 var importResult = importer.Import(myLocation, myGraphDBSession, transactionContext, myParallelTasks, myComments, myOffset, myLimit, myVerbosityType);
 
-                if (importResult.ResultType == Structures.ResultType.Successful)
+                if (importResult.ResultType == ResultType.Successful)
                 {
                     importResult.AddErrorsAndWarnings(transaction.Commit());
                 }
@@ -852,7 +853,7 @@ namespace sones.GraphDB
             using (var transaction = BeginTransaction(mySessionToken, mySessionContext))
             {
 
-                var dbInnerContext = transaction.GetDBContext();
+                var dbInnerContext = (DBContext)transaction.GetDBContext();
 
                 #region Verify that DB is not set to readonly
 
@@ -909,7 +910,7 @@ namespace sones.GraphDB
             using (var transaction = BeginTransaction(mySessionToken, mySessionContext))
             {
 
-                var dbInnerContext = transaction.GetDBContext();
+                var dbInnerContext = (DBContext)transaction.GetDBContext();
 
                 #region Verify that DB is not set to readonly
 
@@ -953,7 +954,7 @@ namespace sones.GraphDB
             using (var transaction = BeginTransaction(mySessionToken, mySessionContext))
             {
 
-                var dbInnerContext = transaction.GetDBContext();
+                var dbInnerContext = (DBContext)transaction.GetDBContext();
 
                 #region Verify that DB is not set to readonly
 
@@ -985,12 +986,12 @@ namespace sones.GraphDB
 
         }
 
-        public QueryResult RebuilIndices(SessionToken mySessionToken, DBContext mySessionContext, HashSet<string> myTypeNames = null)
+        public QueryResult RebuildIndices(SessionToken mySessionToken, DBContext mySessionContext, HashSet<string> myTypeNames = null)
         {
 
             if (!IsWriteTransaction(mySessionToken))
             {
-                return new QueryResult(new Error_StatementExpectsWriteTransaction("RebuilIndices", GetLatestTransaction(mySessionToken).IsolationLevel));
+                return new QueryResult(new Error_StatementExpectsWriteTransaction("RebuildIndices", GetLatestTransaction(mySessionToken).IsolationLevel));
             }
 
             using (var transaction = BeginTransaction(mySessionToken, mySessionContext))
@@ -1000,11 +1001,11 @@ namespace sones.GraphDB
                 IEnumerable<GraphDBType> typesToRebuild;
                 QueryResult result = new QueryResult();
 
-                var transactionContext = transaction.GetDBContext();
+                DBContext transactionContext = (DBContext)transaction.GetDBContext();
 
                 #region Verify that DB is not set to readonly
 
-                var readWriteCheck = VerifyReadWriteOperationIsValid(transactionContext, "RebuilIndices");
+                var readWriteCheck = VerifyReadWriteOperationIsValid(transactionContext, "RebuildIndices");
                 if (readWriteCheck.Failed())
                 {
                     return new QueryResult(readWriteCheck);
@@ -1024,7 +1025,7 @@ namespace sones.GraphDB
                     typesToRebuild = new HashSet<GraphDBType>();
                     foreach (var typeName in myTypeNames)
                     {
-                        var type = transaction.GetDBContext().DBTypeManager.GetTypeByName(typeName);
+                        var type = ((DBContext)transaction.GetDBContext()).DBTypeManager.GetTypeByName(typeName);
                         if (type == null)
                         {
                             return new QueryResult(new Errors.Error_TypeDoesNotExist(typeName));
@@ -1036,7 +1037,7 @@ namespace sones.GraphDB
 
                 }
 
-                rebuildResult = transaction.GetDBContext().DBIndexManager.RebuildIndices(typesToRebuild);
+                rebuildResult = ((DBContext)transaction.GetDBContext()).DBIndexManager.RebuildIndices(typesToRebuild);
 
                 if (!rebuildResult.Success())
                 {
@@ -1072,7 +1073,7 @@ namespace sones.GraphDB
             using (var transaction = BeginTransaction(mySessionToken, mySessionContext))
             {
 
-                var dbInnerContext = transaction.GetDBContext();
+                var dbInnerContext = (DBContext)transaction.GetDBContext();
 
                 #region Verify that DB is not set to readonly
 
@@ -1104,7 +1105,7 @@ namespace sones.GraphDB
 
         }
 
-        public QueryResult Select(SessionToken mySessionToken, DBContext mySessionContext, Dictionary<AExpressionDefinition, string> mySelectedElements, List<TypeReferenceDefinition> myReferenceAndTypeList,
+        public QueryResult Select(SessionToken mySessionToken, DBContext mySessionContext, List<Tuple<AExpressionDefinition, string, SelectValueAssignment>> mySelectedElements, List<TypeReferenceDefinition> myReferenceAndTypeList,
             BinaryExpressionDefinition myWhereExpressionDefinition = null, List<IDChainDefinition> myGroupBy = null, BinaryExpressionDefinition myHaving = null, OrderByDefinition myOrderByDefinition = null,
             ulong? myLimit = null, ulong? myOffset = null, long myResolutionDepth = -1, Boolean myRunWithTimeout = false)
         {
@@ -1113,7 +1114,7 @@ namespace sones.GraphDB
             {
 
                 var selectManager = new SelectManager();
-                var transactionContext = transaction.GetDBContext();
+                DBContext transactionContext = (DBContext)transaction.GetDBContext();
 
                 if (myRunWithTimeout)
                 {
@@ -1124,7 +1125,7 @@ namespace sones.GraphDB
 
                     var selectTask = Task.Factory.StartNew(() =>
                     {
-                        return selectManager.ExecuteSelect(transaction.GetDBContext(), mySelectedElements, myReferenceAndTypeList, myWhereExpressionDefinition, myGroupBy, myHaving,
+                        return selectManager.ExecuteSelect((DBContext)transaction.GetDBContext(), mySelectedElements, myReferenceAndTypeList, myWhereExpressionDefinition, myGroupBy, myHaving,
                         myOrderByDefinition, myLimit, myOffset, myResolutionDepth);
                     });
 
@@ -1145,7 +1146,7 @@ namespace sones.GraphDB
                 else
                 {
 
-                    var qresult = selectManager.ExecuteSelect(transaction.GetDBContext(), mySelectedElements, myReferenceAndTypeList, myWhereExpressionDefinition, myGroupBy, myHaving,
+                    var qresult = selectManager.ExecuteSelect((DBContext)transaction.GetDBContext(), mySelectedElements, myReferenceAndTypeList, myWhereExpressionDefinition, myGroupBy, myHaving,
                         myOrderByDefinition, myLimit, myOffset, myResolutionDepth);
                     qresult.AddErrorsAndWarnings(transaction.Commit());
                     return qresult;
@@ -1168,9 +1169,9 @@ namespace sones.GraphDB
             using (var transaction = BeginTransaction(mySessionToken, mySessionContext))
             {
 
-                var transactionContext = transaction.GetDBContext();
+                DBContext transactionContext = (DBContext)transaction.GetDBContext();
 
-                var result = transactionContext.DBSettingsManager.ExecuteSettingOperation(transaction.GetDBContext(), myASettingDefinition, myTypeOfSettingOperation, mySettings);
+                var result = transactionContext.DBSettingsManager.ExecuteSettingOperation(transactionContext, myASettingDefinition, myTypeOfSettingOperation, mySettings);
 
                 #region Commit transaction and add all Warnings and Errors
 
@@ -1194,7 +1195,7 @@ namespace sones.GraphDB
             using (var _Transaction = BeginTransaction(mySessionToken, mySessionContext))
             {
 
-                var _DBInnerContext = _Transaction.GetDBContext();
+                var _DBInnerContext = (DBContext)_Transaction.GetDBContext();
 
                 #region Verify that DB is not set to readonly
 
@@ -1248,7 +1249,7 @@ namespace sones.GraphDB
             using (var transaction = BeginTransaction(mySessionToken, mySessionContext))
             {
 
-                var transactionContext = transaction.GetDBContext();
+                var transactionContext = (DBContext)transaction.GetDBContext();
 
                 #region Verify that DB is not set to readonly
 
@@ -1285,7 +1286,7 @@ namespace sones.GraphDB
 
         public DBTransaction BeginTransaction(SessionToken mySessionToken, DBContext dbContext, Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? timestamp = null)
         {
-            var fsTransaction = _IGraphFSSession.BeginTransaction(myDistributed, myLongRunning, myIsolationLevel, myName, timestamp);
+            var fsTransaction = _IGraphFSSession.BeginFSTransaction(myDistributed, myLongRunning, myIsolationLevel, myName, timestamp);
 
             DBTransaction _Transaction = null;
             var currentTransaction = DBTransaction.GetLatestTransaction(mySessionToken.SessionInfo.SessionUUID);
@@ -1391,7 +1392,7 @@ namespace sones.GraphDB
         public Boolean IsWriteTransaction(SessionToken mySessionToken)
         {
 
-            #region Check whether the statement is readWrite and the trnasaction is readOnly <- error!
+            #region Check whether the statement is readWrite and the transaction is readOnly <- error!
 
             var latestTrans = GetLatestTransaction(mySessionToken);
             if (latestTrans.IsRunning())
@@ -1502,6 +1503,245 @@ namespace sones.GraphDB
 
         #endregion
 
+        /// <summary>
+        /// Starts a traversal and returns the found paths or an aggreagted result
+        /// </summary>
+        /// <typeparam name="T">The resulttype after applying the result transformation</typeparam>
+        /// <param name="mySessionToken">The currenct session</param>
+        /// <param name="myStartVertex">The starting vertex</param>
+        /// <param name="TraversalOperation">BreathFirst|DepthFirst</param>
+        /// <param name="myFollowThisEdge">Follow this edge? Based on its TYPE or any other property/characteristic...</param>
+        /// <param name="myFollowThisPath">Follow this path (== actual path + NEW edge + NEW dbobject? Based on edge/object UUID, TYPE or any other property/characteristic...</param>
+        /// <param name="myMatchEvaluator">Mhm, this vertex/path looks interesting!</param>
+        /// <param name="myMatchAction">Hey! I have found something interesting!</param>
+        /// <param name="myStopEvaluator">Will stop the traversal on a condition</param>
+        /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
+        /// <returns></returns>
+        public T TraversePath<T>(   SessionToken                             mySessionToken,
+                                    DBVertex                                 myStartVertex,
+                                    TraversalOperation                       TraversalOperation  = TraversalOperation.BreathFirst,
+                                    Func<DBPath, sones.GraphDB.NewAPI.DBEdge, Boolean>            myFollowThisEdge    = null,
+                                    Func<DBPath, sones.GraphDB.NewAPI.DBEdge, DBVertex, Boolean> myFollowThisPath = null,
+                                    Func<DBPath, Boolean>                    myMatchEvaluator    = null,
+                                    Action<DBPath>                           myMatchAction       = null,
+                                    Func<TraversalState, Boolean>            myStopEvaluator     = null,
+                                    Func<IEnumerable<DBPath>, T>             myWhenFinished      = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Starts a traversal and returns the found vertices or an aggreagted result
+        /// </summary>
+        /// <typeparam name="T">The resulttype after applying the result transformation</typeparam>
+        /// <param name="mySessionToken">The currenct session</param>
+        /// <param name="myStartVertex">The starting vertex</param>
+        /// <param name="TraversalOperation">BreathFirst|DepthFirst</param>
+        /// <param name="myFollowThisEdge">Follow this edge? Based on its TYPE or any other property/characteristic...</param>
+        /// <param name="myMatchEvaluator">Mhm, this vertex/path looks interesting!</param>
+        /// <param name="myMatchAction">Hey! I have found something interesting!</param>
+        /// <param name="myStopEvaluator">Will stop the traversal on a condition</param>
+        /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
+        /// <returns></returns>
+        public T TraverseVertex<T>( SessionToken                    mySessionToken,
+                                    DBVertex                        myStartVertex,
+                                    TraversalOperation              TraversalOperation      = TraversalOperation.BreathFirst,
+                                    Func<DBVertex, sones.GraphDB.NewAPI.DBEdge, Boolean> myFollowThisEdge = null,
+                                    Func<DBVertex, Boolean>         myMatchEvaluator        = null,
+                                    Action<DBVertex>                myMatchAction           = null,
+                                    Func<TraversalState, Boolean>   myStopEvaluator         = null,
+                                    Func<IEnumerable<DBVertex>, T>  myWhenFinished          = null)
+        {
+            TraversalState myTraversalState = new TraversalState(myStartVertex);
+
+
+            if (myWhenFinished != null)
+            {
+                return myWhenFinished(TraverseVertex_private(mySessionToken, myStartVertex, null, TraversalOperation, true, myFollowThisEdge, myMatchEvaluator, myMatchAction, myStopEvaluator, myTraversalState));
+            }
+            else
+            {
+                return (T)TraverseVertex_private(mySessionToken, myStartVertex, null, TraversalOperation, true, myFollowThisEdge, myMatchEvaluator, myMatchAction, myStopEvaluator, myTraversalState);
+            }
+
+        }
+
+        /// <summary>
+        /// Starts a traversal and returns the found vertices
+        /// </summary>
+        /// <param name="sessionToken">The currenct session</param>
+        /// <param name="currentVertex">The current vertex</param>
+        /// <param name="viaEdge">The edge which has lead to the current vertex</param>
+        /// <param name="traversalOperation">BreathFirst|DepthFirst</param>
+        /// <param name="myAvoidCircles">Avoidance of circles</param>
+        /// <param name="followThisEdge">Follow this edge? Based on its TYPE or any other property/characteristic...</param>
+        /// <param name="matchEvaluator">Mhm, this vertex looks interesting!</param>
+        /// <param name="matchAction">Hey! I have found something interesting!</param>
+        /// <param name="stopEvaluator">Will stop the traversal on a condition</param>
+        /// <param name="traversalState">The traversal state</param>
+        /// <returns>An IEnumerable of DBVertex</returns>
+        private IEnumerable<DBVertex> TraverseVertex_private(   SessionToken sessionToken,
+                                                                DBVertex currentVertex,
+                                                                NewAPI.DBEdge viaEdge,
+                                                                TraversalOperation traversalOperation,
+                                                                Boolean myAvoidCircles,
+                                                                Func<DBVertex, NewAPI.DBEdge, bool> followThisEdge,
+                                                                Func<DBVertex, bool> matchEvaluator,
+                                                                Action<DBVertex> matchAction,
+                                                                Func<TraversalState, bool> stopEvaluator,
+                                                                TraversalState traversalState)
+        {
+            #region stop evaluation?
+            //are we allowed to stop the current traversal
+
+            if (stopEvaluator != null)
+            {
+                if (stopEvaluator(traversalState))
+                {
+                    yield break;
+                }
+            }
+
+            #endregion
+
+            #region currentVertex match?
+            //does the current node match the requirements?
+
+            Boolean match = false;
+
+            #region match evaluation
+
+            if (matchEvaluator != null)
+            {
+                //there is a match evaluator... use it
+
+                if (matchEvaluator(currentVertex))
+                {
+                    match = true;
+                }
+            }
+            else
+            {
+                //there is no special function that evaluates if the current vertex matches... so EVERY Vertex matches
+
+                match = true;
+            }
+
+            #endregion
+
+            if (match)
+            {
+                #region match action
+
+                if (matchAction != null)
+                {
+                    matchAction.Invoke(currentVertex);
+                }
+
+                #endregion
+
+                #region update traversal state
+                //update number of found elements
+
+                traversalState.IncreaseNumberOfFoundElements();
+
+                #endregion
+            }
+
+            #endregion
+
+            #region update statistics on traversal state
+
+            traversalState.AddVisitedVertexViaEdge(currentVertex, viaEdge);
+
+            #endregion
+
+            #region return and traverse
+
+            if (match)
+            {
+                //return the current vertex if it matched
+                yield return currentVertex;
+            }
+
+            #region recursive traverse
+            //get all edges and try to traverse them
+
+
+            switch (traversalOperation)
+            {
+                case TraversalOperation.BreathFirst:
+
+                    #region BreathFirst
+
+                    throw new NotImplementedException();
+
+                    #endregion
+
+                case TraversalOperation.DepthFirst:
+
+                    #region DepthFirst
+
+                    foreach (var aEdge in currentVertex.GetEdges())
+                    {
+                        #region try to traverse via aEdge
+
+                        //check for circle avoidance
+                        if (myAvoidCircles)
+                        {
+                            #region check traversal state
+                            //check the traversal state for circles... if there is one, break!
+
+                            if (traversalState.AlreadyVisitedVertexViaEdge(aEdge))
+                            {
+                                continue;
+                            }
+
+                            #endregion
+                        }
+
+                        //check the "follow this Edge" function
+                        if (followThisEdge != null)
+                        {
+                            #region check edge
+                            //check if the edge should be followed... if not, break!
+
+                            if (!followThisEdge(currentVertex, aEdge))
+                            {
+                                continue;
+                            }
+
+                            #endregion
+                        }
+
+                        //move recursive in depth
+                        foreach (var aMatchingVertex in TraverseVertex_private(sessionToken, aEdge.TargetVertex, aEdge, traversalOperation, myAvoidCircles, followThisEdge, matchEvaluator, matchAction, stopEvaluator, traversalState))
+                        {
+                            yield return aMatchingVertex;
+                        }
+
+                        #endregion
+                    }
+
+                    break;
+
+                    #endregion
+
+                default:
+
+                    #region default
+
+                    throw new NotImplementedException();
+
+                    #endregion
+            }
+
+            #endregion
+
+            #endregion
+
+            yield break;
+        }
     }
 
 }

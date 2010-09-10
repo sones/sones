@@ -55,7 +55,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\GraphDB\GraphDB\GraphDB.csproj">
       <Project>{32A56958-2C05-44C6-B661-2A2C6610E073}</Project>
-      <Name>GraphDB</Name>
+      <Name>GraphDB %28Dependencies\GraphDB\GraphDB%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GraphFS\GraphFSInterface\GraphFSInterface.csproj">
       <Project>{B23FDA3D-8229-4CDD-91FD-9AFD7301D315}</Project>
@@ -71,7 +71,7 @@
     </ProjectReference>
     <ProjectReference Include="..\GraphIO\GraphIO.csproj">
       <Project>{624BBB9D-89BE-43CE-8B8C-18BE729F4B11}</Project>
-      <Name>GraphIO</Name>
+      <Name>GraphIO %28Dependencies\GraphIO\GraphIO%29</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

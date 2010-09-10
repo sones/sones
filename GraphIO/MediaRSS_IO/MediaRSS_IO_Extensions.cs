@@ -1,4 +1,24 @@
-﻿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * MediaRSS_IO_Extensions
  * Achim 'ahzf' Friedland, 2010
  */
@@ -11,9 +31,10 @@ using System.Text;
 using sones.GraphFS.DataStructures;
 
 using sones.GraphDB.Structures;
-using sones.GraphDB.Structures.Result;
+
 
 using sones.Lib;
+using sones.GraphDBInterface.Result;
 
 #endregion
 
@@ -67,11 +88,10 @@ namespace sones.GraphIO.MediaRSS
 
 
                 if (myQueryResult != null && myQueryResult.Results != null)
-                    foreach (var _SelectionListElementResult in myQueryResult.Results)
-                        if (_SelectionListElementResult != null && _SelectionListElementResult.Objects != null)
-                            foreach (var _DBObjectReadout in _SelectionListElementResult.Objects)
-                                if (_DBObjectReadout != null)
-                                    myStringBuilder.Append(_DBObjectReadout.ToMediaRSS());
+                    if (myQueryResult.Results != null && myQueryResult.Results.Objects != null)
+                        foreach (var _DBObjectReadout in myQueryResult.Results.Objects)
+                            if (_DBObjectReadout != null)
+                                myStringBuilder.Append(_DBObjectReadout.ToMediaRSS());
 
             }
 

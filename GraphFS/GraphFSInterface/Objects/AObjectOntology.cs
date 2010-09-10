@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /*
  * AObjectOntology
- * Achim Friedland, 2008 - 2010
+ * (c) Achim Friedland, 2008 - 2010
  */
 
 #region Usings
@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using sones.GraphFS.DataStructures;
 using sones.Lib.Serializer;
 using sones.Lib.DataStructures;
+using System.Threading;
 
 #endregion
 
@@ -55,7 +56,7 @@ namespace sones.GraphFS.Objects
         #region ObjectLocation
 
         [NonSerialized]
-        protected ObjectLocation _ObjectLocation;
+        protected ObjectLocation _ObjectLocation = null;
 
         /// <summary>
         /// Stores the complete ObjectLocation (ObjectPath and ObjectName) of
@@ -68,69 +69,62 @@ namespace sones.GraphFS.Objects
 
             get
             {
+
+                if (_ObjectLocatorReference != null)
+                    return _ObjectLocatorReference.ObjectLocation;
+
                 return _ObjectLocation;
+
             }
 
             set
             {
 
-                if (value == null || value.Length < FSPathConstants.PathDelimiter.Length)
-                    throw new ArgumentNullException("Invalid ObjectLocation!");
+                if (_ObjectLocatorReference != null)
+                    _ObjectLocatorReference.ObjectLocationSetter = value;
 
-                _ObjectLocation  = value;
-                _ObjectPath      = _ObjectLocation.Path;
-                _ObjectName      = _ObjectLocation.Name;
-
-                isDirty          = true;
+                _ObjectLocation = value;
+                _ObjectPath     = _ObjectLocation.Path;
+                _ObjectName     = _ObjectLocation.Name;
+                isDirty         = true;
 
             }
-
-            //set
-            //{
-
-            //    if (value == null || value.Length < FSPathConstants.PathDelimiter.Length)
-            //        throw new ArgumentNullException("Invalid ObjectLocation!");
-
-            //    _ObjectLocation  = value;
-            //    _ObjectPath      = _ObjectLocation.Path;
-            //    _ObjectName      = _ObjectLocation.Name;
-
-            //    isDirty          = true;
-
-            //}
 
         }
 
         #endregion
 
         #region ObjectPath
-
+        
         [NonSerialized]
-        protected String _ObjectPath;
+        protected ObjectLocation _ObjectPath = null;
 
         /// <summary>
         /// Stores the ObjectPath of this AGraphObject. Changing this
         /// property will automagically change the myObjectLocation property.
         /// </summary>
         [NotIFastSerialized]
-        public String ObjectPath
+        public ObjectLocation ObjectPath
         {
 
             get
             {
-                //if (_ObjectPath == null || _ObjectPath == String .Empty)
-                //    _ObjectPath = DirectoryHelper.GetObjectPath(_ObjectLocation);
+
+                if (_ObjectLocatorReference != null)
+                    return _ObjectLocatorReference.ObjectPath;
+
                 return _ObjectPath;
+
             }
 
             set
             {
 
-                if (value == null || value.Length < FSPathConstants.PathDelimiter.Length)
-                    throw new ArgumentNullException("The ObjectPath must not be null or its length zero!");
+                if (_ObjectLocatorReference != null)
+                    _ObjectLocatorReference.ObjectPath = value;
 
                 _ObjectPath     = value;
-                _ObjectLocation = new ObjectLocation(DirectoryHelper.Combine(_ObjectPath, _ObjectName));
+                _ObjectLocation = new ObjectLocation(_ObjectPath, _ObjectName);
                 isDirty         = true;
 
             }
@@ -142,31 +136,34 @@ namespace sones.GraphFS.Objects
         #region ObjectName
 
         [NonSerialized]
-        protected String _ObjectName;
+        protected String _ObjectName = null;
 
         /// <summary>
         /// Stores the ObjectName of this AGraphObject. Changing this
         /// property will automagically change the myObjectLocation property.
         /// </summary>
         [NotIFastSerialized]
-        public String ObjectName
+        public virtual String ObjectName
         {
 
             get
             {
-                //if (_ObjectName == null || _ObjectName == String.Empty)
-                //    _ObjectName = DirectoryHelper.GetObjectName(_ObjectLocation);
+
+                if (_ObjectLocatorReference != null)
+                    return _ObjectLocatorReference.ObjectName;
+
                 return _ObjectName;
+
             }
 
             set
             {
 
-                if (value == null || value.Length == 0)
-                    throw new ArgumentNullException("The ObjectName must not be null or its length zero!");
+                if (_ObjectLocatorReference != null)
+                    _ObjectLocatorReference.ObjectName = value;
 
                 _ObjectName     = value;
-                _ObjectLocation = new ObjectLocation(DirectoryHelper.Combine(_ObjectPath, _ObjectName));
+                _ObjectLocation = new ObjectLocation(_ObjectPath, _ObjectName);
                 isDirty         = true;
 
             }
@@ -725,9 +722,6 @@ namespace sones.GraphFS.Objects
         public AFSObjectOntology()
         {
 
-            _ObjectName             = "";
-            _ObjectPath             = "";
-            _ObjectLocation         = null;
             _ObjectStream           = null;
 
             _ObjectSize             = 0;
@@ -762,14 +756,13 @@ namespace sones.GraphFS.Objects
 
             // Members of AFSObjectStructure
             _ObjectLocatorReference     = myAObjectOntology.ObjectLocatorReference;
-            _INodeReference             = myAObjectOntology.INodeReference;
 
             ObjectUUID                  = myAObjectOntology.ObjectUUID;
 
             // Members of IObjectLocation
-            _ObjectLocation             = myAObjectOntology.ObjectLocation;
-            _ObjectPath                 = myAObjectOntology.ObjectPath;
-            _ObjectName                 = myAObjectOntology.ObjectName;
+            //_ObjectLocation             = myAObjectOntology.ObjectLocation;
+            //_ObjectPath                 = myAObjectOntology.ObjectPath;
+            //_ObjectName                 = myAObjectOntology.ObjectName;
 
             // Members of IFSObjectOntology
             _ObjectStream               = myAObjectOntology.ObjectStream;

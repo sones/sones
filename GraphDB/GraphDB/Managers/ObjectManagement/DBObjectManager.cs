@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,13 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-
-/* <id name="GraphDB – ObjectManager" />
+/* <id name="GraphDB � ObjectManager" />
  * <copyright file="ObjectManager.cs"
  *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Stefan Licht</developer>
  * <summary>This class manages the Object handling between DB and FS.</summary>
@@ -32,28 +32,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using sones.GraphFS;
-using sones.GraphFS.DataStructures;
-using sones.GraphFS.Objects;
-using sones.GraphFS.Session;
-
 using sones.GraphDB.Errors;
-using sones.GraphDB.Exceptions;
-using sones.GraphDB.Structures.Result;
-using sones.GraphDB.TypeManagement;
-using sones.GraphDB.Warnings;
-
-using sones.Lib.Session;
-using sones.Lib.ErrorHandling;
-using sones.Lib.DataStructures;
-using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
-using sones.GraphDB.Indices;
-using sones.GraphDB.TypeManagement.BasicTypes;
-using sones.Lib;
-using sones.GraphDB.Transactions;
 using sones.GraphDB.Settings;
 using sones.GraphDB.Structures.Enums;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
+using sones.GraphDBInterface.TypeManagement;
+using sones.GraphFS;
+using sones.GraphFS.DataStructures;
+using sones.GraphFS.Session;
+using sones.Lib;
+using sones.Lib.DataStructures;
+using sones.Lib.ErrorHandling;
 
 #endregion
 

@@ -1,13 +1,13 @@
 /*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /* 
  * AStorageEngine
- * Achim Friedland, 2010
+ * (c) Achim Friedland, 2010
  */
 
 #region Usings
@@ -43,7 +43,6 @@ namespace sones.StorageEngines
 
     public abstract class AStorageEngine : IStorageEngine
     {
-
         
         #region Constructors
 
@@ -58,7 +57,6 @@ namespace sones.StorageEngines
         #endregion
 
         #endregion
-
 
         #region AStorageEngine Members
 

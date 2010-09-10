@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AB0FEED9-D9BE-4362-8A88-95110DFDADD9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GraphDSClient</RootNamespace>
+    <AssemblyName>GraphDSClient</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GraphDSClient.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\GraphDB\GraphDBInterface\GraphDBInterface.csproj">
+      <Project>{72319FF7-E9D9-4AE9-AA0B-2E006442B1ED}</Project>
+      <Name>GraphDBInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphDS\GraphDSSharp\GraphDSSharp.csproj">
+      <Project>{5C3DCC64-FBBE-4050-A7F5-17F52D85DC8F}</Project>
+      <Name>GraphDSSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphFS\GraphFSInterface\GraphFSInterface.csproj">
+      <Project>{B23FDA3D-8229-4CDD-91FD-9AFD7301D315}</Project>
+      <Name>GraphFSInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\GEXF_IO\GEXF_IO.csproj">
+      <Project>{5C819A2C-5CA4-402E-9235-F44774378F56}</Project>
+      <Name>GEXF_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\GraphIO\GraphIO.csproj">
+      <Project>{624BBB9D-89BE-43CE-8B8C-18BE729F4B11}</Project>
+      <Name>GraphIO %28Dependencies\GraphIO\GraphIO%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\HTML_IO\HTML_IO.csproj">
+      <Project>{0A2471D6-AECF-4271-91C4-189C0B8469B2}</Project>
+      <Name>HTML_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\JSON_IO\JSON_IO.csproj">
+      <Project>{FC8A47E3-2699-4123-9517-0A3D325F5DEC}</Project>
+      <Name>JSON_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\MediaRSS_IO\MediaRSS_IO.csproj">
+      <Project>{8302BE24-AE6B-48B4-80FB-949AE198DCC7}</Project>
+      <Name>MediaRSS_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\Serialized_IO\Serialized_IO.csproj">
+      <Project>{D14E998F-0F04-4091-B75F-FB297D447208}</Project>
+      <Name>Serialized_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\TEXT_IO\TEXT_IO.csproj">
+      <Project>{90E0D6D5-6527-4DE9-8DC4-C88B79A2B1C5}</Project>
+      <Name>TEXT_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GraphIO\XML_IO\XML_IO.csproj">
+      <Project>{9FCA399E-33F4-40A0-9987-76C5763F23FF}</Project>
+      <Name>XML_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lib\Lib\Lib.csproj">
+      <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
+      <Name>Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Notifications\Notifications\Notifications.csproj">
+      <Project>{81E75577-B787-4537-B191-F3326C6E5865}</Project>
+      <Name>Notifications %28Dependencies\Notifications\Notifications%29</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

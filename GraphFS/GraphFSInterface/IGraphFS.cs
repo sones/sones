@@ -1,13 +1,13 @@
 /*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /*
  * IGraphFS
- * Achim Friedland, 2008 - 2010
+ * (c) Achim Friedland, 2008 - 2010
  */
 
 #region Usings
@@ -29,21 +29,17 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-using sones.StorageEngines;
-
 using sones.GraphFS;
 using sones.GraphFS.Events;
 using sones.GraphFS.Caches;
 using sones.GraphFS.Objects;
 using sones.GraphFS.Session;
+using sones.GraphFS.Transactions;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.InternalObjects;
 
-using sones.Notifications;
 using sones.Lib.DataStructures;
 using sones.Lib.ErrorHandling;
-using sones.Lib.Session;
-using sones.GraphFS.Transactions;
 using sones.Lib.DataStructures.Indices;
 
 #endregion
@@ -52,10 +48,7 @@ namespace sones
 {
 
     /// <summary>
-    /// The interface for all Graph file systems. Each method that gets exported to the WCF Administration Userland
-    /// should be marked with . Please keep in mind that these methods should only take primitive
-    /// parameters and return data structures that can be serialized and deserialized with .NET Serializers.
-    /// (so preferably they also return just primitives)
+    /// The interface for all Graph file systems.
     /// </summary>
 
     public interface IGraphFS
@@ -64,10 +57,9 @@ namespace sones
 
         #region Properties
 
-        FileSystemUUID          FileSystemUUID          { get; }
-        NotificationSettings    NotificationSettings    { get; set; }
-        ObjectCacheSettings     ObjectCacheSettings     { get; set; }
-        NotificationDispatcher  NotificationDispatcher  { get; set; }
+        FileSystemUUID      FileSystemUUID          { get; }
+        String              FileSystemDescription   { get; set; }
+        ObjectCacheSettings ObjectCacheSettings     { get; set; }
 
         #endregion
 
@@ -192,6 +184,7 @@ namespace sones
 
         #endregion
 
+
         #region GetNumberOfBytes(...)
 
         /// <summary>
@@ -240,6 +233,7 @@ namespace sones
 
         #endregion
 
+
         #region GetAccessMode(...)
 
         /// <summary>
@@ -275,86 +269,90 @@ namespace sones
         #endregion
 
 
-        #region Make-/Grow-/ShrinkFileSystem
+        #region Make-/Grow-/Shrink-/WipeFileSystem
 
         /// <summary>
         /// This initialises a GraphFS in a given device or file using the given sizes
         /// </summary>
-        /// <param name="myStorageLocations">a device or filename where to store the file system data</param>
         /// <param name="myDescription">a distinguishable Name or description for the file system (can be changed later)</param>
         /// <param name="myNumberOfBytes">the size of the file system in byte</param>
         /// <param name="myOverwriteExistingFileSystem">overwrite an existing file system [yes|no]</param>
         /// <returns>the UUID of the new file system</returns>
-        Exceptional<FileSystemUUID> MakeFileSystem(IEnumerable<String> myStorageLocations, String myDescription, UInt64 myNumberOfBytes, Boolean myOverwriteExistingFileSystem, Action<Double> myAction, SessionToken mySessionToken);
+        Exceptional<FileSystemUUID> MakeFileSystem(SessionToken mySessionToken, String myDescription, UInt64 myNumberOfBytes, Boolean myOverwriteExistingFileSystem, Action<Double> myAction);
 
         /// <summary>
         /// This enlarges the size of a GraphFS
         /// </summary>
         /// <param name="myNumberOfBytesToAdd">the number of bytes to add to the size of the current file system</param>
         /// <returns>New total number of bytes</returns>
-        Exceptional<UInt64> GrowFileSystem(UInt64 myNumberOfBytesToAdd, SessionToken mySessionToken);
+        Exceptional<UInt64> GrowFileSystem(SessionToken mySessionToken, UInt64 myNumberOfBytesToAdd);
 
         /// <summary>
         /// This reduces the size of a GraphFS
         /// </summary>
         /// <param name="myNumberOfBytesToRemove">the number of bytes to remove from the size of the current file system</param>
         /// <returns>New total number of bytes</returns>
-        Exceptional<UInt64> ShrinkFileSystem(UInt64 myNumberOfBytesToRemove, SessionToken mySessionToken);
+        Exceptional<UInt64> ShrinkFileSystem(SessionToken mySessionToken, UInt64 myNumberOfBytesToRemove);
+
+        /// <summary>
+        /// Wipe the file system
+        /// </summary>
+        Exceptional WipeFileSystem(SessionToken mySessionToken);
 
         #endregion
 
-        #region MountFileSystem
+        #region Mount-/Remount-/UnmountFileSystem
 
         /// <summary>
-        /// Mounts a GraphFS from a device or filename serving the file system
+        /// Mounts this file system.
         /// </summary>
-        /// <param name="myStorage">a device or filename serving the file system</param>
-        /// <param name="myFSAccessMode">the access mode of this file system (read/write, read-only, ...)</param>
-        Exceptional MountFileSystem(String myStorageLocation, AccessModeTypes myFSAccessMode, SessionToken mySessionToken);
-
-
-        Exceptional MountFileSystem(IGraphFS myIGraphFS, ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode, SessionToken mySessionToken);
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myAccessMode">The file system access mode, e.g. "read-write" or "read-only".</param>
+        Exceptional MountFileSystem(SessionToken mySessionToken, AccessModeTypes myAccessMode);
 
         /// <summary>
-        /// This method will mount the file system from a StorageLocation serving
-        /// the file system into the given ObjectLocation using the given file system
-        /// access mode. If the mountpoint is located within another file system this
-        /// file system will be called to process this request in a recursive way.
+        /// Mounts the given IGraphFS instance at the given mount point using the given access mode.
         /// </summary>
-        /// <param name="myStorageLocation">A StorageLocation (device or filename) the file system can be read from</param>
-        /// <param name="myMountPoint">The location the file system should be mounted at</param>
-        /// <param name="myFSAccessMode">The access mode of the file system to mount</param>
-        Exceptional MountFileSystem(String myStorageLocation, ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode, SessionToken mySessionToken);
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myMountPoint">An ObjectLocation used as mount point.</param>
+        /// <param name="myIGraphFS">An file system instance implementing IGraphFS.</param>
+        /// <param name="myAccessMode">The file system access mode, e.g. "read-write" or "read-only".</param>
+        Exceptional MountFileSystem(SessionToken mySessionToken, ObjectLocation myMountPoint, IGraphFS myIGraphFS, AccessModeTypes myAccessMode);
 
 
         /// <summary>
-        /// Remounts a GraphFS
+        /// Remounts a file system in order to change its access mode.
         /// </summary>
-        /// <param name="myFSAccessMode">the mode the file system should be opend (see AccessModeTypes)</param>
-        Exceptional RemountFileSystem(AccessModeTypes myFSAccessMode, SessionToken mySessionToken);
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myAccessMode">The file system access mode, e.g. "read-write" or "read-only".</param>
+        Exceptional RemountFileSystem(SessionToken mySessionToken, AccessModeTypes myFSAccessMode);
 
         /// <summary>
-        /// Remounts a GraphFS
+        /// Remounts the file system at the given ObjectLocation in order to change its access mode.
         /// </summary>
-        /// <param name="myMountPoint">the location of the file system within the virtual file system</param>
-        /// <param name="myFSAccessMode">the mode the file system should be opend (see AccessModeTypes)</param>
-        Exceptional RemountFileSystem(ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode, SessionToken mySessionToken);
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myMountPoint">The mount point as ObjectLocation of the file system to remount.</param>
+        /// <param name="myAccessMode">The file system access mode, e.g. "read-write" or "read-only".</param>
+        Exceptional RemountFileSystem(SessionToken mySessionToken, ObjectLocation myMountPoint, AccessModeTypes myAccessMode);
 
 
         /// <summary>
-        /// Unmounts a GraphFS by flushing all caches and shutting down all managers, finally closing the file system
+        /// Flush all caches and unmount this file system.
         /// </summary>
+        /// <param name="mySessionToken">The SessionToken.</param>
         Exceptional UnmountFileSystem(SessionToken mySessionToken);
 
         /// <summary>
-        /// Unmounts a GraphFS by flushing all caches and shutting down all managers, finally closing the file
+        /// Unmounts the file system at the given ObjectLocation.
         /// </summary>
-        /// <param name="myMountPoint">the location of the file system within the virtual file system</param>
-        Exceptional UnmountFileSystem(ObjectLocation myMountPoint, SessionToken mySessionToken);
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myMountPoint">The mount point as ObjectLocation of the file system to unmount.</param>
+        Exceptional UnmountFileSystem(SessionToken mySessionToken, ObjectLocation myMountPoint);
 
         /// <summary>
-        /// Unmounts all GraphFSs by flushing all caches and shutting down all managers, finally closing all files
+        /// Unmounts all file systems mounted via this file system.
         /// </summary>
+        /// <param name="mySessionToken">The SessionToken.</param>
         Exceptional UnmountAllFileSystems(SessionToken mySessionToken);
 
 
@@ -362,8 +360,9 @@ namespace sones
         /// Restricts the access to this file system to the given "/ChangeRootPrefix".
         /// This might be of interesst for security and safety purposes.
         /// </summary>
-        /// <param name="myChangeRootPrefix">the location of this object (ObjectPath and ObjectName) of the new file system root</param>
-        Exceptional ChangeRootDirectory(String myChangeRootPrefix, SessionToken mySessionToken);
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myChangeRootPrefix">The new file system root as ObjectLocation.</param>
+        Exceptional ChangeRootDirectory(SessionToken mySessionToken, String myChangeRootPrefix);
 
         #endregion
 
@@ -371,48 +370,109 @@ namespace sones
         #region INode and ObjectLocator
 
         /// <summary>
-        /// Exports the INode of the given ObjectLocation.
-        /// For security reasons only a copy/clone of the INode will be exported!
+        /// Returns the INode of the given ObjectLocation.
         /// </summary>
-        /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested INode within the file system</param>
-        /// <returns>An INode copy/clone of the given ObjectLocation</returns>
-        Exceptional<INode> GetINode(ObjectLocation myObjectLocation, SessionToken mySessionToken);
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myObjectLocation">The location of this object (ObjectPath and ObjectName) of the requested INode within the file system</param>
+        Exceptional<INode> GetINode(SessionToken mySessionToken, ObjectLocation myObjectLocation);
 
         /// <summary>
-        /// Exports the ObjectLocator of the given ObjectLocation.
-        /// For security reasons only a copy/clone of the ObjectLocator will be exported!
+        /// Returns the ObjectLocator of the given ObjectLocation.
         /// </summary>
-        /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested ObjectLocator within the file system</param>
-        /// <returns>An ObjectLocator copy/clone of the given ObjectLocation</returns>
-        Exceptional<ObjectLocator> GetObjectLocator(ObjectLocation myObjectLocation, SessionToken mySessionToken);
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myObjectLocation">The location of this object (ObjectPath and ObjectName) of the requested ObjectLocator within the file system</param>
+        Exceptional<ObjectLocator> GetObjectLocator(SessionToken mySessionToken, ObjectLocation myObjectLocation);
+
+        /// <summary>
+        /// Stores an ObjectLocator
+        /// </summary>
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myObjectLocation">The location of this object (ObjectPath and ObjectName) of the requested ObjectLocator within the file system</param>
+        Exceptional StoreObjectLocator(SessionToken mySessionToken, ObjectLocator myObjectLocator);
 
         #endregion
 
-        #region GraphObject specific methods
+        #region Object/ObjectStream/ObjectEdition/ObjectRevision infos
 
-        Exceptional LockFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime, SessionToken mySessionToken);
+        /// <summary>
+        /// Checks if there is any object located at the given ObjectLocation.
+        /// </summary>
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myObjectLocation">The location (ObjectPath and ObjectName) of the requested object within the file system.</param>
+        Exceptional<Trinary> ObjectExists (SessionToken mySessionToken, ObjectLocation myObjectLocation);
 
-        Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new();
-        Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken) where PT : AFSObject;
-        Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new();
-        Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken) where PT : AFSObject;
+        /// <summary>
+        /// Checks if there the given ObjectStream located at the given ObjectLocation exists.
+        /// </summary>
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myObjectStream">The ObjectStream.</param>
+        /// <param name="myObjectLocation">The location (ObjectPath and ObjectName) of the requested object within the file system.</param>
+        Exceptional<Trinary> ObjectStreamExists(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream);
 
-        Exceptional StoreAFSObject(ObjectLocation myObjectLocation, AFSObject myAGraphObject, Boolean myAllowOverwritting, SessionToken mySessionToken);
+        /// <summary>
+        /// Checks if there the given ObjectEdition and ObjectStream located at the given ObjectLocation exists.
+        /// </summary>
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myObjectStream">The ObjectStream.</param>
+        /// <param name="myObjectEdition">The ObjectEdition.</param>
+        /// <param name="myObjectLocation">The location (ObjectPath and ObjectName) of the requested object within the file system.</param>
+        Exceptional<Trinary> ObjectEditionExists(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition);
 
-        Exceptional<Trinary> ObjectExists         (ObjectLocation myObjectLocation, SessionToken mySessionToken);
-        Exceptional<Trinary> ObjectStreamExists   (ObjectLocation myObjectLocation, String myObjectStream, SessionToken mySessionToken);
-        Exceptional<Trinary> ObjectEditionExists  (ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, SessionToken mySessionToken);
-        Exceptional<Trinary> ObjectRevisionExists (ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, SessionToken mySessionToken);
+        /// <summary>
+        /// Checks if there the given ObjectRevision, ObjectEdition and ObjectStream located at the given ObjectLocation exists.
+        /// </summary>
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myObjectStream">The ObjectStream.</param>
+        /// <param name="myObjectEdition">The ObjectEdition.</param>
+        /// <param name="myObjectRevisionID">The ObjectRevisionID.</param>
+        /// <param name="myObjectLocation">The location (ObjectPath and ObjectName) of the requested object within the file system.</param>
+        Exceptional<Trinary> ObjectRevisionExists(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID);
 
-        Exceptional<IEnumerable<String>>     GetObjectStreams     (ObjectLocation myObjectLocation, SessionToken mySessionToken);
-        Exceptional<IEnumerable<String>>     GetObjectEditions    (ObjectLocation myObjectLocation, String myObjectStream, SessionToken mySessionToken);
-        Exceptional<IEnumerable<ObjectRevisionID>> GetObjectRevisionIDs (ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, SessionToken mySessionToken);
 
-        Exceptional RenameObject(ObjectLocation myObjectLocation, String myNewObjectName, SessionToken mySessionToken);
-        Exceptional RemoveFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, SessionToken mySessionToken);
-        Exceptional EraseFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, SessionToken mySessionToken);
+        /// <summary>
+        /// Returns all ObjectStreams at the given ObjectLocation.
+        /// </summary>
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myObjectLocation">The location (ObjectPath and ObjectName) of the requested ObjectStreams within the file system.</param>
+        Exceptional<IEnumerable<String>> GetObjectStreams(SessionToken mySessionToken, ObjectLocation myObjectLocation);
+
+        /// <summary>
+        /// Returns all ObjectEditions at the given ObjectLocation having the requested ObjectStream.
+        /// </summary>
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myObjectLocation">The location (ObjectPath and ObjectName) of the requested ObjectEditions within the file system.</param>
+        /// <param name="myObjectStream">The ObjectStream.</param>
+        Exceptional<IEnumerable<String>> GetObjectEditions(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream);
+
+        /// <summary>
+        /// Returns all ObjectEditions at the given ObjectLocation having the requested ObjectStream and ObjectEdition.
+        /// </summary>
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myObjectLocation">The location (ObjectPath and ObjectName) of the requested ObjectRevisions within the file system.</param>
+        /// <param name="myObjectStream">The ObjectStream.</param>
+        /// <param name="myObjectEdition">The ObjectEdition.</param>
+        Exceptional<IEnumerable<ObjectRevisionID>> GetObjectRevisionIDs(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition);
 
         #endregion
+
+        #region AFSObject specific methods
+
+        Exceptional<Boolean> LockAFSObject(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime);
+
+        Exceptional<PT> GetOrCreateAFSObject<PT> (SessionToken mySessionToken,                  ObjectLocation myObjectLocation, String myObjectStream = null, String myObjectEdition = null, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new();
+        Exceptional<PT> GetOrCreateAFSObject<PT> (SessionToken mySessionToken, Func<PT> myFunc, ObjectLocation myObjectLocation, String myObjectStream = null, String myObjectEdition = null, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject;
+        Exceptional<PT> GetAFSObject<PT>         (SessionToken mySessionToken,                  ObjectLocation myObjectLocation, String myObjectStream = null, String myObjectEdition = null, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new();
+        Exceptional<PT> GetAFSObject<PT>         (SessionToken mySessionToken, Func<PT> myFunc, ObjectLocation myObjectLocation, String myObjectStream = null, String myObjectEdition = null, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject;
+
+        Exceptional StoreAFSObject   (SessionToken mySessionToken, ObjectLocation myObjectLocation, AFSObject myAGraphObject, Boolean myAllowToOverwrite = false);
+
+        Exceptional RenameAFSObjects (SessionToken mySessionToken, ObjectLocation myObjectLocation, String myNewObjectName);
+        Exceptional RemoveAFSObject  (SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID);
+        Exceptional EraseAFSObject   (SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID);
+
+        #endregion
+        
+
 
         #region Symlink Maintenance
 
@@ -448,23 +508,9 @@ namespace sones
         #region DirectoryObject Methods
 
         /// <summary>
-        /// Creates a directory in the given file system location reserving the given number of bytes 
-        /// </summary>
-        /// <param name="myObjectLocation"></param>
-        /// <param name="myBlocksize"></param>
-        /// <param name="mySessionToken"></param>
-        /// <returns></returns>
-        Exceptional<IDirectoryObject> CreateDirectoryObject(ObjectLocation myObjectLocation, UInt64 myBlocksize, SessionToken mySessionToken);
-
-        /// <summary>
         /// Creates a directory in the given file system location, it will recursively all not existing subdirectories
         /// </summary>
-        /// <param name="myObjectLocation"></param>
-        /// <param name="myBlocksize"></param>
-        /// <param name="myRecursive"></param>
-        /// <param name="mySessionToken"></param>
-        /// <returns></returns>
-        Exceptional<IDirectoryObject> CreateDirectoryObject(ObjectLocation myObjectLocation, UInt64 myBlocksize, Boolean myRecursive, SessionToken mySessionToken);
+        Exceptional<IDirectoryObject> CreateDirectoryObject(SessionToken mySessionToken, ObjectLocation myObjectLocation, UInt64 myBlocksize = 0, Boolean myRecursive = false);
 
 
         /// <summary>
@@ -472,7 +518,7 @@ namespace sones
         /// </summary>
         /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested directory within the file system</param>        
         /// <returns>exists(true) or not exists(false)</returns>        
-        Exceptional<Trinary> isIDirectoryObject(ObjectLocation myObjectLocation, SessionToken mySessionToken);
+        Exceptional<Trinary> IsIDirectoryObject(ObjectLocation myObjectLocation, SessionToken mySessionToken);
 
 
         /// <summary>
@@ -513,14 +559,14 @@ namespace sones
         /// </summary>
         /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the directory which will be deleted</param>        
         /// <param name="myRemoveRecursive">remove the directory recursive</param>        
-        Exceptional RemoveDirectoryObject(ObjectLocation myObjectLocation, Boolean removeRecursive, SessionToken mySessionToken);
+        Exceptional RemoveDirectoryObject(ObjectLocation myObjectLocation, Boolean myRemoveRecursive, SessionToken mySessionToken);
 
         /// <summary>
         /// Erases a directory in the given file system location
         /// </summary>
         /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the directory within the file system</param>
         /// <param name="myRemoveRecursive">erase the directory recursive</param>        
-        Exceptional EraseDirectoryObject(ObjectLocation myObjectLocation, Boolean eradeRecursive, SessionToken mySessionToken);
+        Exceptional EraseDirectoryObject(ObjectLocation myObjectLocation, Boolean myRemoveRecursive, SessionToken mySessionToken);
 
         #endregion
 
@@ -545,7 +591,7 @@ namespace sones
         #endregion
 
 
-        //#region AccessControlObject Maintenance
+        #region AccessControlObject Maintenance (unmaintained!)
 
         ///// <summary>
         ///// This method adds a RIGTHSSTREAM to an Object.
@@ -621,103 +667,9 @@ namespace sones
 
         //List<Right> EvaluateRightsForEntity(ObjectLocation myObjectLocation, EntityUUID myEntityGuid, AccessControlObject myRightsObject, SessionToken mySessionToken);
 
-        //#endregion
+        #endregion
 
-        //#region Index Maintenance
-
-        ////void CreateIndexObject<T1, T2, T3>(ObjectLocation myObjectLocation) where T1 : AGraphObject, IIndexObject<T2, T3>, new() where T2 : IComparable;
-        //IIndexObject<TKey, TValue> CreateIndexObject<TKey, TValue>(ObjectLocation myObjectLocation, IndexObjectTypes myIndexObjectType, SessionToken mySessionToken) where TKey : IComparable;
-
-        //IIndexObject<TKey, TValue> CreateIndex<TKey, TValue>(ObjectLocation myObjectLocation, IndexObjectTypes myIndexObjectType, Boolean myScaleableIndex, SessionToken mySessionToken) where TKey : IComparable;
-
-        ///// <summary>
-        ///// Stores any object identified by the given metadata key within a user MetadataObject at the given file system location 
-        ///// </summary>
-        ///// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested metadatum within the file system</param>        
-        ///// <param name="myKey">the key to identify the object/metadatum to store</param>
-        ///// <param name="myValue">an object</param>
-        //void InsertIntoIndex<TKey, TValue>(ObjectLocation myObjectLocation, TKey myKey, List<TValue> myValue, SessionToken mySessionToken) where TKey : IComparable;
-
-        ///// <summary>
-        ///// Stores a list of <String, Object>-KeyValuePairs within a user MetadataObject at the given file system location 
-        ///// </summary>
-        ///// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested metadatum within the file system</param>        
-        ///// <param name="myIndexList">a list of KeyValuePairs to store</param>
-        //void InsertIntoIndex<TKey, TValue>(ObjectLocation myObjectLocation, List<KeyValuePair<TKey, List<TValue>>> myIndexList, SessionToken mySessionToken) where TKey : IComparable;
-
-        ///// <summary>
-        ///// Stores a dictionary of type <String, Object> within a user MetadataObject at the given file system location 
-        ///// </summary>
-        ///// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested metadatum within the file system</param>        
-        ///// <param name="myIndexDictionary">a dictionary of type <String, Object> to store</param>
-        //void InsertIntoIndex<TKey, TValue>(ObjectLocation myObjectLocation, Dictionary<TKey, List<TValue>> myIndexDictionary, SessionToken mySessionToken) where TKey : IComparable;
-
-
-        ///// <summary>
-        ///// Returns the requested user metadatum indexed by the object location and the metadata key.
-        ///// </summary>
-        ///// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested metadata object within the file system</param>        
-        ///// <param name="myKey">the key or identifier of the requested metadatum</param>
-        ///// <returns>the requested metadatum</returns>
-        //List<TValue> GetValueFromIndex<TKey, TValue>(ObjectLocation myObjectLocation, TKey myUserMetadataKey, SessionToken mySessionToken) where TKey : IComparable;
-
-        ///// <summary>
-        ///// Returns a list of key-value-pairs of all user metadata indexed by the object location.
-        ///// </summary>
-        ///// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested metadatum within the file system</param>        
-        ///// <returns>the requested list of all metadata</returns>
-        //List<KeyValuePair<TKey, TValue>> GetIndexAsList<TKey, TValue>(ObjectLocation myObjectLocation, SessionToken mySessionToken) where TKey : IComparable;
-
-        ///// <summary>
-        ///// Returns a dictionary of all user metadata indexed by the object location.
-        ///// </summary>
-        ///// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested metadatum within the file system</param>        
-        ///// <returns>the requested dictionary of all metadata</returns>
-        //Dictionary<TKey, List<TValue>> GetIndexAsDictionary<TKey, TValue>(ObjectLocation myObjectLocation, SessionToken mySessionToken) where TKey : IComparable;
-
-
-        ///// <summary>
-        ///// Deletes the entire user metadata object at the given object location.
-        ///// </summary>
-        ///// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the metadatum within the file system</param>        
-        //void DeleteIndexObject(ObjectLocation myObjectLocation, SessionToken mySessionToken);
-
-        ///// <summary>
-        ///// Deletes a user metadatum at the given object location indexed by the metadata key.
-        ///// </summary>
-        ///// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the metadatum within the file system</param>        
-        ///// <param name="myUserMetadataKey">the key or identifier of the metadatum</param>
-        //void DeleteKeyFromIndex<TKey, TValue>(ObjectLocation myObjectLocation, TKey myKey, SessionToken mySessionToken) where TKey : IComparable;
-
-
-        ///// <summary>
-        ///// Checks if a specific user metadata object exists at the given object location.
-        ///// </summary>
-        ///// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the metadatum within the file system</param>        
-        ///// <returns>exists(true) or not exists(false)</returns>
-        //Boolean IndexObjectExists(ObjectLocation myObjectLocation, String nameOfKeyClass, SessionToken mySessionToken);
-
-        ///// <summary>
-        ///// Checks if a specific user metadata key indexed by the given object location exists.
-        ///// </summary>
-        ///// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the metadatum within the file system</param>        
-        ///// <param name="myUserMetadataKey">the key or identifier of the metadatum</param>
-        ///// <returns>exists(true) or not exists(false)</returns>
-        //Boolean IndexHasKey<TKey, TValue>(ObjectLocation myObjectLocation, TKey myKey, SessionToken mySessionToken) where TKey : IComparable;
-
-        //#endregion
-
-        //#region StringListObject Maintenance
-
-        //void CreateListOfStrings(ObjectLocation myObjectLocation, SessionToken mySessionToken);
-        //List<String> GetListOfStrings(ObjectLocation myObjectLocation, SessionToken mySessionToken);
-        //void AddToListOfStrings(ObjectLocation myObjectLocation, String myNewString, SessionToken mySessionToken);
-        //void RemoveFromListOfStrings(ObjectLocation myObjectLocation, String myToBeRemovedString, SessionToken mySessionToken);
-        //Boolean ListOfStringsExist(ObjectLocation myObjectLocation, SessionToken mySessionToken);
-
-        //#endregion
-
-        //#region EntitiesObject Maintenance
+        #region EntitiesObject Maintenance (unmaintained!)
 
         ///// <summary>
         ///// This method tries to add an Entity to the EntitiesObject.
@@ -811,10 +763,10 @@ namespace sones
         ///// <returns>A list of public keys</returns>
         //List<PublicKey> GetEntityPublicKeyList(ObjectLocation myObjectLocation, EntityUUID myEntityUUID, SessionToken mySessionToken);
 
-        //#endregion
+        #endregion
 
-        //#region Rights ObjectIndex Maintenance
-        
+        #region RightsObject Maintenance (unmaintained!)
+
         ///// <summary>
         ///// This method adds a Right to the GraphFS. All 
         ///// Rights that are added via this method are treated as 
@@ -846,69 +798,8 @@ namespace sones
 
         //Boolean ContainsRightUUID(RightUUID myRightUUID, SessionToken mySessionToken);
 
-        //#endregion
-
-
-        #region FlushObjectLocationNew(myObjectLocation, SessionToken mySessionToken);
-
-        void FlushObjectLocationNew(ObjectLocation myObjectLocation, SessionToken mySessionToken);
-
         #endregion
 
-        #region StorageEngine Maintenance
-
-        #region StorageLocations(...)
-
-        /// <summary>
-        /// Returns a list of all StorageLocations associated with this file system
-        /// </summary>
-        /// <returns>A list of all StorageLocations associated with this file system</returns>
-        IEnumerable<String> StorageLocations(SessionToken mySessionToken);
-
-        /// <summary>
-        /// Returns a list of all StorageLocations associated with the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <returns>A list of all StorageLocations associated with the file system at the given ObjectLocation</returns>
-        IEnumerable<String> StorageLocations(ObjectLocation myObjectLocation, SessionToken mySessionToken);
-
-        #endregion
-
-        #region StorageUUIDs(...)
-
-        /// <summary>
-        /// Returns a list of all StorageUUIDs associated with this file system
-        /// </summary>
-        /// <returns>A list of all StorageUUIDs associated with this file system</returns>
-        IEnumerable<StorageUUID> StorageUUIDs(SessionToken mySessionToken);
-
-        /// <summary>
-        /// Returns a list of all StorageUUIDs associated with the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <returns>A list of all StorageUUIDs associated with the file system at the given ObjectLocation</returns>
-        IEnumerable<StorageUUID> StorageUUIDs(ObjectLocation myObjectLocation, SessionToken mySessionToken);
-
-        #endregion
-
-        #region StorageDescriptions(...)
-
-        /// <summary>
-        /// Returns a list of descriptions for the storage engines associated with this file system
-        /// </summary>
-        /// <returns>A list of descriptions for the storage engines associated with this file system</returns>
-        IEnumerable<String> StorageDescriptions(SessionToken mySessionToken);
-
-        /// <summary>
-        /// Returns a list of descriptions for the storage engines associated with the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <returns>A list of descriptions for the storage engines associated with the file system at the given ObjectLocation</returns>
-        IEnumerable<String> StorageDescriptions(ObjectLocation myObjectLocation, SessionToken mySessionToken);
-
-        #endregion
-
-        #endregion
 
         #region Transactions
 
@@ -953,83 +844,6 @@ namespace sones
         /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
         /// <param name="myNotificationSettings">A ObjectCacheSettings object</param>
         Exceptional SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken);
-
-        #endregion
-
-        #region NotificationDispatcher
-
-        // The NotificationDispatcher handles all kind of notification between system parts or other dispatchers.
-        // Use register to get notified as recipient.
-        // Use SendNotification to send a notification to all subscribed recipients.
-
-        #region GetNotificationDispatcher(...)
-
-        /// <summary>
-        /// Returns the NotificationDispatcher of this file system
-        /// </summary>
-        /// <returns>The NotificationDispatcher of this file system</returns>
-        NotificationDispatcher GetNotificationDispatcher(SessionToken mySessionToken);
-
-        /// <summary>
-        /// Returns the NotificationDispatcher of the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <returns>The NotificationDispatcher of the file system at the given ObjectLocation</returns>
-        NotificationDispatcher GetNotificationDispatcher(ObjectLocation myObjectLocation, SessionToken mySessionToken);
-
-        #endregion
-
-        #region GetNotificationSettings(...)
-
-        /// <summary>
-        /// Returns the NotificationDispatcher settings of this file system
-        /// </summary>
-        /// <returns>The NotificationDispatcher settings of this file system</returns>
-        NotificationSettings GetNotificationSettings(SessionToken mySessionToken);
-
-        /// <summary>
-        /// Returns the NotificationDispatcher settings of the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <returns>The NotificationDispatcher settings of the file system at the given ObjectLocation</returns>
-        NotificationSettings GetNotificationSettings(ObjectLocation myObjectLocation, SessionToken mySessionToken);
-
-        #endregion
-
-
-        #region SetNotificationDispatcher(..., myNotificationDispatcher)
-
-        /// <summary>
-        /// Sets the NotificationDispatcher of this file system.
-        /// </summary>
-        /// <param name="myNotificationDispatcher">A NotificationDispatcher object</param>
-        void SetNotificationDispatcher(NotificationDispatcher myNotificationDispatcher, SessionToken mySessionToken);
-
-        /// <summary>
-        /// Sets the NotificationDispatcher of the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <param name="myNotificationDispatcher">A NotificationDispatcher object</param>
-        void SetNotificationDispatcher(ObjectLocation myObjectLocation, NotificationDispatcher myNotificationDispatcher, SessionToken mySessionToken);
-
-        #endregion
-
-        #region SetNotificationSettings(..., myNotificationSettings)
-
-        /// <summary>
-        /// Sets the NotificationDispatcher settings of this file system
-        /// </summary>
-        /// <param name="myNotificationSettings">A NotificationSettings object</param>
-        void SetNotificationSettings(NotificationSettings myNotificationSettings, SessionToken mySessionToken);
-
-        /// <summary>
-        /// Sets the NotificationDispatcher settings of the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <param name="myNotificationSettings">A NotificationSettings object</param>
-        void SetNotificationSettings(ObjectLocation myObjectLocation, NotificationSettings myNotificationSettings, SessionToken mySessionToken);
-
-        #endregion
 
         #endregion
 

@@ -81,6 +81,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GraphDSRESTCLI\AllGraphDSRESTCLICommands.cs" />
+    <Compile Include="GraphDSRESTCLI\RESTCLI_StartREST.cs" />
     <Compile Include="GraphDSExtensionsREST.cs" />
     <Compile Include="GraphDSREST_Client.cs" />
     <Compile Include="GraphDSREST_OutputFormat.cs" />
@@ -151,7 +153,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\GraphDB\GraphDB\GraphDB.csproj">
       <Project>{32A56958-2C05-44C6-B661-2A2C6610E073}</Project>
-      <Name>GraphDB</Name>
+      <Name>GraphDB %28Dependencies\GraphDB\GraphDB%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GraphDB\GraphQL\GraphQL.csproj">
       <Project>{B7A88819-4276-495A-A7E9-E6947C936397}</Project>
@@ -201,9 +203,9 @@
       <Project>{DDC48D4C-6885-462C-B57A-216658EB94AE}</Project>
       <Name>Networking</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Lib\sonesCLI\sonesCLI.csproj">
-      <Project>{5EB964C0-FF26-4B37-99A6-C1D40644E33C}</Project>
-      <Name>sonesCLI</Name>
+    <ProjectReference Include="..\GraphDSCLI\GraphDSCLI.csproj">
+      <Project>{0A4A8E31-9ED5-4581-932F-62BAF97C36DD}</Project>
+      <Name>GraphDSCLI</Name>
     </ProjectReference>
     <ProjectReference Include="..\GraphDSSharp\GraphDSSharp.csproj">
       <Project>{5C3DCC64-FBBE-4050-A7F5-17F52D85DC8F}</Project>
@@ -372,10 +374,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="GEXF\" />
-    <Folder Include="WebShell\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

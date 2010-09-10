@@ -82,8 +82,6 @@
     <Compile Include="SubscriptionDispatcher.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AdditionalLicenses.txt" />
-    <Content Include="license.txt" />
     <Content Include="Readme.txt" />
   </ItemGroup>
   <ItemGroup>

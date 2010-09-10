@@ -1,13 +1,13 @@
-ï»¿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,13 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-
-/* <id Name=â€sones GraphDB â€“ db object cacheâ€ />
- * <copyright file=â€DBObjectCache.csâ€
- *            company=â€sones GmbHâ€>
- * Copyright (c) sones GmbH 2007-2010
+/* <id Name=”GraphDB – db object cache” />
+ * <copyright file=”DBObjectCache.cs”
+ *            company=”sones GmbH”>
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Henning Rauch</developer>
  * <summary>The DBObject cache is the interface to the DBObjects stored in GraphFS. 
@@ -34,14 +34,15 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
-using sones.GraphDB.Structures.ExpressionGraph;
 using sones.GraphDB.Structures.EdgeTypes;
+using sones.GraphDB.Structures.ExpressionGraph;
 using sones.GraphDB.TypeManagement;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
-using System.Threading;
+using sones.Lib;
 
 #endregion
 
@@ -214,8 +215,10 @@ namespace sones.GraphDB.ObjectManagement
             if (myLevelKey.Level == 0)
             {
                 typeOfDBObjects = _typeManager.GetTypeByUUID(myLevelKey.Edges[0].TypeUUID);
+                
+                var subTypes = _typeManager.GetAllSubtypes(typeOfDBObjects, true);
 
-                if (!typeOfDBObjects.IsAbstract)
+                if (subTypes.IsNullOrEmpty())
                 {
                     var idx = typeOfDBObjects.GetUUIDIndex(dbContext.DBTypeManager);
                     var currentIndexType = dbContext.DBTypeManager.GetTypeByUUID(idx.IndexRelatedTypeUUID);
@@ -227,15 +230,18 @@ namespace sones.GraphDB.ObjectManagement
                 }
                 else
                 {
-                    foreach (var aType in _typeManager.GetAllSubtypes(typeOfDBObjects, false))
+                    foreach (var aType in subTypes)
                     {
-                        var idx = aType.GetUUIDIndex(dbContext.DBTypeManager);
-                        var currentIndexType = dbContext.DBTypeManager.GetTypeByUUID(idx.IndexRelatedTypeUUID);
-
-                        foreach (var aDBO in LoadListOfDBObjectStreams(aType, idx.GetAllUUIDs(currentIndexType, dbContext)))
+                        if (aType.AttributeIndices.Count != 0)
                         {
-                            yield return aDBO;
-                        }
+                            var idx = aType.GetUUIDIndex(dbContext.DBTypeManager);
+                            var currentIndexType = dbContext.DBTypeManager.GetTypeByUUID(idx.IndexRelatedTypeUUID);
+
+                            foreach (var aDBO in LoadListOfDBObjectStreams(aType, idx.GetAllUUIDs(currentIndexType, dbContext)))
+                            {
+                                yield return aDBO;
+                            }
+                        }                        
                     }
                 }
             }
@@ -484,7 +490,7 @@ namespace sones.GraphDB.ObjectManagement
 
         #endregion
 
-        #region misc
+        #region misc        
 
         private IEnumerable<Exceptional<DBObjectStream>> GetReferenceObjects(DBObjectStream myStartingDBObject, TypeAttribute interestingAttributeEdge, GraphDBType myStartingDBObjectType, DBTypeManager myDBTypeManager)
         {

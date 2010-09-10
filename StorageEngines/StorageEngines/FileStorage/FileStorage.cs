@@ -1,4 +1,24 @@
 /*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * FileStorage
  * (c) Achim Friedland, 2008 - 2010
  */
@@ -273,8 +293,14 @@ namespace sones.StorageEngines.FileStorage
                         _buffer[i] = 0xAA;
                     }
 
-                    var _NumberOfBlocks = myNumberOfBytes / (UInt64) myBufferSize;
-                    var _RemainingBytes = myNumberOfBytes % (UInt64) myBufferSize;
+
+                    UInt64 _NumberOfBlocks = 0;
+                    UInt64 _RemainingBytes = 0;
+                    if (myBufferSize != 0)
+                    {
+                        _NumberOfBlocks = myNumberOfBytes / (UInt64)myBufferSize;
+                        _RemainingBytes = myNumberOfBytes % (UInt64) myBufferSize;
+                    }
 
                     try
                     {

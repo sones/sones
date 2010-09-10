@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /* 
  * GraphFSInterface - ObjectStream
- * Achim Friedland, 2008 - 2010
+ * (c) Achim Friedland, 2008 - 2010
  */
 
 #region Usings
@@ -158,7 +158,7 @@ namespace sones.GraphFS.DataStructures
         public ObjectStream()
         {
 
-            _ObjectPath                 = "";
+            _ObjectPath                 = null;
             _ObjectName                 = "";
             _ObjectLocation             = null;
 
@@ -478,10 +478,10 @@ namespace sones.GraphFS.DataStructures
         #region ObjectPath
 
         [NonSerialized]
-        private String _ObjectPath;
+        private ObjectLocation _ObjectPath;
 
         [NotIFastSerialized]
-        public String ObjectPath
+        ObjectLocation IObjectLocation.ObjectPath
         {
 
             get
@@ -489,11 +489,11 @@ namespace sones.GraphFS.DataStructures
                 return _ObjectPath;
             }
 
-            set
-            {
-                _ObjectPath = value;
-                _ObjectLocation = new ObjectLocation(DirectoryHelper.Combine(_ObjectPath, _ObjectName));
-            }
+            //set
+            //{
+            //    _ObjectPath     = value;
+            //    _ObjectLocation = new ObjectLocation(_ObjectPath, _ObjectName);
+            //}
 
         }
 
@@ -505,7 +505,7 @@ namespace sones.GraphFS.DataStructures
         private String _ObjectName;
 
         [NotIFastSerialized]
-        public String ObjectName
+        String IObjectLocation.ObjectName
         {
 
             get
@@ -513,11 +513,11 @@ namespace sones.GraphFS.DataStructures
                 return _ObjectName;
             }
 
-            set
-            {
-                _ObjectName = value;
-                _ObjectLocation = new ObjectLocation(DirectoryHelper.Combine(_ObjectPath, _ObjectName));
-            }
+            //set
+            //{
+            //    _ObjectName = value;
+            //    _ObjectLocation = new ObjectLocation(_ObjectPath, _ObjectName);
+            //}
 
         }
 
@@ -529,7 +529,7 @@ namespace sones.GraphFS.DataStructures
         private ObjectLocation _ObjectLocation;
 
         [NotIFastSerialized]
-        public ObjectLocation ObjectLocation
+        ObjectLocation IObjectLocation.ObjectLocation
         {
 
             get
@@ -537,13 +537,12 @@ namespace sones.GraphFS.DataStructures
                 return _ObjectLocation;
             }
 
-            set
-            {
-                _ObjectLocation = value;
-                _ObjectPath = _ObjectLocation.Path;
-                _ObjectName = _ObjectLocation.Name;
-
-            }
+            //set
+            //{
+            //    _ObjectLocation = value;
+            //    _ObjectPath = _ObjectLocation.Path;
+            //    _ObjectName = _ObjectLocation.Name;
+            //}
 
         }
 
@@ -576,7 +575,7 @@ namespace sones.GraphFS.DataStructures
 
         #region ObjectExists(myObjectName)
 
-        public Trinary ObjectExists(String myObjectName)
+        Trinary IDirectoryListing.ObjectExists(String myObjectName)
         {
 
             if (myObjectName.Equals(FSConstants.DotLink))
@@ -600,7 +599,7 @@ namespace sones.GraphFS.DataStructures
 
         #region ObjectStreamExists(myObjectName, myObjectStream)
 
-        public Trinary ObjectStreamExists(String myObjectName, String myObjectStream)
+        Trinary IDirectoryListing.ObjectStreamExists(String myObjectName, String myObjectStream)
         {
 
             if (myObjectName.Equals(FSConstants.DotLink) && myObjectStream == FSConstants.VIRTUALDIRECTORY)
@@ -624,7 +623,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetObjectStreamsList(myObjectName)
 
-        public IEnumerable<String> GetObjectStreamsList(String myObjectName)
+        IEnumerable<String> IDirectoryListing.GetObjectStreamsList(String myObjectName)
         {
 
             if (myObjectName.Equals(FSConstants.DotLink))
@@ -648,7 +647,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetObjectINodePositions(String myObjectName)
 
-        public IEnumerable<ExtendedPosition> GetObjectINodePositions(String myObjectName)
+        IEnumerable<ExtendedPosition> IDirectoryListing.GetObjectINodePositions(String myObjectName)
         {
             throw new NotImplementedException();
         }
@@ -657,7 +656,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetInlineData(myObjectName)
 
-        public Byte[] GetInlineData(String myObjectName)
+        Byte[] IDirectoryListing.GetInlineData(String myObjectName)
         {
             throw new NotImplementedException();
         }
@@ -666,7 +665,7 @@ namespace sones.GraphFS.DataStructures
 
         #region hasInlineData(myObjectName)
 
-        public Trinary hasInlineData(String myObjectName)
+        Trinary IDirectoryListing.hasInlineData(String myObjectName)
         {
             throw new NotImplementedException();
         }
@@ -675,7 +674,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetSymlink(myObjectName)
 
-        public ObjectLocation GetSymlink(String myObjectName)
+        ObjectLocation IDirectoryListing.GetSymlink(String myObjectName)
         {
 
             if (myObjectName.Equals(FSConstants.DotDefaultEditionSymlink))
@@ -689,7 +688,7 @@ namespace sones.GraphFS.DataStructures
 
         #region isSymlink(myObjectName)
 
-        public Trinary isSymlink(String myObjectName)
+        Trinary IDirectoryListing.isSymlink(String myObjectName)
         {
 
             if (myObjectName.Equals(FSConstants.DotDefaultEditionSymlink))
@@ -703,15 +702,15 @@ namespace sones.GraphFS.DataStructures
 
         #region GetDirectoryListing()
 
-        public IEnumerable<String> GetDirectoryListing()
+        IEnumerable<String> IDirectoryListing.GetDirectoryListing()
         {
 
-            List<String> _DirectoryListing = new List<String>();
+            var _DirectoryListing = new List<String>();
 
             _DirectoryListing.Add(".");
             _DirectoryListing.Add("..");
 
-            foreach (String _DirectoryEntry in _ObjectEditions.Keys)
+            foreach (var _DirectoryEntry in _ObjectEditions.Keys)
                 _DirectoryListing.Add(_DirectoryEntry);
 
             _DirectoryListing.Add(FSConstants.DotDefaultEditionSymlink);
@@ -724,7 +723,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetDirectoryListing(myFunc)
 
-        public IEnumerable<String> GetDirectoryListing(Func<KeyValuePair<String, DirectoryEntry>, Boolean> myFunc)
+        IEnumerable<String> IDirectoryListing.GetDirectoryListing(Func<KeyValuePair<String, DirectoryEntry>, Boolean> myFunc)
         {
             throw new NotImplementedException();
         }
@@ -733,7 +732,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetDirectoryListing(myName, myIgnoreName, myRegExpr, myObjectStreams, myIgnoreObjectStreams)
 
-        public IEnumerable<String> GetDirectoryListing(String[] myName, String[] myIgnoreName, String[] myRegExpr, List<String> myObjectStream, List<String> myIgnoreObjectStreamTypes)
+        IEnumerable<String> IDirectoryListing.GetDirectoryListing(String[] myName, String[] myIgnoreName, String[] myRegExpr, List<String> myObjectStream, List<String> myIgnoreObjectStreamTypes)
         {
             throw new NotImplementedException();
         }
@@ -742,7 +741,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetExtendedDirectoryListing()
 
-        public IEnumerable<DirectoryEntryInformation> GetExtendedDirectoryListing()
+        IEnumerable<DirectoryEntryInformation> IDirectoryListing.GetExtendedDirectoryListing()
         {
 
             var _Output           = new List<DirectoryEntryInformation>();
@@ -775,7 +774,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetExtendedDirectoryListing(myFunc)
 
-        public IEnumerable<DirectoryEntryInformation> GetExtendedDirectoryListing(Func<KeyValuePair<String, DirectoryEntry>, Boolean> myFunc)
+        IEnumerable<DirectoryEntryInformation> IDirectoryListing.GetExtendedDirectoryListing(Func<KeyValuePair<String, DirectoryEntry>, Boolean> myFunc)
         {
             throw new NotImplementedException();
         }
@@ -784,7 +783,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetExtendedDirectoryListing(myName, myIgnoreName, myRegExpr, myObjectStreams, myIgnoreObjectStreams)
 
-        public IEnumerable<DirectoryEntryInformation> GetExtendedDirectoryListing(String[] myName, String[] myIgnoreName, String[] myRegExpr, List<String> myObjectStreams, List<String> myIgnoreObjectStreamTypes)
+        IEnumerable<DirectoryEntryInformation> IDirectoryListing.GetExtendedDirectoryListing(String[] myName, String[] myIgnoreName, String[] myRegExpr, List<String> myObjectStreams, List<String> myIgnoreObjectStreamTypes)
         {
             throw new NotImplementedException();
         }
@@ -793,28 +792,28 @@ namespace sones.GraphFS.DataStructures
 
         #region DirCount()
 
-        public UInt64 DirCount
+        UInt64 IDirectoryListing.DirCount
         {
             get
             {
-                return (UInt64)GetDirectoryListing().LongCount();
+                return (UInt64)_ObjectEditions.Keys.LongCount() + 3;
             }
         }
 
         #endregion
 
 
-        public NHIDirectoryObject NotificationHandling
+        NHIDirectoryObject IDirectoryListing.NotificationHandling
         {
             get { throw new NotImplementedException(); }
         }
 
-        public void SubscribeNotification(NHIDirectoryObject myNotificationHandling)
+        void IDirectoryListing.SubscribeNotification(NHIDirectoryObject myNotificationHandling)
         {
             throw new NotImplementedException();
         }
 
-        public void UnsubscribeNotification(NHIDirectoryObject myNotificationHandling)
+        void IDirectoryListing.UnsubscribeNotification(NHIDirectoryObject myNotificationHandling)
         {
             throw new NotImplementedException();
         }
@@ -822,10 +821,10 @@ namespace sones.GraphFS.DataStructures
 
         #region GetDirectoryEntry(myObjectName)
 
-        public DirectoryEntry GetDirectoryEntry(String myObjectName)
+        DirectoryEntry IDirectoryListing.GetDirectoryEntry(String myObjectName)
         {
             
-            foreach (String _DirectoryEntry in _ObjectEditions.Keys)
+            foreach (var _DirectoryEntry in _ObjectEditions.Keys)
                 if (_DirectoryEntry.Equals(myObjectName))
                     return new DirectoryEntry { Virtual = new HashSet<String>{ FSConstants.VIRTUALDIRECTORY }};
 

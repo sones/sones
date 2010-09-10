@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,13 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-
-/* <id name="GraphDB – AttributeIndex" />
+/* <id name="GraphDB � AttributeIndex" />
  * <copyright file="AttributeIndex.cs"
  *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Achim Friedland</developer>
  * <developer>Henning Rauch</developer>
@@ -32,19 +32,18 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.BasicTypes;
-using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
+
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Objects;
-using sones.Lib.DataStructures;
 using sones.Lib.DataStructures.Indices;
 using sones.Lib.ErrorHandling;
-using System.Linq;
+using sones.GraphDB.TypeManagement.BasicTypes;
 
 #endregion
 
@@ -109,8 +108,9 @@ namespace sones.GraphDB.Indices
         /// <param name="myAttributes">The list of attributes that is needed for the creation of a IndexKeyDefinition</param>
         /// <param name="myIndexType">The IndexType e.g. HashMap, BTree of this AttributeIndex</param>
         /// <param name="correspondingType">The corresponding type of this index, used to get the file system location</param>
+        /// <param name="myFileSystemLocation">The location oif the index. If null it will be generated based on the <paramref name="correspondingType"/>.</param>
         public AttributeIndex(String myIndexName, String myIndexEdition, List<AttributeUUID> myAttributes, GraphDBType correspondingType, String myIndexType = null)
-            :this(myIndexName, new IndexKeyDefinition(myAttributes), correspondingType, myIndexType, myIndexEdition)
+            : this(myIndexName, new IndexKeyDefinition(myAttributes), correspondingType, myIndexType, myIndexEdition)
         { }
 
         public AttributeIndex(string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, string indexType = null, string indexEdition = DBConstants.DEFAULTINDEX)
@@ -164,6 +164,7 @@ namespace sones.GraphDB.Indices
             #endregion
 
             FileSystemLocation = (correspondingType.ObjectLocation + "Indices") + (IndexName + "#" + IndexEdition);
+           
         }
 
         #endregion
@@ -575,7 +576,7 @@ namespace sones.GraphDB.Indices
 
         #region Clear
 
-        public override Exceptional Clear(DBIndexManager indexManager)
+        public override Exceptional ClearAndRemoveFromDisc(DBIndexManager indexManager)
         {
             _indexReference = null;
             return indexManager.RemoveDBIndex(FileSystemLocation);

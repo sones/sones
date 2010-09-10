@@ -1,22 +1,36 @@
-﻿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * Henning Rauch, Stefan Licht, 2009 - 2010
  */
 
 #region Usings
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.Exceptions;
-using sones.Lib;
-using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.BasicTypes;
-using sones.GraphDB.Structures;
-using sones.Lib.ErrorHandling;
-using sones.GraphDB.Errors;
 using System.Diagnostics;
+using sones.GraphDB.Errors;
+using sones.GraphDB.Exceptions;
+using sones.GraphDB.TypeManagement.BasicTypes;
+
+using sones.Lib.ErrorHandling;
 
 #endregion
 
@@ -30,13 +44,13 @@ namespace sones.GraphDB.TypeManagement
     public class GraphDBTypeMapper
     {
 
-        public static TypesOfOperatorResult GraphInteger          = TypesOfOperatorResult.Int64;
-        public static TypesOfOperatorResult GraphInt32            = TypesOfOperatorResult.Int32;
-        public static TypesOfOperatorResult GraphUnsignedInteger  = TypesOfOperatorResult.UInt64;
-        public static TypesOfOperatorResult GraphString           = TypesOfOperatorResult.String;
-        public static TypesOfOperatorResult GraphDouble           = TypesOfOperatorResult.Double;
-        public static TypesOfOperatorResult GraphDateTime         = TypesOfOperatorResult.DateTime;
-        public static TypesOfOperatorResult GraphBoolean          = TypesOfOperatorResult.Boolean;
+        public static BasicType GraphInteger          = BasicType.Int64;
+        public static BasicType GraphInt32            = BasicType.Int32;
+        public static BasicType GraphUnsignedInteger  = BasicType.UInt64;
+        public static BasicType GraphString           = BasicType.String;
+        public static BasicType GraphDouble           = BasicType.Double;
+        public static BasicType GraphDateTime         = BasicType.DateTime;
+        public static BasicType GraphBoolean          = BasicType.Boolean;
 
         public static Boolean IsBasicType(String typeName)
         {
@@ -88,7 +102,7 @@ namespace sones.GraphDB.TypeManagement
         /// <param name="typeOfAttributeValue">Kind of attribute value.</param>
         /// <param name="typeManager">The TypeManager of the GraphDB</param>
         /// <returns></returns>
-        public static bool IsAValidAttributeType(GraphDBType aGraphType, TypesOfOperatorResult typeOfAttributeValue, DBContext typeManager, Object myValue)
+        public static bool IsAValidAttributeType(GraphDBType aGraphType, BasicType typeOfAttributeValue, DBContext typeManager, Object myValue)
         {
 
             #region Data
@@ -101,7 +115,7 @@ namespace sones.GraphDB.TypeManagement
 
             #region non-list type
 
-            if (typeOfAttributeValue == TypesOfOperatorResult.Unknown)
+            if (typeOfAttributeValue == BasicType.Unknown)
             {
                 isValid = GraphDBTypeMapper.GetGraphObjectFromTypeName(aGraphType.Name).IsValidValue(myValue);
             }
@@ -118,7 +132,7 @@ namespace sones.GraphDB.TypeManagement
 
         }
 
-        public static TypesOfOperatorResult ConvertCSharp2Graph(Type myType)
+        public static BasicType ConvertCSharp2Graph(Type myType)
         {
 
             if (myType == typeof(Int16))
@@ -142,26 +156,26 @@ namespace sones.GraphDB.TypeManagement
             if (myType == typeof(DateTime))
                 return GraphDateTime;
 
-            return TypesOfOperatorResult.Unknown;
+            return BasicType.Unknown;
 
         }
-        
-        public static TypesOfOperatorResult ConvertGraph2CSharp(TypeAttribute attributeDefinition, GraphDBType typeOfAttribute)
+
+        public static BasicType ConvertGraph2CSharp(TypeAttribute attributeDefinition, GraphDBType typeOfAttribute)
         {
 
             if (typeOfAttribute.IsUserDefined)
             {
                 if (attributeDefinition.KindOfType != KindsOfType.SetOfReferences && attributeDefinition.KindOfType != KindsOfType.SingleReference)
                     throw new GraphDBException(new Error_ListAttributeNotAllowed(typeOfAttribute.Name));
-                
-                return TypesOfOperatorResult.Reference;
+
+                return BasicType.Reference;
             }
 
             else
             {
 
                 if (attributeDefinition.KindOfType == KindsOfType.ListOfNoneReferences || attributeDefinition.KindOfType == KindsOfType.SetOfNoneReferences)
-                    return TypesOfOperatorResult.SetOfDBObjects;
+                    return BasicType.SetOfDBObjects;
 
                 switch (typeOfAttribute.Name)
                 {
@@ -188,13 +202,13 @@ namespace sones.GraphDB.TypeManagement
                         return GraphBoolean;
 
                     case "NumberLiteral":
-                        return TypesOfOperatorResult.Unknown;
+                        return BasicType.Unknown;
 
                     case "StringLiteral":
-                        return TypesOfOperatorResult.Unknown;
+                        return BasicType.Unknown;
 
                     case DBConstants.DBObject:
-                        return TypesOfOperatorResult.Reference;
+                        return BasicType.Reference;
 
                     default:
                         throw new GraphDBException(new Error_TypeDoesNotExist(typeOfAttribute.Name));
@@ -205,7 +219,7 @@ namespace sones.GraphDB.TypeManagement
 
         }
 
-        public static TypesOfOperatorResult ConvertGraph2CSharp(String typeName)
+        public static BasicType ConvertGraph2CSharp(String typeName)
         {
             if (!IsBasicType(typeName))
             {
@@ -215,14 +229,14 @@ namespace sones.GraphDB.TypeManagement
                     throw new GraphDBException(new Error_TypeDoesNotExist(typeName));
                 }
                 */
-                return TypesOfOperatorResult.NotABasicType;
+                return BasicType.NotABasicType;
             }
 
             else
             {
 
                 if (typeName.Contains(DBConstants.LIST_PREFIX))
-                    return TypesOfOperatorResult.SetOfDBObjects;
+                    return BasicType.SetOfDBObjects;
 
                 switch (typeName)
                 {
@@ -250,7 +264,7 @@ namespace sones.GraphDB.TypeManagement
 
                     case "NumberLiteral":
                     case "StringLiteral":
-                        return TypesOfOperatorResult.Unknown;
+                        return BasicType.Unknown;
                     
                     default:
                         throw new GraphDBException(new Error_TypeDoesNotExist(typeName));
@@ -288,7 +302,7 @@ namespace sones.GraphDB.TypeManagement
         }
 
 
-        public static ADBBaseObject GetEmptyGraphObjectFromType(TypesOfOperatorResult myTypeOfValue)
+        public static ADBBaseObject GetEmptyGraphObjectFromType(BasicType myTypeOfValue)
         {
             return GetGraphObjectFromType(myTypeOfValue, null);
         }
@@ -372,66 +386,66 @@ namespace sones.GraphDB.TypeManagement
             return GetGraphObjectFromType(ConvertCSharp2Graph(myValue.GetType()), myValue);
         }
 
-        public static ADBBaseObject GetGraphObjectFromType(TypesOfOperatorResult myTypeOfValue, Object myValue)
+        public static ADBBaseObject GetGraphObjectFromType(BasicType myTypeOfValue, Object myValue)
         {
 
             switch (myTypeOfValue)
             {
 
-                case TypesOfOperatorResult.Double:
+                case BasicType.Double:
                     if (myValue == null)
                         return new DBDouble();
                     else
                         return new DBDouble(myValue);
 
-                case TypesOfOperatorResult.UInt64:
+                case BasicType.UInt64:
                     if (myValue == null)
                         return new DBUInt64();
                     else
                         return new DBUInt64(myValue);
 
-                case TypesOfOperatorResult.Int64:
+                case BasicType.Int64:
                     if (myValue == null)
                         return new DBInt64();
                     else
                         return new DBInt64(myValue);
 
-                case TypesOfOperatorResult.Int32:
+                case BasicType.Int32:
                     if (myValue == null)
                         return new DBInt32();
                     else
                         return new DBInt32(myValue);
 
-                case TypesOfOperatorResult.String:
+                case BasicType.String:
                     if (myValue == null)
                         return new DBString();
                     else
                         return new DBString(myValue);
 
-                case TypesOfOperatorResult.DateTime:
+                case BasicType.DateTime:
                     if (myValue == null)
                         return new DBDateTime();
                     else
                         return new DBDateTime(myValue);
 
-                case TypesOfOperatorResult.Boolean:
+                case BasicType.Boolean:
                     if (myValue == null)
                         return new DBBoolean();
                     else
                         return new DBBoolean(myValue);
 
-                case TypesOfOperatorResult.SetOfDBObjects:
+                case BasicType.SetOfDBObjects:
                     if (myValue != null)
                         return new DBEdge(myValue);
                     return new DBEdge();
 
-                case TypesOfOperatorResult.Unknown:
+                case BasicType.Unknown:
                     if (myValue is String)
                         return new DBString(myValue);
                     return new DBNumber(myValue);
 
-                case TypesOfOperatorResult.NotABasicType:
-                case TypesOfOperatorResult.Reference:
+                case BasicType.NotABasicType:
+                case BasicType.Reference:
 
                     if (myValue != null)
                     {
@@ -448,7 +462,7 @@ namespace sones.GraphDB.TypeManagement
                     else
                     {
 
-                        if (myTypeOfValue == TypesOfOperatorResult.Reference)
+                        if (myTypeOfValue == BasicType.Reference)
                             return new DBReference();
 
                         return null;
@@ -471,7 +485,7 @@ namespace sones.GraphDB.TypeManagement
 
             #region Both are not unknown
 
-            if ((myDBBaseObjectA.Type != TypesOfOperatorResult.Unknown) && (myDBBaseObjectB.Type != TypesOfOperatorResult.Unknown))
+            if ((myDBBaseObjectA.Type != BasicType.Unknown) && (myDBBaseObjectB.Type != BasicType.Unknown))
             {
 
                 #region Types matching, we can leave
@@ -580,17 +594,17 @@ namespace sones.GraphDB.TypeManagement
 
             #region only one is unknown 
 
-            else if (!(myDBBaseObjectA.Type == TypesOfOperatorResult.Unknown && myDBBaseObjectB.Type == TypesOfOperatorResult.Unknown))
+            else if (!(myDBBaseObjectA.Type == BasicType.Unknown && myDBBaseObjectB.Type == BasicType.Unknown))
             {
 
                 #region myDBBaseObjectA is unknown - try to use the type of myDBBaseObjectB
 
-                if (myDBBaseObjectA.Type == TypesOfOperatorResult.Unknown)
+                if (myDBBaseObjectA.Type == BasicType.Unknown)
                 {
 
                     // avoid changing a Double to Int64
                     if (myDBBaseObjectA is DBNumber
-                        && (myDBBaseObjectB.Type == TypesOfOperatorResult.Int64 || myDBBaseObjectB.Type == TypesOfOperatorResult.UInt64))
+                        && (myDBBaseObjectB.Type == BasicType.Int64 || myDBBaseObjectB.Type == BasicType.UInt64))
                     {
                         if (myDBBaseObjectA.Value is Double && DBDouble.IsValid(myDBBaseObjectB.Value))
                         {
@@ -615,12 +629,12 @@ namespace sones.GraphDB.TypeManagement
 
                 #region myDBBaseObjectB is unknown - try to use the type of myDBBaseObjectA
 
-                else if (myDBBaseObjectB.Type == TypesOfOperatorResult.Unknown)
+                else if (myDBBaseObjectB.Type == BasicType.Unknown)
                 {
 
                     // avoid changing a Double to Int64
                     if (myDBBaseObjectB is DBNumber
-                        && (myDBBaseObjectA.Type == TypesOfOperatorResult.Int64 || myDBBaseObjectA.Type == TypesOfOperatorResult.UInt64))
+                        && (myDBBaseObjectA.Type == BasicType.Int64 || myDBBaseObjectA.Type == BasicType.UInt64))
                     {
                         if (myDBBaseObjectB.Value is Double && DBDouble.IsValid(myDBBaseObjectA.Value))
                         {
@@ -742,7 +756,7 @@ namespace sones.GraphDB.TypeManagement
 
             #region Both are not unknown
 
-            if ((myDBBaseObjectA.Type != TypesOfOperatorResult.Unknown) && (myDBBaseObjectB.Type != TypesOfOperatorResult.Unknown))
+            if ((myDBBaseObjectA.Type != BasicType.Unknown) && (myDBBaseObjectB.Type != BasicType.Unknown))
             {
 
                 #region Types matching, we can leave
@@ -852,19 +866,19 @@ namespace sones.GraphDB.TypeManagement
 
             #region only one is unknown
 
-            else if (!(myDBBaseObjectA.Type == TypesOfOperatorResult.Unknown && myDBBaseObjectB.Type == TypesOfOperatorResult.Unknown))
+            else if (!(myDBBaseObjectA.Type == BasicType.Unknown && myDBBaseObjectB.Type == BasicType.Unknown))
             {
 
                 #region myDBBaseObjectA is unknown - try to use the type of myDBBaseObjectB
 
-                if (myDBBaseObjectA.Type == TypesOfOperatorResult.Unknown)
+                if (myDBBaseObjectA.Type == BasicType.Unknown)
                 {
 
                     try
                     {
                         // avaoid changing a Double to Int64
                         if (myDBBaseObjectA is DBNumber
-                            && (myDBBaseObjectB.Type == TypesOfOperatorResult.Int64 || myDBBaseObjectB.Type == TypesOfOperatorResult.UInt64))
+                            && (myDBBaseObjectB.Type == BasicType.Int64 || myDBBaseObjectB.Type == BasicType.UInt64))
                         {
                             if (myDBBaseObjectA.Value is Double && DBDouble.IsValid(myDBBaseObjectB.Value))
                             {
@@ -889,7 +903,7 @@ namespace sones.GraphDB.TypeManagement
 
                 #region myDBBaseObjectB is unknown - try to use the type of myDBBaseObjectA
 
-                else if (myDBBaseObjectB.Type == TypesOfOperatorResult.Unknown)
+                else if (myDBBaseObjectB.Type == BasicType.Unknown)
                 {
                     try
                     {

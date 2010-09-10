@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-/* <id name="GraphDB – WeightedSet<T>" />
+/* <id name="GraphDB � WeightedSet<T>" />
  * <copyright file="WeightedSet.cs"
  *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Stefan Licht</developer>
  * <summary>This datastructure is an implementation of an weighted set, ...</summary>
@@ -29,16 +30,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
-using sones.Lib.Serializer;
-using sones.Lib.NewFastSerializer;
-using sones.Lib.DataStructures;
-
 using sones.GraphDB.TypeManagement.BasicTypes;
-using sones.GraphDB.TypeManagement;
-using sones.GraphDB.Exceptions;
-using sones.GraphDB.Errors;
+using sones.Lib.DataStructures;
+using sones.Lib.NewFastSerializer;
+using sones.Lib.Serializer;
 
 namespace sones.GraphDB.Structures
 {
@@ -518,8 +513,7 @@ namespace sones.GraphDB.Structures
             #region Write
 
             mySerializationWriter.WriteByte((Byte)_SortDirection);
-            this._DefaultWeight.ID.Serialize(ref mySerializationWriter);
-            _DefaultWeight.Serialize(ref mySerializationWriter);
+            mySerializationWriter.WriteObject(_DefaultWeight);
 
             mySerializationWriter.WriteUInt32((UInt32)_WeightedListEntries.Count);
 
@@ -547,10 +541,7 @@ namespace sones.GraphDB.Structures
 
             _WeightedListEntries = new Dictionary<T, DBNumber>();
 
-            TypeUUID typeID = new TypeUUID();
-            typeID.Deserialize(ref mySerializationReader);
-            _DefaultWeight = (DBNumber)GraphDBTypeMapper.GetADBBaseObjectFromUUID(typeID, 0);
-            _DefaultWeight.Deserialize(ref mySerializationReader);
+            _DefaultWeight = (DBNumber)mySerializationReader.ReadObject();
 
             UInt32 _WeightedListEntriesCount = mySerializationReader.ReadUInt32();
 

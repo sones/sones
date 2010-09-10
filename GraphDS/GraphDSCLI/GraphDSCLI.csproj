@@ -71,32 +71,79 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AllGraphDSCLICommands.cs" />
-    <Compile Include="DSCLICommands\DSCLI_DBQUERY.cs" />
-    <Compile Include="DSCLICommands\DSCLI_DSINFO.cs" />
+    <Compile Include="AcInformation.cs" />
+    <Compile Include="GraphDSCLI\AllGraphDSCLICommands.cs" />
+    <Compile Include="AllCLIAutocompletion\AllCLIAutocompletions.cs" />
+    <Compile Include="AllCLIAutocompletion\InBuildAutocompletions\InBuildAutocompletions.cs" />
+    <Compile Include="AllCLIAutocompletion\InBuildAutocompletions\StringLiteral_ExternalEntry.cs" />
+    <Compile Include="AllCLICommands\AbstractCLIOption.cs" />
+    <Compile Include="AllCLICommands\AllCLICommands.cs" />
+    <Compile Include="AllCLICommands\InBuildCommands\AllInBuildCLICommands.cs" />
+    <Compile Include="AllCLICommands\InBuildCommands\CLI_EXIT.cs" />
+    <Compile Include="AllCLICommands\InBuildCommands\CLI_PANIC.cs" />
+    <Compile Include="AllCLICommands\InBuildCommands\CLI_QUIT.cs" />
+    <Compile Include="AllCLICommands\InBuildCommands\CLI_SAVEHISTORY.cs" />
+    <Compile Include="AllCLICommands\InBuildCommands\CLI_USEHISTORY.cs" />
+    <Compile Include="CLITelnetDaemon.cs" />
+    <Compile Include="CLIVersion.cs" />
+    <Compile Include="GraphDSCLI\DSCLI_DBQUERY.cs" />
+    <Compile Include="GraphDSCLI\DSCLI_DSINFO.cs" />
+    <Compile Include="GraphDBCLI\AdvancedDBCLICommands\AdvancedDBCLICommands.cs" />
+    <Compile Include="GraphDBCLI\AdvancedDBCLICommands\DBCLI_DBTYPEINFO.cs" />
+    <Compile Include="GraphDBCLI\AdvancedDBCLICommands\DBCLI_OM.cs" />
+    <Compile Include="GraphDBCLI\AllGraphDBCLICommands.cs" />
+    <Compile Include="GraphDBCLI\BasicDBCLICommands\BasicDBCLICommands.cs" />
+    <Compile Include="GraphDBCLI\BasicDBCLICommands\DBCLI_CREATE.cs" />
+    <Compile Include="GraphDBCLI\BasicDBCLICommands\DBCLI_EXECDBSCRIPT.cs" />
+    <Compile Include="GraphDBCLI\BasicDBCLICommands\DBCLI_INSERT.cs" />
+    <Compile Include="GraphDBCLI\BasicDBCLICommands\DBCLI_LOCALE.cs" />
+    <Compile Include="GraphDBCLI\BasicDBCLICommands\DBCLI_GRAPHDB.cs" />
+    <Compile Include="GraphDBCLI\BasicDBCLICommands\DBCLI_UPDATE.cs" />
+    <Compile Include="GraphDBCLI\DBCLIAutocompletion\DBCLIAutocompletions.cs" />
+    <Compile Include="GraphDBCLI\DBCLIAutocompletion\StringLiteralPandoraType.cs" />
     <Compile Include="GraphDSExtensionsCLI.cs" />
+    <Compile Include="GraphFSCLI\AdvancedFSCLICommands\AdvancedFSCLICommands.cs" />
+    <Compile Include="GraphFSCLI\AdvancedFSCLICommands\FSCLI_CREATEFILE.cs" />
+    <Compile Include="GraphFSCLI\AdvancedFSCLICommands\FSCLI_ECHO.cs" />
+    <Compile Include="GraphFSCLI\AdvancedFSCLICommands\FSCLI_MKDIR.cs" />
+    <Compile Include="GraphFSCLI\AdvancedFSCLICommands\FSCLI_MKFS.cs" />
+    <Compile Include="GraphFSCLI\AdvancedFSCLICommands\FSCLI_MOUNT.cs" />
+    <Compile Include="GraphFSCLI\AdvancedFSCLICommands\FSCLI_NOTIFICATION.cs" />
+    <Compile Include="GraphFSCLI\AdvancedFSCLICommands\FSCLI_UNMOUNT.cs" />
+    <Compile Include="GraphFSCLI\AdvancedFSCLICommands\FSCLI_UNMOUNTALL.cs" />
+    <Compile Include="GraphFSCLI\AllGraphFSCLICommands.cs" />
+    <Compile Include="GraphFSCLI\BasicFSCLICommands\BasicFSCLICommands.cs" />
+    <Compile Include="GraphFSCLI\BasicFSCLICommands\FSCLI_CAT.cs" />
+    <Compile Include="GraphFSCLI\BasicFSCLICommands\FSCLI_CD.cs" />
+    <Compile Include="GraphFSCLI\BasicFSCLICommands\FSCLI_DF.cs" />
+    <Compile Include="GraphFSCLI\BasicFSCLICommands\FSCLI_DS.cs" />
+    <Compile Include="GraphFSCLI\BasicFSCLICommands\FSCLI_DU.cs" />
+    <Compile Include="GraphFSCLI\BasicFSCLICommands\FSCLI_LINK.cs" />
+    <Compile Include="GraphFSCLI\BasicFSCLICommands\FSCLI_LL.cs" />
+    <Compile Include="GraphFSCLI\BasicFSCLICommands\FSCLI_LS.cs" />
+    <Compile Include="GraphFSCLI\FSCLIAutocompletion\FSCLIAutocompletions.cs" />
+    <Compile Include="GraphFSCLI\FSCLIAutocompletion\StringLiteral_IPandoraFS.cs" />
+    <Compile Include="GraphFSCLI\ScriptingFSCLICommands\FSCLI_DIRECTORYEXISTS.cs" />
+    <Compile Include="GraphFSCLI\ScriptingFSCLICommands\FSCLI_FILEEXISTS.cs" />
+    <Compile Include="GraphFSCLI\ScriptingFSCLICommands\FSCLI_OBJECTEXISTS.cs" />
+    <Compile Include="GraphFSCLI\ScriptingFSCLICommands\FSCLI_SYSTEMMETADATAEXISTS.cs" />
+    <Compile Include="GraphFSCLI\ScriptingFSCLICommands\FSCLI_USERMETADATAEXISTS.cs" />
+    <Compile Include="GraphFSCLI\ScriptingFSCLICommands\ScriptingFSCLICommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="GraphCLI.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\GraphDB\GraphDBCLI\GraphDBCLI.csproj">
-      <Project>{849E73AE-BFB1-4CF2-9B8A-8F64C386A65F}</Project>
-      <Name>GraphDBCLI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\GraphDB\GraphDBInterface\GraphDBInterface.csproj">
       <Project>{72319FF7-E9D9-4AE9-AA0B-2E006442B1ED}</Project>
       <Name>GraphDBInterface</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GraphDB\GraphDB\GraphDB.csproj">
       <Project>{32A56958-2C05-44C6-B661-2A2C6610E073}</Project>
-      <Name>GraphDB</Name>
+      <Name>GraphDB %28Dependencies\GraphDB\GraphDB%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GraphDB\GraphQL\GraphQL.csproj">
       <Project>{B7A88819-4276-495A-A7E9-E6947C936397}</Project>
       <Name>GraphQL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GraphFS\GraphFSCLI\GraphFSCLI.csproj">
-      <Project>{89669EC0-286E-4ABC-980D-D991A3407666}</Project>
-      <Name>GraphFSCLI</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GraphFS\GraphFSInterface\GraphFSInterface.csproj">
       <Project>{B23FDA3D-8229-4CDD-91FD-9AFD7301D315}</Project>
@@ -117,10 +164,6 @@
     <ProjectReference Include="..\..\Lib\Lib\Lib.csproj">
       <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
       <Name>Lib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Lib\sonesCLI\sonesCLI.csproj">
-      <Project>{5EB964C0-FF26-4B37-99A6-C1D40644E33C}</Project>
-      <Name>sonesCLI</Name>
     </ProjectReference>
     <ProjectReference Include="..\GraphDSSharp\GraphDSSharp.csproj">
       <Project>{5C3DCC64-FBBE-4050-A7F5-17F52D85DC8F}</Project>
@@ -143,10 +186,6 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AdditionalLicenses.txt" />
-    <Content Include="license.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

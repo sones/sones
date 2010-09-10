@@ -1,13 +1,13 @@
-ï»¿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,11 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-/* <id name="sones GraphDB â€“ BreadthFirstSearch" />
+/* <id name="GraphDB – BreadthFirstSearch" />
  * <copyright file="BreadthFirstSearch.cs"
  *            company="sones GmbH">
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Martin Junghanns</developer>
  * <developer>Michael Woidak</developer>
@@ -79,25 +81,392 @@ using System.Linq;
 using System.Text;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.TypeManagement;
-//using sones.Lib.Frameworks.NLog;
 using sones.GraphDB.Structures.EdgeTypes;
-using GraphAlgorithms.PathAlgorithm.BFSTreeStructure;
+using sones.GraphAlgorithms.PathAlgorithm.BFSTreeStructure;
 using sones.Lib.DataStructures.Big;
 using sones.Lib.ErrorHandling;
 using sones.Lib.DataStructures.UUID;
 using sones.GraphFS.DataStructures;
+using sones.GraphDB;
 
-#endregion
+#endregion usings
 
-namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
+namespace sones.GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 {
     public class BreadthFirstSearch
     {
         //Logger
         //private static Logger //_Logger = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// Sucht im Graphen nach Knoten "myEnd" ausgehend vom Knoten "myStart", bis zur max. Tiefe "myMaxDepth".
+        /// </summary>
+        /// <param name="myTypeAttribute">Kante über die gesucht werden soll</param>
+        /// <param name="myDBContext"></param>
+        /// <param name="myStart">Startknoten</param>
+        /// <param name="myEnd">gesuchter Knoten</param>
+        /// <param name="myMaxDepth">max. Tiefe</param>
+        /// <returns>true wenn gesuchter Knoten min. 1 mal gefunden, false sonst</returns>
+        public bool Find(TypeAttribute myTypeAttribute, DBContext myDBContext, DBObjectStream myStart, DBObjectStream myEnd, byte myMaxDepth)
+        {
+            #region data
+            //queue for BFS
+            Queue<ObjectUUID> queue = new Queue<ObjectUUID>();
+
+            //Dictionary to store visited TreeNodes
+            BigHashSet<ObjectUUID> visitedNodes = new BigHashSet<ObjectUUID>();
+
+            //current depth
+            byte depth = 1;
+
+            //first node in path tree, the start of the select
+            ObjectUUID root = myStart.ObjectUUID;
+
+            //target node, the target of the select
+            ObjectUUID target = myEnd.ObjectUUID;
+
+            //dummy node to check in which level the BFS is
+            ObjectUUID dummy = null;
+
+            //enqueue first node to start the BFS
+            queue.Enqueue(root);
+            queue.Enqueue(dummy);
+
+            //add root to visitedNodes
+            visitedNodes.Add(root);
+
+            //holds the actual DBObject
+            Exceptional<DBObjectStream> currentDBObject;
+            #endregion data
+
+            #region BFS
+
+            #region validate root
+            //check if root has edge
+            var dbo = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), root);
+            if (dbo.Failed())
+            {
+                throw new NotImplementedException();
+            }
+
+            if (!dbo.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
+            {
+                return false;
+            }
+            #endregion validate root
+
+            //if there is more than one object in the queue and the actual depth is less than MaxDepth
+            while ((queue.Count > 1) && (depth <= myMaxDepth))
+            {
+                //get the first Object of the queue
+                ObjectUUID nodeOfQueue = queue.Dequeue();
+
+                #region check if nodeOfQueue is a dummy
+                //if nodeOfQueue is a dummy, this level is completely worked off
+                if (nodeOfQueue == null)
+                {
+                    depth++;
+
+                    queue.Enqueue(nodeOfQueue);
+
+                    continue;
+                }
+                #endregion check if current is a dummy
+
+                //load DBObject
+                currentDBObject = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), nodeOfQueue);
+                if (currentDBObject.Failed())
+                {
+                    throw new NotImplementedException();
+                }
+
+                if (currentDBObject.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
+                {
+                    #region EdgeType is ASetOfReferencesEdgeType
+                    if (myTypeAttribute.EdgeType is ASetOfReferencesEdgeType)
+                    {
+                        //get all referenced ObjectUUIDs using the given Edge                                                
+                        var objectUUIDs = (currentDBObject.Value.GetAttribute(myTypeAttribute.UUID) as ASetOfReferencesEdgeType).GetAllReferenceIDs();
+                        ObjectUUID currentNode;
+
+                        foreach (ObjectUUID obj in objectUUIDs)
+                        {
+                            #region obj is target
+                            //if the child is the target
+                            if (target.Equals(obj))
+                            {
+                                return true;
+                            }
+                            #endregion obj is target
+                            #region never seen before
+                            else if (!visitedNodes.Contains(obj))
+                            {
+                                //create new node and set nodeOfQueue as parent
+                                currentNode = new ObjectUUID(obj.ToString());
+
+                                //mark the node as visited
+                                visitedNodes.Add(currentNode);
+
+                                //put created node in queue
+                                queue.Enqueue(currentNode);
+                            }
+                            #endregion never seen before
+                        }
+                    }
+                    #endregion EdgeType is ASetOfReferencesEdgeType
+                    #region EdgeType is ASingleReferenceEdgeType
+                    else if (myTypeAttribute.EdgeType is ASingleReferenceEdgeType)
+                    {
+                        //get all referenced ObjectUUIDs using the given Edge                                                
+                        var objectUUIDs = (currentDBObject.Value.GetAttribute(myTypeAttribute.UUID) as ASingleReferenceEdgeType).GetAllReferenceIDs();
+                        ObjectUUID objectUUID = objectUUIDs.First<ObjectUUID>();
+                        ObjectUUID currentNode;
+
+                        #region obj is target
+                        //if the child is the target
+                        if (target.Equals(objectUUID))
+                        {
+                            return true;
+                        }
+                        #endregion obj is target
+                        #region never seen before
+                        else if (!visitedNodes.Contains(objectUUID))
+                        {
+                            //create new node and set nodeOfQueue as parent
+                            currentNode = new ObjectUUID(objectUUID.ToString());
+
+                            //mark the node as visited
+                            visitedNodes.Add(currentNode);
+
+                            //put created node in queue
+                            queue.Enqueue(currentNode);
+                        }
+                        #endregion never seen before
+                    }
+                    #endregion EdgeType is ASingleReferenceEdgeType
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+                }
+            }
+
+            #endregion BFS
+
+            return false;
+        }
+
+        /// <summary>
+        /// Sucht im Graphen nach Knoten "myEnd" ausgehend von der Knotenmenge "myEdge", bis zur max. Tiefe "myMaxDepth".
+        /// </summary>
+        /// <param name="myTypeAttribute">Kante über die gesucht werden soll</param>
+        /// <param name="myDBContext"></param>
+        /// <param name="myStart">Startknoten</param>
+        /// <param name="myEnd">gesuchter Knoten</param>
+        /// <param name="myEdge">Menge an Knoten, ausgehend vom Startknoten welche mittels einer Funktion eingeschränkt wurde</param>
+        /// <param name="myMaxDepth">max. Tiefe</param>
+        /// <returns>true wenn gesuchter Knoten min. 1 mal gefunden, false sonst</returns>
+        public bool Find(TypeAttribute myTypeAttribute, DBContext myDBContext, DBObjectStream myStart, DBObjectStream myEnd, IReferenceEdge myEdge, byte myMaxDepth)
+        {
+            #region data
+            //queue for BFS
+            Queue<ObjectUUID> queue = new Queue<ObjectUUID>();
+
+            //Dictionary to store visited TreeNodes
+            BigHashSet<ObjectUUID> visitedNodes = new BigHashSet<ObjectUUID>();
+
+            //current depth
+            byte depth = 2;
+
+            //first node in path tree, the start of the select
+            ObjectUUID root = myStart.ObjectUUID;
+
+            //constrainted set of nodes, of start node
+            HashSet<ObjectUUID> rootFriends = new HashSet<ObjectUUID>();
+
+            //target node, the target of the select
+            ObjectUUID target = myEnd.ObjectUUID;
+
+            //dummy node to check in which level the BFS is
+            ObjectUUID dummy = null;
+
+            //add root to visitedNodes
+            visitedNodes.Add(root);
+
+            //holds the actual DBObject
+            Exceptional<DBObjectStream> currentDBObject;
+            #endregion data
+
+            #region validate root
+            //check if root has edge
+            var dbo = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), root);
+            if (dbo.Failed())
+            {
+                throw new NotImplementedException();
+            }
+
+            if (!dbo.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
+            {
+                return false;
+            }
+            #endregion validate root
+
+            #region get friends of startElement and check if they are the target and valid
+            //instead of inserting only the startObject, we are using the startObject and the friends of the startObject (which could be restricted)
+            var firstUUIDs = myEdge.GetAllReferenceIDs();
+
+            for (int i = 0; i < firstUUIDs.Count(); i++)
+            {
+                var element = firstUUIDs.ElementAt(i);
+
+                if (element != null)
+                {
+                    //create a new node and set root = parent
+                    var currentNode = element;
+
+                    #region check if the child is the target
+                    //start and target are conntected directly
+                    if (currentNode.Equals(myEnd.ObjectUUID))
+                    {
+                        //add node (which coud be the target) to startFriends (if start and target are directly connected, the target in the rootFriends list is needed)
+                        rootFriends.Add(currentNode);
+
+                        return true;
+                    }
+                    #endregion check if the child is the target
+
+                    //check if element has edge
+                    var dbobject = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), currentNode);
+                    if (dbobject.Failed())
+                    {
+                        continue;
+                    }
+
+                    if (!dbobject.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
+                    {
+                        continue;
+                    }
+
+                    //enqueue node to start from left side
+                    queue.Enqueue(currentNode);
+
+                    //add node to visitedNodes
+                    visitedNodes.Add(currentNode);
+
+                    //add node to startFriends
+                    rootFriends.Add(currentNode);
+                }
+            }
+            #endregion get friends of startElement and check if they are the target and valid
+
+            //enqueue dummy
+            queue.Enqueue(dummy);
+
+            #region BFS
+
+            //if there is more than one object in the queue and the actual depth is less than MaxDepth
+            while ((queue.Count > 1) && (depth <= myMaxDepth))
+            {
+                //get the first Object of the queue
+                ObjectUUID nodeOfQueue = queue.Dequeue();
+
+                #region check if nodeOfQueue is a dummy
+                //if nodeOfQueue is a dummy, this level is completely worked off
+                if (nodeOfQueue == null)
+                {
+                    depth++;
+
+                    queue.Enqueue(nodeOfQueue);
+
+                    continue;
+                }
+                #endregion check if current is a dummy
+
+                //load DBObject
+                currentDBObject = myDBContext.DBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager), nodeOfQueue);
+                if (currentDBObject.Failed())
+                {
+                    throw new NotImplementedException();
+                }
+
+                if (currentDBObject.Value.HasAttribute(myTypeAttribute.UUID, myTypeAttribute.GetRelatedType(myDBContext.DBTypeManager)))
+                {
+                    #region EdgeType is ASetOfReferencesEdgeType
+                    if (myTypeAttribute.EdgeType is ASetOfReferencesEdgeType)
+                    {
+                        //get all referenced ObjectUUIDs using the given Edge                                                
+                        var objectUUIDs = (currentDBObject.Value.GetAttribute(myTypeAttribute.UUID) as ASetOfReferencesEdgeType).GetAllReferenceIDs();
+                        ObjectUUID currentNode;
+
+                        foreach (ObjectUUID obj in objectUUIDs)
+                        {
+                            #region obj is target
+                            //if the child is the target
+                            if (target.Equals(obj))
+                            {
+                                return true;
+                            }
+                            #endregion obj is target
+                            #region never seen before
+                            else if (!visitedNodes.Contains(obj))
+                            {
+                                //create new node and set nodeOfQueue as parent
+                                currentNode = new ObjectUUID(obj.ToString());
+
+                                //mark the node as visited
+                                visitedNodes.Add(currentNode);
+
+                                //put created node in queue
+                                queue.Enqueue(currentNode);
+                            }
+                            #endregion never seen before
+                        }
+                    }
+                    #endregion EdgeType is ASetOfReferencesEdgeType
+                    #region EdgeType is ASingleReferenceEdgeType
+                    else if (myTypeAttribute.EdgeType is ASingleReferenceEdgeType)
+                    {
+                        //get all referenced ObjectUUIDs using the given Edge                                                
+                        var objectUUIDs = (currentDBObject.Value.GetAttribute(myTypeAttribute.UUID) as ASingleReferenceEdgeType).GetAllReferenceIDs();
+                        ObjectUUID objectUUID = objectUUIDs.First<ObjectUUID>();
+                        ObjectUUID currentNode;
+
+                        #region obj is target
+                        //if the child is the target
+                        if (target.Equals(objectUUID))
+                        {
+                            return true;
+                        }
+                        #endregion obj is target
+                        #region never seen before
+                        else if (!visitedNodes.Contains(objectUUID))
+                        {
+                            //create new node and set nodeOfQueue as parent
+                            currentNode = new ObjectUUID(objectUUID.ToString());
+
+                            //mark the node as visited
+                            visitedNodes.Add(currentNode);
+
+                            //put created node in queue
+                            queue.Enqueue(currentNode);
+                        }
+                        #endregion never seen before
+                    }
+                    #endregion EdgeType is ASingleReferenceEdgeType
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+                }
+            }
+
+            #endregion BFS
+
+            return false;
+        }
         
         /// <summary>
-        /// Please look at the class documentation for detailed description how this algorithm works.
+        /// Searches shortest, all shortest or all paths starting from "myStart" to "myEnd".
         /// </summary>
         /// <param name="myTypeAttribute">The Attribute representing the edge to follow (p.e. "Friends")</param>
         /// <param name="myTypeManager">The TypeManager for the Node type</param>
@@ -124,9 +493,13 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
             
             //first node in path tree, the start of the select
             Node root = new Node(myStart.ObjectUUID);
+            
+            //root changed in Dictionary because of BidirectionalBFS
+            HashSet<ObjectUUID> rootFriends = new HashSet<ObjectUUID>();
 
             //target node, the target of the select
             Node target = new Node(myEnd.ObjectUUID);
+
             //holds the key of the backwardedge
             EdgeKey edgeKey = new EdgeKey(myTypeAttribute);
             
@@ -157,7 +530,6 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
             ////_Logger.Info("Starting BFS..");
 
             //check if root node has edge and target has backwardedge
-
             var dbObject = myDBObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myTypeManager), root.Key);
             if (dbObject.Failed())
             {
@@ -209,18 +581,18 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                     {
                         //get all referenced ObjectUUIDs using the given Edge                                                
                         var objectUUIDs = (currentDBObject.Value.GetAttribute(myTypeAttribute.UUID) as ASetOfReferencesEdgeType).GetAllReferenceIDs();
-                        Node tmp;
+                        Node currentNode;
                         
                         foreach(ObjectUUID dbo in objectUUIDs)
                         {
                             //only for debug
-                            //var tmpObject = myTypeManager.LoadDBObject(myTypeAttribute.RelatedGraphType, dbo);
+                            //var currentNodeObject = myTypeManager.LoadDBObject(myTypeAttribute.RelatedGraphType, dbo);
                             
-                            //create a new node and set current = parent, tmp = child                            
-                            tmp = new Node(dbo, current);                           
+                            //create a new node and set current = parent, currentNode = child                            
+                            currentNode = new Node(dbo, current);                           
                             
                             //if the child is the target
-                            if (tmp.Key == myEnd.ObjectUUID)
+                            if (currentNode.Key.Equals(myEnd.ObjectUUID))
                             {   
                                 //node points on the target
                                 target.Parents.Add(current);
@@ -238,29 +610,29 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                                     {
                                         ////_Logger.Info("found shortest path.");
                                         //got the shortest, finished
-                                        return new TargetAnalyzer(root, target, myMaxPathLength, shortestOnly, findAll).getPaths();
+                                        return new TargetAnalyzer(root, rootFriends, target, myMaxPathLength, shortestOnly, findAll).getPaths();
                                     }
                                 }
                             }
                             else
                             {
                                 //been there before
-                                if (visitedNodes.ContainsKey(tmp.Key))
+                                if (visitedNodes.ContainsKey(currentNode.Key))
                                 {
-                                    //if tmp.Key isn't root set parent
-                                    if (tmp.Key != root.Key)
+                                    //if currentNode.Key isn't root set parent
+                                    if (!rootFriends.Contains(currentNode.Key))
                                     {
                                         //node has more then one parent
-                                        visitedNodes[tmp.Key].Parents.Add(current);
+                                        visitedNodes[currentNode.Key].Parents.Add(current);
                                     }
                                     continue;
                                 }
 
                                 //never seen before
                                 //mark the node as visited
-                                visitedNodes.Add(tmp.Key, tmp);
+                                visitedNodes.Add(currentNode.Key, currentNode);
                                 //and look what comes on the next level of depth
-                                queue.Enqueue(tmp);
+                                queue.Enqueue(currentNode);
 
                                 //some logging
                                 if (queue.Count % 10000 == 0)
@@ -295,7 +667,7 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
             ////_Logger.Info("finished building path-graph.. starting analyzer");
             //analyze paths
-            return new TargetAnalyzer(root, target, myMaxPathLength, shortestOnly, findAll).getPaths();
+            return new TargetAnalyzer(root, rootFriends, target, myMaxPathLength, shortestOnly, findAll).getPaths();
         }        
     }
 }

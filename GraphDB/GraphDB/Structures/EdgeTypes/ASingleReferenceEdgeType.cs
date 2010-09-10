@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-/* <id name="sones GraphDB – abstract class for all single reference edges" />
+/* <id name="GraphDB � abstract class for all single reference edges" />
  * <copyright file="ASingleEdgeType.cs"
  *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Stefan Licht</developer>
  * <summary>This abstract class should be implemented for all single reference edges. It will store just an ObjectUUID. The complementary of this for not reference types are all ADBBaseObject implementations.</summary>
@@ -31,12 +32,15 @@
 using System;
 using System.Collections.Generic;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.Structures.Result;
+
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
 using sones.Lib;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.TypeManagement;
+
 
 #endregion
 
@@ -180,6 +184,13 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public abstract IReferenceEdge GetNewInstance(IEnumerable<ObjectUUID> iEnumerable, TypeUUID typeOfObjects);
 
         #endregion
+        
+        #region IComparable Members
+
+        public abstract Int32 CompareTo(object obj);
+
+        #endregion
+
     }
 
 }

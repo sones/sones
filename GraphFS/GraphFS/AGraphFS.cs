@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,10 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
+
 /*
  * AGraphFS
- * Achim Friedland, 2010
+ * (c) Achim Friedland, 2010
  */
 
 #region Usings
@@ -33,16 +35,15 @@ using System.Text.RegularExpressions;
 using sones.GraphFS;
 using sones.GraphFS.Events;
 using sones.GraphFS.Caches;
-using sones.GraphFS.DataStructures;
 using sones.GraphFS.Errors;
-using sones.GraphFS.Exceptions;
-using sones.GraphFS.InternalObjects;
-using sones.GraphFS.Notification;
+using sones.GraphFS.Session;
 using sones.GraphFS.Objects;
+using sones.GraphFS.Exceptions;
 using sones.GraphFS.Transactions;
+using sones.GraphFS.DataStructures;
+using sones.GraphFS.InternalObjects;
 
 using sones.Lib;
-using sones.Lib.Session;
 using sones.Lib.ErrorHandling;
 using sones.Lib.DataStructures;
 using sones.Lib.DataStructures.Indices;
@@ -58,7 +59,8 @@ namespace sones
 
     /// <summary>
     /// This is an abstract implementation of the IGraphFS interface and
-    /// many other file system will extend this implementation.
+    /// many other file system implementations will inherit and extend
+    /// this class.
     /// </summary>
 
     public abstract class AGraphFS : IGraphFS
@@ -81,18 +83,6 @@ namespace sones
         #region FileSystemDescription
 
         public String FileSystemDescription { get; set; }
-
-        #endregion
-
-        #region NotificationSettings
-
-        public NotificationSettings NotificationSettings { get; set; }
-
-        #endregion
-
-        #region NotificationDispatcher
-
-        public NotificationDispatcher NotificationDispatcher { get; set; }
 
         #endregion
 
@@ -265,7 +255,7 @@ namespace sones
 
         #endregion
 
-        #region OnRemoved/OnRemovedEvent(myObjectLocator, myObjectStream, myObjectEdition, myRevisionID)
+        #region OnRemoved/OnRemovedEvent(myObjectLocation, myObjectStream, myObjectEdition, myRevisionID)
 
         /// <summary>
         /// An event to be notified whenever an AFSObject
@@ -278,15 +268,15 @@ namespace sones
         /// was successfully removed.
         /// </summary>
         /// <param name="e">EventArgs</param>
-        public virtual void OnRemovedEvent(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myRevisionID)
+        public virtual void OnRemovedEvent(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myRevisionID)
         {
             if (OnRemoved != null)
-                OnRemoved(myObjectLocator, myObjectStream, myObjectEdition, myRevisionID);
+                OnRemoved(myObjectLocation, myObjectStream, myObjectEdition, myRevisionID);
         }
 
         #endregion
 
-        #region OnRemovedAsync/OnRemovedAsyncEvent(myObjectLocator, myObjectStream, myObjectEdition, myRevisionID)
+        #region OnRemovedAsync/OnRemovedAsyncEvent(myObjectLocation, myObjectStream, myObjectEdition, myRevisionID)
 
         /// <summary>
         /// An event to be notified asynchronously whenever an
@@ -299,10 +289,10 @@ namespace sones
         /// an AFSObject was successfully removed.
         /// </summary>
         /// <param name="e">EventArgs</param>
-        public virtual void OnRemovedAsyncEvent(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myRevisionID)
+        public virtual void OnRemovedAsyncEvent(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myRevisionID)
         {
             if (OnRemovedAsync != null)
-                OnRemovedAsync(myObjectLocator, myObjectStream, myObjectEdition, myRevisionID);
+                OnRemovedAsync(myObjectLocation, myObjectStream, myObjectEdition, myRevisionID);
         }
 
         #endregion
@@ -507,7 +497,6 @@ namespace sones
             AccessMode                          = AccessModeTypes.rw;
             ParentFileSystem                    = null;
             _GraphFSLookuptable                 = new MountpointLookup();
-            NotificationSettings                = new NotificationSettings();
             _MoreThanOnePathSeperatorRegExpr    = new Regex("\\" + FSPathConstants.PathDelimiter + "\\" + FSPathConstants.PathDelimiter);
         }
 
@@ -697,13 +686,15 @@ namespace sones
         /// Sets the Name or a description of this file system.
         /// </summary>
         /// <param name="myFileSystemDescription">the Name or a description of this file system</param>
-        public void SetFileSystemDescription(String myFileSystemDescription, SessionToken mySessionToken)
+        public Boolean SetFileSystemDescription(String myFileSystemDescription, SessionToken mySessionToken)
         {
 
             if (!IsMounted)
                 throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
             FileSystemDescription = myFileSystemDescription;
+
+            return true;
 
         }
 
@@ -716,9 +707,9 @@ namespace sones
         /// </summary>
         /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
         /// <param name="myFileSystemDescription">the Name or a description of the file system at the given ObjectLocation</param>
-        public void SetFileSystemDescription(ObjectLocation myObjectLocation, String myFileSystemDescription, SessionToken mySessionToken)
+        public Boolean SetFileSystemDescription(ObjectLocation myObjectLocation, String myFileSystemDescription, SessionToken mySessionToken)
         {
-            GetChildFileSystem(myObjectLocation, true, mySessionToken).SetFileSystemDescription(myFileSystemDescription, mySessionToken);
+            return GetChildFileSystem(myObjectLocation, true, mySessionToken).SetFileSystemDescription(myFileSystemDescription, mySessionToken);
         }
 
         #endregion
@@ -915,7 +906,7 @@ namespace sones
             foreach (var __Mountpoint_IGraphFS in _GraphFSLookuptable.MountedFSs)
             {
 
-                if (myObjectLocation.StartsWith(__Mountpoint_IGraphFS.Key) &&
+                if (myObjectLocation.StartsWith(__Mountpoint_IGraphFS.Key.ToString()) &&
                     (_PathLength < __Mountpoint_IGraphFS.Key.Length))
                 {
                     _PathLength = __Mountpoint_IGraphFS.Key.Length;
@@ -987,11 +978,11 @@ namespace sones
             foreach (var __Mountpoint_IGraphFS in _GraphFSLookuptable.MountedFSs)
             {
 
-                if (myObjectLocation.StartsWith(__Mountpoint_IGraphFS.Key) &&
+                if (myObjectLocation.StartsWith(__Mountpoint_IGraphFS.Key.ToString()) &&
                     (_PathLength < __Mountpoint_IGraphFS.Key.Length))
                 {
                     _PathLength       = __Mountpoint_IGraphFS.Key.Length;
-                    _ChildMountpoint  = __Mountpoint_IGraphFS.Key;
+                    _ChildMountpoint  = __Mountpoint_IGraphFS.Key.ToString();
                 }
 
             }
@@ -1021,19 +1012,113 @@ namespace sones
         #endregion
 
 
-        #region Make-/Grow-/ShrinkFileSystem
+        #region ObjectCache handling
 
-        public abstract Exceptional<FileSystemUUID> MakeFileSystem(IEnumerable<String> myStorageLocations, String myDescription, UInt64 myNumberOfBytes, Boolean myOverwriteExistingFileSystem, Action<Double> myAction, SessionToken mySessionToken);
-        public abstract Exceptional<UInt64> GrowFileSystem(UInt64 myNumberOfBytesToAdd, SessionToken mySessionToken);
-        public abstract Exceptional<UInt64> ShrinkFileSystem(UInt64 myNumberOfBytesToRemove, SessionToken mySessionToken);
+        #region ObjectCacheSettings
+
+        public ObjectCacheSettings ObjectCacheSettings
+        {
+
+            get
+            {
+                return _ObjectCache.ObjectCacheSettings;
+            }
+
+            set
+            {
+                if (_ObjectCache != null)
+                    _ObjectCache.ObjectCacheSettings = value;
+                else
+                    Debug.WriteLine("Could not set _ObjectCache.ObjectCacheSettings as _ObjectCache == null!");
+            }
+
+        }
 
         #endregion
 
-        #region MountFileSystem
+        #region GetObjectCacheSettings(mySessionToken)
 
-        public abstract Exceptional MountFileSystem(String myStorageLocation, AccessModeTypes myFSAccessMode, SessionToken mySessionToken);
+        public Exceptional<ObjectCacheSettings> GetObjectCacheSettings(SessionToken mySessionToken)
+        {
+            return new Exceptional<ObjectCacheSettings>(_ObjectCache.ObjectCacheSettings);
+        }
 
-        #region MountFileSystem(myStorageLocation, myMountPoint, myFSAccessMode, SessionToken mySessionToken)
+        #endregion
+
+        #region GetObjectCacheSettings(myObjectLocation, mySessionToken)
+
+        public Exceptional<ObjectCacheSettings> GetObjectCacheSettings(ObjectLocation myObjectLocation, SessionToken mySessionToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region SetObjectCacheSettings(myObjectCacheSettings, mySessionToken)
+
+        public Exceptional SetObjectCacheSettings(ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken)
+        {
+
+            Debug.Assert(myObjectCacheSettings != null);
+
+            _ObjectCache.ObjectCacheSettings = myObjectCacheSettings;
+
+            return Exceptional.OK;
+
+        }
+
+        #endregion
+
+        #region SetObjectCacheSettings(myObjectLocation, myObjectCacheSettings, mySessionToken)
+
+        public Exceptional SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #endregion
+
+
+        #region Make-/Grow-/Shrink-/WipeFileSystem
+
+        public abstract Exceptional<FileSystemUUID> MakeFileSystem(SessionToken mySessionToken, String myDescription, UInt64 myNumberOfBytes, Boolean myOverwriteExistingFileSystem, Action<Double> myAction);
+
+        #region GrowFileSystem(mySessionToken, myNumberOfBytesToAdd)
+
+        public virtual Exceptional<UInt64> GrowFileSystem(SessionToken mySessionToken, UInt64 myNumberOfBytesToAdd)
+        {
+            return new Exceptional<UInt64>(new GraphFSError("GrowFileSystem(...) is not available within this implementation!"));
+        }
+
+        #endregion
+
+        #region ShrinkFileSystem(mySessionToken, myNumberOfBytesToRemove)
+
+        public virtual Exceptional<UInt64> ShrinkFileSystem(SessionToken mySessionToken, UInt64 myNumberOfBytesToRemove)
+        {
+            return new Exceptional<UInt64>(new GraphFSError("ShrinkFileSystem(...) is not available within this implementation!"));
+        }
+
+        #endregion
+
+        #region WipeFileSystem(mySessionToken)
+
+        public virtual Exceptional WipeFileSystem(SessionToken mySessionToken)
+        {
+            return new Exceptional<UInt64>(new GraphFSError("WipeFileSystem(...) is not available within this implementation!"));
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Mount-/Remount-/UnmountFileSystem
+
+        public abstract Exceptional MountFileSystem(SessionToken mySessionToken, AccessModeTypes myFSAccessMode);
+
+        #region MountFileSystem(mySessionToken, myMountPoint, myIGraphFS, myFSAccessMode)
 
         /// <summary>
         /// This method will mount the file system from a StorageLocation serving
@@ -1043,8 +1128,8 @@ namespace sones
         /// </summary>
         /// <param name="myStorageLocation">A StorageLocation (device or filename) the file system can be read from</param>
         /// <param name="myMountPoint">The location the file system should be mounted at</param>
-        /// <param name="myFSAccessMode">The access mode of the file system to mount</param>
-        public Exceptional MountFileSystem(IGraphFS myIGraphFS, ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode, SessionToken mySessionToken)
+        /// <param name="myAccessMode">The access mode of the file system to mount</param>
+        public Exceptional MountFileSystem(SessionToken mySessionToken, ObjectLocation myMountPoint, IGraphFS myIGraphFS, AccessModeTypes myAccessMode)
         {
 
             #region Pre-Mounting checks
@@ -1065,7 +1150,6 @@ namespace sones
                 myMountPoint = new ObjectLocation(myMountPoint.Substring(0, myMountPoint.Length - FSPathConstants.PathDelimiter.Length));
 
             #endregion
-
 
             var _ChildIGraphFS = GetChildFileSystem(myMountPoint, false, mySessionToken);
 
@@ -1090,7 +1174,7 @@ namespace sones
             }
 
             else
-                _ChildIGraphFS.MountFileSystem(myIGraphFS, GetObjectLocationOnChildFileSystem(myMountPoint, mySessionToken), myFSAccessMode, mySessionToken);
+                _ChildIGraphFS.MountFileSystem(mySessionToken, GetObjectLocationOnChildFileSystem(myMountPoint, mySessionToken), myIGraphFS, myAccessMode);
 
             return new Exceptional();
 
@@ -1098,123 +1182,25 @@ namespace sones
 
         #endregion
 
-        #region MountFileSystem(myStorageLocation, myMountPoint, myFSAccessMode, SessionToken mySessionToken)
 
-        /// <summary>
-        /// This method will mount the file system from a StorageLocation serving
-        /// the file system into the given ObjectLocation using the given file system
-        /// access mode. If the mountpoint is located within another file system this
-        /// file system will be called to process this request in a recursive way.
-        /// </summary>
-        /// <param name="myStorageLocation">A StorageLocation (device or filename) the file system can be read from</param>
-        /// <param name="myMountPoint">The location the file system should be mounted at</param>
-        /// <param name="myFSAccessMode">The access mode of the file system to mount</param>
-        public Exceptional MountFileSystem(String myStorageLocation, ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode, SessionToken mySessionToken)
+        #region RemountFileSystem(mySessionToken, myFSAccessMode)
+
+        public Exceptional RemountFileSystem(SessionToken mySessionToken, AccessModeTypes myFSAccessMode)
         {
-
-            #region Pre-Mounting checks
-
-            // Check if the root filesystem is mounted
-            if (!IsMounted)
-            {
-
-                if (myMountPoint.Equals(FSPathConstants.PathDelimiter))
-                    return MountFileSystem(myStorageLocation, myFSAccessMode, mySessionToken);
-
-                throw new GraphFSException_MountFileSystemFailed("Please mount a (root) file system first!");
-
-            }
-
-            // Remove an ending FSPathConstants.PathDelimiter: "/Volumes/test/" -> "/Volumes/test"
-            if ((myMountPoint.Length > FSPathConstants.PathDelimiter.Length) && (myMountPoint.EndsWith(FSPathConstants.PathDelimiter)))
-                myMountPoint = new ObjectLocation(myMountPoint.Substring(0, myMountPoint.Length - FSPathConstants.PathDelimiter.Length));
-
-            #endregion
-
-            var _ChildIGraphFS = GetChildFileSystem(myMountPoint, false, mySessionToken);
-
-            if (_ChildIGraphFS == this)
-            {
-
-                //if (myMountPoint.Equals(FSPathConstants.PathDelimiter))
-                //    MountFileSystem(myStorageLocation, myFSAccessMode, mySessionToken);
-
-                //else
-                //{
-
-                    #region Checks against other mounted filesystems
-
-                    // Check if the _exact_ _MountPoint is already used by another filesystem
-                    foreach (var _Mountpoint in _GraphFSLookuptable.Mountpoints)
-                    {
-
-                        if (myMountPoint.Equals(_Mountpoint))
-                            throw new GraphFSException_MountFileSystemFailed("This mountpoint is already in use!");
-
-                        //// Check if the filesystem is already mounted != readonly
-                        //if (MountedFileSystems[_Filesystem].StorageIDs.Equals(myStorageLocation))
-                        //{
-                        //    switch (MountedFileSystems[_Filesystem].AccessMode)
-                        //    {
-                        //        case AccessModeTypes.rw: throw new GraphFSException_MountFileSystemFailed("File system is already mounted read/write");
-                        //        case AccessModeTypes.ap: throw new GraphFSException_MountFileSystemFailed("File system is already mounted appendable");
-                        //        case AccessModeTypes.metarw: throw new GraphFSException_MountFileSystemFailed("File system is already mounted meta-read/write");
-                        //        case AccessModeTypes.metaap: throw new GraphFSException_MountFileSystemFailed("File system is already mounted meta-appendable");
-                        //    }
-                        //}
-
-                    }
-
-                    // Check if the directory mentioned in the _MountPoint is existend
-
-                    #endregion
-
-                    #region Mount and register the new file system
-
-                    //IGraphFS newFSObject = new TmpFS1();
-                    ////newFSObject.SetNotificationDispatcher(_NotificationDispatcher, mySessionToken);
-                    //newFSObject.MountFileSystem(myStorageLocation, myFSAccessMode, mySessionToken);
-
-                    ////ParentMountedFS = FindMountedFileSystemByPath(myMountPoint);
-
-                    //// Register this file system as parent file system
-                    //newFSObject.ParentFileSystem = this;
-
-                    //// Register the mountedFS object in the list of ChildFileSystems
-                    //_GraphFSLookuptable.Set(myMountPoint, newFSObject);
-
-                    #endregion
-
-                //}
-
-            }
-
-            else
-                _ChildIGraphFS.MountFileSystem(myStorageLocation, GetObjectLocationOnChildFileSystem(myMountPoint, mySessionToken), myFSAccessMode, mySessionToken);
-
-            return new Exceptional();
-
+            return RemountFileSystem(mySessionToken, ObjectLocation.Root, myFSAccessMode);
         }
 
         #endregion
 
-        #region RemountFileSystem(myFSAccessMode, mySessionToken)
+        #region RemountFileSystem(mySessionToken, myMountPoint, myFSAccessMode)
 
-        public Exceptional RemountFileSystem(AccessModeTypes myFSAccessMode, SessionToken mySessionToken)
-        {
-            return RemountFileSystem(ObjectLocation.Root, myFSAccessMode, mySessionToken);
-        }
-
-        #endregion
-
-        #region RemountFileSystem(myMountPoint, myFSAccessMode, mySessionToken)
-
-        public Exceptional RemountFileSystem(ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode, SessionToken mySessionToken)
+        public Exceptional RemountFileSystem(SessionToken mySessionToken, ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode)
         {
             throw new NotImplementedException();
         }
 
         #endregion
+
 
         #region UnmountFileSystem(mySessionToken)
 
@@ -1234,6 +1220,7 @@ namespace sones
             FileSystemUUID          = new FileSystemUUID(0);
             FileSystemDescription   = null;
             //_NotificationDispatcher.Dispose();
+            _ObjectCache.Clear();
 
             return Exceptional.OK;
 
@@ -1241,9 +1228,9 @@ namespace sones
 
         #endregion
 
-        #region UnmountFileSystem(myMountPoint, mySessionToken)
+        #region UnmountFileSystem(mySessionToken, myMountPoint)
 
-        public Exceptional UnmountFileSystem(ObjectLocation myMountPoint, SessionToken mySessionToken)
+        public Exceptional UnmountFileSystem(SessionToken mySessionToken, ObjectLocation myMountPoint)
         {
             var _ChildIGraphFS = GetChildFileSystem(myMountPoint, false, mySessionToken);
             return _ChildIGraphFS.UnmountFileSystem(mySessionToken);
@@ -1287,7 +1274,8 @@ namespace sones
 
         #endregion
 
-        #region ChangeRootDirectory(myChangeRootPrefix, mySessionToken)
+
+        #region ChangeRootDirectory(mySessionToken, myChangeRootPrefix)
 
         /// <summary>
         /// Restricts the access to this file system to the given "/ChangeRootPrefix".
@@ -1295,7 +1283,7 @@ namespace sones
         /// </summary>
         /// <param name="myChangeRootPrefix">the location of this object (ObjectPath and ObjectName) of the new file system root</param>
         /// <param name="mySessionToken"></param>
-        public Exceptional ChangeRootDirectory(String myChangeRootPrefix, SessionToken mySessionToken)
+        public Exceptional ChangeRootDirectory(SessionToken mySessionToken, String myChangeRootPrefix)
         {
             throw new NotImplementedException();
         }
@@ -1304,18 +1292,20 @@ namespace sones
 
         #endregion
 
-        
-        #region INode and ObjectLocator methods
+
+        #region INode and ObjectLocator
 
         #region (protected) GetINode_protected(myObjectLocation)
 
         protected Exceptional<INode> GetINode_protected(ObjectLocation myObjectLocation)
         {
 
-            var _Exceptional = new Exceptional<INode>();
+            Debug.Assert(myObjectLocation != null);
+
+            var _Exceptional              = new Exceptional<INode>();
             var _ObjectLocatorExceptional = GetObjectLocator_protected(myObjectLocation);
 
-            if (_ObjectLocatorExceptional.Success() && _ObjectLocatorExceptional.Value != null && _ObjectLocatorExceptional.Value.INodeReference != null)
+            if (_ObjectLocatorExceptional.IsValid() && _ObjectLocatorExceptional.Value.INodeReference != null)
                 _Exceptional.Value = _ObjectLocatorExceptional.Value.INodeReference;
 
             else
@@ -1327,154 +1317,310 @@ namespace sones
 
         #endregion
 
-        #region GetINode(myObjectLocation, mySessionToken)
+        #region GetINode(mySessionToken, myObjectLocation)
 
-        public Exceptional<INode> GetINode(ObjectLocation myObjectLocation, SessionToken mySessionToken)
+        public Exceptional<INode> GetINode(SessionToken mySessionToken, ObjectLocation myObjectLocation)
         {
+
+            Debug.Assert(mySessionToken   != null);
+            Debug.Assert(myObjectLocation != null);
+
+            //ToDo: Check SessionToken
+
             return GetINode_protected(myObjectLocation);
+
         }
 
         #endregion
 
-        #region (private) GetObjectLocator_protected(myObjectLocation)
 
-        protected abstract Exceptional<ObjectLocator> GetObjectLocator_protected(ObjectLocation myObjectLocation);
+        #region (protected) GetObjectLocator_protected(myObjectLocation)
+
+        protected virtual Exceptional<ObjectLocator> GetObjectLocator_protected(ObjectLocation myObjectLocation)
+        {
+            return _ObjectCache.GetObjectLocator(myObjectLocation);
+        }
 
         #endregion
 
-        #region GetObjectLocator(myObjectLocation, mySessionToken)
+        #region GetObjectLocator(mySessionToken, myObjectLocation)
 
-        public Exceptional<ObjectLocator> GetObjectLocator(ObjectLocation myObjectLocation, SessionToken mySessionToken)
+        public Exceptional<ObjectLocator> GetObjectLocator(SessionToken mySessionToken, ObjectLocation myObjectLocation)
         {
 
+            Debug.Assert(mySessionToken   != null);
+            Debug.Assert(myObjectLocation != null);
+            
+            //ToDo: Check SessionToken
+            
             return GetObjectLocator_protected(myObjectLocation);
 
-            //var _Exceptional = new Exceptional<ObjectLocator>();
-
-            //_Exceptional.Value = _Lookuptable.GetObjectLocator(myObjectLocation);
-
-            //if (_Exceptional.Value == null)
-            //    _Exceptional.Add(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
-
-            //return _Exceptional;
-            
         }
 
         #endregion
 
-        #endregion
+        #region StoreObjectLocator(mySessionToken, myObjectLocator)
 
-        #region (protected) ObjectCache handling
-
-        #region ObjectCacheSettings
-
-        public ObjectCacheSettings ObjectCacheSettings
+        /// <summary>
+        /// Stores an ObjectLocator
+        /// </summary>
+        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="myObjectLocation">The location of this object (ObjectPath and ObjectName) of the requested ObjectLocator within the file system</param>
+        public virtual Exceptional StoreObjectLocator(SessionToken mySessionToken, ObjectLocator myObjectLocator)
         {
-
-            get
-            {
-                return _ObjectCache.ObjectCacheSettings;
-            }
-
-            set
-            {
-                if (_ObjectCache != null)
-                    _ObjectCache.ObjectCacheSettings = value;
-                else
-                    Debug.WriteLine("Could not set _ObjectCache.ObjectCacheSettings as _ObjectCache == null!");
-            }
-
-        }
-
-        #endregion
-
-        #region GetObjectCacheSettings(mySessionToken)
-
-        public Exceptional<ObjectCacheSettings> GetObjectCacheSettings(SessionToken mySessionToken)
-        {
-            return new Exceptional<ObjectCacheSettings>(_ObjectCache.ObjectCacheSettings);
-        }
-
-        #endregion
-
-        #region GetObjectCacheSettings(myObjectLocation, mySessionToken)
-
-        public Exceptional<ObjectCacheSettings> GetObjectCacheSettings(ObjectLocation myObjectLocation, SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-
-        #region SetObjectCacheSettings(myObjectCacheSettings, mySessionToken)
-
-        public Exceptional SetObjectCacheSettings(ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken)
-        {
-
-            Debug.Assert(myObjectCacheSettings != null);
-
-            _ObjectCache.ObjectCacheSettings = myObjectCacheSettings;
-
             return Exceptional.OK;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Object/ObjectStream/ObjectEdition/ObjectRevision infos
+
+        #region ObjectExists(mySessionToken, myObjectLocation)
+
+        public Exceptional<Trinary> ObjectExists(SessionToken mySessionToken, ObjectLocation myObjectLocation)
+        {
+
+            #region Resolve all symlinks and call myself on a possible ChildFileSystem...
+
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
+
+            //myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
+
+            if (myObjectLocation == null)
+                return new Exceptional<Trinary>(Trinary.FALSE);
+
+            var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
+
+            if (_ChildIGraphFS != this)
+                return _ChildIGraphFS.ObjectExists(mySessionToken, GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken));
+
+            #endregion
+
+            var _Exceptional = new Exceptional<Trinary>();
+            var _ParentDirectoryObjectExceptional = GetAFSObject_protected<DirectoryObject>(
+                                                        new ObjectLocation(myObjectLocation.Path),
+                                                        FSConstants.DIRECTORYSTREAM,
+                                                        null,
+                                                        null,
+                                                        0,
+                                                        false);
+
+            if (_ParentDirectoryObjectExceptional.IsValid())
+                _Exceptional.Value = _ParentDirectoryObjectExceptional.Value.ObjectExists(myObjectLocation.Name);
+
+            else
+            {
+                _Exceptional.PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path));
+                //                _Exceptional.Add(_ParentDirectoryObjectExceptional.Errors);
+                _Exceptional.Value = Trinary.FALSE;
+            }
+
+            return _Exceptional;
 
         }
 
         #endregion
 
-        #region SetObjectCacheSettings(myObjectLocation, myObjectCacheSettings, mySessionToken)
+        #region ObjectStreamExists(mySessionToken, myObjectLocation, myObjectStream)
 
-        public Exceptional SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken)
+        public Exceptional<Trinary> ObjectStreamExists(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream)
         {
-            throw new NotImplementedException();
+
+            #region Resolve all symlinks and call myself on a possible ChildFileSystem...
+
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
+
+            //myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
+
+            //if (myObjectLocation == null)
+            //    return Trinary.FALSE;
+
+            var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
+
+            if (_ChildIGraphFS != this)
+                return _ChildIGraphFS.ObjectStreamExists(mySessionToken, GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myObjectStream);
+
+            #endregion
+
+            var _Exceptional = new Exceptional<Trinary>();
+            var _ParentDirectoryObjectExceptional = GetAFSObject<DirectoryObject>(
+                                                        mySessionToken,
+                                                        new ObjectLocation(myObjectLocation.Path),
+                                                        FSConstants.DIRECTORYSTREAM,
+                                                        null,
+                                                        null,
+                                                        0,
+                                                        false);
+
+            if (_ParentDirectoryObjectExceptional.IsValid())
+            {
+
+                // Get DirectoryEntry
+                var _DirectoryEntry = _ParentDirectoryObjectExceptional.Value.GetDirectoryEntry(myObjectLocation.Name);
+
+                if (_DirectoryEntry != null && _DirectoryEntry.ObjectStreamsList != null)
+                    _Exceptional.Value = _DirectoryEntry.ObjectStreamsList.Contains(myObjectStream);
+
+                else _Exceptional.Value = Trinary.FALSE;
+
+            }
+
+            else
+            {
+                _Exceptional = new Exceptional<Trinary>(_ParentDirectoryObjectExceptional);
+                _Exceptional.Push(new GraphFSError_DirectoryObjectNotFound(myObjectLocation));
+                _Exceptional.Value = Trinary.FALSE;
+            }
+
+            return _Exceptional;
+
         }
 
         #endregion
 
+        #region (protected) ObjectEditionExists_protected(myObjectLocation, myObjectStream, myObjectEdition)
 
-        #region (protected) CacheAdd(myObjectLocator, myIsPinned = false)
-
-        protected Exceptional CacheAdd(ObjectLocator myObjectLocator, Boolean myIsPinned = false)
+        protected Exceptional<Trinary> ObjectEditionExists_protected(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition)
         {
 
-            Debug.Assert(myObjectLocator != null);
-            Debug.Assert(myObjectLocator.ObjectLocation != null);
-            Debug.Assert(_ObjectCache != null);
+            var _Exceptional = new Exceptional<Trinary>();
+            var _ObjectLocatorExceptional = GetObjectLocator_protected(myObjectLocation);
 
-            return _ObjectCache.StoreObjectLocator(myObjectLocator);
+            if (_ObjectLocatorExceptional.IsValid())
+            {
+
+                // Get ObjectStream
+                var _ObjectStream = _ObjectLocatorExceptional.Value[myObjectStream];
+
+                if (_ObjectStream != null)
+                {
+
+                    var _ObjectEdition = _ObjectStream[myObjectEdition];
+
+                    if (_ObjectEdition == null)
+                        _Exceptional.Value = Trinary.FALSE;
+                    else if (_ObjectEdition.IsDeleted)
+                        _Exceptional.Value = Trinary.DELETED;
+                    else
+                        _Exceptional.Value = Trinary.TRUE;
+                    //                    _Exceptional.Value = _ObjectStream.ContainsKey(myObjectEdition);
+                }
+
+                else
+                {
+                    _Exceptional.PushT(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
+                    _Exceptional.Value = Trinary.FALSE;
+                }
+
+            }
+
+            else
+            {
+                _Exceptional = new Exceptional<Trinary>(_ObjectLocatorExceptional);
+                _Exceptional.PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
+                _Exceptional.Value = Trinary.FALSE;
+            }
+
+            return _Exceptional;
 
         }
 
         #endregion
 
-        #region (protected) CacheAdd(myCacheUUID, myAFSObject, myIsPinned = false)
+        #region ObjectEditionExists(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition)
 
-        protected Exceptional CacheAdd(CacheUUID myCacheUUID, AFSObject myAFSObject, Boolean myIsPinned = false)
+        public Exceptional<Trinary> ObjectEditionExists(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition)
         {
 
-            Debug.Assert(myAFSObject != null);
-            Debug.Assert(myAFSObject.ObjectLocation != null);
-            Debug.Assert(_ObjectCache != null);
+            #region Resolve all symlinks and call myself on a possible ChildFileSystem...
 
-            return _ObjectCache.StoreAFSObject(myCacheUUID, myAFSObject, myIsPinned);
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
+
+            //myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
+
+            if (myObjectLocation == null)
+                return new Exceptional<Trinary>() { Value = Trinary.FALSE };
+
+            var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
+
+            if (_ChildIGraphFS != this)
+                return _ChildIGraphFS.ObjectEditionExists(mySessionToken, GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myObjectStream, myObjectEdition);
+
+            #endregion
+
+            return ObjectEditionExists_protected(myObjectLocation, myObjectStream, myObjectEdition);
 
         }
 
         #endregion
 
+        #region ObjectRevisionExists(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID)
 
-        #region (protected) CacheGet<PT>(myCacheUUID)
-
-        protected Exceptional<PT> CacheGet<PT>(CacheUUID myCacheUUID)
-            where PT : AFSObject
+        public Exceptional<Trinary> ObjectRevisionExists(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID)
         {
 
-            Debug.Assert(_ObjectCache != null, "_ObjectCache == null! No root file system mounted?");
+            #region Resolve all symlinks and call myself on a possible ChildFileSystem...
 
-            var _Exceptional = _ObjectCache.GetAFSObject<PT>(myCacheUUID);
+            if (!IsMounted)
+                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
-            if (_Exceptional.Value == null)
-                _Exceptional.PushT(new GraphFSError("Could not get object with UUID '" + myCacheUUID.ToString() + "' from ObjectCache!"));
+            //myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
+
+            if (myObjectLocation == null)
+                return new Exceptional<Trinary>() { Value = Trinary.FALSE };
+
+            var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
+
+            if (_ChildIGraphFS != this)
+                return _ChildIGraphFS.ObjectRevisionExists(mySessionToken, GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myObjectStream, myObjectEdition, myObjectRevisionID);
+
+            #endregion
+
+            var _Exceptional = new Exceptional<Trinary>();
+            var _ObjectLocatorExceptional = GetObjectLocator(mySessionToken, myObjectLocation);
+
+            if (_ObjectLocatorExceptional.IsValid())
+            {
+
+                // Get ObjectStream
+                var _ObjectStream = _ObjectLocatorExceptional.Value[myObjectStream];
+
+                if (_ObjectStream != null && _ObjectStream.ContainsKey(myObjectEdition))
+                {
+
+                    // Get ObjectEdition
+                    var _ObjectEdition = _ObjectStream[myObjectEdition];
+
+                    if (_ObjectEdition != null)
+                        _Exceptional.Value = _ObjectEdition.ContainsKey(myObjectRevisionID);
+
+                    else
+                    {
+                        _Exceptional.PushT(new GraphFSError_ObjectEditionNotFound(myObjectLocation, myObjectStream, myObjectEdition));
+                        _Exceptional.Value = Trinary.FALSE;
+                    }
+
+                }
+
+                else
+                {
+                    _Exceptional.PushT(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
+                    _Exceptional.Value = Trinary.FALSE;
+                }
+
+            }
+
+            else
+            {
+                _Exceptional = new Exceptional<Trinary>(_ObjectLocatorExceptional);
+                _Exceptional.PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
+                _Exceptional.Value = Trinary.FALSE;
+            }
 
             return _Exceptional;
 
@@ -1483,194 +1629,326 @@ namespace sones
         #endregion
 
 
-        #region (protected) CacheCopy(mySourceLocation, myTargetLocation, myRecursion = false)
+        #region GetObjectStreams(mySessionToken, myObjectLocation)
 
-        protected Exceptional CacheCopy(ObjectLocation mySourceLocation, ObjectLocation myTargetLocation, Boolean myRecursion = false)
+        public Exceptional<IEnumerable<String>> GetObjectStreams(SessionToken mySessionToken, ObjectLocation myObjectLocation)
         {
-
-            Debug.Assert(_ObjectCache != null, "_ObjectCache == null! No root file system mounted?");
-
-            return _ObjectCache.Copy(mySourceLocation, myTargetLocation, myRecursion);
-
-        }
-
-        #endregion
-
-        #region (protected) CacheMove(mySourceLocation, myTargetLocation, myRecursion = false)
-
-        protected Exceptional CacheMove(ObjectLocation mySourceLocation, ObjectLocation myTargetLocation, Boolean myRecursion = false)
-        {
-
-            Debug.Assert(_ObjectCache != null, "_ObjectCache == null! No root file system mounted?");
-
-            return _ObjectCache.Move(mySourceLocation, myTargetLocation, myRecursion);
-
-        }
-
-        #endregion
-
-
-        #region (protected) CacheRemove(myObjectLocation, myRecursion = false)
-
-        protected Exceptional CacheRemove(ObjectLocation myObjectLocation, Boolean myRecursion = false)
-        {
-
-            Debug.Assert(_ObjectCache != null, "_ObjectCache == null! No root file system mounted?");
-
-            return _ObjectCache.RemoveObjectLocation(myObjectLocation, myRecursion);
-
-        }
-
-        #endregion
-
-        #region (protected) CacheRemove(myCacheUUID)
-
-        protected Exceptional CacheRemove(CacheUUID myCacheUUID)
-        {
-
-            Debug.Assert(_ObjectCache != null, "_ObjectCache == null! No root file system mounted?");
-
-            return _ObjectCache.RemoveAFSObject(myCacheUUID);
-
-        }
-
-        #endregion
-
-        #endregion
-
-
-
-        #region AFSObject specific methods
-
-        protected abstract Exceptional            StoreAFSObject_Layer2_protected (ObjectLocation myObjectLocation, AFSObject myAFSObject, Boolean myAllowOverwritting);
-        protected abstract Exceptional<AFSObject> LoadAFSObject_protected  (ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, AFSObject myAFSObject);
-        protected abstract Exceptional            RemoveAFSObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID);
-        protected abstract Exceptional            EraseAFSObject_protected (ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID);
-
-
-        #region LockObject_protected(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectLock, myObjectLockType, myLockingTime)
-
-        protected Boolean LockObject_protected(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime)
-        {
-
-            Debug.Assert(myObjectLocation   != null);
-            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
-            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
-            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
-
-            return false;
-
-        }
-
-        #endregion
-
-        #region LockObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectLock, myObjectLockType, myLockingTime, mySessionToken)
-
-        public Boolean LockObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime, SessionToken mySessionToken)
-        {
-
-            Debug.Assert(myObjectLocation   != null);
-            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
-            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
-            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
-
-            return LockObject_protected(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectLock, myObjectLockType, myLockingTime);
-
-        }
-
-        #endregion
-
-
-
-        #region GetOrCreateFSObject_protected<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures)
-
-        protected Exceptional<PT> GetOrCreateFSObject_protected<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures) where PT : AFSObject, new()
-        {
-
-            Debug.Assert(myObjectLocation   != null);
-            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
-            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
-            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
-
-            return GetOrCreateFSObject_protected<PT>(myObjectLocation,
-                                           myObjectStream,
-                                           myObjectEdition,
-                                           myObjectRevisionID,
-                                           myObjectCopy,
-                                           myIgnoreIntegrityCheckFailures,
-                                           new Func<PT>(delegate { return new PT(); }));
-
-        }
-
-        #endregion
-
-        #region GetOrCreateFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, mySessionToken)
-
-        public Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new()
-        {
-
-            Debug.Assert(myObjectLocation   != null);
-            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
-            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
-            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
-
-            return GetOrCreateFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, new Func<PT>(delegate { return new PT(); }), mySessionToken);
-
-        }
-
-        #endregion
-
-        #region GetOrCreateObject_protected<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myIgnoreIntegrityCheckFailures)
-
-        protected Exceptional<PT> GetOrCreateFSObject_protected<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc) where PT : AFSObject
-        {
-
-            Debug.Assert(myObjectLocation   != null);
-            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
-            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
-            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
-            Debug.Assert(myFunc             != null);
 
             lock (this)
             {
 
-                #region Get an existing Object...
+                var _Exceptional = new Exceptional<IEnumerable<String>>();
 
-                var _Exceptional = GetFSObject_protected<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc);
+                #region Special handling of the root directory as we can not ask its parent directory!
+
+                if (myObjectLocation.IsRoot)
+                {
+
+                    var _ObjectLocatorExceptional = GetObjectLocator(mySessionToken, myObjectLocation);
+
+                    if (_ObjectLocatorExceptional.IsValid())
+                        _Exceptional.Value = _ObjectLocatorExceptional.Value.Keys;
+
+                    else
+                    {
+                        _Exceptional = _ObjectLocatorExceptional.Convert<IEnumerable<String>>().
+                            PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
+                    }
+
+                }
+
+                #endregion
+
+                #region Just ask the parent directory, as this avoids unnecessary loading of the INode and ObjectLocator!
+
+                else
+                {
+
+                    var _ParentDirectoryObjectExceptional = GetAFSObject<DirectoryObject>(
+                                                                mySessionToken,
+                                                                new ObjectLocation(myObjectLocation.Path),
+                                                                FSConstants.DIRECTORYSTREAM,
+                                                                null,
+                                                                null,
+                                                                0,
+                                                                false);
+
+                    if (_ParentDirectoryObjectExceptional.IsValid())
+                    {
+
+                        // Get DirectoryEntry
+                        var _DirectoryEntry = _ParentDirectoryObjectExceptional.Value.GetDirectoryEntry(myObjectLocation.Name);
+
+                        if (_DirectoryEntry != null && _DirectoryEntry.ObjectStreamsList != null)
+                            _Exceptional.Value = _DirectoryEntry.ObjectStreamsList;
+
+                        else
+                            _Exceptional.PushT(new GraphFSError_CouldNotGetObjectStreams(myObjectLocation));
+
+                    }
+
+                    else
+                    {
+                        _Exceptional = _ParentDirectoryObjectExceptional.Convert<IEnumerable<String>>().
+                            PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation));
+                    }
+
+                }
+
+                #endregion
+
+                return _Exceptional;
+
+            }
+
+        }
+
+        #endregion
+
+        #region GetObjectEditions(mySessionToken, myObjectLocation, myObjectStream)
+
+        public Exceptional<IEnumerable<String>> GetObjectEditions(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream)
+        {
+
+            var _Exceptional = new Exceptional<IEnumerable<String>>();
+            var _ObjectLocatorExceptional = GetObjectLocator(mySessionToken, myObjectLocation);
+
+            if (_ObjectLocatorExceptional.IsValid())
+            {
+
+                // Get ObjectStream
+                var _ObjectStream = _ObjectLocatorExceptional.Value[myObjectStream];
+
+                if (_ObjectStream != null)
+                    _Exceptional.Value = _ObjectStream.Keys;
+
+                else
+                    _Exceptional.PushT(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
+
+            }
+
+            else
+            {
+                _Exceptional = _ObjectLocatorExceptional.Convert<IEnumerable<String>>().
+                    PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
+            }
+
+            return _Exceptional;
+
+        }
+
+        #endregion
+
+        #region GetObjectRevisionIDs(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition)
+
+        public Exceptional<IEnumerable<ObjectRevisionID>> GetObjectRevisionIDs(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition)
+        {
+
+            var _Exceptional = new Exceptional<IEnumerable<ObjectRevisionID>>();
+            var _ObjectLocatorExceptional = GetObjectLocator(mySessionToken, myObjectLocation);
+
+            if (_ObjectLocatorExceptional.IsValid())
+            {
+
+                // Get ObjectStream
+                var _ObjectStream = _ObjectLocatorExceptional.Value[myObjectStream];
+
+                if (_ObjectStream != null && _ObjectStream.ContainsKey(myObjectEdition))
+                {
+
+                    // Get ObjectEdition
+                    var _ObjectEdition = _ObjectStream[myObjectEdition];
+
+                    if (_ObjectEdition != null)
+                        _Exceptional.Value = _ObjectEdition.Keys;
+
+                    else
+                        _Exceptional.PushT(new GraphFSError_ObjectEditionNotFound(myObjectLocation, myObjectStream, myObjectEdition));
+
+                }
+
+                else
+                    _Exceptional.PushT(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
+
+            }
+
+            else
+            {
+                _Exceptional = _ObjectLocatorExceptional.Convert<IEnumerable<ObjectRevisionID>>().
+                    PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
+            }
+
+            return _Exceptional;
+
+        }
+
+        #endregion
+
+        #endregion
+
+        #region AFSObject specific methods
+
+        protected abstract Exceptional<AFSObject> LoadAFSObject_protected         (ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, AFSObject myAFSObject);
+
+
+        #region LockAFSObject_protected(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectLock, myObjectLockType, myLockingTime)
+
+        protected Exceptional<Boolean> LockAFSObject_protected(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime)
+        {
+
+            lock (this)
+            {
+
+                Debug.Assert(myObjectLocation     != null);
+                //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
+                //Debug.Assert(myObjectEdition    != null); => DefaultEdition
+                //Debug.Assert(myObjectRevisionID != null); => LatestRevision
+
+                return new Exceptional<Boolean>(false);
+
+            }
+
+        }
+
+        #endregion
+
+        #region LockAFSObject(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectLock, myObjectLockType, myLockingTime)
+
+        public Exceptional<Boolean> LockAFSObject(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime)
+        {
+
+            lock (this)
+            {
+
+                #region Resolve all symlinks and call myself on a possible ChildFileSystem...
+
+                if (!IsMounted)
+                    return new Exceptional<Boolean>(new GraphFSError_NoFileSystemMounted());
+
+                if (myObjectLocation == null)
+                    return new Exceptional<Boolean>(new ArgumentNullOrEmptyError("myObjectLocation"));
+
+                var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
+
+                if (_ChildIGraphFS != this)
+                    return _ChildIGraphFS.LockAFSObject(mySessionToken, GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myObjectStream, myObjectEdition, myObjectRevisionID, myObjectLock, myObjectLockType, myLockingTime);
+
+                #endregion
+
+                //ToDo: Check mySessionToken!
+
+                return LockAFSObject_protected(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectLock, myObjectLockType, myLockingTime);
+
+            }
+
+        }
+
+        #endregion
+
+
+        #region GetOrCreateAFSObject_protected<PT>(myObjectLocation, myObjectStream = null, myObjectEdition = null, myObjectRevisionID = null, myObjectCopy = 0, myIgnoreIntegrityCheckFailures = false)
+
+        protected Exceptional<PT> GetOrCreateAFSObject_protected<PT>(ObjectLocation myObjectLocation, String myObjectStream = null, String myObjectEdition = null, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new()
+        {
+
+            lock (this)
+            {
+
+                Debug.Assert(myObjectLocation     != null);
+                //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
+                //Debug.Assert(myObjectEdition    != null); => DefaultEdition
+                //Debug.Assert(myObjectRevisionID != null); => LatestRevision
+
+                return GetOrCreateAFSObject_protected<PT>(new Func<PT>(delegate { return new PT(); }),
+                                                         myObjectLocation,
+                                                         myObjectStream,
+                                                         myObjectEdition,
+                                                         myObjectRevisionID,
+                                                         myObjectCopy,
+                                                         myIgnoreIntegrityCheckFailures);
+            
+            }
+
+        }
+
+        #endregion
+
+        #region GetOrCreateAFSObject<PT>(mySessionToken, myObjectLocation, myObjectStream = null, myObjectEdition = null, myObjectRevisionID = null, myObjectCopy = 0, myIgnoreIntegrityCheckFailures = false)
+
+        public Exceptional<PT> GetOrCreateAFSObject<PT>(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream = null, String myObjectEdition = null, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new()
+        {
+
+            lock (this)
+            {
+
+                #region Resolve all symlinks and call myself on a possible ChildFileSystem...
+
+                if (!IsMounted)
+                    return new Exceptional<PT>(new GraphFSError_NoFileSystemMounted());
+
+                if (myObjectLocation == null)
+                    return new Exceptional<PT>(new ArgumentNullOrEmptyError("myObjectLocation"));
+
+                var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
+
+                if (_ChildIGraphFS != this)
+                    return _ChildIGraphFS.GetOrCreateAFSObject<PT>(mySessionToken, GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myObjectStream, myObjectEdition, myObjectRevisionID);
+
+                #endregion
+
+                //ToDo: Check mySessionToken!
+
+                return GetOrCreateAFSObject_protected<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures);
+
+            }
+
+        }
+
+        #endregion
+
+        #region GetOrCreateAFSObject_protected<PT>(myFunc, myObjectLocation, myObjectStream = null, myObjectEdition = null, myObjectRevisionID = null, myObjectCopy = 0, myIgnoreIntegrityCheckFailures = false)
+
+        protected Exceptional<PT> GetOrCreateAFSObject_protected<PT>(Func<PT> myFunc, ObjectLocation myObjectLocation, String myObjectStream = null, String myObjectEdition = null, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject
+        {
+
+            lock (this)
+            {
+
+                Debug.Assert(myObjectLocation     != null);
+                //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
+                //Debug.Assert(myObjectEdition    != null); => DefaultEdition
+                //Debug.Assert(myObjectRevisionID != null); => LatestRevision
+                Debug.Assert(myFunc               != null);
+
+                #region Get the maybe existing AFSObject...
+
+                var _Exceptional = GetAFSObject_protected<PT>(myFunc, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures);
 
                 #endregion
 
                 #region ...or create a new one!
 
-                try
+                if (_Exceptional.IsInvalid())
                 {
 
-                    if (_Exceptional.Value == null)
-                    {
+                    _Exceptional       = new Exceptional<PT>();
+                    _Exceptional.Value = myFunc();
+                    _Exceptional.Value.ObjectLocation = myObjectLocation;
 
-                        _Exceptional       = new Exceptional<PT>();
-                        //_Exceptional.Value = new PT() { ObjectLocation = myObjectLocation };
-                        _Exceptional.Value = myFunc();
-                        _Exceptional.Value.ObjectLocation = myObjectLocation;
+                    // ...else use the ObjectStream defined by the class itself!
+                    if (myObjectStream != null && myObjectStream.Length > 0)
+                        _Exceptional.Value.ObjectStream = myObjectStream;
 
-                        if (myObjectStream != null && myObjectStream.Length > 0)
-                            _Exceptional.Value.ObjectStream = myObjectStream;
+                    // ...else use the ObjectEdition defined by the class itself!
+                    if (myObjectEdition != null && myObjectEdition.Length > 0)
+                        _Exceptional.Value.ObjectEdition = myObjectEdition;
 
-                        if (myObjectEdition != null && myObjectEdition.Length > 0)
-                            _Exceptional.Value.ObjectEdition = myObjectEdition;
-
-                        if (myObjectRevisionID != null && myObjectRevisionID.Timestamp != 0 && myObjectRevisionID.UUID != null)
-                            _Exceptional.Value.ObjectRevisionID = myObjectRevisionID;
-
-                    }
+                    if (myObjectRevisionID != null && myObjectRevisionID.UUID != null)
+                        _Exceptional.Value.ObjectRevisionID = myObjectRevisionID;
 
                 }
 
-                catch (Exception e)
-                {
-                    _Exceptional.PushT(new GraphFSError(e.Message));
-                }
-
+             
                 #endregion
 
                 return _Exceptional;
@@ -1681,88 +1959,120 @@ namespace sones
 
         #endregion
 
-        #region GetOrCreateObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myIgnoreIntegrityCheckFailures, mySessionToken)
+        #region GetOrCreateAFSObject<PT>(mySessionToken, myFunc, myObjectLocation, myObjectStream = null, myObjectEdition = null, myObjectRevisionID = null, myObjectCopy = 0, myIgnoreIntegrityCheckFailures = false)
 
-        public Exceptional<PT> GetOrCreateFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken) where PT : AFSObject
+        public Exceptional<PT> GetOrCreateAFSObject<PT>(SessionToken mySessionToken, Func<PT> myFunc, ObjectLocation myObjectLocation, String myObjectStream = null, String myObjectEdition = null, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject
         {
-
-            Debug.Assert(myObjectLocation   != null);
-            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
-            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
-            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
-
-            //ToDo: Check mySessionToken!
-
-            return GetOrCreateFSObject_protected<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc);
-
-        }
-
-        #endregion
-
-
-
-        #region GetFSObject_protected<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures)
-
-        protected Exceptional<PT> GetFSObject_protected<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures) where PT : AFSObject, new()
-        {
-
-            Debug.Assert(myObjectLocation   != null);
-            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
-            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
-            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
-
-            return GetFSObject_protected<PT>(myObjectLocation,
-                                             myObjectStream,
-                                             myObjectEdition,
-                                             myObjectRevisionID,
-                                             myObjectCopy,
-                                             myIgnoreIntegrityCheckFailures,
-                                             new Func<PT>(delegate { return new PT(); }));
-
-        }
-
-        #endregion
-
-        #region GetFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, mySessionToken)
-
-        public Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, SessionToken mySessionToken) where PT : AFSObject, new()
-        {
-
-            Debug.Assert(myObjectLocation   != null);
-            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
-            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
-            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
-
-            return GetFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, new Func<PT>(delegate { return new PT(); }), mySessionToken);
-
-        }
-
-        #endregion
-
-        #region GetFSObject_protected<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures)
-
-        protected Exceptional<PT> GetFSObject_protected<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc) where PT : AFSObject
-        {
-
-            Debug.Assert(myObjectLocation   != null);
-            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
-            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
-            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
-            Debug.Assert(myFunc             != null);
 
             lock (this)
             {
 
+                #region Resolve all symlinks and call myself on a possible ChildFileSystem...
+
+                if (!IsMounted)
+                    return new Exceptional<PT>(new GraphFSError_NoFileSystemMounted());
+
+                if (myFunc == null)
+                    return new Exceptional<PT>(new ArgumentNullOrEmptyError("myFunc"));
+
+                if (myObjectLocation == null)
+                    return new Exceptional<PT>(new ArgumentNullOrEmptyError("myObjectLocation"));
+
+                var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
+
+                if (_ChildIGraphFS != this)
+                    return _ChildIGraphFS.GetOrCreateAFSObject<PT>(mySessionToken, myFunc, GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures);
+
+                #endregion
+
+                //ToDo: Check mySessionToken!
+
+                return GetOrCreateAFSObject_protected<PT>(myFunc, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures);
+            
+            }
+
+        }
+
+        #endregion
+
+
+        #region GetAFSObject_protected<PT>(myObjectLocation, myObjectStream = null, myObjectEdition = null, myObjectRevisionID = null, myObjectCopy = 0, myIgnoreIntegrityCheckFailures = false)
+
+        protected Exceptional<PT> GetAFSObject_protected<PT>(ObjectLocation myObjectLocation, String myObjectStream = null, String myObjectEdition = null, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new()
+        {
+
+            lock (this)
+            {
+
+                Debug.Assert(myObjectLocation     != null);
+                //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
+                //Debug.Assert(myObjectEdition    != null); => DefaultEdition
+                //Debug.Assert(myObjectRevisionID != null); => LatestRevision
+
+                return GetAFSObject_protected<PT>(new Func<PT>(delegate { return new PT(); }),
+                                                 myObjectLocation,
+                                                 myObjectStream,
+                                                 myObjectEdition,
+                                                 myObjectRevisionID,
+                                                 myObjectCopy,
+                                                 myIgnoreIntegrityCheckFailures);
+
+            }
+
+        }
+
+        #endregion
+
+        #region GetAFSObject<PT>(mySessionToken, myObjectLocation, myObjectStream = null, myObjectEdition = null, myObjectRevisionID = null, myObjectCopy = 0, myIgnoreIntegrityCheckFailures = false)
+
+        public Exceptional<PT> GetAFSObject<PT>(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream = null, String myObjectEdition = null, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new()
+        {
+
+            lock (this)
+            {
+
+                #region Resolve all symlinks and call myself on a possible ChildFileSystem...
+
+                if (!IsMounted)
+                    return new Exceptional<PT>(new GraphFSError_NoFileSystemMounted());
+
+                if (myObjectLocation == null)
+                    return new Exceptional<PT>(new ArgumentNullOrEmptyError("myObjectLocation"));
+
+                var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
+
+                if (_ChildIGraphFS != this)
+                    return _ChildIGraphFS.GetAFSObject<PT>(mySessionToken, GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures);
+
+                #endregion
+
+                //ToDo: Check mySessionToken!
+
+                return GetAFSObject<PT>(mySessionToken, new Func<PT>(delegate { return new PT(); }), myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures);
+
+            }
+
+        }
+
+        #endregion
+
+        #region GetAFSObject_protected<PT>(myFunc, myObjectLocation, myObjectStream = null, myObjectEdition = null, myObjectRevisionID = null, myObjectCopy = 0, myIgnoreIntegrityCheckFailures = false)
+
+        protected Exceptional<PT> GetAFSObject_protected<PT>(Func<PT> myFunc, ObjectLocation myObjectLocation, String myObjectStream = null, String myObjectEdition = null, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject
+        {
+
+            lock (this)
+            {
+
+                Debug.Assert(myObjectLocation   != null);
+                //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
+                //Debug.Assert(myObjectEdition    != null); => DefaultEdition
+                //Debug.Assert(myObjectRevisionID != null); => LatestRevision
+                Debug.Assert(myFunc             != null);
 
                 PT newT = myFunc();
 
                 #region Input validation
-
-                using (var _Exceptional2 = new Exceptional<PT>().NotNullOrEmptyMsg<PT>("The myObjectLocation must not be null or its length zero!", myObjectLocation))
-                {
-                    if (_Exceptional2.Failed())
-                        return _Exceptional2;
-                }
 
                 if (myObjectStream == null)
                 {
@@ -1794,7 +2104,7 @@ namespace sones
                     if (_ObjectLocatorExceptional.Failed())
                         return _ObjectLocatorExceptional.Convert<PT>();
 
-                    if (_ObjectLocatorExceptional.Success() && _ObjectLocatorExceptional.Value != null)
+                    if (_ObjectLocatorExceptional.IsValid())
                     {
 
                         #region Resolve ObjectStream, -Edition and -RevisionID
@@ -1873,23 +2183,22 @@ namespace sones
 
                         #endregion
 
+                        Debug.Assert(_ObjectRevision.CacheUUID != null);
+
                         if (_ObjectRevision != null && _ObjectRevision.CacheUUID != null)
                         {
 
                             #region Try to get the object from the internal cache...
 
-                            var _GetObjectFromCacheExceptional = CacheGet<PT>(_ObjectRevision.CacheUUID);
+                            var _GetObjectFromCacheExceptional = _ObjectCache.GetAFSObject<PT>(_ObjectRevision.CacheUUID);
 
-                            if (_GetObjectFromCacheExceptional.Success() && _GetObjectFromCacheExceptional.Value != null)
+                            if (_GetObjectFromCacheExceptional.IsValid())
                             {
                                 
                                 _Exceptional.Value       = _GetObjectFromCacheExceptional.Value;
 
                                 if (_Exceptional.Value.ObjectLocatorReference == null)
                                     _Exceptional.Value.ObjectLocatorReference = _ObjectLocatorExceptional.Value;
-
-                                if (_Exceptional.Value.INodeReference == null)
-                                    _Exceptional.Value.INodeReference = _ObjectLocatorExceptional.Value.INodeReference;
 
                                 _Exceptional.Value.isNew = false;
 
@@ -1909,19 +2218,28 @@ namespace sones
                                     Debug.WriteLine("_ObjectRevision.Count > 2");
                                 }
 
+                                newT.ObjectStream           = myObjectStream;
+                                newT.ObjectEdition          = myObjectEdition;
+                                newT.ObjectRevisionID       = myObjectRevisionID;
+                                newT.ObjectLocation         = myObjectLocation;
+                                newT.ObjectLocatorReference = _ObjectLocatorExceptional.Value;
+
                                 //var _LoadObjectExceptional = LoadObject_protected<PT>(_ObjectLocatorExceptional.Value, _ObjectRevision, myIgnoreIntegrityCheckFailures);
                                 var _LoadObjectExceptional = LoadAFSObject_protected(_ObjectLocatorExceptional.Value, myObjectStream, myObjectEdition, myObjectRevisionID, 0, myIgnoreIntegrityCheckFailures, newT);
 
-                                if (_LoadObjectExceptional.Success() && _LoadObjectExceptional.Value != null)
+                                if (_LoadObjectExceptional.IsValid())
                                 {
 
-                                    _LoadObjectExceptional.Value.ObjectStream      = myObjectStream;
-                                    _LoadObjectExceptional.Value.ObjectStream      = myObjectStream;
-                                    _LoadObjectExceptional.Value.ObjectEdition     = myObjectEdition;
-                                    _LoadObjectExceptional.Value.ObjectRevisionID    = myObjectRevisionID;
+                                    //_LoadObjectExceptional.Value.ObjectStream           = myObjectStream;
+                                    //_LoadObjectExceptional.Value.ObjectStream           = myObjectStream;
+                                    //_LoadObjectExceptional.Value.ObjectEdition          = myObjectEdition;
+                                    //_LoadObjectExceptional.Value.ObjectRevisionID       = myObjectRevisionID;
+                                    //_LoadObjectExceptional.Value.ObjectLocation         = myObjectLocation;
+                                    //_LoadObjectExceptional.Value.ObjectLocatorReference = _ObjectLocatorExceptional.Value;
 
                                     // Cache the loaded object
-                                    CacheAdd(_ObjectRevision.CacheUUID, _LoadObjectExceptional.Value, false);
+                                    _ObjectCache.StoreAFSObject(_LoadObjectExceptional.Value, false);
+                                    //_ObjectCache.StoreAFSObject(_LoadObjectExceptional.Value.ObjectUUID, _LoadObjectExceptional.Value, false);
 
                                     //_Exceptional.Value = _LoadObjectExceptional.Value;
                                     _Exceptional.Value = _LoadObjectExceptional.Value as PT;
@@ -1960,278 +2278,386 @@ namespace sones
 
         #endregion
 
-        #region GetFSObject<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc, mySessionToken)
+        #region GetAFSObject<PT>(mySessionToken, myFunc, myObjectLocation, myObjectStream = null, myObjectEdition = null, myObjectRevisionID = null, myObjectCopy = 0, myIgnoreIntegrityCheckFailures = false)
 
-        public Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, UInt64 myObjectCopy, Boolean myIgnoreIntegrityCheckFailures, Func<PT> myFunc, SessionToken mySessionToken)
+        public Exceptional<PT> GetAFSObject<PT>(SessionToken mySessionToken, Func<PT> myFunc, ObjectLocation myObjectLocation, String myObjectStream = null, String myObjectEdition = null, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false)
             where PT : AFSObject
         {
-
-            Debug.Assert(myObjectLocation   != null);
-            //Debug.Assert(myObjectStream     != null); => PT.ObjectStream
-            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
-            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
-
-            //ToDo: Check mySessionToken!
-
-            #region Call OnLoadEvent on this file system
-
-            OnLoadEvent(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID);
-
-            #endregion
-
-            var _PTExceptional = GetFSObject_protected<PT>(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures, myFunc);
-
-            #region Call OnSavedEvents on this file system and the given AFSObject
-
-            if (!_PTExceptional.Failed())
-            {
-                OnLoadedEvent(_PTExceptional.Value.ObjectLocatorReference, _PTExceptional.Value);
-                _PTExceptional.Value.OnLoadedEvent(_PTExceptional.Value.ObjectLocatorReference, _PTExceptional.Value);
-            }
-
-            #endregion
-
-            return _PTExceptional;
-
-        }
-
-        #endregion
-
-
-
-        #region StoreAFSObject_protected(myObjectLocation, myAGraphObject, myAllowOverwritting)
-
-        protected Exceptional StoreAFSObject_protected(ObjectLocation myObjectLocation, AFSObject myAFSObject, Boolean myAllowOverwritting)
-        {
-
-            var _Exceptional = new Exceptional();
-
-            #region Check/Set myAFSObject.ObjectStream/-Edition/-RevisionID
-
-            if (myAFSObject.ObjectEdition == null)
-                myAFSObject.ObjectEdition = FSConstants.DefaultEdition;
-
-            // Use the _ForestUUID to distinguish ObjectRevisions in a distributed environment!
-            if (myAFSObject.ObjectRevisionID == null)
-                myAFSObject.ObjectRevisionID = new ObjectRevisionID(_ForestUUID);
-
-            #endregion
-
-            #region Check/Set the ObjectLocator and the INode
-
-            if (myAFSObject.ObjectLocatorReference == null)
-            {
-
-                // Will load the ParentIDirectoryObject
-                var _AFSObjectLocator = GetObjectLocator_protected(myObjectLocation);
-
-                if (_AFSObjectLocator.Failed())
-                {
-
-                    var _ParentIDirectoryObjectLocator = GetObjectLocator_protected(new ObjectLocation(myObjectLocation.Path));
-
-                    if (_ParentIDirectoryObjectLocator.Failed())
-                    {
-                        //return _ParentIDirectoryObjectLocator.Push(new GraphFSError_ObjectLocatorNotFound(new ObjectLocation(myObjectLocation.Path)));
-                        throw new GraphFSException("ObjectLocator for parent ObjectLocation '" + myObjectLocation.Path + "' was not found!");
-                    }
-
-                }
-
-                myAFSObject.ObjectLocatorReference = _AFSObjectLocator.Value;
-
-                if (myAFSObject.ObjectLocatorReference == null)
-                {
-
-                    myAFSObject.ObjectLocatorReference = new ObjectLocator(myAFSObject.ObjectLocation, myAFSObject.ObjectUUID);
-                    myAFSObject.ObjectLocatorReference.INodeReference = new INode(myAFSObject.ObjectUUID);
-                    myAFSObject.ObjectLocatorReference.INodeReference.LastModificationTime = myAFSObject.ObjectRevisionID.Timestamp;
-
-                    myAFSObject.ObjectLocatorReference.INodeReference.ObjectLocatorReference = myAFSObject.ObjectLocatorReference;
-
-                }
-
-                myAFSObject.INodeReference = myAFSObject.ObjectLocatorReference.INodeReference;
-
-            }
-
-            if (myAFSObject.INodeReference.ObjectLocatorReference == null)
-                myAFSObject.INodeReference.ObjectLocatorReference = myAFSObject.ObjectLocatorReference;
-
-            if (myAFSObject.ObjectLocatorReference.INodeReference == null)
-                myAFSObject.ObjectLocatorReference.INodeReference = myAFSObject.INodeReference;
-
-            #endregion
-
-            #region Check/Set the ObjectStream and ObjectEdition
-
-            // Add ObjectStreamName
-            if (myAFSObject.ObjectLocatorReference == null ||
-                myAFSObject.ObjectLocatorReference.ContainsKey(myAFSObject.ObjectStream) == false)
-                myAFSObject.ObjectLocatorReference.Add(myAFSObject.ObjectStream, null);
-
-
-            // Add ObjectStream
-            if (myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream] == null)
-                myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream] = new ObjectStream(myAFSObject.ObjectStream, myAFSObject.ObjectEdition, null);
-
-            // Add ObjectEditionName
-            else if (!myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream].ContainsKey(myAFSObject.ObjectEdition))
-                myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream].Add(myAFSObject.ObjectEdition, null);
-
-
-            // Add ObjectEdition
-            if (myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition] == null)
-                myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition] = new ObjectEdition(myAFSObject.ObjectEdition, myAFSObject.ObjectRevisionID, null)
-                {
-                    IsDeleted = false,
-                    MinNumberOfRevisions = FSConstants.MIN_NUMBER_OF_REVISIONS,
-                    MaxNumberOfRevisions = FSConstants.MAX_NUMBER_OF_REVISIONS,
-                    MinRevisionDelta = FSConstants.MIN_REVISION_DELTA,
-                    MaxRevisionAge = FSConstants.MAX_REVISION_AGE
-                };
-
-            else
-
-                // The ObjectEdition might be marked as deleted before => remove this mark and store another ObjectRevision
-                if (myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].IsDeleted)
-                    myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].IsDeleted = false;
-
-            #endregion
-
-            #region ObjectRevision
-
-            #region Create the first ObjectRevision
-
-            if (myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].Count() == 0)
-            {
-                myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].
-                    Add(myAFSObject.ObjectRevisionID, new ObjectRevision(myAFSObject.ObjectStream)
-                {
-                    MinNumberOfCopies = FSConstants.MIN_NUMBER_OF_COPIES,
-                    MaxNumberOfCopies = FSConstants.MAX_NUMBER_OF_COPIES
-                });
-            }
-
-            #endregion
-
-            // Unknown := newer or older but not first ObjectRevision
-            else
-            {
-
-                #region Try to overwrite the latest ObjectRevision
-
-                if (myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].LatestRevisionID == myAFSObject.ObjectRevisionID)
-                {
-
-                    if (myAllowOverwritting)
-                    {
-
-                        myAFSObject.ObjectRevisionID = new ObjectRevisionID(_ForestUUID);
-
-                        myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].
-                            Add(myAFSObject.ObjectRevisionID, new ObjectRevision(myAFSObject.ObjectStream)
-                        {
-                            MinNumberOfCopies = FSConstants.MIN_NUMBER_OF_COPIES,
-                            MaxNumberOfCopies = FSConstants.MAX_NUMBER_OF_COPIES
-                        });
-
-                    }
-
-                    else
-                    {
-                        return _Exceptional.Push(new GraphFSError_CouldNotOverwriteRevision(myAFSObject.ObjectLocation, myAFSObject.ObjectStream, myAFSObject.ObjectEdition, myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].LatestRevisionID));
-                    }
-
-                }
-
-                #endregion
-
-                #region Try to add a very old ObjectRevision
-
-                else if (myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].LatestRevisionID > myAFSObject.ObjectRevisionID)
-                {
-                    if (myAllowOverwritting)
-                    {
-
-                        myAFSObject.ObjectRevisionID = new ObjectRevisionID(_ForestUUID);
-
-                        myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].
-                            Add(myAFSObject.ObjectRevisionID, new ObjectRevision(myAFSObject.ObjectStream)
-                        {
-                            MinNumberOfCopies = FSConstants.MIN_NUMBER_OF_COPIES,
-                            MaxNumberOfCopies = FSConstants.MAX_NUMBER_OF_COPIES
-                        });
-
-                    }
-
-                    else
-                    {
-                        return _Exceptional.Push(new GraphFSError_CouldNotOverwriteRevision(myAFSObject.ObjectLocation, myAFSObject.ObjectStream, myAFSObject.ObjectEdition, myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].LatestRevisionID));
-                    }
-                }
-
-                #endregion
-
-                #region Add a very new ObjectRevision
-
-                else// if (myAGraphObject.ObjectLocatorReference[myAGraphObject.ObjectStream][myAGraphObject.ObjectEdition][myAGraphObject.ObjectRevision] == null)
-                {
-                    myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition][myAFSObject.ObjectRevisionID] =
-                        new ObjectRevision(myAFSObject.ObjectStream)
-                    {
-                        MinNumberOfCopies = FSConstants.MIN_NUMBER_OF_COPIES,
-                        MaxNumberOfCopies = FSConstants.MAX_NUMBER_OF_COPIES
-                    };
-                }
-
-                #endregion
-
-            }
-
-            //// Check if there is already an existing revision
-            //if (myAGraphObject.ObjectLocatorReference[myAGraphObject.ObjectStream][myAGraphObject.ObjectEdition].ULongCount() > 0 && !myAllowOverwritting)
-            //{
-            //    _Exceptional.Add(new GraphFSError_CouldNotOverwriteRevision(myAGraphObject.ObjectLocation, myAGraphObject.ObjectStream, myAGraphObject.ObjectEdition, myAGraphObject.ObjectLocatorReference[myAGraphObject.ObjectStream][myAGraphObject.ObjectEdition].LatestRevisionID));
-            //    //return _Exceptional;
-            //    throw new GraphFSException_ObjectStreamAlreadyExists(myAGraphObject.ObjectStream + " '" + myObjectLocation + "' already exists!");
-            //}
-
-            //else if (!myAGraphObject.ObjectLocatorReference[myAGraphObject.ObjectStream][myAGraphObject.ObjectEdition].ContainsKey(myAGraphObject.ObjectRevisionID))
-            //    myAGraphObject.ObjectLocatorReference[myAGraphObject.ObjectStream][myAGraphObject.ObjectEdition].Add(myAGraphObject.ObjectRevisionID, null);
-
-            #endregion
-
-            StoreAFSObject_Layer2_protected(myObjectLocation, myAFSObject, myAllowOverwritting);
-
-            return _Exceptional;
-
-        }
-
-        #endregion
-
-        #region StoreAFSObject(myObjectLocation, myAFSObject, myAllowOverwritting, mySessionToken)
-
-        public Exceptional StoreAFSObject(ObjectLocation myObjectLocation, AFSObject myAFSObject, Boolean myAllowOverwritting, SessionToken mySessionToken)
-        {
-
-            Debug.Assert(myObjectLocation       != null);
-            Debug.Assert(myAFSObject            != null);
-            Debug.Assert(myAFSObject.ObjectStream     != null);// => PT.ObjectStream
-            //Debug.Assert(myObjectEdition    != null); => DefaultEdition
-            //Debug.Assert(myObjectRevisionID != null); => LatestRevision
-
-            var _OldObjectRevisionID = myAFSObject.ObjectRevisionID;
 
             lock (this)
             {
 
+                #region Resolve all symlinks and call myself on a possible ChildFileSystem...
+
+                if (!IsMounted)
+                    return new Exceptional<PT>(new GraphFSError_NoFileSystemMounted());
+
+                if (myObjectLocation == null)
+                    return new Exceptional<PT>(new ArgumentNullOrEmptyError("myObjectLocation"));
+
+                var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
+
+                if (_ChildIGraphFS != this)
+                    return _ChildIGraphFS.GetAFSObject<PT>(mySessionToken, myFunc, GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures);
+
+                #endregion
+
+                //ToDo: Check mySessionToken!
+
+                #region Call OnLoadEvent on this file system
+
+                OnLoadEvent(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID);
+
+                #endregion
+
+                var _PTExceptional = GetAFSObject_protected<PT>(myFunc, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, myObjectCopy, myIgnoreIntegrityCheckFailures);
+
+                #region Call OnSavedEvents on this file system and the given AFSObject
+
+                if (!_PTExceptional.Failed())
+                {
+                    OnLoadedEvent(_PTExceptional.Value.ObjectLocatorReference, _PTExceptional.Value);
+                    _PTExceptional.Value.OnLoadedEvent(_PTExceptional.Value.ObjectLocatorReference, _PTExceptional.Value);
+                }
+
+                #endregion
+
+                return _PTExceptional;
+
+            }
+
+        }
+
+        #endregion
+
+
+        #region (protected) StoreAFSObject_protected(myObjectLocation, myAGraphObject, myAllowToOverwrite = false)
+
+        protected virtual Exceptional StoreAFSObject_protected(ObjectLocation myObjectLocation, AFSObject myAFSObject, Boolean myAllowToOverwrite = false)
+        {
+
+            lock (this)
+            {
+
+                #region Initial checks
+
+                Debug.Assert(IsMounted);
+                Debug.Assert(myObjectLocation           != null);
+                Debug.Assert(myAFSObject                != null);
+                Debug.Assert(myAFSObject.ObjectStream   != null);
+
+                #endregion
+
+                #region Check/Set myAFSObject.ObjectStream/-Edition/-RevisionID
+
+                if (myAFSObject.ObjectStream == null)
+
+                if (myAFSObject.ObjectEdition == null)
+                    myAFSObject.ObjectEdition = FSConstants.DefaultEdition;
+
+                // Use the _ForestUUID to distinguish ObjectRevisions in a distributed environment!
+                if (myAFSObject.ObjectRevisionID == null)
+                    myAFSObject.ObjectRevisionID = new ObjectRevisionID(_ForestUUID);
+
+                #endregion
+
+                #region Check if AFSObject already exists!
+
+                var _Exceptional = ObjectEditionExists_protected(myObjectLocation, myAFSObject.ObjectStream, myAFSObject.ObjectEdition);
+                if (_Exceptional.IsValid())
+                {
+                    if (_Exceptional.Value == Trinary.TRUE && !myAllowToOverwrite)
+                        return new Exceptional(new GraphFSError("Can not overwrite!"));
+                }
+
+                #endregion
+
+                #region Check/Set the ObjectLocator and the INode
+
+                if (myAFSObject.ObjectLocatorReference == null)
+                {
+
+                    // Will load the ParentIDirectoryObject
+                    var _AFSObjectLocator = GetObjectLocator_protected(myObjectLocation);
+
+                    if (_AFSObjectLocator.Failed())
+                    {
+
+                        var _ParentIDirectoryObjectLocator = GetObjectLocator_protected(new ObjectLocation(myObjectLocation.Path));
+
+                        if (_ParentIDirectoryObjectLocator.Failed())
+                        {
+                            //return _ParentIDirectoryObjectLocator.Push(new GraphFSError_ObjectLocatorNotFound(new ObjectLocation(myObjectLocation.Path)));
+                            throw new GraphFSException("ObjectLocator for parent ObjectLocation '" + myObjectLocation.Path + "' was not found!");
+                        }
+
+                    }
+
+                    myAFSObject.ObjectLocatorReference = _AFSObjectLocator.Value;
+
+                    if (myAFSObject.ObjectLocatorReference == null)
+                    {
+
+                        myAFSObject.ObjectLocatorReference = new ObjectLocator(myAFSObject.ObjectLocation, myAFSObject.ObjectUUID);
+                        myAFSObject.ObjectLocatorReference.INodeReferenceSetter = new INode(myAFSObject.ObjectUUID);
+                        myAFSObject.ObjectLocatorReference.INodeReference.LastModificationTime = myAFSObject.ObjectRevisionID.Timestamp;
+                        Debug.Assert(myAFSObject.INodeReference == myAFSObject.ObjectLocatorReference.INodeReference);
+                        myAFSObject.ObjectLocatorReference.INodeReference.ObjectLocatorReference = myAFSObject.ObjectLocatorReference;
+
+                        //#region Store new ObjectLocator and INode
+
+                        //_Exceptional.Push(StoreObjectLocator_protected(myAFSObject.ObjectLocatorReference));
+                        //_Exceptional.Push(StoreINode_protected(myAFSObject.ObjectLocatorReference.INodeReference));
+
+                        //#endregion
+
+                    }
+
+                }
+
+
+                if (myAFSObject.INodeReference.ObjectLocatorReference == null)
+                    myAFSObject.INodeReference.ObjectLocatorReference = myAFSObject.ObjectLocatorReference;
+
+                if (myAFSObject.ObjectLocatorReference.INodeReference == null)
+                    myAFSObject.ObjectLocatorReference.INodeReferenceSetter = myAFSObject.INodeReference;
+
+                #endregion
+
+                #region Check/Set the ObjectStream and ObjectEdition
+
+                // Add ObjectStreamName
+                if (myAFSObject.ObjectLocatorReference == null ||
+                    myAFSObject.ObjectLocatorReference.ContainsKey(myAFSObject.ObjectStream) == false)
+                    myAFSObject.ObjectLocatorReference.Add(myAFSObject.ObjectStream, null);
+
+
+                // Add ObjectStream
+                if (myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream] == null)
+                    myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream] = new ObjectStream(myAFSObject.ObjectStream, myAFSObject.ObjectEdition, null);
+
+                // Add ObjectEditionName
+                else if (!myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream].ContainsKey(myAFSObject.ObjectEdition))
+                    myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream].Add(myAFSObject.ObjectEdition, null);
+
+
+                // Add ObjectEdition
+                if (myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition] == null)
+                    myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition] = new ObjectEdition(myAFSObject.ObjectEdition, myAFSObject.ObjectRevisionID, null)
+                    {
+                        IsDeleted = false,
+                        MinNumberOfRevisions = FSConstants.MIN_NUMBER_OF_REVISIONS,
+                        MaxNumberOfRevisions = FSConstants.MAX_NUMBER_OF_REVISIONS,
+                        MinRevisionDelta     = FSConstants.MIN_REVISION_DELTA,
+                        MaxRevisionAge       = FSConstants.MAX_REVISION_AGE
+                    };
+
+                else
+
+                    // The ObjectEdition might be marked as deleted before => remove this mark and store another ObjectRevision
+                    if (myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].IsDeleted)
+                        myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].IsDeleted = false;
+
+                #endregion
+
+
+                #region ObjectRevision
+
+                #region Create the first ObjectRevision
+
+                // Count() == 0
+                if (!myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].Any())
+                {
+                    myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].
+                        Add(myAFSObject.ObjectRevisionID, new ObjectRevision(myAFSObject.ObjectRevisionID, myAFSObject.ObjectStream)
+                    {
+                        MinNumberOfCopies = FSConstants.MIN_NUMBER_OF_COPIES,
+                        MaxNumberOfCopies = FSConstants.MAX_NUMBER_OF_COPIES
+                    });
+                }
+
+                if (myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].LatestRevision == null)
+                {
+                    myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition][myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].LatestRevisionID] =
+                        new ObjectRevision(myAFSObject.ObjectRevisionID, myAFSObject.ObjectStream)
+                        {
+                            MinNumberOfCopies = FSConstants.MIN_NUMBER_OF_COPIES,
+                            MaxNumberOfCopies = FSConstants.MAX_NUMBER_OF_COPIES
+                        };
+
+                }
+
+                #endregion
+
+                // Unknown := newer or older but not first ObjectRevision
+                else
+                {
+
+                    #region Try to overwrite the latest ObjectRevision
+
+                    if (myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].LatestRevisionID == myAFSObject.ObjectRevisionID)
+                    {
+
+                        if (myAllowToOverwrite)
+                        {
+
+                            myAFSObject.ObjectRevisionID = new ObjectRevisionID(_ForestUUID);
+
+                            myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].
+                                Add(myAFSObject.ObjectRevisionID, new ObjectRevision(myAFSObject.ObjectRevisionID, myAFSObject.ObjectStream)
+                            {
+                                MinNumberOfCopies = FSConstants.MIN_NUMBER_OF_COPIES,
+                                MaxNumberOfCopies = FSConstants.MAX_NUMBER_OF_COPIES
+                            });
+
+                        }
+
+                        else
+                        {
+                            return _Exceptional.Push(new GraphFSError_CouldNotOverwriteRevision(myAFSObject.ObjectLocation, myAFSObject.ObjectStream, myAFSObject.ObjectEdition, myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].LatestRevisionID));
+                        }
+
+                    }
+
+                    #endregion
+
+                    #region Try to add a very old ObjectRevision
+
+                    else if (myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].LatestRevisionID > myAFSObject.ObjectRevisionID)
+                    {
+                        if (myAllowToOverwrite)
+                        {
+
+                            myAFSObject.ObjectRevisionID = new ObjectRevisionID(_ForestUUID);
+
+                            myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].
+                                Add(myAFSObject.ObjectRevisionID, new ObjectRevision(myAFSObject.ObjectRevisionID, myAFSObject.ObjectStream)
+                            {
+                                MinNumberOfCopies = FSConstants.MIN_NUMBER_OF_COPIES,
+                                MaxNumberOfCopies = FSConstants.MAX_NUMBER_OF_COPIES
+                            });
+
+                        }
+
+                        else
+                        {
+                            return _Exceptional.Push(new GraphFSError_CouldNotOverwriteRevision(myAFSObject.ObjectLocation, myAFSObject.ObjectStream, myAFSObject.ObjectEdition, myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].LatestRevisionID));
+                        }
+                    }
+
+                    #endregion
+
+                    #region Add a very new ObjectRevision
+
+                    else// if (myAGraphObject.ObjectLocatorReference[myAGraphObject.ObjectStream][myAGraphObject.ObjectEdition][myAGraphObject.ObjectRevision] == null)
+                    {
+                        myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition][myAFSObject.ObjectRevisionID] =
+                            new ObjectRevision(myAFSObject.ObjectRevisionID, myAFSObject.ObjectStream)
+                        {
+                            MinNumberOfCopies = FSConstants.MIN_NUMBER_OF_COPIES,
+                            MaxNumberOfCopies = FSConstants.MAX_NUMBER_OF_COPIES
+                        };
+                    }
+
+                    #endregion
+
+                }
+
+                //// Check if there is already an existing revision
+                //if (myAGraphObject.ObjectLocatorReference[myAGraphObject.ObjectStream][myAGraphObject.ObjectEdition].ULongCount() > 0 && !myAllowOverwritting)
+                //{
+                //    _Exceptional.Add(new GraphFSError_CouldNotOverwriteRevision(myAGraphObject.ObjectLocation, myAGraphObject.ObjectStream, myAGraphObject.ObjectEdition, myAGraphObject.ObjectLocatorReference[myAGraphObject.ObjectStream][myAGraphObject.ObjectEdition].LatestRevisionID));
+                //    //return _Exceptional;
+                //    throw new GraphFSException_ObjectStreamAlreadyExists(myAGraphObject.ObjectStream + " '" + myObjectLocation + "' already exists!");
+                //}
+
+                //else if (!myAGraphObject.ObjectLocatorReference[myAGraphObject.ObjectStream][myAGraphObject.ObjectEdition].ContainsKey(myAGraphObject.ObjectRevisionID))
+                //    myAGraphObject.ObjectLocatorReference[myAGraphObject.ObjectStream][myAGraphObject.ObjectEdition].Add(myAGraphObject.ObjectRevisionID, null);
+
+                #endregion
+
+                #region Cache ObjectLocator and AFSObject
+
+                _ObjectCache.StoreObjectLocator(myAFSObject.ObjectLocatorReference, false);
+                _ObjectCache.StoreAFSObject(myAFSObject, false);
+
+                #endregion
+
+                #region Remove obsolete ObjectRevisions
+
+                //while (myAGraphObject.ObjectLocatorReference[myAGraphObject.ObjectStream][myAGraphObject.ObjectEdition].MaxNumberOfRevisions <
+                //       myAGraphObject.ObjectLocatorReference[myAGraphObject.ObjectStream][myAGraphObject.ObjectEdition].GetMaxPathLength(
+                //       myAGraphObject.ObjectLocatorReference[myAGraphObject.ObjectStream][myAGraphObject.ObjectEdition].LatestRevisionID))
+                //{
+                //    DeleteOldestObjectRevision(myAGraphObject.ObjectLocatorReference, myAGraphObject.ObjectStream, myAGraphObject.ObjectEdition, mySessionToken);
+                //}
+
+                var _ObjectEdition1 = myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition];
+
+                while (_ObjectEdition1.ULongCount() > _ObjectEdition1.MaxNumberOfRevisions)
+                {
+
+                    // If the oldest and the second oldest object within the cache are different remove the oldest!
+                    if (_ObjectEdition1.SecondOldestRevision != null)
+                        if (_ObjectEdition1.SecondOldestRevision.CacheUUID != _ObjectEdition1.OldestRevision.CacheUUID)
+                        {
+
+                            // Remove from disc
+                            // [...]
+
+                            // Remove from ObjectCache
+                            _ObjectCache.RemoveAFSObject(_ObjectEdition1.OldestRevision.CacheUUID);
+
+                        }
+
+                    _ObjectEdition1.Remove(_ObjectEdition1.OldestRevisionID);
+
+                }
+
+                #endregion
+
+                return Exceptional.OK;
+
+            }
+
+            // Most low-level implementations run their virtual-override at this point!
+
+        }
+
+        #endregion
+
+        #region StoreAFSObject(mySessionToken, myObjectLocation, myAFSObject, myAllowToOverwrite = false)
+
+        public Exceptional StoreAFSObject(SessionToken mySessionToken, ObjectLocation myObjectLocation, AFSObject myAFSObject, Boolean myAllowToOverwrite = false)
+        {
+
+            lock (this)
+            {
+
+                #region Resolve all symlinks and call myself on a possible ChildFileSystem...
+
+                if (!IsMounted)
+                    return new Exceptional(new GraphFSError_NoFileSystemMounted());
+
+                if (myObjectLocation == null)
+                    return new Exceptional(new ArgumentNullOrEmptyError("myObjectLocation"));
+
+                var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
+
+                if (_ChildIGraphFS != this)
+                    return _ChildIGraphFS.StoreAFSObject(mySessionToken, GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myAFSObject, myAllowToOverwrite);
+
+                #endregion
+
+                //ToDo: Check mySessionToken!
+
+                var _OldObjectRevisionID = myAFSObject.ObjectRevisionID;
+
+                #region Initial Checks
+
                 var _Exceptional = new Exceptional();
-
-                #region Sanity Checks
-
-                _Exceptional.NotNullMsg("AFSObject must not be null!", myAFSObject);
-                _Exceptional.NotNullOrEmptyMsg("The ObjectStream must not be null or its length zero!", myAFSObject.ObjectStream);
+                _Exceptional.NotNullMsg("AFSObject", myAFSObject);
+                _Exceptional.NotNullOrEmptyMsg("ObjectStream", myAFSObject.ObjectStream);
 
                 if (_Exceptional.Failed())
                     return _Exceptional;
@@ -2245,7 +2671,9 @@ namespace sones
 
                 #endregion
 
-                StoreAFSObject_protected(myObjectLocation, myAFSObject, myAllowOverwritting);
+                _Exceptional = StoreAFSObject_protected(myObjectLocation, myAFSObject, myAllowToOverwrite);
+                if (_Exceptional.Failed())
+                    return _Exceptional;
 
                 #region Call OnSavedEvents on this file system and the given AFSObject
 
@@ -2254,7 +2682,7 @@ namespace sones
 
                 #endregion
 
-                return new Exceptional();
+                return _Exceptional;
 
             }
 
@@ -2263,285 +2691,199 @@ namespace sones
         #endregion
 
 
-        #region ObjectExists(myObjectLocation)
+        #region (protected) RenameAFSObjects_protected(myObjectLocation, myNewObjectName)
 
-        public Exceptional<Trinary> ObjectExists(ObjectLocation myObjectLocation, SessionToken mySessionToken)
+        /// <summary>
+        /// Renames all AFSObjects at the given ObjectLocation.
+        /// </summary>
+        /// <param name="myObjectLocation">The current ObjectLocation.</param>
+        /// <param name="myNewObjectName">The new name of the AFSObjects at the given ObjectLocation.</param>
+        protected virtual Exceptional RenameAFSObjects_protected(ObjectLocation myObjectLocation, String myNewObjectName)
         {
 
-            #region Resolve all symlinks and call myself on a possible ChildFileSystem...
+            // Most low-level implementations call their virtual-override first!
 
-            if (!IsMounted)
-                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
-
-            //myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
-
-            if (myObjectLocation == null)
-                return new Exceptional<Trinary>(Trinary.FALSE);
-
-            var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
-
-            if (_ChildIGraphFS != this)
-                return _ChildIGraphFS.ObjectExists(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), mySessionToken);
-
-            #endregion
-
-            var _Exceptional = new Exceptional<Trinary>();
-            var _ParentDirectoryObjectExceptional = GetFSObject_protected<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), FSConstants.DIRECTORYSTREAM, null, null, 0, false);
-
-            if (_ParentDirectoryObjectExceptional.Success() && _ParentDirectoryObjectExceptional.Value != null)
-                _Exceptional.Value = _ParentDirectoryObjectExceptional.Value.ObjectExists(myObjectLocation.Name);
-
-            else
-            {
-                _Exceptional.PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path));
-//                _Exceptional.Add(_ParentDirectoryObjectExceptional.Errors);
-                _Exceptional.Value = Trinary.FALSE;
-            }
-
-            return _Exceptional;
-
-        }
-
-        #endregion
-
-        #region ObjectStreamExists(myObjectLocation, myObjectStream, mySessionToken)
-
-        public Exceptional<Trinary> ObjectStreamExists(ObjectLocation myObjectLocation, String myObjectStream, SessionToken mySessionToken)
-        {
-
-            #region Resolve all symlinks and call myself on a possible ChildFileSystem...
-
-            if (!IsMounted)
-                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
-
-            //myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
-
-            //if (myObjectLocation == null)
-            //    return Trinary.FALSE;
-
-            var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
-
-            if (_ChildIGraphFS != this)
-                return _ChildIGraphFS.ObjectStreamExists(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myObjectStream, mySessionToken);
-
-            #endregion
-
-            var _Exceptional = new Exceptional<Trinary>();
-            var _ParentDirectoryObjectExceptional = GetFSObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), FSConstants.DIRECTORYSTREAM, null, null, 0, false, mySessionToken);
-
-            if (_ParentDirectoryObjectExceptional.Success() && _ParentDirectoryObjectExceptional.Value != null)
+            lock (this)
             {
 
-                // Get DirectoryEntry
-                var _DirectoryEntry = _ParentDirectoryObjectExceptional.Value.GetDirectoryEntry(myObjectLocation.Name);
+                var _Exceptional = Exceptional.OK;
 
-                if (_DirectoryEntry != null && _DirectoryEntry.ObjectStreamsList != null)
-                    _Exceptional.Value = _DirectoryEntry.ObjectStreamsList.Contains(myObjectStream);
-
-                else _Exceptional.Value = Trinary.FALSE;
-
-            }
-
-            else
-            {
-                _Exceptional = new Exceptional<Trinary>(_ParentDirectoryObjectExceptional);
-                _Exceptional.Push(new GraphFSError_DirectoryObjectNotFound(myObjectLocation));
-                _Exceptional.Value = Trinary.FALSE;
-            }
-
-            return _Exceptional;
-
-        }
-
-        #endregion
-
-        #region ObjectEditionExists(myObjectLocation, myObjectStream, myObjectEdition, mySessionToken)
-
-        public Exceptional<Trinary> ObjectEditionExists(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, SessionToken mySessionToken)
-        {
-
-            #region Resolve all symlinks and call myself on a possible ChildFileSystem...
-
-            if (!IsMounted)
-                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
-
-            //myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
-
-            if (myObjectLocation == null)
-                return new Exceptional<Trinary>() { Value = Trinary.FALSE };
-
-            var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
-
-            if (_ChildIGraphFS != this)
-                return _ChildIGraphFS.ObjectEditionExists(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myObjectStream, myObjectEdition, mySessionToken);
-
-            #endregion
-
-            var _Exceptional = new Exceptional<Trinary>();
-            var _ObjectLocatorExceptional = GetObjectLocator(myObjectLocation, mySessionToken);
-
-            if (_ObjectLocatorExceptional.Success() && _ObjectLocatorExceptional.Value != null)
-            {
-
-                // Get ObjectStream
-                var _ObjectStream = _ObjectLocatorExceptional.Value[myObjectStream];
-
-                if (_ObjectStream != null)
-                    _Exceptional.Value = _ObjectStream.ContainsKey(myObjectEdition);
-
-                else
-                {
-                    _Exceptional.PushT(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
-                    _Exceptional.Value = Trinary.FALSE;
-                }
-
-            }
-
-            else
-            {
-                _Exceptional = new Exceptional<Trinary>(_ObjectLocatorExceptional);
-                _Exceptional.PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
-                _Exceptional.Value = Trinary.FALSE;
-            }
-
-            return _Exceptional;
-
-        }
-
-        #endregion
-
-        #region ObjectRevisionExists(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, mySessionToken)
-
-        public Exceptional<Trinary> ObjectRevisionExists(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, SessionToken mySessionToken)
-        {
-
-            #region Resolve all symlinks and call myself on a possible ChildFileSystem...
-
-            if (!IsMounted)
-                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
-
-            //myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
-
-            if (myObjectLocation == null)
-                return new Exceptional<Trinary>() { Value = Trinary.FALSE };
-
-            var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
-
-            if (_ChildIGraphFS != this)
-                return _ChildIGraphFS.ObjectRevisionExists(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myObjectStream, myObjectEdition, myObjectRevisionID, mySessionToken);
-
-            #endregion
-
-            var _Exceptional = new Exceptional<Trinary>();
-            var _ObjectLocatorExceptional = GetObjectLocator(myObjectLocation, mySessionToken);
-
-            if (_ObjectLocatorExceptional.Success() && _ObjectLocatorExceptional.Value != null)
-            {
-
-                // Get ObjectStream
-                var _ObjectStream = _ObjectLocatorExceptional.Value[myObjectStream];
-
-                if (_ObjectStream != null && _ObjectStream.ContainsKey(myObjectEdition))
+                var _ParentDirectoryObjectExceptional = GetAFSObject_protected<DirectoryObject>(myObjectLocation.Path, FSConstants.DIRECTORYSTREAM, null, null, 0, false);
+                if (_ParentDirectoryObjectExceptional.IsValid())
                 {
 
-                    // Get ObjectEdition
-                    var _ObjectEdition = _ObjectStream[myObjectEdition];
+                    // Rename ParentDirectoryEntry
+                    if (!_ParentDirectoryObjectExceptional.Value.RenameDirectoryEntry(myObjectLocation.Name, myNewObjectName))
+                        _Exceptional.Push(new GraphFSError_ObjectNotFound(myObjectLocation));
 
-                    if (_ObjectEdition != null)
-                        _Exceptional.Value = _ObjectEdition.ContainsKey(myObjectRevisionID);
-                    
-                    else
-                    {
-                        _Exceptional.PushT(new GraphFSError_ObjectEditionNotFound(myObjectLocation, myObjectStream, myObjectEdition));
-                        _Exceptional.Value = Trinary.FALSE;
-                    }
+                    // Move cached ObjectLocator and all AFSObjects under the given ObjectLocation
+                    _Exceptional = _ObjectCache.MoveToLocation(myObjectLocation, new ObjectLocation(myObjectLocation.Path, myNewObjectName));
+                    if (_Exceptional.Failed())
+                        return _Exceptional;
 
                 }
 
                 else
                 {
-                    _Exceptional.PushT(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
-                    _Exceptional.Value = Trinary.FALSE;
+                    _Exceptional = _ParentDirectoryObjectExceptional.Convert<IEnumerable<ObjectRevisionID>>().
+                        PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path));
                 }
 
-            }
+                return _Exceptional;
 
-            else
-            {
-                _Exceptional = new Exceptional<Trinary>(_ObjectLocatorExceptional);
-                _Exceptional.PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
-                _Exceptional.Value = Trinary.FALSE;
             }
-
-            return _Exceptional;
 
         }
 
         #endregion
 
+        #region RenameAFSObjects(mySessionToken, myObjectLocation, myNewObjectName)
 
-        #region GetObjectStreams(myObjectLocation, mySessionToken)
-
-        public Exceptional<IEnumerable<String>> GetObjectStreams(ObjectLocation myObjectLocation, SessionToken mySessionToken)
+        /// <summary>
+        /// Renames all AFSObjects at the given ObjectLocation.
+        /// </summary>
+        /// <param name="myObjectLocation">The current ObjectLocation.</param>
+        /// <param name="myNewObjectName">The new name of the AFSObjects at the given ObjectLocation.</param>
+        public Exceptional RenameAFSObjects(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myNewObjectName)
         {
 
             lock (this)
             {
 
-                var _Exceptional = new Exceptional<IEnumerable<String>>();
+                #region Resolve all symlinks and call myself on a possible ChildFileSystem...
 
-                #region Special handling of the root directory as we can not ask its parent directory!
+                if (!IsMounted)
+                    return new Exceptional(new GraphFSError_NoFileSystemMounted());
 
-                if (myObjectLocation.Equals(FSPathConstants.PathDelimiter))
-                {
+                if (myObjectLocation == null)
+                    return new Exceptional(new ArgumentNullOrEmptyError("myObjectLocation"));
 
-                    var _ObjectLocatorExceptional = GetObjectLocator(myObjectLocation, mySessionToken);
+                var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
 
-                    if (_ObjectLocatorExceptional.Success() && _ObjectLocatorExceptional.Value != null)
-                        _Exceptional.Value = _ObjectLocatorExceptional.Value.Keys;
-
-                    else
-                    {
-                        _Exceptional = _ObjectLocatorExceptional.Convert<IEnumerable<String>>().
-                            PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
-                    }
-
-                }
+                if (_ChildIGraphFS != this)
+                    return _ChildIGraphFS.RenameAFSObjects(mySessionToken, GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myNewObjectName);
 
                 #endregion
 
-                #region Just ask the parent directory, as this avoids unnecessary loading of the INode and ObjectLocator!
+                //ToDo: Check mySessionToken!
 
-                else
-                {
+                return RenameAFSObjects_protected(myObjectLocation, myNewObjectName);
 
-                    var _ParentDirectoryObjectExceptional = GetFSObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), FSConstants.DIRECTORYSTREAM, null, null, 0, false, mySessionToken);
+            }
 
-                    if (_ParentDirectoryObjectExceptional.Success() && _ParentDirectoryObjectExceptional.Value != null)
-                    {
+        }
 
-                        // Get DirectoryEntry
-                        var _DirectoryEntry = _ParentDirectoryObjectExceptional.Value.GetDirectoryEntry(myObjectLocation.Name);
+        #endregion
 
-                        if (_DirectoryEntry != null && _DirectoryEntry.ObjectStreamsList != null)
-                            _Exceptional.Value = _DirectoryEntry.ObjectStreamsList;
 
-                        else
-                            _Exceptional.PushT(new GraphFSError_CouldNotGetObjectStreams(myObjectLocation));
+        #region (protected) RemoveAFSObject_protected(myObjectLocator, myObjectStream, myObjectEdition, myObjectRevisionID)
 
-                    }
+        /// <summary>
+        /// Removes the specified AFSObject.
+        /// </summary>
+        /// <param name="myObjectLocator">The ObjectLocation of the AFSObject to remove.</param>
+        /// <param name="myObjectStream">The ObjectStream of the AFSObject to remove.</param>
+        /// <param name="myObjectEdition">The ObjectEdition of the AFSObject to remove.</param>
+        /// <param name="myObjectRevisionID">The ObjectRevisionID of the AFSObject to remove.</param>
+        protected virtual Exceptional RemoveAFSObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID)
+        {
 
-                    else
-                    {
-                        _Exceptional = _ParentDirectoryObjectExceptional.Convert<IEnumerable<String>>().
-                            PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation));
-                    }
+            lock (this)
+            {
 
-                }
+                Debug.Assert(IsMounted);
+                Debug.Assert(myObjectLocator    != null);
+                Debug.Assert(myObjectStream     != null);
+                Debug.Assert(myObjectEdition    != null);
+                Debug.Assert(myObjectRevisionID != null);
+
+                #region Check the ObjectOntology
+
+                // ObjectStream
+                if (myObjectLocator.ContainsKey(myObjectStream) == false)
+                    return new Exceptional().Push(new GraphFSError("Invalid ObjectStream '" + myObjectStream + "'!"));
+
+                var _ObjectStream = myObjectLocator[myObjectStream];
+
+                // ObjectEdition
+                if (myObjectEdition == null || _ObjectStream.ContainsKey(myObjectEdition) == false)
+                    return new Exceptional().Push(new GraphFSError("Invalid ObjectEdition '" + myObjectEdition + "'!"));
+
+                var _ObjectEdition = _ObjectStream[myObjectEdition];
+
+                if (_ObjectEdition.IsDeleted)
+                    return Exceptional.OK;
+
+                // ObjectRevision
+                if (myObjectRevisionID == null || _ObjectEdition.ContainsKey(myObjectRevisionID) == false)
+                    return new Exceptional().Push(new GraphFSError("Invalid ObjectRevisionID '" + myObjectRevisionID + "'!"));
+
+                var _ObjectRevision = _ObjectEdition[myObjectRevisionID];
 
                 #endregion
 
-                return _Exceptional;
+                #region Remove AFSObject from ObjectCache
+
+                    // ErrorHandling?!
+                var _Exceptional2 = _ObjectCache.RemoveAFSObject(_ObjectRevision.CacheUUID);
+                if (_Exceptional2.Failed())
+                    return _Exceptional2;
+
+                #endregion
+
+                #region Mark ObjectEdition as deleted
+
+                _ObjectEdition.IsDeleted = true;
+
+                //var _success = _ObjectEdition.Remove(myObjectRevisionID);
+
+                //// If the last ObjectRevision was removed => Remove the ObjectEdition
+                //if (_ObjectEdition.Count == 0)
+                //{
+
+                //    _ObjectStream.Remove(myObjectEdition);
+
+                //    // If the last ObjectEdition was removed => Remove the ObjectEdition
+                //    if (_ObjectStream.Count == 0)
+                //    {
+
+                //        _ObjectLocator.Remove(myObjectStream);
+
+                //        if (_ObjectLocator.Count == 0)
+                //            CacheRemove(myObjectLocation, false);
+
+                //    }
+
+                //}
+
+                #endregion
+
+                #region Remove ObjectStream from ParentIDirectoryObject
+
+                var _Exceptional3 = GetAFSObject_protected<DirectoryObject>(myObjectLocator.ObjectLocation.Path, null, null, null, 0, false).
+                    WhenFailed<DirectoryObject>(e => e.PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocator.ObjectLocation.Path))).
+                    WhenSucceded<DirectoryObject>(e =>
+                    {
+
+                        e.Value.IGraphFSReference = this;
+                        e.Value.RemoveObjectStream(myObjectLocator.ObjectLocation.Name, myObjectStream);
+
+                        var _ObjectStreamsList = e.Value.GetObjectStreamsList(myObjectLocator.ObjectLocation.Name);
+
+                        if (_ObjectStreamsList.Contains(FSConstants.ACCESSCONTROLSTREAM) &&
+                            _ObjectStreamsList.CountIs(2))
+                            e.Value.RemoveObjectStream(myObjectLocator.ObjectLocation.Name, FSConstants.ACCESSCONTROLSTREAM);
+
+                        e.Push(StoreAFSObject_protected(myObjectLocator.ObjectLocation.Path, e.Value, true));
+
+                        return e;
+
+                    }
+                    );
+
+                #endregion
+
+                return _Exceptional3;
 
             }
 
@@ -2549,286 +2891,94 @@ namespace sones
 
         #endregion
 
-        #region GetObjectEditions(myObjectLocation, myObjectStream, mySessionToken)
+        #region RemoveAFSObject(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID)
 
-        public Exceptional<IEnumerable<String>> GetObjectEditions(ObjectLocation myObjectLocation, String myObjectStream, SessionToken mySessionToken)
+        /// <summary>
+        /// Removes the specified AFSObject.
+        /// </summary>
+        /// <param name="myObjectLocator">The ObjectLocation of the AFSObject to remove.</param>
+        /// <param name="myObjectStream">The ObjectStream of the AFSObject to remove.</param>
+        /// <param name="myObjectEdition">The ObjectEdition of the AFSObject to remove.</param>
+        /// <param name="myObjectRevisionID">The ObjectRevisionID of the AFSObject to remove.</param>
+        public Exceptional RemoveAFSObject(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID)
         {
 
-            var _Exceptional = new Exceptional<IEnumerable<String>>();
-            var _ObjectLocatorExceptional = GetObjectLocator(myObjectLocation, mySessionToken);
-
-            if (_ObjectLocatorExceptional.Success() && _ObjectLocatorExceptional.Value != null)
+            lock (this)
             {
 
-                // Get ObjectStream
-                var _ObjectStream = _ObjectLocatorExceptional.Value[myObjectStream];
+                #region Resolve all symlinks and call myself on a possible ChildFileSystem...
 
-                if (_ObjectStream != null)
-                    _Exceptional.Value = _ObjectStream.Keys;
+                if (!IsMounted)
+                    return new Exceptional(new GraphFSError_NoFileSystemMounted());
 
-                else
-                    _Exceptional.PushT(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
+                if (myObjectLocation == null)
+                    return new Exceptional(new ArgumentNullOrEmptyError("myObjectLocation"));
 
-            }
+                var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
 
-            else
-            {
-                _Exceptional = _ObjectLocatorExceptional.Convert<IEnumerable<String>>().
-                    PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
-            }
+                if (_ChildIGraphFS != this)
+                    return _ChildIGraphFS.RemoveAFSObject(mySessionToken, GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myObjectStream, myObjectEdition, myObjectRevisionID);
 
-            return _Exceptional;
+                #endregion
 
-        }
+                //ToDo: Check mySessionToken!
 
-        #endregion
 
-        #region GetObjectRevisionIDs(myObjectLocation, myObjectStream, myObjectEdition, mySessionToken)
+                #region Call OnRemoveEvent on this file system
 
-        public Exceptional<IEnumerable<ObjectRevisionID>> GetObjectRevisionIDs(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, SessionToken mySessionToken)
-        {
+                OnRemoveEvent(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID);
 
-            var _Exceptional = new Exceptional<IEnumerable<ObjectRevisionID>>();
-            var _ObjectLocatorExceptional = GetObjectLocator(myObjectLocation, mySessionToken);
+                #endregion
 
-            if (_ObjectLocatorExceptional.Success() && _ObjectLocatorExceptional.Value != null)
-            {
+                var _ObjectLocatorExceptional = GetObjectLocator_protected(myObjectLocation);
+                if (_ObjectLocatorExceptional.IsInvalid())
+                    return _ObjectLocatorExceptional;
 
-                // Get ObjectStream
-                var _ObjectStream = _ObjectLocatorExceptional.Value[myObjectStream];
+                var _Exceptional = RemoveAFSObject_protected(_ObjectLocatorExceptional.Value, myObjectStream, myObjectEdition, myObjectRevisionID);
+                if (_Exceptional.Failed())
+                    return _Exceptional;
 
-                if (_ObjectStream != null && _ObjectStream.ContainsKey(myObjectEdition))
-                {
+                #region Call OnRemovedEvent on this file system
 
-                    // Get ObjectEdition
-                    var _ObjectEdition = _ObjectStream[myObjectEdition];
+                OnRemovedEvent(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID);
 
-                    if (_ObjectEdition != null)
-                        _Exceptional.Value = _ObjectEdition.Keys;
+                #endregion
 
-                    else
-                        _Exceptional.PushT(new GraphFSError_ObjectEditionNotFound(myObjectLocation, myObjectStream, myObjectEdition));
-
-                }
-
-                else
-                    _Exceptional.PushT(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
-
-            }
-
-            else
-            {
-                _Exceptional = _ObjectLocatorExceptional.Convert<IEnumerable<ObjectRevisionID>>().
-                    PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
-            }
-
-            return _Exceptional;
-
-        }
-
-        #endregion
-
-
-        #region RenameObject_protected(myObjectLocation, myNewObjectName)
-
-        protected Exceptional RenameObject_protected(ObjectLocation myObjectLocation, String myNewObjectName)
-        {
-
-            var _Exceptional = new Exceptional();
-
-            var _ParentDirectoryObjectExceptional = GetFSObject_protected<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), FSConstants.DIRECTORYSTREAM, null, null, 0, false);
-
-            if (_ParentDirectoryObjectExceptional.Success() && _ParentDirectoryObjectExceptional.Value != null)
-            {
-
-                if (!_ParentDirectoryObjectExceptional.Value.RenameDirectoryEntry(myObjectLocation.Name, myNewObjectName))
-                    _Exceptional.Push(new GraphFSError_ObjectNotFound(myObjectLocation));
-
-                var _GetObjectLocatorExceptional = GetObjectLocator_protected(myObjectLocation);
-                if (_GetObjectLocatorExceptional.Failed() || _GetObjectLocatorExceptional.Value == null)
-                    _Exceptional.Push(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
-
-                else
-                {
-                    CacheMove(myObjectLocation, new ObjectLocation(myObjectLocation.Path, myNewObjectName), true);
-                }
-
-                return _Exceptional;
-
-            }
-
-            else
-            {
-                _Exceptional = _ParentDirectoryObjectExceptional.Convert<IEnumerable<ObjectRevisionID>>().
-                    PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path));
-            }
-
-            return _Exceptional;
-
-        }
-
-        #endregion
-
-        #region RenameObject(myObjectLocation, myNewObjectName, mySessionToken)
-
-        public Exceptional RenameObject(ObjectLocation myObjectLocation, String myNewObjectName, SessionToken mySessionToken)
-        {
-
-            #region Resolve all symlinks and call myself on a possible ChildFileSystem...
-
-            if (!IsMounted)
-                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
-
-            //myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
-
-            if (myObjectLocation == null)
-                throw new ArgumentNullException("myObjectLocation must not be null!");
-
-            var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
-
-            if (_ChildIGraphFS != this)
-                return _ChildIGraphFS.RenameObject(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myNewObjectName, mySessionToken);
-
-            #endregion
-
-            return RenameObject_protected(myObjectLocation, myNewObjectName);
-
-        }
-
-        #endregion
-
-
-        #region RemoveObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, mySessionToken)
-
-        public Exceptional RemoveFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, SessionToken mySessionToken)
-        {
-
-            #region Call OnRemoveEvent on this file system
-
-            OnRemoveEvent(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID);
-
-            #endregion
-
-
-            #region GetObjectLocator
-
-            var _Exceptional = new Exceptional<IEnumerable<String>>();
-            var _ObjectLocatorExceptional = GetObjectLocator(myObjectLocation, mySessionToken);
-
-            if (_ObjectLocatorExceptional.Failed() || _ObjectLocatorExceptional.Value == null)
-                return _Exceptional.Push(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
-
-            #endregion
-
-            #region Check the ObjectOntology
-
-            var _ObjectLocator = _ObjectLocatorExceptional.Value;
-
-            // ObjectStream
-            if (myObjectStream == null || _ObjectLocator.ContainsKey(myObjectStream) == false)
-                return new Exceptional().Push(new GraphFSError("Invalid ObjectStream '" + myObjectStream + "'!"));
-
-            var _ObjectStream = _ObjectLocator[myObjectStream];
-
-            // ObjectEdition
-            if (myObjectEdition == null || _ObjectStream.ContainsKey(myObjectEdition) == false)
-                return new Exceptional().Push(new GraphFSError("Invalid ObjectEdition '" + myObjectEdition + "'!"));
-
-            var _ObjectEdition = _ObjectStream[myObjectEdition];
-
-            if (_ObjectEdition.IsDeleted)
                 return Exceptional.OK;
 
-            // ObjectRevision
-            if (myObjectRevisionID == null || _ObjectEdition.ContainsKey(myObjectRevisionID) == false)
-                return new Exceptional().Push(new GraphFSError("Invalid ObjectRevisionID '" + myObjectRevisionID + "'!"));
-
-            var _ObjectRevision = _ObjectEdition[myObjectRevisionID];
-
-            #endregion
-
-            #region Remove AFSObject from ObjectCache
-
-            try
-            {
-                // ErrorHandling?!
-                CacheRemove(_ObjectRevision.CacheUUID);
             }
-            catch (Exception)
-            { }
-
-            #endregion
-
-            #region Mark ObjectEdition as deleted
-
-            _ObjectEdition.IsDeleted = true;
-            RemoveAFSObject_protected(_ObjectLocator, myObjectStream, myObjectEdition, myObjectRevisionID);
-
-            //var _success = _ObjectEdition.Remove(myObjectRevisionID);
-
-            //// If the last ObjectRevision was removed => Remove the ObjectEdition
-            //if (_ObjectEdition.Count == 0)
-            //{
-
-            //    _ObjectStream.Remove(myObjectEdition);
-
-            //    // If the last ObjectEdition was removed => Remove the ObjectEdition
-            //    if (_ObjectStream.Count == 0)
-            //    {
-
-            //        _ObjectLocator.Remove(myObjectStream);
-
-            //        if (_ObjectLocator.Count == 0)
-            //            CacheRemove(myObjectLocation, false);
-
-            //    }
-
-            //}
-
-            #endregion
-
-            #region Remove ObjectStream from ParentIDirectoryObject
-
-            var _Exceptional2 = GetFSObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false, mySessionToken).
-                WhenFailed<DirectoryObject>(e => e.PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path))).
-                WhenSucceded<DirectoryObject>(e =>
-                {
-
-                    e.Value.IGraphFSReference = this;
-                    e.Value.RemoveObjectStream(myObjectLocation.Name, myObjectStream);
-
-                    var _ObjectStreamsList = e.Value.GetObjectStreamsList(myObjectLocation.Name);
-
-                    if (_ObjectStreamsList.Contains(FSConstants.ACCESSCONTROLSTREAM) &&
-                        _ObjectStreamsList.CountIs(2))
-                        e.Value.RemoveObjectStream(myObjectLocation.Name, FSConstants.ACCESSCONTROLSTREAM);
-
-                    return e;
-
-                }
-                );
-
-            #endregion
-
-
-            #region Call OnRemovedEvent on this file system
-
-            if (!_Exceptional2.Failed())
-            {
-                OnRemovedEvent(_ObjectLocatorExceptional.Value, myObjectStream, myObjectEdition, myObjectRevisionID);
-            }
-
-            #endregion
-
-            return _Exceptional2;
 
         }
 
         #endregion
 
-        #region EraseObject(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID, mySessionToken)
 
-        public Exceptional EraseFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, SessionToken mySessionToken)
+        #region (protected) EraseAFSObject_protected(myObjectLocator, myObjectStream, myObjectEdition, myObjectRevisionID)
+
+        /// <summary>
+        /// Erases the specified AFSObject.
+        /// </summary>
+        /// <param name="myObjectLocator">The ObjectLocation of the AFSObject to erase.</param>
+        /// <param name="myObjectStream">The ObjectStream of the AFSObject to erase.</param>
+        /// <param name="myObjectEdition">The ObjectEdition of the AFSObject to erase.</param>
+        /// <param name="myObjectRevisionID">The ObjectRevisionID of the AFSObject to erase.</param>
+        protected virtual Exceptional EraseAFSObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region EraseAFSObject(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID)
+
+        /// <summary>
+        /// Erases the specified AFSObject.
+        /// </summary>
+        /// <param name="myObjectLocator">The ObjectLocation of the AFSObject to erase.</param>
+        /// <param name="myObjectStream">The ObjectStream of the AFSObject to erase.</param>
+        /// <param name="myObjectEdition">The ObjectEdition of the AFSObject to erase.</param>
+        /// <param name="myObjectRevisionID">The ObjectRevisionID of the AFSObject to erase.</param>
+        public Exceptional EraseAFSObject(SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID)
         {
             throw new NotImplementedException();
         }
@@ -2836,6 +2986,8 @@ namespace sones
         #endregion
 
         #endregion
+
+
 
         #region Symlink methods
 
@@ -2850,7 +3002,7 @@ namespace sones
                 var _Exceptional = new Exceptional();
 
                 // Add symlink to ParentIDirectoryObject
-                var _ParentIDirectoryObject = GetFSObject_protected<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false);
+                var _ParentIDirectoryObject = GetAFSObject_protected<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false);
 
                 if (_ParentIDirectoryObject.Failed())
                 {
@@ -2878,9 +3030,7 @@ namespace sones
 
             #region Resolve all symlinks...
 
-            //myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(ResolveObjectLocation(new ObjectLocation(myObjectLocation.Path), true, mySessionToken),
-            myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(new ObjectLocation(myObjectLocation.Path),
-                                                  DirectoryHelper.GetObjectName(myObjectLocation)));
+            myObjectLocation = new ObjectLocation(myObjectLocation.Path, myObjectLocation);
 
             var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
 
@@ -2913,7 +3063,7 @@ namespace sones
             if (myIParentDirectoryLocation.Length == 0)
                 return new Exceptional<Trinary>(Trinary.FALSE);
 
-            myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(myIParentDirectoryLocation, myObjectLocation.Name));
+            myObjectLocation = new ObjectLocation(myIParentDirectoryLocation, myObjectLocation.Name);
 
             IGraphFS _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
 
@@ -2928,7 +3078,7 @@ namespace sones
                 var _Exceptional = new Exceptional<Trinary>();
 
                 // Add symlink to ParentIDirectoryObject
-                var _ParentIDirectoryObject = GetFSObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false, mySessionToken);
+                var _ParentIDirectoryObject = GetAFSObject<DirectoryObject>(mySessionToken, new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false);
 
                 if (_ParentIDirectoryObject.Failed())
                 {
@@ -2952,10 +3102,6 @@ namespace sones
 
             #region Resolve all symlinks...
 
-            //myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(ResolveObjectLocation(new ObjectLocation(myObjectLocation.Path), true, mySessionToken),
-            myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(new ObjectLocation(myObjectLocation.Path),
-                                                       DirectoryHelper.GetObjectName(myObjectLocation)));
-
             IGraphFS _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
 
             if (_ChildIGraphFS != this)
@@ -2969,7 +3115,7 @@ namespace sones
                 var _Exceptional = new Exceptional<ObjectLocation>();
 
                 // Add symlink to ParentIDirectoryObject
-                var _ParentIDirectoryObject = GetFSObject<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false, mySessionToken);
+                var _ParentIDirectoryObject = GetAFSObject<DirectoryObject>(mySessionToken, new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false);
 
                 if (_ParentIDirectoryObject.Failed())
                 {
@@ -3010,11 +3156,6 @@ namespace sones
             if (!IsMounted)
                 throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
 
-            // Will throw an exception if the ObjectLocation could not be resolved
-            //myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(ResolveObjectLocation(new ObjectLocation(myObjectLocation), true, mySessionToken),
-            myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(new ObjectLocation(myObjectLocation),
-                                                       DirectoryHelper.GetObjectName(myObjectLocation)));
-
             IGraphFS _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
 
             if (_ChildIGraphFS != this)
@@ -3030,7 +3171,7 @@ namespace sones
             //        CommitTransaction(mySessionToken);
             //    }
             //else
-            return RemoveFSObject(myObjectLocation, FSConstants.SYMLINK, null, null, mySessionToken);
+            return RemoveAFSObject(mySessionToken, myObjectLocation, FSConstants.SYMLINK, null, null);
 
         }
 
@@ -3040,11 +3181,11 @@ namespace sones
 
         #region DirectoryObject Methods
 
-        protected abstract Exceptional<IDirectoryObject> InitDirectoryObject_protected(ObjectLocation myObjectLocation, UInt64 myBlocksize);
+        protected abstract Exceptional<IDirectoryObject> InitDirectoryObject_protected(ObjectLocation myObjectLocation, UInt64 myBlocksize = 0);
 
-        #region (protected) CreateDirectoryObject(myObjectLocation, myBlocksize, mySessionToken)
+        #region (protected) CreateDirectoryObject(myObjectLocation, myBlocksize, myRecursive = false, myAction = null)
 
-        protected Exceptional<IDirectoryObject> CreateDirectoryObject_protected(ObjectLocation myObjectLocation, UInt64 myBlocksize)
+        protected Exceptional<IDirectoryObject> CreateDirectoryObject_protected(ObjectLocation myObjectLocation, UInt64 myBlocksize = 0, Boolean myRecursive = false, Action<IDirectoryObject> myAction = null)
         {
 
             //if (mySessionToken.Transaction == null)
@@ -3053,47 +3194,87 @@ namespace sones
             var _Exceptional = new Exceptional<IDirectoryObject>();
 
             try
-            {                
+            {
 
-                #region Initialize a new DirectoryObject
+                IDirectoryObject _IDirectoryObject = null;
 
-                // Just create a DirectoryObject within the IGraphFS implementation
-                var _IDirectoryObject = InitDirectoryObject_protected(myObjectLocation, myBlocksize).Value;
-
-                // Add standard subdirectories to the new DirectoryObject
-                _IDirectoryObject.AddObjectStream(FSConstants.DotLink,     FSConstants.DIRECTORYSTREAM, new List<ExtendedPosition> { new ExtendedPosition(0, 0) });
-                _IDirectoryObject.AddObjectStream(FSConstants.DotDotLink,  FSConstants.DIRECTORYSTREAM, new List<ExtendedPosition> { new ExtendedPosition(0, 0) });
-                _IDirectoryObject.AddObjectStream(FSConstants.DotMetadata, FSConstants.VIRTUALDIRECTORY);
-                _IDirectoryObject.AddObjectStream(FSConstants.DotSystem,   FSConstants.VIRTUALDIRECTORY);
-                _IDirectoryObject.AddObjectStream(FSConstants.DotStreams,  FSConstants.VIRTUALDIRECTORY);
-                _IDirectoryObject.StoreInlineData(FSConstants.DotUUID,     _IDirectoryObject.ObjectUUID.GetByteArray(), true);
-
-                #endregion
-
-                #region Store the new DirectoryObject
-
-                var _AFSObject = _IDirectoryObject as AFSObject;
-
-                if (_AFSObject == null)
-                    throw new GraphFSException("'_AFSObject = _IDirectoryObject as AFSObject' failed!");
-
-                using (var _StoreDirectoryObjectExceptional = StoreAFSObject_protected(myObjectLocation, _AFSObject, true))
+                if (!myRecursive)
                 {
-                    if (_StoreDirectoryObjectExceptional.Failed())
-                        return _StoreDirectoryObjectExceptional.Convert<IDirectoryObject>().PushT(new GraphFSError_CreateDirectoryFailed(myObjectLocation));
+
+                    #region Initialize a new DirectoryObject
+
+                    // Just create a DirectoryObject within the IGraphFS implementation
+                    _IDirectoryObject = InitDirectoryObject_protected(myObjectLocation, myBlocksize).Value;
+
+                    // Add standard subdirectories to the new DirectoryObject
+                    _IDirectoryObject.AddObjectStream(FSConstants.DotLink,      FSConstants.DIRECTORYSTREAM, new List<ExtendedPosition> { new ExtendedPosition(0, 0) });
+                    _IDirectoryObject.AddObjectStream(FSConstants.DotDotLink,   FSConstants.DIRECTORYSTREAM, new List<ExtendedPosition> { new ExtendedPosition(0, 0) });
+                    _IDirectoryObject.AddObjectStream(FSConstants.DotMetadata,  FSConstants.VIRTUALDIRECTORY);
+                    _IDirectoryObject.AddObjectStream(FSConstants.DotSystem,    FSConstants.VIRTUALDIRECTORY);
+                    _IDirectoryObject.AddObjectStream(FSConstants.DotStreams,   FSConstants.VIRTUALDIRECTORY);
+                    _IDirectoryObject.StoreInlineData(FSConstants.DotUUID,      _IDirectoryObject.ObjectUUID.GetByteArray(), true);
+
+                    #endregion
+
+                    #region Call myAction
+
+                    // Do something like creating additional subdirectories
+                    if (myAction != null)
+                        myAction(_IDirectoryObject);
+
+                    #endregion
+
+                    #region Store the new DirectoryObject
+
+                    var _AFSObject = _IDirectoryObject as AFSObject;
+
+                    if (_AFSObject == null)
+                        throw new GraphFSException("'_AFSObject = _IDirectoryObject as AFSObject' failed!");
+
+                    using (var _StoreDirectoryObjectExceptional = StoreAFSObject_protected(myObjectLocation, _AFSObject, true))
+                    {
+                        if (_StoreDirectoryObjectExceptional.Failed())
+                            return _StoreDirectoryObjectExceptional.Convert<IDirectoryObject>().PushT(new GraphFSError_CreateDirectoryFailed(myObjectLocation));
+                    }
+
+                    //_DirectoryObject.IGraphFSReference = this;
+
+                    #endregion
+
                 }
 
-                //_DirectoryObject.IGraphFSReference = this;
+                else
+                {
 
-                #endregion
+                    throw new NotImplementedException();
+                    //var _ObjectPath = new ObjectLocation(myObjectLocation.Path);
+                    //var _ObjectName = myObjectLocation.Name;
+
+                    //IEnumerable<String> _ObjectStreams  = new List<String>();
+                    //IDirectoryObject    _ParentDir      = null;
+                    //IGraphFS            _IGraphFS       = this;
+
+                    //while (!ResolveObjectLocation(ref _ObjectPath, out _ObjectStreams, out _ObjectPath, out _ObjectName, out _ParentDir, out _IGraphFS, mySessionToken))
+                    //{
+                    //    _IGraphFS.CreateDirectoryObject(new ObjectLocation(DirectoryHelper.Combine(_ParentDir.ObjectLocation, _ObjectName)), 0, mySessionToken);
+                    //    _ObjectPath = new ObjectLocation(myObjectLocation.Path);
+                    //    _ObjectName = myObjectLocation.Name;
+                    //}
+
+                    ////myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(ResolveObjectLocation(new ObjectLocation(myObjectLocation.Path), true, mySessionToken),
+                    //myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(new ObjectLocation(myObjectLocation.Path),
+                    //                                      DirectoryHelper.GetObjectName(myObjectLocation)));
+
+                    //return CreateDirectoryObject(myObjectLocation, myBlocksize, mySessionToken);
+
+                }
 
                 _Exceptional.Value = _IDirectoryObject;
 
             }
-
-            catch (Exception)
+            catch (Exception e)
             {
-                _Exceptional.PushT(new GraphFSError_CreateDirectoryFailed(myObjectLocation));
+                _Exceptional.PushT(new GraphFSError_CreateDirectoryFailed(myObjectLocation, e.ToString(true)));
             }
 
             return _Exceptional;            
@@ -3102,89 +3283,52 @@ namespace sones
 
         #endregion
 
-        #region CreateDirectoryObject(myObjectLocation, myBlocksize, mySessionToken)
+        #region CreateDirectoryObject(mySessionToken, myObjectLocation, myBlocksize = 0, mySessionToken = false)
 
-        public Exceptional<IDirectoryObject> CreateDirectoryObject(ObjectLocation myObjectLocation, UInt64 myBlocksize, SessionToken mySessionToken)
-        {
-
-            #region Resolve all symlinks and call myself on a possible ChildFileSystem...
-
-            if (!IsMounted)
-                throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
-
-            //myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
-
-            if (myObjectLocation == null)
-                throw new ArgumentNullException("myObjectLocation must not be null!");
-
-            var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
-
-            if (_ChildIGraphFS != this)
-                return _ChildIGraphFS.CreateDirectoryObject(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myBlocksize, mySessionToken);
-
-            #endregion
-
-            return CreateDirectoryObject_protected(myObjectLocation, myBlocksize);
-
-        }
-
-        #endregion
-
-        #region CreateDirectoryObject(myObjectLocation, myBlocksize, myRecursive, mySessionToken)
-
-        public Exceptional<IDirectoryObject> CreateDirectoryObject(ObjectLocation myObjectLocation, UInt64 myBlocksize, Boolean myRecursive, SessionToken mySessionToken)
-        {
-
-            throw new NotImplementedException();
-
-            //var _ObjectPath = new ObjectLocation(myObjectLocation.Path);
-            //var _ObjectName = myObjectLocation.Name;
-
-            //IEnumerable<String> _ObjectStreams  = new List<String>();
-            //IDirectoryObject    _ParentDir      = null;
-            //IGraphFS            _IGraphFS       = this;
-
-            //while (!ResolveObjectLocation(ref _ObjectPath, out _ObjectStreams, out _ObjectPath, out _ObjectName, out _ParentDir, out _IGraphFS, mySessionToken))
-            //{
-            //    _IGraphFS.CreateDirectoryObject(new ObjectLocation(DirectoryHelper.Combine(_ParentDir.ObjectLocation, _ObjectName)), 0, mySessionToken);
-            //    _ObjectPath = new ObjectLocation(myObjectLocation.Path);
-            //    _ObjectName = myObjectLocation.Name;
-            //}
-
-            ////myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(ResolveObjectLocation(new ObjectLocation(myObjectLocation.Path), true, mySessionToken),
-            //myObjectLocation = new ObjectLocation(DirectoryHelper.Combine(new ObjectLocation(myObjectLocation.Path),
-            //                                      DirectoryHelper.GetObjectName(myObjectLocation)));
-
-            //return CreateDirectoryObject(myObjectLocation, myBlocksize, mySessionToken);
-
-        }
-
-        #endregion
-
-
-        #region isIDirectoryObject(myObjectLocation, mySessionToken)
-
-        public Exceptional<Trinary> isIDirectoryObject(ObjectLocation myObjectLocation, SessionToken mySessionToken)
+        public Exceptional<IDirectoryObject> CreateDirectoryObject(SessionToken mySessionToken, ObjectLocation myObjectLocation, UInt64 myBlocksize = 0, Boolean myRecursive = false)
         {
 
             lock (this)
             {
 
-                return GetObjectStreams(myObjectLocation, mySessionToken).
+                #region Resolve all symlinks and call myself on a possible ChildFileSystem...
+
+                if (!IsMounted)
+                    throw new GraphFSException_FileSystemNotMounted("Please mount a file system first!");
+
+                //myObjectLocation = ResolveObjectLocation(myObjectLocation, false, mySessionToken);
+
+                if (myObjectLocation == null)
+                    throw new ArgumentNullException("myObjectLocation must not be null!");
+
+                var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
+
+                if (_ChildIGraphFS != this)
+                    return _ChildIGraphFS.CreateDirectoryObject(mySessionToken, GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myBlocksize, myRecursive);
+
+                #endregion
+
+                return CreateDirectoryObject_protected(myObjectLocation, myBlocksize, myRecursive);
+
+            }
+
+        }
+
+        #endregion
+
+
+        #region IsIDirectoryObject(myObjectLocation, mySessionToken)
+
+        public Exceptional<Trinary> IsIDirectoryObject(ObjectLocation myObjectLocation, SessionToken mySessionToken)
+        {
+
+            lock (this)
+            {
+
+                //ToDo: Resolve SymLinks!
+                return GetObjectStreams(mySessionToken, myObjectLocation).
                            ConvertWithFunc<IEnumerable<String>, Trinary>(v => v.Contains(FSConstants.DIRECTORYSTREAM)).
                            WhenFailed<Trinary>(e => new Exceptional<Trinary>(Trinary.FALSE));
-
-                ////ToDo: Resolve SymLinks!
-
-                //var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, mySessionToken);
-
-                //if (_ChildIGraphFS != this)
-                //    return _ChildIGraphFS.isIDirectoryObject(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), mySessionToken);
-
-                //// Get ParentDirectoryObject, check ObjectStream and return Trinary.FALSE on any error!
-                //return GetObject<DirectoryObject>(myObjectLocation.Path, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false, mySessionToken).
-                //    Convert<DirectoryObject, Trinary>(v => v.ObjectStreamExists(myObjectLocation.Name, FSConstants.DIRECTORYSTREAM)).
-                //    WhenFailed<Trinary>(e => new Exceptional<Trinary>(Trinary.FALSE));
 
             }
 
@@ -3209,7 +3353,7 @@ namespace sones
                     return _ChildIGraphFS.GetDirectoryListing(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), mySessionToken);
 
                 // Get DirectoryObject and return the directory listing
-                return GetFSObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false, mySessionToken).
+                return GetAFSObject<DirectoryObject>(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false).
                        ConvertWithFunc<DirectoryObject, IEnumerable<String>>(v => v.GetDirectoryListing());
 
             }
@@ -3234,7 +3378,7 @@ namespace sones
                     return _ChildIGraphFS.GetDirectoryListing(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myFunc, mySessionToken);
 
                 // Get DirectoryObject and return the directory listing
-                return GetFSObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false, mySessionToken).
+                return GetAFSObject<DirectoryObject>(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false).
                        ConvertWithFunc<DirectoryObject, IEnumerable<String>>(v => v.GetDirectoryListing(myFunc));
 
             }
@@ -3260,7 +3404,7 @@ namespace sones
             Boolean _AddEntry;
 
             // Get DirectoryObject and return the filtered directory listing
-            return GetFSObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false, mySessionToken).
+            return GetAFSObject<DirectoryObject>(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false).
                    ConvertWithFunc<DirectoryObject, IEnumerable<String>>(v => v.GetDirectoryListing(myName, myIgnoreName, myRegExpr, myObjectStreams, myIgnoreObjectStreams)).
                    WhenSucceded<IEnumerable<String>>(_Exceptional =>
                    {
@@ -3282,10 +3426,10 @@ namespace sones
                                #region Load the INode via this methods in order to make use of the object cache
 
                                if (myObjectLocation.Equals(FSPathConstants.PathDelimiter))
-                                   _INode = GetINode(new ObjectLocation(_ObjectName), mySessionToken).Value;
+                                   _INode = GetINode(mySessionToken, new ObjectLocation(_ObjectName)).Value;
 
                                else
-                                   _INode = GetINode(new ObjectLocation(myObjectLocation, _ObjectName), mySessionToken).Value;
+                                   _INode = GetINode(mySessionToken, new ObjectLocation(myObjectLocation, _ObjectName)).Value;
 
                                #endregion
 
@@ -3436,7 +3580,7 @@ namespace sones
                     return _ChildIGraphFS.GetExtendedDirectoryListing(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), mySessionToken);
 
                 // Get DirectoryObject and return the extended directory listing
-                return GetFSObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false, mySessionToken).
+                return GetAFSObject<DirectoryObject>(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false).
                        ConvertWithFunc<DirectoryObject, IEnumerable<DirectoryEntryInformation>>(v => v.GetExtendedDirectoryListing());
 
             }
@@ -3461,7 +3605,7 @@ namespace sones
                     return _ChildIGraphFS.GetExtendedDirectoryListing(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myFunc, mySessionToken);
 
                 // Get DirectoryObject and return the extended directory listing
-                return GetFSObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false, mySessionToken).
+                return GetAFSObject<DirectoryObject>(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false).
                        ConvertWithFunc<DirectoryObject, IEnumerable<DirectoryEntryInformation>>(v => v.GetExtendedDirectoryListing(myFunc));
 
             }
@@ -3489,7 +3633,7 @@ namespace sones
 
             #region _IDirectoryObject.GetExtendedDirectoryListing(...)
 
-            var _IDirectoryObject = (IDirectoryObject) GetFSObject<DirectoryObject>(myObjectLocation, FSConstants.DIRECTORYSTREAM, null, null, 0, false, mySessionToken).Value;
+            var _IDirectoryObject = (IDirectoryObject) GetAFSObject<DirectoryObject>(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, null, null, 0, false).Value;
             var _DirectoryListing = _IDirectoryObject.GetExtendedDirectoryListing(myName, myIgnoreName, myRegExpr, myObjectStreams, myIgnoreObjectStreamTypes);
             var _Output = new List<DirectoryEntryInformation>(); ;
 
@@ -3529,10 +3673,10 @@ namespace sones
                     #region Load the INode via this methods in order to make use of the object cache
 
                     if (myObjectLocation.Equals(FSPathConstants.PathDelimiter))
-                        _INode = GetINode(new ObjectLocation(_ExtendedDirectoryListing.Name), mySessionToken).Value;
+                        _INode = GetINode(mySessionToken, new ObjectLocation(_ExtendedDirectoryListing.Name)).Value;
 
                     else
-                        _INode = GetINode(new ObjectLocation(myObjectLocation, _ExtendedDirectoryListing.Name), mySessionToken).Value;
+                        _INode = GetINode(mySessionToken, new ObjectLocation(myObjectLocation, _ExtendedDirectoryListing.Name)).Value;
 
                     #endregion
 
@@ -3688,9 +3832,9 @@ namespace sones
         #endregion
 
 
-        #region RemoveDirectoryObject(myObjectLocation, myRemoveRecursive, mySessionToken)
+        #region RemoveDirectoryObject(myObjectLocation, myRecursiveRemoval, mySessionToken)
 
-        public Exceptional RemoveDirectoryObject(ObjectLocation myObjectLocation, Boolean myRemoveRecursive, SessionToken mySessionToken)
+        public Exceptional RemoveDirectoryObject(ObjectLocation myObjectLocation, Boolean myRecursiveRemoval, SessionToken mySessionToken)
         {
 
             #region Initial Checks
@@ -3723,7 +3867,7 @@ namespace sones
 
                 #region Fail if myRemoveRecursive == false
 
-                if (!myRemoveRecursive)
+                if (!myRecursiveRemoval)
                 {
                     return _Exceptional.Push(new GraphFSError_DirectoryIsNotEmpty(myObjectLocation));
                 }
@@ -3799,7 +3943,7 @@ namespace sones
                                 foreach (var _ObjectEditionAndRevisionID in _ListOfObjectEditionsAndRevisionIDs)
                                 {
 
-                                    var _RemoveSubobjectExceptional = RemoveFSObject(new ObjectLocation(myObjectLocation, _DirectoryEntryInformation.Name), _StreamType, _ObjectEditionAndRevisionID.Key, _ObjectEditionAndRevisionID.Value, mySessionToken);
+                                    var _RemoveSubobjectExceptional = RemoveAFSObject(mySessionToken, new ObjectLocation(myObjectLocation, _DirectoryEntryInformation.Name), _StreamType, _ObjectEditionAndRevisionID.Key, _ObjectEditionAndRevisionID.Value);
 
                                     if (_RemoveSubobjectExceptional.Failed())
                                     {
@@ -3837,7 +3981,7 @@ namespace sones
             }
 
             // Remove the $DefaultEditon and $LatestRevision
-            var _RemoveObjectExceptional = RemoveFSObject(myObjectLocation, FSConstants.DIRECTORYSTREAM, _ObjectLocatorExceptional.Value[FSConstants.DIRECTORYSTREAM].DefaultEditionName, _ObjectLocatorExceptional.Value[FSConstants.DIRECTORYSTREAM].DefaultEdition.LatestRevisionID, mySessionToken);
+            var _RemoveObjectExceptional = RemoveAFSObject(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, _ObjectLocatorExceptional.Value[FSConstants.DIRECTORYSTREAM].DefaultEditionName, _ObjectLocatorExceptional.Value[FSConstants.DIRECTORYSTREAM].DefaultEdition.LatestRevisionID);
 
             if (_RemoveObjectExceptional.Failed())
             {
@@ -3852,21 +3996,21 @@ namespace sones
 
         #endregion
 
-        #region EraseDirectoryObject(myObjectLocation, myEraseRecursive, mySessionToken)
+        #region EraseDirectoryObject(myObjectLocation, myRecursiveErasure, mySessionToken)
 
-        public Exceptional EraseDirectoryObject(ObjectLocation myObjectLocation, Boolean myEraseRecursive, SessionToken mySessionToken)
+        public Exceptional EraseDirectoryObject(ObjectLocation myObjectLocation, Boolean myRecursiveErasure, SessionToken mySessionToken)
         {
 
             #region Erase recursive
 
-            if (myEraseRecursive)
+            if (myRecursiveErasure)
             {
 
                 #region really erase recursive?
 
                 if (GetDirectoryListing(myObjectLocation, mySessionToken).Value.LongCount().Equals((Int64)NUMBER_OF_DEFAULT_DIRECTORYENTRIES))
                 {
-                    return EraseFSObject(myObjectLocation, FSConstants.DIRECTORYSTREAM, null, null, mySessionToken);
+                    return EraseAFSObject(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, null, null);
                 }
 
                 #endregion
@@ -3930,7 +4074,7 @@ namespace sones
                                 {
                                     if (!aStreamType.Equals(FSConstants.INLINEDATA))
                                     {
-                                        EraseFSObject(new ObjectLocation(myObjectLocation, aDirInformation.Name), aStreamType, null, null, mySessionToken);
+                                        EraseAFSObject(mySessionToken, new ObjectLocation(myObjectLocation, aDirInformation.Name), aStreamType, null, null);
                                     }
                                 }
 
@@ -3945,16 +4089,18 @@ namespace sones
 
                     List<String> streamTypes = new List<String>();
 
-                    streamTypes.AddRange(GetObjectStreams(myObjectLocation, mySessionToken).Value);
+                    streamTypes.AddRange(GetObjectStreams(mySessionToken, myObjectLocation).Value);
 
                     foreach (String aStreamType in streamTypes)
                     {
-                        EraseFSObject(myObjectLocation, aStreamType, null, null, mySessionToken);
+                        EraseAFSObject(mySessionToken, myObjectLocation, aStreamType, null, null);
                     }
 
                     #endregion
                 }
+
             }
+
             #endregion
 
             // non-recursive
@@ -3963,12 +4109,11 @@ namespace sones
                 if (GetDirectoryListing(myObjectLocation, mySessionToken).Value.LongCount() > (Int64)NUMBER_OF_DEFAULT_DIRECTORYENTRIES)
                     throw new GraphFSException_DirectoryObjectIsNotEmpty("This DirectoryObject is not empty!");
 
-                return EraseFSObject(myObjectLocation, FSConstants.DIRECTORYSTREAM, null, null, mySessionToken);
+                return EraseAFSObject(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, null, null);
 
             }
 
             return new Exceptional<Boolean>();
-
 
         }
 
@@ -3985,7 +4130,7 @@ namespace sones
 
             #region Get or create MetadataObject
 
-            var _MetadataObjectExceptional = GetOrCreateFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
+            var _MetadataObjectExceptional = GetOrCreateAFSObject<MetadataObject<TValue>>(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, null, 0, false);
 
             if (_MetadataObjectExceptional.Failed() || _MetadataObjectExceptional.Value == null)
             {
@@ -4002,7 +4147,7 @@ namespace sones
                 _MetadataObjectExceptional.Value.Set(myKey, myValue, myIndexSetStrategy);
 //                _MetadataObjectExceptional.Value.Save();
 
-                using (var _StoreObjectExceptional = StoreAFSObject(myObjectLocation, _MetadataObjectExceptional.Value, true, mySessionToken))
+                using (var _StoreObjectExceptional = StoreAFSObject(mySessionToken, myObjectLocation, _MetadataObjectExceptional.Value, true))
                 {
                     if (_StoreObjectExceptional.Failed())
                     {
@@ -4017,7 +4162,7 @@ namespace sones
             _MetadataObjectExceptional.Value.Set(myKey, myValue, myIndexSetStrategy);
             //_MetadataObjectExceptional.Value.Save();
 
-            return StoreAFSObject(myObjectLocation, _MetadataObjectExceptional.Value, true, mySessionToken).
+            return StoreAFSObject(mySessionToken, myObjectLocation, _MetadataObjectExceptional.Value, true).
                        WhenFailed(e => e.Push(new GraphFSError_CouldNotStoreObject(myObjectLocation, myObjectStream, myObjectEdition)));
 
             //using (var _StoreObjectExceptional = StoreFSObject(myObjectLocation, _MetadataObjectExceptional.Value, true, mySessionToken))
@@ -4043,7 +4188,7 @@ namespace sones
         {
 
 
-            var _MetadataObjectExceptional = GetOrCreateFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken).
+            var _MetadataObjectExceptional = GetOrCreateAFSObject<MetadataObject<TValue>>(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, null, 0, false).
                                                  WhenFailed(e => e.PushT(new GraphFSError_CouldNotSetMetadata(myObjectLocation, myObjectStream, myObjectEdition)));
 
             if (_MetadataObjectExceptional.Failed())
@@ -4073,7 +4218,7 @@ namespace sones
             if (_MetadataObjectExceptional.Value.isNew)
             {
 
-                return StoreAFSObject(myObjectLocation, _MetadataObjectExceptional.Value, true, mySessionToken).
+                return StoreAFSObject(mySessionToken, myObjectLocation, _MetadataObjectExceptional.Value, true).
                            WhenFailed(e => e.Push(new GraphFSError_CouldNotStoreObject(myObjectLocation, myObjectStream, myObjectEdition)));
 
 
@@ -4103,7 +4248,7 @@ namespace sones
         public Exceptional<Trinary> MetadatumExists<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey, TValue myValue, SessionToken mySessionToken)
         {
 
-            return GetFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken).
+            return GetAFSObject<MetadataObject<TValue>>(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, null, 0, false).
                        ConvertWithFunc(v => v.Contains(myKey, myValue)).
                        WhenFailed(e => e = new Exceptional<Trinary>(Trinary.FALSE));
 
@@ -4131,7 +4276,7 @@ namespace sones
         public Exceptional<Trinary> MetadataExists<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey, SessionToken mySessionToken)
         {
 
-            return GetFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken).
+            return GetAFSObject<MetadataObject<TValue>>(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, null, 0, false).
                        ConvertWithFunc(v => v.ContainsKey(myKey)).
                        WhenFailed(e => e = new Exceptional<Trinary>(Trinary.FALSE));
 
@@ -4161,7 +4306,7 @@ namespace sones
         public Exceptional<IEnumerable<TValue>> GetMetadatum<TValue>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, String myKey, SessionToken mySessionToken)
         {
 
-            return GetFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken).
+            return GetAFSObject<MetadataObject<TValue>>(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, null, 0, false).
                        ConvertWithFunc(v =>
                        {
                            var _ListOfValues = new List<TValue>();
@@ -4223,7 +4368,7 @@ namespace sones
         {
             
             var _Exceptional = new Exceptional<IEnumerable<KeyValuePair<String, TValue>>>();
-            var _MetadataObjectExceptional = GetFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
+            var _MetadataObjectExceptional = GetAFSObject<MetadataObject<TValue>>(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, null, 0, false);
 
             if (_MetadataObjectExceptional.Failed() || _MetadataObjectExceptional.Value == null)
             {
@@ -4266,7 +4411,7 @@ namespace sones
         {
 
             var _Exceptional = new Exceptional<IEnumerable<KeyValuePair<String, TValue>>>();
-            var _MetadataObjectExceptional = GetFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
+            var _MetadataObjectExceptional = GetAFSObject<MetadataObject<TValue>>(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, null, 0, false);
 
             if (_MetadataObjectExceptional.Failed() || _MetadataObjectExceptional.Value == null)
             {
@@ -4320,7 +4465,7 @@ namespace sones
         {
 
             var _Exceptional = new Exceptional();
-            var _MetadataObjectExceptional = GetFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
+            var _MetadataObjectExceptional = GetAFSObject<MetadataObject<TValue>>(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, null, 0, false);
 
             if (_MetadataObjectExceptional.Failed() || _MetadataObjectExceptional.Value == null)
             {
@@ -4353,7 +4498,7 @@ namespace sones
         {
 
             var _Exceptional = new Exceptional();
-            var _MetadataObjectExceptional = GetFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
+            var _MetadataObjectExceptional = GetAFSObject<MetadataObject<TValue>>(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, null, 0, false);
 
             if (_MetadataObjectExceptional.Failed() || _MetadataObjectExceptional.Value == null)
             {
@@ -4372,7 +4517,7 @@ namespace sones
                 {
                 }
 
-                var _StoreObjectExceptional = StoreAFSObject(myObjectLocation, _MetadataObjectExceptional.Value, true, mySessionToken);
+                var _StoreObjectExceptional = StoreAFSObject(mySessionToken, myObjectLocation, _MetadataObjectExceptional.Value, true);
 
                 if (_StoreObjectExceptional.Failed())
                 {
@@ -4394,7 +4539,7 @@ namespace sones
         {
 
             var _Exceptional = new Exceptional<IEnumerable<KeyValuePair<String, TValue>>>();
-            var _MetadataObjectExceptional = GetFSObject<MetadataObject<TValue>>(myObjectLocation, myObjectStream, myObjectEdition, null, 0, false, mySessionToken);
+            var _MetadataObjectExceptional = GetAFSObject<MetadataObject<TValue>>(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, null, 0, false);
 
             if (_MetadataObjectExceptional.Failed() || _MetadataObjectExceptional.Value == null)
             {
@@ -4464,58 +4609,20 @@ namespace sones
         #endregion
 
 
-        #region StorageEngine Maintenance
+        #region StorageLocations(...)
 
-        #region StorageLocations(mySessionToken)
+        #region GetStorageLocations(mySessionToken)
 
-        public IEnumerable<String> StorageLocations(SessionToken mySessionToken)
+        public IEnumerable<String> GetStorageLocations(SessionToken mySessionToken)
         {
             return new List<String>();
         }
 
         #endregion
 
-        #region StorageLocations(myObjectLocation, mySessionToken)
+        #region GetStorageLocations(myObjectLocation, mySessionToken)
 
-        public IEnumerable<String> StorageLocations(ObjectLocation myObjectLocation, SessionToken mySessionToken)
-        {
-            return new List<String>();
-        }
-
-        #endregion
-
-
-        #region StorageUUIDs(mySessionToken)
-
-        public IEnumerable<StorageUUID> StorageUUIDs(SessionToken mySessionToken)
-        {
-            return new List<StorageUUID>();
-        }
-
-        #endregion
-
-        #region StorageUUIDs(myObjectLocation, mySessionToken)
-
-        public IEnumerable<StorageUUID> StorageUUIDs(ObjectLocation myObjectLocation, SessionToken mySessionToken)
-        {
-            return new List<StorageUUID>();
-        }
-
-        #endregion
-
-
-        #region StorageDescriptions(mySessionToken)
-
-        public IEnumerable<String> StorageDescriptions(SessionToken mySessionToken)
-        {
-            return new List<String>();
-        }
-
-        #endregion
-
-        #region StorageDescriptions(myObjectLocation, mySessionToken)
-
-        public IEnumerable<String> StorageDescriptions(ObjectLocation myObjectLocation, SessionToken mySessionToken)
+        public IEnumerable<String> GetStorageLocations(ObjectLocation myObjectLocation, SessionToken mySessionToken)
         {
             return new List<String>();
         }
@@ -4841,161 +4948,6 @@ namespace sones
         //public abstract ResolveTypes ResolveObjectLocationRecursive_Internal(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIGraphFS, ref List<String> mySymlinkTargets, SessionToken mySessionToken);
         //public abstract Trinary ResolveObjectLocation(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIGraphFS, SessionToken mySessionToken);
         //public abstract ObjectLocation ResolveObjectLocation(ObjectLocation myObjectLocation, Boolean myThrowObjectNotFoundException, SessionToken mySessionToken);
-
-        #endregion
-
-
-        #region NotificationDispatcher
-
-        // The NotificationDispatcher handles all kind of notification between system parts or other dispatchers.
-        // Use register to get notified as recipient.
-        // Use SendNotification to send a notification to all subscribed recipients.
-
-        #region GetNotificationDispatcher(SessionToken mySessionToken)
-
-        /// <summary>
-        /// Returns the NotificationDispatcher of this file system.
-        /// </summary>
-        /// <returns>The NotificationDispatcher of this file system</returns>
-        public NotificationDispatcher GetNotificationDispatcher(SessionToken mySessionToken)
-        {
-            return NotificationDispatcher;
-        }
-
-        #endregion
-
-        #region GetNotificationDispatcher(myObjectLocation, mySessionToken)
-
-        /// <summary>
-        /// Returns the NotificationDispatcher of the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <returns>The NotificationDispatcher of the file system at the given ObjectLocation</returns>
-        public NotificationDispatcher GetNotificationDispatcher(ObjectLocation myObjectLocation, SessionToken mySessionToken)
-        {
-
-            var _PathLength = Int32.MinValue;
-            var _NotificationDispatcher = GetNotificationDispatcher(mySessionToken);
-
-            foreach (var __Mountpoint_IGraphFS in _GraphFSLookuptable.MountedFSs)
-            {
-
-                if (myObjectLocation.StartsWith(__Mountpoint_IGraphFS.Key) &&
-                    (_PathLength < __Mountpoint_IGraphFS.Key.Length))
-                {
-                    _PathLength = __Mountpoint_IGraphFS.Key.Length;
-                    _NotificationDispatcher = __Mountpoint_IGraphFS.Value.GetNotificationDispatcher(mySessionToken);
-                }
-
-            }
-
-            return _NotificationDispatcher;
-        }
-
-        #endregion
-
-
-        #region SetNotificationDispatcher(myNotificationDispatcher, mySessionToken)
-
-        /// <summary>
-        /// Sets the NotificationDispatcher of this file system.
-        /// </summary>
-        /// <param name="myNotificationDispatcher">A NotificationDispatcher object</param>
-        public void SetNotificationDispatcher(NotificationDispatcher myNotificationDispatcher, SessionToken mySessionToken)
-        {
-            NotificationDispatcher = myNotificationDispatcher;
-        }
-
-        #endregion
-
-        #region SetNotificationDispatcher(myObjectLocation, myNotificationDispatcher, SessionToken mySessionToken)
-
-        /// <summary>
-        /// Sets the NotificationDispatcher of the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <param name="myNotificationDispatcher">A NotificationDispatcher object</param>
-        public void SetNotificationDispatcher(ObjectLocation myObjectLocation, NotificationDispatcher myNotificationDispatcher, SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-
-        #region GetNotificationSettings(SessionToken mySessionToken)
-
-        /// <summary>
-        /// Returns the NotificationDispatcher settings of this file system
-        /// </summary>
-        /// <returns>The NotificationDispatcher settings of this file system</returns>
-        public NotificationSettings GetNotificationSettings(SessionToken mySessionToken)
-        {
-            return NotificationSettings;
-        }
-
-        #endregion
-
-        #region GetNotificationSettings(myObjectLocation, SessionToken mySessionToken)
-
-        /// <summary>
-        /// Returns the NotificationDispatcher settings of the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <returns>The NotificationDispatcher settings of the file system at the given ObjectLocation</returns>
-        public NotificationSettings GetNotificationSettings(ObjectLocation myObjectLocation, SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region SetNotificationSettings(myNotificationSettings, SessionToken mySessionToken)
-
-        /// <summary>
-        /// Sets the NotificationDispatcher settings of this file system
-        /// </summary>
-        /// <param name="myNotificationSettings">A NotificationSettings object</param>
-        public void SetNotificationSettings(NotificationSettings myNotificationSettings, SessionToken mySessionToken)
-        {
-            NotificationSettings = myNotificationSettings;
-        }
-
-        #endregion
-
-        #region SetNotificationSettings(myObjectLocation, myNotificationSettings, SessionToken mySessionToken)
-
-        /// <summary>
-        /// Sets the NotificationDispatcher settings of the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <param name="myNotificationSettings">A NotificationSettings object</param>
-        public void SetNotificationSettings(ObjectLocation myObjectLocation, NotificationSettings myNotificationSettings, SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #endregion
-
-
-        #region IGraphFS Members
-
-        bool IGraphFS.SetFileSystemDescription(string myFileSystemDescription, SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        bool IGraphFS.SetFileSystemDescription(ObjectLocation myObjectLocation, string myFileSystemDescription, SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        Exceptional IGraphFS.LockFSObject(ObjectLocation myObjectLocation, string myObjectStream, string myObjectEdition, ObjectRevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, ulong myLockingTime, SessionToken mySessionToken)
-        {
-            throw new NotImplementedException();
-        }
 
         #endregion
 

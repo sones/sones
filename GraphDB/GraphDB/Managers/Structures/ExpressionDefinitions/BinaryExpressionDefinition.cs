@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * BinaryExpressionDefinition
  * (c) Stefan Licht, 2010
  */
@@ -15,7 +35,7 @@ using sones.Lib.ErrorHandling;
 using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;
-using sones.GraphDB.Structures.Result;
+
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
@@ -23,6 +43,9 @@ using sones.GraphDB.Structures.ExpressionGraph;
 using System.Threading.Tasks;
 using sones.Lib;
 using sones.GraphDB.Managers.Select;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.TypeManagement;
+
 
 #endregion
 
@@ -36,7 +59,7 @@ namespace sones.GraphDB.Managers.Structures
         public TypesOfBinaryExpression TypeOfBinaryExpression { get; private set; }
         public Exceptional<AOperationDefinition> ResultValue { get; private set; }
         public ABinaryOperator Operator { get; private set; }
-        public Exceptional ValidateResult { get; private set; }
+        public Exceptional ValidateResult { get; private set; }        
 
         private String _OperatorSymbol;
 
@@ -59,6 +82,11 @@ namespace sones.GraphDB.Managers.Structures
         {
             get { return _Right; }
             set { _Right = value; }
+        }
+
+        public String OperatorSymbol
+        {
+            get { return _OperatorSymbol; }
         }
 
         #endregion
@@ -511,34 +539,28 @@ namespace sones.GraphDB.Managers.Structures
                             return new Exceptional<AOperationDefinition>(qresult.Errors);
                         }
 
-                        foreach (SelectionResultSet aSelResult in qresult.Results)
+                        TypeAttribute curAttr = ((tupleVal.Value as SelectDefinition).SelectedElements.First().Item1 as IDChainDefinition).LastAttribute;
+
+                        var dbTypeOfAttribute = curAttr.GetDBType(myDBContext.DBTypeManager);
+
+                        var aTypeOfOperatorResult = GraphDBTypeMapper.ConvertGraph2CSharp(dbTypeOfAttribute.Name);
+
+                        foreach (DBObjectReadout dbo in qresult.Results.Objects)
                         {
-                            //Hack:
-                            int lowestSelectedLevel = (from aSelectionForReference in aSelResult.SelectedAttributes select aSelectionForReference.Key).Min();
+                            if (!(dbo.Attributes.ContainsKey(curAttr.Name)))
+                                continue;
 
-                            String attrName = aSelResult.SelectedAttributes[lowestSelectedLevel].First().Value;
-                            TypeAttribute curAttr = aSelResult.Type.GetTypeAttributeByName(attrName);
-
-                            var dbTypeOfAttribute = curAttr.GetDBType(myDBContext.DBTypeManager);
-
-                            var aTypeOfOperatorResult = GraphDBTypeMapper.ConvertGraph2CSharp(dbTypeOfAttribute.Name);
-
-                            foreach (DBObjectReadout dbo in aSelResult.Objects)
+                            if (curAttr != null)
                             {
-                                if (!(dbo.Attributes.ContainsKey(attrName)))
-                                    continue;
-
-                                if (curAttr != null)
-                                {
-                                    var val = new ValueDefinition(aTypeOfOperatorResult, dbo.Attributes[attrName]);
-                                    retVal.AddElement(new TupleElement(aTypeOfOperatorResult, val));
-                                }
-                                else
-                                {
-                                    return new Exceptional<AOperationDefinition>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-                                }
+                                var val = new ValueDefinition(aTypeOfOperatorResult, dbo.Attributes[curAttr.Name]);
+                                retVal.AddElement(new TupleElement(aTypeOfOperatorResult, val));
+                            }
+                            else
+                            {
+                                return new Exceptional<AOperationDefinition>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                             }
                         }
+
 
                         #endregion
                     }
@@ -1392,7 +1414,7 @@ namespace sones.GraphDB.Managers.Structures
 
         #region Having
 
-        public Exceptional<bool> IsSatisfyHaving(DBObjectReadoutGroup myDBObjectReadoutGroup, DBContext dbContext)
+        public Exceptional<bool> IsSatisfyHaving(DBObjectReadout myDBObjectReadoutGroup, DBContext dbContext)
         {
 
             if (TypeOfBinaryExpression == TypesOfBinaryExpression.LeftComplex)
@@ -1433,7 +1455,7 @@ namespace sones.GraphDB.Managers.Structures
 
         }
 
-        private Exceptional<Boolean> EvaluateHaving(DBObjectReadoutGroup myDBObjectReadoutGroup, AExpressionDefinition complexValue, out String attributeName, out ValueDefinition simpleValue, DBContext dbContext)
+        private Exceptional<Boolean> EvaluateHaving(DBObjectReadout myDBObjectReadoutGroup, AExpressionDefinition complexValue, out String attributeName, out ValueDefinition simpleValue, DBContext dbContext)
         {
 
             //GraphDBType graphDBType = null;

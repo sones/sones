@@ -8,7 +8,7 @@
     <ProjectGuid>{56277965-A00C-4219-BD4E-6E030D37343F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Lib</RootNamespace>
+    <RootNamespace>sones.Lib</RootNamespace>
     <AssemblyName>Lib</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -128,15 +128,18 @@
     <Compile Include="DataStructures\WeightedSet\WeightedSet.cs" />
     <Compile Include="DDate\DiscordianDate.cs" />
     <Compile Include="DDate\DiscordianDateStructure.cs" />
+    <Compile Include="ErrorHandling\Errors\ArgumentNullError.cs" />
+    <Compile Include="ErrorHandling\Errors\ArgumentNullOrEmptyError.cs" />
+    <Compile Include="ErrorHandling\Warnings\Warning_Unspecified.cs" />
+    <Compile Include="ErrorHandling\Errors\Error_Unspecified.cs" />
+    <Compile Include="ErrorHandling\Warnings\GeneralWarning.cs" />
     <Compile Include="ErrorHandling\ExceptionalExtensions.cs" />
     <Compile Include="ErrorHandling\ExceptionalConversionError.cs" />
-    <Compile Include="ErrorHandling\ExceptionalError.cs" />
-    <Compile Include="ErrorHandling\Enums\ErrorCodeEnum.cs" />
     <Compile Include="ErrorHandling\Exceptional.cs" />
-    <Compile Include="ErrorHandling\GraphError.cs" />
-    <Compile Include="ErrorHandling\IError.cs" />
+    <Compile Include="ErrorHandling\Errors\GeneralError.cs" />
+    <Compile Include="ErrorHandling\Errors\IError.cs" />
     <Compile Include="ErrorHandling\IExceptional.cs" />
-    <Compile Include="ErrorHandling\IWarning.cs" />
+    <Compile Include="ErrorHandling\Warnings\IWarning.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FastSerializer\FastReflectionSerializer.cs" />
@@ -146,6 +149,9 @@
     <Compile Include="FastSerializer\IFastSerializeExtensions.cs" />
     <Compile Include="FastSerializer\IFastSerializer.cs" />
     <Compile Include="GenericEnum.cs" />
+    <Compile Include="Hashing\ConsistentHashing\ConsistentHashing.cs" />
+    <Compile Include="Hashing\ConsistentHashing\DictionaryCache.cs" />
+    <Compile Include="Hashing\ConsistentHashing\ICache.cs" />
     <Compile Include="Hashing\Filter\AFilter.cs" />
     <Compile Include="Hashing\ConsistentHashing.cs" />
     <Compile Include="Hashing\Filter\MultiHashBloomFilter.cs" />
@@ -154,10 +160,33 @@
     <Compile Include="Hashing\Functions\MurmurHash2.cs" />
     <Compile Include="Hashing\Functions\SHA1Hash.cs" />
     <Compile Include="Hashing\IHashFunction.cs" />
+    <Compile Include="IO\DirectoryHandler.cs" />
+    <Compile Include="IO\FileHandler.cs" />
+    <Compile Include="IO\NativeWin32Methods.cs" />
+    <Compile Include="IO\PathHandler.cs" />
     <Compile Include="KeyValuePairSerializer\KeyValuePairSerializer.cs" />
+    <Compile Include="Math\Poisson.cs" />
     <Compile Include="MIMEType\MIMEType.cs" />
     <Compile Include="MinMaxDictionary.cs" />
     <Compile Include="Multithreading\PandoraThreadPool\PandoraThreadPool.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\CallerThreadContext.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\EventWaitHandle.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\EventWaitHandleFactory.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\Exceptions.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\Interfaces.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\PriorityQueue.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\SmartThreadPool.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\STPPerformanceCounter.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\STPStartInfo.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\SynchronizedDictionary.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WIGStartInfo.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItem.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemFactory.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemInfo.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemResultTWrapper.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemsGroup.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemsGroupBase.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemsQueue.cs" />
     <Compile Include="Multithreading\SpecialTimer.cs" />
     <Compile Include="NewFastSerializer\IFastSerializationTypeSurrogate.cs" />
     <Compile Include="NewFastSerializer\IOwnedDataSerializable.cs" />
@@ -173,22 +202,14 @@
     <Compile Include="Reflection\AutoDiscoveryError.cs" />
     <Compile Include="RessourceLock.cs" />
     <Compile Include="SeperatorTypes.cs" />
-    <Compile Include="Session\ISessionInfo.cs" />
-    <Compile Include="Session\SessionSettings.cs" />
-    <Compile Include="Session\SessionToken.cs" />
-    <Compile Include="Session\SessionUUID.cs" />
-    <Compile Include="Settings\ISettings.cs" />
     <Compile Include="SimpleLogger\ConsoleOutputLogger.cs" />
     <Compile Include="Singleton\Singleton.cs" />
     <Compile Include="UnitTestHelper\DynamicUnitTestHelper.cs" />
     <Compile Include="UnitTestHelper\UnitTestHelper.cs" />
     <Compile Include="Version.cs" />
-    <Compile Include="XML\PandoraXMLValidation.cs" />
-    <Compile Include="XML\XMLValidationTypes.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AdditionalLicenses.txt" />
-    <Content Include="license.txt" />
+    <Content Include="Multithreading\SmartThreadPool\license.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DataStructures\Exceptional\" />

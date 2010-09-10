@@ -1,13 +1,13 @@
 /*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,34 +15,21 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /*
  * ObjectLocation
- * Achim Friedland, 2010
+ * (c) Achim Friedland, 2009 - 2010
  */
 
 #region Usings
 
 using System;
-using System.Text;
-using System.IO;
 using System.Linq;
-using System.Xml.Linq;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
-using System.Diagnostics;
 
-using sones.Lib;
-using sones.Lib.Serializer;
-
-
-using sones.Lib.XML;
-using sones.Lib.NewFastSerializer;
 using sones.Lib.DataStructures;
 
 #endregion
@@ -51,29 +38,23 @@ namespace sones.GraphFS.DataStructures
 {
 
     /// <summary>
-    /// The ObjectLocation is consists of the ObjectPath and -Name
+    /// The ObjectLocation locates the AFSObject within a file system hierarchy.
+    /// It is the combination of the AFSObject path and its name.
     /// </summary>
 
-    //[Serializable]
-    
-    public class ObjectLocation : IComparable, IComparable<ObjectLocation>, IComparable<String>, IEquatable<ObjectLocation>, IEquatable<String>, IDisposable
+    public class ObjectLocation : IComparable, IComparable<ObjectLocation>, IEquatable<ObjectLocation>, IDisposable
     {
-
 
         #region Data
 
-        [NonSerialized]
-        protected String _ObjectLocation;
-
-        protected List<String> _PathElements;
+        private String       _ObjectLocation;
+        private List<String> _PathElements;
 
         #endregion
 
         #region Properties
 
         #region Path
-
-        protected String _Path;
 
         /// <summary>
         /// Stores the path of this AFSObject.
@@ -82,7 +63,14 @@ namespace sones.GraphFS.DataStructures
         {
             get
             {
-                return new ObjectLocation(_Path);
+
+                var _Count = _PathElements.Count();
+
+                if (_Count > 0)
+                    return new ObjectLocation(_PathElements.Take(_Count - 1));
+
+                return this;
+
             }
         }
 
@@ -93,14 +81,27 @@ namespace sones.GraphFS.DataStructures
         /// <summary>
         /// Stores the name of this AFSObject.
         /// </summary>
-        public String Name { get; protected set; }
+        public String Name
+        {
+            get
+            {
+
+                var _Count = _PathElements.Count();
+
+                if (_Count > 0)
+                    return _PathElements[_Count - 1];
+
+                return "";
+
+            }
+        }
 
         #endregion
 
         #region Length
 
         /// <summary>
-        /// Returns the length of the ObjectLocation.
+        /// Returns the length of the ObjectLocation as Int32.
         /// </summary>
         public Int32 Length
         {
@@ -112,10 +113,25 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
+        #region LongLength
+
+        /// <summary>
+        /// Returns the length of the ObjectLocation as Int64.
+        /// </summary>
+        public Int64 LongLength
+        {
+            get
+            {
+                return (Int64) _ObjectLocation.Length;
+            }
+        }
+
+        #endregion
+
         #region ULongLength
 
         /// <summary>
-        /// Returns the length of the ObjectLocation.
+        /// Returns the length of the ObjectLocation as UInt64.
         /// </summary>
         public UInt64 ULongLength
         {
@@ -127,7 +143,36 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
-        #region OK
+        #region IsRoot
+
+        public Boolean IsRoot
+        {
+            get
+            {
+                
+                if (_PathElements.Count == 0)
+                    return true;
+                
+                return false;
+
+            }
+        }
+
+        #endregion
+
+        #region PathElements
+
+        public IEnumerable<String> PathElements
+        {
+            get
+            {
+                return _PathElements;
+            }
+        }
+
+        #endregion
+
+        #region (static) Root
 
         private static readonly ObjectLocation _Root = new ObjectLocation();
 
@@ -151,150 +196,243 @@ namespace sones.GraphFS.DataStructures
         #region ObjectLocation()
 
         /// <summary>
-        /// This will create an empty ObjectLocation
+        /// This will create the root ObjectLocation.
+        /// You may also use the static ObjectLocation.Root.
         /// </summary>
         public ObjectLocation()
-            : this(FSPathConstants.PathDelimiter)
         {
+            _PathElements = new List<String>();
+            PathElements2ObjectLocation();
         }
 
         #endregion
 
-        #region ObjectLocation(myObjectLocation)
+        #region ObjectLocation(params myPathElements)
 
         /// <summary>
-        /// This will create an ObjectLocation based on the information
-        /// given within the array of strings.
+        /// Transforms the given array of path elements into an valid ObjectLocation.
         /// </summary>
-        public ObjectLocation(params String[] myObjectLocation)
+        /// <param name="myPathElements">An array of valid path elements (null and empty entries will be removed!)</param>
+        public ObjectLocation(params String[] myPathElements)
+        {
+            _PathElements = myPathElements.Where(s => !String.IsNullOrEmpty(s)).ToList();
+            PathElements2ObjectLocation();
+        }
+
+        #endregion
+
+        #region ObjectLocation(myPathElements)
+
+        /// <summary>
+        /// Transforms the given enumeration of path elements into an valid ObjectLocation.
+        /// </summary>
+        /// <param name="myPathElements">An enumeration of valid path elements (null and empty entries will be removed!)</param>
+        public ObjectLocation(IEnumerable<String> myPathElements)
+        {
+            _PathElements = myPathElements.Where(s => s != null && s != "").ToList();
+            PathElements2ObjectLocation();
+        }
+
+        #endregion
+
+        #region ObjectLocation(myObjectLocation, params myPathElements)
+
+        /// <summary>
+        /// Adds the given array of path elements to the given ObjectLocation.
+        /// </summary>
+        /// <param name="myObjectLocation">A valid ObjectLocation</param>
+        /// <param name="myPathElements">An array of valid path elements (null and empty entries will be removed!)</param>
+        public ObjectLocation(ObjectLocation myObjectLocation, params String[] myPathElements)
         {
 
-            var _PathElements = new List<String>();
+            _PathElements = new List<String>(myObjectLocation.PathElements);
+            _PathElements.AddRange(myPathElements.Where(s => s != null && s != ""));
+            
+            PathElements2ObjectLocation();
 
-            foreach (var a in myObjectLocation)
-                foreach (var b in a.Split(new String[] { FSPathConstants.PathDelimiter }, StringSplitOptions.RemoveEmptyEntries))
-                    _PathElements.Add(b);
+        }
 
-            //var __ObjectLocation = "";
+        #endregion
 
-            //foreach (var c in _PathElements)
-            //{
-            //    __ObjectLocation += FSPathConstants.PathDelimiter;
-            //    __ObjectLocation += c;
-            //}
+        #region ObjectLocation(myObjectLocation, myPathElements)
 
-            var __ObjectLocation = _PathElements.ToArray();
+        /// <summary>
+        /// Adds the given enumeration of path elements to the given ObjectLocation.
+        /// </summary>
+        /// <param name="myObjectLocation">A valid ObjectLocation</param>
+        /// <param name="myPathElements">An enumeration of valid path elements (null and empty entries will be removed!)</param>
+        public ObjectLocation(ObjectLocation myObjectLocation, IEnumerable<String> myPathElements)
+        {
 
-            if (__ObjectLocation.Length == 0)
-                __ObjectLocation = new String[] { FSPathConstants.PathDelimiter };
+            _PathElements = new List<String>(myObjectLocation.PathElements);
+            _PathElements.AddRange(myPathElements.Where(s => s != null && s != ""));
 
-            // Note: Do not check for additional PathDelimiters within the String array
-            // Six might be the right break event!
-            //if (__ObjectLocation.Length > 6)
-            //{
+            PathElements2ObjectLocation();
 
-            //    var _NewObjectLocation = new StringBuilder(__ObjectLocation[0]);
+        }
 
-            //    _NewObjectLocation.Append(FSPathConstants.PathDelimiter);
+        #endregion
 
-            //    for (int i = 1; i < __ObjectLocation.Length - 1; i++)
-            //        _NewObjectLocation.Append(__ObjectLocation[i]).Append(FSPathConstants.PathDelimiter);
+        #region ObjectLocation(myObjectLocation1, myObjectLocation2, params myObjectLocations)
 
-            //    _ObjectPath     = _NewObjectLocation.ToString();
-            //    Name     = __ObjectLocation[__ObjectLocation.Length - 1];
-            //    _ObjectLocation = _ObjectPath + FSPathConstants.PathDelimiter + Name;
+        /// <summary>
+        /// Transforms the given ObjectLocations into a single valid ObjectLocation.
+        /// Note: myObjectLocation1, myObjectLocation2 just to work around Mono's
+        ///       strage optional parameters behavior!
+        /// </summary>
+        /// <param name="myObjectLocation1">A valid ObjectLocation</param>
+        /// <param name="myObjectLocation2">A valid ObjectLocation</param>
+        /// <param name="myObjectLocations">Some valid ObjectLocations</param>
+        public ObjectLocation(ObjectLocation myObjectLocation1, ObjectLocation myObjectLocation2, params ObjectLocation[] myObjectLocations)
+        {
 
-            //}
+            _PathElements = new List<String>(myObjectLocation1.PathElements);
+            _PathElements.AddRange(myObjectLocation2.PathElements);
 
-            //else
-            if (__ObjectLocation.Length > 1)
+            foreach (var _ObjectLocation in myObjectLocations)
+                _PathElements.AddRange(_ObjectLocation.PathElements);
+
+            PathElements2ObjectLocation();
+
+        }
+
+        #endregion
+
+        #region ObjectLocation(myObjectLocations)
+
+        /// <summary>
+        /// Transforms the given enumeration of ObjectLocations into a single valid ObjectLocation.
+        /// </summary>
+        /// <param name="myObjectLocations">Some valid ObjectLocations</param>
+        public ObjectLocation(IEnumerable<ObjectLocation> myObjectLocations)
+        {
+
+            _PathElements = new List<String>();
+
+            foreach (var _ObjectLocation in myObjectLocations)
+                _PathElements.AddRange(_ObjectLocation.PathElements);
+
+            PathElements2ObjectLocation();
+
+        }
+
+        #endregion
+
+        #endregion
+
+
+        #region Clone()
+
+        /// <summary>
+        /// Returns a clone of this ObjectLocation.
+        /// </summary>
+        public ObjectLocation Clone()
+        {
+            return new ObjectLocation(_PathElements.ToArray());
+        }
+
+        #endregion
+
+        #region (static) Clone(myObjectLocation)
+
+        /// <summary>
+        /// Returns a clone of myObjectLocation.
+        /// </summary>
+        public static ObjectLocation Clone(ObjectLocation myObjectLocation)
+        {
+            return new ObjectLocation(myObjectLocation.PathElements.ToArray());
+        }
+
+        #endregion
+
+        #region (private) PathElements2ObjectLocation()
+
+        /// <summary>
+        /// Transforms the private list of PathElements into a valid ObjectLocation.
+        /// NOTE: The PathElements should not have any null or empty entries.
+        /// </summary>
+        private void PathElements2ObjectLocation()
+        {
+
+            var _Count = _PathElements.Count();
+
+            if (_Count > 0)
             {
 
-                String _NewObjectName = "";
-                _ObjectLocation = FSPathConstants.PathDelimiter;
+                // Aggreagte PathElements to _ObjectLocation
+                _ObjectLocation = _PathElements.Aggregate((result, next) => result + FSPathConstants.PathDelimiter + next);
 
-                for (int i = 0; i < __ObjectLocation.Length; i++)
-                {
-
-                    _NewObjectName = __ObjectLocation[i];
-
-                    while (_NewObjectName.StartsWith(FSPathConstants.PathDelimiter))
-                        _NewObjectName = _NewObjectName.Remove(0, FSPathConstants.PathDelimiter.Length);
-
-                    while (_NewObjectName.EndsWith(FSPathConstants.PathDelimiter))
-                        _NewObjectName = _NewObjectName.Substring(0, _NewObjectName.Length - FSPathConstants.PathDelimiter.Length);
-
-                    if (_NewObjectName != "")
-                        _ObjectLocation = String.Concat(_ObjectLocation, _NewObjectName, FSPathConstants.PathDelimiter);
-
-                }
-
-                if (_ObjectLocation.StartsWith("/..") || _ObjectLocation.StartsWith("/."))
-                {
-                    _ObjectLocation = _ObjectLocation.Substring(1, _ObjectLocation.Length - FSPathConstants.PathDelimiter.Length - 1);
-                }
-
-                else
-                    _ObjectLocation = _ObjectLocation.Substring(0, _ObjectLocation.Length - FSPathConstants.PathDelimiter.Length);
+                // Do not add an additional "/" in fromt of e.g. "../directory" and not in front of an already leading "/"
+                if (!_ObjectLocation.StartsWith(".") && !_ObjectLocation.StartsWith(FSPathConstants.PathDelimiter))
+                    _ObjectLocation = FSPathConstants.PathDelimiter + _ObjectLocation;
 
             }
 
             else
-            {
-
-                //HACK: For "/dir/file" within first parameter
-                if (__ObjectLocation[0].Length > FSPathConstants.PathDelimiter.Length && __ObjectLocation[0].Contains(FSPathConstants.PathDelimiter))
-                {
-                    var _tmp = new ObjectLocation(__ObjectLocation[0].Split(new String[] { FSPathConstants.PathDelimiter }, StringSplitOptions.RemoveEmptyEntries));
-                    _ObjectLocation = _tmp._ObjectLocation;
-                    Name            = _tmp.Name;
-                    _Path           = _tmp.Path;
-                    return;
-                }
-
-
-                //Name = __ObjectLocation[0] == null ? __ObjectLocation[0] : "";
-                Name = __ObjectLocation[0];
-
-                while (Name.StartsWith(FSPathConstants.PathDelimiter))
-                    Name = Name.Remove(0, FSPathConstants.PathDelimiter.Length);
-
-                while (Name.EndsWith(FSPathConstants.PathDelimiter))
-                    Name = Name.Substring(0, Name.Length - FSPathConstants.PathDelimiter.Length);
-
-                if (Name == "..")
-                {
-                    _ObjectLocation = Name;
-                    _Path           = "";
-                }
-
-                else
-                {
-                    _ObjectLocation = FSPathConstants.PathDelimiter + Name;
-                    _Path           = FSPathConstants.PathDelimiter;
-                }
-
-                return;
-
-            }
-
-            var _Slash = _ObjectLocation.LastIndexOf(FSPathConstants.PathDelimiter);
-            _Path = _ObjectLocation.Substring(0, _Slash);//new ObjectLocation(_ObjectLocation.Substring(0, _Slash));//
-            Name  = _ObjectLocation.Substring(_Slash + FSPathConstants.PathDelimiter.Length);
-
-            if (Name.Contains("/"))
-            {
-                var b = "";
-            }
+                _ObjectLocation = FSPathConstants.PathDelimiter;
 
         }
 
         #endregion
 
+        #region (static) ParseString(myString)
+
+        /// <summary>
+        /// Parses a String into an ObjectLocation by splitting it using FSPathConstants.PathDelimiter. 
+        /// </summary>
+        /// <param name="myPath">An ObjectLocation as String</param>
+        /// <returns>A valid ObjectLocation</returns>
+        public static ObjectLocation ParseString(String myPath)
+        {
+            return new ObjectLocation(myPath.Split(new String[] { FSPathConstants.PathDelimiter }, StringSplitOptions.RemoveEmptyEntries));
+        }
+
+        #endregion
+
+        #region (static) SimplifyObjectLocation(myPath)
+
+        /// <summary>
+        /// Simplifies an object location by removing relative path fragments
+        /// like /directoryname1/../directoryname2 -> /directoryname2
+        /// </summary>
+        /// <param name="myPath">the current path</param>
+        /// <returns>a simplified current path</returns>
+        public static String SimplifyObjectLocation(String myPath)
+        {
+
+            String   _newPath = "";
+            String[] _SplittedPathElements = myPath.Split(new String[] { FSPathConstants.PathDelimiter }, StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 1; i < _SplittedPathElements.Length; i++)
+            {
+
+                if (_SplittedPathElements[i].Equals(FSConstants.DotDotLink))
+                {
+                    _SplittedPathElements[i]     = "";
+                    _SplittedPathElements[i - 1] = "";
+                }
+
+                else if (_SplittedPathElements[i].Equals(FSPathConstants.PathDelimiter))
+                {
+                    _SplittedPathElements[i]     = "";
+                }
+
+            }
+
+            foreach (var _Path in _SplittedPathElements)
+                if (!_Path.Equals("")) _newPath = String.Concat(_newPath, FSPathConstants.PathDelimiter, _Path);
+
+            if (_newPath.Equals(""))
+                _newPath = FSPathConstants.PathDelimiter;
+
+            return _newPath;
+
+        }
+
         #endregion
 
 
-        #region Object specific methods
+        #region String-like usage of the ObjectLocation class
 
         #region Combine(myObjectPath, myObjectName)
 
@@ -421,25 +559,15 @@ namespace sones.GraphFS.DataStructures
         #endregion
 
 
-        #region Implicit conversation to/from String
-
-        //public static implicit operator ObjectLocation(String myString)
-        //{
-        //    return new ObjectLocation(myString);
-        //}
-
-        public static implicit operator String(ObjectLocation myObjectLocation)
-        {
-            return myObjectLocation.ToString();
-        }
-
-        #endregion
-
-
         #region Operator overloading
 
         #region Operator == (myObjectLocation1, myObjectLocation2)
 
+        /// <summary>
+        /// Compares two ObjectLocations.
+        /// </summary>
+        /// <param name="myObjectLocation1">A valid ObjectLocation</param>
+        /// <param name="myObjectLocation2">A valid ObjectLocation</param>
         public static Boolean operator == (ObjectLocation myObjectLocation1, ObjectLocation myObjectLocation2)
         {
 
@@ -459,18 +587,44 @@ namespace sones.GraphFS.DataStructures
 
         #region Operator != (myObjectLocation1, myObjectLocation2)
 
-        public static Boolean operator != (ObjectLocation myObjectLocation1, ObjectLocation myObjectLocation2)
+        /// <summary>
+        /// Compares two ObjectLocations.
+        /// </summary>
+        /// <param name="myObjectLocation1">A valid ObjectLocation</param>
+        /// <param name="myObjectLocation2">A valid ObjectLocation</param>
+        public static Boolean operator !=(ObjectLocation myObjectLocation1, ObjectLocation myObjectLocation2)
         {
             return !(myObjectLocation1 == myObjectLocation2);
         }
 
         #endregion
 
-        #region Operator + (myObjectLocation1, myObjectLocation2)
+        #region Operator +  (myObjectLocation1, myObjectLocation2)
 
-        public static ObjectLocation operator +(ObjectLocation myObjectLocation1, String myObjectLocation2)
+        /// <summary>
+        /// Transforms the given ObjectLocations into a single valid ObjectLocation.
+        /// </summary>
+        /// <param name="myObjectLocation1">A valid ObjectLocation</param>
+        /// <param name="myObjectLocation2">A valid ObjectLocation</param>
+        /// <returns>A valid ObjectLocation</returns>
+        public static ObjectLocation operator + (ObjectLocation myObjectLocation1, String myObjectLocation2)
         {
-            return new ObjectLocation(myObjectLocation1._ObjectLocation, myObjectLocation2);
+            return new ObjectLocation(myObjectLocation1, myObjectLocation2);
+        }
+
+        #endregion
+
+        #region Operator +  (myObjectLocation,  myStringArray)
+
+        /// <summary>
+        /// Transforms the given ObjectLocation and array of strings into a single valid ObjectLocation.
+        /// </summary>
+        /// <param name="myObjectLocation">A valid ObjectLocation</param>
+        /// <param name="myStringArray">An array of strings</param>
+        /// <returns>A valid ObjectLocation</returns>
+        public static ObjectLocation operator + (ObjectLocation myObjectLocation, String[] myStringArray)
+        {
+            return new ObjectLocation(myObjectLocation, myStringArray);
         }
 
         #endregion
@@ -507,15 +661,6 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
-        #region IComparable<String> Members
-
-        public Int32 CompareTo(String myString)
-        {
-            return myString.CompareTo(_ObjectLocation);
-        }
-
-        #endregion
-
 
         #region IEquatable Members
 
@@ -547,7 +692,7 @@ namespace sones.GraphFS.DataStructures
                 return false;
 
             // Check if the inner fields have the same values
-            if (_ObjectLocation != myObjectLocation)
+            if (_ObjectLocation.ToString() != myObjectLocation.ToString())
                 return false;
 
             return true;
@@ -555,32 +700,13 @@ namespace sones.GraphFS.DataStructures
         }
 
         #endregion
-
-        #region IEquatable<String> Members
-
-        public Boolean Equals(String myString)
-        {
-
-            // If parameter is null return false:
-            if ((Object) myString == null)
-                return false;
-
-            // Check if the inner fields have the same values
-            if (_ObjectLocation != myString)
-                return false;
-
-            return true;
-
-        }
-
-        #endregion
-
+        
 
         #region GetHashCode()
 
-        public override int GetHashCode()
+        public override Int32 GetHashCode()
         {
-            return _ObjectLocation.GetHashCode();
+            return _ObjectLocation.ToString().GetHashCode();
         }
 
         #endregion

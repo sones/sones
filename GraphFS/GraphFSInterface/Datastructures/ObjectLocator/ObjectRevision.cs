@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /* 
  * GraphFSInterface - ObjectRevision
- * Achim Friedland, 2008 - 2010
+ * (c) Achim Friedland, 2008 - 2010
  */
 
 #region Usings
@@ -38,6 +38,7 @@ using sones.GraphFS.Objects;
 using sones.Lib.DataStructures.UUID;
 using sones.GraphFS.InternalObjects;
 using System.Diagnostics;
+using sones.Lib.DataStructures.WeakReference;
 
 #endregion
 
@@ -71,6 +72,27 @@ namespace sones.GraphFS.DataStructures
             {
                 return _RevisionID;
             }
+        }
+
+        #endregion
+
+        #region IsDeltaRevision
+
+        private Boolean _IsDeltaRevision;
+
+        public Boolean IsDeltaRevision
+        {
+
+            get
+            {
+                return _IsDeltaRevision;
+            }
+
+            set
+            {
+                _IsDeltaRevision = value;
+            }
+
         }
 
         #endregion
@@ -194,6 +216,32 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
+        #region CachedAFSObject
+
+        private WeakReference<AFSObject> _CachedAFSObject;
+
+        public AFSObject CachedAFSObject
+        {
+
+            get
+            {
+
+                if (_CachedAFSObject.IsAlive)
+                    return _CachedAFSObject.Value;
+
+                return null;
+
+            }
+
+            set
+            {
+                _CachedAFSObject = new WeakReference<AFSObject>(value);
+            }
+
+        }
+
+        #endregion
+
         #region CacheUUID
 
         private CacheUUID _CacheUUID;
@@ -229,7 +277,7 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
-        #region Constructors
+        #region Constructor(s)
 
         #region ObjectRevision(myObjectStream)
 
@@ -237,14 +285,16 @@ namespace sones.GraphFS.DataStructures
         /// Basic constructor
         /// </summary>
         /// <param name="myObjectStream">the object stream type of the file system object</param>
+        [Obsolete("This constructor is evil! Do not use it! Use ObjectRevision(ObjectRevisionID myObjectRevisionID, String myObjectStream)")]
         public ObjectRevision(String myObjectStream)
         {
 
-            _ObjectPath             = "";
+            _ObjectPath             = null;
             _ObjectName             = "";
             _ObjectLocation         = null;
 
             _RevisionID             = new ObjectRevisionID(UUID.NewUUID);
+            _IsDeltaRevision        = false;
             _ParentRevisionIDs      = new HashSet<ObjectRevisionID>();
             _MinNumberOfCopies      = FSConstants.MIN_NUMBER_OF_COPIES;
             _MaxNumberOfCopies      = FSConstants.MAX_NUMBER_OF_COPIES;
@@ -260,20 +310,50 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
-        #region ObjectRevision(myRevisionID)
+        #region ObjectRevision(myObjectStream)
 
         /// <summary>
-        /// 
+        /// Basic constructor
         /// </summary>
-        /// <param name="myObjectStream"></param>
-        /// <param name="myRevisionID"></param>
-        public ObjectRevision(String myObjectStream, ObjectRevisionID myRevisionID)
-            : this(myObjectStream)
+        /// <param name="myObjectStream">the object stream type of the file system object</param>
+        public ObjectRevision(ObjectRevisionID myObjectRevisionID, String myObjectStream)
         {
-            _RevisionID = myRevisionID;
+
+            _ObjectPath             = null;
+            _ObjectName             = "";
+            _ObjectLocation         = null;
+
+            _RevisionID             = myObjectRevisionID;
+            _IsDeltaRevision        = false;
+            _ParentRevisionIDs      = new HashSet<ObjectRevisionID>();
+            _MinNumberOfCopies      = FSConstants.MIN_NUMBER_OF_COPIES;
+            _MaxNumberOfCopies      = FSConstants.MAX_NUMBER_OF_COPIES;
+            _ObjectStream           = myObjectStream;
+            _SerializedObject       = null;
+
+            // TODO: Use a cheaper way to generate the UUID - e.g. number etc.
+            _CacheUUID              = CacheUUID.NewUUID;
+
+            _ObjectDatastreams      = new List<ObjectDatastream>();
+
         }
 
         #endregion
+
+        //#region ObjectRevision(myRevisionID)
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="myObjectStream"></param>
+        ///// <param name="myRevisionID"></param>
+        //public ObjectRevision(String myObjectStream, ObjectRevisionID myRevisionID)
+        //    : this(myObjectStream)
+        //{
+        //    _RevisionID = myRevisionID;
+        //}
+
+        //#endregion
 
         #region ObjectRevision(myObjectRevision, myCopyObjectDatastreams)
 
@@ -283,11 +363,13 @@ namespace sones.GraphFS.DataStructures
         /// </summary>
         /// <param name="myObjectRevision">The ObjectCopies to be cloned</param>
         /// <param name="myCopyObjectDatastreams">Should the ObjectDatastreams should be cloned or not!</param>
-        public ObjectRevision(ObjectRevision myObjectRevision, Boolean myCopyObjectDatastreams)
+        public ObjectRevision(ObjectRevisionID myObjectRevisionID, ObjectRevision myObjectRevision, Boolean myCopyObjectDatastreams)
         {
 
             //if (myObjectRevision.RevisionID == null)
             //    Debug.WriteLine("myObjectRevision.RevisionID must not be null!");// throw new ArgumentNullException("myObjectRevision.RevisionID must not be null!");
+
+            _RevisionID             = myObjectRevisionID;
 
             _CacheUUID              = myObjectRevision.CacheUUID;
             _isDirty                = myObjectRevision._isDirty;
@@ -295,6 +377,7 @@ namespace sones.GraphFS.DataStructures
             _SerializedObject       = myObjectRevision.SerializedObject;
 
             ObjectLocation          = myObjectRevision.ObjectLocation;
+            _IsDeltaRevision        = false;
 
             _ParentRevisionIDs      = (myObjectRevision.RevisionID == null) ? new HashSet<ObjectRevisionID>() : new HashSet<ObjectRevisionID>() { myObjectRevision.RevisionID };
             _MinNumberOfCopies      = myObjectRevision.MinNumberOfCopies;
@@ -390,10 +473,10 @@ namespace sones.GraphFS.DataStructures
         #region ObjectPath
 
         [NonSerialized]
-        private String _ObjectPath;
+        private ObjectLocation _ObjectPath;
 
         [NotIFastSerialized]
-        public String ObjectPath
+        public ObjectLocation ObjectPath
         {
 
             get
@@ -404,7 +487,7 @@ namespace sones.GraphFS.DataStructures
             set
             {
                 _ObjectPath      = value;
-                _ObjectLocation = new ObjectLocation(DirectoryHelper.Combine(_ObjectPath, _ObjectName));
+                _ObjectLocation = new ObjectLocation(_ObjectPath, _ObjectName);
             }
 
         }
@@ -428,7 +511,7 @@ namespace sones.GraphFS.DataStructures
             set
             {
                 _ObjectName      = value;
-                _ObjectLocation = new ObjectLocation(DirectoryHelper.Combine(_ObjectPath, _ObjectName));
+                _ObjectLocation = new ObjectLocation(_ObjectPath, _ObjectName);
             }
 
         }
@@ -602,7 +685,7 @@ namespace sones.GraphFS.DataStructures
                 return Encoding.UTF8.GetBytes(_MaxNumberOfCopies.ToString());
 
             if (myObjectName.Equals(_ObjectLocation))
-                return Encoding.UTF8.GetBytes(ObjectLocation);
+                return Encoding.UTF8.GetBytes(ObjectLocation.ToString());
 
             return new Byte[0];
 

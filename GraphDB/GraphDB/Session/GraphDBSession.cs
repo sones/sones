@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,6 +15,7 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
 /*
@@ -35,13 +36,16 @@ using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.Plugin;
 using sones.GraphDB.Session;
 using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.Structures.Result;
-using sones.GraphDB.Transactions;
+
 using sones.GraphFS.Transactions;
 using sones.Lib.DataStructures.UUID;
 using sones.Lib.ErrorHandling;
-using sones.Lib.Session;
+using sones.GraphFS.Session;
 using sones.Notifications;
+using sones.GraphFS.DataStructures;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.Transactions;
+using sones.GraphDB.Managers.Select;
 
 #endregion
 
@@ -65,7 +69,7 @@ namespace sones.GraphDB
 
         #region DatabaseRootPath
 
-        public String DatabaseRootPath
+        public ObjectLocation DatabaseRootPath
         {
             get { return _GraphDB.DatabaseRootPath; }
         }
@@ -88,6 +92,22 @@ namespace sones.GraphDB
             _GraphDB        = myGraphDB;
             _SessionToken   = new SessionToken(new DBSessionInfo(myUsername));
             _DBPluginManager = new Plugin.DBPluginManager(null);
+
+            //TODO: remove true for rebuild indices as soon as they are really persistent
+            _DBContext = new DBContext(myGraphDB.GraphFSSession, _GraphDB.DatabaseRootPath, null, _GraphDB.DBSettings, false, _DBPluginManager, new DBSessionSettings(_SessionToken.SessionSettings));
+
+            //_QueryManager = new QueryManager(_DBContext.DBPluginManager);
+        }
+
+        #endregion
+
+        #region GraphDBSession(myGraphDB, myUsername)
+
+        internal GraphDBSession(GraphDB2 myGraphDB, String myUsername, DBPluginManager myDBPluginManager)
+        {
+            _GraphDB = myGraphDB;
+            _SessionToken = new SessionToken(new DBSessionInfo(myUsername));
+            _DBPluginManager = myDBPluginManager;
 
             //TODO: remove true for rebuild indices as soon as they are really persistent
             _DBContext = new DBContext(myGraphDB.GraphFSSession, _GraphDB.DatabaseRootPath, null, _GraphDB.DBSettings, false, _DBPluginManager, new DBSessionSettings(_SessionToken.SessionSettings));
@@ -188,10 +208,10 @@ namespace sones.GraphDB
 
         }
 
-        public QueryResult RebuilIndices(HashSet<string> myTypeNames = null)
+        public QueryResult RebuildIndices(HashSet<string> myTypeNames = null)
         {
 
-            return _GraphDB.RebuilIndices(_SessionToken, _DBContext, myTypeNames);
+            return _GraphDB.RebuildIndices(_SessionToken, _DBContext, myTypeNames);
 
         }
 
@@ -202,7 +222,7 @@ namespace sones.GraphDB
 
         }
 
-        public QueryResult Select(Dictionary<AExpressionDefinition, string> mySelectedElements, List<TypeReferenceDefinition> myReferenceAndTypeList,
+        public QueryResult Select(List<Tuple<AExpressionDefinition, string, SelectValueAssignment>> mySelectedElements, List<TypeReferenceDefinition> myReferenceAndTypeList,
             BinaryExpressionDefinition myWhereExpressionDefinition = null, List<IDChainDefinition> myGroupBy = null, BinaryExpressionDefinition myHaving = null, OrderByDefinition myOrderByDefinition = null,
             ulong? myLimit = null, ulong? myOffset = null, long myResolutionDepth = -1, Boolean myRunWithTimeout = false)
         {

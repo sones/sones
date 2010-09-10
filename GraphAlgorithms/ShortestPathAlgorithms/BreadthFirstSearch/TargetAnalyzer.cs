@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,11 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-/* <id name="sones GraphDB – TargetAnalyzer" />
+/* <id name="GraphDB � TargetAnalyzer" />
  * <copyright file="TargetAnalyzer.cs"
  *            company="sones GmbH">
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Martin Junghanns</developer>
  * <developer>Michael Woidak</developer>
@@ -58,17 +60,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using GraphAlgorithms.PathAlgorithm.BFSTreeStructure;
+
 using sones.Lib.DataStructures.UUID;
+
 using sones.GraphFS.DataStructures;
+using sones.GraphAlgorithms.PathAlgorithm.BFSTreeStructure;
 
 #endregion
 
-namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
+namespace sones.GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 {
     class TargetAnalyzer
     {
-
         #region private members
 
         //Logger
@@ -80,8 +83,11 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
         //an actual path
         private List<ObjectUUID> _TempList;
 
-        //start is the target of the select
+        //end is the root or start of the select
         private Node _Start;
+
+        //startFriends holds the freinds of the target of the select
+        private HashSet<ObjectUUID> _StartFriends;
 
         //end is the root or start of the select
         private Node _End;
@@ -95,11 +101,11 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
         //needed to abort recursion
         private bool _Done = false;
 
-        #endregion
+        #endregion private members
 
         #region constructors
 
-        public TargetAnalyzer(Node myStart, Node myEnd, byte myMaxPathLength)
+        public TargetAnalyzer(Node myStart, HashSet<ObjectUUID> myStartFriends, Node myEnd, byte myMaxPathLength)
         {
             _Paths = new HashSet<List<ObjectUUID>>();
 
@@ -107,19 +113,28 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
             _Start = myStart;
 
+            _StartFriends = myStartFriends;
+
             _End = myEnd;
 
-            _MaxPathLength = myMaxPathLength;
+            if (myMaxPathLength != 0)
+            {
+                _MaxPathLength = Convert.ToByte(myMaxPathLength - 1);
+            }
+            else 
+            {
+                _MaxPathLength = Convert.ToByte(myMaxPathLength);
+            }
         }
 
-        public TargetAnalyzer(Node myStart, Node myEnd, byte myMaxPathLength, bool myShortestOnly, bool myFindAll)
-            : this(myStart, myEnd, myMaxPathLength)
+        public TargetAnalyzer(Node myStart, HashSet<ObjectUUID> myStartFriends, Node myEnd, byte myMaxPathLength, bool myShortestOnly, bool myFindAll)
+            : this(myStart, myStartFriends, myEnd, myMaxPathLength)
         {
             _ShortestOnly = myShortestOnly;
             _FindAll = myFindAll;
         }
 
-        #endregion
+        #endregion constructors
 
         #region public methods
 
@@ -188,59 +203,58 @@ namespace GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
         private void getPath(Node myCurrent)
         {
-            //add myCurrent to actual path
-            _TempList.Add(myCurrent.Key);
-            //set flag to mark that myCurrent is in actual path
-            myCurrent.AlreadyInPath = true;
-
-            //abort recursion when myCurrent is the root node
-            if (myCurrent.Key.Equals(_Start.Key))
+            if (!_TempList.Contains(myCurrent.Key))
             {
-                //duplicate list
-                var temp = new List<ObjectUUID>(_TempList);
-                
-                //reverse because the path is calculated beginning at the target
-                temp.Reverse();
+                //add myCurrent to actual path
+                _TempList.Add(myCurrent.Key);
 
-                //add completed path to result list
-                _Paths.Add(temp);
+                //set flag to mark that myCurrent is in actual path
+                myCurrent.AlreadyInPath = true;
 
-                //log the path
-                PathViewer.LogPath(temp);
-
-                //if (_ShortestOnly && !_FindAll)
-                //{
-                //    //first path is analyzed
-                //    _Done = true; //we can stop evaluating next parents
-                //    return;
-                //}
-            }
-
-            foreach (Node parent in myCurrent.Parents)
-            {
-                //if parent node not already in actual path
-                if(!parent.AlreadyInPath)
+                //abort recursion when myCurrent is the root node
+                if (_StartFriends.Contains(myCurrent.Key))
                 {
-                    //and MaxPathLength is not reached
-                    if (_TempList.Count < _MaxPathLength)
+                    //duplicate list
+                    var temp = new List<ObjectUUID>(_TempList);
+
+                    //reverse because the path is calculated beginning at the target
+                    temp.Reverse();
+
+                    //add completed path to result list
+                    _Paths.Add(temp);
+
+                    //log the path
+                    PathViewer.LogPath(temp);
+                }
+
+
+                foreach (Node parent in myCurrent.Parents)
+                {
+                    //if parent node not already in actual path
+                    if (!parent.AlreadyInPath && !parent.Key.Equals(_Start.Key))
                     {
-                        if (!_Done)
+                        //and MaxPathLength is not reached
+                        if (_TempList.Count < _MaxPathLength)
                         {
-                            getPath(parent);
+                            if (!_Done)
+                            {
+                                getPath(parent);
+                            }
                         }
                     }
                 }
+
+                if (_TempList.Count != 0)
+                {
+                    //remove last node from actual path
+                    _TempList.Remove(_TempList.Last<ObjectUUID>());
+                    //myCurrent isn't in actual path
+                    myCurrent.AlreadyInPath = false;
+                }
             }
-
-            //remove last node from actual path
-            _TempList.Remove(_TempList.Last<ObjectUUID>());
-            //myCurrent isn't in actual path
-            myCurrent.AlreadyInPath = false;
-
             return;
         }
 
-        #endregion
-
+        #endregion private methods
     }
 }

@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,34 +15,22 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
 
-/* <id Name=”sones GraphDB – SumAggregate” />
- * <copyright file=”SumAggregate.cs”
- *            company=”sones GmbH”>
- * Copyright (c) sones GmbH 2007-2010
- * </copyright>
- * <developer>Stefan Licht</developer>
- * <summary>The aggregate SUM.<summary>
- */
+#region Usings
 
-#region
-
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Indices;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.Structures.Result;
-using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.BasicTypes;
-using sones.GraphFS.DataStructures;
+using sones.GraphDBInterface.TypeManagement;
+
 using sones.Lib.ErrorHandling;
-using sones.Lib.Session;
+using sones.GraphDB.TypeManagement.BasicTypes;
 
 #endregion
 
@@ -55,55 +43,51 @@ namespace sones.GraphDB.Aggregates
     public class SumAggregate : ABaseAggregate
     {
 
+        #region Properties
+
         public override string FunctionName
         {
             get { return "SUM"; }
         }
 
-        public override AggregateType AggregateType
-        {
-            get { return AggregateType.SUM; }
-        }
-        
-        public override TypesOfOperatorResult TypeOfResult
-        {
-            get { return TypesOfOperatorResult.Double; }
-        }
+        #endregion
 
-        public override Exceptional<Object> Aggregate(IEnumerable<DBObjectReadout> myDBObjectReadouts, TypeAttribute myTypeAttribute, DBContext dbContext, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
+        #region Attribute aggregate
+
+        public override Exceptional<IObject> Aggregate(IEnumerable<DBObjectStream> myDBObjects, TypeAttribute myTypeAttribute, DBContext myDBContext, params Functions.ParameterValue[] myParameters)
         {
-            ADBBaseObject GraphObject = myTypeAttribute.GetADBBaseObjectType(dbContext.DBTypeManager);
-            foreach (DBObjectReadout dbo in myDBObjectReadouts)
+            var aggregateResult = myTypeAttribute.GetADBBaseObjectType(myDBContext.DBTypeManager);
+            foreach (var dbo in myDBObjects)
             {
-                if (HasAttribute(dbo.Attributes, myTypeAttribute.Name, dbContext))
+                var attrResult = dbo.GetAttribute(myTypeAttribute, myTypeAttribute.GetDBType(myDBContext.DBTypeManager), myDBContext);
+                if (attrResult.Failed())
                 {
-                    GraphObject.Add(GraphObject.Clone(GetAttribute(dbo.Attributes, myTypeAttribute.Name, dbContext)));
+                    return attrResult;
+                }
+                var attr = attrResult.Value;
+
+                if (attr != null && attr is ADBBaseObject && aggregateResult.IsValidValue((attr as ADBBaseObject).Value))
+                {
+                    aggregateResult.Add((attr as ADBBaseObject));
+                }
+                else if (attr != null) // if null, this value will be skipped
+                {
+                    return new Exceptional<IObject>(new Error_AggregateIsNotValidOnThisAttribute(myTypeAttribute.Name));
                 }
             }
-            return new Exceptional<Object>(GraphObject.Value);
+            return new Exceptional<IObject>(aggregateResult);
         }
 
-        public override Exceptional<Object> Aggregate(IEnumerable<ObjectUUID> myObjectUUIDs, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
-        {
-            return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-        }
+        #endregion
 
-        public override Exceptional<Object> Aggregate(IListOrSetEdgeType myAListEdgeType, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
-        {
-            return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-        }
+        #region Index aggregate
 
-        public override Exceptional<Object> Aggregate(IEnumerable<Exceptional<ObjectUUID>> myObjectStreams, TypeAttribute myTypeAttribute, DBContext myTypeManager, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
-        {
-            return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-        }
-
-        public override Exceptional<object> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
+        public override Exceptional<IObject> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext)
         {
 
             if (attributeIndex is UUIDIndex)
             {
-                return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "Aggregating attribute UUID is not implemented!"));
+                return new Exceptional<IObject>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "Aggregating attribute UUID is not implemented!"));
             }
             else
             {
@@ -112,22 +96,24 @@ namespace sones.GraphDB.Aggregates
                 // HACK: rewrite as soon as we have real attribute index keys
                 if (attributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs.Count != 1)
                 {
-                    return new Exceptional<object>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                    return new Exceptional<IObject>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                 }
 
                 var typeAttr = graphDBType.GetTypeAttributeByUUID(attributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs.First());
                 ADBBaseObject oneVal = typeAttr.GetADBBaseObjectType(dbContext.DBTypeManager);
 
-                return new Exceptional<Object>(attributeIndex.GetKeyValues(indexRelatedType, dbContext).AsParallel().Select(kv =>
+                return new Exceptional<IObject>(attributeIndex.GetKeyValues(indexRelatedType, dbContext).AsParallel().Select(kv =>
                 {
                     var mul = oneVal.Clone(kv.Key);
                     mul.Mul(oneVal.Clone(kv.Value.Count()));
                     return mul;
 
-                }).Aggregate(oneVal.Clone(), (elem, result) => { result.Add(elem); return result; }).Value);
+                }).Aggregate(oneVal.Clone(), (elem, result) => { result.Add(elem); return result; }));
             }
 
         }
+
+        #endregion
 
     }
 

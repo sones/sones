@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,6 +15,7 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
 /* 
@@ -35,12 +36,15 @@ using sones.GraphDB.Managers.Structures.Setting;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.Plugin;
 using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.Structures.Result;
-using sones.GraphDB.Transactions;
+
 using sones.GraphFS.Transactions;
 using sones.Lib.DataStructures.UUID;
 using sones.Lib.ErrorHandling;
 using sones.Notifications;
+using sones.GraphFS.DataStructures;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.Transactions;
+using sones.GraphDB.Managers.Select;
 
 #endregion
 
@@ -61,7 +65,7 @@ namespace sones.GraphDB
 
         #endregion
 
-        String DatabaseRootPath { get; }
+        ObjectLocation DatabaseRootPath { get; }
         DBPluginManager DBPluginManager { get; }
 
         //QueryResult             Query(String myQuery);
@@ -111,7 +115,7 @@ namespace sones.GraphDB
 
         QueryResult InsertOrUpdate(String myTypeName, List<AAttributeAssignOrUpdate> myAttributeAssignList, BinaryExpressionDefinition myWhereExpression);
 
-        QueryResult RebuilIndices(HashSet<String> myTypeNames = null);
+        QueryResult RebuildIndices(HashSet<String> myTypeNames = null);
 
         QueryResult Replace(String myTypeName, List<AAttributeAssignOrUpdate> myAttributeAssignList, BinaryExpressionDefinition myWhereExpression);
 
@@ -130,7 +134,7 @@ namespace sones.GraphDB
         /// <param name="myOffset"></param>
         /// <param name="myResolutionDepth"></param>
         /// <returns></returns>
-        QueryResult Select(Dictionary<AExpressionDefinition, String> mySelectedElements, List<TypeReferenceDefinition> myReferenceAndTypeList,
+        QueryResult Select(List<Tuple<AExpressionDefinition, string, SelectValueAssignment>> mySelectedElements, List<TypeReferenceDefinition> myReferenceAndTypeList,
             BinaryExpressionDefinition myWhereExpressionDefinition = null, List<IDChainDefinition> myGroupBy = null, BinaryExpressionDefinition myHaving = null,
             OrderByDefinition myOrderByDefinition = null, UInt64? myLimit = null, UInt64? myOffset = null, Int64 myResolutionDepth = -1, Boolean myRunWithTimeout = false);
 

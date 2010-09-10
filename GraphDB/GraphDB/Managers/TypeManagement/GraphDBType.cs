@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,18 +15,14 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-/* <id name="sones GraphDB – PandoraType" />
- * <copyright file="PandoraType.cs"
- *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
- * </copyright>
- * <refactored>Achim 'ahzf' Friedland</refactored>
- * <refactored>Stefan Licht</refactored>
- * <refactored>Henning Rauch</refactored>
- * <developed>Henning Rauch</developed>
- * <summary></summary>
+/* 
+ * TypeAttribute
+ * Stefan Licht, 2009-2010
+ * Henning Rauch, 2009-2010
+ * Achim Friedland, 2010
  */
 
 #region Usings
@@ -56,6 +52,9 @@ using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
 using sones.Lib.Serializer;
 using System.Diagnostics;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDBInterface.ObjectManagement;
 
 #endregion
 
@@ -338,7 +337,7 @@ namespace sones.GraphDB.TypeManagement
 
         #endregion
 
-        #region GraphDBType(myObjectLocation, myTypeName, myParentType, myAttributes, myIsListType, myIsUserDefined, myIsAbstract)
+        #region GraphDBType(myUUID, myObjectLocation, myTypeName, myParentType, myAttributes, myIsListType, myIsUserDefined, myIsAbstract)
 
         public GraphDBType(TypeUUID myUUID, ObjectLocation myDBRootPath, String myTypeName, TypeUUID myParentType, Dictionary<AttributeUUID, TypeAttribute> myAttributes, Boolean myIsUserDefined, Boolean myIsAbstract, String myComment)
             : this(myDBRootPath + myTypeName)
@@ -374,8 +373,14 @@ namespace sones.GraphDB.TypeManagement
 
             _TypeSettings               = new Dictionary<String, ADBSettingsBase>();
 
-            _UUID = myUUID;
-
+            if (_IsUserDefined)
+            {
+                _UUID = new TypeUUID(ObjectUUID.GetByteArray());
+            }
+            else
+            {
+                _UUID = myUUID;
+            }
         }
 
         #endregion
@@ -619,9 +624,11 @@ namespace sones.GraphDB.TypeManagement
 
         public Exceptional CreateUUIDIndex(DBContext _DBContext, AttributeUUID myUUID)
         {
+            
             var _NewUUIDIndex = new UUIDIndex(SpecialTypeAttribute_UUID.AttributeName, new IndexKeyDefinition(myUUID), this);
 
             return new Exceptional(AddAttributeIndex(_NewUUIDIndex, _DBContext));
+
         }
 
         #region GetAttributeIndex methods
@@ -634,9 +641,7 @@ namespace sones.GraphDB.TypeManagement
         /// <returns>The index for the given myAttributes if one exist. Else, null.</returns>
         public AAttributeIndex GetDefaultAttributeIndex(AttributeUUID myAttributeName)
         {
-
             return GetAttributeIndex(myAttributeName, DBConstants.DEFAULTINDEX).Value;
-
         }
 
         /// <summary>
@@ -647,11 +652,12 @@ namespace sones.GraphDB.TypeManagement
         /// <returns>The index for the given myAttributes if one exist. Else, null.</returns>
         public AAttributeIndex GetAttributeIndex(List<AttributeUUID> myAttributeNames, String myIndexEdition)
         {
+
             IndexKeyDefinition idxKey = new IndexKeyDefinition(myAttributeNames);
             if (_AttributeIndices.ContainsKey(idxKey) && _AttributeIndices[idxKey].ContainsKey(myIndexEdition))
                 return _AttributeIndices[idxKey][myIndexEdition];
 
-            throw new GraphDBException(new Error_IndexDoesNotExist(myAttributeNames.ToAggregatedString(), myIndexEdition));
+            throw new GraphDBException(new Error_IndexDoesNotExist(myAttributeNames.ToAggregatedString(mySeperator: ", "), myIndexEdition));
 
         }
 
@@ -681,11 +687,14 @@ namespace sones.GraphDB.TypeManagement
         /// <returns>The index or null if no index was found.</returns>
         private AAttributeIndex GetAttributeIndex(IndexKeyDefinition idxKey, string edition)
         {
+            
             if (_AttributeIndices.ContainsKey(idxKey) && _AttributeIndices[idxKey].ContainsKey(DBConstants.UNIQUEATTRIBUTESINDEX))
             {
                 return _AttributeIndices[idxKey][DBConstants.UNIQUEATTRIBUTESINDEX];
             }
+            
             return null;
+
         }
 
         #endregion
@@ -698,6 +707,7 @@ namespace sones.GraphDB.TypeManagement
         /// <returns>The index for the given myAttributes if one exist. Else, null.</returns>
         public Exceptional<AAttributeIndex> GetAttributeIndex(AttributeUUID myAttributeUUID, String myIndexEdition)
         {
+
             IndexKeyDefinition idxKey = new IndexKeyDefinition(new List<AttributeUUID>() { myAttributeUUID });
 
             lock (_AttributeIndices)
@@ -705,6 +715,7 @@ namespace sones.GraphDB.TypeManagement
 
                 if (_AttributeIndices.ContainsKey(idxKey))
                 {
+                    
                     if (myIndexEdition == null)
                     {
                         if (_AttributeIndices[idxKey].ContainsKey(DBConstants.DEFAULTINDEX))
@@ -712,14 +723,18 @@ namespace sones.GraphDB.TypeManagement
                         else
                             return new Exceptional<AAttributeIndex>(_AttributeIndices[idxKey].First().Value);
                     }
+                    
                     else if (_AttributeIndices[idxKey].ContainsKey(myIndexEdition))
                     {
                         return new Exceptional<AAttributeIndex>(_AttributeIndices[idxKey][myIndexEdition]);
                     }
+
                 }
+
             }
 
             return new Exceptional<AAttributeIndex>(new Error_IndexAttributeDoesNotExist(GetTypeAttributeByUUID(myAttributeUUID).Name));
+
         }
 
         #endregion
@@ -753,6 +768,7 @@ namespace sones.GraphDB.TypeManagement
             }
 
             return new Exceptional<Boolean>(new Error_IndexDoesNotExist(myIndexName, myIndexEdition));
+
         }
 
         #region CreateUniqueAttributeIndex(myIndexName, myAttributeName, myIndexEdition, myIndexObjectTypes, myFileSystemLocation)
@@ -899,18 +915,16 @@ namespace sones.GraphDB.TypeManagement
         /// <returns>The TypeAttribute, else null.</returns>
         public TypeAttribute GetTypeAttributeByName(String myAttributeName)
         {
-            var retval = (from aAttrDef in _TypeAttributeLookupTable where aAttrDef.Value.Name == myAttributeName select aAttrDef.Value).FirstOrDefault();
-
-            return retval;
+            return (from aAttrDef in _TypeAttributeLookupTable where aAttrDef.Value.Name == myAttributeName select aAttrDef.Value).FirstOrDefault();
         }
 
-        public IEnumerable<TypeAttribute> GetSpecificAttributes(Predicate<TypeAttribute> predicate)
+        public IEnumerable<TypeAttribute> GetFilteredAttributes(Predicate<TypeAttribute> myPredicate)
         {
-            foreach (var attr in _Attributes)
+            foreach (var _AttributeKeyValuePair in _Attributes)
             {
-                if (predicate(attr.Value))
+                if (myPredicate(_AttributeKeyValuePair.Value))
                 {
-                    yield return attr.Value;
+                    yield return _AttributeKeyValuePair.Value;
                 }
             }
         }
@@ -938,18 +952,30 @@ namespace sones.GraphDB.TypeManagement
         public IEnumerable<AAttributeIndex> GetAllAttributeIndices(Boolean includeUUIDIndices = true)
         {
 
-            foreach (var attrIndices in _AttributeIndices)
+            foreach (var __AttributeIndices in _AttributeIndices.Values)
             {
-                foreach (var attrIndex in attrIndices.Value)
+                foreach (var _AttributeIndex in __AttributeIndices)
                 {
-                    if (!(attrIndex.Value is UUIDIndex) || includeUUIDIndices)
+                    if (!(_AttributeIndex.Value is UUIDIndex) || includeUUIDIndices)
                     {
-                        yield return attrIndex.Value;
+                        yield return _AttributeIndex.Value;
                     }
                 }
             }
 
-            yield break;
+            //foreach (var attrIndices in _AttributeIndices)
+            //{
+            //    foreach (var attrIndex in attrIndices.Value)
+            //    {
+            //        if (!(attrIndex.Value is UUIDIndex) || includeUUIDIndices)
+            //        {
+            //            yield return attrIndex.Value;
+            //        }
+            //    }
+            //}
+
+            //yield break;
+
         }
 
         public Boolean HasAttributeIndices(List<AttributeUUID> myAttributeUUIDs)
@@ -977,12 +1003,14 @@ namespace sones.GraphDB.TypeManagement
 
         public Exceptional<Boolean> RenameAttribute(AttributeUUID attributeUUID, string newName)
         {
+
             if (GetTypeSpecificAttributeByName(newName) != null)
                 return new Exceptional<Boolean>(new Error_AttributeAlreadyExists(newName));
 
             _Attributes[attributeUUID].Name = newName;
 
             return new Exceptional<Boolean>(true);
+
         }
 
         public Exceptional<Boolean> RenameBackwardedge(TypeAttribute myBackwardEdge, string newName, DBTypeManager myTypeManager)
@@ -1001,6 +1029,7 @@ namespace sones.GraphDB.TypeManagement
                 return new Exceptional<Boolean>(new Error_InvalidEdgeType(new Type[] { typeof(DBBackwardEdgeType) }));
 
             return myTypeManager.RenameAttributeOfType(this, myBackwardEdge.Name, newName);
+
         }
 
         /// <summary>
@@ -1009,12 +1038,16 @@ namespace sones.GraphDB.TypeManagement
         /// <returns></returns>
         public IEnumerable<TypeAttribute> GetAllAttributes(DBContext context)
         {
+
             foreach (var type in context.DBTypeManager.GetAllParentTypes(this, true, true))
             {
+
                 foreach (var attrib in type.Attributes)
                 {
+
                     if (attrib.Value is ASpecialTypeAttribute)
                     {
+
                         //check if there is an setting for this attribute
                         if (context.DBSettingsManager.HasSetting((attrib.Value as ASpecialTypeAttribute).ShowSettingName))
                         {
@@ -1024,14 +1057,18 @@ namespace sones.GraphDB.TypeManagement
                                 continue;
                             }
                         }
+
                         else
                         {
                             continue;
                         }
                         
                     }
+
                     yield return attrib.Value;
+
                 }
+
             }
 
             yield break;
@@ -1039,8 +1076,10 @@ namespace sones.GraphDB.TypeManagement
 
         public void AddAttribute(TypeAttribute myTypeAttribute, DBTypeManager myDBTypeManager, Boolean validate)
         {
+
             if (validate)
             {
+
                 HashSet<UInt16> occupiedIDs = new HashSet<UInt16>();
 
                 #region validate attributes
@@ -1071,29 +1110,37 @@ namespace sones.GraphDB.TypeManagement
                 //now we can be shure to add the attribute
                 _Attributes.Add(myTypeAttribute.UUID, myTypeAttribute);
                 _TypeAttributeLookupTable.Add(myTypeAttribute.UUID, myTypeAttribute);
+
             }
+
             else
             {
                 _Attributes.Add(myTypeAttribute.UUID, myTypeAttribute);
                 _TypeAttributeLookupTable.Add(myTypeAttribute.UUID, myTypeAttribute);
             }
+
         }
 
         private void CheckAttributeAgainstOthers(Dictionary<AttributeUUID, TypeAttribute> myAttributees, ref TypeAttribute myTypeAttribute, ref HashSet<ushort> occupiedIDs)
         {
+
             if (myAttributees.ContainsKey(myTypeAttribute.UUID))
             {
+
                 occupiedIDs.Add(myTypeAttribute.UUID.ID);
 
                 do
                 {
                     ChangeTypeAttributeID(ref myTypeAttribute, occupiedIDs);
                 } while (myAttributees.ContainsKey(myTypeAttribute.UUID));
+
             }
+
         }
 
         private Dictionary<AttributeUUID, TypeAttribute> GetAttributesOfSubtypes(DBTypeManager myDBTypeManager)
         {
+
             var result = new Dictionary<AttributeUUID, TypeAttribute>();
 
             foreach (var aSubType in myDBTypeManager.GetAllSubtypes(this, false))
@@ -1108,10 +1155,12 @@ namespace sones.GraphDB.TypeManagement
             }
 
             return result;
+
         }
 
         private void ChangeTypeAttributeID(ref TypeAttribute myTypeAttribute, HashSet<ushort> occupiedIDs)
         {
+
             UInt16 startingID = Convert.ToUInt16(myTypeAttribute.UUID.ID + 10);
 
             while (occupiedIDs.Contains(startingID))
@@ -1120,6 +1169,7 @@ namespace sones.GraphDB.TypeManagement
             }
 
             myTypeAttribute.UUID.SetID(startingID);
+
         }
 
         public void RemoveAttribute(AttributeUUID myUUID)
@@ -1132,18 +1182,19 @@ namespace sones.GraphDB.TypeManagement
         /// Returns all attribute of this type and all derived types
         /// </summary>
         /// <returns></returns>
-        public IEnumerable<TypeAttribute> GetAllAttributes(Predicate<TypeAttribute> predicate, DBContext context, Boolean includeParentTypes = true)
+        public IEnumerable<TypeAttribute> GetAllAttributes(Predicate<TypeAttribute> myPredicate, DBContext myDBContext, Boolean includeParentTypes = true)
         {
 
-            foreach (var attrib in GetAllAttributes(context))
+            foreach (var _TypeAttribute in GetAllAttributes(myDBContext))
             {
-                if (predicate(attrib))
+                if (myPredicate(_TypeAttribute))
                 {
-                    yield return attrib;
+                    yield return _TypeAttribute;
                 }
             }
 
             yield break;
+
         }
 
         #endregion
@@ -1597,7 +1648,7 @@ namespace sones.GraphDB.TypeManagement
 
         public ObjectLocation GetObjectLocation(ObjectUUID objectUUID)
         {
-            return (_ObjectLocation + DBConstants.DBObjectsLocation) + objectUUID.ToString();
+            return new ObjectLocation(ObjectLocation, DBConstants.DBObjectsLocation, objectUUID.ToString());
         }
 
         public void SetParentTypeUUID(TypeUUID typeUUID)
@@ -1716,8 +1767,7 @@ namespace sones.GraphDB.TypeManagement
 
                 try
                 {
-
-                    _UUID.Serialize(ref mySerializationWriter);
+                    
                     ParentTypeUUID.Serialize(ref mySerializationWriter);
                     mySerializationWriter.WriteBoolean(_IsUserDefined);
                     mySerializationWriter.WriteBoolean(_IsAbstract);
@@ -1793,9 +1843,7 @@ namespace sones.GraphDB.TypeManagement
             {
                 try 
                 {
-
-                    _UUID = new TypeUUID();
-                    UUID.Deserialize(ref mySerializationReader);
+                    _UUID = new TypeUUID(this.ObjectUUID.GetByteArray());
                     ParentTypeUUID = new TypeUUID();
                     ParentTypeUUID.Deserialize(ref mySerializationReader);
                     _IsUserDefined = mySerializationReader.ReadBoolean();
@@ -2077,6 +2125,7 @@ namespace sones.GraphDB.TypeManagement
         {
             return _TypeAttributeLookupTable.Exists(item => item.Value.Name == AttributeName);
         }
+
     }
 
 }

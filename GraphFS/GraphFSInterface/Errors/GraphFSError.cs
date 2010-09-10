@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,20 +15,19 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /*
  * GraphFSError
- * Achim Friedland, 2010
+ * (c) Achim Friedland, 2010
  */
 
 #region Usings
 
 using System;
-
-using sones.Lib.ErrorHandling;
 using System.Diagnostics;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
@@ -38,23 +37,17 @@ namespace sones.GraphFS.Errors
     /// <summary>
     /// The generic class for all errors within the GraphFS
     /// </summary>
-    public class GraphFSError : IError
+    public class GraphFSError : GeneralError
     {
 
-        #region Properties
-
-        public String       Message     { get; protected set; }
-        public StackTrace   StackTrace  { get; protected set; }
-
-        #endregion
-
-        #region Constructors
+        #region Constructor(s)
 
         #region GraphFSError()
 
         public GraphFSError()
         {
-            Message = default(String);
+            Message     = default(String);
+            StackTrace  = null;
         }
 
         #endregion
@@ -63,7 +56,8 @@ namespace sones.GraphFS.Errors
 
         public GraphFSError(String myMessage)
         {
-            Message = myMessage;
+            Message     = myMessage;
+            StackTrace  = null;
         }
 
         #endregion
@@ -77,15 +71,6 @@ namespace sones.GraphFS.Errors
         }
 
         #endregion
-
-        #endregion
-
-        #region ToString()
-
-        public override String ToString()
-        {
-            return Message;
-        }
 
         #endregion
 

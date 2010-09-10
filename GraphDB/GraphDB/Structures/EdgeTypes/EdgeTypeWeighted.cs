@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-/* <id name="sones GraphDB – EdgeTypeWeightedList<T>" />
+/* <id name="GraphDB � EdgeTypeWeightedList<T>" />
  * <copyright file="EdgeTypeWeightedList.cs"
  *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Stefan Licht</developer>
  * <summary>
@@ -40,9 +41,9 @@ using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.Structures.Result;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphDBInterface.Result;
 using sones.GraphFS.DataStructures;
 using sones.Lib;
 using sones.Lib.DataStructures;
@@ -258,7 +259,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             {
                 var readout = GetAllAttributesFromDBO(dbo.Key.ObjectUUID);
 
-                yield return new DBWeightedObjectReadout(readout.Attributes, dbo.Value);
+                yield return new DBWeightedObjectReadout(readout.Attributes, dbo.Value.Value, dbo.Value.Type.ToString());
             }
         }
 
@@ -278,7 +279,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 {
                     var weight = weightedSet.Get(lookupReference);
                     var readout = GetAllAttributesFromDBO(dbo.Value.ObjectUUID);
-                    yield return new DBWeightedObjectReadout(readout.Attributes, weight.Value);
+                    yield return new DBWeightedObjectReadout(readout.Attributes, weight.Value.Value, weight.Value.Type.ToString());
                 }
             }
         }
@@ -426,6 +427,15 @@ namespace sones.GraphDB.Structures.EdgeTypes
             }
 
             return true;
+        }
+
+        #endregion
+
+        #region IComparable Members
+
+        public override int CompareTo(object obj)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-/* <id name="sones GraphDB – Settings" />
+/* <id name="GraphDB � Settings" />
  * <copyright file="SettingsDepth.cs"
  *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Dirk Bludau</developer>
  * <summary></summary>
@@ -29,22 +30,18 @@
 #region Usings
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
+using sones.GraphFS.Session;
 using sones.GraphDB.TypeManagement.BasicTypes;
 
-using sones.Lib.Settings;
-using sones.GraphDB.TypeManagement;
 using sones.Lib.NewFastSerializer;
-using sones.Lib.DataStructures.UUID;
-using sones.GraphFS.DataStructures;
+
 
 #endregion
 
 namespace sones.GraphDB.Settings
 {
+
     public class SettingDepth : ANonPersistentSetting, IDBAttributeSetting
     {
 
@@ -56,11 +53,11 @@ namespace sones.GraphDB.Settings
 
         public SettingDepth()
         {
-            Name = "DEPTH";
-            Description = "The depth of an request.";
-            Type = DBInt64.UUID;
-            Default = new DBInt64(0L);
-            this._Value = Default.Clone();
+            Name            = "DEPTH";
+            Description     = "The depth of an request.";
+            Type            = DBInt64.UUID;
+            Default         = new DBInt64(0L);
+            this._Value     = Default.Clone();
         }
 
 
@@ -112,5 +109,6 @@ namespace sones.GraphDB.Settings
         }
 
         #endregion
+    
     }
 }

@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /*
  * GraphDSExtensionsCLI
- * Achim Friedland, 2010
+ * (c) Achim Friedland, 2010
  */
 
 #region Usings
@@ -32,28 +32,28 @@ using sones.GraphDB.Connectors.GraphDBCLI;
 using sones.GraphFS.Connectors.GraphFSCLI;
 using sones.GraphFS.Connectors.GraphDSCLI;
 
-using sones.Lib.CLI;
-
 #endregion
 
 namespace sones.GraphDS.Connectors.CLI
 {
 
     /// <summary>
-    /// Extension methods to start a GraphDS CLI
+    /// Extension methods to start the GraphDS CLI (command line interface).
     /// </summary>
     public static class GraphDSExtensionsCLI
     {
 
         #region OpenCLI()
 
-        public static void OpenCLI(this GraphDSSharp myGraphDSSharp)
+        /// <summary>
+        /// Starts the GraphDS command line interface using the default commands.
+        /// </summary>
+        public static void OpenCLI(this AGraphDSSharp myAGraphDSSharp)
         {
 
-            var _GraphDBCLI = new sonesCLI(
-                                myGraphDSSharp.IGraphDBSession,
-                                myGraphDSSharp.IGraphFSSession,
-                                myGraphDSSharp.DatabaseName,
+            var _GraphDBCLI = new GraphCLI(
+                                myAGraphDSSharp,
+                                myAGraphDSSharp.DatabaseName,
                                 typeof(AllBasicFSCLICommands),
                                 typeof(AllAdvancedFSCLICommands),
                                 typeof(AllBasicDBCLICommands),
@@ -69,13 +69,16 @@ namespace sones.GraphDS.Connectors.CLI
 
         #region OpenCLI(params myCommandTypes)
 
-        public static void OpenCLI(this GraphDSSharp myGraphDSSharp, params Type[] myCommandTypes)
+        /// <summary>
+        /// Starts the GraphDS command line interface using the given array of command types.
+        /// </summary>
+        /// <param name="myCommandTypes">The array of command types to load at CLI start-up.</param>
+        public static void OpenCLI(this AGraphDSSharp myAGraphDSSharp, params Type[] myCommandTypes)
         {
 
-            var _GraphDBCLI = new sonesCLI(
-                                myGraphDSSharp.IGraphDBSession,
-                                myGraphDSSharp.IGraphFSSession,
-                                myGraphDSSharp.DatabaseName,
+            var _GraphDBCLI = new GraphCLI(
+                                myAGraphDSSharp,
+                                myAGraphDSSharp.DatabaseName,
                                 myCommandTypes
                               );
 

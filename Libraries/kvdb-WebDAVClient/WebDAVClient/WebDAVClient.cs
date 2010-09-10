@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * (C) 2010 Kees van den Broek: kvdb@kvdb.net
  *          D-centralize: d-centralize.nl
  *          
@@ -54,19 +74,40 @@ namespace net.kvdb.webdav
                 server = value;
             }
         }
+
+        
+        #region basePath
+
         private String basePath = "/";
+        
         /// <summary>
         /// Specify the path of a WebDAV directory to use as 'root' (default: /)
         /// </summary>
         public String BasePath
         {
-            get { return basePath; }
+            
+            get
+            {
+                return basePath;
+            }
+            
             set
             {
+                
                 value = value.Trim('/');
-                basePath = "/" + value + "/";
+
+                if (value != "")
+                    basePath = "/" + value + "/";
+
+                else
+                    basePath = "/";
+
             }
+
         }
+
+        #endregion
+
         private int? port = null;
         /// <summary>
         /// Specify an port (default: null = auto-detect)
@@ -103,7 +144,9 @@ namespace net.kvdb.webdav
 
         Uri getServerUrl(String path, Boolean appendTrailingSlash)
         {
+
             String completePath = basePath;
+            
             if (path != null)
             {
             	completePath += path.Trim('/');

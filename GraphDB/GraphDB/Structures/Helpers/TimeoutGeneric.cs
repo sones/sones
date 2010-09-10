@@ -1,4 +1,24 @@
-ï»¿using System;
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -68,11 +88,11 @@ namespace sones.GraphDB.Query.Helpers
         #region DoIt's
 
         /// <summary>
-        /// FÃ¼hrt die Methode aus, die in einer festgesetzen Zeit erfolgen soll.
+        /// Führt die Methode aus, die in einer festgesetzen Zeit erfolgen soll.
         /// </summary>
-        /// <param name="runMethod">Methode zum ausfÃ¼hren</param>
-        /// <param name="timeout">Zu erwartende HÃ¶chstzeit, bevor die AusfÃ¼hrung der Methode abgebrochen wird</param>
-        /// <returns>True, wenn die AusfÃ¼hrung der Methode vor dem Timeout zu Ende gegangen ist. False wenn das Timeout Ã¼berschritten wurde.</returns>
+        /// <param name="runMethod">Methode zum ausführen</param>
+        /// <param name="timeout">Zu erwartende Höchstzeit, bevor die Ausführung der Methode abgebrochen wird</param>
+        /// <returns>True, wenn die Ausführung der Methode vor dem Timeout zu Ende gegangen ist. False wenn das Timeout überschritten wurde.</returns>
         public TimeOutResult<T> DoIt<T>(Delegate runMethod, TimeSpan timeout)
             where T : class
         {
@@ -80,12 +100,12 @@ namespace sones.GraphDB.Query.Helpers
         }
 
         /// <summary>
-        /// FÃ¼hrt die Methode aus, die in einer festgesetzten Zeit erfolgen soll und Ã¼bergibt die fÃ¼r sie bestimmte Parameter.
+        /// Führt die Methode aus, die in einer festgesetzten Zeit erfolgen soll und übergibt die für sie bestimmte Parameter.
         /// </summary>
-        /// <param name="runMethod">Methode zum ausfÃ¼hren</param>
+        /// <param name="runMethod">Methode zum ausführen</param>
         /// <param name="parameters">Parametertabelle</param>
-        /// <param name="timeout">Zu erwartende HÃ¶chstzeit, bevor die AusfÃ¼hrung der Methode abgebrochen wird</param>
-        /// <returns>True, wenn die AusfÃ¼hrung der Methode vor dem Timeout zu Ende gegangen ist. False wenn das Timeout Ã¼berschritten wurde.</returns>
+        /// <param name="timeout">Zu erwartende Höchstzeit, bevor die Ausführung der Methode abgebrochen wird</param>
+        /// <returns>True, wenn die Ausführung der Methode vor dem Timeout zu Ende gegangen ist. False wenn das Timeout überschritten wurde.</returns>
         public TimeOutResult<T> DoIt<T>(Delegate myDelegate, TimeSpan myTimeout, params object[] myParameters)
             where T : class
         {
@@ -93,12 +113,12 @@ namespace sones.GraphDB.Query.Helpers
         }
 
         /// <summary>
-        /// FÃ¼hrt die Methode mittels Delegate und Ã¼bergebenen Parametern, die in der festgesetzen Zeit ausgefÃ¼hrt wurde.
+        /// Führt die Methode mittels Delegate und übergebenen Parametern, die in der festgesetzen Zeit ausgeführt wurde.
         /// </summary>
-        /// <param name="d">AuszufÃ¼hrendes Delegate</param>
-        /// <param name="parameters">Zu Ã¼bergebende Paramter fÃ¼r das Delegate</param>
-        /// <param name="timeout">Zu erwartende HÃ¶chstzeit, bevor die AusfÃ¼hrung des Delegates abgebrochen wird</param>
-        /// <returns>True, wenn die AusfÃ¼hrung des Delegates vor dem Timeout zu Ende gegangen ist. False wenn das Timeout Ã¼berschritten wurde.</returns>
+        /// <param name="d">Auszuführendes Delegate</param>
+        /// <param name="parameters">Zu übergebende Paramter für das Delegate</param>
+        /// <param name="timeout">Zu erwartende Höchstzeit, bevor die Ausführung des Delegates abgebrochen wird</param>
+        /// <returns>True, wenn die Ausführung des Delegates vor dem Timeout zu Ende gegangen ist. False wenn das Timeout überschritten wurde.</returns>
         private TimeOutResult<T> DoItImp<T>(Delegate myDelegate, TimeSpan myTimeout, params object[] myParameters)
             where T : class
         {

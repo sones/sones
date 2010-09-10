@@ -44,7 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IXML_IO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XMLValidationTypes.cs" />
     <Compile Include="XML_IO.cs" />
     <Compile Include="XML_IO_Extensions.cs" />
   </ItemGroup>
@@ -52,10 +54,6 @@
     <ProjectReference Include="..\..\GraphDB\GraphDBInterface\GraphDBInterface.csproj">
       <Project>{72319FF7-E9D9-4AE9-AA0B-2E006442B1ED}</Project>
       <Name>GraphDBInterface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GraphDB\GraphDB\GraphDB.csproj">
-      <Project>{32A56958-2C05-44C6-B661-2A2C6610E073}</Project>
-      <Name>GraphDB</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GraphFS\GraphFSInterface\GraphFSInterface.csproj">
       <Project>{B23FDA3D-8229-4CDD-91FD-9AFD7301D315}</Project>
@@ -71,7 +69,7 @@
     </ProjectReference>
     <ProjectReference Include="..\GraphIO\GraphIO.csproj">
       <Project>{624BBB9D-89BE-43CE-8B8C-18BE729F4B11}</Project>
-      <Name>GraphIO</Name>
+      <Name>GraphIO %28Dependencies\GraphIO\GraphIO%29</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

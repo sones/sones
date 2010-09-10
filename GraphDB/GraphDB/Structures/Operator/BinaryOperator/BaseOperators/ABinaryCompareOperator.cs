@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-/* <id name="sones GraphDB – ABinaryCompareOperator" />
+/* <id name="GraphDB � ABinaryCompareOperator" />
  * <copyright file="ABinaryCompareOperator.cs"
  *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Henning Rauch</developer>
  * <developer>Stefan Licht</developer>
@@ -49,13 +50,15 @@ using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Objects;
 using sones.Lib.ErrorHandling;
-using sones.Lib.Session;
+using sones.GraphFS.Session;
 using sones.Lib.DataStructures.UUID;
 using sones.Lib;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 
 using sones.GraphDB.Managers.Structures;
-using sones.GraphDB.Structures.Result;
+
+using sones.GraphDBInterface.TypeManagement;
+
 
 
 #endregion
@@ -940,7 +943,7 @@ namespace sones.GraphDB.Structures.Operators
                                 IObject dbos = GetDbos(primIDNode, DBObjectStream.Value, dbContext, mySessionToken, dbObjectCache);
 
                                 Exceptional<AOperationDefinition> tempResult;
-                                if (aCtype == TypesOfOperatorResult.SetOfDBObjects)
+                                if (aCtype == BasicType.SetOfDBObjects)
                                 {
                                     tempResult = this.SimpleOperation(new TupleDefinition(aCtype, dbos, primIDNode.LastAttribute.GetDBType(dbContext.DBTypeManager)), aOperand.Value, TypesOfBinaryExpression.Complex);
                                 }
@@ -1365,17 +1368,19 @@ namespace sones.GraphDB.Structures.Operators
 
                 if (myExtraordinary is AggregateDefinition)
                 {
-                    var aggrNode = ((AggregateDefinition)myExtraordinary).ChainPartAggregateDefinition;
+                    System.Diagnostics.Debug.Assert(false);
 
-                    aggrNode.Validate(dbContext);
+                    //var aggrNode = ((AggregateDefinition)myExtraordinary).ChainPartAggregateDefinition;
 
-                    //result of aggregate
-                    var pResult = aggrNode.Aggregate.Aggregate(dbos, myIDChainDefinition.LastAttribute, dbContext, dbObjectCache, mySessionToken);
-                    if (pResult.Failed())
-                        return new Exceptional<AOperationDefinition>(pResult);
+                    //aggrNode.Validate(dbContext);
 
-                    aCtype = aggrNode.Aggregate.TypeOfResult;
-                    operand = new ValueDefinition(aggrNode.Aggregate.TypeOfResult, pResult.Value);
+                    ////result of aggregate
+                    //var pResult = aggrNode.Aggregate.Aggregate(dbos, myIDChainDefinition.LastAttribute, dbContext);
+                    //if (pResult.Failed())
+                    //    return new Exceptional<AOperationDefinition>(pResult);
+
+                    //aCtype = aggrNode.Aggregate.TypeOfResult;
+                    //operand = new ValueDefinition(aggrNode.Aggregate.TypeOfResult, pResult.Value);
                 }
                 else
                 {
@@ -1390,7 +1395,7 @@ namespace sones.GraphDB.Structures.Operators
                         func.CallingObject = dbos;
                         //result of function
 
-                        var pResult = chainFunc.Execute(myIDChainDefinition.LastAttribute.GetDBType(dbContext.DBTypeManager), myDBObjectStream, myIDChainDefinition.Reference.Item1, dbContext, dbObjectCache);
+                        var pResult = chainFunc.Execute(myIDChainDefinition.LastAttribute.GetDBType(dbContext.DBTypeManager), myDBObjectStream, myIDChainDefinition.Reference.Item1, dbContext);
                         if (pResult.Failed())
                             return new Exceptional<AOperationDefinition>(pResult);
 
@@ -1411,7 +1416,7 @@ namespace sones.GraphDB.Structures.Operators
             {
                 #region simple
 
-                if (aCtype == TypesOfOperatorResult.SetOfDBObjects)
+                if (aCtype == BasicType.SetOfDBObjects)
                 {
                     operand = new TupleDefinition(aCtype, dbos, myIDChainDefinition.LastAttribute.GetDBType(dbContext.DBTypeManager));
                 }
@@ -1546,7 +1551,7 @@ namespace sones.GraphDB.Structures.Operators
             //return new Exceptional<IOperationValue>(new GraphError(ErrorCode.DataTypeDoesNotMatchValue, (leftObj.ObjectName + " != " + rightObj.ToString())));
 
             var resultValue = Compare(leftObj, rightObj);
-            resultObject = new ValueDefinition(TypesOfOperatorResult.Boolean, (object)resultValue.Value);
+            resultObject = new ValueDefinition(BasicType.Boolean, (object)resultValue.Value);
 
             return new Exceptional<AOperationDefinition>(resultObject);
 
@@ -1587,7 +1592,7 @@ namespace sones.GraphDB.Structures.Operators
                     break;
                 }
             }
-            resultObject = new ValueDefinition(TypesOfOperatorResult.Boolean, (object)resultValue);
+            resultObject = new ValueDefinition(BasicType.Boolean, (object)resultValue);
 
             return new Exceptional<AOperationDefinition>(resultObject);
 
@@ -1628,7 +1633,7 @@ namespace sones.GraphDB.Structures.Operators
                     break;
                 }
             }
-            resultObject = new ValueDefinition(TypesOfOperatorResult.Boolean, (object)resultValue);
+            resultObject = new ValueDefinition(BasicType.Boolean, (object)resultValue);
 
             return new Exceptional<AOperationDefinition>(resultObject);
 
@@ -1675,7 +1680,7 @@ namespace sones.GraphDB.Structures.Operators
                 if (!(Boolean)resultValue)
                     break;
             }
-            resultObject = new ValueDefinition(TypesOfOperatorResult.Boolean, (object)resultValue);
+            resultObject = new ValueDefinition(BasicType.Boolean, (object)resultValue);
 
             return new Exceptional<AOperationDefinition>(resultObject);
 

@@ -6,12 +6,6 @@
       <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
-    <InheritanceLine Type="sones.GraphFS.DataStructures.AGraphStructure" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="1.812" Y="4.75" />
-        <Point X="1.812" Y="4.04" />
-      </Path>
-    </InheritanceLine>
     <AssociationLine Name="Values" Type="sones.GraphFS.DataStructures.ObjectStream" FixedFromPoint="true">
       <Path>
         <Point X="2.25" Y="1.812" />
@@ -19,7 +13,7 @@
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>QAIgQAAAAAAEABgECoAApAeABGRiABIkAwAhAABQIBQ=</HashCode>
+      <HashCode>QBIgQAAAABAEABgECIAApAeABGRiABIkAwAhAAFQIFU=</HashCode>
       <FileName>Datastructures\ObjectLocator\ObjectLocator.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -40,7 +34,7 @@
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>QAIgQAAAAAAEQBCEGoBApAeABUQiCBMkAwQlAABQABQ=</HashCode>
+      <HashCode>gBICSAAgAAAEShDGWIBAJAQAIQAQCAEsAQQlBCJQABA=</HashCode>
       <FileName>Datastructures\ObjectLocator\ObjectStream.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -61,7 +55,7 @@
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>SAMwQAQgIwCEERGEKojMpI+DFMQiERc2AwAhQAhYIAQ=</HashCode>
+      <HashCode>iBISSAAgAgKECRHGaIjFJIwDMMAQEQU0AQAhRSBYQAA=</HashCode>
       <FileName>Datastructures\ObjectLocator\ObjectEdition.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
@@ -82,7 +76,7 @@
       </Path>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>SAIkQBAAAAAABBCECoBAoAfABEwiARMkVwwBAABEAIQ=</HashCode>
+      <HashCode>SBIkQBAAAAAABJCkCIBAoAfABEwiARMkVwwBICBEAIQ=</HashCode>
       <FileName>Datastructures\ObjectLocator\ObjectRevision.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -97,7 +91,7 @@
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>QAIiYAAKoAAAABCIDqBArAeghEwiIRsmAwgBCARAACQ=</HashCode>
+      <HashCode>QDIiYAAKoAAAABCIDKBArBeghEwiIRsmEwgBGCRAACY=</HashCode>
       <FileName>Datastructures\ObjectLocator\ObjectDatastream.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
@@ -111,23 +105,11 @@
     <TypeIdentifier />
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="sones.GraphFS.DataStructures.AGraphStructure">
+  <Class Name="sones.GraphFS.DataStructures.AFSStructure">
     <Position X="0.5" Y="4.75" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACBAAAAAAAAAAAAAABA=</HashCode>
-      <FileName>Datastructures\AGraphStructure.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="0.2" />
-  </Class>
-  <Class Name="sones.GraphFS.Objects.AObjectHeader">
-    <Position X="3.25" Y="5.5" Width="1.75" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>AAABQAACABABAQCGAoQAAEEQhEAAGAkCAAECYAJAAAE=</HashCode>
-      <FileName>Objects\AObjectHeader.cs</FileName>
+      <FileName>Datastructures\AFSStructure.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>

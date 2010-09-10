@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,13 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-
-/* <id name="GraphDB – DBPluginManager" />
+/* <id name="GraphDB � DBPluginManager" />
  * <copyright file="DBPluginManager.cs"
  *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Stefan Licht</developer>
  * <summary>This class search all .dll and .exe for specific baseclass derived classes and fill the dictionaries .</summary>
@@ -46,6 +46,7 @@ using sones.GraphDB.TypeManagement;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Objects;
 using sones.Lib.ErrorHandling;
+using sones.Lib;
 
 namespace sones.GraphDB.Plugin
 {
@@ -116,7 +117,7 @@ namespace sones.GraphDB.Plugin
 
         #endregion
 
-        public DBPluginManager(EntityUUID myUserID)
+        public DBPluginManager(EntityUUID myUserID, Boolean myIncludePrivateClasses = false)
         {            
             _Functions       = new Dictionary<string, ABaseFunction>();
             _Aggregates      = new Dictionary<string, ABaseAggregate>();
@@ -128,12 +129,12 @@ namespace sones.GraphDB.Plugin
             _GraphDBExporter = new Dictionary<string, AGraphDBExport>();
             _UserID          = myUserID;
 
-            FindAndFillReflections();
+            FindAndFillReflections(myIncludePrivateClasses);
         }
 
         #region Reflection
 
-        private void FindAndFillReflections()
+        private void FindAndFillReflections(Boolean myIncludePrivateClasses = false)
         {
             //NLOG: temporarily commented
             //Logger.Trace("Starting find all ABinaryOperator, ABaseAggregate, ABaseFunction");
@@ -146,232 +147,13 @@ namespace sones.GraphDB.Plugin
                 //Preliminary check, must be .dll
                 if ((file.Extension.Equals(".dll")) || (file.Extension.Equals(".exe")))
                 {
+
+                    #region Get all types from assembly
+
+                    System.Type[] allTypes = null;
                     try
                     {
-                        System.Type[] allTypes = Assembly.LoadFrom(file.FullName).GetTypes();
-                        foreach (System.Type type in allTypes)
-                        {
-
-                            try
-                            {
-
-                                String fullTypeName = type.Name;
-
-                                // check for correct base
-                                bool correctbase = false;
-
-                                if (type != null)
-                                {
-                                    if (type.BaseType == null)
-                                        continue;
-                                    if (type.IsAbstract)
-                                        continue;
-
-                                    System.Type basetype = type.BaseType;
-
-                                    while (!correctbase)
-                                    {
-                                        if (basetype == typeof(System.Object))
-                                            break;
-
-                                        if (
-                                            basetype == typeof(ABaseFunction)
-                                         || basetype == typeof(ABaseAggregate)
-                                         || basetype == typeof(ABinaryOperator)
-                                         || basetype == typeof(ADBSettingsBase)
-                                         || type.GetInterface(typeof(IEdgeType).Name) != null
-                                         || (basetype == typeof(AFSObject) && type.GetInterface(typeof(IVersionedIndexObject<IndexKey, ObjectUUID>).Name) != null)
-                                         || basetype == typeof(AGraphDBImport)
-                                         || basetype == typeof(AGraphDBExport)
-                                            )
-                                            correctbase = true;
-                                        else
-                                        {
-                                            basetype = basetype.BaseType;
-                                        }
-
-                                    }
-
-                                    #region Check the base type, create instance and store it
-
-                                    // if this type has the correct base type
-                                    if (correctbase)
-                                    {
-                                        #region ABaseFunction
-
-                                        if (basetype == typeof(ABaseFunction))
-                                        {
-                                            ABaseFunction newABaseFunc = (ABaseFunction)Activator.CreateInstance(type);
-                                            if (!_Functions.ContainsKey(newABaseFunc.FunctionName.ToUpper()))
-                                            {
-                                                // not in the operator list
-                                                _Functions.Add(newABaseFunc.FunctionName.ToUpper(), newABaseFunc);
-                                            }
-                                            else
-                                            {
-                                                //NLOG: temporarily commented
-                                                //Logger.Warn("Function with Name '" + newABaseFunc.FunctionName + "' already added!");
-                                            }
-                                        }
-
-                                        #endregion
-
-                                        #region ABaseAggregate
-
-                                        else if (basetype == typeof(ABaseAggregate))
-                                        {
-                                            ABaseAggregate newABaseAggregate = (ABaseAggregate)Activator.CreateInstance(type);
-                                            if (!_Aggregates.ContainsKey(newABaseAggregate.FunctionName))
-                                            {
-                                                // not in the operator list
-                                                _Aggregates.Add(newABaseAggregate.FunctionName, newABaseAggregate);
-                                            }
-                                            else
-                                            {
-                                                //NLOG: temporarily commented
-                                                //Logger.Warn("Aggregate with Name '" + newABaseAggregate.FunctionName + "' already added!");
-                                            }
-                                        }
-
-                                        #endregion
-
-                                        #region ABinaryOperator
-
-                                        else if (basetype == typeof(ABinaryOperator))
-                                        {
-                                            ABinaryOperator newBinaryOperator = (ABinaryOperator)Activator.CreateInstance(type);
-
-                                            foreach (String sym in newBinaryOperator.Symbol)
-                                            {
-                                                if (!_Operators.ContainsKey(sym))
-                                                {
-                                                    // not in the operator list
-                                                    _Operators.Add(sym, newBinaryOperator);
-                                                }
-                                                else
-                                                {
-                                                    //NLOG: temporarily commented
-                                                    //Logger.Warn("Operator with Symbol '" + sym + "' already added!");
-                                                }
-                                            }
-                                        }
-
-                                        #endregion
-
-                                        #region ADBSettingsBase
-
-                                        else if (basetype == typeof(ADBSettingsBase))
-                                        {
-                                            ADBSettingsBase newSetting = (ADBSettingsBase)Activator.CreateInstance(type);
-
-                                            if (!_Settings.ContainsKey(newSetting.Name))
-                                            {
-                                                //if (newSetting.OwnerID == null)
-                                                //    newSetting.OwnerID = UserID;
-                                                _Settings.Add(newSetting.Name, newSetting);
-                                            }
-                                            else
-                                            {
-                                                //NLOG: temporarily commented
-                                                //Logger.Warn("Setting with name '" + newSetting.Name + "' already added!");
-                                            }
-                                        }
-
-                                        #endregion
-
-                                        #region IEdgeType
-
-                                        else if (type.GetInterface(typeof(IEdgeType).Name) != null)
-                                        {
-                                            IEdgeType newAEdgeType = (IEdgeType)Activator.CreateInstance(type);
-                                            if (!_EdgeTypes.ContainsKey(newAEdgeType.EdgeTypeName))
-                                            {
-                                                // not in the operator list
-                                                _EdgeTypes.Add(newAEdgeType.EdgeTypeName.ToLower(), newAEdgeType);
-                                            }
-                                            else
-                                            {
-                                                //NLOG: temporarily commented
-                                                //Logger.Warn("EdgeType with Name '" + newAEdgeType.EdgeTypeName + "' already added!");
-                                            }
-                                        }
-
-                                        #endregion
-
-                                        #region AGraphDBImport
-
-                                        else if (basetype == typeof(AGraphDBImport))
-                                        {
-                                            try
-                                            {
-                                                var importer = (AGraphDBImport)Activator.CreateInstance(type);
-                                                if (!_GraphDBImporter.ContainsKey(importer.ImportFormat.ToUpper()))
-                                                {
-                                                    _GraphDBImporter.Add(importer.ImportFormat.ToUpper(), importer);
-                                                }
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                Debug.WriteLine("[DBPluginmanager] Failed to create instance of type {0}: {1}", type.Name, ex.Message);
-                                            }
-                                        }
-
-                                        #endregion
-
-                                        #region AGraphDBExport
-
-                                        else if (basetype == typeof(AGraphDBExport))
-                                        {
-                                            try
-                                            {
-                                                var exporter = (AGraphDBExport)Activator.CreateInstance(type);
-                                                if (!_GraphDBExporter.ContainsKey(exporter.ExportFormat.ToUpper()))
-                                                {
-                                                    _GraphDBExporter.Add(exporter.ExportFormat.ToUpper(), exporter);
-                                                }
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                Debug.WriteLine("[DBPluginmanager] Failed to create instance of type {0}: {1}", type.Name, ex.Message);
-                                            }
-                                        }
-
-                                        #endregion
-
-                                        #region Check the interface
-
-                                        else if (basetype == typeof(AFSObject) && type.GetInterface(typeof(IVersionedIndexObject<IndexKey, ObjectUUID>).Name) != null)
-                                        {
-                                            try
-                                            {
-                                                var idx = (IVersionedIndexObject<IndexKey, ObjectUUID>)Activator.CreateInstance(type.MakeGenericType(typeof(IndexKey), typeof(ObjectUUID)));
-                                                if (!_Indices.ContainsKey(idx.IndexName.ToUpper()))
-                                                {
-                                                    _Indices.Add(idx.IndexName.ToUpper(), idx);
-                                                }
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                Debug.WriteLine("[DBPluginmanager] Failed to create instance of type {0}: {1}", type.Name, ex.Message);
-                                            }
-                                        }
-
-                                        #endregion
-                                    }
-
-                                    #endregion
-
-
-                                }
-
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.WriteLine("[DBPluginmanager Startup] Reflection on " + file.Name + " and type [" + type + "] failed: " + ex.Message);
-                                //NLOG: temporarily commented
-                                //Logger.ErrorException("[AggregatesManager Startup] Reflection on " + file.Name + " failed ", ex);
-                            }
-                        }
+                        allTypes = Assembly.LoadFrom(file.FullName).GetTypes();
                     }
                     catch (Exception ex)
                     {
@@ -379,6 +161,269 @@ namespace sones.GraphDB.Plugin
                         //NLOG: temporarily commented
                         //Logger.ErrorException("[AggregatesManager Startup] Reflection on " + file.Name + " failed ", ex);
                     }
+
+                    if (allTypes.IsNullOrEmpty()) continue;
+
+                    #endregion
+
+                    foreach (System.Type type in allTypes)
+                    {
+
+                        try
+                        {
+
+                            String fullTypeName = type.Name;
+
+                            // check for correct base
+                            bool correctbase = false;
+
+                            if (type != null)
+                            {
+                                if (type.BaseType == null)
+                                    continue;
+                                if (type.IsAbstract)
+                                    continue;
+                                if (!myIncludePrivateClasses && (type.IsNestedPrivate || type.IsNotPublic))
+                                    continue;
+                                
+
+                                #region Check base type iterative
+
+                                System.Type basetype = type.BaseType;
+
+                                while (!correctbase)
+                                {
+                                    if (basetype == typeof(System.Object))
+                                        break;
+
+                                    if (
+                                        basetype == typeof(ABaseFunction)
+                                     || basetype == typeof(ABaseAggregate)
+                                     || basetype == typeof(ABinaryOperator)
+                                     || basetype == typeof(ADBSettingsBase)
+                                     || type.GetInterface(typeof(IEdgeType).Name) != null
+                                     || (basetype == typeof(AFSObject) && type.GetInterface(typeof(IVersionedIndexObject<IndexKey, ObjectUUID>).Name) != null)
+                                     || basetype == typeof(AGraphDBImport)
+                                     || basetype == typeof(AGraphDBExport)
+                                        )
+                                        correctbase = true;
+                                    else
+                                    {
+                                        basetype = basetype.BaseType;
+                                    }
+
+                                }
+
+                                #endregion
+
+                                #region Check the base type, create instance and store it
+
+                                // if this type has the correct base type
+                                if (correctbase)
+                                {
+                                    #region ABaseFunction
+
+                                    if (basetype == typeof(ABaseFunction))
+                                    {
+                                        ABaseFunction newABaseFunc = (ABaseFunction)Activator.CreateInstance(type);
+                                        
+                                        #region Verify that there is no aggregate with the same name if the current function has parameters
+
+                                        if (_Aggregates.ContainsKey(newABaseFunc.FunctionName.ToUpper()) && newABaseFunc.GetParameters().IsNotNullOrEmpty())
+                                        {
+                                            throw new GraphDBException(new Error_DuplicateAggregateOrFunction(newABaseFunc.FunctionName.ToUpper(), false));
+                                        }
+
+                                        #endregion
+
+                                        if (!_Functions.ContainsKey(newABaseFunc.FunctionName.ToUpper()))
+                                        {
+                                            // not in the operator list
+                                            _Functions.Add(newABaseFunc.FunctionName.ToUpper(), newABaseFunc);
+                                        }
+                                        else
+                                        {
+                                            throw new GraphDBException(new Error_DuplicateAggregateOrFunction(newABaseFunc.FunctionName.ToUpper()));
+                                            //NLOG: temporarily commented
+                                            //Logger.Warn("Function with Name '" + newABaseFunc.FunctionName + "' already added!");
+                                        }
+
+                                    }
+
+                                    #endregion
+
+                                    #region ABaseAggregate
+
+                                    else if (basetype == typeof(ABaseAggregate))
+                                    {
+                                        ABaseAggregate newABaseAggregate = (ABaseAggregate)Activator.CreateInstance(type);
+
+                                        #region Verify that there is no function with parameters and the same name
+
+                                        if (_Functions.ContainsKey(newABaseAggregate.FunctionName.ToUpper()) && _Functions[newABaseAggregate.FunctionName.ToUpper()].GetParameters().IsNotNullOrEmpty())
+                                        {
+                                            throw new GraphDBException(new Error_DuplicateAggregateOrFunction(newABaseAggregate.FunctionName.ToUpper()));
+                                        }
+                                        
+                                        #endregion
+
+                                        if (!_Aggregates.ContainsKey(newABaseAggregate.FunctionName))
+                                        {
+                                            // not in the operator list
+                                            _Aggregates.Add(newABaseAggregate.FunctionName.ToUpper(), newABaseAggregate);
+                                        }
+                                        else
+                                        {
+                                            throw new GraphDBException(new Error_DuplicateAggregateOrFunction(newABaseAggregate.FunctionName.ToUpper(), false));
+                                            //NLOG: temporarily commented
+                                            //Logger.Warn("Aggregate with Name '" + newABaseAggregate.FunctionName + "' already added!");
+                                        }
+                                    }
+
+                                    #endregion
+
+                                    #region ABinaryOperator
+
+                                    else if (basetype == typeof(ABinaryOperator))
+                                    {
+                                        ABinaryOperator newBinaryOperator = (ABinaryOperator)Activator.CreateInstance(type);
+
+                                        foreach (String sym in newBinaryOperator.Symbol)
+                                        {
+                                            if (!_Operators.ContainsKey(sym))
+                                            {
+                                                // not in the operator list
+                                                _Operators.Add(sym, newBinaryOperator);
+                                            }
+                                            else
+                                            {
+                                                //NLOG: temporarily commented
+                                                //Logger.Warn("Operator with Symbol '" + sym + "' already added!");
+                                            }
+                                        }
+                                    }
+
+                                    #endregion
+
+                                    #region ADBSettingsBase
+
+                                    else if (basetype == typeof(ADBSettingsBase))
+                                    {
+                                        ADBSettingsBase newSetting = (ADBSettingsBase)Activator.CreateInstance(type);
+
+                                        if (!_Settings.ContainsKey(newSetting.Name))
+                                        {
+                                            //if (newSetting.OwnerID == null)
+                                            //    newSetting.OwnerID = UserID;
+                                            _Settings.Add(newSetting.Name, newSetting);
+                                        }
+                                        else
+                                        {
+                                            //NLOG: temporarily commented
+                                            //Logger.Warn("Setting with name '" + newSetting.Name + "' already added!");
+                                        }
+                                    }
+
+                                    #endregion
+
+                                    #region IEdgeType
+
+                                    else if (type.GetInterface(typeof(IEdgeType).Name) != null)
+                                    {
+                                        IEdgeType newAEdgeType = (IEdgeType)Activator.CreateInstance(type);
+                                        if (!_EdgeTypes.ContainsKey(newAEdgeType.EdgeTypeName))
+                                        {
+                                            // not in the operator list
+                                            _EdgeTypes.Add(newAEdgeType.EdgeTypeName.ToLower(), newAEdgeType);
+                                        }
+                                        else
+                                        {
+                                            //NLOG: temporarily commented
+                                            //Logger.Warn("EdgeType with Name '" + newAEdgeType.EdgeTypeName + "' already added!");
+                                        }
+                                    }
+
+                                    #endregion
+
+                                    #region AGraphDBImport
+
+                                    else if (basetype == typeof(AGraphDBImport))
+                                    {
+                                        try
+                                        {
+                                            var importer = (AGraphDBImport)Activator.CreateInstance(type);
+                                            if (!_GraphDBImporter.ContainsKey(importer.ImportFormat.ToUpper()))
+                                            {
+                                                _GraphDBImporter.Add(importer.ImportFormat.ToUpper(), importer);
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Debug.WriteLine("[DBPluginmanager] Failed to create instance of type {0}: {1}", type.Name, ex.Message);
+                                        }
+                                    }
+
+                                    #endregion
+
+                                    #region AGraphDBExport
+
+                                    else if (basetype == typeof(AGraphDBExport))
+                                    {
+                                        try
+                                        {
+                                            var exporter = (AGraphDBExport)Activator.CreateInstance(type);
+                                            if (!_GraphDBExporter.ContainsKey(exporter.ExportFormat.ToUpper()))
+                                            {
+                                                _GraphDBExporter.Add(exporter.ExportFormat.ToUpper(), exporter);
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Debug.WriteLine("[DBPluginmanager] Failed to create instance of type {0}: {1}", type.Name, ex.Message);
+                                        }
+                                    }
+
+                                    #endregion
+
+                                    #region Check the interface
+
+                                    else if (basetype == typeof(AFSObject) && type.GetInterface(typeof(IVersionedIndexObject<IndexKey, ObjectUUID>).Name) != null)
+                                    {
+                                        try
+                                        {
+                                            var idx = (IVersionedIndexObject<IndexKey, ObjectUUID>)Activator.CreateInstance(type.MakeGenericType(typeof(IndexKey), typeof(ObjectUUID)));
+                                            if (!_Indices.ContainsKey(idx.IndexName.ToUpper()))
+                                            {
+                                                _Indices.Add(idx.IndexName.ToUpper(), idx);
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Debug.WriteLine("[DBPluginmanager] Failed to create instance of type {0}: {1}", type.Name, ex.Message);
+                                        }
+                                    }
+
+                                    #endregion
+                                }
+
+                                #endregion
+
+                            }
+
+                        }
+                        catch (GraphDBException gex)
+                        {
+                            throw gex; // do not catch (and hide) GraphDBExceptions
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.WriteLine("[DBPluginmanager Startup] Reflection on " + file.Name + " and type [" + type + "] failed: " + ex.Message);
+                            //NLOG: temporarily commented
+                            //Logger.ErrorException("[AggregatesManager Startup] Reflection on " + file.Name + " failed ", ex);
+                        }
+
+                    }
+
 
                 }
             }
@@ -460,7 +505,7 @@ namespace sones.GraphDB.Plugin
                 throw new GraphDBException(new Error_AggregateOrFunctionDoesNotExist(myAggregateName));
             }
 
-            return Aggregates[myAggregateName];
+            return Activator.CreateInstance(Aggregates[myAggregateName].GetType()) as ABaseAggregate;
 
         }
 

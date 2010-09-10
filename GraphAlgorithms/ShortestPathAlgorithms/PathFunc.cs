@@ -1,13 +1,13 @@
 /*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,13 +15,16 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
+
 #region usings
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GraphAlgorithms.PathAlgorithm.BreadthFirstSearch;
+using sones.GraphAlgorithms.PathAlgorithm.BreadthFirstSearch;
+
 using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Managers.Structures;
@@ -32,7 +35,8 @@ using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
-using sones.GraphDB.Structures.Result;
+
+using sones.GraphDBInterface.TypeManagement;
 
 #endregion
 
@@ -103,7 +107,7 @@ namespace sones.GraphDB
 
             byte maxPathLength = Convert.ToByte((myParams[2].Value as DBInt64).GetValue());
 
-            //values incorrect
+            //check if values incorrect
             if (maxDepth < 1 && maxPathLength < 2)
             {
                 Exceptional<FuncParameter> errorResult = new Exceptional<FuncParameter>();

@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,35 +15,20 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
 
-/* <id Name="sones GraphDB – ABaseFunction" />
- * <copyright file="ABaseFunction.cs"
- *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
- * </copyright>
- * <developer>Stefan Licht</developer>
- * <summary>This is the base function class. Each function mus derive this class and implement at least:
- *  FunctionName: The name of the function used in the query itself
- *  TypeOfResult: The result type of the evaluated function
- *  SubstringFunc(): The constructor fills the _Parameters dictionary which defines the function parameters
- *  ExecFunc(...): Is the function itself and will containing the logic. You MUST call PandoraResult result = base.ExecFunc(myParams); at the beginning to verify the parameters number and types
- * <summary>
- */
-
-#region
+#region Usings
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using sones.GraphDB.Errors;
 using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.BasicTypes;
-
+using sones.GraphDBInterface.TypeManagement;
 using sones.Lib.ErrorHandling;
 
 #endregion

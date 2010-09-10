@@ -1,13 +1,13 @@
 /*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,33 +15,33 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /*
  * GraphFSInterface - ObjectLocator
- * Achim Friedland, 2008 - 2010
+ * (c) Achim Friedland, 2008 - 2010
  */
 
 #region Usings
 
 using System;
-using System.Text;
 using System.Linq;
-using System.Xml.Linq;
+using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 
-using sones.Lib;
-using sones.Lib.Serializer;
-using sones.Lib.DataStructures;
-using sones.Lib.XML;
-using sones.Lib.NewFastSerializer;
-using sones.StorageEngines;
-using sones.Lib.DataStructures.UUID;
-using sones.GraphFS.Exceptions;
 using sones.GraphFS.Objects;
+using sones.GraphFS.Exceptions;
 using sones.GraphFS.InternalObjects;
+
+using sones.Lib;
+using sones.Lib.DataStructures;
+using sones.Lib.DataStructures.UUID;
+using sones.Lib.NewFastSerializer;
+using sones.Lib.Serializer;
+
+using sones.StorageEngines;
 
 #endregion
 
@@ -74,7 +74,7 @@ namespace sones.GraphFS.DataStructures
         {
 
             // Members of AGraphStructure
-            _StructureVersion           = 1;
+            _StructureVersion       = 1;
 
             // ObjectLocator specific Data
             _ObjectStreams          = new Dictionary<String, ObjectStream>();
@@ -83,19 +83,18 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
-        #region ObjectLocator(myObjectLocation, myINode)
+        #region ObjectLocator(myObjectLocation)
 
         /// <summary>
         /// This will create an empty ObjectLocator based on the information within the INode
         /// </summary>
         /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested file within the file system</param>
-        /// <param name="myINode">The associated INode</param>
-        public ObjectLocator(ObjectLocation myObjectLocation, INode myINode)
+        public ObjectLocator(ObjectLocation myObjectLocation)
             : this()
         {
 
-            ObjectUUID                           = myINode.ObjectUUID;
-            _INodeReference                      = myINode;
+            ObjectUUID                           = new ObjectUUID();
+            _INodeReference                      = null;
             _ObjectLocation                      = myObjectLocation;
             _ObjectPath                          = _ObjectLocation.Path;
             _ObjectName                          = _ObjectLocation.Name;
@@ -110,7 +109,7 @@ namespace sones.GraphFS.DataStructures
         /// This will create an empty ObjectLocator based on the information within the INode
         /// </summary>
         /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested file within the file system</param>
-        /// <param name="myINode">The associated INode</param>
+        /// <param name="myObjectUUID"></param>
         public ObjectLocator(ObjectLocation myObjectLocation, ObjectUUID myObjectUUID)
             : this()
         {
@@ -125,7 +124,29 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
-        #region ObjectLocator(myObjectLocation, myINode, myObjectStream, myObjectType, MinNumberOfRevisions, MaxNumberOfRevisions, myMinRevisionDelta, MaxRevisionAge, MinNumberOfCopies, MaxNumberOfCopies)
+        #region ObjectLocator(myObjectLocation, myObjectUUID, myINode)
+
+        /// <summary>
+        /// This will create an empty ObjectLocator based on the information within the INode
+        /// </summary>
+        /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested file within the file system</param>
+        /// <param name="myObjectUUID"></param>
+        /// <param name="myINode">The associated INode</param>
+        public ObjectLocator(ObjectLocation myObjectLocation, ObjectUUID myObjectUUID, INode myINode)
+            : this()
+        {
+
+            ObjectUUID                           = myObjectUUID;
+            _INodeReference                      = myINode;
+            _ObjectLocation                      = myObjectLocation;
+            _ObjectPath                          = _ObjectLocation.Path;
+            _ObjectName                          = _ObjectLocation.Name;
+            
+        }
+
+        #endregion
+
+        #region ObjectLocator(myObjectLocation, myObjectStream, myObjectType, MinNumberOfRevisions, MaxNumberOfRevisions, myMinRevisionDelta, MaxRevisionAge, MinNumberOfCopies, MaxNumberOfCopies)
 
         /// <summary>
         /// This will create an object locator locating the given object streams at the
@@ -142,8 +163,8 @@ namespace sones.GraphFS.DataStructures
         /// <param name="myMaxRevisionAge">maximum timespan to keep old revisions</param>
         /// <param name="MinNumberOfCopies">minimum number of object copies</param>
         /// <param name="MaxNumberOfCopies">maximum number of object copies</param>
-        public ObjectLocator(ObjectLocation myObjectLocation, INode myINode, String myObjectStream, String myObjectEdition, UInt64 myMinNumberOfRevisions, UInt64 myMaxNumberOfRevisions, UInt64 myMinRevisionDelta, UInt64 myMaxRevisionAge, UInt64 myMinNumberOfCopies, UInt64 myMaxNumberOfCopies)
-            : this (myObjectLocation, myINode)
+        public ObjectLocator(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, UInt64 myMinNumberOfRevisions, UInt64 myMaxNumberOfRevisions, UInt64 myMinRevisionDelta, UInt64 myMaxRevisionAge, UInt64 myMinNumberOfCopies, UInt64 myMaxNumberOfCopies)
+            : this (myObjectLocation)
         {
 
             _ObjectStreams          = new Dictionary<String, ObjectStream>();
@@ -164,7 +185,7 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
-        #region ObjectLocator(myObjectLocation, myINode, myObjectStream, MinNumberOfRevisions, MaxNumberOfRevisions, myMinRevisionDelta, myMaxRevisionAge, MinNumberOfCopies, MaxNumberOfCopies, myListOfObjectStreams)
+        #region ObjectLocator(myObjectLocation, myObjectStream, MinNumberOfRevisions, MaxNumberOfRevisions, myMinRevisionDelta, myMaxRevisionAge, MinNumberOfCopies, MaxNumberOfCopies, myListOfObjectStreams)
 
         /// <summary>
         /// This will create an object locator locating the given object streams at the
@@ -183,11 +204,13 @@ namespace sones.GraphFS.DataStructures
         /// <param name="MinNumberOfCopies">minimum number of object copies</param>
         /// <param name="MaxNumberOfCopies">maximum number of object copies</param>
         /// <param name="myListOfObjectStreams">a list of object streams for storing the given object</param>
-        public ObjectLocator(ObjectLocation myObjectLocation, INode myINode, String myObjectStream, String myObjectEdition, UUID myForestUUID, UInt64 myMinNumberOfRevisions, UInt64 myMaxNumberOfRevisions, UInt64 myMinRevisionDelta, UInt64 myMaxRevisionAge, UInt64 myMinNumberOfCopies, UInt64 myMaxNumberOfCopies, List<ObjectDatastream> myListOfObjectStreams)
-            : this (myObjectLocation, myINode)
+        public ObjectLocator(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, UUID myForestUUID, UInt64 myMinNumberOfRevisions, UInt64 myMaxNumberOfRevisions, UInt64 myMinRevisionDelta, UInt64 myMaxRevisionAge, UInt64 myMinNumberOfCopies, UInt64 myMaxNumberOfCopies, List<ObjectDatastream> myListOfObjectStreams)
+            : this (myObjectLocation)
         {
 
-            _ObjectStreams   = new Dictionary<String, ObjectStream>();
+            var myINode = new INode(ObjectUUID);
+
+            _ObjectStreams      = new Dictionary<String, ObjectStream>();
 
             var _ObjectRevision = new ObjectEdition()
                                     {
@@ -196,8 +219,10 @@ namespace sones.GraphFS.DataStructures
                                         MinRevisionDelta        = myMinRevisionDelta,
                                         MaxRevisionAge          = myMaxRevisionAge
                                     };
+            
+            var tmpID           = new ObjectRevisionID((UInt64) myINode.ModificationTime.Ticks, myForestUUID);
 
-            var _ObjectCopy     = new ObjectRevision(myObjectStream)
+            var _ObjectCopy     = new ObjectRevision(tmpID, myObjectStream)
                                     {
                                         MinNumberOfCopies       = myMinNumberOfCopies,
                                         MaxNumberOfCopies       = myMaxNumberOfCopies
@@ -205,8 +230,8 @@ namespace sones.GraphFS.DataStructures
 
             _ObjectCopy.Set(myListOfObjectStreams);
             //HACK: ParentRevisions set to 0!
-            var tmpID = new ObjectRevisionID((UInt64) myINode.ModificationTime.Ticks, myForestUUID);
-            _ObjectRevision.Add(tmpID , _ObjectCopy);
+            
+            _ObjectRevision.Add(tmpID, _ObjectCopy);
 
             var _ObjectEdition   = new ObjectStream(myObjectStream, myObjectEdition, _ObjectRevision);
 
@@ -216,7 +241,7 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
-        #region ObjectLocator(myObjectLocation, myINode, myObjectStream, myObjectType, myRevisionID, MinNumberOfRevisions, MaxNumberOfRevisions, myMinRevisionDelta, myMaxRevisionAge, MinNumberOfCopies, MaxNumberOfCopies, myListOfObjectStreams)
+        #region ObjectLocator(myObjectLocation, myObjectStream, myObjectType, myRevisionID, MinNumberOfRevisions, MaxNumberOfRevisions, myMinRevisionDelta, myMaxRevisionAge, MinNumberOfCopies, MaxNumberOfCopies, myListOfObjectStreams)
 
         /// <summary>
         /// This will create an object locator locating the given object streams at the
@@ -236,9 +261,11 @@ namespace sones.GraphFS.DataStructures
         /// <param name="MinNumberOfCopies">minimum number of object copies</param>
         /// <param name="MaxNumberOfCopies">maximum number of object copies</param>
         /// <param name="myListOfObjectStreams">a list of object streams for storing the given object</param>
-        public ObjectLocator(ObjectLocation myObjectLocation, INode myINode, String myObjectStream, String myObjectEdition, UInt64 myRevisionTimestamp, UUID myForestUUID, UInt64 myMinNumberOfRevisions, UInt64 myMaxNumberOfRevisions, UInt64 myMinRevisionDelta, UInt64 myMaxRevisionAge, UInt64 myMinNumberOfCopies, UInt64 myMaxNumberOfCopies, List<ObjectDatastream> myListOfObjectStreams)
-            : this (myObjectLocation, myINode)
+        public ObjectLocator(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, UInt64 myRevisionTimestamp, UUID myForestUUID, UInt64 myMinNumberOfRevisions, UInt64 myMaxNumberOfRevisions, UInt64 myMinRevisionDelta, UInt64 myMaxRevisionAge, UInt64 myMinNumberOfCopies, UInt64 myMaxNumberOfCopies, List<ObjectDatastream> myListOfObjectStreams)
+            : this (myObjectLocation)
         {
+
+            var myINode = new INode(ObjectUUID);
 
                 _ObjectStreams   = new Dictionary<String, ObjectStream>();
 
@@ -250,7 +277,9 @@ namespace sones.GraphFS.DataStructures
                                         MaxRevisionAge          = myMaxRevisionAge
                                     };
 
-            var _ObjectCopy     = new ObjectRevision(myObjectStream)
+            var tmpID           = new ObjectRevisionID((UInt64) myINode.ModificationTime.Ticks, myForestUUID);
+
+            var _ObjectCopy     = new ObjectRevision(tmpID, myObjectStream)
                                     {
                                         MinNumberOfCopies       = myMinNumberOfCopies,
                                         MaxNumberOfCopies       = myMaxNumberOfCopies
@@ -259,7 +288,6 @@ namespace sones.GraphFS.DataStructures
 
             _ObjectCopy.Set(myListOfObjectStreams);
             //HACK: ParentRevisions set to 0!
-            var tmpID = new ObjectRevisionID((UInt64) myINode.ModificationTime.Ticks, myForestUUID);
             _ObjectRevision.Add(tmpID , _ObjectCopy);
 
             var _ObjectEdition   = new ObjectStream(myObjectStream, myObjectEdition, _ObjectRevision);
@@ -274,15 +302,20 @@ namespace sones.GraphFS.DataStructures
         #region ObjectLocator(myObjectLocation, mySerializedData)
 
         /// <summary>
-        /// A constructor of the ObjectLocator used for fast deserializing
+        /// Deserialize the ObjectLocator from the given byte array and set its
+        /// ObjectLocation to the given myObjectLocation.
         /// </summary>
         /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested file within the file system</param>
         /// <param name="mySerializedData">An array of bytes containing a serialized ObjectLocator</param>
         public ObjectLocator(ObjectLocation myObjectLocation, Byte[] mySerializedData)
         {
+            
             Deserialize(mySerializedData, null, null);
-            ObjectLocation = myObjectLocation;
-            _isNew = false;
+
+            // Use the ObjectLocationSetter to set ObjectPath and ObjectName
+            ObjectLocationSetter = myObjectLocation;
+            _isNew               = false;
+
         }
 
         #endregion
@@ -525,7 +558,7 @@ namespace sones.GraphFS.DataStructures
                             // Read number of ObjectStreams (aka copies)
                             var NumberOfObjectStreamCopies       = mySerializationReader.ReadUInt32();
 
-                            var __ObjectRevision = new ObjectRevision(__ObjectStreamName)
+                            var __ObjectRevision = new ObjectRevision(_RevisionID, __ObjectStreamName)
                             {
                                 MinNumberOfCopies = ObjectRevision_MinNumberOfCopies,
                                 MaxNumberOfCopies = ObjectRevision_MaxNumberOfCopies
@@ -642,6 +675,42 @@ namespace sones.GraphFS.DataStructures
 
         #region ObjectLocator-specific methods
 
+        #region INodeReference - A reference to the INode of this GraphStructure
+
+        [NonSerialized]
+        [NotIFastSerialized]
+        protected INode _INodeReference;
+
+        /// <summary>
+        /// A reference to the INode of this GraphStructure.
+        /// Purpose: Give fast access to the information stored within the INode
+        /// </summary>
+        [NotIFastSerialized]
+        public INode INodeReferenceSetter
+        {
+            set
+            {
+                _INodeReference = value;
+                _INodeReference.ObjectLocatorReference = this;
+                isDirty = true;
+            }
+        }
+
+        /// <summary>
+        /// A reference to the INode of this GraphStructure.
+        /// Purpose: Give fast access to the information stored within the INode
+        /// </summary>
+        [NotIFastSerialized]
+        public override INode INodeReference
+        {
+            get
+            {
+                return _INodeReference;
+            }
+        }
+
+        #endregion
+
         #region CopyTo(myObjectLocator)
 
         /// <summary>
@@ -651,8 +720,8 @@ namespace sones.GraphFS.DataStructures
         /// <param name="myObjectLocator"></param>
         public void CopyTo(ObjectLocator myObjectLocator)
         {
-            myObjectLocator.ObjectLocation          = _ObjectLocation;
-            myObjectLocator.INodeReference          = _INodeReference;
+            myObjectLocator.ObjectLocationSetter    = _ObjectLocation;
+            myObjectLocator.INodeReferenceSetter    = _INodeReference;
             myObjectLocator.ObjectLocatorReference  = _ObjectLocatorReference;
             myObjectLocator.PreallocationTickets    = PreallocationTickets;
             myObjectLocator._StructureVersion       = _StructureVersion;
@@ -668,8 +737,8 @@ namespace sones.GraphFS.DataStructures
         {
 
             var __ObjectLocatorCopy = new ObjectLocator();
-            __ObjectLocatorCopy.ObjectLocation          = _ObjectLocation;
-            __ObjectLocatorCopy.INodeReference          = _INodeReference;
+            __ObjectLocatorCopy.ObjectLocationSetter    = _ObjectLocation;
+            __ObjectLocatorCopy.INodeReferenceSetter    = _INodeReference;
             __ObjectLocatorCopy.ObjectLocatorReference  = _ObjectLocatorReference;
 
             /*
@@ -705,7 +774,7 @@ namespace sones.GraphFS.DataStructures
                     foreach (var __ObjectRevisionsEnumerator in __ObjectEditionsEnumerator.Value)
                     {
 
-                        var __ObjectRevision = new ObjectRevision(__ObjectRevisionsEnumerator.Value.ObjectStream)
+                        var __ObjectRevision = new ObjectRevision(__ObjectRevisionsEnumerator.Key, __ObjectRevisionsEnumerator.Value.ObjectStream)
                             {
                                 MinNumberOfCopies = __ObjectRevisionsEnumerator.Value.MinNumberOfCopies,
                                 MaxNumberOfCopies = __ObjectRevisionsEnumerator.Value.MaxNumberOfCopies
@@ -815,7 +884,7 @@ namespace sones.GraphFS.DataStructures
 
             }
 
-            catch (Exception)
+            catch (Exception e)
             {
                 return false;
             }
@@ -956,7 +1025,7 @@ namespace sones.GraphFS.DataStructures
 
             }
 
-            catch (Exception)
+            catch (Exception e)
             {
                 return false;
             }
@@ -1013,17 +1082,56 @@ namespace sones.GraphFS.DataStructures
 
         #region IObjectLocation Members
 
+        #region ObjectLocation
+
+        [NonSerialized]
+        protected ObjectLocation _ObjectLocation;
+
+        /// <summary>
+        /// Stores the complete ObjectLocation (ObjectPath and ObjectName) of
+        /// this AGraphObject. Changing this property will automagically
+        /// change the ObjectPath and ObjectName property.
+        /// </summary>
+        [NotIFastSerialized]
+        public ObjectLocation ObjectLocationSetter
+        {
+            set
+            {
+
+                if (value == null || value.Length < FSPathConstants.PathDelimiter.Length)
+                    throw new ArgumentNullException("Invalid ObjectLocation!");
+
+                _ObjectLocation  = value;
+                _ObjectPath      = _ObjectLocation.Path;
+                _ObjectName      = _ObjectLocation.Name;
+
+                isDirty          = true;
+
+            }
+        }
+
+        [NotIFastSerialized]
+        public ObjectLocation ObjectLocation
+        {
+            get
+            {
+                return _ObjectLocation;
+            }
+        }
+
+        #endregion
+
         #region ObjectPath
 
         [NonSerialized]
-        protected String _ObjectPath;
+        protected ObjectLocation _ObjectPath;
 
         /// <summary>
         /// Stores the ObjectPath of this AGraphObject. Changing this
         /// property will automagically change the myObjectLocation property.
         /// </summary>
         [NotIFastSerialized]
-        public String ObjectPath
+        public ObjectLocation ObjectPath
         {
 
             get
@@ -1038,7 +1146,7 @@ namespace sones.GraphFS.DataStructures
                     throw new ArgumentNullException("Invalid ObjectPath!");
 
                 _ObjectPath      = value;
-                _ObjectLocation  = new ObjectLocation(DirectoryHelper.Combine(_ObjectPath, _ObjectName));
+                _ObjectLocation  = new ObjectLocation(_ObjectPath, _ObjectName);
 
             }
 
@@ -1071,7 +1179,7 @@ namespace sones.GraphFS.DataStructures
                     throw new ArgumentNullException("Invalid ObjectName!");
 
                 _ObjectName      = value;
-                _ObjectLocation = new ObjectLocation(DirectoryHelper.Combine(_ObjectPath, _ObjectName));
+                _ObjectLocation  = new ObjectLocation(_ObjectPath, _ObjectName);
 
             }
 
@@ -1079,42 +1187,7 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
-        #region ObjectLocation
 
-        [NonSerialized]
-        protected ObjectLocation _ObjectLocation;
-
-        /// <summary>
-        /// Stores the complete ObjectLocation (ObjectPath and ObjectName) of
-        /// this AGraphObject. Changing this property will automagically
-        /// change the ObjectPath and ObjectName property.
-        /// </summary>
-        [NotIFastSerialized]
-        public ObjectLocation ObjectLocation
-        {
-
-            get
-            {
-                return _ObjectLocation;
-            }
-
-            set
-            {
-
-                if (value == null || value.Length < FSPathConstants.PathDelimiter.Length)
-                    throw new ArgumentNullException("Invalid ObjectLocation!");
-
-                _ObjectLocation  = value;
-                _ObjectPath      = _ObjectLocation.Path;
-                _ObjectName      = _ObjectLocation.Name;
-
-                isDirty          = true;
-
-            }
-
-        }
-
-        #endregion
 
         #endregion
 
@@ -1405,7 +1478,7 @@ namespace sones.GraphFS.DataStructures
         public override String ToString()
         {
 
-            var _ReturnValue        = "[";
+            var _ReturnValue        = ObjectLocation.ToString() + " [";
             var _ObjectStreamList   = new List<String>(_ObjectStreams.Keys);
 
             for (int i=0; i < _ObjectStreamList.Count-1; i++)

@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,13 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-
-/* <id name="sones GraphDB – SelectResultManager" />
+/* <id name="GraphDB � SelectResultManager" />
  * <copyright file="SelectResultManager.cs"
  *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Stefan Licht</developer>
  * <summary>This will create the result of any kind of select - working on an IExpressionGraph.</summary>
@@ -36,213 +36,31 @@ using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.Structures.ExpressionGraph;
-using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Settings;
 using sones.GraphDB.Structures.EdgeTypes;
+using sones.GraphDB.Structures.Enums;
+using sones.GraphDB.Structures.ExpressionGraph;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.TypeManagement;
+
 using sones.GraphFS.DataStructures;
 using sones.Lib;
 using sones.Lib.ErrorHandling;
-using sones.Lib.Session;
-using sones.Lib.DataStructures.UUID;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphDB.Managers.TypeManagement.BasicTypes;
 
 #endregion
 
 namespace sones.GraphDB.Managers.Select
 {
 
-    #region GroupingKey and GroupingStructure
-
-    public struct GroupingValuesKey
-    {
-        public AttributeUUID AttributeUUID;
-        public String AttributeAlias;
-        public String AttributeName;
-
-        public GroupingValuesKey(TypeManagement.AttributeUUID myAttributeUUID, String myAttributeAlias)
-        {
-            AttributeUUID = myAttributeUUID;
-            AttributeAlias = myAttributeAlias;
-            AttributeName = null;
-        }
-
-        public GroupingValuesKey(String myAttributeName, String myAttributeAlias)
-        {
-            AttributeName = myAttributeName;
-            AttributeAlias = myAttributeAlias;
-            AttributeUUID = null;
-        }
-
-        public override string ToString()
-        {
-            return AttributeAlias;
-        }
-
-        public override int GetHashCode()
-        {
-            if (AttributeUUID == null)
-            {
-                return AttributeAlias.GetHashCode();
-            }
-            else
-            {
-                if (AttributeName != null)
-                {
-                    return AttributeName.GetHashCode();
-                }
-            }
-
-            return 0;
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!(obj is GroupingValuesKey))
-            {
-                return false;
-            }
-
-            if (((GroupingValuesKey)obj).AttributeUUID != null)
-            {
-                return ((GroupingValuesKey)obj).AttributeUUID.Equals(AttributeUUID);
-            }
-            else
-            {
-                return ((GroupingValuesKey)obj).AttributeName.Equals(AttributeName);
-            }
-        }
-
-    }
-
-    public class GroupingKey : IComparable<Dictionary<GroupingValuesKey, ADBBaseObject>>
-    {
-
-        Dictionary<GroupingValuesKey, ADBBaseObject> _Values;
-        Dictionary<GroupingValuesKey, IDChainDefinition> _GroupingAttr;
-
-        public Dictionary<GroupingValuesKey, ADBBaseObject> Values
-        {
-            get { return _Values; }
-            set { _Values = value; }
-        }
-
-        public GroupingKey(Dictionary<GroupingValuesKey, ADBBaseObject> myValues, Dictionary<GroupingValuesKey, IDChainDefinition> myGroupingAttr)
-        {
-            _Values = myValues;
-            _GroupingAttr = myGroupingAttr;
-        }
-
-        #region IComparable<ADBBaseObject> Members
-
-        public int CompareTo(Dictionary<GroupingValuesKey, ADBBaseObject> other)
-        {
-
-            // it could happen, that not all grouped aatributes are existing in all DBOs, so use the group by from the select to check
-            foreach (var attr in _GroupingAttr.Keys)
-            {
-                if (_Values.ContainsKey(attr) && other.ContainsKey(attr))
-                    if (_Values[attr].CompareTo(other[attr]) != 0)
-                        return -1;
-            }
-
-            return 0;
-        }
-
-        #endregion
-
-        public override int GetHashCode()
-        {
-            Int32 retVal = -1;
-            foreach (KeyValuePair<GroupingValuesKey, ADBBaseObject> keyValPair in _Values)
-            {
-                if (retVal == -1)
-                    retVal = keyValPair.Value.Value.GetHashCode();
-                else
-                    retVal = retVal ^ keyValPair.Value.Value.GetHashCode();
-            }
-
-            return retVal;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return CompareTo(((GroupingKey)obj).Values) == 0;
-        }
-    }
-
-    public class GroupingStructure
-    {
-
-        private Dictionary<GroupingValuesKey, IDChainDefinition> _GroupingAttr;
-
-        // The attribute value of each Group BY, Set of DBOs which have exactly these values
-        private Dictionary<GroupingKey, HashSet<DBObjectReadout>> _GroupsAndAggregates;
-        public Dictionary<GroupingKey, HashSet<DBObjectReadout>> GroupsAndAggregates
-        {
-            get { return _GroupsAndAggregates; }
-            set { _GroupsAndAggregates = value; }
-        }
-
-        public GraphDBType DBTypeStream
-        {
-            get;
-            set;
-        }
-
-        public GroupingStructure(Dictionary<GroupingValuesKey, IDChainDefinition> myGroupingAttr)
-        {
-            _GroupsAndAggregates = new Dictionary<GroupingKey, HashSet<DBObjectReadout>>();
-            _GroupingAttr = myGroupingAttr;
-        }
-
-        public void Add(DBObjectReadout myDBObjectReadout, Dictionary<GroupingValuesKey, ADBBaseObject> myValues)
-        {
-            GroupingKey curKey = new GroupingKey(myValues, _GroupingAttr);
-            if (!_GroupsAndAggregates.ContainsKey(curKey))
-            {
-                _GroupsAndAggregates.Add(curKey, new HashSet<DBObjectReadout>());
-            }
-            _GroupsAndAggregates[curKey].Add(myDBObjectReadout);
-        }
-    }
-
-    #endregion
 
     public class SelectResultManager
     {
 
         #region Data
-
-        #region DBObjectCache
-
-        DBObjectCache _DBObjectCache;
-        public DBObjectCache DBObjectCache
-        {
-            set
-            {
-                _DBObjectCache = value;
-            }
-        }
-
-        #endregion
-
-        #region SessionToken
-
-        SessionSettings _SessionToken;
-
-        public SessionSettings SessionToken
-        {
-            set
-            {
-                _SessionToken = value;
-            }
-        }
-        
-        #endregion
 
         #region ExpressionGraph
 
@@ -261,7 +79,6 @@ namespace sones.GraphDB.Managers.Select
 
         DBContext _DBContext;
         SelectSettingCache _SettingCache;
-        IEnumerable<DBObjectReadout> _DBOsEnumerable;
 
         /// <summary>
         /// Dictionary of the base type and the selections of this type: e.g. U.Name and U.Cars.Color are both of basetype User.
@@ -280,13 +97,20 @@ namespace sones.GraphDB.Managers.Select
         /// <summary>
         /// the selection element of _Selections , the aggregate selection element
         /// </summary>
-        List<SelectionElementAggregate> _Aggregates;
-        List<SelectionElement> _Groupings;
+        //List<SelectionElementAggregate> _Aggregates;
+        Dictionary<String, Dictionary<EdgeList, List<SelectionElementAggregate>>> _Aggregates;
+        Dictionary<String, List<SelectionElement>> _Groupings;
 
-        Dictionary<String, GroupingStructure> _GroupingStructure;
         BinaryExpressionDefinition _HavingExpression;
 
+        /// <summary>
+        /// Used to cache lookups
+        /// </summary>
         Dictionary<GraphDBType, List<TypeAttribute>> _BackwardEdgeAttributesByType = new Dictionary<GraphDBType, List<TypeAttribute>>();
+
+        /// <summary>
+        /// Used to cache lookups
+        /// </summary>
         Dictionary<GraphDBType, List<TypeAttribute>> _SpecialAttributesByType      = new Dictionary<GraphDBType, List<TypeAttribute>>();
 
         #endregion
@@ -298,15 +122,13 @@ namespace sones.GraphDB.Managers.Select
         public SelectResultManager(DBContext dbContext)
         {
 
-            _DBContext = dbContext;
-            _SettingCache = new SelectSettingCache();
-
-            _Selections = new Dictionary<string, Dictionary<EdgeList, List<SelectionElement>>>();
+            _DBContext                        = dbContext;
+            _SettingCache                     = new SelectSettingCache();
+            _Aggregates                       = new Dictionary<string, Dictionary<EdgeList, List<SelectionElementAggregate>>>();
+            _Groupings                        = new Dictionary<string, List<SelectionElement>>();
+            _Selections                       = new Dictionary<string, Dictionary<EdgeList, List<SelectionElement>>>();
             _SelectionElementsTypeIndependend = new List<SelectionElement>();
-            _GroupingStructure = new Dictionary<string,GroupingStructure>();
 
-            _Aggregates = new List<SelectionElementAggregate>();
-            _Groupings = new List<SelectionElement>();
 
         }
 
@@ -342,20 +164,20 @@ namespace sones.GraphDB.Managers.Select
         /// <summary>
         /// Single IDNode selection attribute
         /// </summary>
-        /// <param name="reference"></param>
-        /// <param name="alias"></param>
+        /// <param name="myReference"></param>
+        /// <param name="myAlias"></param>
         /// <param name="myAStructureNode"></param>
         /// <param name="myGraphType"></param>
-        public Exceptional AddElementToSelection(string alias, String reference, IDChainDefinition myIDChainDefinition, Boolean isGroupedOrAggregated)
+        public Exceptional AddElementToSelection(string myAlias, String myReference, IDChainDefinition myIDChainDefinition, Boolean myIsGroupedOrAggregated)
         {
             SelectionElement lastElem = null;
 
             var curLevel = new EdgeList();
             EdgeList preLevel = null;
 
-            if (reference != null && _Selections.ContainsKey(reference) && _Selections[reference].Any(kv => kv.Value.Any(se => se.RelatedIDChainDefinition == myIDChainDefinition && se.Alias == alias)))
+            if (myReference != null && _Selections.ContainsKey(myReference) && _Selections[myReference].Any(kv => kv.Value.Any(se => se.RelatedIDChainDefinition == myIDChainDefinition && se.Alias == myAlias)))
             {
-                return new Exceptional(new Error_DuplicateAttributeSelection(alias));
+                return new Exceptional(new Error_DuplicateAttributeSelection(myAlias));
             }
 
             foreach (var nodeEdgeKey in myIDChainDefinition)
@@ -368,7 +190,7 @@ namespace sones.GraphDB.Managers.Select
 
                     preLevel = null;
 
-                    var selElem = new SelectionElement(alias, curLevel, isGroupedOrAggregated, myIDChainDefinition);
+                    var selElem = new SelectionElement(myAlias, curLevel, myIsGroupedOrAggregated, myIDChainDefinition);
 
                     var typeOrAttr = (nodeEdgeKey as ChainPartTypeOrAttributeDefinition);
 
@@ -399,41 +221,42 @@ namespace sones.GraphDB.Managers.Select
                         }
                         else
                         {
-                            var element = _Selections[reference].Last();
+                            var element = _Selections[myReference].Last();
                             
                             preLevel = curLevel;
                         }
                         selElem.Alias = typeOrAttr.TypeOrAttributeName;
+                        selElem.Element = new UndefinedTypeAttribute(typeOrAttr.TypeOrAttributeName);
 
                         #endregion
                     }
 
-                    if (!_Selections.ContainsKey(reference))
+                    if (!_Selections.ContainsKey(myReference))
                     {
-                        _Selections.Add(reference, new Dictionary<EdgeList, List<SelectionElement>>());
+                        _Selections.Add(myReference, new Dictionary<EdgeList, List<SelectionElement>>());
                     }
 
-                    if (!_Selections[reference].ContainsKey(preLevel))
+                    if (!_Selections[myReference].ContainsKey(preLevel))
                     {
-                        _Selections[reference].Add(preLevel, new List<SelectionElement>());
+                        _Selections[myReference].Add(preLevel, new List<SelectionElement>());
                     }
 
                     ///
                     /// Duplicate AttributeSelection is: "U.Name, U.Name" or "U.Name.TOUPPER(), U.Name" but not "U.Friends.TOP(1).Name, U.Friends.TOP(1).Age"
                     if ((nodeEdgeKey.Next == null || (nodeEdgeKey.Next is ChainPartFuncDefinition && nodeEdgeKey.Next.Next == null))
                         //                                                        U.Name, U.Name                  U.Name.TOUPPER, U.Name
-                        && _Selections[reference][preLevel].Exists(item => item.Alias == selElem.Alias && selElem.EdgeList.Level == item.EdgeList.Level && item.RelatedIDChainDefinition.Depth == selElem.RelatedIDChainDefinition.Depth && item.Element != null) && !isGroupedOrAggregated)
+                        && _Selections[myReference][preLevel].Exists(item => item.Alias == selElem.Alias && selElem.EdgeList.Level == item.EdgeList.Level && item.RelatedIDChainDefinition.Depth == selElem.RelatedIDChainDefinition.Depth && item.Element != null) && !myIsGroupedOrAggregated)
                     {
                         return new Exceptional(new Error_DuplicateAttributeSelection(selElem.Alias));
                     }
 
-                    if (nodeEdgeKey.Next != null && _Selections[reference][preLevel].Exists(item => item.Alias == selElem.Alias && item.RelatedIDChainDefinition.Depth == selElem.RelatedIDChainDefinition.Depth))
+                    if (nodeEdgeKey.Next != null && _Selections[myReference][preLevel].Exists(item => item.Alias == selElem.Alias && item.RelatedIDChainDefinition.Depth == selElem.RelatedIDChainDefinition.Depth))
                     {
                         // do not add this element again!
                     }
                     else
                     {                        
-                        _Selections[reference][preLevel].Add(selElem);
+                        _Selections[myReference][preLevel].Add(selElem);
                     }
 
                     lastElem = selElem;
@@ -448,12 +271,12 @@ namespace sones.GraphDB.Managers.Select
 
                     #region Function
 
-                    if (reference == null)
+                    if (myReference == null)
                     {
 
                         #region Type independent functions
 
-                        var selElem = new SelectionElement(alias, myIDChainDefinition);
+                        var selElem = new SelectionElement(myAlias, myIDChainDefinition);
                         if (String.IsNullOrEmpty(selElem.Alias))
                         {
                             selElem.Alias = chainPartFuncDefinition.SourceParsedString;
@@ -482,12 +305,14 @@ namespace sones.GraphDB.Managers.Select
                     else
                     {
 
+                        #region Type dependent function
+
                         var funcElem = new SelectionElementFunction(lastElem, (nodeEdgeKey as ChainPartFuncDefinition), (nodeEdgeKey as ChainPartFuncDefinition).Parameters);
                         funcElem.RelatedIDChainDefinition = myIDChainDefinition;
 
-                        if (!String.IsNullOrEmpty(alias) && nodeEdgeKey.Next == null)
+                        if (!String.IsNullOrEmpty(myAlias) && nodeEdgeKey.Next == null)
                         {
-                            funcElem.Alias = alias;
+                            funcElem.Alias = myAlias;
                         }
 
                         if (lastElem is SelectionElementFunction)
@@ -495,12 +320,12 @@ namespace sones.GraphDB.Managers.Select
                             (lastElem as SelectionElementFunction).AddFollowingFunction(funcElem);
                             lastElem = funcElem;
                         }
-                        else if (_Selections[reference][preLevel].Contains(lastElem))
+                        else if (_Selections[myReference][preLevel].Contains(lastElem))
                         {
 
                             #region Add function to the last selection element (replace it)
 
-                            _Selections[reference][preLevel].Remove(lastElem);
+                            _Selections[myReference][preLevel].Remove(lastElem);
 
                             //lastElem = new SelectionElementFunction(lastElem, (nodeEdgeKey as ChainPartFuncDefinition), (nodeEdgeKey as ChainPartFuncDefinition).Parameters);
                             //lastElem.RelatedIDChainDefinition = myIDChainDefinition;
@@ -511,26 +336,28 @@ namespace sones.GraphDB.Managers.Select
                             //}
                             lastElem = funcElem;
 
-                            if (!_Selections[reference][preLevel].Contains(lastElem)) // In case this Element with func is already in the selection list do nothing.
+                            if (!_Selections[myReference][preLevel].Contains(lastElem)) // In case this Element with func is already in the selection list do nothing.
                             {
 
-                                _Selections[reference][preLevel].Add(lastElem);
+                                _Selections[myReference][preLevel].Add(lastElem);
 
                             }
 
                             #endregion
 
                         }
-                        else if (!_Selections[reference][preLevel].Contains(funcElem))
+                        else if (!_Selections[myReference][preLevel].Contains(funcElem))
                         {
 
                             #region In this case we have a similar function but NOT THE SAME. Since we don't know what to do, return error.
 
                             return new Exceptional(new Error_InvalidAttributeSelection(myIDChainDefinition.ContentString));
-                            
+
                             #endregion
 
                         }
+
+                        #endregion
 
                     }
                     
@@ -544,14 +371,20 @@ namespace sones.GraphDB.Managers.Select
         }
 
         /// <summary>
-        /// Multi IDNode selection attribute
+        /// Adds an aggregate to the selection. It will check whether it is an index aggregate or not.
+        /// Aggregates on attributes with level > 1 will return an error.
         /// </summary>
-        /// <param name="reference"></param>
-        /// <param name="alias"></param>
+        /// <param name="myReference"></param>
+        /// <param name="myAlias"></param>
         /// <param name="myAStructureNode"></param>
         /// <param name="myGraphType"></param>
-        public Exceptional AddAggregateElementToSelection(string alias, string reference, SelectionElementAggregate mySelectionPartAggregate)
+        public Exceptional AddAggregateElementToSelection(string myAlias, string myReference, SelectionElementAggregate mySelectionPartAggregate)
         {
+
+            if (mySelectionPartAggregate.EdgeList.Level > 1)
+            {
+                return new Exceptional(new Error_AggregateIsNotValidOnThisAttribute(mySelectionPartAggregate.ToString()));
+            }
 
             #region Check for index aggregate
 
@@ -568,11 +401,6 @@ namespace sones.GraphDB.Managers.Select
 
                 #endregion
 
-                else if (_DBContext.DBTypeManager.GetTypeAttributeByEdge(edge).EdgeType is ASetOfReferencesEdgeType)
-                {
-                    return new Exceptional(new Error_AggregateIsNotValidOnThisAttribute(_DBContext.DBTypeManager.GetTypeAttributeByEdge(edge).Name));
-                }
-
                 else
                 {
                     // if the GetAttributeIndex did not return null we will pass this as the aggregate operation value
@@ -583,16 +411,18 @@ namespace sones.GraphDB.Managers.Select
 
             #endregion
 
-            _Aggregates.Add(mySelectionPartAggregate);
-
-            if (mySelectionPartAggregate.IndexAggregate == null) // If this is not an index aggregate, we need to get all values prior - so add to usual select
+            if (!_Aggregates.ContainsKey(myReference))
             {
-                var addResult = AddElementToSelection(null, reference, mySelectionPartAggregate.Parameter, true);
-                if (addResult.Failed())
-                {
-                    return new Exceptional(addResult);
-                }
+                _Aggregates.Add(myReference, new Dictionary<EdgeList,List<SelectionElementAggregate>>());
             }
+
+            var level = mySelectionPartAggregate.EdgeList.GetPredecessorLevel();
+            if (!_Aggregates[myReference].ContainsKey(level))
+            {
+                _Aggregates[myReference].Add(level, new List<SelectionElementAggregate>());
+            }
+
+            _Aggregates[myReference][level].Add(mySelectionPartAggregate);
 
             return Exceptional.OK;
 
@@ -601,16 +431,31 @@ namespace sones.GraphDB.Managers.Select
         /// <summary>
         /// Adds a group element to the selection and validat it
         /// </summary>
-        /// <param name="reference"></param>
+        /// <param name="myReference"></param>
         /// <param name="myIDChainDefinition"></param>
-        public void AddGroupElementToSelection(string reference, IDChainDefinition myIDChainDefinition)
+        public Exceptional AddGroupElementToSelection(string myReference, IDChainDefinition myIDChainDefinition)
         {
+
+            if (myIDChainDefinition.Edges.Count > 1)
+            {
+                return new Exceptional(new Error_InvalidGroupByLevel(myIDChainDefinition));
+            }
+
             // if the grouped attr is not selected
-            if ((!_Selections.ContainsKey(reference) || !_Selections[reference].Any(l => l.Value.Any(se => se.Element != null && se.Element == myIDChainDefinition.LastAttribute))) && !myIDChainDefinition.IsUndefinedAttribute)
-                throw new GraphDBException(new Error_GroupedAttributeIsNotSelected(myIDChainDefinition.LastAttribute));
+            if ((!_Selections.ContainsKey(myReference) || !_Selections[myReference].Any(l => l.Value.Any(se => se.Element != null && se.Element == myIDChainDefinition.LastAttribute))) && !myIDChainDefinition.IsUndefinedAttribute)
+            {
+                return new Exceptional(new Error_GroupedAttributeIsNotSelected(myIDChainDefinition.LastAttribute));
+            }
             else
-                _Groupings.Add(new SelectionElement(reference, new EdgeList(myIDChainDefinition.Edges), false, myIDChainDefinition, myIDChainDefinition.LastAttribute));
-                //{ Alias = reference, Element = myIDChainDefinition.LastAttribute, RelatedIDChainDefinition = myIDChainDefinition, EdgeList = new EdgeList(myIDChainDefinition.Edges) });
+            {
+                if (!_Groupings.ContainsKey(myReference))
+                {
+                    _Groupings.Add(myReference, new List<SelectionElement>());
+                }
+                _Groupings[myReference].Add(new SelectionElement(myReference, new EdgeList(myIDChainDefinition.Edges), false, myIDChainDefinition, myIDChainDefinition.LastAttribute));
+            }
+
+            return Exceptional.OK;
         }
 
         /// <summary>
@@ -624,7 +469,7 @@ namespace sones.GraphDB.Managers.Select
 
         #endregion
 
-        #region Examine
+        #region Examines the DBOs
 
         /// <summary>
         /// Examine a TypeNode to a specific <paramref name="myResolutionDepth"/> by using the underlying graph or the type guid index
@@ -633,56 +478,17 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="myTypeNode">The type node which should be examined on selections</param>
         /// <param name="myUsingGraph">True if there is a valid where expression of this typeNode</param>
         /// <returns>True if succeeded, false if there was nothing to select for this type</returns>
-        public Exceptional<Boolean> Examine(Int64 myResolutionDepth, String myReference, GraphDBType myReferencedDBType, Boolean myUsingGraph, DBObjectCache myDBObjectCache, SessionSettings mySessionToken, ref IEnumerable<DBObjectReadout> dbosEnumerable)
+        public Exceptional<Boolean> Examine(Int64 myResolutionDepth, String myReference, GraphDBType myReferencedDBType, Boolean myUsingGraph, ref IEnumerable<DBObjectReadout> dbosEnumerable)
         {
-            #region Return false if no selections were found for this typenode
 
-            if (!_Selections.ContainsKey(myReference) || !_Selections[myReference].ContainsKey(new EdgeList(myReferencedDBType.UUID)))
+            if ((!_Selections.ContainsKey(myReference) || !_Selections[myReference].ContainsKey(new EdgeList(myReferencedDBType.UUID))) && _Aggregates.IsNullOrEmpty())
             {
-                
-                #region Aggregates on index wont be in the _Selections
-
-                if (_Aggregates.IsNullOrEmpty())
-                {
-                    return new Exceptional<bool>(false);
-                }
-                else
-                {
-                    if (myUsingGraph) // Due to we have a where expression we can't use the index - so add all AggrergateIndices to the selection
-                    {
-                        foreach(var aggr in _Aggregates.Where(a => a.IndexAggregate != null))
-                        {
-                            AddElementToSelection(null, myReference, aggr.Parameter, true);
-                        }
-                    }
-                    else
-                    {
-                        return new Exceptional<bool>(true);
-                    }
-                } 
-                
-                #endregion
-
+                return new Exceptional<bool>(false);
             }
-
-            #endregion
 
             var levelKey = new EdgeList(myReferencedDBType.UUID);
-            //_DBOsEnumerable = dbosEnumerable;
 
-            #region For groupings we cant create a enumerable
-
-            if (!_Groupings.IsNullOrEmpty())
-            {
-                CreateGroupings(myResolutionDepth, myReference, myReferencedDBType, levelKey, myUsingGraph, myDBObjectCache, mySessionToken);
-            }
-            else
-            {
-                _DBOsEnumerable = dbosEnumerable;
-                dbosEnumerable  = ExamineDBO(myResolutionDepth, myReference, myReferencedDBType, levelKey, myUsingGraph, myDBObjectCache, mySessionToken);
-            }
-
-            #endregion
+            dbosEnumerable  = ExamineDBO(myResolutionDepth, myReference, myReferencedDBType, levelKey, myUsingGraph);
 
             return new Exceptional<Boolean>(true);
 
@@ -694,21 +500,26 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="dbos"></param>
         /// <param name="myResolutionDepth"></param>
         /// <param name="myTypeNode"></param>
-        /// <param name="levelKey"></param>
+        /// <param name="myLevelKey"></param>
         /// <param name="myUsingGraph">True if for all selects the graph will be asked for DBOs</param>
         /// <param name="myDBObjectCache"></param>
         /// <param name="mySessionToken"></param>
         /// <returns></returns>
-        private IEnumerable<DBObjectReadout> ExamineDBO(long myResolutionDepth, String myReference, GraphDBType myReferencedDBType, EdgeList levelKey, bool myUsingGraph, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
+        private IEnumerable<DBObjectReadout> ExamineDBO(long myResolutionDepth, String myReference, GraphDBType myReferencedDBType, EdgeList myLevelKey, bool myUsingGraph)
         {
 
-            #region Get all selection for this reference, type and level
+            #region Get all selections and aggregates for this reference, type and level
             
-            var selections = getAttributeSelections(myReference, myReferencedDBType, levelKey);
+            var selections = getAttributeSelections(myReference, myReferencedDBType, myLevelKey);
+            var aggregates = getAttributeAggregates(myReference, myReferencedDBType, myLevelKey);
 
             #endregion
 
-            if (!selections.IsNullOrEmpty() && selections.All(s => s.IsReferenceToSkip(levelKey) ))
+            if (
+                (selections.IsNotNullOrEmpty() && selections.All(s => s.IsReferenceToSkip(myLevelKey)) && aggregates.IsNotNullOrEmpty() && aggregates.All(a => a.IsReferenceToSkip(myLevelKey)))
+                || (selections.IsNotNullOrEmpty() && selections.All(s => s.IsReferenceToSkip(myLevelKey)) && aggregates.IsNullOrEmpty())
+               )
+
             {
 
                 #region If there are only references in this level, we will skip this level (and add the attribute as placeholder) and step to the next one
@@ -717,10 +528,10 @@ namespace sones.GraphDB.Managers.Select
 
                 foreach (var sel in selections)
                 {
-                    var edgeKey = new EdgeKey(sel.Element.RelatedGraphDBTypeUUID, sel.Element.UUID);                    
-                    Attributes.Add(sel.Alias, new Edge(ExamineDBO(myResolutionDepth, myReference, myReferencedDBType, levelKey + edgeKey, myUsingGraph, myDBObjectCache, mySessionToken), sel.Element.GetDBType(_DBContext.DBTypeManager).Name));
+                    var edgeKey = new EdgeKey(sel.Element.RelatedGraphDBTypeUUID, sel.Element.UUID);
+                    Attributes.Add(sel.Alias, new Edge(ExamineDBO(myResolutionDepth, myReference, myReferencedDBType, myLevelKey + edgeKey, myUsingGraph), sel.Element.GetDBType(_DBContext.DBTypeManager).Name));
                 }
-                
+
                 yield return new DBObjectReadout(Attributes);
 
                 #endregion
@@ -731,40 +542,82 @@ namespace sones.GraphDB.Managers.Select
 
                 #region Otherwise load all dbos until this level and return them
 
-                #region Get dbos enumerable of the first level - this need to be changed if the graph is used but the first (0) level is not selected
+                #region Get dbos enumerable of the first level - either from ExpressionGraph or via index
 
                 IEnumerable<Exceptional<DBObjectStream>> dbos;
                 if (myUsingGraph)
                 {
-                    dbos = _ExpressionGraph.Select(new LevelKey(levelKey.Edges, _DBContext.DBTypeManager), null, true);
+                    dbos = _ExpressionGraph.Select(new LevelKey(myLevelKey.Edges, _DBContext.DBTypeManager), null, true);
                 }
                 else // using GUID index
                 {
-                    dbos = _DBObjectCache.SelectDBObjectsForLevelKey(new LevelKey(levelKey.Edges, _DBContext.DBTypeManager), _DBContext);
+                    dbos = _DBContext.DBObjectCache.SelectDBObjectsForLevelKey(new LevelKey(myLevelKey.Edges, _DBContext.DBTypeManager), _DBContext);
                 }
 
                 #endregion
 
-                foreach (var aDBObject in dbos)
+                if (aggregates.IsNotNullOrEmpty())
                 {
-                    if (aDBObject.Failed())
+                    foreach (var val in ExamineDBO_Aggregates(dbos, aggregates, selections, myReferencedDBType, myUsingGraph))
                     {
-                        // since we are in an yield we can do nothing else than throw a exception
-                        throw new GraphDBException(aDBObject.Errors);
+                        if (val != null)
+                        {
+                            yield return val;
+                        }
                     }
-
-                    #region Create a readoutObject for this DBO and yield it: on an failure throw a exception
-
-                    var examineResult = CreateReadOutObject(aDBObject.Value, myResolutionDepth, myReference, myReferencedDBType, levelKey, myUsingGraph, myDBObjectCache, mySessionToken);
-
-                    if (examineResult.Failed())
+                }
+                else if (_Groupings.IsNotNullOrEmpty())
+                {
+                    foreach (var val in ExamineDBO_Groupings(dbos, selections, myReferencedDBType))
                     {
-                        // since we are in an yield we can do nothing else than throw a exception
-                        throw new GraphDBException(examineResult.Errors);
+                        if (val != null)
+                        {
+                            yield return val;
+                        }
                     }
+                }
+                else if (!selections.IsNullOrEmpty())
+                {
 
-                    if (examineResult.Value != null) // could happens, if the DBO has no selected attributes
-                        yield return examineResult.Value;
+                    Boolean isRefTypeVertex = myReferencedDBType.UUID.Equals(DBVertex.UUID);
+                    GraphDBType refType;
+                    
+                    #region Usually attribute selections
+
+                    foreach (var aDBObject in dbos)
+                    {
+                        if (aDBObject.Failed())
+                        {
+                            // since we are in an yield we can do nothing else than throw a exception
+                            throw new GraphDBException(aDBObject.Errors);
+                        }
+
+                        #region Create a readoutObject for this DBO and yield it: on an failure throw a exception
+
+                        if (isRefTypeVertex)
+                        {
+                            refType = _DBContext.DBTypeManager.GetTypeByUUID(aDBObject.Value.TypeUUID);
+                        }
+                        else
+                        {
+                            refType = myReferencedDBType;
+                        }
+
+                        var Attributes = GetAllSelectedAttributesFromDBO(aDBObject.Value, refType, myResolutionDepth, myLevelKey, myReference, myUsingGraph);
+
+                        if (Attributes.IsNotNullOrEmpty())
+                        {
+                            yield return new DBObjectReadout(Attributes);
+                        }
+                        //else
+                        //{
+                        //    // we found no attributes, so we return null because currently we do not want to add empty attribute readouts
+                        //    yield return (DBObjectReadout)null;
+                        //}
+
+                        #endregion
+
+                    }
 
                     #endregion
 
@@ -777,30 +630,359 @@ namespace sones.GraphDB.Managers.Select
         }
 
         /// <summary>
-        /// Create readouts of all attributes of a specific type <paramref name="myTypeOfDBObject"/>
+        /// Go through each DBO and aggregate them
         /// </summary>
-        /// <param name="myDBObject">The DBObject which is examined</param>
-        /// <param name="myDepth">The Depth</param>
-        /// <param name="myTypeOfDBObject">The Type</param>
-        /// <param name="myLevelKey">The levelKey</param>
-        /// <returns>Successful or Failed for any error</returns>
-        private Exceptional<DBObjectReadout> CreateReadOutObject(DBObjectStream myDBObject, Int64 myDepth, String myReference, GraphDBType myReferencedDBType, EdgeList myLevelKey, Boolean myUsingGraph, DBObjectCache myObjectCache, SessionSettings mySessionToken)
+        /// <param name="myAggregates"></param>
+        /// <param name="mySelections"></param>
+        /// <param name="myDBOs"></param>
+        /// <param name="myReferencedDBType"></param>
+        /// <returns></returns>
+        private IEnumerable<DBObjectReadout> ExamineDBO_Aggregates(IEnumerable<Exceptional<DBObjectStream>> myDBOs, List<SelectionElementAggregate> myAggregates, List<SelectionElement> mySelections, GraphDBType myReferencedDBType, Boolean myUsingGraph)
         {
 
-            var Attributes = GetAllSelectedAttributesFromDBO(myDBObject, myReferencedDBType, myDepth, myLevelKey, myReference, myUsingGraph);
+            #region Aggregate
 
-            if (!Attributes.IsNullOrEmpty())
+            if (mySelections.CountIsGreater(0))
             {
-                return new Exceptional<DBObjectReadout>(new DBObjectReadout(Attributes));
+
+                #region Grouping - each selection is grouped (checked prior)
+
+                var aggregatedGroupings = new Dictionary<GroupingKey, SelectionElementAggregate>();
+
+                #region Create groupings using the ILookup
+
+                var groupedDBOs = myDBOs.ToLookup((dbo) =>
+                {
+                    CheckLoadedDBObjectStream(dbo, myReferencedDBType);
+
+                    #region Create GroupingKey based on the group values and attributes
+
+                    Dictionary<GroupingValuesKey, IObject> groupingVals = new Dictionary<GroupingValuesKey, IObject>();
+                    foreach (var selection in mySelections)
+                    {
+                        var attrValue = dbo.Value.GetAttribute(selection.Element, myReferencedDBType, _DBContext);
+                        if (attrValue.Failed())
+                        {
+                            throw new GraphDBException(attrValue.Errors);
+                        }
+
+                        groupingVals.Add(new GroupingValuesKey(selection.Element, selection.Alias), attrValue.Value);
+                    }
+                    GroupingKey groupingKey = new GroupingKey(groupingVals);
+
+                    #endregion
+
+                    return groupingKey;
+
+                }, (dbo) =>
+                {
+                    CheckLoadedDBObjectStream(dbo, myReferencedDBType);
+
+                    return dbo.Value;
+                });
+                
+                #endregion
+
+                foreach (var group in groupedDBOs)
+                {
+
+                    #region Create group readouts
+
+                    var aggregatedAttributes = new Dictionary<String, Object>();
+
+                    foreach (var aggr in myAggregates)
+                    {
+                        var aggrResult = aggr.Aggregate.Aggregate(group as IEnumerable<DBObjectStream>, aggr.Element, _DBContext);
+                        if (aggrResult.Failed())
+                        {
+                            throw new GraphDBException(aggrResult.Errors);
+                        }
+                        aggregatedAttributes.Add(aggr.Alias, aggrResult.Value.GetReadoutValue());
+                    }
+
+                    foreach (var groupingKeyVal in group.Key.Values)
+                    {
+                        aggregatedAttributes.Add(groupingKeyVal.Key.AttributeAlias, groupingKeyVal.Value.GetReadoutValue());
+                    }
+
+                    var dbObjectReadout = new DBObjectReadoutGroup(aggregatedAttributes, (group as IEnumerable<DBObjectStream>).Select(dbo => new DBObjectReadout(GetAllSelectedAttributesFromDBO(dbo, myReferencedDBType, 0L, null, null, false, true))));
+
+                    #endregion
+
+                    #region Evaluate having if exist and yield return
+
+                    if (_HavingExpression != null)
+                    {
+                        var res = _HavingExpression.IsSatisfyHaving(dbObjectReadout, _DBContext);
+                        if (res.Failed())
+                            throw new GraphDBException(res.Errors);
+                        else if (res.Value)
+                            yield return dbObjectReadout;
+                    }
+                    else
+                    {
+                        yield return dbObjectReadout;
+                    }
+
+                    #endregion
+
+                }
+                
+                yield break;
+
+                #endregion
+
             }
             else
             {
-                // we found no attributes, so we return null because currently we do not want to add empty attribute readouts
-                return new Exceptional<DBObjectReadout>((DBObjectReadout)null);
+
+                #region No grouping, just aggregates
+
+                var aggregatedAttributes = new Dictionary<String, Object>();
+                DBObjectReadout dbObjectReadout;
+
+                if (!myUsingGraph && myAggregates.All(a => a.IndexAggregate != null))
+                {
+
+                    #region Index aggregates
+
+                    foreach (var aggr in myAggregates)
+                    {
+                        var idxAggrResult = aggr.Aggregate.Aggregate(aggr.IndexAggregate, myReferencedDBType, _DBContext);
+                        if (idxAggrResult.Failed())
+                        {
+                            throw new GraphDBException(idxAggrResult.Errors);
+                        }
+                        aggregatedAttributes.Add(aggr.Alias, idxAggrResult.Value.GetReadoutValue());
+                    }
+                    dbObjectReadout = new DBObjectReadout(aggregatedAttributes);
+
+                    #endregion
+
+                }
+                else
+                {
+
+                    #region OR Attribute aggregates
+
+                    foreach (var aggr in myAggregates)
+                    {
+                        var curType = _DBContext.DBTypeManager.GetTypeByUUID(aggr.EdgeList.LastEdge.TypeUUID);
+                        var curAttr = curType.GetTypeAttributeByUUID(aggr.EdgeList.LastEdge.AttrUUID);
+                        var aggrResult = aggr.Aggregate.Aggregate(myDBOs.Select(dbo =>
+                        {
+                            CheckLoadedDBObjectStream(dbo, curType, curAttr);
+                            return dbo.Value;
+                        }), aggr.Element, _DBContext);
+
+                        if (aggrResult.Failed())
+                        {
+                            throw new GraphDBException(aggrResult.Errors);
+                        }
+
+                        aggregatedAttributes.Add(aggr.Alias, aggrResult.Value.GetReadoutValue());
+
+                    }
+
+                    dbObjectReadout = new DBObjectReadout(aggregatedAttributes);
+
+                    #endregion
+
+                }
+
+                #region Check having expression and yield return value
+
+                if (_HavingExpression != null)
+                {
+                    var res = _HavingExpression.IsSatisfyHaving(dbObjectReadout, _DBContext);
+                    if (res.Failed())
+                        throw new GraphDBException(res.Errors);
+                    else if (res.Value)
+                        yield return dbObjectReadout;
+                }
+                else
+                {
+                    yield return dbObjectReadout;
+                }
+
+                #endregion
+
+                yield break;
+
+                #endregion
+
             }
+
+            #endregion
 
         }
 
+        /// <summary>
+        /// This will check the exceptional for errors. Depending on the SettingInvalidReferenceHandling an expcetion will be thrown or false will be return on any load error.
+        /// </summary>
+        /// <param name="dbStream"></param>
+        /// <param name="myLevelKey"></param>
+        /// <returns></returns>
+        private Boolean CheckLoadedDBObjectStream(Exceptional<DBObjectStream> dbStream, GraphDBType myDBType, TypeAttribute myTypeAttribute = null)
+        {
+            SettingInvalidReferenceHandling invalidReferenceSetting = null;
+            GraphDBType currentType = myDBType;
+
+            if (dbStream.Failed())
+            {
+                #region error
+
+                #region get setting
+
+                if (invalidReferenceSetting == null)
+                {
+                    //currentType = _DBContext.DBTypeManager.GetTypeByUUID(myLevelKey.LastEdge.TypeUUID);
+
+                    //if (myLevelKey.LastEdge.AttrUUID != null)
+                    if (myTypeAttribute != null)
+                    {
+                        invalidReferenceSetting = (SettingInvalidReferenceHandling)_DBContext.DBSettingsManager.GetSetting(SettingInvalidReferenceHandling.UUID, _DBContext, TypesSettingScope.ATTRIBUTE, currentType, myTypeAttribute).Value; // currentType.GetTypeAttributeByUUID(myLevelKey.LastEdge.AttrUUID)).Value;
+                    }
+                    else
+                    {
+                        invalidReferenceSetting = (SettingInvalidReferenceHandling)_DBContext.DBSettingsManager.GetSetting(SettingInvalidReferenceHandling.UUID, _DBContext, TypesSettingScope.TYPE, currentType).Value;
+                    }
+                }
+
+                #endregion
+
+                switch (invalidReferenceSetting.Behaviour)
+                {
+                    case BehaviourOnInvalidReference.ignore:
+                        #region ignore
+
+                        return false;
+
+                        #endregion
+                    case BehaviourOnInvalidReference.log:
+
+                    default:
+
+                        throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace()));
+                }
+
+                #endregion
+            }
+
+            return true;
+
+        }
+
+        /// <summary>
+        ///  Group all DBOs and return the readouts
+        /// </summary>
+        /// <param name="myDBOs"></param>
+        /// <param name="mySelections"></param>
+        /// <param name="myReferencedDBType"></param>
+        /// <returns></returns>
+        private IEnumerable<DBObjectReadout> ExamineDBO_Groupings(IEnumerable<Exceptional<DBObjectStream>> myDBOs, List<SelectionElement> mySelections, GraphDBType myReferencedDBType)
+        {
+
+            #region Groupings
+
+            #region Create groupings using the ILookup
+
+            var groupedDBOs = myDBOs.ToLookup((dbo) =>
+            {
+                CheckLoadedDBObjectStream(dbo, myReferencedDBType);
+
+                #region Create GroupingKey based on the group values and attributes
+
+                Dictionary<GroupingValuesKey, IObject> groupingVals = new Dictionary<GroupingValuesKey, IObject>();
+                foreach (var selection in mySelections)
+                {
+                    if (!dbo.Value.HasAttribute(selection.Element, _DBContext))
+                    {
+                        continue;
+                    } 
+                    
+                    var attrValue = dbo.Value.GetAttribute(selection.Element, myReferencedDBType, _DBContext);
+                    if (attrValue.Failed())
+                    {
+                        throw new GraphDBException(attrValue.Errors);
+                    }
+
+                    groupingVals.Add(new GroupingValuesKey(selection.Element, selection.Alias), attrValue.Value);
+                }
+                GroupingKey groupingKey = new GroupingKey(groupingVals);
+
+                #endregion
+
+                return groupingKey;
+
+            }, (dbo) =>
+            {
+                CheckLoadedDBObjectStream(dbo, myReferencedDBType);
+
+                return dbo.Value;
+            });
+
+            #endregion
+
+            foreach (var group in groupedDBOs)
+            {
+
+                #region No valid grouping keys found
+
+                if (group.Key.Values.IsNullOrEmpty())
+                {
+                    continue;
+                }
+                
+                #endregion
+
+                var groupedAttributes = new Dictionary<String, Object>();
+                foreach (var groupingKeyVal in group.Key.Values)
+                {
+                    groupedAttributes.Add(groupingKeyVal.Key.AttributeAlias, groupingKeyVal.Value.GetReadoutValue());
+                }
+
+                var dbObjectReadout = new DBObjectReadoutGroup(groupedAttributes, group.Select(dbo => new DBObjectReadout(GetAllSelectedAttributesFromDBO(dbo, myReferencedDBType, 0L, null, null, false, true))));
+                
+                #region Check having
+
+                if (_HavingExpression != null)
+                {
+                    var res = _HavingExpression.IsSatisfyHaving(dbObjectReadout, _DBContext);
+                    if (res.Failed())
+                        throw new GraphDBException(res.Errors);
+                    else if (res.Value)
+                        yield return dbObjectReadout;
+                }
+                else
+                {
+                    yield return dbObjectReadout;
+                }
+
+                #endregion
+
+            }
+
+            #endregion
+
+        }
+
+        #endregion
+
+        #region ExecuteFunction
+
+        /// <summary>
+        /// Executes the function and return the result - for concatenated functions this will be done recursively
+        /// </summary>
+        /// <param name="mySelectionElementFunction"></param>
+        /// <param name="myDBObject"></param>
+        /// <param name="myCallingObject"></param>
+        /// <param name="myDepth"></param>
+        /// <param name="myReference"></param>
+        /// <param name="myReferencedDBType"></param>
+        /// <param name="myLevelKey"></param>
+        /// <param name="myUsingGraph"></param>
+        /// <returns></returns>
         private Exceptional<FuncParameter> ExecuteFunction(SelectionElementFunction mySelectionElementFunction, DBObjectStream myDBObject, IObject myCallingObject, Int64 myDepth, String myReference, GraphDBType myReferencedDBType, EdgeList myLevelKey, Boolean myUsingGraph)
         {
 
@@ -833,7 +1015,7 @@ namespace sones.GraphDB.Managers.Select
 
             #region Execute the function
 
-            var res = func.Execute(myReferencedDBType, myDBObject, myReference, _DBContext, _DBObjectCache);
+            var res = func.Execute(myReferencedDBType, myDBObject, myReference, _DBContext);
             if (res.Failed())
             {
                 return new Exceptional<FuncParameter>(res);
@@ -861,9 +1043,13 @@ namespace sones.GraphDB.Managers.Select
 
             #endregion
         }
+        
+        #endregion
+
+        #region Some helper methods
 
         /// <summary>
-        /// 
+        /// Returns the depth based on the parameters and settings
         /// </summary>
         /// <param name="myDepth">The target depth (defined by the select)</param>
         /// <param name="minDepth">The minimum depth. If the depth of the setting or mydepth is lower then minDepth will be returned</param>
@@ -871,7 +1057,7 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="attributeUUID">May be NULL, than only the depth settings of the type will be checked</param>
         /// <param name="sessionToken"></param>
         /// <returns></returns>
-        private long GetDepth(long myDepth, long minDepth, GraphDBType type, TypeAttribute attribute = null)
+        private long GetDepth(long myDepth, long minDepth, GraphDBType myType, TypeAttribute myAttribute = null)
         {
             Int64 Depth = 0;
 
@@ -879,22 +1065,22 @@ namespace sones.GraphDB.Managers.Select
 
             /// This results of all selected attributes and their LevelKey. If U.Friends.Friends.Name is selected, than the MinDepth is 3
 
-            if (attribute != null)
+            if (myAttribute != null)
             {
 
                 if (myDepth > -1)
                     Depth = Math.Max(minDepth, myDepth);
                 else
-                    Depth = Math.Max(minDepth, (Int64)_SettingCache.GetValue(type, attribute, SettingDepth.UUID, _DBContext).Value);
+                    Depth = Math.Max(minDepth, (Int64)_SettingCache.GetValue(myType, myAttribute, SettingDepth.UUID, _DBContext).Value);
 
             }
             else
             {
-            
+
                 if (myDepth > -1)
                     Depth = Math.Max(minDepth, myDepth);
                 else
-                    Depth = Math.Max(minDepth, (Int64)(_DBContext.DBSettingsManager.GetSetting(SettingDepth.UUID, _DBContext, TypesSettingScope.TYPE, type).Value.Value).Value);
+                    Depth = Math.Max(minDepth, (Int64)(_DBContext.DBSettingsManager.GetSetting(SettingDepth.UUID, _DBContext, TypesSettingScope.TYPE, myType).Value.Value).Value);
 
             }
 
@@ -904,17 +1090,37 @@ namespace sones.GraphDB.Managers.Select
         }
 
         /// <summary>
-        /// Get all selections on this <paramref name="reference"/>, <paramref name="type"/> and <paramref name="myLevelKey"/>
+        /// Get all selections on this <paramref name="myReference"/>, <paramref name="myType"/> and <paramref name="myLevelKey"/>
         /// </summary>
-        /// <param name="reference"></param>
-        /// <param name="type"></param>
+        /// <param name="myReference"></param>
+        /// <param name="myType"></param>
         /// <param name="myLevelKey"></param>
         /// <returns></returns>
-        private List<SelectionElement> getAttributeSelections(String reference, GraphDBType type, EdgeList myLevelKey)
+        private List<SelectionElement> getAttributeSelections(String myReference, GraphDBType myType, EdgeList myLevelKey)
         {
-            if (_Selections.ContainsKey(reference) && (_Selections[reference].ContainsKey(myLevelKey)))
+            if (_Selections.ContainsKey(myReference) && (_Selections[myReference].ContainsKey(myLevelKey)))
             {
-                return _Selections[reference][myLevelKey];
+                return _Selections[myReference][myLevelKey];
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
+        /// <summary>
+        /// Get all aggregates on this <paramref name="myReference"/>, <paramref name="myType"/> and <paramref name="myLevelKey"/>
+        /// </summary>
+        /// <param name="myReference"></param>
+        /// <param name="myType"></param>
+        /// <param name="myLevelKey"></param>
+        /// <returns></returns>
+        private List<SelectionElementAggregate> getAttributeAggregates(String myReference, GraphDBType myType, EdgeList myLevelKey)
+        {
+            if (_Aggregates.ContainsKey(myReference) && (_Aggregates[myReference].ContainsKey(myLevelKey)))
+            {
+                return _Aggregates[myReference][myLevelKey];
             }
             else
             {
@@ -924,242 +1130,91 @@ namespace sones.GraphDB.Managers.Select
         }
 
         #endregion
-
-        #region Grouping and Aggregates
+        
+        #region Validate Grouping, Selections and Aggregates
 
         /// <summary>
-        /// Initialize the grouping and aggregate and validate them
+        /// Validates the groupings and aggregates
         /// </summary>
-        /// <param name="typeNode"></param>
+        /// <param name="myReference"></param>
+        /// <param name="myDBType"></param>
         /// <returns></returns>
-        public Exceptional<bool> InitGroupingOrAggregate(String myReference, GraphDBType myDBType)
+        internal Exceptional ValidateGroupingAndAggregate(String myReference, GraphDBType myDBType)
         {
-            #region if we have grouping or aggregate the must be NO attribute in the select list which is not covert by an aggregate or grouping
 
-            // all selections which are NOT from an aggregate
-            var selectionsWithoutGroupOrAggregate = ((_Selections.ContainsKey(myReference)) ? _Selections[myReference].Aggregate(0, (result, el) => result + el.Value.Count) : 0) - _Aggregates.Count(e => e.IndexAggregate == null) - _Groupings.Count;
+            #region No Aggregates nor Groupings
 
-
-            #region If we have defined grouping, all selects must be groups or aggregates
-
-            if (_Groupings.Count > 0 || _Aggregates.Count > 0)
+            if (_Aggregates.IsNullOrEmpty() && _Groupings.IsNullOrEmpty())
             {
-
-                if (selectionsWithoutGroupOrAggregate > 0)
-                    return new Exceptional<bool>(new Error_NoGroupingArgument());
-
+                return Exceptional.OK;
             }
 
             #endregion
 
-            #region Store the List of aggregated uuids
+            #region No groupings <-> no selections
 
-            if (!_Aggregates.IsNullOrEmpty())
+            if (_Groupings.IsNullOrEmpty() && _Selections.IsNullOrEmpty())
             {
-                foreach (var aggrNode in _Aggregates)
+                return Exceptional.OK;
+            }
+            
+            #endregion
+
+            if (!_Groupings.ContainsKey(myReference) && !_Selections.ContainsKey(myReference))
+            {
+
+                #region The reference is not existent in selections nor groupings
+
+                return Exceptional.OK;
+
+                #endregion
+
+            }
+            else if (_Selections.ContainsKey(myReference) && _Groupings.ContainsKey(myReference))
+            {
+
+                #region Verify that all selections match the groupings
+
+                foreach (var selectionEdge in _Selections[myReference])
                 {
-
-                    // We checked prio in GetContent of SelectNode that we have exactly one expression
-                    var aAggrIDNode = aggrNode.Parameter;
-
-                    if (aAggrIDNode == null)
+                    foreach (var selection in selectionEdge.Value)
                     {
-                        return new Exceptional<bool>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                        if (!_Groupings[myReference].Any(ge => ge.RelatedIDChainDefinition.ContentString == selection.RelatedIDChainDefinition.ContentString))
+                        {
+                            return new Exceptional<bool>(new Error_NoGroupingArgument(selection.RelatedIDChainDefinition.ContentString));
+                        }
                     }
-                    else if (aAggrIDNode.Level > 1)
+                }
+
+                #endregion
+
+            }
+            else
+            {
+                #region Only one of the selections or the groupings contains the reference -> Error
+
+                return new Exceptional<bool>(new Error_NoGroupingArgument(""));
+
+                #endregion
+            }
+
+            #region Validate that aggregates and groups are of the same level
+
+            if (_Selections.ContainsKey(myReference) && _Aggregates.ContainsKey(myReference))
+            {
+                foreach (var selectionEdge in _Selections[myReference])
+                {
+                    if (!_Aggregates[myReference].Any(a => a.Key.Level == selectionEdge.Key.Level))
                     {
-                        return new Exceptional<bool>(new Error_AggregateIsNotValidOnThisAttribute(aAggrIDNode.ToString()));
-                    }
+                        return new Exceptional<bool>(new Error_AggregateDoesNotMatchGroupLevel(_Aggregates[myReference].Where(a => a.Key.Level != selectionEdge.Key.Level).First().Value.First().Alias));
+                    } 
                 }
             }
 
             #endregion
 
-            if (!_Groupings.IsNullOrEmpty())
-            {
+            return Exceptional.OK;
 
-                var groupingAttr = new Dictionary<GroupingValuesKey, IDChainDefinition>();
-
-                foreach (var intAttr in _Groupings)
-                {
-                    if (intAttr.Element == null)
-                    {
-                        groupingAttr.Add(new GroupingValuesKey(intAttr.RelatedIDChainDefinition.UndefinedAttribute, intAttr.Alias), intAttr.RelatedIDChainDefinition);
-                    }
-                    else
-                    {
-                        groupingAttr.Add(new GroupingValuesKey((intAttr.Element as TypeAttribute).UUID, intAttr.Alias), intAttr.RelatedIDChainDefinition);
-                    }
-                    break;
-                }
-                _GroupingStructure.Add(myReference, new GroupingStructure(groupingAttr) { DBTypeStream = myDBType });
-  
-            }
-            #endregion
-
-            return new Exceptional<bool>();
-        }
-
-        private void CreateGroupings(long myResolutionDepth, String myReference, GraphDBType myReferencedDBType, EdgeList levelKey, bool myUsingGraph, DBObjectCache myDBObjectCache, SessionSettings mySessionToken)
-        {
-            IEnumerable<Exceptional<DBObjectStream>> dbos;
-
-            #region Get dbos enumerable of the first level - this need to be changed if the graph is used but the first (0) level is not selected
-
-            if (myUsingGraph)
-            {
-                dbos = _ExpressionGraph.Select(new LevelKey( levelKey.Edges, _DBContext.DBTypeManager), null, true);
-            }
-            else // using GUID index
-            {
-                dbos = _DBObjectCache.SelectDBObjectsForLevelKey(new LevelKey(myReferencedDBType, _DBContext.DBTypeManager), _DBContext);
-            }
-
-            #endregion
-
-
-            var interestingAttributes = GetInterestingAttributes(myReference, myReferencedDBType);
-
-            foreach (var dbo in dbos)
-            {
-
-                var myDBObject = dbo.Value;
-                var groupingVals = new Dictionary<GroupingValuesKey, ADBBaseObject>();
-
-                foreach (var _InterestingAttribute in _Groupings)
-                {
-
-                    var typeAttr = _InterestingAttribute.Element as TypeAttribute;
-                    // some grouping
-
-                    if (typeAttr == null)
-                    {
-                        #region undefined attributes
-                        
-                        if (myDBObject.ContainsUndefinedAttribute(_InterestingAttribute.RelatedIDChainDefinition.UndefinedAttribute, _DBContext.DBObjectManager))
-                        {
-                            var attrValue = myDBObject.GetUndefinedAttributeValue(_InterestingAttribute.RelatedIDChainDefinition.UndefinedAttribute, _DBContext.DBObjectManager);
-
-                            if (!attrValue.Success())
-                            {
-                                throw new GraphDBException(attrValue.Errors);
-                            }
-
-                            groupingVals.Add(new GroupingValuesKey(_InterestingAttribute.RelatedIDChainDefinition.UndefinedAttribute, _InterestingAttribute.Alias), GraphDBTypeMapper.GetBaseObjectFromCSharpType(attrValue.Value.GetReadoutValue()));
-                        }
-
-                        #endregion
-                    }
-                    else
-                    {
-                        #region defined attributes                      
-
-                        if (myDBObject.HasAttribute(typeAttr.UUID, myReferencedDBType))
-                        {
-                            groupingVals.Add(new GroupingValuesKey(typeAttr.UUID, _InterestingAttribute.Alias),
-                                GraphDBTypeMapper.GetGraphObjectFromTypeName(
-                                typeAttr.GetDBType(_DBContext.DBTypeManager).Name, ResolveAttributeValue(_InterestingAttribute.Element as TypeAttribute, myDBObject.GetAttribute(typeAttr.UUID, myReferencedDBType, _DBContext),
-                                myResolutionDepth, levelKey, myDBObject, myReference, myUsingGraph)
-                                ));
-                        }
-
-                        #endregion
-                    }
-                }
-                
-                //_GroupingStructure[myTypeNode.Reference].Add(new DBObjectReadout(myDBObject.GetAttributes(), myTypeNode.DBTypeStream), groupingVals);
-                _GroupingStructure[myReference].Add(new DBObjectReadout(GetInterestingAttributeValues(myDBObject, interestingAttributes, myReferencedDBType, mySessionToken)), groupingVals);
-            }
-
-        }
-
-        private Dictionary<string, Object> GetInterestingAttributeValues(DBObjectStream myDBObject, HashSet<Object> interestingAttributes, GraphDBType graphDBType, SessionSettings mySessionToken)
-        {
-            Dictionary<string, Object> result = new Dictionary<string, Object>();
-
-            foreach (var aTypeAttribute in interestingAttributes)
-            {
-                if (aTypeAttribute is TypeAttribute)
-                {
-                    #region defined attributes
-                    
-                    var tAttribute = aTypeAttribute as TypeAttribute;
-
-                    if (!result.ContainsKey(tAttribute.Name))
-                    {
-                        result.Add(tAttribute.Name, ((IObject)myDBObject.GetAttribute(tAttribute, graphDBType, _DBContext)).GetReadoutValue());
-                    }
-
-                    #endregion
-                }
-                else if (aTypeAttribute is IDChainDefinition)
-                {
-                    var tAttribute = aTypeAttribute as IDChainDefinition;
-
-                    if (myDBObject.ContainsUndefinedAttribute(tAttribute.UndefinedAttribute, _DBContext.DBObjectManager))
-                    {
-                        var resultExcept = myDBObject.GetUndefinedAttributeValue(tAttribute.UndefinedAttribute, _DBContext.DBObjectManager);
-
-                        if (!resultExcept.Success())
-                        {
-                            throw new GraphDBException(resultExcept.Errors);
-                        }
-
-                        if (!result.ContainsKey(tAttribute.UndefinedAttribute))
-                        {
-                            result.Add(tAttribute.UndefinedAttribute, resultExcept.Value.GetReadoutValue());
-                        }
-                    }
-                }
-                else
-                {
-                    throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-                }
-            }
-
-            return result;
-        }
-
-        private HashSet<Object> GetInterestingAttributes(String myReference, GraphDBType graphDBType)
-        {
-            HashSet<Object> result = new HashSet<Object>();
-
-            foreach (var aAggregate in _Aggregates)
-            {
-                result.Add(aAggregate.Element);
-            }
-
-            foreach (var aGrouping  in _Groupings.Where(item => item.Alias == myReference))
-            {
-                if (aGrouping.Element == null)
-                {
-                    result.Add(aGrouping.RelatedIDChainDefinition);
-                }
-                else
-                {
-                    result.Add(aGrouping.Element);
-                }
-            }
-
-            foreach (var aSelection in _Selections.Where(item => item.Key == myReference).Select(aMatchingElement => aMatchingElement.Value))
-            {
-                foreach (var aLevelKey in aSelection.Select(item => item.Value))
-                {
-                    foreach (var aInnerSelection in aLevelKey)
-                    {
-                        if (aInnerSelection.RelatedIDChainDefinition.IsUndefinedAttribute)
-                        {   
-                            result.Add(aInnerSelection.RelatedIDChainDefinition);
-                        }
-                        else
-                        {
-                            result.Add(aInnerSelection.Element);
-                        }
-                    }
-                }
-            }
-
-            return result;
         }
 
         #endregion
@@ -1169,23 +1224,14 @@ namespace sones.GraphDB.Managers.Select
         /// <summary>
         /// Resolve a AListReferenceEdgeType to a DBObjectReadouts. This will resolve each edge target using the 'GetAllAttributesFromDBO' method
         /// </summary>
-        /// <param name="typeOfAttribute"></param>
-        /// <param name="dbos"></param>
+        /// <param name="myTypeOfAttribute"></param>
+        /// <param name="myDBOs"></param>
         /// <param name="myDepth"></param>
         /// <param name="currentLvl"></param>
         /// <returns></returns>
-        private IEnumerable<DBObjectReadout> GetReadouts(GraphDBType typeOfAttribute, ASetOfReferencesEdgeType dbos, IEnumerable<Exceptional<DBObjectStream>> myObjectUUIDs, Int64 myDepth, EdgeList myLevelKey, String reference, Boolean myUsingGraph)
+        internal IEnumerable<DBObjectReadout> GetReadouts(GraphDBType myTypeOfAttribute, ASetOfReferencesEdgeType myDBOs, IEnumerable<Exceptional<DBObjectStream>> myObjectUUIDs, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph)
         {
-            foreach (var aReadOut in dbos.GetReadouts(a =>
-            {
-                var dbStream = _DBObjectCache.LoadDBObjectStream(typeOfAttribute, a);
-                if (dbStream.Failed())
-                {
-                    throw new GraphDBException(dbStream.Errors);
-                }
-
-                return new DBObjectReadout(GetAllSelectedAttributesFromDBO(dbStream.Value, typeOfAttribute, myDepth, myLevelKey, reference, myUsingGraph));
-            }, myObjectUUIDs))
+            foreach (var aReadOut in myDBOs.GetReadouts(a => LoadAndResolveDBObject(a, myTypeOfAttribute, myDepth, myLevelKey, myReference, myUsingGraph), myObjectUUIDs))
             {
                 yield return aReadOut;
             }
@@ -1197,60 +1243,13 @@ namespace sones.GraphDB.Managers.Select
         /// Resolve a AListReferenceEdgeType to a List of DBObjectReadout. This will resolve each edge target using the 'GetAllAttributesFromDBO' method
         /// </summary>
         /// <param name="typeOfAttribute"></param>
-        /// <param name="dbos"></param>
+        /// <param name="myDBOs"></param>
         /// <param name="myDepth"></param>
         /// <param name="currentLvl"></param>
         /// <returns></returns>
-        private IEnumerable<DBObjectReadout> GetReadouts(GraphDBType typeOfAttribute, ASetOfReferencesEdgeType dbos, Int64 myDepth, EdgeList myLevelKey, String reference, Boolean myUsingGraph)
+        internal IEnumerable<DBObjectReadout> GetReadouts(GraphDBType myTypeOfAttribute, ASetOfReferencesEdgeType myDBOs, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph)
         {
-            SettingInvalidReferenceHandling invalidReferenceSetting = null;
-            GraphDBType currentType = null;
-
-            foreach (var aReadOut in dbos.GetReadouts(a =>
-            {
-                var dbStream = _DBObjectCache.LoadDBObjectStream(typeOfAttribute, a);
-                if (!dbStream.Success())
-                {
-                    #region error
-
-                    #region get setting
-
-                    if (invalidReferenceSetting == null)
-                    {
-                        currentType = _DBContext.DBTypeManager.GetTypeByUUID(myLevelKey.LastEdge.TypeUUID);
-
-                        if (myLevelKey.LastEdge.AttrUUID != null)
-                        {
-                            invalidReferenceSetting = (SettingInvalidReferenceHandling)_DBContext.DBSettingsManager.GetSetting(SettingInvalidReferenceHandling.UUID, _DBContext, TypesSettingScope.ATTRIBUTE, currentType, currentType.GetTypeAttributeByUUID(myLevelKey.LastEdge.AttrUUID)).Value;
-                        }
-                        else
-                        {
-                            invalidReferenceSetting = (SettingInvalidReferenceHandling)_DBContext.DBSettingsManager.GetSetting(SettingInvalidReferenceHandling.UUID, _DBContext, TypesSettingScope.TYPE, currentType).Value;
-                        }
-                    }
-
-                    #endregion
-
-                    switch (invalidReferenceSetting.Behaviour)
-                    {
-                        case BehaviourOnInvalidReference.ignore:
-                            #region ignore
-
-                            return GenerateUndefindedDBReadout(a, currentType);
-
-                            #endregion
-                        case BehaviourOnInvalidReference.log:
-                        
-                        default:
-
-                            throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace()));
-                    }
-
-                    #endregion
-                }
-
-                return new DBObjectReadout(GetAllSelectedAttributesFromDBO(dbStream.Value, typeOfAttribute, myDepth, myLevelKey, reference, myUsingGraph));               
-            }))
+            foreach (var aReadOut in myDBOs.GetReadouts(a => LoadAndResolveDBObject(a, myTypeOfAttribute, myDepth, myLevelKey, myReference, myUsingGraph)))
             {
                 if (aReadOut != null)
                 {
@@ -1261,21 +1260,48 @@ namespace sones.GraphDB.Managers.Select
             yield break;
         }
 
+        /// <summary>
+        /// This will load the DBO (check for load errors) and get all selected attributes of this DBO
+        /// </summary>
+        /// <param name="myObjectUUID"></param>
+        /// <param name="myTypeOfAttribute"></param>
+        /// <param name="myDepth"></param>
+        /// <param name="myLevelKey"></param>
+        /// <param name="myReference"></param>
+        /// <param name="myUsingGraph"></param>
+        /// <returns></returns>
+        private DBObjectReadout LoadAndResolveDBObject(ObjectUUID myObjectUUID, GraphDBType myTypeOfAttribute, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph)
+        {
+            
+            var dbStream = _DBContext.DBObjectCache.LoadDBObjectStream(myTypeOfAttribute, myObjectUUID);
+
+            var curType = _DBContext.DBTypeManager.GetTypeByUUID(myLevelKey.LastEdge.TypeUUID);
+            var curAttr = curType.GetTypeAttributeByUUID(myLevelKey.LastEdge.AttrUUID);
+            if (!CheckLoadedDBObjectStream(dbStream, curType, curAttr))
+            {
+                return GenerateNotResolvedDBReadout(myObjectUUID, _DBContext.DBTypeManager.GetTypeByUUID(myLevelKey.LastEdge.TypeUUID));
+            }
+
+            return new DBObjectReadout(GetAllSelectedAttributesFromDBO(dbStream.Value, myTypeOfAttribute, myDepth, myLevelKey, myReference, myUsingGraph));
+        }
+
         #endregion
 
-        #region AddAttribute and get the values
+        #region Add all Attributes of myDBObject (select *) and get the values
 
         /// <summary>
-        /// Instead of using the Type with the attributes it will show ALL attributes of the <paramref name="myDBObject"/>
+        /// This will add all attributes of <paramref name="myDBObject"/> to the <paramref name="myAttributes"/> reference. Reference attributes will be resolved to the <paramref name="myDepth"/>
         /// </summary>
-        /// <param name="attributes"></param>
-        /// <param name="type"></param>
+        /// <param name="myAttributes"></param>
+        /// <param name="myType"></param>
         /// <param name="myDBObject"></param>
-        /// <param name="depth"></param>
+        /// <param name="myDepth"></param>
         /// <param name="myEdgeList"></param>
-        /// <param name="reference"></param>
+        /// <param name="myReference"></param>
         /// <param name="myUsingGraph"></param>
-        private void AddAttributesByDBO(ref Dictionary<string, object> attributes, GraphDBType type, DBObjectStream myDBObject, long depth, EdgeList myEdgeList, string reference, bool myUsingGraph, TypesOfSelect mySelType, TypeUUID myTypeID = null)
+        /// <param name="mySelType"></param>
+        /// <param name="myTypeID"></param>
+        private void AddAttributesByDBO(ref Dictionary<string, object> myAttributes, GraphDBType myType, DBObjectStream myDBObject, long myDepth, EdgeList myEdgeList, string myReference, bool myUsingGraph, TypesOfSelect mySelType, TypeUUID myTypeID = null)
         {
 
             #region Get all attributes which are stored at the DBO
@@ -1285,53 +1311,79 @@ namespace sones.GraphDB.Managers.Select
 
                 #region Check whether the attribute is still exist in the type - if not, continue
 
-                var typeAttr = type.GetTypeAttributeByUUID(attr.Key);
+                var typeAttr = myType.GetTypeAttributeByUUID(attr.Key);
 
                 if (typeAttr == null)
+                {
                     continue;
+                }
 
                 #endregion
 
+                #region Only attributes of the selected myTypeID (TypesOfSelect.Ad)
+
                 if (mySelType == TypesOfSelect.Ad)
-                {                    
+                {
                     if (myTypeID != typeAttr.GetDBType(_DBContext.DBTypeManager).UUID)
                     {
                         continue;
                     }
                 }
-                
+
+                #endregion
+
                 if (attr.Value is ADBBaseObject)
                 {
+
+                    #region Single base object
+
                     if (mySelType != TypesOfSelect.Minus && mySelType != TypesOfSelect.Gt && mySelType != TypesOfSelect.Lt)
                     {
-                        attributes.Add(typeAttr.Name, (attr.Value as ADBBaseObject).GetReadoutValue());
+                        myAttributes.Add(typeAttr.Name, (attr.Value as ADBBaseObject).GetReadoutValue());
                     }
+
+                    #endregion
+
                 }
                 else if (attr.Value is IBaseEdge)
                 {
+
+                    #region List of base objects
+
                     if (mySelType != TypesOfSelect.Minus && mySelType != TypesOfSelect.Gt && mySelType != TypesOfSelect.Lt)
                     {
-                        attributes.Add(typeAttr.Name, (attr.Value as IBaseEdge).GetReadoutValues());
+                        myAttributes.Add(typeAttr.Name, (attr.Value as IBaseEdge).GetReadoutValues());
                     }
+
+                    #endregion
+
                 }
                 else if (attr.Value is IReferenceEdge)
                 {
+
+                    #region Reference edge
+
                     if (mySelType == TypesOfSelect.Minus || mySelType == TypesOfSelect.Asterisk || mySelType == TypesOfSelect.Ad || mySelType == TypesOfSelect.Gt)
                     {
                         // Since we can define special depth (via setting) for attributes we need to check them now
-                        depth = GetDepth(-1, depth, type, typeAttr);
-                        if (depth > 0)
+                        myDepth = GetDepth(-1, myDepth, myType, typeAttr);
+                        if (myDepth > 0)
                         {
-                            attributes.Add(typeAttr.Name, ResolveAttributeValue(typeAttr, attr.Value, depth - 1, myEdgeList, myDBObject, reference, myUsingGraph));
+                            myAttributes.Add(typeAttr.Name, ResolveAttributeValue(typeAttr, attr.Value, myDepth - 1, myEdgeList, myDBObject, myReference, myUsingGraph));
                         }
                         else
                         {
-                            attributes.Add(typeAttr.Name, GetNotResolvedReferenceAttributeValue(myDBObject, typeAttr, type, myEdgeList, myUsingGraph, _DBContext));
+                            myAttributes.Add(typeAttr.Name, GetNotResolvedReferenceAttributeValue(myDBObject, typeAttr, myType, myEdgeList, myUsingGraph, _DBContext));
                         }
                     }
+
+                    #endregion
+
                 }
                 else
+                {
                     throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                }
 
             }
 
@@ -1341,9 +1393,9 @@ namespace sones.GraphDB.Managers.Select
 
             if (mySelType == TypesOfSelect.Minus || mySelType == TypesOfSelect.Asterisk || mySelType == TypesOfSelect.Ad || mySelType == TypesOfSelect.Lt)
             {
-                foreach (var beAttr in GetBackwardEdgeAttributes(type))
+                foreach (var beAttr in GetBackwardEdgeAttributes(myType))
                 {
-                    if (depth > 0)
+                    if (myDepth > 0)
                     {
                         if (mySelType == TypesOfSelect.Ad)
                         {
@@ -1352,14 +1404,14 @@ namespace sones.GraphDB.Managers.Select
                                 continue;
                             }
                         }
-                        
-                        var bes = myDBObject.GetBackwardEdges(beAttr.BackwardEdgeDefinition, _DBContext, _DBObjectCache, beAttr.GetDBType(_DBContext.DBTypeManager));
+
+                        var bes = myDBObject.GetBackwardEdges(beAttr.BackwardEdgeDefinition, _DBContext, _DBContext.DBObjectCache, beAttr.GetDBType(_DBContext.DBTypeManager));
                         
                         if (bes.Failed())
                             throw new GraphDBException(bes.Errors);
 
                         if (bes.Value != null) // otherwise the DBO does not have any
-                            attributes.Add(beAttr.Name, ResolveAttributeValue(beAttr, bes.Value, depth - 1, myEdgeList, myDBObject, reference, myUsingGraph));
+                            myAttributes.Add(beAttr.Name, ResolveAttributeValue(beAttr, bes.Value, myDepth - 1, myEdgeList, myDBObject, myReference, myUsingGraph));
                     }
                     else
                     {
@@ -1374,14 +1426,14 @@ namespace sones.GraphDB.Managers.Select
                         var notResolvedBEs = GetNotResolvedBackwardEdgeReferenceAttributeValue(myDBObject, beAttr, beAttr.BackwardEdgeDefinition, myEdgeList, myUsingGraph, _DBContext);
                         if (notResolvedBEs != null)
                         {
-                            attributes.Add(beAttr.Name, notResolvedBEs);
+                            myAttributes.Add(beAttr.Name, notResolvedBEs);
                         }
                     }
                 }
             }
             #endregion
 
-            #region Get all untyped attributes from DBO - to be done
+            #region Get all undefined attributes from DBO
 
             if (mySelType == TypesOfSelect.Asterisk || mySelType == TypesOfSelect.Rhomb)
             {
@@ -1391,7 +1443,7 @@ namespace sones.GraphDB.Managers.Select
                     throw new GraphDBException(undefAttrException.Errors);
 
                 foreach (var undefAttr in undefAttrException.Value)
-                    attributes.Add(undefAttr.Key, undefAttr.Value.GetReadoutValue());
+                    myAttributes.Add(undefAttr.Key, undefAttr.Value.GetReadoutValue());
             }
 
             #endregion
@@ -1400,17 +1452,17 @@ namespace sones.GraphDB.Managers.Select
 
             if (mySelType == TypesOfSelect.Asterisk)
             {
-                foreach (var specialAttr in GetSpecialAttributes(type))
+                foreach (var specialAttr in GetSpecialAttributes(myType))
                 {
-                    if (!attributes.ContainsKey(specialAttr.Name))
+                    if (!myAttributes.ContainsKey(specialAttr.Name))
                     {
-                        var result = (specialAttr as ASpecialTypeAttribute).ExtractValue(myDBObject, type, _DBContext);
+                        var result = (specialAttr as ASpecialTypeAttribute).ExtractValue(myDBObject, myType, _DBContext);
                         if (result.Failed())
                         {
                             throw new GraphDBException(result.Errors);
                         }
 
-                        attributes.Add(specialAttr.Name, result.Value.GetReadoutValue());
+                        myAttributes.Add(specialAttr.Name, result.Value.GetReadoutValue());
                     }
                 }
             }
@@ -1436,7 +1488,7 @@ namespace sones.GraphDB.Managers.Select
             return _SpecialAttributesByType[type];
         }
 
-        /// <summary>   Gets an attribute value. </summary>
+        /// <summary>   Gets an attribute value - references will be resolved. </summary>
         ///
         /// <remarks>   Stefan, 16.04.2010. </remarks>
         ///
@@ -1452,42 +1504,14 @@ namespace sones.GraphDB.Managers.Select
         /// <returns>   true if it succeeds, false if the DBO does not have the attribute. </returns>
         private Boolean GetAttributeValueAndResolve(GraphDBType myType, TypeAttribute myTypeAttribute, DBObjectStream myDBObject, Int64 myDepth, EdgeList myLevelKey, String reference, Boolean myUsingGraph, out Object attributeValue, String myUndefAttrName = null)
         {
-                        
-            if (myTypeAttribute == null)
-            {
-                #region undefined attributes
-
-                attributeValue = null;
-
-                if (myDBObject.ContainsUndefinedAttribute(myUndefAttrName, _DBContext.DBObjectManager))
-                {
-                    var retExcept = myDBObject.GetUndefinedAttributeValue(myUndefAttrName, _DBContext.DBObjectManager);
-
-                    if (!retExcept.Success())
-                        throw new GraphDBException(retExcept.Errors);
-
-                    if (retExcept.Value is ADBBaseObject)
-                        attributeValue = (retExcept.Value as ADBBaseObject).GetReadoutValue();
-                    else if (retExcept.Value is IBaseEdge)
-                        attributeValue = (retExcept.Value as IBaseEdge).GetReadoutValues();
-                    else
-                        attributeValue = retExcept.Value;
-
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
                 
-                #endregion
-            }
-            else if (myTypeAttribute.TypeCharacteristics.IsBackwardEdge)
+            if (myTypeAttribute.TypeCharacteristics.IsBackwardEdge)
             {
+
                 #region IsBackwardEdge
 
                 EdgeKey edgeKey = myTypeAttribute.BackwardEdgeDefinition;
-                var contBackwardExcept = myDBObject.ContainsBackwardEdge(edgeKey, _DBContext, _DBObjectCache, myType);
+                var contBackwardExcept = myDBObject.ContainsBackwardEdge(edgeKey, _DBContext, _DBContext.DBObjectCache, myType);
 
                 if (contBackwardExcept.Failed())
                     throw new GraphDBException(contBackwardExcept.Errors);
@@ -1496,7 +1520,7 @@ namespace sones.GraphDB.Managers.Select
                 {
                     if (myDepth > 0)
                     {
-                        var dbos = myDBObject.GetBackwardEdges(edgeKey, _DBContext, _DBObjectCache, myTypeAttribute.GetDBType(_DBContext.DBTypeManager));
+                        var dbos = myDBObject.GetBackwardEdges(edgeKey, _DBContext, _DBContext.DBObjectCache, myTypeAttribute.GetDBType(_DBContext.DBTypeManager));
 
                         if (dbos.Failed())
                             throw new GraphDBException(dbos.Errors);
@@ -1518,23 +1542,29 @@ namespace sones.GraphDB.Managers.Select
                 #endregion
 
             }
-            else if (myDBObject.HasAttribute(myTypeAttribute.UUID, myType))
+            else if (myDBObject.HasAttribute(myTypeAttribute, _DBContext))
             {
 
                 #region ELSE (!IsBackwardEdge)
 
                 #region not a reference attribute value
 
-                if (!myTypeAttribute.GetDBType(_DBContext.DBTypeManager).IsUserDefined)
+                if (!myTypeAttribute.IsUserDefinedType(_DBContext.DBTypeManager))
                 {
-                    var attrVal = myDBObject.GetAttribute(myTypeAttribute.UUID, myType, _DBContext);
+                    var attrVal = myDBObject.GetAttribute(myTypeAttribute, myType, _DBContext);
+
+                    if (attrVal.Failed())
+                    {
+                        throw new GraphDBException(attrVal.Errors);
+                    }
+
                     // currently, we do not want to return a ADBBaseObject but the real value
-                    if (attrVal is ADBBaseObject)
-                        attributeValue = (attrVal as ADBBaseObject).GetReadoutValue();
-                    else if (attrVal is IBaseEdge)
-                        attributeValue = (attrVal as IBaseEdge).GetReadoutValues();
+                    if (attrVal.Value is ADBBaseObject)
+                        attributeValue = (attrVal.Value as ADBBaseObject).GetReadoutValue();
+                    else if (attrVal.Value is IBaseEdge)
+                        attributeValue = (attrVal.Value as IBaseEdge).GetReadoutValues();
                     else
-                        attributeValue = attrVal;
+                        attributeValue = attrVal.Value;
 
                     return true;
                 }
@@ -1570,16 +1600,24 @@ namespace sones.GraphDB.Managers.Select
 
         #region GetNotResolved edges
 
-        private Edge GetNotResolvedReferenceAttributeValue(IReferenceEdge referenceEdge, TypeAttribute typeAttribute, GraphDBType graphDBType, DBContext _DBContext)
+        /// <summary>
+        /// Returns just UUID and Type for this edge
+        /// </summary>
+        /// <param name="referenceEdge"></param>
+        /// <param name="typeAttribute"></param>
+        /// <param name="graphDBType"></param>
+        /// <param name="_DBContext"></param>
+        /// <returns></returns>
+        private Edge GetNotResolvedReferenceEdgeAttributeValue(IReferenceEdge referenceEdge, GraphDBType graphDBType, DBContext _DBContext)
         {
 
             if (referenceEdge is ASetOfReferencesEdgeType)
             {
-                return new Edge((referenceEdge as ASetOfReferencesEdgeType).GetReadouts((uuid) => GenerateUndefindedDBReadout(uuid, graphDBType)), graphDBType.Name);
+                return new Edge((referenceEdge as ASetOfReferencesEdgeType).GetReadouts((uuid) => GenerateNotResolvedDBReadout(uuid, graphDBType)), graphDBType.Name);
             }
             else if (referenceEdge is ASingleReferenceEdgeType)
             {
-                return new Edge((referenceEdge as ASingleReferenceEdgeType).GetReadout((uuid) => GenerateUndefindedDBReadout(uuid, graphDBType)), graphDBType.Name);
+                return new Edge((referenceEdge as ASingleReferenceEdgeType).GetReadout((uuid) => GenerateNotResolvedDBReadout(uuid, graphDBType)), graphDBType.Name);
             }
             else
             {
@@ -1587,6 +1625,16 @@ namespace sones.GraphDB.Managers.Select
             }
         }
 
+        /// <summary>
+        /// Get the attribute value of <paramref name="myTypeAttribute"/> and calls GetNotResolvedReferenceEdgeAttributeValue with the edge
+        /// </summary>
+        /// <param name="myDBObject"></param>
+        /// <param name="myTypeAttribute"></param>
+        /// <param name="myType"></param>
+        /// <param name="currentEdgeList"></param>
+        /// <param name="myUsingGraph"></param>
+        /// <param name="_DBContext"></param>
+        /// <returns></returns>
         private Edge GetNotResolvedReferenceAttributeValue(DBObjectStream myDBObject, TypeAttribute myTypeAttribute, GraphDBType myType, EdgeList currentEdgeList, Boolean myUsingGraph, DBContext _DBContext)
         {
             IObject attrValue = null;
@@ -1608,33 +1656,24 @@ namespace sones.GraphDB.Managers.Select
             {
                 return null;
             }
-            else if (!(attrValue is IReferenceEdge))
-            {
-                throw new GraphDBException(new Error_InvalidEdgeType(attrValue.GetType(), typeof(IReferenceEdge)));
-            }
 
-            List<DBObjectReadout> readouts = new List<DBObjectReadout>();
             var typeName = myTypeAttribute.GetDBType(_DBContext.DBTypeManager).Name;
 
-            if (attrValue is ASetOfReferencesEdgeType)
-            {
-                return new Edge((attrValue as ASetOfReferencesEdgeType).GetReadouts((uuid) => GenerateUndefindedDBReadout(uuid, myTypeAttribute.GetDBType(_DBContext.DBTypeManager))), typeName);
-            }
-            else if (attrValue is ASingleReferenceEdgeType)
-            {
-                return new Edge((attrValue as ASingleReferenceEdgeType).GetReadout((uuid) => GenerateUndefindedDBReadout(uuid, myTypeAttribute.GetDBType(_DBContext.DBTypeManager))), typeName);
-            }
-            else
-            {
-                throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-            }
+            return GetNotResolvedReferenceEdgeAttributeValue(attrValue as IReferenceEdge, myTypeAttribute.GetDBType(_DBContext.DBTypeManager), _DBContext);
+
         }
 
-        private DBObjectReadout GenerateUndefindedDBReadout(ObjectUUID reference, GraphDBType myType)
+        /// <summary>
+        /// The default DBReadout for not resolved edges
+        /// </summary>
+        /// <param name="reference"></param>
+        /// <param name="myType"></param>
+        /// <returns></returns>
+        private DBObjectReadout GenerateNotResolvedDBReadout(ObjectUUID reference, GraphDBType myType)
         {
             var specialAttributes = new Dictionary<string, object>();
             specialAttributes.Add(SpecialTypeAttribute_UUID.AttributeName, reference);
-            specialAttributes.Add(SpecialTypeAttribute_TYPE.AttributeName, myType);
+            specialAttributes.Add(SpecialTypeAttribute_TYPE.AttributeName, myType.Name);
 
             return new DBObjectReadout(specialAttributes);
         }
@@ -1651,7 +1690,7 @@ namespace sones.GraphDB.Managers.Select
             }
             else
             {
-                var attrValueException = myDBObject.GetBackwardEdges(edgeKey, _DBContext, _DBObjectCache, myTypeAttribute.GetDBType(_DBContext.DBTypeManager));
+                var attrValueException = myDBObject.GetBackwardEdges(edgeKey, _DBContext, _DBContext.DBObjectCache, myTypeAttribute.GetDBType(_DBContext.DBTypeManager));
                 if (attrValueException.Failed())
                 {
                     throw new GraphDBException(attrValueException.Errors);
@@ -1685,54 +1724,6 @@ namespace sones.GraphDB.Managers.Select
         }
         
         #endregion
-
-        /// <summary>
-        /// Extracts the attribute from <paramref name="myDBObject"/>.
-        /// </summary>
-        /// <param name="myType"></param>
-        /// <param name="myTypeAttribute"></param>
-        /// <param name="myDBObject"></param>
-        /// <param name="myLevelKey"></param>
-        /// <returns></returns>
-        private Object GetAttributeValue(GraphDBType myType, TypeAttribute myTypeAttribute, DBObjectStream myDBObject, EdgeList myLevelKey)
-        {
-            if (myTypeAttribute.TypeCharacteristics.IsBackwardEdge)
-            {
-
-                #region IsBackwardEdge
-
-                EdgeKey edgeKey = myTypeAttribute.BackwardEdgeDefinition;
-                var contBackwardExcept = myDBObject.ContainsBackwardEdge(edgeKey, _DBContext, _DBObjectCache, myType);
-
-                if (contBackwardExcept.Failed())
-                    throw new GraphDBException(contBackwardExcept.Errors);
-
-                if (contBackwardExcept.Value)
-                {
-                    var getBackwardExcept = myDBObject.GetBackwardEdges(edgeKey, _DBContext, _DBObjectCache, myTypeAttribute.GetDBType(_DBContext.DBTypeManager));
-
-                    if (getBackwardExcept.Failed())
-                        throw new GraphDBException(getBackwardExcept.Errors);
-
-                    return getBackwardExcept.Value;
-                }
-
-                #endregion
-
-            }
-            else if (myDBObject.HasAttribute(myTypeAttribute.UUID, myType))
-            {
-
-                #region ELSE (!IsBackwardEdge)
-
-                return myDBObject.GetAttribute(myTypeAttribute.UUID, myType, _DBContext);
-
-                #endregion
-
-            }
-
-            return null;
-        }
 
         /// <summary>
         /// Resolves an attribute 
@@ -1789,7 +1780,7 @@ namespace sones.GraphDB.Managers.Select
             if (attributeValue is ASetOfReferencesEdgeType)
             {
 
-                #region SetReference attribute
+                #region SetReference attribute -> return new Edge
 
                 IEnumerable<DBObjectReadout> resultList = null;
 
@@ -1816,16 +1807,8 @@ namespace sones.GraphDB.Managers.Select
 
                 #region Single reference
 
-                attributeValue = new Edge((attributeValue as ASingleReferenceEdgeType).GetReadout(a =>
-                {
-                    var dbStream = _DBObjectCache.LoadDBObjectStream(typeOfAttribute, a);
-                    if (dbStream.Failed())
-                    {
-                        throw new GraphDBException(dbStream.Errors);
-                    }
-
-                    return new DBObjectReadout(GetAllSelectedAttributesFromDBO(dbStream.Value, typeOfAttribute, myDepth, myEdgeList, reference, myUsingGraph));
-                }), typeOfAttribute.Name);
+                attributeValue = new Edge((attributeValue as ASingleReferenceEdgeType).GetReadout(a => LoadAndResolveDBObject(a, typeOfAttribute, myDepth, myEdgeList, reference, myUsingGraph))
+                    , typeOfAttribute.Name);
 
                 return attributeValue;
 
@@ -1838,6 +1821,10 @@ namespace sones.GraphDB.Managers.Select
             }
         }
 
+        #endregion
+
+        #region GetAllSelectedAttributesFromDBO
+
         /// <summary>
         /// Gets all selected attributes of an <paramref name="aDBObject"/> or on asterisk all attributes
         /// </summary>
@@ -1848,16 +1835,21 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="reference"></param>
         /// <param name="myUsingGraph"></param>
         /// <returns></returns>
-        private Dictionary<string, object> GetAllSelectedAttributesFromDBO(DBObjectStream myDBObject, GraphDBType myDBType, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph)
+        private Dictionary<string, object> GetAllSelectedAttributesFromDBO(DBObjectStream myDBObject, GraphDBType myDBType, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph, Boolean selectAllAttributes = false)
         {
             Dictionary<string, object> Attributes = new Dictionary<string, object>();
             Int64 Depth;
 
             var minDepth = 0;
 
-            var attributeSelections = getAttributeSelections(myReference, myDBType, myLevelKey);
+            IEnumerable<SelectionElement> attributeSelections = null;
 
-            if (attributeSelections.IsNullOrEmpty())// && myLevelKey.Level > 0)
+            if (!selectAllAttributes)
+            {
+                attributeSelections = getAttributeSelections(myReference, myDBType, myLevelKey);
+            }
+
+            if (attributeSelections.IsNullOrEmpty() || selectAllAttributes)// && myLevelKey.Level > 0)
             {
 
                 #region Get all attributes from the DBO if nothing special was selected
@@ -1877,6 +1869,8 @@ namespace sones.GraphDB.Managers.Select
 
                     //myDepth = attrSel.EdgeList.Level;
 
+                    #region Some kind of asterisk - return all attributes
+
                     if (attrSel.Selection != TypesOfSelect.None)
                     {
 
@@ -1891,6 +1885,10 @@ namespace sones.GraphDB.Managers.Select
                         continue;
 
                     }
+                    
+                    #endregion
+
+                    #region Alias
 
                     String alias = String.Empty;
 
@@ -1902,6 +1900,8 @@ namespace sones.GraphDB.Managers.Select
                     {
                         alias = (attrSel.Alias == null) ? (attrSel.Element as TypeAttribute).Name : attrSel.Alias;
                     }
+
+                    #endregion
 
                     if (Attributes.ContainsKey(alias))
                     {
@@ -1983,7 +1983,7 @@ namespace sones.GraphDB.Managers.Select
                             else
                             {
 
-                                Attributes.Add(alias, GetNotResolvedReferenceAttributeValue(res.Value.Value as IReferenceEdge, res.Value.TypeAttribute, res.Value.TypeAttribute.GetDBType(_DBContext.DBTypeManager), _DBContext));
+                                Attributes.Add(alias, GetNotResolvedReferenceEdgeAttributeValue(res.Value.Value as IReferenceEdge, res.Value.TypeAttribute.GetDBType(_DBContext.DBTypeManager), _DBContext));
 
                             }
 
@@ -1996,23 +1996,25 @@ namespace sones.GraphDB.Managers.Select
                         #endregion
 
                     }
-                    else if (attrSel.Element == null)
+                    else if (attrSel.Element is UndefinedTypeAttribute)
                     {
+
                         #region undefined attribute selection
 
                         var undef_alias = attrSel.Alias;
 
                         if (!Attributes.ContainsKey(undef_alias))
                         {
-                            Object attrValue = null;                            
+                            Object attrValue = null;
 
-                            if (GetAttributeValueAndResolve(myDBType, null, myDBObject, 0, myLevelKey, myReference, myUsingGraph, out attrValue, undef_alias))
+                            if (GetAttributeValueAndResolve(myDBType, attrSel.Element, myDBObject, 0, myLevelKey, myReference, myUsingGraph, out attrValue, undef_alias))
                             {
                                 Attributes.Add(undef_alias, attrValue);
                             }                            
                         }                        
 
                         #endregion
+
                     }
                     else
                     {
@@ -2051,6 +2053,54 @@ namespace sones.GraphDB.Managers.Select
             return Attributes;
         }
 
+        /// <summary>
+        /// Extracts the attribute from <paramref name="myDBObject"/>.
+        /// </summary>
+        /// <param name="myType"></param>
+        /// <param name="myTypeAttribute"></param>
+        /// <param name="myDBObject"></param>
+        /// <param name="myLevelKey"></param>
+        /// <returns></returns>
+        private Object GetAttributeValue(GraphDBType myType, TypeAttribute myTypeAttribute, DBObjectStream myDBObject, EdgeList myLevelKey)
+        {
+            if (myTypeAttribute.TypeCharacteristics.IsBackwardEdge)
+            {
+
+                #region IsBackwardEdge
+
+                EdgeKey edgeKey = myTypeAttribute.BackwardEdgeDefinition;
+                var contBackwardExcept = myDBObject.ContainsBackwardEdge(edgeKey, _DBContext, _DBContext.DBObjectCache, myType);
+
+                if (contBackwardExcept.Failed())
+                    throw new GraphDBException(contBackwardExcept.Errors);
+
+                if (contBackwardExcept.Value)
+                {
+                    var getBackwardExcept = myDBObject.GetBackwardEdges(edgeKey, _DBContext, _DBContext.DBObjectCache, myTypeAttribute.GetDBType(_DBContext.DBTypeManager));
+
+                    if (getBackwardExcept.Failed())
+                        throw new GraphDBException(getBackwardExcept.Errors);
+
+                    return getBackwardExcept.Value;
+                }
+
+                #endregion
+
+            }
+            else if (myDBObject.HasAttribute(myTypeAttribute.UUID, myType))
+            {
+
+                #region ELSE (!IsBackwardEdge)
+
+                return myDBObject.GetAttribute(myTypeAttribute.UUID, myType, _DBContext);
+
+                #endregion
+
+            }
+
+            return null;
+        }
+        
         #endregion
 
         #region GetResult
@@ -2065,154 +2115,10 @@ namespace sones.GraphDB.Managers.Select
         public IEnumerable<DBObjectReadout> GetResult(String myReference, GraphDBType myReferencedDBType, IEnumerable<DBObjectReadout> dbObjectReadouts, Boolean isWhereExpressionDependent = false)
         {
 
-            if (!_Aggregates.IsNullOrEmpty() && _Groupings.IsNullOrEmpty())
-            //if (_AggregateNodes != null && _GroupingAttr == null)
-
-            #region We have only aggregates!
-
+            foreach (var dbo in dbObjectReadouts)
             {
-
-                var Attributes = new Dictionary<String, Object>();
-
-                foreach (var aggr in _Aggregates)
-                {
-
-                    if (aggr.IndexAggregate != null && !isWhereExpressionDependent)
-                    {
-                        #region Aggregate on index and no where expression
-
-                        var res = aggr.Aggregate.Aggregate(aggr.IndexAggregate, aggr.Parameter.Reference.Item2, _DBContext, _DBObjectCache, _SessionToken);
-                        if (res.Failed())
-                        {
-                            throw new GraphDBException(res.Errors);
-                        }
-                        Attributes.Add(aggr.Alias, res.Value);
-
-                        #endregion
-                    }
-                    else
-                    {
-                        #region Aggregate on the dbObjectReadouts created by the select run
-
-                        var res = aggr.Aggregate.Aggregate(dbObjectReadouts, aggr.Parameter.LastAttribute, _DBContext, _DBObjectCache, _SessionToken);
-                        if (res.Failed())
-                        {
-                            throw new GraphDBException(res.Errors);
-                        }
-
-                        Attributes.Add(aggr.Alias, res.Value);
-
-                        #endregion
-                    }
-
-                }
-
-                //_DBOs = new IEnumerable<DBObjectReadout>();
-                //_DBOs.Add(new DBObjectReadoutGroup(Attributes, new DBObjectSystemData()));
-
-                //yield return new DBObjectReadoutGroup(Attributes);
-                yield return new DBObjectReadout(Attributes);
-
+                yield return dbo;
             }
-
-            #endregion
-
-            else //if (_AggregateNodes != null || _GroupingAttr != null)
-                if (!_Aggregates.IsNullOrEmpty() || !_Groupings.IsNullOrEmpty())
-                #region We have aggregates and/or groupings
-                {
-
-                    foreach (var keyValPair in _GroupingStructure[myReference].GroupsAndAggregates)
-                    {
-
-                        var Attributes = new Dictionary<string, object>();
-
-                        foreach (var groupKeyValPair in keyValPair.Key.Values)
-                        {
-
-                            TypeAttribute theAttribute = null;
-
-                            //if we have an undefined attribute
-                            if (groupKeyValPair.Key.AttributeUUID != null)
-                            {
-                                theAttribute = _GroupingStructure[myReference].DBTypeStream.GetTypeAttributeByUUID(groupKeyValPair.Key.AttributeUUID);
-                            }
-                            
-                            if (theAttribute != null)
-                            {
-                                Attributes.Add(theAttribute.Name, groupKeyValPair.Value.GetReadoutValue());
-                            }
-                            else
-                            {   
-                                var Setting = _DBContext.DBSettingsManager.GetSetting(new UUID(groupKeyValPair.Key.ToString()), _DBContext, TypesSettingScope.TYPE, _GroupingStructure[myReference].DBTypeStream).Value;
-
-                                if (Setting != null)
-                                {
-                                    Attributes.Add(Setting.Name, groupKeyValPair.Value.GetReadoutValue());
-                                }
-                                else
-                                {
-                                    #region undefined attributes
-                                    
-                                    Attributes.Add(groupKeyValPair.Key.AttributeName, groupKeyValPair.Value.GetReadoutValue());
-
-                                    #endregion
-                                }
-                            }
-                        }
-
-                        #region Calculate aggregate
-
-                        if (!_Aggregates.IsNullOrEmpty())
-                        {
-                            foreach (var aggr in _Aggregates)
-                            {
-                                var res = aggr.Aggregate.Aggregate(keyValPair.Value, aggr.Parameter.LastAttribute, _DBContext, _DBObjectCache, _SessionToken);
-                                
-                                if (res.Failed())
-                                {
-                                    //return new Exceptional<IEnumerable<DBObjectReadout>>(res.Errors);
-                                }
-                                Attributes.Add(aggr.Alias, res.Value);
-                            }
-                        }
-
-                        #endregion
-
-                        var _DBObjectReadoutGroup = new DBObjectReadoutGroup(Attributes, keyValPair.Value);
-                        //_DBObjectReadoutGroup.GrouppedVertices = keyValPair.Value;
-
-                        #region Check for having expressions and evaluate them
-
-                        if (_HavingExpression == null)
-                        {
-                            //_DBOs.Add(readoutGroup);
-                            yield return _DBObjectReadoutGroup;
-                        }
-                        else
-                        {
-
-                            var res = _HavingExpression.IsSatisfyHaving(_DBObjectReadoutGroup, _DBContext);
-                            if (res.Failed())
-                                throw new GraphDBException(res.Errors);
-                            else if (res.Value)
-                                yield return _DBObjectReadoutGroup;
-                        }
-
-                        #endregion
-
-                    }
-
-                }
-
-                #endregion
-
-                //return _DBOs;
-                else
-                {
-                    foreach (var dbo in dbObjectReadouts)
-                        yield return dbo;
-                }
 
         }
 
@@ -2234,7 +2140,7 @@ namespace sones.GraphDB.Managers.Select
 
                     while (func != null)
                     {
-                        funcResult = func.Function.Execute(null, null, null, _DBContext, _DBObjectCache);
+                        funcResult = func.Function.Execute(null, null, null, _DBContext);
                         if (funcResult.Success())
                         {
 
@@ -2272,9 +2178,7 @@ namespace sones.GraphDB.Managers.Select
 
             if (!Attributes.IsNullOrEmpty())
             {
-                DBObjectReadout tempROObject = new DBObjectReadout(Attributes);
-                //_DBOs.Add(tempROObject);
-                yield return tempROObject;
+                yield return new DBObjectReadout(Attributes);
             }
 
         }
@@ -2288,6 +2192,8 @@ namespace sones.GraphDB.Managers.Select
 
             var retVal = new Dictionary<String, String>();
 
+            #region AttributeList
+
             foreach (var selType in _Selections)
             {
                 foreach (var sel in selType.Value)
@@ -2300,11 +2206,11 @@ namespace sones.GraphDB.Managers.Select
                                 retVal.Add(selElem.Element.Name, selElem.Alias);
                         }
                         else if (selElem.Selection != TypesOfSelect.None)
-                        {                            
+                        {
                             var attributes = _DBContext.DBTypeManager.GetTypeByUUID(sel.Key.Edges[0].TypeUUID).GetAllAttributes(_DBContext);
 
-                            switch(selElem.Selection)
-                            {   
+                            switch (selElem.Selection)
+                            {
                                 case TypesOfSelect.Minus:
                                     foreach (var attr in attributes)
                                     {
@@ -2358,14 +2264,14 @@ namespace sones.GraphDB.Managers.Select
                                         }
                                     }
                                     break;
-                                
+
                                 case TypesOfSelect.Asterisk:
                                     foreach (var attr in attributes)
                                     {
                                         if (!retVal.ContainsKey(attr.Name))
                                             retVal.Add(attr.Name, attr.Name);
                                     }
-                                    break;                               
+                                    break;
                             }
                         }
 
@@ -2373,16 +2279,23 @@ namespace sones.GraphDB.Managers.Select
                 }
             }
 
+            #endregion
+
             #region Aggregates
 
             if (!_Aggregates.IsNullOrEmpty())
             {
-                foreach (var selElem in _Aggregates)
+                foreach (var selElem in _Aggregates.Values)
                 {
-                    retVal.Add(selElem.AggregateDefinition.ChainPartAggregateDefinition.SourceParsedString, selElem.Alias);
+                    foreach (var aggrList in selElem.Values)
+                    {
+                        foreach (var aggr in aggrList)
+                        {
+                            retVal.Add(aggr.AggregateDefinition.ChainPartAggregateDefinition.SourceParsedString, aggr.Alias);
+                        }
+                    }
                 }
             }
-
 
             #endregion
 

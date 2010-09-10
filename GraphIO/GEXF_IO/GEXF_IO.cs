@@ -1,4 +1,24 @@
-﻿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * GEXF_IO
  * Achim 'ahzf' Friedland, 2010
  */
@@ -12,11 +32,13 @@ using System.Xml.Linq;
 using System.Collections.Generic;
 
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.Structures.Result;
+
 using sones.GraphDB.ObjectManagement;
 using sones.Lib;
 using sones.GraphFS.DataStructures;
 using System.Text;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.ObjectManagement;
 
 #endregion
 
@@ -227,7 +249,7 @@ namespace sones.GraphIO.GEXF
 
             if (_WeightedDBObject1 != null)
             {
-                _DBObject.Add(new XElement("edgelabel", new XElement("attribute", new XAttribute("name", "weight"), new XAttribute("type", _WeightedDBObject1.Weight.Type.ToString()), _WeightedDBObject1.Weight)));
+                _DBObject.Add(new XElement("edgelabel", new XElement("attribute", new XAttribute("name", "weight"), new XAttribute("type", _WeightedDBObject1.TypeName), _WeightedDBObject1.Weight)));
             }
 
             #endregion
@@ -247,8 +269,8 @@ namespace sones.GraphIO.GEXF
 
                         var _Grouped = new XElement("grouped");
 
-                        if (_GroupedDBObjects.GrouppedVertices != null)
-                            foreach (var _DBObjectReadout in _GroupedDBObjects.GrouppedVertices)
+                        if (_GroupedDBObjects.GroupedVertices != null)
+                            foreach (var _DBObjectReadout in _GroupedDBObjects.GroupedVertices)
                                 _Grouped.Add(ExportVertex(_DBObjectReadout));
 
                         _DBObject.Add(_Grouped);
@@ -265,7 +287,7 @@ namespace sones.GraphIO.GEXF
 
                     if (_WeightedDBObject != null)
                     {
-                        _DBObject.Add(new XElement("edgelabel", new XElement("attribute", new XAttribute("name", "weight"), new XAttribute("type", _WeightedDBObject1.Weight.Type.ToString()), _WeightedDBObject1.Weight)));
+                        _DBObject.Add(new XElement("edgelabel", new XElement("attribute", new XAttribute("name", "weight"), new XAttribute("type", _WeightedDBObject1.TypeName), _WeightedDBObject1.Weight)));
                         continue;
                     }
 

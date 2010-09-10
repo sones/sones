@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * 
  * (c) Stefan Licht, 2010
  */
@@ -9,10 +29,11 @@ using System.Linq;
 using System.Text;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.Structures.Result;
+
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.Errors;
+using sones.GraphDBInterface.TypeManagement;
 
 namespace sones.GraphDB.Managers.Structures
 {
@@ -99,14 +120,19 @@ namespace sones.GraphDB.Managers.Structures
 
             #region get elements
 
-            try
+            if (AttributeIDChain.LastAttribute.EdgeType == null)
             {
-                _elementsToBeRemoved = (ASetOfReferencesEdgeType)(TupleDefinition.GetCorrespondigDBObjectUUIDAsList(myGraphDBType, myDBContext, AttributeIDChain.LastAttribute.EdgeType.GetNewInstance(), AttributeIDChain.LastAttribute.GetDBType(myDBContext.DBTypeManager)).Value);
+                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(new Error_InvalidEdgeType(AttributeIDChain.LastAttribute.GetType()));
             }
-            catch (Exception e)
+
+            var elements = TupleDefinition.GetCorrespondigDBObjectUUIDAsList(myGraphDBType, myDBContext, AttributeIDChain.LastAttribute.EdgeType.GetNewInstance(), AttributeIDChain.LastAttribute.GetDBType(myDBContext.DBTypeManager));
+
+            if(!elements.Success())
             {
-                return new Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>>(new Error_UnknownDBError(e));
+                return new Exceptional<Dictionary<string,Tuple<TypeAttribute,IObject>>>(elements);
             }
+
+            _elementsToBeRemoved = (ASetOfReferencesEdgeType)elements.Value;            
 
             #endregion
 

@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * ObjectStore
  * (c) Achim Friedland, 2010
  */
@@ -7,16 +27,17 @@
 
 using System;
 using System.Linq;
+using System.Diagnostics;
+using System.Collections.Generic;
 
+using sones.GraphFS.Caches;
+using sones.GraphFS.Errors;
 using sones.GraphFS.Objects;
 using sones.GraphFS.DataStructures;
 
+using sones.Lib.ErrorHandling;
 using sones.Lib.DataStructures;
 using sones.Lib.DataStructures.Big;
-using sones.GraphFS.Caches;
-using sones.Lib.ErrorHandling;
-using System.Collections.Generic;
-using sones.GraphFS.Errors;
 
 #endregion
 
@@ -24,16 +45,17 @@ namespace sones.GraphFS
 {
 
     /// <summary>
-    /// Stores INodes, ObjectLocators and AFSObjects within
-    /// the memory-only GraphFS1
+    /// An implemantation of the IObjectCache interface for storing INodes,
+    /// ObjectLocators and AFSObjects without removing them again at anytime.
+    /// Thus this implementation can be used for in-memory solutions.
     /// </summary>
     public class ObjectStore : IObjectCache
     {
 
         #region Data
 
-        private BigDictionary<ObjectLocation, ObjectLocator> _ObjectLocatorLookuptable;
-        private BigDictionary<CacheUUID, AFSObject>          _AFSObjectLookuptable;
+        protected IDictionary<ObjectLocation, ObjectLocator>  _ObjectLocatorStore;
+        protected IDictionary<CacheUUID, AFSObject>           _AFSObjectStore;
 
         #endregion
 
@@ -45,7 +67,10 @@ namespace sones.GraphFS
         {
             get
             {
-                return !_ObjectLocatorLookuptable.Any();
+                lock (this)
+                {
+                    return !_ObjectLocatorStore.Any();
+                }
             }
         }
 
@@ -57,9 +82,18 @@ namespace sones.GraphFS
         {
             get
             {
-                return (UInt64) _ObjectLocatorLookuptable.Count();
+                lock (this)
+                {
+                    return (UInt64) _ObjectLocatorStore.Count();
+                }
             }
         }
+
+        #endregion
+
+        #region ObjectCacheSettings
+
+        public ObjectCacheSettings ObjectCacheSettings { get; set; }
 
         #endregion
 
@@ -69,31 +103,28 @@ namespace sones.GraphFS
 
         public ObjectStore()
         {
-            _ObjectLocatorLookuptable = new BigDictionary<ObjectLocation, ObjectLocator>();
-            _AFSObjectLookuptable     = new BigDictionary<CacheUUID, AFSObject>();
+            _ObjectLocatorStore = new Dictionary<ObjectLocation, ObjectLocator>();
+            _AFSObjectStore     = new Dictionary<CacheUUID, AFSObject>();
         }
-
-        #endregion
-
-
-        #region ObjectCacheSettings
-
-        public ObjectCacheSettings ObjectCacheSettings { get; set; }
 
         #endregion
 
 
         #region StoreINode(myINode, myObjectLocation, myIsPinned = false)
 
-        public Exceptional<INode> StoreINode(INode myINode, ObjectLocation myObjectLocation, Boolean myIsPinned = false)
+        public virtual Exceptional<INode> StoreINode(INode myINode, ObjectLocation myObjectLocation, Boolean myIsPinned = false)
         {
+
+            Debug.Assert(myINode                != null);
+            Debug.Assert(myObjectLocation       != null);
+            Debug.Assert(_ObjectLocatorStore    != null);
 
             var _Exceptional = GetObjectLocator(myObjectLocation);
 
             if (_Exceptional.Failed())
                 return _Exceptional.Convert<INode>();
 
-            _Exceptional.Value.INodeReference = myINode;
+            _Exceptional.Value.INodeReferenceSetter = myINode;
 
             return new Exceptional<INode>();
 
@@ -103,33 +134,59 @@ namespace sones.GraphFS
 
         #region StoreObjectLocator(myObjectLocator, myIsPinned = false)
 
-        public Exceptional<ObjectLocator> StoreObjectLocator(ObjectLocator myObjectLocator, Boolean myIsPinned = false)
+        public virtual Exceptional<ObjectLocator> StoreObjectLocator(ObjectLocator myObjectLocator, Boolean myIsPinned = false)
         {
 
-            if (_ObjectLocatorLookuptable.ContainsKey(myObjectLocator.ObjectLocation))
-                _ObjectLocatorLookuptable[myObjectLocator.ObjectLocation] = myObjectLocator;
+            Debug.Assert(myObjectLocator                != null);
+            Debug.Assert(myObjectLocator.ObjectLocation != null);
+            Debug.Assert(_ObjectLocatorStore            != null);
 
-            else
-                _ObjectLocatorLookuptable.Add(myObjectLocator.ObjectLocation, myObjectLocator);
+            lock (this)
+            {
 
-            return new Exceptional<ObjectLocator>(myObjectLocator);
+                if (_ObjectLocatorStore.ContainsKey(myObjectLocator.ObjectLocation))
+                    _ObjectLocatorStore[myObjectLocator.ObjectLocation] = myObjectLocator;
+
+                else
+                    _ObjectLocatorStore.Add(myObjectLocator.ObjectLocation, myObjectLocator);
+
+                return new Exceptional<ObjectLocator>(myObjectLocator);
+
+            }
 
         }
 
         #endregion
 
-        #region StoreAFSObject(myCacheUUID, myAFSObject, myIsPinned = false)
+        #region StoreAFSObject(myAFSObject, myIsPinned = false)
 
-        public Exceptional<AFSObject> StoreAFSObject(CacheUUID myCacheUUID, AFSObject myAFSObject, Boolean myIsPinned = false)
+        public virtual Exceptional<AFSObject> StoreAFSObject(AFSObject myAFSObject, Boolean myIsPinned = false)
         {
 
-            if (_AFSObjectLookuptable.ContainsKey(myCacheUUID))
-                _AFSObjectLookuptable[myCacheUUID] = myAFSObject;
+            Debug.Assert(myAFSObject                        != null);
+            Debug.Assert(myAFSObject.ObjectLocation         != null);
+            Debug.Assert(myAFSObject.ObjectLocatorReference != null);
+            Debug.Assert(myAFSObject.ObjectStream           != null);
+            Debug.Assert(myAFSObject.ObjectEdition          != null);
+            Debug.Assert(myAFSObject.ObjectRevisionID       != null);
+            Debug.Assert(_ObjectLocatorStore                != null);
+            Debug.Assert(_AFSObjectStore                    != null);
 
-            else
-                _AFSObjectLookuptable.Add(myCacheUUID, myAFSObject);
+            lock (this)
+            {
 
-            return new Exceptional<AFSObject>(myAFSObject);
+                var _CacheUUID = myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition][myAFSObject.ObjectRevisionID].CacheUUID;
+                Debug.Assert(_CacheUUID != null);
+
+                if (_AFSObjectStore.ContainsKey(_CacheUUID))
+                    _AFSObjectStore[_CacheUUID] = myAFSObject;
+
+                else
+                    _AFSObjectStore.Add(_CacheUUID, myAFSObject);
+
+                return new Exceptional<AFSObject>(myAFSObject);
+            
+            }
 
         }
 
@@ -138,8 +195,10 @@ namespace sones.GraphFS
 
         #region GetINode(myObjectLocation)
 
-        public Exceptional<INode> GetINode(ObjectLocation myObjectLocation)
+        public virtual Exceptional<INode> GetINode(ObjectLocation myObjectLocation)
         {
+
+            Debug.Assert(myObjectLocation   != null);
 
             var _Exceptional = GetObjectLocator(myObjectLocation);
 
@@ -158,17 +217,25 @@ namespace sones.GraphFS
 
         #region GetObjectLocator(myObjectLocation)
 
-        public Exceptional<ObjectLocator> GetObjectLocator(ObjectLocation myObjectLocation)
+        public virtual Exceptional<ObjectLocator> GetObjectLocator(ObjectLocation myObjectLocation)
         {
 
-            ObjectLocator _ObjectLocator = null;
+            Debug.Assert(myObjectLocation       != null);
+            Debug.Assert(_ObjectLocatorStore    != null);
 
-            if (_ObjectLocatorLookuptable.TryGetValue(myObjectLocation, out _ObjectLocator))
-                if (_ObjectLocator != null)
-                    return new Exceptional<ObjectLocator>(_ObjectLocator);
+            lock (this)
+            {
 
-            //ToDo: This might be a bit too expensive!
-            return new Exceptional<ObjectLocator>(new GraphFSError("Not within the ObjectCache!"));
+                ObjectLocator _ObjectLocator = null;
+
+                if (_ObjectLocatorStore.TryGetValue(myObjectLocation, out _ObjectLocator))
+                    if (_ObjectLocator != null)
+                        return new Exceptional<ObjectLocator>(_ObjectLocator);
+
+                //ToDo: This might be a bit too expensive!
+                return new Exceptional<ObjectLocator>(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
+
+            }
 
         }
 
@@ -176,137 +243,129 @@ namespace sones.GraphFS
 
         #region GetAFSObject<PT>(myCacheUUID)
 
-        public Exceptional<PT> GetAFSObject<PT>(CacheUUID myCacheUUID)
+        public virtual Exceptional<PT> GetAFSObject<PT>(CacheUUID myCacheUUID)
             where PT : AFSObject
         {
 
-            AFSObject _AFSObject = null;
-
-            if (_AFSObjectLookuptable.TryGetValue(myCacheUUID, out _AFSObject))
-                if (_AFSObject != null)
-                    return new Exceptional<PT>(_AFSObject as PT);
-
-            //ToDo: This might be a bit too expensive!
-            return new Exceptional<PT>(new GraphFSError("Not within the ObjectCache!"));
-
-        }
-
-        #endregion
-
-        //#region HasObjectLocator(myObjectLocation)
-
-        //public Exceptional<Boolean> HasObjectLocator(ObjectLocation myObjectLocation)
-        //{
-        //    return new Exceptional<Boolean>(_ObjectLocatorLookuptable.ContainsKey(myObjectLocation));
-        //}
-
-        //#endregion
-
-
-        #region Copy(mySourceLocation, myTargetLocation, myRecursion = false)
-
-        public Exceptional Copy(ObjectLocation mySourceLocation, ObjectLocation myTargetLocation, Boolean myRecursion = false)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region Move(mySourceLocation, myTargetLocation, myRecursion = false)
-
-        public Exceptional Move(ObjectLocation mySourceLocation, ObjectLocation myTargetLocation, Boolean myRecursion = false)
-        {
+            Debug.Assert(myCacheUUID        != null);
+            Debug.Assert(_AFSObjectStore    != null);
 
             lock (this)
             {
 
-                if (_ObjectLocatorLookuptable.ContainsKey(mySourceLocation) &&
-                    !_ObjectLocatorLookuptable.ContainsKey(myTargetLocation))
+                AFSObject _AFSObject = null;
+
+                if (_AFSObjectStore.TryGetValue(myCacheUUID, out _AFSObject))
+                    if (_AFSObject != null)
+                        return new Exceptional<PT>(_AFSObject as PT);
+
+                //ToDo: This might be a bit too expensive!
+                return new Exceptional<PT>(new GraphFSError("Not within the ObjectCache!"));
+
+            }
+
+        }
+
+        #endregion
+
+
+        #region Copy(mySourceLocation, myTargetLocation)
+
+        public virtual Exceptional CopyToLocation(ObjectLocation mySourceLocation, ObjectLocation myTargetLocation)
+        {
+
+            Debug.Assert(_ObjectLocatorStore    != null);
+            Debug.Assert(_AFSObjectStore        != null);
+            Debug.Assert(mySourceLocation       != null);
+            Debug.Assert(myTargetLocation       != null);
+
+            lock (this)
+            {
+
+                if (_ObjectLocatorStore.ContainsKey(mySourceLocation) &&
+                    !_ObjectLocatorStore.ContainsKey(myTargetLocation))
                 {
 
-                    #region Recursive move objects under this location!
-
-                    if (myRecursion)
+                    foreach (var _ItemToMove in from _Item in _ObjectLocatorStore where _Item.Key.StartsWith(mySourceLocation.ToString()) select _Item)
                     {
 
-                        var _ListOfItemsToMove = (from _Item in _ObjectLocatorLookuptable where _Item.Key.StartsWith(mySourceLocation) select _Item).ToList();
-
-                        foreach (var _ItemToMove in _ListOfItemsToMove)
-                        {
-
-                            var _OldLocation = _ItemToMove.Key.ToString();
-
-                            // Move the ObjectLocator to the new ObjectLocation
-                            var _ObjectLocator = _ObjectLocatorLookuptable[_ItemToMove.Key];
-                            _ObjectLocator.ObjectLocation = new ObjectLocation(myTargetLocation, _OldLocation.Remove(0, mySourceLocation.Length));
-                            _ObjectLocatorLookuptable.Add(new ObjectLocation(myTargetLocation, _OldLocation.Remove(0, mySourceLocation.Length)), _ObjectLocator);
-                            _ObjectLocatorLookuptable.Remove(_ItemToMove.Key);
-
-
-                            // Remove all objects at this location
-                            foreach (var _StringStream in _ObjectLocator)
-                            {
-
-                                //if (_StringStream.Key == FSConstants.DIRECTORYSTREAM)
-                                //    Remove(new ObjectLocation(myOldObjectLocation, _StringStream.Key), true);
-
-                                foreach (var _StringEdition in _StringStream.Value)
-                                    foreach (var _RevisionIDRevision in _StringEdition.Value)
-                                    {
-
-                                        AFSObject _Object = null;
-
-                                        if (_AFSObjectLookuptable.TryGetValue(_RevisionIDRevision.Value.CacheUUID, out _Object))
-                                        {
-                                            var _OldObjectLocation = _Object.ObjectLocation.ToString();
-                                            if (_OldObjectLocation.StartsWith(mySourceLocation.ToString() + FSPathConstants.PathDelimiter))
-                                            {
-                                                _Object.ObjectLocation = new ObjectLocation(myTargetLocation, _OldObjectLocation.Remove(0, mySourceLocation.Length));
-                                            }
-                                        }
-
-                                    }
-
-                            }
-
-                        }
+                        // Copy the ObjectLocator to the new ObjectLocation
+                        var _ObjectLocator = _ObjectLocatorStore[_ItemToMove.Key];
+                        var _NewLocation   = new ObjectLocation(myTargetLocation, _ItemToMove.Key.PathElements.Skip(mySourceLocation.PathElements.Count()));
+                        _ObjectLocator.ObjectLocationSetter = _NewLocation;
+                        _ObjectLocatorStore.Add(_NewLocation, _ObjectLocator);
 
                     }
 
-                    #endregion
+                }
 
-                    #region Move objects at this location!
+            }
 
-                    else
+            return Exceptional.OK;
+
+        }
+
+        #endregion
+
+        #region Move(mySourceLocation, myTargetLocation)
+
+        public virtual Exceptional MoveToLocation(ObjectLocation mySourceLocation, ObjectLocation myTargetLocation)
+        {
+
+            Debug.Assert(_ObjectLocatorStore    != null);
+            Debug.Assert(_AFSObjectStore        != null);
+            Debug.Assert(mySourceLocation       != null);
+            Debug.Assert(myTargetLocation       != null);
+
+            lock (this)
+            {
+
+                if (_ObjectLocatorStore.ContainsKey(mySourceLocation) &&
+                    !_ObjectLocatorStore.ContainsKey(myTargetLocation))
+                {
+
+                    // Get a copy of all ObjectsLocations to move, as we will modify the list later...
+                    var _ListOfItemsToMove = (from _Item in _ObjectLocatorStore where _Item.Key.StartsWith(mySourceLocation.ToString()) select _Item).ToList();
+
+                    foreach (var _ItemToMove in _ListOfItemsToMove)
                     {
 
                         // Move the ObjectLocator to the new ObjectLocation
-                        var _ObjectLocator = _ObjectLocatorLookuptable[mySourceLocation];
-                        _ObjectLocatorLookuptable.Add(myTargetLocation, _ObjectLocator);
-                        _ObjectLocatorLookuptable.Remove(mySourceLocation);
+                        var _ObjectLocator = _ObjectLocatorStore[_ItemToMove.Key];
+                        var _NewLocation   = new ObjectLocation(myTargetLocation, _ItemToMove.Key.PathElements.Skip(mySourceLocation.PathElements.Count()));
+                        _ObjectLocator.ObjectLocationSetter = _NewLocation;
+                        _ObjectLocatorStore.Add(_NewLocation, _ObjectLocator);
+                        _ObjectLocatorStore.Remove(_ItemToMove.Key);
 
-                        // Move all _Object.ObjectLocations to the new ObjectLocation
-                        foreach (var _StringStream in _ObjectLocator)
-                            foreach (var _StringEdition in _StringStream.Value)
-                                foreach (var _RevisionIDRevision in _StringEdition.Value)
-                                {
+                        // No longer needed... as all AFSObjects ask the ObjectLocator for their ObjectLocation
+                        //var _OldLocation = _ItemToMove.Key.ToString();
+                        //// Remove all objects at this location
+                        //foreach (var _StringStream in _ObjectLocator)
+                        //{
 
-                                    AFSObject _Object = null;
+                        //    //if (_StringStream.Key == FSConstants.DIRECTORYSTREAM)
+                        //    //    Remove(new ObjectLocation(myOldObjectLocation, _StringStream.Key), true);
 
-                                    if (_AFSObjectLookuptable.TryGetValue(_RevisionIDRevision.Value.CacheUUID, out _Object))
-                                    {
-                                        var _OldLocation = _Object.ObjectLocation.ToString();
-                                        if (_OldLocation.StartsWith(mySourceLocation))
-                                        {
-                                            _Object.ObjectLocation = new ObjectLocation(myTargetLocation, _OldLocation.Remove(0, mySourceLocation.Length));
-                                        }
-                                    }
+                        //    foreach (var _StringEdition in _StringStream.Value)
+                        //        foreach (var _RevisionIDRevision in _StringEdition.Value)
+                        //        {
 
-                                }
+                        //            AFSObject _Object = null;
+
+                        //            if (_AFSObjectLookuptable.TryGetValue(_RevisionIDRevision.Value.CacheUUID, out _Object))
+                        //            {
+                        //                var _OldObjectLocation = _Object.ObjectLocation.ToString();
+                        //                if (_OldObjectLocation.StartsWith(mySourceLocation.ToString() + FSPathConstants.PathDelimiter))
+                        //                {
+                        //                    _Object.ObjectLocation = new ObjectLocation(myTargetLocation, _OldObjectLocation.Remove(0, mySourceLocation.Length));
+                        //                }
+                        //            }
+
+                        //        }
+
+                        //}
 
                     }
-
-                    #endregion
 
                 }
 
@@ -321,22 +380,33 @@ namespace sones.GraphFS
 
         #region RemoveObjectLocator(myObjectLocator, myRecursion = false)
 
-        public Exceptional RemoveObjectLocator(ObjectLocator myObjectLocator, Boolean myRecursion = false)
+        public virtual Exceptional RemoveObjectLocator(ObjectLocator myObjectLocator, Boolean myRecursion = false)
         {
+
+            Debug.Assert(myObjectLocator                != null);
+            Debug.Assert(myObjectLocator.ObjectLocation != null);
+            Debug.Assert(_ObjectLocatorStore            != null);
+            Debug.Assert(_AFSObjectStore                != null);
+
             return RemoveObjectLocation(myObjectLocator.ObjectLocation, myRecursion);
+
         }
 
         #endregion
 
         #region RemoveObjectLocation(myObjectLocation, myRecursion = false)
 
-        public Exceptional RemoveObjectLocation(ObjectLocation myObjectLocation, Boolean myRecursion = false)
+        public virtual Exceptional RemoveObjectLocation(ObjectLocation myObjectLocation, Boolean myRecursion = false)
         {
+
+            Debug.Assert(myObjectLocation       != null);
+            Debug.Assert(_ObjectLocatorStore    != null);
+            Debug.Assert(_AFSObjectStore        != null);
 
             lock (this)
             {
 
-                if (_ObjectLocatorLookuptable.ContainsKey(myObjectLocation))
+                if (_ObjectLocatorStore.ContainsKey(myObjectLocation))
                 {
 
                     #region Recursive remove objects under this location!
@@ -345,7 +415,7 @@ namespace sones.GraphFS
                     {
 
                         // Remove all objects at this location
-                        foreach (var _StringStream in _ObjectLocatorLookuptable[myObjectLocation])
+                        foreach (var _StringStream in _ObjectLocatorStore[myObjectLocation])
                         {
 
                             if (_StringStream.Key == FSConstants.DIRECTORYSTREAM)
@@ -358,7 +428,7 @@ namespace sones.GraphFS
                         }
 
                         // Remove ObjectLocator
-                        _ObjectLocatorLookuptable.Remove(myObjectLocation);
+                        _ObjectLocatorStore.Remove(myObjectLocation);
 
                     }
 
@@ -370,13 +440,13 @@ namespace sones.GraphFS
                     {
 
                         // Remove all objects at this location
-                        foreach (var _StringStream in _ObjectLocatorLookuptable[myObjectLocation])
+                        foreach (var _StringStream in _ObjectLocatorStore[myObjectLocation])
                             foreach (var _StringEdition in _StringStream.Value)
                                 foreach (var _RevisionIDRevision in _StringEdition.Value)
                                     RemoveAFSObject(_RevisionIDRevision.Value.CacheUUID);
 
                         // Remove ObjectLocator
-                        _ObjectLocatorLookuptable.Remove(myObjectLocation);
+                        _ObjectLocatorStore.Remove(myObjectLocation);
 
                     }
 
@@ -394,13 +464,21 @@ namespace sones.GraphFS
 
         #region RemoveAFSObject(myCacheUUID)
 
-        public Exceptional RemoveAFSObject(CacheUUID myCacheUUID)
+        public virtual Exceptional RemoveAFSObject(CacheUUID myCacheUUID)
         {
 
-            if (_AFSObjectLookuptable.ContainsKey(myCacheUUID))
-                _AFSObjectLookuptable.Remove(myCacheUUID);
+            Debug.Assert(myCacheUUID        != null);
+            Debug.Assert(_AFSObjectStore    != null);
 
-            return Exceptional.OK;
+            lock (this)
+            {
+
+                if (_AFSObjectStore.ContainsKey(myCacheUUID))
+                    _AFSObjectStore.Remove(myCacheUUID);
+
+                return Exceptional.OK;
+
+            }
 
         }
 
@@ -412,14 +490,22 @@ namespace sones.GraphFS
         public Exceptional Clear()
         {
 
-            _ObjectLocatorLookuptable.Clear();
+            Debug.Assert(_ObjectLocatorStore    != null);
+            Debug.Assert(_AFSObjectStore        != null);
 
-            return Exceptional.OK;
+            lock (this)
+            {
+
+                _ObjectLocatorStore.Clear();
+                _AFSObjectStore.Clear();
+
+                return Exceptional.OK;
+
+            }
 
         }
 
         #endregion
-
 
     }
 

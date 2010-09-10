@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /*
  * GraphFSFactory
- * Achim Friedland, 2008 - 2010
+ * (c) Achim Friedland, 2008 - 2010
  */
 
 #region Usings
@@ -30,6 +30,8 @@ using System;
 using sones.Lib.Singleton;
 using sones.Lib.Reflection;
 using sones.Lib.ErrorHandling;
+using System.Collections.Generic;
+using sones.GraphFS.Errors;
 
 #endregion
 
@@ -83,15 +85,60 @@ namespace sones.GraphFS
 
             #endregion
 
+
+            #region SetIGraphFSParametersDictionary()
+
+            /// <summary>
+            /// Set IGraphFS properties based on IGraphFSParametersDictionary
+            /// </summary>
+            public Exceptional SetIGraphFSParametersDictionary(IGraphFS myIGraphFS, IDictionary<String, Object> IGraphFSParameters)
+            {
+
+                foreach (var _GraphFSParameter in IGraphFSParameters)
+                {
+
+                    var _IGraphFSProperty = myIGraphFS.GetType().GetProperty(_GraphFSParameter.Key);
+
+                    try
+                    {
+
+                        if (_IGraphFSProperty != null)
+                            _IGraphFSProperty.SetValue(myIGraphFS, _GraphFSParameter.Value, null);
+
+                    }
+                    catch (Exception e)
+                    {
+                        return new Exceptional(new GraphFSError_InvalidIGraphFSParameterType(myIGraphFS, _GraphFSParameter.Key, _IGraphFSProperty.PropertyType, _GraphFSParameter.Value.GetType()));
+                    }
+
+                }
+
+                return Exceptional.OK;
+
+            }
+
+            #endregion
+
             #region ActivateIGraphFS(myImplementation)
 
-            public Exceptional<IGraphFS> ActivateIGraphFS(String myImplementation = _DefaultImplementation)
+            public Exceptional<IGraphFS> ActivateIGraphFS(String myImplementation = _DefaultImplementation, IDictionary<String, Object> IGraphFSParameters = null)
             {
 
                 if (myImplementation == null)
                     myImplementation = _DefaultImplementation;
 
-                return ActivateT_protected(myImplementation);
+                var _Exceptional = ActivateT_protected(myImplementation);
+                if (_Exceptional.IsInvalid())
+                    return _Exceptional;
+
+                if (IGraphFSParameters != null)
+                {
+                    var _Exceptional2 = SetIGraphFSParametersDictionary(_Exceptional.Value, IGraphFSParameters);
+                    if (_Exceptional2.Failed())
+                        return _Exceptional2.Convert<IGraphFS>();
+                }
+
+                return _Exceptional;
 
             }
 

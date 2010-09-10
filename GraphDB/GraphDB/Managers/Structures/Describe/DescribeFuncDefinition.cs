@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * DescribeFuncDefinition
  * (c) Stefan Licht, 2010
  */
@@ -9,12 +29,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.Structures.Result;
+
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Functions;
 using sones.GraphDB.TypeManagement;
+using sones.GraphDBInterface.Result;
 
 #endregion
 
@@ -40,11 +61,8 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
         #region ADescribeDefinition
 
-        public override Exceptional<List<SelectionResultSet>> GetResult(DBContext myDBContext)
+        public override Exceptional<SelectionResultSet> GetResult(DBContext myDBContext)
         {
-
-            var result = new List<SelectionResultSet>();
-
             if (!String.IsNullOrEmpty(_FuncName))
             {
 
@@ -53,11 +71,11 @@ namespace sones.GraphDB.Managers.Structures.Describe
                 var func = myDBContext.DBPluginManager.GetFunction(_FuncName);
                 if (func != null)
                 {
-                    result.Add(new SelectionResultSet(GenerateOutput(func, _FuncName, myDBContext.DBTypeManager)));
+                    return new Exceptional<SelectionResultSet>(new SelectionResultSet(GenerateOutput(func, _FuncName, myDBContext.DBTypeManager)));
                 }
                 else
                 {
-                    return new Exceptional<List<SelectionResultSet>>(new Error_EdgeTypeDoesNotExist(_FuncName));
+                    return new Exceptional<SelectionResultSet>(new Error_EdgeTypeDoesNotExist(_FuncName));
                 }
 
                 #endregion
@@ -68,17 +86,18 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
                 #region All edge
 
+                List<DBObjectReadout> resultingReadouts = new List<DBObjectReadout>();
+
                 foreach (var func in myDBContext.DBPluginManager.GetAllFunctions())
                 {
-                    result.Add(new SelectionResultSet(GenerateOutput(func.Value, func.Key, myDBContext.DBTypeManager)));
+                    resultingReadouts.Add(GenerateOutput(func.Value, func.Key, myDBContext.DBTypeManager));
                 }
 
+
+                return new Exceptional<SelectionResultSet>(new SelectionResultSet(resultingReadouts));
                 #endregion
 
             }
-
-            return new Exceptional<List<SelectionResultSet>>(result);
-
         }
 
         #endregion
@@ -92,7 +111,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
         /// <param name="myFuncName">function name</param>
         /// <param name="myTypeManager">type manager</param>
         /// <returns>a list of readouts which contains the information</returns>
-        private IEnumerable<DBObjectReadout> GenerateOutput(ABaseFunction myFunc, string myFuncName, DBTypeManager myTypeManager)
+        private DBObjectReadout GenerateOutput(ABaseFunction myFunc, string myFuncName, DBTypeManager myTypeManager)
         {
 
             var Func = new Dictionary<String, Object>();
@@ -107,19 +126,19 @@ namespace sones.GraphDB.Managers.Structures.Describe
             {
                 if (param.VariableNumOfParams)
                 {
-                    GraphDBType[] myArray = { myTypeManager.GetTypeByUUID(param.DBType.ID) };
+                    GraphDBType[] myArray = { myTypeManager.GetTypeByName(param.DBType.ObjectName) };
                     parameters.Add(param.Name, myArray);
                 }
                 else
                 {
-                    parameters.Add(param.Name, myTypeManager.GetTypeByUUID(param.DBType.ID));
+                    parameters.Add(param.Name, myTypeManager.GetTypeByName(param.DBType.ObjectName));
                 }
             }
             Func.Add("Parameters", new Edge(new DBObjectReadout(parameters), ""));
 
             #endregion
 
-            return new List<DBObjectReadout>() { new DBObjectReadout(Func) };
+            return new DBObjectReadout(Func);
 
         }
 

@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB – ColumnItem node" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB � ColumnItem node" />
  * <copyright file="ColumnItemNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -17,11 +37,13 @@ using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.Structures.Enums;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.GraphQL.Structure;
+using sones.GraphDB.Managers.Select;
 
 #endregion
 
 namespace sones.GraphDB.GraphQL.StructureNodes
 {
+
 
     /// <summary>
     /// This node is requested in case of an ColumnItem node
@@ -29,22 +51,15 @@ namespace sones.GraphDB.GraphQL.StructureNodes
     public class SelectionListElementNode : AStructureNode, IAstNodeInit
     {
 
-        public TypesOfSelect SelType { get; private set; }        
-        
-        #region Data
-
-        TypesOfColumnSource         _TypeOfColumnSource;
-        AExpressionDefinition       _ColumnSourceValue  = null;
-        String                      _AliasId            = null;
-
-        #endregion
 
         #region Accessors
 
-        public TypesOfColumnSource TypeOfColumnSource   { get { return _TypeOfColumnSource; } }
-        public AExpressionDefinition ColumnSourceValue  { get { return _ColumnSourceValue; } }
-        public String AliasId                           { get { return _AliasId; } }
+        public TypesOfColumnSource TypeOfColumnSource   { get; private set; } 
+        public AExpressionDefinition ColumnSourceValue  { get; private set; }
+        public String AliasId                           { get; private set; }
         public String TypeName                          { get; private set; }
+        public TypesOfSelect SelType                    { get; private set; }
+        public SelectValueAssignment ValueAssignment    { get; private set; }
 
         #endregion
 
@@ -52,7 +67,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
         public SelectionListElementNode()
         {
-            
+            ColumnSourceValue = null;
         }
 
         #endregion
@@ -93,6 +108,9 @@ namespace sones.GraphDB.GraphQL.StructureNodes
             }
             else
             {
+
+                #region IDNode or AggregateNode
+
                 SelType = TypesOfSelect.None;
                 object astNode = parseNode.ChildNodes[0].AstNode;
 
@@ -123,19 +141,19 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
                     #region ID
 
-                    _TypeOfColumnSource = TypesOfColumnSource.ID;
+                    TypeOfColumnSource = TypesOfColumnSource.ID;
 
                     #region get value
 
-                    _ColumnSourceValue = ((IDNode)aIDNode).IDChainDefinition;
+                    ColumnSourceValue = ((IDNode)aIDNode).IDChainDefinition;
 
                     #endregion
 
                     #region Alias handling
 
-                    if (parseNode.ChildNodes.Count > 1)
+                    if (parseNode.ChildNodes.Count > 2)// && parseNode.ChildNodes.Last().AstNode is AliasNode)
                     {
-                        _AliasId = parseNode.ChildNodes[2].Token.ValueString;
+                        AliasId = parseNode.ChildNodes[3].Token.ValueString; //(parseNode.ChildNodes.Last().AstNode as AliasNode).AliasId;
                     }
 
                     #endregion
@@ -147,23 +165,23 @@ namespace sones.GraphDB.GraphQL.StructureNodes
                 {
                     #region aggregate
 
-                    _TypeOfColumnSource = TypesOfColumnSource.Aggregate;
+                    TypeOfColumnSource = TypesOfColumnSource.Aggregate;
 
                     AggregateNode aAggregateNode = (AggregateNode)astNode;
 
-                    _ColumnSourceValue = aAggregateNode.AggregateDefinition;
+                    ColumnSourceValue = aAggregateNode.AggregateDefinition;
 
                     #endregion
 
                     #region Alias handling
 
-                    if (parseNode.ChildNodes.Count.CompareTo(1) > 0)
+                    if (parseNode.ChildNodes.Count > 1)//Last().AstNode is AliasNode)
                     {
-                        _AliasId = parseNode.ChildNodes[2].Token.ValueString;
+                        AliasId = parseNode.ChildNodes[2].Token.ValueString;//(parseNode.ChildNodes.Last().AstNode as AliasNode).AliasId;
                     }
                     else
                     {
-                        _AliasId = aAggregateNode.AggregateDefinition.ChainPartAggregateDefinition.SourceParsedString;
+                        AliasId = aAggregateNode.AggregateDefinition.ChainPartAggregateDefinition.SourceParsedString;
                     }
 
                     #endregion
@@ -172,6 +190,23 @@ namespace sones.GraphDB.GraphQL.StructureNodes
                 else
                 {
                     throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), parseNode.ChildNodes[0].AstNode.GetType().Name));
+                }
+
+                #endregion
+
+                if (parseNode.ChildNodes.Count > 1)
+                {
+
+                    #region SelectValueAssignmentNode
+
+                    if (parseNode.ChildNodes[1].AstNode is SelectValueAssignmentNode)
+                    {
+                        ValueAssignment = (parseNode.ChildNodes[1].AstNode as SelectValueAssignmentNode).ValueAssignment;
+                        //ValueAssignment = new Tuple<ValueAssignmentType, object>(ValueAssignmentType.Always, parseNode.ChildNodes[2].Token.Value);
+                    }
+
+                    #endregion
+
                 }
 
             }

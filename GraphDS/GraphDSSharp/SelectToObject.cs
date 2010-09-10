@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * SelectToObjectGraph
  * (c) Stefan Licht, 2010
  */
@@ -15,12 +35,13 @@ using System.Xml.Linq;
 using sones.GraphDB.Structures;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 using sones.GraphDB.NewAPI;
-using sones.GraphDB.Structures.Result;
+
 
 using sones.GraphFS.DataStructures;
 
 using sones.GraphIO;
 using sones.GraphIO.XML;
+using sones.GraphDBInterface.Result;
 
 #endregion
 
@@ -201,9 +222,9 @@ namespace sones.GraphDS.API.CSharp
 
             #region Find the SelectionList to type T
 
-            var selection = (from sel in _QueryResult.Results where sel.Type.Name == theType.Name select sel).FirstOrDefault();
+            //var selection = (from sel in _QueryResult.Results where sel.TypeName == theType.Name select sel).FirstOrDefault();
 
-            foreach (var elem in selection.Objects)
+            foreach (var elem in _QueryResult.Results.Objects)
             {
 
                 if (!_VisitedVerticesCache.ContainsKey(typeof(T)))
@@ -333,7 +354,7 @@ namespace sones.GraphDS.API.CSharp
 
             #region Find the SelectionList to type T
 
-            foreach (var _Element in _QueryResultElement.Elements("results").Elements("DBObject"))
+            foreach (var _Element in _QueryResultElement.Element("results").Elements("DBObject"))
             {
 
                 // Perhaps first collect all attributes and then create the object using all attributes as parameter
@@ -395,12 +416,12 @@ namespace sones.GraphDS.API.CSharp
 
             #region Find the SelectionList to type T
 
-            foreach (var _Element in _QueryResultElement.Elements("results").Elements("DBObject"))
+            foreach (var _Element in _QueryResultElement.Element("results").Elements("DBObject"))
             {
 
                 try
                 {
-                    _NewVertex = (T)Activator.CreateInstance(typeof(T));
+                    _NewVertex = (T) Activator.CreateInstance(typeof(T));
                 }
                 catch (Exception e)
                 {
@@ -856,7 +877,7 @@ namespace sones.GraphDS.API.CSharp
 //using System.Reflection;
 //using System.Xml.Linq;
 
-//using sones.GraphDB.Structures.Result;
+//
 //using sones.GraphDB.Structures;
 //using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 //using sones.GraphDS.API.CSharp.Reflection;

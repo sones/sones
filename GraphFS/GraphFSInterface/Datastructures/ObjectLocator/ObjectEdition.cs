@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /* 
  * GraphFSInterface - ObjectEdition
- * Achim Friedland, 2008 - 2010
+ * (c) Achim Friedland, 2008 - 2010
  */
 
 #region Usings
@@ -48,9 +48,9 @@ namespace sones.GraphFS.DataStructures
 {
   
     /// <summary>
-    /// An object revision is part of the object locator describing
-    /// different revisions of an object stream. It keeps track of the
-    /// oldest and latest object revision.
+    /// An ObjectEdition is part of the ObjectLocator describing
+    /// different revisions of an ObjectStream. It keeps track of the
+    /// oldest and latest ObjectRevision.
     /// </summary>
 
     public class ObjectEdition : IGraphFSDictionary<ObjectRevisionID, ObjectRevision>, IDirectoryListing
@@ -213,7 +213,7 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
-        #region Constructors
+        #region Constructor(s)
 
         #region ObjectEdition()
 
@@ -223,7 +223,7 @@ namespace sones.GraphFS.DataStructures
         public ObjectEdition()
         {
 
-            _ObjectPath             = "";
+            _ObjectPath             = null;
             _ObjectName             = "";
             _ObjectLocation         = null;
 
@@ -254,7 +254,7 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
-        #region ObjectEdition(myRevisionID, myObjectCopies)
+        #region ObjectEdition(myObjectEditionName, myObjectRevisionID, myObjectRevision)
 
         /// <summary>
         /// Main constructor
@@ -262,10 +262,10 @@ namespace sones.GraphFS.DataStructures
         /// <param name="myObjectEditionName"></param>
         /// <param name="myRevisionID"></param>
         /// <param name="myObjectCopies"></param>
-        public ObjectEdition(String myObjectEditionName, ObjectRevisionID myRevisionID, ObjectRevision myObjectCopies)
+        public ObjectEdition(String myObjectEditionName, ObjectRevisionID myObjectRevisionID, ObjectRevision myObjectRevision)
             : this(myObjectEditionName)
         {
-            SetRevision(myRevisionID, myObjectCopies);
+            SetRevision(myObjectRevisionID, myObjectRevision);
         }
 
         #endregion
@@ -283,7 +283,12 @@ namespace sones.GraphFS.DataStructures
             ObjectRevision _ObjectRevision = null;
 
             if (_ObjectRevisions.TryGetValue(myRevisionID, out _ObjectRevision))
+            {
                 _ObjectRevision = myObjectRevision;
+                return;
+            }
+
+            Add(myRevisionID, myObjectRevision);
 
         }
 
@@ -307,9 +312,8 @@ namespace sones.GraphFS.DataStructures
         #region LatestRevision
 
         /// <summary>
-        /// Returns the latest object copy object
+        /// Returns the latest ObjectRevision object.
         /// </summary>
-        /// <returns>the latest object copy object</returns>
         public ObjectRevision LatestRevision
         {
             get
@@ -323,9 +327,8 @@ namespace sones.GraphFS.DataStructures
         #region LatestRevisionID
 
         /// <summary>
-        /// Returns the latest revision timestamp.
+        /// Returns the latest ObjectRevisionID.
         /// </summary>
-        /// <returns>the latest revision timestamp</returns>
         public ObjectRevisionID LatestRevisionID
         {
             get
@@ -333,6 +336,42 @@ namespace sones.GraphFS.DataStructures
 
                 if (_ObjectRevisions != null)
                     return _ObjectRevisions.Keys.Max();
+
+                return null;
+
+            }
+        }
+
+        #endregion
+
+
+        #region LatestFullRevision
+
+        /// <summary>
+        /// Returns the latest ObjectRevision object which is not a delta revision.
+        /// </summary>
+        public ObjectRevision LatestFullRevision
+        {
+            get
+            {
+                return this[LatestFullRevisionID];
+            }
+        }
+
+        #endregion
+
+        #region LatestFullRevisionID
+
+        /// <summary>
+        /// Returns the latest ObjectRevisionID which is not a delta revision.
+        /// </summary>
+        public ObjectRevisionID LatestFullRevisionID
+        {
+            get
+            {
+
+                if (_ObjectRevisions != null)
+                    return _ObjectRevisions.Where(_Revision => _Revision.Value.IsDeltaRevision == false).Max().Key;
 
                 return null;
 
@@ -365,33 +404,12 @@ namespace sones.GraphFS.DataStructures
         {
 
             if (myRevisionID == null)
-                return null;
-
-            IOrderedEnumerable<ObjectRevisionID> _ListOfRevisionIDs = null;
+                throw new ArgumentNullException("myRevisionID must not be null!");
 
             if (_ObjectRevisions != null)
-                _ListOfRevisionIDs = (from _RevisionID in _ObjectRevisions.Keys select _RevisionID).OrderByDescending(key => key);
-
-            foreach (var _RevisionID in _ListOfRevisionIDs)
-                if (_RevisionID < myRevisionID)
-                    return _RevisionID;
+                return (from _RevisionID in _ObjectRevisions.Keys select _RevisionID).Where(key => key < myRevisionID).OrderByDescending(key => key).FirstOrDefault();
 
             return null;
-
-            //var _LatestRevisionID = OldestRevisionID;
-
-            //foreach (var _RevisionID in _RevisionIDs)
-            //{
-
-            //    if (_RevisionID.Timestamp > _LatestRevisionID.Timestamp)
-            //        _LatestRevisionID = _RevisionID;
-
-            //    if (_RevisionID.Timestamp >= myRevisionID.Timestamp)
-            //        break;
-
-            //}
-
-            //return _LatestRevisionID;
 
         }
 
@@ -555,138 +573,6 @@ namespace sones.GraphFS.DataStructures
         }
 
         #endregion
-
-        #endregion
-
-        #region Transactions
-
-        //#region AddTransactionRevision(myRevisionTimestamp, myObjectCopy, myTransactionUUID)
-
-        ///// <summary>
-        ///// Adds the given object revision to the list of revisions and keeps
-        ///// track of the oldest and latest revision timestamp.
-        ///// The latest revision will be used as parent revision.
-        ///// </summary>
-        ///// <param name="myRevisionID">the revision timestamp</param>
-        ///// <param name="myObjectCopy">the list of copies of the object stream</param>
-        //public void AddTransactionRevision(RevisionID myRevisionTimestamp, ObjectRevision myObjectCopy, UUID myTransactionUUID)
-        //{
-
-        //    //System.Diagnostics.Debug.WriteLine("[Transaction] AddTransactionRevision : " + myRevisionTimestamp + " uuid: " + myObjectCopy.CacheUUID);
-        //    lock (_TransactionLockObject)
-        //    {
-        //        if (_TransactionRevision != null && _TransactionRevision.Item3 != myTransactionUUID)
-        //            throw new GraphFSException_RevisionAlreadyHoldTransaction(_TransactionRevision.Item1.ToString());
-
-        //        _TransactionRevision = new StefanTuple<RevisionID, ObjectRevision, UUID>(myRevisionTimestamp, myObjectCopy, myTransactionUUID);
-        //    }
-
-        //}
-
-        //#endregion
-
-        //#region HoldTransaction
-
-        //public Boolean HoldTransaction
-        //{
-        //    get
-        //    {
-        //        return (_TransactionRevision != null);
-        //    }
-        //}
-
-        //#endregion
-
-        //#region CommitTransaction
-
-        //public void CommitTransaction()
-        //{
-        //    lock (_TransactionLockObject)
-        //    {
-        //        if (_TransactionRevision == null)
-        //            throw new GraphFSException_NoTransactionFound("");
-
-        //        //System.Diagnostics.Debug.WriteLine("[Transaction] CommitTransaction : " + _TransactionRevision.TupelElement1 + " uuid: " + _TransactionRevision.TupelElement2.CacheUUID);
-
-        //        Add(_TransactionRevision.Item1, _TransactionRevision.Item2);
-        //        _TransactionRevision = null;
-
-        //    }
-        //}
-
-        //#endregion
-
-        //#region RollbackTransaction
-
-        //public void RollbackTransaction()
-        //{
-        //    lock (_TransactionLockObject)
-        //    {
-        //        if (_TransactionRevision == null)
-        //            throw new GraphFSException_NoTransactionFound("");
-
-        //        //System.Diagnostics.Debug.WriteLine("[Transaction] RollbackTransaction : " + _TransactionRevision.TupelElement1 + " uuid: " + _TransactionRevision.TupelElement2.CacheUUID);
-
-        //        _TransactionRevision = null;
-        //    }
-        //}
-
-        //#endregion
-
-        //#region TransactionRevision
-
-        ///// <summary>
-        ///// Returns the latest object copy object
-        ///// </summary>
-        ///// <returns>the latest object copy object</returns>
-        //public ObjectRevision TransactionRevision
-        //{
-        //    get
-        //    {
-        //        if (_TransactionRevision == null)
-        //            return null;
-        //        //    throw new GraphFSException_NoTransactionFound("");
-
-        //        return _TransactionRevision.Item2;
-
-        //    }
-        //}
-
-        //#endregion
-
-        //#region TransactionRevisionID
-
-        ///// <summary>
-        ///// Returns the latest object copy object
-        ///// </summary>
-        ///// <returns>the latest object copy object</returns>
-        //public RevisionID TransactionRevisionID
-        //{
-        //    get
-        //    {
-        //        if (_TransactionRevision == null)
-        //            throw new GraphFSException_NoTransactionFound("");
-
-        //        return _TransactionRevision.Item1;
-        //    }
-        //}
-
-        //#endregion
-
-        //#region TransactionUUID
-
-        //public UUID TransactionUUID
-        //{
-        //    get
-        //    {
-        //        if (_TransactionRevision == null)
-        //            return null;
-
-        //        return _TransactionRevision.Item3;
-        //    }
-        //}
-
-        //#endregion
 
         #endregion
 
@@ -896,10 +782,10 @@ namespace sones.GraphFS.DataStructures
         #region ObjectPath
 
         [NonSerialized]
-        private String _ObjectPath;
+        private ObjectLocation _ObjectPath;
 
         [NotIFastSerialized]
-        public String ObjectPath
+        public ObjectLocation ObjectPath
         {
 
             get
@@ -910,7 +796,7 @@ namespace sones.GraphFS.DataStructures
             set
             {
                 _ObjectPath      = value;
-                _ObjectLocation = new ObjectLocation(DirectoryHelper.Combine(_ObjectPath, _ObjectName));
+                _ObjectLocation = new ObjectLocation(_ObjectPath, _ObjectName);
             }
 
         }
@@ -934,7 +820,7 @@ namespace sones.GraphFS.DataStructures
             set
             {
                 _ObjectName      = value;
-                _ObjectLocation = new ObjectLocation(DirectoryHelper.Combine(_ObjectPath, _ObjectName));
+                _ObjectLocation = new ObjectLocation(_ObjectPath, _ObjectName);
             }
 
         }
@@ -994,7 +880,7 @@ namespace sones.GraphFS.DataStructures
 
         #region ObjectExists(myObjectName)
 
-        public Trinary ObjectExists(String myObjectName)
+        Trinary IDirectoryListing.ObjectExists(String myObjectName)
         {
 
             if (myObjectName.Equals(FSConstants.DotLink))
@@ -1030,7 +916,7 @@ namespace sones.GraphFS.DataStructures
 
         #region ObjectStreamExists(myObjectName, myObjectStream)
 
-        public Trinary ObjectStreamExists(String myObjectName, String myObjectStream)
+        Trinary IDirectoryListing.ObjectStreamExists(String myObjectName, String myObjectStream)
         {
 
             if (myObjectName.Equals(FSConstants.DotLink) && myObjectStream == FSConstants.VIRTUALDIRECTORY)
@@ -1067,7 +953,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetObjectStreamsList(myObjectName)
 
-        public IEnumerable<String> GetObjectStreamsList(String myObjectName)
+        IEnumerable<String> IDirectoryListing.GetObjectStreamsList(String myObjectName)
         {
 
             if (myObjectName.Equals(FSConstants.DotLink))
@@ -1088,7 +974,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetObjectINodePositions(myObjectName)
 
-        public IEnumerable<ExtendedPosition> GetObjectINodePositions(String myObjectName)
+        IEnumerable<ExtendedPosition> IDirectoryListing.GetObjectINodePositions(String myObjectName)
         {
             return new List<ExtendedPosition>();
         }
@@ -1097,7 +983,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetInlineData(myObjectName)
 
-        public Byte[] GetInlineData(String myObjectName)
+        Byte[] IDirectoryListing.GetInlineData(String myObjectName)
         {
 
             if (myObjectName.Equals(_MinNumberOfRevisionsName))
@@ -1120,16 +1006,16 @@ namespace sones.GraphFS.DataStructures
 
         #region hasInlineData(myObjectName)
 
-        public Trinary hasInlineData(String myObjectName)
+        Trinary IDirectoryListing.hasInlineData(String myObjectName)
         {
-            return ObjectStreamExists(myObjectName, FSConstants.INLINEDATA);
+            return ((IDirectoryListing)this).ObjectStreamExists(myObjectName, FSConstants.INLINEDATA);
         }
 
         #endregion
 
         #region GetSymlink(myObjectName)
 
-        public ObjectLocation GetSymlink(String myObjectName)
+        ObjectLocation IDirectoryListing.GetSymlink(String myObjectName)
         {
 
             if (myObjectName.Equals(FSConstants.DotLatestRevisionSymlink))
@@ -1143,7 +1029,7 @@ namespace sones.GraphFS.DataStructures
 
         #region isSymlink(myObjectName)
 
-        public Trinary isSymlink(String myObjectName)
+        Trinary IDirectoryListing.isSymlink(String myObjectName)
         {
 
             if (myObjectName.Equals(FSConstants.DotLatestRevisionSymlink))
@@ -1157,7 +1043,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetDirectoryListing()
 
-        public IEnumerable<String> GetDirectoryListing()
+        IEnumerable<String> IDirectoryListing.GetDirectoryListing()
         {
 
             var _DirectoryListing = new List<String>();
@@ -1182,7 +1068,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetDirectoryListing(myFunc)
 
-        public IEnumerable<String> GetDirectoryListing(Func<KeyValuePair<String, DirectoryEntry>, Boolean> myFunc)
+        IEnumerable<String> IDirectoryListing.GetDirectoryListing(Func<KeyValuePair<String, DirectoryEntry>, Boolean> myFunc)
         {
             throw new NotImplementedException();
         }
@@ -1191,16 +1077,16 @@ namespace sones.GraphFS.DataStructures
 
         #region GetDirectoryListing(myName, myIgnoreName, myRegExpr, myObjectStreams, myIgnoreObjectStreams)
 
-        public IEnumerable<String> GetDirectoryListing(String[] myName, String[] myIgnoreName, String[] myRegExpr, List<String> myObjectStreams, List<String> myIgnoreObjectStreams)
+        IEnumerable<String> IDirectoryListing.GetDirectoryListing(String[] myName, String[] myIgnoreName, String[] myRegExpr, List<String> myObjectStreams, List<String> myIgnoreObjectStreams)
         {
-            return GetDirectoryListing();
+            return ((IDirectoryListing)this).GetDirectoryListing();
         }
 
         #endregion
 
         #region GetExtendedDirectoryListing()
 
-        public IEnumerable<DirectoryEntryInformation> GetExtendedDirectoryListing()
+        IEnumerable<DirectoryEntryInformation> IDirectoryListing.GetExtendedDirectoryListing()
         {
 
             var _Output = new List<DirectoryEntryInformation>();
@@ -1249,7 +1135,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetExtendedDirectoryListing(myFunc)
 
-        public IEnumerable<DirectoryEntryInformation> GetExtendedDirectoryListing(Func<KeyValuePair<String, DirectoryEntry>, Boolean> myFunc)
+        IEnumerable<DirectoryEntryInformation> IDirectoryListing.GetExtendedDirectoryListing(Func<KeyValuePair<String, DirectoryEntry>, Boolean> myFunc)
         {
             throw new NotImplementedException();
         }
@@ -1258,7 +1144,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetExtendedDirectoryListing(myName, myIgnoreName, myRegExpr, myObjectStreams, myIgnoreObjectStreams)
 
-        public IEnumerable<DirectoryEntryInformation> GetExtendedDirectoryListing(string[] myName, string[] myIgnoreName, string[] myRegExpr, List<String> myObjectStream, List<String> myIgnoreObjectStreams)
+        IEnumerable<DirectoryEntryInformation> IDirectoryListing.GetExtendedDirectoryListing(string[] myName, string[] myIgnoreName, string[] myRegExpr, List<String> myObjectStream, List<String> myIgnoreObjectStreams)
         {
             throw new NotImplementedException();
         }
@@ -1267,28 +1153,28 @@ namespace sones.GraphFS.DataStructures
 
         #region DirCount()
 
-        public UInt64 DirCount
+        UInt64 IDirectoryListing.DirCount
         {
             get
             {
-                return GetDirectoryListing().ULongCount();
+                return ((IDirectoryListing)this).GetDirectoryListing().ULongCount();
             }
         }
 
         #endregion
 
 
-        public NHIDirectoryObject NotificationHandling
+        NHIDirectoryObject IDirectoryListing.NotificationHandling
         {
             get { throw new NotImplementedException(); }
         }
 
-        public void SubscribeNotification(NHIDirectoryObject myNotificationHandling)
+        void IDirectoryListing.SubscribeNotification(NHIDirectoryObject myNotificationHandling)
         {
             throw new NotImplementedException();
         }
 
-        public void UnsubscribeNotification(NHIDirectoryObject myNotificationHandling)
+        void IDirectoryListing.UnsubscribeNotification(NHIDirectoryObject myNotificationHandling)
         {
             throw new NotImplementedException();
         }
@@ -1296,7 +1182,7 @@ namespace sones.GraphFS.DataStructures
 
         #region GetDirectoryEntry(myObjectName)
 
-        public DirectoryEntry GetDirectoryEntry(String myObjectName)
+        DirectoryEntry IDirectoryListing.GetDirectoryEntry(String myObjectName)
         {
             throw new NotImplementedException();
         }

@@ -26,7 +26,6 @@ using System.Diagnostics;
 using System.ServiceModel;
 using System.IdentityModel.Selectors;
 using System.IdentityModel.Tokens;
-using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Structures;
 using sones.GraphDS.API.CSharp;
 using sones.GraphDS.API.CSharp.Notifications;
@@ -42,6 +41,7 @@ using sones.Notifications.Messages;
 using System.Net;
 using System.Threading;
 using sones.GraphDB.NewAPI;
+using sones.GraphDBInterface.Result;
 
 #endregion
 
@@ -141,11 +141,11 @@ namespace sonesExample
         {
             if (!quiet)
             {
-            if (myQueryResult.ResultType != ResultType.Successful)
-                Console.WriteLine("{0} => {1}", myQueryResult.Query, myQueryResult.Errors.First().Message);
+                if (myQueryResult.ResultType != ResultType.Successful)
+                    Console.WriteLine("{0} => {1}", myQueryResult.Query, myQueryResult.Errors.First().Message);
 
-            else
-                Console.WriteLine("{0}", myQueryResult.Query);
+                else
+                    Console.WriteLine("{0}", myQueryResult.Query);
             }
         }
 
@@ -153,7 +153,7 @@ namespace sonesExample
 
         public sonesExampleClass(String[] myArgs)
         {
-           
+
 
             if (myArgs.Count() > 0)
             {
@@ -179,11 +179,11 @@ namespace sonesExample
 
             var _GraphDSSharp = new GraphDSSharp()
             {
-                DatabaseName            = "sonesExample",
-                Username                = "Dr.Falken",
-                Password                = "Joshua",
-                NotificationSettings    = _NotificationSettings,
-                NotificationDispatcher  = _NotificationDispatcher,
+                DatabaseName = "sonesExample",
+                Username = "Dr.Falken",
+                Password = "Joshua",
+                NotificationSettings = _NotificationSettings,
+                NotificationDispatcher = _NotificationDispatcher,
             };
 
             // Create a InMemory data storage
@@ -200,7 +200,7 @@ namespace sonesExample
 
             #region Create a document upload directory
 
-            _GraphDSSharp.IGraphFSSession.CreateDirectoryObject(new ObjectLocation("Uploads"));
+            _GraphDSSharp.CreateDirectoryObject(new ObjectLocation("Uploads"));
 
             #endregion
 
@@ -218,14 +218,14 @@ namespace sonesExample
             #region Start REST, WebDAV and WebAdmin services, send GraphDS notification
 
             var _HttpSecurity = new HTTPSecurity()
-                {
-                    CredentialType            = HttpClientCredentialType.Basic,
-                    UserNamePasswordValidator = new PassValidator()
-                };
+            {
+                CredentialType = HttpClientCredentialType.Basic,
+                UserNamePasswordValidator = new PassValidator()
+            };
 
             // Start a REST service on localhost port 9975
             var _RESTService      = _GraphDSSharp.StartREST(IPAddress.Any, 9975, _HttpSecurity);
-            
+
 
             // Start a WebDAV service on localhost port 9978
             var _WebDAVService    = _GraphDSSharp.StartWebDAV(IPAddress.Any, 9978, _HttpSecurity);
@@ -268,7 +268,7 @@ namespace sonesExample
                 _GraphDSSharp.OpenCLI();
             else
                 while (true)
-                { 
+                {
                     Thread.Sleep(1000);
                 }
 

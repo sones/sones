@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,7 +15,11 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
+
+
+#region Usings
 
 using System;
 using System.Collections.Generic;
@@ -33,7 +37,7 @@ using sones.GraphDB.Settings;
 using sones.GraphDB.Structures;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.Structures.Result;
+
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 using sones.GraphDB.Warnings;
@@ -45,7 +49,11 @@ using sones.GraphFS.Session;
 using sones.Lib;
 using sones.Lib.DataStructures;
 using sones.Lib.ErrorHandling;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.Managers.TypeManagement.BasicTypes;
 
+#endregion
 
 namespace sones.GraphDB.TypeManagement
 {
@@ -73,7 +81,7 @@ namespace sones.GraphDB.TypeManagement
         /// <summary>
         /// The database root path.
         /// </summary>
-        private String _DatabaseRootPath;
+        private ObjectLocation _DatabaseRootPath;
 
         /// <summary>
         /// The myIGraphFS where the information is stored. Remove when InstanceSettings contain the myIGraphFS.
@@ -168,6 +176,7 @@ namespace sones.GraphDB.TypeManagement
         /// <returns></returns>
         private ListOfStringsObject LoadListOfTypeLocations(ObjectLocation myDatabaseRootPath)
         {
+
             var listOfLocations = _IGraphFSSession.GetOrCreateFSObject<ListOfStringsObject>(new ObjectLocation(myDatabaseRootPath, DBConstants.DBTypeLocations), FSConstants.LISTOF_STRINGS, null, null, 0, false);
 
             if (listOfLocations.Failed())
@@ -176,6 +185,7 @@ namespace sones.GraphDB.TypeManagement
             }
 
             return listOfLocations.Value;
+
         }
 
         #endregion
@@ -185,14 +195,14 @@ namespace sones.GraphDB.TypeManagement
         /// <summary>
         /// Initializes the type manager. This method may only be called once, else it throws an TypeInitializationException.
         /// </summary>
-        /// <param name="myIGraphFS">The myIGraphFS, on which the database is stored.</param>
+        /// <param name="myIGraphFSSession">The myIGraphFS, on which the database is stored.</param>
         /// <param name="myDatabaseLocation">The databases root path in the myIGraphFS.</param>
-        public Exceptional Init(IGraphFSSession myIGraphFS, ObjectLocation myDatabaseLocation, Boolean myRebuildIndices)
+        public Exceptional Init(IGraphFSSession myIGraphFSSession, ObjectLocation myDatabaseLocation, Boolean myRebuildIndices)
         {
 
             #region Input validation
 
-            if (myIGraphFS == null)
+            if (myIGraphFSSession == null)
                 return new Exceptional<bool>(new Error_ArgumentNullOrEmpty("The parameter myIGraphFS must not be null!"));
             
             if (myDatabaseLocation == null)
@@ -360,7 +370,7 @@ namespace sones.GraphDB.TypeManagement
 
             #region DBVertex
 
-            var typeDBVertex = new GraphDBType(new TypeUUID(DBConstants.DBVertexID), myDatabaseLocation, DBConstants.DBVertexName, DBReference.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all user defined database vertices");
+            var typeDBVertex = new GraphDBType(DBVertex.UUID, myDatabaseLocation, DBConstants.DBVertexName, DBReference.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all user defined database vertices");
 
             _SystemTypes.Add(typeDBVertex.UUID, typeDBVertex);
 
@@ -389,11 +399,11 @@ namespace sones.GraphDB.TypeManagement
 
             #endregion
 
-            foreach (GraphDBType ptype in _SystemTypes.Values)
-                _TypesNameLookUpTable.Add(ptype.Name, ptype);
+            foreach (var _GraphDBType in _SystemTypes.Values)
+                _TypesNameLookUpTable.Add(_GraphDBType.Name, _GraphDBType);
 
-            foreach (GraphDBType ptype in _BasicTypes.Values)
-                _TypesNameLookUpTable.Add(ptype.Name, ptype);            
+            foreach (var _GraphDBType in _BasicTypes.Values)
+                _TypesNameLookUpTable.Add(_GraphDBType.Name, _GraphDBType);            
 
             return LoadUserDefinedDatabaseTypes(myRebuildIndices);
 
@@ -416,9 +426,7 @@ namespace sones.GraphDB.TypeManagement
             lock (_ObjectLocationsOfAllUserDefinedDatabaseTypes)
             {
                 foreach (var _String in _ObjectLocationsOfAllUserDefinedDatabaseTypes.ListOfStrings)
-                {
-                    _ObjectLocations.Add(new ObjectLocation(_String.Split(new String[] { FSPathConstants.PathDelimiter }, StringSplitOptions.RemoveEmptyEntries)));
-                }
+                    _ObjectLocations.Add(ObjectLocation.ParseString(_String));
             }
 
             return LoadUserDefinedDatabaseTypes(_ObjectLocations, myRebuildIndices);
@@ -432,7 +440,7 @@ namespace sones.GraphDB.TypeManagement
         /// <summary>
         /// Tries to load all database types from the given ObjectLocations
         /// </summary>
-        private Exceptional LoadUserDefinedDatabaseTypes(List<ObjectLocation> myObjectLocations, Boolean myRebuildIndices)
+        private Exceptional LoadUserDefinedDatabaseTypes(IEnumerable<ObjectLocation> myObjectLocations, Boolean myRebuildIndices)
         {
 
             var ListOfDatabaseTypes = new List<GraphDBType>();
@@ -441,8 +449,8 @@ namespace sones.GraphDB.TypeManagement
             foreach (var _ActualObjectLocation in myObjectLocations)
             {
 
-                if (GetTypeByName(DirectoryHelper.GetObjectName(_ActualObjectLocation)) != null)
-                    return new Exceptional<Boolean>(new Error_TypeAlreadyExist(DirectoryHelper.GetObjectName(_ActualObjectLocation)));
+                if (GetTypeByName(_ActualObjectLocation.Name) != null)
+                    return new Exceptional<Boolean>(new Error_TypeAlreadyExist(_ActualObjectLocation.Name));
 
                 //ListOfDatabaseTypes.Add(new GraphType(_IGraphFS2Session, _ActualObjectLocation, true, this));
                 var pt = _IGraphFSSession.GetFSObject<GraphDBType>(_ActualObjectLocation);
@@ -549,7 +557,7 @@ namespace sones.GraphDB.TypeManagement
 
             #region Data
 
-            String objectLocation = myTypeOfDBObject.ObjectLocation + FSPathConstants.PathDelimiter + DBConstants.DBObjectsLocation + FSPathConstants.PathDelimiter + myUUID;
+            var objectLocation = new ObjectLocation(myTypeOfDBObject.ObjectLocation, DBConstants.DBObjectsLocation, myUUID.ToString());
             Exceptional<DBObjectStream> aNewDBObject;
             Exceptional<ResultType> result = new Exceptional<ResultType>();
 
@@ -561,7 +569,7 @@ namespace sones.GraphDB.TypeManagement
 
             if (aNewDBObject.Failed())
             {
-                result.Push(new Error_LoadObject(myUUID.ToString()));
+                result.Push(new Error_LoadObject(aNewDBObject.Value.ObjectLocation));
                 return result;
             }
 
@@ -1012,7 +1020,8 @@ namespace sones.GraphDB.TypeManagement
 
         #region GraphDBType handling
 
-        
+        #region GetTypeReadouts(myGraphDBType)
+
         /// <summary>
         /// return the uuid, revision id and the editition for a new created type
         /// </summary>
@@ -1026,7 +1035,7 @@ namespace sones.GraphDB.TypeManagement
             if (myGraphDBType == null)
                 return new Exceptional<DBObjectReadout>(new Error_ArgumentNullOrEmpty("The type should not be null."));
 
-            readOut.Attributes.Add(DBConstants.DbGraphType, myGraphDBType);
+            readOut.Attributes.Add(DBConstants.DbGraphType, myGraphDBType.Name);
             
             readOut.Attributes.Add(SpecialTypeAttribute_UUID.AttributeName, myGraphDBType.ObjectUUID);
             readOut.Attributes.Add(SpecialTypeAttribute_REVISION.AttributeName, myGraphDBType.ObjectRevisionID);
@@ -1035,6 +1044,8 @@ namespace sones.GraphDB.TypeManagement
             return new Exceptional<DBObjectReadout>(readOut);
 
         }
+
+        #endregion
 
         #region AddBulkTypes(TypeList, flushToFs)
 
@@ -1106,8 +1117,7 @@ namespace sones.GraphDB.TypeManagement
                     #endregion
 
                     GraphDBType parentType = GetTypeByName(aTypeDef.ParentType);
-                    Dictionary<AttributeUUID, TypeAttribute> attributes = new Dictionary<AttributeUUID, TypeAttribute>();
-                    TypeUUID _NewGraphTypeUUID = new TypeUUID();
+                    Dictionary<AttributeUUID, TypeAttribute> attributes = new Dictionary<AttributeUUID, TypeAttribute>();                    
 
                     #region Add type
 
@@ -1115,7 +1125,7 @@ namespace sones.GraphDB.TypeManagement
 
                     #region hack
 
-                    GraphDBType _NewGraphType = new GraphDBType(_NewGraphTypeUUID, new ObjectLocation(_DatabaseRootPath), aTypeDef.Name, parentUUID, attributes, true, aTypeDef.IsAbstract, aTypeDef.Comment);
+                    GraphDBType _NewGraphType = new GraphDBType(null, new ObjectLocation(_DatabaseRootPath), aTypeDef.Name, parentUUID, attributes, true, aTypeDef.IsAbstract, aTypeDef.Comment);
 
                     #endregion
 
@@ -1179,6 +1189,9 @@ namespace sones.GraphDB.TypeManagement
                     #endregion
 
                     #endregion
+
+                    //add TypeAttributeLookuptable to current type
+                    aType.AttributeLookupTable.AddRange(parentType.AttributeLookupTable);
 
                     #region check and set type of attributes
                     UInt16 attributeCounter = 0;
@@ -1338,20 +1351,20 @@ namespace sones.GraphDB.TypeManagement
                 
                 #endregion
 
-                #region add attribute lookup table of parent type to the actual one
+                //#region add attribute lookup table of parent type to the actual one
 
-                foreach (var aAddedType in addedTypes)
-                {
-                    foreach (var aLookupAttributeInParentType in aAddedType.GetParentType(this).AttributeLookupTable)
-                    {
-                        if (!aAddedType.AttributeLookupTable.ContainsKey(aLookupAttributeInParentType.Key))
-                        {
-                            aAddedType.AttributeLookupTable.Add(aLookupAttributeInParentType.Key, aLookupAttributeInParentType.Value);
-                        }
-                    }
-                }
+                //foreach (var aAddedType in addedTypes)
+                //{
+                //    foreach (var aLookupAttributeInParentType in aAddedType.GetParentType(this).AttributeLookupTable)
+                //    {
+                //        if (!aAddedType.AttributeLookupTable.ContainsKey(aLookupAttributeInParentType.Key))
+                //        {
+                //            aAddedType.AttributeLookupTable.Add(aLookupAttributeInParentType.Key, aLookupAttributeInParentType.Value);
+                //        }
+                //    }
+                //}
 
-                #endregion
+                //#endregion
 
                 #region Create indices
 
@@ -1437,7 +1450,7 @@ namespace sones.GraphDB.TypeManagement
                 }
 
                 selResult = new SelectionResultSet(readOutList);
-                result.AddResult(selResult);
+                result.SetResult(selResult);
                 
 
                 #endregion
@@ -1562,6 +1575,7 @@ namespace sones.GraphDB.TypeManagement
 
         private Exceptional<GraphDBType> AddingType(String myTypeName, String myParentType, Dictionary<AttributeDefinition, String> myAttributes, Boolean myIsAbstract, String myComment)
         {
+
             var ptd = new GraphDBTypeDefinition(myTypeName, myParentType, false, myAttributes, null, null, myComment);
 
             var errors = AddBulkTypes(new List<GraphDBTypeDefinition>(new[] { ptd }), _DBContext);
@@ -1571,6 +1585,7 @@ namespace sones.GraphDB.TypeManagement
 
             else
                 return new Exceptional<GraphDBType>(GetTypeByName(myTypeName));        
+
         }
 
         /// <summary>
@@ -1655,7 +1670,7 @@ namespace sones.GraphDB.TypeManagement
 
         private Exceptional<Boolean> CreateTypeOnFS(GraphDBType myGraphType)
         {
-            using (var _Transaction = _IGraphFSSession.BeginTransaction())
+            using (var _Transaction = _IGraphFSSession.BeginFSTransaction())
             {
                 var CreateException = CreateTypeOnFS_internal(myGraphType);
 
@@ -1686,7 +1701,7 @@ namespace sones.GraphDB.TypeManagement
 
             lock (_ObjectLocationsOfAllUserDefinedDatabaseTypes)
             {
-                _ObjectLocationsOfAllUserDefinedDatabaseTypes.Add(typeDir);
+                _ObjectLocationsOfAllUserDefinedDatabaseTypes.Add(typeDir.ToString());
                 _ObjectLocationsOfAllUserDefinedDatabaseTypes.Save();
             }
 
@@ -1814,8 +1829,9 @@ namespace sones.GraphDB.TypeManagement
 
             if (!_UserDefinedTypes.ContainsKey(myType.UUID))
             {
-                if (!_ObjectLocationsOfAllUserDefinedDatabaseTypes.Contains(myType.ObjectLocation))
+                if (!_ObjectLocationsOfAllUserDefinedDatabaseTypes.Contains(myType.ObjectLocation.ToString()))
                 {
+
                     var existExcept = _IGraphFSSession.ObjectExists(myType.ObjectLocation);
 
                     if (existExcept.Failed())
@@ -1823,10 +1839,12 @@ namespace sones.GraphDB.TypeManagement
 
                     if (existExcept.Value != Trinary.TRUE)
                         return new Exceptional<bool>(true);
+
                 }
             }
 
             return new Exceptional<bool>(false);
+
         }
 
         #endregion
@@ -1835,6 +1853,7 @@ namespace sones.GraphDB.TypeManagement
 
         private Exceptional<Boolean> ProcessTypeRemoval(List<GraphDBType> toDelete, GraphDBType startingType)
         {
+
             foreach (var aType in _UserDefinedTypes)
             {
                 //remove attributes
@@ -1846,6 +1865,7 @@ namespace sones.GraphDB.TypeManagement
 
             foreach (var toBeDeletedTypes in toDelete)
             {
+
                 #region remove from userdefined types
 
                 if (!_UserDefinedTypes.Remove(toBeDeletedTypes.UUID))
@@ -1861,8 +1881,8 @@ namespace sones.GraphDB.TypeManagement
                 try
                 {
 
-                    var DbObjectSchemeSettingsDest = _DatabaseRootPath + FSPathConstants.PathDelimiter + DBConstants.DBTypeLocations;
-                    _ObjectLocationsOfAllUserDefinedDatabaseTypes.Remove(toBeDeletedTypes.ObjectLocation);
+                    var DbObjectSchemeSettingsDest = _DatabaseRootPath + DBConstants.DBTypeLocations;
+                    _ObjectLocationsOfAllUserDefinedDatabaseTypes.Remove(toBeDeletedTypes.ObjectLocation.ToString());
                     _ObjectLocationsOfAllUserDefinedDatabaseTypes.Save();
 
                 }
@@ -1883,9 +1903,11 @@ namespace sones.GraphDB.TypeManagement
                 }
 
                 #endregion
+            
             }
 
             return new Exceptional<bool>(true);
+
         }
 
 
@@ -1901,7 +1923,7 @@ namespace sones.GraphDB.TypeManagement
         private Exceptional<Boolean> RemoveTypeFromFs(ObjectLocation typeDir)
         {
 
-            using (var _Transaction = _IGraphFSSession.BeginTransaction())
+            using (var _Transaction = _IGraphFSSession.BeginFSTransaction())
             {
 
                 var removeObjectExcept = _IGraphFSSession.RemoveFSObject(typeDir, DBConstants.DBTYPESTREAM, null, null);
@@ -1962,26 +1984,29 @@ namespace sones.GraphDB.TypeManagement
         }
         #endregion
 
-        public Exceptional ChangeCommentOnType(GraphDBType atype, string comment)
+        public Exceptional ChangeCommentOnType(GraphDBType myGraphDBType, String myComment)
         {
-            if (atype == null)
-                return new Exceptional<Boolean>(new Error_ArgumentNullOrEmpty("atype"));
 
-            if (String.IsNullOrEmpty(comment))
-                return new Exceptional<Boolean>(new Error_ArgumentNullOrEmpty("newName"));
+            if (myGraphDBType == null)
+                return new Exceptional<Boolean>(new Error_ArgumentNullOrEmpty("myGraphDBType"));
 
-            atype.SetComment(comment);
+            if (String.IsNullOrEmpty(myComment))
+                return new Exceptional<Boolean>(new Error_ArgumentNullOrEmpty("myComment"));
 
-            var flushExcept = FlushType(atype);
+            myGraphDBType.SetComment(myComment);
+
+            var flushExcept = FlushType(myGraphDBType);
 
             if (!flushExcept.Success())
             {
                 return new Exceptional<Boolean>(true);
             }
+            
             else
             {
                 return new Exceptional<Boolean>(flushExcept);
             }
+
         }
 
         #endregion
@@ -2167,7 +2192,7 @@ namespace sones.GraphDB.TypeManagement
             #region INPUT EXCEPTIONS
 
             if (myGraphDBType == null) return null;
-            if (!_UserDefinedTypes.ContainsKey(myGraphDBType.UUID)) return null;
+            if (!_UserDefinedTypes.ContainsKey(myGraphDBType.UUID) && !myGraphDBType.UUID.Equals(DBVertex.UUID)) return null;
 
             #endregion
 

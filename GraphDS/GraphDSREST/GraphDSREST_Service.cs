@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /*
  * GraphDSREST_Service
- * Achim Friedland, 2010
+ * (c) Achim Friedland, 2010
  */
 
 #region Usings
@@ -43,13 +43,12 @@ using Newtonsoft.Json.Linq;
 
 using sones.GraphDB;
 using sones.GraphDB.Errors;
-using sones.GraphDB.Structures.Result;
+
 using sones.GraphDB.Structures;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Objects;
 using sones.GraphFS.Session;
 using sones.Lib;
-using sones.Lib.CLI;
 using sones.Lib.DDate;
 using sones.Lib.ErrorHandling;
 using sones.Lib.SimpleLogger;
@@ -64,6 +63,7 @@ using sones.GraphIO.TEXT;
 using sones.GraphIO.GEXF;
 using sones.GraphIO.JSON;
 using sones.GraphDB.Warnings;
+using sones.GraphDBInterface.Result;
 
 #endregion
 
@@ -77,9 +77,8 @@ namespace sones.GraphDS.Connectors.REST
 
         #region Data
 
-        private        IGraphDBSession              _IGraphDBSession;
-        private        IGraphFSSession              _IGraphFSSession;
-        private        Dictionary<String, sonesCLI> _SessionSonesCLIs;
+        private        AGraphDSSharp                _AGraphDSSharp;
+//        private        Dictionary<String, sonesCLI> _SessionSonesCLIs;
         private        MemoryStream                 _MemoryStream;
         private        GraphQLQuery                     _GraphQLQuery;
 
@@ -120,14 +119,13 @@ namespace sones.GraphDS.Connectors.REST
 
         #endregion
 
-        #region GraphDSREST_Service(myIGraphDBSession, myIGraphFSSession)
+        #region GraphDSREST_Service(myAGraphDSSharp)
 
-        public GraphDSREST_Service(IGraphDBSession myIGraphDBSession, IGraphFSSession myIGraphFSSession)
+        public GraphDSREST_Service(AGraphDSSharp myAGraphDSSharp)
         {
-            _IGraphDBSession  = myIGraphDBSession;
-            _IGraphFSSession  = myIGraphFSSession;
-            _GraphQLQuery = new GraphQLQuery(_IGraphDBSession.DBPluginManager);
-            _SessionSonesCLIs = new Dictionary<String, sonesCLI>();
+            _AGraphDSSharp    = myAGraphDSSharp;
+            _GraphQLQuery     = new GraphQLQuery(_AGraphDSSharp.IGraphDBSession.DBPluginManager);
+//            _SessionSonesCLIs = new Dictionary<String, sonesCLI>();
         }
 
         #endregion
@@ -245,7 +243,7 @@ namespace sones.GraphDS.Connectors.REST
                                 while ((line = streamReader.ReadLine()) != null)
                                 {
                                     ConsoleOutputLogger.WriteLine(line);
-                                    QueryResult newResult = _GraphQLQuery.Query(line, _IGraphDBSession);
+                                    QueryResult newResult = _GraphQLQuery.Query(line, _AGraphDSSharp.IGraphDBSession);
 
                                     QueryResults.Add(newResult);
                                     String Logging2 = PrintErrorToString(newResult.ResultType, newResult.Errors);
@@ -287,7 +285,7 @@ namespace sones.GraphDS.Connectors.REST
                     else
                     {
                         _StopWatch.Start();
-                        _QueryResult = _GraphQLQuery.Query(_GQLQuery, _IGraphDBSession);
+                        _QueryResult = _GraphQLQuery.Query(_GQLQuery, _AGraphDSSharp.IGraphDBSession);
                         _StopWatch.Stop();
                     }
 
@@ -305,7 +303,7 @@ namespace sones.GraphDS.Connectors.REST
 
                         var _HTMLExport = new HTML_IO();
 
-                        var _String = HTML_IO_Extensions.HTMLBuilder(_IGraphDBSession.DatabaseRootPath, _StringBuilder =>
+                        var _String = HTML_IO_Extensions.HTMLBuilder(_AGraphDSSharp.IGraphDBSession.DatabaseRootPath.ToString(), _StringBuilder =>
                         {
 
                             _StringBuilder.Append("<p><a href=\"/\">back...</a></p>");
@@ -473,93 +471,93 @@ namespace sones.GraphDS.Connectors.REST
 
         public void ExecuteCLIQuery()
         {
+            throw new NotImplementedException();
+            //try
+            //{
 
-            try
-            {
+            //    #region Check settings
 
-                #region Check settings
+            //    var _GraphDBREST_Settings = new GraphDSREST_Settings();
 
-                var _GraphDBREST_Settings = new GraphDSREST_Settings();
+            //    if (!checkAuthentication(_GraphDBREST_Settings))
+            //        throw new NotImplementedException("TODO implement: error handling checkAuth...");
 
-                if (!checkAuthentication(_GraphDBREST_Settings))
-                    throw new NotImplementedException("TODO implement: error handling checkAuth...");
+            //    #endregion
 
-                #endregion
-
-                else
-                {
-
-
-                    if (HTTPServer.HTTPContext.RequestHeader.QueryString == null)
-                    {
-                        Error400_BadRequest("[Syntax Error] Please use '...cli?query'!");
-                        return;
-                    }
-
-                    var _QueryString = HTTPServer.HTTPContext.RequestHeader.QueryString[null];
-                    if (_QueryString == null)
-                    {
-                        Error400_BadRequest("[Syntax Error] Please use '...cli?query'!");
-                        return;
-                    }
-
-                    var _CLIQuery = HttpUtility.UrlDecode(_QueryString);
+            //    else
+            //    {
 
 
+            //        if (HTTPServer.HTTPContext.RequestHeader.QueryString == null)
+            //        {
+            //            Error400_BadRequest("[Syntax Error] Please use '...cli?query'!");
+            //            return;
+            //        }
 
-                    if (HTTPServer.HTTPContext != null)
-                        HTTPServer.HTTPContext.ResponseHeader.ContentType = new ContentType("text/plain");
+            //        var _QueryString = HTTPServer.HTTPContext.RequestHeader.QueryString[null];
+            //        if (_QueryString == null)
+            //        {
+            //            Error400_BadRequest("[Syntax Error] Please use '...cli?query'!");
+            //            return;
+            //        }
 
-                    #region Start a GraphCLI // Please refactor me!
-
-                    sonesCLI _GraphCLI;
-
-                    if (_GraphDBREST_Settings.Username == null)
-                        _GraphDBREST_Settings.Username = "";
-
-                    if (!_SessionSonesCLIs.ContainsKey(_GraphDBREST_Settings.Username))
-                    {
-                        _MemoryStream = new MemoryStream();
-                        _GraphCLI = new sonesCLI(_IGraphDBSession, _IGraphFSSession, _IGraphDBSession.DatabaseRootPath, _MemoryStream, CLI_Output.Standard, typeof(AllCLICommands));
-                        _SessionSonesCLIs.Add(_GraphDBREST_Settings.Username, _GraphCLI);
-                    }
-
-                    else
-                    {
-                        _GraphCLI = _SessionSonesCLIs[_GraphDBREST_Settings.Username];
-                        _MemoryStream = new MemoryStream();
-                        _GraphCLI.StreamWriter = new StreamWriter(_MemoryStream);
-                    }
-
-                    var sw = new Stopwatch();
-
-                    _GraphCLI.ReadAndExecuteCommand(_CLIQuery);
-                    _MemoryStream.Seek(0, SeekOrigin.Begin);
-
-                    var _Header = HTTPServer.HTTPContext.ResponseHeader;
-
-                    _Header.HttpStatusCode = HTTPStatusCodes.OK;
-                    _Header.CacheControl = "no-cache";
-                    _Header.ServerName = _ServerID;
-                    _Header.ContentLength = _MemoryStream.ULength();
-                    _Header.ContentType = _XML_UTF8;
-
-                    HTTPServer.HTTPContext.WriteToResponseStream(_Header.ToBytes());
-                    HTTPServer.HTTPContext.WriteToResponseStream(_MemoryStream);
-
-                    return;
+            //        var _CLIQuery = HttpUtility.UrlDecode(_QueryString);
 
 
-                    #endregion
 
-                }
+            //        if (HTTPServer.HTTPContext != null)
+            //            HTTPServer.HTTPContext.ResponseHeader.ContentType = new ContentType("text/plain");
 
-            }
+            //        #region Start a GraphCLI // Please refactor me!
 
-            catch (Exception ex)
-            {
-                Error400_BadRequest(ex.Message + ex.StackTrace);
-            }
+            //        sonesCLI _GraphCLI;
+
+            //        if (_GraphDBREST_Settings.Username == null)
+            //            _GraphDBREST_Settings.Username = "";
+
+            //        if (!_SessionSonesCLIs.ContainsKey(_GraphDBREST_Settings.Username))
+            //        {
+            //            _MemoryStream = new MemoryStream();
+            //            _GraphCLI = new sonesCLI(_AGraphDSSharp, _AGraphDSSharp.IGraphDBSession.DatabaseRootPath.ToString(), _MemoryStream, CLI_Output.Standard, typeof(AllCLICommands));
+            //            _SessionSonesCLIs.Add(_GraphDBREST_Settings.Username, _GraphCLI);
+            //        }
+
+            //        else
+            //        {
+            //            _GraphCLI = _SessionSonesCLIs[_GraphDBREST_Settings.Username];
+            //            _MemoryStream = new MemoryStream();
+            //            _GraphCLI.StreamWriter = new StreamWriter(_MemoryStream);
+            //        }
+
+            //        var sw = new Stopwatch();
+
+            //        _GraphCLI.ReadAndExecuteCommand(_CLIQuery);
+            //        _MemoryStream.Seek(0, SeekOrigin.Begin);
+
+            //        var _Header = HTTPServer.HTTPContext.ResponseHeader;
+
+            //        _Header.HttpStatusCode = HTTPStatusCodes.OK;
+            //        _Header.CacheControl = "no-cache";
+            //        _Header.ServerName = _ServerID;
+            //        _Header.ContentLength = _MemoryStream.ULength();
+            //        _Header.ContentType = _XML_UTF8;
+
+            //        HTTPServer.HTTPContext.WriteToResponseStream(_Header.ToBytes());
+            //        HTTPServer.HTTPContext.WriteToResponseStream(_MemoryStream);
+
+            //        return;
+
+
+            //        #endregion
+
+            //    }
+
+            //}
+
+            //catch (Exception ex)
+            //{
+            //    Error400_BadRequest(ex.Message + ex.StackTrace);
+            //}
 
         }
 
@@ -602,7 +600,7 @@ namespace sones.GraphDS.Connectors.REST
             {
 
                 if (myObjectRevision.IsNullOrEmpty() || myObjectRevision == "null")
-                    _RevisionID = new ObjectRevisionID(_IGraphFSSession.GetFileSystemUUID());
+                    _RevisionID = new ObjectRevisionID(_AGraphDSSharp.GetFileSystemUUID());
                 else
                     _RevisionID = new ObjectRevisionID(myObjectRevision);
 
@@ -630,8 +628,8 @@ namespace sones.GraphDS.Connectors.REST
             var _Body   = HTTPServer.HTTPContext.RequestBody;
             var _Header = HTTPServer.HTTPContext.RequestHeader;
 
-            _IGraphFSSession.StoreFSObject(new FileObject() {
-                                               ObjectLocation   = new ObjectLocation(_IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName),
+            _AGraphDSSharp.StoreFSObject(new FileObject() {
+                                               ObjectLocation   = new ObjectLocation(_AGraphDSSharp.IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName),
                                                ObjectStream     = myObjectStream,
                                                ObjectEdition    = myObjectEdition,
                                                ObjectRevisionID   = _RevisionID,
@@ -688,13 +686,13 @@ namespace sones.GraphDS.Connectors.REST
 
             QueryResult _QueryResult;
 
-            _QueryResult = _GraphQLQuery.Query("SETTING DB SET ('TYPE'     = 'true')", _IGraphDBSession);
-            _QueryResult = _GraphQLQuery.Query("SETTING DB SET ('UUID'     = 'true')", _IGraphDBSession);
-            _QueryResult = _GraphQLQuery.Query("SETTING DB SET ('EDITION'  = 'true')", _IGraphDBSession);
-            _QueryResult = _GraphQLQuery.Query("SETTING DB SET ('REVISION' = 'true')", _IGraphDBSession);
+            _QueryResult = _GraphQLQuery.Query("SETTING DB SET ('TYPE'     = 'true')", _AGraphDSSharp.IGraphDBSession);
+            _QueryResult = _GraphQLQuery.Query("SETTING DB SET ('UUID'     = 'true')", _AGraphDSSharp.IGraphDBSession);
+            _QueryResult = _GraphQLQuery.Query("SETTING DB SET ('EDITION'  = 'true')", _AGraphDSSharp.IGraphDBSession);
+            _QueryResult = _GraphQLQuery.Query("SETTING DB SET ('REVISION' = 'true')", _AGraphDSSharp.IGraphDBSession);
             
             _StopWatch.Start();
-            _QueryResult = _GraphQLQuery.Query("FROM " + myObjectType + " SELECT TYPE,UUID,EDITION,REVISION,* DEPTH 1", _IGraphDBSession);
+            _QueryResult = _GraphQLQuery.Query("FROM " + myObjectType + " SELECT TYPE,UUID,EDITION,REVISION,* DEPTH 1", _AGraphDSSharp.IGraphDBSession);
             _StopWatch.Stop();
 
             var _ContentType = HTTPServer.HTTPContext.RequestHeader.GetBestMatchingAcceptHeader(_HTML, _JSON, _XML, _TEXT);
@@ -704,12 +702,12 @@ namespace sones.GraphDS.Connectors.REST
             if (_ContentType.MediaType == _HTML.MediaType)
             {
 
-                var _String = HTML_IO_Extensions.HTMLBuilder(_IGraphDBSession.DatabaseRootPath, _StringBuilder =>
+                var _String = HTML_IO_Extensions.HTMLBuilder(_AGraphDSSharp.IGraphDBSession.DatabaseRootPath.ToString(), _StringBuilder =>
                 {
 
                     _StringBuilder.Append("<p><a href=\"/\">back...</a></p>");
 
-                    foreach (var _DBObjectReadout in _QueryResult[0])
+                    foreach (var _DBObjectReadout in _QueryResult.Results.Objects)
                         _StringBuilder.Append(_DBObjectReadout.ToHTML());
 
                     _StringBuilder.Append("<b>Duration:</b> ").Append(_StopWatch.ElapsedMilliseconds).Append(" ms<br />");
@@ -831,7 +829,7 @@ namespace sones.GraphDS.Connectors.REST
             var _ContentType = HTTPServer.HTTPContext.RequestHeader.GetBestMatchingAcceptHeader(_HTML, _JSON, _XML, _TEXT);
 
 
-            _IGraphFSSession.GetObjectStreams(new ObjectLocation(_IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName)).
+            _AGraphDSSharp.GetObjectStreams(new ObjectLocation(_AGraphDSSharp.IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName)).
 
                 #region Failed!
 
@@ -864,7 +862,7 @@ namespace sones.GraphDS.Connectors.REST
                         if (_ContentType.MediaType == _HTML.MediaType)
                         {
 
-                            var _String = HTML_IO_Extensions.HTMLBuilder(_IGraphDBSession.DatabaseRootPath, _StringBuilder =>
+                            var _String = HTML_IO_Extensions.HTMLBuilder(_AGraphDSSharp.IGraphDBSession.DatabaseRootPath.ToString(), _StringBuilder =>
                             {
 
                                 _StringBuilder.Append("<p><a href=\"/\">back...</a></p>");
@@ -971,7 +969,7 @@ namespace sones.GraphDS.Connectors.REST
             var _ContentType = HTTPServer.HTTPContext.RequestHeader.GetBestMatchingAcceptHeader(_JSON, _XML, _TEXT);
 
 
-            _IGraphFSSession.GetObjectEditions(new ObjectLocation(_IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName), myObjectStream).
+            _AGraphDSSharp.GetObjectEditions(new ObjectLocation(_AGraphDSSharp.IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName), myObjectStream).
 
                 #region Failed!
 
@@ -1081,7 +1079,7 @@ namespace sones.GraphDS.Connectors.REST
             var _ContentType = HTTPServer.HTTPContext.RequestHeader.GetBestMatchingAcceptHeader(_JSON, _XML, _TEXT);
 
 
-            _IGraphFSSession.GetObjectRevisionIDs(new ObjectLocation(_IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName), myObjectStream, myObjectEdition).
+            _AGraphDSSharp.GetObjectRevisionIDs(new ObjectLocation(_AGraphDSSharp.IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName), myObjectStream, myObjectEdition).
 
                 #region Failed!
 
@@ -1110,7 +1108,7 @@ namespace sones.GraphDS.Connectors.REST
                         var    RevisionIDs = new StringBuilder();
                         Byte[] content     = null;
 
-                        var _OL = _IGraphFSSession.GetObjectLocator(new ObjectLocation(_IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName)).Value;
+                        var _OL = _AGraphDSSharp.GetObjectLocator(new ObjectLocation(_AGraphDSSharp.IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName)).Value;
                         var _OE = _OL[myObjectStream][myObjectEdition];
 
                         #region XML
@@ -1209,8 +1207,8 @@ namespace sones.GraphDS.Connectors.REST
             var _Header = HTTPServer.HTTPContext.RequestHeader;
 
 
-            _IGraphFSSession.GetFSObject<FileObject>(
-                                 new ObjectLocation(_IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName),
+            _AGraphDSSharp.GetFSObject<FileObject>(
+                                 new ObjectLocation(_AGraphDSSharp.IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName),
                                  myObjectStream, myObjectEdition, _RevisionID, 0, false).
 
                 #region Failed!
@@ -1301,8 +1299,8 @@ namespace sones.GraphDS.Connectors.REST
             var _Body   = HTTPServer.HTTPContext.RequestBody;
             var _Header = HTTPServer.HTTPContext.RequestHeader;
 
-            _IGraphFSSession.RemoveFSObject(
-                                new ObjectLocation(_IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName),
+            _AGraphDSSharp.RemoveFSObject(
+                                new ObjectLocation(_AGraphDSSharp.IGraphDBSession.DatabaseRootPath, myObjectType, "Objects", myObjectName),
                                 myObjectStream, myObjectEdition, _RevisionID).
 
                 #region Failed!
@@ -1452,12 +1450,12 @@ namespace sones.GraphDS.Connectors.REST
             _StopWatch.Start();
 
 
-                var _String = HTML_IO_Extensions.HTMLBuilder(_IGraphDBSession.DatabaseRootPath, _StringBuilder =>
+                var _String = HTML_IO_Extensions.HTMLBuilder(_AGraphDSSharp.IGraphDBSession.DatabaseRootPath.ToString(), _StringBuilder =>
                 {
 
                     _StringBuilder.Append("<p><a href=\"/WebShell\">WebShell</a></p><br /><br />");
 
-                    _IGraphFSSession.GetFilteredDirectoryListing(new ObjectLocation(_IGraphDBSession.DatabaseRootPath), null, null, null, new List<String>() {DBConstants.DBTYPESTREAM}, null, null, null, null ,null ,null).
+                    _AGraphDSSharp.GetFilteredDirectoryListing(new ObjectLocation(_AGraphDSSharp.IGraphDBSession.DatabaseRootPath), null, null, null, new List<String>() { DBConstants.DBTYPESTREAM }, null, null, null, null, null, null).
 
                     #region FailedAction...
 

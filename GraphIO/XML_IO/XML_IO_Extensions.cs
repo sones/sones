@@ -1,4 +1,24 @@
-﻿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * XML_IO_Extensions
  * Achim 'ahzf' Friedland, 2009 - 2010
  */
@@ -7,14 +27,18 @@
 
 using System;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 using System.Collections.Generic;
 
-using sones.GraphFS.DataStructures;
-using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.Structures.Result;
-using sones.Lib;
 using sones.GraphFS.Objects;
+using sones.GraphFS.DataStructures;
+
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.ObjectManagement;
+
+using sones.Lib;
+using System.Xml;
 
 #endregion
 
@@ -301,7 +325,7 @@ namespace sones.GraphIO.XML
                 from _Warning in myQueryResult.Warnings
                 select
                     new XElement("warning",
-                    new XAttribute("code", _Warning.GetType().Name),
+                    new XAttribute("code", _Warning.GetType().FullName),
                     _Warning.ToString())
                 ));
 
@@ -310,25 +334,31 @@ namespace sones.GraphIO.XML
                 from _Error in myQueryResult.Errors
                 select
                     new XElement("error",
-                    new XAttribute("code", _Error.GetType().Name),
+                    new XAttribute("code", _Error.GetType().FullName),
                     _Error.ToString())
                 ));
 
             // results ------------------------------
-            _Query.Add(new XElement("results",
-                from _SelectionListElementResult in myQueryResult.Results
-                where _SelectionListElementResult.Objects != null
-                select
-                    from _DBObject in _SelectionListElementResult.Objects
-                    select
-                        _DBObject.ToXML()
-            ));
-
+            _Query.Add(new XElement("results", GetXMLFromResult(myQueryResult.Results)));
+            
             return _Query;
 
         }
 
         #endregion
+
+        private static IEnumerable<XElement> GetXMLFromResult(SelectionResultSet myResultSet)
+        {
+            if (myResultSet.Objects != null)
+            {
+                foreach (var aXElement in from aReadout in myResultSet.Objects select aReadout.ToXML())
+                {
+                    yield return aXElement;
+                }
+            }
+
+            yield break;
+        }
 
         #region ToXML(this myDBVertex)
 
@@ -360,7 +390,28 @@ namespace sones.GraphIO.XML
 
             if (_WeightedDBObject1 != null)
             {
-                _DBObject.Add(new XElement("edgelabel", new XElement("attribute", new XAttribute("name", "weight"), new XAttribute("type", _WeightedDBObject1.Weight.Type.ToString()), _WeightedDBObject1.Weight)));
+                _DBObject.Add(new XElement("edgelabel", new XElement("attribute", new XAttribute("name", "weight"), new XAttribute("type", _WeightedDBObject1.TypeName), _WeightedDBObject1.Weight)));
+            }
+
+            #endregion
+
+            #region DBObjectReadoutGroup
+
+            var _GroupedDBObject1 = myDBVertex as DBObjectReadoutGroup;
+
+            if (_GroupedDBObject1 != null)
+            {
+
+                var _groupedElements = new XElement("attribute", new XAttribute("name", "group"));
+
+                var _groupedElementEdgeLabel = new XElement("edgelabel");
+
+                foreach (var _DBObjectReadout in _GroupedDBObject1.GroupedVertices)
+                    _groupedElements.Add(_DBObjectReadout.ToXML());
+
+                _groupedElementEdgeLabel.Add(_groupedElements);
+
+                _DBObject.Add(_groupedElementEdgeLabel);
             }
 
             #endregion
@@ -380,8 +431,8 @@ namespace sones.GraphIO.XML
 
                         var _Grouped = new XElement("grouped");
 
-                        if (_GroupedDBObjects.GrouppedVertices != null)
-                            foreach (var _DBObjectReadout in _GroupedDBObjects.GrouppedVertices)
+                        if (_GroupedDBObjects.GroupedVertices != null)
+                            foreach (var _DBObjectReadout in _GroupedDBObjects.GroupedVertices)
                                 _Grouped.Add(_DBObjectReadout.ToXML());
 
                         _DBObject.Add(_Grouped);
@@ -398,7 +449,7 @@ namespace sones.GraphIO.XML
 
                     if (_WeightedDBObject != null)
                     {
-                        _DBObject.Add(new XElement("edgelabel", new XElement("attribute", new XAttribute("name", "weight"), new XAttribute("type", _WeightedDBObject1.Weight.Type.ToString()), _WeightedDBObject1.Weight)));
+                        _DBObject.Add(new XElement("edgelabel", new XElement("attribute", new XAttribute("name", "weight"), new XAttribute("type", _WeightedDBObject1.TypeName), _WeightedDBObject1.Weight)));
                         continue;
                     }
 
@@ -437,6 +488,8 @@ namespace sones.GraphIO.XML
 
                     if (_AttributeType.IsGenericType)
                     {
+                        
+
                         _AttributeTypeString = _AttributeType.Name;
                         _AttributeTypeString = _AttributeTypeString.Substring(0, _AttributeTypeString.IndexOf('`')).ToUpper();
                         _AttributeTypeString += "&lt;";
@@ -549,7 +602,217 @@ namespace sones.GraphIO.XML
             var _String = "<?xml version=\"1.0\" encoding=\"utf-8\" standalone=\"yes\"?>" + Environment.NewLine;
             _String += myXDocument.ToString();
 
+            Console.WriteLine(_String);
+
             return _String;
+
+        }
+
+        #endregion
+
+
+        #region AddValidationInformation(myValidationType, params myXElements)
+
+        public static String AddValidationInformation(XMLValidationTypes myValidationType, params XElement[] myXElements)
+        {
+
+            #region XML Header
+
+            var _XMLString = new StringBuilder();
+            _XMLString.AppendLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+
+            #endregion
+
+
+            #region DTD
+
+            if (myValidationType == XMLValidationTypes.DTD)
+            {
+
+                _XMLString.AppendLine("<!DOCTYPE sones [");
+
+                _XMLString.AppendLine("<!ELEMENT sones                   (GraphFS|GraphDB)+>");
+                _XMLString.AppendLine("<!ATTLIST sones");
+                _XMLString.AppendLine("version                           CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                #region GraphFS
+
+                _XMLString.AppendLine("<!ELEMENT GraphFS                 (INode|ObjectLocator)+>");
+                _XMLString.AppendLine("<!ATTLIST GraphFS");
+                _XMLString.AppendLine("version                           CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                #region INode
+
+                _XMLString.AppendLine("<!ELEMENT INode                   (CreationTime, LastAccessTime, LastModificationTime, DeletionTime, ReferenceCount, ObjectSize, IntegrityCheckAlgorithm, EncryptionAlgorithm, ObjectLocatorPosition)>");
+                _XMLString.AppendLine("<!ATTLIST INode");
+                _XMLString.AppendLine("Version                           CDATA #REQUIRED");
+                _XMLString.AppendLine("ObjectUUID                        CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                _XMLString.AppendLine("<!ELEMENT CreationTime            (#PCDATA)>");
+                _XMLString.AppendLine("<!ELEMENT LastAccessTime          (#PCDATA)>");
+                _XMLString.AppendLine("<!ELEMENT LastModificationTime    (#PCDATA)>");
+                _XMLString.AppendLine("<!ELEMENT DeletionTime            (#PCDATA)>");
+                _XMLString.AppendLine("<!ELEMENT ReferenceCount          (#PCDATA)>");
+                _XMLString.AppendLine("<!ELEMENT ObjectSize              (#PCDATA)>");
+                _XMLString.AppendLine("<!ELEMENT IntegrityCheckAlgorithm (#PCDATA)>");
+                _XMLString.AppendLine("<!ELEMENT EncryptionAlgorithm     (#PCDATA)>");
+
+                _XMLString.AppendLine("<!ELEMENT ObjectLocatorPosition   (ExtendedPosition)+>");
+                _XMLString.AppendLine("<!ATTLIST ObjectLocatorPosition");
+                _XMLString.AppendLine("Length                            CDATA #REQUIRED");
+                _XMLString.AppendLine("Reserve                           CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                _XMLString.AppendLine("<!ELEMENT ExtendedPosition        EMPTY>");
+                _XMLString.AppendLine("<!ATTLIST ExtendedPosition");
+                _XMLString.AppendLine("StorageID                         CDATA #REQUIRED");
+                _XMLString.AppendLine("Position                          CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                #endregion
+
+                #region ObjectLocator
+
+                _XMLString.AppendLine("<!ELEMENT ObjectLocator           (ObjectStreamTypes)>");
+                _XMLString.AppendLine("<!ATTLIST ObjectLocator");
+                _XMLString.AppendLine("Version                           CDATA #REQUIRED");
+                _XMLString.AppendLine("ObjectUUID                        CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                _XMLString.AppendLine("<!ELEMENT ObjectStreamTypes       (ObjectStream)+>");
+
+                _XMLString.AppendLine("<!ELEMENT ObjectStream            (ObjectEditions)>");
+                _XMLString.AppendLine("<!ATTLIST ObjectStream");
+                _XMLString.AppendLine("Type                              CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                _XMLString.AppendLine("<!ELEMENT ObjectEditions          (ObjectEditions)+>");
+                _XMLString.AppendLine("<!ATTLIST ObjectEditions");
+                _XMLString.AppendLine("DefaultEdition                    CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                _XMLString.AppendLine("<!ELEMENT ObjectEditions          (ObjectRevisions)>");
+                _XMLString.AppendLine("<!ATTLIST ObjectEditions");
+                _XMLString.AppendLine("myLogin                           CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                _XMLString.AppendLine("<!ELEMENT ObjectRevisions         (ObjectRevisions)+>");
+                _XMLString.AppendLine("<!ATTLIST ObjectRevisions");
+                _XMLString.AppendLine("MinNumberOfRevisions              CDATA #REQUIRED");
+                _XMLString.AppendLine("MaxNumberOfRevisions              CDATA #REQUIRED");
+                _XMLString.AppendLine("MinRevisionDelta                  CDATA #REQUIRED");
+                _XMLString.AppendLine("MaxRevisionAge                    CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                _XMLString.AppendLine("<!ELEMENT ObjectRevisions         (ObjectCopies)+>");
+                _XMLString.AppendLine("<!ATTLIST ObjectRevisions");
+                _XMLString.AppendLine("RevisionID                        CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                _XMLString.AppendLine("<!ELEMENT ObjectCopies            (ObjectStream)+>");
+                _XMLString.AppendLine("<!ATTLIST ObjectCopies");
+                _XMLString.AppendLine("MinNumberOfCopies                 CDATA #REQUIRED");
+                _XMLString.AppendLine("MaxNumberOfCopies                 CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                _XMLString.AppendLine("<!ELEMENT ObjectStream            (AccessRights, AvailableStorageIDs, BlockIntegrityArrays, Extents)>");
+                _XMLString.AppendLine("<!ATTLIST ObjectStream");
+                _XMLString.AppendLine("Algorithm                         CDATA #REQUIRED");
+                _XMLString.AppendLine("ForwardErrorCorrection            CDATA #REQUIRED");
+                _XMLString.AppendLine("IntegrityCheckValue               CDATA #REQUIRED");
+                _XMLString.AppendLine("ObjectUUID                        CDATA #REQUIRED");
+                _XMLString.AppendLine("Redundancy                        CDATA #REQUIRED");
+                _XMLString.AppendLine("ReservedLength                    CDATA #REQUIRED");
+                _XMLString.AppendLine("StreamLength                      CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                _XMLString.AppendLine("<!ELEMENT AccessRights            EMPTY>");
+                _XMLString.AppendLine("<!ELEMENT AvailableStorageIDs     EMPTY>");
+                _XMLString.AppendLine("<!ELEMENT BlockIntegrityArrays    EMPTY>");
+                _XMLString.AppendLine("<!ELEMENT Extents                 (Extent)+>");
+
+                _XMLString.AppendLine("<!ELEMENT Extent                  EMPTY>");
+                _XMLString.AppendLine("<!ATTLIST Extent");
+                _XMLString.AppendLine("Length                            CDATA #REQUIRED");
+                _XMLString.AppendLine("LogicalPosition                   CDATA #REQUIRED");
+                _XMLString.AppendLine("StorageID                         CDATA #REQUIRED");
+                _XMLString.AppendLine("PhysicalPosition                  CDATA #REQUIRED");
+                _XMLString.AppendLine("NextExtent_StorageID              CDATA #REQUIRED");
+                _XMLString.AppendLine("NextExtent_Position               CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                #endregion
+
+                #endregion
+
+                #region GraphDB
+
+                _XMLString.AppendLine("<!ELEMENT GraphDB                 (queryresult)+>");
+                _XMLString.AppendLine("<!ATTLIST GraphDB");
+                _XMLString.AppendLine("version                           CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                _XMLString.AppendLine("<!ELEMENT queryresult             (query, result, duration)>");
+                _XMLString.AppendLine("<!ATTLIST queryresult");
+                _XMLString.AppendLine("version                           CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                _XMLString.AppendLine("<!ELEMENT query                   (#PCDATA)>");
+                _XMLString.AppendLine("<!ELEMENT result                  (#PCDATA)>");
+
+                _XMLString.AppendLine("<!ELEMENT duration                (#PCDATA)>");
+                _XMLString.AppendLine("<!ATTLIST duration");
+                _XMLString.AppendLine("resolution                        CDATA #REQUIRED");
+                _XMLString.AppendLine(">");
+
+                #endregion
+
+                _XMLString.AppendLine("]>");
+
+            }
+
+            #endregion
+
+            #region DTD_URL
+
+            else if (myValidationType == XMLValidationTypes.DTD_URL)
+                _XMLString.AppendLine("<!DOCTYPE spec SYSTEM \"http://www.sones.de/Graph/XML/DTD/GraphXML.dtd\">");
+
+            #endregion
+
+            #region Schema
+
+            else if (myValidationType == XMLValidationTypes.Schema)
+            {
+            }
+
+            #endregion
+
+            #region Schema_URL
+
+            else if (myValidationType == XMLValidationTypes.Schema_URL)
+            {
+            }
+
+            #endregion
+
+
+            #region Print <Graph ...> ... </Graph>
+
+            _XMLString.AppendFormat("<Graph>"); _XMLString.AppendLine();
+
+            foreach (var _XElement in myXElements)
+                _XMLString.Append(_XElement.ToString());
+
+            _XMLString.AppendLine("</Graph>");
+            _XMLString.AppendLine("");
+
+            #endregion
+
+            return _XMLString.ToString();
 
         }
 

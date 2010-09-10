@@ -1,5 +1,72 @@
 sones GraphDB 1.2 (developer) Changelog:
 
+10.09.2010
+- Fixed bug of selecting undefined attributes in higher levels
+- renamed DBVertex to Vertex
+- renamed NewApi.DBVertex to Vertex 
+- some minor Vertex and DBObject refactoring
+- fixed bug fixed "from DBVertex select 
+- where type=..." vertices always inheritated by DBVertex
+- Implemented StaticSelect
+- fixed XML bug
+- Added grammar for PBI (527)
+- added some vertex traversal functionality
+- renamed DBVertex in API to Vertex and added a base type DBVertex
+- fixed create types bug (608)
+- Refactored GaphDSCLI, replaces old Object stuff with AGraphDSSharp 
+- Added GraphDSRESTCLI command to start the GraphDS...
+- Moved GraphDSSharp Linq and Traverser stuff into their own extension classes
+- Moved a lot of methods from AGraphDSSharp to FluentInterfaceExtensions
+- Fixed bug (At DESCRIBE TYPE, the AttributeUUID should be a valid UnsignedInteger)
+- refactored QueryResult
+- Fixed bug for duplicate aggregate and function with parameters
+- extended error handling (FailedAction)
+- Removed TypeName from SelectionResultSet (doesn't make sense anymore, because there might be more than one type within ...
+- fixed bug set GraphDBType.UUID = GraphDBType.ObjectUUID
+- Fixed bug 551 (UPDATE... (ADD TO...) || (REMOVE FROM...) => Warning: Please use += / -=)
+- added Traverse* methods to IGraphDB 
+- added a GraphDBInterface and a SessionToken to DBObject (to be able to trigger a t...
+- Unicode FileHandle fixes
+- Moved old GraphDSSharp_RESTClient to GraphDSClient project outsidde from GraphDS
+- added some method stubs for Vertex/Path traversal
+- renamed UnspecifiedError to Error_Unspecified 
+- renamed UnspecifiedWarning to Warning_Unspecified
+- minor IError/IWarning bugFix 
+- removed graphDBCLient_QueryResult...
+- Fixed some error-/warningshandling stuff 
+- Added some XML DDT to XML_IO
+- upgraded Query method of GraphDSSharp_RESTClient to be able to generate QueryResults that equal the embedded ones 
+- added some inline documentation
+- Moved old XML AddValidationInformation(...) method from Lib to GraphIO.XML_IO
+- IGraphFS clean'up and inline dokumentation 
+- Removed notification stuff from GraphFS*
+- removed toDBObjectReadout extension on DBObjectStream +refactored DBWeightedReadout 
+- there's no ADBaseObject as weight...
+- Changed Type attribute of non resolved edges from GraphDBType to String
+- implemented simple lazy QueryResult which doesn't care about certain edges or weighted DBObjectReadouts human language and web semantic style for unlink command
+- removed obsolete SelectedAttributes from QueryResult
+- added empty constructor to GeneralError and GraphDBWarning 
+- added GraphDSSharpRestClient_RealQueryResult (currently inc...
+- refactored QueryResult (now with GeneralErrors and GraphDBWarnings)
+- refactored IGetName (now located at sones.GraphDBInterface.ObjectManagement) 
+- changed output of GetTypeReadout (DBTypeM...
+- removed networking and lib project reference from GraphDSSharp
+- removed GraphDSREST reference from GraphDSSharpREST
+- refactored some errors and warnings to GraphDBInterface 
+- added IDBContext to GraphDBInterface +refactored DBTransaction...
+- removed IRONY reference from DBInterface
+- removed using sones.GraphDB.Structures.Result namespace 
+- refactored OutputDictionary, OutputList, QueryResultExtensions...
+- ReRefactored TypeUUID and AttributeUUID back to GraphDB 
+- removed TypeUUID property from ADBBaseObject
+- refactored QueryResult (now located at sones.GraphDBInterface.Result)
+- Refactored SelectionResultSet (now located at sones.GraphDBInterface.Result)
+- refactored Edge (now located at sones.GraphDBInterface.Result)
+- refactored DBObjectReadoutGroup and DBWeightedObjectReadout (now located at sones.GraphDBInterface.Result)
+- refactored ADBBaseObject (now located in GraphDBInterface.TypeManagement.BasicTypes) 
+- moved TypesOfOperatorResult to Gr...
+- refactored TypeUUID, AttributeUUID, IObject (now located in GraphDBInterface/TypeManagement)
+
 23.08.2010
 - fixed bug 580 (Performance Counter on Windows XP crash)
 - reduced warnings

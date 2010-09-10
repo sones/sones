@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,13 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-
-/* <id name="GraphdbDB – DBIndexManager" />
+/* <id name="GraphdbDB � DBIndexManager" />
  * <copyright file="DBIndexManager.cs"
  *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Henning Rauch</developer>
  */
@@ -34,20 +34,20 @@ using System.Linq;
 using System.Text;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
-using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.Structures.Result;
-using sones.GraphDB.Structures;
+using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.TypeManagement;
+
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Errors;
 using sones.GraphFS.Exceptions;
 using sones.GraphFS.Objects;
 using sones.GraphFS.Session;
 using sones.Lib;
-using sones.Lib.ErrorHandling;
 using sones.Lib.DataStructures.Indices;
-using sones.GraphDB.Managers.Structures;
+using sones.Lib.ErrorHandling;
+using sones.GraphDB.TypeManagement.BasicTypes;
 
 #endregion
 
@@ -137,7 +137,7 @@ namespace sones.GraphDB.Indices
 
                 var index = myDBTypeStream.GetAttributeIndex(myIndexName, myIndexEdition);
 
-                index.Clear(this);
+                index.ClearAndRemoveFromDisc(this);
 
                 if (allDBOLocations.Value != null)
                 {
@@ -194,57 +194,67 @@ namespace sones.GraphDB.Indices
         public Exceptional<Boolean> RebuildIndices(IEnumerable<GraphDBType> myUserDefinedTypes)
         {
 
-            #region Remove old indices
+            #region Remove old attribute indices
 
-            foreach (var type in myUserDefinedTypes)
+            foreach (var _UserDefinedType in myUserDefinedTypes)
             {
-                foreach (var attrIdx in type.GetAllAttributeIndices(false))
+                foreach (var _AttributeIndex in _UserDefinedType.GetAllAttributeIndices(includeUUIDIndices: false))
                 {
-                    attrIdx.Clear(this);
+                    // Clears the index and removes it from the file system!
+                    _AttributeIndex.ClearAndRemoveFromDisc(this);
                 }
             }
             
             #endregion
 
-            foreach (var userDefinedType in myUserDefinedTypes)
-            {
-                var _ObjectLocation = new ObjectLocation(userDefinedType.ObjectLocation, DBConstants.DBObjectsLocation);
 
-                using (var _DBObjectsLocationsExceptional = _IGraphFSSession.GetFilteredDirectoryListing(_ObjectLocation, null, null, null, new List<String>(new String[] { DBConstants.DBOBJECTSTREAM }), null, null, null, null, null, null))
+            foreach (var _UserDefinedType in myUserDefinedTypes)
+            {
+
+                var _DBObjectsLocation = new ObjectLocation(_UserDefinedType.ObjectLocation, DBConstants.DBObjectsLocation);
+
+                // Get all DBObjects from DirectoryListing
+                using (var _DBObjectsLocationsExceptional = _IGraphFSSession.GetFilteredDirectoryListing(_DBObjectsLocation, null, null, null, new List<String>(new String[] { DBConstants.DBOBJECTSTREAM }), null, null, null, null, null, null))
                 {
 
-                    if (_DBObjectsLocationsExceptional.Success() && _DBObjectsLocationsExceptional.Value != null)
+                    if (_DBObjectsLocationsExceptional.IsValid())
                     {
 
                         var UUIDAttributeUUID = _DBContext.DBTypeManager.GetUUIDTypeAttribute().UUID;
 
                         var UUIDIdxIndexKey = new IndexKeyDefinition(new List<AttributeUUID>() { UUIDAttributeUUID });
 
-                        foreach (var loc in _DBObjectsLocationsExceptional.Value)
+                        foreach (var _DBObjectLocation in _DBObjectsLocationsExceptional.Value)
                         {
-                            var dbo = _DBContext.DBObjectManager.LoadDBObject(new ObjectLocation(userDefinedType.ObjectLocation, DBConstants.DBObjectsLocation, loc));
 
-                            if (dbo.Failed())
+                            var _DBObjectExceptional = _DBContext.DBObjectManager.LoadDBObject(new ObjectLocation(_DBObjectsLocation, _DBObjectLocation));
+                            if (_DBObjectExceptional.Failed())
                             {
-                                return new Exceptional<bool>(dbo);
+                                return new Exceptional<Boolean>(_DBObjectExceptional);
                             }
 
                             //rebuild everything but the UUIDidx
-                            foreach (var index in userDefinedType.AttributeIndices.Where(aIDX => aIDX.Key != UUIDIdxIndexKey))
+                            foreach (var _KeyValuePair in _UserDefinedType.AttributeIndices.Where(aIDX => aIDX.Key != UUIDIdxIndexKey))
                             {
-                                foreach (var edition in index.Value.Values)
+                                foreach (var _AttributeIndex in _KeyValuePair.Value.Values)
                                 {
-                                    edition.Insert(dbo.Value, userDefinedType, _DBContext);
+                                    _AttributeIndex.Insert(_DBObjectExceptional.Value, _UserDefinedType, _DBContext);
                                 }
                             }
+
                         }
+
                     }
+                    
                     else
-                        return new Exceptional<bool>(new Error_IndexRebuildError(userDefinedType, _ObjectLocation));
+                        return new Exceptional<bool>(new Error_IndexRebuildError(_UserDefinedType, _DBObjectsLocation));
+
                 }
+
             }
 
             return new Exceptional<bool>(true);
+
         }
 
         #endregion
@@ -352,18 +362,22 @@ namespace sones.GraphDB.Indices
             {
                 return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(result);
             }
+
             else
             {
+
                 if (result.Value.isNew)
                 {
                     // Uncomment as soon as index is serializeable
                     result.AddErrorsAndWarnings(_IGraphFSSession.StoreFSObject(result.Value, false));
                     //result.AddErrorsAndWarnings(result.Value.Save());
+                    //ToDo: Fehler beim Speichern werden im Weiterm ignoriert statt darauf reagiert!
                 }
 
                 return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(result.Value as IVersionedIndexObject<IndexKey, ObjectUUID>);
 
             }
+
         }
 
         #endregion
@@ -406,6 +420,7 @@ namespace sones.GraphDB.Indices
         {
 
             SelectionResultSet resultOutput = null;
+
             var dbObjectType = myDBContext.DBTypeManager.GetTypeByName(myDBType);
             if (dbObjectType == null)
             {
@@ -443,7 +458,12 @@ namespace sones.GraphDB.Indices
 
             if (String.IsNullOrEmpty(myIndexName))
             {
-                myIndexName = myAttributeList.Aggregate(new StringBuilder(DBConstants.IndexKeyPrefix), (result, elem) => { result.Append(String.Concat(DBConstants.IndexKeySeperator, elem.IndexAttribute.LastAttribute.Name)); return result; }).ToString();
+                myIndexName = myAttributeList.Aggregate(new StringBuilder(DBConstants.IndexKeyPrefix),
+                                                        (result, elem) => {
+                                                            result.Append(String.Concat(DBConstants.IndexKeySeperator, elem.IndexAttribute.LastAttribute.Name));
+                                                            return result;
+                                                        }
+                                                       ).ToString();
             }
 
 
@@ -480,7 +500,7 @@ namespace sones.GraphDB.Indices
 
                     var readOut = GenerateCreateIndexResult(myDBType, myAttributeList, createdIDx.Value);
 
-                    resultOutput = new SelectionResultSet(null, new List<DBObjectReadout> { readOut });
+                    resultOutput = new SelectionResultSet(new List<DBObjectReadout> { readOut });
 
                     #endregion
 

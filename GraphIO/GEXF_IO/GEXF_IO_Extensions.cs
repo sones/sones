@@ -1,4 +1,24 @@
-﻿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * GEXF_IO_Extensions
  * Achim 'ahzf' Friedland, 2010
  */
@@ -11,12 +31,14 @@ using System.Xml.Linq;
 using System.Collections.Generic;
 
 using sones.Lib;
-using sones.GraphDB.Structures.Result;
+
 using System.IO;
 using System.Xml;
 using System.Text;
 using sones.GraphFS.DataStructures;
 using sones.GraphDB.ObjectManagement;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.ObjectManagement;
 
 #endregion
 
@@ -97,98 +119,95 @@ namespace sones.GraphIO.GEXF
             //    }
             //}
 
-            foreach (var _SelectionListElementResult in myQueryResult.Results)
+            if (myQueryResult.Results.Objects != null)
             {
-                if (_SelectionListElementResult.Objects != null)
+                foreach (var _DBObject in myQueryResult.Results.Objects)
                 {
-                    foreach (var _DBObject in _SelectionListElementResult.Objects)
+
+                    var _UUID = (_DBObject["UUID"] != null) ? _DBObject["UUID"] : "n/a";
+                    var _TYPE = (_DBObject["TYPE"] != null) ? _DBObject["TYPE"] : "n/a";
+                    var _Name = (_DBObject["Name"] != null) ? _DBObject["Name"] : "n/a";
+
+                    if (_UUID is ObjectUUID)
                     {
-
-                        var _UUID = (_DBObject["UUID"] != null) ? _DBObject["UUID"] : "n/a";
-                        var _TYPE = (_DBObject["TYPE"] != null) ? _DBObject["TYPE"] : "n/a";
-                        var _Name = (_DBObject["Name"] != null) ? _DBObject["Name"] : "n/a";
-
-                        if (_UUID is ObjectUUID)
+                        if (!_allNodes.Contains((ObjectUUID)_UUID))
                         {
-                            if (!_allNodes.Contains((ObjectUUID)_UUID))
-                            {
-                                _allNodes.Add((ObjectUUID)_UUID);
-                                _nodes.Add(new XElement("node", new XAttribute("id", _UUID), new XAttribute("type", _TYPE), new XAttribute("label", _TYPE + "." + _Name)));
-                            }
+                            _allNodes.Add((ObjectUUID)_UUID);
+                            _nodes.Add(new XElement("node", new XAttribute("id", _UUID), new XAttribute("type", _TYPE), new XAttribute("label", _TYPE + "." + _Name)));
                         }
-                        else
+                    }
+                    else
+                    {
+                        if (!_allNodes.Contains(new ObjectUUID((String)_UUID)))
                         {
-                            if (!_allNodes.Contains(new ObjectUUID((String)_UUID)))
-                            {
-                                _allNodes.Add(new ObjectUUID((String)_UUID));
-                                _nodes.Add(new XElement("node", new XAttribute("id", _UUID), new XAttribute("type", _TYPE), new XAttribute("label", _TYPE + "." + _Name)));
-                            }
+                            _allNodes.Add(new ObjectUUID((String)_UUID));
+                            _nodes.Add(new XElement("node", new XAttribute("id", _UUID), new XAttribute("type", _TYPE), new XAttribute("label", _TYPE + "." + _Name)));
                         }
+                    }
 
-                        foreach (var _Attribute in _DBObject.Attributes)
+                    foreach (var _Attribute in _DBObject.Attributes)
+                    {
+                        if (_Attribute.Value != null)
                         {
-                            if (_Attribute.Value != null)
+                            #region IEnumerable<DBObjectReadout>
+
+                            var _DBObjects = _Attribute.Value as IEnumerable<DBObjectReadout>;
+
+                            if (_DBObjects != null && _DBObjects.Count() > 0)
                             {
-                                #region IEnumerable<DBObjectReadout>
 
-                                var _DBObjects = _Attribute.Value as IEnumerable<DBObjectReadout>;
+                                var _EdgeInfo = (_Attribute.Value as Edge);
+                                var _EdgeType = (_EdgeInfo != null) ? _EdgeInfo.EdgeTypeName : "";
 
-                                if (_DBObjects != null && _DBObjects.Count() > 0)
+                                //var _ListAttribute = new XElement("edge",
+                                //    new XAttribute("name", _Attribute.Key.EscapeForXMLandHTML()),
+                                //    new XAttribute("type", _EdgeType));
+
+                                // An edgelabel for all edges together...
+                                //_ListAttribute.Add(new XElement("hyperedgelabel"));
+
+                                foreach (var _DBObjectReadout in _DBObjects)
                                 {
 
-                                    var _EdgeInfo = (_Attribute.Value as Edge);
-                                    var _EdgeType = (_EdgeInfo != null) ? _EdgeInfo.EdgeTypeName : "";
+                                    var _OtherUUID = _DBObjectReadout.Attributes["UUID"];
 
-                                    //var _ListAttribute = new XElement("edge",
-                                    //    new XAttribute("name", _Attribute.Key.EscapeForXMLandHTML()),
-                                    //    new XAttribute("type", _EdgeType));
-
-                                    // An edgelabel for all edges together...
-                                    //_ListAttribute.Add(new XElement("hyperedgelabel"));
-
-                                    foreach (var _DBObjectReadout in _DBObjects)
+                                    Object _OtherTYPE = "";
+                                    if (_DBObjectReadout.Attributes.ContainsKey("TYPE"))
                                     {
-
-                                        var _OtherUUID = _DBObjectReadout.Attributes["UUID"];
-
-                                        Object _OtherTYPE = "";
-                                        if (_DBObjectReadout.Attributes.ContainsKey("TYPE"))
-                                        {
-                                            if (_DBObjectReadout.Attributes["TYPE"] is IGetName)
-                                                _OtherTYPE = ((IGetName)_DBObjectReadout.Attributes["TYPE"]).Name;
-                                            else
-                                                _OtherTYPE = _DBObjectReadout.Attributes["TYPE"];
-                                        }
-
-                                        Object _OtherName = "";
-                                        if (_DBObjectReadout.Attributes.ContainsKey("Name"))
-                                            _OtherName = _DBObjectReadout.Attributes["Name"];
-
-                                        if (!_allNodes.Contains((ObjectUUID)_OtherUUID))
-                                        {
-                                            _allNodes.Add((ObjectUUID)_OtherUUID);
-                                            _nodes.Add(new XElement("node", new XAttribute("id", _OtherUUID), new XAttribute("type", _OtherTYPE), new XAttribute("label", _OtherTYPE + "." + _OtherName)));
-                                        }
-
-                                        //if (_allNodes.Contains(_UUID) && _allNodes.Contains(_OtherUUID))
-                                        _edges.Add(new XElement("edge", new XAttribute("id", _UUID.ToString() + "->" + _OtherUUID.ToString()),
-                                                                        new XAttribute("source", _UUID),
-                                                                        new XAttribute("target", _OtherUUID)
-
-                                            ));
-
+                                        if (_DBObjectReadout.Attributes["TYPE"] is IGetName)
+                                            _OtherTYPE = ((IGetName)_DBObjectReadout.Attributes["TYPE"]).Name;
+                                        else
+                                            _OtherTYPE = _DBObjectReadout.Attributes["TYPE"];
                                     }
 
-                                    //_DBObject.Add(_ListAttribute);
-                                    continue;
+                                    Object _OtherName = "";
+                                    if (_DBObjectReadout.Attributes.ContainsKey("Name"))
+                                        _OtherName = _DBObjectReadout.Attributes["Name"];
+
+                                    if (!_allNodes.Contains((ObjectUUID)_OtherUUID))
+                                    {
+                                        _allNodes.Add((ObjectUUID)_OtherUUID);
+                                        _nodes.Add(new XElement("node", new XAttribute("id", _OtherUUID), new XAttribute("type", _OtherTYPE), new XAttribute("label", _OtherTYPE + "." + _OtherName)));
+                                    }
+
+                                    //if (_allNodes.Contains(_UUID) && _allNodes.Contains(_OtherUUID))
+                                    _edges.Add(new XElement("edge", new XAttribute("id", _UUID.ToString() + "->" + _OtherUUID.ToString()),
+                                                                    new XAttribute("source", _UUID),
+                                                                    new XAttribute("target", _OtherUUID)
+
+                                        ));
 
                                 }
 
-                                #endregion
-                            }
-                        }
+                                //_DBObject.Add(_ListAttribute);
+                                continue;
 
+                            }
+
+                            #endregion
+                        }
                     }
+
                 }
             }
 

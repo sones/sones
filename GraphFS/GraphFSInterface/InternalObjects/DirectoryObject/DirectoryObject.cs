@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /* 
  * GraphFS - DirectoryObject
- * Achim Friedland, 2008 - 2010
+ * (c) Achim Friedland, 2008 - 2010
  */
 
 #region Usings
@@ -81,26 +81,32 @@ namespace sones.GraphFS.InternalObjects
 
         #endregion
 
-        #region DirectoryObject(myObjectLocation, mySerializedData, myIntegrityCheckAlgorithm, myEncryptionAlgorithm)
+        #region DirectoryObject()
+
+        /// <summary>
+        /// This will create an empty DirectoryObject
+        /// </summary>
+        public DirectoryObject(ObjectUUID myObjectUUID)
+            : this()
+        {
+            ObjectUUID = myObjectUUID;
+        }
+
+        #endregion
+
+        #region DirectoryObject(mySerializedData, myIntegrityCheckAlgorithm, myEncryptionAlgorithm)
 
         /// <summary>
         /// A constructor used for fast deserializing
         /// </summary>
         /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the requested file within the file system</param>
         /// <param name="mySerializedData">An array of bytes[] containing a serialized DirectoryObject</param>
-        public DirectoryObject(ObjectLocation myObjectLocation, Byte[] mySerializedData, IIntegrityCheck myIntegrityCheckAlgorithm, ISymmetricEncryption myEncryptionAlgorithm)
+        public DirectoryObject(Byte[] mySerializedData, IIntegrityCheck myIntegrityCheckAlgorithm, ISymmetricEncryption myEncryptionAlgorithm)
             : this()
         {
 
             if (mySerializedData == null || mySerializedData.Length == 0)
                 throw new ArgumentNullException("mySerializedData must not be null or its length be zero!");
-
-            if (myObjectLocation == null || myObjectLocation.Length < FSPathConstants.PathDelimiter.Length)
-                throw new ArgumentNullException("Invalid ObjectLocation!");
-
-            // Set the property in order to automagically set the
-            // ObjectPath and ObjectName
-            ObjectLocation = myObjectLocation;
 
             Deserialize(mySerializedData, myIntegrityCheckAlgorithm, myEncryptionAlgorithm, false);
             _isNew = false;
@@ -990,9 +996,19 @@ namespace sones.GraphFS.InternalObjects
 
                             foreach (String _IgnoreName in myIgnoreName)
                             {
+
                                 if (_IgnoreName.EndsWith("*") && __DirectoryEntry.Key.StartsWith(_IgnoreName.Substring(0, _IgnoreName.Length - 1))) _AddEntry = false;
                                 if (_IgnoreName.StartsWith("*") && __DirectoryEntry.Key.EndsWith(_IgnoreName.Substring(1, _IgnoreName.Length - 1))) _AddEntry = false;
+
+                                if ((!_IgnoreName.EndsWith("*") && !_IgnoreName.StartsWith("*")) && (__DirectoryEntry.Key == _IgnoreName))
+                                {
+                                    _AddEntry = false;
+                                }
+
+                                if (!_AddEntry) break;
                             }
+
+                            if (!_AddEntry) continue;
 
                         }
 
@@ -1139,7 +1155,7 @@ namespace sones.GraphFS.InternalObjects
 
         public override String ToString()
         {
-            return String.Concat("\"", _ObjectLocation, "\", ", ObjectUUID.ToString(), ", ", base.KeyCount(), " entries");
+            return String.Concat("\"", ObjectLocation, "\", UUID=", ObjectUUID.ToHexString(), ", ", base.KeyCount(), " entries");
         }
 
         #endregion

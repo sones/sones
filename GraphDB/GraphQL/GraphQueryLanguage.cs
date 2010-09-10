@@ -1,4 +1,24 @@
-ï»¿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * Copyright (c) sones GmbH. All rights reserved.
  * <developer>Henning Rauch</developer>
  * <developer>Stefan Licht</developer>
@@ -37,7 +57,7 @@ using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.Structures.Operators;
-using sones.GraphDB.Structures.Result;
+
 using sones.GraphDB.Settings;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
@@ -49,6 +69,10 @@ using sones.Lib.ErrorHandling;
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.Lib.Frameworks.Irony.Scripting.Ast;
 using sones.GraphDB.GraphQL.Structure;
+using sones.GraphDB.GraphQL.StatementNodes.Link;
+using sones.GraphDB.GraphQL.StatementNodes.Unlink;
+using sones.GraphDBInterface.TypeManagement;
+
 
 #endregion
 
@@ -100,6 +124,8 @@ namespace sones.GraphDB.GraphQL
         public SymbolTerminal S_MINUS                           { get; private set; }
         public SymbolTerminal S_AD                              { get; private set; }
         public SymbolTerminal S_colon                           { get; private set; }
+        public SymbolTerminal S_EQUALS                          { get; private set; }
+        public SymbolTerminal S_QUESTIONMARK_EQUALS             { get; private set; }
 
         #region Brackets
 
@@ -263,6 +289,19 @@ namespace sones.GraphDB.GraphQL
 
         #endregion
 
+        #region LINK
+
+        public SymbolTerminal S_VIA                     { get; private set; }
+        public SymbolTerminal S_LINK                    { get; private set; }
+
+        #endregion
+
+        #region UNLINK
+
+        public SymbolTerminal S_UNLINK                  { get; private set; }
+
+        #endregion
+
         #endregion
 
         #endregion
@@ -326,7 +365,7 @@ namespace sones.GraphDB.GraphQL
             var string_literal      = new StringLiteral("string", "'", StringFlags.AllowsDoubledQuote | StringFlags.AllowsLineBreak);
             var location_literal    = new StringLiteral("file", "'", StringFlags.AllowsDoubledQuote | StringFlags.AllowsLineBreak | StringFlags.NoEscapes);
             
-            var name                = new IdentifierTerminal("name", "Ã„Ã–ÃœÃ¤Ã¶Ã¼ÃŸ0123456789_", "Ã„Ã–ÃœÃ¤Ã¶Ã¼0123456789$_");
+            var name                = new IdentifierTerminal("name", "ÄÖÜäöüß0123456789_", "ÄÖÜäöü0123456789$_");
 
 
             #endregion
@@ -342,6 +381,8 @@ namespace sones.GraphDB.GraphQL
             S_MINUS                           = Symbol("-");
             S_RHOMB                           = Symbol("#");
             S_AD                              = Symbol("@");
+            S_EQUALS                          = Symbol("=");
+            S_QUESTIONMARK_EQUALS             = Symbol("?=");
            
             S_colon                           = Symbol(":");
             S_BRACKET_LEFT                    = Symbol(TERMINAL_BRACKET_LEFT);
@@ -457,6 +498,9 @@ namespace sones.GraphDB.GraphQL
             S_REBUILD                         = Symbol("REBUILD");
             S_DEFINE                          = Symbol("DEFINE");
             S_UNDEFINE                        = Symbol("UNDEFINE");
+            S_VIA                             = Symbol("VIA");
+            S_LINK                            = Symbol("LINK");
+            S_UNLINK                          = Symbol("UNLINK");
 
             #region IMPORT
 
@@ -505,7 +549,7 @@ namespace sones.GraphDB.GraphQL
             var InsertStmt                  = new NonTerminal("InsertStmt", CreateInsertStatementNode);
             var updateStmt                  = new NonTerminal("updateStmt", CreateUpdateStatementNode);
             var deleteStmt                  = new NonTerminal("deleteStmt", CreateDeleteStatementNode);
-            var SelectStmtGraph           = new NonTerminal("SelectStmtGraph", CreateSelectStatementNode);
+            var SelectStmtGraph             = new NonTerminal("SelectStmtGraph", CreateSelectStatementNode);
             var parSelectStmt               = new NonTerminal("parSelectStmt", CreatePartialSelectStmtNode);
             var createTypesStmt             = new NonTerminal("createTypesStmt", CreateCreateTypesStatementNode);
             var insertorupdateStmt          = new NonTerminal("insertorupdateStmt", CreateInsertOrUpdateStatementNode);
@@ -513,6 +557,8 @@ namespace sones.GraphDB.GraphQL
             var replaceStmt                 = new NonTerminal("replaceStmt", CreateReplaceStatementNode);
             var transactStmt                = new NonTerminal("transactStmt", CreateTransActionStatementNode);
             var commitRollBackTransactStmt  = new NonTerminal("commitRollBackTransactStmt", CreateCommitRollbackTransActionNode);
+            var linkStmt                    = new NonTerminal("linkStmt", CreateLinkStmtNode);
+            var unlinkStmt                  = new NonTerminal("unlinkStmt", CreateUnlinkStmt);
             
             #endregion
 
@@ -565,7 +611,6 @@ namespace sones.GraphDB.GraphQL
             var selectionListElement        = new NonTerminal("selectionListElement", typeof(SelectionListElementNode));
             selectionSource                 = new NonTerminal("selectionSource");
             var selByType                   = new NonTerminal("selByType", CreateSelByTypeNode);
-            var asOpt                       = new NonTerminal("asOpt");
             var aliasOpt                    = new NonTerminal("aliasOpt");
             var aliasOptName                = new NonTerminal("aliasOptName");
             var selectOutputOpt             = new NonTerminal("selectOutputOpt", typeof(SelectOutputOptNode));
@@ -661,6 +706,7 @@ namespace sones.GraphDB.GraphQL
 
             var ListType                    = new NonTerminal("ListType");
             var ListParametersForExpression = new NonTerminal("ListParametersForExpression", typeof(ParametersNode));
+            var LinkCondition               = new NonTerminal("LinkCondition");
 
             #region EdgeType
 
@@ -765,7 +811,7 @@ namespace sones.GraphDB.GraphQL
             var verbosity           = new NonTerminal("verbosity", CreateVerbosityNode);
             var verbosityTypes      = new NonTerminal("verbosityTypes");
 
-            #endregion
+            #endregion           
 
             #endregion
 
@@ -795,7 +841,9 @@ namespace sones.GraphDB.GraphQL
                             | transactStmt
                             | commitRollBackTransactStmt
                             | rebuildIndicesStmt
-                            | BNF_ImportStmt;
+                            | BNF_ImportStmt
+                            | linkStmt
+                            | unlinkStmt;
                             
 
             #endregion
@@ -816,7 +864,7 @@ namespace sones.GraphDB.GraphQL
             //old
             //Id.Rule = MakePlusRule(Id, dotWrapper, Id_simple);
 
-            Id.Description = "an id is composed by an identifier a dot and a second identifier -  or a list of them an id could be â€˜U.Nameâ€™ or â€˜U.Friends.Ageâ€™\n";
+            Id.Description = "an id is composed by an identifier a dot and a second identifier -  or a list of them an id could be ‘U.Name’ or ‘U.Friends.Age’\n";
             idlist.Rule = MakePlusRule(idlist, S_comma, Id);
             id_simpleList.Rule = MakePlusRule(id_simpleList, S_comma, Id_simple);
             id_simpleDotList.Rule = MakePlusRule(id_simpleDotList, S_dot, Id_simple);
@@ -855,7 +903,7 @@ namespace sones.GraphDB.GraphQL
             #region typeList
 
             TypeList.Rule = MakePlusRule(TypeList, S_comma, AType);
-            TypeList.Description = "specify the type object to be selected for example a type list could be â€˜User Uâ€™, â€˜Car Câ€™, â€¦\n";
+            TypeList.Description = "specify the type object to be selected for example a type list could be ‘User U’, ‘Car C’, …\n";
 
             AType.Rule = Id_simple + Id_simple
                         | Id_simple;
@@ -1224,7 +1272,7 @@ namespace sones.GraphDB.GraphQL
                                         |   TERMINAL_LT 
                                         |   TERMINAL_GT
                                         |   selByType
-                                        |   selectionSource + aliasOpt;
+                                        |   selectionSource;
 
             selByType.Rule = Empty
                             | S_AD + Id_simple;
@@ -1234,7 +1282,10 @@ namespace sones.GraphDB.GraphQL
             aliasOpt.Rule =     Empty
                             |   S_AS + aliasOptName;
 
-            selectionSource.Rule = BNF_Aggregate | IdOrFuncList;
+            var staticSelect = new NonTerminal("staticSelect", CreateSelectValueAssignmentNode);
+            staticSelect.Rule = Empty | S_EQUALS + Value | "?=" + Value;
+
+            selectionSource.Rule = BNF_Aggregate + aliasOpt | IdOrFuncList + staticSelect + aliasOpt;
                 //|   funcCall
                 //|   Id;
                                 
@@ -1538,6 +1589,23 @@ namespace sones.GraphDB.GraphQL
 
             #endregion
 
+            #region LINK
+            
+            // Semantic Web Yoda-Style and human language style
+            linkStmt.Rule = S_LINK + TypeWrapper + CollectionTuple + S_VIA + Id + S_TO + LinkCondition |
+                            S_LINK + TypeWrapper + CollectionTuple + S_TO + LinkCondition + S_VIA + Id;
+
+            LinkCondition.Rule = TypeWrapper + CollectionTuple;
+
+            #endregion
+
+            #region UNLINK
+
+            unlinkStmt.Rule = S_UNLINK + TypeWrapper + CollectionTuple + S_VIA + Id + S_FROM + LinkCondition |
+                              S_UNLINK + TypeWrapper + CollectionTuple + S_FROM + LinkCondition + S_VIA + Id;
+
+            #endregion
+
             #endregion
 
             #region Misc
@@ -1811,6 +1879,24 @@ namespace sones.GraphDB.GraphQL
             parseNode.AstNode = (object)aSelectStatementNode;
         }
 
+        private void CreateAliasNode(CompilerContext context, ParseTreeNode parseNode)
+        {
+            var aliasNode = new AliasNode();
+
+            aliasNode.GetContent(context, parseNode);
+
+            parseNode.AstNode = aliasNode;
+        }
+
+        private void CreateSelectValueAssignmentNode(CompilerContext context, ParseTreeNode parseNode)
+        {
+            var selectValueAssignmentNode = new SelectValueAssignmentNode();
+
+            selectValueAssignmentNode.GetContent(context, parseNode);
+
+            parseNode.AstNode = selectValueAssignmentNode;
+        }
+
         private void CreateSelByTypeNode(CompilerContext context, ParseTreeNode parseNode)
         {
             var aSelByTypeNode = new SelByTypeNode();
@@ -1923,6 +2009,8 @@ namespace sones.GraphDB.GraphQL
             parseNode.AstNode = (object)deleteNode;
         }
 
+        #region Settings
+
         private void CreateSettingStatementNode(CompilerContext context, ParseTreeNode parseNode)
         {
             SettingNode settingNode = new SettingNode();
@@ -1950,6 +2038,7 @@ namespace sones.GraphDB.GraphQL
             parseNode.AstNode = (object)settingAttrNode;
         }
 
+        #endregion
 
         private void CreateBackwardEdgesNode(CompilerContext context, ParseTreeNode parseNode)
         {
@@ -1987,6 +2076,8 @@ namespace sones.GraphDB.GraphQL
             parseNode.AstNode = (object)edgeTypeDefNode;
         }
 
+        #region Dump/Export
+
         private void CreateDumpNode(CompilerContext context, ParseTreeNode parseNode)
         {
             var dumpNode = new DumpNode();
@@ -2013,6 +2104,8 @@ namespace sones.GraphDB.GraphQL
 
             parseNode.AstNode = dumpFormatNode;
         }
+
+        #endregion
 
         private void CreateAddToListAttrUpdateAddToNode(CompilerContext context, ParseTreeNode parseNode)
         {
@@ -2273,8 +2366,33 @@ namespace sones.GraphDB.GraphQL
 
         #endregion
 
+        #region link
+
+        private void CreateLinkStmtNode(CompilerContext context, ParseTreeNode parseNode)
+        {
+            var linkNode = new LinkNode();
+
+            linkNode.GetContent(context, parseNode);
+
+            parseNode.AstNode = linkNode;
+        }
+
         #endregion
 
+        #region unlink
+
+        private void CreateUnlinkStmt(CompilerContext context, ParseTreeNode parseNode)
+        {
+            var unlinkNode = new UnlinkNode();
+
+            unlinkNode.GetContent(context, parseNode);
+
+            parseNode.AstNode = unlinkNode;
+        }
+
+        #endregion
+
+        #endregion
 
         #region IDumpable Members
 
@@ -2315,18 +2433,18 @@ namespace sones.GraphDB.GraphQL
 
                 #region Not backwardEdge attributes
 
-                if (myGraphDBType.GetSpecificAttributes(ta => !ta.IsBackwardEdge).CountIsGreater(0))
+                if (myGraphDBType.GetFilteredAttributes(ta => !ta.IsBackwardEdge).CountIsGreater(0))
                 {
-                    stringBuilder.Append(S_ATTRIBUTES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfAttributes(myDumpFormat, myGraphDBType.GetSpecificAttributes(ta => !ta.IsBackwardEdge), myDBContext) + S_BRACKET_RIGHT.ToUpperString() + " ");
+                    stringBuilder.Append(S_ATTRIBUTES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfAttributes(myDumpFormat, myGraphDBType.GetFilteredAttributes(ta => !ta.IsBackwardEdge), myDBContext) + S_BRACKET_RIGHT.ToUpperString() + " ");
                 }
 
                 #endregion
 
                 #region BackwardEdge attributes
 
-                if (myGraphDBType.GetSpecificAttributes(ta => ta.IsBackwardEdge).CountIsGreater(0))
+                if (myGraphDBType.GetFilteredAttributes(ta => ta.IsBackwardEdge).CountIsGreater(0))
                 {
-                    stringBuilder.Append(S_BACKWARDEDGES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfBackwardEdges(myDumpFormat, myGraphDBType.GetSpecificAttributes(ta => ta.IsBackwardEdge), myDBContext) + S_BRACKET_RIGHT.ToUpperString() + " ");
+                    stringBuilder.Append(S_BACKWARDEDGES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfBackwardEdges(myDumpFormat, myGraphDBType.GetFilteredAttributes(ta => ta.IsBackwardEdge), myDBContext) + S_BRACKET_RIGHT.ToUpperString() + " ");
                 }
 
                 #endregion

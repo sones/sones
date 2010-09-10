@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,13 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-
-/* <id name="GraphDB – ObjectManipulationManager" />
+/* <id name="GraphDB � ObjectManipulationManager" />
  * <copyright file="ObjectManipulationManager.cs"
  *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Stefan Licht</developer>
  * <summary>This class will handle all manipulations on DBObjects coming from Irony statement nodes like InsertNode, UpdateNode, DeleteNode, etc.</summary>
@@ -32,23 +32,25 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDB.Structures.Enums;
-using sones.GraphDB.Structures.ExpressionGraph;
-using sones.GraphDB.Structures.Result;
 using sones.GraphDB.Settings;
 using sones.GraphDB.Structures.EdgeTypes;
+using sones.GraphDB.Structures.Enums;
+using sones.GraphDB.Structures.ExpressionGraph;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 using sones.GraphDB.Warnings;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.TypeManagement;
+
 using sones.GraphFS.DataStructures;
 using sones.Lib;
 using sones.Lib.ErrorHandling;
-using System.Threading.Tasks;
+using sones.GraphDB.TypeManagement.BasicTypes;
 
 #endregion
 
@@ -206,14 +208,6 @@ namespace sones.GraphDB.Managers
 
             #endregion
 
-            #region data
-
-            String UndefName = String.Empty;
-            var specialAttributeUUID = new SpecialTypeAttribute_UUID();
-            var specialAttributeRev = new SpecialTypeAttribute_REVISION();
-
-            #endregion
-
             #region regular update
 
             foreach (var aDBO in myDBObjects)
@@ -301,7 +295,7 @@ namespace sones.GraphDB.Managers
 
             #region Return all affected dbObjectUUIDs
 
-            return new QueryResult(new List<SelectionResultSet> { new SelectionResultSet(myGraphDBType, queryResultContent, new Dictionary<String, String>()) });
+            return new QueryResult(new SelectionResultSet(queryResultContent));
 
             #endregion
         }
@@ -413,9 +407,8 @@ namespace sones.GraphDB.Managers
             #region Create QueryResult
 
             var readOut = GetManipulationResultSet(dbContext, dbObjectStream, type, attributes, undefinedAttributes, specialTypeAttributes);
-            var selResultSet = new SelectionResultSet(type, new List<DBObjectReadout> { readOut.Value });
-            var selectionListElementResultList = new List<SelectionResultSet> { selResultSet };
-            var queryResult = new QueryResult(selectionListElementResultList);
+            var selResultSet = new SelectionResultSet(new List<DBObjectReadout> { readOut.Value });
+            var queryResult = new QueryResult(selResultSet);
 
             #endregion
 
@@ -710,7 +703,7 @@ namespace sones.GraphDB.Managers
                 var beEdge = new EdgeKey(aType.UUID, attributesOfType.UUID);
                 
                 var runMT = DBConstants.RunMT;
-
+                runMT = false;
                 if (runMT)
                 {
 
@@ -785,7 +778,7 @@ namespace sones.GraphDB.Managers
             {
                 if (aDBO.Failed())
                 {
-                    return new Exceptional<SelectionResultSet>(new Error_LoadObject(aDBO.Value.ObjectUUID.ToString()));
+                    return new Exceptional<SelectionResultSet>(new Error_LoadObject(aDBO.Value.ObjectLocation));
                 }
 
                 deletionCounter++;
@@ -875,11 +868,11 @@ namespace sones.GraphDB.Managers
 
             if (deletionCounter == 0)
             {
-                var result = new Exceptional<SelectionResultSet>(new SelectionResultSet(myGraphDBType, deletionCounter));
+                var result = new Exceptional<SelectionResultSet>(new SelectionResultSet());
                 return result.PushT(new Warning_NoObjectsToDelete());
             }
 
-            return new Exceptional<SelectionResultSet>(new SelectionResultSet(myGraphDBType, deletionCounter));
+            return new Exceptional<SelectionResultSet>(new SelectionResultSet());
 
         }
 
@@ -895,8 +888,7 @@ namespace sones.GraphDB.Managers
         public QueryResult Delete(BinaryExpressionDefinition myWhereExpression, DBContext myDBContext, Dictionary<GraphDBType, List<string>> myTypeWithUndefAttrs, Dictionary<GraphDBType, List<TypeAttribute>> myDBTypeAttributeToDelete, Dictionary<String, GraphDBType> myReferenceTypeLookup)
         {
 
-            List<SelectionResultSet> _SelectionListElementResultList = new List<SelectionResultSet>();
-            QueryResult result = new QueryResult(_SelectionListElementResultList);
+            QueryResult result = new QueryResult();
 
             try
             {
@@ -971,7 +963,7 @@ namespace sones.GraphDB.Managers
                                 result.AddWarnings(deleteResult.Warnings);
                             }
 
-                            result.AddResult(deleteResult.Value);
+                            result.SetResult(deleteResult.Value);
 
                         }
 
@@ -1334,7 +1326,7 @@ namespace sones.GraphDB.Managers
 
             TypeAttribute attr;
             ADBBaseObject typedAttributeValue;
-            TypesOfOperatorResult correspondingCSharpType;
+            BasicType correspondingCSharpType;
 
             var typeMandatoryAttribs = myGraphDBType.GetMandatoryAttributesUUIDs(myDBContext.DBTypeManager);
 
@@ -1372,7 +1364,7 @@ namespace sones.GraphDB.Managers
 
                         foreach (var tuple in colDefinition.TupleDefinition)
                         {
-                            if (tuple.TypeOfValue == TypesOfOperatorResult.Unknown)
+                            if (tuple.TypeOfValue == BasicType.Unknown)
                                 valueList.Add((tuple.Value as ValueDefinition).Value);
                             else if (tuple.Value is ValueDefinition)
                                 valueList.Add((tuple.Value as ValueDefinition).Value);
@@ -1755,7 +1747,7 @@ namespace sones.GraphDB.Managers
             Parallel.ForEach(myGraphDBType.GetAllAttributeIndices(false), aIdx =>
                 {
                     //it is not necessary to clear the UUID IDX because this is done by deleting the objects in the fs
-                    aIdx.Clear(myDBContext.DBIndexManager);
+                    aIdx.ClearAndRemoveFromDisc(myDBContext.DBIndexManager);
                 });
 
             #endregion
@@ -1767,6 +1759,6 @@ namespace sones.GraphDB.Managers
         }
 
         #endregion
-
+        
     }
 }

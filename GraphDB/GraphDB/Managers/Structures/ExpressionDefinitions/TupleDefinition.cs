@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * TupleDefinition
  * (c) Stefan Licht, 2010
  */
@@ -13,7 +33,7 @@ using sones.GraphDB.Structures.Operators;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.Structures.EdgeTypes;
-using sones.GraphDB.Structures.Result;
+
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.Errors;
 using sones.GraphFS.DataStructures;
@@ -21,6 +41,10 @@ using sones.GraphDB.Exceptions;
 using sones.GraphDB.Structures.ExpressionGraph;
 using System.Diagnostics;
 using sones.GraphDB.Managers.Select;
+using sones.Lib.ErrorHandling;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
 
 #endregion
 
@@ -36,7 +60,7 @@ namespace sones.GraphDB.Managers.Structures
 
         public KindOfTuple KindOfTuple { get; private set; }
         public List<TupleElement> TupleElements { get; private set; }
-        public TypesOfOperatorResult TypeOfOperatorResult { get; private set; }
+        public BasicType TypeOfOperatorResult { get; private set; }
 
         #endregion
 
@@ -45,21 +69,21 @@ namespace sones.GraphDB.Managers.Structures
         public TupleDefinition(KindOfTuple kindOfTuple = KindOfTuple.Inclusive)
         {
             TupleElements = new List<TupleElement>();
-            TypeOfOperatorResult = TypesOfOperatorResult.Unknown;
+            TypeOfOperatorResult = BasicType.Unknown;
             KindOfTuple = kindOfTuple;
         }
 
-        public TupleDefinition(TypesOfOperatorResult myTypesOfOperatorResult, IObject myObject, GraphDBType myGraphType, KindOfTuple kindOfTuple = KindOfTuple.Inclusive)
+        public TupleDefinition(BasicType myBasicType, IObject myObject, GraphDBType myGraphType, KindOfTuple kindOfTuple = KindOfTuple.Inclusive)
             : this()
         {
-            TypeOfOperatorResult = myTypesOfOperatorResult;
+            TypeOfOperatorResult = myBasicType;
             KindOfTuple = kindOfTuple;
 
             if (myObject is IBaseEdge)
             {
                 foreach (var obj in (IBaseEdge)myObject)
                 {
-                    TupleElements.Add(new TupleElement(new ValueDefinition(obj as sones.GraphDB.TypeManagement.BasicTypes.ADBBaseObject)));
+                    TupleElements.Add(new TupleElement(new ValueDefinition(obj as ADBBaseObject)));
                 }
             }
             else
@@ -129,46 +153,39 @@ namespace sones.GraphDB.Managers.Structures
 
             for (int i = 0; i < TupleElements.Count; i++)
             {
-                var tupleEl = TupleElements[i].Value;
+                var tupleElement = TupleElements[i].Value;
 
-                if (tupleEl is SelectDefinition)
+                if (tupleElement is SelectDefinition)
                 {
 
                     #region partial select
 
                     var selectManager = new SelectManager();
-                    var qresult = selectManager.ExecuteSelect(myDBContext, (tupleEl as SelectDefinition));
+                    var qresult = selectManager.ExecuteSelect(myDBContext, (tupleElement as SelectDefinition));
                     if (qresult.Failed)
                     {
                         return new Exceptional(qresult.Errors);
                     }
 
-                    foreach (SelectionResultSet aSelResult in qresult.Results)
+                    TypeAttribute curAttr = ((tupleElement as SelectDefinition).SelectedElements.First().Item1 as IDChainDefinition).LastAttribute;
+
+                    var dbTypeOfAttribute = curAttr.GetDBType(myDBContext.DBTypeManager);
+
+                    var aTypeOfOperatorResult = GraphDBTypeMapper.ConvertGraph2CSharp(dbTypeOfAttribute.Name);
+
+                    foreach (DBObjectReadout dbo in qresult.Results.Objects)
                     {
-                        //Hack:
-                        int lowestSelectedLevel = (from aSelectionForReference in aSelResult.SelectedAttributes select aSelectionForReference.Key).Min();
+                        if (!(dbo.Attributes.ContainsKey(curAttr.Name)))
+                            continue;
 
-                        String attrName = aSelResult.SelectedAttributes[lowestSelectedLevel].First().Value;
-                        TypeAttribute curAttr = aSelResult.Type.GetTypeAttributeByName(attrName);
-
-                        var dbTypeOfAttribute = curAttr.GetDBType(myDBContext.DBTypeManager);
-
-                        var aTypeOfOperatorResult = GraphDBTypeMapper.ConvertGraph2CSharp(dbTypeOfAttribute.Name);
-
-                        foreach (DBObjectReadout dbo in aSelResult.Objects)
+                        if (curAttr != null)
                         {
-                            if (!(dbo.Attributes.ContainsKey(attrName)))
-                                continue;
-
-                            if (curAttr != null)
-                            {
-                                var val = new ValueDefinition(aTypeOfOperatorResult, dbo.Attributes[attrName]);
-                                newTuple.Add(new TupleElement(aTypeOfOperatorResult, val));
-                            }
-                            else
-                            {
-                                throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-                            }
+                            var val = new ValueDefinition(aTypeOfOperatorResult, dbo.Attributes[curAttr.Name]);
+                            newTuple.Add(new TupleElement(aTypeOfOperatorResult, val));
+                        }
+                        else
+                        {
+                            throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                         }
                     }
 
@@ -298,8 +315,8 @@ namespace sones.GraphDB.Managers.Structures
             {
                 switch (aTupleElement.TypeOfValue)
                 {
-                       
-                    case TypesOfOperatorResult.NotABasicType:
+
+                    case BasicType.NotABasicType:
 
                         if (aTupleElement.Value is BinaryExpressionDefinition)
                         {

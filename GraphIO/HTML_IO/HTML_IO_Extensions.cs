@@ -1,4 +1,24 @@
-﻿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * HTML_IO_Extensions
  * Achim 'ahzf' Friedland, 2009 - 2010
  */
@@ -9,10 +29,11 @@ using System;
 using System.Linq;
 using System.Text;
 
-using sones.GraphDB.Structures.Result;
+
 using sones.Lib;
 using System.Collections.Generic;
 using sones.GraphDB.TypeManagement;
+using sones.GraphDBInterface.Result;
 
 #endregion
 
@@ -62,14 +83,13 @@ namespace sones.GraphIO.HTML
 
             // results ------------------------------
             myStringBuilder.Append("<tr><td>results</td><td><table>");
-            foreach (var _SelectionListElementResult in myQueryResult.Results)
-                if (_SelectionListElementResult.Objects != null)
-                    foreach (var _DBObject in _SelectionListElementResult.Objects)
-                    {
-                        myStringBuilder.Append("<tr><td>");
-                        myStringBuilder.Append(_DBObject.ToHTML());
-                        myStringBuilder.Append("</td></tr>");
-                    }
+            if (myQueryResult.Results.Objects != null)
+                foreach (var _DBObject in myQueryResult.Results.Objects)
+                {
+                    myStringBuilder.Append("<tr><td>");
+                    myStringBuilder.Append(_DBObject.ToHTML());
+                    myStringBuilder.Append("</td></tr>");
+                }
             myStringBuilder.AppendLine("</table></td></tr>");
 
             myStringBuilder.AppendLine("</table>");
@@ -113,7 +133,7 @@ namespace sones.GraphIO.HTML
             if (_WeightedDBObject1 != null)
             {
                 _StringBuilder.Append("<tr><td style=\"width:250px\">edgelabel</td><td style=\"width:400px\">");
-                _StringBuilder.Append("<table border=\"1\"><tr><td>weight</td><td>" + _WeightedDBObject1.Weight.Type.ToString().EscapeForXMLandHTML() + "</td><td>" + _WeightedDBObject1.Weight.ToString().EscapeForXMLandHTML() + "</td></tr></table>");
+                _StringBuilder.Append("<table border=\"1\"><tr><td>weight</td><td>" + _WeightedDBObject1.TypeName.EscapeForXMLandHTML() + "</td><td>" + _WeightedDBObject1.Weight.ToString().EscapeForXMLandHTML() + "</td></tr></table>");
                 _StringBuilder.Append("</td></tr>");
             }
 

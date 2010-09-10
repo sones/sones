@@ -115,22 +115,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AdvancedFSCLICommands\AdvancedFSCLICommands.cs" />
-    <Compile Include="AdvancedFSCLICommands\FSCLI_ECHO.cs" />
-    <Compile Include="AdvancedFSCLICommands\FSCLI_MKDIR.cs" />
-    <Compile Include="AllGraphFSCLICommands.cs" />
-    <Compile Include="BasicFSCLICommands\BasicFSCLICommands.cs" />
-    <Compile Include="BasicFSCLICommands\FSCLI_CAT.cs" />
-    <Compile Include="BasicFSCLICommands\FSCLI_CD.cs" />
-    <Compile Include="BasicFSCLICommands\FSCLI_DF.cs" />
-    <Compile Include="BasicFSCLICommands\FSCLI_DS.cs" />
-    <Compile Include="BasicFSCLICommands\FSCLI_DU.cs" />
-    <Compile Include="BasicFSCLICommands\FSCLI_LINK.cs" />
-    <Compile Include="BasicFSCLICommands\FSCLI_LL.cs" />
-    <Compile Include="BasicFSCLICommands\FSCLI_LS.cs" />
-    <Compile Include="FSCLIAutocompletion\FSCLIAutocompletions.cs" />
-    <Compile Include="FSCLIAutocompletion\StringLiteral_IPandoraFS.cs" />
-    <Compile Include="ScriptingFSCLICommands\ScriptingFSCLICommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -142,17 +126,13 @@
       <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
       <Name>Lib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Lib\sonesCLI\sonesCLI.csproj">
-      <Project>{5EB964C0-FF26-4B37-99A6-C1D40644E33C}</Project>
-      <Name>sonesCLI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\GraphFSInterface\GraphFSInterface.csproj">
       <Project>{B23FDA3D-8229-4CDD-91FD-9AFD7301D315}</Project>
       <Name>GraphFSInterface</Name>
     </ProjectReference>
     <ProjectReference Include="..\GraphFS\GraphFS.csproj">
       <Project>{97235BF0-C3C4-4B4C-9583-0869CD3632AC}</Project>
-      <Name>GraphFS</Name>
+      <Name>GraphFS %28Dependencies\GraphFS\GraphFS%29</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -171,10 +151,6 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AdditionalLicenses.txt" />
-    <Content Include="license.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

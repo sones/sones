@@ -74,9 +74,11 @@
   <ItemGroup>
     <Compile Include="AGraphDSSharp.cs" />
     <Compile Include="CodeGeneration\CodeGenerator.cs" />
+    <Compile Include="Errors\GraphDSError.cs" />
     <Compile Include="FluentInterface\FluentExtensions.cs" />
     <Compile Include="GraphDSSharp.cs" />
     <Compile Include="Errors\GraphDSSharpExceptions.cs" />
+    <Compile Include="Linq\LinqExtensions.cs" />
     <Compile Include="Linq\LinqQueryable.cs" />
     <Compile Include="Linq\LinqQueryProvider.cs" />
     <Compile Include="Linq\TypeSystem.cs" />
@@ -94,6 +96,7 @@
     <Compile Include="Reflection\ReflectionExtensions.cs" />
     <Compile Include="Reflection\ReflectionAttributes.cs" />
     <Compile Include="Reflection\TemporaryType.cs" />
+    <Compile Include="Traverser\TraverserExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -113,25 +116,17 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\GraphDB\GraphDBCLI\GraphDBCLI.csproj">
-      <Project>{849E73AE-BFB1-4CF2-9B8A-8F64C386A65F}</Project>
-      <Name>GraphDBCLI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\GraphDB\GraphDBInterface\GraphDBInterface.csproj">
       <Project>{72319FF7-E9D9-4AE9-AA0B-2E006442B1ED}</Project>
       <Name>GraphDBInterface</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GraphDB\GraphDB\GraphDB.csproj">
       <Project>{32A56958-2C05-44C6-B661-2A2C6610E073}</Project>
-      <Name>GraphDB</Name>
+      <Name>GraphDB %28Dependencies\GraphDB\GraphDB%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GraphDB\GraphQL\GraphQL.csproj">
       <Project>{B7A88819-4276-495A-A7E9-E6947C936397}</Project>
       <Name>GraphQL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GraphFS\GraphFSCLI\GraphFSCLI.csproj">
-      <Project>{89669EC0-286E-4ABC-980D-D991A3407666}</Project>
-      <Name>GraphFSCLI</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GraphFS\GraphFSInterface\GraphFSInterface.csproj">
       <Project>{B23FDA3D-8229-4CDD-91FD-9AFD7301D315}</Project>
@@ -139,7 +134,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\GraphFS\GraphFS\GraphFS.csproj">
       <Project>{97235BF0-C3C4-4B4C-9583-0869CD3632AC}</Project>
-      <Name>GraphFS</Name>
+      <Name>GraphFS %28Dependencies\GraphFS\GraphFS%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GraphIO\GraphIO\GraphIO.csproj">
       <Project>{624BBB9D-89BE-43CE-8B8C-18BE729F4B11}</Project>
@@ -169,13 +164,9 @@
       <Project>{DDC48D4C-6885-462C-B57A-216658EB94AE}</Project>
       <Name>Networking</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Lib\sonesCLI\sonesCLI.csproj">
-      <Project>{5EB964C0-FF26-4B37-99A6-C1D40644E33C}</Project>
-      <Name>sonesCLI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Notifications\Notifications\Notifications.csproj">
       <Project>{81E75577-B787-4537-B191-F3326C6E5865}</Project>
-      <Name>Notifications</Name>
+      <Name>Notifications %28Dependencies\Notifications\Notifications%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\StorageEngines\StorageEnginesInterface\StorageEnginesInterface.csproj">
       <Project>{F3BF32FF-7113-4DE6-801B-BB234A76539B}</Project>
@@ -186,10 +177,7 @@
       <Name>StorageEngines %28Dependencies\StorageEngines\StorageEngines%29</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="AdditionalLicenses.txt" />
-    <Content Include="license.txt" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

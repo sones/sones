@@ -48,6 +48,7 @@
     <Compile Include="Applications\Administration\DBAdministrationServiceClient.cs" />
     <Compile Include="Applications\Administration\DBAdministrationServiceHost.cs" />
     <Compile Include="DBExtensions.cs" />
+    <Compile Include="Errors\AggregateErrors\Error_AggregateDoesNotMatchGroupLevel.cs" />
     <Compile Include="Errors\AggregateErrors\GraphDBAggregateError.cs" />
     <Compile Include="Errors\AttributeAssignmentErrors\Error_InvalidUndefAttrType.cs" />
     <Compile Include="Errors\AttributeAssignmentErrors\GraphDBAttributeAssignmentError.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="Errors\AggregateErrors\Error_AggregateParameterCountMismatch.cs" />
     <Compile Include="Errors\EdgeErrors\GraphDBEdgeError.cs" />
     <Compile Include="Errors\Error_AmbiguousAttribute.cs" />
+    <Compile Include="Errors\FunctionErrors\Error_DuplicateAggregateOrFunction.cs" />
     <Compile Include="Errors\FunctionErrors\Error_InvalidFunctionReturnType.cs" />
     <Compile Include="Errors\FunctionErrors\GraphDBFunctionError.cs" />
     <Compile Include="Errors\GraphDBTypeErrors\GraphDBTypeError.cs" />
@@ -76,6 +78,7 @@
     <Compile Include="Errors\IndexErrors\Error_CouldNotAlterIndexOnType.cs" />
     <Compile Include="Errors\IndexErrors\Error_CouldNotGetIndexReference.cs" />
     <Compile Include="Errors\IndexErrors\GraphDBIndexError.cs" />
+    <Compile Include="Errors\SelectErrors\Error_InvalidGroupByLevel.cs" />
     <Compile Include="Errors\SelectErrors\GraphDBSelectError.cs" />
     <Compile Include="Errors\SettingErrors\Error_CouldNotRemoveSetting.cs" />
     <Compile Include="Errors\SettingErrors\Error_CouldNotSetSetting.cs" />
@@ -85,8 +88,6 @@
     <Compile Include="Errors\SettingErrors\GraphDBSettingError.cs" />
     <Compile Include="Errors\TransactionErrors\Error_InvalidTransactionIsolationLevel.cs" />
     <Compile Include="Errors\TransactionErrors\Error_StatementExpectsWriteTransaction.cs" />
-    <Compile Include="Errors\TransactionErrors\GraphDBTransactionError.cs" />
-    <Compile Include="Errors\TransactionErrors\Error_ExistingNestedTransaction.cs" />
     <Compile Include="Errors\FunctionErrors\Error_InvalidFunctionBase.cs" />
     <Compile Include="Errors\IndexErrors\Error_IndexIsNotPersistent.cs" />
     <Compile Include="Errors\AttributeAssignmentErrors\Error_InvalidAttrDefaultValueAssignment.cs" />
@@ -95,7 +96,6 @@
     <Compile Include="Errors\GraphDBTypeErrors\Error_InvalidType.cs" />
     <Compile Include="Errors\IndexErrors\Error_InvalidIndexReference.cs" />
     <Compile Include="Errors\TransactionErrors\Error_NoTransaction.cs" />
-    <Compile Include="Errors\TransactionErrors\Error_ParallelTransactionsNotAllowed.cs" />
     <Compile Include="Errors\TypeAttributeErrors\GraphDBAttributeError.cs" />
     <Compile Include="Functions\ParameterValue.cs" />
     <Compile Include="Functions\ToLowerFunc.cs" />
@@ -108,6 +108,8 @@
     <Compile Include="Indices\UUIDIndex.cs" />
     <Compile Include="Indices\IAttributeIndex.cs" />
     <Compile Include="Indices\DBIndexManager.cs" />
+    <Compile Include="Managers\Select\GroupingKey.cs" />
+    <Compile Include="Managers\Select\SelectValueAssignment.cs" />
     <Compile Include="Managers\Structures\AlterType\AAlterTypeCommand.cs" />
     <Compile Include="Managers\DBTransactionManager.cs" />
     <Compile Include="Managers\Select\SelectManager.cs" />
@@ -156,7 +158,6 @@
     <Compile Include="Managers\Structures\Setting\SettingSessionDefinition.cs" />
     <Compile Include="Managers\Structures\Setting\SettingTypeDefinition.cs" />
     <Compile Include="Managers\Structures\TypeReferenceDefinition.cs" />
-    <Compile Include="Managers\ObjectManagement\IGetName.cs" />
     <Compile Include="Managers\Plugin\DBPluginManager.cs" />
     <Compile Include="Errors\TypeAttributeErrors\Error_DropOfAttributeNotAllowed.cs" />
     <Compile Include="Errors\IndexErrors\Error_IndexKeyCreationError.cs" />
@@ -170,7 +171,6 @@
     <Compile Include="Errors\AggregateErrors\Error_AggregateIsNotValidOnThisAttribute.cs" />
     <Compile Include="Errors\AggregateErrors\Error_AggregateOnMultiAttributesNotAllowed.cs" />
     <Compile Include="Errors\AggregateErrors\Error_AggregateOrFunctionDoesNotExist.cs" />
-    <Compile Include="Errors\Error_ArgumentNullOrEmpty.cs" />
     <Compile Include="Errors\TypeAttributeErrors\Error_AttributeAlreadyExists.cs" />
     <Compile Include="Errors\TypeAttributeErrors\Error_AttributeIsNotDefined.cs" />
     <Compile Include="Errors\TypeAttributeErrors\Error_AttributeExistsInSupertype.cs" />
@@ -251,6 +251,12 @@
     <Compile Include="Managers\ObjectManagement\DBObjectManager.cs" />
     <Compile Include="Managers\ObjectManagement\UndefinedAttributesStream.cs" />
     <Compile Include="GraphDB2.cs" />
+    <Compile Include="Managers\TypeManagement\AttributeUUID.cs" />
+    <Compile Include="Managers\TypeManagement\BasicTypes\ADBBaseObject.cs" />
+    <Compile Include="Managers\TypeManagement\BasicTypes\BasicType.cs" />
+    <Compile Include="Managers\TypeManagement\BasicTypes\DBVertex.cs" />
+    <Compile Include="Managers\TypeManagement\TypeUUID.cs" />
+    <Compile Include="Managers\TypeManagement\UndefinedTypeAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Structures\EdgeTypes\ASetOfReferencesEdgeType.cs" />
     <Compile Include="Structures\EdgeTypes\ASetOfReferencesWithInfoEdgeType.cs" />
@@ -267,7 +273,6 @@
     <Compile Include="Structures\Enums\TypesOfAType.cs" />
     <Compile Include="Structures\Enums\TypesOfBinaryExpression.cs" />
     <Compile Include="Structures\Enums\TypesOfColumnSource.cs" />
-    <Compile Include="Structures\Enums\TypesOfOperatorResult.cs" />
     <Compile Include="Structures\Enums\TypesOfSettingOperation.cs" />
     <Compile Include="Structures\Enums\TypesOfSettingScope.cs" />
     <Compile Include="Structures\Enums\TypesOfUpdate.cs" />
@@ -288,7 +293,6 @@
     <Compile Include="Interfaces\IExtendableGrammar.cs" />
     <Compile Include="Interfaces\IQueryableLanguage.cs" />
     <Compile Include="Aggregates\ABaseAggregate.cs" />
-    <Compile Include="Aggregates\AggregateType.cs" />
     <Compile Include="Aggregates\AvgAggregate.cs" />
     <Compile Include="Aggregates\CountAggregate.cs" />
     <Compile Include="Aggregates\MaxAggregate.cs" />
@@ -336,7 +340,6 @@
     <Compile Include="Structures\Operator\BinaryOperator\BaseOperators\SubtractionOperator.cs" />
     <Compile Include="Structures\Operator\BinaryOperator\BinaryOperatorTypes.cs" />
     <Compile Include="Managers\Structures\ExpressionDefinitions\KindOfTuple.cs" />
-    <Compile Include="Managers\TypeManagement\IObject.cs" />
     <Compile Include="Structures\Helpers\Timeout.cs" />
     <Compile Include="Structures\Helpers\TimeoutGeneric.cs" />
     <Compile Include="Session\DBSessionSettings.cs" />
@@ -353,14 +356,6 @@
     <Compile Include="Structures\EdgeTypes\EdgeTypeSetOfBaseObjects.cs" />
     <Compile Include="Structures\EdgeTypes\IBaseEdge.cs" />
     <Compile Include="Structures\EdgeTypes\Reference.cs" />
-    <Compile Include="Structures\Result\DBObjectReadoutGroup.cs" />
-    <Compile Include="Structures\Result\DBWeightedObjectReadout.cs" />
-    <Compile Include="Structures\Result\Edge.cs" />
-    <Compile Include="Structures\Result\OutputDictionary.cs" />
-    <Compile Include="Structures\Result\OutputList.cs" />
-    <Compile Include="Structures\Result\QueryResult.cs" />
-    <Compile Include="Structures\Result\QueryResultExtensions.cs" />
-    <Compile Include="Structures\Result\SelectionResultSet.cs" />
     <Compile Include="Session\GraphDBSession.cs" />
     <Compile Include="Session\IGraphDBSession.cs" />
     <Compile Include="Settings\ADBSettingsBase.cs" />
@@ -394,13 +389,11 @@
     <Compile Include="Structures\EdgeTypes\EdgeTypeWeighted.cs" />
     <Compile Include="Structures\SpecializedSet\SortDescendencyComparer.cs" />
     <Compile Include="Structures\SpecializedSet\WeightedSet.cs" />
-    <Compile Include="Managers\TypeManagement\AttributeUUID.cs" />
     <Compile Include="Managers\TypeManagement\DBTypeManager.cs" />
     <Compile Include="Managers\TypeManagement\GraphDBType.cs" />
     <Compile Include="Managers\Structures\GraphDBTypeDefinition.cs" />
     <Compile Include="Managers\TypeManagement\GraphDBTypeMapper.cs" />
     <Compile Include="Managers\TypeManagement\KindsOfType.cs" />
-    <Compile Include="Managers\TypeManagement\BasicTypes\ADBBaseObject.cs" />
     <Compile Include="Managers\TypeManagement\BasicTypes\DBBackwardEdgeType.cs" />
     <Compile Include="Managers\TypeManagement\BasicTypes\DBBaseObject.cs" />
     <Compile Include="Managers\TypeManagement\BasicTypes\DBBoolean.cs" />
@@ -438,12 +431,9 @@
     <Compile Include="Managers\TypeManagement\TypeAttribute.cs" />
     <Compile Include="Managers\TypeManagement\TypeCharacteristics.cs" />
     <Compile Include="DBContext.cs" />
-    <Compile Include="Managers\TypeManagement\TypeUUID.cs" />
-    <Compile Include="Transactions\DBTransaction.cs" />
     <Compile Include="Version.cs" />
     <Compile Include="Warnings\Warning_ImportWarning.cs" />
     <Compile Include="Warnings\Warning_NothingInserted.cs" />
-    <Compile Include="Warnings\Warning_NoFSTransaction.cs" />
     <Compile Include="Warnings\Warning_NoObjectsToReplace.cs" />
     <Compile Include="Warnings\Warning_CouldNotLoadDBObject.cs" />
     <Compile Include="Warnings\Warning_EdgeToNonExistingNode.cs" />
@@ -451,6 +441,8 @@
     <Compile Include="Warnings\Warning_ObsoleteGQL.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="buildSolution.sh" />
+    <None Include="clearDirectory.sh" />
     <None Include="NLog.config" />
     <None Include="Settings\SettingsClassDiagram.cd" />
   </ItemGroup>
@@ -471,22 +463,14 @@
       <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
       <Name>Lib</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Lib\sonesCLI\sonesCLI.csproj">
-      <Project>{5EB964C0-FF26-4B37-99A6-C1D40644E33C}</Project>
-      <Name>sonesCLI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Notifications\Notifications\Notifications.csproj">
       <Project>{81E75577-B787-4537-B191-F3326C6E5865}</Project>
-      <Name>Notifications</Name>
+      <Name>Notifications %28Dependencies\Notifications\Notifications%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\GraphDBInterface\GraphDBInterface.csproj">
       <Project>{72319FF7-E9D9-4AE9-AA0B-2E006442B1ED}</Project>
       <Name>GraphDBInterface</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AdditionalLicenses.txt" />
-    <Content Include="license.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

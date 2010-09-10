@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
 /* <id name="EdgeTypePath" />
  * <copyright file="AListReferenceEdgeType.cs"
  *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Stefan Licht</developer>
  * <summary>Special edge to store paths and create the readout of them.</summary>
@@ -31,7 +32,7 @@ using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.ObjectManagement;
 
-using sones.GraphDB.Structures.Result;
+
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
@@ -39,6 +40,9 @@ using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
 using sones.GraphDB.Managers.Structures;
 using sones.Lib;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.TypeManagement;
+
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
@@ -121,7 +125,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             {
                 var keyVal = new Dictionary<String, Object>();
 
-                result.Add(resolvePath(null, path.Skip(1), GetAllAttributesFromDBO));
+                result.Add(resolvePath(null, path, GetAllAttributesFromDBO));
             }
             return result;
         }
@@ -293,5 +297,15 @@ namespace sones.GraphDB.Structures.EdgeTypes
         {
             throw new NotImplementedException();
         }
+
+        #region IComparable Members
+
+        public override int CompareTo(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
     }
 }

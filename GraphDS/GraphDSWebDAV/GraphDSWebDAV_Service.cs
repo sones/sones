@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,17 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-
-/* GraphDSWebDAV_Service
+/*
+ * GraphDSWebDAV_Service
  * (c) Stefan Licht, 2009
- * 
- * A WebDAV server implementation on the GraphFS
- * 
- * Lead programmer:
- *      Stefan Licht
- * 
  */
 
 #region Usings
@@ -48,6 +43,7 @@ using sones.Networking.HTTP;
 using sones.Networking.WebDAV;
 using sones.Lib.DataStructures;
 using sones.Lib.ErrorHandling;
+using sones.GraphDS.API.CSharp;
 
 
 #endregion
@@ -55,6 +51,9 @@ using sones.Lib.ErrorHandling;
 namespace sones.GraphDS.Connectors.WebDAV
 {
 
+    /// <summary>
+    /// A WebDAV server implementation on the GraphFS
+    /// </summary>
     public class GraphDSWebDAV_Service : IGraphDSWebDAV_Service
     {
         //private static Logger _Logger = LogManager.GetCurrentClassLogger();
@@ -151,10 +150,10 @@ namespace sones.GraphDS.Connectors.WebDAV
             
             #region MKCOL - Create Directory
 
-            if (_IGraphFSSession.isIDirectoryObject(new ObjectLocation(header.Destination)).Value != Trinary.TRUE)
+            if (_AGraphDSSharp.isIDirectoryObject(ObjectLocation.ParseString(header.Destination)).Value != Trinary.TRUE)
             {
 
-                var _CreateDirectoryExceptional = _IGraphFSSession.CreateDirectoryObject(new ObjectLocation(header.Destination));
+                var _CreateDirectoryExceptional = _AGraphDSSharp.CreateDirectoryObject(ObjectLocation.ParseString(header.Destination));
 
                 if (_CreateDirectoryExceptional == null || _CreateDirectoryExceptional.Failed())
                 {
@@ -191,21 +190,21 @@ namespace sones.GraphDS.Connectors.WebDAV
             var header = HTTPServer.HTTPContext.RequestHeader;
             HTTPHeader respHeader = null;
 
-            if (_IGraphFSSession.ObjectExists(new ObjectLocation(header.Destination)).Value == Trinary.TRUE)
+            if (_AGraphDSSharp.ObjectExists(ObjectLocation.ParseString(header.Destination)).Value == Trinary.TRUE)
             {
-                var isDir = _IGraphFSSession.isIDirectoryObject(new ObjectLocation(header.Destination));
+                var isDir = _AGraphDSSharp.isIDirectoryObject(ObjectLocation.ParseString(header.Destination));
                 if (isDir.Success() && isDir.Value == Trinary.TRUE)
                 {
-                    _IGraphFSSession.RemoveDirectoryObject(new ObjectLocation(header.Destination), true);
+                    _AGraphDSSharp.RemoveDirectoryObject(ObjectLocation.ParseString(header.Destination), true);
                     respHeader = CreateHeader(HTTPStatusCodes.NoContent, content.ULongLength());
                 }
                 else
                 {
 
-                    var isFile = _IGraphFSSession.ObjectStreamExists(new ObjectLocation(header.Destination), FSConstants.FILESTREAM);
+                    var isFile = _AGraphDSSharp.ObjectStreamExists(ObjectLocation.ParseString(header.Destination), FSConstants.FILESTREAM);
                     if (isFile.Success() && isFile.Value == Trinary.TRUE)
                     {
-                        _IGraphFSSession.RemoveFSObject(new ObjectLocation(header.Destination), FSConstants.FILESTREAM, null, null);
+                        _AGraphDSSharp.RemoveFSObject(ObjectLocation.ParseString(header.Destination), FSConstants.FILESTREAM, null, null);
                         respHeader = CreateHeader(HTTPStatusCodes.NoContent, content.ULongLength());
                     }
                     else
@@ -239,18 +238,21 @@ namespace sones.GraphDS.Connectors.WebDAV
             {
                 respHeader = CreateHeader(HTTPStatusCodes.NotFound, 0);
             }
+
             else if (_DestinationObjectStreamTypes.Contains(FSConstants.INLINEDATA))
             {
                 content = CreateGetInlineDataResponse(DirectoryHelper.GetObjectPath(header.Destination), DirectoryHelper.GetObjectName(header.Destination));
 
                 respHeader = CreateHeader(HTTPStatusCodes.OK, content.ULongLength(), new ContentType(MediaTypeNames.Application.Octet));
             }
+
             else if (_DestinationObjectStreamTypes.Contains(FSConstants.FILESTREAM))
             {
                 content = CreateGetFileResponse(header);
 
                 respHeader = CreateHeader(HTTPStatusCodes.OK, content.ULongLength(), new ContentType(MediaTypeNames.Application.Octet));
             }
+
             else
             {
                 respHeader = CreateHeader(HTTPStatusCodes.BadRequest, content.ULongLength(), new ContentType(MediaTypeNames.Application.Octet));
@@ -259,6 +261,7 @@ namespace sones.GraphDS.Connectors.WebDAV
             Byte[] HeaderBytes = respHeader.ToBytes();
             HTTPServer.HTTPContext.WriteToResponseStream(HeaderBytes, 0, HeaderBytes.Length);
             HTTPServer.HTTPContext.WriteToResponseStream(content, 0, content.Length);
+
         }
 
         public void DoPUT(string destination)
@@ -282,7 +285,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                     try
                     {
 
-                        _IGraphFSSession.StoreFSObject(new FileObject() { ObjectLocation = new ObjectLocation(header.Destination), ObjectData = _Body }, true);
+                        _AGraphDSSharp.StoreFSObject(new FileObject() { ObjectLocation = ObjectLocation.ParseString(header.Destination), ObjectData = _Body }, true);
 
                     }
                     catch (Exception Ex)
@@ -316,7 +319,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                 Exceptional<Trinary> FileExists = null;
                 try
                 {
-                    FileExists = _IGraphFSSession.ObjectStreamExists(new ObjectLocation(FSConstants.FILESTREAM), header.Destination);
+                    FileExists = _AGraphDSSharp.ObjectStreamExists(ObjectLocation.ParseString(header.Destination), FSConstants.FILESTREAM);
                 }
                 catch (GraphFSException_ObjectNotFound)
                 {
@@ -332,7 +335,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                     try
                     {
 
-                        _IGraphFSSession.StoreFSObject(new FileObject() { ObjectLocation = new ObjectLocation(header.Destination), ObjectData = _Body }, true);
+                        _AGraphDSSharp.StoreFSObject(new FileObject() { ObjectLocation = ObjectLocation.ParseString(header.Destination), ObjectData = _Body }, true);
 
                     }
                     catch (Exception Ex)
@@ -557,12 +560,12 @@ namespace sones.GraphDS.Connectors.WebDAV
                 */
                 #region Copy a Directory
 
-                if (_IGraphFSSession.isIDirectoryObject(new ObjectLocation(header.Destination)).Value == Trinary.TRUE)
+                if (_AGraphDSSharp.isIDirectoryObject(ObjectLocation.ParseString(header.Destination)).Value == Trinary.TRUE)
                 {
 
-                    if (_IGraphFSSession.isIDirectoryObject(new ObjectLocation(NewLocation)).Value != Trinary.TRUE)
+                    if (_AGraphDSSharp.isIDirectoryObject(ObjectLocation.ParseString(NewLocation)).Value != Trinary.TRUE)
                     {
-                        _IGraphFSSession.CreateDirectoryObject(new ObjectLocation(NewLocation));
+                        _AGraphDSSharp.CreateDirectoryObject(ObjectLocation.ParseString(NewLocation));
 
                         respHeader = CreateHeader(HTTPStatusCodes.Created, content.ULongLength(), new ContentType(MediaTypeNames.Text.Plain + "; charset=utf-8"));
                         respHeader.Headers.Add("Location", header.GetFullHTTPHost() + NewLocation);
@@ -580,15 +583,15 @@ namespace sones.GraphDS.Connectors.WebDAV
 
                 #region Copy a File
 
-                else if (_IGraphFSSession.ObjectStreamExists(new ObjectLocation(FSConstants.FILESTREAM), header.Destination).Value)
+                else if (_AGraphDSSharp.ObjectStreamExists(ObjectLocation.ParseString(header.Destination), FSConstants.FILESTREAM).Value)
                 {
 
-                    if (_IGraphFSSession.ObjectStreamExists(new ObjectLocation(FSConstants.FILESTREAM), NewLocation).Value != Trinary.TRUE)
+                    if (_AGraphDSSharp.ObjectStreamExists(ObjectLocation.ParseString(NewLocation), FSConstants.FILESTREAM).Value != Trinary.TRUE)
                     {
 
-                        AFSObject FileObject = _IGraphFSSession.GetFSObject<FileObject>(new ObjectLocation(header.Destination), FSConstants.FILESTREAM, null, null, 0, false).Value;
-                        FileObject.ObjectLocation = new ObjectLocation(NewLocation);
-                        _IGraphFSSession.StoreFSObject(FileObject, true);
+                        AFSObject FileObject = _AGraphDSSharp.GetFSObject<FileObject>(ObjectLocation.ParseString(header.Destination), FSConstants.FILESTREAM, null, null, 0, false).Value;
+                        FileObject.ObjectLocation = ObjectLocation.ParseString(NewLocation);
+                        _AGraphDSSharp.StoreFSObject(FileObject, true);
 
                         respHeader = CreateHeader(HTTPStatusCodes.Created, content.ULongLength(), new ContentType(MediaTypeNames.Text.Plain + "; charset=utf-8"));
                         respHeader.Headers.Add("Location", header.GetFullHTTPHost() + NewLocation);
@@ -643,15 +646,16 @@ namespace sones.GraphDS.Connectors.WebDAV
 
                 #region Move a Directory
 
-                if (_IGraphFSSession.isIDirectoryObject(new ObjectLocation(header.Destination)).Value == Trinary.TRUE)
+                if (_AGraphDSSharp.isIDirectoryObject(ObjectLocation.ParseString(header.Destination)).Value == Trinary.TRUE)
                 {
 
-                    if (_IGraphFSSession.isIDirectoryObject(new ObjectLocation(NewLocation)).Value != Trinary.TRUE)
+                    if (_AGraphDSSharp.isIDirectoryObject(ObjectLocation.ParseString(NewLocation)).Value != Trinary.TRUE)
                     {
-                        //_IGraphFSSession.CreateDirectoryObject(new ObjectLocation(NewLocation));
-                        //_IGraphFSSession.RemoveDirectoryObject(new ObjectLocation(Header.Destination), true);
 
-                        _IGraphFSSession.RenameFSObject(new ObjectLocation(header.Destination), new ObjectLocation(NewLocation).Name);
+                        //_AGraphDSSharp.CreateDirectoryObject(ObjectLocation.ParseString((NewLocation));
+                        //_AGraphDSSharp.RemoveDirectoryObject(ObjectLocation.ParseString((Header.Destination), true);
+
+                        _AGraphDSSharp.RenameFSObject(ObjectLocation.ParseString(header.Destination), ObjectLocation.ParseString(NewLocation).Name);
 
                         // TODO: Remove old Directory
                         //_GraphVFS.DeleteDirectoryObject(Header.Destination);
@@ -662,9 +666,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                     }
                     else
                     {
-
                         respHeader = CreateHeader(HTTPStatusCodes.PreconditionFailed, content.ULongLength(), new ContentType(MediaTypeNames.Text.Plain + "; charset=utf-8"));
-
                     }
 
                 }
@@ -673,18 +675,18 @@ namespace sones.GraphDS.Connectors.WebDAV
 
                 #region Move a File
 
-                else if (_IGraphFSSession.ObjectStreamExists(new ObjectLocation(header.Destination), FSConstants.FILESTREAM).Value)
+                else if (_AGraphDSSharp.ObjectStreamExists(ObjectLocation.ParseString(header.Destination), FSConstants.FILESTREAM).Value)
                 {
 
-                    if (_IGraphFSSession.ObjectStreamExists(new ObjectLocation(NewLocation), FSConstants.FILESTREAM).Value != Trinary.TRUE)
+                    if (_AGraphDSSharp.ObjectStreamExists(ObjectLocation.ParseString(NewLocation), FSConstants.FILESTREAM).Value != Trinary.TRUE)
                     {
 
-                        //AGraphObject FileObject = _IGraphFSSession.GetObject<FileObject>(new ObjectLocation(Header.Destination), FSConstants.FILESTREAM, null, null, 0, false);
-                        //FileObject.ObjectLocation = new ObjectLocation(NewLocation);
-                        //_IGraphFSSession.StoreObject(FileObject, Overwrite);
-                        //_IGraphFSSession.RemoveObject(new ObjectLocation(Header.Destination), FSConstants.FILESTREAM, null, null);
+                        //AGraphObject FileObject = _AGraphDSSharp.GetObject<FileObject>(ObjectLocation.ParseString((Header.Destination), FSConstants.FILESTREAM, null, null, 0, false);
+                        //FileObject.ObjectLocation = ObjectLocation.ParseString((NewLocation);
+                        //_AGraphDSSharp.StoreObject(FileObject, Overwrite);
+                        //_AGraphDSSharp.RemoveObject(ObjectLocation.ParseString((Header.Destination), FSConstants.FILESTREAM, null, null);
 
-                        _IGraphFSSession.RenameFSObject(new ObjectLocation(header.Destination), new ObjectLocation(NewLocation).Name);
+                        _AGraphDSSharp.RenameFSObject(ObjectLocation.ParseString(header.Destination), ObjectLocation.ParseString(NewLocation).Name);
 
                         respHeader = CreateHeader(HTTPStatusCodes.Created, content.ULongLength(), new ContentType(MediaTypeNames.Text.Plain + "; charset=utf-8"));
                         respHeader.Headers.Add("Location", header.GetFullHTTPHost() + NewLocation);
@@ -740,8 +742,8 @@ namespace sones.GraphDS.Connectors.WebDAV
 
                 // A successful lock request to an unmapped URL MUST result in the creation of a locked (non-collection)
                 // resource with empty content
-                if (_IGraphFSSession.ObjectStreamExists(new ObjectLocation(header.Destination), FSConstants.FILESTREAM).Value != Trinary.TRUE)
-                    _IGraphFSSession.StoreFSObject(new FileObject() { ObjectLocation = new ObjectLocation(header.Destination), ObjectData = new Byte[0] }, true);
+                if (_AGraphDSSharp.ObjectStreamExists(ObjectLocation.ParseString(header.Destination), FSConstants.FILESTREAM).Value != Trinary.TRUE)
+                    _AGraphDSSharp.StoreFSObject(new FileObject() { ObjectLocation = ObjectLocation.ParseString(header.Destination), ObjectData = new Byte[0] }, true);
 
                 //sones.Graph.Lib.Networking 
                 content = CreateLockResponse(header, body, header.GetDepth());
@@ -811,12 +813,12 @@ namespace sones.GraphDS.Connectors.WebDAV
 
         }
 
-
         #endregion
+
 
         #region Fields
 
-        IGraphFSSession _IGraphFSSession;
+        AGraphDSSharp _AGraphDSSharp;
 
         #endregion
 
@@ -826,9 +828,9 @@ namespace sones.GraphDS.Connectors.WebDAV
         {
         }
 
-        public GraphDSWebDAV_Service(IGraphFSSession graphFSSession)
+        public GraphDSWebDAV_Service(AGraphDSSharp myAGraphDSSharp)
         {
-            _IGraphFSSession = graphFSSession;
+            _AGraphDSSharp = myAGraphDSSharp;
         }
 
         #endregion
@@ -841,7 +843,7 @@ namespace sones.GraphDS.Connectors.WebDAV
             try
             {
 
-                var streams = _IGraphFSSession.GetObjectStreams(new ObjectLocation(header.Destination));
+                var streams = _AGraphDSSharp.GetObjectStreams(ObjectLocation.ParseString(header.Destination));
                 if (streams.Failed())
                 {
                     return null;
@@ -851,9 +853,9 @@ namespace sones.GraphDS.Connectors.WebDAV
 
                 // We found a InlineData Element
                 //if (_DestinationObjectStreamTypes.Contains(FSConstants.INLINEDATA))
-                //    _DestinationObjectLocator = _IGraphFSSession.ExportObjectLocator(new ObjectLocation(DirectoryHelper.GetObjectPath(Header.Destination)));
+                //    _DestinationObjectLocator = _AGraphDSSharp.ExportObjectLocator(ObjectLocation.ParseString((DirectoryHelper.GetObjectPath(Header.Destination)));
                 //else
-                //    _DestinationObjectLocator = _IGraphFSSession.ExportObjectLocator(new ObjectLocation(Header.Destination));
+                //    _DestinationObjectLocator = _AGraphDSSharp.ExportObjectLocator(ObjectLocation.ParseString((Header.Destination));
             }
             catch
             {
@@ -880,6 +882,7 @@ namespace sones.GraphDS.Connectors.WebDAV
         /// <returns></returns>
         private PropfindProperties ParsePropfindBody(Byte[] body)
         {
+
             PropfindProperties FoundPropfindProperties = PropfindProperties.NONE;
             String BodyString = Encoding.UTF8.GetString(body);
 
@@ -1026,13 +1029,13 @@ namespace sones.GraphDS.Connectors.WebDAV
         private Byte[] CreateGetFileResponse(HTTPHeader header, params string[] properties)
         {
 
-            return _IGraphFSSession.GetFSObject<FileObject>(new ObjectLocation(header.Destination), FSConstants.FILESTREAM, null, null, 0, false).Value.ObjectData;
+            return _AGraphDSSharp.GetFSObject<FileObject>(ObjectLocation.ParseString(header.Destination), FSConstants.FILESTREAM, null, null, 0, false).Value.ObjectData;
 
         }
 
         private Byte[] CreateGetInlineDataResponse(params string[] properties)
         {
-            DirectoryObject DirectoryObject = _IGraphFSSession.GetFSObject<DirectoryObject>(new ObjectLocation(properties[0]), FSConstants.DIRECTORYSTREAM, null, null, 0, false).Value;
+            DirectoryObject DirectoryObject = _AGraphDSSharp.GetFSObject<DirectoryObject>(ObjectLocation.ParseString(properties[0]), FSConstants.DIRECTORYSTREAM, null, null, 0, false).Value;
 
             return Encoding.ASCII.GetBytes(DirectoryObject.GetInlineData(properties[1]).ToHexString());
 
@@ -1070,9 +1073,9 @@ namespace sones.GraphDS.Connectors.WebDAV
             if (S_INVALID_DIRECTORIES.Contains(String.Concat("|", DirectoryHelper.GetObjectName(header.Destination), "|")))
                 IsLegalDir = false;
 
-            var directoryObjectR = _IGraphFSSession.GetFSObject<DirectoryObject>(new ObjectLocation(header.Destination), FSConstants.DIRECTORYSTREAM, null, null, 0, false);
-            // uncommented because _IGraphFSSession.isIDirectoryObject is odd
-            //if (IsLegalDir && _IGraphFSSession.isIDirectoryObject(new ObjectLocation(header.Destination)) == Trinary.TRUE)
+            var directoryObjectR = _AGraphDSSharp.GetFSObject<DirectoryObject>(ObjectLocation.ParseString(header.Destination), FSConstants.DIRECTORYSTREAM, null, null, 0, false);
+            // uncommented because _AGraphDSSharp.isIDirectoryObject is odd
+            //if (IsLegalDir && _AGraphDSSharp.isIDirectoryObject(ObjectLocation.ParseString((header.Destination)) == Trinary.TRUE)
             if (IsLegalDir && directoryObjectR.Success())
             {
                 #region root elements
@@ -1083,6 +1086,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                     var DirectoryObject = directoryObjectR.Value;
                     foreach (DirectoryEntryInformation actualDirectoryEntry in DirectoryObject.GetExtendedDirectoryListing())
                     {
+
                         //if (((String)DirectoryEntries["ObjectName"]).Contains(".forest") || ((String)DirectoryEntries["ObjectName"]).Contains(".fs") || ((String)DirectoryEntries["ObjectName"]).Contains(".metadata") || ((String)DirectoryEntries["ObjectName"]).Contains(".revisions") || ((String)DirectoryEntries["ObjectName"]).Contains(".vfs"))
                         if (S_INVALID_DIRECTORIES.Contains(String.Concat("|", actualDirectoryEntry.Name)))
                             continue;
@@ -1093,7 +1097,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                         {
                             try
                             {
-                                IDirectoryObject CurDirectoryObject = _IGraphFSSession.GetFSObject<DirectoryObject>(new ObjectLocation(ObjectDestination), FSConstants.DIRECTORYSTREAM, null, null, 0, false).Value;
+                                IDirectoryObject CurDirectoryObject = _AGraphDSSharp.GetFSObject<DirectoryObject>(ObjectLocation.ParseString(ObjectDestination), FSConstants.DIRECTORYSTREAM, null, null, 0, false).Value;
                                 String HRef = header.FullHTTPDestinationPath() + (header.FullHTTPDestinationPath().EndsWith("/") ? "" : FSPathConstants.PathDelimiter) + actualDirectoryEntry.Name;
                                 XmlElement XmlElement = CreateResponseElement_Dir(header, XmlDocument, HRef, actualDirectoryEntry.Name, CurDirectoryObject, propfindProperties);
                                 Root.AppendChild(XmlElement);
@@ -1106,8 +1110,8 @@ namespace sones.GraphDS.Connectors.WebDAV
                         else if (actualDirectoryEntry.Streams.Contains(FSConstants.FILESTREAM))
                         {
                             String HRef = header.FullHTTPDestinationPath() + (header.FullHTTPDestinationPath().EndsWith("/") ? "" : FSPathConstants.PathDelimiter) + actualDirectoryEntry.Name;
-                            //INode INode = _IGraphFSSession.ExportINode(new ObjectLocation(ObjectDestination));
-                            UInt64 Size = (UInt64)_IGraphFSSession.GetFSObject<FileObject>(new ObjectLocation(ObjectDestination), FSConstants.FILESTREAM, null, null, 0, false).Value.ObjectData.Length;
+                            //INode INode = _AGraphDSSharp.ExportINode(ObjectLocation.ParseString((ObjectDestination));
+                            UInt64 Size = (UInt64)_AGraphDSSharp.GetFSObject<FileObject>(ObjectLocation.ParseString(ObjectDestination), FSConstants.FILESTREAM, null, null, 0, false).Value.ObjectData.Length;
                             XmlElement ResponseElement_File = CreateResponseElement_File(header, XmlDocument, HRef, actualDirectoryEntry.Name, System.Net.Mime.MediaTypeNames.Text.Plain, Size, propfindProperties);
                             Root.AppendChild(ResponseElement_File);
                         }
@@ -1649,7 +1653,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                 if (!destinationObjectStreamTypes.Contains(FSConstants.INLINEDATA))
                 {
 
-                    //var ObjectLocator = _IGraphFSSession.ExportObjectLocator(new ObjectLocation(Header.Destination));
+                    //var ObjectLocator = _AGraphDSSharp.ExportObjectLocator(ObjectLocation.ParseString((Header.Destination));
 
                     if (destinationObjectStreamTypes.Contains(FSConstants.DIRECTORYSTREAM))
                     {
@@ -1668,7 +1672,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                     }
                     else if (destinationObjectStreamTypes.Contains(FSConstants.FILESTREAM))
                     {
-                        Props.Add(PropfindProperties.Getcontentlength.ToString(), _IGraphFSSession.GetFSObject<FileObject>(new ObjectLocation(header.Destination), FSConstants.FILESTREAM, null, null, 0, false).Value.ObjectData.Length.ToString());
+                        Props.Add(PropfindProperties.Getcontentlength.ToString(), _AGraphDSSharp.GetFSObject<FileObject>(ObjectLocation.ParseString(header.Destination), FSConstants.FILESTREAM, null, null, 0, false).Value.ObjectData.Length.ToString());
                     }
 
                     //if ((myPropfindProperties == PropfindProperties.NONE) || ((myPropfindProperties & PropfindProperties.Getlastmodified) == PropfindProperties.Getlastmodified))
@@ -1711,7 +1715,7 @@ namespace sones.GraphDS.Connectors.WebDAV
                 {
                     if (destinationObjectStreamTypes.Contains(FSConstants.INLINEDATA))
                     {
-                        //ObjectLocator ObjectLocator = _IGraphFSSession.ExportObjectLocator(new ObjectLocation(Header.Destination));
+                        //ObjectLocator ObjectLocator = _AGraphDSSharp.ExportObjectLocator(ObjectLocation.ParseString((Header.Destination));
 
                         //Props.Add(PropfindProperties.Creationdate.ToString(), GetConvertedDateTime(ObjectLocator.INodeReference.CreationTime).ToString(S_DATETIME_FORMAT));
                         //Props.Add(PropfindProperties.Getlastmodified.ToString(), GetConvertedDateTime(ObjectLocator.INodeReference.LastModificationTime).ToString(S_DATETIME_FORMAT));

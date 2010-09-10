@@ -1,13 +1,13 @@
-ï»¿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,13 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-
-/* <id Name=â€GraphDB â€“ database objectâ€ />
- * <copyright file=â€DBObjectStream.csâ€
- *            company=â€sones GmbHâ€>
- * Copyright (c) sones GmbH 2007-2010
+/* <id Name=”GraphDB – database object” />
+ * <copyright file=”DBObjectStream.cs”
+ *            company=”sones GmbH”>
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Henning Rauch</developer>
  * <developer>Stefan Licht</developer>
@@ -36,10 +36,11 @@ using System.Text;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Errors.DBObjectErrors;
 using sones.GraphDB.Exceptions;
-using sones.GraphDB.Structures;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
+using sones.GraphDBInterface.Result;
+using sones.GraphDBInterface.TypeManagement;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Objects;
 using sones.GraphFS.Session;
@@ -49,7 +50,6 @@ using sones.Lib.DataStructures;
 using sones.Lib.DataStructures.Indices;
 using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
-using sones.Lib.Session;
 
 #endregion
 
@@ -219,24 +219,25 @@ namespace sones.GraphDB.ObjectManagement
 
         #region GetAttribute(myAttributeName)
 
-        public IObject GetAttribute(TypeAttribute myAttribute, GraphDBType myType, DBContext dbContext)
+        public Exceptional<IObject> GetAttribute(TypeAttribute myAttribute, GraphDBType myType, DBContext dbContext)
         {
             IObject RetVal = null;
 
+            if (myAttribute is UndefinedTypeAttribute)
+            {
+                return GetUndefinedAttributeValue(myAttribute.Name, dbContext.DBObjectManager);
+            }
+
             if (base.ContainsKey(myAttribute.UUID) == Trinary.TRUE)
-                return base[myAttribute.UUID];
+                return new Exceptional<IObject>(base[myAttribute.UUID]);
 
             if (myAttribute is ASpecialTypeAttribute)
             {
                 var extrVal = (myAttribute as ASpecialTypeAttribute).ExtractValue(this, myType, dbContext);
-                if (extrVal.Failed())
-                {
-                    throw new GraphDBException(extrVal.Errors);
-                }
-                return extrVal.Value;
+                return extrVal;
             }
 
-            return RetVal;
+            return new Exceptional<IObject>(RetVal);
         }
 
         /// <summary>
@@ -347,7 +348,7 @@ namespace sones.GraphDB.ObjectManagement
                 }
                 else
                 {
-                    return new Exceptional<IObject>(UndefAttributes.GetAttributeValue(myName));
+                    return new Exceptional<IObject>(UndefAttributes[myName]);
                 }
             }
 
@@ -409,6 +410,32 @@ namespace sones.GraphDB.ObjectManagement
             return new Exceptional<bool>(true);
         }
     
+
+        #endregion
+
+        #region HasAttribute(myTypeAttribute)
+
+        public Boolean HasAttribute(TypeAttribute myTypeAttribute, DBContext myDBContext)
+        {
+
+            if (myTypeAttribute is UndefinedTypeAttribute)
+            {
+                return ContainsUndefinedAttribute(myTypeAttribute.Name, myDBContext.DBObjectManager);
+            }
+
+            if (base.ContainsKey(myTypeAttribute.UUID) == Trinary.TRUE)
+            {
+                return true;
+            }
+
+            if (myTypeAttribute is ASpecialTypeAttribute)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
 
         #endregion
 

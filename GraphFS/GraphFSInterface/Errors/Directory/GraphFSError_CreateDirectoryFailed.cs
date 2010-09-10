@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /*
  * GraphFSError_CreateDirectoryFailed
- * Achim Friedland, 2010
+ * (c) Achim Friedland, 2010
  */
 
 #region Usings
@@ -44,6 +44,8 @@ namespace sones.GraphFS.Errors
     /// </summary>
     public class GraphFSError_CreateDirectoryFailed : GraphFSError
     {
+        private   DataStructures.ObjectLocation myObjectLocation;
+
 
         #region Properties
 
@@ -55,10 +57,18 @@ namespace sones.GraphFS.Errors
 
         #region GraphFSError_CreateDirectoryFailed(myObjectLocation)
 
-        public GraphFSError_CreateDirectoryFailed(ObjectLocation myObjectLocation)
+        public GraphFSError_CreateDirectoryFailed(ObjectLocation myObjectLocation, String myMessage = null)
         {
             ObjectLocation = myObjectLocation;
-            Message        = String.Format("Creating a directory at location '{0}' failed!", ObjectLocation);
+
+            if (myMessage != null)
+            {
+                Message = String.Format("Creating a directory at location '{0}' failed because: {1}", ObjectLocation, myMessage);
+            }
+            else
+            {
+                Message = String.Format("Creating a directory at location '{0}' failed!", ObjectLocation);
+            }
         }
 
         #endregion

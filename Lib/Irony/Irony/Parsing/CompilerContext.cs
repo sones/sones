@@ -14,7 +14,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using sones.Lib.Frameworks.Irony.Diagnostics;
-using sones.Lib.Session;
 
 namespace sones.Lib.Frameworks.Irony.Parsing {
 

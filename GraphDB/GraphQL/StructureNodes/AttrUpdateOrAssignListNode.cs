@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB – AttrUpdateOrAssignListNode Node" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB � AttrUpdateOrAssignListNode Node" />
  * <copyright file="AttrUpdateOrAssignListNode.cs
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -23,6 +43,9 @@ using sones.Lib.Frameworks.Irony.Parsing;
 namespace sones.GraphDB.GraphQL.StructureNodes
 {
 
+    /// <summary>
+    /// Warnings: Warning_ObsoleteGQL
+    /// </summary>
     public class AttrUpdateOrAssignListNode : AStructureNode, IAstNodeInit
     {
      
@@ -66,14 +89,14 @@ namespace sones.GraphDB.GraphQL.StructureNodes
                         if (aChild.AstNode is AddToListAttrUpdateNode)
                         {
                             ListOfUpdate.Add((aChild.AstNode as AddToListAttrUpdateNode).AttributeUpdateList);
-
+                            base.ParsingResult.Push((aChild.AstNode as AddToListAttrUpdateNode).ParsingResult);
                         }
                         #endregion
                                                 
                         if (aChild.AstNode is RemoveFromListAttrUpdateNode)
                         {
                             ListOfUpdate.Add((aChild.AstNode as RemoveFromListAttrUpdateNode).AttributeRemoveList);
-                     
+                            base.ParsingResult.Push((aChild.AstNode as RemoveFromListAttrUpdateNode).ParsingResult);
                         }
                     }
                     else

@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
 /* <id name="DBContext" />
  * <copyright file="DBContext.cs"
  *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Stefan Licht</developer>
  * <summary>This class holds all DB related managers and is bound to a transaction.</summary>
@@ -37,9 +38,9 @@ using sones.GraphDB.Plugin;
 using sones.GraphDB.Session;
 using sones.GraphDB.Settings;
 using sones.GraphDB.TypeManagement;
+using sones.GraphDBInterface.Context;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Session;
-using sones.Lib;
 using sones.Lib.ErrorHandling;
 
 #endregion
@@ -54,7 +55,7 @@ namespace sones.GraphDB
     /// - start each time with an empty Cache, TypeManager, etc to load these data based on the transaction timestamp
     /// </summary>
 
-    public class DBContext
+    public class DBContext : IDBContext
     {
 
         #region Data
@@ -172,15 +173,22 @@ namespace sones.GraphDB
 
         #endregion
         
-        public void CopyTo(DBContext dbContext)
+        public IDBContext CopyMe()
         {
-            dbContext._DBIndexManager = _DBIndexManager;
-            dbContext._DBObjectCache = _DBObjectCache;
-            dbContext._DBObjectManager = _DBObjectManager;
-            dbContext._DBPluginManager = _DBPluginManager;
-            dbContext._DBSettingsManager = _DBSettingsManager;
-            dbContext._DBTypeManager = _DBTypeManager;
-            dbContext._SessionSettings = _SessionSettings;
+            return new DBContext(this);
+        }
+
+
+        public void CopyTo(IDBContext myDBContext)
+        {
+            var realContext = (DBContext)myDBContext;
+            realContext._DBIndexManager = _DBIndexManager;
+            realContext._DBObjectCache = _DBObjectCache;
+            realContext._DBObjectManager = _DBObjectManager;
+            realContext._DBPluginManager = _DBPluginManager;
+            realContext._DBSettingsManager = _DBSettingsManager;
+            realContext._DBTypeManager = _DBTypeManager;
+            realContext._SessionSettings = _SessionSettings;
         }
     }
 

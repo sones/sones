@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /*
  * IGraphFSSession
- * Achim Friedland, 2008 - 2010
+ * (c) Achim Friedland, 2008 - 2010
  */
 
 #region Usings
@@ -37,7 +37,7 @@ using sones.GraphFS.Transactions;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.InternalObjects;
 
-using sones.Lib.Session;
+using sones.GraphFS.Session;
 using sones.Lib.ErrorHandling;
 using sones.Lib.DataStructures;
 using sones.Lib.DataStructures.Indices;
@@ -61,7 +61,7 @@ namespace sones.GraphFS.Session
 
         IGraphFS     IGraphFS      { get; }
         SessionToken SessionToken  { get; }
-        String       Implemenation { get; }
+        String       Implementation { get; }
 
         #endregion
 
@@ -287,83 +287,6 @@ namespace sones.GraphFS.Session
 
         #endregion
 
-        #region NotificationDispatcher
-
-        // The NotificationDispatcher handles all kind of notification between system parts or other dispatchers.
-        // Use register to get notified as recipient.
-        // Use SendNotification to send a notification to all subscribed recipients.
-
-        #region GetNotificationDispatcher(...)
-
-        /// <summary>
-        /// Returns the NotificationDispatcher of this file system
-        /// </summary>
-        /// <returns>The NotificationDispatcher of this file system</returns>
-        NotificationDispatcher GetNotificationDispatcher();
-
-        /// <summary>
-        /// Returns the NotificationDispatcher of the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <returns>The NotificationDispatcher of the file system at the given ObjectLocation</returns>
-        NotificationDispatcher GetNotificationDispatcher(ObjectLocation myObjectLocation);
-
-        #endregion
-
-        #region GetNotificationSettings(...)
-
-        /// <summary>
-        /// Returns the NotificationDispatcher settings of this file system
-        /// </summary>
-        /// <returns>The NotificationDispatcher settings of this file system</returns>
-        NotificationSettings GetNotificationSettings();
-
-        /// <summary>
-        /// Returns the NotificationDispatcher settings of the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <returns>The NotificationDispatcher settings of the file system at the given ObjectLocation</returns>
-        NotificationSettings GetNotificationSettings(ObjectLocation myObjectLocation);
-
-        #endregion
-
-
-        #region SetNotificationDispatcher(..., myNotificationDispatcher)
-
-        /// <summary>
-        /// Sets the NotificationDispatcher of this file system.
-        /// </summary>
-        /// <param name="myNotificationDispatcher">A NotificationDispatcher object</param>
-        void SetNotificationDispatcher(NotificationDispatcher myNotificationDispatcher);
-
-        /// <summary>
-        /// Sets the NotificationDispatcher of the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <param name="myNotificationDispatcher">A NotificationDispatcher object</param>
-        void SetNotificationDispatcher(ObjectLocation myObjectLocation, NotificationDispatcher myNotificationDispatcher);
-
-        #endregion
-
-        #region SetNotificationSettings(..., myNotificationSettings)
-
-        /// <summary>
-        /// Sets the NotificationDispatcher settings of this file system
-        /// </summary>
-        /// <param name="myNotificationSettings">A NotificationSettings object</param>
-        void SetNotificationSettings(NotificationSettings myNotificationSettings);
-
-        /// <summary>
-        /// Sets the NotificationDispatcher settings of the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <param name="myNotificationSettings">A NotificationSettings object</param>
-        void SetNotificationSettings(ObjectLocation myObjectLocation, NotificationSettings myNotificationSettings);
-
-        #endregion
-
-        #endregion
-
         #region ObjectCache
 
         /// <summary>
@@ -395,12 +318,8 @@ namespace sones.GraphFS.Session
 
         #endregion
 
-        #region MakeFileSystem/MountFileSystem/ChangeRootDirectory
 
-
-        #region MakeFileSystem(myStorageLocation, myDescription, ...)
-
-        Exceptional<FileSystemUUID> MakeFileSystem(String myStorageLocation, String myDescription, UInt64 myNumberOfBytes, Boolean myOverwriteExistingFileSystem, Action<Double> myAction);
+        #region Make-/Grow-/Shrink-/WipeFileSystem
 
         /// <summary>
         /// This initialises a IGraphFS in a given device or file using the given sizes
@@ -410,32 +329,28 @@ namespace sones.GraphFS.Session
         /// <param name="myNumberOfBytes">the size of the file system in byte</param>
         /// <param name="myOverwriteExistingFileSystem">overwrite an existing file system [yes|no]</param>
         /// <returns>the UUID of the new file system</returns>
-        Exceptional<FileSystemUUID> MakeFileSystem(IEnumerable<String> myStorageLocations, String myDescription, UInt64 myNumberOfBytes, Boolean myOverwriteExistingFileSystem, Action<Double> myAction);
-
-        #endregion
-
-        #region GrowFileSystem(myNumberOfBytesToAdd)
+        Exceptional<FileSystemUUID> MakeFileSystem(String myDescription, UInt64 myNumberOfBytes, Boolean myOverwriteExistingFileSystem, Action<Double> myAction);
 
         /// <summary>
         /// This enlarges the size of a IGraphFS
         /// </summary>
         /// <param name="myNumberOfBytesToAdd">the number of bytes to add to the size of the current file system</param>
-        void GrowFileSystem(UInt64 myNumberOfBytesToAdd);
-
-        #endregion
-
-        #region ShrinkFileSystem
+        Exceptional<UInt64> GrowFileSystem(UInt64 myNumberOfBytesToAdd);
 
         /// <summary>
         /// This reduces the size of a IGraphFS
         /// </summary>
         /// <param name="myNumberOfBytesToRemove">the number of bytes to remove from the size of the current file system</param>
-        void ShrinkFileSystem(UInt64 myNumberOfBytesToRemove);
+        Exceptional<UInt64> ShrinkFileSystem(UInt64 myNumberOfBytesToRemove);
+
+        /// <summary>
+        /// Wipe the file system
+        /// </summary>
+        Exceptional WipeFileSystem();
 
         #endregion
 
-
-        #region MountFileSystem(myStorageLocation, ...)
+        #region Mount-/Remount-/UnmountFileSystem
 
         /// <summary>
         /// Mounts a IGraphFS from a device or filename serving the file system with an existing Notification dispatcher
@@ -443,88 +358,53 @@ namespace sones.GraphFS.Session
         /// <param name="myStorage">a device or filename serving the file system</param>
         /// <param name="myFSAccessMode">the access mode of this file system (read/write, read-only, ...)</param>
         /// <param name="myNotificationDispatcher">the notification dispatcher with already registered recipients to get notifications during mount</param>
-        void MountFileSystem(String myStorageLocation, AccessModeTypes myFSAccessMode);
+        Exceptional MountFileSystem(AccessModeTypes myFSAccessMode);
 
-        /// <summary>
-        /// This method will mount the file system from a StorageLocation serving
-        /// the file system into the given ObjectLocation using the given file system
-        /// access mode. If the mountpoint is located within another file system this
-        /// file system will be called to process this request in a recursive way.
-        /// </summary>
-        /// <param name="myStorageLocation">A StorageLocation (device or filename) the file system can be read from</param>
-        /// <param name="myMountPoint">The location the file system should be mounted at</param>
-        /// <param name="myFSAccessMode">The access mode of the file system to mount</param>
-        void MountFileSystem(String myStorageLocation, ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode);
+        Exceptional MountFileSystem(ObjectLocation myMountPoint, IGraphFSSession myIGraphFSSession, AccessModeTypes myFSAccessMode);
 
-
-        void MountFileSystem(IGraphFSSession myIGraphFSSession, ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode);
-
-        #endregion
-
-        #region RemountFileSystem(...)
 
         /// <summary>
         /// Remounts a IGraphFS
         /// </summary>
         /// <param name="myFSAccessMode">the mode the file system should be opend (see AccessModeTypes)</param>
-        void RemountFileSystem(AccessModeTypes myFSAccessMode);
+        Exceptional RemountFileSystem(AccessModeTypes myFSAccessMode);
 
         /// <summary>
         /// Remounts a IGraphFS
         /// </summary>
         /// <param name="myMountPoint">the location of the file system within the virtual file system</param>
         /// <param name="myFSAccessMode">the mode the file system should be opend (see AccessModeTypes)</param>
-        void RemountFileSystem(ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode);
+        Exceptional RemountFileSystem(ObjectLocation myMountPoint, AccessModeTypes myFSAccessMode);
 
-        #endregion
-
-        #region UnmountFileSystem(...)
 
         /// <summary>
         /// Unmounts a IGraphFS by flushing all caches and shutting down all managers, finally closing the file system
         /// </summary>
-        void UnmountFileSystem();
+        Exceptional UnmountFileSystem();
 
         /// <summary>
         /// Unmounts a IGraphFS by flushing all caches and shutting down all managers, finally closing the file
         /// </summary>
         /// <param name="myMountPoint">the location of the file system within the virtual file system</param>
-        void UnmountFileSystem(ObjectLocation myMountPoint);
+        Exceptional UnmountFileSystem(ObjectLocation myMountPoint);
 
         /// <summary>
         /// Unmounts all GraphFSs by flushing all caches and shutting down all managers, finally closing all files
         /// </summary>
-        void UnmountAllFileSystems();
+        Exceptional UnmountAllFileSystems();
 
-        #endregion
-
-
-        #region ChangeRootDirectory(myChangeRootPrefix)
 
         /// <summary>
         /// Restricts the access to this file system to the given "/ChangeRootPrefix".
         /// This might be of interesst for security and safety purposes.
         /// </summary>
         /// <param name="myChangeRootPrefix">the location of this object (ObjectPath and ObjectName) of the new file system root</param>
-        void ChangeRootDirectory(String myChangeRootPrefix);
+        Exceptional ChangeRootDirectory(String myChangeRootPrefix);
 
         #endregion
 
 
-        #endregion
-
-        #region ResolveAndVerifyObjectLocation(...)
-
-        //ResolveTypes ResolveObjectLocation_Internal(ref ObjectLocation myObjectLocation, out List<String> myObjectStreams, out String myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, ref List<String> mySymlinkTargets);
-        //ResolveTypes ResolveObjectLocationRecursive_Internal(ref ObjectLocation myObjectLocation, out List<String> myObjectStreams, out String myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIGraphFS, ref List<String> mySymlinkTargets);
-
-        Trinary ResolveObjectLocation(ref ObjectLocation myObjectLocation, out IEnumerable<String> myObjectStreams, out ObjectLocation myObjectPath, out String myObjectName, out IDirectoryObject myIDirectoryObject, out IGraphFS myIGraphFS);
-        String ResolveObjectLocation(ObjectLocation myObjectLocation, Boolean myThrowObjectNotFoundException);
-
-        #endregion
-
-
-        #region INode and ObjectLocator
+        #region Get INode and ObjectLocator
 
         /// <summary>
         /// Exports the INode of the given ObjectLocation.
@@ -544,7 +424,20 @@ namespace sones.GraphFS.Session
 
         #endregion
 
-        #region Object specific methods
+        #region Object/ObjectStream/ObjectEdition/ObjectRevision infos
+
+        Exceptional<Trinary> ObjectExists(ObjectLocation myObjectLocatio);
+        Exceptional<Trinary> ObjectStreamExists(ObjectLocation myObjectLocation, String myObjectStream);
+        Exceptional<Trinary> ObjectEditionExists(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition);
+        Exceptional<Trinary> ObjectRevisionExists(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null);
+
+        Exceptional<IEnumerable<String>> GetObjectStreams(ObjectLocation myObjectLocation);
+        Exceptional<IEnumerable<String>> GetObjectEditions(ObjectLocation myObjectLocation, String myObjectStream);
+        Exceptional<IEnumerable<ObjectRevisionID>> GetObjectRevisionIDs(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition);
+
+        #endregion
+
+        #region AFSObject specific methods
 
         Exceptional LockFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, ObjectLocks myObjectLock, ObjectLockTypes myObjectLockType, UInt64 myLockingTime);
 
@@ -558,20 +451,12 @@ namespace sones.GraphFS.Session
 
         Exceptional StoreFSObject(AFSObject myAGraphObject, Boolean myAllowOverwritting);
 
-        Exceptional<Trinary> ObjectExists(ObjectLocation myObjectLocatio);
-        Exceptional<Trinary> ObjectStreamExists(ObjectLocation myObjectLocation, String myObjectStream);
-        Exceptional<Trinary> ObjectEditionExists(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition);
-        Exceptional<Trinary> ObjectRevisionExists(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null);
-
-        Exceptional<IEnumerable<String>> GetObjectStreams(ObjectLocation myObjectLocation);
-        Exceptional<IEnumerable<String>> GetObjectEditions(ObjectLocation myObjectLocation, String myObjectStream);
-        Exceptional<IEnumerable<ObjectRevisionID>> GetObjectRevisionIDs(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition);
-
         Exceptional RenameFSObject(ObjectLocation myObjectLocation, String myNewObjectName);
         Exceptional RemoveFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null);
-        Exceptional EraseFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null);
+        Exceptional EraseFSObject (ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null);
 
         #endregion
+
 
         #region Symlink Maintenance
 
@@ -618,11 +503,7 @@ namespace sones.GraphFS.Session
         /// </summary>
         /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the new directory within the file system
         /// Multiple strings will be concatenated to a valid ObjectLocation.</param>
-        Exceptional<IDirectoryObject> CreateDirectoryObject(ObjectLocation myObjectLocation);
-
-        Exceptional<IDirectoryObject> CreateDirectoryObject(ObjectLocation myObjectLocation, UInt64 myBlocksize);
-
-        Exceptional<IDirectoryObject> CreateDirectoryObject(ObjectLocation myObjectLocation, UInt64 myBlocksize, Boolean myRecursive);
+        Exceptional<IDirectoryObject> CreateDirectoryObject(ObjectLocation myObjectLocation, UInt64 myBlocksize = 0, Boolean myRecursive = false);
 
         /// <summary>
         /// Checks the existence of a directory in the given file system location
@@ -763,11 +644,13 @@ namespace sones.GraphFS.Session
         Exceptional<FileObject> GetFileObject(ObjectLocation myObjectLocation);
         Exceptional<FileObject> GetFileObject(ObjectLocation myObjectLocation, ObjectRevisionID myRevisionID);
 
-        Exceptional StoreFileObject(ObjectLocation myObjectLocation, Byte[] myData, Boolean myAllowOverwritte);
+        Exceptional StoreFileObject(ObjectLocation myObjectLocation, Byte[] myData, Boolean myAllowToOverwrite = false);
+        Exceptional StoreFileObject(ObjectLocation myObjectLocation, String myData, Boolean myAllowToOverwrite = false);
 
         #endregion
 
-        //#region AccessControlObject Maintenance
+
+        #region AccessControlObject Maintenance
 
         ///// <summary>
         ///// This method adds a RIGTHSSTREAM to an Object.
@@ -837,15 +720,15 @@ namespace sones.GraphFS.Session
         ///// <returns>True for success or otherwise false.</returns>
         //bool RemoveAlertFromGraphRightsAlertHandlingList(ObjectLocation myObjectLocation, NHAccessControlObject myAlert);
 
-        //#endregion
+        #endregion
 
-        //#region Evaluation of rights
+        #region Evaluation of rights
 
         //List<Right> EvaluateRightsForEntity(ObjectLocation myObjectLocation, EntityUUID myEntityGuid, AccessControlObject myRightsObject);
 
-        //#endregion
+        #endregion
 
-        //#region Index Maintenance
+        #region Index Maintenance
 
         ////void CreateIndexObject<T1, T2, T3>(ObjectLocation myObjectLocation) where T1 : AGraphObject, IIndexObject<T2, T3>, new() where T2 : IComparable;
         //IIndexObject<TKey, TValue> CreateIndexObject<TKey, TValue>(ObjectLocation myObjectLocation, IndexObjectTypes myIndexObjectType) where TKey : IComparable;
@@ -925,9 +808,9 @@ namespace sones.GraphFS.Session
         ///// <returns>exists(true) or not exists(false)</returns>
         //Boolean IndexHasKey<TKey, TValue>(ObjectLocation myObjectLocation, TKey myKey) where TKey : IComparable;
 
-        //#endregion
+        #endregion
 
-        //#region StringListObject Maintenance
+        #region StringListObject Maintenance
 
         //void CreateListOfStrings(ObjectLocation myObjectLocation);
         //List<String> GetListOfStrings(ObjectLocation myObjectLocation);
@@ -935,9 +818,9 @@ namespace sones.GraphFS.Session
         //void RemoveFromListOfStrings(ObjectLocation myObjectLocation, String myToBeRemovedString);
         //Boolean ListOfStringsExist(ObjectLocation myObjectLocation);
 
-        //#endregion
+        #endregion
 
-        //#region EntitiesObject Maintenance
+        #region EntitiesObject Maintenance
 
         ///// <summary>
         ///// This method tries to add an Entity to the EntitiesObject.
@@ -1031,9 +914,9 @@ namespace sones.GraphFS.Session
         ///// <returns>A list of public keys</returns>
         //List<PublicKey> GetEntityPublicKeyList(ObjectLocation myObjectLocation, EntityUUID myEntityUUID);
 
-        //#endregion
+        #endregion
 
-        //#region Rights ObjectIndex Maintenance
+        #region Rights ObjectIndex Maintenance
 
         ///// <summary>
         ///// This method adds a Right to the IGraphFS. All 
@@ -1066,49 +949,12 @@ namespace sones.GraphFS.Session
 
         //Boolean ContainsRightUUID(RightUUID myRightUUID);
 
-        //#endregion
-
-
-
-        #region FlushObjectLocation(myObjectLocation)
-
-        void FlushObjectLocation(ObjectLocation myObjectLocation);
-
         #endregion
 
-        #region StorageEngine Maintenance
-
-        ///// <summary>
-        ///// Returns a list of all StorageUUIDs associated with this file system
-        ///// </summary>
-        ///// <returns>A list of all StorageUUIDs associated with this file system</returns>
-        //IEnumerable<StorageUUID> StorageUUIDs();
-
-        ///// <summary>
-        ///// Returns a list of all StorageUUIDs associated with the file system at the given ObjectLocation
-        ///// </summary>
-        ///// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        ///// <returns>A list of all StorageUUIDs associated with the file system at the given ObjectLocation</returns>
-        //IEnumerable<StorageUUID> StorageUUIDs(ObjectLocation myObjectLocation);
-
-        /// <summary>
-        /// Returns a list of descriptions for the storage engines associated with this file system
-        /// </summary>
-        /// <returns>A list of descriptions for the storage engines associated with this file system</returns>
-        IEnumerable<String> StorageDescriptions();
-
-        /// <summary>
-        /// Returns a list of descriptions for the storage engines associated with the file system at the given ObjectLocation
-        /// </summary>
-        /// <param name="myObjectLocation">the ObjectLocation or path of interest</param>
-        /// <returns>A list of descriptions for the storage engines associated with the file system at the given ObjectLocation</returns>
-        IEnumerable<String> StorageDescriptions(ObjectLocation myObjectLocation);
-
-        #endregion
 
         #region Transactions
 
-        FSTransaction BeginTransaction(Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? timestamp = null);
+        FSTransaction BeginFSTransaction(Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? timestamp = null);
 
         #endregion
 

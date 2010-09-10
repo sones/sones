@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,13 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-/* <id name="sones GraphDB - in operator" />
+/* <id name="GraphDB - in operator" />
  * <copyright file="InOperator.cs"
  *            company="sones GmbH">
- * Copyright (c) sones GmbH 2007-2010
+ * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Henning Rauch</developer>
  * <summary>This class implements an in operator.</summary>
@@ -44,6 +45,7 @@ using sones.Lib.ErrorHandling;
 
 using sones.GraphDB.Managers.Structures;
 
+
 #endregion
 
 namespace sones.GraphDB.Structures.Operators
@@ -51,7 +53,7 @@ namespace sones.GraphDB.Structures.Operators
     /// <summary>
     /// This class implements an in operator.
     /// </summary>
-    class InRangeOperator : ABinaryCompareOperator
+    public class InRangeOperator : ABinaryCompareOperator
     {
         #region General comparer infos
 
@@ -106,7 +108,7 @@ namespace sones.GraphDB.Structures.Operators
                 return new Exceptional<AOperationDefinition>(resultValue);
 
 
-            resultObject = new ValueDefinition(TypesOfOperatorResult.Boolean, (object)resultValue);
+            resultObject = new ValueDefinition(BasicType.Boolean, (object)resultValue);
 
             return new Exceptional<AOperationDefinition>(resultObject);
 
@@ -139,7 +141,7 @@ namespace sones.GraphDB.Structures.Operators
                 }
             }
 
-            resultObject = new ValueDefinition(TypesOfOperatorResult.Boolean, (object)resultValue);
+            resultObject = new ValueDefinition(BasicType.Boolean, (object)resultValue);
 
             return new Exceptional<AOperationDefinition>(resultObject);
 
@@ -176,7 +178,7 @@ namespace sones.GraphDB.Structures.Operators
                 if ((Boolean)resultValue) break;
             }
 
-            resultObject = new ValueDefinition(TypesOfOperatorResult.Boolean, (object)resultValue);
+            resultObject = new ValueDefinition(BasicType.Boolean, (object)resultValue);
 
             return new Exceptional<AOperationDefinition>(resultObject);
 

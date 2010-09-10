@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,12 +15,12 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 /*
  * AFSObject
- * Achim Friedland, 2008 - 2010
+ * (c) Achim Friedland, 2008 - 2010
  */
 
 #region Usings
@@ -163,7 +163,7 @@ namespace sones.GraphFS.Objects
 
         #endregion
 
-        #region OnRemoved/OnRemovedEvent(myObjectLocator, myObjectStream, myObjectEdition, myRevisionID)
+        #region OnRemoved/OnRemovedEvent(myObjectLocation, myObjectStream, myObjectEdition, myRevisionID)
 
         /// <summary>
         /// An event to be notified whenever a AFSObject
@@ -176,10 +176,10 @@ namespace sones.GraphFS.Objects
         /// was successfully removed.
         /// </summary>
         /// <param name="e">EventArgs</param>
-        public virtual void OnRemovedEvent(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myRevisionID)
+        public virtual void OnRemovedEvent(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myRevisionID)
         {
             if (OnRemoved != null)
-                OnRemoved(myObjectLocator, myObjectStream, myObjectEdition, myRevisionID);
+                OnRemoved(myObjectLocation, myObjectStream, myObjectEdition, myRevisionID);
         }
 
         #endregion
@@ -198,11 +198,7 @@ namespace sones.GraphFS.Objects
         public AFSObject()
         {
 
-            _ObjectName         = "";
-            _ObjectPath         = "";
-            _ObjectLocation     = null;
             _ObjectStream       = null;
-
             _ObjectSize         = 0;
             _ObjectSizeOnDisc   = 0;
 
@@ -224,9 +220,6 @@ namespace sones.GraphFS.Objects
         public AFSObject(ObjectUUID myObjectUUID)
         {
 
-            _ObjectName         = "";
-            _ObjectPath         = "";
-            _ObjectLocation     = null;
             _ObjectStream       = null;
 
             _ObjectSize         = 0;
@@ -276,7 +269,7 @@ namespace sones.GraphFS.Objects
 
             if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
             {
-                _ObjectLocation = myObjectLocation;
+                ObjectLocatorReference.ObjectLocationSetter = myObjectLocation;
                 Save();
             }
 
@@ -304,8 +297,8 @@ namespace sones.GraphFS.Objects
             if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
             {
 
+                ObjectLocatorReference.ObjectLocationSetter = myObjectLocation;
                 _ObjectStream       = myObjectStream;
-                _ObjectLocation     = myObjectLocation;
                 _ObjectEdition      = myObjectEditon;
                 _ObjectRevisionID   = myObjectRevisionID;
 
@@ -364,10 +357,7 @@ namespace sones.GraphFS.Objects
                 var _Exceptional = _IGraphFSSessionReference.Value.RenameFSObject(this.ObjectLocation, myNewObjectName);
 
                 if (_Exceptional.Success())
-                {
-                    this._ObjectName = myNewObjectName;
-                    this._ObjectLocation = new ObjectLocation(DirectoryHelper.Combine(_ObjectPath, _ObjectName));
-                }
+                    this.ObjectLocatorReference.ObjectLocationSetter = new ObjectLocation(ObjectPath, ObjectName);
 
                 return _Exceptional;
             
@@ -384,7 +374,7 @@ namespace sones.GraphFS.Objects
         public void Remove()
         {
             if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
-                _IGraphFSSessionReference.Value.RemoveFSObject(_ObjectLocation, _ObjectStream, _ObjectEdition, _ObjectRevisionID);
+                _IGraphFSSessionReference.Value.RemoveFSObject(ObjectLocation, _ObjectStream, _ObjectEdition, _ObjectRevisionID);
         }
 
         #endregion
@@ -394,7 +384,7 @@ namespace sones.GraphFS.Objects
         public void Erase()
         {
             if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
-                _IGraphFSSessionReference.Value.EraseFSObject(_ObjectLocation, _ObjectStream, _ObjectEdition, _ObjectRevisionID);
+                _IGraphFSSessionReference.Value.EraseFSObject(ObjectLocation, _ObjectStream, _ObjectEdition, _ObjectRevisionID);
         }
 
         #endregion

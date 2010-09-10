@@ -1,4 +1,24 @@
-﻿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * GraphDBImport_GQL
  * (c) Stefan Licht, 2010
  */
@@ -11,9 +31,10 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 
 using sones.GraphDB.GraphQL;
-using sones.GraphDB.Structures.Result;
+
 
 using sones.Lib;
+using sones.GraphDBInterface.Result;
 
 #endregion
 
@@ -73,6 +94,7 @@ namespace sones.GraphDB.ImportExport
         {
 
             var queryResult = new QueryResult();
+            List<IEnumerable<DBObjectReadout>> aggregatedResults = new List<IEnumerable<DBObjectReadout>>();
 
             #region Create parallel options
 
@@ -102,12 +124,9 @@ namespace sones.GraphDB.ImportExport
 
                         if (verbosityTypes == VerbosityTypes.Full)
                         {
-                            lock (queryResult)
+                            lock (aggregatedResults)
                             {
-                                foreach (var resultSet in qresult.Results)
-                                {
-                                    queryResult.AddResult(resultSet);
-                                }
+                                aggregatedResults.Add(qresult.Results.Objects);
                             }
                         }
 
@@ -115,7 +134,7 @@ namespace sones.GraphDB.ImportExport
 
                         #region !VerbosityTypes.Silent: Add errors and break execution
 
-                        if (qresult.ResultType != Structures.ResultType.Successful && verbosityTypes != VerbosityTypes.Silent)
+                        if (qresult.ResultType != ResultType.Successful && verbosityTypes != VerbosityTypes.Silent)
                         {
                             lock (queryResult)
                             {
@@ -134,6 +153,10 @@ namespace sones.GraphDB.ImportExport
 
             });
 
+
+            //add the results of each query into the queryResult
+            queryResult.SetResult(new SelectionResultSet(AggregateListOfReadouts(aggregatedResults)));
+
             return queryResult;
 
         }
@@ -144,6 +167,7 @@ namespace sones.GraphDB.ImportExport
             var queryResult = new QueryResult();
             Int64 numberOfLine = 0;
             String query = String.Empty;
+            List<IEnumerable<DBObjectReadout>> aggregatedResults = new List<IEnumerable<DBObjectReadout>>();
 
             foreach (var _Line in myLines)
             {
@@ -167,17 +191,14 @@ namespace sones.GraphDB.ImportExport
 
                 if (verbosityTypes == VerbosityTypes.Full)
                 {
-                    foreach (var resultSet in qresult.Results)
-                    {
-                        queryResult.AddResult(resultSet);
-                    }
+                    aggregatedResults.Add(qresult.Results.Objects);
                 }
 
                 #endregion
 
                 #region !VerbosityTypes.Silent: Add errors and break execution
 
-                if (qresult.ResultType == Structures.ResultType.Failed)
+                if (qresult.ResultType == ResultType.Failed)
                 {
 
                     if (qresult.Errors.Any(e => (e is Errors.Error_GqlSyntax) && (e as Errors.Error_GqlSyntax).SyntaxErrorMessage.Equals("Mal-formed  string literal - cannot find termination symbol.")))
@@ -195,7 +216,7 @@ namespace sones.GraphDB.ImportExport
 
                     break;
                 }
-                else if (qresult.ResultType == Structures.ResultType.PartialSuccessful && verbosityTypes != VerbosityTypes.Silent)
+                else if (qresult.ResultType == ResultType.PartialSuccessful && verbosityTypes != VerbosityTypes.Silent)
                 {
 
                     queryResult.AddWarning(new Warnings.Warning_ImportWarning(query, numberOfLine));
@@ -209,8 +230,29 @@ namespace sones.GraphDB.ImportExport
 
             }
 
+            //add the results of each query into the queryResult
+            queryResult.SetResult(new SelectionResultSet(AggregateListOfReadouts(aggregatedResults)));
+
             return queryResult;
 
+        }
+
+        /// <summary>
+        /// Aggregates different enumerations of readout objects
+        /// </summary>
+        /// <param name="listOfReadouts"></param>
+        /// <returns></returns>
+        private IEnumerable<DBObjectReadout> AggregateListOfReadouts(List<IEnumerable<DBObjectReadout>> listOfReadouts)
+        {
+            foreach (var aReadoutEnumerable in listOfReadouts)
+            {
+                foreach (var aDBReadout in aReadoutEnumerable)
+                {
+                    yield return aDBReadout;
+                }
+            }
+
+            yield break;
         }
 
         private Boolean IsComment(String myQuery, IEnumerable<String> comments = null)

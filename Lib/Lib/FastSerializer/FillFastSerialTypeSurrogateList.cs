@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,28 +15,28 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.Lib.NewFastSerializer;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using sones.Lib.NewFastSerializer;
 
 namespace sones.Lib.FastSerializer
 {
+
     public class FillFastSerialTypeSurrogateList
     {
-        //NLOG: temporarily commented
-        //private static Logger //_Logger = LogManager.GetCurrentClassLogger();
 
-        #region constructor
+        #region Constructor(s)
+
         public FillFastSerialTypeSurrogateList()
         {
         }
+
         #endregion
 
         public void FillList()
@@ -46,65 +46,77 @@ namespace sones.Lib.FastSerializer
         
         private void FindAllTypes()
         {
-            foreach (string fileOn in Directory.GetFiles("."))
-            {
-                FileInfo file = new FileInfo(fileOn);
 
-                //Preliminary check, must be .dll
-                if ((file.Extension.Equals(".dll")) || (file.Extension.Equals(".exe")))
+            var files = new List<String>();
+            files.AddRange(Directory.GetFiles(".", "*.dll"));
+            files.AddRange(Directory.GetFiles(".", "*.exe"));
+
+            foreach (var actualFile in files)
+            {
+
+                var fileInfo = new FileInfo(actualFile);
+                Type[] allTypes = null;
+
+                //Debug.WriteLine(String.Format("{0} : ", actualFile));
+                try
                 {
+                    allTypes = Assembly.LoadFrom(fileInfo.FullName).GetTypes();
+                }
+                catch (ReflectionTypeLoadException rtlex)
+                {
+                    Console.WriteLine("Could not get types from file [" + fileInfo.Name + "]: " + rtlex.LoaderExceptions.ToAggregatedString(e => e.ToString(true), Environment.NewLine + Environment.NewLine));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Could not get types from file [" + fileInfo.Name + "]: " + ex.ToString(true));
+                }
+
+                foreach (var _Type in allTypes)
+                {
+
                     try
                     {
-                        System.Diagnostics.Debug.WriteLine(String.Format("{0} : ",fileOn));
-                        Type[] allTypes = Assembly.LoadFrom(file.FullName).GetTypes();
-                        foreach (Type type in allTypes)
+
+                        if (_Type.IsAbstract)
+                            continue;
+
+                        if (_Type.IsInterface)
+                            continue;
+
+                        // Not a *_Accessor class created from the tests
+                        // maybe we can get here a problem with derived types
+                        if (_Type.Module.ScopeName == "GraphDB_Accessor")
+                            continue;
+
+                        if (typeof(IFastSerializationTypeSurrogate).IsAssignableFrom(_Type))
                         {
 
-                            try
+                            IFastSerializationTypeSurrogate SurrogateType = (IFastSerializationTypeSurrogate)Activator.CreateInstance(_Type);
+
+                            var existingType = SerializationWriter.findSurrogateForType(SurrogateType.TypeCode);
+                            if (existingType != null && existingType.GetType() != _Type)
                             {
-                                if (type.IsAbstract)
-                                    continue;
-
-                                if (type.IsInterface)
-                                    continue;
-
-                                // Not a *_Accessor class created from the tests
-                                // maybe we can get here a problem with derived types
-                                if (type.Module.ScopeName == "GraphDB_Accessor")
-                                    continue;
-
-                                if (typeof(IFastSerializationTypeSurrogate).IsAssignableFrom(type))
-                                {
-                                    IFastSerializationTypeSurrogate SurrogateType = (IFastSerializationTypeSurrogate)Activator.CreateInstance(type);
-
-                                    var existingType = SerializationWriter.findSurrogateForType(SurrogateType.TypeCode);
-                                    if (existingType != null && existingType.GetType() != type)
-                                    {
-                                        throw new sones.Lib.Exceptions.FastSerializeSurrogateTypeCodeExistException(
-                                            "Could not add [" + type.Name + "] SurrogateForType already exists with typeCode " + SurrogateType.TypeCode
-                                            + "[" + SerializationWriter.findSurrogateForType(SurrogateType.TypeCode).GetType().Name + "]");
-                                    }
-
-                                    SerializationWriter.AddSurrogateType(SurrogateType);
-                                }
+                                throw new sones.Lib.Exceptions.FastSerializeSurrogateTypeCodeExistException(
+                                    "Could not add [" + _Type.Name + "] SurrogateForType already exists with typeCode " + SurrogateType.TypeCode
+                                    + "[" + SerializationWriter.findSurrogateForType(SurrogateType.TypeCode).GetType().Name + "]");
                             }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine(file.Name + " failed for type [" + type + "]: " + ex.Message);
-                            }
+
+                            SerializationWriter.AddSurrogateType(SurrogateType);
 
                         }
-                    }
-                    catch (sones.Lib.Exceptions.FastSerializeSurrogateTypeCodeExistException fsstcee)
-                    {
-                        throw fsstcee;
+
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(file.Name + " failed: " + ex.Message);
+                        Console.WriteLine(fileInfo.Name + " failed for type [" + _Type + "]: " + ex.Message);
                     }
+
                 }
+
             }
+
         }
+
     }
+
 }

@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * sones GraphDS API - DBObject
  * (c) Achim 'ahzf' Friedland, 2009 - 2010
  */
@@ -16,6 +36,7 @@ using System.Reflection;
 using sones.Lib.DataStructures.UUID;
 using sones.GraphFS.DataStructures;
 using sones.GraphDB.Structures;
+using sones.GraphFS.Session;
 
 #endregion
 
@@ -40,7 +61,8 @@ namespace sones.GraphDB.NewAPI
 
         #region Properties
 
-      //  public Object GraphDSSharp { get; set; }
+        public IGraphDB     GraphDBInterface    { get; set; }
+        public SessionToken SessionToken        { get; set; }
 
         //#region CreateTypeQuery
 
@@ -240,7 +262,12 @@ namespace sones.GraphDB.NewAPI
 
         public override Int32 GetHashCode()
         {
+
+            if (UUID == null)
+                return _UndefinedAttributes.GetHashCode();
+
             return UUID.GetHashCode();
+
         }
 
         #endregion

@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * DescribeEdgeDefinition
  * (c) Stefan Licht, 2010
  */
@@ -9,10 +29,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.Structures.Result;
+
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.Errors;
+using sones.GraphDBInterface.Result;
 
 #endregion
 
@@ -39,11 +60,8 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
         #region ADescribeDefinition
 
-        public override Exceptional<List<SelectionResultSet>> GetResult(DBContext myDBContext)
+        public override Exceptional<SelectionResultSet> GetResult(DBContext myDBContext)
         {
-
-            var result = new List<SelectionResultSet>();
-
             if (!String.IsNullOrEmpty(_EdgeName))
             {
 
@@ -52,11 +70,11 @@ namespace sones.GraphDB.Managers.Structures.Describe
                 var edge = myDBContext.DBPluginManager.GetEdgeType(_EdgeName);
                 if (edge != null)
                 {
-                    result.Add(new SelectionResultSet(GenerateOutput(edge, _EdgeName)));
+                    return new Exceptional<SelectionResultSet>(new SelectionResultSet(GenerateOutput(edge, _EdgeName)));
                 }
                 else
                 {
-                    return new Exceptional<List<SelectionResultSet>>(new Error_EdgeTypeDoesNotExist(_EdgeName));
+                    return new Exceptional<SelectionResultSet>(new Error_EdgeTypeDoesNotExist(_EdgeName));
                 }
 
                 #endregion
@@ -65,19 +83,20 @@ namespace sones.GraphDB.Managers.Structures.Describe
             else
             {
 
-                #region All edge
+                #region All edges
+
+                List<DBObjectReadout> resultingReadouts = new List<DBObjectReadout>();
 
                 foreach (var edge in myDBContext.DBPluginManager.GetAllEdgeTypes())
                 {
-                    result.Add(new SelectionResultSet(GenerateOutput(edge.Value, edge.Key)));
+                    resultingReadouts.Add(GenerateOutput(edge.Value, edge.Key));
                 }
 
+
+                return new Exceptional<SelectionResultSet>(new SelectionResultSet(resultingReadouts));
                 #endregion
 
             }
-
-            return new Exceptional<List<SelectionResultSet>>(result);
-
         }
 
         #endregion
@@ -90,7 +109,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
         /// <param name="myEdge">the edge</param>
         /// <param name="myEdgeName">edge name</param>
         /// <returns>list of readouts with the information</returns>
-        private IEnumerable<DBObjectReadout> GenerateOutput(IEdgeType myEdge, String myEdgeName)
+        private DBObjectReadout GenerateOutput(IEdgeType myEdge, String myEdgeName)
         {
 
             string Temp = "";
@@ -108,7 +127,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
             Edge.Add("EdgeType", System.Convert.ToUInt32(Temp.Substring(0, Pos)));
 
-            return new List<DBObjectReadout>() { new DBObjectReadout(Edge) };
+            return new DBObjectReadout(Edge);
 
         }
 

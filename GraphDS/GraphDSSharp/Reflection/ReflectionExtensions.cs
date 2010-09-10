@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * sones GraphDS API - ReflectionExtensions
  * (c) Achim 'ahzf' Friedland, 2010
  */
@@ -10,9 +30,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.GraphDB.NewAPI;
-using sones.GraphDB.Structures.Result;
+
 
 using sones.Lib;
+using sones.GraphDBInterface.Result;
+using System.Diagnostics;
+using sones.GraphFS.DataStructures;
 
 #endregion
 
@@ -460,140 +483,180 @@ namespace sones.GraphDS.API.CSharp.Reflection
                     if (_PropertyInfo.CanRead && _PropertyInfo.CanWrite)
                     {
 
-                        _PropertyValue = _PropertyInfo.GetValue(myDBVertex, null);
+                        #region Check found attribute
 
-                        if (_PropertyValue != null)
+                        var _AddToDatabaseType = true;
+
+                        // Ignore inherited attributes
+                        if (_PropertyInfo.DeclaringType.Name != myDBVertex.GetType().Name)
+                            _AddToDatabaseType = false;
+
+                        // Check attribute attributes ;)
+                        else
                         {
 
-                            _StringBuilder.Append(_PropertyInfo.Name).Append(" = ");
-
-                            #region List<...>
-
-                            if (_PropertyInfo.PropertyType.IsGenericType &&
-                                _PropertyInfo.PropertyType.GetGenericTypeDefinition().FullName == "System.Collections.Generic.List`1")
+                            foreach (var _Property in _PropertyInfo.GetCustomAttributes(true))
                             {
 
-                                _StringBuilder.Append(" LISTOF(");
+                                #region Check "HideFromDatabase"-Attribute
 
-                                var _List = _PropertyInfo.GetValue(myDBVertex, null) as IEnumerable<Object>;
-                                if (_List != null)
+                                if (_Property as HideFromDatabase != null)
                                 {
-
-                                    foreach (var _Object in _List)
-                                        _StringBuilder.Append("'").Append(_Object).Append("'").Append(mySeperator);
-
-                                    _StringBuilder.Length = _StringBuilder.Length - 2;
-
+                                    _AddToDatabaseType = false;
+                                    break;
                                 }
 
-                                _StringBuilder.Append(") ");
+                                #endregion
 
                             }
 
-                            #endregion
+                        }
 
-                            #region DBObject
+                        #endregion
 
-                            else if (_PropertyInfo.PropertyType.BaseType != null &&
-                                     _PropertyInfo.PropertyType.BaseType.FullName == "sones.GraphDB.NewAPI.DBVertex")
-                            // ToDo: Improve basetype lookup!
+                        if (_AddToDatabaseType)
+                        {
+
+                            _PropertyValue = _PropertyInfo.GetValue(myDBVertex, null);
+
+                            if (_PropertyValue != null)
                             {
 
-                                var _DBObject = _PropertyInfo.GetValue(myDBVertex, null) as DBVertex;
-                                if (_DBObject != null)
-                                {
-                                    _StringBuilder.Append("REF(UUID = '").Append(_DBObject.UUID).Append("')");
-                                }
+                                _StringBuilder.Append(_PropertyInfo.Name).Append(" = ");
 
-                            }
+                                #region List<...>
 
-                            #endregion
-
-                            #region Set<DBObject, DBObject>
-
-                            else if (_PropertyInfo.PropertyType.IsGenericType &&
-                                _PropertyInfo.PropertyType.GetGenericTypeDefinition().FullName == "sones.GraphDB.NewAPI.Set`2")
-                            {
-
-                                _StringBuilder.Append(" SETOF(");
-
-                                var _Set = _PropertyInfo.GetValue(myDBVertex, null) as Set<DBVertex, DBEdge>;
-                                if (_Set != null)
+                                if (_PropertyInfo.PropertyType.IsGenericType &&
+                                    _PropertyInfo.PropertyType.GetGenericTypeDefinition().FullName == "System.Collections.Generic.List`1")
                                 {
 
-                                    foreach (var _DBObject in _Set)
-                                        _StringBuilder.Append("UUID = '").Append(_DBObject.UUID).Append("'").Append(mySeperator);
+                                    _StringBuilder.Append(" LISTOF(");
 
-                                    _StringBuilder.Length = _StringBuilder.Length - 2;
+                                    var _List = _PropertyInfo.GetValue(myDBVertex, null) as IEnumerable<Object>;
+                                    if (_List != null)
+                                    {
 
-                                }
+                                        foreach (var _Object in _List)
+                                            _StringBuilder.Append("'").Append(_Object).Append("'").Append(mySeperator);
 
-                                _StringBuilder.Append(") ");
+                                        _StringBuilder.Length = _StringBuilder.Length - 2;
 
-                            }
+                                    }
 
-                            #endregion
-
-                            #region Set<DBObject>
-
-                            else if (_PropertyInfo.PropertyType.IsGenericType &&
-                                     _PropertyInfo.PropertyType.GetGenericTypeDefinition().FullName == "sones.GraphDB.NewAPI.Set`1" &&
-                                     _PropertyInfo.PropertyType.GetGenericArguments()[0].BaseType.FullName == "sones.GraphDB.NewAPI.DBVertex")
-                            // ToDo: Improve basetype lookup!
-                            {
-
-                                _StringBuilder.Append(" SETOF(");
-
-                                var _Set = _PropertyInfo.GetValue(myDBVertex, null) as Set<DBVertex>;
-                                if (_Set != null)
-                                {
-
-                                    foreach (var _DBObject in _Set)
-                                        _StringBuilder.Append("UUID = '").Append(_DBObject.UUID).Append("'").Append(mySeperator);
-
-                                    _StringBuilder.Length = _StringBuilder.Length - 2;
+                                    _StringBuilder.Append(") ");
 
                                 }
 
-                                _StringBuilder.Append(") ");
+                                #endregion
 
-                            }
+                                #region DBObject
 
-                            #endregion
-
-                            #region Set<...>
-
-                            else if (_PropertyInfo.PropertyType.IsGenericType &&
-                                _PropertyInfo.PropertyType.GetGenericTypeDefinition().FullName == "sones.GraphDB.NewAPI.Set`1")
-                            {
-
-                                _StringBuilder.Append(" SETOF(");
-
-                                var _Set = _PropertyInfo.GetValue(myDBVertex, null) as IEnumerable<Object>;
-                                if (_Set != null)
+                                else if (_PropertyInfo.PropertyType.BaseType != null &&
+                                         _PropertyInfo.PropertyType.BaseType.FullName == "sones.GraphDB.NewAPI.DBVertex")
+                                // ToDo: Improve basetype lookup!
                                 {
 
-                                    foreach (var _Object in _Set)
-                                        _StringBuilder.Append("'").Append(_Object).Append("'").Append(mySeperator);
-
-                                    _StringBuilder.Length = _StringBuilder.Length - 2;
+                                    var _DBObject = _PropertyInfo.GetValue(myDBVertex, null) as DBVertex;
+                                    if (_DBObject != null)
+                                    {
+                                        _StringBuilder.Append("REF(UUID = '").Append(_DBObject.UUID).Append("')");
+                                    }
 
                                 }
 
-                                _StringBuilder.Append(") ");
+                                #endregion
+
+                                #region Set<DBObject, DBObject>
+
+                                else if (_PropertyInfo.PropertyType.IsGenericType &&
+                                    _PropertyInfo.PropertyType.GetGenericTypeDefinition().FullName == "sones.GraphDB.NewAPI.Set`2")
+                                {
+
+                                    _StringBuilder.Append(" SETOF(");
+
+                                    var _Set = _PropertyInfo.GetValue(myDBVertex, null) as Set<DBVertex, DBEdge>;
+                                    if (_Set != null)
+                                    {
+
+                                        foreach (var _DBObject in _Set)
+                                            _StringBuilder.Append("UUID = '").Append(_DBObject.UUID).Append("'").Append(mySeperator);
+
+                                        _StringBuilder.Length = _StringBuilder.Length - 2;
+
+                                    }
+
+                                    _StringBuilder.Append(") ");
+
+                                }
+
+                                #endregion
+
+                                #region Set<DBObject>
+
+                                else if (_PropertyInfo.PropertyType.IsGenericType &&
+                                         _PropertyInfo.PropertyType.GetGenericTypeDefinition().FullName == "sones.GraphDB.NewAPI.Set`1" &&
+                                         _PropertyInfo.PropertyType.GetGenericArguments()[0].BaseType.FullName == "sones.GraphDB.NewAPI.DBVertex")
+                                // ToDo: Improve basetype lookup!
+                                {
+
+                                    _StringBuilder.Append(" SETOF(");
+
+                                    var _Set = _PropertyInfo.GetValue(myDBVertex, null) as IEnumerable<DBVertex>;
+                                    if (_Set != null)
+                                    {
+
+                                        foreach (var _DBObject in _Set)
+                                        {
+                                            // Check if _DBObject is already stored within the
+                                            // GraphDB or if it has to be added recursively!
+                                            _StringBuilder.Append("UUID = '").Append(_DBObject.UUID).Append("'").Append(mySeperator);
+                                        }
+
+                                        _StringBuilder.Length = _StringBuilder.Length - 2;
+
+                                    }
+
+                                    _StringBuilder.Append(") ");
+
+                                }
+
+                                #endregion
+
+                                #region Set<...>
+
+                                else if (_PropertyInfo.PropertyType.IsGenericType &&
+                                    _PropertyInfo.PropertyType.GetGenericTypeDefinition().FullName == "sones.GraphDB.NewAPI.Set`1")
+                                {
+
+                                    _StringBuilder.Append(" SETOF(");
+
+                                    var _Set = _PropertyInfo.GetValue(myDBVertex, null) as IEnumerable<Object>;
+                                    if (_Set != null)
+                                    {
+
+                                        foreach (var _Object in _Set)
+                                            _StringBuilder.Append("'").Append(_Object).Append("'").Append(mySeperator);
+
+                                        _StringBuilder.Length = _StringBuilder.Length - 2;
+
+                                    }
+
+                                    _StringBuilder.Append(") ");
+
+                                }
+
+                                #endregion
+
+                                #region Single value
+
+                                else
+                                    _StringBuilder.Append("'").Append(_PropertyInfo.GetValue(myDBVertex, null)).Append("'");
+
+                                #endregion
+
+                                _StringBuilder.Append(mySeperator);
 
                             }
-
-                            #endregion
-
-                            #region Single value
-
-                            else
-                                _StringBuilder.Append("'").Append(_PropertyInfo.GetValue(myDBVertex, null)).Append("'");
-
-                            #endregion
-
-                            _StringBuilder.Append(mySeperator);
 
                         }
 
@@ -1060,6 +1123,125 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #endregion
         
+        #endregion
+
+
+
+        #region (protected) SetReturnValues(myDBObjectOfT, myQueryResult)
+
+        private static void SetReturnValues(DBObject myDBObjectOfT, QueryResult myQueryResult)
+        {
+
+            Debug.Assert(myQueryResult["UUID"] != null);
+            //Debug.Assert(myQueryResult["EDITION"]   != null);
+            Debug.Assert(myQueryResult["REVISION"] != null);
+
+            //Debug.Assert(myQueryResult["UUID"]          as ObjectUUID != null);
+            //Debug.Assert(myQueryResult["EDITION"]       as String != null);
+            //Debug.Assert(myQueryResult["REVISION"]      as RevisionID != null); //ToDo: REVISION is String NOT RevisionID!!!
+
+            if (myQueryResult["UUID"] is ObjectUUID)
+            {
+                myDBObjectOfT.UUID = myQueryResult["UUID"] as ObjectUUID;
+            }
+            else
+            {
+                myDBObjectOfT.UUID = new ObjectUUID(myQueryResult["UUID"].ToString());
+            }
+
+            myDBObjectOfT.Edition    = myQueryResult["EDITION"] as String;
+            myDBObjectOfT.RevisionID = myQueryResult["REVISION"] as ObjectRevisionID;
+
+        }
+
+        #endregion
+
+        #region Insert(this myAGraphDSSharp, myAction, myDBObjects)
+
+        public static DBVertex[] Insert(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, params DBVertex[] myDBVertices)
+        {
+
+            if (myDBVertices == null)
+                throw new ArgumentNullException();
+
+            if (!myDBVertices.Any())
+                throw new ArgumentException();
+
+            QueryResult _QueryResult = null;
+
+            if (myDBVertices != null)
+            {
+                foreach (var _DBVertex in myDBVertices)
+                {
+
+                    _QueryResult = myAGraphDSSharp.Query("INSERT INTO " + _DBVertex.GetType().Name + " VALUES (" + _DBVertex.GetInsertValues(", ") + ")", myAction);
+
+                    if (_QueryResult.ResultType != ResultType.Failed)
+                        SetReturnValues(_DBVertex, _QueryResult);
+
+                }
+            }
+
+            return myDBVertices;
+
+        }
+
+        #endregion
+
+        #region Insert<T>(this myAGraphDSSharp, myAction, myDBVertexOfT)
+
+        public static T Insert<T>(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, T myDBVertexOfT)
+            where T : DBVertex
+        {
+
+            if (myDBVertexOfT == null)
+                throw new ArgumentNullException();
+
+            var _GQLQuery = "INSERT INTO " + typeof(T).Name + " VALUES (" + myDBVertexOfT.GetInsertValues(", ") + ")";
+            var _QueryResult = myAGraphDSSharp.Query(_GQLQuery, myAction);
+
+            if (_QueryResult.ResultType != ResultType.Failed)
+                SetReturnValues(myDBVertexOfT, _QueryResult);
+
+            return myDBVertexOfT;
+
+        }
+
+        #endregion
+
+        #region Insert<T>(this myAGraphDSSharp, myAction, myDBVerticesOfT)
+
+        public static T[] Insert<T>(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, params T[] myDBVerticesOfT)
+            where T : DBVertex
+        {
+
+            if (myDBVerticesOfT == null)
+                throw new ArgumentNullException();
+
+            if (!myDBVerticesOfT.Any())
+                throw new ArgumentException();
+
+            QueryResult _QueryResult = null;
+
+            if (myDBVerticesOfT != null)
+            {
+
+                foreach (var _DBVertex in myDBVerticesOfT)
+                {
+
+                    _QueryResult = myAGraphDSSharp.Query("INSERT INTO " + typeof(T).Name + " VALUES (" + _DBVertex.GetInsertValues(", ") + ")", myAction);
+
+                    if (_QueryResult.ResultType != ResultType.Failed)
+                        SetReturnValues(_DBVertex, _QueryResult);
+
+                }
+
+            }
+
+            return myDBVerticesOfT;
+
+        }
+
         #endregion
 
     }

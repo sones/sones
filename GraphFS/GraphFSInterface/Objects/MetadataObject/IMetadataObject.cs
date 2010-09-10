@@ -1,13 +1,13 @@
-﻿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,29 +15,22 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
 
-
-/* PandoraFS - IMetadataObject
- * Achim Friedland, 2009
- * 
- * The interface for all Graph metadata objects and virtual
- * directory objects.
- * 
- * Lead programmer:
- *      Achim Friedland
- * 
- * */
+/* 
+ * IMetadataObject
+ * (c) Achim Friedland, 2008 - 2010
+ */
 
 #region Usings
 
 using System;
 using System.Collections.Generic;
 
+using sones.GraphFS.DataStructures;
 
 using sones.Lib.DataStructures;
-using sones.GraphFS.DataStructures;
-using sones.Lib.DataStructures.UUID;
 using sones.Lib.DataStructures.Indices;
 
 #endregion
@@ -50,25 +43,18 @@ namespace sones.GraphFS.Objects
     /// directory objects.
     /// </summary>
 
-    public interface IMetadataObject<TValue>
+    public interface IMetadataObject<TValue> : IObjectLocation
     {
 
         #region Members of AGraphHeader
 
         Boolean       isNew                   { get; set; }
-        INode         INodeReference          { get; set; }
+        INode         INodeReference          { get; }
         ObjectLocator ObjectLocatorReference  { get; set; }
         ObjectUUID    ObjectUUID              { get; }
 
         #endregion
 
-        #region Members of AGraphObject
-
-        ObjectLocation  ObjectLocation          { get; set; }
-        String          ObjectPath              { get; set; }
-        String          ObjectName              { get; }
-
-        #endregion
 
         #region Members of IFastSerialize
 
@@ -185,7 +171,6 @@ namespace sones.GraphFS.Objects
         #endregion
 
         #endregion
-
 
     }
 

@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * DescribeTypeDefinition
  * (c) Stefan Licht, 2010
  */
@@ -9,11 +29,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.Structures.Result;
+
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.Errors;
 using sones.GraphDB.TypeManagement;
+using sones.GraphDBInterface.Result;
 
 #endregion
 
@@ -39,10 +60,8 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
         #region ADescribeDefinition
 
-        public override Exceptional<List<SelectionResultSet>> GetResult(DBContext myDBContext)
+        public override Exceptional<SelectionResultSet> GetResult(DBContext myDBContext)
         {
-
-            var result = new List<SelectionResultSet>();
 
             if (!String.IsNullOrEmpty(_TypeName))
             {
@@ -52,11 +71,11 @@ namespace sones.GraphDB.Managers.Structures.Describe
                 var type = myDBContext.DBTypeManager.GetTypeByName(_TypeName);
                 if (type != null)
                 {
-                    result.Add(new SelectionResultSet(GenerateOutput(myDBContext, type)));
+                    return new Exceptional<SelectionResultSet>(new SelectionResultSet(GenerateOutput(myDBContext, type)));
                 }
                 else
                 {
-                    return new Exceptional<List<SelectionResultSet>>(new Error_TypeDoesNotExist(_TypeName));
+                    return new Exceptional<SelectionResultSet>(new Error_TypeDoesNotExist(_TypeName));
                 }
 
                 #endregion
@@ -67,17 +86,18 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
                 #region All types
 
+                List<DBObjectReadout> resultingReadouts = new List<DBObjectReadout>();
+
                 foreach (var type in myDBContext.DBTypeManager.GetAllTypes())
                 {
-                    result.Add(new SelectionResultSet(GenerateOutput(myDBContext, type)));
+                    resultingReadouts.Add(GenerateOutput(myDBContext, type));
                 }
 
+                return new Exceptional<SelectionResultSet>(new SelectionResultSet(resultingReadouts));
+
                 #endregion
-
             }
-
-            return new Exceptional<List<SelectionResultSet>>(result);
-
+            
         }
         
         #endregion
@@ -87,7 +107,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
         /// <summary>
         /// Generate an output for an type with the attributes of the types and all parent types
         /// </summary>
-        private IEnumerable<DBObjectReadout> GenerateOutput(DBContext myDBContext, GraphDBType myGraphDBType)
+        private DBObjectReadout GenerateOutput(DBContext myDBContext, GraphDBType myGraphDBType)
         {
 
             GraphDBType _ParentType = null;
@@ -105,7 +125,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
             if (_ParentType != null)
                 _CurrentType.Add("ParentType", GenerateOutput(myDBContext, _ParentType));
 
-            return new List<DBObjectReadout>() { new DBObjectReadout(_CurrentType) };
+            return new DBObjectReadout(_CurrentType);
 
         }
 
