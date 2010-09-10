@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{14DA37A0-B627-4584-A53D-9CCC20D381B0}</ProjectGuid>
+    <ProjectGuid>{B2816A9C-CF35-4E4D-B03D-9376744A79FE}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>sonesExample</RootNamespace>
@@ -14,21 +14,6 @@
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
-    <PublishUrl>publish\</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
@@ -45,45 +30,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisLogFile>bin\Debug\WebDAVExample.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <CodeAnalysisLogFile>bin\Release\WebDAVExample.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -97,17 +50,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="sonesExample.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\GraphAlgorithms\ShortestPathAlgorithms\ShortestPathAlgorithms.csproj">
       <Project>{C16C34B5-F09A-4B44-BD01-B00824D1DD6E}</Project>
       <Name>ShortestPathAlgorithms</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\GraphDB\GraphDBInterface\GraphDBInterface.csproj">
+      <Project>{72319FF7-E9D9-4AE9-AA0B-2E006442B1ED}</Project>
+      <Name>GraphDBInterface</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\GraphDB\GraphDB\GraphDB.csproj">
       <Project>{32A56958-2C05-44C6-B661-2A2C6610E073}</Project>
-      <Name>GraphDB</Name>
+      <Name>GraphDB %28Dependencies\GraphDB\GraphDB%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GraphDS\GraphDSCLI\GraphDSCLI.csproj">
       <Project>{0A4A8E31-9ED5-4581-932F-62BAF97C36DD}</Project>
@@ -135,7 +92,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\GraphFS\GraphFS\GraphFS.csproj">
       <Project>{97235BF0-C3C4-4B4C-9583-0869CD3632AC}</Project>
-      <Name>GraphFS</Name>
+      <Name>GraphFS %28Dependencies\GraphFS\GraphFS%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Lib\Lib\Lib.csproj">
       <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
@@ -145,21 +102,9 @@
       <Project>{DDC48D4C-6885-462C-B57A-216658EB94AE}</Project>
       <Name>Networking</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Lib\sonesCLI\sonesCLI.csproj">
-      <Project>{5EB964C0-FF26-4B37-99A6-C1D40644E33C}</Project>
-      <Name>sonesCLI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GraphDB\GraphDBCLI\GraphDBCLI.csproj">
-      <Project>{849E73AE-BFB1-4CF2-9B8A-8F64C386A65F}</Project>
-      <Name>GraphDBCLI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GraphDB\GraphDBInterface\GraphDBInterface.csproj">
-      <Project>{72319FF7-E9D9-4AE9-AA0B-2E006442B1ED}</Project>
-      <Name>GraphDBInterface</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Notifications\Notifications\Notifications.csproj">
       <Project>{81E75577-B787-4537-B191-F3326C6E5865}</Project>
-      <Name>Notifications</Name>
+      <Name>Notifications %28Dependencies\Notifications\Notifications%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\StorageEngines\StorageEnginesInterface\StorageEnginesInterface.csproj">
       <Project>{F3BF32FF-7113-4DE6-801B-BB234A76539B}</Project>
@@ -172,32 +117,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.0">
-      <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4 %28x86 and x64%29</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
-      <Visible>False</Visible>
-      <ProductName>.NET Framework 3.5 SP1</ProductName>
-      <Install>false</Install>
-    </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
-      <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AdditionalLicenses.txt" />
-    <Content Include="license.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

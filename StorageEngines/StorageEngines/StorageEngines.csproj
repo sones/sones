@@ -116,9 +116,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AStorageEngine.cs" />
+    <Compile Include="MemoryMappedFileStorage\MemoryMappedFileStorage.cs" />
     <Compile Include="StorageCaches\QueueEntry.cs" />
     <Compile Include="MemoryStorage\MemoryStorage.cs" />
     <Compile Include="StorageCaches\ByteCache.cs" />
+    <Compile Include="FileStorage\FileStorage.cs" />
+    <Compile Include="FileStorage\FileStorageException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StorageCaches\QueueManagerExceptions.cs" />
     <Compile Include="StorageCaches\ReadQueueManager.cs" />
@@ -133,7 +136,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Notifications\Notifications\Notifications.csproj">
       <Project>{81E75577-B787-4537-B191-F3326C6E5865}</Project>
-      <Name>Notifications</Name>
+      <Name>Notifications %28Dependencies\Notifications\Notifications%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\StorageEnginesInterface\StorageEnginesInterface.csproj">
       <Project>{F3BF32FF-7113-4DE6-801B-BB234A76539B}</Project>
@@ -156,10 +159,6 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AdditionalLicenses.txt" />
-    <Content Include="license.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

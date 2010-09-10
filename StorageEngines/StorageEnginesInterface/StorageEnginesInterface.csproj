@@ -160,12 +160,8 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Notifications\Notifications\Notifications.csproj">
       <Project>{81E75577-B787-4537-B191-F3326C6E5865}</Project>
-      <Name>Notifications</Name>
+      <Name>Notifications %28Dependencies\Notifications\Notifications%29</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AdditionalLicenses.txt" />
-    <Content Include="license.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

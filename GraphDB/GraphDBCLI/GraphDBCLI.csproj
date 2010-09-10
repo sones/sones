@@ -128,6 +128,7 @@
     <Compile Include="BasicDBCLICommands\DBCLI_UPDATE.cs" />
     <Compile Include="DBCLIAutocompletion\DBCLIAutocompletions.cs" />
     <Compile Include="DBCLIAutocompletion\StringLiteralPandoraType.cs" />
+    <Compile Include="DBCLI_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -149,7 +150,7 @@
     </ProjectReference>
     <ProjectReference Include="..\GraphDB\GraphDB.csproj">
       <Project>{32A56958-2C05-44C6-B661-2A2C6610E073}</Project>
-      <Name>GraphDB</Name>
+      <Name>GraphDB %28Dependencies\GraphDB\GraphDB%29</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -168,10 +169,6 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AdditionalLicenses.txt" />
-    <Content Include="license.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

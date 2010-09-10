@@ -1,13 +1,13 @@
-ï»¿/*
-* sones GraphDB - OpenSource Graph Database - http://www.sones.com
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
 * Copyright (C) 2007-2010 sones GmbH
 *
-* This file is part of sones GraphDB OpenSource Edition.
+* This file is part of sones GraphDB Open Source Edition (OSE).
 *
 * sones GraphDB OSE is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as published by
 * the Free Software Foundation, version 3 of the License.
-*
+* 
 * sones GraphDB OSE is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -15,8 +15,8 @@
 *
 * You should have received a copy of the GNU Affero General Public License
 * along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
 */
-
 
 using System;
 using System.Collections.Generic;
@@ -37,35 +37,35 @@ namespace sones.GraphDB.Query.Helpers
         public delegate void RunMethodDelegate();
 
         /// <summary>
-        /// FÃ¼hrt die Methode aus, die in einer festgesetzen Zeit erfolgen soll.
+        /// Führt die Methode aus, die in einer festgesetzen Zeit erfolgen soll.
         /// </summary>
-        /// <param name="runMethod">Methode zum ausfÃ¼hren</param>
-        /// <param name="timeout">Zu erwartende HÃ¶chstzeit, bevor die AusfÃ¼hrung der Methode abgebrochen wird</param>
-        /// <returns>True, wenn die AusfÃ¼hrung der Methode vor dem Timeout zu Ende gegangen ist. False wenn das Timeout Ã¼berschritten wurde.</returns>
+        /// <param name="runMethod">Methode zum ausführen</param>
+        /// <param name="timeout">Zu erwartende Höchstzeit, bevor die Ausführung der Methode abgebrochen wird</param>
+        /// <returns>True, wenn die Ausführung der Methode vor dem Timeout zu Ende gegangen ist. False wenn das Timeout überschritten wurde.</returns>
         public bool DoIt(Delegate runMethod, TimeSpan timeout)
         {
             return this.DoIt(runMethod, timeout, null);
         }
 
         /// <summary>
-        /// FÃ¼hrt die Methode aus, die in einer festgesetzten Zeit erfolgen soll und Ã¼bergibt die fÃ¼r sie bestimmte Parameter.
+        /// Führt die Methode aus, die in einer festgesetzten Zeit erfolgen soll und übergibt die für sie bestimmte Parameter.
         /// </summary>
-        /// <param name="runMethod">Methode zum ausfÃ¼hren</param>
+        /// <param name="runMethod">Methode zum ausführen</param>
         /// <param name="parameters">Parametertabelle</param>
-        /// <param name="timeout">Zu erwartende HÃ¶chstzeit, bevor die AusfÃ¼hrung der Methode abgebrochen wird</param>
-        /// <returns>True, wenn die AusfÃ¼hrung der Methode vor dem Timeout zu Ende gegangen ist. False wenn das Timeout Ã¼berschritten wurde.</returns>
+        /// <param name="timeout">Zu erwartende Höchstzeit, bevor die Ausführung der Methode abgebrochen wird</param>
+        /// <returns>True, wenn die Ausführung der Methode vor dem Timeout zu Ende gegangen ist. False wenn das Timeout überschritten wurde.</returns>
         public bool DoIt(Delegate myDelegate, TimeSpan myTimeout, params object[] myParameters)
         {
             return this.DoItImp(myDelegate, myTimeout, myParameters);
         }
 
         /// <summary>
-        /// FÃ¼hrt die Methode mittels Delegate und Ã¼bergebenen Parametern, die in der festgesetzen Zeit ausgefÃ¼hrt wurde.
+        /// Führt die Methode mittels Delegate und übergebenen Parametern, die in der festgesetzen Zeit ausgeführt wurde.
         /// </summary>
-        /// <param name="d">AuszufÃ¼hrendes Delegate</param>
-        /// <param name="parameters">Zu Ã¼bergebende Paramter fÃ¼r das Delegate</param>
-        /// <param name="timeout">Zu erwartende HÃ¶chstzeit, bevor die AusfÃ¼hrung des Delegates abgebrochen wird</param>
-        /// <returns>True, wenn die AusfÃ¼hrung des Delegates vor dem Timeout zu Ende gegangen ist. False wenn das Timeout Ã¼berschritten wurde.</returns>
+        /// <param name="d">Auszuführendes Delegate</param>
+        /// <param name="parameters">Zu übergebende Paramter für das Delegate</param>
+        /// <param name="timeout">Zu erwartende Höchstzeit, bevor die Ausführung des Delegates abgebrochen wird</param>
+        /// <returns>True, wenn die Ausführung des Delegates vor dem Timeout zu Ende gegangen ist. False wenn das Timeout überschritten wurde.</returns>
         private bool DoItImp(Delegate myDelegate, TimeSpan myTimeout, params object[] myParameters)
         {
             var _Worker = new Worker(myDelegate, myParameters, this._AutoResetEvent);

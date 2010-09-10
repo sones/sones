@@ -174,12 +174,14 @@
     <Compile Include="InternalObjects\RightsObject\Right.cs" />
     <Compile Include="InternalObjects\RightsObject\RightsObject.cs" />
     <Compile Include="InternalObjects\RightsObject\RightUUID.cs" />
+    <Compile Include="InternalObjects\SystemMetadataObject\SystemMetadataObject.cs" />
     <Compile Include="Notifications\NObjectStored.cs" />
     <Compile Include="Objects\AObjectHeader.cs" />
     <Compile Include="Objects\AFSObject.cs" />
     <Compile Include="Objects\AObjectOntology.cs" />
     <Compile Include="Datastructures\AccessModeTypes.cs" />
     <Compile Include="Datastructures\AFSStructure.cs" />
+    <Compile Include="Datastructures\FSExceptional.cs" />
     <Compile Include="Datastructures\ObjectLocator\Helper\AccessRight.cs" />
     <Compile Include="Datastructures\ObjectLocator\Helper\ObjectCompression.cs" />
     <Compile Include="Datastructures\ObjectLocator\Helper\ObjectFEC.cs" />
@@ -231,6 +233,8 @@
     <Compile Include="Notifications\FileSystem\NFileSystem_IntegrityCheckFailed.cs" />
     <Compile Include="Notifications\FileSystem\NFileSystem_NumberOfRevisionsReached.cs" />
     <Compile Include="Notifications\FileSystem\NFileSystem_PandoraObjectChanged.cs" />
+    <Compile Include="Notifications\NFilesystem_ObjectLocationChanged.cs" />
+    <Compile Include="Notifications\NFilesystem_ObjectLocatorChanged.cs" />
     <Compile Include="Notifications\ObjectCache\NObjectCache.cs" />
     <Compile Include="Notifications\ObjectCache\NObjectCache_FlushCacheItems.cs" />
     <Compile Include="Notifications\ObjectCache\NObjectCache_MissingCacheItem.cs" />
@@ -242,6 +246,7 @@
     <Compile Include="Errors\PandoraFSExceptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Datastructures\RevisionID.cs" />
+    <Compile Include="Objects\DictionaryObject\DictionaryObjectTypes.cs" />
     <Compile Include="Objects\DictionaryObject\Implementation\ADictionaryObject.cs" />
     <Compile Include="Objects\DictionaryObject\Implementation\AVersionedDictionaryObject.cs" />
     <Compile Include="Objects\DictionaryObject\Implementation\DictionaryObject.cs" />
@@ -251,6 +256,8 @@
     <Compile Include="Objects\FileObject\AFileObject.cs" />
     <Compile Include="Objects\FileObject\FileObject.cs" />
     <Compile Include="Objects\HashSetObject\HashSetObject.cs" />
+    <Compile Include="Objects\IndexObject\old_AVersionedIndexObject.cs" />
+    <Compile Include="Objects\IndexObject\Implementation\old_VersionedIndexObject.cs" />
     <Compile Include="Objects\IndexObject\IndexObjectTypes.cs" />
     <Compile Include="Objects\IndexObject\Interfaces\IIndexObject.cs" />
     <Compile Include="Objects\IndexObject\Interfaces\IVersionedIndexObject.cs" />
@@ -259,6 +266,8 @@
     <Compile Include="Objects\MetadataObject\NHIMetadataObject.cs" />
     <Compile Include="Objects\QueueObject\QueueObject.cs" />
     <Compile Include="Objects\TypedMetadataObject\TypedMetadataKey.cs" />
+    <Compile Include="Objects\TypedMetadataObject\TypedMetadataObject.cs" />
+    <Compile Include="Objects\UserMetadataObject\UserMetadataObject.cs" />
     <Compile Include="Session\FSSessionInfo.cs" />
     <Compile Include="Session\FSSessionSettings.cs" />
     <Compile Include="GraphFSFactory.cs" />
@@ -280,7 +289,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Notifications\Notifications\Notifications.csproj">
       <Project>{81E75577-B787-4537-B191-F3326C6E5865}</Project>
-      <Name>Notifications</Name>
+      <Name>Notifications %28Dependencies\Notifications\Notifications%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\StorageEngines\StorageEnginesInterface\StorageEnginesInterface.csproj">
       <Project>{F3BF32FF-7113-4DE6-801B-BB234A76539B}</Project>
@@ -309,10 +318,6 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AdditionalLicenses.txt" />
-    <Content Include="license.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

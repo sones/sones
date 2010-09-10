@@ -153,9 +153,28 @@
     <Compile Include="Hashing\IHashFunction.cs" />
     <Compile Include="IContext.cs" />
     <Compile Include="KeyValuePairSerializer\KeyValuePairSerializer.cs" />
+    <Compile Include="Math\Poisson.cs" />
     <Compile Include="MIMEType\MIMEType.cs" />
     <Compile Include="MinMaxDictionary.cs" />
     <Compile Include="Multithreading\PandoraThreadPool\PandoraThreadPool.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\CallerThreadContext.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\EventWaitHandle.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\EventWaitHandleFactory.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\Exceptions.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\Interfaces.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\PriorityQueue.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\SmartThreadPool.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\STPPerformanceCounter.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\STPStartInfo.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\SynchronizedDictionary.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WIGStartInfo.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItem.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemFactory.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemInfo.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemResultTWrapper.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemsGroup.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemsGroupBase.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemsQueue.cs" />
     <Compile Include="Multithreading\SpecialTimer.cs" />
     <Compile Include="NewFastSerializer\IFastSerializationTypeSurrogate.cs" />
     <Compile Include="NewFastSerializer\IOwnedDataSerializable.cs" />
@@ -186,8 +205,7 @@
     <Compile Include="XML\XMLValidationTypes.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AdditionalLicenses.txt" />
-    <Content Include="license.txt" />
+    <Content Include="Multithreading\SmartThreadPool\license.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DataStructures\Exceptional\" />

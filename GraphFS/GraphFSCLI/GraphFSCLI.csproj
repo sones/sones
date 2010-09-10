@@ -116,8 +116,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdvancedFSCLICommands\AdvancedFSCLICommands.cs" />
+    <Compile Include="AdvancedFSCLICommands\FSCLI_CREATEFILE.cs" />
     <Compile Include="AdvancedFSCLICommands\FSCLI_ECHO.cs" />
     <Compile Include="AdvancedFSCLICommands\FSCLI_MKDIR.cs" />
+    <Compile Include="AdvancedFSCLICommands\FSCLI_MKFS.cs" />
+    <Compile Include="AdvancedFSCLICommands\FSCLI_MOUNT.cs" />
+    <Compile Include="AdvancedFSCLICommands\FSCLI_NOTIFICATION.cs" />
+    <Compile Include="AdvancedFSCLICommands\FSCLI_UNMOUNT.cs" />
+    <Compile Include="AdvancedFSCLICommands\FSCLI_UNMOUNTALL.cs" />
     <Compile Include="AllGraphFSCLICommands.cs" />
     <Compile Include="BasicFSCLICommands\BasicFSCLICommands.cs" />
     <Compile Include="BasicFSCLICommands\FSCLI_CAT.cs" />
@@ -130,6 +136,11 @@
     <Compile Include="BasicFSCLICommands\FSCLI_LS.cs" />
     <Compile Include="FSCLIAutocompletion\FSCLIAutocompletions.cs" />
     <Compile Include="FSCLIAutocompletion\StringLiteral_IPandoraFS.cs" />
+    <Compile Include="ScriptingFSCLICommands\FSCLI_DIRECTORYEXISTS.cs" />
+    <Compile Include="ScriptingFSCLICommands\FSCLI_FILEEXISTS.cs" />
+    <Compile Include="ScriptingFSCLICommands\FSCLI_OBJECTEXISTS.cs" />
+    <Compile Include="ScriptingFSCLICommands\FSCLI_SYSTEMMETADATAEXISTS.cs" />
+    <Compile Include="ScriptingFSCLICommands\FSCLI_USERMETADATAEXISTS.cs" />
     <Compile Include="ScriptingFSCLICommands\ScriptingFSCLICommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -152,7 +163,7 @@
     </ProjectReference>
     <ProjectReference Include="..\GraphFS\GraphFS.csproj">
       <Project>{97235BF0-C3C4-4B4C-9583-0869CD3632AC}</Project>
-      <Name>GraphFS</Name>
+      <Name>GraphFS %28Dependencies\GraphFS\GraphFS%29</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -171,10 +182,6 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AdditionalLicenses.txt" />
-    <Content Include="license.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

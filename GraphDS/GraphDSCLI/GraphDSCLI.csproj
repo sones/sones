@@ -88,7 +88,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\GraphDB\GraphDB\GraphDB.csproj">
       <Project>{32A56958-2C05-44C6-B661-2A2C6610E073}</Project>
-      <Name>GraphDB</Name>
+      <Name>GraphDB %28Dependencies\GraphDB\GraphDB%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\GraphFS\GraphFSCLI\GraphFSCLI.csproj">
       <Project>{89669EC0-286E-4ABC-980D-D991A3407666}</Project>
@@ -131,10 +131,6 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="AdditionalLicenses.txt" />
-    <Content Include="license.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -74,13 +74,13 @@ namespace sonesExample
     {
 
         [Indexed(DBIndexTypes.HashTable)]
-        public String         Name       { get; set; }
+        public String Name { get; set; }
 
         // Edges to type Website
-        public Set<Tag>       Tags       { get; set; }
+        public Set<Tag> Tags { get; set; }
 
         // Edges to type Author
-        public Set<Author>    Authors    { get; set; }
+        public Set<Author> Authors { get; set; }
 
         public Document() { }
 
@@ -94,13 +94,13 @@ namespace sonesExample
     {
 
         [Indexed(DBIndexTypes.HashTable)]
-        public String         Name       { get; set; }
+        public String Name { get; set; }
 
-        public String         EMail      { get; set; }
+        public String EMail { get; set; }
 
         // Backwardedges to attribute tags of type Website
         [BackwardEdge("Authors")]
-        public Set<Document>  Writtings  { get; set; }
+        public Set<Document> Writtings { get; set; }
 
         public Author() { }
 
@@ -114,11 +114,11 @@ namespace sonesExample
     {
 
         [Indexed(DBIndexTypes.HashTable)]
-        public String         Name       { get; set; }
+        public String Name { get; set; }
 
         // Backwardedges to attribute tags of type Website
         [BackwardEdge("Tags")]
-        public Set<Document>  Documents  { get; set; }
+        public Set<Document> Documents { get; set; }
 
         public Tag() { }
 
@@ -164,11 +164,11 @@ namespace sonesExample
 
             var _GraphDSSharp = new GraphDSSharp()
             {
-                DatabaseName            = "sonesExample",
-                Username                = "Dr.Falken",
-                Password                = "Joshua",
-                NotificationSettings    = _NotificationSettings,
-                NotificationDispatcher  = _NotificationDispatcher,
+                DatabaseName = "sonesExample",
+                Username = "Dr.Falken",
+                Password = "Joshua",
+                NotificationSettings = _NotificationSettings,
+                NotificationDispatcher = _NotificationDispatcher,
             };
 
             // Create a InMemory data storage
@@ -203,14 +203,14 @@ namespace sonesExample
             #region Start REST, WebDAV and WebAdmin services, send GraphDS notification
 
             var _HttpSecurity = new HTTPSecurity()
-                {
-                    CredentialType            = HttpClientCredentialType.Basic,
-                    UserNamePasswordValidator = new PassValidator()
-                };
+            {
+                CredentialType = HttpClientCredentialType.Basic,
+                UserNamePasswordValidator = new PassValidator()
+            };
 
             // Start a REST service on localhost port 9975
             var _RESTService      = _GraphDSSharp.StartREST(IPAddress.Any, 9975, _HttpSecurity);
-            
+
 
             // Start a WebDAV service on localhost port 9978
             var _WebDAVService    = _GraphDSSharp.StartWebDAV(IPAddress.Any, 9978, _HttpSecurity);

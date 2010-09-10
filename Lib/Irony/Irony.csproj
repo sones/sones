@@ -233,7 +233,7 @@
   <ItemGroup>
     <Content Include="Changes in Irony\Changes.txt" />
     <Content Include="CLIrony\Compiler\NLALR\about_NLALR.txt" />
-    <Content Include="License.txt" />
+    <Content Include="CLIrony\License.txt" />
     <Content Include="CLIrony\Samples\CSharp\Notes.txt" />
     <Content Include="CLIrony\Samples\Ruby\Ruby_auth.txt" />
     <Content Include="CLIrony\Samples\SourceSamples\ExprSample.txt" />
