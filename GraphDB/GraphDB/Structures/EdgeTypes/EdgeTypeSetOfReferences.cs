@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-#region Usings
+﻿#region Usings
 
 using System;
 using System.Collections;
@@ -35,8 +15,9 @@ using sones.GraphFS.DataStructures;
 using sones.Lib;
 using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.Result;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.NewAPI;
 
 
 #endregion
@@ -189,7 +170,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return _ObjectUUIDs.Select(aKV => aKV.Key);
         }
 
-        public override IEnumerable<DBObjectReadout> GetReadouts(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO)
+        public override IEnumerable<Vertex> GetVertices(Func<ObjectUUID, Vertex> GetAllAttributesFromDBO)
         {
             foreach (var dbo in _ObjectUUIDs)
             {
@@ -199,13 +180,13 @@ namespace sones.GraphDB.Structures.EdgeTypes
             yield break;
         }
 
-        public override IEnumerable<DBObjectReadout> GetReadouts(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO, IEnumerable<Exceptional<DBObjectStream>> myObjectUUIDs)
+        public override IEnumerable<Vertex> GetReadouts(Func<ObjectUUID, Vertex> GetAllAttributesFromDBO, IEnumerable<Exceptional<DBObjectStream>> myObjectUUIDs)
         {
             foreach (var dbo in myObjectUUIDs)
             {
 
                 if (dbo.Failed())
-                    throw new GraphDBException(dbo.Errors);
+                    throw new GraphDBException(dbo.IErrors);
                 /* If we had a function like TOP(1) the GetAllAttributesFromDBO might not contains elements which are in myObjectUUIDs (which is coming from the where)*/
                 if (_ObjectUUIDs.ContainsKey(dbo.Value.ObjectUUID))
                 {

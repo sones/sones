@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * sones GraphDS API - ReflectionExtensions
  * (c) Achim 'ahzf' Friedland, 2010
  */
@@ -33,7 +13,7 @@ using sones.GraphDB.NewAPI;
 
 
 using sones.Lib;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
 using System.Diagnostics;
 using sones.GraphFS.DataStructures;
 
@@ -48,7 +28,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region ReflectMyself(this myDBVertex)
 
-        public static Tuple<String, List<String>> ReflectMyself(this DBVertex myDBVertex)
+        public static Tuple<String, List<String>> ReflectMyself(this Vertex myVertex)
         {
 
             String _CreateTypeQuery = "";
@@ -56,20 +36,20 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
             #region Init StringBuilder
 
-            var _Command = new StringBuilder();
-            var _Attributes = new StringBuilder();
+            var _Command       = new StringBuilder();
+            var _Attributes    = new StringBuilder();
             var _BackwardEdges = new StringBuilder();
 
-      //      myDBVertex.TYPE = myDBVertex.GetType().Name;
+      //      myVertex.TYPE = myDBVertex.GetType().Name;
 
-            _Command.Append("CREATE VERTEX " + myDBVertex.GetType().Name);
-            _Command.Append(" EXTENDS " + myDBVertex.GetType().BaseType.Name);
+            _Command.Append("CREATE VERTEX " + myVertex.GetType().Name);
+            _Command.Append(" EXTENDS " + myVertex.GetType().BaseType.Name);
 
             #endregion
 
             #region Find Attributes and Backwardedges
 
-            var _AllProperties = myDBVertex.GetType().GetProperties();
+            var _AllProperties = myVertex.GetType().GetProperties();
 
             if (_AllProperties.Length > 0)
             {
@@ -87,7 +67,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
                         var _CreateAttributeIndex = "";
 
                         // Ignore inherited attributes
-                        if (_PropertyInfo.DeclaringType.Name != myDBVertex.GetType().Name)
+                        if (_PropertyInfo.DeclaringType.Name != myVertex.GetType().Name)
                             _AddToDatabaseType = false;
 
                         // Check attribute attributes ;)
@@ -149,7 +129,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
                                     if (!_IndexType.Equals(""))
                                         _IndexType = " INDEXTYPE " + _IndexType;
 
-                                    _CreateAttributeIndex = "CREATE INDEX " + _IndexName + " ON VERTEX " + myDBVertex.GetType().Name + " (" + _PropertyInfo.Name + _IndexOrder + ")" + _IndexType;
+                                    _CreateAttributeIndex = "CREATE INDEX " + _IndexName + " ON VERTEX " + myVertex.GetType().Name + " (" + _PropertyInfo.Name + _IndexOrder + ")" + _IndexType;
 
                                 }
 
@@ -254,7 +234,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
             #region Add Comment
 
-            _Command.Append(" Comment = '" + myDBVertex.Comment + "'");
+            _Command.Append(" Comment = '" + myVertex.Comment + "'");
 
             #endregion
 
@@ -268,7 +248,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region ReflectMyself(this myDBEdge)
 
-        public static Tuple<String, List<String>> ReflectMyself(this DBEdge myDBEdge)
+        public static Tuple<String, List<String>> ReflectMyself(this EdgeLabel myDBEdge)
         {
 
             String _CreateTypeQuery = "";
@@ -466,7 +446,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region GetInsertValues(mySeperator)
 
-        public static String GetInsertValues(this DBVertex myDBVertex, String mySeperator)
+        public static String GetInsertValues(this Vertex myDBVertex, String mySeperator)
         {
 
             var _StringBuilder = new StringBuilder();
@@ -552,11 +532,11 @@ namespace sones.GraphDS.API.CSharp.Reflection
                                 #region DBObject
 
                                 else if (_PropertyInfo.PropertyType.BaseType != null &&
-                                         _PropertyInfo.PropertyType.BaseType.FullName == "sones.GraphDB.NewAPI.DBVertex")
+                                         _PropertyInfo.PropertyType.BaseType.FullName == typeof(Vertex).FullName)
                                 // ToDo: Improve basetype lookup!
                                 {
 
-                                    var _DBObject = _PropertyInfo.GetValue(myDBVertex, null) as DBVertex;
+                                    var _DBObject = _PropertyInfo.GetValue(myDBVertex, null) as Vertex;
                                     if (_DBObject != null)
                                     {
                                         _StringBuilder.Append("REF(UUID = '").Append(_DBObject.UUID).Append("')");
@@ -574,7 +554,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
                                     _StringBuilder.Append(" SETOF(");
 
-                                    var _Set = _PropertyInfo.GetValue(myDBVertex, null) as Set<DBVertex, DBEdge>;
+                                    var _Set = _PropertyInfo.GetValue(myDBVertex, null) as Set<Vertex, EdgeLabel>;
                                     if (_Set != null)
                                     {
 
@@ -595,13 +575,13 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
                                 else if (_PropertyInfo.PropertyType.IsGenericType &&
                                          _PropertyInfo.PropertyType.GetGenericTypeDefinition().FullName == "sones.GraphDB.NewAPI.Set`1" &&
-                                         _PropertyInfo.PropertyType.GetGenericArguments()[0].BaseType.FullName == "sones.GraphDB.NewAPI.DBVertex")
+                                         _PropertyInfo.PropertyType.GetGenericArguments()[0].BaseType.FullName == typeof(Vertex).FullName)
                                 // ToDo: Improve basetype lookup!
                                 {
 
                                     _StringBuilder.Append(" SETOF(");
 
-                                    var _Set = _PropertyInfo.GetValue(myDBVertex, null) as IEnumerable<DBVertex>;
+                                    var _Set = _PropertyInfo.GetValue(myDBVertex, null) as IEnumerable<Vertex>;
                                     if (_Set != null)
                                     {
 
@@ -692,7 +672,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
         public static QueryResult CreateTypes(this AGraphDSSharp myAGraphDSSharp, params Type[] myTypes)
         {
             // ToDo: Allow to create DBEdges!
-            var a = myTypes.Select(type => Activator.CreateInstance(type) as DBVertex).Where(dbvertex => dbvertex != null).ToArray();
+            var a = myTypes.Select(type => Activator.CreateInstance(type) as Vertex).Where(dbvertex => dbvertex != null).ToArray();
             return myAGraphDSSharp.CreateVertices(a);
         }
 
@@ -750,7 +730,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region CreateVertices(this myAGraphDSSharp, params myDBVertices)
 
-        public static QueryResult CreateVertices(this AGraphDSSharp myAGraphDSSharp, params DBVertex[] myDBVertices)
+        public static QueryResult CreateVertices(this AGraphDSSharp myAGraphDSSharp, params Vertex[] myDBVertices)
         {
 
             var _CreateTypesQuery      = new StringBuilder("CREATE VERTICES ");
@@ -793,10 +773,10 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region CreateVertices(this myAGraphDSSharp, myAction, params myDBVertices)
 
-        public static QueryResult CreateVertices(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, params DBVertex[] myDBVertices)
+        public static QueryResult CreateVertices(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, params Vertex[] myDBVertices)
         {
 
-            var _CreateTypesQuery = new StringBuilder("CREATE VERTICES ");
+            var _CreateTypesQuery      = new StringBuilder("CREATE VERTICES ");
             var _CreateIndiciesQueries = new List<String>();
 
             foreach (var _DBVertex in myDBVertices)
@@ -840,7 +820,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region CreateVertices(this myAGraphDSSharp, mySuccessAction, myFailureAction, params myDBVertices)
 
-        public static QueryResult CreateVertices(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, params DBVertex[] myDBVertices)
+        public static QueryResult CreateVertices(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, params Vertex[] myDBVertices)
         {
 
             var _CreateTypesQuery = new StringBuilder("CREATE VERTICES ");
@@ -887,7 +867,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region CreateVertices(this myAGraphDSSharp, mySuccessAction, myPartialSuccessAction, myFailureAction, params myDBVertices)
 
-        public static QueryResult CreateVertices(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, params DBVertex[] myDBVertices)
+        public static QueryResult CreateVertices(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, params Vertex[] myDBVertices)
         {
 
             var _CreateTypesQuery = new StringBuilder("CREATE VERTICES ");
@@ -939,7 +919,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region CreateEdges(this myAGraphDSSharp, params myDBEdges)
 
-        public static QueryResult CreateEdges(this AGraphDSSharp myAGraphDSSharp, params DBEdge[] myDBEdges)
+        public static QueryResult CreateEdges(this AGraphDSSharp myAGraphDSSharp, params EdgeLabel[] myDBEdges)
         {
 
             var _CreateTypesQuery = new StringBuilder("CREATE EDGES ");
@@ -982,7 +962,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region CreateEdges(this myAGraphDSSharp, myAction, params myDBEdges)
 
-        public static QueryResult CreateEdges(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, params DBEdge[] myDBEdges)
+        public static QueryResult CreateEdges(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, params EdgeLabel[] myDBEdges)
         {
 
             var _CreateTypesQuery = new StringBuilder("CREATE EDGES ");
@@ -1029,7 +1009,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region CreateEdges(this myAGraphDSSharp, mySuccessAction, myFailureAction, params myDBEdges)
 
-        public static QueryResult CreateEdges(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, params DBEdge[] myDBEdges)
+        public static QueryResult CreateEdges(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, params EdgeLabel[] myDBEdges)
         {
 
             var _CreateTypesQuery = new StringBuilder("CREATE EDGES ");
@@ -1076,7 +1056,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region CreateEdges(this myAGraphDSSharp, mySuccessAction, myPartialSuccessAction, myFailureAction, params myDBEdges)
 
-        public static QueryResult CreateEdges(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, params DBVertex[] myDBEdges)
+        public static QueryResult CreateEdges(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, params Vertex[] myDBEdges)
         {
 
             var _CreateTypesQuery = new StringBuilder("CREATE EDGES ");
@@ -1149,8 +1129,8 @@ namespace sones.GraphDS.API.CSharp.Reflection
                 myDBObjectOfT.UUID = new ObjectUUID(myQueryResult["UUID"].ToString());
             }
 
-            myDBObjectOfT.Edition    = myQueryResult["EDITION"] as String;
-            myDBObjectOfT.RevisionID = myQueryResult["REVISION"] as ObjectRevisionID;
+            myDBObjectOfT.EDITION    = myQueryResult["EDITION"] as String;
+            myDBObjectOfT.REVISIONID = myQueryResult["REVISION"] as ObjectRevisionID;
 
         }
 
@@ -1158,7 +1138,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region Insert(this myAGraphDSSharp, myAction, myDBObjects)
 
-        public static DBVertex[] Insert(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, params DBVertex[] myDBVertices)
+        public static Vertex[] Insert(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, params Vertex[] myDBVertices)
         {
 
             if (myDBVertices == null)
@@ -1191,7 +1171,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
         #region Insert<T>(this myAGraphDSSharp, myAction, myDBVertexOfT)
 
         public static T Insert<T>(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, T myDBVertexOfT)
-            where T : DBVertex
+            where T : Vertex
         {
 
             if (myDBVertexOfT == null)
@@ -1212,7 +1192,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
         #region Insert<T>(this myAGraphDSSharp, myAction, myDBVerticesOfT)
 
         public static T[] Insert<T>(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, params T[] myDBVerticesOfT)
-            where T : DBVertex
+            where T : Vertex
         {
 
             if (myDBVerticesOfT == null)

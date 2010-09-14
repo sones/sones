@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * TupleDefinition
  * (c) Stefan Licht, 2010
  */
@@ -42,8 +22,8 @@ using sones.GraphDB.Structures.ExpressionGraph;
 using System.Diagnostics;
 using sones.GraphDB.Managers.Select;
 using sones.Lib.ErrorHandling;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.Result;
+using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
 
 #endregion
@@ -173,14 +153,14 @@ namespace sones.GraphDB.Managers.Structures
 
                     var aTypeOfOperatorResult = GraphDBTypeMapper.ConvertGraph2CSharp(dbTypeOfAttribute.Name);
 
-                    foreach (DBObjectReadout dbo in qresult.Results.Objects)
+                    foreach (var _Vertex in qresult.Vertices)
                     {
-                        if (!(dbo.Attributes.ContainsKey(curAttr.Name)))
+                        if (!(_Vertex.IsAttribute(curAttr.Name)))
                             continue;
 
                         if (curAttr != null)
                         {
-                            var val = new ValueDefinition(aTypeOfOperatorResult, dbo.Attributes[curAttr.Name]);
+                            var val = new ValueDefinition(aTypeOfOperatorResult, _Vertex.ObsoleteAttributes[curAttr.Name]);
                             newTuple.Add(new TupleElement(aTypeOfOperatorResult, val));
                         }
                         else
@@ -277,7 +257,7 @@ namespace sones.GraphDB.Managers.Structures
                     var validateResult = ((BinaryExpressionDefinition)aTupleElement.Value).Validate(dbContext, myGraphType);
                     if (validateResult.Failed())
                     {
-                        throw new GraphDBException(validateResult.Errors);
+                        throw new GraphDBException(validateResult.IErrors);
                     }
                     //if (!IsValidBinaryExpressionNode((BinaryExpressionDefinition)aTupleElement.Value, myGraphType))
                     //{
@@ -444,8 +424,8 @@ namespace sones.GraphDB.Managers.Structures
 
                 case TypesOfBinaryExpression.Complex:
                     return new Exceptional()
-                        .Push(ValidateBinaryExpressionInternal(aUniqueExpr.Left, validationType, typeManager))
-                        .Push(ValidateBinaryExpressionInternal(aUniqueExpr.Right, validationType, typeManager));
+                        .PushIExceptional(ValidateBinaryExpressionInternal(aUniqueExpr.Left, validationType, typeManager))
+                        .PushIExceptional(ValidateBinaryExpressionInternal(aUniqueExpr.Right, validationType, typeManager));
 
                 case TypesOfBinaryExpression.Atom:
 

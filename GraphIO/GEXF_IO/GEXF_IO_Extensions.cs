@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* 
+﻿/* 
  * GEXF_IO_Extensions
  * Achim 'ahzf' Friedland, 2010
  */
@@ -37,8 +17,9 @@ using System.Xml;
 using System.Text;
 using sones.GraphFS.DataStructures;
 using sones.GraphDB.ObjectManagement;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.ObjectManagement;
+using sones.GraphDB.Result;
+using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -46,7 +27,7 @@ namespace sones.GraphIO.GEXF
 {
 
     /// <summary>
-    /// Extension methods to transform a QueryResult and a DBObjectReadout into an
+    /// Extension methods to transform a QueryResult and a Vertex into an
     /// application/gexf representation an vice versa.
     /// </summary>
 
@@ -119,14 +100,14 @@ namespace sones.GraphIO.GEXF
             //    }
             //}
 
-            if (myQueryResult.Results.Objects != null)
+            if (myQueryResult.Vertices != null)
             {
-                foreach (var _DBObject in myQueryResult.Results.Objects)
+                foreach (var _Vertex in myQueryResult)
                 {
 
-                    var _UUID = (_DBObject["UUID"] != null) ? _DBObject["UUID"] : "n/a";
-                    var _TYPE = (_DBObject["TYPE"] != null) ? _DBObject["TYPE"] : "n/a";
-                    var _Name = (_DBObject["Name"] != null) ? _DBObject["Name"] : "n/a";
+                    var _UUID = _Vertex.UUID;
+                    var _TYPE = (_Vertex.TYPE != null) ? _Vertex.TYPE : "n/a";
+                    var _Name = (_Vertex.GetStringProperty("Name") != null) ? _Vertex.GetStringProperty("Name") : "n/a";
 
                     if (_UUID is ObjectUUID)
                     {
@@ -138,20 +119,20 @@ namespace sones.GraphIO.GEXF
                     }
                     else
                     {
-                        if (!_allNodes.Contains(new ObjectUUID((String)_UUID)))
+                        if (!_allNodes.Contains(new ObjectUUID(_UUID.ToString())))
                         {
-                            _allNodes.Add(new ObjectUUID((String)_UUID));
+                            _allNodes.Add(new ObjectUUID(_UUID.ToString()));
                             _nodes.Add(new XElement("node", new XAttribute("id", _UUID), new XAttribute("type", _TYPE), new XAttribute("label", _TYPE + "." + _Name)));
                         }
                     }
 
-                    foreach (var _Attribute in _DBObject.Attributes)
+                    foreach (var _Attribute in _Vertex)
                     {
                         if (_Attribute.Value != null)
                         {
-                            #region IEnumerable<DBObjectReadout>
+                            #region IEnumerable<Vertex>
 
-                            var _DBObjects = _Attribute.Value as IEnumerable<DBObjectReadout>;
+                            var _DBObjects = _Attribute.Value as IEnumerable<Vertex>;
 
                             if (_DBObjects != null && _DBObjects.Count() > 0)
                             {
@@ -169,20 +150,20 @@ namespace sones.GraphIO.GEXF
                                 foreach (var _DBObjectReadout in _DBObjects)
                                 {
 
-                                    var _OtherUUID = _DBObjectReadout.Attributes["UUID"];
+                                    var _OtherUUID = _DBObjectReadout.ObsoleteAttributes["UUID"];
 
                                     Object _OtherTYPE = "";
-                                    if (_DBObjectReadout.Attributes.ContainsKey("TYPE"))
+                                    if (_DBObjectReadout.IsAttribute("TYPE"))
                                     {
-                                        if (_DBObjectReadout.Attributes["TYPE"] is IGetName)
-                                            _OtherTYPE = ((IGetName)_DBObjectReadout.Attributes["TYPE"]).Name;
+                                        if (_DBObjectReadout.ObsoleteAttributes["TYPE"] is IGetName)
+                                            _OtherTYPE = ((IGetName)_DBObjectReadout.ObsoleteAttributes["TYPE"]).Name;
                                         else
-                                            _OtherTYPE = _DBObjectReadout.Attributes["TYPE"];
+                                            _OtherTYPE = _DBObjectReadout.ObsoleteAttributes["TYPE"];
                                     }
 
                                     Object _OtherName = "";
-                                    if (_DBObjectReadout.Attributes.ContainsKey("Name"))
-                                        _OtherName = _DBObjectReadout.Attributes["Name"];
+                                    if (_DBObjectReadout.IsAttribute("Name"))
+                                        _OtherName = _DBObjectReadout.ObsoleteAttributes["Name"];
 
                                     if (!_allNodes.Contains((ObjectUUID)_OtherUUID))
                                     {
@@ -224,9 +205,9 @@ namespace sones.GraphIO.GEXF
 
         #region ToGEXF(this myDBObjectReadout)
 
-        private static XElement ToGEXF(this DBObjectReadout myDBObjectReadout)
+        private static XElement ToGEXF(this Vertex myVertex)
         {
-            return new GEXF_IO().ExportVertex(myDBObjectReadout) as XElement;
+            return new GEXF_IO().ExportVertex(myVertex) as XElement;
         }
 
         #endregion

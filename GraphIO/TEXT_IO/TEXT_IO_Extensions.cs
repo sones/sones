@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* 
+﻿/* 
  * TEXT_IO_Extensions
  * Achim 'ahzf' Friedland, 2009-2010
  */
@@ -32,7 +12,8 @@ using System.Text;
 
 using System.Collections.Generic;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -88,15 +69,15 @@ namespace sones.GraphIO.TEXT
             }
 
             // results ------------------------------
-            if (myQueryResult.Results.Any())
+            if (myQueryResult.Vertices.Any())
             {
 
                 _StringBuilder.AppendLine();
-                _StringBuilder.AppendLine(myQueryResult.Results.Count() + " result(s): ");
+                _StringBuilder.AppendLine(myQueryResult.Vertices.Count() + " result(s): ");
 
-                if (myQueryResult.Results.Objects != null)
-                    foreach (var _DBObject in myQueryResult.Results.Objects)
-                        _StringBuilder.Append(_DBObject.ToTEXT());
+                if (myQueryResult.Vertices != null)
+                    foreach (var _Vertex in myQueryResult)
+                        _StringBuilder.Append(_Vertex.ToTEXT());
 
                 _StringBuilder.AppendLine();
 
@@ -109,31 +90,30 @@ namespace sones.GraphIO.TEXT
         #endregion
 
 
-        #region ToTEXT(myDBObjectReadout, myRecursion)
+        #region ToTEXT(myVertex, myRecursion)
 
-        public static Object ToTEXT(this DBObjectReadout myDBVertex)
+        public static Object ToTEXT(this Vertex myVertex)
         {
-            return ToTEXT(myDBVertex, new StringBuilder(), 0);
+            return ToTEXT(myVertex, new StringBuilder(), 0);
         }
 
         #endregion
 
         #region (private) ToTEXT(myDBObjectReadout, myStringBuilder, myIndendLevel = 0)
 
-        private static object ToTEXT(this DBObjectReadout myDBObjectReadout, StringBuilder myStringBuilder, Int32 myIndent = 0)
+        private static object ToTEXT(this Vertex myVertex, StringBuilder myStringBuilder, Int32 myIndent = 0)
         {
 
-            var _TypeObject = myDBObjectReadout["TYPE"] as GraphDBType;
-            String _Type = (_TypeObject != null) ? _TypeObject.Name : "";
-            var _UUID = myDBObjectReadout["UUID"];
+            var _Type = myVertex.TYPE;
+            var _UUID = myVertex.UUID;
 
-            IEnumerable<DBObjectReadout> _DBObjects = null;
+            IEnumerable<Vertex> _Vertices           = null;
             IEnumerable<Object> _AttributeValueList = null;
 
 
-            #region DBWeightedObjectReadout
+            #region Vertex_WeightedEdges
 
-            var _WeightedDBObject1 = myDBObjectReadout as DBWeightedObjectReadout;
+            var _WeightedDBObject1 = myVertex as Vertex_WeightedEdges;
 
             if (_WeightedDBObject1 != null)
             {
@@ -148,7 +128,7 @@ namespace sones.GraphIO.TEXT
 
             #endregion
 
-            foreach (var _Attribute in myDBObjectReadout.Attributes)
+            foreach (var _Attribute in myVertex)
             {
 
                 switch (_Attribute.Key)
@@ -180,11 +160,11 @@ namespace sones.GraphIO.TEXT
 
                             myStringBuilder.Append(_Attribute.Key.ToString() + ": ");
 
-                            #region IEnumerable<DBObjectReadout>
+                            #region IEnumerable<Vertex>
 
-                            _DBObjects = _Attribute.Value as IEnumerable<DBObjectReadout>;
+                            _Vertices = _Attribute.Value as IEnumerable<Vertex>;
 
-                            if (_DBObjects != null && _DBObjects.Count() > 0)
+                            if (_Vertices != null && _Vertices.Count() > 0)
                             {
 
                                 var _EdgeInfo = (_Attribute.Value as Edge);
@@ -195,7 +175,7 @@ namespace sones.GraphIO.TEXT
                                 // An edgelabel for all edges together...
                                 //_ListAttribute.Add(new XElement("hyperedgelabel"));
 
-                                foreach (var _DBObjectReadout in _DBObjects)
+                                foreach (var _DBObjectReadout in _Vertices)
                                     _DBObjectReadout.ToTEXT(myStringBuilder, myIndent++);
 
                                 continue;

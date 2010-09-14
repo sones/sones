@@ -42,6 +42,7 @@ using System.Net;
 using System.Threading;
 using sones.GraphDB.NewAPI;
 using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
 
 #endregion
 
@@ -71,7 +72,7 @@ namespace sonesExample
 
     #region Document
 
-    public class Document : DBVertex
+    public class Document : Vertex
     {
 
         [Indexed(DBIndexTypes.HashTable)]
@@ -91,7 +92,7 @@ namespace sonesExample
 
     #region Author
 
-    public class Author : DBVertex
+    public class Author : Vertex
     {
 
         [Indexed(DBIndexTypes.HashTable)]
@@ -111,7 +112,7 @@ namespace sonesExample
 
     #region Tag
 
-    public class Tag : DBVertex
+    public class Tag : Vertex
     {
 
         [Indexed(DBIndexTypes.HashTable)]

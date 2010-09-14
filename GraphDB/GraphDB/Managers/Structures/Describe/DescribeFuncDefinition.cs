@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * DescribeFuncDefinition
  * (c) Stefan Licht, 2010
  */
@@ -35,7 +15,8 @@ using sones.Lib.ErrorHandling;
 using sones.GraphDB.Errors;
 using sones.GraphDB.Functions;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -61,7 +42,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
         #region ADescribeDefinition
 
-        public override Exceptional<SelectionResultSet> GetResult(DBContext myDBContext)
+        public override Exceptional<IEnumerable<Vertex>> GetResult(DBContext myDBContext)
         {
             if (!String.IsNullOrEmpty(_FuncName))
             {
@@ -71,11 +52,11 @@ namespace sones.GraphDB.Managers.Structures.Describe
                 var func = myDBContext.DBPluginManager.GetFunction(_FuncName);
                 if (func != null)
                 {
-                    return new Exceptional<SelectionResultSet>(new SelectionResultSet(GenerateOutput(func, _FuncName, myDBContext.DBTypeManager)));
+                    return new Exceptional<IEnumerable<Vertex>>(new List<Vertex>(){(GenerateOutput(func, _FuncName, myDBContext.DBTypeManager))});
                 }
                 else
                 {
-                    return new Exceptional<SelectionResultSet>(new Error_EdgeTypeDoesNotExist(_FuncName));
+                    return new Exceptional<IEnumerable<Vertex>>(new Error_EdgeTypeDoesNotExist(_FuncName));
                 }
 
                 #endregion
@@ -86,7 +67,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
                 #region All edge
 
-                List<DBObjectReadout> resultingReadouts = new List<DBObjectReadout>();
+                var resultingReadouts = new List<Vertex>();
 
                 foreach (var func in myDBContext.DBPluginManager.GetAllFunctions())
                 {
@@ -94,7 +75,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
                 }
 
 
-                return new Exceptional<SelectionResultSet>(new SelectionResultSet(resultingReadouts));
+                return new Exceptional<IEnumerable<Vertex>>(resultingReadouts);
                 #endregion
 
             }
@@ -111,12 +92,12 @@ namespace sones.GraphDB.Managers.Structures.Describe
         /// <param name="myFuncName">function name</param>
         /// <param name="myTypeManager">type manager</param>
         /// <returns>a list of readouts which contains the information</returns>
-        private DBObjectReadout GenerateOutput(ABaseFunction myFunc, string myFuncName, DBTypeManager myTypeManager)
+        private Vertex GenerateOutput(ABaseFunction myFunc, String myFuncName, DBTypeManager myTypeManager)
         {
 
             var Func = new Dictionary<String, Object>();
 
-            Func.Add("Name", myFuncName);
+            Func.Add("Name",        myFuncName);
             Func.Add("Description", myFunc.GetDescribeOutput());
 
             #region Add function parameters
@@ -134,11 +115,12 @@ namespace sones.GraphDB.Managers.Structures.Describe
                     parameters.Add(param.Name, myTypeManager.GetTypeByName(param.DBType.ObjectName));
                 }
             }
-            Func.Add("Parameters", new Edge(new DBObjectReadout(parameters), ""));
+
+            Func.Add("Parameters", new Edge(null, new Vertex(parameters)));
 
             #endregion
 
-            return new DBObjectReadout(Func);
+            return new Vertex(Func);
 
         }
 

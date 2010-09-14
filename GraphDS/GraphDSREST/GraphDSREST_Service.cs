@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * GraphDSREST_Service
  * (c) Achim Friedland, 2010
  */
@@ -63,7 +43,7 @@ using sones.GraphIO.TEXT;
 using sones.GraphIO.GEXF;
 using sones.GraphIO.JSON;
 using sones.GraphDB.Warnings;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
 
 #endregion
 
@@ -278,7 +258,7 @@ namespace sones.GraphDS.Connectors.REST
 
                         #endregion
 
-                        _QueryResult.AddWarning(new Warning_ObsoleteGQL("EXECDBSCRIPT", "IMPORT FROM '<file or http ressource>' FORMAT GQL"));
+                        _QueryResult.PushIWarning(new Warning_ObsoleteGQL("EXECDBSCRIPT", "IMPORT FROM '<file or http ressource>' FORMAT GQL"));
 
                     }
 
@@ -707,8 +687,8 @@ namespace sones.GraphDS.Connectors.REST
 
                     _StringBuilder.Append("<p><a href=\"/\">back...</a></p>");
 
-                    foreach (var _DBObjectReadout in _QueryResult.Results.Objects)
-                        _StringBuilder.Append(_DBObjectReadout.ToHTML());
+                    foreach (var _Vertex in _QueryResult)
+                        _StringBuilder.Append(_Vertex.ToHTML());
 
                     _StringBuilder.Append("<b>Duration:</b> ").Append(_StopWatch.ElapsedMilliseconds).Append(" ms<br />");
 

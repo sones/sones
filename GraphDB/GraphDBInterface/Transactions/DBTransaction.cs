@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* 
+﻿/* 
  * DBTransaction
  * (c) Stefan Licht, 2010
  */
@@ -36,7 +16,7 @@ using sones.GraphFS.Exceptions;
 using sones.GraphFS.Transactions;
 
 using sones.Lib.ErrorHandling;
-using sones.GraphDBInterface.Context;
+using sones.GraphDB.Context;
 using sones.GraphDB.Warnings;
 
 #if(__MonoCS__)
@@ -46,7 +26,7 @@ using sones.Lib.DataStructures.ConcurrentDictionary_Mono;
 
 #endregion
 
-namespace sones.GraphDBInterface.Transactions
+namespace sones.GraphDB.Transactions
 {
 
     /// <summary>
@@ -318,7 +298,7 @@ namespace sones.GraphDBInterface.Transactions
             _TransactionalDBContext = null;
 
             var result = _FSTransaction.Rollback(async);
-            result.AddErrorsAndWarnings(base.Rollback(async));
+            result.PushIExceptional(base.Rollback(async));
 
             if (DBTransaction.GetTransaction(_Session) == this)
             {
@@ -353,7 +333,7 @@ namespace sones.GraphDBInterface.Transactions
 
             #region Commit base transaction to set state etc.
 
-            result.AddErrorsAndWarnings(base.Commit(async));
+            result.PushIExceptional(base.Commit(async));
 
             #endregion
 
@@ -430,7 +410,7 @@ namespace sones.GraphDBInterface.Transactions
             else
             {
                 dbTransaction = new DBTransaction(_Session, myDistributed, myLongRunning, myIsolationLevel, myName, timestamp);
-                dbTransaction.Push(new Warning_NoFSTransaction());
+                dbTransaction.PushIWarning(new Warning_NoFSTransaction());
             }
 
             return BeginNestedTransaction(dbTransaction);

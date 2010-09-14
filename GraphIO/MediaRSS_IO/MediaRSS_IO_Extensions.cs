@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* 
+﻿/* 
  * MediaRSS_IO_Extensions
  * Achim 'ahzf' Friedland, 2010
  */
@@ -34,7 +14,8 @@ using sones.GraphDB.Structures;
 
 
 using sones.Lib;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -87,11 +68,11 @@ namespace sones.GraphIO.MediaRSS
                 //<!-- <link>http://www.ahzf.de/cooliris.html</link> -->
 
 
-                if (myQueryResult != null && myQueryResult.Results != null)
-                    if (myQueryResult.Results != null && myQueryResult.Results.Objects != null)
-                        foreach (var _DBObjectReadout in myQueryResult.Results.Objects)
-                            if (_DBObjectReadout != null)
-                                myStringBuilder.Append(_DBObjectReadout.ToMediaRSS());
+                if (myQueryResult != null && myQueryResult.Vertices != null)
+                    if (myQueryResult.Vertices != null && myQueryResult.Vertices != null)
+                        foreach (var _Vertex in myQueryResult)
+                            if (_Vertex != null)
+                                myStringBuilder.Append(_Vertex.ToMediaRSS());
 
             }
 
@@ -129,18 +110,18 @@ namespace sones.GraphIO.MediaRSS
 
         #endregion
 
-        #region ToMediaRSS(this myDBObjectReadout)
+        #region ToMediaRSS(this myVertex)
 
-        public static String ToMediaRSS(this DBObjectReadout myDBObjectReadout)
+        public static String ToMediaRSS(this Vertex myVertex)
         {
 
             var myStringBuilder = new StringBuilder();
 
-            var _UUID = myDBObjectReadout["UUID"];
-            var _filename = myDBObjectReadout["Filename"];
-            var _MIMEType = myDBObjectReadout["MIMEType"];
-            var _title = myDBObjectReadout["Title"];
-            var _description = myDBObjectReadout["Description"];
+            var _UUID           = myVertex.UUID;
+            var _filename       = myVertex.GetStringProperty("Filename");
+            var _MIMEType       = myVertex.GetStringProperty("MIMEType");
+            var _title          = myVertex.GetStringProperty("Title");
+            var _description    = myVertex.GetStringProperty("Description");
 
             if (_UUID != null && _filename != null && _MIMEType != null && _title != null && _description != null)
             {

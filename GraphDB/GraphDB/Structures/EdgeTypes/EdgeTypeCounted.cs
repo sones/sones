@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-
+﻿
 #region usings
 
 using System;
@@ -29,11 +9,12 @@ using sones.GraphDB.Exceptions;
 using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
 using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -139,9 +120,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return edgeTypeCounted;
         }
 
-        public override DBObjectReadout GetReadout(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO)
+        public override Vertex GetVertex(Func<ObjectUUID, Vertex> GetAllAttributesFromDBO)
         {
-            return (DBObjectReadout)new DBWeightedObjectReadout(GetAllAttributesFromDBO(_Reference.ObjectUUID).Attributes, _Count.Value, _Count.Type.ToString());
+            return (Vertex) new Vertex_WeightedEdges(GetAllAttributesFromDBO(_Reference.ObjectUUID).ObsoleteAttributes, _Count.Value, _Count.Type.ToString());
         }
 
         public override String GetDescribeOutput(GraphDBType myGraphDBType)

@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * SelectToObjectGraph
  * (c) Stefan Licht, 2010
  */
@@ -36,12 +16,11 @@ using sones.GraphDB.Structures;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 using sones.GraphDB.NewAPI;
 
-
 using sones.GraphFS.DataStructures;
 
 using sones.GraphIO;
 using sones.GraphIO.XML;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
 
 #endregion
 
@@ -156,7 +135,7 @@ namespace sones.GraphDS.API.CSharp
             #region Set QueryResult data
 
             _XMLQueryResult = XDocument.Parse(myXMLQueryResult, LoadOptions.None);
-            _QueryResultElement = _XMLQueryResult.Element("sones").Element("GraphDB").Element("queryresult");
+            _QueryResultElement = _XMLQueryResult.Element("sones").Element("graphdb").Element("queryresult");
 
             Query = _QueryResultElement.Element("query").Value;
             QueryResult = (ResultType)Enum.Parse(typeof(ResultType), _QueryResultElement.Element("result").Value);
@@ -224,7 +203,7 @@ namespace sones.GraphDS.API.CSharp
 
             //var selection = (from sel in _QueryResult.Results where sel.TypeName == theType.Name select sel).FirstOrDefault();
 
-            foreach (var elem in _QueryResult.Results.Objects)
+            foreach (var _Vertex in _QueryResult)
             {
 
                 if (!_VisitedVerticesCache.ContainsKey(typeof(T)))
@@ -234,20 +213,20 @@ namespace sones.GraphDS.API.CSharp
 
                 #region Create new instance or use an existing one
 
-                if (_VisitedVerticesCache[typeof(T)].ContainsKey((String)elem.Attributes["UUID"]))
+                if (_VisitedVerticesCache[typeof(T)].ContainsKey(_Vertex.UUID.ToString()))
                 {
-                    newDBO = _VisitedVerticesCache[typeof(T)][(String)elem.Attributes["UUID"]] as T;
+                    newDBO = _VisitedVerticesCache[typeof(T)][_Vertex.UUID.ToString()] as T;
                 }
 
                 else
                 {
                     newDBO = new T();
-                    _VisitedVerticesCache[typeof(T)].Add((String)elem.Attributes["UUID"], newDBO);
+                    _VisitedVerticesCache[typeof(T)].Add(_Vertex.UUID.ToString(), newDBO);
                 }
 
                 #endregion
 
-                foreach (var attr in elem.Attributes)
+                foreach (var attr in _Vertex)
                     ApplyAttributeToObject(theType, newDBO, attr.Key, attr.Value);
 
                 retVal.Add(newDBO);
@@ -785,7 +764,7 @@ namespace sones.GraphDS.API.CSharp
 
             var curProp = myDBObjectType.GetProperty(myAttributeName);
 
-            if (myAttributeValue is List<DBObjectReadout>)
+            if (myAttributeValue is List<Vertex>)
             {
 
                 /// Check whether it is really a List
@@ -800,7 +779,7 @@ namespace sones.GraphDS.API.CSharp
 
                 #endregion
 
-                foreach (var val in (myAttributeValue as List<DBObjectReadout>))
+                foreach (var _Vertex in (myAttributeValue as List<Vertex>))
                 {
                     /// Check whether it is really a List with one generic arg, what is about Weighted etc?
                     var listType = refType.GetGenericArguments()[0];
@@ -811,19 +790,19 @@ namespace sones.GraphDS.API.CSharp
                         _VisitedVerticesCache.Add(listType, new Dictionary<String, Object>());
 
                     DBObject refObject;
-                    if (_VisitedVerticesCache[listType].ContainsKey((String)val.Attributes["UUID"]))
+                    if (_VisitedVerticesCache[listType].ContainsKey(_Vertex.UUID.ToString()))
                     {
-                        refObject = _VisitedVerticesCache[listType][(String)val.Attributes["UUID"]] as DBObject;
+                        refObject = _VisitedVerticesCache[listType][_Vertex.UUID.ToString()] as DBObject;
                     }
                     else
                     {
                         refObject = Activator.CreateInstance(listType) as DBObject;
-                        _VisitedVerticesCache[listType].Add((String)val.Attributes["UUID"], refObject);
+                        _VisitedVerticesCache[listType].Add(_Vertex.UUID.ToString(), refObject);
                     }
 
                     #endregion
 
-                    foreach (var attr in (val as DBObjectReadout).Attributes)
+                    foreach (var attr in _Vertex)
                         ApplyAttributeToObject(listType, refObject, attr.Key, attr.Value);
 
                     propVal.Add(refObject);
@@ -834,13 +813,13 @@ namespace sones.GraphDS.API.CSharp
 
             }
 
-            else if (myAttributeValue is DBObjectReadout)
+            else if (myAttributeValue is Vertex)
             {
 
                 var refType = curProp.PropertyType;
                 var refObject = Activator.CreateInstance(refType) as DBObject;
 
-                foreach (var attr in (myAttributeValue as DBObjectReadout).Attributes)
+                foreach (var attr in (myAttributeValue as Vertex))
                     ApplyAttributeToObject(refType, refObject, attr.Key, attr.Value);
 
                 curProp.SetValue(myDBObject, refObject, null);
@@ -1327,7 +1306,7 @@ namespace sones.GraphDS.API.CSharp
 
 //        #endregion
 
-//        #region The direct QueryResult with DBObjectReadout - fix me
+//        #region The direct QueryResult with Vertex - fix me
 
 //        private IEnumerable<T> FromQueryResult<T>()
 //            where T : DBObject, new()
@@ -1382,7 +1361,7 @@ namespace sones.GraphDS.API.CSharp
 
 //            var curProp = myDBObjectType.GetProperty(myAttributeName);
 
-//            if (myAttributeValue is List<DBObjectReadout>)
+//            if (myAttributeValue is List<Vertex>)
 //            {
 
 //                /// Check whether it is really a List
@@ -1397,7 +1376,7 @@ namespace sones.GraphDS.API.CSharp
 
 //                #endregion
 
-//                foreach (var val in (myAttributeValue as List<DBObjectReadout>))
+//                foreach (var val in (myAttributeValue as List<Vertex>))
 //                {
 //                    /// Check whether it is really a List with one generic arg, what is about Weighted etc?
 //                    var listType = refType.GetGenericArguments()[0];
@@ -1420,7 +1399,7 @@ namespace sones.GraphDS.API.CSharp
 
 //                    #endregion
 
-//                    foreach (var attr in (val as DBObjectReadout).Attributes)
+//                    foreach (var attr in (val as Vertex).Attributes)
 //                    {
 //                        ApplyAttributeToObject(listType, refObject, attr.Key, attr.Value);
 //                    }
@@ -1430,12 +1409,12 @@ namespace sones.GraphDS.API.CSharp
 
 //                curProp.SetValue(myDBObject, propVal, null);
 //            }
-//            else if (myAttributeValue is DBObjectReadout)
+//            else if (myAttributeValue is Vertex)
 //            {
 //                var refType = curProp.PropertyType;
 //                var refObject = Activator.CreateInstance(refType) as DBObject;
 
-//                foreach (var attr in (myAttributeValue as DBObjectReadout).Attributes)
+//                foreach (var attr in (myAttributeValue as Vertex).Attributes)
 //                {
 //                    ApplyAttributeToObject(refType, refObject, attr.Key, attr.Value);
 //                }

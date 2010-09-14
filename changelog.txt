@@ -1,5 +1,21 @@
 sones GraphDB 1.2 (developer) Changelog:
 
+14.09.2010
+- DBObject, Vertex, Edge (user-defined!!!) updates
+- Changed DBObject (StringComparer.OrdinalIgnoreCase) => _Attributes = new Dictionary<String, Object>(StringComparer.Ord...
+- Rename ObjectCache.cs -> LRUObjectCache.cs
+- LRUObjectCache class + a simple test
+- removed SelectionSetResult from QueryResult 
+- replaced DBObjectReadout by Vertex 
+- added DBRevisionID type 
+- ObjectUUID on...
+- sligthly change in multithreading behaviour of Union and Intersection method within CommonUsageGraph.cs
+- Fixed bug of selecting undefined attributes in higher levels
+- renamed DBVertex to Vertex
+- renamed NewApi.DBVertex to Vertex 
+- some minor Vertex and DBObject refactoring
+- fixed bug fixed "from DBVertex select * where type=..." vertices always inheritated by DBVertex
+
 10.09.2010
 - Fixed bug of selecting undefined attributes in higher levels
 - renamed DBVertex to Vertex

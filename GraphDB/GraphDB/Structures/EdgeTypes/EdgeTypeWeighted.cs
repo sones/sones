@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � EdgeTypeWeightedList<T>" />
+﻿/* <id name="GraphDB – EdgeTypeWeightedList<T>" />
  * <copyright file="EdgeTypeWeightedList.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -43,12 +23,13 @@ using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
 using sones.GraphFS.DataStructures;
 using sones.Lib;
 using sones.Lib.DataStructures;
 using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -253,24 +234,24 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return weightedSet.GetAllValues().Select(aReference => aReference.ObjectUUID);
         }
 
-        public override IEnumerable<DBObjectReadout> GetReadouts(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO)
+        public override IEnumerable<Vertex> GetVertices(Func<ObjectUUID, Vertex> GetAllAttributesFromDBO)
         {
             foreach (var dbo in weightedSet.GetAll())
             {
                 var readout = GetAllAttributesFromDBO(dbo.Key.ObjectUUID);
 
-                yield return new DBWeightedObjectReadout(readout.Attributes, dbo.Value.Value, dbo.Value.Type.ToString());
+                yield return new Vertex_WeightedEdges(readout.ObsoleteAttributes, dbo.Value.Value, dbo.Value.Type.ToString());
             }
         }
 
-        public override IEnumerable<DBObjectReadout> GetReadouts(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO, IEnumerable<Exceptional<DBObjectStream>> myObjectUUIDs)
+        public override IEnumerable<Vertex> GetReadouts(Func<ObjectUUID, Vertex> GetAllAttributesFromDBO, IEnumerable<Exceptional<DBObjectStream>> myObjectUUIDs)
         {
             foreach (var dbo in myObjectUUIDs)
             {
 
                 if (dbo.Failed())
                 {
-                    throw new GraphDBException(dbo.Errors);
+                    throw new GraphDBException(dbo.IErrors);
                 }
 
                 var lookupReference = new Reference(dbo.Value.ObjectUUID, dbo.Value.TypeUUID);
@@ -279,7 +260,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 {
                     var weight = weightedSet.Get(lookupReference);
                     var readout = GetAllAttributesFromDBO(dbo.Value.ObjectUUID);
-                    yield return new DBWeightedObjectReadout(readout.Attributes, weight.Value.Value, weight.Value.Type.ToString());
+                    yield return new Vertex_WeightedEdges(readout.ObsoleteAttributes, weight.Value.Value, weight.Value.Type.ToString());
                 }
             }
         }

@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.Errors;
@@ -26,7 +6,7 @@ using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
 using sones.Lib.ErrorHandling;
-using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.TypeManagement;
 
 namespace sones.GraphDB.Managers.Structures
 {
@@ -152,7 +132,7 @@ namespace sones.GraphDB.Managers.Structures
                 if (addUndefExcept.Failed())
                     return new Exceptional<Dictionary<String, Tuple<TypeAttribute, IObject>>>(addUndefExcept);
 
-                attrsForResult.Add(AttributeIDChain.UndefinedAttribute, new Tuple<TypeAttribute, IObject>(null, elementsToBeAddedEdge));
+                attrsForResult.Add(AttributeIDChain.UndefinedAttribute, new Tuple<TypeAttribute, IObject>(AttributeIDChain.LastAttribute, elementsToBeAddedEdge));
                 return new Exceptional<Dictionary<String, Tuple<TypeAttribute, IObject>>>(attrsForResult);
             }
             #endregion
@@ -229,7 +209,7 @@ namespace sones.GraphDB.Managers.Structures
 
                         if (!removeRefExcept.Success())
                         {
-                            return new Exceptional<Dictionary<string,Tuple<TypeAttribute,IObject>>>(removeRefExcept.Errors.First());
+                            return new Exceptional<Dictionary<string,Tuple<TypeAttribute,IObject>>>(removeRefExcept.IErrors.First());
                         }
                     }
 

@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * UnspecifiedError
  * (c) Achim Friedland, 2010
  */
@@ -37,7 +17,7 @@ namespace sones.Lib.ErrorHandling
     /// <summary>
     /// This class carries information of unspecified errors.
     /// </summary>
-    public class Error_Unspecified : IError
+    public class UnspecifiedError : IError
     {
 
         #region Properties
@@ -50,9 +30,9 @@ namespace sones.Lib.ErrorHandling
 
         #region Constructor(s)
 
-        #region Error_Unspecified()
+        #region UnspecifiedError()
 
-        public Error_Unspecified()
+        public UnspecifiedError()
         {
             Message     = default(String);
             StackTrace  = null;
@@ -60,9 +40,9 @@ namespace sones.Lib.ErrorHandling
 
         #endregion
 
-        #region Error_Unspecified(myID)
+        #region UnspecifiedError(myID)
 
-        public Error_Unspecified(String myID)
+        public UnspecifiedError(String myID)
         {
 
             if (myID == null)
@@ -75,9 +55,9 @@ namespace sones.Lib.ErrorHandling
 
         #endregion
 
-        #region Error_Unspecified(myID, myMessage)
+        #region UnspecifiedError(myID, myMessage)
 
-        public Error_Unspecified(String myID, String myMessage)
+        public UnspecifiedError(String myID, String myMessage)
         {
 
             if (myID == null)
@@ -93,9 +73,9 @@ namespace sones.Lib.ErrorHandling
 
         #endregion
 
-        #region Error_Unspecified(myID, myMessage, myStackTrace)
+        #region UnspecifiedError(myID, myMessage, myStackTrace)
 
-        public Error_Unspecified(String myID, String myMessage, StackTrace myStackTrace)
+        public UnspecifiedError(String myID, String myMessage, StackTrace myStackTrace)
         {
 
             if (myID == null)

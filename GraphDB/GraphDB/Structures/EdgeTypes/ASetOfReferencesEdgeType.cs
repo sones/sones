@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � abstract class for all reference list edges" />
+﻿/* <id name="GraphDB – abstract class for all reference list edges" />
  * <copyright file="AListReferenceEdgeType.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -35,8 +15,9 @@ using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.Result;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.NewAPI;
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
@@ -54,7 +35,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// </summary>
         /// <param name="GetAllAttributesFromDBO">A delegate which will retriev the standard DBObjectReadout for a ObjectUUID</param>
         /// <returns>The standard readouts with some additional infos</returns>
-        public abstract IEnumerable<DBObjectReadout> GetReadouts(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO);
+        public abstract IEnumerable<Vertex> GetVertices(Func<ObjectUUID, Vertex> GetAllAttributesFromDBO);
 
         /// <summary>
         /// Extracts a list of readouts defined by <paramref name="myDBObjectStreams"/> from the edge. 
@@ -65,7 +46,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// <param name="GetAllAttributesFromDBO">A delegate which will retriev the standard DBObjectReadout for a ObjectUUID</param>
         /// <param name="myDBObjectStreams">The Objects which should be extracted from the edge</param>
         /// <returns>The standard readouts with some additional infos</returns>
-        public abstract IEnumerable<DBObjectReadout> GetReadouts(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO, IEnumerable<Exceptional<DBObjectStream>> myDBObjectStreams);
+        public abstract IEnumerable<Vertex> GetReadouts(Func<ObjectUUID, Vertex> GetAllAttributesFromDBO, IEnumerable<Exceptional<DBObjectStream>> myDBObjectStreams);
 
         /// <summary>
         /// Adds a set of ObjectUUID with parameters

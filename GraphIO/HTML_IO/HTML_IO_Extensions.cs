@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* 
+﻿/* 
  * HTML_IO_Extensions
  * Achim 'ahzf' Friedland, 2009 - 2010
  */
@@ -33,7 +13,8 @@ using System.Text;
 using sones.Lib;
 using System.Collections.Generic;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -83,8 +64,8 @@ namespace sones.GraphIO.HTML
 
             // results ------------------------------
             myStringBuilder.Append("<tr><td>results</td><td><table>");
-            if (myQueryResult.Results.Objects != null)
-                foreach (var _DBObject in myQueryResult.Results.Objects)
+            if (myQueryResult.Vertices != null)
+                foreach (var _DBObject in myQueryResult)
                 {
                     myStringBuilder.Append("<tr><td>");
                     myStringBuilder.Append(_DBObject.ToHTML());
@@ -101,34 +82,35 @@ namespace sones.GraphIO.HTML
         #endregion
 
 
-        #region ToHTML(this myDBVertex)
+        #region ToHTML(this myVertex)
 
-        public static String ToHTML(this DBObjectReadout myDBVertex)
+        public static String ToHTML(this Vertex myVertex)
         {
-            return myDBVertex.ToHTML(false);
+            return myVertex.ToHTML(false);
         }
 
         #endregion
 
-        #region (private) ToHTML(this myDBVertex, myRecursion)
+        #region (private) ToHTML(this myVertex, myRecursion)
 
-        private static String ToHTML(this DBObjectReadout myDBVertex, Boolean myRecursion)
+        private static String ToHTML(this Vertex myVertex, Boolean myRecursion)
         {
 
             var _StringBuilder = new StringBuilder();
 
-            var _TypeObject = myDBVertex["TYPE"] as GraphDBType;
-            String _Type = (_TypeObject != null) ? _TypeObject.Name : "";
-            var _UUID = myDBVertex["UUID"];
+            var _TypeObject = myVertex.TYPE;
+            //String _Type = (_TypeObject != null) ? _TypeObject.Name : "";
+            String _Type = _TypeObject;
+            var _UUID = myVertex.UUID;
 
-            IEnumerable<DBObjectReadout> _DBObjects = null;
+            IEnumerable<Vertex> _Vertex = null;
             IEnumerable<Object> _AttributeValueList = null;
 
             _StringBuilder.AppendLine("<table class=\"gql_table\" border=\"1\">");
 
-            #region DBWeightedObjectReadout
+            #region Vertex_WeightedEdges
 
-            var _WeightedDBObject1 = myDBVertex as DBWeightedObjectReadout;
+            var _WeightedDBObject1 = myVertex as Vertex_WeightedEdges;
 
             if (_WeightedDBObject1 != null)
             {
@@ -139,7 +121,7 @@ namespace sones.GraphIO.HTML
 
             #endregion
 
-            foreach (var _Attribute in myDBVertex.Attributes)
+            foreach (var _Attribute in myVertex.ObsoleteAttributes)
             {
 
                 switch (_Attribute.Key)
@@ -180,11 +162,11 @@ namespace sones.GraphIO.HTML
 
                             _StringBuilder.Append("<tr><td style=\"width:250px\">").Append(_Attribute.Key.ToString().EscapeForXMLandHTML()).Append("</td><td style=\"width:400px\">");
 
-                            #region IEnumerable<DBObjectReadout>
+                            #region IEnumerable<Vertex>
 
-                            _DBObjects = _Attribute.Value as IEnumerable<DBObjectReadout>;
+                            _Vertex = _Attribute.Value as IEnumerable<Vertex>;
 
-                            if (_DBObjects != null && _DBObjects.Count() > 0)
+                            if (_Vertex != null && _Vertex.Count() > 0)
                             {
 
                                 var _EdgeInfo = (_Attribute.Value as Edge);
@@ -193,7 +175,7 @@ namespace sones.GraphIO.HTML
                                 // An edgelabel for all edges together...
                                 //_ListAttribute.Add(new XElement("hyperedgelabel"));
 
-                                foreach (var _DBObjectReadout in _DBObjects)
+                                foreach (var _DBObjectReadout in _Vertex)
                                     _DBObjectReadout.ToHTML(true);
 
                                 _StringBuilder.Append("</td></tr>");

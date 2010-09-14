@@ -124,10 +124,8 @@
   <ItemGroup>
     <Compile Include="AGraphFS.cs" />
     <Compile Include="IObjectCache.cs" />
-    <Compile Include="LRUCacheEnumerator.cs" />
-    <Compile Include="LRUObjectCache.cs" />
     <Compile Include="MountpointLookup.cs" />
-    <Compile Include="ObjectCache.cs" />
+    <Compile Include="LRUObjectCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GraphFSSession.cs" />
     <Compile Include="ObjectStore.cs" />

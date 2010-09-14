@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * BinaryExpressionDefinition
  * (c) Stefan Licht, 2010
  */
@@ -43,8 +23,9 @@ using sones.GraphDB.Structures.ExpressionGraph;
 using System.Threading.Tasks;
 using sones.Lib;
 using sones.GraphDB.Managers.Select;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.Result;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.NewAPI;
 
 
 #endregion
@@ -131,7 +112,7 @@ namespace sones.GraphDB.Managers.Structures
             }
             else if (_Left is IDChainDefinition)
             {
-                ValidateResult.Push((_Left as IDChainDefinition).Validate(myDBContext, true, types));
+                ValidateResult.PushIExceptional((_Left as IDChainDefinition).Validate(myDBContext, true, types));
                 TypeOfBinaryExpression = TypesOfBinaryExpression.LeftComplex;
             }
             else if (_Left is TupleDefinition)
@@ -144,7 +125,7 @@ namespace sones.GraphDB.Managers.Structures
                     var exceptionalResult = TryGetBinexpression((_Left as TupleDefinition).First().Value, myDBContext);
                     if (exceptionalResult.Failed())
                     {
-                        return ValidateResult.Push(exceptionalResult);
+                        return ValidateResult.PushIExceptional(exceptionalResult);
                     }
                     _Left = exceptionalResult.Value;
                     TypeOfBinaryExpression = TypesOfBinaryExpression.LeftComplex;
@@ -172,7 +153,7 @@ namespace sones.GraphDB.Managers.Structures
                 TypeOfBinaryExpression = TypesOfBinaryExpression.LeftComplex;
                 var binExprResult = (_Left as UnaryExpressionDefinition).GetBinaryExpression(myDBContext);
 
-                ValidateResult.Push(binExprResult);
+                ValidateResult.PushIExceptional(binExprResult);
 
                 _Left = binExprResult.Value;
             }
@@ -183,7 +164,7 @@ namespace sones.GraphDB.Managers.Structures
                 var exceptionalResult = TryGetBinexpression(_Left, myDBContext);
                 if (exceptionalResult.Failed())
                 {
-                    return ValidateResult.Push(exceptionalResult);
+                    return ValidateResult.PushIExceptional(exceptionalResult);
                 }
                 _Left = exceptionalResult.Value;
                 TypeOfBinaryExpression = TypesOfBinaryExpression.LeftComplex;
@@ -210,7 +191,7 @@ namespace sones.GraphDB.Managers.Structures
             }
             else if (_Right is IDChainDefinition)
             {
-                ValidateResult.Push((_Right as IDChainDefinition).Validate(myDBContext, false, types));
+                ValidateResult.PushIExceptional((_Right as IDChainDefinition).Validate(myDBContext, false, types));
                 if (TypeOfBinaryExpression == TypesOfBinaryExpression.LeftComplex)
                 {
                     TypeOfBinaryExpression = TypesOfBinaryExpression.Complex;
@@ -224,7 +205,7 @@ namespace sones.GraphDB.Managers.Structures
                 }
                 var binExprResult = (_Right as UnaryExpressionDefinition).GetBinaryExpression(myDBContext);
 
-                ValidateResult.Push(binExprResult);
+                ValidateResult.PushIExceptional(binExprResult);
 
                 _Right = binExprResult.Value;
             }
@@ -238,7 +219,7 @@ namespace sones.GraphDB.Managers.Structures
                     var exceptionalResult = TryGetBinexpression((_Right as TupleDefinition).First().Value, myDBContext);
                     if (exceptionalResult.Failed())
                     {
-                        return ValidateResult.Push(exceptionalResult);
+                        return ValidateResult.PushIExceptional(exceptionalResult);
                     }
                     _Right = exceptionalResult.Value;
                     if (TypeOfBinaryExpression == TypesOfBinaryExpression.LeftComplex)
@@ -277,7 +258,7 @@ namespace sones.GraphDB.Managers.Structures
                 var exceptionalResult = TryGetBinexpression(_Right, myDBContext);
                 if (exceptionalResult.Failed())
                 {
-                    return ValidateResult.Push(exceptionalResult);
+                    return ValidateResult.PushIExceptional(exceptionalResult);
                 }
                 _Right = exceptionalResult.Value;
                 if (TypeOfBinaryExpression == TypesOfBinaryExpression.LeftComplex)
@@ -316,7 +297,7 @@ namespace sones.GraphDB.Managers.Structures
                     {
                         if (leftTemp.Failed())
                         {
-                            return ValidateResult.Push(leftTemp);
+                            return ValidateResult.PushIExceptional(leftTemp);
                         }
                         TypeOfBinaryExpression = TypesOfBinaryExpression.Atom;
                         _Left = leftTemp.Value;
@@ -336,7 +317,7 @@ namespace sones.GraphDB.Managers.Structures
                     {
                         if (rightTemp.Failed())
                         {
-                            return ValidateResult.Push(rightTemp);
+                            return ValidateResult.PushIExceptional(rightTemp);
                         }
                         TypeOfBinaryExpression = TypesOfBinaryExpression.Atom;
                         _Right = rightTemp.Value;
@@ -357,11 +338,11 @@ namespace sones.GraphDB.Managers.Structures
 
                     if (leftTemp != null && leftTemp.Failed())
                     {
-                        return ValidateResult.Push(leftTemp);
+                        return ValidateResult.PushIExceptional(leftTemp);
                     }
                     if (rightTemp != null && rightTemp.Failed())
                     {
-                        return ValidateResult.Push(rightTemp);
+                        return ValidateResult.PushIExceptional(rightTemp);
                     }
 
                     #endregion
@@ -404,7 +385,7 @@ namespace sones.GraphDB.Managers.Structures
                     var opResult = Operator.SimpleOperation(((AOperationDefinition)_Left), ((AOperationDefinition)_Right), TypeOfBinaryExpression);
                     if (opResult.Failed())
                     {
-                        return ValidateResult.Push(opResult);
+                        return ValidateResult.PushIExceptional(opResult);
                     }
                     ResultValue = new Exceptional<AOperationDefinition>(opResult.Value);
                 }
@@ -545,14 +526,14 @@ namespace sones.GraphDB.Managers.Structures
 
                         var aTypeOfOperatorResult = GraphDBTypeMapper.ConvertGraph2CSharp(dbTypeOfAttribute.Name);
 
-                        foreach (DBObjectReadout dbo in qresult.Results.Objects)
+                        foreach (var _Vertex in qresult.Vertices)
                         {
-                            if (!(dbo.Attributes.ContainsKey(curAttr.Name)))
+                            if (!(_Vertex.IsAttribute(curAttr.Name)))
                                 continue;
 
                             if (curAttr != null)
                             {
-                                var val = new ValueDefinition(aTypeOfOperatorResult, dbo.Attributes[curAttr.Name]);
+                                var val = new ValueDefinition(aTypeOfOperatorResult, _Vertex.ObsoleteAttributes[curAttr.Name]);
                                 retVal.AddElement(new TupleElement(aTypeOfOperatorResult, val));
                             }
                             else
@@ -1414,7 +1395,7 @@ namespace sones.GraphDB.Managers.Structures
 
         #region Having
 
-        public Exceptional<bool> IsSatisfyHaving(DBObjectReadout myDBObjectReadoutGroup, DBContext dbContext)
+        public Exceptional<bool> IsSatisfyHaving(Vertex myDBObjectReadoutGroup, DBContext dbContext)
         {
 
             if (TypeOfBinaryExpression == TypesOfBinaryExpression.LeftComplex)
@@ -1455,7 +1436,7 @@ namespace sones.GraphDB.Managers.Structures
 
         }
 
-        private Exceptional<Boolean> EvaluateHaving(DBObjectReadout myDBObjectReadoutGroup, AExpressionDefinition complexValue, out String attributeName, out ValueDefinition simpleValue, DBContext dbContext)
+        private Exceptional<Boolean> EvaluateHaving(Vertex myDBObjectReadoutGroup, AExpressionDefinition complexValue, out String attributeName, out ValueDefinition simpleValue, DBContext dbContext)
         {
 
             //GraphDBType graphDBType = null;
@@ -1509,9 +1490,9 @@ namespace sones.GraphDB.Managers.Structures
                 }
             }
 
-            if (myDBObjectReadoutGroup.Attributes.ContainsKey(attributeName))
+            if (myDBObjectReadoutGroup.IsAttribute(attributeName))
             {
-                ADBBaseObject objectValue = GraphDBTypeMapper.GetBaseObjectFromCSharpType(myDBObjectReadoutGroup.Attributes[attributeName]);
+                ADBBaseObject objectValue = GraphDBTypeMapper.GetBaseObjectFromCSharpType(myDBObjectReadoutGroup.ObsoleteAttributes[attributeName]);
                 simpleValue = new ValueDefinition(objectValue);
                 return new Exceptional<bool>(true);
             }

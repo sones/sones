@@ -1,154 +1,140 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
+﻿/*
+ * sones GraphDS API - Edge
+ * (c) Achim 'ahzf' Friedland, 2010
+ */
+
+#region Usings
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
 
-namespace sones.GraphDBInterface.Result
+using sones.GraphDB.NewAPI;
+
+#endregion
+
+namespace sones.GraphDB.Result
 {
-    public class Edge : IEnumerable<DBObjectReadout>
+
+    /// <summary>
+    /// Old and maybe new Edge class for graphdb and user-defined edge types.
+    /// May get more and more functionality from DBEdgeNew.
+    /// </summary>
+    public class Edge : IEnumerable<Vertex>, IEnumerable<EdgeLabel>, IEquatable<Edge>
     {
 
-        private IEnumerable<DBObjectReadout> _Objects;
+        #region Properties
 
-        #region EdgeTypeName
+        #region SourceVertex
 
-        private String _EdgeTypeName;
-        public String EdgeTypeName
+        [HideFromDatabase]
+        public Vertex SourceVertex { get; private set; }
+
+        #endregion
+
+        #region TargetVertex
+
+        [HideFromDatabase]
+        public Vertex TargetVertex
         {
-            get { return _EdgeTypeName; }
-            set { _EdgeTypeName = value; }
+
+            get
+            {
+                return _TargetVertices.FirstOrDefault();
+            }
+
+            //set
+            //{
+            //    _TargetVertices.Clear();
+            //    _TargetVertices.Add(value);
+            //}
+
         }
 
         #endregion
 
-        /// <summary>
-        /// Creates a new edge containing the <paramref name="objects"/>
-        /// </summary>
-        /// <param name="objects">The objects</param>
-        /// <param name="edgeTypeName">The type of the edge. For User.Friends this would be User. </param>
-        public Edge(IEnumerable<DBObjectReadout> objects, String edgeTypeName)
-        {
-            _Objects = objects;
-            _EdgeTypeName = edgeTypeName;
-        }
+        #region TargetVertices
 
-        public Edge(DBObjectReadout dBObjectReadout, String edgeTypeName)
-        {
-            _Objects = new List<DBObjectReadout>(){ dBObjectReadout };
-            _EdgeTypeName = edgeTypeName;
-        }
+        //ToDo: Maybe better use a HashSet<Vertex>!
+        private IEnumerable<Vertex> _TargetVertices;
 
-        #region IEnumerable<DBObjectReadout> Members
-
-        public IEnumerator<DBObjectReadout> GetEnumerator()
-        {
-            return _Objects.GetEnumerator();
-        }
-
-        #endregion
-
-        #region IEnumerable Members
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        #endregion
-
-        #region implicit operator
-
-        public static implicit operator DBObjectReadout(Edge edge)
-        {
-            return edge.FirstOrDefault();
-        }
-
-
-        public static implicit operator List<DBObjectReadout>(Edge edge)
-        {
-            if (edge._Objects is List<DBObjectReadout>)
-                return (edge._Objects as List<DBObjectReadout>);
-            else
-                return edge.ToList();
-        }
-
-        #endregion
-
-        public DBObjectReadout this[Int32 elementAt]
+        [HideFromDatabase]
+        public IEnumerable<Vertex> TargetVertices
         {
             get
             {
-                return _Objects.ElementAtOrDefault(elementAt);
+                return _TargetVertices;
             }
         }
 
-        #region Equals Overrides
+        #endregion
 
-        public override Boolean Equals(System.Object obj)
+        #region EdgeTypeName
+
+        public String EdgeTypeName { get; set; }
+
+        #endregion
+
+        #endregion
+
+        #region Constructor(s)
+
+        #region Edge(mySourceVertex, myTargetVertex, myEdgeTypeName = "")
+
+        public Edge(Vertex mySourceVertex, Vertex myTargetVertex, String myEdgeTypeName = "")
         {
+            SourceVertex    = mySourceVertex;
+            _TargetVertices = new List<Vertex> { myTargetVertex };
+            EdgeTypeName    = myEdgeTypeName;
+        }
 
-            // If parameter is null return false.
-            if (obj == null)
-            {
-                return false;
-            }
+        #endregion
 
-            // If parameter cannot be cast to Point return false.
-            if (obj is Edge)
+        #region Edge(mySourceVertex, myTargetVertices, myEdgeTypeName = "")
+
+        public Edge(Vertex mySourceVertex, IEnumerable<Vertex> myTargetVertices, String myEdgeTypeName = "")
+        {
+            SourceVertex    = mySourceVertex;
+            _TargetVertices = myTargetVertices;
+            EdgeTypeName    = myEdgeTypeName;
+        }
+
+        #endregion
+
+        #endregion
+
+
+        #region this[myElementAt]
+
+        public Vertex this[Int32 myElementAt]
+        {
+            get
             {
-                return Equals((Edge)obj);
-            }
-            else
-            {
-                return false;
+                return _TargetVertices.ElementAtOrDefault(myElementAt);
             }
         }
 
-        public Boolean Equals(Edge p)
+        #endregion
+
+        #region CompareVertices(myVertices1, myVertices2)
+
+        private Boolean CompareVertices(IEnumerable<Vertex> myVertices1, IEnumerable<Vertex> myVertices2)
         {
-            // If parameter is null return false:
-            if ((object)p == null)
+
+            if (myVertices1.Count() != myVertices2.Count())
             {
                 return false;
             }
 
-            return (this._EdgeTypeName == p._EdgeTypeName) && CompareVertices(this._Objects, p._Objects);
-        }
-
-        private bool CompareVertices(IEnumerable<DBObjectReadout> iEnumerable_1, IEnumerable<DBObjectReadout> iEnumerable_2)
-        {
-            if (iEnumerable_1.Count() != iEnumerable_2.Count())
-            {
-                return false;
-            }
-
-            if (iEnumerable_1.Count() == 0)
+            if (myVertices1.Count() == 0)
             {
                 return true;
             }
 
-            foreach (var aOuterResult in iEnumerable_1)
+            foreach (var aOuterResult in myVertices1)
             {
-                var equals = iEnumerable_2.Contains(aOuterResult);
+                var equals = myVertices2.Contains(aOuterResult);
 
                 if (!equals)
                 {
@@ -157,32 +143,145 @@ namespace sones.GraphDBInterface.Result
             }
 
             return true;
+
         }
 
-        public static Boolean operator ==(Edge a, Edge b)
+        #endregion
+
+
+
+        #region Operator overloading
+
+        #region Operator == (myEdge1, myEdge2)
+
+        public static Boolean operator == (Edge myEdge1, Edge myEdge2)
         {
+
             // If both are null, or both are same instance, return true.
-            if (System.Object.ReferenceEquals(a, b))
-            {
+            if (Object.ReferenceEquals(myEdge1, myEdge2))
                 return true;
-            }
 
             // If one is null, but not both, return false.
-            if (((object)a == null) || ((object)b == null))
-            {
+            if (((Object) myEdge1 == null) || ((Object) myEdge2 == null))
                 return false;
-            }
 
-            // Return true if the fields match:
-            return a.Equals(b);
+            return myEdge1.Equals(myEdge2);
+
         }
 
-        public static Boolean operator !=(Edge a, Edge b)
+        #endregion
+
+        #region Operator != (myEdge1, myEdge2)
+
+        public static Boolean operator != (Edge myEdge1, Edge myEdge2)
         {
-            return !(a == b);
+            return !(myEdge1 == myEdge2);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region IEnumerable.GetEnumerator()
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _TargetVertices.GetEnumerator();
+        }
+
+        #endregion
+
+        #region IEnumerable<Vertex> Members
+
+        IEnumerator<Vertex> IEnumerable<Vertex>.GetEnumerator()
+        {
+            return _TargetVertices.GetEnumerator();
+        }
+
+        #endregion
+
+        #region IEnumerable<EdgeLabel> Members
+
+        IEnumerator<EdgeLabel> IEnumerable<EdgeLabel>.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region IEquatable<Edge> Members
+
+        #region Equals(myObject)
+
+        public override Boolean Equals(Object myObject)
+        {
+
+            if (myObject == null)
+                return false;
+
+            var _Object = myObject as Edge;
+            if (_Object == null)
+                return (Equals(_Object));
+
+            return false;
+
+        }
+
+        #endregion
+
+        #region Equals(myDBObject)
+
+        public Boolean Equals(Edge myEdge)
+        {
+
+            if ((Object) myEdge == null)
+                return false;
+
+            //TODO: Here it might be good to check all vertices and
+            //      all edge attributes of the UNIQUE constraint!
+            //return (this.UUID == myDBEdge.UUID);
+
+            return (EdgeTypeName == myEdge.EdgeTypeName) &&
+                CompareVertices(_TargetVertices, myEdge._TargetVertices);
+
+        }
+
+        #endregion
+
+        #endregion
+
+        #region GetHashCode()
+
+        public override Int32 GetHashCode()
+        {
+            return EdgeTypeName.GetHashCode();
+        }
+
+        #endregion
+
+        #region ToString()
+
+        public override String ToString()
+        {
+
+            String _SourceVertexString = "<null>";
+            
+            if (SourceVertex != null)
+                _SourceVertexString = SourceVertex.ToString();
+
+            var _ReturnValue = String.Format("[{0}] SourceVertex {1} -> ", EdgeTypeName, _SourceVertexString);
+
+            foreach (var _Vertex in _TargetVertices)
+                _ReturnValue += _Vertex.ToString() + ", ";
+
+            _ReturnValue.Substring(0, _ReturnValue.Length - 2);
+
+            return _ReturnValue;
+
         }
 
         #endregion
 
     }
+
 }

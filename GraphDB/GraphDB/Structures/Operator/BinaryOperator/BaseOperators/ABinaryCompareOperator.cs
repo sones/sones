@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � ABinaryCompareOperator" />
+﻿/* <id name="GraphDB – ABinaryCompareOperator" />
  * <copyright file="ABinaryCompareOperator.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -57,7 +37,7 @@ using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 
 using sones.GraphDB.Managers.Structures;
 
-using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.TypeManagement;
 
 
 
@@ -1056,6 +1036,13 @@ namespace sones.GraphDB.Structures.Operators
 
             foreach (var aIDX in idx)
             {
+
+                //this is only for such type(DBVertex) that have no AAttributeIndex
+                if (aIDX.Item2 == null)
+                {
+                    continue;
+                }
+                
                 #region Execution
 
                 if (aIDX.Item2 is UUIDIndex && (data.IDChainDefinitions.Item1.LastAttribute != dbContext.DBTypeManager.GetUUIDTypeAttribute()))
@@ -1448,7 +1435,7 @@ namespace sones.GraphDB.Structures.Operators
                 var contBackwardExcept = myDBObjectStream.ContainsBackwardEdge(myIDChainDefinition.LastAttribute.BackwardEdgeDefinition, dbContext, dbObjectCache, myIDChainDefinition.LastAttribute.GetRelatedType(dbContext.DBTypeManager));
 
                 if (contBackwardExcept.Failed())
-                    throw new GraphDBException(contBackwardExcept.Errors);
+                    throw new GraphDBException(contBackwardExcept.IErrors);
 
                 if (contBackwardExcept.Value)
                 {
@@ -1543,7 +1530,7 @@ namespace sones.GraphDB.Structures.Operators
 
             #endregion
 
-            ADBBaseObject leftObj = left.Value;
+            ADBBaseObject leftObj  = left.Value;
             ADBBaseObject rightObj = right.Value;
 
             if (!GraphDBTypeMapper.ConvertToBestMatchingType(ref leftObj, ref rightObj).Value)
@@ -1727,7 +1714,7 @@ namespace sones.GraphDB.Structures.Operators
 
                 if (res.Failed())
                 {
-                    throw new GraphDBException(res.Push(new Error_InvalidIndexOperation(myIndex.IndexName, keyValPair.Key.IndexKeyValues[0].Value, myOperationValue.Value)).Errors);
+                    throw new GraphDBException(res.PushIError(new Error_InvalidIndexOperation(myIndex.IndexName, keyValPair.Key.IndexKeyValues[0].Value, myOperationValue.Value)).IErrors);
                 }
 
                 if (res.Value)

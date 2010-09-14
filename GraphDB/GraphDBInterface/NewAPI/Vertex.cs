@@ -1,25 +1,5 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
- * sones GraphDS API - DBObject
+﻿/*
+ * sones GraphDS API - Vertex
  * (c) Achim 'ahzf' Friedland, 2009 - 2010
  */
 
@@ -37,6 +17,7 @@ using sones.Lib.DataStructures.UUID;
 using sones.GraphFS.DataStructures;
 using sones.GraphDB.Structures;
 using sones.Lib.ErrorHandling;
+using sones.GraphDB.Result;
 
 #endregion
 
@@ -44,39 +25,46 @@ namespace sones.GraphDB.NewAPI
 {
 
     /// <summary>
-    /// The DBObject class for user-defined graph data base types
+    /// The Vertex class for all user-defined vertex types
     /// </summary>
-
-    public class DBVertex : DBObject, IEquatable<DBVertex>
+    public class Vertex : DBObject, IEquatable<Vertex>
     {
-
 
         #region Properties
 
-        [HideFromDatabase]
-        public IDictionary<String, Object> Attributes { get; protected set; }
+        #region Count
+
+        public UInt64 Count
+        {
+            get
+            {
+                return (UInt64) _Attributes.Count();
+            }
+        }
+
+        #endregion
 
         #endregion
 
         #region Constructor(s)
 
-        #region DBVertex()
+        #region Vertex()
 
-        public DBVertex()
+        public Vertex()
         {
-            UUID        = null;
-            Edition     = null;
-            RevisionID  = null;
-            Attributes  = new Dictionary<String, Object>();
         }
 
         #endregion
 
-        #region DBVertex(myAttributes)
+        #region Vertex(myAttributes)
 
-        public DBVertex(IDictionary<String, Object> myAttributes)
+        public Vertex(IDictionary<String, Object> myAttributes)
+            : this()
         {
-            Attributes = myAttributes;
+
+            if (myAttributes != null && myAttributes.Any())
+                AddAttribute(myAttributes);
+
         }
 
         #endregion
@@ -84,35 +72,234 @@ namespace sones.GraphDB.NewAPI
         #endregion
 
 
+        #region Graph operations
 
-        #region this[myAttributeName]
+        #region IsAttribute(myAttributeName)
 
-        [HideFromDatabase]
-        public Object this[String myAttributeName]
+        public Boolean IsAttribute(String myAttributeName)
+        {
+            return _Attributes.ContainsKey(myAttributeName);
+        }
+
+        #endregion
+
+        #region IsProperty(myAttributeName)
+
+        public Boolean IsProperty(String myAttributeName)
         {
 
-            get
+            var _Attribute = GetProperty(myAttributeName);
+
+            if (_Attribute == null)
+                return false;
+
+            if (_Attribute as Vertex != null)
+                return false;
+
+            if (_Attribute as IEnumerable<Vertex> != null)
+                return false;
+
+            return true;
+
+        }
+
+        #endregion
+
+        #region IsEdge(myAttributeName)
+
+        public Boolean IsEdge(String myAttributeName)
+        {
+
+            var _Attribute = GetProperty(myAttributeName);
+
+            if (_Attribute == null)
+                return false;
+
+            if (_Attribute as Vertex != null)
+                return true;
+
+            if (_Attribute as IEnumerable<Vertex> != null)
+                return true;
+
+            return false;
+
+        }
+
+        #endregion
+
+
+        #region GetProperty(myAttributeName)
+
+        public Object GetProperty(String myAttributeName, Func<Object, Boolean> myPropertyQualifier = null)
+        {
+
+            Object _Object = null;
+
+            _Attributes.TryGetValue(myAttributeName, out _Object);
+
+            return _Object;
+
+        }
+
+        #endregion
+
+        #region GetProperty<T>(myAttributeName)
+
+        public T GetProperty<T>(String myAttributeName, Func<T, Boolean> myPropertyQualifier = null)
+        {
+
+            Object _Object = null;
+
+            _Attributes.TryGetValue(myAttributeName, out _Object);
+
+            return (T)_Object;
+
+        }
+
+        #endregion
+
+        #region GetStringProperty(myAttributeName)
+
+        public String GetStringProperty(String myAttributeName, Func<Object, Boolean> myPropertyQualifier = null)
+        {
+
+            Object _Object = null;
+
+            _Attributes.TryGetValue(myAttributeName, out _Object);
+
+            return _Object as String;
+
+        }
+
+        #endregion
+
+
+        #region GetNeighbor(myAttributeName)
+
+        public Vertex GetNeighbor(String myAttributeName)
+        {
+
+            Object _Object = null;
+
+            _Attributes.TryGetValue(myAttributeName, out _Object);
+
+            var _Edge = _Object as Edge;
+            if (_Edge != null)
             {
-
-                Object _Object = null;
-
-                Attributes.TryGetValue(myAttributeName, out _Object);
-                
-                return _Object;
-
+                var _Vertices = _Edge as IEnumerable<Vertex>;
+                if (_Vertices != null)
+                    return _Vertices.First();
             }
 
+            return null;
+
         }
 
         #endregion
-        
+
+        #region GetNeighbor<T>(myAttributeName)
+
+        public T GetNeighbor<T>(String myAttributeName)
+            where T : Vertex
+        {
+
+            Object _Object = null;
+
+            _Attributes.TryGetValue(myAttributeName, out _Object);
+
+            var _Edge = _Object as Edge;
+            if (_Edge != null)
+            {
+                var _Vertices = _Edge as IEnumerable<Vertex>;
+                if (_Vertices != null)
+                    return _Vertices.First() as T;
+            }
+
+            return null;
+
+        }
+
+        #endregion
+
+        #region GetNeighbors(myAttributeName)
+
+        public IEnumerable<Vertex> GetNeighbors(String myAttributeName)
+        {
+
+            Object _Object = null;
+
+            _Attributes.TryGetValue(myAttributeName, out _Object);
+
+            return _Object as Edge;
+
+        }
+
+        #endregion
+
+        #region GetNeighbors<T>(myAttributeName)
+
+        public IEnumerable<T> GetNeighbors<T>(String myAttributeName)
+            where T : Vertex
+        {
+
+            Object _Object = null;
+
+            _Attributes.TryGetValue(myAttributeName, out _Object);
+
+            return _Object as Edge as IEnumerable<T>;
+
+        }
+
+        #endregion
 
 
-        #region Graph Operations
+        #region GetAllNeighbors(myVertexQualifier = null)
+
+        public IEnumerable<Vertex> GetAllNeighbors(Func<Vertex, Boolean> myVertexQualifier = null)
+        {
+
+            if (myVertexQualifier == null)
+                // return all!
+                throw new NotImplementedException();
+
+            throw new NotImplementedException();
+
+        }
+
+        #endregion
+
+
+        #region GetEdge(myAttributeName)
+
+        public IEnumerable<EdgeLabel> GetEdgeInfo(String myAttributeName)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region GetEdges(myDBEdgeQualifier = null)
+
+        public IEnumerable<EdgeLabel> GetEdgeInfo(Func<EdgeLabel, Boolean> myDBEdgeQualifier = null)
+        {
+
+            if (myDBEdgeQualifier == null)
+                // return all!
+                throw new NotImplementedException();
+
+            throw new NotImplementedException();
+
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Special Graph Operations
 
         #region Link()
 
-        public Exceptional Link(DBVertex myDBVertex)
+        public Exceptional Link(Vertex myDBVertex)
         {
 
             if (myDBVertex == null)
@@ -127,7 +314,7 @@ namespace sones.GraphDB.NewAPI
 
         #region Link()
 
-        public Exceptional Link(params DBVertex[] myDBVertices)
+        public Exceptional Link(params Vertex[] myDBVertices)
         {
 
             if (myDBVertices == null)
@@ -142,7 +329,7 @@ namespace sones.GraphDB.NewAPI
 
         #region Link()
 
-        public Exceptional Link(IEnumerable<DBVertex> myDBVertices)
+        public Exceptional Link(IEnumerable<Vertex> myDBVertices)
         {
 
             if (myDBVertices == null)
@@ -158,7 +345,7 @@ namespace sones.GraphDB.NewAPI
 
         #region Unlink()
 
-        public Exceptional Unlink(DBVertex myDBVertex)
+        public Exceptional Unlink(Vertex myDBVertex)
         {
 
             if (myDBVertex == null)
@@ -173,7 +360,7 @@ namespace sones.GraphDB.NewAPI
 
         #region Unlink()
 
-        public Exceptional Unlink(params DBVertex[] myDBVertices)
+        public Exceptional Unlink(params Vertex[] myDBVertices)
         {
 
             if (myDBVertices == null)
@@ -188,7 +375,7 @@ namespace sones.GraphDB.NewAPI
 
         #region Unlink()
 
-        public Exceptional Unlink(IEnumerable<DBVertex> myDBVertices)
+        public Exceptional Unlink(IEnumerable<Vertex> myDBVertices)
         {
 
             if (myDBVertices == null)
@@ -202,100 +389,7 @@ namespace sones.GraphDB.NewAPI
         #endregion
 
 
-        #region GetNeighbors(myDBVertexQualifier = null, myDepth = 0)
-
-        public IEnumerable<DBVertex> GetNeighbors(Func<DBVertex, Boolean> myDBVertexQualifier = null, UInt64 myDepth = 0)
-        {
-
-            if (myDBVertexQualifier == null)
-                // return all!
-                throw new NotImplementedException();
-
-            throw new NotImplementedException();
-
-        }
-
-        #endregion
-
-        #region GetNeighborCount(myDBVertexQualifier = null, myDepth = 0)
-
-        public UInt64 GetNeighborCount(Func<DBVertex, Boolean> myDBVertexQualifier = null, UInt64 myDepth = 0)
-        {
-
-            if (myDBVertexQualifier == null)
-                // count all!
-                throw new NotImplementedException();
-
-            throw new NotImplementedException();
-
-        }
-
-        #endregion
-
-
-        #region GetEdge(myEdgeName)
-
-        public IEnumerable<DBObject> GetEdge(String myEdgeName)
-        {
-
-            //ToDo: Rethink me!
-
-            var prop = this.GetType().GetProperty(myEdgeName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-            if (prop == null)
-                return null;
-
-            var edgeProp = this.GetType().GetProperty(myEdgeName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).GetValue(this, null) as IList;
-            if (edgeProp == null)
-                return null;
-            //yield break;
-
-
-            var retVal = new List<DBObject>();
-
-            foreach (var edge in edgeProp)
-            {
-                retVal.Add(edge as DBObject);
-                //yield return edge as DBObject;
-            }
-
-            return retVal;
-
-        }
-
-        #endregion
-
-        #region GetEdges(myDBEdgeQualifier = null, myDepth = 0)
-
-        public IEnumerable<DBEdge> GetEdges(Func<DBEdge, Boolean> myDBEdgeQualifier = null, UInt64 myDepth = 0)
-        {
-
-            if (myDBEdgeQualifier == null)
-                // return all!
-                throw new NotImplementedException();
-
-            throw new NotImplementedException();
-
-        }
-
-        #endregion
-
-        #region GetEdgeCount(myDBEdgeQualifier = null, myDepth = 0)
-
-        public UInt64 GetEdgeCount(Func<DBEdge, Boolean> myDBEdgeQualifier = null, UInt64 myDepth = 0)
-        {
-
-            if (myDBEdgeQualifier == null)
-                // count all!
-                throw new NotImplementedException();
-
-            throw new NotImplementedException();
-
-        }
-
-        #endregion
-
-
-        #region Traverse(...)
+        #region TraversePath(...)
 
         /// <summary>
         /// Starts a traversal and returns the found paths or an aggreagted result
@@ -309,16 +403,20 @@ namespace sones.GraphDB.NewAPI
         /// <param name="myStopEvaluator">Will stop the traversal on a condition</param>
         /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
         /// <returns></returns>
-        public T TraversePath<T>(   TraversalOperation                       TraversalOperation  = TraversalOperation.BreathFirst,
-                                    Func<DBPath, DBEdge, Boolean>            myFollowThisEdge    = null,
-                                    Func<DBPath, DBEdge, DBVertex, Boolean>  myFollowThisPath    = null,
-                                    Func<DBPath, Boolean>                    myMatchEvaluator    = null,
-                                    Action<DBPath>                           myMatchAction       = null,
-                                    Func<TraversalState, Boolean>            myStopEvaluator     = null,
-                                    Func<IEnumerable<DBPath>, T>             myWhenFinished      = null)
+        public T TraversePath<T>(TraversalOperation                         TraversalOperation = TraversalOperation.BreathFirst,
+                                 Func<DBPath, EdgeLabel, Boolean>           myFollowThisEdge = null,
+                                 Func<DBPath, EdgeLabel, Vertex, Boolean>   myFollowThisPath = null,
+                                 Func<DBPath, Boolean>                      myMatchEvaluator = null,
+                                 Action<DBPath>                             myMatchAction = null,
+                                 Func<TraversalState, Boolean>              myStopEvaluator = null,
+                                 Func<IEnumerable<DBPath>, T>               myWhenFinished = null)
         {
             return GraphDBInterface.TraversePath(SessionToken, this, TraversalOperation, myFollowThisEdge, myFollowThisPath, myMatchEvaluator, myMatchAction, myStopEvaluator, myWhenFinished);
         }
+
+        #endregion
+
+        #region TraverseVertex(...)
 
         /// <summary>
         /// Starts a traversal and returns the found vertices or an aggreagted result
@@ -331,12 +429,12 @@ namespace sones.GraphDB.NewAPI
         /// <param name="myStopEvaluator">Will stop the traversal on a condition</param>
         /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
         /// <returns></returns>
-        public T TraverseVertex<T>(TraversalOperation TraversalOperation = TraversalOperation.BreathFirst,
-                                    Func<DBVertex, DBEdge, Boolean> myFollowThisEdge = null,
-                                    Func<DBVertex, Boolean> myMatchEvaluator = null,
-                                    Action<DBVertex> myMatchAction = null,
-                                    Func<TraversalState, Boolean> myStopEvaluator = null,
-                                    Func<IEnumerable<DBVertex>, T> myWhenFinished = null)
+        public T TraverseVertex<T>(TraversalOperation                       TraversalOperation = TraversalOperation.BreathFirst,
+                                    Func<Vertex, EdgeLabel, Boolean>        myFollowThisEdge = null,
+                                    Func<Vertex, Boolean>                   myMatchEvaluator = null,
+                                    Action<Vertex>                          myMatchAction = null,
+                                    Func<TraversalState, Boolean>           myStopEvaluator = null,
+                                    Func<IEnumerable<Vertex>, T>            myWhenFinished = null)
         {
             return GraphDBInterface.TraverseVertex(SessionToken, this, TraversalOperation, myFollowThisEdge, myMatchEvaluator, myMatchAction, myStopEvaluator, myWhenFinished);
         }
@@ -350,7 +448,7 @@ namespace sones.GraphDB.NewAPI
 
         #region Operator == (myDBObject1, myDBVertex2)
 
-        public static Boolean operator == (DBVertex myDBVertex1, DBVertex myDBVertex2)
+        public static Boolean operator == (Vertex myDBVertex1, Vertex myDBVertex2)
         {
 
             // If both are null, or both are same instance, return true.
@@ -369,7 +467,7 @@ namespace sones.GraphDB.NewAPI
 
         #region Operator != (myDBVertex1, myDBVertex2)
 
-        public static Boolean operator != (DBVertex myDBVertex1, DBVertex myDBVertex2)
+        public static Boolean operator != (Vertex myDBVertex1, Vertex myDBVertex2)
         {
             return !(myDBVertex1 == myDBVertex2);
         }
@@ -378,7 +476,7 @@ namespace sones.GraphDB.NewAPI
 
         #endregion
 
-        #region IEquatable<DBObject> Members
+        #region IEquatable<Vertex> Members
 
         #region Equals(myObject)
 
@@ -388,7 +486,7 @@ namespace sones.GraphDB.NewAPI
             if (myObject == null)
                 return false;
 
-            var _Object = myObject as DBVertex;
+            var _Object = myObject as Vertex;
             if (_Object == null)
                 return (Equals(_Object));
 
@@ -398,18 +496,18 @@ namespace sones.GraphDB.NewAPI
 
         #endregion
 
-        #region Equals(myDBVertex)
+        #region Equals(myVertex)
 
-        public Boolean Equals(DBVertex myDBVertex)
+        public Boolean Equals(Vertex myVertex)
         {
 
-            if ((object) myDBVertex == null)
+            if ((object) myVertex == null)
             {
                 return false;
             }
 
             //TODO: Here it might be good to check all attributes of the UNIQUE constraint!
-            return (this.UUID == myDBVertex.UUID);
+            return (this.UUID == myVertex.UUID);
 
         }
 
@@ -426,15 +524,14 @@ namespace sones.GraphDB.NewAPI
 
         #endregion
 
-
         #region ToString()
 
         public override String ToString()
         {
 
-            var _ReturnValue = new StringBuilder(Attributes.Count + " Attributes: ");
+            var _ReturnValue = new StringBuilder(_Attributes.Count + " Attributes: ");
 
-            foreach (var _KeyValuePair in Attributes)
+            foreach (var _KeyValuePair in _Attributes)
                 _ReturnValue.Append(_KeyValuePair.Key + " = '" + _KeyValuePair.Value + "', ");
 
             _ReturnValue.Length = _ReturnValue.Length - 2;
@@ -444,6 +541,7 @@ namespace sones.GraphDB.NewAPI
         }
 
         #endregion
+
 
     }
 

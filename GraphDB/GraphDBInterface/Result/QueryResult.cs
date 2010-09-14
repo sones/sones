@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � outer Query Result" />
+﻿/* <id name="GraphDB – outer Query Result" />
  * <copyright file="QueryResult.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -33,35 +13,39 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
 using System.Text;
-using sones.Lib;
 using sones.Lib.ErrorHandling;
-
+using sones.GraphDB.NewAPI;
 
 #endregion
 
-namespace sones.GraphDBInterface.Result
+namespace sones.GraphDB.Result
 {
 
     /// <summary>
     /// This class hold all the data that comes out of the database after a query is run
     /// </summary>
-    public class QueryResult : DynamicObject, IEnumerable<DBObjectReadout>, IDisposable
+    public class QueryResult : IEnumerable<Vertex>, IDisposable
     {
 
         #region Properties
 
         #region ResultType
 
-        private ResultType _ResultType;
-
         public ResultType ResultType
         {
             get
             {
-                return _ResultType;
+                
+                if (Success)
+                    return ResultType.Successful;
+                
+                if (PartialSuccess)
+                    return ResultType.PartialSuccessful;
+
+                return ResultType.Failed;
+
             }
         }
 
@@ -73,7 +57,7 @@ namespace sones.GraphDBInterface.Result
         {
             get
             {
-                return _ResultType == ResultType.Successful;
+                return !_IErrors.Any() && (!_IWarnings.Any());
             }
         }
 
@@ -85,7 +69,7 @@ namespace sones.GraphDBInterface.Result
         {
             get
             {
-                return _ResultType == ResultType.PartialSuccessful;
+                return (!_IErrors.Any() && _IWarnings.Any());
             }
         }
 
@@ -97,52 +81,53 @@ namespace sones.GraphDBInterface.Result
         {
             get
             {
-                return _ResultType == ResultType.Failed;
+                return _IErrors.Any();
             }
         }
 
         #endregion
 
 
-        #region Errors
+        #region IWarnings
 
-        private List<IError> _Errors = null;
+        protected Stack<IWarning> _IWarnings;
 
-        public IEnumerable<IError> Errors
-        {
-            get
-            {
-                return _Errors;
-            }
-        }
-
-        #endregion
-
-        #region Warnings
-
-        private List<IWarning> _Warnings = null;
-
+        /// <summary>
+        /// A list of exceptions that might have been thrown while determining the actual value of T.
+        /// It is a list, as within an expression tree there might occure more than one exception.
+        /// </summary>
         public IEnumerable<IWarning> Warnings
         {
             get
             {
-                return _Warnings;
+                return _IWarnings;
             }
         }
 
         #endregion
 
-        #region SelectionListResult
+        #region IErrors
 
-        private SelectionResultSet _Results = null;
+        protected Stack<IError> _IErrors;
 
-        public SelectionResultSet Results
+        /// <summary>
+        /// A list of exceptions that might have been thrown while determining the actual value of T.
+        /// It is a list, as within an expression tree there might occure more than one exception.
+        /// </summary>
+        public IEnumerable<IError> Errors
         {
             get
             {
-                return _Results;
+                return _IErrors;
             }
         }
+
+        #endregion
+
+
+        #region Vertices
+
+        public IEnumerable<Vertex> Vertices { get; set; }
 
         #endregion
 
@@ -158,19 +143,19 @@ namespace sones.GraphDBInterface.Result
 
         #endregion
 
-        #region NumberOfAffectedDBObjects
+        #region NumberOfAffectedVertices
 
-        public UInt64 TotalNumberOfAffectedDBObjects
+        public UInt64 NumberOfAffectedVertices
         {
             get
             {
 
-                var _NumberOfAffectedDBObjects = 0UL;
+                var _NumberOfAffectedVertices = 0UL;
 
-                if (Results != null)
-                        _NumberOfAffectedDBObjects = Results.NumberOfAffectedObjects;
+                if (Vertices != null)
+                        _NumberOfAffectedVertices = (UInt64) Vertices.Count();
 
-                return _NumberOfAffectedDBObjects;
+                return _NumberOfAffectedVertices;
 
             }
         }
@@ -179,111 +164,266 @@ namespace sones.GraphDBInterface.Result
 
         #endregion
 
-        #region Constructors
+        #region Constructor(s)
 
-        public QueryResult(Exceptional exceptional)
-            : this(exceptional.Errors, exceptional.Warnings)
+        #region QueryResult()
+
+        public QueryResult()
         {
+            _IErrors    = new Stack<IError>();
+            _IWarnings  = new Stack<IWarning>();
+            Vertices     = new List<Vertex>();
         }
 
-        public QueryResult(IError error)
-            : this(myErrors: new List<IError>() { error })
-        { }
+        #endregion
 
-        public QueryResult(IWarning warning)
-            : this(myErrors: new List<IError>(), myWarnings: new List<IWarning>() { warning })
-        { }
+        #region QueryResult(myIWarning)
 
-        public QueryResult(IEnumerable<IError> myErrors = null, IEnumerable<IWarning> myWarnings = null)
-        {               
-            _ResultType = ResultType.Successful;
-            _Results = new SelectionResultSet();
-
-            if (myErrors != null)
-            {
-                _Errors = GetIErrors(myErrors);
-            }
-            else
-                _Errors = new List<IError>();
-
-            if (myWarnings != null)
-            {
-                _Warnings = GetDBWarnings(myWarnings);
-            }
-            else
-                _Warnings = new List<IWarning>();
-
-            SetResultType();
-
+        /// <summary>
+        /// Init using a single warning.
+        /// </summary>
+        public QueryResult(IWarning myIWarning)
+            : this()
+        {
+            PushIWarning(myIWarning);
         }
 
-        public QueryResult(SelectionResultSet mySelectionListElementResult, IEnumerable<IWarning> myWarnings = null)
+        #endregion
+
+        #region QueryResult(myIWarnings)
+
+        /// <summary>
+        /// Init using a list of warnings.
+        /// </summary>
+        public QueryResult(IEnumerable<IWarning> myIWarnings)
+            : this()
+        {
+            PushIWarnings(myIWarnings);
+        }
+
+        #endregion
+
+        #region QueryResult(myIError)
+
+        public QueryResult(IError myIError)
+            : this()
+        {
+            PushIError(myIError);
+        }
+
+        #endregion
+
+        #region QueryResult(myIErrors)
+
+        public QueryResult(IEnumerable<IError> myIErrors)
+            : this()
+        {
+            PushIErrors(myIErrors);
+        }
+
+        #endregion
+
+        #region QueryResult(myIExceptional)
+
+        public QueryResult(IExceptional myIExceptional)
+            : this()
+        {
+            PushIExceptional(myIExceptional);
+        }
+
+        #endregion
+
+        #region QueryResult(myIErrors, myIWarnings)
+
+        public QueryResult(IEnumerable<IError> myIErrors, IEnumerable<IWarning> myIWarnings)
+            : this()
+        {
+            PushIErrors(myIErrors);
+            PushIWarnings(myIWarnings);
+        }
+
+        #endregion
+
+        #region QueryResult(myVertex, myIWarnings = null)
+
+        public QueryResult(Vertex myVertex, IEnumerable<IWarning> myIWarnings = null)
             : this()
         {
 
-            if (myWarnings != null)
-                _Warnings = GetDBWarnings(myWarnings);
+            PushIWarnings(myIWarnings);
 
-            SetResultType();
+            if (myVertex != null)
+                Vertices = new List<Vertex>{ myVertex };
 
-            if (mySelectionListElementResult != null)
-            {
-                _Results = mySelectionListElementResult;
-            }
-        
-        }
-        
-        private void SetResultType()
-        {
-            if (!_Errors.IsNullOrEmpty())
-                _ResultType = ResultType.Failed;
-            else if (!_Warnings.IsNullOrEmpty())
-                _ResultType = ResultType.PartialSuccessful;
-            else
-                _ResultType = ResultType.Successful;
         }
 
         #endregion
+
+        #region QueryResult(myVertices, myIWarnings = null)
+
+        public QueryResult(IEnumerable<Vertex> myVertices, IEnumerable<IWarning> myIWarnings = null)
+            : this()
+        {
+
+            PushIWarnings(myIWarnings);
+
+            if (myVertices != null)
+                Vertices = myVertices;
+
+        }
+
+        #endregion
+
+        #endregion
+
+
+        #region Push(IWarning(s)/IError(s)/IExceptional)
+
+        #region PushIWarning(myIWarning)
+
+        /// <summary>
+        /// Adds a single warning.
+        /// </summary>
+        public QueryResult PushIWarning(IWarning myIWarning)
+        {
+            lock (this)
+            {
+                _IWarnings.Push(myIWarning);
+                return this;
+            }
+        }
+
+        #endregion
+
+        #region PushIWarnings(myIWarnings)
+
+        /// <summary>
+        /// Adds a list of warnings.
+        /// </summary>
+        public QueryResult PushIWarnings(IEnumerable<IWarning> myIWarnings)
+        {
+            lock (this)
+            {
+
+                if (myIWarnings != null && myIWarnings.Any())
+                    foreach (var _Warning in myIWarnings.ToList().Reverse<IWarning>())
+                        _IWarnings.Push(_Warning);
+
+                return this;
+
+            }
+        }
+
+        #endregion
+
+        #region PushIError(myIError)
+
+        /// <summary>
+        /// Adds a single error.
+        /// </summary>
+        public QueryResult PushIError(IError myIError)
+        {
+            lock (this)
+            {
+                _IErrors.Push(myIError);
+                return this;
+            }
+        }
+
+        #endregion
+
+        #region PushIErrors(myIErrors)
+
+        /// <summary>
+        /// Adds a list of errors.
+        /// </summary>
+        public QueryResult PushIErrors(IEnumerable<IError> myIErrors)
+        {
+            lock (this)
+            {
+
+                if (myIErrors != null && myIErrors.Any())
+                    foreach (var _Error in myIErrors.ToList().Reverse<IError>())
+                        _IErrors.Push(_Error);
+
+                return this;
+
+            }
+        }
+
+        #endregion
+
+        #region PushIExceptional(myIExceptional)
+
+        /// <summary>
+        /// Adds the given exceptional.
+        /// </summary>
+        public QueryResult PushIExceptional(IExceptional myIExceptional)
+        {
+            lock (this)
+            {
+
+                // Add warnings...
+                if (myIExceptional.IWarnings != null && myIExceptional.IWarnings.Any())
+                    foreach (var _Warning in myIExceptional.IWarnings.ToList().Reverse<IWarning>())
+                        _IWarnings.Push(_Warning);
+
+                // Add errors...
+                if (myIExceptional.IErrors != null && myIExceptional.IErrors.Any())
+                    foreach (var _Error in myIExceptional.IErrors.ToList().Reverse<IError>())
+                        _IErrors.Push(_Error);
+
+                return this;
+
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+
 
         #region this[myAttribute]
 
         /// <summary>
-        /// This will return the given attribute of the first DBObject of the first
-        /// selectionelement or it will return null.
+        /// Collects the values of the given AttributeName from all vertices.
         /// </summary>
         /// <param name="myAttribute"></param>
         /// <returns></returns>
+        [Obsolete("Do no longer use this!")]
         public Object this[String myAttribute]
         {
             get
             {
 
-                if (_Results != null)
-                    if (_Results.Objects != null)
+                if (Vertices != null)
+                {
+
+                    if (Vertices.Count() == 1)
                     {
-                        if (_Results.Objects.Count() == 1)
-                        {
-                            if (_Results.Objects.First().Attributes.ContainsKey(myAttribute))
-                                return _Results.Objects.First().Attributes[myAttribute];
-                            else
-                                return null;
-                        }
 
-                        if (_Results.Objects.Count() > 1)
-                        {
-
-                            var _ReturnValue = new List<Object>();
-
-                            foreach (var _DBObjectReadout in _Results.Objects)
-                                if (_DBObjectReadout.Attributes != null)
-                                    if (_DBObjectReadout.Attributes.ContainsKey(myAttribute))
-                                        _ReturnValue.Add(_DBObjectReadout.Attributes[myAttribute]);
-
-                            return _ReturnValue;
-
-                        }
+                        if (Vertices.First().IsAttribute(myAttribute))
+                            return Vertices.First().GetProperty(myAttribute);
+                        else
+                            return null;
 
                     }
+
+                    if (Vertices.Count() > 1)
+                    {
+
+                        var _ReturnValue = new List<Object>();
+
+                        foreach (var _Vertex in Vertices)
+                                if (_Vertex.IsAttribute(myAttribute))
+                                    _ReturnValue.Add(_Vertex.GetProperty(myAttribute));
+
+                        return _ReturnValue;
+
+                    }
+
+                }
 
                 return null;
 
@@ -292,48 +432,48 @@ namespace sones.GraphDBInterface.Result
 
         #endregion
 
-        #region GetFirstResult<T>(mySelectionElement, myAttribute)
+        //#region GetFirstResult<T>(myAttribute)
 
-        /// <summary>
-        /// This will return a list of resulsts for the given attribute of the given
-        /// selectionelement or it will return null.
-        /// </summary>
-        /// <param name="myAttribute"></param>
-        /// <returns></returns>
-        public T GetFirstResult<T>(String myAttribute)
-        {
+        ///// <summary>
+        ///// This will return a list of resulsts for the given attribute of the given
+        ///// selectionelement or it will return null.
+        ///// </summary>
+        ///// <param name="myAttribute"></param>
+        ///// <returns></returns>
+        //public T GetFirstResult<T>(String myAttribute)
+        //{
 
-            if (_Results != null)
-                if (_Results != null)
-                    if (_Results.Objects != null)
-                        if (_Results.Objects.Count() > 0)
-                            if (_Results.Objects.FirstOrDefault() != null)
-                                if (_Results.Objects.First().Attributes.ContainsKey(myAttribute))
-                                {
+        //    if (Vertices != null)
+        //        if (Vertices != null)
+        //            if (Vertices != null)
+        //                if (Vertices.Any())
+        //                    if (Vertices.FirstOrDefault() != null)
+        //                        if (Vertices.First().Attributes.ContainsKey(myAttribute))
+        //                        {
 
-                                    T tmp;
+        //                            T tmp;
 
-                                    try
-                                    {
-                                        tmp = (T)_Results.Objects.First().Attributes[myAttribute];
-                                    }
-                                    catch
-                                    {
-                                        return default(T);
-                                    }
+        //                            try
+        //                            {
+        //                                tmp = (T)Vertices.First().Attributes[myAttribute];
+        //                            }
+        //                            catch
+        //                            {
+        //                                return default(T);
+        //                            }
 
-                                    return tmp;
+        //                            return tmp;
 
-                                }
+        //                        }
 
 
-            return default(T);
+        //    return default(T);
 
-        }
+        //}
 
-        #endregion
+        //#endregion
 
-        #region GetResults<T>(mySelectionElement, myAttribute)
+        #region GetResults<T>(myAttribute)
 
         /// <summary>
         /// This will return the given attribute of the first DBObject of the given
@@ -341,40 +481,40 @@ namespace sones.GraphDBInterface.Result
         /// </summary>
         /// <param name="myAttribute"></param>
         /// <returns></returns>
-        public List<T> GetResults<T>(String myAttribute)
+        [Obsolete("Use _QueryResult.First()...")]
+        public IEnumerable<T> GetResults<T>(String myAttribute)
         {
 
-            if (_Results != null)
-                if (_Results != null)
-                    if (_Results.Objects != null)
-                        if (_Results.Objects.Count() > 0)
+            if (Vertices != null)
+                if (Vertices != null)
+                    if (Vertices != null)
+                        if (Vertices.Count() > 0)
                         {
 
-                            List<T> _ReturnValue = new List<T>();
+                            var _ReturnValue = new List<T>();
 
-                            foreach (var _DBObjectReadout in _Results.Objects)
-                                if (_DBObjectReadout.Attributes != null)
-                                    if (_DBObjectReadout.Attributes.ContainsKey(myAttribute))
+                            foreach (var _Vertex in Vertices)
+                                if (_Vertex.IsAttribute(myAttribute))
+                                {
+
+                                    T tmp;
+
+                                    try
                                     {
-
-                                        T tmp;
-
-                                        try
-                                        {
-                                            tmp = (T)_DBObjectReadout.Attributes[myAttribute];
-                                            _ReturnValue.Add(tmp);
-                                        }
-                                        catch (InvalidCastException ice)
-                                        {
-                                            throw ice;
-                                        }
-                                        catch
-                                        {
-                                            // Ignore exception and go on adding the next element!
-                                            //return default(List<T>);
-                                        }
-
+                                        tmp = _Vertex.GetProperty<T>(myAttribute);
+                                        _ReturnValue.Add(tmp);
                                     }
+                                    catch (InvalidCastException ice)
+                                    {
+                                        throw ice;
+                                    }
+                                    catch
+                                    {
+                                        // Ignore exception and go on adding the next element!
+                                        //return default(List<T>);
+                                    }
+
+                                }
 
                             return _ReturnValue;
 
@@ -387,146 +527,73 @@ namespace sones.GraphDBInterface.Result
 
         #endregion
 
-        #region GetWarningsAsString()
 
-        public String GetWarningsAsString()
+        public IEnumerable<T> Aggreagte<T>(String myAttributeName)
         {
 
-            if (_Warnings == null || _Warnings.Count == 0)
-                return String.Empty;
+            var _list = new List<T>();
+            T   _T    = default(T);
 
-            return _Warnings.Aggregate("", (result, element) =>
+            foreach (var _Vertex in Vertices)
             {
-                result += String.Format("[{0}]\r\n{1}\r\n\r\n", element.GetType().Name, element.ToString());
-                return result;
-            });
+                _T = _Vertex.GetProperty<T>(myAttributeName);
 
-        }
+                if (_T != null)
+                    _list.Add(_T);
 
-        #endregion
-
-        #region GetErrorsAsString()
-
-        public String GetErrorsAsString()
-        {
-
-            if (_Errors == null || _Errors.Count == 0)
-                return GetWarningsAsString();
-
-            return _Errors.Aggregate("", (result, element) =>
-            {
-                result += String.Format("[{0}]\r\n{1}\r\n\r\n", element.GetType().Name, element.ToString());
-                return result;
-            })
-
-            + GetWarningsAsString();
-
-        }
-
-        #endregion
-
-        #region AddWarning(myIWarning)
-
-        public void AddWarning(IWarning myIWarning)
-        {
-
-            _Warnings.Add(myIWarning);
-
-            if (_Warnings.Count > 0)
-                _ResultType = ResultType.PartialSuccessful;
-
-        }
-
-        #endregion
-
-        #region AddWarnings(myIWarnings)
-
-        public void AddWarnings(IEnumerable<IWarning> myIWarnings)
-        {
-
-            _Warnings.AddRange(GetDBWarnings(myIWarnings));
-
-            if (_Warnings.Count > 0)
-                _ResultType = ResultType.PartialSuccessful;
-
-        }
-
-        #endregion
-
-        #region AddErrors(myErrors)
-
-        public void AddErrors(IEnumerable<IError> myErrors)
-        {
-            _Errors.AddRange(GetIErrors(myErrors));
-            _ResultType = ResultType.Failed;
-        }
-
-        #endregion
-
-        #region AddErrorsAndWarnings(myExceptional)
-
-        public void AddErrorsAndWarnings(Exceptional myExceptional)
-        {
-
-            if (!myExceptional.Errors.IsNullOrEmpty())
-            {
-                AddErrors(myExceptional.Errors);
             }
 
-            if (!myExceptional.Warnings.IsNullOrEmpty())
-            {
-                AddWarnings(myExceptional.Warnings);
-            }
+            return _list;
 
         }
 
-        #endregion
 
-        #region AddResult(SelectionResultSet selResultSet)
-
-        public void SetResult(SelectionResultSet mySelectionResultSet)
-        {
-            _Results = mySelectionResultSet;
-        }
-
-        #endregion
-
-
-        #region Members of DynamicObject
-
-        #region TryGetMember(myBinder, out myResult)
-
-        public override Boolean TryGetMember(GetMemberBinder myBinder, out Object myResult)
+        /// <summary>
+        /// Search for a DBObjectReadout with the specified attribute <paramref name="attributeName"/> and <paramref name="attributeValue"/> and return it.
+        /// For more than 1 result an exception will be thrown.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="selection"></param>
+        /// <param name="attributeName"></param>
+        /// <param name="attributeValue"></param>
+        /// <exception cref="ArgumentException"></exception>
+        /// <returns>Null if no element was found or the element itself</returns>
+        public Vertex SearchVertex(params Tuple<String, Object>[] myAttributes)
         {
 
-            myResult = GetResults<Object>(myBinder.Name);
-
-            return true;
-
-        }
-
-        #endregion
-
-        #region TrySetMember(myBinder, myObject)
-
-        public override Boolean TrySetMember(SetMemberBinder myBinder, Object myObject)
-        {
-            return true;
+            var _Vertices = Vertices.Where(_Vertex =>
+                    {
+                        return myAttributes.Any(t => _Vertex.IsAttribute(t.Item1) && _Vertex.GetProperty(t.Item1).Equals(t.Item2));
+                    }
+                );
+            
+            return _Vertices.FirstOrDefault();
 
         }
 
-        #endregion
 
-        #endregion
+        //#region Members of DynamicObject
 
+        //#region TryGetMember(myBinder, out myResult)
 
-        #region IEnumerable<DBObjectReadout> Members
+        //public override Boolean TryGetMember(GetMemberBinder myBinder, out Object myResult)
+        //{
 
-        public IEnumerator<DBObjectReadout> GetEnumerator()
+        //    myResult = GetResults<Object>(myBinder.Name);
+
+        //    return true;
+
+        //}
+
+        //#endregion
+
+        //#endregion
+
+        #region IEnumerable<Vertex> Members
+
+        public IEnumerator<Vertex> GetEnumerator()
         {
-
-            return _Results.Objects.GetEnumerator();
-
+            return Vertices.GetEnumerator();
         }
 
         #endregion
@@ -535,7 +602,7 @@ namespace sones.GraphDBInterface.Result
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _Results.Objects.GetEnumerator();
+            return Vertices.GetEnumerator();
         }
 
         #endregion
@@ -543,22 +610,18 @@ namespace sones.GraphDBInterface.Result
 
         #region ToString()
 
-        public override String ToString()
+        #region GetIWarningsAsString()
+
+        public String GetIWarningsAsString()
         {
-            return _ResultType.ToString() + ", " + TotalNumberOfAffectedDBObjects.ToString() + " DBObject(s) affected";
-        }
 
-        #endregion
-
-        #region ToErrorString()
-
-        public String ToErrorString()
-        {
+            if (_IWarnings == null || !_IWarnings.Any())
+                return String.Empty;
 
             var _StringBuilder = new StringBuilder();
 
-            foreach (var _ErrorString in _Errors)
-                _StringBuilder.AppendLine(_ErrorString.Message);
+            foreach (var _Warning in _IWarnings)
+                _StringBuilder.AppendLine(String.Format("{0} => {1}", _Warning.GetType().Name, _Warning.ToString()));
 
             return _StringBuilder.ToString();
 
@@ -566,47 +629,42 @@ namespace sones.GraphDBInterface.Result
 
         #endregion
 
+        #region GetIErrorsAsString()
+
+        public String GetIErrorsAsString()
+        {
+
+            if (_IErrors == null || !_IErrors.Any())
+                return String.Empty;
+
+            var _StringBuilder = new StringBuilder();
+
+            foreach (var _IError in _IErrors)
+                _StringBuilder.AppendLine(String.Format("{0} => {1}", _IError.GetType().Name, _IError.ToString()));
+
+            return _StringBuilder.ToString();
+
+        }
+
+        #endregion
+
+        #region ToString()
+
+        public override String ToString()
+        {
+            return ResultType.ToString() + ", " + NumberOfAffectedVertices.ToString() + " Vertices affected";
+        }
+
+        #endregion
+
+        #endregion
+
+
         #region IDisposable Members
 
         public void Dispose()
         {
             // throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region private helper
-
-        private List<IWarning> GetDBWarnings(IEnumerable<IWarning> myWarnings)
-        {
-
-            var result = new List<IWarning>();
-
-            if (myWarnings != null)
-            {
-                foreach (var aWarning in myWarnings)
-                {
-                    result.Add(aWarning);
-                }
-            }
-
-            return result;
-        }
-
-        private List<IError> GetIErrors(IEnumerable<IError> myErrors)
-        {
-            List<IError> result = new List<IError>();
-
-            if (myErrors != null)
-            {
-                foreach (var aError in myErrors)
-                {
-                    result.Add((IError)aError);
-                }
-
-            }
-
-            return result;
         }
 
         #endregion

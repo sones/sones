@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � EdgeTypeSingle" />
+﻿/* <id name="GraphDB – EdgeTypeSingle" />
  * <copyright file="EdgeTypeSingle.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -41,8 +21,9 @@ using sones.GraphFS.DataStructures;
 using sones.Lib;
 using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.Result;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.NewAPI;
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
@@ -52,6 +33,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
     
     public class EdgeTypeSingleReference : ASingleReferenceEdgeType
     {
+
         private Tuple<ObjectUUID, Reference> _ObjectUUID;
         
         #region TypeCode
@@ -156,7 +138,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             _ObjectUUID = new Tuple<ObjectUUID, Reference>(aReference.ObjectUUID, aReference);
         }
 
-        public override DBObjectReadout GetReadout(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO)
+        public override Vertex GetVertex(Func<ObjectUUID, Vertex> GetAllAttributesFromDBO)
         {
             return GetAllAttributesFromDBO(_ObjectUUID.Item1);
         }

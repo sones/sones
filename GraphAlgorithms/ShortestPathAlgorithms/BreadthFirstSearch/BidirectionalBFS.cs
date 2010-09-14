@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � BidirectionalBFS" />
+﻿/* <id name="GraphDB – BidirectionalBFS" />
  * <copyright file="BidirectionalBFS.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -189,15 +169,13 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
             //instead of inserting only the startObject, we are using the startObject and the friends of the startObject (which could be restricted)
             var firstUUIDs = myEdge.GetAllReferenceIDs();
 
-            for (int i = 0; i < firstUUIDs.Count(); i++)
+            foreach (var element in firstUUIDs)
             {
-                var element = firstUUIDs.ElementAt(i);
-
                 if (element != null)
                 {
                     //create a new node and set root = parent
-                    var currentNodeLeft = new Node(element); 
-                    
+                    var currentNodeLeft = new Node(element);
+
                     #region check if the child is the target
                     //start and target are conntected directly
                     if (currentNodeLeft.Key == myEnd.ObjectUUID)
@@ -209,7 +187,7 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                         rootFriends.Add(currentNodeLeft.Key);
 
                         shortestPathLength = Convert.ToByte(depthLeft);
-                        
+
                         return new TargetAnalyzer(root, rootFriends, target, shortestPathLength, shortestOnly, findAll).getPaths();
                     }
                     #endregion check if the child is the target
@@ -236,6 +214,7 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                     rootFriends.Add(currentNodeLeft.Key);
                 }
             }
+
             #endregion get friends of startElement and check if they are the target and valid
 
             //elements of myEdge doesn't have edge
@@ -457,7 +436,7 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
                             Node currentNodeLeft;
 
                             #region check left friends
-                            foreach (ObjectUUID dboLeft in objectUUIDsLeft)
+                            foreach (var dboLeft in objectUUIDsLeft)
                             {
                                 #region if the child is the target
                                 if (dboLeft == myEnd.ObjectUUID)

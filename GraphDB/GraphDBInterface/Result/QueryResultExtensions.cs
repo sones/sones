@@ -1,35 +1,15 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-
+﻿
 
 #region Usings
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
 
 #endregion
 
-namespace sones.GraphDBInterface.Result
+namespace sones.GraphDB.Result
 {
 
     public static class QueryResultExtensions
@@ -66,11 +46,11 @@ namespace sones.GraphDBInterface.Result
 
             }
 
-            if (myQueryResult.Results == null || !myQueryResult.Results.Any()) { return sResult; }
+            if (myQueryResult.Vertices == null || !myQueryResult.Vertices.Any()) { return sResult; }
 
-            SelectionResultSet table = myQueryResult.Results;
+            var table = myQueryResult.Vertices;
 
-            var lData = table.Objects;
+            var lData = table;
             int iNr = 0;
             int iCount = 0;
             IDictionary<String, Object> dict = null;
@@ -78,15 +58,15 @@ namespace sones.GraphDBInterface.Result
 
             sResult.Header = new List<KeyValuePair<String, Object>>();
 
-            foreach (var _DBObjectReadout in lData)
+            foreach (var _Vertex in lData)
             {
 
-                dict = _DBObjectReadout.Attributes;
                 if (iNr == 0)
                 {
-                    foreach (KeyValuePair<String, Object> attribute in dict)
+                    foreach (var _Attribute in _Vertex)
                     {
-                        sResult.Header.Add(new KeyValuePair<String, Object>(attribute.Key, attribute.Value));
+
+                        sResult.Header.Add(new KeyValuePair<String, Object>(_Attribute.Key, _Attribute.Value));
 
                         //if (attribute.Value is String)        type = ""; 
                         //else if (attribute.Value is int)      type = 0; 
@@ -97,9 +77,13 @@ namespace sones.GraphDBInterface.Result
                         //sResult.Header.Add(new KeyValuePair<String, Object>(attribute.Key, type));
 
                         iNr++;
+
                     }
+
                     sResult.Data = new List<object[]>();
+
                 }
+
                 if (iNr == 0) break;  // no attributes ???
 
                 oLineData = new object[iNr];

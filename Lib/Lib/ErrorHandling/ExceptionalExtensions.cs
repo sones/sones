@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * ExceptionalExtensions
  * (c) Achim Friedland, 2009 - 2010
  */
@@ -44,7 +24,7 @@ namespace sones.Lib.ErrorHandling
         /// </summary>
         public static Boolean Success(this Exceptional myExceptional)
         {
-            return !myExceptional.Failed() && (myExceptional.Warnings.Count() == 0);
+            return !myExceptional.Failed() && (!myExceptional.IWarnings.Any());
         }
 
         #endregion
@@ -57,7 +37,7 @@ namespace sones.Lib.ErrorHandling
         public static Boolean Failed(this Exceptional myExceptional)
         {
 
-            if (myExceptional == null || myExceptional.Errors.Any())
+            if (myExceptional == null || myExceptional.IErrors.Any())
                 return true;
 
             return false;
@@ -76,7 +56,7 @@ namespace sones.Lib.ErrorHandling
         public static Boolean IsValid<T>(this Exceptional<T> myExceptional)
         {
 
-            if (myExceptional != null && !myExceptional.Errors.Any() && myExceptional.Value != null)
+            if (myExceptional != null && !myExceptional.IErrors.Any() && myExceptional.Value != null)
                 return true;
 
             return false;
@@ -94,7 +74,7 @@ namespace sones.Lib.ErrorHandling
         public static Boolean IsInvalid<T>(this Exceptional<T> myExceptional)
         {
 
-            if (myExceptional == null || myExceptional.Errors.Any() || myExceptional.Value == null)
+            if (myExceptional == null || myExceptional.IErrors.Any() || myExceptional.Value == null)
                 return true;
 
             return false;
@@ -237,7 +217,6 @@ namespace sones.Lib.ErrorHandling
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="myExceptional"></param>
-        /// <returns></returns>
         public static T ValueOrDefault<T>(this Exceptional<T> myExceptional)
         {
 
@@ -260,7 +239,6 @@ namespace sones.Lib.ErrorHandling
         /// <typeparam name="T"></typeparam>
         /// <param name="myExceptional"></param>
         /// <param name="myAlternative"></param>
-        /// <returns></returns>
         public static T ValueOrAlternative<T>(this Exceptional<T> myExceptional, T myAlternative)
         {
 
@@ -331,7 +309,7 @@ namespace sones.Lib.ErrorHandling
         {
 
             if (myObjects.Any(o => o == null))
-                myExceptional.Push(new ArgumentNullError(myParameter));
+                myExceptional.PushIError(new ArgumentNullError(myParameter));
 
             return myExceptional;
 
@@ -341,7 +319,7 @@ namespace sones.Lib.ErrorHandling
         {
 
             if (myObjects.Any(o => o == null))
-                myExceptional.Push(new ArgumentNullError(myParameter));
+                myExceptional.PushIError(new ArgumentNullError(myParameter));
 
             return myExceptional;
 
@@ -365,7 +343,7 @@ namespace sones.Lib.ErrorHandling
         {
 
             if (myObjects.Any(o => o == null))
-                myExceptional.Push(new ArgumentNullError());
+                myExceptional.PushIError(new ArgumentNullError());
 
             return myExceptional;
 
@@ -375,7 +353,7 @@ namespace sones.Lib.ErrorHandling
         {
 
             if (myObjects.Any(o => o == null))
-                myExceptional.Push(new ArgumentNullError());
+                myExceptional.PushIError(new ArgumentNullError());
 
             return myExceptional;
 
@@ -400,7 +378,7 @@ namespace sones.Lib.ErrorHandling
         {
 
             if (myStrings.Any(o => o == null || o == ""))
-                myExceptional.Push(new ArgumentNullError("String"));
+                myExceptional.PushIError(new ArgumentNullError("String"));
 
             return myExceptional;
 
@@ -410,7 +388,7 @@ namespace sones.Lib.ErrorHandling
         {
 
             if (myStrings.Any(o => o == null || o == ""))
-                myExceptional.Push(new ArgumentNullError("String"));
+                myExceptional.PushIError(new ArgumentNullError("String"));
 
             return myExceptional;
         
@@ -437,7 +415,7 @@ namespace sones.Lib.ErrorHandling
                 myParameter = "String";
 
             if (myStrings.Any(o => o == null || o == ""))
-                myExceptional.Push(new ArgumentNullOrEmptyError(myParameter));
+                myExceptional.PushIError(new ArgumentNullOrEmptyError(myParameter));
 
             return myExceptional;
 
@@ -450,7 +428,7 @@ namespace sones.Lib.ErrorHandling
                 myParameter = "String";
 
             if (myStrings.Any(o => o == null || o == ""))
-                myExceptional.Push(new ArgumentNullOrEmptyError(myParameter));
+                myExceptional.PushIError(new ArgumentNullOrEmptyError(myParameter));
 
             return myExceptional;
 

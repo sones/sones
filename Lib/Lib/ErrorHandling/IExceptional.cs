@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * IExceptional/IExceptional<TValue>
  * (c) Achim Friedland, 2010
  * 
@@ -42,38 +22,54 @@ namespace sones.Lib.ErrorHandling
 {
 
     /// <summary>
-    /// The normal/non-generic IExceptional interface holding a list of IErrors
+    /// The normal/non-generic IExceptional interface holding a list of IWarnings and IErrors
     /// </summary>
     public interface IExceptional
     {
 
         // Properties
-        //Boolean             Success { get; }
-        //Boolean             Failed  { get; }
-        IEnumerable<IError> Errors  { get; }
+        IEnumerable<IWarning> IWarnings { get; }
+        IEnumerable<IError>   IErrors   { get; }
 
-        // Methods
-        Exceptional Push(IError myError);
-        Exceptional Push(IWarning myWarning);
 
-        // Helpers
-        String  ToString();
+        // Push(IWarning(s)/IError(s)/IExceptional)
+        Exceptional PushIWarning     (IWarning myWarning);
+        Exceptional PushIWarnings    (IEnumerable<IWarning> myWarnings);
+
+        Exceptional PushIError       (IError myError);
+        Exceptional PushIErrors      (IEnumerable<IError> myIErrors);
+
+        Exceptional PushIExceptional (IExceptional myIExceptional);
+
+
+        // ...ToString()
+        String GetIWarningsAsString();
+        String GetIErrorsAsString();
+        String ToString();
 
     }
 
     /// <summary>
-    /// The generic IExceptional interface holding a list of IErrors and a value
+    /// The generic IExceptional interface holding a list of IWarnings,
+    /// IErrors and an encapsulated value.
     /// </summary>
-    /// <typeparam name="TValue"></typeparam>
+    /// <typeparam name="TValue">The type of the encapsulated value</typeparam>
     public interface IExceptional<TValue> : IExceptional
     {
 
-        // The inner value
+        // The encapsulated value
         TValue Value { get; set; }
 
-        // Methods
-        Exceptional<TValue> PushT(IError myError);
-        Exceptional<TValue> PushT(IWarning myWarning);
+
+        // PushT(IWarning(s)/IError(s)/IExceptional)
+        Exceptional<TValue> PushIWarningT     (IWarning myWarning);
+        Exceptional<TValue> PushIWarningsT    (IEnumerable<IWarning> myWarnings);
+
+        Exceptional<TValue> PushIErrorT       (IError myError);
+        Exceptional<TValue> PushIErrorsT      (IEnumerable<IError> myIErrors);
+
+        Exceptional<TValue> PushIExceptionalT (IExceptional myIExceptional);
+
 
         // Additional Helpers
         Boolean Equals(Object myObject);

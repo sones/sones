@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * DescribeIndexDefinition
  * (c) Stefan Licht, 2010
  */
@@ -37,7 +17,8 @@ using sones.GraphDB.Functions;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.Indices;
 using sones.GraphDB.Exceptions;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -68,7 +49,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
         #region ADescribeDefinition
 
-        public override Exceptional<SelectionResultSet> GetResult(DBContext myDBContext)
+        public override Exceptional<IEnumerable<Vertex>> GetResult(DBContext myDBContext)
         {
 
             if (!String.IsNullOrEmpty(_TypeName))
@@ -79,7 +60,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
                 var type = myDBContext.DBTypeManager.GetTypeByName(_TypeName);
                 if (type == null)
                 {
-                    return new Exceptional<SelectionResultSet>(new Error_TypeDoesNotExist(_TypeName));
+                    return new Exceptional<IEnumerable<Vertex>>(new Error_TypeDoesNotExist(_TypeName));
                 }
 
                 if (String.IsNullOrEmpty(_IndexEdition))
@@ -90,11 +71,11 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
                 if (attrIndex != null)
                 {
-                    return new Exceptional<SelectionResultSet>(new SelectionResultSet(GenerateOutput(attrIndex, _IndexName)));
+                    return new Exceptional<IEnumerable<Vertex>>(new List<Vertex>(){(GenerateOutput(attrIndex, _IndexName))});
                 }
                 else
                 {
-                    return new Exceptional<SelectionResultSet>(new Error_IndexDoesNotExist(_IndexName, _IndexEdition));
+                    return new Exceptional<IEnumerable<Vertex>>(new Error_IndexDoesNotExist(_IndexName, _IndexEdition));
                 }
 
                 #endregion
@@ -105,7 +86,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
                 #region All indices
 
-                List<DBObjectReadout> resultingReadouts = new List<DBObjectReadout>();
+                var resultingReadouts = new List<Vertex>();
 
                 foreach (var type in myDBContext.DBTypeManager.GetAllTypes(false))
                 {
@@ -118,7 +99,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
                     }
                 }
 
-                return new Exceptional<SelectionResultSet>(new SelectionResultSet(resultingReadouts));
+                return new Exceptional<IEnumerable<Vertex>>(resultingReadouts);
 
                 #endregion
 
@@ -135,18 +116,18 @@ namespace sones.GraphDB.Managers.Structures.Describe
         /// <param name="myIndex">the index</param>
         /// <param name="myName">the index name</param>
         /// <returns>list of readouts which contain the index information</returns>
-        private DBObjectReadout GenerateOutput(AAttributeIndex myIndex, String myName)
+        private Vertex GenerateOutput(AAttributeIndex myIndex, String myName)
         {
 
             var _Index = new Dictionary<String, Object>();
 
-            _Index.Add("Name", myName);
-            _Index.Add("Edition", myIndex.IndexEdition);
-            _Index.Add("IndexType", myIndex.IndexType);
-            _Index.Add("IsUuidIndex", myIndex is UUIDIndex);
+            _Index.Add("Name",                   myName);
+            _Index.Add("Edition",                myIndex.IndexEdition);
+            _Index.Add("IndexType",              myIndex.IndexType);
+            _Index.Add("IsUuidIndex",            myIndex is UUIDIndex);
             _Index.Add("IsUniqueAttributeIndex", myIndex.IsUniqueAttributeIndex);
 
-            return new DBObjectReadout(_Index);
+            return new Vertex(_Index);
             
         }
 

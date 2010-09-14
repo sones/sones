@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * GraphDSSharp
  * (c) Achim 'ahzf' Friedland, 2009 - 2010 
  */
@@ -27,8 +7,9 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Net;
+using System.Linq;
+using System.Text;
 using System.Reflection;
 using System.Diagnostics;
 using System.Collections.Generic;
@@ -46,6 +27,9 @@ using sones.GraphFS.Exceptions;
 using sones.GraphFS.Session;
 using sones.GraphFS.Transactions;
 
+using sones.GraphIO;
+using sones.GraphIO.XML;
+
 using sones.Lib;
 using sones.Lib.ErrorHandling;
 using sones.Lib.DataStructures.UUID;
@@ -55,12 +39,11 @@ using sones.GraphFS.Session;
 using sones.Notifications;
 using sones.GraphFS.Caches;
 using sones.Lib.DataStructures.Indices;
-using System.Text;
 using sones.GraphFS.InternalObjects;
 using sones.GraphFS.Errors;
 using sones.Lib.DataStructures.WeakReference;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.Transactions;
+using sones.GraphDB.Result;
+using sones.GraphDB.Transactions;
 
 #endregion
 
@@ -70,11 +53,9 @@ namespace sones.GraphDS.API.CSharp
     public class GraphDSSharp : AGraphDSSharp
     {
 
-
         #region Data
 
-        private   Dictionary<String, Type>  _AssemblyTypes;
-        private   String                    _RestURL            = null;
+        private Dictionary<String, Type> _AssemblyTypes;
 
         #endregion
 
@@ -824,43 +805,21 @@ namespace sones.GraphDS.API.CSharp
         #endregion
 
 
+        #region QueryAsString(myQueryString)
 
-        #region Query(myQuery, myAction = null, mySuccessAction = null, myPartialSuccessAction = null, myFailureAction = null)
+        public override Exceptional<String> QueryAsString(String myQueryString)
+        {
+            return new Exceptional<String>(XML_IO_Extensions.BuildXMLDocument(_GQLQuery.Query(myQueryString, IGraphDBSession).ToXML()).XMLDocument2String());
+        }
 
-        public override QueryResult Query(String myQuery, Action<QueryResult> myAction = null, Action<QueryResult> mySuccessAction = null, Action<QueryResult> myPartialSuccessAction = null, Action<QueryResult> myFailureAction = null)
+        #endregion
+
+        #region Query(myQueryString, myAction = null, mySuccessAction = null, myPartialSuccessAction = null, myFailureAction = null)
+
+        public override QueryResult Query(String myQueryString, Action<QueryResult> myAction = null, Action<QueryResult> mySuccessAction = null, Action<QueryResult> myPartialSuccessAction = null, Action<QueryResult> myFailureAction = null)
         {
 
-            QueryResult _QueryResult = null;
-
-            // Use embedded reference
-            if (IGraphDBSession != null)
-            {
-                _QueryResult = _GQLQuery.Query(myQuery, IGraphDBSession);
-            }
-
-            else if (!String.IsNullOrEmpty(_RestURL))
-            {
-
-                var request = (HttpWebRequest) WebRequest.Create(_RestURL + myQuery.ToBase64());
-                var stream = new StreamReader(request.GetResponse().GetResponseStream());
-                var result = stream.ReadToEnd();
-                
-                if (result.StartsWith("<string>"))
-                    result = result.Substring("<string>".Length);
-
-                if (result.EndsWith("</string>"))
-                    result = result.Substring(0, result.Length - "</string>".Length);
-
-                var readout = new DBObjectReadout();
-                //readout.Attributes.Add("query", QueryXml(myQuery));
-                readout.Attributes.Add("query", Query(myQuery));
-
-                _QueryResult = new QueryResult(new SelectionResultSet(new List<DBObjectReadout>() { readout }));
-
-            }
-
-            else
-                _QueryResult = new QueryResult(new Error_NotImplemented(new StackTrace(true)));
+            var _QueryResult = _GQLQuery.Query(myQueryString, IGraphDBSession);
 
             QueryResultAction(_QueryResult, myAction, mySuccessAction, myPartialSuccessAction, myFailureAction);
 
@@ -880,7 +839,7 @@ namespace sones.GraphDS.API.CSharp
         {
 
             if (_AssemblyTypes.ContainsKey(myTypeName))
-                return Activator.CreateInstance(_AssemblyTypes[myTypeName]) as DBVertex;
+                return Activator.CreateInstance(_AssemblyTypes[myTypeName]) as Vertex;
 
             return null;
 
@@ -1416,7 +1375,7 @@ namespace sones.GraphDS.API.CSharp
                 {
 
                     return IGraphFS.GetObjectLocator(SessionToken, myObjectLocation).
-                        WhenFailed(e => e.PushT(new GraphFSError_CouldNotGetObjectLocator(myObjectLocation))).
+                        WhenFailed(e => e.PushIErrorT(new GraphFSError_CouldNotGetObjectLocator(myObjectLocation))).
                         WhenSucceded<ObjectLocator>(e =>
                         {
                             if (myObjectEdition == null)
@@ -2029,6 +1988,7 @@ namespace sones.GraphDS.API.CSharp
         #endregion
 
         #endregion
+
 
 
     }

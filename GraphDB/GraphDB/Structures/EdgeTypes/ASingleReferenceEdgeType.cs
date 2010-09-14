@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � abstract class for all single reference edges" />
+﻿/* <id name="GraphDB – abstract class for all single reference edges" />
  * <copyright file="ASingleEdgeType.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -38,8 +18,9 @@ using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
 using sones.Lib;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.Result;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.NewAPI;
 
 
 #endregion
@@ -74,9 +55,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// <summary>
         /// Create the readout for the ObjectUUID.
         /// </summary>
-        /// <param name="GetAllAttributesFromDBO">A delegate which will retriev the standard DBObjectReadout for a ObjectUUID</param>
+        /// <param name="GetAllAttributesFromDBO">A delegate which will retriev the standard Vertex for a ObjectUUID</param>
         /// <returns></returns>
-        public abstract DBObjectReadout GetReadout(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO);
+        public abstract Vertex GetVertex(Func<ObjectUUID, Vertex> GetAllAttributesFromDBO);
 
 
         #region IEdgeType Members

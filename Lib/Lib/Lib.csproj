@@ -53,6 +53,7 @@
     <Compile Include="Caches\ASimpleCache.cs" />
     <Compile Include="Caches\CacheExceptions.cs" />
     <Compile Include="Caches\CacheSettings.cs" />
+    <Compile Include="Caches\CacheTimer.cs" />
     <Compile Include="Caches\ExpirationTypes.cs" />
     <Compile Include="Caches\SimpleCache.cs" />
     <Compile Include="Caches\SimpleCacheItem.cs" />
@@ -130,8 +131,7 @@
     <Compile Include="DDate\DiscordianDateStructure.cs" />
     <Compile Include="ErrorHandling\Errors\ArgumentNullError.cs" />
     <Compile Include="ErrorHandling\Errors\ArgumentNullOrEmptyError.cs" />
-    <Compile Include="ErrorHandling\Warnings\Warning_Unspecified.cs" />
-    <Compile Include="ErrorHandling\Errors\Error_Unspecified.cs" />
+    <Compile Include="ErrorHandling\Errors\UnspecifiedError.cs" />
     <Compile Include="ErrorHandling\Warnings\GeneralWarning.cs" />
     <Compile Include="ErrorHandling\ExceptionalExtensions.cs" />
     <Compile Include="ErrorHandling\ExceptionalConversionError.cs" />
@@ -140,6 +140,7 @@
     <Compile Include="ErrorHandling\Errors\IError.cs" />
     <Compile Include="ErrorHandling\IExceptional.cs" />
     <Compile Include="ErrorHandling\Warnings\IWarning.cs" />
+    <Compile Include="ErrorHandling\Warnings\UnspecifiedWarning.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FastSerializer\FastReflectionSerializer.cs" />

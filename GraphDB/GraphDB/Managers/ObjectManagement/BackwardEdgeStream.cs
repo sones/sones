@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id Name="GraphDB � DBBackwardEdge" />
+﻿/* <id Name="GraphDB – DBBackwardEdge" />
  * <copyright file="DBBackwardEdge.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -61,6 +41,7 @@ namespace sones.GraphDB.ObjectManagement
             // Set ObjectUUID
             if (ObjectUUID.Length == 0)
                 ObjectUUID = base.ObjectUUID;
+
         }
 
         public BackwardEdgeStream(ObjectLocation myObjectLocation)
@@ -116,6 +97,7 @@ namespace sones.GraphDB.ObjectManagement
         /// <param name="myObjectUUID"></param>
         public void AddBackwardEdge(EdgeKey myEdgeKey, ObjectUUID myObjectUUID, DBObjectManager objectManager)
         {
+
             if (!base.ContainsKey(myEdgeKey))
             {
                 base.Add(myEdgeKey, new EdgeTypeSetOfReferences(null, myEdgeKey.TypeUUID));
@@ -124,6 +106,7 @@ namespace sones.GraphDB.ObjectManagement
             base[myEdgeKey].Add(myObjectUUID, myEdgeKey.TypeUUID);
 
             isDirty = true;
+
         }
 
         /// <summary>
@@ -133,6 +116,7 @@ namespace sones.GraphDB.ObjectManagement
         /// <param name="myObjectUUID"></param>
         public void AddBackwardEdge(EdgeKey myEdgeKey, IEnumerable<ObjectUUID> myObjectUUIDs, DBObjectManager objectManager)
         {
+
             if (!base.ContainsKey(myEdgeKey))
             {
                 base.Add(myEdgeKey, new EdgeTypeSetOfReferences(myObjectUUIDs, myEdgeKey.TypeUUID));
@@ -143,6 +127,7 @@ namespace sones.GraphDB.ObjectManagement
             }
 
             isDirty = true;
+
         }
 
         /// <summary>

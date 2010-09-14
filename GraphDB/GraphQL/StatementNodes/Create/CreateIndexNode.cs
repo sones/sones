@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * CreateIndexNode
  * (c) Achim Friedland, 2009 - 2010
  * refactored: Stefan Licht, 2010
@@ -38,7 +18,7 @@ using sones.GraphDB.Structures;
 
 using sones.Lib.Frameworks.Irony.Parsing;
 using sones.Lib.ErrorHandling;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
 
 #endregion
 
@@ -111,7 +91,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes
 
                         if (myParseTreeNode.ChildNodes[childNum - 1].Token.AsSymbol == grammar.S_ON)
                         {
-                            ParsingResult.Push(new Warnings.Warning_ObsoleteGQL("CREATE INDEX ... ON", "CREATE INDEX ... ON VERTEX"));
+                            ParsingResult.PushIWarning(new Warnings.Warning_ObsoleteGQL("CREATE INDEX ... ON", "CREATE INDEX ... ON VERTEX"));
                         }
                     }
                     else if (child.AstNode is IndexAttributeListNode)
@@ -143,7 +123,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes
         {
 
             var createIdxResult = myIGraphDBSession.CreateIndex(_DBType, _IndexName, _IndexEdition, _IndexType, _AttributeList);
-            createIdxResult.AddErrorsAndWarnings(ParsingResult);
+            createIdxResult.PushIExceptional(ParsingResult);
             return createIdxResult;
 
         }

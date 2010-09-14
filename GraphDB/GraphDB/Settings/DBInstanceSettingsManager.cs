@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � Instantce Settings" />
+﻿/* <id name="GraphDB – Instantce Settings" />
  * <copyright file="DBInstanceSettingsManager.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -119,7 +99,7 @@ namespace sones.GraphDB.Settings
                     var readSettingsResult = ReadSettings();
                     if (readSettingsResult.Failed())
                     {
-                        throw new GraphDBException(readSettingsResult.Errors);
+                        throw new GraphDBException(readSettingsResult.IErrors);
                     }
                 }
 
@@ -184,7 +164,7 @@ namespace sones.GraphDB.Settings
 
             else
             {
-                _Exceptional = _UserMetadataExceptional.Push(new GraphDBError_SettingsNotFound(new ObjectLocation(_DatabaseRootPath)));
+                _Exceptional = _UserMetadataExceptional.PushIError(new GraphDBError_SettingsNotFound(new ObjectLocation(_DatabaseRootPath)));
             }
 
             return _Exceptional;
@@ -207,7 +187,7 @@ namespace sones.GraphDB.Settings
 
             if (_UserMetadataExceptional.Failed())
             {
-                _Exceptional = _UserMetadataExceptional.Push(new GraphDBError_CouldNotWriteSettings(new ObjectLocation(_DatabaseRootPath)));
+                _Exceptional = _UserMetadataExceptional.PushIError(new GraphDBError_CouldNotWriteSettings(new ObjectLocation(_DatabaseRootPath)));
             }
 
             return _Exceptional;

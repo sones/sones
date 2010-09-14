@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � BeginTransactionNode" />
+﻿/* <id name="GraphDB – BeginTransactionNode" />
  * <copyright file="BeginTransactionNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -41,7 +21,8 @@ using sones.GraphDB.GraphQL.StatementNodes;
 
 using sones.Lib.ErrorHandling;
 using sones.Lib.Frameworks.Irony.Parsing;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -194,35 +175,33 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Transaction
         /// <summary>
         /// Executes the statement
         /// </summary>
-        /// <param name="graphDBSession">The DBSession to start new transactions</param>
-        /// <param name="dbContext">The current dbContext inside an readonly transaction. For any changes, you need to start a new transaction using <paramref name="graphDBSession"/></param>
+        /// <param name="myGraphDBSession">The DBSession to start new transactions</param>
+        /// <param name="dbContext">The current dbContext inside an readonly transaction. For any changes, you need to start a new transaction using <paramref name="myGraphDBSession"/></param>
         /// <returns>The result of the query</returns>
-        public override QueryResult Execute(IGraphDBSession graphDBSession)
+        public override QueryResult Execute(IGraphDBSession myGraphDBSession)
         {
-            var qr = new QueryResult();
-            var dbTransaction = graphDBSession.BeginTransaction(IsDistributed, IsLongRunning, Isolation, Name, TimeStamp);
 
-            if (dbTransaction.Success())
+            var _GraphDBTransaction = myGraphDBSession.BeginTransaction(IsDistributed, IsLongRunning, Isolation, Name, TimeStamp);
+
+            if (_GraphDBTransaction.Success())
             {
+
                 var readoutVals = new Dictionary<String, Object>();
-                readoutVals.Add("UUID", dbTransaction.UUID.ToHexString());
-                readoutVals.Add("Created", dbTransaction.Created);
-                readoutVals.Add("Distributed", dbTransaction.Distributed);
-                readoutVals.Add("IsolationLevel", dbTransaction.IsolationLevel.ToString());
-                readoutVals.Add("LongRunning", dbTransaction.LongRunning);
-                readoutVals.Add("Name", dbTransaction.Name);
-                readoutVals.Add("State", dbTransaction.State.ToString());
+                readoutVals.Add("UUID",           _GraphDBTransaction.UUID);
+                readoutVals.Add("Created",        _GraphDBTransaction.Created);
+                readoutVals.Add("Distributed",    _GraphDBTransaction.Distributed);
+                readoutVals.Add("IsolationLevel", _GraphDBTransaction.IsolationLevel);
+                readoutVals.Add("LongRunning",    _GraphDBTransaction.LongRunning);
+                readoutVals.Add("Name",           _GraphDBTransaction.Name);
+                readoutVals.Add("State",          _GraphDBTransaction.State);
 
-                var selResultSet = new SelectionResultSet(new DBObjectReadout(readoutVals));
-                qr.SetResult(selResultSet);
-            }
-            else
-            {
-                qr.AddErrorsAndWarnings(dbTransaction);
-            }
-            qr.AddErrorsAndWarnings(ParsingResult);
+                return new QueryResult(new Vertex(readoutVals)).PushIExceptional(ParsingResult);
 
-            return qr;
+            }
+
+            // DBTransaction is Exceptional
+            return new QueryResult(_GraphDBTransaction).PushIExceptional(ParsingResult);
+
         }
 
         #endregion

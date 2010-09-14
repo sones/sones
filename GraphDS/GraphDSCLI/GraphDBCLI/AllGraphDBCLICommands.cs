@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * AllGraphDBCLICommands
  * (c) Achim Friedland, 2010
  *     Henning Rauch, 2010
@@ -37,8 +17,9 @@ using sones.GraphDB.Structures;
 using sones.GraphDS.Connectors.CLI;
 
 using sones.Lib.Frameworks.CLIrony.Compiler;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
 using sones.GraphDS.API.CSharp;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -371,9 +352,9 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
                 if (printResult)
                 {
 
-                    foreach (DBObjectReadout dataObject in queryResult.Results.Objects)
+                    foreach (var _Vertex in queryResult.Vertices)
                     {
-                        printDBReadout(dataObject, 0);
+                        printVertex(_Vertex, 0);
                         if (CLI_Output == CLI_Output.Standard)
                             WriteLine(Environment.NewLine);
                     }
@@ -388,22 +369,22 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
         #endregion
 
-        #region printDBReadout(dataObject, level)
+        #region printVertex(myVertex, level)
 
-        private void printDBReadout(DBObjectReadout dataObject, UInt16 level)
+        private void printVertex(Vertex myVertex, UInt16 level)
         {
-            foreach (KeyValuePair<String, Object> attribute in dataObject.Attributes)
+            foreach (KeyValuePair<String, Object> attribute in myVertex.ObsoleteAttributes)
             {
                 if (attribute.Value != null)
                 {
-                    if (attribute.Value is DBObjectReadout)
+                    if (attribute.Value is Vertex)
                     {
                         Write(attribute.Key.ToString() + " <resolved>:" + Environment.NewLine);
-                        printDBReadout((DBObjectReadout)attribute.Value, (UInt16)(level + 1));
+                        printVertex((Vertex)attribute.Value, (UInt16)(level + 1));
                     }
                     else
                     {
-                        if (attribute.Value is IEnumerable<DBObjectReadout>)
+                        if (attribute.Value is IEnumerable<Vertex>)
                         {
                             for (UInt16 i = 0; i < level; i++)
                             {
@@ -411,9 +392,9 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
                             }
                             Write(attribute.Key.ToString() + " <resolved>:" + Environment.NewLine);
 
-                            foreach (DBObjectReadout adbo in (IEnumerable<DBObjectReadout>)attribute.Value)
+                            foreach (var adbo in (IEnumerable<Vertex>)attribute.Value)
                             {
-                                printDBReadout(adbo, (UInt16)(level + 1));
+                                printVertex(adbo, (UInt16)(level + 1));
                                 Write(Environment.NewLine);
                                 Write(Environment.NewLine);
                             }

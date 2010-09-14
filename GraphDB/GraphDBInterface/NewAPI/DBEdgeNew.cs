@@ -1,25 +1,5 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
- * sones GraphDS API - DBEdge
+﻿/*
+ * sones GraphDS API - EdgeLabel
  * (c) Achim 'ahzf' Friedland, 2010
  */
 
@@ -46,100 +26,90 @@ namespace sones.GraphDB.NewAPI
     /// The DBEdge class for user-defined edge types
     /// </summary>
 
-    public class DBEdge : DBObject, IEquatable<DBEdge>
+    public class EdgeLabel : DBObject, IEquatable<EdgeLabel>
     {
 
-        // ToDo: Needs clean'up!
+        // Do not mix it up with the internal Edge.cs!
+        // This is a user-defined edge!
 
         #region Properties
 
         #region SourceVertex
 
         [HideFromDatabase]
-        public DBVertex SourceVertex { get; private set; }
+        public Vertex SourceVertex { get; private set; }
 
         #endregion
 
         #region TargetVertex
 
         [HideFromDatabase]
-        public DBVertex TargetVertex
+        public Vertex TargetVertex
         {
 
             get
             {
-
-                if (TargetVertices.Any())
-                    return TargetVertices.First();
-
-                return null;
-
+                return _TargetVertices.FirstOrDefault();
             }
-
-            set
-            {
-                _TargetVertices.Clear();
-                _TargetVertices.Add(value);
-            }
-        
         }
 
         #endregion
 
         #region TargetVertices
 
-        private readonly HashSet<DBVertex> _TargetVertices;
+        private readonly IEnumerable<Vertex> _TargetVertices;
 
         [HideFromDatabase]
-        public IEnumerable<DBVertex> TargetVertices
+        public IEnumerable<Vertex> TargetVertices
         {
-
             get
             {
                 return _TargetVertices;
             }
-
-            set
-            {
-                _TargetVertices.Clear();
-                foreach (var _Vertex in value)
-                    _TargetVertices.Add(_Vertex);
-            }
-
         }
 
         #endregion
 
         #endregion
 
-        #region Constructors
+        #region Constructor(s)
 
-        #region DBEdge()
+        #region DBEdgeNew()
 
-        public DBEdge()
+        public EdgeLabel()
         {
-            SourceVertex      = null;
-            _TargetVertices    = null;
+            SourceVertex    = null;
+            _TargetVertices = null;
         }
 
         #endregion
 
-        #region DBEdge(mySourceVertex, myTargetVertex)
+        #region DBEdgeNew(mySourceVertex, myTargetVertex, myAttributes = null)
 
-        public DBEdge(DBVertex mySourceVertex, DBVertex myTargetVertex)
+        public EdgeLabel(Vertex mySourceVertex, Vertex myTargetVertex, IDictionary<String, Object> myAttributes = null)
         {
-            SourceVertex      = mySourceVertex;
-            _TargetVertices    = new HashSet<DBVertex>() { myTargetVertex };
+
+            SourceVertex    = null;
+            _TargetVertices = new List<Vertex> { myTargetVertex };
+
+            if (myAttributes != null && myAttributes.Any())
+                AddAttribute(myAttributes);
+
         }
 
         #endregion
 
-        #region DBEdge(mySourceVertex, myTargetVertices)
+        #region DBEdgeNew(mySourceVertex, myTargetVertices, myAttributes = null)
 
-        public DBEdge(DBVertex mySourceVertex, IEnumerable<DBVertex> myTargetVertices)
+        public EdgeLabel(Vertex mySourceVertex, IEnumerable<Vertex> myTargetVertices, IDictionary<String, Object> myAttributes = null)
         {
-            SourceVertex      = mySourceVertex;
-            _TargetVertices    = new HashSet<DBVertex>(myTargetVertices);
+
+            SourceVertex    = mySourceVertex;
+            _TargetVertices = myTargetVertices;
+
+            if (myAttributes != null && myAttributes.Any())
+                AddAttribute(myAttributes);
+
         }
 
         #endregion
@@ -151,7 +121,7 @@ namespace sones.GraphDB.NewAPI
 
         #region Operator == (myDBEdge1, myDBEdge2)
 
-        public static Boolean operator == (DBEdge myDBEdge1, DBEdge myDBEdge2)
+        public static Boolean operator ==(EdgeLabel myDBEdge1, EdgeLabel myDBEdge2)
         {
 
             // If both are null, or both are same instance, return true.
@@ -170,7 +140,7 @@ namespace sones.GraphDB.NewAPI
 
         #region Operator != (myDBEdge1, myDBEdge2)
 
-        public static Boolean operator != (DBEdge myDBEdge1, DBEdge myDBEdge2)
+        public static Boolean operator !=(EdgeLabel myDBEdge1, EdgeLabel myDBEdge2)
         {
             return !(myDBEdge1 == myDBEdge2);
         }
@@ -179,7 +149,7 @@ namespace sones.GraphDB.NewAPI
 
         #endregion
 
-        #region IEquatable<DBEdge> Members
+        #region IEquatable<DBEdgeNew> Members
 
         #region Equals(myObject)
 
@@ -189,7 +159,7 @@ namespace sones.GraphDB.NewAPI
             if (myObject == null)
                 return false;
 
-            var _Object = myObject as DBEdge;
+            var _Object = myObject as EdgeLabel;
             if (_Object == null)
                 return (Equals(_Object));
 
@@ -201,7 +171,7 @@ namespace sones.GraphDB.NewAPI
 
         #region Equals(myDBObject)
 
-        public Boolean Equals(DBEdge myDBEdge)
+        public Boolean Equals(EdgeLabel myDBEdge)
         {
 
             if ((object) myDBEdge == null)
@@ -226,6 +196,25 @@ namespace sones.GraphDB.NewAPI
         }
 
         #endregion
+        
+        #region ToString()
+
+        public override String ToString()
+        {
+
+            var _ReturnValue = new StringBuilder(_Attributes.Count + " Attributes: ");
+
+            foreach (var _KeyValuePair in _Attributes)
+                _ReturnValue.Append(_KeyValuePair.Key + " = '" + _KeyValuePair.Value + "', ");
+
+            _ReturnValue.Length = _ReturnValue.Length - 2;
+
+            return _ReturnValue.ToString();
+
+        }
+
+        #endregion
+
 
     }
 

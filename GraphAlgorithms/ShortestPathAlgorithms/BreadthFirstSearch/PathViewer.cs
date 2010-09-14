@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � PathViewer" />
+﻿/* <id name="GraphDB – PathViewer" />
  * <copyright file="PathViewer.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -35,19 +15,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.GraphDB.TypeManagement;
-//using sones.Lib.Frameworks.NLog;
 using sones.GraphDB.ObjectManagement;
 using sones.Lib.ErrorHandling;
-using sones.Lib.DataStructures.UUID;
 using sones.GraphFS.DataStructures;
-using sones.GraphDBInterface.TypeManagement;
 
 namespace sones.GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 {
-    class PathViewer
+
+    public class PathViewer
     {
-        //Logger
-        //private static Logger //_Logger = LogManager.GetCurrentClassLogger();
 
         //used to create output (and save some memory)
         private static StringBuilder _StringBuilder = new StringBuilder();
@@ -66,15 +42,19 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
         /// <param name="myAttribute">The Attribute which shall be used for output.</param>
         public static void ShowDBObjects(HashSet<List<ObjectUUID>> myPaths, DBTypeManager myTypeManager, TypeAttribute myTypeAttribute, String myAttribute, DBObjectCache myObjectCache)
         {
-            AttributeUUID attributeUUID = myTypeAttribute.GetRelatedType(myTypeManager).GetTypeSpecificAttributeByName(myAttribute).UUID;
-            foreach (List<ObjectUUID> path in myPaths)
+
+            var attributeUUID = myTypeAttribute.GetRelatedType(myTypeManager).GetTypeSpecificAttributeByName(myAttribute).UUID;
+
+            foreach (var path in myPaths)
             {
-                StringBuilder pathString = new StringBuilder();
+
+                var pathString = new StringBuilder();
                 Exceptional<DBObjectStream> currentDBObject;
-                foreach (ObjectUUID uuid in path)
+                
+                foreach (var _ObjectUUID in path)
                 {
                     //load from DB
-                    currentDBObject = myObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myTypeManager), uuid);
+                    currentDBObject = myObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myTypeManager), _ObjectUUID);
                     if (currentDBObject.Failed())
                     {
                         throw new NotImplementedException();
@@ -82,9 +62,12 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
                     pathString.Append(currentDBObject.Value.GetAttribute(attributeUUID) + " -> ");
                 }
+
                 ////_Logger.Info(pathString.ToString());
                 pathString.Remove(0, pathString.Length);
+
             }
+
         }
 
         /// <summary>
@@ -95,13 +78,12 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
         /// <param name="myTypeAttribute">The type attribute</param>
         public static void ShowDBObject(ObjectUUID myObjectUUID, DBTypeManager myTypeManager, TypeAttribute myTypeAttribute, DBObjectCache myObjectCache)
         {
-            var currentDBObject = myObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myTypeManager), myObjectUUID);
-            if (currentDBObject.Failed())
-            {
-                throw new NotImplementedException();
-            }
 
-            ////_Logger.Info(currentDBObject.Value.ToString());                            
+            var currentDBObject = myObjectCache.LoadDBObjectStream(myTypeAttribute.GetRelatedType(myTypeManager), myObjectUUID);
+            
+            if (currentDBObject.Failed())
+                throw new NotImplementedException();
+
         }
 
         /// <summary>
@@ -119,5 +101,7 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
 
             ////_Logger.Info(_StringBuilder.ToString());
         }
+
     }
+
 }

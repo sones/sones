@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * Exceptional/Exceptional<TValue>
  * (c) Achim Friedland, 2009 - 2010
  */
@@ -43,48 +23,12 @@ namespace sones.Lib.ErrorHandling
 
         #region Properties
 
-        #region IErrors
-
-        protected Stack<IError> _IErrors;
-
-        /// <summary>
-        /// A list of exceptions that might have been thrown while determining the actual value of T.
-        /// It is a list, as within an expression tree there might occure more than one exception.
-        /// </summary>
-        public IEnumerable<IError> Errors
-        {
-            get
-            {
-                return _IErrors;
-            }
-        }
-
-        #endregion
-
-        #region Warnings
-
-        protected Stack<IWarning> _IWarnings;
-
-        /// <summary>
-        /// A list of exceptions that might have been thrown while determining the actual value of T.
-        /// It is a list, as within an expression tree there might occure more than one exception.
-        /// </summary>
-        public IEnumerable<IWarning> Warnings
-        {
-            get
-            {
-                return _IWarnings;
-            }
-        }
-
-        #endregion
-
         #region OK
 
         private static readonly Exceptional _OK = new Exceptional();
 
         /// <summary>
-        /// This is an empty Exceptional for a successful return and must never be used for errors or warnings.
+        /// A static and empty Exceptional for successful return values.
         /// </summary>
         public static Exceptional OK
         {
@@ -96,46 +40,52 @@ namespace sones.Lib.ErrorHandling
 
         #endregion
 
-        #region CheckForErrors
+        #region IWarnings
 
-        public Boolean CheckForErrors { get; protected set; }
+        protected Stack<IWarning> _IWarnings;
+
+        /// <summary>
+        /// A list of exceptions that might have been thrown while determining the actual value of T.
+        /// It is a list, as within an expression tree there might occure more than one exception.
+        /// </summary>
+        public IEnumerable<IWarning> IWarnings
+        {
+            get
+            {
+                return _IWarnings;
+            }
+        }
+
+        #endregion
+
+        #region IErrors
+
+        protected Stack<IError> _IErrors;
+
+        /// <summary>
+        /// A list of exceptions that might have been thrown while determining the actual value of T.
+        /// It is a list, as within an expression tree there might occure more than one exception.
+        /// </summary>
+        public IEnumerable<IError> IErrors
+        {
+            get
+            {
+                return _IErrors;
+            }
+        }
 
         #endregion
 
         #endregion
 
-        #region Constructors
+        #region Constructor(s)
 
         #region Exceptional()
 
         public Exceptional()
         {
-            CheckForErrors = false; //HACK: Rethink this!
-            _IErrors    = new Stack<IError>();
             _IWarnings  = new Stack<IWarning>();
-        }
-
-        #endregion
-
-        #region Exceptional(myIError)
-
-        /// <summary>
-        /// This will internal set Failed=True and Status=False
-        /// </summary>
-        /// <param name="myIError"></param>
-        public Exceptional(IError myIError)
-            : this()
-        {
-            _IErrors.Push(myIError);
-        }
-
-        public Exceptional(IEnumerable<IError> myIErrors)
-            : this()
-        {
-            foreach (var err in myIErrors)
-            {
-                _IErrors.Push(err);
-            }
+            _IErrors    = new Stack<IError>();
         }
 
         #endregion
@@ -143,68 +93,79 @@ namespace sones.Lib.ErrorHandling
         #region Exceptional(myIWarning)
 
         /// <summary>
-        /// This will internal set Failed=True and Status=False
+        /// Init using a single warning.
         /// </summary>
-        /// <param name="myIError"></param>
         public Exceptional(IWarning myIWarning)
             : this()
         {
-            _IWarnings.Push(myIWarning);
+            PushIWarning(myIWarning);
         }
 
         #endregion
 
-        #region Exceptional(myExceptional)
+        #region Exceptional(myIWarnings)
 
         /// <summary>
-        /// This will internal set Failed=True and Status=False
+        /// Init using a list of warnings.
         /// </summary>
-        /// <param name="myIErrors"></param>
-        public Exceptional(Exceptional myExceptional)
+        public Exceptional(IEnumerable<IWarning> myIWarnings)
             : this()
         {
-
-            if (myExceptional.Errors != null && myExceptional.Errors.Count() > 0)
-                foreach (var _Error in myExceptional.Errors.ToList().Reverse<IError>())
-                    _IErrors.Push(_Error);
-
-            if (myExceptional.Warnings != null && myExceptional.Warnings.Count() > 0)
-                foreach (var _Warning in myExceptional.Warnings.ToList().Reverse<IWarning>())
-                    _IWarnings.Push(_Warning);
-
+            PushIWarnings(myIWarnings);
         }
 
         #endregion
 
-        #endregion
-
-
-        #region Push
-
-        #region Push(myIError)
+        #region Exceptional(myIError)
 
         /// <summary>
-        /// This will internal set Failed=True and Status=False
+        /// Init using a single error.
         /// </summary>
-        /// <param name="myException"></param>
-        public Exceptional Push(IError myIError)
+        public Exceptional(IError myIError)
+            : this()
         {
-            lock (this)
-            {
-                _IErrors.Push(myIError);
-                return this;
-            }
+            PushIError(myIError);
         }
 
         #endregion
 
-        #region Push(myWarning)
+        #region Exceptional(myIErrors)
 
         /// <summary>
-        /// This will internal set Failed=True and Status=False
+        /// Init using a list of errors.
         /// </summary>
-        /// <param name="myException"></param>
-        public Exceptional Push(IWarning myIWarning)
+        public Exceptional(IEnumerable<IError> myIErrors)
+            : this()
+        {
+            PushIErrors(myIErrors);
+        }
+
+        #endregion
+
+        #region Exceptional(myIExceptional)
+
+        /// <summary>
+        /// Init using a single exceptional.
+        /// </summary>
+        public Exceptional(IExceptional myIExceptional)
+            : this()
+        {
+            PushIExceptional(myIExceptional);
+        }
+
+        #endregion
+
+        #endregion
+
+
+        #region Push(IWarning(s)/IError(s)/IExceptional)
+
+        #region PushIWarning(myIWarning)
+
+        /// <summary>
+        /// Adds a single warning.
+        /// </summary>
+        public Exceptional PushIWarning(IWarning myIWarning)
         {
             lock (this)
             {
@@ -215,25 +176,86 @@ namespace sones.Lib.ErrorHandling
 
         #endregion
 
-        #region Push(exceptional)
+        #region PushIWarnings(myIWarnings)
 
         /// <summary>
-        /// This will internal set Failed=True and Status=False
+        /// Adds a list of warnings.
         /// </summary>
-        /// <param name="myException"></param>
-        public Exceptional Push(Exceptional exceptional)
+        public Exceptional PushIWarnings(IEnumerable<IWarning> myIWarnings)
         {
             lock (this)
             {
-                foreach (var err in exceptional.Errors)
-                {
-                    _IErrors.Push(err);
-                }
-                foreach (var warn in exceptional.Warnings)
-                {
-                    _IWarnings.Push(warn);
-                }
+
+                if (myIWarnings != null && myIWarnings.Any())
+                    foreach (var _Warning in myIWarnings.ToList().Reverse<IWarning>())
+                        _IWarnings.Push(_Warning);
+
                 return this;
+
+            }
+        }
+
+        #endregion
+
+        #region PushIError(myIError)
+
+        /// <summary>
+        /// Adds a single error.
+        /// </summary>
+        public Exceptional PushIError(IError myIError)
+        {
+            lock (this)
+            {
+                _IErrors.Push(myIError);
+                return this;
+            }
+        }
+
+        #endregion
+
+        #region PushIErrors(myIErrors)
+
+        /// <summary>
+        /// Adds a list of errors.
+        /// </summary>
+        public Exceptional PushIErrors(IEnumerable<IError> myIErrors)
+        {
+            lock (this)
+            {
+
+                if (myIErrors != null && myIErrors.Any())
+                    foreach (var _Error in myIErrors.ToList().Reverse<IError>())
+                        _IErrors.Push(_Error);
+
+                return this;
+
+            }
+        }
+
+        #endregion
+
+        #region PushIExceptional(myIExceptional)
+
+        /// <summary>
+        /// Adds the given exceptional.
+        /// </summary>
+        public Exceptional PushIExceptional(IExceptional myIExceptional)
+        {
+            lock (this)
+            {
+
+                // Add warnings...
+                if (myIExceptional.IWarnings != null && myIExceptional.IWarnings.Any())
+                    foreach (var _Warning in myIExceptional.IWarnings.ToList().Reverse<IWarning>())
+                        _IWarnings.Push(_Warning);
+
+                // Add errors...
+                if (myIExceptional.IErrors != null && myIExceptional.IErrors.Any())
+                    foreach (var _Error in myIExceptional.IErrors.ToList().Reverse<IError>())
+                        _IErrors.Push(_Error);
+
+                return this;
+
             }
         }
 
@@ -244,38 +266,12 @@ namespace sones.Lib.ErrorHandling
 
         #region ToString()
 
-        public override String ToString()
-        {
-            return String.Format("{0} errors occured!", _IErrors.Count());
-        }
+        #region GetIWarningsAsString()
 
-        #endregion
-
-        #region GetErrorsAsString()
-
-        public String GetErrorsAsString()
+        public String GetIWarningsAsString()
         {
 
-            if (_IErrors == null || _IErrors.Count() == 0)
-                return String.Empty;
-
-            var _StringBuilder = new StringBuilder();
-
-            foreach (var _IError in _IErrors)
-                _StringBuilder.AppendLine(String.Format("{0} => {1}", _IError.GetType().Name, _IError.ToString()));
-
-            return _StringBuilder.ToString();
-
-        }
-
-        #endregion
-
-        #region GetWarningsAsString()
-
-        public String GetWarningsAsString()
-        {
-
-            if (_IWarnings == null || _IWarnings.Count() == 0)
+            if (_IWarnings == null || !_IWarnings.Any())
                 return String.Empty;
 
             var _StringBuilder = new StringBuilder();
@@ -289,41 +285,46 @@ namespace sones.Lib.ErrorHandling
 
         #endregion
 
+        #region GetIErrorsAsString()
+
+        public String GetIErrorsAsString()
+        {
+
+            if (_IErrors == null || !_IErrors.Any())
+                return String.Empty;
+
+            var _StringBuilder = new StringBuilder();
+
+            foreach (var _IError in _IErrors)
+                _StringBuilder.AppendLine(String.Format("{0} => {1}", _IError.GetType().Name, _IError.ToString()));
+
+            return _StringBuilder.ToString();
+
+        }
+
+        #endregion
+
+        #region ToString()
+
+        public override String ToString()
+        {
+
+            if (_IErrors.Any())
+                return "[Failed] " + GetIErrorsAsString();
+
+            return String.Format("{0} error(s), {1} warning(s) occured!", _IErrors.Count(), _IWarnings.Count());
+
+        }
+
+        #endregion
+
+        #endregion
+
 
         #region IDisposable Members
 
         public virtual void Dispose()
         {
-        }
-
-        #endregion
-
-        #region AddErrorsAndWarnings
-
-        public void AddErrorsAndWarnings(Exceptional exceptional)
-        {
-            if (_IErrors.IsNullOrEmpty())
-            {
-                _IErrors = exceptional.Errors as Stack<IError>;
-            }
-            else
-            {
-                foreach (var e in exceptional.Errors)
-                {
-                    _IErrors.Push(e);
-                }
-            }
-            if (_IWarnings.IsNullOrEmpty())
-            {
-                _IWarnings = exceptional.Warnings as Stack<IWarning>;
-            }
-            else
-            {
-                foreach (var w in exceptional.Warnings)
-                {
-                    _IWarnings.Push(w);
-                }
-            }
         }
 
         #endregion
@@ -337,7 +338,7 @@ namespace sones.Lib.ErrorHandling
     /// For more information on this idea please watch the following MSDN Channel 9 video:
     /// http://channel9.msdn.com/shows/Going+Deep/E2E-Erik-Meijer-and-Burton-Smith-Concurrency-Parallelism-and-Programming/
     /// </summary>
-    /// <typeparam name="TValue">the type of the value</typeparam>
+    /// <typeparam name="TValue">the type of the encapsulated value</typeparam>
     public class Exceptional<TValue> : Exceptional, IExceptional<TValue>
     {
 
@@ -347,22 +348,19 @@ namespace sones.Lib.ErrorHandling
 
         private TValue _Value;
 
+        /// <summary>
+        /// The encapsulated value.
+        /// </summary>
         public TValue Value
         {
             get
             {
-                #if __WithCheckExceptionals__
-                if(CheckForErrors == false)
-                    throw new Exception("The result of the exception was not checked.");
-                #endif
-
                 return _Value;
             }
 
             set
             {
                 _Value = value;
-//                _Exceptions.Clear();  //ahzf: I don't think that this is usefull!
             }
 
         }        
@@ -371,14 +369,13 @@ namespace sones.Lib.ErrorHandling
 
         #endregion
 
-        #region Constructors
+        #region Constructor(s)
 
         #region Exceptional()
 
         public Exceptional()
+            : base()
         {
-            _IErrors    = new Stack<IError>();
-            _IWarnings  = new Stack<IWarning>();
             _Value      = default(TValue);
         }
 
@@ -387,11 +384,60 @@ namespace sones.Lib.ErrorHandling
         #region Exceptional(myValue)
 
         /// <summary>
-        /// This will internal set Failed=False and Status=True
+        /// Adds the given value
         /// </summary>
-        /// <param name="myValue"></param>
         public Exceptional(TValue myValue)
             : this()
+        {
+            _Value = myValue;
+        }
+
+        #endregion
+
+        #region Exceptional(myIWarning)
+
+        /// <summary>
+        /// Init using a single warning.
+        /// </summary>
+        public Exceptional(IWarning myIWarning)
+            : base(myIWarning)
+        {
+        }
+
+        #endregion
+
+        #region Exceptional(myIWarnings)
+
+        /// <summary>
+        /// Init using a list of warnings.
+        /// </summary>
+        public Exceptional(IEnumerable<IWarning> myIWarnings)
+            : base(myIWarnings)
+        {
+        }
+
+        #endregion
+
+        #region Exceptional(myValue, myIWarning)
+
+        /// <summary>
+        /// Adds the given value and warning.
+        /// </summary>
+        public Exceptional(TValue myValue, IWarning myIWarning)
+            : this(myIWarning)
+        {
+            _Value = myValue;
+        }
+
+        #endregion
+
+        #region Exceptional(myValue, myIWarnings)
+
+        /// <summary>
+        /// Adds the given value and list of warnings.
+        /// </summary>
+        public Exceptional(TValue myValue, IEnumerable<IWarning> myIWarnings)
+            : this(myIWarnings)
         {
             _Value = myValue;
         }
@@ -401,13 +447,11 @@ namespace sones.Lib.ErrorHandling
         #region Exceptional(myIError)
 
         /// <summary>
-        /// This will internal set Failed=True and Status=False
+        /// Init using a single error.
         /// </summary>
-        /// <param name="myException"></param>
         public Exceptional(IError myIError)
-            : this()
+            : base(myIError)
         {
-            _IErrors.Push(myIError);
         }
 
         #endregion
@@ -415,67 +459,23 @@ namespace sones.Lib.ErrorHandling
         #region Exceptional(myIErrors)
 
         /// <summary>
-        /// This will internal set Failed=True and Status=False
+        /// Init using a list of errors.
         /// </summary>
-        /// <param name="myException"></param>
         public Exceptional(IEnumerable<IError> myIErrors)
-            : this()
+            : base(myIErrors)
         {
-            foreach (var error in myIErrors)
-            {
-                _IErrors.Push(error);
-            }
         }
 
         #endregion
 
-        #region Exceptional(myIWarning)
+        #region Exceptional(myIExceptional)
 
         /// <summary>
-        /// This will internal set Failed=True and Status=False
+        /// Init using a single exceptional.
         /// </summary>
-        /// <param name="myIError"></param>
-        public Exceptional(IWarning myIWarning)
-            : this()
+        public Exceptional(IExceptional myIExceptional)
+            : base(myIExceptional)
         {
-            _IWarnings.Push(myIWarning);
-        }
-
-        #endregion
-
-        #region Exceptional(myValue, myIWarning)
-
-        /// <summary>
-        /// This will internal set Failed=False and Status=True
-        /// </summary>
-        /// <param name="myValue"></param>
-        /// <param name="myIWarning"></param>
-        public Exceptional(TValue myValue, IWarning myIWarning)
-            : this(myIWarning)
-        {
-            _Value = myValue;
-        }
-
-        #endregion
-
-        #region Exceptional(myExceptional)
-
-        /// <summary>
-        /// This will internal set Failed=True and Status=False
-        /// </summary>
-        /// <param name="myExceptional"></param>
-        public Exceptional(Exceptional myExceptional)
-            : this()
-        {
-
-            if (myExceptional.Errors != null && myExceptional.Errors.Count() > 0)
-                foreach (var _Error in myExceptional.Errors.ToList().Reverse<IError>())
-                    _IErrors.Push(_Error);
-
-            if (myExceptional.Warnings != null && myExceptional.Warnings.Count() > 0)
-                foreach (var _Warning in myExceptional.Warnings.ToList().Reverse<IWarning>())
-                    _IWarnings.Push(_Warning);
-
         }
 
         #endregion
@@ -483,12 +483,10 @@ namespace sones.Lib.ErrorHandling
         #region Exceptional(myValue, myExceptional)
 
         /// <summary>
-        /// This will internal set Failed=True and Status=False
+        /// Init using the given value and a single exceptional.
         /// </summary>
-        /// <param name="myValue"></param>
-        /// <param name="myExceptional"></param>
-        public Exceptional(TValue myValue, Exceptional myExceptional)
-            : this(myExceptional)
+        public Exceptional(TValue myValue, IExceptional myIExceptional)
+            : this(myIExceptional)
         {
             _Value = myValue;
         }
@@ -498,53 +496,82 @@ namespace sones.Lib.ErrorHandling
         #endregion
 
 
-        #region PushT
+        #region PushT(IWarning(s)/IError(s)/IExceptional)
 
-        #region Push(myExceptional)
+        #region PushIWarningT(myIWarning)
 
         /// <summary>
-        /// This will internal set Failed=True and Status=False
+        /// Adds a single warning.
         /// </summary>
-        /// <param name="myException"></param>
-        new public Exceptional<TValue> Push(Exceptional myExceptional)
+        public Exceptional<TValue> PushIWarningT(IWarning myIWarning)
         {
             lock (this)
             {
-                AddErrorsAndWarnings(myExceptional);
+                base.PushIWarning(myIWarning);
                 return this;
             }
         }
 
         #endregion
 
-        #region PushT(myIError)
+        #region PushIWarningsT(myIWarnings)
 
         /// <summary>
-        /// This will internal set Failed=True and Status=False
+        /// Adds a list of warnings.
         /// </summary>
-        /// <param name="myException"></param>
-        public Exceptional<TValue> PushT(IError myIError)
+        public Exceptional<TValue> PushIWarningsT(IEnumerable<IWarning> myIWarnings)
         {
             lock (this)
             {
-                _IErrors.Push(myIError);
+                base.PushIWarnings(myIWarnings);
                 return this;
             }
         }
 
         #endregion
 
-        #region PushT(myWarning)
+        #region PushIErrorT(myIError)
 
         /// <summary>
-        /// This will internal set Failed=True and Status=False
+        /// Adds a single error.
         /// </summary>
-        /// <param name="myException"></param>
-        public Exceptional<TValue> PushT(IWarning myIWarning)
+        public Exceptional<TValue> PushIErrorT(IError myIError)
         {
             lock (this)
             {
-                _IWarnings.Push(myIWarning);
+                base.PushIError(myIError);
+                return this;
+            }
+        }
+
+        #endregion
+
+        #region PushIErrorsT(myIErrors)
+
+        /// <summary>
+        /// Adds a list of errors.
+        /// </summary>
+        public Exceptional<TValue> PushIErrorsT(IEnumerable<IError> myIErrors)
+        {
+            lock (this)
+            {
+                base.PushIErrors(myIErrors);
+                return this;
+            }
+        }
+
+        #endregion
+
+        #region PushIExceptionalT(myExceptional)
+
+        /// <summary>
+        /// Adds the given exceptional.
+        /// </summary>
+        public Exceptional<TValue> PushIExceptionalT(IExceptional myIExceptional)
+        {
+            lock (this)
+            {
+                base.PushIExceptional(myIExceptional);
                 return this;
             }
         }
@@ -552,21 +579,6 @@ namespace sones.Lib.ErrorHandling
         #endregion
 
         #endregion
-
-        //HACK: Disabled because of nasty side effects!
-        //#region Implicit conversation to/from TValue
-
-        //public static implicit operator Exceptional<TValue>(TValue myValue)
-        //{
-        //    return new Exceptional<TValue>(myValue);
-        //}
-
-        //public static implicit operator TValue(Exceptional<TValue> myExceptional)
-        //{
-        //    return myExceptional.Value;
-        //}
-
-        //#endregion
 
 
         #region Equals(myObject)
@@ -592,17 +604,13 @@ namespace sones.Lib.ErrorHandling
         public override String ToString()
         {
 
-            if (!_IErrors.Any())
-            {
+            if (_IErrors.Any())
+                return "[Failed] " + GetIErrorsAsString();
 
-                if (_Value != null)
-                    return _Value.ToString();
+            if (_Value != null)
+                return "[Success] " + _Value.ToString();
 
-                return "[Success]";
-
-            }
-
-            return "[Failed] " + GetErrorsAsString();
+            return "[Success] <null>";
 
         }
 

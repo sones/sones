@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="EdgeTypePath" />
+﻿/* <id name="EdgeTypePath" />
  * <copyright file="AListReferenceEdgeType.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -27,25 +7,30 @@
  * <summary>Special edge to store paths and create the readout of them.</summary>
  */
 
+#region Usings
+
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using sones.GraphDB.ObjectManagement;
+using System.Collections.Generic;
 
-
-using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
+
+using sones.GraphDB.NewAPI;
+using sones.GraphDB.Result;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.TypeManagement.BasicTypes;
+
+using sones.Lib;
 using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
-using sones.GraphDB.Managers.Structures;
-using sones.Lib;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.TypeManagement;
 
+#endregion
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
+
     /// <summary>
     /// Sepecial edge to store paths and create the readout of them
     /// </summary>
@@ -117,9 +102,10 @@ namespace sones.GraphDB.Structures.EdgeTypes
         }
 
 
-        public override IEnumerable<DBObjectReadout> GetReadouts(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO)
+        public override IEnumerable<Vertex> GetVertices(Func<ObjectUUID, Vertex> GetAllAttributesFromDBO)
         {
-            var result = new List<DBObjectReadout>();
+
+            var result = new List<Vertex>();
 
             foreach (var path in _Paths)
             {
@@ -127,40 +113,60 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
                 result.Add(resolvePath(null, path, GetAllAttributesFromDBO));
             }
+
             return result;
+
         }
 
-        private DBObjectReadout resolvePath(DBObjectReadout myReadoutPath, IEnumerable<ObjectUUID> myPathEntries, Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO)
+        private Vertex resolvePath(Vertex myVertexPath, IEnumerable<ObjectUUID> myPathEntries, Func<ObjectUUID, Vertex> myGetAllAttributesFromVertex)
         {
-            var dbReadout = GetAllAttributesFromDBO(myPathEntries.First());
+            
+            var _Vertex = myGetAllAttributesFromVertex(myPathEntries.First());
 
             if (myPathEntries.Count() > 1)
             {
 
-                var res = resolvePath(myReadoutPath, myPathEntries.Skip(1), GetAllAttributesFromDBO);
-                if (res.Attributes == null)
-                    return null;
+                var res = resolvePath(myVertexPath, myPathEntries.Skip(1), myGetAllAttributesFromVertex);
 
-                if (dbReadout.Attributes.ContainsKey(_pathAttribute.Name))
-                    if ((dbReadout.Attributes[_pathAttribute.Name] as List<DBObjectReadout>) == null)
-                        dbReadout.Attributes[_pathAttribute.Name] = new Edge( new List<DBObjectReadout>() { res }, _typeOfObjects.Name );
+                if (_Vertex.ObsoleteAttributes.ContainsKey(_pathAttribute.Name))
+                {
+                    var listOfVertices = _Vertex.ObsoleteAttributes[_pathAttribute.Name] as List<Vertex>;
+                    if (listOfVertices == null)
+                    {
+                        _Vertex.ObsoleteAttributes[_pathAttribute.Name] = new Edge(null, new List<Vertex>() { res }, _typeOfObjects.Name);
+                    }
                     else
-                        ((List<DBObjectReadout>)(dbReadout.Attributes[_pathAttribute.Name] as Edge)).Add(res);
+                    {
+                        //((List<DBObjectReadout>)(dbReadout.Attributes[_pathAttribute.Name] as Edge)).Add(res);
+
+                        var newContent = new List<Vertex>(_Vertex.ObsoleteAttributes[_pathAttribute.Name] as Edge);
+                        newContent.Add(res);
+
+                        _Vertex.ObsoleteAttributes[_pathAttribute.Name] = new Edge(null, new List<Vertex>(newContent), _typeOfObjects.Name);
+                    }
+
+                }
+
                 else
-                    dbReadout.Attributes.Add(_pathAttribute.Name, new Edge(new List<DBObjectReadout>() { res }, _typeOfObjects.Name));
+                {
+
+                    _Vertex.ObsoleteAttributes.Add(_pathAttribute.Name, new Edge(null, new List<Vertex>() { res }, _typeOfObjects.Name));
+                }
 
             }
             else
             {
-                dbReadout.Attributes.Remove(_pathAttribute.Name);
+                _Vertex.ObsoleteAttributes.Remove(_pathAttribute.Name);
             }
 
-            return dbReadout;
+            return _Vertex;
+
         }
 
-        public override IEnumerable<DBObjectReadout> GetReadouts(Func<ObjectUUID, DBObjectReadout> GetAllAttributesFromDBO, IEnumerable<Exceptional<DBObjectStream>> myDBObjectStreams)
+        public override IEnumerable<Vertex> GetReadouts(Func<ObjectUUID, Vertex> GetAllAttributesFromDBO, IEnumerable<Exceptional<DBObjectStream>> myDBObjectStreams)
         {
-            var result = new List<DBObjectReadout>();
+
+            var result = new List<Vertex>();
 
             foreach (var path in _Paths)
             {
@@ -168,7 +174,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
                 result.Add(resolvePath(null, path, GetAllAttributesFromDBO));
             }
+
             return result;
+
         }
 
         public override ObjectUUID FirstOrDefault()

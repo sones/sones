@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB ñ Graph" />
+Ôªø/* <id name="GraphDB ‚Äì Graph" />
  * <copyright file="CommonUsageGraph.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -76,7 +56,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
         private Dictionary<int, IExpressionLevel> _Levels;
 
         ///// <summary>
-        ///// Es wird ein BackwardEdge level aufgelˆst (U.Friends.Friends.Friends.Name = >lˆst nur ...[BE]Friends.Name auf - aber nicht bis U
+        ///// Es wird ein BackwardEdge level aufgel√∂st (U.Friends.Friends.Friends.Name = >l√∂st nur ...[BE]Friends.Name auf - aber nicht bis U
         ///// Es wird validiert! Aber nicht im graphen gespeichert.
         ///// </summary>
         //private int _defaultBackwardResolution = 0;
@@ -276,7 +256,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                             {
                                 if (aDBO.Failed())
                                 {
-                                    AddWarning(new Warning_CouldNotLoadDBObject(aDBO.Errors, new System.Diagnostics.StackTrace(true)));
+                                    AddWarning(new Warning_CouldNotLoadDBObject(aDBO.IErrors, new System.Diagnostics.StackTrace(true)));
                                 }
                                 else
                                 {
@@ -483,50 +463,28 @@ namespace sones.GraphDB.Structures.ExpressionGraph
 
             #endregion
 
-            CalcDownFillGraph myDownfill = new CalcDownFillGraph(DownFillGraph);
-            Task fillThis = null;
-            Task fillAnother = null;
             var runMT = DBConstants.RunMT;
 
+            #region Downfill
 
-            #region this
             //TODO: only fill down to a certain levelKey)
             if (runMT)
             {
-                fillThis = Task.Factory.StartNew(() =>
+                Parallel.Invoke(
+                    () =>
                     {
                         DownFillGraph(this, thisMinLevelKeys, thisMinLevel);
+                    },
+                    () =>
+                    {
+                        DownFillGraph(anotherGraph, anotherMinLevelKeys, anotherMinLevel);
                     });
             }
             else
             {
                 DownFillGraph(this, thisMinLevelKeys, thisMinLevel);
-            }
-
-            #endregion
-
-            #region another
-
-            if (runMT)
-            {
-                fillAnother = Task.Factory.StartNew(() =>
-                {
-                    DownFillGraph(anotherGraph, anotherMinLevelKeys, anotherMinLevel);
-                });
-            }
-            else
-            {
                 DownFillGraph(anotherGraph, anotherMinLevelKeys, anotherMinLevel);
-            }
 
-            #endregion
-
-            #region wait
-
-            if (runMT)
-            {
-                fillThis.Wait();
-                fillAnother.Wait();
             }
 
             #endregion
@@ -545,41 +503,26 @@ namespace sones.GraphDB.Structures.ExpressionGraph
             //upfill levelKey differences of each graph & update Nodes in both graphs
             if (runMT)
             {
-                fillThis = Task.Factory.StartNew(() =>
-                {
-                    UpgradeGraphStructure(this, diffForThis);
-                    UpfillGraph(this, diffForThis);
-                });
+                Parallel.Invoke(
+                    () =>
+                    {
+                        UpgradeGraphStructure(this, diffForThis);
+                        UpfillGraph(this, diffForThis);
+                    },
+                    () =>
+                    {
+                        UpgradeGraphStructure(anotherGraph, diffForAnotherGraph);
+                        UpfillGraph(anotherGraph, diffForAnotherGraph);
+                    });
             }
             else
             {
                 UpgradeGraphStructure(this, diffForThis);
                 UpfillGraph(this, diffForThis);
-            }
 
-            if (runMT)
-            {
-                fillAnother = Task.Factory.StartNew(() =>
-                {
-                    UpgradeGraphStructure(anotherGraph, diffForAnotherGraph);
-                    UpfillGraph(anotherGraph, diffForAnotherGraph);
-                });
-            }
-            else
-            {
                 UpgradeGraphStructure(anotherGraph, diffForAnotherGraph);
                 UpfillGraph(anotherGraph, diffForAnotherGraph);
             }
-
-            #region wait
-
-            if (runMT)
-            {
-                fillThis.Wait();
-                fillAnother.Wait();
-            }
-
-            #endregion
 
             #endregion
 
@@ -652,19 +595,29 @@ namespace sones.GraphDB.Structures.ExpressionGraph
 
                 #endregion
 
+                var runMT = DBConstants.RunMT;
+
                 #region Downfill both graphs
 
-                #region this
                 //TODO: only fill down to a certain levelKey)
-                DownFillGraph(this, thisMinLevelKeys, thisMinLevel);
+                if (runMT)
+                {
+                    Parallel.Invoke(
+                        () =>
+                        {
+                            DownFillGraph(this, thisMinLevelKeys, thisMinLevel);
+                        },
+                        () =>
+                        {
+                            DownFillGraph(anotherGraph, anotherMinLevelKeys, anotherMinLevel);
+                        });
+                }
+                else
+                {
+                    DownFillGraph(this, thisMinLevelKeys, thisMinLevel);
+                    DownFillGraph(anotherGraph, anotherMinLevelKeys, anotherMinLevel);
 
-                #endregion
-
-                #region another
-
-                DownFillGraph(anotherGraph, anotherMinLevelKeys, anotherMinLevel);
-
-                #endregion
+                }
 
                 #endregion
 
@@ -765,7 +718,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
 
                     if (beStream.Failed())
                     {
-                        throw new GraphDBException(new Error_CouldNotLoadBackwardEdge(aDBObject, tempTypeAttribute, beStream.Errors));
+                        throw new GraphDBException(new Error_CouldNotLoadBackwardEdge(aDBObject, tempTypeAttribute, beStream.IErrors));
                     }
 
                     var tempEdgeKey = GetBackwardEdgeKey(myLevelKey, desiredBackwardEdgeLevel, _DBContext);
@@ -847,7 +800,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                                     break;
                                 case BehaviourOnInvalidReference.log:
 
-                                    AddWarning(new Warning_EdgeToNonExistingNode(aDBObject, tempTypeAttribute.GetDBType(_DBContext.DBTypeManager), tempTypeAttribute, tempDbo.Errors));
+                                    AddWarning(new Warning_EdgeToNonExistingNode(aDBObject, tempTypeAttribute.GetDBType(_DBContext.DBTypeManager), tempTypeAttribute, tempDbo.IErrors));
 
                                     break;
 
@@ -1433,7 +1386,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
 
                                 if (currentBackwardEdgeStream.Failed())
                                 {
-                                    throw new GraphDBException(new Error_CouldNotLoadBackwardEdge(myNode.GetDBObjectStream(_DBObjectCache, currentAttribute.GetRelatedType(_DBContext.DBTypeManager).UUID), currentAttribute, currentBackwardEdgeStream.Errors));
+                                    throw new GraphDBException(new Error_CouldNotLoadBackwardEdge(myNode.GetDBObjectStream(_DBObjectCache, currentAttribute.GetRelatedType(_DBContext.DBTypeManager).UUID), currentAttribute, currentBackwardEdgeStream.IErrors));
                                 }
 
                                 if (currentBackwardEdgeStream.Value.ContainsBackwardEdge(myCurrentBackwardEdgekey))
@@ -1487,7 +1440,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                                             break;
                                         case BehaviourOnInvalidReference.log:
 
-                                            AddWarning(new Warning_EdgeToNonExistingNode(myNode.GetDBObjectStream(_DBObjectCache, referencedType.UUID), currentAttribute.GetDBType(_DBContext.DBTypeManager), currentAttribute, referencedDBObject.Errors));
+                                            AddWarning(new Warning_EdgeToNonExistingNode(myNode.GetDBObjectStream(_DBObjectCache, referencedType.UUID), currentAttribute.GetDBType(_DBContext.DBTypeManager), currentAttribute, referencedDBObject.IErrors));
 
                                             break;
 
@@ -1573,7 +1526,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
 
                             if (beStream.Failed())
                             {
-                                throw new GraphDBException(new Error_CouldNotLoadBackwardEdge(myStartingDBObject, interestingAttributeEdge, beStream.Errors));
+                                throw new GraphDBException(new Error_CouldNotLoadBackwardEdge(myStartingDBObject, interestingAttributeEdge, beStream.IErrors));
                             }
 
                             if (beStream.Value.ContainsBackwardEdge(interestingAttributeEdge.BackwardEdgeDefinition))
@@ -1771,7 +1724,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                                             break;
                                         case BehaviourOnInvalidReference.log:
 
-                                            AddWarning(new Warning_EdgeToNonExistingNode(currentDBObject, interestingAttribute.GetDBType(_DBContext.DBTypeManager), interestingAttribute, aReferenceStream.Errors));
+                                            AddWarning(new Warning_EdgeToNonExistingNode(currentDBObject, interestingAttribute.GetDBType(_DBContext.DBTypeManager), interestingAttribute, aReferenceStream.IErrors));
 
                                             break;
 
@@ -1817,7 +1770,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
 
                         if (beStream.Failed())
                         {
-                            throw new GraphDBException(new Error_CouldNotLoadBackwardEdge(currentDBObject, interestingAttribute, beStream.Errors));
+                            throw new GraphDBException(new Error_CouldNotLoadBackwardEdge(currentDBObject, interestingAttribute, beStream.IErrors));
                         }
 
                         if (beStream.Value.ContainsBackwardEdge(interestingAttribute.BackwardEdgeDefinition))
@@ -2003,7 +1956,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                             {
                                 if (aDBO.Failed())
                                 {
-                                    AddWarning(new Warning_CouldNotLoadDBObject(aDBO.Errors, new System.Diagnostics.StackTrace(true)));
+                                    AddWarning(new Warning_CouldNotLoadDBObject(aDBO.IErrors, new System.Diagnostics.StackTrace(true)));
                                 }
                                 else
                                 {

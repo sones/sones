@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * sones GraphDS API - DBObject
  * (c) Achim 'ahzf' Friedland, 2009 - 2010
  */
@@ -33,10 +13,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
-using sones.Lib.DataStructures.UUID;
+using sones.GraphFS.Session;
 using sones.GraphFS.DataStructures;
 using sones.GraphDB.Structures;
-using sones.GraphFS.Session;
+using sones.Lib.DataStructures.UUID;
+using System.Diagnostics;
 
 #endregion
 
@@ -44,92 +25,191 @@ namespace sones.GraphDB.NewAPI
 {
 
     /// <summary>
-    /// The DBObject class for user-defined graph data base types
+    /// The abstract DBObject class for all user-defined vertices and edges.
     /// </summary>
-
-    public abstract class DBObject : DynamicObject, IEquatable<DBObject>
+    public abstract class DBObject : DynamicObject, IEnumerable<KeyValuePair<String, Object>>, IEquatable<DBObject>
     {
-
-        #region Data
-
-        /// <summary>
-        /// This dictionary will hold undefined attributes 
-        /// </summary>
-        protected readonly Dictionary<String, Object> _UndefinedAttributes;
-
-        #endregion
 
         #region Properties
 
-        public IGraphDB     GraphDBInterface    { get; set; }
-        public SessionToken SessionToken        { get; set; }
+        // Must be IGraphDBSession cause of the SessionToken!
+        // But first IGraphDB and IGraphDBSession has to be cleaned
+        // from graphdb-internal datastructures!
+        protected          IGraphDB     GraphDBInterface;
+        protected          SessionToken SessionToken;
 
-        //#region CreateTypeQuery
-
-        //protected String _CreateTypeQuery;
-
-        //[HideFromDatabase]
-        //public String CreateTypeQuery
-        //{
-        //    get
-        //    {
-        //        if (_CreateTypeQuery == null) ReflectMyself();
-        //        return _CreateTypeQuery;
-        //    }
-
-        //}
-
-        //#endregion
-
-        //#region CreateIndicesQueries
-
-        //// Just used within tests!
-
-        //protected readonly List<String> _CreateIndicesQueries;
-
-        //[HideFromDatabase]
-        //public List<String> CreateIndicesQueries
-        //{
-        //    get
-        //    {
-        //        if (_CreateIndicesQueries == null) ReflectMyself();
-        //        return _CreateIndicesQueries;
-        //    }
-
-        //}
-
-        //#endregion
+        protected readonly IDictionary<String, Object> _Attributes;
 
         #region Omnipresent attributes
 
-        public ObjectUUID   UUID        { get; set; }
+        #region Attributes (OBSOLETE!!!)
+
+        /// <summary>
+        /// This dictionary will hold information about the DBObject
+        /// </summary>
+        [HideFromDatabase, Obsolete("Do not use this dictionary directly!")]
+        public IDictionary<String, Object> ObsoleteAttributes
+        {
+            get
+            {
+                return _Attributes;
+            }
+        }
+
+        #endregion
+
+        #region UUID
+
+        public ObjectUUID UUID
+        {
+
+            get
+            {
+                
+                Object _Object = null;
+
+                if (_Attributes.TryGetValue("UUID", out _Object))
+                    return _Object as ObjectUUID;
+
+                return null;
+
+            }
+
+            set
+            {
+
+                if (_Attributes.ContainsKey("UUID"))
+                    _Attributes["UUID"] = value;
+
+                else
+                    _Attributes.Add("UUID", value);
+
+            }
+
+        }
+
+        #endregion
+
+        #region TYPE
 
         [HideFromDatabase]
-        public String       TYPE        { get; protected set; }
+        public String TYPE
+        {
 
-        public String       Edition     { get; set; }
+            get
+            {
+                
+                Object _Object = null;
+
+                if (_Attributes.TryGetValue("TYPE", out _Object))
+                    return _Object as String;
+
+                return null;
+
+            }
+
+            protected set
+            {
+
+                if (_Attributes.ContainsKey("TYPE"))
+                    _Attributes["TYPE"] = value;
+
+                else
+                    _Attributes.Add("TYPE", value);
+
+            }
+
+        }
+
+        #endregion
+
+        #region EDITION
 
         [HideFromDatabase]
-        public ObjectRevisionID   RevisionID  { get; set; }
+        public String EDITION
+        {
+
+            get
+            {
+                
+                Object _Object = null;
+
+                if (_Attributes.TryGetValue("EDITION", out _Object))
+                    return _Object as String;
+
+                return null;
+
+            }
+
+            set
+            {
+
+                if (_Attributes.ContainsKey("EDITION"))
+                    _Attributes["EDITION"] = value;
+
+                else
+                    _Attributes.Add("EDITION", value);
+
+            }
+
+        }
+
+        #endregion
+
+        #region REVISIONID
 
         [HideFromDatabase]
-        public virtual String Comment   { get; set; }
+        public ObjectRevisionID REVISIONID
+        {
+
+            get
+            {
+                
+                Object _Object = null;
+
+                if (_Attributes.TryGetValue("REVISION", out _Object))
+                    return _Object as ObjectRevisionID;
+
+                return null;
+
+            }
+
+            set
+            {
+
+                if (_Attributes.ContainsKey("REVISION"))
+                    _Attributes["REVISION"] = value;
+
+                else
+                    _Attributes.Add("REVISION", value);
+
+            }
+
+        }
+
+        #endregion
+
+        [HideFromDatabase]
+        public virtual String Comment { get; set; }
 
         #endregion
 
         #endregion
 
-        #region Constructors
+        #region Constructor(s)
 
         #region DBObject()
 
         public DBObject()
         {
-            UUID                    = null;
-            Edition                 = null;
-            RevisionID              = null;
-            _UndefinedAttributes    = new Dictionary<String, Object>();
+
+            // StringComparison.OrdinalIgnoreCase is often used to compare file names,
+            // path names, network paths, and any other string whose value does not change
+            // based on the locale of the user's computer.
+            _Attributes = new Dictionary<String, Object>(StringComparer.OrdinalIgnoreCase);
+
             //_CreateIndicesQueries   = new List<String>();
+
         }
 
         #endregion
@@ -137,45 +217,121 @@ namespace sones.GraphDB.NewAPI
         #endregion
 
 
-       // public abstract String GetInsertValues(String mySeperator);
-    //    public abstract void ReflectMyself();
+        #region Attribute manipulation
 
+        #region AddAttribute(myAttributeName, myObject)
 
-        #region Members of DynamicObject
-
-        // Used to access undefined attributes
-
-        #region GetDynamicMemberNames()
-
-        public override IEnumerable<String> GetDynamicMemberNames()
+        public void AddAttribute(String myAttributeName, Object myObject)
         {
-            return _UndefinedAttributes.Keys;
+
+            if (myAttributeName == "UUID" && !(myObject is ObjectUUID))
+                Debug.WriteLine("Setting vertex property 'UUID' to an unwanted value of '{0}'", myObject);
+
+            if (myAttributeName == "REVISION" && !(myObject is ObjectRevisionID))
+                Debug.WriteLine("Setting vertex property 'REVISION' to an unwanted value of '{0}'", myObject);
+
+            _Attributes.Add(myAttributeName, myObject);
+
         }
 
         #endregion
 
-        #region TryGetMember(myBinder, out myObject)
+        #region AddAttribute(myKeyValuePair)
 
-        public override Boolean TryGetMember(GetMemberBinder myBinder, out Object myObject)
+        public void AddAttribute(KeyValuePair<String, Object> myKeyValuePair)
         {
-            return _UndefinedAttributes.TryGetValue(myBinder.Name, out myObject);
+            AddAttribute(myKeyValuePair.Key, myKeyValuePair.Value);
         }
 
         #endregion
 
-        #region TrySetMember(myBinder, myObject)
+        #region AddAttribute(myKeyValuePairs)
 
-        public override Boolean TrySetMember(SetMemberBinder myBinder, Object myObject)
+        public void AddAttribute(IEnumerable<KeyValuePair<String, Object>> myKeyValuePairs)
+        {
+            foreach (var _KeyValuePair in myKeyValuePairs)
+                AddAttribute(_KeyValuePair.Key, _KeyValuePair.Value);
+        }
+
+        #endregion
+
+        #region AddAttribute(myIDictionary)
+
+        public void AddAttribute(IDictionary<String, Object> myIDictionary)
+        {
+            foreach (var _KeyValuePair in myIDictionary)
+                AddAttribute(_KeyValuePair.Key, _KeyValuePair.Value);
+        }
+
+        #endregion
+
+
+        #region SetAttribute(myAttributeName, myObject)
+
+        public void SetAttribute(String myAttributeName, Object myObject)
+        {
+            _Attributes[myAttributeName] = myObject;
+        }
+
+        #endregion
+
+        #region SetAttribute(myKeyValuePair)
+
+        public void SetAttribute(KeyValuePair<String, Object> myKeyValuePair)
+        {
+            SetAttribute(myKeyValuePair.Key, myKeyValuePair.Value);
+        }
+
+        #endregion
+
+        #region SetAttribute(myKeyValuePairs)
+
+        public void SetAttribute(IEnumerable<KeyValuePair<String, Object>> myKeyValuePairs)
+        {
+            foreach (var _KeyValuePair in myKeyValuePairs)
+                SetAttribute(_KeyValuePair.Key, _KeyValuePair.Value);
+        }
+
+        #endregion
+
+        #region SetAttribute(myIDictionary)
+
+        public void SetAttribute(IDictionary<String, Object> myIDictionary)
+        {
+            foreach (var _KeyValuePair in myIDictionary)
+                SetAttribute(_KeyValuePair.Key, _KeyValuePair.Value);
+        }
+
+        #endregion
+
+
+        #region RemoveAttribute(myAttributeName)
+
+        public Boolean RemoveAttribute(String myAttributeName)
+        {
+            return _Attributes.Remove(myAttributeName);
+        }
+
+        #endregion
+
+
+        #region CompareAttributes(myDBObject1, myDBObject2)
+
+        private Boolean CompareAttributes(DBObject myDBObject1, DBObject myDBObject2)
         {
 
-            //if (_StructuredData.Contains(myBinder.Name))
-            //    throw new ArgumentException("Invalid operation!");
+            if (myDBObject1.Count() != myDBObject2.Count())
+                return false;
 
-            if (_UndefinedAttributes.ContainsKey(myBinder.Name))
-                _UndefinedAttributes[myBinder.Name] = myObject;
+            foreach (var _KeyValuePair in myDBObject1)
+            {
 
-            else
-                _UndefinedAttributes.Add(myBinder.Name, myObject);
+                if (myDBObject2.Contains(_KeyValuePair))
+                    continue;
+
+                return false;
+
+            }
 
             return true;
 
@@ -185,6 +341,54 @@ namespace sones.GraphDB.NewAPI
 
         #endregion
 
+
+        #region DynamicObject Members
+
+        #region GetDynamicMemberNames()
+
+        public override IEnumerable<String> GetDynamicMemberNames()
+        {
+            return _Attributes.Keys;
+        }
+
+        #endregion
+
+        #region TrySetMember(myBinder, myObject)
+
+        public override Boolean TrySetMember(SetMemberBinder myBinder, Object myObject)
+        {
+
+            if (_Attributes.ContainsKey(myBinder.Name))
+                _Attributes[myBinder.Name] = myObject;
+
+            else
+                _Attributes.Add(myBinder.Name, myObject);
+
+            return true;
+
+        }
+
+        #endregion
+
+        #region TryGetMember(myBinder, out myObject)
+
+        public override Boolean TryGetMember(GetMemberBinder myBinder, out Object myObject)
+        {
+            return _Attributes.TryGetValue(myBinder.Name, out myObject);
+        }
+
+        #endregion
+
+        #region TryDeleteMember(myBinder)
+
+        public override Boolean TryDeleteMember(DeleteMemberBinder myBinder)
+        {
+            return _Attributes.Remove(myBinder.Name);
+        }
+
+        #endregion
+
+        #endregion
 
 
         #region Operator overloading
@@ -216,6 +420,24 @@ namespace sones.GraphDB.NewAPI
         }
 
         #endregion
+
+        #endregion
+        
+        #region IEnumerable Members
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _Attributes.GetEnumerator();
+        }
+
+        #endregion
+
+        #region IEnumerable<KeyValuePair<String, Object>> Members
+
+        public IEnumerator<KeyValuePair<String, Object>> GetEnumerator()
+        {
+            return _Attributes.GetEnumerator();
+        }
 
         #endregion
 
@@ -264,7 +486,7 @@ namespace sones.GraphDB.NewAPI
         {
 
             if (UUID == null)
-                return _UndefinedAttributes.GetHashCode();
+                return _Attributes.GetHashCode();
 
             return UUID.GetHashCode();
 
@@ -278,7 +500,7 @@ namespace sones.GraphDB.NewAPI
         {
 
             var UUIDString = (UUID == null) ? "<null>" : UUID.ToString();
-            var RevisionIDString = (RevisionID == null) ? "<null>" : RevisionID.ToString();
+            var RevisionIDString = (REVISIONID == null) ? "<null>" : REVISIONID.ToString();
 
             return this.GetType().Name + "(UUID = " + UUIDString + ", RevisionID = " + RevisionIDString + ")";
 

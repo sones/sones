@@ -7,7 +7,7 @@
             var out = "";
             out += "<div class=\"resultItem\">";
             out += "<span class=\"AttrTag\">&lt;sones <span class=\"AttrParamName\">version</span>=<span class=\"AttrParamValue\">\"1.0\"</span>&gt;</span>\n";
-            out += "<div class=\"inner\"><span class=\"AttrTag\">&lt;GraphDB <span class=\"AttrParamName\">version</span>=<span class=\"AttrParamValue\">\"1.0\"</span>&gt;</span>\n";
+            out += "<div class=\"inner\"><span class=\"AttrTag\">&lt;graphdb <span class=\"AttrParamName\">version</span>=<span class=\"AttrParamValue\">\"1.0\"</span>&gt;</span>\n";
             out += "<div class=\"inner\"><span class=\"AttrTag\">&lt;queryresult <span class=\"AttrParamName\">version</span>=<span class=\"AttrParamValue\">\"1.0\"</span>&gt;</span>\n";
 
             // query string
@@ -33,7 +33,7 @@
             out += results2XML(queryResult.getElementsByTagName("results")[0], false);
 
             out += "<span class=\"AttrTag\">&lt;/queryresult&gt;</div></span>\n";
-            out += "<span class=\"AttrTag\">&lt;/GraphDB&gt;</div></span>\n";
+            out += "<span class=\"AttrTag\">&lt;/graphdb&gt;</div></span>\n";
             out += "<span class=\"AttrTag\">&lt;/sones&gt;</span>\n";
             out += "</div>\n";
 
@@ -76,9 +76,9 @@
                 }
 
                 // DBObject
-                else if (results[i].nodeName == "DBObject") {
+                else if (results[i].nodeName == "vertex") {
 
-                    tmp += "<div class=\"inner\"><span class=\"DBObjectTag\">&lt;DBObject</span>";
+                    tmp += "<div class=\"inner\"><span class=\"DBObjectTag\">&lt;vertex</span>";
                     tmp += "<span class=\"DBObjectTag\">&gt;</span>";
 
                     var attributeTags = $(results[i]).children();

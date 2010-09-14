@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * AGraphFS
  * (c) Achim Friedland, 2010
  */
@@ -1309,7 +1289,7 @@ namespace sones
                 _Exceptional.Value = _ObjectLocatorExceptional.Value.INodeReference;
 
             else
-                return _ObjectLocatorExceptional.Convert<INode>().PushT(new GraphFSError_INodeCouldNotBeLoaded(myObjectLocation));
+                return _ObjectLocatorExceptional.Convert<INode>().PushIErrorT(new GraphFSError_INodeCouldNotBeLoaded(myObjectLocation));
 
             return _Exceptional;
 
@@ -1413,7 +1393,7 @@ namespace sones
 
             else
             {
-                _Exceptional.PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path));
+                _Exceptional.PushIErrorT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path));
                 //                _Exceptional.Add(_ParentDirectoryObjectExceptional.Errors);
                 _Exceptional.Value = Trinary.FALSE;
             }
@@ -1472,7 +1452,7 @@ namespace sones
             else
             {
                 _Exceptional = new Exceptional<Trinary>(_ParentDirectoryObjectExceptional);
-                _Exceptional.Push(new GraphFSError_DirectoryObjectNotFound(myObjectLocation));
+                _Exceptional.PushIError(new GraphFSError_DirectoryObjectNotFound(myObjectLocation));
                 _Exceptional.Value = Trinary.FALSE;
             }
 
@@ -1512,7 +1492,7 @@ namespace sones
 
                 else
                 {
-                    _Exceptional.PushT(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
+                    _Exceptional.PushIErrorT(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
                     _Exceptional.Value = Trinary.FALSE;
                 }
 
@@ -1521,7 +1501,7 @@ namespace sones
             else
             {
                 _Exceptional = new Exceptional<Trinary>(_ObjectLocatorExceptional);
-                _Exceptional.PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
+                _Exceptional.PushIErrorT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
                 _Exceptional.Value = Trinary.FALSE;
             }
 
@@ -1601,7 +1581,7 @@ namespace sones
 
                     else
                     {
-                        _Exceptional.PushT(new GraphFSError_ObjectEditionNotFound(myObjectLocation, myObjectStream, myObjectEdition));
+                        _Exceptional.PushIErrorT(new GraphFSError_ObjectEditionNotFound(myObjectLocation, myObjectStream, myObjectEdition));
                         _Exceptional.Value = Trinary.FALSE;
                     }
 
@@ -1609,7 +1589,7 @@ namespace sones
 
                 else
                 {
-                    _Exceptional.PushT(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
+                    _Exceptional.PushIErrorT(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
                     _Exceptional.Value = Trinary.FALSE;
                 }
 
@@ -1618,7 +1598,7 @@ namespace sones
             else
             {
                 _Exceptional = new Exceptional<Trinary>(_ObjectLocatorExceptional);
-                _Exceptional.PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
+                _Exceptional.PushIErrorT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
                 _Exceptional.Value = Trinary.FALSE;
             }
 
@@ -1652,7 +1632,7 @@ namespace sones
                     else
                     {
                         _Exceptional = _ObjectLocatorExceptional.Convert<IEnumerable<String>>().
-                            PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
+                            PushIErrorT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
                     }
 
                 }
@@ -1683,14 +1663,14 @@ namespace sones
                             _Exceptional.Value = _DirectoryEntry.ObjectStreamsList;
 
                         else
-                            _Exceptional.PushT(new GraphFSError_CouldNotGetObjectStreams(myObjectLocation));
+                            _Exceptional.PushIErrorT(new GraphFSError_CouldNotGetObjectStreams(myObjectLocation));
 
                     }
 
                     else
                     {
                         _Exceptional = _ParentDirectoryObjectExceptional.Convert<IEnumerable<String>>().
-                            PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation));
+                            PushIErrorT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation));
                     }
 
                 }
@@ -1723,14 +1703,14 @@ namespace sones
                     _Exceptional.Value = _ObjectStream.Keys;
 
                 else
-                    _Exceptional.PushT(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
+                    _Exceptional.PushIErrorT(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
 
             }
 
             else
             {
                 _Exceptional = _ObjectLocatorExceptional.Convert<IEnumerable<String>>().
-                    PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
+                    PushIErrorT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
             }
 
             return _Exceptional;
@@ -1763,19 +1743,19 @@ namespace sones
                         _Exceptional.Value = _ObjectEdition.Keys;
 
                     else
-                        _Exceptional.PushT(new GraphFSError_ObjectEditionNotFound(myObjectLocation, myObjectStream, myObjectEdition));
+                        _Exceptional.PushIErrorT(new GraphFSError_ObjectEditionNotFound(myObjectLocation, myObjectStream, myObjectEdition));
 
                 }
 
                 else
-                    _Exceptional.PushT(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
+                    _Exceptional.PushIErrorT(new GraphFSError_ObjectStreamNotFound(myObjectLocation, myObjectStream));
 
             }
 
             else
             {
                 _Exceptional = _ObjectLocatorExceptional.Convert<IEnumerable<ObjectRevisionID>>().
-                    PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
+                    PushIErrorT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
             }
 
             return _Exceptional;
@@ -2099,7 +2079,7 @@ namespace sones
                 {
 
                     var _ObjectLocatorExceptional = GetObjectLocator_protected(myObjectLocation).
-                        WhenFailed<ObjectLocator>(e => e.PushT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation)));
+                        WhenFailed<ObjectLocator>(e => e.PushIErrorT(new GraphFSError_ObjectLocatorNotFound(myObjectLocation)));
 
                     if (_ObjectLocatorExceptional.Failed())
                         return _ObjectLocatorExceptional.Convert<PT>();
@@ -2249,7 +2229,7 @@ namespace sones
                                 else
                                 {
                                     // ErrorHandling!
-                                    return _Exceptional.PushT(new GraphFSError_AllObjectCopiesFailed(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID));
+                                    return _Exceptional.PushIErrorT(new GraphFSError_AllObjectCopiesFailed(myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID));
                                 }
 
                             }
@@ -2259,7 +2239,7 @@ namespace sones
                         }
 
                         else
-                            _Exceptional.PushT(new GraphFSError("Could not find a valid CacheUUID for this object!"));
+                            _Exceptional.PushIErrorT(new GraphFSError("Could not find a valid CacheUUID for this object!"));
 
                     }
 
@@ -2514,7 +2494,7 @@ namespace sones
 
                         else
                         {
-                            return _Exceptional.Push(new GraphFSError_CouldNotOverwriteRevision(myAFSObject.ObjectLocation, myAFSObject.ObjectStream, myAFSObject.ObjectEdition, myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].LatestRevisionID));
+                            return _Exceptional.PushIError(new GraphFSError_CouldNotOverwriteRevision(myAFSObject.ObjectLocation, myAFSObject.ObjectStream, myAFSObject.ObjectEdition, myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].LatestRevisionID));
                         }
 
                     }
@@ -2541,7 +2521,7 @@ namespace sones
 
                         else
                         {
-                            return _Exceptional.Push(new GraphFSError_CouldNotOverwriteRevision(myAFSObject.ObjectLocation, myAFSObject.ObjectStream, myAFSObject.ObjectEdition, myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].LatestRevisionID));
+                            return _Exceptional.PushIError(new GraphFSError_CouldNotOverwriteRevision(myAFSObject.ObjectLocation, myAFSObject.ObjectStream, myAFSObject.ObjectEdition, myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition].LatestRevisionID));
                         }
                     }
 
@@ -2714,7 +2694,7 @@ namespace sones
 
                     // Rename ParentDirectoryEntry
                     if (!_ParentDirectoryObjectExceptional.Value.RenameDirectoryEntry(myObjectLocation.Name, myNewObjectName))
-                        _Exceptional.Push(new GraphFSError_ObjectNotFound(myObjectLocation));
+                        _Exceptional.PushIError(new GraphFSError_ObjectNotFound(myObjectLocation));
 
                     // Move cached ObjectLocator and all AFSObjects under the given ObjectLocation
                     _Exceptional = _ObjectCache.MoveToLocation(myObjectLocation, new ObjectLocation(myObjectLocation.Path, myNewObjectName));
@@ -2726,7 +2706,7 @@ namespace sones
                 else
                 {
                     _Exceptional = _ParentDirectoryObjectExceptional.Convert<IEnumerable<ObjectRevisionID>>().
-                        PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path));
+                        PushIErrorT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path));
                 }
 
                 return _Exceptional;
@@ -2801,13 +2781,13 @@ namespace sones
 
                 // ObjectStream
                 if (myObjectLocator.ContainsKey(myObjectStream) == false)
-                    return new Exceptional().Push(new GraphFSError("Invalid ObjectStream '" + myObjectStream + "'!"));
+                    return new Exceptional().PushIError(new GraphFSError("Invalid ObjectStream '" + myObjectStream + "'!"));
 
                 var _ObjectStream = myObjectLocator[myObjectStream];
 
                 // ObjectEdition
                 if (myObjectEdition == null || _ObjectStream.ContainsKey(myObjectEdition) == false)
-                    return new Exceptional().Push(new GraphFSError("Invalid ObjectEdition '" + myObjectEdition + "'!"));
+                    return new Exceptional().PushIError(new GraphFSError("Invalid ObjectEdition '" + myObjectEdition + "'!"));
 
                 var _ObjectEdition = _ObjectStream[myObjectEdition];
 
@@ -2816,7 +2796,7 @@ namespace sones
 
                 // ObjectRevision
                 if (myObjectRevisionID == null || _ObjectEdition.ContainsKey(myObjectRevisionID) == false)
-                    return new Exceptional().Push(new GraphFSError("Invalid ObjectRevisionID '" + myObjectRevisionID + "'!"));
+                    return new Exceptional().PushIError(new GraphFSError("Invalid ObjectRevisionID '" + myObjectRevisionID + "'!"));
 
                 var _ObjectRevision = _ObjectEdition[myObjectRevisionID];
 
@@ -2861,7 +2841,7 @@ namespace sones
                 #region Remove ObjectStream from ParentIDirectoryObject
 
                 var _Exceptional3 = GetAFSObject_protected<DirectoryObject>(myObjectLocator.ObjectLocation.Path, null, null, null, 0, false).
-                    WhenFailed<DirectoryObject>(e => e.PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocator.ObjectLocation.Path))).
+                    WhenFailed<DirectoryObject>(e => e.PushIErrorT(new GraphFSError_DirectoryObjectNotFound(myObjectLocator.ObjectLocation.Path))).
                     WhenSucceded<DirectoryObject>(e =>
                     {
 
@@ -2874,7 +2854,7 @@ namespace sones
                             _ObjectStreamsList.CountIs(2))
                             e.Value.RemoveObjectStream(myObjectLocator.ObjectLocation.Name, FSConstants.ACCESSCONTROLSTREAM);
 
-                        e.Push(StoreAFSObject_protected(myObjectLocator.ObjectLocation.Path, e.Value, true));
+                        e.PushIExceptional(StoreAFSObject_protected(myObjectLocator.ObjectLocation.Path, e.Value, true));
 
                         return e;
 
@@ -3006,7 +2986,7 @@ namespace sones
 
                 if (_ParentIDirectoryObject.Failed())
                 {
-                    return _ParentIDirectoryObject.Push(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path));
+                    return _ParentIDirectoryObject.PushIError(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path));
                 }
 
                 if (!_ParentIDirectoryObject.Value.ObjectExists(myObjectLocation.Name))
@@ -3082,7 +3062,7 @@ namespace sones
 
                 if (_ParentIDirectoryObject.Failed())
                 {
-                    return _ParentIDirectoryObject.Convert<Trinary>().PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path));
+                    return _ParentIDirectoryObject.Convert<Trinary>().PushIErrorT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path));
                 }
 
                 _Exceptional.Value = _ParentIDirectoryObject.Value.isSymlink(myObjectLocation.Name);
@@ -3119,7 +3099,7 @@ namespace sones
 
                 if (_ParentIDirectoryObject.Failed())
                 {
-                    return _ParentIDirectoryObject.Convert<ObjectLocation>().PushT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path));
+                    return _ParentIDirectoryObject.Convert<ObjectLocation>().PushIErrorT(new GraphFSError_DirectoryObjectNotFound(myObjectLocation.Path));
                 }
 
                 _Exceptional.Value = _ParentIDirectoryObject.Value.GetSymlink(myObjectLocation.Name);
@@ -3234,7 +3214,7 @@ namespace sones
                     using (var _StoreDirectoryObjectExceptional = StoreAFSObject_protected(myObjectLocation, _AFSObject, true))
                     {
                         if (_StoreDirectoryObjectExceptional.Failed())
-                            return _StoreDirectoryObjectExceptional.Convert<IDirectoryObject>().PushT(new GraphFSError_CreateDirectoryFailed(myObjectLocation));
+                            return _StoreDirectoryObjectExceptional.Convert<IDirectoryObject>().PushIErrorT(new GraphFSError_CreateDirectoryFailed(myObjectLocation));
                     }
 
                     //_DirectoryObject.IGraphFSReference = this;
@@ -3274,7 +3254,7 @@ namespace sones
             }
             catch (Exception e)
             {
-                _Exceptional.PushT(new GraphFSError_CreateDirectoryFailed(myObjectLocation, e.ToString(true)));
+                _Exceptional.PushIErrorT(new GraphFSError_CreateDirectoryFailed(myObjectLocation, e.ToString(true)));
             }
 
             return _Exceptional;            
@@ -3855,7 +3835,7 @@ namespace sones
 
             if (_DirectoryListingExceptional.Failed() || _DirectoryListingExceptional.Value == null)
             {
-                return _DirectoryListingExceptional.Push(new GraphFSError_CouldNotGetDirectoryListing(myObjectLocation));
+                return _DirectoryListingExceptional.PushIError(new GraphFSError_CouldNotGetDirectoryListing(myObjectLocation));
             }
 
             #endregion
@@ -3869,7 +3849,7 @@ namespace sones
 
                 if (!myRecursiveRemoval)
                 {
-                    return _Exceptional.Push(new GraphFSError_DirectoryIsNotEmpty(myObjectLocation));
+                    return _Exceptional.PushIError(new GraphFSError_DirectoryIsNotEmpty(myObjectLocation));
                 }
 
                 #endregion
@@ -3925,7 +3905,7 @@ namespace sones
 
                                 if (_SubobjectLocatorExceptional.Failed() || _SubobjectLocatorExceptional.Value == null)
                                 {
-                                    return _SubobjectLocatorExceptional.Push(new GraphFSError_CouldNotGetObjectLocator(new ObjectLocation(myObjectLocation, _DirectoryEntryInformation.Name)));
+                                    return _SubobjectLocatorExceptional.PushIError(new GraphFSError_CouldNotGetObjectLocator(new ObjectLocation(myObjectLocation, _DirectoryEntryInformation.Name)));
                                 }
 
                                 foreach (var _ObjectEditionKeyValuePair in _SubobjectLocatorExceptional.Value[_StreamType])
@@ -3977,7 +3957,7 @@ namespace sones
 
             if (_ObjectLocatorExceptional.Failed() || _ObjectLocatorExceptional.Value == null)
             {
-                return _ObjectLocatorExceptional.Push(new GraphFSError_CouldNotGetObjectLocator(myObjectLocation));
+                return _ObjectLocatorExceptional.PushIError(new GraphFSError_CouldNotGetObjectLocator(myObjectLocation));
             }
 
             // Remove the $DefaultEditon and $LatestRevision
@@ -3985,7 +3965,7 @@ namespace sones
 
             if (_RemoveObjectExceptional.Failed())
             {
-                return _RemoveObjectExceptional.Push(new GraphFSError_CouldNotRemoveDirectoryObject(myObjectLocation));
+                return _RemoveObjectExceptional.PushIError(new GraphFSError_CouldNotRemoveDirectoryObject(myObjectLocation));
             }
 
             return _Exceptional;
@@ -4134,7 +4114,7 @@ namespace sones
 
             if (_MetadataObjectExceptional.Failed() || _MetadataObjectExceptional.Value == null)
             {
-                return _MetadataObjectExceptional.Push(new GraphFSError_CouldNotSetMetadata(myObjectLocation, myObjectStream, myObjectEdition));
+                return _MetadataObjectExceptional.PushIError(new GraphFSError_CouldNotSetMetadata(myObjectLocation, myObjectStream, myObjectEdition));
             }
 
             #endregion
@@ -4151,7 +4131,7 @@ namespace sones
                 {
                     if (_StoreObjectExceptional.Failed())
                     {
-                        return _MetadataObjectExceptional.Push(new GraphFSError_CouldNotStoreObject(myObjectLocation, myObjectStream, myObjectEdition));
+                        return _MetadataObjectExceptional.PushIError(new GraphFSError_CouldNotStoreObject(myObjectLocation, myObjectStream, myObjectEdition));
                     }
                 }
 
@@ -4163,7 +4143,7 @@ namespace sones
             //_MetadataObjectExceptional.Value.Save();
 
             return StoreAFSObject(mySessionToken, myObjectLocation, _MetadataObjectExceptional.Value, true).
-                       WhenFailed(e => e.Push(new GraphFSError_CouldNotStoreObject(myObjectLocation, myObjectStream, myObjectEdition)));
+                       WhenFailed(e => e.PushIError(new GraphFSError_CouldNotStoreObject(myObjectLocation, myObjectStream, myObjectEdition)));
 
             //using (var _StoreObjectExceptional = StoreFSObject(myObjectLocation, _MetadataObjectExceptional.Value, true, mySessionToken))
             //{
@@ -4189,7 +4169,7 @@ namespace sones
 
 
             var _MetadataObjectExceptional = GetOrCreateAFSObject<MetadataObject<TValue>>(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, null, 0, false).
-                                                 WhenFailed(e => e.PushT(new GraphFSError_CouldNotSetMetadata(myObjectLocation, myObjectStream, myObjectEdition)));
+                                                 WhenFailed(e => e.PushIErrorT(new GraphFSError_CouldNotSetMetadata(myObjectLocation, myObjectStream, myObjectEdition)));
 
             if (_MetadataObjectExceptional.Failed())
                 return _MetadataObjectExceptional;
@@ -4219,7 +4199,7 @@ namespace sones
             {
 
                 return StoreAFSObject(mySessionToken, myObjectLocation, _MetadataObjectExceptional.Value, true).
-                           WhenFailed(e => e.Push(new GraphFSError_CouldNotStoreObject(myObjectLocation, myObjectStream, myObjectEdition)));
+                           WhenFailed(e => e.PushIError(new GraphFSError_CouldNotStoreObject(myObjectLocation, myObjectStream, myObjectEdition)));
 
 
                 //var _StoreObjectExceptional = StoreFSObject(myObjectLocation, _MetadataObjectExceptional.Value, true, mySessionToken);
@@ -4324,7 +4304,7 @@ namespace sones
 
                            return (IEnumerable<TValue>) _ListOfValues;
                        }).
-                       WhenFailed(e => e.PushT(new GraphFSError_MetadataObjectNotFound(myObjectLocation, myObjectStream, myObjectEdition)));
+                       WhenFailed(e => e.PushIErrorT(new GraphFSError_MetadataObjectNotFound(myObjectLocation, myObjectStream, myObjectEdition)));
 
 
 
@@ -4373,7 +4353,7 @@ namespace sones
             if (_MetadataObjectExceptional.Failed() || _MetadataObjectExceptional.Value == null)
             {
                 _Exceptional = _MetadataObjectExceptional.Convert<IEnumerable<KeyValuePair<String,TValue>>>().
-                                    PushT(new GraphFSError_MetadataObjectNotFound(myObjectLocation, myObjectStream, myObjectEdition));
+                                    PushIErrorT(new GraphFSError_MetadataObjectNotFound(myObjectLocation, myObjectStream, myObjectEdition));
             }
 
             else
@@ -4416,7 +4396,7 @@ namespace sones
             if (_MetadataObjectExceptional.Failed() || _MetadataObjectExceptional.Value == null)
             {
                 _Exceptional = _MetadataObjectExceptional.Convert<IEnumerable<KeyValuePair<String, TValue>>>().
-                    PushT(new GraphFSError_MetadataObjectNotFound(myObjectLocation, myObjectStream, myObjectEdition));
+                    PushIErrorT(new GraphFSError_MetadataObjectNotFound(myObjectLocation, myObjectStream, myObjectEdition));
             }
 
             else
@@ -4470,7 +4450,7 @@ namespace sones
             if (_MetadataObjectExceptional.Failed() || _MetadataObjectExceptional.Value == null)
             {
                 _Exceptional = _MetadataObjectExceptional.Convert<IEnumerable<KeyValuePair<String, TValue>>>().
-                    PushT(new GraphFSError_MetadataObjectNotFound(myObjectLocation, myObjectStream, myObjectEdition));
+                    PushIErrorT(new GraphFSError_MetadataObjectNotFound(myObjectLocation, myObjectStream, myObjectEdition));
             }
 
             else
@@ -4503,7 +4483,7 @@ namespace sones
             if (_MetadataObjectExceptional.Failed() || _MetadataObjectExceptional.Value == null)
             {
                 _Exceptional = _MetadataObjectExceptional.Convert<IEnumerable<KeyValuePair<String, TValue>>>().
-                    PushT(new GraphFSError_MetadataObjectNotFound(myObjectLocation, myObjectStream, myObjectEdition));
+                    PushIErrorT(new GraphFSError_MetadataObjectNotFound(myObjectLocation, myObjectStream, myObjectEdition));
             }
 
             else
@@ -4522,7 +4502,7 @@ namespace sones
                 if (_StoreObjectExceptional.Failed())
                 {
                     return _MetadataObjectExceptional.Convert<IEnumerable<KeyValuePair<String, TValue>>>().
-                        PushT(new GraphFSError_CouldNotStoreObject(myObjectLocation, myObjectStream, myObjectEdition));
+                        PushIErrorT(new GraphFSError_CouldNotStoreObject(myObjectLocation, myObjectStream, myObjectEdition));
                 }
 
             }
@@ -4544,7 +4524,7 @@ namespace sones
             if (_MetadataObjectExceptional.Failed() || _MetadataObjectExceptional.Value == null)
             {
                 _Exceptional = _MetadataObjectExceptional.Convert<IEnumerable<KeyValuePair<String, TValue>>>().
-                    PushT(new GraphFSError_MetadataObjectNotFound(myObjectLocation, myObjectStream, myObjectEdition));
+                    PushIErrorT(new GraphFSError_MetadataObjectNotFound(myObjectLocation, myObjectStream, myObjectEdition));
             }
 
             else

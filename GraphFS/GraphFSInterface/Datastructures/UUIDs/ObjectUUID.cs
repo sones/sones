@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * ObjectUUID
  * (c) Achim Friedland, 2008 - 2010
  */
@@ -36,8 +16,7 @@ using sones.Lib.DataStructures.UUID;
 namespace sones.GraphFS.DataStructures
 {
 
-
-    public sealed class ObjectUUID : UUID
+    public class ObjectUUID : UUID, IComparable, IComparable<ObjectUUID>, IEquatable<ObjectUUID>
     {
 
         #region TypeCode
@@ -56,22 +35,11 @@ namespace sones.GraphFS.DataStructures
 
         #endregion
 
-        #region ObjectUUID(myBoolean)
-
-        public ObjectUUID(Boolean myBoolean)
-        {
-            _UUID = new Byte[0];
-        }
-
-        #endregion
-
         #region ObjectUUID(myUInt64)
 
         public ObjectUUID(UInt64 myUInt64)
             : this(myUInt64.ToString())
-        {
-//            _UUID = BitConverter.GetBytes(myUInt64);
-        }
+        { }
 
         #endregion
 
@@ -107,9 +75,146 @@ namespace sones.GraphFS.DataStructures
         {
             get
             {
-                return new ObjectUUID(Guid.NewGuid().ToByteArray());
+                return new ObjectUUID(Guid.NewGuid().ToString());
             }
         }
+
+        #endregion
+
+
+        #region Statics
+
+        public static ObjectUUID FromString(String myString)
+        {
+            return new ObjectUUID(Encoding.UTF8.GetBytes(myString));
+        }
+
+        #endregion
+
+
+        #region Operator overloading
+
+        #region Operator == (myObjectUUID1, myObjectUUID2)
+
+        public static Boolean operator == (ObjectUUID myObjectUUID1, ObjectUUID myObjectUUID2)
+        {
+
+            // If both are null, or both are same instance, return true.
+            if (System.Object.ReferenceEquals(myObjectUUID1, myObjectUUID2))
+                return true;
+
+            // If one is null, but not both, return false.
+            if (( (Object) myObjectUUID1 == null) || ( (Object) myObjectUUID2 == null))
+                return false;
+
+            return myObjectUUID1.Equals(myObjectUUID2);
+
+        }
+
+        #endregion
+
+        #region Operator != (myObjectUUID1, myObjectUUID2)
+
+        public static Boolean operator != (ObjectUUID myObjectUUID1, ObjectUUID myObjectUUID2)
+        {
+            return !(myObjectUUID1 == myObjectUUID2);
+        }
+
+        #endregion
+
+        #region Operator < (myObjectUUID1, myObjectUUID2)
+
+        public static Boolean operator < (ObjectUUID myObjectUUID1, ObjectUUID myObjectUUID2)
+        {
+
+            // Check if myObjectUUID1 is null
+            if ( (Object) myObjectUUID1 == null)
+                throw new ArgumentNullException("Parameter myObjectUUID1 must not be null!");
+
+            // Check if myObjectUUID2 is null
+            if ( (Object) myObjectUUID2 == null)
+                throw new ArgumentNullException("Parameter myObjectUUID2 must not be null!");
+
+
+            // Check the length of the arrays
+            if (myObjectUUID1.Length < myObjectUUID2.Length)
+                return true;
+
+            if (myObjectUUID1.Length > myObjectUUID2.Length)
+                return false;
+
+
+            Byte[] _ObjectUUID1 = myObjectUUID1.GetByteArray();
+            Byte[] _ObjectUUID2 = myObjectUUID2.GetByteArray();
+
+            // Check if the inner array of bytes have the same values
+            for (UInt64 i = 0; i < ( (UInt64) myObjectUUID1.Length); i++)
+            {
+                if (_ObjectUUID1[i] < _ObjectUUID2[i]) return true;
+                if (_ObjectUUID1[i] > _ObjectUUID2[i]) return false;
+            }
+
+            return false;
+
+        }
+
+        #endregion
+
+        #region Operator > (myObjectUUID1, myObjectUUID2)
+
+        public static Boolean operator > (ObjectUUID myObjectUUID1, ObjectUUID myObjectUUID2)
+        {
+
+            // Check if myObjectUUID1 is null
+            if ( (Object) myObjectUUID1 == null)
+                throw new ArgumentNullException("Parameter myObjectUUID1 must not be null!");
+
+            // Check if myObjectUUID2 is null
+            if ( (Object) myObjectUUID2 == null)
+                throw new ArgumentNullException("Parameter myObjectUUID2 must not be null!");
+
+
+            // Check the length of the arrays
+            if (myObjectUUID1.Length > myObjectUUID2.Length)
+                return true;
+
+            if (myObjectUUID1.Length < myObjectUUID2.Length)
+                return false;
+
+
+            Byte[] _ObjectUUID1 = myObjectUUID1.GetByteArray();
+            Byte[] _ObjectUUID2 = myObjectUUID2.GetByteArray();
+
+            // Check if the inner array of bytes have the same values
+            for (UInt64 i = 0; i < ( (UInt64) myObjectUUID1.Length); i++)
+            {
+                if (_ObjectUUID1[i] > _ObjectUUID2[i]) return true;
+                if (_ObjectUUID1[i] < _ObjectUUID2[i]) return false;
+            }
+
+            return false;
+
+        }
+
+        #endregion
+
+        #region Operator <= (myObjectUUID1, myObjectUUID2)
+
+        public static Boolean operator <= (ObjectUUID myObjectUUID1, ObjectUUID myObjectUUID2)
+        {
+            return !(myObjectUUID1 > myObjectUUID2);
+        }
+
+        #endregion
+
+        #region Operator >= (myObjectUUID1, myObjectUUID2)
+
+        public static Boolean operator >= (ObjectUUID myObjectUUID1, ObjectUUID myObjectUUID2)
+        {
+            return !(myObjectUUID1 < myObjectUUID2);
+        }
+
+        #endregion
 
         #endregion
 
@@ -118,45 +223,131 @@ namespace sones.GraphFS.DataStructures
 
         public new ObjectUUID Clone()
         {
-            ObjectUUID newUUID = new ObjectUUID(_UUID);
+            var newUUID = new ObjectUUID(_UUID);
             return newUUID;
         }
 
         #endregion
 
-        #region Statics
+        #region IComparable Members
 
-        public static ObjectUUID FromHexString(String myHexString)
+        public Int32 CompareTo(Object myObject)
         {
-            return new ObjectUUID(ByteArrayHelper.FromHexString(myHexString));
-        }
 
-        /// <summary>
-        /// Create a ObjectUUID using the <paramref name="myString"/>. Each char of this string is one byte.
-        /// </summary>
-        /// <param name="myString"></param>
-        /// <returns></returns>
-        public static ObjectUUID FromString(String myString)
-        {
-            return new ObjectUUID(Encoding.UTF8.GetBytes(myString));
+            // Check if myObject is null
+            if (myObject == null)
+                throw new ArgumentNullException("myObject must not be null!");
+
+            // Check if myObject can be casted to an UUID object
+            var myObjectUUID = myObject as ObjectUUID;
+            if ( (Object) myObjectUUID == null)
+                throw new ArgumentException("myObject is not of type ObjectUUID!");
+
+            return CompareTo(myObjectUUID);
+
         }
 
         #endregion
 
-        #region Implizit operators
-        /*
-        public static implicit operator ObjectUUID(String myObjectUUIDAsString)
+        #region IComparable<ObjectUUID> Members
+
+        public Int32 CompareTo(ObjectUUID myObjectUUID)
         {
-            return new ObjectUUID(myObjectUUIDAsString);
+
+            // Check if myUUID is null
+            if (myObjectUUID == null)
+                throw new ArgumentNullException("myObjectUUID must not be null!");
+
+            if (this < myObjectUUID) return -1;
+            if (this > myObjectUUID) return +1;
+
+            return 0;
+
         }
-        */
+
         #endregion
 
-        public override string ToString()
+        #region IEquatable<ObjectUUID> Members
+
+        #region Equals(myObject)
+
+        public override Boolean Equals(Object myObject)
         {
-            //return _UUID.ToHexString(SeperatorTypes.NONE, true);
+
+            // Check if myObject is null
+            if (myObject == null)
+                throw new ArgumentNullException("Parameter myObject must not be null!");
+
+            // Check if myObject can be cast to UUID
+            var myUUID = myObject as ObjectUUID;
+            if ((Object) myUUID == null)
+                throw new ArgumentException("Parameter myObject could not be casted to type ObjectUUID!");
+
+            return this.Equals(myUUID);
+
+        }
+
+        #endregion
+
+        #region Equals(myObjectUUID)
+
+        public Boolean Equals(ObjectUUID myObjectUUID)
+        {
+
+            // Check if myObjectUUID is null
+            if (myObjectUUID == null)
+            {
+                throw new ArgumentNullException("Parameter myObjectUUID must not be null!");
+            }
+
+            // Check if the arrays have the same length
+            var myLength = _UUID.ULongLength();
+            var anotherLength = myObjectUUID.Length;
+
+            if (myLength != anotherLength)
+                return false;
+
+            if (this.GetHashCode() != myObjectUUID.GetHashCode())
+            {
+                return false;
+            }
+
+            // Check if the inner array of bytes have the same values
+            var anotherUUIDArray = myObjectUUID.GetByteArray();
+
+            for (var i = myLength; i > 0; i--)
+            {
+                if (_UUID[i - 1] != anotherUUIDArray[i - 1])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+
+        }
+
+        #endregion
+
+        #endregion
+
+        #region GetHashCode()
+
+        public override Int32 GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        #endregion
+
+        #region ToString()
+
+        public override String ToString()
+        {
             return Encoding.UTF8.GetString(_UUID);
         }
+
+        #endregion
 
     }
 

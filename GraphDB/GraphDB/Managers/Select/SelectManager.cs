@@ -1,43 +1,31 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * SelectManager
  * (c) Stefan Licht, 2009-2010
  */
 
+#region Usings
+
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
+
+using sones.GraphDB.NewAPI;
 using sones.GraphDB.Errors;
+using sones.GraphDB.Result;
+using sones.GraphDB.TypeManagement;
 using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.Structures.ExpressionGraph;
-using sones.GraphDB.TypeManagement;
-using sones.GraphDBInterface.Result;
+
 using sones.Lib;
 using sones.Lib.DataStructures;
 using sones.Lib.ErrorHandling;
 
+#endregion
+
 namespace sones.GraphDB.Managers.Select
 {
+
     public class SelectManager
     {
 
@@ -45,11 +33,25 @@ namespace sones.GraphDB.Managers.Select
 
         #region ExecuteSelect
 
+        #region ExecuteSelect(myDBContext, mySelectDefinition)
+
         public QueryResult ExecuteSelect(DBContext myDBContext, SelectDefinition mySelectDefinition)
         {
-            return ExecuteSelect(myDBContext, mySelectDefinition.SelectedElements, mySelectDefinition.TypeList, mySelectDefinition.WhereExpressionDefinition, mySelectDefinition.GroupByIDs,
-                mySelectDefinition.Having, mySelectDefinition.OrderByDefinition, mySelectDefinition.Limit, mySelectDefinition.Offset, mySelectDefinition.ResolutionDepth);
+            return ExecuteSelect(myDBContext,
+                                 mySelectDefinition.SelectedElements,
+                                 mySelectDefinition.TypeList,
+                                 mySelectDefinition.WhereExpressionDefinition,
+                                 mySelectDefinition.GroupByIDs,
+                                 mySelectDefinition.Having,
+                                 mySelectDefinition.OrderByDefinition,
+                                 mySelectDefinition.Limit,
+                                 mySelectDefinition.Offset,
+                                 mySelectDefinition.ResolutionDepth);
         }
+
+        #endregion
+
+        #region ExecuteSelect(...)
 
         /// <summary>
         /// Execute the current select and return a List of SelectionListElementResults
@@ -65,9 +67,16 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="myOffset">An optional offset.</param>
         /// <param name="myResolutionDepth">The resolution depth. Either set to a positive value or an setting is used.</param>
         /// <returns></returns>
-        public QueryResult ExecuteSelect(DBContext myDBContext, List<Tuple<AExpressionDefinition, string, SelectValueAssignment>> mySelectedElements, List<TypeReferenceDefinition> myTypeList,
-            BinaryExpressionDefinition myWhereExpressionDefinition = null, List<IDChainDefinition> myGroupBy = null, BinaryExpressionDefinition myHaving = null,
-            OrderByDefinition myOrderByDefinition = null, UInt64? myLimit = null, UInt64? myOffset = null, Int64 myResolutionDepth = -1)
+        public QueryResult ExecuteSelect(DBContext                      myDBContext,
+                                         List<Tuple<AExpressionDefinition, String, SelectValueAssignment>> mySelectedElements,
+                                         List<TypeReferenceDefinition>  myTypeList,
+                                         BinaryExpressionDefinition     myWhereExpressionDefinition = null,
+                                         List<IDChainDefinition>        myGroupBy = null,
+                                         BinaryExpressionDefinition     myHaving = null,
+                                         OrderByDefinition              myOrderByDefinition = null,
+                                         UInt64?                        myLimit = null,
+                                         UInt64?                        myOffset = null,
+                                         Int64                          myResolutionDepth = -1)
         {
 
             #region Data
@@ -119,29 +128,31 @@ namespace sones.GraphDB.Managers.Select
 
             #endregion
 
-            var listOfReadouts = CreateReadouts(myDBContext, typeList.Value, selectResultManager, myWhereExpressionDefinition, myResolutionDepth, myOrderByDefinition, myLimit, myOffset);
-            if (listOfReadouts.Failed())
+            var _ListOfVertices1 = CreateVertices(myDBContext, typeList.Value, selectResultManager, myWhereExpressionDefinition, myResolutionDepth, myOrderByDefinition, myLimit, myOffset);
+            if (_ListOfVertices1.Failed())
             {
-                return new QueryResult(listOfReadouts);
+                return new QueryResult(_ListOfVertices1);
             }
 
             #region TypeIndependendResults
 
-            var listOfDBObjectReadouts = selectResultManager.GetTypeIndependendResult();
-            if (listOfDBObjectReadouts.CountIsGreater(0))
+            var _ListOfVertices2 = selectResultManager.GetTypeIndependendResult();
+            if (_ListOfVertices2.CountIsGreater(0))
             {
-                listOfReadouts.Value.Add(listOfDBObjectReadouts);
+                _ListOfVertices1.Value.Add(_ListOfVertices2);
             }
 
             #endregion
 
-            return new QueryResult(new SelectionResultSet(AggregateListOfReadouts(listOfReadouts.Value)));
+            return new QueryResult(AggregateListOfVertices(_ListOfVertices1.Value));
 
         }
 
         #endregion
 
-        #region CreateReadouts for all selected types
+        #endregion
+
+        #region CreateVertices for all selected types
 
         /// <summary>
         /// Creates all readouts of all types in the <paramref name="myTypeList"/>
@@ -155,42 +166,51 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="myLimit"></param>
         /// <param name="myOffset"></param>
         /// <returns></returns>
-        private Exceptional<List<IEnumerable<DBObjectReadout>>> CreateReadouts(DBContext myDBContext, Dictionary<string, GraphDBType> myTypeList, SelectResultManager mySelectResultManager,
-            BinaryExpressionDefinition myWhereExpressionDefinition, long myResolutionDepth, OrderByDefinition myOrderByDefinition, ulong? myLimit, ulong? myOffset)
+        private Exceptional<List<IEnumerable<Vertex>>> CreateVertices(DBContext myDBContext,
+                                                                      Dictionary<String, GraphDBType> myTypeList,
+                                                                      SelectResultManager mySelectResultManager,
+                                                                      BinaryExpressionDefinition myWhereExpressionDefinition,
+                                                                      Int64 myResolutionDepth,
+                                                                      OrderByDefinition myOrderByDefinition,
+                                                                      UInt64? myLimit,
+                                                                      UInt64? myOffset)
         {
 
-            List<IEnumerable<DBObjectReadout>> listOfReadouts = new List<IEnumerable<DBObjectReadout>>();
+            var _ListOfListOfVertices = new List<IEnumerable<Vertex>>();
 
-            #region  Go through each type end create the selectionListResults
-
+            // Create vertices for type
             foreach (var typeRef in myTypeList)
             {
 
-                var dbObjectReadouts = CreateReadoutsForType(myDBContext, typeRef, mySelectResultManager, myWhereExpressionDefinition, myResolutionDepth,
-                    myOrderByDefinition, myLimit, myOffset);
+                var _Vertices = CreateVerticesForType(myDBContext,
+                                                      typeRef,
+                                                      mySelectResultManager,
+                                                      myWhereExpressionDefinition,
+                                                      myResolutionDepth,
+                                                      myOrderByDefinition,
+                                                      myLimit,
+                                                      myOffset);
 
-                if (dbObjectReadouts.Failed())
+                if (_Vertices.Failed())
                 {
-                    return new Exceptional<List<IEnumerable<DBObjectReadout>>>(dbObjectReadouts);
+                    return new Exceptional<List<IEnumerable<Vertex>>>(_Vertices);
                 }
 
-                if (dbObjectReadouts.Value != null) // If this type did not returned any result, we wont add it to the result
+                // If this type did not returned any result, we wont add it to the result
+                if (_Vertices.Value != null)
                 {
-                    listOfReadouts.Add(dbObjectReadouts.Value);
+                    _ListOfListOfVertices.Add(_Vertices.Value);
                 }
-
 
             }
 
-            #endregion
-
-            return new Exceptional<List<IEnumerable<DBObjectReadout>>>(listOfReadouts);
+            return new Exceptional<List<IEnumerable<Vertex>>>(_ListOfListOfVertices);
 
         }
         
         #endregion
 
-        #region CreateReadoutsForType - for a particular type
+        #region CreateVerticesForType - for a particular type
 
         /// <summary>
         /// Creates the lazy readouts for the given <paramref name="myTypeReference"/>
@@ -204,11 +224,17 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="myLimit"></param>
         /// <param name="myOffset"></param>
         /// <returns></returns>
-        private Exceptional<IEnumerable<DBObjectReadout>> CreateReadoutsForType(DBContext myDBContext, KeyValuePair<string, GraphDBType> myTypeReference, SelectResultManager mySelectResultManager,
-            BinaryExpressionDefinition myWhereExpressionDefinition, long myResolutionDepth, OrderByDefinition myOrderByDefinition, ulong? myLimit, ulong? myOffset)
+        private Exceptional<IEnumerable<Vertex>> CreateVerticesForType(DBContext myDBContext,
+                                                                       KeyValuePair<String, GraphDBType> myTypeReference,
+                                                                       SelectResultManager mySelectResultManager,
+                                                                       BinaryExpressionDefinition myWhereExpressionDefinition,
+                                                                       Int64 myResolutionDepth,
+                                                                       OrderByDefinition myOrderByDefinition,
+                                                                       UInt64? myLimit,
+                                                                       UInt64? myOffset)
         {
 
-            IEnumerable<DBObjectReadout> dbObjectReadouts = new List<DBObjectReadout>();
+            IEnumerable<Vertex> _Vertices = new List<Vertex>();
 
             #region Check groupings & aggregates
 
@@ -216,7 +242,7 @@ namespace sones.GraphDB.Managers.Select
 
             if (initGroupingOrAggregateResult.Failed())
             {
-                return new Exceptional<IEnumerable<DBObjectReadout>>(initGroupingOrAggregateResult);
+                return new Exceptional<IEnumerable<Vertex>>(initGroupingOrAggregateResult);
             }
 
             #endregion
@@ -229,11 +255,11 @@ namespace sones.GraphDB.Managers.Select
 
             #region Create an IEnumerable of Readouts for this typeNode
 
-            var result = mySelectResultManager.Examine(myResolutionDepth, myTypeReference.Key, myTypeReference.Value, isInterestingWhere, ref dbObjectReadouts);
+            var result = mySelectResultManager.Examine(myResolutionDepth, myTypeReference.Key, myTypeReference.Value, isInterestingWhere, ref _Vertices);
 
             if (result.Failed())
             {
-                return new Exceptional<IEnumerable<DBObjectReadout>>(result);
+                return new Exceptional<IEnumerable<Vertex>>(result);
             }
 
             #endregion
@@ -244,24 +270,24 @@ namespace sones.GraphDB.Managers.Select
 
             if (!isValidTypeForSelect)
             {
-                return new Exceptional<IEnumerable<DBObjectReadout>>();
+                return new Exceptional<IEnumerable<Vertex>>();
             }
 
             #endregion
 
             #region If there was a result for this typeNode we will add a new SelectionListElementResult
 
-            dbObjectReadouts = mySelectResultManager.GetResult(myTypeReference.Key, myTypeReference.Value, dbObjectReadouts, isInterestingWhere);
+            _Vertices = mySelectResultManager.GetResult(myTypeReference.Key, myTypeReference.Value, _Vertices, isInterestingWhere);
 
             #region OrderBy
 
             if (myOrderByDefinition != null)
             {
 
-                var orderResult = OrderReadouts(myDBContext, myOrderByDefinition, ref dbObjectReadouts);
+                var orderResult = OrderVertices(myDBContext, myOrderByDefinition, ref _Vertices);
                 if (orderResult.Failed())
                 {
-                    return new Exceptional<IEnumerable<DBObjectReadout>>(orderResult);
+                    return new Exceptional<IEnumerable<Vertex>>(orderResult);
                 }
 
             }
@@ -272,9 +298,7 @@ namespace sones.GraphDB.Managers.Select
 
             if (myLimit != null || myOffset != null)
             {
-
-                ApplyLimitAndOffset(myLimit, myOffset, ref dbObjectReadouts);
-
+                ApplyLimitAndOffset(myLimit, myOffset, ref _Vertices);
             }
 
             #endregion
@@ -282,7 +306,7 @@ namespace sones.GraphDB.Managers.Select
 
             #endregion
 
-            return new Exceptional<IEnumerable<DBObjectReadout>>(dbObjectReadouts);
+            return new Exceptional<IEnumerable<Vertex>>(_Vertices);
 
         }
         
@@ -291,15 +315,13 @@ namespace sones.GraphDB.Managers.Select
         #region ApplyLimitAndOffset
 
         /// <summary>
-        /// Applys a limit (if not null) and an offset (if not null) to the <paramref name="myDBObjectReadouts"/>
+        /// Applys a limit (if not null) and an offset (if not null) to the <paramref name="myVertices"/>
         /// </summary>
         /// <param name="myLimit"></param>
         /// <param name="myOffset"></param>
-        /// <param name="myDBObjectReadouts"></param>
-        private void ApplyLimitAndOffset(ulong? myLimit, ulong? myOffset, ref IEnumerable<DBObjectReadout> myDBObjectReadouts)
+        /// <param name="myVertices"></param>
+        private void ApplyLimitAndOffset(ulong? myLimit, ulong? myOffset, ref IEnumerable<Vertex> myVertices)
         {
-
-            #region Limit & Offset
 
             Int64 start = 0;
             if (myOffset.HasValue)
@@ -311,29 +333,27 @@ namespace sones.GraphDB.Managers.Select
             if (myLimit.HasValue)
             {
                 //count = Math.Min((Int64)_LimitNode.Count, dbObjectReadouts.Count() - start);
-                myDBObjectReadouts = myDBObjectReadouts.Skip((Int32)start).Take((Int32)myLimit.Value);
+                myVertices = myVertices.Skip((Int32)start).Take((Int32)myLimit.Value);
             }
             else
             {
-                myDBObjectReadouts = myDBObjectReadouts.Skip((Int32)start);
+                myVertices = myVertices.Skip((Int32)start);
             }
-
-            #endregion
 
         }
         
         #endregion
 
-        #region OrderReadouts
+        #region OrderVertices
 
         /// <summary>
         /// Orders the readouts
         /// </summary>
         /// <param name="myDBContext"></param>
         /// <param name="myOrderByDefinition"></param>
-        /// <param name="myDBObjectReadouts"></param>
+        /// <param name="myVertices"></param>
         /// <returns></returns>
-        private Exceptional OrderReadouts(DBContext myDBContext, OrderByDefinition myOrderByDefinition, ref IEnumerable<DBObjectReadout> myDBObjectReadouts)
+        private Exceptional OrderVertices(DBContext myDBContext, OrderByDefinition myOrderByDefinition, ref IEnumerable<Vertex> myVertices)
         {
 
             #region Set the as alias for all not set ones to the attribute name
@@ -367,14 +387,14 @@ namespace sones.GraphDB.Managers.Select
 
             #region ORDER BY
 
-            var comparer = new DBObjectReadout_OrderByComparer(myOrderByDefinition);
+            var comparer = new Vertices_OrderByComparer(myOrderByDefinition);
             if (myOrderByDefinition.OrderDirection == SortDirection.Asc)
             {
-                myDBObjectReadouts = myDBObjectReadouts.OrderBy(dbo => dbo, comparer);
+                myVertices = myVertices.OrderBy(dbo => dbo, comparer);
             }
             else
             {
-                myDBObjectReadouts = myDBObjectReadouts.OrderByDescending(dbo => dbo, comparer);
+                myVertices = myVertices.OrderByDescending(dbo => dbo, comparer);
             }
 
             #endregion
@@ -383,35 +403,43 @@ namespace sones.GraphDB.Managers.Select
 
         }
 
+        #endregion
+
+        #region Vertices_OrderByComparer
+
         /// <summary>
         /// A comparer for a OrderByDefinition
         /// </summary>
-        class DBObjectReadout_OrderByComparer : IComparer<DBObjectReadout>
+        class Vertices_OrderByComparer : IComparer<Vertex>
         {
 
             OrderByDefinition _OrderByDefinition;
 
-            public DBObjectReadout_OrderByComparer(OrderByDefinition myOrderByDefinition)
+            public Vertices_OrderByComparer(OrderByDefinition myOrderByDefinition)
             {
                 _OrderByDefinition = myOrderByDefinition;
             }
 
-            #region IComparer<DBObjectReadout> Members
+            #region IComparer<Vertex> Members
 
-            public int Compare(DBObjectReadout dbo1, DBObjectReadout dbo2)
+            public int Compare(Vertex myVertex1, Vertex myVertex2)
             {
+
                 Int32 retVal = 0;
+
                 foreach (var attrDef in _OrderByDefinition.OrderByAttributeList)
                 {
-                    if (dbo1.Attributes.ContainsKey(attrDef.AsOrderByString) && dbo2.Attributes.ContainsKey(attrDef.AsOrderByString))
+
+                    if (myVertex1.IsAttribute(attrDef.AsOrderByString) && myVertex2.IsAttribute(attrDef.AsOrderByString))
                     {
-                        retVal = ((IComparable)dbo1.Attributes[attrDef.AsOrderByString]).CompareTo(dbo2.Attributes[attrDef.AsOrderByString]);
+                        retVal = ((IComparable)myVertex1.ObsoleteAttributes[attrDef.AsOrderByString]).CompareTo(myVertex2.ObsoleteAttributes[attrDef.AsOrderByString]);
                     }
+
                     else
                     {
-                        if ((!dbo1.Attributes.ContainsKey(attrDef.AsOrderByString)) && dbo2.Attributes.ContainsKey(attrDef.AsOrderByString))
+                        if ((!myVertex1.IsAttribute(attrDef.AsOrderByString)) && myVertex2.IsAttribute(attrDef.AsOrderByString))
                             retVal = -1;
-                        else if (dbo1.Attributes.ContainsKey(attrDef.AsOrderByString) && (!(dbo2.Attributes.ContainsKey(attrDef.AsOrderByString))))
+                        else if (myVertex1.IsAttribute(attrDef.AsOrderByString) && (!(myVertex2.IsAttribute(attrDef.AsOrderByString))))
                             retVal = 1;
                         else
                             retVal = 0;
@@ -421,11 +449,15 @@ namespace sones.GraphDB.Managers.Select
                     {
                         break;
                     }
+
                 }
+
                 return retVal;
+
             }
 
             #endregion
+
         }
         
         #endregion
@@ -440,40 +472,49 @@ namespace sones.GraphDB.Managers.Select
         /// <returns></returns>
         private Exceptional<Dictionary<String, GraphDBType>> ResolveTypes(List<TypeReferenceDefinition> myTypeList, DBTypeManager myDBTypeManager)
         {
+
             var typeList = new Dictionary<String, GraphDBType>();
+            
             foreach (var type in myTypeList)
             {
+
                 var t = myDBTypeManager.GetTypeByName(type.TypeName);
 
                 if (t == null)
                 {
-                    return new Exceptional<Dictionary<string, GraphDBType>>(new Error_TypeDoesNotExist(type.TypeName));
+                    return new Exceptional<Dictionary<String, GraphDBType>>(new Error_TypeDoesNotExist(type.TypeName));
                 }
+
                 typeList.Add(type.Reference, t);
+            
             }
-            return new Exceptional<Dictionary<string, GraphDBType>>(typeList);
+            
+            return new Exceptional<Dictionary<String, GraphDBType>>(typeList);
+
         }
 
         #endregion
 
-        #region AggregateListOfReadouts
+        #region AggregateListOfVertices
 
         /// <summary>
-        /// Aggregates different enumerations of readout objects
+        /// Aggregates different enumerations of vertices
         /// </summary>
-        /// <param name="myListOfReadouts"></param>
+        /// <param name="myListOfListOfVertices"></param>
         /// <returns></returns>
-        private IEnumerable<DBObjectReadout> AggregateListOfReadouts(List<IEnumerable<DBObjectReadout>> myListOfReadouts)
+        private IEnumerable<Vertex> AggregateListOfVertices(List<IEnumerable<Vertex>> myListOfListOfVertices)
         {
-            foreach (var aReadoutEnumerable in myListOfReadouts)
+
+            foreach (var _ListOfVertices in myListOfListOfVertices)
             {
-                foreach (var aDBReadout in aReadoutEnumerable)
+                foreach (var _Vertex in _ListOfVertices)
                 {
-                    yield return aDBReadout;
+                    yield return _Vertex;
                 }
             }
 
             yield break;
+
         }
 
         #endregion
@@ -489,11 +530,15 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="myGroupBy"></param>
         /// <param name="myHaving"></param>
         /// <returns></returns>
-        private Exceptional<SelectResultManager> CreateResultManager(DBContext myDBContext, List<Tuple<AExpressionDefinition, string, SelectValueAssignment>> mySelectedElements, Dictionary<String, GraphDBType> myTypeList,
-            List<IDChainDefinition> myGroupBy = null, BinaryExpressionDefinition myHaving = null)
+        private Exceptional<SelectResultManager> CreateResultManager(DBContext myDBContext,
+                                                                     List<Tuple<AExpressionDefinition, String, SelectValueAssignment>> mySelectedElements,
+                                                                     Dictionary<String, GraphDBType> myTypeList,
+                                                                     List<IDChainDefinition> myGroupBy = null,
+                                                                     BinaryExpressionDefinition myHaving = null)
         {
 
             var _SelectResultManager = new SelectResultManager(myDBContext);
+
             Exceptional exceptional = new Exceptional();
 
             foreach (var selection in mySelectedElements)
@@ -510,7 +555,7 @@ namespace sones.GraphDB.Managers.Select
 
                     Exceptional validateException = idChainSelection.Validate(myDBContext, true);
 
-                    exceptional.Push(validateException);
+                    exceptional.PushIExceptional(validateException);
                     if (exceptional.Failed())
                     {
                         return new Exceptional<SelectResultManager>(exceptional);
@@ -551,7 +596,7 @@ namespace sones.GraphDB.Managers.Select
 
                     if (idChainSelection.Reference == null)
                     { /// this might be a parameterless function without a calling attribute
-                        exceptional.Push(_SelectResultManager.AddElementToSelection(selection.Item2, null, idChainSelection, false));
+                        exceptional.PushIExceptional(_SelectResultManager.AddElementToSelection(selection.Item2, null, idChainSelection, false));
                     }
                     else //if (!(aColumnItemNode.ColumnSourceValue is AggregateNode))
                     {
@@ -578,11 +623,11 @@ namespace sones.GraphDB.Managers.Select
 
                         if (idChainSelection.SelectType != TypesOfSelect.None)
                         {
-                            exceptional.Push(_SelectResultManager.AddSelectionType(reference, theType, idChainSelection.SelectType));
+                            exceptional.PushIExceptional(_SelectResultManager.AddSelectionType(reference, theType, idChainSelection.SelectType));
                         }
                         else
                         {
-                            exceptional.Push(_SelectResultManager.AddElementToSelection(selection.Item2, reference, idChainSelection, false));
+                            exceptional.PushIExceptional(_SelectResultManager.AddElementToSelection(selection.Item2, reference, idChainSelection, false, selection.Item3));
                         }
                         //else
                         //{
@@ -599,6 +644,7 @@ namespace sones.GraphDB.Managers.Select
                     }
 
                 }
+
                 else if (selection.Item1 is AggregateDefinition)
                 {
 
@@ -625,6 +671,7 @@ namespace sones.GraphDB.Managers.Select
                     #endregion
 
                 }
+
                 else
                 {
                     return new Exceptional<SelectResultManager>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
@@ -684,8 +731,9 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="myReference">The reference defined in the FROM</param>
         /// <param name="myWhereExpressionDefinition"></param>
         /// <returns></returns>
-        private bool IsInterestingWhereForReference(string myReference, BinaryExpressionDefinition myWhereExpressionDefinition)
+        private Boolean IsInterestingWhereForReference(String myReference, BinaryExpressionDefinition myWhereExpressionDefinition)
         {
+
             #region check left
 
             var leftIDNode = myWhereExpressionDefinition.Left as IDChainDefinition;
@@ -814,4 +862,5 @@ namespace sones.GraphDB.Managers.Select
         #endregion
 
     }
+
 }

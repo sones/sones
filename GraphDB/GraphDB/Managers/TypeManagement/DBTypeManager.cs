@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-
+﻿
 #region Usings
 
 using System;
@@ -49,9 +29,10 @@ using sones.GraphFS.Session;
 using sones.Lib;
 using sones.Lib.DataStructures;
 using sones.Lib.ErrorHandling;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.Result;
+using sones.GraphDB.TypeManagement;
 using sones.GraphDB.Managers.TypeManagement.BasicTypes;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -181,7 +162,7 @@ namespace sones.GraphDB.TypeManagement
 
             if (listOfLocations.Failed())
             {
-                throw new GraphDBException(listOfLocations.Errors);
+                throw new GraphDBException(listOfLocations.IErrors);
             }
 
             return listOfLocations.Value;
@@ -229,6 +210,13 @@ namespace sones.GraphDB.TypeManagement
             // == DBObject!
             var typeDBReference = new GraphDBType(DBReference.UUID, myDatabaseLocation, DBReference.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all user defined database types");
 
+            #region DBVertex           
+
+            var typeDBVertex = new GraphDBType(DBVertex.UUID, myDatabaseLocation, DBVertex.Name, DBReference.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all user defined database vertices");
+            _SystemTypes.Add(typeDBVertex.UUID, typeDBVertex);
+
+            #endregion
+
 
             #region UUID special Attribute
 
@@ -241,140 +229,137 @@ namespace sones.GraphDB.TypeManagement
             #region CreationTime special attribute
 
             var specialTypeAttribute_CrTime = new SpecialTypeAttribute_CREATIONTIME() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_CrTime, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_CrTime, this, false);            
 
             #endregion
             
             #region DeletionTime special attribute
 
             var specialTypeAttribute_DelTime = new SpecialTypeAttribute_DELETIONTIME() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_DelTime, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_DelTime, this, false);            
 
             #endregion
 
             #region Edition special attribute
 
             var specialTypeAttribute_Edition = new SpecialTypeAttribute_EDITION() { DBTypeUUID = DBString.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_Edition, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_Edition, this, false);            
 
             #endregion
 
             #region Editions special attribute
 
             var specialTypeAttribute_Editions = new SpecialTypeAttribute_EDITIONS() { DBTypeUUID = DBString.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_Editions, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_Editions, this, false);           
 
             #endregion
 
             #region LastAccessTime special attribute
 
             var specialTypeAttribute_AcTime = new SpecialTypeAttribute_LASTACCESSTIME() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_AcTime, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_AcTime, this, false);            
 
             #endregion
 
             #region LastModificationTime special attribute
 
             var specialTypeAttribute_LastModTime = new SpecialTypeAttribute_LASTMODIFICATIONTIME() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_LastModTime, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_LastModTime, this, false);            
 
             #endregion            
 
             #region TypeName special Attribute
 
             var specialTypeAttribute_TYPE = new SpecialTypeAttribute_TYPE() { DBTypeUUID = DBString.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_TYPE, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_TYPE, this, false);            
 
             #endregion
 
             #region REVISION special Attribute
 
             var specialTypeAttribute_REVISION = new SpecialTypeAttribute_REVISION() { DBTypeUUID = DBString.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_REVISION, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_REVISION, this, false);            
 
             #endregion
 
             #region REVISIONS special Attribute
 
             var specialTypeAttribute_REVISIONS = new SpecialTypeAttribute_REVISIONS() { DBTypeUUID = DBString.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_REVISIONS, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_REVISIONS, this, false);            
 
             #endregion
 
             #region STREAMS special Attribute
 
             var specialTypeAttribute_STREAMS = new SpecialTypeAttribute_STREAMS() { DBTypeUUID = DBString.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_STREAMS, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_STREAMS, this, false);            
 
             #endregion
 
             #region NUMBER OF REVISIONS Attribute
 
             var specialTypeAttribute_NUMBEROFREVISIONS = new SpecialTypeAttribute_NUMBEROFREVISIONS() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_NUMBEROFREVISIONS, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_NUMBEROFREVISIONS, this, false);            
 
             #endregion
 
             #region NUMBER OF COPIES
 
             var specialTypeAttribute_NUMBEROFCOPIES = new SpecialTypeAttribute_NUMBEROFCOPIES() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_NUMBEROFCOPIES, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_NUMBEROFCOPIES, this, false);            
 
             #endregion
 
             #region PARENT REVISION IDs
 
             var specialTypeAttribute_PARENTREVISIONIDs = new SpecialTypeAttribute_PARENTREVISIONS() { DBTypeUUID = DBString.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_PARENTREVISIONIDs, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_PARENTREVISIONIDs, this, false);            
 
             #endregion
 
             #region MAX REVISION AGE
 
             var specialTypeAttribute_MAXREVISIONAGE = new SpecialTypeAttribute_MAXREVISIONAGE() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_MAXREVISIONAGE, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_MAXREVISIONAGE, this, false);            
 
             #endregion
 
             #region MIN NUMBER OF REVISIONS
 
             var specialTypeAttribute_MINNUMBEROFREVISIONS = new SpecialTypeAttribute_MINNUMBEROFREVISIONS() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_MINNUMBEROFREVISIONS, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_MINNUMBEROFREVISIONS, this, false);            
 
             #endregion
             
             #region MAX NUMBER OF REVISIONS
 
             var specialTypeAttribute_MAXNUMBEROFREVISIONS = new SpecialTypeAttribute_MAXNUMBEROFREVISIONS() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_MAXNUMBEROFREVISIONS, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_MAXNUMBEROFREVISIONS, this, false);            
 
             #endregion
 
             #region MAX NUMBER OF COPIES
 
             var specialTypeAttribute_MAXNUMBEROFCOPIES = new SpecialTypeAttribute_MAXNUMBEROFCOPIES() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_MAXNUMBEROFCOPIES, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_MAXNUMBEROFCOPIES, this, false);            
 
             #endregion
 
             #region MIN NUMBER OF COPIES
 
             var specialTypeAttribute_MINNUMBEROFCOPIES = new SpecialTypeAttribute_MINNUMBEROFCOPIES() { DBTypeUUID = DBUInt64.UUID, RelatedGraphDBTypeUUID = typeDBReference.UUID, KindOfType = KindsOfType.SpecialAttribute };
-            typeDBReference.AddAttribute(specialTypeAttribute_MINNUMBEROFCOPIES, this, false);
+            typeDBReference.AddAttribute(specialTypeAttribute_MINNUMBEROFCOPIES, this, false);            
 
             #endregion
 
-            _SystemTypes.Add(typeDBReference.UUID, typeDBReference);
+            foreach (var attr in typeDBReference.Attributes)
+            {
+                typeDBVertex.AddAttribute(attr.Value, this, false);
+            }
 
-            #endregion
+            _SystemTypes.Add(typeDBReference.UUID, typeDBReference);            
 
-            #region DBVertex
-
-            var typeDBVertex = new GraphDBType(DBVertex.UUID, myDatabaseLocation, DBConstants.DBVertexName, DBReference.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all user defined database vertices");
-
-            _SystemTypes.Add(typeDBVertex.UUID, typeDBVertex);
-
-            #endregion
+            #endregion            
 
             #region DBEdge
 
@@ -569,7 +554,7 @@ namespace sones.GraphDB.TypeManagement
 
             if (aNewDBObject.Failed())
             {
-                result.Push(new Error_LoadObject(aNewDBObject.Value.ObjectLocation));
+                result.PushIError(new Error_LoadObject(aNewDBObject.Value.ObjectLocation));
                 return result;
             }
 
@@ -584,7 +569,7 @@ namespace sones.GraphDB.TypeManagement
             }
             catch (Exception ex)
             {
-                result.Push(new Error_FlushObject(aNewDBObject.Value.ObjectLocation, ex));
+                result.PushIError(new Error_FlushObject(aNewDBObject.Value.ObjectLocation, ex));
                 aNewDBObject.Value.RemoveAttribute(typeAttribute.UUID);
             }
 
@@ -611,7 +596,7 @@ namespace sones.GraphDB.TypeManagement
 
             if (GetTypeByUUID(myTypeAttribute.DBTypeUUID) == null)
             {
-                return new Exceptional<ResultType>(new Error_TypeDoesNotExist(myTypeAttribute.DBTypeUUID.ToHexString()));
+                return new Exceptional<ResultType>(new Error_TypeDoesNotExist(myTypeAttribute.DBTypeUUID.ToString()));
             }
 
             #endregion
@@ -1020,28 +1005,28 @@ namespace sones.GraphDB.TypeManagement
 
         #region GraphDBType handling
 
-        #region GetTypeReadouts(myGraphDBType)
+        #region GetVertexForType(myGraphDBType)
 
         /// <summary>
         /// return the uuid, revision id and the editition for a new created type
         /// </summary>
         /// <param name="myGraphDBType">the created type</param>
         /// <returns></returns>
-        private Exceptional<DBObjectReadout> GetTypeReadouts(GraphDBType myGraphDBType)
+        private Exceptional<Vertex> GetVertexForType(GraphDBType myGraphDBType)
         {
 
-            var readOut = new DBObjectReadout();
-
             if (myGraphDBType == null)
-                return new Exceptional<DBObjectReadout>(new Error_ArgumentNullOrEmpty("The type should not be null."));
+                return new Exceptional<Vertex>(new Error_ArgumentNullOrEmpty("The type should not be null."));
 
-            readOut.Attributes.Add(DBConstants.DbGraphType, myGraphDBType.Name);
-            
-            readOut.Attributes.Add(SpecialTypeAttribute_UUID.AttributeName, myGraphDBType.ObjectUUID);
-            readOut.Attributes.Add(SpecialTypeAttribute_REVISION.AttributeName, myGraphDBType.ObjectRevisionID);
-            readOut.Attributes.Add(SpecialTypeAttribute_EDITION.AttributeName, myGraphDBType.ObjectEdition);
+            var _Vertex = new Vertex();
 
-            return new Exceptional<DBObjectReadout>(readOut);
+            _Vertex.AddAttribute(DBConstants.DbGraphType, myGraphDBType.Name);
+
+            _Vertex.AddAttribute(SpecialTypeAttribute_UUID.AttributeName,     myGraphDBType.ObjectUUID);
+            _Vertex.AddAttribute(SpecialTypeAttribute_REVISION.AttributeName, myGraphDBType.ObjectRevisionID);
+            _Vertex.AddAttribute(SpecialTypeAttribute_EDITION.AttributeName,  myGraphDBType.ObjectEdition);
+
+            return new Exceptional<Vertex>(_Vertex);
 
         }
 
@@ -1194,7 +1179,9 @@ namespace sones.GraphDB.TypeManagement
                     aType.AttributeLookupTable.AddRange(parentType.AttributeLookupTable);
 
                     #region check and set type of attributes
+
                     UInt16 attributeCounter = 0;
+
                     foreach (var attributeDef in aTypeDef.Attributes)
                     {
                         var attribute = attributeDef.Key.CreateTypeAttribute(currentContext, addedTypes, attributeCounter);
@@ -1301,47 +1288,49 @@ namespace sones.GraphDB.TypeManagement
 
                 #region Validate Attribute dependencies
                                 
-                List<DBObjectReadout> readOutList   = new List<DBObjectReadout>();
-                SelectionResultSet    selResult     = null;
+                var _Vertices = new List<Vertex>();
                 
-                foreach (GraphDBType aType in addedTypes)
+                foreach (var _GraphDBType in addedTypes)
                 {
-                    foreach (GraphDBType _GraphType in GetAllParentTypes(aType, false, true))
+                    foreach (var _GraphDBType2 in GetAllParentTypes(_GraphDBType, false, true))
                     {
-                        var _MandatoryAttr = _GraphType.GetMandatoryAttributesUUIDs(this);
-                        List<AttributeUUID> _UniqueAttr = _GraphType.GetAllUniqueAttributes(false, this);
 
-                        foreach (TypeAttribute ta in aType.Attributes.Values)
+                        var _MandatoryAttributes = _GraphDBType2.GetMandatoryAttributesUUIDs(this);
+                        var _UniqueAttributes    = _GraphDBType2.GetAllUniqueAttributes(false, this);
+
+                        foreach (var _TypeAttribute in _GraphDBType.Attributes.Values)
                         {
-                            if (_GraphType.GetTypeAttributeByName(ta.Name) != null)
+
+                            if (_GraphDBType2.GetTypeAttributeByName(_TypeAttribute.Name) != null)
                             {
                                 // Todo: Use notification here
                                 RemoveRecentlyAddedTypes(addedTypes);
-                                return new Exceptional<QueryResult>(new Error_AttributeExistsInSupertype(ta.Name, aType.Name));
+                                return new Exceptional<QueryResult>(new Error_AttributeExistsInSupertype(_TypeAttribute.Name, _GraphDBType.Name));
                             }
 
                             #region unique and mandatory attributes
 
-                            if (ta.TypeCharacteristics.IsUnique && !_UniqueAttr.Contains(ta.UUID))
+                            if (_TypeAttribute.TypeCharacteristics.IsUnique && !_UniqueAttributes.Contains(_TypeAttribute.UUID))
                             {
                                 //if the attrbute has been marked unique and it is not contained in uniques of super types
-                                if (!uniqueAttrIDs.Contains(ta.UUID))
+                                if (!uniqueAttrIDs.Contains(_TypeAttribute.UUID))
                                 {
-                                    uniqueAttrIDs.Add(ta.UUID);
+                                    uniqueAttrIDs.Add(_TypeAttribute.UUID);
                                 }
                             }
 
-                            if (ta.TypeCharacteristics.IsMandatory && !_MandatoryAttr.Contains(ta.UUID))
+                            if (_TypeAttribute.TypeCharacteristics.IsMandatory && !_MandatoryAttributes.Contains(_TypeAttribute.UUID))
                             {
-                                aType.AddMandatoryAttribute(ta.UUID, this);
+                                _GraphDBType.AddMandatoryAttribute(_TypeAttribute.UUID, this);
                             }
 
                             #endregion
+                        
                         }
                     }
 
                     //Add the unique attribute ids for the current type
-                    var AddUniqueAttrExcept = aType.AddUniqueAttributes(uniqueAttrIDs, currentContext);
+                    var AddUniqueAttrExcept = _GraphDBType.AddUniqueAttributes(uniqueAttrIDs, currentContext);
 
                     if(AddUniqueAttrExcept.Failed())
                         return new Exceptional<QueryResult>(AddUniqueAttrExcept);
@@ -1439,19 +1428,17 @@ namespace sones.GraphDB.TypeManagement
 
                     #region get system attributes from type
 
-                    var readOut = GetTypeReadouts(item);
+                    var readOut = GetVertexForType(item);
 
                     if (!readOut.Success())
-                        return new Exceptional<QueryResult>(readOut.Errors.First());
+                        return new Exceptional<QueryResult>(readOut.IErrors.First());
 
-                    readOutList.Add(readOut.Value);
+                    _Vertices.Add(readOut.Value);
 
                     #endregion
                 }
 
-                selResult = new SelectionResultSet(readOutList);
-                result.SetResult(selResult);
-                
+                result.Vertices = _Vertices;
 
                 #endregion
 
@@ -1462,7 +1449,7 @@ namespace sones.GraphDB.TypeManagement
 
                 var _Exceptional = new Exceptional<QueryResult>();
                 foreach (var _ex in ee.GraphDBErrors)
-                    _Exceptional.Push(_ex);
+                    _Exceptional.PushIError(_ex);
 
                 return _Exceptional;
 
@@ -2024,12 +2011,12 @@ namespace sones.GraphDB.TypeManagement
             }
             else
             {   
-                SelectionResultSet resultReadout = alterTypeCommand.CreateReadout(dbInnerContext, atype);
+                var resultReadout = alterTypeCommand.CreateVertex(dbInnerContext, atype);
 
                 if (resultReadout != null)
                 {
-                    Exceptional<QueryResult>  retVal = new Exceptional<QueryResult>(new QueryResult(resultReadout));
-                    retVal.AddErrorsAndWarnings(result);
+                    var retVal = new Exceptional<QueryResult>(new QueryResult(resultReadout));
+                    retVal.PushIExceptional(result);
 
                     return retVal;
                 }
@@ -2192,48 +2179,46 @@ namespace sones.GraphDB.TypeManagement
             #region INPUT EXCEPTIONS
 
             if (myGraphDBType == null) return null;
-            if (!_UserDefinedTypes.ContainsKey(myGraphDBType.UUID) && !myGraphDBType.UUID.Equals(DBVertex.UUID)) return null;
-
+            if (!_UserDefinedTypes.ContainsKey(myGraphDBType.UUID) && !myGraphDBType.UUID.Equals(DBVertex.UUID) && !myGraphDBType.UUID.Equals(DBReference.UUID)) return null;
+            
             #endregion
+            
+            var result = ResolveSubTypes(myGraphDBType, new List<GraphDBType>(), new List<GraphDBType>());
+            result.Intersect(result);
 
-            List<GraphDBType> result = new List<GraphDBType>();
-            result.Add(myGraphDBType);
-
-            bool somethingToDo = true;
-            while (somethingToDo)
+            if (myThisTypeIncluding)
             {
-                somethingToDo = false;
-                foreach (var type in _UserDefinedTypes)
-                {
-                    List<GraphDBType> tmpTypeList = new List<GraphDBType>();
-                    GraphDBType aType = (GraphDBType)type.Value;
-
-                    foreach (GraphDBType subtypeAllreadyFound in result)
-                    {
-                        if (aType.ParentTypeUUID.Equals(subtypeAllreadyFound.UUID) &&
-                            !tmpTypeList.Contains(aType) && !result.Contains(aType))
-                        {
-                            somethingToDo = true;
-                            tmpTypeList.Add(aType);
-                        }
-                    }
-
-                    foreach (GraphDBType recentSelectedTypes in tmpTypeList)
-                        result.Add(recentSelectedTypes);
-                }
+                result.Add(myGraphDBType);
             }
 
-            #region special handling for GraphObject, cause it is not in the userdefinedtypes dict
-
-            if (myGraphDBType.UUID.Equals(DBBaseObject.UUID))
-                result.Add(myGraphDBType);
-
-            #endregion
-
-            if (!myThisTypeIncluding)
-                result.Remove(myGraphDBType);
-
             return result;
+        }
+
+        private List<GraphDBType> ResolveSubTypes(GraphDBType myGraphDBType, List<GraphDBType> resultList, List<GraphDBType> listToVisit)
+        {
+            listToVisit.Remove(myGraphDBType);
+            
+            var subTypes = _UserDefinedTypes.Values.Where(item => item.ParentTypeUUID == myGraphDBType.UUID);
+
+            var nextType = subTypes.FirstOrDefault();
+
+            if (subTypes.CountIsGreater(0))
+            {
+                listToVisit.AddRange(subTypes);
+                resultList.AddRange(subTypes);
+            }
+
+            if (nextType == null && listToVisit.CountIsGreater(0))
+            {
+                nextType = listToVisit.First();
+            }
+
+            if (nextType == null || nextType == myGraphDBType)
+            {
+                return resultList;
+            }
+
+            return ResolveSubTypes(nextType, resultList, listToVisit);
         }
         
         #endregion

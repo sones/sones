@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphdbDB � DBIndexManager" />
+﻿/* <id name="GraphdbDB – DBIndexManager" />
  * <copyright file="DBIndexManager.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -36,8 +16,8 @@ using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.Result;
+using sones.GraphDB.TypeManagement;
 
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Errors;
@@ -48,6 +28,8 @@ using sones.Lib;
 using sones.Lib.DataStructures.Indices;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphDB.NewAPI;
+using System.Diagnostics;
 
 #endregion
 
@@ -129,7 +111,7 @@ namespace sones.GraphDB.Indices
             var objectLocation = new ObjectLocation(myDBTypeStream.ObjectLocation, DBConstants.DBObjectsLocation);
             var allDBOLocations = _IGraphFSSession.GetFilteredDirectoryListing(objectLocation, null, null, null, new List<String>(new String[] { DBConstants.DBOBJECTSTREAM }), null, null, null, null, null, null);
 
-            if (allDBOLocations.Failed() && allDBOLocations.Errors.First().GetType() != typeof(GraphFSError_ObjectLocatorNotFound))
+            if (allDBOLocations.Failed() && allDBOLocations.IErrors.First().GetType() != typeof(GraphFSError_ObjectLocatorNotFound))
                 return new Exceptional<ResultType>(allDBOLocations);
 
             try
@@ -173,7 +155,7 @@ namespace sones.GraphDB.Indices
             {
                 var _Exceptional = new Exceptional<ResultType>();
                 foreach (var _ex in pe.GraphDBErrors)
-                    _Exceptional.Push(_ex);
+                    _Exceptional.PushIError(_ex);
                 return _Exceptional;
             }
             catch (GraphFSException_IndexKeyAlreadyExist)
@@ -369,7 +351,7 @@ namespace sones.GraphDB.Indices
                 if (result.Value.isNew)
                 {
                     // Uncomment as soon as index is serializeable
-                    result.AddErrorsAndWarnings(_IGraphFSSession.StoreFSObject(result.Value, false));
+                    result.PushIExceptional(_IGraphFSSession.StoreFSObject(result.Value, false));
                     //result.AddErrorsAndWarnings(result.Value.Save());
                     //ToDo: Fehler beim Speichern werden im Weiterm ignoriert statt darauf reagiert!
                 }
@@ -416,15 +398,15 @@ namespace sones.GraphDB.Indices
 
         #region Create Index
 
-        public Exceptional<SelectionResultSet> CreateIndex(DBContext myDBContext, string myDBType, string myIndexName, string myIndexEdition, string myIndexType, List<IndexAttributeDefinition> myAttributeList)
+        public Exceptional<IEnumerable<Vertex>> CreateIndex(DBContext myDBContext, string myDBType, string myIndexName, string myIndexEdition, string myIndexType, List<IndexAttributeDefinition> myAttributeList)
         {
 
-            SelectionResultSet resultOutput = null;
+            IEnumerable<Vertex> resultOutput = null;
 
             var dbObjectType = myDBContext.DBTypeManager.GetTypeByName(myDBType);
             if (dbObjectType == null)
             {
-                return new Exceptional<SelectionResultSet>(new Error_TypeDoesNotExist(myDBType));
+                return new Exceptional<IEnumerable<Vertex>>(new Error_TypeDoesNotExist(myDBType));
             }
 
             #region Get IndexAttributes
@@ -437,14 +419,14 @@ namespace sones.GraphDB.Indices
                 var validateResult = createIndexAttributeNode.IndexAttribute.Validate(myDBContext, false, dbObjectType);
                 if (validateResult.Failed())
                 {
-                    return new Exceptional<SelectionResultSet>(validateResult);
+                    return new Exceptional<IEnumerable<Vertex>>(validateResult);
                 }
                 var attrName = createIndexAttributeNode.IndexAttribute.LastAttribute.Name;
 
                 var validAttrExcept = myDBContext.DBTypeManager.AreValidAttributes(dbObjectType, attrName);
 
                 if (validAttrExcept.Failed())
-                    throw new GraphDBException(validAttrExcept.Errors);
+                    throw new GraphDBException(validAttrExcept.IErrors);
 
                 if (!validAttrExcept.Value)
                     throw new GraphDBException(new Error_AttributeIsNotDefined(dbObjectType.Name, attrName));
@@ -476,7 +458,7 @@ namespace sones.GraphDB.Indices
 
                 if (aIdxAttribute.GetDBType(myDBContext.DBTypeManager).IsUserDefined)
                 {
-                    return new Exceptional<SelectionResultSet>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), String.Format("Currently it is not implemented to create an index on reference attributes like {0}", aIdxAttribute.Name)));
+                    return new Exceptional<IEnumerable<Vertex>>(new Error_NotImplemented(new StackTrace(true), String.Format("Currently it is not implemented to create an index on reference attributes like {0}", aIdxAttribute.Name)));
                 }
             }
 
@@ -490,7 +472,7 @@ namespace sones.GraphDB.Indices
                 var createdIDx = item.CreateAttributeIndex(myDBContext, myIndexName, indexAttributes, myIndexEdition, myIndexType);
                 if (createdIDx.Failed())
                 {
-                    return new Exceptional<SelectionResultSet>(createdIDx);
+                    return new Exceptional<IEnumerable<Vertex>>(createdIDx);
                 }
 
                 else
@@ -500,7 +482,7 @@ namespace sones.GraphDB.Indices
 
                     var readOut = GenerateCreateIndexResult(myDBType, myAttributeList, createdIDx.Value);
 
-                    resultOutput = new SelectionResultSet(new List<DBObjectReadout> { readOut });
+                    resultOutput = new List<Vertex>(){ readOut };
 
                     #endregion
 
@@ -513,7 +495,7 @@ namespace sones.GraphDB.Indices
                 var rebuildResult = myDBContext.DBIndexManager.RebuildIndex(createdIDx.Value.IndexName, createdIDx.Value.IndexEdition, item, IndexSetStrategy.MERGE);
                 if (rebuildResult.Failed())
                 {
-                    return new Exceptional<SelectionResultSet>(rebuildResult);
+                    return new Exceptional<IEnumerable<Vertex>>(rebuildResult);
                 }
 
 
@@ -524,18 +506,18 @@ namespace sones.GraphDB.Indices
                 var flushResult = myDBContext.DBTypeManager.FlushType(item);
                 if (flushResult.Failed())
                 {
-                    return new Exceptional<SelectionResultSet>(flushResult);
+                    return new Exceptional<IEnumerable<Vertex>>(flushResult);
                 }
 
                 #endregion
 
             }
 
-            return new Exceptional<SelectionResultSet>(resultOutput);
+            return new Exceptional<IEnumerable<Vertex>>(resultOutput);
 
         }
 
-        private DBObjectReadout GenerateCreateIndexResult(String myDBType, List<IndexAttributeDefinition> myAttributeList, AAttributeIndex myAttributeIndex)
+        private Vertex GenerateCreateIndexResult(String myDBType, List<IndexAttributeDefinition> myAttributeList, AAttributeIndex myAttributeIndex)
         {
 
             var payload = new Dictionary<String, Object>();
@@ -545,19 +527,19 @@ namespace sones.GraphDB.Indices
             payload.Add("INDEXTYPE", myAttributeIndex.IndexType);
             payload.Add("ONTYPE", myDBType);
 
-            var attributes = new List<DBObjectReadout>();
+            var attributes = new List<Vertex>();
 
             foreach (var _Attribute in myAttributeList)
             {
                 var payloadAttributes = new Dictionary<String, Object>();
                 payloadAttributes.Add("ATTRIBUTE", _Attribute.IndexAttribute);
-                attributes.Add(new DBObjectReadout(payloadAttributes));
+                attributes.Add(new Vertex(payloadAttributes));
             }
 
-            payload.Add("ATTRIBUTES", new Edge(attributes, "ATTRIBUTE"));
+            payload.Add("ATTRIBUTES", new Edge(null, attributes, "ATTRIBUTE"));
             //payload.Add("NAME", attributeIndex.IndexName)
 
-            return new DBObjectReadout(payload);
+            return new Vertex(payload);
 
         }
 

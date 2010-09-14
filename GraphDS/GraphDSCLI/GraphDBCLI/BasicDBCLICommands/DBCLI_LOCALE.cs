@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * DBCLI_LOCALE
  * (c) Henning Rauch, 2009 - 2010
  */
@@ -34,7 +14,7 @@ using sones.GraphFS.Session;
 using sones.GraphDB.Structures;
 
 using sones.GraphDS.Connectors.CLI;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
 using sones.GraphFS.Errors;
 using sones.GraphDS.API.CSharp;
 using sones.Lib.ErrorHandling;
@@ -114,7 +94,7 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
                 if (myQueryResult.ResultType != ResultType.Successful)
                 {
-                    WriteLine(myQueryResult.GetErrorsAsString());
+                    WriteLine(myQueryResult.GetIErrorsAsString());
                     return false;
                 }
 

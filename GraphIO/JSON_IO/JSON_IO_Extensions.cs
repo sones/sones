@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* 
+﻿/* 
  * JSON_IO_Extensions
  * Achim 'ahzf' Friedland, 2009 - 2010
  */
@@ -34,8 +14,9 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphFS.DataStructures;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.ObjectManagement;
+using sones.GraphDB.Result;
+using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -122,7 +103,7 @@ namespace sones.GraphIO.JSON
                        ))));
 
             // results ------------------------------
-            _Query.Add(new JProperty("results", new JArray(GetJObjectsFromResult(myQueryResult.Results))));
+            _Query.Add(new JProperty("results", new JArray(GetJObjectsFromResult(myQueryResult.Vertices))));
 
             return _Query;
 
@@ -130,11 +111,11 @@ namespace sones.GraphIO.JSON
 
         #endregion
 
-        private static IEnumerable<JObject> GetJObjectsFromResult(SelectionResultSet myResultSet)
+        private static IEnumerable<JObject> GetJObjectsFromResult(IEnumerable<Vertex> myResultSet)
         {
-            if (myResultSet.Objects != null)
+            if (myResultSet != null)
             {
-                foreach (var aXElement in from aReadout in myResultSet.Objects select aReadout.ToJSON())
+                foreach (var aXElement in from aReadout in myResultSet select aReadout.ToJSON())
                 {
                     yield return aXElement;
                 }
@@ -143,34 +124,34 @@ namespace sones.GraphIO.JSON
             yield break;
         }
 
-        #region ToJSON(this myDBObjectReadout)
+        #region ToJSON(this myVertex)
 
-        public static JObject ToJSON(this DBObjectReadout myDBObjectReadout)
+        public static JObject ToJSON(this Vertex myVertex)
         {
-            return myDBObjectReadout.ToJSON(false);
+            return myVertex.ToJSON(false);
         }
 
         #endregion
 
-        #region (private) ToJSON(this myDBObjectReadout, myRecursion = false)
+        #region (private) ToJSON(this myVertex, myRecursion = false)
 
-        private static JObject ToJSON(this DBObjectReadout myDBObjectReadout, Boolean myRecursion = false)
+        private static JObject ToJSON(this Vertex myVertex, Boolean myRecursion = false)
         {
 
-            var _DBObject = new JObject();
+            var _Vertex = new JObject();
 
-            DBObjectReadoutGroup         _GroupedDBObjects   = null;
-            DBWeightedObjectReadout      _WeightedDBObject   = null;
-            IEnumerable<DBObjectReadout> _DBObjects          = null;
-            IEnumerable<Object>          _AttributeValueList = null;
-            IGetName                     _IGetName           = null;
+            VertexGroup             _GroupedVertices   = null;
+            Vertex_WeightedEdges    _WeightedDBObject   = null;
+            IEnumerable<Vertex>     _Vertices           = null;
+            IEnumerable<Object>     _AttributeValueList = null;
+            IGetName                _IGetName           = null;
 
-            #region DBWeightedObjectReadout
+            #region Vertex_WeightedEdges
 
-            var _WeightedDBObject1 = myDBObjectReadout as DBWeightedObjectReadout;
+            var _WeightedDBObject1 = myVertex as Vertex_WeightedEdges;
             if (_WeightedDBObject1 != null)
             {
-                _DBObject.Add(new JProperty("edgelabel", new JObject(new JProperty("weight", _WeightedDBObject1.Weight.ToString()))));
+                _Vertex.Add(new JProperty("edgelabel", new JObject(new JProperty("weight", _WeightedDBObject1.Weight.ToString()))));
             }
 
             #endregion
@@ -182,33 +163,33 @@ namespace sones.GraphIO.JSON
             if (myRecursion)
             {
                 _Attributes = new JObject();
-                _DBObject.Add(new JProperty("attributes", _Attributes));
+                _Vertex.Add(new JProperty("attributes", _Attributes));
             }
             else
-                _Attributes = _DBObject;
+                _Attributes = _Vertex;
 
             #endregion
 
-            foreach (var _Attribute in myDBObjectReadout.Attributes)
+            foreach (var _Attribute in myVertex.ObsoleteAttributes)
             {
 
                 if (_Attribute.Value != null)
                 {
 
-                    #region DBObjectReadoutGroup
+                    #region VertexGroup
 
-                    _GroupedDBObjects = _Attribute.Value as DBObjectReadoutGroup;
+                    _GroupedVertices = _Attribute.Value as VertexGroup;
 
-                    if (_GroupedDBObjects != null)
+                    if (_GroupedVertices != null)
                     {
 
                         var _Grouped = new JArray("grouped");
 
-                        if (_GroupedDBObjects.GroupedVertices != null)
-                            foreach (var _DBObjectReadout in _GroupedDBObjects.GroupedVertices)
-                                _Grouped.Add(_DBObjectReadout.ToJSON());
+                        if (_GroupedVertices.GroupedVertices != null)
+                            foreach (var __Vertex in _GroupedVertices.GroupedVertices)
+                                _Grouped.Add(__Vertex.ToJSON());
 
-                        _DBObject.Add(_Grouped);
+                        _Vertex.Add(_Grouped);
 
                         continue;
 
@@ -216,22 +197,22 @@ namespace sones.GraphIO.JSON
 
                     #endregion
 
-                    #region DBWeightedObjectReadout
+                    #region Vertex_WeightedEdges
 
-                    _WeightedDBObject = _Attribute.Value as DBWeightedObjectReadout;
+                    _WeightedDBObject = _Attribute.Value as Vertex_WeightedEdges;
 
                     if (_WeightedDBObject != null)
                     {
-                        _DBObject.Add(new JProperty("strange-edgelabel", new JObject(new JProperty("weight", _WeightedDBObject1.Weight.ToString()))));
+                        _Vertex.Add(new JProperty("strange-edgelabel", new JObject(new JProperty("weight", _WeightedDBObject1.Weight.ToString()))));
                     }
 
                     #endregion
 
-                    #region IEnumerable<DBObjectReadout>
+                    #region IEnumerable<Vertex>
 
-                    _DBObjects = _Attribute.Value as IEnumerable<DBObjectReadout>;
+                    _Vertices = _Attribute.Value as IEnumerable<Vertex>;
 
-                    if (_DBObjects != null && _DBObjects.Count() > 0)
+                    if (_Vertices != null && _Vertices.Count() > 0)
                     {
 
                         _Attributes.Add(
@@ -240,9 +221,9 @@ namespace sones.GraphIO.JSON
                                 // An edgelabel for all edges together...
                                 new JProperty("hyperedgelabel", new JObject()),
 
-                                new JProperty("DBObjects", new JArray(
-                                    from _DBObjectReadout in _DBObjects
-                                    select _DBObjectReadout.ToJSON(true)
+                                new JProperty("Vertices", new JArray(
+                                    from __Vertex in _Vertices
+                                    select __Vertex.ToJSON(true)
                                 ))
 
                             )
@@ -300,7 +281,7 @@ namespace sones.GraphIO.JSON
 
             }
 
-            return _DBObject;
+            return _Vertex;
 
         }
 

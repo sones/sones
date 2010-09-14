@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* 
+﻿/* 
  * XML_IO_Extensions
  * Achim 'ahzf' Friedland, 2009 - 2010
  */
@@ -26,19 +6,16 @@
 #region Usings
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
-using System.Collections.Generic;
-
-using sones.GraphFS.Objects;
+using sones.GraphDB.NewAPI;
+using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.Result;
 using sones.GraphFS.DataStructures;
-
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.ObjectManagement;
-
+using sones.GraphFS.Objects;
 using sones.Lib;
-using System.Xml;
 
 #endregion
 
@@ -95,7 +72,7 @@ namespace sones.GraphIO.XML
             return
                 new XElement("ObjectLocator",
                     new XAttribute("Version", myObjectLocator.StructureVersion),
-                    new XAttribute("ObjectUUID", myObjectLocator.ObjectUUID.ToHexString(SeperatorTypes.COLON)),
+                    new XAttribute("ObjectUUID", myObjectLocator.ObjectUUID.ToString()),
 
                 new XElement("ObjectStreams",
 
@@ -339,7 +316,7 @@ namespace sones.GraphIO.XML
                 ));
 
             // results ------------------------------
-            _Query.Add(new XElement("results", GetXMLFromResult(myQueryResult.Results)));
+            _Query.Add(new XElement("results", GetXMLFromResult(myQueryResult.Vertices)));
             
             return _Query;
 
@@ -347,57 +324,59 @@ namespace sones.GraphIO.XML
 
         #endregion
 
-        private static IEnumerable<XElement> GetXMLFromResult(SelectionResultSet myResultSet)
+        private static IEnumerable<XElement> GetXMLFromResult(IEnumerable<Vertex> myVertices)
         {
-            if (myResultSet.Objects != null)
+
+            if (myVertices != null)
             {
-                foreach (var aXElement in from aReadout in myResultSet.Objects select aReadout.ToXML())
+                foreach (var _XElement in from _Vertex in myVertices select _Vertex.ToXML())
                 {
-                    yield return aXElement;
+                    yield return _XElement;
                 }
             }
 
             yield break;
+
         }
 
-        #region ToXML(this myDBVertex)
+        #region ToXML(this myVertex)
 
-        public static XElement ToXML(this DBObjectReadout myDBVertex)
+        public static XElement ToXML(this Vertex myVertex)
         {
-            return myDBVertex.ToXML(false);
+            return myVertex.ToXML(false);
         }
 
         #endregion
 
-        #region (private) ToXML(this myDBVertex, myRecursion)
+        #region (private) ToXML(this myVertex, myRecursion)
 
-        private static XElement ToXML(this DBObjectReadout myDBVertex, Boolean myRecursion)
+        private static XElement ToXML(this Vertex myVertex, Boolean myRecursion)
         {
 
-            Type _AttributeType         = null;
-            var _AttributeTypeString    = "";
-            var _DBObject               = new XElement("DBObject");
+            Type _AttributeType       = null;
+            var _AttributeTypeString  = "";
+            var __Vertex              = new XElement("vertex");
 
-            DBObjectReadoutGroup         _GroupedDBObjects      = null;
-            DBWeightedObjectReadout      _WeightedDBObject      = null;
-            IEnumerable<DBObjectReadout> _DBObjects             = null;
-            IEnumerable<Object>          _AttributeValueList    = null;
-            IGetName                     _IGetName              = null;
+            VertexGroup             _VertexGroup           = null;
+            Vertex_WeightedEdges    _WeightedDBObject      = null;
+            IEnumerable<Vertex>     _Vertices              = null;
+            IEnumerable<Object>     _AttributeValueList    = null;
+            IGetName                _IGetName              = null;
 
-            #region DBWeightedObjectReadout
+            #region VertexHavingWeightedEdges
 
-            var _WeightedDBObject1 = myDBVertex as DBWeightedObjectReadout;
+            var _WeightedDBObject1 = myVertex as Vertex_WeightedEdges;
 
             if (_WeightedDBObject1 != null)
             {
-                _DBObject.Add(new XElement("edgelabel", new XElement("attribute", new XAttribute("name", "weight"), new XAttribute("type", _WeightedDBObject1.TypeName), _WeightedDBObject1.Weight)));
+                __Vertex.Add(new XElement("edgelabel", new XElement("attribute", new XAttribute("name", "weight"), new XAttribute("type", _WeightedDBObject1.TypeName), _WeightedDBObject1.Weight)));
             }
 
             #endregion
 
-            #region DBObjectReadoutGroup
+            #region VertexGroup
 
-            var _GroupedDBObject1 = myDBVertex as DBObjectReadoutGroup;
+            var _GroupedDBObject1 = myVertex as VertexGroup;
 
             if (_GroupedDBObject1 != null)
             {
@@ -406,36 +385,36 @@ namespace sones.GraphIO.XML
 
                 var _groupedElementEdgeLabel = new XElement("edgelabel");
 
-                foreach (var _DBObjectReadout in _GroupedDBObject1.GroupedVertices)
-                    _groupedElements.Add(_DBObjectReadout.ToXML());
+                foreach (var _Vertex in _GroupedDBObject1.GroupedVertices)
+                    _groupedElements.Add(_Vertex.ToXML());
 
                 _groupedElementEdgeLabel.Add(_groupedElements);
 
-                _DBObject.Add(_groupedElementEdgeLabel);
+                __Vertex.Add(_groupedElementEdgeLabel);
             }
 
             #endregion
 
-            foreach (var _Attribute in myDBVertex.Attributes)
+            foreach (var _Attribute in myVertex)
             {
 
                 if (_Attribute.Value != null)
                 {
 
-                    #region DBObjectReadoutGroup
+                    #region VertexGroup
 
-                    _GroupedDBObjects = _Attribute.Value as DBObjectReadoutGroup;
+                    _VertexGroup = _Attribute.Value as VertexGroup;
 
-                    if (_GroupedDBObjects != null)
+                    if (_VertexGroup != null)
                     {
 
                         var _Grouped = new XElement("grouped");
 
-                        if (_GroupedDBObjects.GroupedVertices != null)
-                            foreach (var _DBObjectReadout in _GroupedDBObjects.GroupedVertices)
-                                _Grouped.Add(_DBObjectReadout.ToXML());
+                        if (_VertexGroup.GroupedVertices != null)
+                            foreach (var _Vertex in _VertexGroup.GroupedVertices)
+                                _Grouped.Add(_Vertex.ToXML());
 
-                        _DBObject.Add(_Grouped);
+                        __Vertex.Add(_Grouped);
 
                         continue;
 
@@ -443,23 +422,23 @@ namespace sones.GraphIO.XML
 
                     #endregion
 
-                    #region DBWeightedObjectReadout
+                    #region Vertex_WeightedEdges
 
-                    _WeightedDBObject = _Attribute.Value as DBWeightedObjectReadout;
+                    _WeightedDBObject = _Attribute.Value as Vertex_WeightedEdges;
 
                     if (_WeightedDBObject != null)
                     {
-                        _DBObject.Add(new XElement("edgelabel", new XElement("attribute", new XAttribute("name", "weight"), new XAttribute("type", _WeightedDBObject1.TypeName), _WeightedDBObject1.Weight)));
+                        __Vertex.Add(new XElement("edgelabel", new XElement("attribute", new XAttribute("name", "weight"), new XAttribute("type", _WeightedDBObject1.TypeName), _WeightedDBObject1.Weight)));
                         continue;
                     }
 
                     #endregion
 
-                    #region IEnumerable<DBObjectReadout>
+                    #region IEnumerable<Vertex>
 
-                    _DBObjects = _Attribute.Value as IEnumerable<DBObjectReadout>;
+                    _Vertices = _Attribute.Value as IEnumerable<Vertex>;
 
-                    if (_DBObjects != null && _DBObjects.Count() > 0)
+                    if (_Vertices != null && _Vertices.Count() > 0)
                     {
 
                         var _EdgeInfo = (_Attribute.Value as Edge);
@@ -472,10 +451,10 @@ namespace sones.GraphIO.XML
                         // An edgelabel for all edges together...
                         _ListAttribute.Add(new XElement("hyperedgelabel"));
 
-                        foreach (var _DBObjectReadout in _DBObjects)
+                        foreach (var _DBObjectReadout in _Vertices)
                             _ListAttribute.Add(_DBObjectReadout.ToXML());
 
-                        _DBObject.Add(_ListAttribute);
+                        __Vertex.Add(_ListAttribute);
                         continue;
 
                     }
@@ -509,7 +488,7 @@ namespace sones.GraphIO.XML
                         new XAttribute("type", _AttributeTypeString)
                     );
 
-                    _DBObject.Add(_AttributeTag);
+                    __Vertex.Add(_AttributeTag);
 
                     #endregion
 
@@ -551,7 +530,7 @@ namespace sones.GraphIO.XML
 
             }
 
-            return _DBObject;
+            return __Vertex;
 
         }
 
@@ -566,7 +545,7 @@ namespace sones.GraphIO.XML
             var _XMLDocument = new XDocument(new XDeclaration("1.0", "UTF-8", "yes"));
 
             var _Sones       = new XElement("sones",   new XAttribute("version", "1.0"));
-            var _GraphDB     = new XElement("GraphDB", new XAttribute("version", "1.0"));
+            var _GraphDB     = new XElement("graphdb", new XAttribute("version", "1.0"));
 
             foreach (var _XElement in myXElements)
                 _GraphDB.Add(_XElement);
@@ -631,7 +610,7 @@ namespace sones.GraphIO.XML
 
                 _XMLString.AppendLine("<!DOCTYPE sones [");
 
-                _XMLString.AppendLine("<!ELEMENT sones                   (GraphFS|GraphDB)+>");
+                _XMLString.AppendLine("<!ELEMENT sones                   (graphfs|graphdb)+>");
                 _XMLString.AppendLine("<!ATTLIST sones");
                 _XMLString.AppendLine("version                           CDATA #REQUIRED");
                 _XMLString.AppendLine(">");
@@ -750,8 +729,8 @@ namespace sones.GraphIO.XML
 
                 #region GraphDB
 
-                _XMLString.AppendLine("<!ELEMENT GraphDB                 (queryresult)+>");
-                _XMLString.AppendLine("<!ATTLIST GraphDB");
+                _XMLString.AppendLine("<!ELEMENT graphdb                 (queryresult)+>");
+                _XMLString.AppendLine("<!ATTLIST graphdb");
                 _XMLString.AppendLine("version                           CDATA #REQUIRED");
                 _XMLString.AppendLine(">");
 

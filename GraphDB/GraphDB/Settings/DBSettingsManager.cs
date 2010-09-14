@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � Settings" />
+﻿/* <id name="GraphDB – Settings" />
  * <copyright file="DBSettingsManager.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -48,7 +28,7 @@ using sones.GraphDB.TypeManagement;
 
 using sones.GraphDB.Managers.Structures.Setting;
 
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
 
 #endregion
 
@@ -140,7 +120,7 @@ namespace sones.GraphDB.Settings
 				return Exceptional.OK;
 			}
 
-			return _SetMetadatumExceptional.Push(new Error_SettingCouldNotBeSet(mySetting.Name));
+			return _SetMetadatumExceptional.PushIError(new Error_SettingCouldNotBeSet(mySetting.Name));
 
 		}
 
@@ -183,7 +163,7 @@ namespace sones.GraphDB.Settings
 
 			if (_RemoveMetadatumExceptional == null || _RemoveMetadatumExceptional.Failed())
 			{
-				return _RemoveMetadatumExceptional.Convert<bool>().PushT(new Error_SettingDoesNotExist(mySettingName));
+				return _RemoveMetadatumExceptional.Convert<bool>().PushIErrorT(new Error_SettingDoesNotExist(mySettingName));
 			}
 
 			//_DBSettings.Remove(mySettingName);

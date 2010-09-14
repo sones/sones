@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* 
+﻿/* 
  * GEXF_IO
  * Achim 'ahzf' Friedland, 2010
  */
@@ -37,8 +17,10 @@ using sones.GraphDB.ObjectManagement;
 using sones.Lib;
 using sones.GraphFS.DataStructures;
 using System.Text;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.ObjectManagement;
+using sones.GraphDB.Result;
+using sones.GraphDB.ObjectManagement;
+using sones.Lib.ErrorHandling;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -46,7 +28,7 @@ namespace sones.GraphIO.GEXF
 {
 
     /// <summary>
-    /// Transforms a QueryResult and a DBObjectReadout into an application/gexf
+    /// Transforms a QueryResult and a Vertex into an application/gexf
     /// representation and vice versa.
     /// </summary>
 
@@ -104,16 +86,16 @@ namespace sones.GraphIO.GEXF
 
         #region ExportVertex(myDBObjectReadout)
 
-        public Object ExportVertex(DBObjectReadout myDBObjectReadout)
+        public Object ExportVertex(Vertex myVertex)
         {
-            return Export(myDBObjectReadout, false);
+            return Export(myVertex, false);
         }
 
         #endregion
 
-        #region (private) Export(myDBObjectReadout, myRecursion)
+        #region (private) Export(myVertex, myRecursion)
 
-        private Object Export(DBObjectReadout myDBObjectReadout, Boolean myRecursion)
+        private Object Export(Vertex myVertex, Boolean myRecursion)
         {
 
             //<?xml version="1.0" encoding="UTF-8"?>
@@ -237,15 +219,15 @@ namespace sones.GraphIO.GEXF
             var  _AttributeTypeString   = "";
             var  _DBObject              = new XElement("DBObject");
 
-            DBObjectReadoutGroup         _GroupedDBObjects      = null;
-            DBWeightedObjectReadout      _WeightedDBObject      = null;
-            IEnumerable<DBObjectReadout> _DBObjects             = null;
-            IEnumerable<Object>          _AttributeValueList    = null;
-            IGetName                     _IGetName              = null;
+            VertexGroup             _GroupedDBObjects      = null;
+            Vertex_WeightedEdges    _WeightedDBObject      = null;
+            IEnumerable<Vertex>     _Vertices              = null;
+            IEnumerable<Object>     _AttributeValueList    = null;
+            IGetName                _IGetName              = null;
 
-            #region DBWeightedObjectReadout
+            #region Vertex_WeightedEdges
 
-            var _WeightedDBObject1 = myDBObjectReadout as DBWeightedObjectReadout;
+            var _WeightedDBObject1 = myVertex as Vertex_WeightedEdges;
 
             if (_WeightedDBObject1 != null)
             {
@@ -254,15 +236,15 @@ namespace sones.GraphIO.GEXF
 
             #endregion
 
-            foreach (var _Attribute in myDBObjectReadout.Attributes)
+            foreach (var _Attribute in myVertex.ObsoleteAttributes)
             {
 
                 if (_Attribute.Value != null)
                 {
 
-                    #region DBObjectReadoutGroup
+                    #region VertexGroup
 
-                    _GroupedDBObjects = _Attribute.Value as DBObjectReadoutGroup;
+                    _GroupedDBObjects = _Attribute.Value as VertexGroup;
 
                     if (_GroupedDBObjects != null)
                     {
@@ -281,9 +263,9 @@ namespace sones.GraphIO.GEXF
 
                     #endregion
 
-                    #region DBWeightedObjectReadout
+                    #region Vertex_WeightedEdges
 
-                    _WeightedDBObject = _Attribute.Value as DBWeightedObjectReadout;
+                    _WeightedDBObject = _Attribute.Value as Vertex_WeightedEdges;
 
                     if (_WeightedDBObject != null)
                     {
@@ -293,11 +275,11 @@ namespace sones.GraphIO.GEXF
 
                     #endregion
 
-                    #region IEnumerable<DBObjectReadout>
+                    #region IEnumerable<Vertex>
 
-                    _DBObjects = _Attribute.Value as IEnumerable<DBObjectReadout>;
+                    _Vertices = _Attribute.Value as IEnumerable<Vertex>;
 
-                    if (_DBObjects != null && _DBObjects.Count() > 0)
+                    if (_Vertices != null && _Vertices.Count() > 0)
                     {
 
                         var _EdgeInfo = (_Attribute.Value as Edge);
@@ -310,7 +292,7 @@ namespace sones.GraphIO.GEXF
                         // An edgelabel for all edges together...
                         _ListAttribute.Add(new XElement("hyperedgelabel"));
 
-                        foreach (var _DBObjectReadout in _DBObjects)
+                        foreach (var _DBObjectReadout in _Vertices)
                             _ListAttribute.Add(ExportVertex(_DBObjectReadout));
 
                         _DBObject.Add(_ListAttribute);
@@ -421,12 +403,39 @@ namespace sones.GraphIO.GEXF
 
         #region ParseDBObject(myInput)
 
-        public DBObjectReadout ParseDBObject(String myInput)
+        public Vertex ParseVertex(String myInput)
         {
             throw new NotImplementedException();
         }
 
         #endregion
+
+        #endregion
+
+
+        #region GenerateUnspecifiedWarning(myWarningXElement)
+
+        /// <summary>
+        /// Generates an UnspecifiedWarning from its XML representation
+        /// </summary>
+        /// <param name="myErrorXML">The XML representation of an UnspecifiedError</param>
+        public UnspecifiedWarning GenerateUnspecifiedWarning(Object myWarningXElement)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region GenerateUnspecifiedError(myErrorXElement)
+
+        /// <summary>
+        /// Generates an UnspecifiedError from its XML representation
+        /// </summary>
+        /// <param name="myErrorXML">The XML representation of an UnspecifiedError</param>
+        public UnspecifiedError GenerateUnspecifiedError(Object myErrorXElement)
+        {
+            throw new NotImplementedException();
+        }
 
         #endregion
 

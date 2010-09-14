@@ -1,25 +1,5 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
- * Warning_Unspecified
+﻿/*
+ * UnspecifiedWarning
  * (c) Achim Friedland, 2010
  */
 
@@ -37,7 +17,7 @@ namespace sones.Lib.ErrorHandling
     /// <summary>
     /// This class carries information of unspecified warnings.
     /// </summary>
-    public class Warning_Unspecified : IWarning
+    public class UnspecifiedWarning : IWarning
     {
 
         #region Properties
@@ -50,9 +30,9 @@ namespace sones.Lib.ErrorHandling
 
         #region Constructor(s)
 
-        #region Warning_Unspecified()
+        #region UnspecifiedWarning()
 
-        public Warning_Unspecified()
+        public UnspecifiedWarning()
         {
             Message     = default(String);
             StackTrace  = null;
@@ -60,9 +40,9 @@ namespace sones.Lib.ErrorHandling
 
         #endregion
 
-        #region Warning_Unspecified(myID)
+        #region UnspecifiedWarning(myID)
 
-        public Warning_Unspecified(String myID)
+        public UnspecifiedWarning(String myID)
         {
 
             if (myID == null)
@@ -75,9 +55,9 @@ namespace sones.Lib.ErrorHandling
 
         #endregion
 
-        #region Warning_Unspecified(myID, myMessage)
+        #region UnspecifiedWarning(myID, myMessage)
 
-        public Warning_Unspecified(String myID, String myMessage)
+        public UnspecifiedWarning(String myID, String myMessage)
         {
 
             if (myID == null)
@@ -93,9 +73,9 @@ namespace sones.Lib.ErrorHandling
 
         #endregion
 
-        #region Warning_Unspecified(myID, myMessage, myStackTrace)
+        #region UnspecifiedWarning(myID, myMessage, myStackTrace)
 
-        public Warning_Unspecified(String myID, String myMessage, StackTrace myStackTrace)
+        public UnspecifiedWarning(String myID, String myMessage, StackTrace myStackTrace)
         {
 
             if (myID == null)

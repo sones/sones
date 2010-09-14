@@ -1,26 +1,6 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id Name=”GraphDB – database object” />
- * <copyright file=”DBObjectStream.cs”
- *            company=”sones GmbH”>
+ï»¿/* <id Name=â€GraphDB â€“ database objectâ€ />
+ * <copyright file=â€DBObjectStream.csâ€
+ *            company=â€sones GmbHâ€>
  * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Henning Rauch</developer>
@@ -39,8 +19,8 @@ using sones.GraphDB.Exceptions;
 using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.Result;
+using sones.GraphDB.TypeManagement;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Objects;
 using sones.GraphFS.Session;
@@ -78,7 +58,7 @@ namespace sones.GraphDB.ObjectManagement
 
         #region Constructor
 
-        #region DBObject()
+        #region DBObjectStream()
 
         /// <summary>
         /// This will create an empty DBObject
@@ -102,17 +82,35 @@ namespace sones.GraphDB.ObjectManagement
 
         #endregion
 
-        #region DBObject(myObjectLocation)
+        #region DBObjectStream(myObjectUUID)
+
+        /// <summary>
+        /// This will create an empty DBObject
+        /// </summary>
+        public DBObjectStream(ObjectUUID myObjectUUID)
+            : this()
+        {
+
+            if (myObjectUUID == null)
+                ObjectUUID = ObjectUUID.NewUUID;
+            else
+                ObjectUUID = myObjectUUID;
+
+        }
+
+        #endregion
+
+        #region DBObjectStream(myObjectUUID, myGraphDBType)
 
         /// <summary>
         /// This will create an em
         /// </summary>
         /// <param name="myObjectLocation">the location (object myPath and Name) of the requested DBObject within the file system</param>
-        private DBObjectStream(GraphDBType myDBTypeStream)
-            : this()
+        private DBObjectStream(ObjectUUID myObjectUUID, GraphDBType myGraphDBType)
+            : this(myObjectUUID)
         {
 
-            ObjectLocation = DBObjectStream.GetObjectLocation(myDBTypeStream, ObjectUUID);
+            ObjectLocation = DBObjectStream.GetObjectLocation(myGraphDBType, ObjectUUID);
 
             if (ObjectLocation == null || ObjectLocation.Length < FSPathConstants.PathDelimiter.Length)
                 throw new ArgumentNullException("Invalid ObjectLocation!");
@@ -121,15 +119,16 @@ namespace sones.GraphDB.ObjectManagement
 
         #endregion
 
-        #region DBObject(myDBTypeStream, myDBObjectAttributes)
+        #region DBObjectStream(myObjectUUID, myDBTypeStream, myDBObjectAttributes)
 
         /// <summary>
         /// This will create an DBObject
         /// </summary>
         /// <param name="myObjectLocation">the location (object myPath and Name) of the requested DBObject within the file system</param>
-        public DBObjectStream(GraphDBType myDBTypeStream, Dictionary<AttributeUUID, IObject> myDBObjectAttributes)
-            : this(myDBTypeStream)
+        public DBObjectStream(ObjectUUID myObjectUUID, GraphDBType myDBTypeStream, Dictionary<AttributeUUID, IObject> myDBObjectAttributes)
+            : this(myObjectUUID, myDBTypeStream)
         {
+
             if (myDBObjectAttributes == null)
                 throw new ArgumentNullException("The parameter myDBObjectAttributes must not be null or empty!");
 
@@ -141,7 +140,7 @@ namespace sones.GraphDB.ObjectManagement
 
         #endregion
 
-        #region DBObject(myObjectLocation, mySerializedData, myIntegrityCheckAlgorithm, myEncryptionAlgorithm)
+        #region DBObjectStream(myObjectLocation, mySerializedData, myIntegrityCheckAlgorithm, myEncryptionAlgorithm)
 
         /// <summary>
         /// A constructor used for fast deserializing
@@ -263,7 +262,7 @@ namespace sones.GraphDB.ObjectManagement
                 var extrVal = (typeAttribute as ASpecialTypeAttribute).ExtractValue(this, myType, dbContext);
                 if (extrVal.Failed())
                 {
-                    throw new GraphDBException(extrVal.Errors);
+                    throw new GraphDBException(extrVal.IErrors);
                 }
                 return extrVal.Value;
             }
@@ -380,19 +379,21 @@ namespace sones.GraphDB.ObjectManagement
                 return new Exceptional<UndefinedAttributesStream>(UndefAttributes);
         }
 
-        public Exceptional<Boolean> AddUndefinedAttribute(string myName, IObject myValue, DBObjectManager objectManager)
+        public Exceptional<Boolean> AddUndefinedAttribute(String myName, IObject myValue, DBObjectManager myDBObjectManager)
         {
-            var retVal = LoadUndefAttributes(this.ObjectLocation, objectManager);
+
+            var retVal = LoadUndefAttributes(ObjectLocation, myDBObjectManager);
 
             if (retVal.Success())
                 UndefAttributes.AddAttribute(myName, myValue);
 
-            var storeExcepts = objectManager.StoreUndefinedAttributes(UndefAttributes);
+            var storeExcepts = myDBObjectManager.StoreUndefinedAttributes(UndefAttributes);
 
             if (storeExcepts.Failed())
                 return new Exceptional<bool>(storeExcepts);
 
             return new Exceptional<bool>(true);
+
         }
 
         public Exceptional<Boolean> RemoveUndefinedAttribute(string myName, DBObjectManager objectManager)
@@ -642,17 +643,17 @@ namespace sones.GraphDB.ObjectManagement
         /// Remove a backwardEdge from the DBObject and flush them.
         /// Use the TypeManager method instead of this!
         /// </summary>
-        /// <param name="uUIDofType"></param>
-        /// <param name="uUIDofAttribute"></param>
-        /// <param name="reference"></param>
+        /// <param name="myTypeUUID"></param>
+        /// <param name="myAttributeUUID"></param>
+        /// <param name="myObjectUUID"></param>
         /// <param name="myTypeManager"></param>
         /// <param name="myGraphFS2Session"></param>
-        public Exceptional<Boolean> RemoveBackwardEdge(TypeUUID uUIDofType, AttributeUUID uUIDofAttribute, ObjectUUID reference, DBObjectManager objectManager)
+        public Exceptional<Boolean> RemoveBackwardEdge(TypeUUID myTypeUUID, AttributeUUID myAttributeUUID, ObjectUUID myObjectUUID, DBObjectManager myDBObjectManager)
         {
 
             if (BackwardEdges == null)
             {
-                var loadExcept = objectManager.LoadBackwardEdge(this.ObjectLocation);
+                var loadExcept = myDBObjectManager.LoadBackwardEdge(this.ObjectLocation);
 
                 if (loadExcept.Failed())
                     return new Exceptional<Boolean>(loadExcept);
@@ -660,10 +661,10 @@ namespace sones.GraphDB.ObjectManagement
                 BackwardEdges = loadExcept.Value;
             }
 
-            EdgeKey tempKey = new EdgeKey(uUIDofType, uUIDofAttribute);
+            var tempKey = new EdgeKey(myTypeUUID, myAttributeUUID);
 
-            if (!BackwardEdges.RemoveBackwardEdge(tempKey, reference))
-                return new Exceptional<Boolean>(new Error_BackwardEdgeDestinationIsInvalid(uUIDofType.ToHexString(), uUIDofAttribute.ToString()));
+            if (!BackwardEdges.RemoveBackwardEdge(tempKey, myObjectUUID))
+                return new Exceptional<Boolean>(new Error_BackwardEdgeDestinationIsInvalid(myTypeUUID.ToString(), myAttributeUUID.ToString()));
 
             var storeExcept = StoreBackwardEdges(_IGraphFSSessionReference.Value);
 

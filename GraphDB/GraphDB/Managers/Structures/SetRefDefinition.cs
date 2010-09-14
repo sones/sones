@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * SetRefDefinition
  * (c) Stefan Licht, 2010
  */
@@ -130,7 +110,7 @@ namespace sones.GraphDB.Managers.Structures
                             var validateResult = aUniqueExpr.Validate(dbContext, TypeOfAttribute);
                             if (validateResult.Failed())
                             {
-                                throw new GraphDBException(validateResult.Errors);
+                                throw new GraphDBException(validateResult.IErrors);
                             }
 
                             //if (IsValidBinaryExpressionNode(aUniqueExpr, TypeOfAttribute))
@@ -144,7 +124,7 @@ namespace sones.GraphDB.Managers.Structures
                             }
                             else
                             {
-                                throw new GraphDBException(aResult.Errors);
+                                throw new GraphDBException(aResult.IErrors);
                             }
                             //}
                             //else
@@ -184,7 +164,7 @@ namespace sones.GraphDB.Managers.Structures
                                         }
                                         else
                                         {
-                                            throw new GraphDBException(aResult.Errors);
+                                            throw new GraphDBException(aResult.IErrors);
                                         }
 
                                     }
@@ -346,8 +326,8 @@ namespace sones.GraphDB.Managers.Structures
 
                 case TypesOfBinaryExpression.Complex:
                     return new Exceptional()
-                        .Push(ValidateBinaryExpressionInternal(aUniqueExpr.Left, validationType, typeManager))
-                        .Push(ValidateBinaryExpressionInternal(aUniqueExpr.Right, validationType, typeManager));
+                        .PushIExceptional(ValidateBinaryExpressionInternal(aUniqueExpr.Left, validationType, typeManager))
+                        .PushIExceptional(ValidateBinaryExpressionInternal(aUniqueExpr.Right, validationType, typeManager));
 
                 case TypesOfBinaryExpression.Atom:
 
@@ -400,7 +380,7 @@ namespace sones.GraphDB.Managers.Structures
                     var validateResult = ((BinaryExpressionDefinition)aTupleElement.Value).Validate(dbContext, myGraphType);
                     if (validateResult.Failed())
                     {
-                        throw new GraphDBException(validateResult.Errors);
+                        throw new GraphDBException(validateResult.IErrors);
                     }
                     //if (!IsValidBinaryExpressionNode((BinaryExpressionDefinition)aTupleElement.Value, myGraphType))
                     //{

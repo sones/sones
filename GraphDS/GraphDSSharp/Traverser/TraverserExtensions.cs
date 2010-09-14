@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * GraphDSSharp - TraverserExtensions
  * (c) Achim 'ahzf' Friedland, 2010
  */
@@ -57,10 +37,10 @@ namespace sones.GraphDS.API.CSharp.TraverserExtensions
         /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
         /// <returns></returns>
         public static T TraversePath<T>(this AGraphDSSharp                       myAGraphDSSharp,
-                                        DBVertex                                 myStartVertex,
+                                        Vertex                                 myStartVertex,
                                         TraversalOperation                       TraversalOperation  = TraversalOperation.BreathFirst,
-                                        Func<DBPath, DBEdge, Boolean>            myFollowThisEdge    = null,
-                                        Func<DBPath, DBEdge, DBVertex, Boolean>  myFollowThisPath    = null,
+                                        Func<DBPath, EdgeLabel, Boolean> myFollowThisEdge = null,
+                                        Func<DBPath, EdgeLabel, Vertex, Boolean> myFollowThisPath = null,
                                         Func<DBPath, Boolean>                    myMatchEvaluator    = null,
                                         Action<DBPath>                           myMatchAction       = null,
                                         Func<TraversalState, Boolean>            myStopEvaluator     = null,
@@ -88,13 +68,13 @@ namespace sones.GraphDS.API.CSharp.TraverserExtensions
         /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
         /// <returns></returns>
         public static T TraverseVertex<T>(this AGraphDSSharp              myAGraphDSSharp,
-                                          DBVertex                        myStartVertex,
+                                          Vertex                        myStartVertex,
                                           TraversalOperation              TraversalOperation  = TraversalOperation.BreathFirst,
-                                          Func<DBVertex, DBEdge, Boolean> myFollowThisEdge    = null,
-                                          Func<DBVertex, Boolean>         myMatchEvaluator    = null,
-                                          Action<DBVertex>                myMatchAction       = null,
+                                          Func<Vertex, EdgeLabel, Boolean> myFollowThisEdge = null,
+                                          Func<Vertex, Boolean>         myMatchEvaluator    = null,
+                                          Action<Vertex>                myMatchAction       = null,
                                           Func<TraversalState, Boolean>   myStopEvaluator     = null,
-                                          Func<IEnumerable<DBVertex>, T>  myWhenFinished      = null)
+                                          Func<IEnumerable<Vertex>, T>  myWhenFinished      = null)
         {
             //TODO call method on GraphDBSession
 

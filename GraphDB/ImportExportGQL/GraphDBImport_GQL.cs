@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* 
+﻿/* 
  * GraphDBImport_GQL
  * (c) Stefan Licht, 2010
  */
@@ -34,7 +14,12 @@ using sones.GraphDB.GraphQL;
 
 
 using sones.Lib;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
+using System.Diagnostics;
+using sones.GraphDB.Errors;
+using sones.GraphDB.Warnings;
+using System.Threading;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -93,8 +78,8 @@ namespace sones.GraphDB.ImportExport
         private QueryResult ExecuteAsParallel(IEnumerable<String> myLines, IGraphDBSession myIGraphDBSession, GraphQLQuery myGQLQuery, VerbosityTypes verbosityTypes, UInt32 parallelTasks = 1, IEnumerable<String> comments = null)
         {
 
-            var queryResult = new QueryResult();
-            List<IEnumerable<DBObjectReadout>> aggregatedResults = new List<IEnumerable<DBObjectReadout>>();
+            var queryResult       = new QueryResult();
+            var aggregatedResults = new List<IEnumerable<Vertex>>();
 
             #region Create parallel options
 
@@ -113,7 +98,7 @@ namespace sones.GraphDB.ImportExport
                 if (!IsComment(line, comments))
                 {
 
-                    System.Threading.Interlocked.Add(ref numberOfLine, 1L);
+                    Interlocked.Add(ref numberOfLine, 1L);
 
                     if (!IsComment(line, comments)) // Skip comments
                     {
@@ -126,7 +111,7 @@ namespace sones.GraphDB.ImportExport
                         {
                             lock (aggregatedResults)
                             {
-                                aggregatedResults.Add(qresult.Results.Objects);
+                                aggregatedResults.Add(qresult.Vertices);
                             }
                         }
 
@@ -138,9 +123,9 @@ namespace sones.GraphDB.ImportExport
                         {
                             lock (queryResult)
                             {
-                                queryResult.AddErrors(new[] { new Errors.Error_ImportFailed(line, numberOfLine) });
-                                queryResult.AddErrors(qresult.Errors);
-                                queryResult.AddWarnings(qresult.Warnings);
+                                queryResult.PushIErrors(new[] { new Errors.Error_ImportFailed(line, numberOfLine) });
+                                queryResult.PushIErrors(qresult.Errors);
+                                queryResult.PushIWarnings(qresult.Warnings);
                             }
                             state.Break();
                         }
@@ -155,7 +140,7 @@ namespace sones.GraphDB.ImportExport
 
 
             //add the results of each query into the queryResult
-            queryResult.SetResult(new SelectionResultSet(AggregateListOfReadouts(aggregatedResults)));
+            queryResult.Vertices = AggregateListOfListOfVertices(aggregatedResults);
 
             return queryResult;
 
@@ -164,10 +149,10 @@ namespace sones.GraphDB.ImportExport
         private QueryResult ExecuteAsSingleThread(IEnumerable<String> myLines, IGraphDBSession myIGraphDBSession, GraphQLQuery myGQLQuery, VerbosityTypes verbosityTypes, IEnumerable<String> comments = null)
         {
 
-            var queryResult = new QueryResult();
+            var queryResult1 = new QueryResult();
             Int64 numberOfLine = 0;
-            String query = String.Empty;
-            List<IEnumerable<DBObjectReadout>> aggregatedResults = new List<IEnumerable<DBObjectReadout>>();
+            var query = String.Empty;
+            var aggregatedResults = new List<IEnumerable<Vertex>>();
 
             foreach (var _Line in myLines)
             {
@@ -191,7 +176,7 @@ namespace sones.GraphDB.ImportExport
 
                 if (verbosityTypes == VerbosityTypes.Full)
                 {
-                    aggregatedResults.Add(qresult.Results.Objects);
+                    aggregatedResults.Add(qresult.Vertices);
                 }
 
                 #endregion
@@ -201,27 +186,26 @@ namespace sones.GraphDB.ImportExport
                 if (qresult.ResultType == ResultType.Failed)
                 {
 
-                    if (qresult.Errors.Any(e => (e is Errors.Error_GqlSyntax) && (e as Errors.Error_GqlSyntax).SyntaxErrorMessage.Equals("Mal-formed  string literal - cannot find termination symbol.")))
+                    if (qresult.Errors.Any(e => (e is Error_GqlSyntax) && (e as Error_GqlSyntax).SyntaxErrorMessage.Equals("Mal-formed  string literal - cannot find termination symbol.")))
                     {
-                        System.Diagnostics.Debug.WriteLine("Query at line [" + numberOfLine + "] [" + query + "] failed with " + qresult.GetErrorsAsString() + " add next line...");
+                        Debug.WriteLine("Query at line [" + numberOfLine + "] [" + query + "] failed with " + qresult.GetIErrorsAsString() + " add next line...");
                         continue;
                     }
                     
                     if (verbosityTypes != VerbosityTypes.Silent)
                     {
-                        queryResult.AddErrors(new[] { new Errors.Error_ImportFailed(query, numberOfLine) });
-                        queryResult.AddErrors(qresult.Errors);
-                        queryResult.AddWarnings(qresult.Warnings);
+                        queryResult1.PushIError(new Error_ImportFailed(query, numberOfLine));
+                        queryResult1.PushIErrors(qresult.Errors);
+                        queryResult1.PushIWarnings(qresult.Warnings);
                     }
 
                     break;
+
                 }
                 else if (qresult.ResultType == ResultType.PartialSuccessful && verbosityTypes != VerbosityTypes.Silent)
                 {
-
-                    queryResult.AddWarning(new Warnings.Warning_ImportWarning(query, numberOfLine));
-                    queryResult.AddWarnings(qresult.Warnings);
-
+                    queryResult1.PushIWarning(new Warning_ImportWarning(query, numberOfLine));
+                    queryResult1.PushIWarnings(qresult.Warnings);
                 }
 
                 #endregion
@@ -231,28 +215,30 @@ namespace sones.GraphDB.ImportExport
             }
 
             //add the results of each query into the queryResult
-            queryResult.SetResult(new SelectionResultSet(AggregateListOfReadouts(aggregatedResults)));
+            queryResult1.Vertices = AggregateListOfListOfVertices(aggregatedResults);
 
-            return queryResult;
+            return queryResult1;
 
         }
 
         /// <summary>
         /// Aggregates different enumerations of readout objects
         /// </summary>
-        /// <param name="listOfReadouts"></param>
+        /// <param name="myListOfListOfVertices"></param>
         /// <returns></returns>
-        private IEnumerable<DBObjectReadout> AggregateListOfReadouts(List<IEnumerable<DBObjectReadout>> listOfReadouts)
+        private IEnumerable<Vertex> AggregateListOfListOfVertices(List<IEnumerable<Vertex>> myListOfListOfVertices)
         {
-            foreach (var aReadoutEnumerable in listOfReadouts)
+
+            foreach (var _ListOfVertices in myListOfListOfVertices)
             {
-                foreach (var aDBReadout in aReadoutEnumerable)
+                foreach (var _Vertex in _ListOfVertices)
                 {
-                    yield return aDBReadout;
+                    yield return _Vertex;
                 }
             }
 
             yield break;
+
         }
 
         private Boolean IsComment(String myQuery, IEnumerable<String> comments = null)

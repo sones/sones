@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � Main Database Code" />
+﻿/* <id name="GraphDB – Main Database Code" />
  * <copyright file="GraphDatabase.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -49,8 +29,8 @@ using sones.GraphDB.Settings;
 using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.Transactions;
+using sones.GraphDB.Result;
+using sones.GraphDB.Transactions;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Session;
 using sones.GraphFS.Transactions;
@@ -137,8 +117,7 @@ namespace sones.GraphDB
             _DatabaseRootPath = myDatabaseRootPath;
             _IGraphFSSession = myIGraphFSSession;
             _InternalDatabaseUUID = myDatabaseInstanceUUID;
-            _InternalUserID = new EntityUUID();
-            _InternalUserID.Generate();
+            _InternalUserID = EntityUUID.NewUUID;
 
             #endregion
 
@@ -147,7 +126,7 @@ namespace sones.GraphDB
             var isDirectExcept = this._IGraphFSSession.isIDirectoryObject(this._DatabaseRootPath);
 
             if (isDirectExcept.Failed())
-                throw new GraphDBException(isDirectExcept.Errors);
+                throw new GraphDBException(isDirectExcept.IErrors);
 
             if (isDirectExcept.Value != Trinary.TRUE)
             {
@@ -157,7 +136,7 @@ namespace sones.GraphDB
                     var createDirExcept = this._IGraphFSSession.CreateDirectoryObject(this._DatabaseRootPath);
 
                     if (createDirExcept.Failed())
-                        throw new GraphDBException(createDirExcept.Errors);
+                        throw new GraphDBException(createDirExcept.IErrors);
                 }
                 else
                 {
@@ -281,7 +260,7 @@ namespace sones.GraphDB
             var allDBOLocations = _IGraphFSSession.GetFilteredDirectoryListing(objectLocation, null, null, null, new List<String>(new String[] { DBConstants.DBOBJECTSTREAM }), null, null, null, null, null, null);
 
             if (allDBOLocations.Failed())
-                return new Exceptional<Object>(allDBOLocations.Errors);
+                return new Exceptional<Object>(allDBOLocations.IErrors);
 
             Exceptional<DBObjectStream> _DBObjectExceptional = null;
 
@@ -429,30 +408,31 @@ namespace sones.GraphDB
 
                 #endregion
 
-                QueryResult qr = new QueryResult();
+                var _QueryResult = new QueryResult();
 
-                List<DBObjectReadout> resultingDBreadouts = new List<DBObjectReadout>();
+                var resultingDBreadouts = new List<Vertex>();
 
                 foreach (var alterTypeCmd in myAlterCommands)
                 {
                     var result = dbInnerContext.DBTypeManager.AlterType(dbInnerContext, dbType, alterTypeCmd);
-                    qr.AddErrorsAndWarnings(result);
+                    _QueryResult.PushIExceptional(result);
 
                     if (result.Value != null)
                     {
-                        resultingDBreadouts.AddRange(result.Value.Results.Objects);
+                        resultingDBreadouts.AddRange(result.Value.Vertices);
                     }
                 }
 
-                qr.SetResult(new SelectionResultSet(resultingDBreadouts));
+                _QueryResult.Vertices = resultingDBreadouts;
 
                 #region Commit transaction and add all Warnings and Errors
 
-                qr.AddErrorsAndWarnings(transaction.Commit());
+                _QueryResult.PushIExceptional(transaction.Commit());
 
                 #endregion
 
-                return qr;
+                return _QueryResult;
+
             }
         }
 
@@ -484,19 +464,19 @@ namespace sones.GraphDB
                 #region Create the index
 
                 var resultOutput = transactionContext.DBIndexManager.CreateIndex(transactionContext, myTypeName, myIndexName, myIndexEdition, myIndexType, myAttributeList);
-                qresult.AddErrorsAndWarnings(resultOutput);
+                qresult.PushIExceptional(resultOutput);
 
                 #endregion
 
                 #region Commit transaction and add all Warnings and Errors
 
-                qresult.AddErrorsAndWarnings(_Transaction.Commit());
+                qresult.PushIExceptional(_Transaction.Commit());
 
                 #endregion
 
                 if (qresult.ResultType == ResultType.Successful)
                 {
-                    qresult.SetResult(resultOutput.Value);
+                    qresult.Vertices = resultOutput.Value;
                 }
 
                 return qresult;
@@ -535,11 +515,11 @@ namespace sones.GraphDB
 
                     #region Rollback transaction and add all Warnings and Errors
 
-                    result.AddErrorsAndWarnings(transaction.Rollback());
+                    result.PushIExceptional(transaction.Rollback());
 
                     #endregion
 
-                    return new QueryResult(result.Errors);
+                    return new QueryResult(result.IErrors);
 
                 }
                 else
@@ -547,7 +527,7 @@ namespace sones.GraphDB
 
                     #region Commit transaction and add all Warnings and Errors
 
-                    result.Value.AddErrorsAndWarnings(transaction.Commit());
+                    result.Value.PushIExceptional(transaction.Commit());
 
                     #endregion
 
@@ -637,7 +617,7 @@ namespace sones.GraphDB
 
                 #region Commit transaction and add all Warnings and Errors
 
-                result.AddErrorsAndWarnings(transaction.Commit());
+                result.PushIExceptional(transaction.Commit());
 
                 #endregion
 
@@ -667,7 +647,7 @@ namespace sones.GraphDB
                     qresult = new QueryResult(result.Value);
                 }
 
-                qresult.AddErrorsAndWarnings(transaction.Commit());
+                qresult.PushIExceptional(transaction.Commit());
 
                 return qresult;
             }
@@ -834,7 +814,7 @@ namespace sones.GraphDB
 
                 if (importResult.ResultType == ResultType.Successful)
                 {
-                    importResult.AddErrorsAndWarnings(transaction.Commit());
+                    importResult.PushIExceptional(transaction.Commit());
                 }
 
                 return importResult;
@@ -883,7 +863,7 @@ namespace sones.GraphDB
 
                 #region Commit transaction and add all Warnings and Errors
 
-                result.AddErrorsAndWarnings(transaction.Commit());
+                result.PushIExceptional(transaction.Commit());
 
                 #endregion
 
@@ -932,7 +912,7 @@ namespace sones.GraphDB
 
                 #region Commit transaction and add all Warnings and Errors
 
-                result.AddErrorsAndWarnings(transaction.Commit());
+                result.PushIExceptional(transaction.Commit());
 
                 #endregion
 
@@ -976,7 +956,7 @@ namespace sones.GraphDB
 
                 #region Commit transaction and add all Warnings and Errors
 
-                result.AddErrorsAndWarnings(transaction.Commit());
+                result.PushIExceptional(transaction.Commit());
 
                 #endregion
 
@@ -1041,9 +1021,9 @@ namespace sones.GraphDB
 
                 if (!rebuildResult.Success())
                 {
-                    result = new QueryResult(rebuildResult.Errors);
+                    result = new QueryResult(rebuildResult.IErrors);
 
-                    result.AddErrorsAndWarnings(transaction.Rollback());
+                    result.PushIExceptional(transaction.Rollback());
 
                     return result;
                 }
@@ -1095,7 +1075,7 @@ namespace sones.GraphDB
 
                 #region Commit transaction and add all Warnings and Errors
 
-                result.AddErrorsAndWarnings(transaction.Commit());
+                result.PushIExceptional(transaction.Commit());
 
                 #endregion
 
@@ -1132,7 +1112,7 @@ namespace sones.GraphDB
                     if (selectTask.Wait(timeout))
                     {
                         var qresult = selectTask.Result;
-                        qresult.AddErrorsAndWarnings(transaction.Commit());
+                        qresult.PushIExceptional(transaction.Commit());
                         return qresult;
                     }
                     else
@@ -1148,7 +1128,7 @@ namespace sones.GraphDB
 
                     var qresult = selectManager.ExecuteSelect((DBContext)transaction.GetDBContext(), mySelectedElements, myReferenceAndTypeList, myWhereExpressionDefinition, myGroupBy, myHaving,
                         myOrderByDefinition, myLimit, myOffset, myResolutionDepth);
-                    qresult.AddErrorsAndWarnings(transaction.Commit());
+                    qresult.PushIExceptional(transaction.Commit());
                     return qresult;
 
                 }
@@ -1175,7 +1155,7 @@ namespace sones.GraphDB
 
                 #region Commit transaction and add all Warnings and Errors
 
-                result.AddErrorsAndWarnings(transaction.Commit());
+                result.PushIExceptional(transaction.Commit());
 
                 #endregion
 
@@ -1228,7 +1208,7 @@ namespace sones.GraphDB
 
                 #region Commit transaction and add all Warnings and Errors
 
-                var queryResult = new QueryResult(_Transaction.Commit().Push(truncateResult));
+                var queryResult = new QueryResult(_Transaction.Commit().PushIExceptional(truncateResult));
 
                 #endregion
 
@@ -1271,7 +1251,7 @@ namespace sones.GraphDB
                 var queryResult = objectManipulationManager.Update(myListOfUpdates, transactionContext, graphDBType, myWhereExpression);
 
                 // Commit transaction and add all Warnings and Errors
-                queryResult.AddErrorsAndWarnings(transaction.Commit());
+                queryResult.PushIExceptional(transaction.Commit());
 
                 return queryResult;
 
@@ -1316,7 +1296,7 @@ namespace sones.GraphDB
             {
                 return new DBTransaction(new Errors.Error_NoTransaction());
             }
-            curTransaction.Push(curTransaction.Commit(async));
+            curTransaction.PushIExceptional(curTransaction.Commit(async));
             //curTransaction = null;
 
             return curTransaction;
@@ -1334,7 +1314,7 @@ namespace sones.GraphDB
             {
                 return new DBTransaction(new Errors.Error_NoTransaction());
             }
-            curTransaction.Push(curTransaction.Rollback(async));
+            curTransaction.PushIExceptional(curTransaction.Rollback(async));
             //curTransaction = null;
 
             return curTransaction;
@@ -1362,6 +1342,77 @@ namespace sones.GraphDB
             // Shutdown the notification dispatcher
             if (_NotificationDispatcher != null)
                 _NotificationDispatcher.Dispose();
+
+        }
+
+        #endregion
+
+        #region TraversePath
+
+        /// <summary>
+        /// Starts a traversal and returns the found paths or an aggreagted result
+        /// </summary>
+        /// <typeparam name="T">The resulttype after applying the result transformation</typeparam>
+        /// <param name="mySessionToken">The currenct session</param>
+        /// <param name="myStartVertex">The starting vertex</param>
+        /// <param name="TraversalOperation">BreathFirst|DepthFirst</param>
+        /// <param name="myFollowThisEdge">Follow this edge? Based on its TYPE or any other property/characteristic...</param>
+        /// <param name="myFollowThisPath">Follow this path (== actual path + NEW edge + NEW dbobject? Based on edge/object UUID, TYPE or any other property/characteristic...</param>
+        /// <param name="myMatchEvaluator">Mhm, this vertex/path looks interesting!</param>
+        /// <param name="myMatchAction">Hey! I have found something interesting!</param>
+        /// <param name="myStopEvaluator">Will stop the traversal on a condition</param>
+        /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
+        /// <returns></returns>
+        public T TraversePath<T>(SessionToken mySessionToken,
+                                    Vertex myStartVertex,
+                                    TraversalOperation TraversalOperation = TraversalOperation.BreathFirst,
+                                    Func<DBPath, EdgeLabel, Boolean> myFollowThisEdge = null,
+                                    Func<DBPath, EdgeLabel, Vertex, Boolean> myFollowThisPath = null,
+                                    Func<DBPath, Boolean> myMatchEvaluator = null,
+                                    Action<DBPath> myMatchAction = null,
+                                    Func<TraversalState, Boolean> myStopEvaluator = null,
+                                    Func<IEnumerable<DBPath>, T> myWhenFinished = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region TraverseVertex
+
+        /// <summary>
+        /// Starts a traversal and returns the found vertices or an aggreagted result
+        /// </summary>
+        /// <typeparam name="T">The resulttype after applying the result transformation</typeparam>
+        /// <param name="mySessionToken">The currenct session</param>
+        /// <param name="myStartVertex">The starting vertex</param>
+        /// <param name="TraversalOperation">BreathFirst|DepthFirst</param>
+        /// <param name="myFollowThisEdge">Follow this edge? Based on its TYPE or any other property/characteristic...</param>
+        /// <param name="myMatchEvaluator">Mhm, this vertex/path looks interesting!</param>
+        /// <param name="myMatchAction">Hey! I have found something interesting!</param>
+        /// <param name="myStopEvaluator">Will stop the traversal on a condition</param>
+        /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
+        /// <returns></returns>
+        public T TraverseVertex<T>(SessionToken mySessionToken,
+                                    Vertex myStartVertex,
+                                    TraversalOperation TraversalOperation = TraversalOperation.BreathFirst,
+                                    Func<Vertex, EdgeLabel, Boolean> myFollowThisEdge = null,
+                                    Func<Vertex, Boolean> myMatchEvaluator = null,
+                                    Action<Vertex> myMatchAction = null,
+                                    Func<TraversalState, Boolean> myStopEvaluator = null,
+                                    Func<IEnumerable<Vertex>, T> myWhenFinished = null)
+        {
+            TraversalState myTraversalState = new TraversalState(myStartVertex);
+
+
+            if (myWhenFinished != null)
+            {
+                return myWhenFinished(TraverseVertex_private(mySessionToken, myStartVertex, null, TraversalOperation, true, myFollowThisEdge, myMatchEvaluator, myMatchAction, myStopEvaluator, myTraversalState));
+            }
+            else
+            {
+                return (T)TraverseVertex_private(mySessionToken, myStartVertex, null, TraversalOperation, true, myFollowThisEdge, myMatchEvaluator, myMatchAction, myStopEvaluator, myTraversalState);
+            }
 
         }
 
@@ -1425,147 +1476,6 @@ namespace sones.GraphDB
             return Exceptional.OK;
         }
 
-        #endregion
-
-        #region NotificationDispatcher
-
-        // The NotificationDispatcher handles all kind of notification between system parts or other dispatchers.
-        // Use register to get notified as recipient.
-        // Use SendNotification to send a notification to all subscribed recipients.
-
-        private NotificationDispatcher  _NotificationDispatcher;
-        private NotificationSettings    _NotificationSettings;
-
-
-        #region GetNotificationDispatcher(SessionToken)
-
-        /// <summary>
-        /// Returns the NotificationDispatcher of this file system.
-        /// </summary>
-        /// <returns>The NotificationDispatcher of this file system</returns>
-        public NotificationDispatcher GetNotificationDispatcher(SessionToken mySessionToken)
-        {
-            return _NotificationDispatcher;
-        }
-
-        #endregion
-
-        #region GetNotificationSettings()
-
-        /// <summary>
-        /// Returns the NotificationDispatcher settings of this file system
-        /// </summary>
-        /// <returns>The NotificationDispatcher settings of this file system</returns>
-        public NotificationSettings GetNotificationSettings(SessionToken mySessionToken)
-        {
-            return _NotificationSettings;
-        }
-
-        #endregion
-
-        #region SetNotificationDispatcher(myNotificationDispatcher)
-
-        /// <summary>
-        /// Sets the NotificationDispatcher of this file system.
-        /// </summary>
-        /// <param name="myNotificationDispatcher">A NotificationDispatcher object</param>
-        public void SetNotificationDispatcher(NotificationDispatcher myNotificationDispatcher, SessionToken mySessionToken)
-        {
-            _NotificationDispatcher = myNotificationDispatcher;
-        }
-
-        #endregion
-
-        #region SetNotificationSettings(myNotificationSettings)
-
-        /// <summary>
-        /// Sets the NotificationDispatcher settings of this file system
-        /// </summary>
-        /// <param name="myNotificationSettings">A NotificationSettings object</param>
-        public void SetNotificationSettings(NotificationSettings myNotificationSettings, SessionToken mySessionToken)
-        {
-            _NotificationSettings = myNotificationSettings;
-        }
-
-        #endregion
-
-        #region (private) StartDefaultNotificationDispatcher()
-
-        private void StartDefaultNotificationDispatcher(String DatabaseIdentificationString)
-        {
-
-            if (_NotificationDispatcher == null)
-                _NotificationDispatcher = new NotificationDispatcher(new UUID(DatabaseIdentificationString), _NotificationSettings);
-
-        }
-
-        #endregion
-
-        #endregion
-
-        /// <summary>
-        /// Starts a traversal and returns the found paths or an aggreagted result
-        /// </summary>
-        /// <typeparam name="T">The resulttype after applying the result transformation</typeparam>
-        /// <param name="mySessionToken">The currenct session</param>
-        /// <param name="myStartVertex">The starting vertex</param>
-        /// <param name="TraversalOperation">BreathFirst|DepthFirst</param>
-        /// <param name="myFollowThisEdge">Follow this edge? Based on its TYPE or any other property/characteristic...</param>
-        /// <param name="myFollowThisPath">Follow this path (== actual path + NEW edge + NEW dbobject? Based on edge/object UUID, TYPE or any other property/characteristic...</param>
-        /// <param name="myMatchEvaluator">Mhm, this vertex/path looks interesting!</param>
-        /// <param name="myMatchAction">Hey! I have found something interesting!</param>
-        /// <param name="myStopEvaluator">Will stop the traversal on a condition</param>
-        /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
-        /// <returns></returns>
-        public T TraversePath<T>(   SessionToken                             mySessionToken,
-                                    DBVertex                                 myStartVertex,
-                                    TraversalOperation                       TraversalOperation  = TraversalOperation.BreathFirst,
-                                    Func<DBPath, sones.GraphDB.NewAPI.DBEdge, Boolean>            myFollowThisEdge    = null,
-                                    Func<DBPath, sones.GraphDB.NewAPI.DBEdge, DBVertex, Boolean> myFollowThisPath = null,
-                                    Func<DBPath, Boolean>                    myMatchEvaluator    = null,
-                                    Action<DBPath>                           myMatchAction       = null,
-                                    Func<TraversalState, Boolean>            myStopEvaluator     = null,
-                                    Func<IEnumerable<DBPath>, T>             myWhenFinished      = null)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Starts a traversal and returns the found vertices or an aggreagted result
-        /// </summary>
-        /// <typeparam name="T">The resulttype after applying the result transformation</typeparam>
-        /// <param name="mySessionToken">The currenct session</param>
-        /// <param name="myStartVertex">The starting vertex</param>
-        /// <param name="TraversalOperation">BreathFirst|DepthFirst</param>
-        /// <param name="myFollowThisEdge">Follow this edge? Based on its TYPE or any other property/characteristic...</param>
-        /// <param name="myMatchEvaluator">Mhm, this vertex/path looks interesting!</param>
-        /// <param name="myMatchAction">Hey! I have found something interesting!</param>
-        /// <param name="myStopEvaluator">Will stop the traversal on a condition</param>
-        /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
-        /// <returns></returns>
-        public T TraverseVertex<T>( SessionToken                    mySessionToken,
-                                    DBVertex                        myStartVertex,
-                                    TraversalOperation              TraversalOperation      = TraversalOperation.BreathFirst,
-                                    Func<DBVertex, sones.GraphDB.NewAPI.DBEdge, Boolean> myFollowThisEdge = null,
-                                    Func<DBVertex, Boolean>         myMatchEvaluator        = null,
-                                    Action<DBVertex>                myMatchAction           = null,
-                                    Func<TraversalState, Boolean>   myStopEvaluator         = null,
-                                    Func<IEnumerable<DBVertex>, T>  myWhenFinished          = null)
-        {
-            TraversalState myTraversalState = new TraversalState(myStartVertex);
-
-
-            if (myWhenFinished != null)
-            {
-                return myWhenFinished(TraverseVertex_private(mySessionToken, myStartVertex, null, TraversalOperation, true, myFollowThisEdge, myMatchEvaluator, myMatchAction, myStopEvaluator, myTraversalState));
-            }
-            else
-            {
-                return (T)TraverseVertex_private(mySessionToken, myStartVertex, null, TraversalOperation, true, myFollowThisEdge, myMatchEvaluator, myMatchAction, myStopEvaluator, myTraversalState);
-            }
-
-        }
-
         /// <summary>
         /// Starts a traversal and returns the found vertices
         /// </summary>
@@ -1580,16 +1490,16 @@ namespace sones.GraphDB
         /// <param name="stopEvaluator">Will stop the traversal on a condition</param>
         /// <param name="traversalState">The traversal state</param>
         /// <returns>An IEnumerable of DBVertex</returns>
-        private IEnumerable<DBVertex> TraverseVertex_private(   SessionToken sessionToken,
-                                                                DBVertex currentVertex,
-                                                                NewAPI.DBEdge viaEdge,
-                                                                TraversalOperation traversalOperation,
-                                                                Boolean myAvoidCircles,
-                                                                Func<DBVertex, NewAPI.DBEdge, bool> followThisEdge,
-                                                                Func<DBVertex, bool> matchEvaluator,
-                                                                Action<DBVertex> matchAction,
-                                                                Func<TraversalState, bool> stopEvaluator,
-                                                                TraversalState traversalState)
+        private IEnumerable<Vertex> TraverseVertex_private(     SessionToken                        sessionToken,
+                                                                Vertex                              currentVertex,
+                                                                EdgeLabel                           viaEdge,
+                                                                TraversalOperation                  traversalOperation,
+                                                                Boolean                             myAvoidCircles,
+                                                                Func<Vertex, EdgeLabel, bool>       followThisEdge,
+                                                                Func<Vertex, bool>                  matchEvaluator,
+                                                                Action<Vertex>                      matchAction,
+                                                                Func<TraversalState, bool>          stopEvaluator,
+                                                                TraversalState                      traversalState)
         {
             #region stop evaluation?
             //are we allowed to stop the current traversal
@@ -1682,8 +1592,9 @@ namespace sones.GraphDB
 
                     #region DepthFirst
 
-                    foreach (var aEdge in currentVertex.GetEdges())
+                    foreach (var aEdge in currentVertex.GetEdgeInfo())
                     {
+
                         #region try to traverse via aEdge
 
                         //check for circle avoidance
@@ -1721,6 +1632,7 @@ namespace sones.GraphDB
                         }
 
                         #endregion
+
                     }
 
                     break;
@@ -1742,6 +1654,84 @@ namespace sones.GraphDB
 
             yield break;
         }
+
+        #endregion
+
+        #region NotificationDispatcher
+
+        // The NotificationDispatcher handles all kind of notification between system parts or other dispatchers.
+        // Use register to get notified as recipient.
+        // Use SendNotification to send a notification to all subscribed recipients.
+
+        private NotificationDispatcher  _NotificationDispatcher;
+        private NotificationSettings    _NotificationSettings;
+
+
+        #region GetNotificationDispatcher(SessionToken)
+
+        /// <summary>
+        /// Returns the NotificationDispatcher of this file system.
+        /// </summary>
+        /// <returns>The NotificationDispatcher of this file system</returns>
+        public NotificationDispatcher GetNotificationDispatcher(SessionToken mySessionToken)
+        {
+            return _NotificationDispatcher;
+        }
+
+        #endregion
+
+        #region GetNotificationSettings()
+
+        /// <summary>
+        /// Returns the NotificationDispatcher settings of this file system
+        /// </summary>
+        /// <returns>The NotificationDispatcher settings of this file system</returns>
+        public NotificationSettings GetNotificationSettings(SessionToken mySessionToken)
+        {
+            return _NotificationSettings;
+        }
+
+        #endregion
+
+        #region SetNotificationDispatcher(myNotificationDispatcher)
+
+        /// <summary>
+        /// Sets the NotificationDispatcher of this file system.
+        /// </summary>
+        /// <param name="myNotificationDispatcher">A NotificationDispatcher object</param>
+        public void SetNotificationDispatcher(NotificationDispatcher myNotificationDispatcher, SessionToken mySessionToken)
+        {
+            _NotificationDispatcher = myNotificationDispatcher;
+        }
+
+        #endregion
+
+        #region SetNotificationSettings(myNotificationSettings)
+
+        /// <summary>
+        /// Sets the NotificationDispatcher settings of this file system
+        /// </summary>
+        /// <param name="myNotificationSettings">A NotificationSettings object</param>
+        public void SetNotificationSettings(NotificationSettings myNotificationSettings, SessionToken mySessionToken)
+        {
+            _NotificationSettings = myNotificationSettings;
+        }
+
+        #endregion
+
+        #region (private) StartDefaultNotificationDispatcher()
+
+        private void StartDefaultNotificationDispatcher(String DatabaseIdentificationString)
+        {
+
+            if (_NotificationDispatcher == null)
+                _NotificationDispatcher = new NotificationDispatcher(new UUID(DatabaseIdentificationString), _NotificationSettings);
+
+        }
+
+        #endregion
+
+        #endregion
     }
 
 }

@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * UnlinkNode
  * (c) Dirk Bludau, 2009-2010
  */
@@ -35,7 +15,7 @@ using sones.Lib.Frameworks.Irony.Parsing;
 using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.GraphQL.StructureNodes;
 using sones.GraphDB.Structures.Operators;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
 
 #endregion
 
@@ -94,7 +74,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Unlink
             #region sources
             
             var typeNode = (parseNode.ChildNodes[1].AstNode as ATypeNode);
-            ParsingResult.AddErrorsAndWarnings(typeNode.ParsingResult);
+            ParsingResult.PushIExceptional(typeNode.ParsingResult);
 
             var tupleDef = (parseNode.ChildNodes[2].AstNode as TupleNode).TupleDefinition;
 
@@ -129,7 +109,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Unlink
                 _Targets = (parseNode.ChildNodes[4].ChildNodes[1].AstNode as TupleNode).TupleDefinition;
             }
 
-            ParsingResult.AddErrorsAndWarnings(typeNode.ParsingResult);
+            ParsingResult.PushIExceptional(typeNode.ParsingResult);
             _SourceType = typeNode.ReferenceAndType;
             
             if (_Targets.Count() > 1)
@@ -150,7 +130,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Unlink
         public override QueryResult Execute(IGraphDBSession graphDBSession)
         {
             var result = graphDBSession.Update(_SourceType.TypeName, _Sources, _Condition);
-            result.AddErrorsAndWarnings(ParsingResult);
+            result.PushIExceptional(ParsingResult);
 
             return result;
         }

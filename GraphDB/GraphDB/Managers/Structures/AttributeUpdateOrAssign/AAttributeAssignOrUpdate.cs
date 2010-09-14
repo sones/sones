@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-#region Usings
+﻿#region Usings
 
 using System;
 using System.Collections.Generic;
@@ -35,7 +15,7 @@ using sones.GraphDB.Exceptions;
 using sones.GraphDB.Errors;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
-using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.TypeManagement;
 
 #endregion
 
@@ -206,7 +186,7 @@ namespace sones.GraphDB.Managers.Structures
                         var removeRefExcept = RemoveBackwardEdgesOnReferences(myAAttributeAssign, (IReferenceEdge)oldValue, myDBObject, myDBContext);
 
                         if (!removeRefExcept.Success())
-                            return new Exceptional<Tuple<String, TypeAttribute, IObject>>(removeRefExcept.Errors.First());
+                            return new Exceptional<Tuple<String, TypeAttribute, IObject>>(removeRefExcept.IErrors.First());
 
                         newValue = (ASetOfReferencesEdgeType)newValue;
                         break;
@@ -230,7 +210,7 @@ namespace sones.GraphDB.Managers.Structures
                             removeRefExcept = RemoveBackwardEdgesOnReferences(myAAttributeAssign, (IReferenceEdge)oldValue, myDBObject, myDBContext);
 
                             if (!removeRefExcept.Success())
-                                return new Exceptional<Tuple<String, TypeAttribute, IObject>>(removeRefExcept.Errors.First());
+                                return new Exceptional<Tuple<String, TypeAttribute, IObject>>(removeRefExcept.IErrors.First());
 
                             ((ASingleReferenceEdgeType)oldValue).Merge((ASingleReferenceEdgeType)newValue);
                             newValue = (ASingleReferenceEdgeType)oldValue;
@@ -281,12 +261,12 @@ namespace sones.GraphDB.Managers.Structures
                 var streamExcept = myDBContext.DBObjectCache.LoadDBObjectStream(myAAttributeAssign.AttributeIDChain.LastAttribute.GetDBType(myDBContext.DBTypeManager), (ObjectUUID)item);
 
                 if (!streamExcept.Success())
-                    return new Exceptional<Boolean>(streamExcept.Errors.First());
+                    return new Exceptional<Boolean>(streamExcept.IErrors.First());
 
                 var removeExcept = myDBContext.DBObjectManager.RemoveBackwardEdge(streamExcept.Value, myAAttributeAssign.AttributeIDChain.LastAttribute.RelatedGraphDBTypeUUID, myAAttributeAssign.AttributeIDChain.LastAttribute.UUID, myDBObject.ObjectUUID);
 
                 if (!removeExcept.Success())
-                    return new Exceptional<Boolean>(removeExcept.Errors.First());
+                    return new Exceptional<Boolean>(removeExcept.IErrors.First());
             }
 
             return new Exceptional<Boolean>(true);

@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � CreateTypes astnode" />
+﻿/* <id name="GraphDB – CreateTypes astnode" />
  * <copyright file="CreateTypesNode.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -40,7 +20,7 @@ using sones.GraphDB.GraphQL.StructureNodes;
 
 
 using sones.Lib.Frameworks.Irony.Parsing;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
 
 #endregion
 
@@ -91,7 +71,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes
         {
 
             var qresult = graphDBSession.CreateTypes(_TypeDefinitions);
-            qresult.AddErrorsAndWarnings(ParsingResult);
+            qresult.PushIExceptional(ParsingResult);
             return qresult;
         }
 
@@ -109,7 +89,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes
 
             if (myParseTreeNode.ChildNodes[2].Token != null && myParseTreeNode.ChildNodes[2].Token.AsSymbol == grammar.S_TYPE)
             {
-                base.ParsingResult.Push(new Warnings.Warning_ObsoleteGQL("CREATE TYPE", "CREATE VERTEX"));
+                base.ParsingResult.PushIWarning(new Warnings.Warning_ObsoleteGQL("CREATE TYPE", "CREATE VERTEX"));
             }
 
             if (myParseTreeNode.ChildNodes.Count > 3)
@@ -118,7 +98,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes
                 #region Single type
 
                 BulkTypeNode aTempNode = (BulkTypeNode)myParseTreeNode.ChildNodes[3].AstNode;
-                ParsingResult.Push(aTempNode.ParsingResult);
+                ParsingResult.PushIExceptional(aTempNode.ParsingResult);
 
                 Boolean isAbstract = false;
 
@@ -143,7 +123,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes
                     if (_ParseTreeNode.AstNode != null)
                     {
                         BulkTypeListMemberNode aTempNode = (BulkTypeListMemberNode)_ParseTreeNode.AstNode;
-                        ParsingResult.Push(aTempNode.ParsingResult);
+                        ParsingResult.PushIExceptional(aTempNode.ParsingResult);
                         _TypeDefinitions.Add(new GraphDBTypeDefinition(aTempNode.TypeName, aTempNode.Extends, aTempNode.IsAbstract, aTempNode.Attributes, aTempNode.BackwardEdges, aTempNode.Indices, aTempNode.Comment));
                     }
                 }

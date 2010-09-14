@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* 
+﻿/* 
  * AGraphDSSharp
  * (c) Achim 'ahzf' Friedland, 2009 - 2010
  */
@@ -43,8 +23,8 @@ using sones.GraphFS.Transactions;
 using sones.GraphDB;
 using sones.GraphDB.GraphQL;
 using sones.GraphDB.NewAPI;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.Transactions;
+using sones.GraphDB.Result;
+using sones.GraphDB.Transactions;
 
 using sones.GraphDS.API.CSharp.Fluent;
 using sones.GraphDS.API.CSharp.Linq;
@@ -57,6 +37,8 @@ using sones.Notifications;
 using sones.Lib.DataStructures;
 using System.IO;
 using sones.GraphFS.InternalObjects;
+using sones.GraphIO;
+using sones.GraphIO.XML;
 
 #endregion
 
@@ -227,33 +209,41 @@ namespace sones.GraphDS.API.CSharp
 
         #region Query(...)
 
-        #region Query()
+        #region QueryAsString(myQuery)
 
-        public SelectQuery Query()
-        {
-            return new SelectQuery(this);
-        }
+        /// <summary>
+        /// This will execute a usual query on the current GraphDBSharp implementation.
+        /// Be aware that under some circumstances (e.g. REST) you will not get a valid result!
+        /// </summary>
+        /// <param name="myQueryString">A valid GQL-query as string</param>
+        /// <returns>The QueryResult as string</returns>
+        public abstract Exceptional<String> QueryAsString(String myQueryString);
 
         #endregion
-
+        
         #region Query(myQuery, myAction = null, mySuccessAction = null, myPartialSuccessAction = null, myFailureAction = null)
 
         /// <summary>
         /// This will execute a usual query on the current GraphDBSharp implementation.
         /// Be aware that under some circumstances (e.g. REST) you will not get a valid result!
         /// </summary>
-        /// <param name="myQuery"></param>
-        /// <returns></returns>
-        public abstract QueryResult Query(String myQuery, Action<QueryResult> myAction = null, Action<QueryResult> mySuccessAction = null, Action<QueryResult> myPartialSuccessAction = null, Action<QueryResult> myFailureAction = null);
+        /// <param name="myQueryString">A valid GQL-query as string</param>
+        /// <returns>The QueryResult</returns>
+        public abstract QueryResult Query(String myQueryString, Action<QueryResult> myAction = null, Action<QueryResult> mySuccessAction = null, Action<QueryResult> myPartialSuccessAction = null, Action<QueryResult> myFailureAction = null);
 
         #endregion
 
+        // ToDo: Maybe better QueryResult<T>!!!
         #region Query<T>(myQuery, myAction = null, mySuccessAction = null, myPartialSuccessAction = null, myFailureAction = null)
 
-        public IEnumerable<T> Query<T>(String myQuery, Action<QueryResult> myAction = null, Action<QueryResult> mySuccessAction = null, Action<QueryResult> myPartialSuccessAction = null, Action<QueryResult> myFailureAction = null)
-            where T : DBObject, new()
+        public Exceptional<IEnumerable<T>> Query<T>(String myQueryString, Action<QueryResult> myAction = null, Action<QueryResult> mySuccessAction = null, Action<QueryResult> myPartialSuccessAction = null, Action<QueryResult> myFailureAction = null)
+            where T : Vertex, new()
         {
-            return new SelectToObjectGraph(Query(myQuery, myAction, mySuccessAction, myPartialSuccessAction, myFailureAction)).ToVertexType<T>();
+
+            var _QueryResultString = QueryAsString(myQueryString);
+
+            return new Exceptional<IEnumerable<T>>(new SelectToObjectGraph(_QueryResultString.Value).ToVertexType<T>());
+
         }
 
         #endregion
@@ -270,38 +260,16 @@ namespace sones.GraphDS.API.CSharp
 
 
 
-        #region Shutdown()
 
-        public virtual Boolean Shutdown()
-        {
 
-            try
-            {
 
-                if (ShutdownEvent != null)
-                    ShutdownEvent(this, EventArgs.Empty);
+        #region IGraphDBSession
 
-                IGraphDBSession.Shutdown();
-                IGraphFS.UnmountAllFileSystems(_SessionToken);
-
-                IGraphDBSession = null;
-                //IGraphFSSession = null;
-
-                //_IGraphFS.GetNotificationDispatcher().Dispose();
-
-            }
-
-            catch (Exception e)
-            {
-                return false;
-            }
-
-            return true;
-
-        }
+        public abstract DBTransaction BeginTransaction(Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? myCreated = null);
 
         #endregion
 
+        #region IGraphFSSession Members
 
         #region FS Events
 
@@ -343,8 +311,7 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
-
-        #region IGraphFSSession Members
+        public abstract FSTransaction BeginFSTransaction(Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? myCreated = null);
 
         public abstract IGraphFS IGraphFS { get; protected set; }
 
@@ -565,8 +532,35 @@ namespace sones.GraphDS.API.CSharp
         #endregion
 
 
-        public abstract FSTransaction BeginFSTransaction (Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? myCreated = null);
-        public abstract DBTransaction BeginTransaction   (Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? myCreated = null);
+
+        #region Shutdown()
+
+        public virtual Boolean Shutdown()
+        {
+
+            try
+            {
+
+                if (ShutdownEvent != null)
+                    ShutdownEvent(this, EventArgs.Empty);
+
+                IGraphDBSession.Shutdown();
+                IGraphFS.UnmountAllFileSystems(_SessionToken);
+
+                IGraphDBSession = null;
+
+            }
+
+            catch (Exception e)
+            {
+                return false;
+            }
+
+            return true;
+
+        }
+
+        #endregion
 
 
     }

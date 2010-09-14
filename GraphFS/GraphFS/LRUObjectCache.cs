@@ -1,250 +1,598 @@
-﻿// Copyright (C) 2009 Robert Rossney <rrossney@gmail.com>
-//
-// This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+﻿/*
+ * LRUObjectCache
+ * (c) Achim Friedland, 2010
+ */
+
+#region Using
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
-namespace LRUCache
+using sones.GraphFS.DataStructures;
+using sones.GraphFS.Events;
+using sones.GraphFS.Objects;
+
+using sones.Lib;
+using sones.Lib.DataStructures;
+using sones.Lib.DataStructures.Timestamp;
+using sones.GraphFS.Caches;
+using sones.Lib.Caches;
+using sones.Lib.ErrorHandling;
+using sones.Lib.DataStructures.Big;
+using sones.GraphFS.Errors;
+using System.Diagnostics;
+using System.Collections;
+
+
+#endregion
+
+namespace sones.GraphFS
 {
 
-    public class LRUCache<T> : ICollection<T>
+    /// <summary>
+    /// An Last-Recently-Use ObjectCache implemantation of the IObjectCache interface
+    /// for storing INodes, ObjectLocators and AFSObjects. This cache will remove the
+    /// entries as soon as memory gets low or the stored items are getting very old.
+    /// </summary>
+    public class LRUObjectCache : IObjectCache
     {
 
-        private const int _DefaultCapacity = 1000;
+        #region Data
 
-        /// <summary>
-        /// The default Capacity that the LRUCache uses if none is provided in the constructor.
-        /// </summary>
-        public static int DefaultCapacity { get { return _DefaultCapacity; } }
+        //private ReaderWriterLockSlim _CacheItemReaderWriterLockSlim;
 
-        // The list of items in the cache.  New items are added to the end of the list;
-        // existing items are moved to the end when added; the items thus appear in
-        // the list in the order they were added/used, with the least recently used
-        // item being the first.  This is internal because the LRUCacheEnumerator
-        // needs to access it.
-        internal readonly LinkedList<T> _LRUList = new LinkedList<T>();
+        public  static   UInt64                                                      MinCapacity     = 100;
+        private const    UInt64                                                     _DefaultCapacity = 50000;
+        private readonly Dictionary<ObjectLocation, LinkedListNode<ObjectLocator>>  _ObjectLocatorCache;
+        private readonly LinkedList<ObjectLocator>                                  _ObjectLocatorLRUList;
+        private readonly IDictionary<CacheUUID, AFSObject>                          _AFSObjectStore;
 
-        // The index into the list, used by Add, Remove, and Contains.
-        private readonly Dictionary<T, LinkedListNode<T>> Index = new Dictionary<T, LinkedListNode<T>>();
+        public  event    EventHandler                                               DiscardingOldestItem;
 
-        // Add, Clear, CopyTo, and Remove lock on this object to keep them threadsafe.
-        private readonly object Lock = new object();
+        #endregion
 
-        #region LRUCache Members
+        #region Properties
 
-        /// <summary>
-        /// Initializes a new instance of the LRUCache class that is empty and has the default
-        /// capacity.
-        /// </summary>
-        public LRUCache() : this(_DefaultCapacity) { }
+        #region IsEmpty
 
-        /// <summary>
-        /// Initializes a new instance of the LRUCache class that is empty and has the specified
-        /// initial capacity.
-        /// </summary>
-        /// <param name="capacity"></param>
-        public LRUCache(int capacity)
-        {
-            if (capacity < 0)
-            {
-                throw new InvalidOperationException("LRUCache capacity must be positive.");
-            }
-            Capacity = capacity;
-        }
-
-        /// <summary>
-        /// Occurs when the LRUCache is about to discard its oldest item
-        /// because its capacity has been reached and a new item is being added.  
-        /// </summary>
-        /// <remarks>The item has not been discarded yet, and thus is still contained in
-        /// the Oldest property.</remarks>
-        public event EventHandler DiscardingOldestItem;
-
-        /// <summary>
-        /// The maximum number of items that the LRUCache can contain without discarding
-        /// the oldest item when a new one is added.
-        /// </summary>
-        public int Capacity { get; private set; }
-
-        /// <summary>
-        /// The oldest (i.e. least recently used) item in the LRUCache.
-        /// </summary>
-        public T Oldest
+        public Boolean IsEmpty
         {
             get
             {
-                return _LRUList.First.Value;
+                lock (this)
+                {
+                    return !_ObjectLocatorCache.Any();
+                }
             }
         }
 
         #endregion
 
-        #region ICollection<T> Members
+        #region Capacity
 
-        /// <summary>
-        /// Add an item to the LRUCache, making it the newest item (i.e. the last
-        /// item in the list).  If the item is already in the LRUCache, it is moved to the end
-        /// of the list and becomes the newest item in the LRUCache.
-        /// </summary>
-        /// <param name="item">The item that is being used.</param>
-        /// <remarks>If the LRUCache has a nonzero capacity, and it is at its capacity, this
-        /// method will discard the oldest item, raising the DiscardingOldestItem event before
-        /// it does so.</remarks>
-        public void Add(T item)
+        private UInt64 _Capacity;
+
+        public UInt64 Capacity
         {
-            lock (Lock)
+
+            get
             {
-                if (Index.ContainsKey(item))
+                return _Capacity;
+            }
+
+            set
+            {
+                if (value >= MinCapacity)
+                    _Capacity = value;
+            }
+        
+        }
+
+        #endregion
+
+        #region NumberOfCachedItems
+
+        public UInt64 NumberOfCachedItems
+        {
+            get
+            {
+                lock (this)
                 {
-                    _LRUList.Remove(Index[item]);
-                    Index[item] = _LRUList.AddLast(item);
-                    return;
+                    return (UInt64) _ObjectLocatorCache.Count();
+                }
+            }
+        }
+
+        #endregion
+
+        #region ObjectCacheSettings
+
+        public ObjectCacheSettings ObjectCacheSettings { get; set; }
+
+        #endregion
+
+        #endregion
+
+        #region Constructor(s)
+
+        #region ObjectCache()
+
+        public LRUObjectCache()
+            : this(_DefaultCapacity)
+        {
+        }
+
+        #endregion
+
+        #region ObjectCache(myCapacity)
+
+        public LRUObjectCache(UInt64 myCapacity)
+            : base()
+        {
+
+            if (myCapacity < MinCapacity)
+                throw new ArgumentException("myCapacity must be larger than zero!");
+
+            _Capacity               = myCapacity;
+            _ObjectLocatorCache     = new Dictionary<ObjectLocation, LinkedListNode<ObjectLocator>>();
+            _ObjectLocatorLRUList   = new LinkedList<ObjectLocator>();
+            _AFSObjectStore         = new Dictionary<CacheUUID, AFSObject>();
+
+        }
+
+        #endregion
+
+        #endregion
+
+
+        #region StoreINode(myINode, myObjectLocation, myIsPinned = false)
+
+        public virtual Exceptional<INode> StoreINode(INode myINode, ObjectLocation myObjectLocation, Boolean myIsPinned = false)
+        {
+
+            Debug.Assert(myINode                != null);
+            Debug.Assert(myObjectLocation       != null);
+            Debug.Assert(_ObjectLocatorCache    != null);
+
+            var _Exceptional = GetObjectLocator(myObjectLocation);
+
+            if (_Exceptional.Failed())
+                return _Exceptional.Convert<INode>();
+
+            _Exceptional.Value.INodeReferenceSetter = myINode;
+
+            return new Exceptional<INode>();
+
+        }
+
+        #endregion
+
+        #region StoreObjectLocator(myObjectLocator, myIsPinned = false)
+
+        public virtual Exceptional<ObjectLocator> StoreObjectLocator(ObjectLocator myObjectLocator, Boolean myIsPinned = false)
+        {
+
+            Debug.Assert(_ObjectLocatorCache            != null);
+            Debug.Assert(_ObjectLocatorLRUList          != null);
+            Debug.Assert(myObjectLocator                != null);
+            Debug.Assert(myObjectLocator.ObjectLocation != null);
+            Debug.Assert(_AFSObjectStore                != null);
+
+            lock (this)
+            {
+
+                if (_ObjectLocatorCache.ContainsKey(myObjectLocator.ObjectLocation))
+                {
+                    // Remove LinkedListNode from LRUList and update ObjectLocator within the ObjectCache
+                    _ObjectLocatorLRUList.Remove(_ObjectLocatorCache[myObjectLocator.ObjectLocation]);
+                    _ObjectLocatorCache[myObjectLocator.ObjectLocation] = _ObjectLocatorLRUList.AddLast(myObjectLocator);
+                    return new Exceptional<ObjectLocator>();
                 }
 
-                if (Count >= Capacity && Capacity != 0)
+                if (_ObjectLocatorLRUList.ULongCount() >= Capacity)
                 {
-                    EventHandler h = DiscardingOldestItem;
-                    if (h != null)
+                    // Remove oldest LinkedListNode from LRUList and add new ObjectLocator to the ObjectCache
+                    if (DiscardingOldestItem != null)
+                        DiscardingOldestItem(this, new EventArgs());
+                    _ObjectLocatorCache.Remove(_ObjectLocatorLRUList.First.Value.ObjectLocation);
+                    _ObjectLocatorLRUList.RemoveFirst();
+                }
+
+                // Add new ObjectLocator to the ObjectCache and add it to the LRUList
+                _ObjectLocatorCache.Add(myObjectLocator.ObjectLocation, _ObjectLocatorLRUList.AddLast(myObjectLocator));
+
+                return new Exceptional<ObjectLocator>(myObjectLocator);
+
+            }
+
+        }
+
+        #endregion
+
+        #region StoreAFSObject(myAFSObject, myIsPinned = false)
+
+        public virtual Exceptional<AFSObject> StoreAFSObject(AFSObject myAFSObject, Boolean myIsPinned = false)
+        {
+
+            Debug.Assert(myAFSObject                        != null);
+            Debug.Assert(myAFSObject.ObjectLocation         != null);
+            Debug.Assert(myAFSObject.ObjectLocatorReference != null);
+            Debug.Assert(myAFSObject.ObjectStream           != null);
+            Debug.Assert(myAFSObject.ObjectEdition          != null);
+            Debug.Assert(myAFSObject.ObjectRevisionID       != null);
+            Debug.Assert(_ObjectLocatorCache                != null);
+            Debug.Assert(_AFSObjectStore                    != null);
+
+            lock (this)
+            {
+
+                var _CacheUUID = myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition][myAFSObject.ObjectRevisionID].CacheUUID;
+                Debug.Assert(_CacheUUID != null);
+
+                if (_AFSObjectStore.ContainsKey(_CacheUUID))
+                    _AFSObjectStore[_CacheUUID] = myAFSObject;
+
+                else
+                    _AFSObjectStore.Add(_CacheUUID, myAFSObject);
+
+                return new Exceptional<AFSObject>(myAFSObject);
+            
+            }
+
+        }
+
+        #endregion
+
+
+        #region GetINode(myObjectLocation)
+
+        public virtual Exceptional<INode> GetINode(ObjectLocation myObjectLocation)
+        {
+            
+            Debug.Assert(myObjectLocation   != null);
+
+            var _Exceptional = GetObjectLocator(myObjectLocation);
+
+            if (_Exceptional.Failed())
+                return _Exceptional.Convert<INode>();
+
+            if (_Exceptional.Value.INodeReference != null)
+                return new Exceptional<INode>(_Exceptional.Value.INodeReference);
+
+            //ToDo: This might be a bit too expensive!
+            return new Exceptional<INode>(new GraphFSError("Not within the ObjectCache!"));
+
+        }
+
+        #endregion
+
+        #region GetObjectLocator(myObjectLocation)
+
+        public virtual Exceptional<ObjectLocator> GetObjectLocator(ObjectLocation myObjectLocation)
+        {
+
+            Debug.Assert(myObjectLocation       != null);
+            Debug.Assert(_ObjectLocatorCache    != null);
+            Debug.Assert(_ObjectLocatorLRUList  != null);
+
+            lock (this)
+            {
+
+                LinkedListNode<ObjectLocator> _ObjectLocatorNode = null;
+
+                if (_ObjectLocatorCache.TryGetValue(myObjectLocation, out _ObjectLocatorNode))
+                    if (_ObjectLocatorNode != null)
+                        return new Exceptional<ObjectLocator>(_ObjectLocatorNode.Value);
+
+                //ToDo: This might be a bit too expensive!
+                return new Exceptional<ObjectLocator>(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
+
+            }
+
+        }
+
+        #endregion
+
+        #region GetAFSObject<PT>(myCacheUUID)
+
+        public virtual Exceptional<PT> GetAFSObject<PT>(CacheUUID myCacheUUID)
+            where PT : AFSObject
+        {
+
+            Debug.Assert(myCacheUUID        != null);
+            Debug.Assert(_AFSObjectStore    != null);
+
+            lock (this)
+            {
+
+                AFSObject _AFSObject = null;
+
+                if (_AFSObjectStore.TryGetValue(myCacheUUID, out _AFSObject))
+                    if (_AFSObject != null)
+                        return new Exceptional<PT>(_AFSObject as PT);
+
+                //ToDo: This might be a bit too expensive!
+                return new Exceptional<PT>(new GraphFSError("Not within the ObjectCache!"));
+
+            }
+
+        }
+
+        #endregion
+
+
+        #region Copy(mySourceLocation, myTargetLocation)
+
+        public virtual Exceptional CopyToLocation(ObjectLocation mySourceLocation, ObjectLocation myTargetLocation)
+        {
+
+            Debug.Assert(_ObjectLocatorCache    != null);
+            Debug.Assert(_AFSObjectStore        != null);
+            Debug.Assert(mySourceLocation       != null);
+            Debug.Assert(myTargetLocation       != null);
+
+            lock (this)
+            {
+
+                if (_ObjectLocatorCache.ContainsKey(mySourceLocation) &&
+                    !_ObjectLocatorCache.ContainsKey(myTargetLocation))
+                {
+
+                    foreach (var _ItemToMove in from _Item in _ObjectLocatorCache where _Item.Key.StartsWith(mySourceLocation.ToString()) select _Item)
                     {
-                        h(this, new EventArgs());
+
+                        // Copy the ObjectLocator to the new ObjectLocation
+                        var _ObjectLocatorNode = _ObjectLocatorCache[_ItemToMove.Key];
+                        var _NewLocation   = new ObjectLocation(myTargetLocation, _ItemToMove.Key.PathElements.Skip(mySourceLocation.PathElements.Count()));
+                        _ObjectLocatorNode.Value.ObjectLocationSetter = _NewLocation;
+                        _ObjectLocatorCache.Add(_NewLocation, _ObjectLocatorNode);
+
                     }
-                    Remove(Oldest);
+
                 }
-                Index.Add(item, _LRUList.AddLast(item));
 
             }
 
-        }
+            return Exceptional.OK;
 
-        /// <summary>
-        /// Determines whether the LRUCache contains a specific value.
-        /// </summary>
-        /// <param name="item">The item to locate in the LRUCache.</param>
-        /// <returns>true if the item is in the LRUCache, otherwise false.</returns>
-        public bool Contains(T item)
-        {
-            return Index.ContainsKey(item);
         }
-
-        /// <summary>
-        /// Copies the elements of the LRUCache to an array, starting at a particular
-        /// array index.
-        /// </summary>
-        /// <param name="array">The one-dimensional array that is the destination of
-        /// items copied from the LRUCache.</param>
-        /// <param name="arrayIndex">The index in array at which copying begins.</param>
-        public void CopyTo(T[] array, int arrayIndex)
-        {
-            lock (Lock)
-            {
-                foreach (T item in this)
-                {
-                    array[arrayIndex++] = item;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Clear the contents of the LRUCache.
-        /// </summary>
-        public void Clear()
-        {
-            lock (Lock)
-            {
-                _LRUList.Clear();
-                Index.Clear();
-            }
-        }
-
-        /// <summary>
-        /// Gets the number of items contained in the LRUCache.
-        /// </summary>
-        public int Count
-        {
-            get
-            {
-                return _LRUList.Count;
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the LRUCache is read-only.
-        /// </summary>
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
-
-        /// <summary>
-        /// Remove the specified item from the LRUCache.
-        /// </summary>
-        /// <param name="item">The item to remove from the LRUCache.</param>
-        /// <returns>true if the item was successfully removed from the LRUCache,
-        /// otherwise false.  This method also returns false if the item was not
-        /// found in the LRUCache.</returns>
-        public bool Remove(T item)
-        {
-            lock (Lock)
-            {
-                if (Index.ContainsKey(item))
-                {
-                    _LRUList.Remove(Index[item]);
-                    Index.Remove(item);
-                    return true;
-                }
-                return false;
-            }
-        }
-
 
         #endregion
 
-        #region IEnumerable<T> Members
+        #region Move(mySourceLocation, myTargetLocation)
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the items in the LRUCache.
-        /// </summary>
-        /// <returns>An IEnumerator object that may be used to iterate through the
-        /// LRUCache./></returns>
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        public virtual Exceptional MoveToLocation(ObjectLocation mySourceLocation, ObjectLocation myTargetLocation)
         {
-            LinkedListNode<T> node = _LRUList.First;
-            while (node != null)
+
+            Debug.Assert(_ObjectLocatorCache    != null);
+            Debug.Assert(_AFSObjectStore        != null);
+            Debug.Assert(mySourceLocation       != null);
+            Debug.Assert(myTargetLocation       != null);
+
+            lock (this)
             {
-                yield return node.Value;
-                node = node.Next;
+
+                if (_ObjectLocatorCache.ContainsKey(mySourceLocation) &&
+                    !_ObjectLocatorCache.ContainsKey(myTargetLocation))
+                {
+
+                    // Get a copy of all ObjectsLocations to move, as we will modify the list later...
+                    var _ListOfItemsToMove = (from _Item in _ObjectLocatorCache where _Item.Key.StartsWith(mySourceLocation.ToString()) select _Item).ToList();
+
+                    foreach (var _ItemToMove in _ListOfItemsToMove)
+                    {
+
+                        // Move the ObjectLocator to the new ObjectLocation
+                        var _ObjectLocatorNode = _ObjectLocatorCache[_ItemToMove.Key];
+                        var _NewLocation   = new ObjectLocation(myTargetLocation, _ItemToMove.Key.PathElements.Skip(mySourceLocation.PathElements.Count()));
+                        _ObjectLocatorNode.Value.ObjectLocationSetter = _NewLocation;
+                        _ObjectLocatorCache.Add(_NewLocation, _ObjectLocatorNode);
+                        _ObjectLocatorCache.Remove(_ItemToMove.Key);
+
+                        // No longer needed... as all AFSObjects ask the ObjectLocator for their ObjectLocation
+                        //var _OldLocation = _ItemToMove.Key.ToString();
+                        //// Remove all objects at this location
+                        //foreach (var _StringStream in _ObjectLocator)
+                        //{
+
+                        //    //if (_StringStream.Key == FSConstants.DIRECTORYSTREAM)
+                        //    //    Remove(new ObjectLocation(myOldObjectLocation, _StringStream.Key), true);
+
+                        //    foreach (var _StringEdition in _StringStream.Value)
+                        //        foreach (var _RevisionIDRevision in _StringEdition.Value)
+                        //        {
+
+                        //            AFSObject _Object = null;
+
+                        //            if (_AFSObjectLookuptable.TryGetValue(_RevisionIDRevision.Value.CacheUUID, out _Object))
+                        //            {
+                        //                var _OldObjectLocation = _Object.ObjectLocation.ToString();
+                        //                if (_OldObjectLocation.StartsWith(mySourceLocation.ToString() + FSPathConstants.PathDelimiter))
+                        //                {
+                        //                    _Object.ObjectLocation = new ObjectLocation(myTargetLocation, _OldObjectLocation.Remove(0, mySourceLocation.Length));
+                        //                }
+                        //            }
+
+                        //        }
+
+                        //}
+
+                    }
+
+                }
+
             }
+
+            return Exceptional.OK;
+
         }
 
         #endregion
+
+
+        #region RemoveObjectLocator(myObjectLocator, myRecursion = false)
+
+        public virtual Exceptional RemoveObjectLocator(ObjectLocator myObjectLocator, Boolean myRecursion = false)
+        {
+
+            Debug.Assert(myObjectLocator                != null);
+            Debug.Assert(myObjectLocator.ObjectLocation != null);
+            Debug.Assert(_ObjectLocatorCache            != null);
+            Debug.Assert(_AFSObjectStore                != null);
+
+            return RemoveObjectLocation(myObjectLocator.ObjectLocation, myRecursion);
+
+        }
+
+        #endregion
+
+        #region RemoveObjectLocation(myObjectLocation, myRecursion = false)
+
+        public virtual Exceptional RemoveObjectLocation(ObjectLocation myObjectLocation, Boolean myRecursion = false)
+        {
+
+            Debug.Assert(myObjectLocation       != null);
+            Debug.Assert(_ObjectLocatorCache    != null);
+            Debug.Assert(_AFSObjectStore        != null);
+
+            lock (this)
+            {
+
+                if (_ObjectLocatorCache.ContainsKey(myObjectLocation))
+                {
+
+                    #region Recursive remove objects under this location!
+
+                    if (myRecursion)
+                    {
+
+                        // Remove all objects at this location
+                        foreach (var _StringStream in _ObjectLocatorCache[myObjectLocation].Value)
+                        {
+
+                            if (_StringStream.Key == FSConstants.DIRECTORYSTREAM)
+                                RemoveObjectLocation(new ObjectLocation(myObjectLocation, _StringStream.Key), true);
+
+                            foreach (var _StringEdition in _StringStream.Value)
+                                foreach (var _RevisionIDRevision in _StringEdition.Value)
+                                    RemoveAFSObject(_RevisionIDRevision.Value.CacheUUID);
+
+                        }
+
+                        // Remove ObjectLocator
+                        _ObjectLocatorCache.Remove(myObjectLocation);
+
+                    }
+
+                    #endregion
+
+                    #region Remove objects at this location!
+
+                    else
+                    {
+
+                        // Remove all objects at this location
+                        foreach (var _StringStream in _ObjectLocatorCache[myObjectLocation].Value)
+                            foreach (var _StringEdition in _StringStream.Value)
+                                foreach (var _RevisionIDRevision in _StringEdition.Value)
+                                    RemoveAFSObject(_RevisionIDRevision.Value.CacheUUID);
+
+                        // Remove ObjectLocator
+                        _ObjectLocatorCache.Remove(myObjectLocation);
+
+                    }
+
+                    #endregion
+
+                }
+
+            }
+
+            return Exceptional.OK;
+
+        }
+
+        #endregion
+
+        #region RemoveAFSObject(myCacheUUID)
+
+        public virtual Exceptional RemoveAFSObject(CacheUUID myCacheUUID)
+        {
+
+            Debug.Assert(myCacheUUID        != null);
+            Debug.Assert(_AFSObjectStore    != null);
+
+            lock (this)
+            {
+
+                if (_AFSObjectStore.ContainsKey(myCacheUUID))
+                    _AFSObjectStore.Remove(myCacheUUID);
+
+                return Exceptional.OK;
+
+            }
+
+        }
+
+        #endregion
+
+
+        #region Clear()
+
+        public Exceptional Clear()
+        {
+
+            Debug.Assert(_ObjectLocatorCache    != null);
+            Debug.Assert(_AFSObjectStore        != null);
+
+            lock (this)
+            {
+
+                _ObjectLocatorCache.Clear();
+                _AFSObjectStore.Clear();
+
+                return Exceptional.OK;
+
+            }
+
+        }
+
+        #endregion
+
 
         #region IEnumerable Members
 
         /// <summary>
-        /// Returns an enumerator that iterates through the items in the LRUCache.
+        /// Iterates through the items of the LRUObjectCache.
         /// </summary>
-        /// <returns>An LRUCacheEnumerator object that may be used it iterate through the
-        /// LRUCache./></returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return new LRUCacheEnumerator<T>(this);
+            foreach (var _KeyValuePair in _ObjectLocatorCache)
+            {
+                yield return new KeyValuePair<ObjectLocation, ObjectLocator>(_KeyValuePair.Key, _KeyValuePair.Value.Value);
+            }
         }
 
         #endregion
-    
+
+        #region IEnumerable<KeyValuePair<ObjectLocation, ObjectLocator>> Members
+
+        /// <summary>
+        /// Iterates through the items of the LRUObjectCache.
+        /// </summary>
+        IEnumerator<KeyValuePair<ObjectLocation, ObjectLocator>> IEnumerable<KeyValuePair<ObjectLocation, ObjectLocator>>.GetEnumerator()
+        {
+            foreach (var _KeyValuePair in _ObjectLocatorCache)
+            {
+                yield return new KeyValuePair<ObjectLocation, ObjectLocator>(_KeyValuePair.Key, _KeyValuePair.Value.Value);
+            }
+        }
+
+        #endregion
+
+
     }
 
 }

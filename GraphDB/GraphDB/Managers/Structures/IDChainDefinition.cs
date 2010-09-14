@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * IDChainDefinition
  * (c) Stefan Licht, 2010
  */
@@ -43,9 +23,10 @@ using sones.GraphDB.Functions;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.Aggregates;
 
-using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.TypeManagement;
 
-using sones.GraphDBInterface.Context;
+using sones.GraphDB.Context;
+using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 
 #endregion
 
@@ -385,7 +366,7 @@ namespace sones.GraphDB.Managers.Structures
 			var result = Function.ExecFunc(dbContext, evaluatedParams.ToArray());
 
 			foreach (var _wa in _warnings)
-				result.Push(_wa);
+				result.PushIWarning(_wa);
 
 			return result;
 
@@ -475,6 +456,7 @@ namespace sones.GraphDB.Managers.Structures
 		{
 			get
 			{
+                System.Diagnostics.Debug.Assert(TypeAttribute != null);
 				return new EdgeKey(DBType.UUID, TypeAttribute.UUID);
 			}
 		}
@@ -499,7 +481,6 @@ namespace sones.GraphDB.Managers.Structures
 			KindOfDelimiter = myKindOfDelimiter;
 		}
 	}
-
  
 	#endregion
 
@@ -507,11 +488,9 @@ namespace sones.GraphDB.Managers.Structures
 		
 	public class AIDChainPart
 	{
-
 		public AIDChainPart Next;
 		public IDChainDelemiter NextDelemiter;
 		public IDChainDelemiter PrevDelemiter;
-
 	}
  
 	#endregion
@@ -792,7 +771,7 @@ namespace sones.GraphDB.Managers.Structures
 			{
 				if (myListOfReferences.Count != 1)
 				{
-					ValidateResult.Push(new Error_DuplicateReferenceOccurence(""));
+					ValidateResult.PushIError(new Error_DuplicateReferenceOccurence(""));
 				}
 				//typeOrAttr.DBType = myListOfReferences.First().Value;
 
@@ -819,7 +798,7 @@ namespace sones.GraphDB.Managers.Structures
 
 					var funcPart = (curPart as ChainPartFuncDefinition);
 					var funcValidateResult = funcPart.Validate(myDBContext);
-					ValidateResult.Push(funcValidateResult);
+					ValidateResult.PushIExceptional(funcValidateResult);
 
 					if (ValidateResult.Failed())
 					{
@@ -838,7 +817,7 @@ namespace sones.GraphDB.Managers.Structures
 
 					if (!funcPart.Function.ValidateWorkingBase(funcWorkingBase, myDBContext.DBTypeManager))
 					{
-						return ValidateResult.Push(new Error_InvalidFunctionBase(_LastAttribute, funcPart.FuncName));
+						return ValidateResult.PushIError(new Error_InvalidFunctionBase(_LastAttribute, funcPart.FuncName));
 					}
 
 					var returnType = funcPart.Function.GetReturnType(new DBTypeAttribute(_LastAttribute), myDBContext.DBTypeManager);
@@ -879,6 +858,15 @@ namespace sones.GraphDB.Managers.Structures
 					if (_LastAttribute != null)
 					{
 
+                        #region Any attribute on an undefined attribute is not allowed
+
+                        if (_LastAttribute is UndefinedTypeAttribute)
+                        {
+                            ValidateResult.PushIError(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
+                        }
+                        
+                        #endregion
+
 						#region The previous attribute was seems to be an reference attribute
 
 						_LastType = GetDBTypeByAttribute(myDBContext, _LastAttribute);
@@ -895,10 +883,13 @@ namespace sones.GraphDB.Managers.Structures
 							if (allowUndefinedAttributes)
 							{
 								UndefinedAttribute = typeOrAttr.TypeOrAttributeName;
-							}
+                                _LastAttribute = new UndefinedTypeAttribute(UndefinedAttribute);
+                                typeOrAttr.TypeAttribute = _LastAttribute;
+                                AddNewEdgeKey(_LastType, _LastAttribute.UUID);
+                            }
 							else
 							{
-								ValidateResult.Push(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
+								ValidateResult.PushIError(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
 							}
 
 							#endregion
@@ -950,7 +941,7 @@ namespace sones.GraphDB.Managers.Structures
 
 							if (typesWithAttibute != null)
 							{
-								ValidateResult.Push(new Error_DuplicateReferenceOccurence(typeOrAttr.TypeOrAttributeName));
+								ValidateResult.PushIError(new Error_DuplicateReferenceOccurence(typeOrAttr.TypeOrAttributeName));
 							}
 
 							#endregion
@@ -992,7 +983,7 @@ namespace sones.GraphDB.Managers.Structures
 									
 									if (foundSth == true)
 									{
-										ValidateResult.Push(new Error_AmbiguousAttribute("The attribute or type \"" + typeOrAttr.TypeOrAttributeName + "\" has been used ambigous."));
+										ValidateResult.PushIError(new Error_AmbiguousAttribute("The attribute or type \"" + typeOrAttr.TypeOrAttributeName + "\" has been used ambigous."));
 									}
 									else
 									{
@@ -1030,7 +1021,7 @@ namespace sones.GraphDB.Managers.Structures
 
 									#region Calling an attribute on an undefined attribute is not allowed
 
-									ValidateResult.Push(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
+									ValidateResult.PushIError(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
 									//ValidateResult.Push(new Error_InvalidUndefinedAttributeName());
 
 									#endregion
@@ -1045,14 +1036,20 @@ namespace sones.GraphDB.Managers.Structures
 
 									if (myListOfReferences.Count != 1)
 									{
-										ValidateResult.Push(new Error_AmbiguousAttribute("The attribute or type \"" + typeOrAttr.TypeOrAttributeName + "\" has been used ambigous."));
+										ValidateResult.PushIError(new Error_AmbiguousAttribute("The attribute or type \"" + typeOrAttr.TypeOrAttributeName + "\" has been used ambigous."));
 									}
 									else
 									{
 										var theRef = myListOfReferences.First();
 										_Reference = new Tuple<string, GraphDBType>(theRef.Key, theRef.Value); //T1 -->key in context dictionary
 										_LastType = _Reference.Item2;
-									}
+                                        _LastAttribute = new UndefinedTypeAttribute(UndefinedAttribute);
+                                        
+                                        typeOrAttr.TypeAttribute = _LastAttribute;
+                                        typeOrAttr.DBType = _LastType;
+                                        
+                                        AddNewEdgeKey(_LastType, _LastAttribute.UUID);
+                                    }
 
 									#endregion
 
@@ -1088,16 +1085,19 @@ namespace sones.GraphDB.Managers.Structures
 							{                                
 								#region Calling an attribute on an undefined attribute is not allowed - so we assume a typo
 
-								ValidateResult.Push(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
+								ValidateResult.PushIError(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
 								continue;
 
 								#endregion
 
 							}
 							else
-							{   
-								UndefinedAttribute = typeOrAttr.TypeOrAttributeName;
-							}
+							{
+                                UndefinedAttribute = typeOrAttr.TypeOrAttributeName;
+                                _LastAttribute = new UndefinedTypeAttribute(UndefinedAttribute);
+                                typeOrAttr.TypeAttribute = _LastAttribute;
+                                AddNewEdgeKey(_LastType, _LastAttribute.UUID);
+                            }
 
 						}
 						else
@@ -1165,7 +1165,7 @@ namespace sones.GraphDB.Managers.Structures
 		{
 			return _IDChainString +
 				((IsValidated) ? " [validated] " : " [notValidated] ") +
-				((ValidateResult == null || ValidateResult.Success()) ? "" : ValidateResult.GetErrorsAsString())
+				((ValidateResult == null || ValidateResult.Success()) ? "" : ValidateResult.GetIErrorsAsString())
 				;
 		}
 
@@ -1222,7 +1222,13 @@ namespace sones.GraphDB.Managers.Structures
 			return _IDChainString.GetHashCode();
 		}
 
-	}
+
+        public bool IsSpecialTypeAttribute()
+        {
+            return (LastAttribute != null && LastAttribute is ASpecialTypeAttribute);
+        }
+
+    }
 
 
 }

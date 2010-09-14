@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � ObjectManipulationManager" />
+﻿/* <id name="GraphDB – ObjectManipulationManager" />
  * <copyright file="ObjectManipulationManager.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -44,13 +24,14 @@ using sones.GraphDB.Structures.ExpressionGraph;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 using sones.GraphDB.Warnings;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.Result;
+using sones.GraphDB.TypeManagement;
 
 using sones.GraphFS.DataStructures;
 using sones.Lib;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -109,7 +90,7 @@ namespace sones.GraphDB.Managers
                     _dbobjects = _tempGraphResult.Value.Select(new LevelKey(myGraphDBType, myDBContext.DBTypeManager), null, true);
                     if (!_tempGraphResult.Success())
                     {
-                        warnings = _tempGraphResult.Warnings;
+                        warnings = _tempGraphResult.IWarnings;
                     }
                 }
                 
@@ -132,7 +113,7 @@ namespace sones.GraphDB.Managers
 
             if (!warnings.IsNullOrEmpty())
             {
-                updateResult.AddWarnings(warnings);
+                updateResult.PushIWarnings(warnings);
             }
 
             #endregion
@@ -153,7 +134,7 @@ namespace sones.GraphDB.Managers
 
             #region Data
 
-            var queryResultContent = new List<DBObjectReadout>();
+            var queryResultContent = new List<Vertex>();
 
             #endregion
 
@@ -181,6 +162,7 @@ namespace sones.GraphDB.Managers
 
             if (definedAttributeAssignments.CountIsGreater(0))
             {
+
                 Exceptional<Boolean> CheckConstraint = null;
 
                 IEnumerable<GraphDBType> parentTypes = myDBContext.DBTypeManager.GetAllParentTypes(myGraphDBType, true, false);
@@ -201,7 +183,7 @@ namespace sones.GraphDB.Managers
                     ChkForUnique.Clear();
 
                     if (CheckConstraint.Failed())
-                        return new QueryResult(CheckConstraint.Errors);
+                        return new QueryResult(CheckConstraint.IErrors);
 
                 }
             }
@@ -295,19 +277,20 @@ namespace sones.GraphDB.Managers
 
             #region Return all affected dbObjectUUIDs
 
-            return new QueryResult(new SelectionResultSet(queryResultContent));
+            return new QueryResult(queryResultContent);
 
             #endregion
+
         }
 
         private Dictionary<TypeAndAttributeDefinition, IObject> ExtractDefinedAttributes(Dictionary<string, Tuple<TypeAttribute, IObject>> attrsForResult, DBTypeManager myTypeManager)
         {
-            return attrsForResult.Where(item => item.Value.Item1 != null).ToDictionary(key => new TypeAndAttributeDefinition(key.Value.Item1, key.Value.Item1.GetDBType(myTypeManager)), value => value.Value.Item2);
+            return attrsForResult.Where(item => !(item.Value.Item1 is UndefinedTypeAttribute)).ToDictionary(key => new TypeAndAttributeDefinition(key.Value.Item1, key.Value.Item1.GetDBType(myTypeManager)), value => value.Value.Item2);
         }
 
         private Dictionary<string, IObject> ExtractUndefindedAttributes(Dictionary<string, Tuple<TypeAttribute, IObject>> attrsForResult)
         {
-            return attrsForResult.Where(item => item.Value.Item1 == null).ToDictionary(key => key.Key, value => value.Value.Item2);
+            return attrsForResult.Where(item => (item.Value.Item1 is UndefinedTypeAttribute)).ToDictionary(key => key.Key, value => value.Value.Item2);
         }
 
         #region AttributesToCheckForUnique
@@ -385,7 +368,7 @@ namespace sones.GraphDB.Managers
 
             if (dbObjectStream.Failed())
             {
-                return new QueryResult(dbObjectStream.Errors);
+                return new QueryResult(dbObjectStream.IErrors);
             }
 
             #endregion
@@ -399,7 +382,7 @@ namespace sones.GraphDB.Managers
                 var setBackEdges = SetBackwardEdges(type, userdefinedAttributes.ToDictionary(key => key.Key.Definition.UUID, value => value.Value), dbObjectStream.Value.ObjectUUID, dbContext);
 
                 if (setBackEdges.Failed())
-                    return new QueryResult(setBackEdges.Errors);
+                    return new QueryResult(setBackEdges.IErrors);
             }
 
             #endregion
@@ -407,7 +390,7 @@ namespace sones.GraphDB.Managers
             #region Create QueryResult
 
             var readOut = GetManipulationResultSet(dbContext, dbObjectStream, type, attributes, undefinedAttributes, specialTypeAttributes);
-            var selResultSet = new SelectionResultSet(new List<DBObjectReadout> { readOut.Value });
+            var selResultSet = new List<Vertex> { readOut.Value };
             var queryResult = new QueryResult(selResultSet);
 
             #endregion
@@ -416,7 +399,7 @@ namespace sones.GraphDB.Managers
 
             if (readOut.Failed())
             {
-                queryResult.AddErrors(readOut.Errors);
+                queryResult.PushIErrors(readOut.IErrors);
             }
 
             #endregion
@@ -453,7 +436,7 @@ namespace sones.GraphDB.Managers
                 }
                 else
                 {
-                    return new QueryResult(_whereGraphResult.Errors);
+                    return new QueryResult(_whereGraphResult.IErrors);
                 }
 
                 #region expressionGraph error handling
@@ -484,7 +467,7 @@ namespace sones.GraphDB.Managers
 
             var checkUniqueVal = myDBContext.DBIndexManager.CheckUniqueConstraint(myGraphDBType, parentTypes, assingedAttrs);
             if (checkUniqueVal.Failed())
-                return new QueryResult(checkUniqueVal.Errors);
+                return new QueryResult(checkUniqueVal.IErrors);
 
             #endregion
 
@@ -505,7 +488,7 @@ namespace sones.GraphDB.Managers
 
                     if (DeleteResult.Failed())
                     {
-                        return new QueryResult(DeleteResult.Errors);
+                        return new QueryResult(DeleteResult.IErrors);
                     }
 
                     #endregion
@@ -519,7 +502,7 @@ namespace sones.GraphDB.Managers
 
             //Insert
             var result = Insert(myDBContext, myGraphDBType, attrsResult.Value, false);
-            result.AddWarnings(warnings);
+            result.PushIWarnings(warnings);
             //if there were any warnings during this process, the need to be added
 
             #endregion
@@ -560,7 +543,7 @@ namespace sones.GraphDB.Managers
                 }
                 else
                 {
-                    return new QueryResult(_whereGraphResult.Errors);
+                    return new QueryResult(_whereGraphResult.IErrors);
                 }
 
                 #region expressionGraph error handling
@@ -589,7 +572,7 @@ namespace sones.GraphDB.Managers
                 result = Update(extractedDBOs, attributeAssignOrUpdateOrRemoveList, myDBContext, myGraphDBType);
             }
 
-            result.AddWarnings(warnings);
+            result.PushIWarnings(warnings);
 
             return result;
 
@@ -620,7 +603,7 @@ namespace sones.GraphDB.Managers
             }
             else
             {
-                return new QueryResult(_whereGraphResult.Errors);
+                return new QueryResult(_whereGraphResult.IErrors);
             }
 
             #region expressionGraph error handling
@@ -637,7 +620,7 @@ namespace sones.GraphDB.Managers
             if (_dbObjects.CountIs(0))
             {
                 warnings.Add(new Warnings.Warning_NoObjectsToReplace());
-                return new QueryResult(myErrors: new List<IError>(), myWarnings: warnings);
+                return new QueryResult(new List<IError>(), warnings);
             }
 
             IEnumerable<GraphDBType> parentTypes = myDBContext.DBTypeManager.GetAllParentTypes(myGraphDBType, true, false);
@@ -664,7 +647,7 @@ namespace sones.GraphDB.Managers
 
             var result = Insert(myDBContext, myGraphDBType, attrsResult.Value, false);
 
-            result.AddWarnings(warnings);
+            result.PushIWarnings(warnings);
 
             return result;
 
@@ -717,7 +700,7 @@ namespace sones.GraphDB.Managers
 
                         if (!addExcept.Success())
                         {
-                            returnVal.AddErrorsAndWarnings(addExcept);
+                            returnVal.PushIExceptional(addExcept);
                         }
                     });
 
@@ -769,7 +752,7 @@ namespace sones.GraphDB.Managers
         /// <param name="myToken"></param>
         /// <param name="myDBObjectCache"></param>
         /// <returns></returns>
-        public Exceptional<SelectionResultSet> DeleteDBObjects(GraphDBType myGraphDBType, List<TypeAttribute> myAttributes, IEnumerable<Exceptional<DBObjectStream>> myListOfAffectedDBObjects, DBContext myDBContext)
+        public Exceptional<IEnumerable<Vertex>> DeleteDBObjects(GraphDBType myGraphDBType, List<TypeAttribute> myAttributes, IEnumerable<Exceptional<DBObjectStream>> myListOfAffectedDBObjects, DBContext myDBContext)
         {
             //some stuff for queryResult
             UInt64 deletionCounter = 0;
@@ -778,7 +761,7 @@ namespace sones.GraphDB.Managers
             {
                 if (aDBO.Failed())
                 {
-                    return new Exceptional<SelectionResultSet>(new Error_LoadObject(aDBO.Value.ObjectLocation));
+                    return new Exceptional<IEnumerable<Vertex>>(new Error_LoadObject(aDBO.Value.ObjectLocation));
                 }
 
                 deletionCounter++;
@@ -800,13 +783,13 @@ namespace sones.GraphDB.Managers
                                 var defaultExcept = SetDefaultValue(Attr, aDBO, myDBContext);
 
                                 if (defaultExcept.Failed())
-                                    return new Exceptional<SelectionResultSet>(defaultExcept);
+                                    return new Exceptional<IEnumerable<Vertex>>(defaultExcept);
 
                                 if (!defaultExcept.Value)
-                                    return new Exceptional<SelectionResultSet>(new Error_UpdateAttributeValue(Attr));
+                                    return new Exceptional<IEnumerable<Vertex>>(new Error_UpdateAttributeValue(Attr));
                             }
                             else
-                                return new Exceptional<SelectionResultSet>(new Error_MandatoryConstraintViolation(Attr.Name));
+                                return new Exceptional<IEnumerable<Vertex>>(new Error_MandatoryConstraintViolation(Attr.Name));
 
                             #endregion
 
@@ -814,7 +797,7 @@ namespace sones.GraphDB.Managers
                         else
                         {
                             if (!aDBO.Value.RemoveAttribute(Attr.UUID))
-                                return new Exceptional<SelectionResultSet>(new Error_RemoveTypeAttribute(myGraphDBType, Attr));
+                                return new Exceptional<IEnumerable<Vertex>>(new Error_RemoveTypeAttribute(myGraphDBType, Attr));
                         }
                     }
 
@@ -822,7 +805,7 @@ namespace sones.GraphDB.Managers
 
                     if (!saveResult.Success())
                     {
-                        return new Exceptional<SelectionResultSet>(saveResult);
+                        return new Exceptional<IEnumerable<Vertex>>(saveResult);
                     }
 
                     #endregion
@@ -841,7 +824,7 @@ namespace sones.GraphDB.Managers
                         var backwardEdgeLoadExcept = myDBContext.DBObjectManager.LoadBackwardEdge(aDBO.Value.ObjectLocation);
 
                         if (!backwardEdgeLoadExcept.Success())
-                            return new Exceptional<SelectionResultSet>(backwardEdgeLoadExcept.Errors.First());
+                            return new Exceptional<IEnumerable<Vertex>>(backwardEdgeLoadExcept.IErrors.First());
 
                         backwarEdges = backwardEdgeLoadExcept.Value;
                     }
@@ -850,7 +833,7 @@ namespace sones.GraphDB.Managers
 
                     if (!removeResult.Success())
                     {
-                        return new Exceptional<SelectionResultSet>(removeResult);
+                        return new Exceptional<IEnumerable<Vertex>>(removeResult);
                     }
 
                     if (backwarEdges != null)
@@ -858,7 +841,7 @@ namespace sones.GraphDB.Managers
                         var delEdgeRefs = DeleteObjectReferences(objID, backwarEdges, myDBContext);
 
                         if (!delEdgeRefs.Success())
-                            return new Exceptional<SelectionResultSet>(delEdgeRefs.Errors.First());
+                            return new Exceptional<IEnumerable<Vertex>>(delEdgeRefs.IErrors.First());
                     }
 
                     #endregion
@@ -868,11 +851,11 @@ namespace sones.GraphDB.Managers
 
             if (deletionCounter == 0)
             {
-                var result = new Exceptional<SelectionResultSet>(new SelectionResultSet());
-                return result.PushT(new Warning_NoObjectsToDelete());
+                var result = new Exceptional<IEnumerable<Vertex>>(new List<Vertex>());
+                return result.PushIWarningT(new Warning_NoObjectsToDelete());
             }
 
-            return new Exceptional<SelectionResultSet>(new SelectionResultSet());
+            return new Exceptional<IEnumerable<Vertex>>(new List<Vertex>());
 
         }
 
@@ -909,7 +892,7 @@ namespace sones.GraphDB.Managers
                     var resultGraph = myWhereExpression.Calculon(myDBContext, new CommonUsageGraph(myDBContext), false);
                     if (resultGraph.Failed())
                     {
-                        return new QueryResult(resultGraph.Errors);
+                        return new QueryResult(resultGraph.IErrors);
                     }
 
                     IEnumerable<Exceptional<DBObjectStream>> _dbobjects;
@@ -927,7 +910,7 @@ namespace sones.GraphDB.Managers
                                 var removeExcept = myDBContext.DBObjectManager.RemoveUndefinedAttribute(undefAttr, dbObj.Value);
 
                                 if (removeExcept.Failed())
-                                    return new QueryResult(removeExcept.Errors);
+                                    return new QueryResult(removeExcept.IErrors);
                             }
                         }
                     }
@@ -953,17 +936,17 @@ namespace sones.GraphDB.Managers
 
                         if (deleteResult.Failed())
                         {
-                            return new QueryResult(deleteResult.Errors);
+                            return new QueryResult(deleteResult.IErrors);
                         }
                         else
                         {
 
                             if (!deleteResult.Success())
                             {
-                                result.AddWarnings(deleteResult.Warnings);
+                                result.PushIWarnings(deleteResult.IWarnings);
                             }
 
-                            result.SetResult(deleteResult.Value);
+                            result.Vertices = deleteResult.Value;
 
                         }
 
@@ -973,7 +956,7 @@ namespace sones.GraphDB.Managers
 
                     #region expressionGraph error handling
 
-                    result.AddWarnings(resultGraph.Value.GetWarnings());
+                    result.PushIWarnings(resultGraph.Value.GetWarnings());
 
                     #endregion
 
@@ -1017,7 +1000,7 @@ namespace sones.GraphDB.Managers
 
                             if (Result.Failed())
                             {
-                                return new QueryResult(Result.Errors);
+                                return new QueryResult(Result.IErrors);
                             }
 
                         }
@@ -1083,7 +1066,7 @@ namespace sones.GraphDB.Managers
                     var flushExcept = dbContext.DBObjectManager.FlushDBObject(objID.Value);
 
                     if (!flushExcept.Success())
-                        return new Exceptional<bool>(flushExcept.Errors.First());
+                        return new Exceptional<bool>(flushExcept.IErrors.First());
                 }
             }
 
@@ -1155,14 +1138,15 @@ namespace sones.GraphDB.Managers
         /// <summary>
         /// Create a readout based on the passed <paramref name="attributes"/>, <paramref name="undefinedAttributes"/>, <paramref name="specialTypeAttributes"/> which are all optional
         /// </summary>
-        /// <param name="dbObjectStream"></param>
+        /// <param name="myDBObjectStreamExceptional"></param>
         /// <param name="attributes"></param>
         /// <param name="undefinedAttributes"></param>
         /// <param name="specialTypeAttributes"></param>
         /// <returns></returns>
-        private Exceptional<DBObjectReadout> GetManipulationResultSet(DBContext dbContext, Exceptional<DBObjectStream> dbObjectStream, GraphDBType _Type, Dictionary<TypeAndAttributeDefinition, IObject> attributes = null, Dictionary<String, IObject> undefinedAttributes = null, Dictionary<ASpecialTypeAttribute, Object> specialTypeAttributes = null)
+        private Exceptional<Vertex> GetManipulationResultSet(DBContext myDBContext, Exceptional<DBObjectStream> myDBObjectStreamExceptional, GraphDBType myGraphDBType, Dictionary<TypeAndAttributeDefinition, IObject> attributes = null, Dictionary<String, IObject> undefinedAttributes = null, Dictionary<ASpecialTypeAttribute, Object> specialTypeAttributes = null)
         {
-            DBObjectReadout readOut = null;
+
+            Vertex _Vertex = null;
 
             #region Return inserted attributes
 
@@ -1170,11 +1154,11 @@ namespace sones.GraphDB.Managers
 
             if (!attributes.IsNullOrEmpty())
             {
-                readOut = new DBObjectReadout(attributes.ToDictionary(key => key.Key.Definition.Name, value => value.Value.GetReadoutValue()));
+                _Vertex = new Vertex(attributes.ToDictionary(key => key.Key.Definition.Name, value => value.Value.GetReadoutValue()));
             }
             else
             {
-                readOut = new DBObjectReadout();
+                _Vertex = new Vertex();
             }
 
             #endregion
@@ -1186,7 +1170,7 @@ namespace sones.GraphDB.Managers
 
                 foreach (var undefAttr in undefinedAttributes)
                 {
-                    readOut.Attributes.Add(undefAttr.Key, undefAttr.Value.GetReadoutValue());
+                    _Vertex.AddAttribute(undefAttr.Key, undefAttr.Value.GetReadoutValue());
                 }
 
             }
@@ -1200,7 +1184,7 @@ namespace sones.GraphDB.Managers
 
                 foreach (var specAttr in specialTypeAttributes)
                 {
-                    readOut.Attributes.Add(specAttr.Key.Name, specAttr.Value);
+                    _Vertex.AddAttribute(specAttr.Key.Name, specAttr.Value);
                 }
 
             }
@@ -1209,15 +1193,17 @@ namespace sones.GraphDB.Managers
 
             #region UUID
 
-            if (!readOut.Attributes.ContainsKey(SpecialTypeAttribute_UUID.AttributeName)) // If it was updated by SpecialTypeAttributes we do not need to add them again
+            if (!_Vertex.IsAttribute(SpecialTypeAttribute_UUID.AttributeName))
             {
 
-                var extractedValue = new SpecialTypeAttribute_UUID().ExtractValue(dbObjectStream.Value, _Type, dbContext);
+                var extractedValue = new SpecialTypeAttribute_UUID().ExtractValue(myDBObjectStreamExceptional.Value, myGraphDBType, myDBContext);
+                
                 if (extractedValue.Failed())
                 {
-                    return new Exceptional<DBObjectReadout>(extractedValue);
+                    return new Exceptional<Vertex>(extractedValue);
                 }
-                readOut.Attributes.Add(SpecialTypeAttribute_UUID.AttributeName, extractedValue.Value.GetReadoutValue());
+
+                _Vertex.AddAttribute(SpecialTypeAttribute_UUID.AttributeName, extractedValue.Value.GetReadoutValue());
 
             }
 
@@ -1225,15 +1211,15 @@ namespace sones.GraphDB.Managers
 
             #region REVISION
 
-            if (!readOut.Attributes.ContainsKey(SpecialTypeAttribute_REVISION.AttributeName)) // If it was updated by SpecialTypeAttributes we do not need to add them again
+            if (!_Vertex.IsAttribute(SpecialTypeAttribute_REVISION.AttributeName)) // If it was updated by SpecialTypeAttributes we do not need to add them again
             {
 
-                var extractedValue = new SpecialTypeAttribute_REVISION().ExtractValue(dbObjectStream.Value, _Type, dbContext);
+                var extractedValue = new SpecialTypeAttribute_REVISION().ExtractValue(myDBObjectStreamExceptional.Value, myGraphDBType, myDBContext);
                 if (extractedValue.Failed())
                 {
-                    return new Exceptional<DBObjectReadout>(extractedValue);
+                    return new Exceptional<Vertex>(extractedValue);
                 }
-                readOut.Attributes.Add(SpecialTypeAttribute_REVISION.AttributeName, extractedValue.Value.GetReadoutValue());
+                _Vertex.AddAttribute(SpecialTypeAttribute_REVISION.AttributeName, extractedValue.Value.GetReadoutValue());
 
             }
 
@@ -1241,7 +1227,7 @@ namespace sones.GraphDB.Managers
 
             #endregion
 
-            return new Exceptional<DBObjectReadout>(readOut);
+            return new Exceptional<Vertex>(_Vertex);
 
         }
 
@@ -1259,9 +1245,10 @@ namespace sones.GraphDB.Managers
                 return result;
             }
 
-            result.Push(AddMandatoryAttributes(myDBContext, myGraphDBType, result.Value));
+            result.PushIExceptional(AddMandatoryAttributes(myDBContext, myGraphDBType, result.Value));
 
             return result;
+
         }
 
         private Exceptional AddMandatoryAttributes(DBContext myDBContext, GraphDBType myGraphDBType, ManipulationAttributes myManipulationAttributes)
@@ -1442,6 +1429,7 @@ namespace sones.GraphDB.Managers
                     manipulationAttributes.SpecialTypeAttributes.Add((attr as ASpecialTypeAttribute), (aAttributeAssign as AttributeAssignOrUpdateValue).Value);
 
                     continue;
+
                 }
 
                 #endregion
@@ -1583,7 +1571,7 @@ namespace sones.GraphDB.Managers
 
                     if (value.Failed())
                     {
-                        return new Exceptional<ManipulationAttributes>(value.Errors.First());
+                        return new Exceptional<ManipulationAttributes>(value.IErrors.First());
                     }
 
 

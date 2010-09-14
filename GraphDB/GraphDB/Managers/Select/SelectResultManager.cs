@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � SelectResultManager" />
+﻿/* <id name="GraphDB – SelectResultManager" />
  * <copyright file="SelectResultManager.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -42,20 +22,21 @@ using sones.GraphDB.Structures.Enums;
 using sones.GraphDB.Structures.ExpressionGraph;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.Result;
+using sones.GraphDB.TypeManagement;
 
 using sones.GraphFS.DataStructures;
 using sones.Lib;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.Managers.TypeManagement.BasicTypes;
+using sones.GraphDB.NewAPI;
+using System.Diagnostics;
 
 #endregion
 
 namespace sones.GraphDB.Managers.Select
 {
-
 
     public class SelectResultManager
     {
@@ -168,7 +149,7 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="myAlias"></param>
         /// <param name="myAStructureNode"></param>
         /// <param name="myGraphType"></param>
-        public Exceptional AddElementToSelection(string myAlias, String myReference, IDChainDefinition myIDChainDefinition, Boolean myIsGroupedOrAggregated)
+        public Exceptional AddElementToSelection(string myAlias, String myReference, IDChainDefinition myIDChainDefinition, Boolean myIsGroupedOrAggregated, SelectValueAssignment mySelectValueAssignment = null)
         {
             SelectionElement lastElem = null;
 
@@ -194,16 +175,16 @@ namespace sones.GraphDB.Managers.Select
 
                     var typeOrAttr = (nodeEdgeKey as ChainPartTypeOrAttributeDefinition);
 
-                    if (typeOrAttr.DBType != null && typeOrAttr.TypeAttribute != null)
+                    if (true || typeOrAttr.DBType != null && typeOrAttr.TypeAttribute != null)
                     {
                         #region defined
 
                         var edgeKey = typeOrAttr.EdgeKey;
-                        selElem.Element = _DBContext.DBTypeManager.GetTypeAttributeByEdge(edgeKey);
+                        selElem.Element = typeOrAttr.TypeAttribute; //_DBContext.DBTypeManager.GetTypeAttributeByEdge(edgeKey);
 
                         if (String.IsNullOrEmpty(selElem.Alias) || (nodeEdgeKey.Next != null && !(nodeEdgeKey.Next is ChainPartFuncDefinition)))
                         {
-                            selElem.Alias = _DBContext.DBTypeManager.GetTypeAttributeByEdge(edgeKey).Name;
+                            selElem.Alias = typeOrAttr.TypeAttribute.Name;//_DBContext.DBTypeManager.GetTypeAttributeByEdge(edgeKey).Name;
                         }
 
                         curLevel += edgeKey;
@@ -222,14 +203,17 @@ namespace sones.GraphDB.Managers.Select
                         else
                         {
                             var element = _Selections[myReference].Last();
-                            
-                            preLevel = curLevel;
+
+                            preLevel = curLevel.GetPredecessorLevel();
+                            //preLevel = curLevel;
                         }
                         selElem.Alias = typeOrAttr.TypeOrAttributeName;
                         selElem.Element = new UndefinedTypeAttribute(typeOrAttr.TypeOrAttributeName);
 
                         #endregion
                     }
+
+                    #region Add to _Selections if valid
 
                     if (!_Selections.ContainsKey(myReference))
                     {
@@ -250,14 +234,16 @@ namespace sones.GraphDB.Managers.Select
                         return new Exceptional(new Error_DuplicateAttributeSelection(selElem.Alias));
                     }
 
-                    if (nodeEdgeKey.Next != null && _Selections[myReference][preLevel].Exists(item => item.Alias == selElem.Alias && item.RelatedIDChainDefinition.Depth == selElem.RelatedIDChainDefinition.Depth))
+                    // Do not add again if:
+                    // - it is a defined attribute and there is an asterisk selection at this level
+                    // - it is not the last part AND
+                    // - there is already an item of this part with the same alias and the same Depth
+                    if (nodeEdgeKey.Next == null || _Selections[myReference][preLevel].Count == 0 || _Selections[myReference][preLevel].Any(item => IsNewSelectionElement(item, selElem)))
                     {
-                        // do not add this element again!
-                    }
-                    else
-                    {                        
                         _Selections[myReference][preLevel].Add(selElem);
                     }
+
+                    #endregion
 
                     lastElem = selElem;
 
@@ -364,9 +350,91 @@ namespace sones.GraphDB.Managers.Select
                     #endregion
 
                 }
+
             }
 
+            #region Set the SelectValueAssignment for the last element
+
+            if (lastElem != null && mySelectValueAssignment != null)
+            {
+
+                #region Error handling
+
+                System.Diagnostics.Debug.Assert(lastElem.Element != null);
+
+                if (lastElem.Element.IsUserDefinedType(_DBContext.DBTypeManager))
+                {
+                    return new Exceptional(new Error_InvalidSelectValueAssignment(lastElem.Element.Name));
+                }
+
+                if (!(mySelectValueAssignment.TermDefinition is ValueDefinition))
+                {
+                    return new Exceptional(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                }
+
+                #endregion
+
+                #region Validate datatype if the attribute is a defined attribute
+
+                if (!(lastElem.Element is UndefinedTypeAttribute))
+                {
+
+                    if (!lastElem.Element.GetADBBaseObjectType(_DBContext.DBTypeManager).IsValidValue((mySelectValueAssignment.TermDefinition as ValueDefinition).Value.Value))
+                    {
+                        return new Exceptional(new Error_SelectValueAssignmentDataTypeDoesNotMatch(lastElem.Element.GetADBBaseObjectType(_DBContext.DBTypeManager).ObjectName, (mySelectValueAssignment.TermDefinition as ValueDefinition).Value.ObjectName));
+                    }
+                    var typedValue = new ValueDefinition(lastElem.Element.GetADBBaseObjectType(_DBContext.DBTypeManager).Clone((mySelectValueAssignment.TermDefinition as ValueDefinition).Value.Value));
+                    mySelectValueAssignment.TermDefinition = typedValue;
+                }
+
+                #endregion
+
+                lastElem.SelectValueAssignment = mySelectValueAssignment;
+            }
+
+
+            #endregion
+
             return Exceptional.OK;
+
+        }
+
+        /// <summary>
+        /// The element <paramref name="myNewElement"/> is new if
+        /// - it is not a special type attribute and there is an asterisk selection at this level
+        /// - it is not the last part AND there is already an item of this part with the same alias and the same Depth
+        /// </summary>
+        /// <param name="myExistingElement"></param>
+        /// <param name="myNewElement"></param>
+        /// <returns></returns>
+        private Boolean IsNewSelectionElement(SelectionElement myExistingElement, SelectionElement myNewElement)
+        {
+
+            #region The existing is an asterisk and the new one is NOT a SpecialTypeAttribute
+		
+            if (myExistingElement.Selection == TypesOfSelect.Asterisk && !myNewElement.RelatedIDChainDefinition.IsSpecialTypeAttribute())
+            {
+                return false;
+            }
+ 
+	        #endregion
+
+            #region The same level is already selected
+
+            var item = myExistingElement;
+            var selElem = myNewElement;
+
+            if (item.Alias == selElem.Alias &&
+                // same depth                                                                 or Undefined and one lower depth Friends.Undefined is Depth 1 and Friends.Age is Depth 2 but at the same selection level
+                (item.RelatedIDChainDefinition.Depth == selElem.RelatedIDChainDefinition.Depth || (selElem.RelatedIDChainDefinition.IsUndefinedAttribute && item.RelatedIDChainDefinition.Depth == selElem.RelatedIDChainDefinition.Depth + 1))
+                )
+            {
+                return false;
+            }
+
+            #endregion
+
+            return true;
 
         }
 
@@ -478,7 +546,7 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="myTypeNode">The type node which should be examined on selections</param>
         /// <param name="myUsingGraph">True if there is a valid where expression of this typeNode</param>
         /// <returns>True if succeeded, false if there was nothing to select for this type</returns>
-        public Exceptional<Boolean> Examine(Int64 myResolutionDepth, String myReference, GraphDBType myReferencedDBType, Boolean myUsingGraph, ref IEnumerable<DBObjectReadout> dbosEnumerable)
+        public Exceptional<Boolean> Examine(Int64 myResolutionDepth, String myReference, GraphDBType myReferencedDBType, Boolean myUsingGraph, ref IEnumerable<Vertex> myVertices)
         {
 
             if ((!_Selections.ContainsKey(myReference) || !_Selections[myReference].ContainsKey(new EdgeList(myReferencedDBType.UUID))) && _Aggregates.IsNullOrEmpty())
@@ -488,7 +556,7 @@ namespace sones.GraphDB.Managers.Select
 
             var levelKey = new EdgeList(myReferencedDBType.UUID);
 
-            dbosEnumerable  = ExamineDBO(myResolutionDepth, myReference, myReferencedDBType, levelKey, myUsingGraph);
+            myVertices  = ExamineVertex(myResolutionDepth, myReference, myReferencedDBType, levelKey, myUsingGraph);
 
             return new Exceptional<Boolean>(true);
 
@@ -505,19 +573,19 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="myDBObjectCache"></param>
         /// <param name="mySessionToken"></param>
         /// <returns></returns>
-        private IEnumerable<DBObjectReadout> ExamineDBO(long myResolutionDepth, String myReference, GraphDBType myReferencedDBType, EdgeList myLevelKey, bool myUsingGraph)
+        private IEnumerable<Vertex> ExamineVertex(long myResolutionDepth, String myReference, GraphDBType myReferencedDBType, EdgeList myLevelKey, bool myUsingGraph)
         {
 
             #region Get all selections and aggregates for this reference, type and level
             
-            var selections = getAttributeSelections(myReference, myReferencedDBType, myLevelKey);
+            var _Selections = getAttributeSelections(myReference, myReferencedDBType, myLevelKey);
             var aggregates = getAttributeAggregates(myReference, myReferencedDBType, myLevelKey);
 
             #endregion
 
             if (
-                (selections.IsNotNullOrEmpty() && selections.All(s => s.IsReferenceToSkip(myLevelKey)) && aggregates.IsNotNullOrEmpty() && aggregates.All(a => a.IsReferenceToSkip(myLevelKey)))
-                || (selections.IsNotNullOrEmpty() && selections.All(s => s.IsReferenceToSkip(myLevelKey)) && aggregates.IsNullOrEmpty())
+                (_Selections.IsNotNullOrEmpty() && _Selections.All(s => s.IsReferenceToSkip(myLevelKey)) && aggregates.IsNotNullOrEmpty() && aggregates.All(a => a.IsReferenceToSkip(myLevelKey)))
+                || (_Selections.IsNotNullOrEmpty() && _Selections.All(s => s.IsReferenceToSkip(myLevelKey)) && aggregates.IsNullOrEmpty())
                )
 
             {
@@ -526,17 +594,23 @@ namespace sones.GraphDB.Managers.Select
 
                 var Attributes = new Dictionary<String, Object>();
 
-                foreach (var sel in selections)
+                foreach (var _Selection in _Selections)
                 {
-                    var edgeKey = new EdgeKey(sel.Element.RelatedGraphDBTypeUUID, sel.Element.UUID);
-                    Attributes.Add(sel.Alias, new Edge(ExamineDBO(myResolutionDepth, myReference, myReferencedDBType, myLevelKey + edgeKey, myUsingGraph), sel.Element.GetDBType(_DBContext.DBTypeManager).Name));
+                    
+                    var edgeKey = new EdgeKey(_Selection.Element.RelatedGraphDBTypeUUID, _Selection.Element.UUID);
+                    
+                    Attributes.Add(_Selection.Alias, new Edge(null,
+                                                              ExamineVertex(myResolutionDepth, myReference, myReferencedDBType, myLevelKey + edgeKey, myUsingGraph),
+                                                              _Selection.Element.GetDBType(_DBContext.DBTypeManager).Name));
+
                 }
 
-                yield return new DBObjectReadout(Attributes);
+                yield return new Vertex(Attributes);
 
                 #endregion
 
             }
+
             else
             {
 
@@ -558,7 +632,7 @@ namespace sones.GraphDB.Managers.Select
 
                 if (aggregates.IsNotNullOrEmpty())
                 {
-                    foreach (var val in ExamineDBO_Aggregates(dbos, aggregates, selections, myReferencedDBType, myUsingGraph))
+                    foreach (var val in ExamineDBO_Aggregates(dbos, aggregates, _Selections, myReferencedDBType, myUsingGraph))
                     {
                         if (val != null)
                         {
@@ -566,9 +640,10 @@ namespace sones.GraphDB.Managers.Select
                         }
                     }
                 }
+
                 else if (_Groupings.IsNotNullOrEmpty())
                 {
-                    foreach (var val in ExamineDBO_Groupings(dbos, selections, myReferencedDBType))
+                    foreach (var val in ExamineDBO_Groupings(dbos, _Selections, myReferencedDBType))
                     {
                         if (val != null)
                         {
@@ -576,7 +651,8 @@ namespace sones.GraphDB.Managers.Select
                         }
                     }
                 }
-                else if (!selections.IsNullOrEmpty())
+
+                else if (!_Selections.IsNullOrEmpty())
                 {
 
                     Boolean isRefTypeVertex = myReferencedDBType.UUID.Equals(DBVertex.UUID);
@@ -589,10 +665,10 @@ namespace sones.GraphDB.Managers.Select
                         if (aDBObject.Failed())
                         {
                             // since we are in an yield we can do nothing else than throw a exception
-                            throw new GraphDBException(aDBObject.Errors);
+                            throw new GraphDBException(aDBObject.IErrors);
                         }
 
-                        #region Create a readoutObject for this DBO and yield it: on an failure throw a exception
+                        #region Create a readoutObject for this DBO and yield it: on failure throw an exception
 
                         if (isRefTypeVertex)
                         {
@@ -603,16 +679,16 @@ namespace sones.GraphDB.Managers.Select
                             refType = myReferencedDBType;
                         }
 
-                        var Attributes = GetAllSelectedAttributesFromDBO(aDBObject.Value, refType, myResolutionDepth, myLevelKey, myReference, myUsingGraph);
+                        var Attributes = GetAllSelectedAttributesFromVertex(aDBObject.Value, refType, myResolutionDepth, myLevelKey, myReference, myUsingGraph);
 
                         if (Attributes.IsNotNullOrEmpty())
                         {
-                            yield return new DBObjectReadout(Attributes);
+                            yield return new Vertex(Attributes);
                         }
                         //else
                         //{
                         //    // we found no attributes, so we return null because currently we do not want to add empty attribute readouts
-                        //    yield return (DBObjectReadout)null;
+                        //    yield return (Vertex)null;
                         //}
 
                         #endregion
@@ -637,7 +713,7 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="myDBOs"></param>
         /// <param name="myReferencedDBType"></param>
         /// <returns></returns>
-        private IEnumerable<DBObjectReadout> ExamineDBO_Aggregates(IEnumerable<Exceptional<DBObjectStream>> myDBOs, List<SelectionElementAggregate> myAggregates, List<SelectionElement> mySelections, GraphDBType myReferencedDBType, Boolean myUsingGraph)
+        private IEnumerable<Vertex> ExamineDBO_Aggregates(IEnumerable<Exceptional<DBObjectStream>> myDBOs, List<SelectionElementAggregate> myAggregates, List<SelectionElement> mySelections, GraphDBType myReferencedDBType, Boolean myUsingGraph)
         {
 
             #region Aggregate
@@ -663,7 +739,7 @@ namespace sones.GraphDB.Managers.Select
                         var attrValue = dbo.Value.GetAttribute(selection.Element, myReferencedDBType, _DBContext);
                         if (attrValue.Failed())
                         {
-                            throw new GraphDBException(attrValue.Errors);
+                            throw new GraphDBException(attrValue.IErrors);
                         }
 
                         groupingVals.Add(new GroupingValuesKey(selection.Element, selection.Alias), attrValue.Value);
@@ -695,7 +771,7 @@ namespace sones.GraphDB.Managers.Select
                         var aggrResult = aggr.Aggregate.Aggregate(group as IEnumerable<DBObjectStream>, aggr.Element, _DBContext);
                         if (aggrResult.Failed())
                         {
-                            throw new GraphDBException(aggrResult.Errors);
+                            throw new GraphDBException(aggrResult.IErrors);
                         }
                         aggregatedAttributes.Add(aggr.Alias, aggrResult.Value.GetReadoutValue());
                     }
@@ -705,7 +781,7 @@ namespace sones.GraphDB.Managers.Select
                         aggregatedAttributes.Add(groupingKeyVal.Key.AttributeAlias, groupingKeyVal.Value.GetReadoutValue());
                     }
 
-                    var dbObjectReadout = new DBObjectReadoutGroup(aggregatedAttributes, (group as IEnumerable<DBObjectStream>).Select(dbo => new DBObjectReadout(GetAllSelectedAttributesFromDBO(dbo, myReferencedDBType, 0L, null, null, false, true))));
+                    var dbObjectReadout = new VertexGroup(aggregatedAttributes, (group as IEnumerable<DBObjectStream>).Select(dbo => new Vertex(GetAllSelectedAttributesFromVertex(dbo, myReferencedDBType, -1, null, null, false, true))));
 
                     #endregion
 
@@ -715,7 +791,7 @@ namespace sones.GraphDB.Managers.Select
                     {
                         var res = _HavingExpression.IsSatisfyHaving(dbObjectReadout, _DBContext);
                         if (res.Failed())
-                            throw new GraphDBException(res.Errors);
+                            throw new GraphDBException(res.IErrors);
                         else if (res.Value)
                             yield return dbObjectReadout;
                     }
@@ -739,7 +815,7 @@ namespace sones.GraphDB.Managers.Select
                 #region No grouping, just aggregates
 
                 var aggregatedAttributes = new Dictionary<String, Object>();
-                DBObjectReadout dbObjectReadout;
+                Vertex _Vertex;
 
                 if (!myUsingGraph && myAggregates.All(a => a.IndexAggregate != null))
                 {
@@ -751,11 +827,12 @@ namespace sones.GraphDB.Managers.Select
                         var idxAggrResult = aggr.Aggregate.Aggregate(aggr.IndexAggregate, myReferencedDBType, _DBContext);
                         if (idxAggrResult.Failed())
                         {
-                            throw new GraphDBException(idxAggrResult.Errors);
+                            throw new GraphDBException(idxAggrResult.IErrors);
                         }
                         aggregatedAttributes.Add(aggr.Alias, idxAggrResult.Value.GetReadoutValue());
                     }
-                    dbObjectReadout = new DBObjectReadout(aggregatedAttributes);
+
+                    _Vertex = new Vertex(aggregatedAttributes);
 
                     #endregion
 
@@ -777,14 +854,14 @@ namespace sones.GraphDB.Managers.Select
 
                         if (aggrResult.Failed())
                         {
-                            throw new GraphDBException(aggrResult.Errors);
+                            throw new GraphDBException(aggrResult.IErrors);
                         }
 
                         aggregatedAttributes.Add(aggr.Alias, aggrResult.Value.GetReadoutValue());
 
                     }
 
-                    dbObjectReadout = new DBObjectReadout(aggregatedAttributes);
+                    _Vertex = new Vertex(aggregatedAttributes);
 
                     #endregion
 
@@ -794,15 +871,15 @@ namespace sones.GraphDB.Managers.Select
 
                 if (_HavingExpression != null)
                 {
-                    var res = _HavingExpression.IsSatisfyHaving(dbObjectReadout, _DBContext);
+                    var res = _HavingExpression.IsSatisfyHaving(_Vertex, _DBContext);
                     if (res.Failed())
-                        throw new GraphDBException(res.Errors);
+                        throw new GraphDBException(res.IErrors);
                     else if (res.Value)
-                        yield return dbObjectReadout;
+                        yield return _Vertex;
                 }
                 else
                 {
-                    yield return dbObjectReadout;
+                    yield return _Vertex;
                 }
 
                 #endregion
@@ -825,6 +902,7 @@ namespace sones.GraphDB.Managers.Select
         /// <returns></returns>
         private Boolean CheckLoadedDBObjectStream(Exceptional<DBObjectStream> dbStream, GraphDBType myDBType, TypeAttribute myTypeAttribute = null)
         {
+
             SettingInvalidReferenceHandling invalidReferenceSetting = null;
             GraphDBType currentType = myDBType;
 
@@ -876,26 +954,27 @@ namespace sones.GraphDB.Managers.Select
         /// <summary>
         ///  Group all DBOs and return the readouts
         /// </summary>
-        /// <param name="myDBOs"></param>
+        /// <param name="myDBObjectStreams"></param>
         /// <param name="mySelections"></param>
         /// <param name="myReferencedDBType"></param>
         /// <returns></returns>
-        private IEnumerable<DBObjectReadout> ExamineDBO_Groupings(IEnumerable<Exceptional<DBObjectStream>> myDBOs, List<SelectionElement> mySelections, GraphDBType myReferencedDBType)
+        private IEnumerable<Vertex> ExamineDBO_Groupings(IEnumerable<Exceptional<DBObjectStream>> myDBObjectStreams, List<SelectionElement> mySelections, GraphDBType myReferencedDBType)
         {
-
-            #region Groupings
 
             #region Create groupings using the ILookup
 
-            var groupedDBOs = myDBOs.ToLookup((dbo) =>
+            var _GroupedVertices = myDBObjectStreams.ToLookup((dbo) =>
             {
+
                 CheckLoadedDBObjectStream(dbo, myReferencedDBType);
 
                 #region Create GroupingKey based on the group values and attributes
 
-                Dictionary<GroupingValuesKey, IObject> groupingVals = new Dictionary<GroupingValuesKey, IObject>();
+                var groupingVals = new Dictionary<GroupingValuesKey, IObject>();
+
                 foreach (var selection in mySelections)
                 {
+
                     if (!dbo.Value.HasAttribute(selection.Element, _DBContext))
                     {
                         continue;
@@ -904,11 +983,13 @@ namespace sones.GraphDB.Managers.Select
                     var attrValue = dbo.Value.GetAttribute(selection.Element, myReferencedDBType, _DBContext);
                     if (attrValue.Failed())
                     {
-                        throw new GraphDBException(attrValue.Errors);
+                        throw new GraphDBException(attrValue.IErrors);
                     }
 
                     groupingVals.Add(new GroupingValuesKey(selection.Element, selection.Alias), attrValue.Value);
+                
                 }
+                
                 GroupingKey groupingKey = new GroupingKey(groupingVals);
 
                 #endregion
@@ -924,7 +1005,7 @@ namespace sones.GraphDB.Managers.Select
 
             #endregion
 
-            foreach (var group in groupedDBOs)
+            foreach (var group in _GroupedVertices)
             {
 
                 #region No valid grouping keys found
@@ -937,33 +1018,39 @@ namespace sones.GraphDB.Managers.Select
                 #endregion
 
                 var groupedAttributes = new Dictionary<String, Object>();
+
                 foreach (var groupingKeyVal in group.Key.Values)
                 {
                     groupedAttributes.Add(groupingKeyVal.Key.AttributeAlias, groupingKeyVal.Value.GetReadoutValue());
                 }
 
-                var dbObjectReadout = new DBObjectReadoutGroup(groupedAttributes, group.Select(dbo => new DBObjectReadout(GetAllSelectedAttributesFromDBO(dbo, myReferencedDBType, 0L, null, null, false, true))));
+                var _VertexGroup = new VertexGroup(groupedAttributes,
+                                                   group.Select(_DBObjectStream =>
+                                                                new Vertex(GetAllSelectedAttributesFromVertex(_DBObjectStream, myReferencedDBType, -1, null, null, false, true))));
                 
                 #region Check having
 
                 if (_HavingExpression != null)
                 {
-                    var res = _HavingExpression.IsSatisfyHaving(dbObjectReadout, _DBContext);
+                    
+                    var res = _HavingExpression.IsSatisfyHaving(_VertexGroup, _DBContext);
+                    
                     if (res.Failed())
-                        throw new GraphDBException(res.Errors);
+                        throw new GraphDBException(res.IErrors);
+                    
                     else if (res.Value)
-                        yield return dbObjectReadout;
+                        yield return _VertexGroup;
+
                 }
+
                 else
                 {
-                    yield return dbObjectReadout;
+                    yield return _VertexGroup;
                 }
 
                 #endregion
 
             }
-
-            #endregion
 
         }
 
@@ -990,6 +1077,12 @@ namespace sones.GraphDB.Managers.Select
 
             if (myCallingObject == null) // DBObject does not have the attribute
             {
+
+                if (mySelectionElementFunction.SelectValueAssignment != null)
+                {
+                    return new Exceptional<FuncParameter>(new FuncParameter((mySelectionElementFunction.SelectValueAssignment.TermDefinition as ValueDefinition).Value));
+                }
+
                 return null;
             }
 
@@ -1219,49 +1312,65 @@ namespace sones.GraphDB.Managers.Select
 
         #endregion
 
-        #region GetReadouts - from a SetReferenceEdgeType
+        #region GetVertices - from a SetReferenceEdgeType
 
         /// <summary>
         /// Resolve a AListReferenceEdgeType to a DBObjectReadouts. This will resolve each edge target using the 'GetAllAttributesFromDBO' method
         /// </summary>
         /// <param name="myTypeOfAttribute"></param>
-        /// <param name="myDBOs"></param>
+        /// <param name="myVertices"></param>
         /// <param name="myDepth"></param>
         /// <param name="currentLvl"></param>
         /// <returns></returns>
-        internal IEnumerable<DBObjectReadout> GetReadouts(GraphDBType myTypeOfAttribute, ASetOfReferencesEdgeType myDBOs, IEnumerable<Exceptional<DBObjectStream>> myObjectUUIDs, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph)
+        internal IEnumerable<Vertex> GetVertices(GraphDBType myTypeOfAttribute, ASetOfReferencesEdgeType myVertices, IEnumerable<Exceptional<DBObjectStream>> myObjectUUIDs, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph)
         {
-            foreach (var aReadOut in myDBOs.GetReadouts(a => LoadAndResolveDBObject(a, myTypeOfAttribute, myDepth, myLevelKey, myReference, myUsingGraph), myObjectUUIDs))
+
+            foreach (var _Vertex in myVertices.GetReadouts(_ObjectUUID => LoadAndResolveVertex(_ObjectUUID,
+                                                                                               myTypeOfAttribute,
+                                                                                               myDepth,
+                                                                                               myLevelKey,
+                                                                                               myReference,
+                                                                                               myUsingGraph),
+                                                           myObjectUUIDs))
+
             {
-                yield return aReadOut;
+                yield return _Vertex;
             }
 
             yield break;
+
         }
 
         /// <summary>
-        /// Resolve a AListReferenceEdgeType to a List of DBObjectReadout. This will resolve each edge target using the 'GetAllAttributesFromDBO' method
+        /// Resolve a AListReferenceEdgeType to a List of Vertex. This will resolve each edge target using the 'GetAllAttributesFromDBO' method
         /// </summary>
         /// <param name="typeOfAttribute"></param>
-        /// <param name="myDBOs"></param>
+        /// <param name="myVertices"></param>
         /// <param name="myDepth"></param>
         /// <param name="currentLvl"></param>
         /// <returns></returns>
-        internal IEnumerable<DBObjectReadout> GetReadouts(GraphDBType myTypeOfAttribute, ASetOfReferencesEdgeType myDBOs, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph)
+        internal IEnumerable<Vertex> GetVertices(GraphDBType myTypeOfAttribute, ASetOfReferencesEdgeType myVertices, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph)
         {
-            foreach (var aReadOut in myDBOs.GetReadouts(a => LoadAndResolveDBObject(a, myTypeOfAttribute, myDepth, myLevelKey, myReference, myUsingGraph)))
+
+            foreach (var _Vertex in myVertices.GetVertices(_ObjectUUID => LoadAndResolveVertex(_ObjectUUID,
+                                                                                               myTypeOfAttribute,
+                                                                                               myDepth,
+                                                                                               myLevelKey,
+                                                                                               myReference,
+                                                                                               myUsingGraph)))
             {
-                if (aReadOut != null)
+                if (_Vertex != null)
                 {
-                    yield return aReadOut;
+                    yield return _Vertex;
                 }
             }
 
             yield break;
+
         }
 
         /// <summary>
-        /// This will load the DBO (check for load errors) and get all selected attributes of this DBO
+        /// This will load the vertex (check for load errors) and get all selected attributes of this vertex
         /// </summary>
         /// <param name="myObjectUUID"></param>
         /// <param name="myTypeOfAttribute"></param>
@@ -1270,24 +1379,26 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="myReference"></param>
         /// <param name="myUsingGraph"></param>
         /// <returns></returns>
-        private DBObjectReadout LoadAndResolveDBObject(ObjectUUID myObjectUUID, GraphDBType myTypeOfAttribute, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph)
+        private Vertex LoadAndResolveVertex(ObjectUUID myObjectUUID, GraphDBType myTypeOfAttribute, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph)
         {
             
             var dbStream = _DBContext.DBObjectCache.LoadDBObjectStream(myTypeOfAttribute, myObjectUUID);
 
             var curType = _DBContext.DBTypeManager.GetTypeByUUID(myLevelKey.LastEdge.TypeUUID);
             var curAttr = curType.GetTypeAttributeByUUID(myLevelKey.LastEdge.AttrUUID);
+            
             if (!CheckLoadedDBObjectStream(dbStream, curType, curAttr))
             {
-                return GenerateNotResolvedDBReadout(myObjectUUID, _DBContext.DBTypeManager.GetTypeByUUID(myLevelKey.LastEdge.TypeUUID));
+                return GenerateNotResolvedVertex(myObjectUUID, _DBContext.DBTypeManager.GetTypeByUUID(myLevelKey.LastEdge.TypeUUID));
             }
 
-            return new DBObjectReadout(GetAllSelectedAttributesFromDBO(dbStream.Value, myTypeOfAttribute, myDepth, myLevelKey, myReference, myUsingGraph));
+            return new Vertex(GetAllSelectedAttributesFromVertex(dbStream.Value, myTypeOfAttribute, myDepth, myLevelKey, myReference, myUsingGraph));
+
         }
 
         #endregion
 
-        #region Add all Attributes of myDBObject (select *) and get the values
+        #region Add all Attributes of a vertex (select *) and get the values
 
         /// <summary>
         /// This will add all attributes of <paramref name="myDBObject"/> to the <paramref name="myAttributes"/> reference. Reference attributes will be resolved to the <paramref name="myDepth"/>
@@ -1301,7 +1412,7 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="myUsingGraph"></param>
         /// <param name="mySelType"></param>
         /// <param name="myTypeID"></param>
-        private void AddAttributesByDBO(ref Dictionary<string, object> myAttributes, GraphDBType myType, DBObjectStream myDBObject, long myDepth, EdgeList myEdgeList, string myReference, bool myUsingGraph, TypesOfSelect mySelType, TypeUUID myTypeID = null)
+        private void AddAttributesByDBO(ref Dictionary<String, Object> myAttributes, GraphDBType myType, DBObjectStream myDBObject, Int64 myDepth, EdgeList myEdgeList, String myReference, Boolean myUsingGraph, TypesOfSelect mySelType, TypeUUID myTypeID = null)
         {
 
             #region Get all attributes which are stored at the DBO
@@ -1367,9 +1478,9 @@ namespace sones.GraphDB.Managers.Select
                     {
                         // Since we can define special depth (via setting) for attributes we need to check them now
                         myDepth = GetDepth(-1, myDepth, myType, typeAttr);
-                        if (myDepth > 0)
+                        if ((myDepth > 0))
                         {
-                            myAttributes.Add(typeAttr.Name, ResolveAttributeValue(typeAttr, attr.Value, myDepth - 1, myEdgeList, myDBObject, myReference, myUsingGraph));
+                            myAttributes.Add(typeAttr.Name, ResolveAttributeValue(typeAttr, attr.Value, myDepth, myEdgeList, myDBObject, myReference, myUsingGraph));
                         }
                         else
                         {
@@ -1408,10 +1519,10 @@ namespace sones.GraphDB.Managers.Select
                         var bes = myDBObject.GetBackwardEdges(beAttr.BackwardEdgeDefinition, _DBContext, _DBContext.DBObjectCache, beAttr.GetDBType(_DBContext.DBTypeManager));
                         
                         if (bes.Failed())
-                            throw new GraphDBException(bes.Errors);
+                            throw new GraphDBException(bes.IErrors);
 
                         if (bes.Value != null) // otherwise the DBO does not have any
-                            myAttributes.Add(beAttr.Name, ResolveAttributeValue(beAttr, bes.Value, myDepth - 1, myEdgeList, myDBObject, myReference, myUsingGraph));
+                            myAttributes.Add(beAttr.Name, ResolveAttributeValue(beAttr, bes.Value, myDepth, myEdgeList, myDBObject, myReference, myUsingGraph));
                     }
                     else
                     {
@@ -1440,7 +1551,7 @@ namespace sones.GraphDB.Managers.Select
                 var undefAttrException = myDBObject.GetUndefinedAttributes(_DBContext.DBObjectManager);
 
                 if (undefAttrException.Failed())
-                    throw new GraphDBException(undefAttrException.Errors);
+                    throw new GraphDBException(undefAttrException.IErrors);
 
                 foreach (var undefAttr in undefAttrException.Value)
                     myAttributes.Add(undefAttr.Key, undefAttr.Value.GetReadoutValue());
@@ -1459,7 +1570,7 @@ namespace sones.GraphDB.Managers.Select
                         var result = (specialAttr as ASpecialTypeAttribute).ExtractValue(myDBObject, myType, _DBContext);
                         if (result.Failed())
                         {
-                            throw new GraphDBException(result.Errors);
+                            throw new GraphDBException(result.IErrors);
                         }
 
                         myAttributes.Add(specialAttr.Name, result.Value.GetReadoutValue());
@@ -1468,24 +1579,31 @@ namespace sones.GraphDB.Managers.Select
             }
 
             #endregion
+        
         }
 
         private IEnumerable<TypeAttribute> GetBackwardEdgeAttributes(GraphDBType type)
         {
+
             if (!_BackwardEdgeAttributesByType.ContainsKey(type))
             {
                 _BackwardEdgeAttributesByType.Add(type, type.GetAllAttributes(t => t.IsBackwardEdge, _DBContext).ToList());
             }
+
             return _BackwardEdgeAttributesByType[type];
+
         }
         
         private IEnumerable<TypeAttribute> GetSpecialAttributes(GraphDBType type)
         {
+
             if (!_SpecialAttributesByType.ContainsKey(type))
             {
                 _SpecialAttributesByType.Add(type, type.GetAllAttributes(t => t is ASpecialTypeAttribute, _DBContext).ToList());
             }
+
             return _SpecialAttributesByType[type];
+
         }
 
         /// <summary>   Gets an attribute value - references will be resolved. </summary>
@@ -1502,38 +1620,40 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="attributeValue">   [out] The attribute value. </param>
         ///
         /// <returns>   true if it succeeds, false if the DBO does not have the attribute. </returns>
-        private Boolean GetAttributeValueAndResolve(GraphDBType myType, TypeAttribute myTypeAttribute, DBObjectStream myDBObject, Int64 myDepth, EdgeList myLevelKey, String reference, Boolean myUsingGraph, out Object attributeValue, String myUndefAttrName = null)
+        private Boolean GetAttributeValueAndResolve(GraphDBType myType, SelectionElement mySelectionelement, DBObjectStream myDBObject, Int64 myDepth, EdgeList myLevelKey, String reference, Boolean myUsingGraph, out Object attributeValue, String myUndefAttrName = null)
         {
-                
-            if (myTypeAttribute.TypeCharacteristics.IsBackwardEdge)
+
+            var typeAttribute = mySelectionelement.Element;
+
+            if (typeAttribute.TypeCharacteristics.IsBackwardEdge)
             {
 
                 #region IsBackwardEdge
 
-                EdgeKey edgeKey = myTypeAttribute.BackwardEdgeDefinition;
+                EdgeKey edgeKey = typeAttribute.BackwardEdgeDefinition;
                 var contBackwardExcept = myDBObject.ContainsBackwardEdge(edgeKey, _DBContext, _DBContext.DBObjectCache, myType);
 
                 if (contBackwardExcept.Failed())
-                    throw new GraphDBException(contBackwardExcept.Errors);
+                    throw new GraphDBException(contBackwardExcept.IErrors);
 
                 if (contBackwardExcept.Value)
                 {
                     if (myDepth > 0)
                     {
-                        var dbos = myDBObject.GetBackwardEdges(edgeKey, _DBContext, _DBContext.DBObjectCache, myTypeAttribute.GetDBType(_DBContext.DBTypeManager));
+                        var dbos = myDBObject.GetBackwardEdges(edgeKey, _DBContext, _DBContext.DBObjectCache, typeAttribute.GetDBType(_DBContext.DBTypeManager));
 
                         if (dbos.Failed())
-                            throw new GraphDBException(dbos.Errors);
+                            throw new GraphDBException(dbos.IErrors);
 
                         if (dbos.Value != null)
                         {
-                            attributeValue = ResolveAttributeValue(myTypeAttribute, dbos.Value, myDepth - 1, myLevelKey, myDBObject, reference, myUsingGraph);
+                            attributeValue = ResolveAttributeValue(typeAttribute, dbos.Value, myDepth, myLevelKey, myDBObject, reference, myUsingGraph);
                             return true;
                         }
                     }
                     else
                     {
-                        attributeValue = GetNotResolvedBackwardEdgeReferenceAttributeValue(myDBObject, myTypeAttribute, edgeKey, myLevelKey, myUsingGraph, _DBContext);
+                        attributeValue = GetNotResolvedBackwardEdgeReferenceAttributeValue(myDBObject, typeAttribute, edgeKey, myLevelKey, myUsingGraph, _DBContext);
                         return true;
 
                     }
@@ -1542,20 +1662,31 @@ namespace sones.GraphDB.Managers.Select
                 #endregion
 
             }
-            else if (myDBObject.HasAttribute(myTypeAttribute, _DBContext))
+            else if (myDBObject.HasAttribute(typeAttribute, _DBContext))
             {
+
+                #region SelectValueAssignment - kind of static assignment of selected attribute
+
+                if (mySelectionelement.SelectValueAssignment != null && mySelectionelement.SelectValueAssignment.ValueAssignmentType == SelectValueAssignment.ValueAssignmentTypes.Always)
+                {
+                    // Currently the prior add SelectionElement verifies that TermDefinition is always a ValueDefinition - if others will become valid this must be changed!
+                    attributeValue = (mySelectionelement.SelectValueAssignment.TermDefinition as ValueDefinition).Value.Value;
+                    return true;
+                }
+
+                #endregion
 
                 #region ELSE (!IsBackwardEdge)
 
                 #region not a reference attribute value
 
-                if (!myTypeAttribute.IsUserDefinedType(_DBContext.DBTypeManager))
+                if (!typeAttribute.IsUserDefinedType(_DBContext.DBTypeManager))
                 {
-                    var attrVal = myDBObject.GetAttribute(myTypeAttribute, myType, _DBContext);
+                    var attrVal = myDBObject.GetAttribute(typeAttribute, myType, _DBContext);
 
                     if (attrVal.Failed())
                     {
-                        throw new GraphDBException(attrVal.Errors);
+                        throw new GraphDBException(attrVal.IErrors);
                     }
 
                     // currently, we do not want to return a ADBBaseObject but the real value
@@ -1577,13 +1708,13 @@ namespace sones.GraphDB.Managers.Select
                 {
                     if (myDepth > 0)
                     {
-                        var attrValue = myDBObject.GetAttribute(myTypeAttribute.UUID, myType, _DBContext);
-                        attributeValue = ResolveAttributeValue(myTypeAttribute, attrValue, myDepth - 1, myLevelKey, myDBObject, reference, myUsingGraph);
+                        var attrValue = myDBObject.GetAttribute(typeAttribute.UUID, myType, _DBContext);
+                        attributeValue = ResolveAttributeValue(typeAttribute, attrValue, myDepth, myLevelKey, myDBObject, reference, myUsingGraph);
                         return true;
                     }
                     else
                     {
-                        attributeValue = GetNotResolvedReferenceAttributeValue(myDBObject, myTypeAttribute, myType, myLevelKey, myUsingGraph, _DBContext);
+                        attributeValue = GetNotResolvedReferenceAttributeValue(myDBObject, typeAttribute, myType, myLevelKey, myUsingGraph, _DBContext);
                         return true;
                     }
                 }
@@ -1593,9 +1724,16 @@ namespace sones.GraphDB.Managers.Select
                 #endregion
 
             }
+            else if (mySelectionelement.SelectValueAssignment != null)
+            {
+                // Currently the prior add SelectionElement verifies that TermDefinition is always a ValueDefinition - if others will become valid this must be changed!
+                attributeValue = (mySelectionelement.SelectValueAssignment.TermDefinition as ValueDefinition).Value.Value;
+                return true;
+            }
 
             attributeValue = null;
             return false;
+
         }
 
         #region GetNotResolved edges
@@ -1605,51 +1743,58 @@ namespace sones.GraphDB.Managers.Select
         /// </summary>
         /// <param name="referenceEdge"></param>
         /// <param name="typeAttribute"></param>
-        /// <param name="graphDBType"></param>
-        /// <param name="_DBContext"></param>
+        /// <param name="myGraphDBType"></param>
+        /// <param name="myDBContext"></param>
         /// <returns></returns>
-        private Edge GetNotResolvedReferenceEdgeAttributeValue(IReferenceEdge referenceEdge, GraphDBType graphDBType, DBContext _DBContext)
+        private Edge GetNotResolvedReferenceEdgeAttributeValue(IReferenceEdge referenceEdge, GraphDBType myGraphDBType, DBContext myDBContext)
         {
 
             if (referenceEdge is ASetOfReferencesEdgeType)
             {
-                return new Edge((referenceEdge as ASetOfReferencesEdgeType).GetReadouts((uuid) => GenerateNotResolvedDBReadout(uuid, graphDBType)), graphDBType.Name);
+                return new Edge(null, (referenceEdge as ASetOfReferencesEdgeType).GetVertices((_ObjectUUID) => GenerateNotResolvedVertex(_ObjectUUID, myGraphDBType)), myGraphDBType.Name);
             }
+
             else if (referenceEdge is ASingleReferenceEdgeType)
             {
-                return new Edge((referenceEdge as ASingleReferenceEdgeType).GetReadout((uuid) => GenerateNotResolvedDBReadout(uuid, graphDBType)), graphDBType.Name);
+                return new Edge(null, (referenceEdge as ASingleReferenceEdgeType).GetVertex((_ObjectUUID) => GenerateNotResolvedVertex(_ObjectUUID, myGraphDBType)), myGraphDBType.Name);
             }
+
             else
             {
-                throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                throw new GraphDBException(new Error_NotImplemented(new StackTrace(true)));
             }
+
         }
 
         /// <summary>
         /// Get the attribute value of <paramref name="myTypeAttribute"/> and calls GetNotResolvedReferenceEdgeAttributeValue with the edge
         /// </summary>
-        /// <param name="myDBObject"></param>
+        /// <param name="myDBObjectStream"></param>
         /// <param name="myTypeAttribute"></param>
-        /// <param name="myType"></param>
-        /// <param name="currentEdgeList"></param>
+        /// <param name="myGraphDBType"></param>
+        /// <param name="myCurrentEdgeList"></param>
         /// <param name="myUsingGraph"></param>
-        /// <param name="_DBContext"></param>
+        /// <param name="myDBContext"></param>
         /// <returns></returns>
-        private Edge GetNotResolvedReferenceAttributeValue(DBObjectStream myDBObject, TypeAttribute myTypeAttribute, GraphDBType myType, EdgeList currentEdgeList, Boolean myUsingGraph, DBContext _DBContext)
+        private Edge GetNotResolvedReferenceAttributeValue(DBObjectStream myDBObjectStream, TypeAttribute myTypeAttribute, GraphDBType myGraphDBType, EdgeList myCurrentEdgeList, Boolean myUsingGraph, DBContext myDBContext)
         {
+
             IObject attrValue = null;
 
             if (myUsingGraph)
             {
-                var interestingLevelKey = new LevelKey((currentEdgeList + new EdgeKey(myType.UUID, myTypeAttribute.UUID)).Edges, _DBContext.DBTypeManager);
 
-                var interestingUUIDs = _ExpressionGraph.SelectUUIDs(interestingLevelKey, myDBObject);
+                var interestingLevelKey = new LevelKey((myCurrentEdgeList + new EdgeKey(myGraphDBType.UUID, myTypeAttribute.UUID)).Edges, myDBContext.DBTypeManager);
 
-                attrValue = ((IReferenceEdge)myDBObject.GetAttribute(myTypeAttribute.UUID, myType, _DBContext)).GetNewInstance(interestingUUIDs, myType.UUID);
+                var interestingUUIDs = _ExpressionGraph.SelectUUIDs(interestingLevelKey, myDBObjectStream);
+
+                attrValue = ((IReferenceEdge)myDBObjectStream.GetAttribute(myTypeAttribute.UUID, myGraphDBType, myDBContext)).GetNewInstance(interestingUUIDs, myGraphDBType.UUID);
+
             }
+
             else
             {
-                attrValue = myDBObject.GetAttribute(myTypeAttribute.UUID, myType, _DBContext);
+                attrValue = myDBObjectStream.GetAttribute(myTypeAttribute.UUID, myGraphDBType, myDBContext);
             }
 
             if (attrValue == null)
@@ -1657,9 +1802,9 @@ namespace sones.GraphDB.Managers.Select
                 return null;
             }
 
-            var typeName = myTypeAttribute.GetDBType(_DBContext.DBTypeManager).Name;
+            var typeName = myTypeAttribute.GetDBType(myDBContext.DBTypeManager).Name;
 
-            return GetNotResolvedReferenceEdgeAttributeValue(attrValue as IReferenceEdge, myTypeAttribute.GetDBType(_DBContext.DBTypeManager), _DBContext);
+            return GetNotResolvedReferenceEdgeAttributeValue(attrValue as IReferenceEdge, myTypeAttribute.GetDBType(myDBContext.DBTypeManager), myDBContext);
 
         }
 
@@ -1669,17 +1814,20 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="reference"></param>
         /// <param name="myType"></param>
         /// <returns></returns>
-        private DBObjectReadout GenerateNotResolvedDBReadout(ObjectUUID reference, GraphDBType myType)
+        private Vertex GenerateNotResolvedVertex(ObjectUUID reference, GraphDBType myType)
         {
-            var specialAttributes = new Dictionary<string, object>();
+
+            var specialAttributes = new Dictionary<String, Object>();
             specialAttributes.Add(SpecialTypeAttribute_UUID.AttributeName, reference);
             specialAttributes.Add(SpecialTypeAttribute_TYPE.AttributeName, myType.Name);
 
-            return new DBObjectReadout(specialAttributes);
+            return new Vertex(specialAttributes);
+
         }
 
         private Edge GetNotResolvedBackwardEdgeReferenceAttributeValue(DBObjectStream myDBObject, TypeAttribute myTypeAttribute, EdgeKey edgeKey, EdgeList currentEdgeList, Boolean myUsingGraph, DBContext _DBContext)
         {
+
             IObject attrValue = null;
 
             if (myUsingGraph)
@@ -1688,12 +1836,13 @@ namespace sones.GraphDB.Managers.Select
 
                 attrValue = new EdgeTypeSetOfReferences(_ExpressionGraph.SelectUUIDs(interestingLevelKey, myDBObject), myTypeAttribute.DBTypeUUID);
             }
+
             else
             {
                 var attrValueException = myDBObject.GetBackwardEdges(edgeKey, _DBContext, _DBContext.DBObjectCache, myTypeAttribute.GetDBType(_DBContext.DBTypeManager));
                 if (attrValueException.Failed())
                 {
-                    throw new GraphDBException(attrValueException.Errors);
+                    throw new GraphDBException(attrValueException.IErrors);
                 }
 
                 attrValue = attrValueException.Value;
@@ -1703,24 +1852,26 @@ namespace sones.GraphDB.Managers.Select
             {
                 return null;
             }
+
             else if (!(attrValue is IReferenceEdge))
             {
                 throw new GraphDBException(new Error_InvalidEdgeType(attrValue.GetType(), typeof(IReferenceEdge)));
             }
 
-            List<DBObjectReadout> readouts = new List<DBObjectReadout>();
+            var readouts = new List<Vertex>();
             var typeName = _DBContext.DBTypeManager.GetTypeByUUID(edgeKey.TypeUUID).Name;
+
             foreach (var reference in (attrValue as IReferenceEdge).GetAllReferenceIDs())
             {
                 var specialAttributes = new Dictionary<string, object>();
                 specialAttributes.Add(SpecialTypeAttribute_UUID.AttributeName, reference);
                 specialAttributes.Add(SpecialTypeAttribute_TYPE.AttributeName, typeName);
 
-                readouts.Add(new DBObjectReadout(specialAttributes));
+                readouts.Add(new Vertex(specialAttributes));
             }
 
+            return new Edge(null, readouts, _DBContext.DBTypeManager.GetTypeAttributeByEdge(edgeKey).GetDBType(_DBContext.DBTypeManager).Name);
 
-            return new Edge(readouts, _DBContext.DBTypeManager.GetTypeAttributeByEdge(edgeKey).GetDBType(_DBContext.DBTypeManager).Name);
         }
         
         #endregion
@@ -1732,7 +1883,7 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="attributeValue">The attribute value, either a AListReferenceEdgeType or ASingleEdgeType or a basic object (Int, String, ...)</param>
         /// <param name="myDepth">The current depth defined by a setting or in the select</param>
         /// <param name="currentLvl">The current level (for recursive resolve)</param>
-        /// <returns>List&lt;DBObjectReadout&gt; for user defined list attributes; DBObjectReadout for reference attributes, Object for basic type values </returns>
+        /// <returns>List&lt;Vertex&gt; for user defined list attributes; Vertex for reference attributes, Object for basic type values </returns>
         private object ResolveAttributeValue(TypeAttribute attrDefinition, object attributeValue, Int64 myDepth, EdgeList myEdgeList, DBObjectStream mySourceDBObject, String reference, Boolean myUsingGraph)
         {
 
@@ -1782,7 +1933,7 @@ namespace sones.GraphDB.Managers.Select
 
                 #region SetReference attribute -> return new Edge
 
-                IEnumerable<DBObjectReadout> resultList = null;
+                IEnumerable<Vertex> resultList = null;
 
                 var edge = ((ASetOfReferencesEdgeType)attributeValue);
 
@@ -1790,14 +1941,14 @@ namespace sones.GraphDB.Managers.Select
                 {
                     var dbos = _ExpressionGraph.Select(new LevelKey(myEdgeList.Edges, _DBContext.DBTypeManager), mySourceDBObject, true);
 
-                    resultList = GetReadouts(typeOfAttribute, edge, dbos, myDepth, myEdgeList, reference, myUsingGraph);
+                    resultList = GetVertices(typeOfAttribute, edge, dbos, myDepth, myEdgeList, reference, myUsingGraph);
                 }
                 else
                 {
-                    resultList = GetReadouts(typeOfAttribute, edge, myDepth, myEdgeList, reference, myUsingGraph);
+                    resultList = GetVertices(typeOfAttribute, edge, myDepth, myEdgeList, reference, myUsingGraph);
                 }
 
-                return new Edge(resultList, typeOfAttribute.Name);
+                return new Edge(null, resultList, typeOfAttribute.Name);
 
                 #endregion
 
@@ -1807,7 +1958,7 @@ namespace sones.GraphDB.Managers.Select
 
                 #region Single reference
 
-                attributeValue = new Edge((attributeValue as ASingleReferenceEdgeType).GetReadout(a => LoadAndResolveDBObject(a, typeOfAttribute, myDepth, myEdgeList, reference, myUsingGraph))
+                attributeValue = new Edge(null, (attributeValue as ASingleReferenceEdgeType).GetVertex(a => LoadAndResolveVertex(a, typeOfAttribute, myDepth, myEdgeList, reference, myUsingGraph))
                     , typeOfAttribute.Name);
 
                 return attributeValue;
@@ -1835,7 +1986,7 @@ namespace sones.GraphDB.Managers.Select
         /// <param name="reference"></param>
         /// <param name="myUsingGraph"></param>
         /// <returns></returns>
-        private Dictionary<string, object> GetAllSelectedAttributesFromDBO(DBObjectStream myDBObject, GraphDBType myDBType, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph, Boolean selectAllAttributes = false)
+        private Dictionary<string, object> GetAllSelectedAttributesFromVertex(DBObjectStream myDBObject, GraphDBType myDBType, Int64 myDepth, EdgeList myLevelKey, String myReference, Boolean myUsingGraph, Boolean selectAllAttributes = false)
         {
             Dictionary<string, object> Attributes = new Dictionary<string, object>();
             Int64 Depth;
@@ -1853,8 +2004,10 @@ namespace sones.GraphDB.Managers.Select
             {
 
                 #region Get all attributes from the DBO if nothing special was selected
-
-                AddAttributesByDBO(ref Attributes, myDBType, myDBObject, myDepth, myLevelKey, myReference, myUsingGraph, TypesOfSelect.Asterisk);
+                if ((myDepth == -1) || (myDepth >= myLevelKey.Level))
+                {
+                    AddAttributesByDBO(ref Attributes, myDBType, myDBObject, myDepth, myLevelKey, myReference, myUsingGraph, TypesOfSelect.Asterisk);
+                }
 
                 #endregion
 
@@ -1907,6 +2060,7 @@ namespace sones.GraphDB.Managers.Select
                     {
                         // This is a bug in the attributeSelections add method. No attribute should be in the selected list twice. 
                         // If one attribute was selected more than one, these information will be stored in the next level.
+                        //System.Diagnostics.Debug.Assert(false, "The attribute '" + alias + "' is selected twice in that level - this shouldnt!");
                         continue;
                     }
 
@@ -1916,6 +2070,12 @@ namespace sones.GraphDB.Managers.Select
                         #region Select a function
 
                         var selectionElementFunction = (attrSel as SelectionElementFunction);
+
+                        if (selectionElementFunction.SelectValueAssignment != null && selectionElementFunction.SelectValueAssignment.ValueAssignmentType == SelectValueAssignment.ValueAssignmentTypes.Always)
+                        {
+                            Attributes.Add(alias, (selectionElementFunction.SelectValueAssignment.TermDefinition as ValueDefinition).Value.GetReadoutValue());
+                            continue;
+                        }
 
                         #region Get the CallingObject
 
@@ -1954,13 +2114,18 @@ namespace sones.GraphDB.Managers.Select
                         }
                         if (res.Failed())
                         {
-                            throw new GraphDBException(res.Errors);
+                            throw new GraphDBException(res.IErrors);
                         }
 
                         #endregion
 
+                        #region Add function return value to attributes
+
                         if (res.Value.Value is IReferenceEdge)
                         {
+
+                            #region Reference edge
+
                             //minDepth = attrSel.EdgeList.Level + 1; // depth should be at least the depth of the selected element
                             minDepth = (attrSel.RelatedIDChainDefinition != null) ? attrSel.RelatedIDChainDefinition.Edges.Count - 1 : 0;
                             myUsingGraph = false;
@@ -1975,7 +2140,7 @@ namespace sones.GraphDB.Managers.Select
                                 #region Resolve DBReferences
 
                                 Attributes.Add(alias,
-                                    ResolveAttributeValue(((FuncParameter)res.Value).TypeAttribute, ((FuncParameter)res.Value).Value, Depth - 1, myLevelKey, myDBObject, myReference, myUsingGraph));
+                                    ResolveAttributeValue(((FuncParameter)res.Value).TypeAttribute, ((FuncParameter)res.Value).Value, Depth, myLevelKey, myDBObject, myReference, myUsingGraph));
 
                                 #endregion
 
@@ -1987,11 +2152,17 @@ namespace sones.GraphDB.Managers.Select
 
                             }
 
+                            #endregion
+
                         }
                         else
                         {
+
                             Attributes.Add(alias, ((FuncParameter)res.Value).Value.GetReadoutValue());
+
                         }
+
+                        #endregion
 
                         #endregion
 
@@ -2007,7 +2178,7 @@ namespace sones.GraphDB.Managers.Select
                         {
                             Object attrValue = null;
 
-                            if (GetAttributeValueAndResolve(myDBType, attrSel.Element, myDBObject, 0, myLevelKey, myReference, myUsingGraph, out attrValue, undef_alias))
+                            if (GetAttributeValueAndResolve(myDBType, attrSel, myDBObject, 0, myLevelKey, myReference, myUsingGraph, out attrValue, undef_alias))
                             {
                                 Attributes.Add(undef_alias, attrValue);
                             }                            
@@ -2032,12 +2203,9 @@ namespace sones.GraphDB.Managers.Select
 
                         Object attrValue = null;
 
-                        if (!Attributes.ContainsKey(alias))
+                        if (GetAttributeValueAndResolve(myDBType, attrSel, myDBObject, Depth, myLevelKey, myReference, myUsingGraph, out attrValue))
                         {
-                            if (GetAttributeValueAndResolve(myDBType, attrSel.Element as TypeAttribute, myDBObject, Depth, myLevelKey, myReference, myUsingGraph, out attrValue))
-                            {
-                                Attributes.Add(alias, attrValue);
-                            }
+                            Attributes.Add(alias, attrValue);
                         }
 
                         #endregion
@@ -2072,14 +2240,14 @@ namespace sones.GraphDB.Managers.Select
                 var contBackwardExcept = myDBObject.ContainsBackwardEdge(edgeKey, _DBContext, _DBContext.DBObjectCache, myType);
 
                 if (contBackwardExcept.Failed())
-                    throw new GraphDBException(contBackwardExcept.Errors);
+                    throw new GraphDBException(contBackwardExcept.IErrors);
 
                 if (contBackwardExcept.Value)
                 {
                     var getBackwardExcept = myDBObject.GetBackwardEdges(edgeKey, _DBContext, _DBContext.DBObjectCache, myTypeAttribute.GetDBType(_DBContext.DBTypeManager));
 
                     if (getBackwardExcept.Failed())
-                        throw new GraphDBException(getBackwardExcept.Errors);
+                        throw new GraphDBException(getBackwardExcept.IErrors);
 
                     return getBackwardExcept.Value;
                 }
@@ -2107,25 +2275,25 @@ namespace sones.GraphDB.Managers.Select
 
         /// <summary>
         /// This will return the result of all examined DBOs, including calculated aggregates and groupings.
-        /// The Value of the returned GraphResult is of type IEnumerable&lt;DBObjectReadout&gt;
+        /// The Value of the returned GraphResult is of type IEnumerable&lt;Vertex&gt;
         /// </summary>
         /// <param name="typeNode">The current typeNode</param>
-        /// <param name="dbObjectReadouts">The precalculated return objects</param>
+        /// <param name="myVertices">The precalculated return objects</param>
         /// <returns>A GraphResult including the ResultType with the occured errors.</returns>
-        public IEnumerable<DBObjectReadout> GetResult(String myReference, GraphDBType myReferencedDBType, IEnumerable<DBObjectReadout> dbObjectReadouts, Boolean isWhereExpressionDependent = false)
+        public IEnumerable<Vertex> GetResult(String myReference, GraphDBType myReferencedDBType, IEnumerable<Vertex> myVertices, Boolean isWhereExpressionDependent = false)
         {
 
-            foreach (var dbo in dbObjectReadouts)
+            foreach (var _Vertex in myVertices)
             {
-                yield return dbo;
+                yield return _Vertex;
             }
 
         }
 
-        public IEnumerable<DBObjectReadout> GetTypeIndependendResult()
+        public IEnumerable<Vertex> GetTypeIndependendResult()
         {
 
-            //_DBOs = new IEnumerable<DBObjectReadout>();
+            //_DBOs = new IEnumerable<Vertex>();
             var Attributes = new Dictionary<string, object>();
 
             #region Go through all _SelectionElementsTypeIndependend
@@ -2160,8 +2328,8 @@ namespace sones.GraphDB.Managers.Select
                         }
                         else
                         {
-                            //return new Exceptional<IEnumerable<DBObjectReadout>>(res.Errors);
-                            throw new GraphDBException(funcResult.Errors);
+                            //return new Exceptional<IEnumerable<Vertex>>(res.Errors);
+                            throw new GraphDBException(funcResult.IErrors);
                         }
                     }
 
@@ -2178,7 +2346,7 @@ namespace sones.GraphDB.Managers.Select
 
             if (!Attributes.IsNullOrEmpty())
             {
-                yield return new DBObjectReadout(Attributes);
+                yield return new Vertex(Attributes);
             }
 
         }
@@ -2305,4 +2473,5 @@ namespace sones.GraphDB.Managers.Select
         #endregion
 
     }
+
 }

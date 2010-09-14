@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * DescribeTypeDefinition
  * (c) Stefan Licht, 2010
  */
@@ -34,7 +14,10 @@ using sones.GraphDB.Structures.EdgeTypes;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.Errors;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
+using sones.GraphDB.NewAPI;
+using sones.GraphFS.DataStructures;
+using sones.Lib.DataStructures.UUID;
 
 #endregion
 
@@ -60,7 +43,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
         #region ADescribeDefinition
 
-        public override Exceptional<SelectionResultSet> GetResult(DBContext myDBContext)
+        public override Exceptional<IEnumerable<Vertex>> GetResult(DBContext myDBContext)
         {
 
             if (!String.IsNullOrEmpty(_TypeName))
@@ -71,11 +54,11 @@ namespace sones.GraphDB.Managers.Structures.Describe
                 var type = myDBContext.DBTypeManager.GetTypeByName(_TypeName);
                 if (type != null)
                 {
-                    return new Exceptional<SelectionResultSet>(new SelectionResultSet(GenerateOutput(myDBContext, type)));
+                    return new Exceptional<IEnumerable<Vertex>>(new List<Vertex>(){(GenerateOutput(myDBContext, type))});
                 }
                 else
                 {
-                    return new Exceptional<SelectionResultSet>(new Error_TypeDoesNotExist(_TypeName));
+                    return new Exceptional<IEnumerable<Vertex>>(new Error_TypeDoesNotExist(_TypeName));
                 }
 
                 #endregion
@@ -86,14 +69,14 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
                 #region All types
 
-                List<DBObjectReadout> resultingReadouts = new List<DBObjectReadout>();
+                var resultingReadouts = new List<Vertex>();
 
                 foreach (var type in myDBContext.DBTypeManager.GetAllTypes())
                 {
                     resultingReadouts.Add(GenerateOutput(myDBContext, type));
                 }
 
-                return new Exceptional<SelectionResultSet>(new SelectionResultSet(resultingReadouts));
+                return new Exceptional<IEnumerable<Vertex>>(resultingReadouts);
 
                 #endregion
             }
@@ -107,7 +90,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
         /// <summary>
         /// Generate an output for an type with the attributes of the types and all parent types
         /// </summary>
-        private DBObjectReadout GenerateOutput(DBContext myDBContext, GraphDBType myGraphDBType)
+        private Vertex GenerateOutput(DBContext myDBContext, GraphDBType myGraphDBType)
         {
 
             GraphDBType _ParentType = null;
@@ -117,15 +100,15 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
             var _CurrentType = new Dictionary<String, Object>();
 
-            _CurrentType.Add("Name", myGraphDBType.Name);
-            _CurrentType.Add("UUID", myGraphDBType.UUID);
-            _CurrentType.Add("Comment", myGraphDBType.Comment);
-            _CurrentType.Add("Attributes", GenerateAttributeOutput(myGraphDBType, myDBContext));
+            _CurrentType.Add("Name",        myGraphDBType.Name);
+            _CurrentType.Add("UUID",        myGraphDBType.UUID);
+            _CurrentType.Add("Comment",     myGraphDBType.Comment);
+            _CurrentType.Add("Attributes",  GenerateAttributeOutput(myGraphDBType, myDBContext));
 
             if (_ParentType != null)
                 _CurrentType.Add("ParentType", GenerateOutput(myDBContext, _ParentType));
 
-            return new DBObjectReadout(_CurrentType);
+            return new Vertex(_CurrentType);
 
         }
 
@@ -135,25 +118,26 @@ namespace sones.GraphDB.Managers.Structures.Describe
         /// <param name="myGraphDBType">the type</param>
         /// <param name="myDBContext">typemanager</param>
         /// <returns>a list of readouts, contains the attributes</returns>
-        private IEnumerable<DBObjectReadout> GenerateAttributeOutput(GraphDBType myGraphDBType, DBContext myDBContext)
+        private IEnumerable<Vertex> GenerateAttributeOutput(GraphDBType myGraphDBType, DBContext myDBContext)
         {
 
-            var _AttributeReadout = new List<DBObjectReadout>();
+            var _AttributeReadout = new List<Vertex>();
 
-            foreach (var _TypeAttribute in myGraphDBType.Attributes)
+            foreach (var _KeyValuePair in myGraphDBType.Attributes)
             {
-                var Attributes = new Dictionary<String, Object>();
-                Attributes.Add("Name", _TypeAttribute.Value.Name);
-                Attributes.Add("Type", _TypeAttribute.Value.GetDBType(myDBContext.DBTypeManager));
-                Attributes.Add("UUID", _TypeAttribute.Value.UUID);
 
-                _AttributeReadout.Add(new DBObjectReadout(Attributes));
+                var Attributes = new Dictionary<String, Object>();
+                Attributes.Add("Name", _KeyValuePair.Value.Name);
+                Attributes.Add("Type", _KeyValuePair.Value.GetDBType(myDBContext.DBTypeManager));
+                //Attributes.Add("UUID", new ObjectUUID(_KeyValuePair.Value.UUID as UUID));
+                Attributes.Add("UUID", _KeyValuePair.Value.UUID);
+
+                _AttributeReadout.Add(new Vertex(Attributes));
+
             }
 
-            if (_AttributeReadout.Count > 0)
-                return _AttributeReadout;
-            else
-                return null;
+            return _AttributeReadout;
+
         }
 
         #endregion

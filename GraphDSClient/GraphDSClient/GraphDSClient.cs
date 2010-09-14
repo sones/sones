@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * GraphDSClient
  * (c) Achim 'ahzf' Friedland, 2009-2010
  */
@@ -42,14 +22,17 @@ using sones.GraphFS.Objects;
 using sones.GraphFS.Session;
 using sones.GraphFS.Transactions;
 
-using sones.GraphDBInterface.Result;
-using sones.GraphDBInterface.Transactions;
+using sones.GraphDB.Result;
+using sones.GraphDB.Transactions;
+
+using sones.GraphIO;
 
 using sones.GraphDS.API.CSharp;
 
 using sones.Lib;
 using sones.Lib.DataStructures;
 using sones.Lib.ErrorHandling;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -61,27 +44,179 @@ namespace sones.GraphDSClient
 
         #region Data
 
-        private String _RestURL = null;
-        private String username = null;
-        private String password = null;
+        String _UsernameAndPassword;
+        String _AuthorizationHeader;
+        readonly CredentialCache _CredentialCache;
 
         #endregion
 
         #region Properties
+
+        #region URI
+
+        private Uri     _URI;
+        private String  _URIString;
+
+        public Uri URI
+        {
+            
+            get
+            {
+                return _URI;
+            }
+
+            set
+            {
+                if (value != null)
+                {
+                    _URI        = value;
+                    _URIString  = value.ToString() + "gql?";
+                }
+            }
+
+        }
+
+        #endregion
+
+        // REST or Thrift or...
+
+        #region TransmissionProtocol
+
+        private IObjectsIO _TransmissionProtocol;
+
+        public IObjectsIO TransmissionProtocol
+        {
+
+            get
+            {
+                return _TransmissionProtocol;
+            }
+
+            set
+            {
+                if (value != null)
+                    _TransmissionProtocol = value;
+            }
+
+        }
+
+        #endregion
+
+        #region Database
+
+        private String _Database;
+
+        public String Database
+        {
+
+            get
+            {
+                return _Database;
+            }
+
+            set
+            {
+                if (value != null)
+                    _Database = value;
+            }
+
+        }
+
+        #endregion
+
+        #region Username
+
+        String _Username;
+
+        public String Username
+        {
+
+            get
+            {
+                return _Username;
+            }
+
+            set
+            {
+                if (value != null)
+                {
+                    _Username = value;
+                    SetUsernameAndPassword(_Username, _Password);
+                }
+            }
+        
+        }
+
+        #endregion
+
+        #region Password
+
+        String _Password;
+
+        public String Password
+        {
+
+            get
+            {
+                return _Password;
+            }
+
+            set
+            {
+                if (value != null)
+                {
+                    _Password = value;
+                    SetUsernameAndPassword(_Username, _Password);
+                }
+            }
+        
+        }
+
+        #endregion
 
         #endregion
 
 
         #region Constructor(s)
 
-        #region GraphDSClient1(myRestURI, myDatabase, myUsername, myPassword)
+        #region GraphDSClient1(myURI, myTransmissionProtocol, myDatabase, myUsername, myPassword)
 
-        public GraphDSClient1(Uri myRestURI, String myDatabase, String myUsername, String myPassword)
+        /// <summary>
+        /// Creates an sones GraphDSClient in order to connect to remote database instances.
+        /// </summary>
+        /// <param name="myURI">The URI of the remote database server</param>
+        /// <param name="myTransmissionProtocol">The transmission protocol (XML, JSON, ...)</param>
+        /// <param name="myDatabase">The database to connect</param>
+        /// <param name="myUsername">The username for BASIC authentication.</param>
+        /// <param name="myPassword">The passwort for BASIC authentication.</param>
+        public GraphDSClient1(Uri myURI, IObjectsIO myTransmissionProtocol, String myDatabase, String myUsername, String myPassword)
         {
-            
-            _RestURL = String.Format("{0}gql?", myRestURI.ToString());
-            username = myUsername;
-            password = myPassword;
+
+            #region Initial checks
+
+            if (myURI == null)
+                throw new ArgumentNullException("myURI must not be null!");
+
+            if (myTransmissionProtocol == null)
+                throw new ArgumentNullException("myTransmissionProtocol must not be null!");
+
+            if (myDatabase == null)
+                throw new ArgumentNullException("myDatabase must not be null!");
+
+            if (myUsername == null)
+                throw new ArgumentNullException("myUsername must not be null!");
+
+            if (myPassword == null)
+                throw new ArgumentNullException("myPassword must not be null!");
+
+            #endregion
+
+            URI                     = myURI;
+            TransmissionProtocol    = myTransmissionProtocol;
+            _Database               = myDatabase;
+            _CredentialCache        = new CredentialCache();
+
+            SetUsernameAndPassword(myUsername, myPassword);
 
         }
 
@@ -89,74 +224,121 @@ namespace sones.GraphDSClient
 
         #endregion
 
-        #region Query(myQuery, myAction = null, mySuccessAction = null, myPartialSuccessAction = null, myFailureAction = null)
 
-        public override QueryResult Query(String myQuery, Action<QueryResult> myAction = null, Action<QueryResult> mySuccessAction = null, Action<QueryResult> myPartialSuccessAction = null, Action<QueryResult> myFailureAction = null)
+        #region QueryAsString(myQueryString)
+
+        public override Exceptional<String> QueryAsString(String myQueryString)
+        {
+
+            #region Data
+
+            HttpWebRequest  _Request                = null;
+            String          _QueryResultAsString    = null;
+
+            #endregion
+
+            #region Create WebRequest
+
+            try
+            {
+                _Request = (HttpWebRequest) WebRequest.Create(_URIString + HttpUtility.UrlEncode(myQueryString));
+            }
+            catch (Exception e)
+            {
+                return new Exceptional<String>(new UnspecifiedError(e.GetType().Name, e.Message));
+            }
+
+            #endregion
+
+            #region Add Credentials and ContentType to WebRequest
+
+            _Request.Credentials = _CredentialCache;
+            _Request.Accept      = TransmissionProtocol.ImportContentType.ToString();
+            _Request.Headers.Add("Authorization", _AuthorizationHeader);
+
+            #endregion
+
+            #region Read WebResponse
+
+            try
+            {
+                _QueryResultAsString = new StreamReader(_Request.GetResponse().GetResponseStream()).ReadToEnd();
+            }
+            catch (Exception e)
+            {
+                return new Exceptional<String>(new UnspecifiedError(e.GetType().Name, e.Message));
+            }
+
+            #endregion
+
+            return new Exceptional<String>(_QueryResultAsString);
+
+        }
+
+        #endregion
+
+        #region Query(myQueryString, myAction = null, mySuccessAction = null, myPartialSuccessAction = null, myFailureAction = null)
+
+        public override QueryResult Query(String myQueryString, Action<QueryResult> myAction = null, Action<QueryResult> mySuccessAction = null, Action<QueryResult> myPartialSuccessAction = null, Action<QueryResult> myFailureAction = null)
         {
 
             #region Init
 
-            String      queryResultAsXMLString  = null;
-            XDocument   queryResultAsXML        = null;
-
-            var warnings                     = new List<IWarning>();
-            var errors                       = new List<IError>();
-            String query                     = String.Empty;
+            var _IWarnings                   = new List<IWarning>();
+            var _IErrors                     = new List<IError>();
             ResultType queryResultType       = ResultType.Failed;
             UInt64 duration                  = 0;
-            SelectionResultSet srs           = null;
-
-            QueryResult result               = null;
+            IEnumerable<Vertex> srs = null;
+            QueryResult _QueryResult         = null;
 
             #endregion
 
-            #region catch communication errors and build xml
+            #region Catch communication errors and build xml
 
-            try
-            {
-                queryResultAsXMLString = QueryXml_private(myQuery);
+            var _QueryResultAsStringExceptional = QueryAsString(myQueryString);
 
-                //get a valid xml document
-                queryResultAsXML = XDocument.Parse(queryResultAsXMLString, LoadOptions.None);
-            }
-            catch (Exception e)
-            {
-                return new QueryResult(new Error_Unspecified(e.GetType().Name, e.Message));
-            }
+            //get a valid xml document
+            var queryResultAsXML = XDocument.Parse(_QueryResultAsStringExceptional.Value, LoadOptions.None);
 
             #endregion
 
             #region Get QueryResult infos
 
             //get the queryResult
-            var queryResultElement = queryResultAsXML.Element("sones").Element("GraphDB").Element("queryresult");
+            var _QueryResultElement = queryResultAsXML.Element("sones").Element("graphdb").Element("queryresult");
 
             //get the query ("From User Select *")
-            query = queryResultElement.Element("query").Value;
+            var _QueryString = _QueryResultElement.Element("query").Value;
 
             //get the ResultType of the query
-            queryResultType = (ResultType)Enum.Parse(typeof(ResultType), queryResultElement.Element("result").Value);
+            queryResultType = (ResultType) Enum.Parse(typeof(ResultType), _QueryResultElement.Element("result").Value);
 
             //get the duration
-            duration = UInt64.Parse(queryResultElement.Element("duration").Value);
+            duration = UInt64.Parse(_QueryResultElement.Element("duration").Value);
 
-            // Warnings
-            var warningsFromXML = queryResultElement.Element("warnings").Elements("warning");
+            #endregion
+
+            #region Warnings
+
+            var warningsFromXML = _QueryResultElement.Element("warnings").Elements("warning");
             if (warningsFromXML != null)
             {
                 foreach (var aWarningXML in warningsFromXML)
                 {
-                    warnings.Add(GenerateWarningFromXML(aWarningXML));
+                    _IWarnings.Add(TransmissionProtocol.GenerateUnspecifiedWarning(aWarningXML));
                 }
             }
 
-            // Errors
-            var errorsFromXML = queryResultElement.Element("errors").Elements("error");
+            #endregion
+
+            #region Errors
+
+            var errorsFromXML = _QueryResultElement.Element("errors").Elements("error");
             if (errorsFromXML != null)
             {
                 foreach (var aErrorXML in errorsFromXML)
                 {
-                    errors.Add(GenerateErrorFromXML(aErrorXML));
+                    _IErrors.Add(TransmissionProtocol.GenerateUnspecifiedError(aErrorXML));
                 }
             }
 
@@ -166,44 +348,30 @@ namespace sones.GraphDSClient
 
             switch (queryResultType)
             {
+
                 case ResultType.Failed:
-
-                    result = new QueryResult(errors, warnings) { Duration = duration, Query = query };
-
+                    _QueryResult = new QueryResult(_IErrors, _IWarnings) { Duration = duration, Query = _QueryString };
                     break;
 
                 case ResultType.PartialSuccessful:
                 case ResultType.Successful:
 
-                    var resultsFromXML = queryResultElement.Element("results");
+                    var resultsFromXML = _QueryResultElement.Element("results");
                     if (resultsFromXML != null)
                     {
-                        srs = GetSelectionResultSetsFromXML(resultsFromXML);
+                        srs = GenerateVertices(resultsFromXML);
                     }
 
-                    result = new QueryResult(srs, warnings) { Duration = duration, Query = query };
+                    _QueryResult = new QueryResult(srs, _IWarnings) { Duration = duration, Query = _QueryString };
 
                     break;
+                
                 default:
                     break;
+
             }
 
             #endregion
-
-            QueryResultAction(result, myAction, mySuccessAction, myPartialSuccessAction, myFailureAction);
-
-            return result;
-
-        }
-
-        public QueryResult QueryXML(String myQuery, Action<QueryResult> myAction = null, Action<QueryResult> mySuccessAction = null, Action<QueryResult> myPartialSuccessAction = null, Action<QueryResult> myFailureAction = null)
-        {
-
-            var readout = new DBObjectReadout();
-
-            readout.Attributes.Add("query", QueryXml_private(myQuery));
-
-            var _QueryResult = new QueryResult(new SelectionResultSet(new List<DBObjectReadout>() { readout }));
 
             QueryResultAction(_QueryResult, myAction, mySuccessAction, myPartialSuccessAction, myFailureAction);
 
@@ -211,55 +379,34 @@ namespace sones.GraphDSClient
 
         }
 
-        private String QueryXml_private(String myQuery)
+        #endregion
+
+        #region QuerySelect(myQuery)
+
+        public override SelectToObjectGraph QuerySelect(String myQuery)
         {
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(_RestURL + HttpUtility.UrlEncode(myQuery));
-            
-            #region Add credentials
-
-            String usernamePassword = username + ":" + password;
-            if (!String.IsNullOrEmpty(usernamePassword))
-            {
-                CredentialCache ccache = new CredentialCache();
-                ccache.Add(request.RequestUri, "Basic", new NetworkCredential(username, password));
-                request.Credentials = ccache;
-                request.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(new ASCIIEncoding().GetBytes(usernamePassword)));
-            }
-            
-            #endregion
-
-            request.Accept = "application/xml";
-
-            var stream = new StreamReader(request.GetResponse().GetResponseStream());
-            var result = stream.ReadToEnd();
-
-            return result; // .FromBase64();
-
+            return new SelectToObjectGraph(QueryAsString(myQuery).Value);
         }
 
         #endregion
 
 
-        public override SelectToObjectGraph QuerySelect(String myQuery)
-        {
-            return new SelectToObjectGraph(QueryXml_private(myQuery));
-        }
 
-
-        public override FSTransaction BeginFSTransaction(Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? myCreated = null)
-        {
-            throw new NotImplementedException();
-        }
+        #region IGraphDBSession
 
         public override DBTransaction BeginTransaction(Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? myCreated = null)
         {
             throw new NotImplementedException();
         }
 
-
+        #endregion
 
         #region IGraphFSSession
+
+        public override FSTransaction BeginFSTransaction(Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? myCreated = null)
+        {
+            throw new NotImplementedException();
+        }
 
         public override IGraphFS IGraphFS
         {
@@ -848,76 +995,71 @@ namespace sones.GraphDSClient
         #endregion
 
 
-        #region private methods
+
+        #region (private) GenerateVertices(myVerticesXML)
 
         /// <summary>
-        /// Extracts Selections from XML
+        /// Generates an IEnumerable of Vertices corresponding to their XML representation
         /// </summary>
-        /// <param name="resultsFromXML">XElements which contain a SelectionResultSet representation.</param>
-        /// <returns>A list of SelectionResultSets</returns>
-        private SelectionResultSet GetSelectionResultSetsFromXML(XElement resultFromXML)
+        /// <param name="myVerticesXML">An IEnumerable of XElements which represent Vertices</param>
+        /// <returns>An IEnumerable of Vertex</returns>
+        private IEnumerable<Vertex> GenerateVertices(XElement myVerticesXML)
         {
-            return GenerateSelectionResultSet(resultFromXML);
-        }
 
-        /// <summary>
-        /// Generates a single SelectionResultSet
-        /// </summary>
-        /// <param name="aResultElement">XElement which represents a SelectionResultSet</param>
-        /// <returns>A SelectionResultSet</returns>
-        private SelectionResultSet GenerateSelectionResultSet(XElement aResultElement)
-        {
-            return new SelectionResultSet(GenerateReadouts(aResultElement.Elements("DBObject")));
-        }
+            var _VerticesXML = myVerticesXML.Elements("vertex");
 
-        /// <summary>
-        /// Generates an IEnumerable of DBObjectReadouts corresponding to their XML representation
-        /// </summary>
-        /// <param name="myDBObjectReadoutsXML">An IEnumerable of XElements which represent DBObjectReadouts</param>
-        /// <returns>An IEnumerable of DBObjectReadout</returns>
-        private IEnumerable<DBObjectReadout> GenerateReadouts(IEnumerable<XElement> myDBObjectReadoutsXML)
-        {
-            if (myDBObjectReadoutsXML == null)
+            if (_VerticesXML == null)
             {
                 yield break;
             }
 
-            foreach (var aDBObjectReadoutXML in myDBObjectReadoutsXML)
+            foreach (var _VertexXML in _VerticesXML)
             {
-                yield return GenerateDBObjectReadoutFromXML(aDBObjectReadoutXML);
+                yield return GenerateVertexFromXML(_VertexXML);
             }
 
             yield break;
+
         }
 
+        #endregion
+
+        #region (private) GenerateVertexFromXML(myVertexXML)
+
         /// <summary>
-        /// Generates a single DBObjectReadout based on its XML representation
+        /// Generates a single Vertex based on its XML representation
         /// </summary>
-        /// <param name="aDBObjectReadoutXML">The XML representation of a DBObjectReadout</param>
-        /// <returns>A DBObjectReadout</returns>
-        private DBObjectReadout GenerateDBObjectReadoutFromXML(XElement aDBObjectReadoutXML)
+        /// <param name="myVertexXML">The XML representation of a Vertex</param>
+        /// <returns>A Vertex</returns>
+        private Vertex GenerateVertexFromXML(XElement myVertexXML)
         {
-            Dictionary<String, Object> payload = new Dictionary<String, Object>();
+
+            String AttributeName, AttributeType, AttributeValue;
+
+            var payload = new Dictionary<String, Object>();
+
 
             //Get all non reference attributes
-            foreach (var aAttribute in aDBObjectReadoutXML.Elements("attribute"))
+            foreach (var _Attribute in myVertexXML.Elements("attribute"))
             {
-                String nameOfAttribute = aAttribute.Attribute("name").Value;
-                String typeOfAttribute = aAttribute.Attribute("type").Value;
-                String valueOfAttribute = aAttribute.Value;
+                
+                AttributeName  = _Attribute.Attribute("name").Value;
+                AttributeType  = _Attribute.Attribute("type").Value;
+                AttributeValue = _Attribute.Value;
 
-                payload.Add(nameOfAttribute, GetAttribute(typeOfAttribute, valueOfAttribute));
+                payload.Add(AttributeName, ParseAttribute(AttributeType, AttributeValue));
+
             }
 
             //Get all edges
-            foreach (var aAttribute in aDBObjectReadoutXML.Elements("edge"))
+            foreach (var _Edge in myVertexXML.Elements("edge"))
             {
-                payload.Add(aAttribute.Attribute("name").Value, new Edge(GenerateEdgeContent(aAttribute.Element("hyperedgelabel"), aAttribute.Elements("DBObject")), aAttribute.Attribute("type").Value));
+                payload.Add(_Edge.Attribute("name").Value, new Edge(null, GenerateEdgeContent(_Edge.Element("hyperedgelabel"), _Edge.Elements("vertex")), _Edge.Attribute("type").Value));
             }
 
-            //generate DBObjectStream
 
-            var edgeLabel = aDBObjectReadoutXML.Element("edgelabel");
+            //generate DBObjectStream
+            var edgeLabel = myVertexXML.Element("edgelabel");
 
             if (edgeLabel != null)
             {
@@ -930,82 +1072,42 @@ namespace sones.GraphDSClient
 
                     switch (edgeIdentifierElement.Value)
                     {
+
                         case "weight":
 
-                            return new DBWeightedObjectReadout(payload, edgeLabel.Value, edgeLabel.Element("attribute").Attribute("type").Value);
+                            return new Vertex_WeightedEdges(payload, edgeLabel.Value, edgeLabel.Element("attribute").Attribute("type").Value);
 
                         case "group":
 
-                            return new DBObjectReadoutGroup(payload, GenerateReadouts(edgeLabel.Element("attribute").Elements("DBObject")));
+                            return new VertexGroup(payload, GenerateVertices(edgeLabel.Element("attribute")));
 
                         default:
-
                             //unknown label... use default
-                            return new DBObjectReadout(payload);
+                            return new Vertex(payload);
 
                     }
+
                 }
+
                 else
                 {
                     //TODO: mhhh, maybe it would be better to throw an exception 
-
-                    return new DBObjectReadout(payload);
+                    return new Vertex(payload);
                 }
+
             }
+
             else
             {
                 //no edgelabel... standart DBObjectReadout
-
-                return new DBObjectReadout(payload);
+                return new Vertex(payload);
             }
+
         }
 
-        private object GetAttribute(String typeOfAttribute, String valueOfAttribute)
-        {
-            if (typeOfAttribute == "Double")
-            {
-                return Convert.ToDouble(valueOfAttribute);
-            }
-            else if (typeOfAttribute == "Int64")
-            {
-                return Convert.ToInt64(valueOfAttribute);
-            }
-            else if (typeOfAttribute == "Int32")
-            {
-                return Convert.ToInt32(valueOfAttribute);
-            }
-            else if (typeOfAttribute == "UInt64")
-            {
-                return Convert.ToUInt64(valueOfAttribute);
+        #endregion
 
-            }
-            else if (typeOfAttribute == "DateTime")
-            {
-                return Convert.ToDateTime(valueOfAttribute);
-
-            }
-            else if (typeOfAttribute == "Boolean")
-            {
-                return Convert.ToBoolean(valueOfAttribute);
-
-            }
-            else if (typeOfAttribute == "String")
-            {
-                return valueOfAttribute;
-            }
-            else if (typeOfAttribute == "ObjectUUID")
-            {
-                return new ObjectUUID(valueOfAttribute);
-            }
-            else if (typeOfAttribute == "ObjectRevisionID")
-            {
-                return new ObjectRevisionID(valueOfAttribute);
-            }
-            else
-            {
-                return valueOfAttribute;
-            }
-        }
+        #region (private) GenerateEdgeContent(hyperEdgeLabel, myDBObjectReadoutsXML)
 
         /// <summary>
         /// Genereate DBObjectReadouts corresponding to a hyperEdgeLabel and their XML representation
@@ -1013,40 +1115,73 @@ namespace sones.GraphDSClient
         /// <param name="hyperEdgeLabel">future feature</param>
         /// <param name="myDBObjectReadoutsXML">XML representation of DBObjectReadouts</param>
         /// <returns>An IEnumerable of DBObjectReadout</returns>
-        private IEnumerable<DBObjectReadout> GenerateEdgeContent(XElement hyperEdgeLabel, IEnumerable<XElement> myDBObjectReadoutsXML)
+        private IEnumerable<Vertex> GenerateEdgeContent(XElement hyperEdgeLabel, IEnumerable<XElement> myDBObjectReadoutsXML)
         {
+
             //TODO: process hyperEdgeLabel
 
             foreach (var aDBReadoutXML in myDBObjectReadoutsXML)
             {
-                yield return GenerateDBObjectReadoutFromXML(aDBReadoutXML);
+                yield return GenerateVertexFromXML(aDBReadoutXML);
             }
 
             yield break;
-        }
 
-        /// <summary>
-        /// Generates a GeneralError that can be integrated into QueryResult
-        /// </summary>
-        /// <param name="aErrorXML">The XML representation of a generalized DBError</param>
-        /// <returns>A GeneralError</returns>
-        private Error_Unspecified GenerateErrorFromXML(XElement aErrorXML)
-        {
-            return new Error_Unspecified(aErrorXML.Attribute("code").Value, aErrorXML.Value);
-        }
-
-        /// <summary>
-        /// Generate a GraphDBWarning
-        /// </summary>
-        /// <param name="aWarningXML">The XML representation of a GraphDBWarning</param>
-        /// <returns>A GraphDBWarning</returns>
-        private Warning_Unspecified GenerateWarningFromXML(XElement aWarningXML)
-        {
-            return new Warning_Unspecified(aWarningXML.Attribute("code").Value, aWarningXML.Value);
         }
 
         #endregion
-    
+
+
+        #region Private Helpers
+
+        #region (private) ParseAttribute(myAttributeType, myAttributeValue)
+
+        private Object ParseAttribute(String myAttributeType, String myAttributeValue)
+        {
+
+            switch (myAttributeType)
+            {
+
+                case "Double"           : return Convert.ToDouble(myAttributeValue);
+                case "Int64"            : return Convert.ToInt64(myAttributeValue);
+                case "Int32"            : return Convert.ToInt32(myAttributeValue);
+                case "UInt64"           : return Convert.ToUInt64(myAttributeValue);
+                case "DateTime"         : return Convert.ToDateTime(myAttributeValue);
+                case "Boolean"          : return Convert.ToBoolean(myAttributeValue);
+
+                case "ObjectUUID"       : return new ObjectUUID(myAttributeValue);
+                case "ObjectRevisionID" : return new ObjectRevisionID(myAttributeValue);
+                
+                // String and all other...
+                default : return myAttributeValue;
+
+            }
+
+        }
+
+        #endregion
+
+        #region (private) SetUsernameAndPassword(myUsername, myPassword)
+
+        public void SetUsernameAndPassword(String myUsername, String myPassword)
+        {
+
+            _Username            = myUsername;
+            _Password            = myPassword;            
+            _UsernameAndPassword = _Username + ":" + _Password;
+
+            _CredentialCache.Remove(_URI, "Basic");
+            _CredentialCache.Add(_URI, "Basic", new NetworkCredential(_Username, _Password));
+
+            _AuthorizationHeader = "Basic " + Convert.ToBase64String(new ASCIIEncoding().GetBytes(_UsernameAndPassword));
+
+        }
+
+        #endregion
+
+        #endregion
+
+
     }
 
 }

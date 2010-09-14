@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB – BreadthFirstSearch" />
+ï»¿/* <id name="GraphDB â€“ BreadthFirstSearch" />
  * <copyright file="BreadthFirstSearch.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -101,7 +81,7 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
         /// <summary>
         /// Sucht im Graphen nach Knoten "myEnd" ausgehend vom Knoten "myStart", bis zur max. Tiefe "myMaxDepth".
         /// </summary>
-        /// <param name="myTypeAttribute">Kante über die gesucht werden soll</param>
+        /// <param name="myTypeAttribute">Kante Ã¼ber die gesucht werden soll</param>
         /// <param name="myDBContext"></param>
         /// <param name="myStart">Startknoten</param>
         /// <param name="myEnd">gesuchter Knoten</param>
@@ -259,11 +239,11 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BreadthFirstSearch
         /// <summary>
         /// Sucht im Graphen nach Knoten "myEnd" ausgehend von der Knotenmenge "myEdge", bis zur max. Tiefe "myMaxDepth".
         /// </summary>
-        /// <param name="myTypeAttribute">Kante über die gesucht werden soll</param>
+        /// <param name="myTypeAttribute">Kante Ã¼ber die gesucht werden soll</param>
         /// <param name="myDBContext"></param>
         /// <param name="myStart">Startknoten</param>
         /// <param name="myEnd">gesuchter Knoten</param>
-        /// <param name="myEdge">Menge an Knoten, ausgehend vom Startknoten welche mittels einer Funktion eingeschränkt wurde</param>
+        /// <param name="myEdge">Menge an Knoten, ausgehend vom Startknoten welche mittels einer Funktion eingeschrÃ¤nkt wurde</param>
         /// <param name="myMaxDepth">max. Tiefe</param>
         /// <returns>true wenn gesuchter Knoten min. 1 mal gefunden, false sonst</returns>
         public bool Find(TypeAttribute myTypeAttribute, DBContext myDBContext, DBObjectStream myStart, DBObjectStream myEnd, IReferenceEdge myEdge, byte myMaxDepth)

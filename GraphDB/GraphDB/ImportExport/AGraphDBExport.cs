@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* 
+﻿/* 
  * AGraphDBExport
  * (c) Stefan Licht, 2010
  */
@@ -33,9 +13,10 @@ using sones.GraphDB.Errors;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.Interfaces;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDBInterface.Result;
+using sones.GraphDB.Result;
 using sones.Lib;
 using sones.Lib.ErrorHandling;
+using sones.GraphDB.NewAPI;
 
 #endregion
 
@@ -73,6 +54,7 @@ namespace sones.GraphDB.ImportExport
 
         public QueryResult Export(String destination, DBContext myDBContext, IDumpable myGrammar, IEnumerable<String> myTypes, DumpTypes myDumpType, VerbosityTypes verbosityType = VerbosityTypes.Errors)
         {
+
             _Destination = destination;
 
             #region Open destination
@@ -106,7 +88,7 @@ namespace sones.GraphDB.ImportExport
                 return new QueryResult(result);
             }
 
-            return new QueryResult(new SelectionResultSet(new List<DBObjectReadout>() { new DBObjectReadout(_DumpReadout) }));
+            return new QueryResult(new List<Vertex>() { new Vertex(_DumpReadout) });
 
         }
 

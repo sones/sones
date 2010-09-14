@@ -1,23 +1,3 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
 #region usings
 
 using System;
@@ -36,7 +16,8 @@ using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.Lib.ErrorHandling;
 
-using sones.GraphDBInterface.TypeManagement;
+using sones.GraphDB.TypeManagement;
+using System.Diagnostics;
 
 #endregion
 
@@ -112,9 +93,9 @@ namespace sones.GraphDB
             {
                 Exceptional<FuncParameter> errorResult = new Exceptional<FuncParameter>();
                 IError error = new Error_InvalidFunctionParameter("maxDepth", ">= 1", maxDepth);
-                errorResult.Push(error);
+                errorResult.PushIError(error);
                 error = new Error_InvalidFunctionParameter("maxPathLength", ">= 2", maxPathLength);
-                errorResult.Push(error);
+                errorResult.PushIError(error);
 
                 return errorResult;
             }
@@ -139,12 +120,12 @@ namespace sones.GraphDB
             #region Call graph function
 
             if (destDBOs.Count() != 1)
-                throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                throw new GraphDBException(new Error_NotImplemented(new StackTrace(true)));
 
             var dbObject = destDBOs.First();
             if (dbObject.Failed())
             {
-                throw new GraphDBException(dbObject.Errors);
+                throw new GraphDBException(dbObject.IErrors);
             }
 
             HashSet<List<ObjectUUID>> paths;
@@ -181,6 +162,7 @@ namespace sones.GraphDB
             #endregion
 
             return pResult;
+
         }
     }
 }
