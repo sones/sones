@@ -1,6 +1,7 @@
 sones GraphDB 1.2 (developer) Changelog:
 
 01.10.2010
+- this version should be compatible with the java client library which can be found on http://github.com/sones/sones-javaclient
 - added IEstimable as generic constraint to TValue in AVersionedIndexObject IVersionedIndexObject in favour of AttributeIndex
 - Settings SettingObjectDirectoryShards and IndexShards optional parameter for CreateIndex and CreateVertex
 - estimated BackwardEdgeStream
