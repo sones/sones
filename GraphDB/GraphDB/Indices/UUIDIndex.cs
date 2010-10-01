@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB – UUIDIndex" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB � UUIDIndex" />
  * <copyright file="UUIDIndex.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -22,7 +42,8 @@ using sones.GraphFS.InternalObjects;
 using sones.Lib;
 using sones.Lib.DataStructures.Indices;
 using sones.Lib.ErrorHandling;
-
+using System.Threading.Tasks;
+using System.Threading;
 
 #endregion
 
@@ -33,6 +54,14 @@ namespace sones.GraphDB.Indices
     /// </summary>
     public class UUIDIndex : AAttributeIndex
     {
+        #region Properties
+
+        Object _lockObject = new object();
+
+        UInt64 _numberOfObjects = 0;
+
+        #endregion
+
         #region Constructor
 
         /// <summary>
@@ -44,16 +73,19 @@ namespace sones.GraphDB.Indices
         /// <param name="myIndexType">The IndexType e.g. HashMap, BTree of this AttributeIndex</param>
         /// <param name="correspondingType">The corresponding type of this index, used to get the file system location</param>
         /// <param name="myFileSystemLocation">The location oif the index. If null it will be generated based on the <paramref name="correspondingType"/>.</param>
-        public UUIDIndex(String myIndexName, String myIndexEdition, List<AttributeUUID> myAttributes, GraphDBType correspondingType, String myIndexType = null)
-            :this(myIndexName, new IndexKeyDefinition(myAttributes), correspondingType, myIndexType, myIndexEdition)
+        public UUIDIndex(String myIndexName, String myIndexEdition, List<AttributeUUID> myAttributes, GraphDBType correspondingType, String myIndexType = null, UInt64 myKeyCount = 0)
+            : this(myIndexName, new IndexKeyDefinition(myAttributes), correspondingType, myIndexType, myIndexEdition, myKeyCount)
         { }
 
-        public UUIDIndex(string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, string indexType = null, string indexEdition = DBConstants.DEFAULTINDEX)
+        public UUIDIndex(string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, string indexType = null, string indexEdition = DBConstants.DEFAULTINDEX, UInt64 myKeyCount = 0)
         {
             IndexName          = indexName;
             IndexEdition       = indexEdition;
             IndexKeyDefinition = idxKey;
             IndexRelatedTypeUUID = correspondingType.UUID;
+
+            _numberOfObjects = myKeyCount;
+            //valueCount is irrellevant, because valueCount = keyCount
 
             if (indexEdition == null)
             {
@@ -97,7 +129,9 @@ namespace sones.GraphDB.Indices
         /// <param name="myToken">The SessionInfos</param>
         public override Exceptional Update(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            return new Exceptional(new Error_InvalidIndexOperation(IndexName, "Update"));
+            //don't do anything, because the number of DBObjects does not change
+
+            return new Exceptional();
         }
 
         #endregion
@@ -124,7 +158,14 @@ namespace sones.GraphDB.Indices
         /// <param name="myToken">The SessionInfos</param>
         public override Exceptional Insert(DBObjectStream myDBObject, IndexSetStrategy myIndexSetStrategy, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            return new Exceptional(new Error_InvalidIndexOperation(IndexName, "Insert"));
+            //do not insert anything, just update the number of objects
+
+            lock (_lockObject)
+            {
+                _numberOfObjects++;
+            }
+
+            return new Exceptional();
         }
 
         #endregion
@@ -155,7 +196,7 @@ namespace sones.GraphDB.Indices
                 }
                 else
                 {
-                    return GetDirectoryObject(myTypeOfDBObject, dbContext).ObjectExists(uuid.ToString());
+                    return GetDirectoryObject(myTypeOfDBObject, uuid, dbContext).ObjectExists(uuid.ToString());
                 }
             }
             else
@@ -166,7 +207,7 @@ namespace sones.GraphDB.Indices
 
         public Boolean Contains(ObjectUUID myUUID, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            return GetDirectoryObject(myTypeOfDBObject, dbContext).ObjectExists(myUUID.ToString());
+            return GetDirectoryObject(myTypeOfDBObject, myUUID, dbContext).ObjectExists(myUUID.ToString());
         }
 
         #endregion
@@ -181,7 +222,14 @@ namespace sones.GraphDB.Indices
         /// <param name="myToken">The SessionInfos</param>
         public override Exceptional Remove(DBObjectStream myDBObject, GraphDBType myTypeOfDBObjects, DBContext dbContext)
         {
-            return new Exceptional(new Error_InvalidIndexOperation(IndexName, "Remove"));            
+            //do not remove anything, just update the number of objects
+
+            lock (_lockObject)
+            {
+                _numberOfObjects--;
+            }
+
+            return new Exceptional();
         }
 
         #endregion
@@ -190,7 +238,14 @@ namespace sones.GraphDB.Indices
 
         public override Exceptional ClearAndRemoveFromDisc(DBIndexManager indexManager)
         {
-            return new Exceptional(new Error_InvalidIndexOperation(IndexName, "Clear"));
+            //do not clear anything, just update the number of objects
+
+            lock (_lockObject)
+            {
+                _numberOfObjects = 0;
+            }
+
+            return new Exceptional();
         }
 
         #endregion
@@ -350,19 +405,18 @@ namespace sones.GraphDB.Indices
 
         #region GetValueCount
 
-        public override UInt64 GetValueCount(GraphDBType myTypeOfDBObject, DBContext dbContext)
+        public override UInt64 GetValueCount()
         {
-            //thats the characteristc of the UUIDIDx... count(keys) == count(values)
-            return GetKeyCount(myTypeOfDBObject, dbContext);
+            return _numberOfObjects;
         }
 
         #endregion
 
         #region GetKeyCount
 
-        public override UInt64 GetKeyCount(GraphDBType myTypeOfDBObject, DBContext dbContext)
+        public override UInt64 GetKeyCount()
         {
-            return GetDirectoryObject(myTypeOfDBObject, dbContext).GetDirectoryListing(null, null, null, new List<String>(new String[] { DBConstants.DBOBJECTSTREAM }), null).ULongCount();
+            return _numberOfObjects;
         }
 
         #endregion
@@ -371,7 +425,15 @@ namespace sones.GraphDB.Indices
 
         public IEnumerable<ObjectUUID> GetAllUUIDs(GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            return GetDirectoryObject(myTypeOfDBObject, dbContext).GetDirectoryListing(null, null, null, new List<String>(new String[] { DBConstants.DBOBJECTSTREAM }), null).Select(item => new ObjectUUID(item));
+            for (UInt16 i = 0; i < DBConstants.ObjectDirectoryShards; i++)
+            {
+                foreach (var aUUID in GetDirectoryObject(myTypeOfDBObject, i, dbContext).GetDirectoryListing(null, null, null, new List<String>(new String[] { DBConstants.DBOBJECTSTREAM }), null).Select(item => new ObjectUUID(item)))
+                {
+                    yield return aUUID;
+                }
+            }
+
+            yield break;
         }
 
         #endregion
@@ -516,9 +578,21 @@ namespace sones.GraphDB.Indices
 
         #region private helper
 
-        private DirectoryObject GetDirectoryObject(GraphDBType myTypeOfDBObject, DBContext dbContext)
+        private DirectoryObject GetDirectoryObject(GraphDBType myTypeOfDBObject, ObjectUUID uuid, DBContext dbContext)
         {
-            var directoryException = dbContext.DBTypeManager.GetObjectsDirectory(myTypeOfDBObject);
+            var directoryException = dbContext.DBTypeManager.GetObjectsDirectory(myTypeOfDBObject, uuid);
+
+            if (directoryException.Failed())
+            {
+                throw new GraphDBException(new Error_CouldNotGetIndexReference(directoryException.IErrors, IndexName, IndexEdition));
+            }
+
+            return directoryException.Value;
+        }
+
+        private DirectoryObject GetDirectoryObject(GraphDBType myTypeOfDBObject, UInt16 shard, DBContext dbContext)
+        {
+            var directoryException = dbContext.DBTypeManager.GetObjectsDirectory(myTypeOfDBObject, shard);
 
             if (directoryException.Failed())
             {

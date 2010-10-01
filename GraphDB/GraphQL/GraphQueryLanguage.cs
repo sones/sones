@@ -1,4 +1,24 @@
-ï»¿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * Copyright (c) sones GmbH. All rights reserved.
  * <developer>Henning Rauch</developer>
  * <developer>Stefan Licht</developer>
@@ -176,6 +196,7 @@ namespace sones.GraphDB.GraphQL
         public SymbolTerminal S_DEPTH           { get; private set; }
         public SymbolTerminal S_DEFINE          { get; private set; }
         public SymbolTerminal S_UNDEFINE        { get; private set; }
+        public SymbolTerminal S_SHARDS          { get; private set; }
 
         #region REF/REFUUID/...
 
@@ -345,7 +366,7 @@ namespace sones.GraphDB.GraphQL
             var string_literal      = new StringLiteral("string", "'", StringFlags.AllowsDoubledQuote | StringFlags.AllowsLineBreak);
             var location_literal    = new StringLiteral("file", "'", StringFlags.AllowsDoubledQuote | StringFlags.AllowsLineBreak | StringFlags.NoEscapes);
             
-            var name                = new IdentifierTerminal("name", "Ã„Ã–ÃœÃ¤Ã¶Ã¼ÃŸ0123456789_", "Ã„Ã–ÃœÃ¤Ã¶Ã¼0123456789$_");
+            var name                = new IdentifierTerminal("name", "ÄÖÜäöüß0123456789_", "ÄÖÜäöü0123456789$_");
 
 
             #endregion
@@ -481,6 +502,7 @@ namespace sones.GraphDB.GraphQL
             S_VIA                             = Symbol("VIA");
             S_LINK                            = Symbol("LINK");
             S_UNLINK                          = Symbol("UNLINK");
+            S_SHARDS                          = Symbol("SHARDS");
 
             #region IMPORT
 
@@ -565,6 +587,7 @@ namespace sones.GraphDB.GraphQL
             var bulkTypeList                = new NonTerminal("bulkTypeList");
             var attributesOpt               = new NonTerminal("attributesOpt");
             var insertValuesOpt             = new NonTerminal("insertValuesOpt");
+            var optionalShards              = new NonTerminal("optionalShards",         typeof(ShardsNode));
 
             #region Expression
              
@@ -844,7 +867,7 @@ namespace sones.GraphDB.GraphQL
             //old
             //Id.Rule = MakePlusRule(Id, dotWrapper, Id_simple);
 
-            Id.Description = "an id is composed by an identifier a dot and a second identifier -  or a list of them an id could be â€˜U.Nameâ€™ or â€˜U.Friends.Ageâ€™\n";
+            Id.Description = "an id is composed by an identifier a dot and a second identifier -  or a list of them an id could be ‘U.Name’ or ‘U.Friends.Age’\n";
             idlist.Rule = MakePlusRule(idlist, S_comma, Id);
             id_simpleList.Rule = MakePlusRule(id_simpleList, S_comma, Id_simple);
             id_simpleDotList.Rule = MakePlusRule(id_simpleDotList, S_dot, Id_simple);
@@ -883,7 +906,7 @@ namespace sones.GraphDB.GraphQL
             #region typeList
 
             TypeList.Rule = MakePlusRule(TypeList, S_comma, AType);
-            TypeList.Description = "specify the type object to be selected for example a type list could be â€˜User Uâ€™, â€˜Car Câ€™, â€¦\n";
+            TypeList.Description = "specify the type object to be selected for example a type list could be ‘User U’, ‘Car C’, …\n";
 
             AType.Rule = Id_simple + Id_simple
                         | Id_simple;
@@ -1177,6 +1200,8 @@ namespace sones.GraphDB.GraphQL
                                     | S_INDICES + IndexOptOnCreateTypeMember;
 
             IndexOptOnCreateTypeMemberList.Rule = MakePlusRule(IndexOptOnCreateTypeMemberList, S_comma, IndexOptOnCreateTypeMember);
+
+            optionalShards.Rule     = S_SHARDS + number | Empty;
 
             IndexOptOnCreateTypeMember.Rule = S_BRACKET_LEFT + indexNameOpt + editionOpt + BNF_IndexTypeOpt + S_ON + S_ATTRIBUTES + IndexAttributeList + S_BRACKET_RIGHT
                                             | S_BRACKET_LEFT + indexNameOpt + editionOpt + BNF_IndexTypeOpt + S_ON + IndexAttributeList + S_BRACKET_RIGHT // due to compatibility the  + S_ATTRIBUTES is optional
@@ -2683,7 +2708,7 @@ namespace sones.GraphDB.GraphQL
 
             #region CreateGDMLforDBOUnDefinedAttributes
 
-            var undefAttrs = myDBObjectStream.GetUndefinedAttributes(myDBContext.DBObjectManager);
+            var undefAttrs = myDBObjectStream.GetUndefinedAttributePayload(myDBContext.DBObjectManager);
 
             if (!undefAttrs.Success())
             {

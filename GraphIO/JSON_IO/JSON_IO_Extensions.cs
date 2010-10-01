@@ -1,4 +1,24 @@
-﻿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * JSON_IO_Extensions
  * Achim 'ahzf' Friedland, 2009 - 2010
  */
@@ -124,31 +144,31 @@ namespace sones.GraphIO.JSON
             yield break;
         }
 
-        #region ToJSON(this myVertex)
+        #region ToJSON(this myIVertex)
 
-        public static JObject ToJSON(this Vertex myVertex)
+        public static JObject ToJSON(this IVertex myIVertex)
         {
-            return myVertex.ToJSON(false);
+            return myIVertex.ToJSON(false);
         }
 
         #endregion
 
-        #region (private) ToJSON(this myVertex, myRecursion = false)
+        #region (private) ToJSON(this myIVertex, myRecursion = false)
 
-        private static JObject ToJSON(this Vertex myVertex, Boolean myRecursion = false)
+        private static JObject ToJSON(this IVertex myIVertex, Boolean myRecursion = false)
         {
 
             var _Vertex = new JObject();
 
             VertexGroup             _GroupedVertices   = null;
             Vertex_WeightedEdges    _WeightedDBObject   = null;
-            IEnumerable<Vertex>     _Vertices           = null;
+            IEdge                   _IEdge              = null;
             IEnumerable<Object>     _AttributeValueList = null;
             IGetName                _IGetName           = null;
 
             #region Vertex_WeightedEdges
 
-            var _WeightedDBObject1 = myVertex as Vertex_WeightedEdges;
+            var _WeightedDBObject1 = myIVertex as Vertex_WeightedEdges;
             if (_WeightedDBObject1 != null)
             {
                 _Vertex.Add(new JProperty("edgelabel", new JObject(new JProperty("weight", _WeightedDBObject1.Weight.ToString()))));
@@ -170,7 +190,7 @@ namespace sones.GraphIO.JSON
 
             #endregion
 
-            foreach (var _Attribute in myVertex.ObsoleteAttributes)
+            foreach (var _Attribute in myIVertex.Attributes())
             {
 
                 if (_Attribute.Value != null)
@@ -208,11 +228,10 @@ namespace sones.GraphIO.JSON
 
                     #endregion
 
-                    #region IEnumerable<Vertex>
+                    #region IEdge
 
-                    _Vertices = _Attribute.Value as IEnumerable<Vertex>;
-
-                    if (_Vertices != null && _Vertices.Count() > 0)
+                    _IEdge = _Attribute.Value as IEdge;
+                    if (_IEdge != null)
                     {
 
                         _Attributes.Add(
@@ -221,8 +240,8 @@ namespace sones.GraphIO.JSON
                                 // An edgelabel for all edges together...
                                 new JProperty("hyperedgelabel", new JObject()),
 
-                                new JProperty("Vertices", new JArray(
-                                    from __Vertex in _Vertices
+                                new JProperty("vertices", new JArray(
+                                    from __Vertex in _IEdge.TargetVertices
                                     select __Vertex.ToJSON(true)
                                 ))
 

@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * sones GraphDS API - ReflectionExtensions
  * (c) Achim 'ahzf' Friedland, 2010
  */
@@ -248,7 +268,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region ReflectMyself(this myDBEdge)
 
-        public static Tuple<String, List<String>> ReflectMyself(this EdgeLabel myDBEdge)
+        public static Tuple<String, List<String>> ReflectMyself(this Edge myDBEdge)
         {
 
             String _CreateTypeQuery = "";
@@ -554,7 +574,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
                                     _StringBuilder.Append(" SETOF(");
 
-                                    var _Set = _PropertyInfo.GetValue(myDBVertex, null) as Set<Vertex, EdgeLabel>;
+                                    var _Set = _PropertyInfo.GetValue(myDBVertex, null) as Set<Vertex, Edge>;
                                     if (_Set != null)
                                     {
 
@@ -644,7 +664,10 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
                 }
 
-                _StringBuilder.Length = _StringBuilder.Length - mySeperator.Length;
+                if (_StringBuilder.Length > mySeperator.Length)
+                {
+                    _StringBuilder.Length = _StringBuilder.Length - mySeperator.Length;
+                }
 
             }
 
@@ -919,7 +942,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region CreateEdges(this myAGraphDSSharp, params myDBEdges)
 
-        public static QueryResult CreateEdges(this AGraphDSSharp myAGraphDSSharp, params EdgeLabel[] myDBEdges)
+        public static QueryResult CreateEdges(this AGraphDSSharp myAGraphDSSharp, params Edge[] myDBEdges)
         {
 
             var _CreateTypesQuery = new StringBuilder("CREATE EDGES ");
@@ -962,7 +985,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region CreateEdges(this myAGraphDSSharp, myAction, params myDBEdges)
 
-        public static QueryResult CreateEdges(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, params EdgeLabel[] myDBEdges)
+        public static QueryResult CreateEdges(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, params Edge[] myDBEdges)
         {
 
             var _CreateTypesQuery = new StringBuilder("CREATE EDGES ");
@@ -1009,7 +1032,7 @@ namespace sones.GraphDS.API.CSharp.Reflection
 
         #region CreateEdges(this myAGraphDSSharp, mySuccessAction, myFailureAction, params myDBEdges)
 
-        public static QueryResult CreateEdges(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, params EdgeLabel[] myDBEdges)
+        public static QueryResult CreateEdges(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, params Edge[] myDBEdges)
         {
 
             var _CreateTypesQuery = new StringBuilder("CREATE EDGES ");

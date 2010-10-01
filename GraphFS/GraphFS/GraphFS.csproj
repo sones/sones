@@ -123,9 +123,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AGraphFS.cs" />
+    <Compile Include="AnotherESObjectCache.cs" />
     <Compile Include="IObjectCache.cs" />
     <Compile Include="MountpointLookup.cs" />
     <Compile Include="LRUObjectCache.cs" />
+    <Compile Include="ESObjectCache.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="GraphFSSession.cs" />
     <Compile Include="ObjectStore.cs" />

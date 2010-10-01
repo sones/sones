@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB DBString DBString" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB DBString DBString" />
  * <copyright file="DBDouble.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -14,6 +34,7 @@ using sones.GraphDB.Structures.Enums;
 using sones.Lib.NewFastSerializer;
 using sones.GraphDB.Structures.Operators;
 using sones.GraphDB.TypeManagement;
+using sones.Lib;
 
 
 namespace sones.GraphDB.TypeManagement.BasicTypes
@@ -27,6 +48,8 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
     {
         public static readonly TypeUUID UUID = new TypeUUID(4000);
         public const string Name = DBConstants.DBString;
+
+        private UInt64 _estimatedSize = 0;
 
         #region TypeCode 
         public override UInt32 TypeCode { get { return 410; } }
@@ -43,21 +66,30 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         public DBString()
         {
             _Value = String.Empty;
+
+            //DO NOT ESTIMATE THE SIZE!!! this constructor is for IFastSerializer purpose only
         }
         
         public DBString(DBObjectInitializeType myDBObjectInitializeType)
         {
             SetValue(myDBObjectInitializeType);
+
+            //DO NOT ESTIMATE THE SIZE!!! it's done in SetValue(...)
+
         }
 
         public DBString(Object myValue)
         {
             Value = myValue;
+
+            CalcEstimatedSize(this);
         }
 
         public DBString(String myValue)
         {
             _Value = myValue;
+
+            CalcEstimatedSize(this);
         }
 
         #endregion
@@ -99,6 +131,9 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
                         _Value = String.Empty;
                     }
                 }
+
+                CalcEstimatedSize(this);
+
             }
         }
 
@@ -227,6 +262,8 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
                     _Value = String.Empty;
                     break;
             }
+
+            CalcEstimatedSize(this);
         }
 
         public override void SetValue(object myValue)
@@ -238,12 +275,6 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         {
             get { return BasicType.Unknown; }
         }
-
-
-        //public override TypeUUID ID
-        //{
-        //    get { return UUID; }
-        //}
 
         public override string ObjectName
         {
@@ -271,6 +302,9 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         private object Deserialize(ref SerializationReader mySerializationReader, DBString myValue)
         {
             myValue._Value = mySerializationReader.ReadString();
+
+            CalcEstimatedSize(myValue);
+
             return myValue;
         }
 
@@ -298,6 +332,21 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         public override string ToString(IFormatProvider provider)
         {
             return _Value.ToString(provider);
+        }
+
+        #endregion
+
+        #region IObject
+
+        public override ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private void CalcEstimatedSize(DBString myTypeAttribute)
+        {
+            //String  + BaseSize
+            _estimatedSize = EstimatedSizeConstants.CalcStringSize(_Value) + GetBaseSize();
         }
 
         #endregion

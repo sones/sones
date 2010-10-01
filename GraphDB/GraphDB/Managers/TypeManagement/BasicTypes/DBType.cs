@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB DBType" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB DBType" />
  * <copyright file="DBType.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -26,6 +46,8 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         public static readonly TypeUUID UUID = new TypeUUID(40);
         public const string Name = DBConstants.DBType;
 
+        private UInt64 _estimatedSize = 0;
+
         #region TypeCode
         public override UInt32 TypeCode { get { return 413; } }
         #endregion
@@ -41,21 +63,31 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         public DBType()
         {
             _Value = new GraphDBType();
+
+            //DO NOT ESTIMATE THE SIZE!!! this constructor is for IFastSerializer purpose only
         }
         
         public DBType(DBObjectInitializeType myDBObjectInitializeType)
         {
             SetValue(myDBObjectInitializeType);
+
+            //DO NOT ESTIMATE THE SIZE!!! it's done in SetValue(...)
+
         }
 
         public DBType(Object myValue)
         {
             Value = myValue;
+
+            CalcEstimatedSize(this);
         }
 
         public DBType(GraphDBType myValue)
         {
             _Value = myValue;
+
+            CalcEstimatedSize(this);
+
         }
 
         #endregion
@@ -86,6 +118,8 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
                         _Value = null;
                 else
                     _Value = null;
+
+                CalcEstimatedSize(this);
             }
         }
 
@@ -209,6 +243,8 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
                     _Value = new GraphDBType();
                     break;
             }
+
+            CalcEstimatedSize(this);
         }
 
         public override void SetValue(object myValue)
@@ -220,11 +256,6 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         {
             get { return BasicType.Unknown; }
         }
-
-        //public override TypeUUID ID
-        //{
-        //    get { return UUID; }
-        //}
 
         public override string ObjectName
         {
@@ -253,6 +284,9 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         private object Deserialize(ref SerializationReader mySerializationReader, DBType myValue)
         {
             myValue._Value.Deserialize(ref mySerializationReader);
+
+            CalcEstimatedSize(myValue);
+
             return myValue;
         }
 
@@ -280,6 +314,21 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         public override string ToString(IFormatProvider provider)
         {
             return ToString();
+        }
+
+        #endregion
+
+        #region IObject
+
+        public override ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private void CalcEstimatedSize(DBType myTypeAttribute)
+        {
+            //GraphDBType + BaseSize
+            _estimatedSize = _Value.GetEstimatedSize() + GetBaseSize();
         }
 
         #endregion

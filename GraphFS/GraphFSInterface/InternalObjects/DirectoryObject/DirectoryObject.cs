@@ -1,4 +1,24 @@
-﻿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * GraphFS - DirectoryObject
  * (c) Achim Friedland, 2008 - 2010
  */
@@ -89,6 +109,7 @@ namespace sones.GraphFS.InternalObjects
                 throw new ArgumentNullException("mySerializedData must not be null or its length be zero!");
 
             Deserialize(mySerializedData, myIntegrityCheckAlgorithm, myEncryptionAlgorithm, false);
+
             _isNew = false;
 
         }
@@ -196,6 +217,12 @@ namespace sones.GraphFS.InternalObjects
 
                     base.Add(myObjectName, _DirectoryEntry);
 
+                    #region Estimated size
+
+                    _estimatedSize += EstimatedSizeConstants.CalcStringSize(myObjectName) + _DirectoryEntry.GetEstimatedSize();
+
+                    #endregion
+
                     // Mark this DirectoryObject dirty...
                     isDirty = true;
 
@@ -258,6 +285,12 @@ namespace sones.GraphFS.InternalObjects
 
                     base.Add(myObjectName, _DirectoryEntry);
 
+                    #region Estimated size
+
+                    _estimatedSize += EstimatedSizeConstants.CalcStringSize(myObjectName) + _DirectoryEntry.GetEstimatedSize();
+
+                    #endregion
+
                     // Mark this DirectoryObject dirty...
                     isDirty = true;
 
@@ -294,6 +327,12 @@ namespace sones.GraphFS.InternalObjects
                 _DirectoryEntry.ObjectStreamsList.Add(myObjectStream);
 
                 base.Add(myObjectName, _DirectoryEntry);
+                
+                #region Estimated size
+
+                _estimatedSize += EstimatedSizeConstants.CalcStringSize(myObjectName) + _DirectoryEntry.GetEstimatedSize();
+
+                #endregion
 
                 #endregion
 
@@ -399,6 +438,8 @@ namespace sones.GraphFS.InternalObjects
         /// <param name="myObjectStream">the ObjectStream of the object</param>
         public void RemoveObjectStream(String myObjectName, String myObjectStream)
         {
+            //TODO: update estimated size
+
 
             if (myObjectName.StartsWith("./"))
                 myObjectName = myObjectName.Substring(2, myObjectName.Length - 2);
@@ -407,7 +448,6 @@ namespace sones.GraphFS.InternalObjects
             {
 
                 // Unregister ObjectStream within the ObjectStreamBitfield of the _DirectoryTree
-
                 if (base[myObjectName].ObjectStreamsList.Contains(myObjectStream))
                     base[myObjectName].ObjectStreamsList.Remove(myObjectStream);
 
@@ -417,8 +457,6 @@ namespace sones.GraphFS.InternalObjects
 
                 // Mark this directory dirty...
                 isDirty = true;
-
-
             }
 
         }
@@ -456,6 +494,7 @@ namespace sones.GraphFS.InternalObjects
 
         public Boolean RenameDirectoryEntry(String myObjectName, String myNewObjectName)
         {
+            //TODO: update estimated size
 
             #region Initial checks
 
@@ -543,6 +582,7 @@ namespace sones.GraphFS.InternalObjects
 
             if (base.ContainsKey(myObjectName))
             {
+                //TODO: update estimated size
 
                 if (base[myObjectName].ObjectStreamsList.Contains(FSConstants.INLINEDATA) && myAllowOverwritting)
                     base[myObjectName].InlineData = myInlineData;
@@ -560,6 +600,12 @@ namespace sones.GraphFS.InternalObjects
                 _DirectoryEntry.ObjectStreamsList  = new HashSet<String> { FSConstants.INLINEDATA };
 
                 base.Add(myObjectName, _DirectoryEntry);
+
+                #region Estimated size
+
+                _estimatedSize += EstimatedSizeConstants.CalcStringSize(myObjectName) + _DirectoryEntry.GetEstimatedSize();
+
+                #endregion
 
             }
 
@@ -626,6 +672,8 @@ namespace sones.GraphFS.InternalObjects
         public void DeleteInlineData(String myObjectName)
         {
 
+            //TODO: update estimated size
+
             if (myObjectName.StartsWith("./"))
                 myObjectName = myObjectName.Substring(2, myObjectName.Length - 2);
 
@@ -660,10 +708,18 @@ namespace sones.GraphFS.InternalObjects
 
                 var _TargetLocation = myTargetLocation.ToString();
 
-                base.Add(myObjectName, new DirectoryEntry
+                var newDirectoryEntry = new DirectoryEntry
                                             {
                                                 Symlink = myTargetLocation
-                                            });
+                                            };
+
+                base.Add(myObjectName, newDirectoryEntry);
+
+                #region Estimated size
+
+                _estimatedSize += EstimatedSizeConstants.CalcStringSize(myObjectName) + newDirectoryEntry.GetEstimatedSize();
+
+                #endregion
 
                 // Mark this directory dirty...
                 isDirty = true;
@@ -737,6 +793,8 @@ namespace sones.GraphFS.InternalObjects
         /// <param name="myObjectName">the Name of the symlink</param>
         public void RemoveSymlink(String myObjectName)
         {
+            //TODO: update estimated size
+
 
             DirectoryEntry _DirectoryEntry;
 
@@ -1140,7 +1198,14 @@ namespace sones.GraphFS.InternalObjects
 
         #endregion
 
+        #region IEstimable Members
 
+        public override ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        #endregion
     }
 
 }

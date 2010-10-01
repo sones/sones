@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * CreateIndexNode
  * (c) Achim Friedland, 2009 - 2010
  * refactored: Stefan Licht, 2010
@@ -38,6 +58,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes
         String                          _DBType             = null;
         List<IndexAttributeDefinition>  _AttributeList      = null;
         String                          _IndexType;
+        UInt16                          _AttributeIdxShards;
 
         #endregion
 
@@ -101,6 +122,10 @@ namespace sones.GraphDB.GraphQL.StatementNodes
                     else if (child.AstNode is IndexTypeOptNode)
                     {
                         _IndexType = (child.AstNode as IndexTypeOptNode).IndexType;
+                    }
+                    else if (child.AstNode is ShardsNode)
+                    {
+                        _AttributeIdxShards = (child.AstNode as ShardsNode).Shards.HasValue ? (child.AstNode as ShardsNode).Shards.Value : DBConstants.AttributeIdxShards;
                     }
                 }
                 childNum++;

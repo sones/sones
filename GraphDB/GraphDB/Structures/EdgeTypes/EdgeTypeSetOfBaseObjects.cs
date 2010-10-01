@@ -1,4 +1,24 @@
-﻿using System;
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.Managers.Structures;
@@ -11,6 +31,7 @@ using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
 using System.Collections;
 using sones.GraphDB.TypeManagement;
+using sones.Lib;
 
 
 namespace sones.GraphDB.Structures.EdgeTypes
@@ -21,7 +42,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         #region Data
 
-        HashSet<ADBBaseObject> _Objects;
+        HashSet<ADBBaseObject>  _Objects;
+        private UInt64          _estimatedSize  = 0;
 
         #endregion
 
@@ -35,6 +57,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public EdgeTypeSetOfBaseObjects(IEnumerable<ADBBaseObject> myObjects)
         {
             _Objects = new HashSet<ADBBaseObject>(myObjects);
+
+            CalcEstimatedSize(this);
         }
 
         #endregion
@@ -63,16 +87,22 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public override void UnionWith(IListOrSetEdgeType myAListEdgeType)
         {
             _Objects.UnionWith((myAListEdgeType as EdgeTypeSetOfBaseObjects)._Objects);
+
+            CalcEstimatedSize(this);
         }
 
         public override void Distinction()
         {
             _Objects = new HashSet<ADBBaseObject>(_Objects.Distinct());
+            CalcEstimatedSize(this);
+
         }
 
         public override void Clear()
         {
             _Objects.Clear();
+
+            CalcEstimatedSize(this);
         }
 
         #endregion
@@ -91,7 +121,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// <param name="myParameters"></param>
         public override void Add(ADBBaseObject myValue, params ADBBaseObject[] myParameters)
         {
-            _Objects.Add((ADBBaseObject)myValue);
+            _Objects.Add(myValue);
+
+            _estimatedSize += myValue.GetEstimatedSize();
         }
 
         /// <summary>
@@ -102,6 +134,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public override void AddRange(IEnumerable<ADBBaseObject> myValue, params ADBBaseObject[] myParameters)
         {
             _Objects.UnionWith(myValue);
+
+            CalcEstimatedSize(this);
         }
 
         /// <summary>
@@ -220,6 +254,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 myValue._Objects.Add((ADBBaseObject)mySerializationReader.ReadObject());
             }
 
+            CalcEstimatedSize(myValue);
+
             return myValue;
         }
 
@@ -303,6 +339,32 @@ namespace sones.GraphDB.Structures.EdgeTypes
         {
             return EdgeTypeUUID.ToString() + "," + EdgeTypeName;
         }
+
+        #region IObject
+
+        public override ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private void CalcEstimatedSize(EdgeTypeSetOfBaseObjects myTypeAttribute)
+        {
+            //_Objects + base size
+            _estimatedSize = base.GetBaseSize();
+
+            if (_Objects != null)
+            {
+                _estimatedSize += EstimatedSizeConstants.HashSet;
+
+                foreach (var aADBBaseObject in _Objects)
+                {
+                    //key
+                    _estimatedSize += aADBBaseObject.GetEstimatedSize();
+                }
+            }
+        }
+
+        #endregion
 
     }
 }

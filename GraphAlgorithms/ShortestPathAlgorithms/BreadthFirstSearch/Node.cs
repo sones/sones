@@ -1,4 +1,24 @@
-ï»¿/* <id name="GraphDB â€“ BreadthFirstSearch" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB – BreadthFirstSearch" />
  * <copyright file="BreadthFirstSearch.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -102,9 +122,9 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BFSTreeStructure
         #region public methods
 
         /// <summary>
-        /// FÃ¼gt dem Knoten ein Child hinzu, existiert dieser schon, werden die Parents und Children des existierenden aktualisiert.
+        /// Fügt dem Knoten ein Child hinzu, existiert dieser schon, werden die Parents und Children des existierenden aktualisiert.
         /// </summary>
-        /// <param name="myChild">Child welches hinzugefÃ¼gt werden soll.</param>
+        /// <param name="myChild">Child welches hinzugefügt werden soll.</param>
         /// <returns></returns>
         public bool addChild(Node myChild)
         {
@@ -130,7 +150,7 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BFSTreeStructure
         }
 
         /// <summary>
-        /// FÃ¼gt eine Liste von Children hinzu.
+        /// Fügt eine Liste von Children hinzu.
         /// </summary>
         /// <param name="myChildren">Liste von Children.</param>
         public void addChildren(HashSet<Node> myChildren)
@@ -142,9 +162,9 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BFSTreeStructure
         }
 
         /// <summary>
-        /// FÃ¼gt dem Knoten ein Parent hinzu, existiert dieser schon, werden die Parents und Children des existierenden aktualisiert.
+        /// Fügt dem Knoten ein Parent hinzu, existiert dieser schon, werden die Parents und Children des existierenden aktualisiert.
         /// </summary>
-        /// <param name="myParent">Parent welcher hinzugefÃ¼gt werden soll.</param>
+        /// <param name="myParent">Parent welcher hinzugefügt werden soll.</param>
         /// <returns></returns>
         public bool addParent(Node myParent)
         {            
@@ -172,7 +192,7 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BFSTreeStructure
         }
 
         /// <summary>
-        /// FÃ¼gt eine Liste von Parents hinzu.
+        /// Fügt eine Liste von Parents hinzu.
         /// </summary>
         /// <param name="myParents">Liste von Parents.</param>
         public void addParents(HashSet<Node> myParents)
@@ -184,7 +204,7 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BFSTreeStructure
         }
 
         /// <summary>
-        /// ÃœberprÃ¼ft ob der angegebene Key bereits vorhanden ist.
+        /// Überprüft ob der angegebene Key bereits vorhanden ist.
         /// </summary>
         /// <param name="key">Key nach dem gesucht werden soll.</param>
         /// <returns></returns>
@@ -200,7 +220,7 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BFSTreeStructure
         }
 
         /// <summary>
-        /// ÃœberprÃ¼ft ob der angegebene Key bereits vorhanden ist.
+        /// Überprüft ob der angegebene Key bereits vorhanden ist.
         /// </summary>
         /// <param name="key">Key nach dem gesucht werden soll.</param>
         /// <returns></returns>
@@ -225,9 +245,9 @@ namespace sones.GraphAlgorithms.PathAlgorithm.BFSTreeStructure
         }
 
         /// <summary>
-        /// ÃœberprÃ¼ft ob Nodes identisch sind.
+        /// Überprüft ob Nodes identisch sind.
         /// </summary>
-        /// <param name="obj">Objekt der Ã¼berprÃ¼ft werden soll. Muss vom Typ "Node" sein.</param>
+        /// <param name="obj">Objekt der überprüft werden soll. Muss vom Typ "Node" sein.</param>
         /// <returns></returns>
         public override bool Equals(object obj)
         {

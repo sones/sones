@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB – ObjectManager" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB � ObjectManager" />
  * <copyright file="ObjectManager.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -24,6 +44,7 @@ using sones.GraphFS.Session;
 using sones.Lib;
 using sones.Lib.DataStructures;
 using sones.Lib.ErrorHandling;
+using sones.GraphDB.Indices;
 
 #endregion
 
@@ -163,8 +184,16 @@ namespace sones.GraphDB.ObjectManagement
             #endregion
 
             // If _NewObjectUUID == null a new one will be generated!
-            _NewDBObjectStream                = new DBObjectStream(_NewObjectUUID, myGraphDBType, myDBObjectAttributes);
-            _NewDBObjectStream.ObjectLocation = new ObjectLocation(_NewDBObjectStream.ObjectPath, _NewDBObjectStream.ObjectUUID.ToString());
+
+            if (_NewObjectUUID == null)
+            {
+                _NewObjectUUID = ObjectUUID.NewUUID;
+            }
+
+            _NewDBObjectStream = new DBObjectStream(_NewObjectUUID, 
+                                                    myGraphDBType, 
+                                                    myDBObjectAttributes,
+                                                    new ObjectLocation(myGraphDBType.ObjectLocation, DBConstants.DBObjectsLocation, GetDBObjectStreamShard(myGraphDBType, _NewObjectUUID), _NewObjectUUID.ToString()));
 
             #endregion
 
@@ -175,14 +204,23 @@ namespace sones.GraphDB.ObjectManagement
             if (_DBObjectStreamAlreadyExistsResult.Failed())
                 return new Exceptional<DBObjectStream>(_DBObjectStreamAlreadyExistsResult);
             
+
+
             while (_DBObjectStreamAlreadyExistsResult.Value == Trinary.TRUE)
             {
-
-                if (_NewObjectUUID != null)
+                if (_SpecialTypeAttribute_UUID_Value != null)
+                {
+                    //so there was an explicit UUID
                     return new Exceptional<DBObjectStream>(new Error_DBObjectCollision(_NewDBObjectStream));
 
-                _NewDBObjectStream                = new DBObjectStream(ObjectUUID.NewUUID, myGraphDBType, myDBObjectAttributes);
-                _NewDBObjectStream.ObjectLocation = new ObjectLocation(_NewDBObjectStream.ObjectPath, _NewDBObjectStream.ObjectUUID.ToString());
+                }
+
+                var newUUID = ObjectUUID.NewUUID;
+
+                _NewDBObjectStream = new DBObjectStream(newUUID, 
+                                                        myGraphDBType, 
+                                                        myDBObjectAttributes,
+                                                        new ObjectLocation(myGraphDBType.ObjectLocation, DBConstants.DBObjectsLocation, GetDBObjectStreamShard(myGraphDBType, newUUID), newUUID.ToString()));
 
                 _DBObjectStreamAlreadyExistsResult = ObjectExistsOnFS(_NewDBObjectStream);
 
@@ -218,32 +256,25 @@ namespace sones.GraphDB.ObjectManagement
 
             if (flushResult.Failed())
                 return new Exceptional<DBObjectStream>(flushResult);
-
-            #region Check for existing object - might be removed at some time
-
-            //var exists = ObjectExistsOnFS(_NewDBObjectStream);
-
-            //if (exists.Failed())
-            //    return new Exceptional<DBObjectStream>(exists);
-
-            //if (exists.Value != Trinary.TRUE)
-            //{
-            //    return new Exceptional<DBObjectStream>(new Error_UnknownDBError("DBObject with path " + _NewDBObjectStream.ObjectLocation + " does not exist."));
-            //}
-
-            #endregion
             
             #region Add UUID of the new DBObject to all indices of myGraphType
 
             foreach (var _GraphDBType in _DBContext.DBTypeManager.GetAllParentTypes(myGraphDBType, true, false))
             {
-                foreach (var _AAttributeIndex in _GraphDBType.GetAllAttributeIndices(false))
+                foreach (var _AAttributeIndex in _GraphDBType.GetAllAttributeIndices(true))
                 {
-                    //Find out if the dbobject carries all necessary attributes
-                    if (_NewDBObjectStream.HasAtLeastOneAttribute(_AAttributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs, _GraphDBType, mySessionSettings))
+                    if (_AAttributeIndex is UUIDIndex)
                     {
-                        //valid dbo for idx
                         _AAttributeIndex.Insert(_NewDBObjectStream, _GraphDBType, _DBContext);
+                    }
+                    else
+                    {
+                        //Find out if the dbobject carries all necessary attributes
+                        if (_NewDBObjectStream.HasAtLeastOneAttribute(_AAttributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs, _GraphDBType, mySessionSettings))
+                        {
+                            //valid dbo for idx
+                            _AAttributeIndex.Insert(_NewDBObjectStream, _GraphDBType, _DBContext);
+                        }
                     }
                 }
             }
@@ -269,6 +300,11 @@ namespace sones.GraphDB.ObjectManagement
 
             return new Exceptional<DBObjectStream>(_NewDBObjectStream);
 
+        }
+
+        public String GetDBObjectStreamShard(GraphDBType myGraphDBType, ObjectUUID objectUUID)
+        {
+            return (Math.Abs(objectUUID.GetHashCode()) % myGraphDBType.ObjectDirectoryShards).ToString();
         }
 
         private Exceptional<Trinary> ObjectExistsOnFS(DBObjectStream NewDBObject)
@@ -308,7 +344,7 @@ namespace sones.GraphDB.ObjectManagement
 
         public Exceptional<DBObjectStream> LoadDBObject(GraphDBType myGraphDBType, ObjectUUID myObjectUUID, String myNameOfType)
         {
-            return LoadDBObject(new ObjectLocation(myGraphDBType.ObjectLocation, DBConstants.DBObjectsLocation, myObjectUUID.ToString()));
+            return LoadDBObject(new ObjectLocation(myGraphDBType.ObjectLocation, DBConstants.DBObjectsLocation, GetDBObjectStreamShard(myGraphDBType, myObjectUUID), myObjectUUID.ToString()));
         }
 
         public Exceptional<DBObjectStream> LoadDBObject(ObjectLocation myObjectLocation)
@@ -392,7 +428,7 @@ namespace sones.GraphDB.ObjectManagement
 
             #region remove from attributeIDX
 
-            foreach (var anIndex in myTypeOfDBObject.GetAllAttributeIndices(false))
+            foreach (var anIndex in myTypeOfDBObject.GetAllAttributeIndices(true))
             {
                 anIndex.Remove(myDBObject, myTypeOfDBObject, _DBContext);
             }
@@ -562,8 +598,7 @@ namespace sones.GraphDB.ObjectManagement
 
         internal Exceptional AddBackwardEdge(ObjectUUID uuid, TypeUUID typeOfBESource, EdgeKey beEdgeKey, ObjectUUID reference)
         {
-
-            //var beLocation = DBObjectStream.GetObjectLocation(_DBContext.DBTypeManager.GetTypeByUUID(typeOfBESource), uuid);
+            //load the backward edge
             var loadExcept = _DBContext.DBObjectCache.LoadDBBackwardEdgeStream(typeOfBESource, uuid); // LoadBackwardEdge(beLocation);
 
             if (loadExcept.Failed())
@@ -571,7 +606,6 @@ namespace sones.GraphDB.ObjectManagement
                 return new Exceptional(loadExcept);
             }
 
-            //EdgeKey tempKey = new EdgeKey(typeUUID, attributeUUID);
             loadExcept.Value.AddBackwardEdge(beEdgeKey, reference, this);
             if (loadExcept.Value.isNew)
             {
@@ -613,6 +647,36 @@ namespace sones.GraphDB.ObjectManagement
 
         #endregion
 
+        public IEnumerable<string> GetAllStreamsRecursive(ObjectLocation objectLocation, string ObjectStream)
+        {
+            #region currentDir
+
+            foreach (var aElement in _IGraphFSSession.GetFilteredDirectoryListing(objectLocation, null, null, null, new List<String>() { ObjectStream }, null, null, null, null, null, null).Value)
+            {
+                yield return aElement;
+            }
+
+            #endregion
+
+            #region  subdirs
+
+            var ignoredDirectories = new String[] { ".", ".." };
+
+            foreach (var aSubdir in _IGraphFSSession.GetFilteredDirectoryListing(objectLocation, null, null, null, new List<String>() { FSConstants.DIRECTORYSTREAM }, null, null, null, null, null, null).Value)
+            {
+                if (!ignoredDirectories.Contains(aSubdir))
+                {
+                    foreach (var aElement in GetAllStreamsRecursive(new ObjectLocation(objectLocation, aSubdir), ObjectStream))
+                    {
+                        yield return aElement;
+                    }
+                }
+            }
+
+            #endregion
+
+            yield break;
+        }
 
     }
 }

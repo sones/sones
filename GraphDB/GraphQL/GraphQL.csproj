@@ -113,6 +113,7 @@
     <Compile Include="StructureNodes\BulkTypeNode.cs" />
     <Compile Include="StructureNodes\CollectionOfDBObjectsNode.cs" />
     <Compile Include="StructureNodes\AliasNode.cs" />
+    <Compile Include="StructureNodes\ShardsNode.cs" />
     <Compile Include="StructureNodes\SelectValueAssignmentNode.cs" />
     <Compile Include="StructureNodes\DefaultValueDefNode.cs" />
     <Compile Include="StructureNodes\EdgeInformationNode.cs" />

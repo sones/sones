@@ -1,4 +1,24 @@
-﻿
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+
 #region Usings
 
 using System;
@@ -44,34 +64,34 @@ namespace sones.GraphDB.Aggregates
 
         public override Exceptional<IObject> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext)
         {
-            if (graphDBType.IsAbstract)
-            {
-                #region For abstract types, count all attribute idx of the subtypes
+            //if (graphDBType.IsAbstract)
+            //{
+            //    #region For abstract types, count all attribute idx of the subtypes
 
-                UInt64 count = 0;
+            //    UInt64 count = 0;
 
-                foreach (var aSubType in dbContext.DBTypeManager.GetAllSubtypes(graphDBType, false))
-                {
-                    if (!aSubType.IsAbstract)
-                    {
-                        count += aSubType.GetUUIDIndex(dbContext.DBTypeManager).GetValueCount(aSubType, dbContext);
-                    }
-                }
+            //    foreach (var aSubType in dbContext.DBTypeManager.GetAllSubtypes(graphDBType, false))
+            //    {
+            //        if (!aSubType.IsAbstract)
+            //        {
+            //            count += aSubType.GetUUIDIndex(dbContext.DBTypeManager).GetValueCount();
+            //        }
+            //    }
 
-                return new Exceptional<IObject>(new DBUInt64(count));
+            //    return new Exceptional<IObject>(new DBUInt64(count));
 
-                #endregion
-            }
-            else
-            {
+            //    #endregion
+            //}
+            //else
+            //{
                 #region Return the count of idx values
 
                 var indexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(attributeIndex.IndexRelatedTypeUUID);
 
-                return new Exceptional<IObject>(new DBUInt64(attributeIndex.GetValueCount(indexRelatedType, dbContext)));
+                return new Exceptional<IObject>(new DBUInt64(attributeIndex.GetValueCount()));
 
                 #endregion
-            }
+            //}
         }
 
         #endregion

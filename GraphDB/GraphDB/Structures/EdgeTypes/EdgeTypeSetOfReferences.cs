@@ -1,4 +1,24 @@
-﻿#region Usings
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+#region Usings
 
 using System;
 using System.Collections;
@@ -29,6 +49,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
     {
         private Dictionary<ObjectUUID, Reference> _ObjectUUIDs = null;
 
+        private UInt64          _estimatedSize  = 0;
+
+
         #region TypeCode
         public override UInt32 TypeCode { get { return 452; } }
         #endregion
@@ -51,6 +74,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
                     _ObjectUUIDs.Add(aUUID, new Reference(aUUID, typeOfDBObjects));
                 }
             }
+
+            CalcEstimatedSize(this);
         }
 
         public EdgeTypeSetOfReferences(IEnumerable<KeyValuePair<ObjectUUID, Reference>> dbos)
@@ -62,6 +87,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 _ObjectUUIDs.Add(dbo.Key, dbo.Value);
             }
 
+            CalcEstimatedSize(this);            
         }
 
         #region AEdgeType Members
@@ -130,6 +156,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public override void Clear()
         {
             _ObjectUUIDs.Clear();
+
+            CalcEstimatedSize(this);
         }
 
         public override void UnionWith(IListOrSetEdgeType myAEdgeType)
@@ -150,6 +178,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
             {
                 throw new ArgumentException("myValue is not of type ObjectUUID");
             }
+
+            CalcEstimatedSize(this);
+
         }
 
         public override bool Contains(ObjectUUID myValue)
@@ -213,13 +244,20 @@ namespace sones.GraphDB.Structures.EdgeTypes
                     _ObjectUUIDs.Add(aUUID, new Reference(aUUID, typeOfDBObjects));
                 }
             }
+
+            CalcEstimatedSize(this);
+
         }
 
         public override void Add(ObjectUUID myValue, TypeUUID typeOfDBObjects, params ADBBaseObject[] myParameters)
         {
             if (!_ObjectUUIDs.ContainsKey(myValue))
             {
-                _ObjectUUIDs.Add(myValue, new Reference(myValue, typeOfDBObjects));
+                var aReference = new Reference(myValue, typeOfDBObjects);
+
+                _estimatedSize += aReference.GetEstimatedSize() + EstimatedSizeConstants.CalcUUIDSize(myValue);
+
+                _ObjectUUIDs.Add(myValue, aReference);
             }
         }
 
@@ -299,6 +337,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 aRef.Deserialize(ref mySerializationReader);
                 myValue._ObjectUUIDs.Add(aRef.ObjectUUID, aRef);
             }
+
+            CalcEstimatedSize(myValue);
+
             return myValue;
         }
 
@@ -402,5 +443,34 @@ namespace sones.GraphDB.Structures.EdgeTypes
         {
             return _ObjectUUIDs.Select(kv => kv.Value);
         }
+
+        #region IObject
+
+        public override ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private void CalcEstimatedSize(EdgeTypeSetOfReferences myTypeAttribute)
+        {
+            //Dictionary<ObjectUUID, Reference> + base size
+            _estimatedSize = base.GetBaseSize();
+
+            if (_ObjectUUIDs != null)
+            {
+                _estimatedSize += EstimatedSizeConstants.Dictionary;
+
+                foreach (var aKV in _ObjectUUIDs)
+                {
+                    //key
+                    _estimatedSize += EstimatedSizeConstants.CalcUUIDSize(aKV.Key);
+
+                    //Value
+                    _estimatedSize += aKV.Value.GetEstimatedSize();
+                }
+            }
+        }
+
+        #endregion
     }
 }

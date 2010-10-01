@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * LRUObjectCache
  * (c) Achim Friedland, 2010
  */
@@ -43,7 +63,7 @@ namespace sones.GraphFS
 
         //private ReaderWriterLockSlim _CacheItemReaderWriterLockSlim;
 
-        public  static   UInt64                                                      MinCapacity     = 100;
+        public  static   UInt64                                                      MinCapacity     = 10;
         private const    UInt64                                                     _DefaultCapacity = 50000;
         private readonly Dictionary<ObjectLocation, LinkedListNode<ObjectLocator>>  _ObjectLocatorCache;
         private readonly LinkedList<ObjectLocator>                                  _ObjectLocatorLRUList;
@@ -100,7 +120,15 @@ namespace sones.GraphFS
             {
                 lock (this)
                 {
-                    return (UInt64) _ObjectLocatorCache.Count();
+
+                    if (_ObjectLocatorCache.Count != _ObjectLocatorLRUList.Count)
+                    {
+                        Debug.WriteLine(String.Format("_ObjectLocatorCache.Count = {0} != _ObjectLocatorLRUList.Count = {1}", _ObjectLocatorCache.Count, _ObjectLocatorLRUList.Count));
+                        //    throw new Exception(String.Format("_ObjectLocatorCache.Count = {0} != _ObjectLocatorLRUList.Count = {1}", _ObjectLocatorCache.Count, _ObjectLocatorLRUList.Count));
+                    }
+
+                    return (UInt64) _ObjectLocatorCache.Count;
+
                 }
             }
         }
@@ -133,7 +161,7 @@ namespace sones.GraphFS
         {
 
             if (myCapacity < MinCapacity)
-                throw new ArgumentException("myCapacity must be larger than zero!");
+                throw new ArgumentException(String.Format("myCapacity must be larger than {0}!", MinCapacity));
 
             _Capacity               = myCapacity;
             _ObjectLocatorCache     = new Dictionary<ObjectLocation, LinkedListNode<ObjectLocator>>();
@@ -191,13 +219,27 @@ namespace sones.GraphFS
                     return new Exceptional<ObjectLocator>();
                 }
 
-                if (_ObjectLocatorLRUList.ULongCount() >= Capacity)
+                if (_ObjectLocatorLRUList.ULongCount() >= _Capacity)
                 {
+
                     // Remove oldest LinkedListNode from LRUList and add new ObjectLocator to the ObjectCache
                     if (DiscardingOldestItem != null)
                         DiscardingOldestItem(this, new EventArgs());
-                    _ObjectLocatorCache.Remove(_ObjectLocatorLRUList.First.Value.ObjectLocation);
+                    //_ObjectLocatorCache.Remove(_ObjectLocatorLRUList.First.Value.ObjectLocation);                    
+                    
+                    var __ObjectLocation = _ObjectLocatorLRUList.First.Value.ObjectLocation;
+
+                    if (__ObjectLocation == ObjectLocation.Root)
+                    {
+                        var _ObjectLocatorNode = _ObjectLocatorLRUList.First();
+                        _ObjectLocatorLRUList.RemoveFirst();
+                        _ObjectLocatorLRUList.AddLast(_ObjectLocatorNode);
+                    }
+
+                    __ObjectLocation = _ObjectLocatorLRUList.First.Value.ObjectLocation;
+                    RemoveObjectLocation(__ObjectLocation);
                     _ObjectLocatorLRUList.RemoveFirst();
+
                 }
 
                 // Add new ObjectLocator to the ObjectCache and add it to the LRUList
@@ -284,7 +326,15 @@ namespace sones.GraphFS
 
                 if (_ObjectLocatorCache.TryGetValue(myObjectLocation, out _ObjectLocatorNode))
                     if (_ObjectLocatorNode != null)
+                    {
+
+                        // Remove the ObjectLocator from LRU-list and readd it!
+                        _ObjectLocatorLRUList.Remove(_ObjectLocatorNode);
+                        _ObjectLocatorLRUList.AddLast(_ObjectLocatorNode);
+
                         return new Exceptional<ObjectLocator>(_ObjectLocatorNode.Value);
+
+                    }
 
                 //ToDo: This might be a bit too expensive!
                 return new Exceptional<ObjectLocator>(new GraphFSError_ObjectLocatorNotFound(myObjectLocation));
@@ -309,12 +359,33 @@ namespace sones.GraphFS
 
                 AFSObject _AFSObject = null;
 
-                if (_AFSObjectStore.TryGetValue(myCacheUUID, out _AFSObject))
-                    if (_AFSObject != null)
-                        return new Exceptional<PT>(_AFSObject as PT);
+                _AFSObjectStore.TryGetValue(myCacheUUID, out _AFSObject);
 
-                //ToDo: This might be a bit too expensive!
-                return new Exceptional<PT>(new GraphFSError("Not within the ObjectCache!"));
+                if (_AFSObject != null)
+                {
+                    //   return new Exceptional<PT>(_AFSObject as PT);
+
+                    var _ObjectLocation = _AFSObject.ObjectLocation;
+
+                    if (_ObjectLocation != null)
+                    {
+
+                        var _ObjectLocatorNode = _ObjectLocatorCache[_ObjectLocation];
+
+                        // Remove the ObjectLocator from LRU-list and readd it!
+                        _ObjectLocatorLRUList.Remove(_ObjectLocatorNode);
+                        _ObjectLocatorLRUList.AddLast(_ObjectLocatorNode);
+
+                    }
+
+                    return new Exceptional<PT>(_AFSObject as PT);
+
+                    //ToDo: This might be a bit too expensive!
+                    //   return new Exceptional<PT>(new GraphFSError("Not within the ObjectCache!"));
+                }
+
+                else
+                    return new Exceptional<PT>(new GraphFSError("Not within the ObjectCache!"));
 
             }
 
@@ -460,8 +531,15 @@ namespace sones.GraphFS
             lock (this)
             {
 
+                if (myObjectLocation == ObjectLocation.Root)
+                {
+                    Debug.WriteLine("...");
+                }
+
                 if (_ObjectLocatorCache.ContainsKey(myObjectLocation))
                 {
+
+                    var _ObjectLocatorNode = _ObjectLocatorCache[myObjectLocation];
 
                     #region Recursive remove objects under this location!
 
@@ -469,20 +547,22 @@ namespace sones.GraphFS
                     {
 
                         // Remove all objects at this location
-                        foreach (var _StringStream in _ObjectLocatorCache[myObjectLocation].Value)
+                        foreach (var _String_ObjectStream_Pair in _ObjectLocatorNode.Value)
                         {
 
-                            if (_StringStream.Key == FSConstants.DIRECTORYSTREAM)
-                                RemoveObjectLocation(new ObjectLocation(myObjectLocation, _StringStream.Key), true);
+                            // Remove subordinated ObjectLocations recursively!
+                            if (_String_ObjectStream_Pair.Key == FSConstants.DIRECTORYSTREAM)
+                                RemoveObjectLocation(new ObjectLocation(myObjectLocation, _String_ObjectStream_Pair.Key), true);
 
-                            foreach (var _StringEdition in _StringStream.Value)
-                                foreach (var _RevisionIDRevision in _StringEdition.Value)
+                            foreach (var _String_ObjectEdition_Pair in _String_ObjectStream_Pair.Value)
+                                foreach (var _RevisionIDRevision in _String_ObjectEdition_Pair.Value)
                                     RemoveAFSObject(_RevisionIDRevision.Value.CacheUUID);
 
                         }
 
                         // Remove ObjectLocator
                         _ObjectLocatorCache.Remove(myObjectLocation);
+                        //_ObjectLocatorLRUList.Remove(_ObjectLocatorNode);
 
                     }
 
@@ -494,7 +574,7 @@ namespace sones.GraphFS
                     {
 
                         // Remove all objects at this location
-                        foreach (var _StringStream in _ObjectLocatorCache[myObjectLocation].Value)
+                        foreach (var _StringStream in _ObjectLocatorNode.Value)
                             foreach (var _StringEdition in _StringStream.Value)
                                 foreach (var _RevisionIDRevision in _StringEdition.Value)
                                     RemoveAFSObject(_RevisionIDRevision.Value.CacheUUID);
@@ -545,12 +625,14 @@ namespace sones.GraphFS
         {
 
             Debug.Assert(_ObjectLocatorCache    != null);
+            Debug.Assert(_ObjectLocatorLRUList  != null);
             Debug.Assert(_AFSObjectStore        != null);
 
             lock (this)
             {
 
                 _ObjectLocatorCache.Clear();
+                _ObjectLocatorLRUList.Clear();
                 _AFSObjectStore.Clear();
 
                 return Exceptional.OK;

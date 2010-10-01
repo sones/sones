@@ -1,4 +1,24 @@
-﻿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * TypeAttribute
  * Stefan Licht, 2009-2010
  * Henning Rauch, 2009-2010
@@ -235,6 +255,16 @@ namespace sones.GraphDB.TypeManagement
 
         #endregion
 
+        #region ObjectDirectoryShards
+
+        public UInt16 ObjectDirectoryShards
+        {
+            get;
+            private set;
+        }
+        
+        #endregion
+
         #endregion
 
         #region Constructor
@@ -319,7 +349,7 @@ namespace sones.GraphDB.TypeManagement
 
         #region GraphDBType(myUUID, myObjectLocation, myTypeName, myParentType, myAttributes, myIsListType, myIsUserDefined, myIsAbstract)
 
-        public GraphDBType(TypeUUID myUUID, ObjectLocation myDBRootPath, String myTypeName, TypeUUID myParentType, Dictionary<AttributeUUID, TypeAttribute> myAttributes, Boolean myIsUserDefined, Boolean myIsAbstract, String myComment)
+        public GraphDBType(TypeUUID myUUID, ObjectLocation myDBRootPath, String myTypeName, TypeUUID myParentType, Dictionary<AttributeUUID, TypeAttribute> myAttributes, Boolean myIsUserDefined, Boolean myIsAbstract, String myComment, UInt16 myObjectDirectoryShards = DBConstants.ObjectDirectoryShards)
             : this(myDBRootPath + myTypeName)
         {
 
@@ -342,6 +372,7 @@ namespace sones.GraphDB.TypeManagement
             _IsUserDefined              = myIsUserDefined;
             _IsAbstract                 = myIsAbstract;
             _Comment                    = myComment;
+            ObjectDirectoryShards       = myObjectDirectoryShards;
 
             _TypeAttributeLookupTable   = new Dictionary<AttributeUUID, TypeAttribute>();
 
@@ -1776,6 +1807,7 @@ namespace sones.GraphDB.TypeManagement
                     foreach (var pValPair in _MandatoryAttributes)
                         pValPair.Serialize(ref mySerializationWriter);
 
+                    mySerializationWriter.WriteUInt16((UInt16)ObjectDirectoryShards);
 
                     #region Indices
 
@@ -1794,6 +1826,8 @@ namespace sones.GraphDB.TypeManagement
                             mySerializationWriter.WriteString(idxType.Value.IndexName);
                             mySerializationWriter.WriteString(idxType.Value.IndexType);
                             mySerializationWriter.WriteBoolean(idxType.Value is UUIDIndex);
+                            mySerializationWriter.WriteUInt64(idxType.Value.GetKeyCount());
+                            mySerializationWriter.WriteUInt64(idxType.Value.GetValueCount());
                         }
                     }
 
@@ -1875,6 +1909,8 @@ namespace sones.GraphDB.TypeManagement
                         _MandatoryAttributes.Add(AttribID);
                     }
 
+                    ObjectDirectoryShards = mySerializationReader.ReadUInt16();
+
                     #region Indices
 
                     _AttributeIndices = new Dictionary<IndexKeyDefinition, Dictionary<String, AAttributeIndex>>();
@@ -1900,16 +1936,18 @@ namespace sones.GraphDB.TypeManagement
                             var indexName           = mySerializationReader.ReadString();
                             var indexType           = mySerializationReader.ReadString();
                             var isUUIDIdx           = mySerializationReader.ReadBoolean();
+                            var keyCount            = mySerializationReader.ReadUInt64();
+                            var valueCount          = mySerializationReader.ReadUInt64();
 
                             //var CreateIdxExcept = CreateAttributeIndex(indexName, idxKey.IndexKeyAttributeUUIDs, indexEdition, indexObjectType, fileSystemLocation);
 
                             if (isUUIDIdx)
                             {
-                                AddAttributeIndex(new UUIDIndex(indexName, idxKey, this, indexType, indexEdition));
+                                AddAttributeIndex(new UUIDIndex(indexName, idxKey, this, indexType, indexEdition, keyCount));
                             }
                             else
                             {
-                                AddAttributeIndex(new AttributeIndex(indexName, idxKey, this, indexType, indexEdition));
+                                AddAttributeIndex(new AttributeIndex(indexName, idxKey, this, indexType, indexEdition, keyCount, valueCount));
                             }
 
                             //if (CreateIdxExcept.Failed())
@@ -2105,6 +2143,15 @@ namespace sones.GraphDB.TypeManagement
         {
             return _TypeAttributeLookupTable.Exists(item => item.Value.Name == AttributeName);
         }
+
+        #region IEstimable Members
+
+        public override ulong GetEstimatedSize()
+        {
+            return EstimatedSizeConstants.UndefinedObjectSize;
+        }
+
+        #endregion
 
     }
 

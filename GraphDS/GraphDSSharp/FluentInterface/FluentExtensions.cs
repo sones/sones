@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * GraphDSSharp - FluentExtensions
  * (c) Achim 'ahzf' Friedland, 2010
  */
@@ -625,7 +645,7 @@ namespace sones.GraphDS.API.CSharp.Fluent
 
         #region Link(this myAGraphDSSharp, mySubject, myEdge, params myObjects)
 
-        public static QueryResult Link(this AGraphDSSharp myAGraphDSSharp, Vertex mySubject, EdgeLabel myEdge, params Vertex[] myObjects)
+        public static QueryResult Link(this AGraphDSSharp myAGraphDSSharp, Vertex mySubject, Edge myEdge, params Vertex[] myObjects)
         {
             return new QueryResult();
         }
@@ -634,7 +654,7 @@ namespace sones.GraphDS.API.CSharp.Fluent
 
         #region Link(this myAGraphDSSharp, myAction, mySubject, myEdge, params myObjects)
 
-        public static QueryResult Link(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, Vertex mySubject, EdgeLabel myEdge, params Vertex[] myObjects)
+        public static QueryResult Link(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, Vertex mySubject, Edge myEdge, params Vertex[] myObjects)
         {
 
             var _QueryResult = myAGraphDSSharp.Link(mySubject, myEdge, myObjects);
@@ -649,7 +669,7 @@ namespace sones.GraphDS.API.CSharp.Fluent
 
         #region Link(this myAGraphDSSharp, mySuccessAction, myFailureAction, mySubject, myEdge, params myObjects)
 
-        public static QueryResult Link(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, Vertex mySubject, EdgeLabel myEdge, params Vertex[] myObjects)
+        public static QueryResult Link(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, Vertex mySubject, Edge myEdge, params Vertex[] myObjects)
         {
 
             var _QueryResult = myAGraphDSSharp.Link(mySubject, myEdge, myObjects);
@@ -664,7 +684,7 @@ namespace sones.GraphDS.API.CSharp.Fluent
 
         #region Link(this myAGraphDSSharp, mySuccessAction, myPartialSuccessAction, myFailureAction, mySubject, myEdge, params myObjects)
 
-        public static QueryResult Link(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, Vertex mySubject, EdgeLabel myEdge, params Vertex[] myObjects)
+        public static QueryResult Link(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, Vertex mySubject, Edge myEdge, params Vertex[] myObjects)
         {
 
             var _QueryResult = myAGraphDSSharp.Link(mySubject, myEdge, myObjects);
@@ -738,7 +758,7 @@ namespace sones.GraphDS.API.CSharp.Fluent
 
         #region Unlink(this myAGraphDSSharp, mySubject, myEdge, params myObjects)
 
-        public static QueryResult Unlink(this AGraphDSSharp myAGraphDSSharp, Vertex mySubject, EdgeLabel myEdge, params Vertex[] myObjects)
+        public static QueryResult Unlink(this AGraphDSSharp myAGraphDSSharp, Vertex mySubject, Edge myEdge, params Vertex[] myObjects)
         {
             throw new NotImplementedException();
         }
@@ -747,7 +767,7 @@ namespace sones.GraphDS.API.CSharp.Fluent
 
         #region Unlink(this myAGraphDSSharp, myAction, mySubject, myEdge, params myObjects)
 
-        public static QueryResult Unlink(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, Vertex mySubject, EdgeLabel myEdge, params Vertex[] myObjects)
+        public static QueryResult Unlink(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> myAction, Vertex mySubject, Edge myEdge, params Vertex[] myObjects)
         {
 
             var _QueryResult = myAGraphDSSharp.Unlink(mySubject, myEdge, myObjects);
@@ -762,7 +782,7 @@ namespace sones.GraphDS.API.CSharp.Fluent
 
         #region Unlink(this myAGraphDSSharp, mySuccessAction, myFailureAction, mySubject, myEdge, params myObjects)
 
-        public static QueryResult Unlink(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, Vertex mySubject, EdgeLabel myEdge, params Vertex[] myObjects)
+        public static QueryResult Unlink(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myFailureAction, Vertex mySubject, Edge myEdge, params Vertex[] myObjects)
         {
 
             var _QueryResult = myAGraphDSSharp.Unlink(mySubject, myEdge, myObjects);
@@ -777,7 +797,7 @@ namespace sones.GraphDS.API.CSharp.Fluent
 
         #region Unlink(this myAGraphDSSharp, mySuccessAction, myPartialSuccessAction, myFailureAction, mySubject, myEdge, params myObjects)
 
-        public static QueryResult Unlink(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, Vertex mySubject, EdgeLabel myEdge, params Vertex[] myObjects)
+        public static QueryResult Unlink(this AGraphDSSharp myAGraphDSSharp, Action<QueryResult> mySuccessAction, Action<QueryResult> myPartialSuccessAction, Action<QueryResult> myFailureAction, Vertex mySubject, Edge myEdge, params Vertex[] myObjects)
         {
 
             var _QueryResult = myAGraphDSSharp.Unlink(mySubject, myEdge, myObjects);

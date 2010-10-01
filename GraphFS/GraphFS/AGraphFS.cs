@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * AGraphFS
  * (c) Achim Friedland, 2010
  */
@@ -54,7 +74,7 @@ namespace sones
         protected readonly  Regex                   _MoreThanOnePathSeperatorRegExpr;
         protected readonly  MountpointLookup        _GraphFSLookuptable;
         protected const     UInt64                  NUMBER_OF_DEFAULT_DIRECTORYENTRIES = 6;
-        protected readonly  IObjectCache            _ObjectCache;
+        protected           IObjectCache            _ObjectCache;
 
         #endregion
 
@@ -64,6 +84,22 @@ namespace sones
 
         public String FileSystemDescription { get; set; }
 
+        #endregion
+
+        #region IObjectCache
+
+        public IObjectCache IObjectCache
+        {
+            get
+            {
+                return _ObjectCache;
+            }
+            internal set
+            {
+                _ObjectCache = value;
+            }
+        }
+        
         #endregion
 
         #endregion
@@ -1379,6 +1415,17 @@ namespace sones
 
             #endregion
 
+            return ObjectExists_protected(myObjectLocation);
+
+        }
+
+        #endregion
+
+        #region ObjectExists_protected(myObjectLocation)
+
+        protected Exceptional<Trinary> ObjectExists_protected(ObjectLocation myObjectLocation)
+        {
+
             var _Exceptional = new Exceptional<Trinary>();
             var _ParentDirectoryObjectExceptional = GetAFSObject_protected<DirectoryObject>(
                                                         new ObjectLocation(myObjectLocation.Path),
@@ -1466,6 +1513,13 @@ namespace sones
 
         protected Exceptional<Trinary> ObjectEditionExists_protected(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition)
         {
+
+            var _ExistsExceptional = ObjectExists_protected(myObjectLocation);
+            if (_ExistsExceptional.IsInvalid())
+                return _ExistsExceptional;
+
+            if (_ExistsExceptional.Value == Trinary.FALSE)
+                return _ExistsExceptional;
 
             var _Exceptional = new Exceptional<Trinary>();
             var _ObjectLocatorExceptional = GetObjectLocator_protected(myObjectLocation);
@@ -2357,25 +2411,32 @@ namespace sones
                 if (myAFSObject.ObjectLocatorReference == null)
                 {
 
-                    // Will load the ParentIDirectoryObject
-                    var _AFSObjectLocator = GetObjectLocator_protected(myObjectLocation);
+                    var _ExistsExeptional = ObjectExists_protected(myObjectLocation);
 
-                    if (_AFSObjectLocator.Failed())
+                    if (_ExistsExeptional.IsValid() && _ExistsExeptional.Value == Trinary.TRUE)
                     {
 
-                        var _ParentIDirectoryObjectLocator = GetObjectLocator_protected(new ObjectLocation(myObjectLocation.Path));
+                        // Will load the ParentIDirectoryObject
+                        var _AFSObjectLocator = GetObjectLocator_protected(myObjectLocation);
 
-                        if (_ParentIDirectoryObjectLocator.Failed())
+                        if (_AFSObjectLocator.Failed())
                         {
-                            //return _ParentIDirectoryObjectLocator.Push(new GraphFSError_ObjectLocatorNotFound(new ObjectLocation(myObjectLocation.Path)));
-                            throw new GraphFSException("ObjectLocator for parent ObjectLocation '" + myObjectLocation.Path + "' was not found!");
+
+                            var _ParentIDirectoryObjectLocator = GetObjectLocator_protected(new ObjectLocation(myObjectLocation.Path));
+
+                            if (_ParentIDirectoryObjectLocator.Failed())
+                            {
+                                //return _ParentIDirectoryObjectLocator.Push(new GraphFSError_ObjectLocatorNotFound(new ObjectLocation(myObjectLocation.Path)));
+                                throw new GraphFSException("ObjectLocator for parent ObjectLocation '" + myObjectLocation.Path + "' was not found!");
+                            }
+
                         }
+
+                        myAFSObject.ObjectLocatorReference = _AFSObjectLocator.Value;
 
                     }
 
-                    myAFSObject.ObjectLocatorReference = _AFSObjectLocator.Value;
-
-                    if (myAFSObject.ObjectLocatorReference == null)
+                    else
                     {
 
                         myAFSObject.ObjectLocatorReference = new ObjectLocator(myAFSObject.ObjectLocation, myAFSObject.ObjectUUID);
@@ -2394,7 +2455,6 @@ namespace sones
                     }
 
                 }
-
 
                 if (myAFSObject.INodeReference.ObjectLocatorReference == null)
                     myAFSObject.INodeReference.ObjectLocatorReference = myAFSObject.ObjectLocatorReference;

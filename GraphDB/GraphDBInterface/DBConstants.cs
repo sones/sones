@@ -1,4 +1,24 @@
-﻿/* GraphFS - DBConstants
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* GraphFS - DBConstants
  * (c) sones Team, 2009
  * 
  * Adds constants to the GraphFS
@@ -66,6 +86,7 @@ namespace sones.GraphDB
         public const String DEFAULTINDEX                        = "DEFAULTINDEX";
         public const String UNIQUEATTRIBUTESINDEX               = "UNIQUEATTRIBUTESINDEX";
         public const String InheritatedIdx                      = "_InheritatedIdx";
+        public const String UUIDIdxName                         = "UUIDIdx";
 
 
         /// <summary>
@@ -158,6 +179,8 @@ namespace sones.GraphDB
 
         public const Boolean UseThreadedSelect                  = true;
 
+        public const UInt16  ObjectDirectoryShards              = 10;
+        public const UInt16  AttributeIdxShards                 = 10;
     }
 
 }

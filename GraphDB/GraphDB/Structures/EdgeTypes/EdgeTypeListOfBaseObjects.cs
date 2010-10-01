@@ -1,4 +1,24 @@
-﻿#region usings
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+#region usings
 
 using System;
 using System.Collections.Generic;
@@ -8,6 +28,7 @@ using sones.GraphDB.TypeManagement;
 
 using sones.Lib.NewFastSerializer;
 using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.Lib;
 
 #endregion
 
@@ -21,6 +42,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         List<ADBBaseObject> _Objects;
 
+        private UInt64 _estimatedSize = 0;
+
         #endregion
 
         #region Ctors
@@ -33,6 +56,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public EdgeTypeListOfBaseObjects(IEnumerable<ADBBaseObject> myObjects)
         {
             _Objects = new List<ADBBaseObject>(myObjects);
+            CalcEstimatedSize(this);
         }
 
         #endregion
@@ -61,16 +85,24 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public override void UnionWith(IListOrSetEdgeType myAListEdgeType)
         {
             _Objects = new List<ADBBaseObject>(_Objects.Union((myAListEdgeType as EdgeTypeListOfBaseObjects)._Objects));
+
+            CalcEstimatedSize(this);
         }
 
         public override void Distinction()
         {
             _Objects = new List<ADBBaseObject>(_Objects.Distinct());
+
+            CalcEstimatedSize(this);
+
         }
 
         public override void Clear()
         {
             _Objects.Clear();
+
+            CalcEstimatedSize(this);
+
         }
 
         #endregion
@@ -90,6 +122,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public override void Add(ADBBaseObject myValue, params ADBBaseObject[] myParameters)
         {
             _Objects.Add(myValue);
+
+            CalcEstimatedSize(this);            
         }
 
         /// <summary>
@@ -100,6 +134,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public override void AddRange(IEnumerable<ADBBaseObject> myValue, params ADBBaseObject[] myParameters)
         {
             _Objects.AddRange(myValue);
+
+            CalcEstimatedSize(this);
+
         }
 
         /// <summary>
@@ -109,7 +146,10 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// <returns></returns>
         public override Boolean Remove(ADBBaseObject myValue)
         {
-            return _Objects.Remove((ADBBaseObject)myValue);
+
+            _estimatedSize -= myValue.GetEstimatedSize();
+
+            return _Objects.Remove(myValue);
         }
 
         /// <summary>
@@ -218,6 +258,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 myValue._Objects.Add((ADBBaseObject)mySerializationReader.ReadObject());
             }
 
+            CalcEstimatedSize(myValue);
+
             return myValue;
         }
 
@@ -301,6 +343,30 @@ namespace sones.GraphDB.Structures.EdgeTypes
         {
             return EdgeTypeUUID.ToString() + "," + EdgeTypeName;
         }
+
+        #region IObject
+
+        public override ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private void CalcEstimatedSize(EdgeTypeListOfBaseObjects myTypeAttribute)
+        {
+            _estimatedSize = base.GetBaseSize();
+
+            //Objects
+            if (_Objects != null)
+            {
+                foreach (var aADBBaseObject in _Objects)
+                {
+                    _estimatedSize += aADBBaseObject.GetEstimatedSize();
+                }
+
+            }
+        }
+
+        #endregion
 
     }
 }

@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB – EdgeTypeWeightedList<T>" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB � EdgeTypeWeightedList<T>" />
  * <copyright file="EdgeTypeWeightedList.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -42,6 +62,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
     public class EdgeTypeWeighted : ASetOfReferencesWithInfoEdgeType
     {
 
+        private UInt64          _estimatedSize  = 0;
+
         public override String EdgeTypeName { get { return "WEIGHTED"; } }
         public override EdgeTypeUUID EdgeTypeUUID { get { return new EdgeTypeUUID(1001); } }
 
@@ -64,6 +86,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
             var edgeTypeWeightedList = new EdgeTypeWeighted();
             edgeTypeWeightedList.weightedSet = new WeightedSet<Reference>(weightedSet.SortDirection);
             edgeTypeWeightedList.weightedSet.SetWeightedDefaultValue(weightedSet.DefaultWeight);
+
+            CalcEstimatedSize(edgeTypeWeightedList);
 
             return edgeTypeWeightedList;
         }
@@ -105,6 +129,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
             }
 
             #endregion
+
+            CalcEstimatedSize(this);
         }
 
         public override String GetDescribeOutput(GraphDBType myGraphDBType)
@@ -141,6 +167,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
         private object Deserialize(ref SerializationReader mySerializationReader, EdgeTypeWeighted myValue)
         {
             myValue.weightedSet.Deserialize(ref mySerializationReader);
+
+            CalcEstimatedSize(myValue);
+
             return myValue;
         }
 
@@ -173,6 +202,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public override void Clear()
         {
             weightedSet.Clear();
+
+            CalcEstimatedSize(this);
         }
 
         public override IListOrSetEdgeType GetTopAsEdge(ulong myNumOfEntries)
@@ -195,6 +226,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
             {
                 throw new ArgumentException("myAEdgeType is not of type EdgeTypeWeightedList");
             }
+
+            CalcEstimatedSize(this);
+
         }
 
         public override void Distinction()
@@ -205,9 +239,14 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         #region AListReferenceEdgeType Members
 
-        public void Add(Reference myValue, DBNumber myWeight)
+        public void Add(Reference myValue, DBNumber myWeight, Boolean calcSize = false)
         {
             weightedSet.Add(myValue, myWeight);
+
+            if (calcSize)
+            {
+                CalcEstimatedSize(this);            
+            }
         }
 
         public override void Add(ObjectUUID myValue, TypeUUID typeOfDBObjects, params ADBBaseObject[] myParameters)
@@ -216,7 +255,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             {
                 if (weightedSet.DefaultWeight.IsValidValue(myParameters[0].Value))
                 {
-                    Add(new Reference(myValue, typeOfDBObjects), (DBNumber)weightedSet.DefaultWeight.Clone(myParameters[0].Value));//new DBNumber(myParameters[0].Value));
+                    Add(new Reference(myValue, typeOfDBObjects), (DBNumber)weightedSet.DefaultWeight.Clone(myParameters[0].Value), true);//new DBNumber(myParameters[0].Value));
                 }
                 else
                 {
@@ -225,7 +264,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             }
             else
             {
-                Add(new Reference(myValue, typeOfDBObjects), weightedSet.DefaultWeight);
+                Add(new Reference(myValue, typeOfDBObjects), weightedSet.DefaultWeight, true);
             }
         }
 
@@ -287,6 +326,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
             {
                 weightedSet.AddRange(hashSet.Select(item => new Reference(item, typeOfDBObjects)), weightedSet.DefaultWeight);
             }
+
+            CalcEstimatedSize(this);
         }
 
         public override bool Contains(ObjectUUID myValue)
@@ -296,7 +337,16 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public override Boolean RemoveUUID(ObjectUUID myValue)
         {
-            return weightedSet.Remove(new Reference(myValue, null));
+            Boolean removeResult = false;
+
+            removeResult = weightedSet.Remove(new Reference(myValue, null));
+
+            if (removeResult)
+            {
+                CalcEstimatedSize(this);
+            }
+
+            return removeResult;
         }
 
         public override bool RemoveUUID(IEnumerable<ObjectUUID> myObjectUUIDs)
@@ -320,6 +370,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 retEdge.Add(vals.Key, vals.Value);
             }
 
+            CalcEstimatedSize(retEdge);
+
             return retEdge;
         }
 
@@ -332,6 +384,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 var vals = weightedSet.Get(new Reference(uuid, typeOfObjects)); ;
                 retEdge.Add(vals.Key, vals.Value);
             }
+
+            CalcEstimatedSize(retEdge);
 
             return retEdge;
         }
@@ -445,5 +499,31 @@ namespace sones.GraphDB.Structures.EdgeTypes
         {
             return weightedSet;
         }
+
+        #region IObject
+
+        public override ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private void CalcEstimatedSize(EdgeTypeWeighted myTypeAttribute)
+        {
+            //weightedSet + weightDataType + base size
+            _estimatedSize = base.GetBaseSize();
+
+            if(weightedSet != null)
+            {
+                _estimatedSize += weightedSet.GetEstimatedSize();
+            }
+
+            if(weightDataType != null)
+            {
+            
+                 _estimatedSize += weightDataType.GetEstimatedSize();
+            }
+        }
+
+        #endregion
     }
 }

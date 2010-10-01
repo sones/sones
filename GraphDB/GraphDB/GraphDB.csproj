@@ -45,14 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Applications\Administration\DBAdministrationServiceClient.cs" />
-    <Compile Include="Applications\Administration\DBAdministrationServiceHost.cs" />
     <Compile Include="DBExtensions.cs" />
     <Compile Include="Errors\AggregateErrors\Error_AggregateDoesNotMatchGroupLevel.cs" />
     <Compile Include="Errors\AggregateErrors\GraphDBAggregateError.cs" />
     <Compile Include="Errors\AttributeAssignmentErrors\Error_InvalidUndefAttrType.cs" />
     <Compile Include="Errors\AttributeAssignmentErrors\GraphDBAttributeAssignmentError.cs" />
-    <Compile Include="Errors\BackwardEdegeErrors\GraphDBBackwardEdgeError.cs" />
+    <Compile Include="Errors\BackwardEdgeErrors\GraphDBBackwardEdgeError.cs" />
     <Compile Include="Errors\DBObjectErrors\Error_UndefinedAttributeNotFound.cs" />
     <Compile Include="Errors\DBObjectErrors\GraphDBObjectError.cs" />
     <Compile Include="Errors\DBOperatorErrors\GraphDBOperatorError.cs" />
@@ -64,6 +62,7 @@
     <Compile Include="Errors\AggregateErrors\Error_AggregateParameterCountMismatch.cs" />
     <Compile Include="Errors\EdgeErrors\GraphDBEdgeError.cs" />
     <Compile Include="Errors\Error_AmbiguousAttribute.cs" />
+    <Compile Include="Errors\Error_UndefinedAttributes.cs" />
     <Compile Include="Errors\FunctionErrors\Error_DuplicateAggregateOrFunction.cs" />
     <Compile Include="Errors\FunctionErrors\Error_InvalidFunctionReturnType.cs" />
     <Compile Include="Errors\FunctionErrors\GraphDBFunctionError.cs" />
@@ -190,10 +189,10 @@
     <Compile Include="Errors\TypeAttributeErrors\Error_AttributeAlreadyExists.cs" />
     <Compile Include="Errors\TypeAttributeErrors\Error_AttributeIsNotDefined.cs" />
     <Compile Include="Errors\TypeAttributeErrors\Error_AttributeExistsInSupertype.cs" />
-    <Compile Include="Errors\BackwardEdegeErrors\Error_BackwardEdgeAlreadyExist.cs" />
-    <Compile Include="Errors\BackwardEdegeErrors\Error_BackwardEdgeDestinationIsInvalid.cs" />
-    <Compile Include="Errors\BackwardEdegeErrors\Error_BackwardEdgesForNotReferenceAttributeTypesAreNotAllowed.cs" />
-    <Compile Include="Errors\BackwardEdegeErrors\Error_CouldNotLoadBackwardEdge.cs" />
+    <Compile Include="Errors\BackwardEdgeErrors\Error_BackwardEdgeAlreadyExist.cs" />
+    <Compile Include="Errors\BackwardEdgeErrors\Error_BackwardEdgeDestinationIsInvalid.cs" />
+    <Compile Include="Errors\BackwardEdgeErrors\Error_BackwardEdgesForNotReferenceAttributeTypesAreNotAllowed.cs" />
+    <Compile Include="Errors\BackwardEdgeErrors\Error_CouldNotLoadBackwardEdge.cs" />
     <Compile Include="Errors\Error_DataTypeDoesNotMatch.cs" />
     <Compile Include="Errors\DBObjectErrors\Error_DBObjectCollision.cs" />
     <Compile Include="Errors\DBObjectErrors\Error_DBObjectDoesNotExistInIndex.cs" />
@@ -275,6 +274,7 @@
     <Compile Include="Managers\TypeManagement\TypeUUID.cs" />
     <Compile Include="Managers\TypeManagement\UndefinedTypeAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings\DatabaseSettings\SettingUndefAttrBehaviour.cs" />
     <Compile Include="Structures\EdgeTypes\ASetOfReferencesEdgeType.cs" />
     <Compile Include="Structures\EdgeTypes\ASetOfReferencesWithInfoEdgeType.cs" />
     <Compile Include="Structures\EdgeTypes\ASingleReferenceEdgeType.cs" />
@@ -456,6 +456,7 @@
     <Compile Include="Warnings\Warning_EdgeToNonExistingNode.cs" />
     <Compile Include="Warnings\Warning_NoObjectsToDelete.cs" />
     <Compile Include="Warnings\Warning_ObsoleteGQL.cs" />
+    <Compile Include="Warnings\Warning_UndefinedAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="buildSolution.sh" />
@@ -464,6 +465,7 @@
     <None Include="Settings\SettingsClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Errors\BackwardEdegeErrors\" />
     <Folder Include="Structures\Operator\BinaryOperator\OperationValues\" />
     <Folder Include="Structures\Operator\OperatorContext\" />
   </ItemGroup>

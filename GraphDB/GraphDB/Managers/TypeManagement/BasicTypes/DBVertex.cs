@@ -1,10 +1,31 @@
-﻿#region usings
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+#region usings
 
 using System;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.DataStructures;
 using sones.GraphDB.TypeManagement;
 using sones.Lib.NewFastSerializer;
+using sones.Lib;
 
 #endregion
 
@@ -16,6 +37,8 @@ namespace sones.GraphDB.Managers.TypeManagement.BasicTypes
 
         public static readonly TypeUUID UUID = new TypeUUID(DBConstants.DBVertexID);
         public const string Name = DBConstants.DBVertexName;
+
+        private UInt64 _estimatedSize = 0;
         
         #region TypeCode
 
@@ -34,21 +57,32 @@ namespace sones.GraphDB.Managers.TypeManagement.BasicTypes
         public DBVertex()
         {
             _Value = new ObjectUUID();
+
+            //DO NOT ESTIMATE THE SIZE!!! this constructor is for IFastSerializer purpose only
         }
 
         public DBVertex(DBObjectInitializeType myDBObjectInitializeType)
         {
             SetValue(myDBObjectInitializeType);
+
+            //DO NOT ESTIMATE THE SIZE!!! it's done in SetValue(...)
+
         }
 
         public DBVertex(Object myValue)
         {
             Value = myValue;
+
+            CalcEstimatedSize(this);
+
         }
 
         public DBVertex(ObjectUUID myValue)
         {
             _Value = myValue;
+
+            CalcEstimatedSize(this);
+
         }
         
         #endregion
@@ -170,6 +204,9 @@ namespace sones.GraphDB.Managers.TypeManagement.BasicTypes
                     _Value = new ObjectUUID(0);
                     break;
             }
+
+            CalcEstimatedSize(this);
+
         }
 
         public override void SetValue(object myValue)
@@ -218,6 +255,9 @@ namespace sones.GraphDB.Managers.TypeManagement.BasicTypes
                 {
                     _Value = null;
                 }
+
+                CalcEstimatedSize(this);
+
             }
         }
 
@@ -295,10 +335,28 @@ namespace sones.GraphDB.Managers.TypeManagement.BasicTypes
         private object Deserialize(ref SerializationReader mySerializationReader, DBVertex myValue)
         {
             myValue._Value.Deserialize(ref mySerializationReader);
+
+            CalcEstimatedSize(myValue);
+
             return myValue;
         }
 
         #endregion
+
+        #endregion
+
+        #region IObject
+
+        public override ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private void CalcEstimatedSize(DBVertex myTypeAttribute)
+        {
+            //ObjectUUID + BaseSize
+            _estimatedSize = EstimatedSizeConstants.CalcUUIDSize(_Value) + GetBaseSize();
+        }
 
         #endregion
     

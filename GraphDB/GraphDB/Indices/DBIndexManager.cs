@@ -1,4 +1,24 @@
-﻿/* <id name="GraphdbDB – DBIndexManager" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphdbDB � DBIndexManager" />
  * <copyright file="DBIndexManager.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -109,10 +129,17 @@ namespace sones.GraphDB.Indices
         {
 
             var objectLocation = new ObjectLocation(myDBTypeStream.ObjectLocation, DBConstants.DBObjectsLocation);
-            var allDBOLocations = _IGraphFSSession.GetFilteredDirectoryListing(objectLocation, null, null, null, new List<String>(new String[] { DBConstants.DBOBJECTSTREAM }), null, null, null, null, null, null);
+            IEnumerable<String> allDBOLocations = null;
 
-            if (allDBOLocations.Failed() && allDBOLocations.IErrors.First().GetType() != typeof(GraphFSError_ObjectLocatorNotFound))
-                return new Exceptional<ResultType>(allDBOLocations);
+            try
+            {
+                allDBOLocations = _DBContext.DBObjectManager.GetAllStreamsRecursive(objectLocation, DBConstants.DBOBJECTSTREAM);
+            }
+            catch (Exception e)
+            {
+                return new Exceptional<ResultType>(new Error_RebuildIndexFailed(myIndexName, myIndexEdition, e.Message));
+                
+            }
 
             try
             {
@@ -120,12 +147,10 @@ namespace sones.GraphDB.Indices
                 var index = myDBTypeStream.GetAttributeIndex(myIndexName, myIndexEdition);
 
                 index.ClearAndRemoveFromDisc(this);
-
-                if (allDBOLocations.Value != null)
-                {
-                    foreach (var loc in allDBOLocations.Value)
+                
+                    foreach (var loc in allDBOLocations)
                     {
-                        var dbo = _DBContext.DBObjectManager.LoadDBObject(new ObjectLocation(myDBTypeStream.ObjectLocation, DBConstants.DBObjectsLocation, loc));
+                        var dbo = _DBContext.DBObjectManager.LoadDBObject(new ObjectLocation(myDBTypeStream.ObjectLocation, DBConstants.DBObjectsLocation, _DBContext.DBObjectManager.GetDBObjectStreamShard(myDBTypeStream, new ObjectUUID(loc)), loc));
 
                         if (dbo.Failed())
                         {
@@ -148,7 +173,7 @@ namespace sones.GraphDB.Indices
                                 }
                             }
                         }
-                    }
+                    
                 }
             }
             catch (GraphDBException pe)
@@ -194,45 +219,42 @@ namespace sones.GraphDB.Indices
             {
 
                 var _DBObjectsLocation = new ObjectLocation(_UserDefinedType.ObjectLocation, DBConstants.DBObjectsLocation);
+                IEnumerable<String> allDBOLocations = null;
 
                 // Get all DBObjects from DirectoryListing
-                using (var _DBObjectsLocationsExceptional = _IGraphFSSession.GetFilteredDirectoryListing(_DBObjectsLocation, null, null, null, new List<String>(new String[] { DBConstants.DBOBJECTSTREAM }), null, null, null, null, null, null))
+                try
                 {
-
-                    if (_DBObjectsLocationsExceptional.IsValid())
-                    {
-
-                        var UUIDAttributeUUID = _DBContext.DBTypeManager.GetUUIDTypeAttribute().UUID;
-
-                        var UUIDIdxIndexKey = new IndexKeyDefinition(new List<AttributeUUID>() { UUIDAttributeUUID });
-
-                        foreach (var _DBObjectLocation in _DBObjectsLocationsExceptional.Value)
-                        {
-
-                            var _DBObjectExceptional = _DBContext.DBObjectManager.LoadDBObject(new ObjectLocation(_DBObjectsLocation, _DBObjectLocation));
-                            if (_DBObjectExceptional.Failed())
-                            {
-                                return new Exceptional<Boolean>(_DBObjectExceptional);
-                            }
-
-                            //rebuild everything but the UUIDidx
-                            foreach (var _KeyValuePair in _UserDefinedType.AttributeIndices.Where(aIDX => aIDX.Key != UUIDIdxIndexKey))
-                            {
-                                foreach (var _AttributeIndex in _KeyValuePair.Value.Values)
-                                {
-                                    _AttributeIndex.Insert(_DBObjectExceptional.Value, _UserDefinedType, _DBContext);
-                                }
-                            }
-
-                        }
-
-                    }
-                    
-                    else
-                        return new Exceptional<bool>(new Error_IndexRebuildError(_UserDefinedType, _DBObjectsLocation));
+                    allDBOLocations = _DBContext.DBObjectManager.GetAllStreamsRecursive(_DBObjectsLocation, DBConstants.DBOBJECTSTREAM);
+                }
+                catch (Exception e)
+                {
+                    return new Exceptional<Boolean>(new Error_RebuildIndexFailed(DBConstants.UUIDIdxName, DBConstants.DEFAULTINDEX, e.Message));
 
                 }
 
+                var UUIDAttributeUUID = _DBContext.DBTypeManager.GetUUIDTypeAttribute().UUID;
+
+                var UUIDIdxIndexKey = new IndexKeyDefinition(new List<AttributeUUID>() { UUIDAttributeUUID });
+
+                foreach (var _DBObjectLocation in allDBOLocations)
+                {
+
+                    var _DBObjectExceptional = _DBContext.DBObjectManager.LoadDBObject(new ObjectLocation(_DBObjectsLocation, _DBContext.DBObjectManager.GetDBObjectStreamShard(_UserDefinedType, new ObjectUUID(_DBObjectLocation)), _DBObjectLocation));
+                    if (_DBObjectExceptional.Failed())
+                    {
+                        return new Exceptional<Boolean>(_DBObjectExceptional);
+                    }
+
+                    //rebuild everything but the UUIDidx
+                    foreach (var _KeyValuePair in _UserDefinedType.AttributeIndices.Where(aIDX => aIDX.Key != UUIDIdxIndexKey))
+                    {
+                        foreach (var _AttributeIndex in _KeyValuePair.Value.Values)
+                        {
+                            _AttributeIndex.Insert(_DBObjectExceptional.Value, _UserDefinedType, _DBContext);
+                        }
+                    }
+
+                }
             }
 
             return new Exceptional<bool>(true);
@@ -322,16 +344,13 @@ namespace sones.GraphDB.Indices
 
         internal Exceptional RemoveDBIndex(ObjectLocation myObjectLocation)
         {
-
-            return  _IGraphFSSession.RemoveFSObject(myObjectLocation, DBConstants.DBINDEXSTREAM);
-
+            return _IGraphFSSession.RemoveDirectoryObject(myObjectLocation, true);
         }
-
         #endregion
 
         #region LoadOrCreateDBIndex()
 
-        internal Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>> LoadOrCreateDBIndex(ObjectLocation myObjectLocation, IVersionedIndexObject<IndexKey, ObjectUUID> myIIndexObject)
+        internal Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>> LoadOrCreateDBIndex(ObjectLocation myShardObjectLocation, IVersionedIndexObject<IndexKey, ObjectUUID> myIIndexObject, AAttributeIndex correspondingIDX)
         {
 
             if (!(myIIndexObject is AFSObject))
@@ -339,7 +358,7 @@ namespace sones.GraphDB.Indices
                 return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(new Error_IndexIsNotPersistent(myIIndexObject));
             }
 
-            var result = _IGraphFSSession.GetOrCreateFSObject<AFSObject>(myObjectLocation, DBConstants.DBINDEXSTREAM, () => myIIndexObject as AFSObject);
+            var result = _IGraphFSSession.GetOrCreateFSObject<AFSObject>(myShardObjectLocation, DBConstants.DBINDEXSTREAM, () => myIIndexObject as AFSObject);
             if (!result.Success())
             {
                 return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(result);
@@ -350,6 +369,12 @@ namespace sones.GraphDB.Indices
 
                 if (result.Value.isNew)
                 {
+                    //TODO: might be a performance bug
+                    if (!_IGraphFSSession.ObjectExists(correspondingIDX.FileSystemLocation).Value)
+                    {
+                        result.PushIExceptional(_IGraphFSSession.CreateDirectoryObject(correspondingIDX.FileSystemLocation));
+                    }
+
                     // Uncomment as soon as index is serializeable
                     result.PushIExceptional(_IGraphFSSession.StoreFSObject(result.Value, false));
                     //result.AddErrorsAndWarnings(result.Value.Save());
@@ -474,10 +499,8 @@ namespace sones.GraphDB.Indices
                 {
                     return new Exceptional<IEnumerable<Vertex>>(createdIDx);
                 }
-
                 else
                 {
-
                     #region prepare readouts
 
                     var readOut = GenerateCreateIndexResult(myDBType, myAttributeList, createdIDx.Value);
@@ -485,7 +508,6 @@ namespace sones.GraphDB.Indices
                     resultOutput = new List<Vertex>(){ readOut };
 
                     #endregion
-
                 }
 
                 #endregion
@@ -536,8 +558,7 @@ namespace sones.GraphDB.Indices
                 attributes.Add(new Vertex(payloadAttributes));
             }
 
-            payload.Add("ATTRIBUTES", new Edge(null, attributes, "ATTRIBUTE"));
-            //payload.Add("NAME", attributeIndex.IndexName)
+            payload.Add("ATTRIBUTES", new Edge(null, attributes) { EdgeTypeName = "ATTRIBUTE" });
 
             return new Vertex(payload);
 

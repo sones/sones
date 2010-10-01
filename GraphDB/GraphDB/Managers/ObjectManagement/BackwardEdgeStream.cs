@@ -1,4 +1,24 @@
-﻿/* <id Name="GraphDB – DBBackwardEdge" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id Name="GraphDB � DBBackwardEdge" />
  * <copyright file="DBBackwardEdge.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -16,6 +36,7 @@ using sones.GraphFS.DataStructures;
 using sones.GraphFS.Objects;
 using sones.Lib.DataStructures;
 using sones.Lib.NewFastSerializer;
+using sones.Lib;
 
 #endregion
 
@@ -105,6 +126,12 @@ namespace sones.GraphDB.ObjectManagement
 
             base[myEdgeKey].Add(myObjectUUID, myEdgeKey.TypeUUID);
 
+            #region estimated size
+
+            _estimatedSize += EstimatedSizeConstants.CalcUUIDSize(myObjectUUID) + EstimatedSizeConstants.CalcUUIDSize(myEdgeKey.TypeUUID);
+
+            #endregion
+
             isDirty = true;
 
         }
@@ -123,7 +150,14 @@ namespace sones.GraphDB.ObjectManagement
             }
             else
             {
-                base[myEdgeKey].AddRange(myObjectUUIDs, myEdgeKey.TypeUUID);
+                var aEdge = base[myEdgeKey];
+
+                foreach (var aReference in myObjectUUIDs)
+                {
+                    aEdge.Add(aReference, myEdgeKey.TypeUUID);
+
+                    _estimatedSize += EstimatedSizeConstants.CalcUUIDSize(aReference) + EstimatedSizeConstants.CalcUUIDSize(myEdgeKey.TypeUUID);
+                }
             }
 
             isDirty = true;
@@ -144,8 +178,10 @@ namespace sones.GraphDB.ObjectManagement
 
             if (base[myEdgeKey].Count() == 0)
             {
-                if (base.Remove(myEdgeKey) == false)
+                if (!base.Remove(myEdgeKey))
+                {
                     return false;
+                }
             }
 
             isDirty = true;
@@ -179,6 +215,13 @@ namespace sones.GraphDB.ObjectManagement
 
         #endregion
 
+        #region IEstimable Members
 
+        public override ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        #endregion
     }
 }

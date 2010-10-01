@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB – outer Query Result" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB � outer Query Result" />
  * <copyright file="QueryResult.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -403,7 +423,7 @@ namespace sones.GraphDB.Result
                     if (Vertices.Count() == 1)
                     {
 
-                        if (Vertices.First().IsAttribute(myAttribute))
+                        if (Vertices.First().HasAttribute(myAttribute))
                             return Vertices.First().GetProperty(myAttribute);
                         else
                             return null;
@@ -416,7 +436,7 @@ namespace sones.GraphDB.Result
                         var _ReturnValue = new List<Object>();
 
                         foreach (var _Vertex in Vertices)
-                                if (_Vertex.IsAttribute(myAttribute))
+                                if (_Vertex.HasAttribute(myAttribute))
                                     _ReturnValue.Add(_Vertex.GetProperty(myAttribute));
 
                         return _ReturnValue;
@@ -431,47 +451,6 @@ namespace sones.GraphDB.Result
         }
 
         #endregion
-
-        //#region GetFirstResult<T>(myAttribute)
-
-        ///// <summary>
-        ///// This will return a list of resulsts for the given attribute of the given
-        ///// selectionelement or it will return null.
-        ///// </summary>
-        ///// <param name="myAttribute"></param>
-        ///// <returns></returns>
-        //public T GetFirstResult<T>(String myAttribute)
-        //{
-
-        //    if (Vertices != null)
-        //        if (Vertices != null)
-        //            if (Vertices != null)
-        //                if (Vertices.Any())
-        //                    if (Vertices.FirstOrDefault() != null)
-        //                        if (Vertices.First().Attributes.ContainsKey(myAttribute))
-        //                        {
-
-        //                            T tmp;
-
-        //                            try
-        //                            {
-        //                                tmp = (T)Vertices.First().Attributes[myAttribute];
-        //                            }
-        //                            catch
-        //                            {
-        //                                return default(T);
-        //                            }
-
-        //                            return tmp;
-
-        //                        }
-
-
-        //    return default(T);
-
-        //}
-
-        //#endregion
 
         #region GetResults<T>(myAttribute)
 
@@ -494,7 +473,7 @@ namespace sones.GraphDB.Result
                             var _ReturnValue = new List<T>();
 
                             foreach (var _Vertex in Vertices)
-                                if (_Vertex.IsAttribute(myAttribute))
+                                if (_Vertex.HasAttribute(myAttribute))
                                 {
 
                                     T tmp;
@@ -527,26 +506,7 @@ namespace sones.GraphDB.Result
 
         #endregion
 
-
-        public IEnumerable<T> Aggreagte<T>(String myAttributeName)
-        {
-
-            var _list = new List<T>();
-            T   _T    = default(T);
-
-            foreach (var _Vertex in Vertices)
-            {
-                _T = _Vertex.GetProperty<T>(myAttributeName);
-
-                if (_T != null)
-                    _list.Add(_T);
-
-            }
-
-            return _list;
-
-        }
-
+        #region SearchVertex(params myAttributes)
 
         /// <summary>
         /// Search for a DBObjectReadout with the specified attribute <paramref name="attributeName"/> and <paramref name="attributeValue"/> and return it.
@@ -563,7 +523,7 @@ namespace sones.GraphDB.Result
 
             var _Vertices = Vertices.Where(_Vertex =>
                     {
-                        return myAttributes.Any(t => _Vertex.IsAttribute(t.Item1) && _Vertex.GetProperty(t.Item1).Equals(t.Item2));
+                        return myAttributes.Any(t => _Vertex.HasAttribute(t.Item1) && _Vertex.GetProperty(t.Item1).Equals(t.Item2));
                     }
                 );
             
@@ -571,23 +531,8 @@ namespace sones.GraphDB.Result
 
         }
 
+        #endregion
 
-        //#region Members of DynamicObject
-
-        //#region TryGetMember(myBinder, out myResult)
-
-        //public override Boolean TryGetMember(GetMemberBinder myBinder, out Object myResult)
-        //{
-
-        //    myResult = GetResults<Object>(myBinder.Name);
-
-        //    return true;
-
-        //}
-
-        //#endregion
-
-        //#endregion
 
         #region IEnumerable<Vertex> Members
 

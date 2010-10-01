@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB – ObjectManipulationManager" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB � ObjectManipulationManager" />
  * <copyright file="ObjectManipulationManager.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -32,6 +52,7 @@ using sones.Lib;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.NewAPI;
+using sones.GraphDB.Settings.DatabaseSettings;
 
 #endregion
 
@@ -135,6 +156,21 @@ namespace sones.GraphDB.Managers
             #region Data
 
             var queryResultContent = new List<Vertex>();
+            var queryResult = new QueryResult();
+            Warning_UndefinedAttribute undefAttrWarning = null;
+
+            #endregion
+
+            #region check for undefined attributes setting
+
+            var undefAttrSetting = myDBContext.DBSettingsManager.GetSetting(SettingUndefAttrBehaviour.UUID, myDBContext, TypesSettingScope.DB);
+
+            if (!undefAttrSetting.Success())
+            {
+                return new QueryResult(undefAttrSetting);
+            }
+
+            var undefSettingVal = ((SettingUndefAttrBehaviour)undefAttrSetting.Value).Behaviour;
 
             #endregion
 
@@ -146,6 +182,25 @@ namespace sones.GraphDB.Managers
                 if (updateOrAssign is AAttributeAssignOrUpdateOrRemove && !(updateOrAssign is AttributeRemove))
                 {
                     var result = (updateOrAssign as AAttributeAssignOrUpdateOrRemove).AttributeIDChain.Validate(myDBContext, true);
+
+                    if (updateOrAssign.IsUndefinedAttributeAssign)
+                    {
+                        switch (undefSettingVal)
+                        {
+                            case UndefAttributeBehaviour.disallow:
+                                return new QueryResult(new Error_UndefinedAttributes());
+
+                            case UndefAttributeBehaviour.warn:
+                                if (undefAttrWarning == null)
+                                {
+                                    undefAttrWarning = new Warning_UndefinedAttribute();
+                                }
+
+                                queryResult.PushIWarning(undefAttrWarning);
+                                break;
+                        }
+                    }
+
                     if (result.Failed())
                     {
                         return new QueryResult(result);
@@ -277,7 +332,9 @@ namespace sones.GraphDB.Managers
 
             #region Return all affected dbObjectUUIDs
 
-            return new QueryResult(queryResultContent);
+            queryResult.Vertices = queryResultContent;
+
+            return queryResult;
 
             #endregion
 
@@ -668,8 +725,8 @@ namespace sones.GraphDB.Managers
             {
                 #region Data
 
-                GraphDBType typeOFAttribute = null;
-                TypeAttribute attributesOfType = null;
+                GraphDBType     typeOFAttribute     = null;
+                TypeAttribute   attributesOfType    = null;
 
                 #endregion
 
@@ -765,7 +822,7 @@ namespace sones.GraphDB.Managers
                 }
 
                 deletionCounter++;
-                
+
                 if (!myAttributes.IsNullOrEmpty())
                 {
 
@@ -817,17 +874,13 @@ namespace sones.GraphDB.Managers
                     #region Remove complete DBO
 
                     var objID = aDBO.Value.ObjectUUID;
-                    var backwarEdges = aDBO.Value.BackwardEdges;
 
-                    if (backwarEdges == null)
-                    {
-                        var backwardEdgeLoadExcept = myDBContext.DBObjectManager.LoadBackwardEdge(aDBO.Value.ObjectLocation);
+                    var backwardEdgeLoadExcept = myDBContext.DBObjectManager.LoadBackwardEdge(aDBO.Value.ObjectLocation);
 
-                        if (!backwardEdgeLoadExcept.Success())
-                            return new Exceptional<IEnumerable<Vertex>>(backwardEdgeLoadExcept.IErrors.First());
+                    if (!backwardEdgeLoadExcept.Success())
+                        return new Exceptional<IEnumerable<Vertex>>(backwardEdgeLoadExcept.IErrors.First());
 
-                        backwarEdges = backwardEdgeLoadExcept.Value;
-                    }
+                    var backwarEdges = backwardEdgeLoadExcept.Value;
 
                     var removeResult = myDBContext.DBObjectManager.RemoveDBObject(myGraphDBType, aDBO.Value, myDBContext.DBObjectCache, myDBContext.SessionSettings);
 
@@ -846,7 +899,7 @@ namespace sones.GraphDB.Managers
 
                     #endregion
 
-                }                
+                }            
             }
 
             if (deletionCounter == 0)
@@ -1112,17 +1165,14 @@ namespace sones.GraphDB.Managers
 
             foreach (var objects in myDBObjStream)
             {
-                if (objects.Value.UndefAttributes != null)
+                var undefAttrsStream = myUndefAttrs.Where(item => objects.Value.GetUndefinedAttributePayload(dbContext.DBObjectManager).Value.ContainsKey(item));
+
+                foreach (var undefAttr in undefAttrsStream)
                 {
-                    var undefAttrsStream = myUndefAttrs.Where(item => objects.Value.GetUndefinedAttributes(dbContext.DBObjectManager).Value.ContainsKey(item));
+                    var removeExcept = dbContext.DBObjectManager.RemoveUndefinedAttribute(undefAttr, objects.Value);
 
-                    foreach (var undefAttr in undefAttrsStream)
-                    {
-                        var removeExcept = dbContext.DBObjectManager.RemoveUndefinedAttribute(undefAttr, objects.Value);
-
-                        if (removeExcept.Failed())
-                            return new Exceptional(removeExcept);
-                    }
+                    if (removeExcept.Failed())
+                        return new Exceptional(removeExcept);
                 }
             }
 
@@ -1193,7 +1243,7 @@ namespace sones.GraphDB.Managers
 
             #region UUID
 
-            if (!_Vertex.IsAttribute(SpecialTypeAttribute_UUID.AttributeName))
+            if (!_Vertex.HasAttribute(SpecialTypeAttribute_UUID.AttributeName))
             {
 
                 var extractedValue = new SpecialTypeAttribute_UUID().ExtractValue(myDBObjectStreamExceptional.Value, myGraphDBType, myDBContext);
@@ -1211,7 +1261,7 @@ namespace sones.GraphDB.Managers
 
             #region REVISION
 
-            if (!_Vertex.IsAttribute(SpecialTypeAttribute_REVISION.AttributeName)) // If it was updated by SpecialTypeAttributes we do not need to add them again
+            if (!_Vertex.HasAttribute(SpecialTypeAttribute_REVISION.AttributeName)) // If it was updated by SpecialTypeAttributes we do not need to add them again
             {
 
                 var extractedValue = new SpecialTypeAttribute_REVISION().ExtractValue(myDBObjectStreamExceptional.Value, myGraphDBType, myDBContext);
@@ -1240,7 +1290,8 @@ namespace sones.GraphDB.Managers
         {
 
             var result = GetRecursiveAttributes(myAttributeAssigns, myDBContext, myGraphDBType);
-            if (!result.Success())
+            
+            if (result.Failed())
             {
                 return result;
             }
@@ -1305,28 +1356,40 @@ namespace sones.GraphDB.Managers
             #region Data
 
             var manipulationAttributes = new ManipulationAttributes();
+            var resultExcept = new Exceptional<ManipulationAttributes>();
 
             if (myAttributeAssigns == null)
-            {
+            {                
                 return new Exceptional<ManipulationAttributes>(manipulationAttributes);
             }
 
             TypeAttribute attr;
             ADBBaseObject typedAttributeValue;
             BasicType correspondingCSharpType;
+            Warning_UndefinedAttribute undefAttrWarning = null;
 
             var typeMandatoryAttribs = myGraphDBType.GetMandatoryAttributesUUIDs(myDBContext.DBTypeManager);
+
+            var setExcept = myDBContext.DBSettingsManager.GetSetting(SettingUndefAttrBehaviour.UUID, myDBContext, TypesSettingScope.DB);
+
+            if (!setExcept.Success())
+            {
+                return new Exceptional<ManipulationAttributes>(setExcept);
+            }
+
+            var undefAttrBehave = (SettingUndefAttrBehaviour)setExcept.Value;
 
             #endregion
 
             #region get Data
-
+            
             #region proceed list
 
             foreach (var aAttributeAssign in myAttributeAssigns)
             {
 
                 var validateResult = aAttributeAssign.AttributeIDChain.Validate(myDBContext, true);
+
                 if (validateResult.Failed())
                 {
                     return new Exceptional<ManipulationAttributes>(validateResult);
@@ -1338,9 +1401,25 @@ namespace sones.GraphDB.Managers
 
                 //in this case we have an undefined attribute
                 if (aAttributeAssign.AttributeIDChain.IsUndefinedAttribute)
-                {
-
+                {                    
+                    
                     var UndefAttrName = aAttributeAssign.AttributeIDChain.UndefinedAttribute;
+
+                    switch (undefAttrBehave.Behaviour)
+                    {
+                        case UndefAttributeBehaviour.disallow:
+                            return new Exceptional<ManipulationAttributes>(new Error_UndefinedAttributes());
+
+                        case UndefAttributeBehaviour.warn:
+                            if (undefAttrWarning == null)
+                            {
+                                undefAttrWarning = new Warning_UndefinedAttribute();
+                            }
+
+                            resultExcept.PushIWarning(undefAttrWarning);
+                            break;
+                    }
+
                     if (aAttributeAssign is AttributeAssignOrUpdateList)
                     {
 
@@ -1362,7 +1441,7 @@ namespace sones.GraphDB.Managers
                         if (colDefinition.CollectionType == CollectionType.Set)
                             valueList.UnionWith(valueList);
 
-                        manipulationAttributes.UndefinedAttributes.Add(UndefAttrName, valueList);
+                        manipulationAttributes.UndefinedAttributes.Add(UndefAttrName, valueList);                        
                         var undefAttr = new UndefinedAttributeDefinition() { AttributeName = UndefAttrName, AttributeValue = valueList };
                         var undefAttrAssign = new AttributeAssignOrUpdateUndefined((aAttributeAssign as AttributeAssignOrUpdateList).AttributeIDChain, undefAttr);
                         manipulationAttributes.AttributeToUpdateOrAssign.Add(undefAttrAssign);
@@ -1674,7 +1753,9 @@ namespace sones.GraphDB.Managers
 
             #endregion
 
-            return new Exceptional<ManipulationAttributes>(manipulationAttributes);
+            resultExcept.Value = manipulationAttributes;
+
+            return resultExcept;
         }
 
         #endregion
@@ -1699,17 +1780,13 @@ namespace sones.GraphDB.Managers
                 }
 
                 var dbObjID = aDBO.Value.ObjectUUID;
-                var dbBackwardEdges = aDBO.Value.BackwardEdges;
 
-                if (dbBackwardEdges == null)
-                {
-                    var dbBackwardEdgeLoadExcept = myDBContext.DBObjectManager.LoadBackwardEdge(aDBO.Value.ObjectLocation);
+                var dbBackwardEdgeLoadExcept = myDBContext.DBObjectManager.LoadBackwardEdge(aDBO.Value.ObjectLocation);
 
-                    if (!dbBackwardEdgeLoadExcept.Success())
-                        return new Exceptional(dbBackwardEdgeLoadExcept);
+                if (!dbBackwardEdgeLoadExcept.Success())
+                    return new Exceptional(dbBackwardEdgeLoadExcept);
 
-                    dbBackwardEdges = dbBackwardEdgeLoadExcept.Value;
-                }
+                var dbBackwardEdges = dbBackwardEdgeLoadExcept.Value;
 
                 var result = myDBContext.DBObjectManager.RemoveDBObject(myGraphDBType, aDBO.Value, myDBContext.DBObjectCache, myDBContext.SessionSettings);
 

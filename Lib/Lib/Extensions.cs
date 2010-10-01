@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * Extension Class for several things
  * (c) Stefan Licht, 2009-2010
  * (c) Achim Friedland, 2009-2010
@@ -297,6 +317,21 @@ namespace sones.Lib
 
         #endregion
 
+        #region LinkedList<T>
+
+        public static UInt64 ULongCount<T>(this LinkedList<T> myLinkedList)
+        {
+
+            if (myLinkedList == null) return 0;
+
+            var _ReturnValue = myLinkedList.Count;
+
+            return (_ReturnValue >= 0) ? (UInt64)_ReturnValue : 0;
+
+        }
+
+        #endregion
+
         #region Extensions for LINQ aggregates on UInt64
 
         public static UInt64 Sum(this IEnumerable<UInt64> myIEnumerable)
@@ -366,6 +401,41 @@ namespace sones.Lib
             return Encoding.UTF8.GetString(myByteArray);
 
         }
+
+        public static byte[] ToUtf8Bytes(this string value)
+        {
+            return Encoding.UTF8.GetBytes(value);
+        }
+
+        public static byte[] ToUtf8Bytes(this int intVal)
+        {
+            return FastToUtf8Bytes(intVal.ToString());
+        }
+
+        public static byte[] ToUtf8Bytes(this long longVal)
+        {
+            return FastToUtf8Bytes(longVal.ToString());
+        }
+
+        public static byte[] ToUtf8Bytes(this double doubleVal)
+        {
+            return FastToUtf8Bytes(doubleVal.ToString());
+        }
+
+        /// <summary>
+        /// Skip the encoding process for 'safe strings'
+        /// </summary>
+        /// <param name="strVal"></param>
+        /// <returns></returns>
+        private static byte[] FastToUtf8Bytes(string strVal)
+        {
+            var bytes = new byte[strVal.Length];
+            for (var i = 0; i < strVal.Length; i++)
+                bytes[i] = (byte)strVal[i];
+
+            return bytes;
+        }
+
 
         #endregion
 

@@ -1,5 +1,46 @@
 sones GraphDB 1.2 (developer) Changelog:
 
+01.10.2010
+- added IEstimable as generic constraint to TValue in AVersionedIndexObject IVersionedIndexObject in favour of AttributeIndex
+- Settings SettingObjectDirectoryShards and IndexShards optional parameter for CreateIndex and CreateVertex
+- estimated BackwardEdgeStream
+- estimated ADictionaryObject 
+- added TKey generic type constraint IEstimable 
+- estimated DBObjectStream
+- ESObjectCache fix
+- EsObjectCache upgrades
+- added IEstimable as generic type constraint to TValue of ADictionaryObject
+- implement an cache using the estimated size of objects (ESObjectCache)
+- Estimated DirectoryObject
+- made some more generic TValues IEstimable 
+- added generic type constraint to AVersionedDictionaryObject (TValue: IEstimable) +fixed tests
+- estimated DirectoryEntry
+- AFSObject implements IEstimable additionally
+- removed references of BackwardEdgeStream and UndefinedAttributeStream from DBObjectStream
+- removed some useless constructors in DBObjectStream
+- added interface IEstimable 
+- IObject implements IEstimable 
+- corresponding upgrades in classes which implement IObject
+- changes in linux build script
+- some small changes in buildscript
+- changed build script for linux options for build in release or debug mode
+- fixed the count aggregate 
+- changed GetKeyCount + GetValueCount signature 
+- upgraded UUIDIndex and AttributeIndex to support shards
+- upgraded Error_CouldNotGetIndexReference to support IDX shards 
+- upgraded AttributeIndex to support index sharding
+- Fixed superfluous exception handling when an ObjectLocator does not exist
+- minor changes in GetMatchingVertices method
+- added GetAllStreamsRecursive method to DBObjectManager 
+- fixed rebuild idx
+- sharded the UUIDIdx by sharding the Objects directory
+- Fixed bug 630 (when an edge is selected the user can add whatever they want after it with dot notation without getting...)
+- added a setting for undefined attributes
+- Replaced internal edge(s) by new sones.GraphDB.NewAPI.Edge.cs 
+- Adapted IGraphIO classes
+- ObjectStreams should now be removed from the ObjectCache 
+- Vertex, IVertex, Edge, IEdge updates
+
 14.09.2010
 - DBObject, Vertex, Edge (user-defined!!!) updates
 - Changed DBObject (StringComparer.OrdinalIgnoreCase) => _Attributes = new Dictionary<String, Object>(StringComparer.Ord...

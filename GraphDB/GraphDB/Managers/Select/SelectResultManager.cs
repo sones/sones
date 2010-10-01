@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB – SelectResultManager" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB � SelectResultManager" />
  * <copyright file="SelectResultManager.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -598,10 +618,10 @@ namespace sones.GraphDB.Managers.Select
                 {
                     
                     var edgeKey = new EdgeKey(_Selection.Element.RelatedGraphDBTypeUUID, _Selection.Element.UUID);
-                    
+
                     Attributes.Add(_Selection.Alias, new Edge(null,
-                                                              ExamineVertex(myResolutionDepth, myReference, myReferencedDBType, myLevelKey + edgeKey, myUsingGraph),
-                                                              _Selection.Element.GetDBType(_DBContext.DBTypeManager).Name));
+                                                              ExamineVertex(myResolutionDepth, myReference, myReferencedDBType, myLevelKey + edgeKey, myUsingGraph))
+                                                              { EdgeTypeName = _Selection.Element.GetDBType(_DBContext.DBTypeManager).Name });
 
                 }
 
@@ -1548,7 +1568,7 @@ namespace sones.GraphDB.Managers.Select
 
             if (mySelType == TypesOfSelect.Asterisk || mySelType == TypesOfSelect.Rhomb)
             {
-                var undefAttrException = myDBObject.GetUndefinedAttributes(_DBContext.DBObjectManager);
+                var undefAttrException = myDBObject.GetUndefinedAttributePayload(_DBContext.DBObjectManager);
 
                 if (undefAttrException.Failed())
                     throw new GraphDBException(undefAttrException.IErrors);
@@ -1751,12 +1771,16 @@ namespace sones.GraphDB.Managers.Select
 
             if (referenceEdge is ASetOfReferencesEdgeType)
             {
-                return new Edge(null, (referenceEdge as ASetOfReferencesEdgeType).GetVertices((_ObjectUUID) => GenerateNotResolvedVertex(_ObjectUUID, myGraphDBType)), myGraphDBType.Name);
+                return new Edge(null,
+                                (referenceEdge as ASetOfReferencesEdgeType).GetVertices((_ObjectUUID) => GenerateNotResolvedVertex(_ObjectUUID, myGraphDBType)))
+                                { EdgeTypeName = myGraphDBType.Name};
             }
 
             else if (referenceEdge is ASingleReferenceEdgeType)
             {
-                return new Edge(null, (referenceEdge as ASingleReferenceEdgeType).GetVertex((_ObjectUUID) => GenerateNotResolvedVertex(_ObjectUUID, myGraphDBType)), myGraphDBType.Name);
+                return new Edge(null,
+                                (referenceEdge as ASingleReferenceEdgeType).GetVertex((_ObjectUUID) => GenerateNotResolvedVertex(_ObjectUUID, myGraphDBType)))
+                                { EdgeTypeName = myGraphDBType.Name};
             }
 
             else
@@ -1870,7 +1894,8 @@ namespace sones.GraphDB.Managers.Select
                 readouts.Add(new Vertex(specialAttributes));
             }
 
-            return new Edge(null, readouts, _DBContext.DBTypeManager.GetTypeAttributeByEdge(edgeKey).GetDBType(_DBContext.DBTypeManager).Name);
+            return new Edge(null, readouts)
+                    { EdgeTypeName = _DBContext.DBTypeManager.GetTypeAttributeByEdge(edgeKey).GetDBType(_DBContext.DBTypeManager).Name};
 
         }
         
@@ -1948,7 +1973,7 @@ namespace sones.GraphDB.Managers.Select
                     resultList = GetVertices(typeOfAttribute, edge, myDepth, myEdgeList, reference, myUsingGraph);
                 }
 
-                return new Edge(null, resultList, typeOfAttribute.Name);
+                return new Edge(null, resultList) { EdgeTypeName = typeOfAttribute.Name };
 
                 #endregion
 
@@ -1958,8 +1983,10 @@ namespace sones.GraphDB.Managers.Select
 
                 #region Single reference
 
-                attributeValue = new Edge(null, (attributeValue as ASingleReferenceEdgeType).GetVertex(a => LoadAndResolveVertex(a, typeOfAttribute, myDepth, myEdgeList, reference, myUsingGraph))
-                    , typeOfAttribute.Name);
+                attributeValue = new Edge(null,
+                                          (attributeValue as ASingleReferenceEdgeType).GetVertex
+                                          (a => LoadAndResolveVertex(a, typeOfAttribute, myDepth, myEdgeList, reference, myUsingGraph)))
+                                          { EdgeTypeName = typeOfAttribute.Name };
 
                 return attributeValue;
 

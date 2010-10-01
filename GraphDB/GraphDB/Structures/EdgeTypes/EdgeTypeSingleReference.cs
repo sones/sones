@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB – EdgeTypeSingle" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB � EdgeTypeSingle" />
  * <copyright file="EdgeTypeSingle.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -35,7 +55,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
     {
 
         private Tuple<ObjectUUID, Reference> _ObjectUUID;
-        
+
+        private UInt64          _estimatedSize  = 0;
+
         #region TypeCode
         public override UInt32 TypeCode { get { return 455; } }
         #endregion
@@ -51,9 +73,10 @@ namespace sones.GraphDB.Structures.EdgeTypes
             if (dbos != null)
             {
                 _ObjectUUID = new Tuple<ObjectUUID, Reference>(dbos, new Reference(dbos, myTypeOfDBObject));
+
+                CalcEstimatedSize(this);
             }
         }
-
 
         #region AEdgeType Members
 
@@ -88,6 +111,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 var newInst = GetNewInstance() as EdgeTypeSingleReference;
 
                 newInst.Set(_ObjectUUID.Item1, iEnumerable.First().Value.TypeUUID);
+
                 return newInst;
             }
         }
@@ -102,6 +126,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             {
                 var newInst = GetNewInstance() as EdgeTypeSingleReference;
                 newInst.Set(_ObjectUUID.Item1, typeOfObjects);
+
                 return newInst;
             }
         }
@@ -129,6 +154,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public override void Set(ObjectUUID myValue, TypeUUID typeOfDBObject, params ADBBaseObject[] myParameters)
         {
             _ObjectUUID = new Tuple<ObjectUUID, Reference>(myValue, new Reference(myValue, typeOfDBObject));
+
+            CalcEstimatedSize(this);
         }
 
         public override void Merge(ASingleReferenceEdgeType mySingleEdgeType)
@@ -136,6 +163,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
             var aReference = mySingleEdgeType.GetAllReferences().FirstOrDefault();
 
             _ObjectUUID = new Tuple<ObjectUUID, Reference>(aReference.ObjectUUID, aReference);
+
+            CalcEstimatedSize(this);
+
         }
 
         public override Vertex GetVertex(Func<ObjectUUID, Vertex> GetAllAttributesFromDBO)
@@ -181,6 +211,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
             {
                 myValue._ObjectUUID = new Tuple<ObjectUUID, Reference>(reference.ObjectUUID, reference);
             }
+
+            CalcEstimatedSize(myValue);
 
             return myValue;
         }
@@ -320,6 +352,34 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
             yield break;
         }
+
+        #region IObject
+
+        public override ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private void CalcEstimatedSize(EdgeTypeSingleReference myTypeAttribute)
+        {
+            //Tuple<ObjectUUID, Reference> + base size
+            _estimatedSize = base.GetBaseSize() + EstimatedSizeConstants.Tuple;
+
+            if (_ObjectUUID != null)
+            {
+                if (_ObjectUUID.Item1 != null)
+                {
+                    _estimatedSize += EstimatedSizeConstants.CalcUUIDSize(_ObjectUUID.Item1);
+                }
+
+                if (_ObjectUUID.Item2 != null)
+                {
+                    _estimatedSize += _ObjectUUID.Item2.GetEstimatedSize();
+                }
+            }
+        }
+
+        #endregion
 
     }
 }

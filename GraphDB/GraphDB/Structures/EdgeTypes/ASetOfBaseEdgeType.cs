@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB – abstract class for all not reference list edges" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB � abstract class for all not reference list edges" />
  * <copyright file="AListBaseEdgeType.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -16,6 +36,7 @@ using System.Collections;
 using sones.GraphDB.TypeManagement.BasicTypes;
 
 using sones.GraphDB.TypeManagement;
+using sones.Lib;
 
 
 namespace sones.GraphDB.Structures.EdgeTypes
@@ -169,5 +190,18 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public abstract Int32 CompareTo(object obj);
 
         #endregion
+
+        #region IObject Members
+
+        public abstract ulong GetEstimatedSize();
+
+        #endregion
+
+
+        protected ulong GetBaseSize()
+        {
+            //EdgeTypeName + EdgeTypeUUID + TypeCode + EstimatedSize + CLassDefaltSize
+            return EstimatedSizeConstants.CalcStringSize(EdgeTypeName) + EstimatedSizeConstants.CalcUUIDSize(EdgeTypeUUID) + EstimatedSizeConstants.UInt32 + EstimatedSizeConstants.UInt64 + EstimatedSizeConstants.ClassDefaultSize;
+        }
     }
 }

@@ -77,28 +77,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Context\IDBContext.cs" />
+    <Compile Include="Interfaces\IDBContext.cs" />
     <Compile Include="DBConstants.cs" />
     <Compile Include="DBIndexTypes.cs" />
-    <Compile Include="Errors\Error_ArgumentNullOrEmpty.cs" />
-    <Compile Include="Errors\Transaction\Error_ConcurrentTransactionsNotAllowed.cs" />
-    <Compile Include="Errors\Transaction\Error_ExistingNestedTransaction.cs" />
-    <Compile Include="Errors\GraphDBTransactionError.cs" />
-    <Compile Include="NewAPI\DBEdgeNew.cs" />
-    <Compile Include="ObjectManagement\IGetName.cs" />
-    <Compile Include="Result\DBObjectReadout.cs" />
-    <Compile Include="Errors\Error_DatabaseNotFound.cs" />
-    <Compile Include="Errors\Error_FileNotFound.cs" />
-    <Compile Include="Errors\Error_Logic.cs" />
-    <Compile Include="Errors\Error_MandatoryConstraintViolation.cs" />
-    <Compile Include="Errors\Error_NotImplemented.cs" />
-    <Compile Include="Errors\Error_ReadOnlyViolation.cs" />
-    <Compile Include="Errors\Error_UniqueConstrainViolation.cs" />
-    <Compile Include="Errors\Error_UnknownDBError.cs" />
-    <Compile Include="Errors\GraphDBError.cs" />
+    <Compile Include="ErrorHandling\Errors\Error_ArgumentNullOrEmpty.cs" />
+    <Compile Include="ErrorHandling\Errors\Transaction\Error_ConcurrentTransactionsNotAllowed.cs" />
+    <Compile Include="ErrorHandling\Errors\Transaction\Error_ExistingNestedTransaction.cs" />
+    <Compile Include="ErrorHandling\Errors\GraphDBTransactionError.cs" />
+    <Compile Include="NewAPI\Edge.cs" />
+    <Compile Include="NewAPI\IEdge.cs" />
+    <Compile Include="NewAPI\IVertex.cs" />
+    <Compile Include="Interfaces\IGetName.cs" />
+    <Compile Include="ErrorHandling\Errors\Error_DatabaseNotFound.cs" />
+    <Compile Include="ErrorHandling\Errors\Error_FileNotFound.cs" />
+    <Compile Include="ErrorHandling\Errors\Error_Logic.cs" />
+    <Compile Include="ErrorHandling\Errors\Error_MandatoryConstraintViolation.cs" />
+    <Compile Include="ErrorHandling\Errors\Error_NotImplemented.cs" />
+    <Compile Include="ErrorHandling\Errors\Error_ReadOnlyViolation.cs" />
+    <Compile Include="ErrorHandling\Errors\Error_UniqueConstrainViolation.cs" />
+    <Compile Include="ErrorHandling\Errors\Error_UnknownDBError.cs" />
+    <Compile Include="ErrorHandling\Errors\GraphDBError.cs" />
     <Compile Include="Events\DBVertexEventHandlers.cs" />
     <Compile Include="Events\GraphDBEventHandlers.cs" />
-    <Compile Include="Exceptions\Exceptions.cs" />
+    <Compile Include="ErrorHandling\Exceptions\Exceptions.cs" />
     <Compile Include="IGraphDB.cs" />
     <Compile Include="Licensing\FeatureIDs.cs" />
     <Compile Include="Licensing\FeatureLicenseProcessor.cs" />
@@ -112,7 +113,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="NewAPI\DBObject.cs" />
     <Compile Include="NewAPI\Vertex.cs" />
-    <Compile Include="Result\Edge.cs" />
     <Compile Include="Result\Obsolete\OutputDictionary.cs" />
     <Compile Include="Result\Obsolete\OutputList.cs" />
     <Compile Include="Result\Obsolete\SimpleResult.cs" />
@@ -121,14 +121,13 @@
     <Compile Include="Result\QueryResultQuantity.cs" />
     <Compile Include="NewAPI\Set.cs" />
     <Compile Include="Result\ResultType.cs" />
-    <Compile Include="Result\SelectionResultSet.cs" />
     <Compile Include="Result\VertexGroup.cs" />
     <Compile Include="Result\Vertex_WeightedEdges.cs" />
     <Compile Include="Transactions\DBTransaction.cs" />
-    <Compile Include="TypeManagement\IObject.cs" />
-    <Compile Include="Warnings\GraphDBWarning.cs" />
-    <Compile Include="Warnings\GraphDBWarningException.cs" />
-    <Compile Include="Warnings\Warning_NoFSTransaction.cs" />
+    <Compile Include="Interfaces\IObject.cs" />
+    <Compile Include="ErrorHandling\Warnings\GraphDBWarning.cs" />
+    <Compile Include="ErrorHandling\Warnings\GraphDBWarningException.cs" />
+    <Compile Include="ErrorHandling\Warnings\Warning_NoFSTransaction.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\GraphFS\GraphFSInterface\GraphFSInterface.csproj">
@@ -162,7 +161,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Context\" />
     <Folder Include="Linq\" />
+    <Folder Include="ObjectManagement\" />
+    <Folder Include="TypeManagement\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

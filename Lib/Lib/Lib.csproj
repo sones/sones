@@ -57,6 +57,8 @@
     <Compile Include="Caches\ExpirationTypes.cs" />
     <Compile Include="Caches\SimpleCache.cs" />
     <Compile Include="Caches\SimpleCacheItem.cs" />
+    <Compile Include="IEstimable.cs" />
+    <Compile Include="EstimatedSizeConstants.cs" />
     <Compile Include="Cryptography\CryptographyExceptions.cs" />
     <Compile Include="Cryptography\IntegrityCheck\AIntegrityCheck.cs" />
     <Compile Include="Cryptography\IntegrityCheck\MurmurHash2.cs" />

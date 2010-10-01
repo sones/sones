@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB DBList DBList" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB DBList DBList" />
  * <copyright file="DBDouble.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -22,6 +42,7 @@ using sones.Lib.ErrorHandling;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.Exceptions;
 using sones.GraphDB.TypeManagement;
+using sones.Lib;
 
 
 namespace sones.GraphDB.TypeManagement.BasicTypes
@@ -30,6 +51,8 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
     {
         public static readonly TypeUUID UUID = new TypeUUID(20);
         public const string Name = "SET";
+
+        private UInt64 _estimatedSize = 0;
 
         #region TypeCode
         public override UInt32 TypeCode { get { return 407; } }
@@ -46,16 +69,24 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         public DBEdge()
         {
             _Value = null;
+
+            //DO NOT ESTIMATE THE SIZE!!! this constructor is for IFastSerializer purpose only
         }
         
         public DBEdge(DBObjectInitializeType myDBObjectInitializeType)
         {
             SetValue(myDBObjectInitializeType);
+
+            //DO NOT ESTIMATE THE SIZE!!! it's done in SetValue(...)
+
         }
 
         public DBEdge(Object myValue)
         {
             Value = myValue;
+
+            CalcEstimatedSize(this);
+
         }
 
         #endregion
@@ -83,6 +114,9 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
                     _Value = value as IEnumerable<Exceptional<DBObjectStream>>;
                 else 
                     throw new GraphDBException(new Errors.Error_DataTypeDoesNotMatch("IEnumerable<Exceptional<DBObjectStream>>", value.GetType().Name));
+
+                CalcEstimatedSize(this);
+
             }
         }
 
@@ -200,6 +234,9 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
                     _Value = null;
                     break;
             }
+
+            CalcEstimatedSize(this);
+
         }
 
         public override void SetValue(object myValue)
@@ -211,11 +248,6 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         {
             get { return BasicType.SetOfDBObjects; }
         }
-
-        //public override TypeUUID ID
-        //{
-        //    get { return UUID; }
-        //}
 
         public override string ObjectName
         {
@@ -256,6 +288,10 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         private object Deserialize(ref SerializationReader mySerializationReader, DBEdge myValue)
         {
             myValue._Value = mySerializationReader.ReadObject() as IEnumerable<Exceptional<DBObjectStream>>;
+
+            CalcEstimatedSize(myValue);
+
+
             return myValue;
         }
 
@@ -283,6 +319,31 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
         public override string ToString(IFormatProvider provider)
         {
             return ToString();
+        }
+
+        #endregion
+
+        #region IObject
+
+        public override ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private void CalcEstimatedSize(DBEdge myTypeAttribute)
+        {
+            _estimatedSize = GetBaseSize();
+
+            //DBObjectStreams + BaseSize
+
+            if (_Value != null)
+            {
+                foreach (var aDBO in _Value)
+                {
+                    _estimatedSize += aDBO.Value.GetEstimatedSize();
+                }
+            }
+
         }
 
         #endregion

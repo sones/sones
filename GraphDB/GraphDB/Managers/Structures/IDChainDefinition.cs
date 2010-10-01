@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * IDChainDefinition
  * (c) Stefan Licht, 2010
  */
@@ -858,9 +878,9 @@ namespace sones.GraphDB.Managers.Structures
 					if (_LastAttribute != null)
 					{
 
-                        #region Any attribute on an undefined attribute is not allowed
+                        #region Any attribute on an undefined attributes or not user defined (reference) type is not allowed
 
-                        if (_LastAttribute is UndefinedTypeAttribute)
+                        if (_LastAttribute is UndefinedTypeAttribute || !(_LastAttribute.GetDBType(myDBContext.DBTypeManager).IsUserDefined || _LastAttribute.GetDBType(myDBContext.DBTypeManager).IsBackwardEdge))
                         {
                             ValidateResult.PushIError(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
                         }
@@ -869,7 +889,7 @@ namespace sones.GraphDB.Managers.Structures
 
 						#region The previous attribute was seems to be an reference attribute
 
-						_LastType = GetDBTypeByAttribute(myDBContext, _LastAttribute);
+                        _LastType = GetDBTypeByAttribute(myDBContext, _LastAttribute);
 
 						typeOrAttr.DBType = _LastType;
 						typeOrAttr.TypeAttribute = typeOrAttr.DBType.GetTypeAttributeByName(typeOrAttr.TypeOrAttributeName);
@@ -880,7 +900,7 @@ namespace sones.GraphDB.Managers.Structures
 
 							#region Undefined attribute
 
-							if (allowUndefinedAttributes)
+                            if (allowUndefinedAttributes)
 							{
 								UndefinedAttribute = typeOrAttr.TypeOrAttributeName;
                                 _LastAttribute = new UndefinedTypeAttribute(UndefinedAttribute);

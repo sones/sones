@@ -1,4 +1,24 @@
-﻿
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+
 #region usings
 
 using System;
@@ -15,6 +35,7 @@ using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.NewAPI;
+using sones.Lib;
 
 #endregion
 
@@ -27,6 +48,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
         private Reference _Reference;
         private ADBBaseObject _Count;
         private ADBBaseObject _CountBy;
+
+        private UInt64 _estimatedSize = 0;
 
         #region TypeCode 
         public override UInt32 TypeCode { get { return 451; } }
@@ -88,6 +111,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
             #endregion
 
+            CalcEstimatedSize(this);
+
         }
 
         public override IEdgeType GetNewInstance()
@@ -97,6 +122,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 edgeTypeCounted._Count = _Count.Clone();
             if (_CountBy != null)
                 edgeTypeCounted._CountBy = _CountBy.Clone();
+
+            CalcEstimatedSize(edgeTypeCounted);
+
             return edgeTypeCounted;
         }
 
@@ -107,6 +135,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 edgeTypeCounted._Count = _Count.Clone();
             if (_CountBy != null)
                 edgeTypeCounted._CountBy = _CountBy.Clone();
+
+            CalcEstimatedSize(edgeTypeCounted);
+
             return edgeTypeCounted;
         }
 
@@ -117,6 +148,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 edgeTypeCounted._Count = _Count.Clone();
             if (_CountBy != null)
                 edgeTypeCounted._CountBy = _CountBy.Clone();
+
+            CalcEstimatedSize(edgeTypeCounted);
+
             return edgeTypeCounted;
         }
 
@@ -175,6 +209,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
             {
                 _Count.Add(_CountBy);
             }
+
+            CalcEstimatedSize(this);
         }
 
         public override Boolean RemoveUUID(ObjectUUID myObjectUUID)
@@ -200,6 +236,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
             _Reference = reference;
 
             _Count.Add((mySingleEdgeType as EdgeTypeCounted)._Count);
+
+            CalcEstimatedSize(this);
         }
 
         /// <summary>
@@ -239,7 +277,9 @@ namespace sones.GraphDB.Structures.EdgeTypes
             myValue._Reference = (Reference)mySerializationReader.ReadObject();
             myValue._Count = (ADBBaseObject)mySerializationReader.ReadObject();
             myValue._CountBy = (ADBBaseObject)mySerializationReader.ReadObject();
-            
+
+            CalcEstimatedSize(myValue);
+
             return myValue;
         }
 
@@ -322,5 +362,35 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         #endregion
 
+
+        #region IObject
+
+        public override ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private void CalcEstimatedSize(EdgeTypeCounted myTypeAttribute)
+        {
+            //Count + CountBy + Reference
+            _estimatedSize = base.GetBaseSize();
+
+            if(_Count != null)
+            {
+                _estimatedSize += _Count.GetEstimatedSize();
+            }
+            
+            if(_CountBy != null)
+            {
+                _estimatedSize += _CountBy.GetEstimatedSize();
+            }
+            
+            if(_Reference != null)
+            {
+                _estimatedSize += _Reference.GetEstimatedSize();
+            }
+        }
+
+        #endregion
     }
 }

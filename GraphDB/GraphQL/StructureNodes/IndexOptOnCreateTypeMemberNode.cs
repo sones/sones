@@ -1,4 +1,24 @@
-﻿
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+
 #region Usings
 
 using System;
@@ -33,6 +53,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
         private String _Edition;
         private String _IndexType;
         private List<IndexAttributeDefinition> _IndexAttributeDefinitions { get; set; }
+        private UInt16 _AttributeIdxShards;
 
         #endregion
 
@@ -78,6 +99,11 @@ namespace sones.GraphDB.GraphQL.StructureNodes
                         _IndexAttributeDefinitions = (child.AstNode as IndexAttributeListNode).IndexAttributes;
                     }
 
+                    else if (child.AstNode is ShardsNode)
+                    {
+                        _AttributeIdxShards = (child.AstNode as ShardsNode).Shards.HasValue ? (child.AstNode as ShardsNode).Shards.Value : DBConstants.AttributeIdxShards;
+                    }
+
                 }
 
             }
@@ -92,7 +118,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
 
             #endregion
 
-            IndexDefinition = new IndexDefinition(_IndexName, _Edition, _IndexType, _IndexAttributeDefinitions);
+            IndexDefinition = new IndexDefinition(_IndexName, _Edition, _IndexType, _IndexAttributeDefinitions, _AttributeIdxShards);
 
             #region Check for obsolete GQL parts and return warning
 

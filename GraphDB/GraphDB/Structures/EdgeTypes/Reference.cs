@@ -1,4 +1,24 @@
-﻿/* <id name="Reference" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="Reference" />
  * <copyright file="Reference.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -18,6 +38,7 @@ using sones.Lib.ErrorHandling;
 using sones.Lib.NewFastSerializer;
 using sones.Lib.Serializer;
 using sones.GraphDB.TypeManagement;
+using sones.Lib;
 
 #endregion
 
@@ -25,42 +46,54 @@ namespace sones.GraphDB.Structures.EdgeTypes
 {
 
     /// <summary>
-    /// The actual connection to another DBObject
+    /// The actual connection to another DBObjectStream
     /// </summary>
-    public class Reference : IComparable, IComparable<Reference>, IFastSerialize, IFastSerializationTypeSurrogate
+    public class Reference : IComparable, IComparable<Reference>, IFastSerialize, IFastSerializationTypeSurrogate, IEstimable
     {
+
+        #region Data
+
+        private TypeUUID       _TypeUUID        = null;
+        private WeakReference  _WeakReference   = null;
+        private Int32          _hashCode        = 0;
+
+        private UInt64          _estimatedSize  = 0;
+
+
+        #endregion
 
         #region Properties
 
         public  ObjectUUID      ObjectUUID { get; private set; }
-        private TypeUUID        _typeOfDBObjects = null;
-        private WeakReference   _dbObject = null;
-
-        private int _hashCode = 0;
 
         #endregion
 
-        #region Constructor
+        #region Constructor(s)
+
+        #region Reference()
 
         public Reference()
         {
-            //_dbObject = new WeakReference(null);
-            //ObjectUUID = null;
         }
 
-        public Reference(ObjectUUID myObjectUUID, TypeUUID typeOfDBObjects, Exceptional<DBObjectStream> myDBObject = null)
-        {
-            //Debug.Assert(typeOfDBObjects != null);
-            ObjectUUID          = myObjectUUID;
-            _typeOfDBObjects    = typeOfDBObjects;
-            _dbObject           = new WeakReference(myDBObject);
+        #endregion
 
+        #region Reference(myObjectUUID, myTypeUUID, myDBObjectStream = null)
+
+        public Reference(ObjectUUID myObjectUUID, TypeUUID myTypeUUID, Exceptional<DBObjectStream> myDBObjectStream = null)
+        {
+            ObjectUUID          = myObjectUUID;
+            _TypeUUID           = myTypeUUID;
+            _WeakReference      = new WeakReference(myDBObjectStream);
             _hashCode           = myObjectUUID.GetHashCode();
         }
 
         #endregion
 
-        #region public methods
+        #endregion
+
+
+        #region GetDBObjectStream(myDBObjectCache)
 
         /// <summary>
         /// Gets the actual DBObjectstream that this reference is pointing to
@@ -69,23 +102,25 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// <returns>The actual DBObjectStream corresponding to this reference.</returns>
         public Exceptional<DBObjectStream> GetDBObjectStream(DBObjectCache myDBObjectCache)
         {
-            var aDBO = _dbObject.Target as Exceptional<DBObjectStream>;
-            if (aDBO == null)
+
+            var _DBObjectStream = _WeakReference.Target as Exceptional<DBObjectStream>;
+            if (_DBObjectStream == null)
             {
 
-                Debug.Assert(_typeOfDBObjects != null);
+                Debug.Assert(_TypeUUID != null);
                 // Object was reclaimed, so get it again
-                aDBO = myDBObjectCache.LoadDBObjectStream(_typeOfDBObjects, ObjectUUID);
+                _DBObjectStream = myDBObjectCache.LoadDBObjectStream(_TypeUUID, ObjectUUID);
 
-                _dbObject.Target = aDBO;
+                _WeakReference.Target = _DBObjectStream;
+
             }
 
-            return aDBO;
+            return _DBObjectStream;
+
         }
 
         #endregion
 
-        #region override
 
         #region Equals Overrides
 
@@ -149,20 +184,16 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return _hashCode;
         }
 
-        #endregion
-
         #region ToString
 
         public override string ToString()
         {
-            return String.Format("ObjectUUID: {0}, TypeUUID: {1}", ObjectUUID.ToString(), _typeOfDBObjects.ToString());
+            return String.Format("ObjectUUID: {0}, TypeUUID: {1}", ObjectUUID.ToString(), _TypeUUID.ToString());
         }
 
         #endregion
 
         #endregion
-
-        #region interfaces
 
         #region ICompareable
 
@@ -212,21 +243,21 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public void Serialize(ref SerializationWriter mySerializationWriter)
         {
-            _typeOfDBObjects.Serialize(ref mySerializationWriter);
+            _TypeUUID.Serialize(ref mySerializationWriter);
 
             ObjectUUID.Serialize(ref mySerializationWriter);
         }
 
         public void Deserialize(ref SerializationReader mySerializationReader)
         {
-            _typeOfDBObjects = new TypeUUID(ref mySerializationReader);
+            _TypeUUID = new TypeUUID(ref mySerializationReader);
 
             ObjectUUID = new ObjectUUID();
             ObjectUUID.Deserialize(ref mySerializationReader);
 
             _hashCode = ObjectUUID.GetHashCode();
 
-            _dbObject = new WeakReference(null);
+            _WeakReference = new WeakReference(null);
         }
 
         #endregion
@@ -240,7 +271,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         public void Serialize(SerializationWriter writer, object value)
         {
-            writer.WriteObject(((Reference)value)._typeOfDBObjects);
+            writer.WriteObject(((Reference)value)._TypeUUID);
             writer.WriteObject(((Reference)value).ObjectUUID);
         }
 
@@ -252,12 +283,12 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         private object Deserialize(ref SerializationReader reader, Reference myReference)
         {
-            myReference._typeOfDBObjects = (TypeUUID)reader.ReadObject();
+            myReference._TypeUUID = (TypeUUID)reader.ReadObject();
             myReference.ObjectUUID = (ObjectUUID)reader.ReadObject();
 
             myReference._hashCode = myReference.ObjectUUID.GetHashCode();
 
-            myReference._dbObject = new WeakReference(null);
+            myReference._WeakReference = new WeakReference(null);
 
             return myReference;
         }
@@ -269,8 +300,22 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         #endregion
 
+        #region estimated size
+
+        public ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private void CalcEstimatedSize(Reference myTypeAttribute)
+        {
+            //ObjectUUID + BaseSize
+            _estimatedSize = EstimatedSizeConstants.CalcUUIDSize(_TypeUUID) + EstimatedSizeConstants.CalcUUIDSize(ObjectUUID) + EstimatedSizeConstants.UInt64 + EstimatedSizeConstants.Int32 + EstimatedSizeConstants.ClassDefaultSize + EstimatedSizeConstants.WeakReference;
+        }
+
         #endregion
-    
+
+
     }
 
 }

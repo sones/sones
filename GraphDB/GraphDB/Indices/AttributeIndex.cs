@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB – AttributeIndex" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB � AttributeIndex" />
  * <copyright file="AttributeIndex.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -34,47 +54,12 @@ namespace sones.GraphDB.Indices
     /// </summary>
     public class AttributeIndex : AAttributeIndex
     {
-        #region properties
+        #region Properties
 
-        #region IndexReference
+        Object _lockObject = new object();
 
-        private IVersionedIndexObject<IndexKey, ObjectUUID> _indexReference = null;
-        
-        /// <summary>
-        /// A reference to this index after it was loaded into the memory
-        /// or connected by a proxy class
-        /// </summary>
-        private Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>> GetIndexReference(DBIndexManager indexManager)
-        {
-
-            if (_indexReference == null)
-            {
-                if (!indexManager.HasIndex(IndexType))
-                {
-                    // the index type does not exist anymore - return null or throw exception
-                    return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(new GraphDBError("Index is away!"));
-                }
-
-                var emptyIdx = indexManager.GetIndex(IndexType);
-                if (!emptyIdx.Success())
-                {
-                    return emptyIdx;
-                }
-
-                var indexExceptional = indexManager.LoadOrCreateDBIndex(FileSystemLocation, emptyIdx.Value);
-
-                if (indexExceptional.Failed())
-                {
-                    return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(indexExceptional);
-                }
-
-                _indexReference = indexExceptional.Value;
-            }
-
-            return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(_indexReference);
-        }
-
-        #endregion
+        UInt64 _keyCount = 0;
+        UInt64 _valueCount = 0;
 
         #endregion
 
@@ -89,16 +74,19 @@ namespace sones.GraphDB.Indices
         /// <param name="myIndexType">The IndexType e.g. HashMap, BTree of this AttributeIndex</param>
         /// <param name="correspondingType">The corresponding type of this index, used to get the file system location</param>
         /// <param name="myFileSystemLocation">The location oif the index. If null it will be generated based on the <paramref name="correspondingType"/>.</param>
-        public AttributeIndex(String myIndexName, String myIndexEdition, List<AttributeUUID> myAttributes, GraphDBType correspondingType, String myIndexType = null)
-            : this(myIndexName, new IndexKeyDefinition(myAttributes), correspondingType, myIndexType, myIndexEdition)
+        public AttributeIndex(String myIndexName, String myIndexEdition, List<AttributeUUID> myAttributes, GraphDBType correspondingType, String myIndexType = null, UInt64 myKeyCount = 0, UInt64 myValueCount = 0)
+            : this(myIndexName, new IndexKeyDefinition(myAttributes), correspondingType, myIndexType, myIndexEdition, myKeyCount, myValueCount)
         { }
 
-        public AttributeIndex(string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, string indexType = null, string indexEdition = DBConstants.DEFAULTINDEX)
+        public AttributeIndex(string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, string indexType = null, string indexEdition = DBConstants.DEFAULTINDEX, UInt64 myKeyCount = 0, UInt64 myValueCount = 0)
         {
             IndexName          = indexName;
             IndexEdition       = indexEdition;
             IndexKeyDefinition = idxKey;
             IndexRelatedTypeUUID = correspondingType.UUID;
+
+            _keyCount = myKeyCount;
+            _valueCount = myValueCount;
 
             if (indexEdition == null)
             {
@@ -149,167 +137,6 @@ namespace sones.GraphDB.Indices
 
         #endregion
 
-        #region GetIndexkeysFromDBObject
-
-        /// <summary>
-        /// Creates IndexKeys from a DBObject.
-        /// </summary>
-        /// <param name="myDBObject">The DBObject reference for the resulting IndexKeys</param>
-        /// <param name="myTypeOfDBObject">The Type of the DBObject</param>
-        /// <param name="myToken">The SessionInfos</param>
-        /// <returns>A HashSet of IndexKeys</returns>
-        private HashSet<IndexKey> GetIndexkeysFromDBObject(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext)
-        {
-            HashSet<IndexKey> result = new HashSet<IndexKey>();
-            TypeAttribute currentAttribute;
-
-            foreach (var aIndexAttributeUUID in IndexKeyDefinition.IndexKeyAttributeUUIDs)
-            {
-                currentAttribute = myTypeOfDBObject.GetTypeAttributeByUUID(aIndexAttributeUUID);
-
-                if (!currentAttribute.GetDBType(dbContext.DBTypeManager).IsUserDefined)
-                {
-                    #region base attribute
-
-                    if (myDBObject.HasAttribute(aIndexAttributeUUID, myTypeOfDBObject))
-                    {
-                        ADBBaseObject newIndexKeyItem = null;
-
-                        switch (currentAttribute.KindOfType)
-                        {
-                            #region List/Set
-
-                            case KindsOfType.ListOfNoneReferences:
-                            case KindsOfType.SetOfNoneReferences:
-
-                                var helperSet = new List<ADBBaseObject>();
-                                
-                                foreach (var aBaseObject in ((IBaseEdge)myDBObject.GetAttribute(aIndexAttributeUUID, myTypeOfDBObject, dbContext)).GetBaseObjects())
-                                {
-                                    helperSet.Add((ADBBaseObject)aBaseObject);
-                                }
-                                
-                                if (result.Count != 0)
-                                {
-                                    #region update
-
-                                    HashSet<IndexKey> helperResultSet = new HashSet<IndexKey>();
-
-                                    foreach (var aNewItem in helperSet)
-                                    {
-                                        foreach (var aReturnVal in result)
-                                        {
-                                            helperResultSet.Add(new IndexKey(aReturnVal, aIndexAttributeUUID, aNewItem, this.IndexKeyDefinition));
-                                        }
-                                    }
-
-                                    result = helperResultSet;
-
-                                    #endregion
-                                }
-                                else
-                                {
-                                    #region create new
-
-                                    foreach (var aNewItem in helperSet)
-                                    {
-                                        result.Add(new IndexKey(aIndexAttributeUUID, aNewItem, this.IndexKeyDefinition));
-                                    }
-
-                                    #endregion
-                                }
-
-                                break;
-
-                            #endregion
-
-                            #region single/special
-
-                            case KindsOfType.SingleReference:
-                            case KindsOfType.SingleNoneReference:
-                            case KindsOfType.SpecialAttribute:
-
-                                newIndexKeyItem = (ADBBaseObject)myDBObject.GetAttribute(aIndexAttributeUUID, myTypeOfDBObject, dbContext);
-                                
-                                if (result.Count != 0)
-                                {
-                                    #region update
-
-                                    foreach (var aResultItem in result)
-                                    {
-                                        aResultItem.AddAADBBAseObject(aIndexAttributeUUID, newIndexKeyItem);
-                                    }
-
-                                    #endregion
-                                }
-                                else
-                                {
-                                    #region create new
-
-                                    result.Add(new IndexKey(aIndexAttributeUUID, newIndexKeyItem, this.IndexKeyDefinition));
-
-                                    #endregion
-                                }
-
-                                break;
-
-                            #endregion
-
-                            #region not implemented
-
-                            case KindsOfType.SetOfReferences:
-                            default:
-
-                                throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "Currently its not implemented to insert anything else than a List/Set/Single of base types"));
-
-                            #endregion
-                        }
-                    }
-                    else
-                    {
-                        //add default value
-
-                        var defaultADBBAseObject = GraphDBTypeMapper.GetADBBaseObjectFromUUID(currentAttribute.DBTypeUUID);
-                        defaultADBBAseObject.SetValue(DBObjectInitializeType.Default);
-
-                        if (result.Count != 0)
-                        {
-                            #region update
-
-                            foreach (var aResultItem in result)
-                            {
-                                aResultItem.AddAADBBAseObject(aIndexAttributeUUID, defaultADBBAseObject);
-                            }
-
-                            #endregion
-                        }
-                        else
-                        {
-                            #region create new
-
-                            result.Add(new IndexKey(aIndexAttributeUUID, defaultADBBAseObject, this.IndexKeyDefinition));
-
-                            #endregion
-                        }
-
-                    }
-                    #endregion
-                }
-                else
-                {
-                    #region reference attribute
-
-                    throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-
-                    #endregion
-                }
-            }
-
-            return result;
-        }
-
-        #endregion
-
         #region public methods
 
         #region Update
@@ -322,20 +149,19 @@ namespace sones.GraphDB.Indices
         /// <param name="myToken">The SessionInfos</param>
         public override Exceptional Update(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
+            #region remove DBObject from idx --> inperformant like hell
 
-            #region Get index reference
-
-            var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (!idxRef.Success())
+            foreach (var aIdxShardExceptional in GetAllIdxShards(dbContext))
             {
-                return new Exceptional(idxRef);
-            }
-            var idxRefVal = idxRef.Value;
+                #region get the shard
 
-            #endregion
+                if (!aIdxShardExceptional.Item2.Success())
+                {
+                    return new Exceptional(aIdxShardExceptional.Item2);
+                }
+                var idxRefVal = aIdxShardExceptional.Item2.Value;
 
-            if (idxRefVal != null)
-            {
+                #endregion
 
                 #region remove
 
@@ -343,7 +169,12 @@ namespace sones.GraphDB.Indices
 
                 foreach (var aKeyValue in idxRefVal.GetIDictionary())
                 {
-                    aKeyValue.Value.Remove(myDBObject.ObjectUUID);
+                    if (aKeyValue.Value.Remove(myDBObject.ObjectUUID))
+                    {
+                        //there has been something removed
+                        DecreaseValueCount();
+                    }
+
                     if (aKeyValue.Value.Count == 0)
                     {
                         toBeRemovedIdxKeys.Add(aKeyValue.Key);
@@ -352,32 +183,40 @@ namespace sones.GraphDB.Indices
 
                 foreach (var aToBeDeletedIndexKey in toBeRemovedIdxKeys)
                 {
+                    //a complete key has been removed
                     idxRefVal.Remove(aToBeDeletedIndexKey);
+
+                    DecreaseKeyCount();
                 }
 
                 #endregion
-
-                #region insert
-
-                if (myDBObject.HasAtLeastOneAttribute(this.IndexKeyDefinition.IndexKeyAttributeUUIDs, myTypeOfDBObject, dbContext.SessionSettings))
-                {
-                    //insert
-                    foreach (var aIndexKey in this.GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, dbContext))
-                    {
-                        idxRefVal.Set(aIndexKey, myDBObject.ObjectUUID, IndexSetStrategy.MERGE);
-                    }
-                }
-
-                #endregion
-
             }
-            else
+
+            #endregion
+
+            #region insert new values
+
+            if (myDBObject.HasAtLeastOneAttribute(this.IndexKeyDefinition.IndexKeyAttributeUUIDs, myTypeOfDBObject, dbContext.SessionSettings))
             {
-                return new Exceptional(new Error_InvalidIndexReference(IndexName, IndexEdition));
+                //insert
+                foreach (var aIndexKey in this.GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, dbContext))
+                {
+                    //get the actual shard
+                    var currentIdxShard = GetIndexReference(dbContext.DBIndexManager, GetIndexShardID(aIndexKey));
+
+                    if (!currentIdxShard.Success())
+                    {
+                        return new Exceptional(currentIdxShard);
+                    }
+                    var currentIdxShardValue = currentIdxShard.Value;
+
+                    SetIndexKeyAndValue(currentIdxShardValue, aIndexKey, myDBObject.ObjectUUID, IndexSetStrategy.MERGE);
+                }
             }
+
+            #endregion
 
             return Exceptional.OK;
-
         }
 
         #endregion
@@ -404,44 +243,36 @@ namespace sones.GraphDB.Indices
         /// <param name="myToken">The SessionInfos</param>
         public override Exceptional Insert(DBObjectStream myDBObject, IndexSetStrategy myIndexSetStrategy, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-
-            #region Get index reference
-
-            var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (!idxRef.Success())
+            foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, dbContext))
             {
-                return new Exceptional(idxRef);
-            }
-            var idxRefVal = idxRef.Value;
+                #region get the shard
 
-            #endregion
+                //get the actual shard
+                var currentIdxShard = GetIndexReference(dbContext.DBIndexManager, GetIndexShardID(aIndexKex));
 
-            if (idxRefVal != null)
-            {
-                foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, dbContext))
+                if (!currentIdxShard.Success())
                 {
-
-                    #region Check for uniqueness - TODO: remove me as soon as we have a unique indexObject implementation
-
-                    if (IsUniqueAttributeIndex)
-                    {
-                        if (idxRefVal.ContainsKey(aIndexKex))
-                        {
-                            return new Exceptional(new Error_UniqueConstrainViolation(myTypeOfDBObject.Name, IndexName));
-                        }
-                    }
-
-                    #endregion
-
-
-                    idxRefVal.Set(aIndexKex, myDBObject.ObjectUUID, myIndexSetStrategy);
+                    return new Exceptional(currentIdxShard);
                 }
-            }
-            else
-            {
-                return new Exceptional(new Error_InvalidIndexReference(IndexName, IndexEdition));
-            }
+                var currentIdxShardValue = currentIdxShard.Value;
 
+                #endregion
+
+                #region Check for uniqueness - TODO: remove me as soon as we have a unique indexObject implementation
+
+                if (IsUniqueAttributeIndex)
+                {
+                    if (currentIdxShardValue.ContainsKey(aIndexKex))
+                    {
+                        return new Exceptional(new Error_UniqueConstrainViolation(myTypeOfDBObject.Name, IndexName));
+                    }
+                }
+
+                #endregion
+
+                SetIndexKeyAndValue(currentIdxShardValue, aIndexKex, myDBObject.ObjectUUID, myIndexSetStrategy);
+            }
+            
             return Exceptional.OK;
 
         }
@@ -460,57 +291,48 @@ namespace sones.GraphDB.Indices
         public override Boolean Contains(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
 
-            #region Get index reference
-
-            var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed())
+            foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, dbContext))
             {
-                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.IErrors, IndexName, IndexEdition));
-            }
-            var idxRefVal = idxRef.Value;
+                #region get the shard
 
-            #endregion
+                //get the actual shard
+                var currentIdxShard = GetIndexReference(dbContext.DBIndexManager, GetIndexShardID(aIndexKex));
 
-            if (idxRefVal != null)
-            {
-                foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, dbContext))
+                if (!currentIdxShard.Success())
                 {
-                    if (idxRefVal.Contains(aIndexKex, myDBObject.ObjectUUID))
-                    {
-                        return true;
-                    }
+                    throw new GraphDBException(new Error_CouldNotGetIndexReference(currentIdxShard.IErrors, IndexName, IndexEdition, GetIndexShardID(aIndexKex)));
                 }
+                
+                var currentIdxShardValue = currentIdxShard.Value;
 
-                return false;
-            }
-            else
-            {
-                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
+                #endregion
+
+                if (currentIdxShardValue.Contains(aIndexKex, myDBObject.ObjectUUID))
+                {
+                    return true;
+                }
             }
 
+            return false;
         }
 
         public override Boolean Contains(IndexKey myIndeyKey, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            #region Get index reference
+            #region get the shard
 
-            var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed())
+            //get the actual shard
+            var currentIdxShard = GetIndexReference(dbContext.DBIndexManager, GetIndexShardID(myIndeyKey));
+
+            if (!currentIdxShard.Success())
             {
-                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.IErrors, IndexName, IndexEdition));
+                throw new GraphDBException(new Error_CouldNotGetIndexReference(currentIdxShard.IErrors, IndexName, IndexEdition, GetIndexShardID(myIndeyKey)));
             }
-            var idxRefVal = idxRef.Value;
+
+            var currentIdxShardValue = currentIdxShard.Value;
 
             #endregion
 
-            if (idxRefVal != null)
-            {
-                return idxRefVal.ContainsKey(myIndeyKey);
-            }
-            else
-            {
-                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
-            }
+            return currentIdxShardValue.ContainsKey(myIndeyKey);
         }
 
         #endregion
@@ -525,27 +347,32 @@ namespace sones.GraphDB.Indices
         /// <param name="myToken">The SessionInfos</param>
         public override Exceptional Remove(DBObjectStream myDBObject, GraphDBType myTypeOfDBObjects, DBContext dbContext)
         {
-
-            #region Get index reference
-
-            var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (!idxRef.Success())
+            foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObjects, dbContext))
             {
-                return new Exceptional(idxRef);
-            }
-            var idxRefVal = idxRef.Value;
+                #region get the shard
 
-            #endregion
-            if (idxRefVal != null)
-            {
-                foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObjects, dbContext))
+                //get the actual shard
+                var currentIdxShard = GetIndexReference(dbContext.DBIndexManager, GetIndexShardID(aIndexKex));
+
+                if (!currentIdxShard.Success())
                 {
-                    idxRefVal.Remove(aIndexKex, myDBObject.ObjectUUID);
+                    return new Exceptional(currentIdxShard);
                 }
-            }
-            else
-            {
-                return new Exceptional(new Error_InvalidIndexReference(IndexName, IndexEdition));
+                var currentIdxShardValue = currentIdxShard.Value;
+
+                #endregion
+
+                if (currentIdxShardValue.Remove(aIndexKex, myDBObject.ObjectUUID))
+                {
+                    //the ObjectUUID has been deleted from this idx... so decrease the valueCount
+                    DecreaseValueCount();
+                }
+
+                if (currentIdxShardValue[aIndexKex].Count == 0)
+                {
+                    //so, the last element in this indexKey has just been removed...
+                    DecreaseKeyCount();
+                }
             }
 
             return Exceptional.OK;
@@ -558,7 +385,12 @@ namespace sones.GraphDB.Indices
 
         public override Exceptional ClearAndRemoveFromDisc(DBIndexManager indexManager)
         {
-            _indexReference = null;
+            lock (_lockObject)
+            {
+                _valueCount = 0;
+                _keyCount = 0;
+            }
+
             return indexManager.RemoveDBIndex(FileSystemLocation);
         }
 
@@ -660,25 +492,26 @@ namespace sones.GraphDB.Indices
 
         public override IEnumerable<IndexKey> GetKeys(GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            #region Get index reference
-
-            var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed())
+            foreach (var aIdxShardExceptional in GetAllIdxShards(dbContext))
             {
-                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.IErrors, IndexName, IndexEdition));
-            }
-            var idxRefVal = idxRef.Value;
+                #region get the shard
 
-            #endregion
+                if (!aIdxShardExceptional.Item2.Success())
+                {
+                    throw new GraphDBException(new Error_CouldNotGetIndexReference(aIdxShardExceptional.Item2.IErrors, IndexName, IndexEdition, aIdxShardExceptional.Item1));
+                }
 
-            if (idxRefVal != null)
-            {
-                return idxRefVal.Keys();
+                var idxRefVal = aIdxShardExceptional.Item2.Value;
+
+                #endregion
+
+                foreach (var aKey in idxRefVal.Keys())
+                {
+                    yield return aKey;
+                }
             }
-            else
-            {
-                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
-            }
+
+            yield break;
         }
 
         #endregion
@@ -687,25 +520,20 @@ namespace sones.GraphDB.Indices
 
         public override IEnumerable<ObjectUUID> GetValues(IndexKey myIndeyKey, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            #region Get index reference
+            #region get the shard
 
-            var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed())
+            //get the actual shard
+            var currentIdxShard = GetIndexReference(dbContext.DBIndexManager, GetIndexShardID(myIndeyKey));
+
+            if (!currentIdxShard.Success())
             {
-                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.IErrors, IndexName, IndexEdition));
+                throw new GraphDBException(new Error_CouldNotGetIndexReference(currentIdxShard.IErrors, IndexName, IndexEdition, GetIndexShardID(myIndeyKey)));
             }
-            var idxRefVal = idxRef.Value;
+            var currentIdxShardValue = currentIdxShard.Value;
 
             #endregion
 
-            if (idxRefVal != null)
-            {
-                return idxRef.Value[myIndeyKey];
-            }
-            else
-            {
-                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
-            }
+            return currentIdxShardValue[myIndeyKey];
         }
 
         #endregion
@@ -714,30 +542,26 @@ namespace sones.GraphDB.Indices
 
         public override IEnumerable<IEnumerable<ObjectUUID>> GetAllValues(GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            #region Get index reference
-
-            var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed())
+            foreach (var aIdxShardExceptional in GetAllIdxShards(dbContext))
             {
-                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.IErrors, IndexName, IndexEdition));
-            }
-            var idxRefVal = idxRef.Value;
+                #region get the shard
 
-            #endregion
+                if (!aIdxShardExceptional.Item2.Success())
+                {
+                    throw new GraphDBException(new Error_CouldNotGetIndexReference(aIdxShardExceptional.Item2.IErrors, IndexName, IndexEdition, aIdxShardExceptional.Item1));
+                }
 
-            if (idxRefVal != null)
-            {
+                var idxRefVal = aIdxShardExceptional.Item2.Value;
+
+                #endregion
+
                 foreach (var aValue in idxRefVal.Values())
                 {
                     yield return aValue;
                 }
+            }
 
-                yield break;
-            }
-            else
-            {
-                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
-            }
+            yield break;
         }
 
         #endregion
@@ -746,84 +570,45 @@ namespace sones.GraphDB.Indices
 
         public override IEnumerable<KeyValuePair<IndexKey, HashSet<ObjectUUID>>> GetKeyValues(GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            #region Get index reference
-
-            var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed())
+            foreach (var aIdxShardExceptional in GetAllIdxShards(dbContext))
             {
-                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.IErrors, IndexName, IndexEdition));
-            }
-            var idxRefVal = idxRef.Value;
+                #region get the shard
 
-            #endregion
+                if (!aIdxShardExceptional.Item2.Success())
+                {
+                    throw new GraphDBException(new Error_CouldNotGetIndexReference(aIdxShardExceptional.Item2.IErrors, IndexName, IndexEdition, aIdxShardExceptional.Item1));
+                }
 
-            if (idxRefVal != null)
-            {
-                foreach (var aKV in idxRef.Value)
+                var idxRefVal = aIdxShardExceptional.Item2.Value;
+
+                #endregion
+
+                foreach (var aKV in idxRefVal)
                 {
                     yield return aKV;
                 }
+            }
 
-                yield break;
-            }
-            else
-            {
-                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
-            }
+            yield break;
+
         }
 
         #endregion
 
         #region GetValueCount
 
-        public override UInt64 GetValueCount(GraphDBType myTypeOfDBObject, DBContext dbContext)
+        public override UInt64 GetValueCount()
         {
-            #region Get index reference
-
-            var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed())
-            {
-                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.IErrors, IndexName, IndexEdition));
-            }
-            var idxRefVal = idxRef.Value;
-
-            #endregion
-
-            if (idxRefVal != null)
-            {
-                return idxRefVal.ValueCount();
-            }
-            else
-            {
-                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
-            }
+            return _valueCount;
         }
 
         #endregion
 
         #region GetKeyCount
 
-        public override UInt64 GetKeyCount(GraphDBType myTypeOfDBObject, DBContext dbContext)
+        public override UInt64 GetKeyCount()
         {
-            #region Get index reference
-
-            var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed())
-            {
-                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.IErrors, IndexName, IndexEdition));
-            }
-            var idxRefVal = idxRef.Value;
-
-            #endregion
-
-            if (idxRefVal != null)
-            {
-                return idxRefVal.KeyCount();
-            }
-            else
-            {
-                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
-            }
+            return _keyCount;
         }
 
         #endregion
@@ -832,28 +617,345 @@ namespace sones.GraphDB.Indices
 
         public override IEnumerable<ObjectUUID> InRange(IndexKey fromIndexKey, IndexKey toIndexKey, bool myOrEqualFromKey, bool myOrEqualToKey, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            #region Get index reference
+            //TODO: PERFORMANCE BUG!!!!!!!
 
-            var idxRef = GetIndexReference(dbContext.DBIndexManager);
-            if (idxRef.Failed())
+            foreach (var aIdxShardExceptional in GetAllIdxShards(dbContext))
             {
-                throw new GraphDBException(new Error_CouldNotGetIndexReference(idxRef.IErrors, IndexName, IndexEdition));
-            }
-            var idxRefVal = idxRef.Value;
+                #region get the shard
 
-            #endregion
+                if (!aIdxShardExceptional.Item2.Success())
+                {
+                    throw new GraphDBException(new Error_CouldNotGetIndexReference(aIdxShardExceptional.Item2.IErrors, IndexName, IndexEdition, aIdxShardExceptional.Item1));
+                }
 
-            if (idxRefVal != null)
-            {
-                return idxRefVal.InRange(fromIndexKey, toIndexKey, myOrEqualFromKey, myOrEqualToKey);
+                var idxRefVal = aIdxShardExceptional.Item2.Value;
+
+                #endregion
+
+                foreach (var aUUID in idxRefVal.InRange(fromIndexKey, toIndexKey, myOrEqualFromKey, myOrEqualToKey))
+                {
+                    yield return aUUID;
+                }
             }
-            else
-            {
-                throw new GraphDBException(new Error_InvalidIndexReference(IndexName, IndexEdition));
-            }
+
+            yield break;
+
         }
 
         #endregion
+
+        #endregion
+
+        #region private helper
+
+        #region IndexReference
+
+        /// <summary>
+        /// A reference to this index after it was loaded into the memory
+        /// or connected by a proxy class
+        /// </summary>
+        /// <param name="indexManager">The database index manager</param>
+        /// <param name="idxShard">The shard that should be loaded</param>
+        /// <returns>A versioned idx object</returns>
+        private Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>> GetIndexReference(DBIndexManager indexManager, int idxShard)
+        {
+            if (!indexManager.HasIndex(IndexType))
+            {
+                // the index type does not exist anymore - return null or throw exception
+                return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(new GraphDBError("Index is away!"));
+            }
+
+            var emptyIdx = indexManager.GetIndex(IndexType);
+            if (!emptyIdx.Success())
+            {
+                return emptyIdx;
+            }
+
+            var indexExceptional = indexManager.LoadOrCreateDBIndex(FileSystemLocation + idxShard.ToString(), emptyIdx.Value, this);
+
+            if (indexExceptional.Failed())
+            {
+                return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(indexExceptional);
+            }
+
+            return indexExceptional;
+        }
+
+
+        #endregion
+
+        #region GetIndexkeysFromDBObject
+
+        /// <summary>
+        /// Creates IndexKeys from a DBObject.
+        /// </summary>
+        /// <param name="myDBObject">The DBObject reference for the resulting IndexKeys</param>
+        /// <param name="myTypeOfDBObject">The Type of the DBObject</param>
+        /// <param name="myToken">The SessionInfos</param>
+        /// <returns>A HashSet of IndexKeys</returns>
+        private HashSet<IndexKey> GetIndexkeysFromDBObject(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext)
+        {
+            HashSet<IndexKey> result = new HashSet<IndexKey>();
+            TypeAttribute currentAttribute;
+
+            foreach (var aIndexAttributeUUID in IndexKeyDefinition.IndexKeyAttributeUUIDs)
+            {
+                currentAttribute = myTypeOfDBObject.GetTypeAttributeByUUID(aIndexAttributeUUID);
+
+                if (!currentAttribute.GetDBType(dbContext.DBTypeManager).IsUserDefined)
+                {
+                    #region base attribute
+
+                    if (myDBObject.HasAttribute(aIndexAttributeUUID, myTypeOfDBObject))
+                    {
+                        ADBBaseObject newIndexKeyItem = null;
+
+                        switch (currentAttribute.KindOfType)
+                        {
+                            #region List/Set
+
+                            case KindsOfType.ListOfNoneReferences:
+                            case KindsOfType.SetOfNoneReferences:
+
+                                var helperSet = new List<ADBBaseObject>();
+
+                                foreach (var aBaseObject in ((IBaseEdge)myDBObject.GetAttribute(aIndexAttributeUUID, myTypeOfDBObject, dbContext)).GetBaseObjects())
+                                {
+                                    helperSet.Add((ADBBaseObject)aBaseObject);
+                                }
+
+                                if (result.Count != 0)
+                                {
+                                    #region update
+
+                                    HashSet<IndexKey> helperResultSet = new HashSet<IndexKey>();
+
+                                    foreach (var aNewItem in helperSet)
+                                    {
+                                        foreach (var aReturnVal in result)
+                                        {
+                                            helperResultSet.Add(new IndexKey(aReturnVal, aIndexAttributeUUID, aNewItem, this.IndexKeyDefinition));
+                                        }
+                                    }
+
+                                    result = helperResultSet;
+
+                                    #endregion
+                                }
+                                else
+                                {
+                                    #region create new
+
+                                    foreach (var aNewItem in helperSet)
+                                    {
+                                        result.Add(new IndexKey(aIndexAttributeUUID, aNewItem, this.IndexKeyDefinition));
+                                    }
+
+                                    #endregion
+                                }
+
+                                break;
+
+                            #endregion
+
+                            #region single/special
+
+                            case KindsOfType.SingleReference:
+                            case KindsOfType.SingleNoneReference:
+                            case KindsOfType.SpecialAttribute:
+
+                                newIndexKeyItem = (ADBBaseObject)myDBObject.GetAttribute(aIndexAttributeUUID, myTypeOfDBObject, dbContext);
+
+                                if (result.Count != 0)
+                                {
+                                    #region update
+
+                                    foreach (var aResultItem in result)
+                                    {
+                                        aResultItem.AddAADBBAseObject(aIndexAttributeUUID, newIndexKeyItem);
+                                    }
+
+                                    #endregion
+                                }
+                                else
+                                {
+                                    #region create new
+
+                                    result.Add(new IndexKey(aIndexAttributeUUID, newIndexKeyItem, this.IndexKeyDefinition));
+
+                                    #endregion
+                                }
+
+                                break;
+
+                            #endregion
+
+                            #region not implemented
+
+                            case KindsOfType.SetOfReferences:
+                            default:
+
+                                throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "Currently its not implemented to insert anything else than a List/Set/Single of base types"));
+
+                            #endregion
+                        }
+                    }
+                    else
+                    {
+                        //add default value
+
+                        var defaultADBBAseObject = GraphDBTypeMapper.GetADBBaseObjectFromUUID(currentAttribute.DBTypeUUID);
+                        defaultADBBAseObject.SetValue(DBObjectInitializeType.Default);
+
+                        if (result.Count != 0)
+                        {
+                            #region update
+
+                            foreach (var aResultItem in result)
+                            {
+                                aResultItem.AddAADBBAseObject(aIndexAttributeUUID, defaultADBBAseObject);
+                            }
+
+                            #endregion
+                        }
+                        else
+                        {
+                            #region create new
+
+                            result.Add(new IndexKey(aIndexAttributeUUID, defaultADBBAseObject, this.IndexKeyDefinition));
+
+                            #endregion
+                        }
+
+                    }
+                    #endregion
+                }
+                else
+                {
+                    #region reference attribute
+
+                    throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+
+                    #endregion
+                }
+            }
+
+            return result;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Get the shard id corresponding to an indexKey
+        /// </summary>
+        /// <param name="aIndexKey">An IndexKey</param>
+        /// <returns>The shard id</returns>
+        private int GetIndexShardID(IndexKey aIndexKey)
+        {
+            //stupid... might be solved by constant hashing or sth like that
+            return Math.Abs(aIndexKey.GetHashCode()) % DBConstants.AttributeIdxShards;
+        }
+
+        private void IncreaseValueCount()
+        {
+            lock (_lockObject)
+            {
+                _valueCount++;
+            }
+        }
+
+        private void IncreaseKeyCount()
+        {
+            lock (_lockObject)
+            {
+                _keyCount++;
+            }
+        }
+
+        private void DecreaseKeyCount()
+        {
+            lock (_lockObject)
+            {
+                _keyCount--;
+            }
+        }
+
+        private void DecreaseValueCount()
+        {
+            lock (_lockObject)
+            {
+                _valueCount--;
+            }
+        }
+
+        /// <summary>
+        /// Get all index shards
+        /// </summary>
+        /// <param name="dbContext">The current database context</param>
+        /// <returns>An enumerable of shardID/IVersionedIndexObject</returns>
+        private IEnumerable<Tuple<int, Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>>> GetAllIdxShards(DBContext dbContext)
+        {
+            foreach (var aIdxShardID in GetAllIdxShardIDs())
+            {
+                #region load the shard
+
+                yield return new Tuple<int, Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>>(aIdxShardID, LoadAnIdxShard(aIdxShardID, dbContext));
+
+                #endregion
+            }
+
+            yield break;
+        }
+
+        /// <summary>
+        /// Loads an index shard
+        /// </summary>
+        /// <param name="aIdxShardID">The index shard id</param>
+        /// <param name="dbContext">The current database context</param>
+        /// <returns>An IVersionedIndexObject</returns>
+        private Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>> LoadAnIdxShard(ushort aIdxShardID, DBContext dbContext)
+        {
+            var idxRef = GetIndexReference(dbContext.DBIndexManager, aIdxShardID);
+            if (!idxRef.Success())
+            {
+                return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(idxRef);
+            }
+
+            return idxRef;
+        }
+
+        /// <summary>
+        /// Returns all index shard ids
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerable<UInt16> GetAllIdxShardIDs()
+        {
+            //stupid
+            for (UInt16 i = 0; i < DBConstants.AttributeIdxShards; i++)
+            {
+                yield return i;
+            }
+
+            yield break;
+        }
+
+        private void SetIndexKeyAndValue(IVersionedIndexObject<IndexKey, ObjectUUID> currentIdxShardValue, IndexKey aIndexKex, ObjectUUID objectUUID, IndexSetStrategy myIndexSetStrategy)
+        {
+
+            UInt64 previousKeyCount = currentIdxShardValue.KeyCount();
+
+            currentIdxShardValue.Set(aIndexKex, objectUUID, myIndexSetStrategy);
+
+            UInt64 afterKeyCount = currentIdxShardValue.KeyCount();
+
+            if (afterKeyCount > previousKeyCount)
+            {
+                //so there is one more key...
+                IncreaseKeyCount();
+            }
+
+            IncreaseValueCount();
+        }
 
         #endregion
     }

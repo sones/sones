@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * AVersionedDictionaryObject
  * (c) Achim Friedland, 2009 - 2010
  */
@@ -20,7 +40,6 @@ using sones.GraphFS.Session;
 
 using sones.Lib;
 using sones.Lib.BTree;
-using sones.GraphFS.Session;
 using sones.Lib.Serializer;
 using sones.Lib.DataStructures;
 using sones.Lib.NewFastSerializer;
@@ -44,10 +63,12 @@ namespace sones.GraphFS.Objects
 
     public abstract class AVersionedDictionaryObject<TKey, TValue> : AFSObject
         where TKey : IComparable
+        where TValue : IEstimable
     {
 
-
         #region Data
+
+        protected UInt64 _estimatedSize = 0;
 
         protected IDictionary<TKey, DictionaryValueHistory<TValue>> _IDictionary;
 
@@ -128,6 +149,16 @@ namespace sones.GraphFS.Objects
                 throw new ArgumentException("Type '" + _IDictionaryGenericType.ToString() + "' does not implement IDictionary<..., ...>!");
 
             _HistorySize                = 3;
+
+            #region Estimated size
+
+            //estimate the IDictionary
+            _estimatedSize += EstimatedSizeConstants.BigDictionary;
+
+            //estimate the base size of a AFSObject
+            _estimatedSize += EstimatedSizeConstants.AFSObjectOntologyObject;
+
+            #endregion
 
         }
 
@@ -251,8 +282,18 @@ namespace sones.GraphFS.Objects
             try
             {
 
+                #region Estimated size
+
+                //estimate the IDictionary
+                _estimatedSize += EstimatedSizeConstants.BigDictionary;
+
+                //estimate the base size of a AFSObject
+                _estimatedSize += EstimatedSizeConstants.AFSObjectOntologyObject;
+
+                #endregion
+
                 #region Read Key- and ValueTypes
-                
+
                 /*if (_IndexKeyType != typeof(TKey))
                     throw new GraphFSException_TypeParametersDiffer("Type parameter TKey of IndexObject_HashTable<" + typeof(TKey).ToString() + ", " + typeof(TValue).ToString() + "> is different from the serialized IndexObject_HashTable<" + _IndexKeyType.ToString() + ", " + _IndexValueType.ToString() + ">!");
 
@@ -265,11 +306,23 @@ namespace sones.GraphFS.Objects
 
                 _HistorySize = mySerializationReader.ReadUInt64();
 
+                #region estimated size
+
+                _estimatedSize += EstimatedSizeConstants.UInt64;
+
+                #endregion
+
                 #endregion
 
                 #region NotificationHandling
 
                 UInt64 _NotificationHandling = mySerializationReader.ReadUInt64();
+
+                #region estimated size
+
+                _estimatedSize += EstimatedSizeConstants.UInt64;
+
+                #endregion
 
                 #endregion
 
@@ -289,11 +342,16 @@ namespace sones.GraphFS.Objects
                     #region Read TKey
 
                     KeyObject = (TKey)mySerializationReader.ReadObject();
-                        
 
                     #endregion
 
                     Timestamp = mySerializationReader.ReadUInt64();
+
+                    #region estimated size
+                    //Timestamp
+                    _estimatedSize += EstimatedSizeConstants.UInt64;
+
+                    #endregion
 
                     #region Read TValue
                     
@@ -309,22 +367,40 @@ namespace sones.GraphFS.Objects
 
                         ValueObject = (TValue) _Object;
 
+                        #region estimated size
+                        //estimate the payload
+                        _estimatedSize += ValueObject.GetEstimatedSize();
+
+                        #endregion
+
                         //_IndexHashTable.Add((TKey)KeyObject, new DictionaryValueHistory<TValue>((TValue)ValueObject));
 
                         DictionaryValueHistory<TValue> _DictionaryValueHistory;
 
                         if (_IDictionary.TryGetValue(KeyObject, out _DictionaryValueHistory))
+                        {
                             _DictionaryValueHistory.Add(Timestamp, ValueObject);
-
+                        }
                         else
+                        {
                             _IDictionary.Add(KeyObject, new DictionaryValueHistory<TValue>(Timestamp, ValueObject));
+
+                            #region estimated size
+                            //add the size of the structure itself (not the payload)
+                            _estimatedSize += EstimatedSizeConstants.DictionaryValueHistory;
+
+                            //estimate the key... currently it is not IEstimable.
+                            _estimatedSize += EstimatedSizeConstants.EstimatedKeyInDictionarySize;
+
+                            #endregion
+                        }
 
                     }
 
                     #endregion
 
                     #region Remove key/timestamp...
-
+                    //TODO: update estimated size
                     else
                     {
 
@@ -438,6 +514,15 @@ namespace sones.GraphFS.Objects
 
                 else
                 {
+                    #region Estimated size
+
+                    //estimate the IDictionary
+                    _estimatedSize += EstimatedSizeConstants.DictionaryValueHistory;
+
+                    //estimate the size of Key and Value within the derived class
+
+                    #endregion
+
                     _IDictionary.Add(myKey, new DictionaryValueHistory<TValue>(myValue));
                     AddOnFileSystem(myKey, myValue, _Timestamp);
                     isDirty = true;
@@ -500,9 +585,16 @@ namespace sones.GraphFS.Objects
                 // The key already exists!
                 if (_IDictionary.TryGetValue(myKey, out _DictionaryHistoryList))
                     _DictionaryHistoryList.Set(myValue);
-
                 else
+                {
                     _IDictionary.Add(myKey, new DictionaryValueHistory<TValue>(myValue));
+
+                    #region estimated size
+
+                    _estimatedSize += EstimatedSizeConstants.DictionaryValueHistory + myValue.GetEstimatedSize() + EstimatedSizeConstants.EstimatedKeyInDictionarySize;
+
+                    #endregion
+                }
 
                 isDirty = true;
                 return 1;

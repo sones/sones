@@ -1,4 +1,24 @@
-﻿/* GraphFS - BlockIntegrityObject
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* GraphFS - BlockIntegrityObject
  * (c) Achim Friedland, 2008 - 2009
  * 
  * This represents a structure for saving the block integrity check
@@ -24,11 +44,65 @@ using sones.Lib.Cryptography.SymmetricEncryption;
 using sones.Lib.DataStructures;
 using sones.GraphFS.Objects;
 using sones.GraphFS.DataStructures;
+using sones.Lib;
 
 #endregion
 
 namespace sones.GraphFS.InternalObjects
 {
+    /// <summary>
+    /// This wrapper struct enables a ByteArray to be estimated by size.
+    /// </summary>
+    public struct ByteArrayWrapper : IEstimable
+    {
+        private Byte[] _payLoad;
+
+        public Byte[] PayLoad
+        {
+            get { return _payLoad; }
+        }
+
+        public ByteArrayWrapper(Byte[] myByteArry)
+        {
+            _payLoad = myByteArry;
+        }
+
+        public ulong GetEstimatedSize()
+        {
+            return _payLoad.ULongLength();
+        }
+    }
+
+    /// <summary>
+    /// This wrapper struct enables a ByteArray to be estimated by size.
+    /// </summary>
+    public struct UInt64ArrayWrapper : IEstimable, IComparable
+    {
+        private UInt64 _payLoad;
+
+        public UInt64 PayLoad
+        {
+            get { return _payLoad; }
+        }
+
+
+        public UInt64ArrayWrapper(UInt64 myUInt64)
+        {
+            _payLoad = myUInt64;
+        }
+
+        public ulong GetEstimatedSize()
+        {
+            return EstimatedSizeConstants.UInt64;
+        }
+
+        public int CompareTo(object obj)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+
 
     /// <summary>
     /// This represents a structure for saving the block integrity check
@@ -36,10 +110,7 @@ namespace sones.GraphFS.InternalObjects
     /// This structure can handle multiple block integrity check arrays using
     /// different block sizes.
     /// </summary>
-
-    
-
-    public class BlockIntegrityObject : ADictionaryObject<UInt64, Byte[]>
+    public class BlockIntegrityObject : ADictionaryObject<UInt64ArrayWrapper, ByteArrayWrapper>
     {
 
         #region Data
@@ -172,6 +243,15 @@ namespace sones.GraphFS.InternalObjects
         }
 
         #endregion
+
+        #endregion
+
+        #region IEstimable Members
+
+        public override ulong GetEstimatedSize()
+        {
+            return EstimatedSizeConstants.UndefinedObjectSize;
+        }
 
         #endregion
 

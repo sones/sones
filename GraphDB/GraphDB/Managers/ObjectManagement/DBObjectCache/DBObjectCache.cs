@@ -1,6 +1,26 @@
-ï»¿/* <id Name=â€GraphDB â€“ db object cacheâ€ />
- * <copyright file=â€DBObjectCache.csâ€
- *            company=â€sones GmbHâ€>
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id Name=”GraphDB – db object cache” />
+ * <copyright file=”DBObjectCache.cs”
+ *            company=”sones GmbH”>
  * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Henning Rauch</developer>
@@ -72,12 +92,12 @@ namespace sones.GraphDB.ObjectManagement
 
         public DBObjectCache(DBTypeManager myTypeManager, DBObjectManager objectManager, long myMaxElements)
         {
-            _typeManager = myTypeManager;
-            _DBObjectManager = objectManager;
-            _cachedDBObjectStreams = new Dictionary<TypeUUID, ConcurrentDictionary<ObjectUUID, WeakReference>>();
-            _cachedBackwardEdges = new Dictionary<TypeUUID, ConcurrentDictionary<ObjectUUID, WeakReference>>();
-            _maxElements = myMaxElements;
-            _currentElements = 0;
+            _typeManager            = myTypeManager;
+            _DBObjectManager        = objectManager;
+            _cachedDBObjectStreams  = new Dictionary<TypeUUID, ConcurrentDictionary<ObjectUUID, WeakReference>>();
+            _cachedBackwardEdges    = new Dictionary<TypeUUID, ConcurrentDictionary<ObjectUUID, WeakReference>>();
+            _maxElements            = myMaxElements;
+            _currentElements        = 0;
         }
 
         #endregion
@@ -453,7 +473,7 @@ namespace sones.GraphDB.ObjectManagement
         /// <returns>A BackwardEdge</returns>
         private Exceptional<BackwardEdgeStream> LoadDBBackwardEdgeInternal(GraphDBType myType, ObjectUUID myObjectUUID)
         {
-            return _DBObjectManager.LoadBackwardEdge(new ObjectLocation(myType.ObjectLocation, DBConstants.DBObjectsLocation, myObjectUUID.ToString()));
+            return _DBObjectManager.LoadBackwardEdge(new ObjectLocation(myType.ObjectLocation, DBConstants.DBObjectsLocation, _DBObjectManager.GetDBObjectStreamShard(myType, myObjectUUID), myObjectUUID.ToString()));
         }
 
         private Exceptional<BackwardEdgeStream> GetBackwardEdgeStreamViaWeakReference(ObjectUUID myObjectUUID, GraphDBType myType, WeakReference weakReference)

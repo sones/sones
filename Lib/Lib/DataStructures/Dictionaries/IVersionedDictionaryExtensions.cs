@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * IVersionedDictionaryExtensions
  * (c) Achim Friedland, 2009 - 2010
  */
@@ -27,6 +47,7 @@ namespace sones.Lib.DataStructures.Dictionaries
 
         public static Trinary ContainsKeys<TKey, TValue>(this IVersionedDictionaryInterface<TKey, TValue> myIVersionedDictionaryInterface, IEnumerable<TKey> myKeys, Int64 myVersion)
             where TKey : IComparable
+            where TValue : IEstimable
         {
 
             var _Success = Trinary.TRUE;
@@ -44,6 +65,7 @@ namespace sones.Lib.DataStructures.Dictionaries
 
         public static Trinary ContainsValues<TKey, TValue>(this IVersionedDictionaryInterface<TKey, TValue> myIVersionedDictionaryInterface, IEnumerable<TValue> myValues, Int64 myVersion)
             where TKey : IComparable
+            where TValue : IEstimable
         {
 
             var _Success = Trinary.TRUE;
@@ -61,6 +83,7 @@ namespace sones.Lib.DataStructures.Dictionaries
 
         public static Trinary Contains<TKey, TValue>(this IVersionedDictionaryInterface<TKey, TValue> myIVersionedDictionaryInterface, KeyValuePair<TKey, TValue> myKeyValuePair, Int64 myVersion)
             where TKey : IComparable
+            where TValue : IEstimable
         {
             return myIVersionedDictionaryInterface.Contains(myKeyValuePair.Key, myKeyValuePair.Value, myVersion);
         }
@@ -71,6 +94,7 @@ namespace sones.Lib.DataStructures.Dictionaries
 
         public static Trinary Contains<TKey, TValue>(this IVersionedDictionaryInterface<TKey, TValue> myIVersionedDictionaryInterface, Dictionary<TKey, TValue> myDictionary, Int64 myVersion)
             where TKey : IComparable
+            where TValue : IEstimable
         {
 
             var _Success = Trinary.TRUE;
@@ -89,6 +113,7 @@ namespace sones.Lib.DataStructures.Dictionaries
 
         public static IEnumerable<TKey> Keys<TKey, TValue>(this IVersionedDictionaryInterface<TKey, TValue> myIVersionedDictionaryInterface, TKey myMinKey, TKey myMaxKey, Int64 myVersion)
             where TKey : IComparable
+            where TValue : IEstimable
         {
             return myIVersionedDictionaryInterface.Keys(item => item.Key.CompareTo(myMinKey) >= 0 && item.Key.CompareTo(myMaxKey) <= 0, myVersion);
         }
@@ -99,6 +124,7 @@ namespace sones.Lib.DataStructures.Dictionaries
 
         public static UInt64 KeyCount<TKey, TValue>(this IVersionedDictionaryInterface<TKey, TValue> myIVersionedDictionaryInterface, TKey myMinKey, TKey myMaxKey, Int64 myVersion)
             where TKey : IComparable
+            where TValue : IEstimable
         {
             return myIVersionedDictionaryInterface.KeyCount(item => item.Key.CompareTo(myMinKey) >= 0 && item.Key.CompareTo(myMaxKey) <= 0, myVersion);
         }
@@ -109,6 +135,7 @@ namespace sones.Lib.DataStructures.Dictionaries
 
         public static IEnumerable<TValue> Values<TKey, TValue>(this IVersionedDictionaryInterface<TKey, TValue> myIVersionedDictionaryInterface, TKey myMinKey, TKey myMaxKey, Int64 myVersion)
             where TKey : IComparable
+            where TValue : IEstimable
         {
             return myIVersionedDictionaryInterface.Values(item => item.Key.CompareTo(myMinKey) >= 0 && item.Key.CompareTo(myMaxKey) <= 0, myVersion);
         }
@@ -119,6 +146,7 @@ namespace sones.Lib.DataStructures.Dictionaries
 
         public static UInt64 ValueCount<TKey, TValue>(this IVersionedDictionaryInterface<TKey, TValue> myIVersionedDictionaryInterface, TKey myMinKey, TKey myMaxKey, Int64 myVersion)
             where TKey : IComparable
+            where TValue : IEstimable
         {
             return myIVersionedDictionaryInterface.ValueCount(item => item.Key.CompareTo(myMinKey) >= 0 && item.Key.CompareTo(myMaxKey) <= 0, myVersion);
         }
@@ -129,6 +157,7 @@ namespace sones.Lib.DataStructures.Dictionaries
 
         public static IDictionary<TKey, TValue> GetIDictionary<TKey, TValue>(this IVersionedDictionaryInterface<TKey, TValue> myIVersionedDictionaryInterface, TKey myMinKey, TKey myMaxKey, Int64 myVersion)
             where TKey : IComparable
+            where TValue : IEstimable
         {
             return myIVersionedDictionaryInterface.GetIDictionary(item => item.Key.CompareTo(myMinKey) >= 0 && item.Key.CompareTo(myMaxKey) <= 0, myVersion);
         }
@@ -139,6 +168,7 @@ namespace sones.Lib.DataStructures.Dictionaries
 
         public static IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator<TKey, TValue>(this IVersionedDictionaryInterface<TKey, TValue> myIVersionedDictionaryInterface, TKey myMinKey, TKey myMaxKey, Int64 myVersion)
             where TKey : IComparable
+            where TValue : IEstimable
         {
             return myIVersionedDictionaryInterface.GetEnumerator(item => item.Key.CompareTo(myMinKey) >= 0 && item.Key.CompareTo(myMaxKey) <= 0, myVersion);
         }

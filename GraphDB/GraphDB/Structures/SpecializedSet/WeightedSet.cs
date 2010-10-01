@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB – WeightedSet<T>" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB � WeightedSet<T>" />
  * <copyright file="WeightedSet.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -14,19 +34,22 @@ using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.Lib.DataStructures;
 using sones.Lib.NewFastSerializer;
 using sones.Lib.Serializer;
+using sones.Lib;
 
 namespace sones.GraphDB.Structures
 {
 
     
     public class WeightedSet<T> : IFastSerialize, ICollection<T>, IEnumerable<T>
-        where T : IComparable, IFastSerialize, new()
+        where T : IComparable, IFastSerialize, IEstimable, new()
     {
 
         #region Data
 
         private SortedDictionary<DBNumber, List<T>> _WeightedListEntriesWeights;
         private Dictionary<T, DBNumber> _WeightedListEntries;
+
+        private UInt64          _estimatedSize  = 0;
 
         #endregion
 
@@ -86,6 +109,7 @@ namespace sones.GraphDB.Structures
 
             _Count = 0;
 
+            CalcEstimatedSize(this);
         }
 
         #endregion
@@ -208,6 +232,7 @@ namespace sones.GraphDB.Structures
 
             _Count++;
 
+            _estimatedSize += (myValue.GetEstimatedSize() + myWeight.GetEstimatedSize())*2;
         }
 
         /// <summary>
@@ -406,6 +431,9 @@ namespace sones.GraphDB.Structures
             _WeightedListEntries = new Dictionary<T, DBNumber>();
             _WeightedListEntriesWeights = new SortedDictionary<DBNumber, List<T>>();
             _Count = 0;
+
+            CalcEstimatedSize(this);
+
         }
 
         public bool Contains(T item)
@@ -434,7 +462,9 @@ namespace sones.GraphDB.Structures
                 return true;
 
             if (_WeightedListEntries[item] != null)
+            {
                 _WeightedListEntriesWeights[_WeightedListEntries[item]].Remove(item);
+            }
 
             return _WeightedListEntries.Remove(item);
         }
@@ -538,6 +568,9 @@ namespace sones.GraphDB.Structures
 
             #endregion
 
+            CalcEstimatedSize(this);
+
+
         }
 
         #endregion
@@ -622,6 +655,57 @@ namespace sones.GraphDB.Structures
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+
+        #endregion
+
+        #region IObject
+
+        public ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private void CalcEstimatedSize(WeightedSet<T> myTypeAttribute)
+        {
+             //estimatedSize + SortDirection + DefaultWeight + _Count + ClassDefaultSize 
+
+            _estimatedSize = EstimatedSizeConstants.EnumByte + _DefaultWeight.GetEstimatedSize() + EstimatedSizeConstants.UInt64 + EstimatedSizeConstants.UInt64 + EstimatedSizeConstants.ClassDefaultSize;
+
+            //_WeightedListEntriesWeights + _WeightedListEntries
+
+            if (_WeightedListEntriesWeights != null)
+            {
+                _estimatedSize += EstimatedSizeConstants.SortedDictionary;
+
+                foreach (var aKV in _WeightedListEntriesWeights)
+                {
+                    //Key
+                    _estimatedSize += aKV.Key.GetEstimatedSize();
+
+                    //Value
+                    _estimatedSize += EstimatedSizeConstants.List;
+                    foreach (var aValueItem in aKV.Value)
+                    {
+                        _estimatedSize += aValueItem.GetEstimatedSize();
+                    }
+                }
+            }
+
+            if (_WeightedListEntries != null)
+            {
+                _estimatedSize += EstimatedSizeConstants.Dictionary;
+
+                foreach (var aKV in _WeightedListEntries)
+                {
+                    //Key
+                    _estimatedSize += aKV.Key.GetEstimatedSize();
+
+                    //Value
+                    _estimatedSize += aKV.Value.GetEstimatedSize();
+                }
+            }
+
         }
 
         #endregion

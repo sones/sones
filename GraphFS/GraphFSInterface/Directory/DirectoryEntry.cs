@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * GraphFS - DirectoryEntry
  * (c) Achim Friedland, 2008 - 2009
  * 
@@ -38,15 +58,21 @@ namespace sones.GraphFS.InternalObjects
     /// subdirectory. It may appear as leaf within a directory tree or
     /// within a directory hashmap.
     /// </summary>
-       
-    public class DirectoryEntry : IFastSerialize, IFastSerializationTypeSurrogate
+
+    public class DirectoryEntry : IFastSerialize, IFastSerializationTypeSurrogate, IEstimable
     {
 
 
         #region Properties
 
+        #region IEstimable
+
+        private UInt64 _estimatedSize = 0;
+
+        #endregion
+
         #region INodePositions
-        
+
         private HashSet<ExtendedPosition> _INodePositions;
         public UInt32 TypeCode { get { return 201; } }
 
@@ -54,7 +80,7 @@ namespace sones.GraphFS.InternalObjects
         /// A list of extended positions for locationg the INodes
         /// of an file system objects
         /// </summary>
-        public  HashSet<ExtendedPosition> INodePositions
+        public HashSet<ExtendedPosition> INodePositions
         {
 
             get
@@ -64,9 +90,25 @@ namespace sones.GraphFS.InternalObjects
 
             set
             {
-                _INodePositions  = value;
-                _InlineData      = null;
-                isDirty          = true;
+                #region Estimated Size
+
+                //old -
+                if (_INodePositions != null)
+                {
+                    _estimatedSize -= Convert.ToUInt64(_INodePositions.Count) * EstimatedSizeConstants.ExtendedPosition;
+                }
+
+                //new +
+                if (value != null)
+                {
+                    _estimatedSize += Convert.ToUInt64(value.Count) * EstimatedSizeConstants.ExtendedPosition;
+                }
+
+                #endregion
+
+                _INodePositions = value;
+                _InlineData = null;
+                isDirty = true;
             }
 
         }
@@ -92,9 +134,26 @@ namespace sones.GraphFS.InternalObjects
 
             set
             {
+                #region Estimated Size
+
+                //old -
+                if (_ObjectStreamsList != null)
+                {
+                    //assuming that a ObjectStream name isn't longer that 10 chars
+                    _estimatedSize -= Convert.ToUInt64(_ObjectStreamsList.Count) * EstimatedSizeConstants.Char * EstimatedSizeConstants.EstimatedObjectStreamNameLength;
+                }
+
+                //new +
+                if (value != null)
+                {
+                    _estimatedSize += Convert.ToUInt64(value.Count) * EstimatedSizeConstants.Char * EstimatedSizeConstants.EstimatedObjectStreamNameLength;
+                }
+
+                #endregion
+
                 _ObjectStreamsList = value;
-                _InlineData        = null;
-                isDirty            = true;
+                _InlineData = null;
+                isDirty = true;
             }
 
         }
@@ -145,9 +204,30 @@ namespace sones.GraphFS.InternalObjects
 
             set
             {
+                #region Estimated Size
+
+                //old -
+                if (_InlineData != null)
+                {
+                    _estimatedSize -= Convert.ToUInt64(_InlineData.Length) * EstimatedSizeConstants.Byte;
+                }
+                //clear INOdePositions
+                if (_INodePositions != null)
+                {
+                    _estimatedSize -= Convert.ToUInt64(_INodePositions.Count) * EstimatedSizeConstants.ExtendedPosition;
+                }
+
+                //new +
+                if (value != null)
+                {
+                    _estimatedSize += Convert.ToUInt64(value.Length) * EstimatedSizeConstants.Byte;
+                }
+
+                #endregion
+
                 _InlineData = value;
                 _INodePositions.Clear();
-                isDirty     = true;
+                isDirty = true;
             }
 
         }
@@ -204,10 +284,39 @@ namespace sones.GraphFS.InternalObjects
 
             set
             {
-                _InlineData         = Encoding.UTF8.GetBytes(value.ToString());
+                _InlineData = Encoding.UTF8.GetBytes(value.ToString());
+
+                #region Estimated Size
+
+                //old -
+                if (_InlineData != null)
+                {
+                    _estimatedSize -= Convert.ToUInt64(_InlineData.Length) * EstimatedSizeConstants.Byte;
+                }
+                //clear INOdePositions
+                if (_INodePositions != null)
+                {
+                    _estimatedSize -= Convert.ToUInt64(_INodePositions.Count) * EstimatedSizeConstants.ExtendedPosition;
+                }
+                //handle ObjectStreamList
+                if (_ObjectStreamsList != null)
+                {
+                    _estimatedSize -= Convert.ToUInt64(_ObjectStreamsList.Count) * EstimatedSizeConstants.Char * EstimatedSizeConstants.EstimatedObjectStreamNameLength;
+                }
+
+                //new +
+                if (value != null)
+                {
+                    _estimatedSize += Convert.ToUInt64(_InlineData.Length) * EstimatedSizeConstants.Byte;
+                }
+                //Symlink
+                _estimatedSize += EstimatedSizeConstants.Char * EstimatedSizeConstants.EstimatedObjectStreamNameLength;
+
+                #endregion
+
                 _INodePositions.Clear();
-                _ObjectStreamsList  = new HashSet<String> { FSConstants.SYMLINK };
-                isDirty             = true;
+                _ObjectStreamsList = new HashSet<String> { FSConstants.SYMLINK };
+                isDirty = true;
             }
 
         }
@@ -258,10 +367,36 @@ namespace sones.GraphFS.InternalObjects
 
             set
             {
-                _InlineData         = null;
+                #region Estimated Size
+
+                //old -
+                if (_InlineData != null)
+                {
+                    _estimatedSize -= Convert.ToUInt64(_InlineData.Length) * EstimatedSizeConstants.Byte;
+                }
+                //clear INOdePositions
+                if (_INodePositions != null)
+                {
+                    _estimatedSize -= Convert.ToUInt64(_INodePositions.Count) * EstimatedSizeConstants.ExtendedPosition;
+                }
+                //handle ObjectStreamList
+                if (_ObjectStreamsList != null)
+                {
+                    _estimatedSize -= Convert.ToUInt64(_ObjectStreamsList.Count) * EstimatedSizeConstants.Char * EstimatedSizeConstants.EstimatedObjectStreamNameLength;
+                }
+
+                //new +
+                if (value != null)
+                {
+                    _estimatedSize += Convert.ToUInt64(value.Count) * EstimatedSizeConstants.Char * EstimatedSizeConstants.EstimatedObjectStreamNameLength;
+                }
+
+                #endregion
+
+                _InlineData = null;
                 _INodePositions.Clear();
-                _ObjectStreamsList  = value;
-                isDirty             = true;
+                _ObjectStreamsList = value;
+                isDirty = true;
             }
 
         }
@@ -279,9 +414,16 @@ namespace sones.GraphFS.InternalObjects
         /// </summary>
         public DirectoryEntry()
         {
-            _INodePositions         = new HashSet<ExtendedPosition>();
-            _InlineData             = null;
-            _ObjectStreamsList      = new HashSet<String>();
+            _INodePositions = new HashSet<ExtendedPosition>();
+            _InlineData = null;
+            _ObjectStreamsList = new HashSet<String>();
+
+            #region Estimated size
+
+            //InodePositions + ObjectStreamList + ClassDefaultSize + estimatedSize + typecode
+            _estimatedSize += EstimatedSizeConstants.HashSet + EstimatedSizeConstants.HashSet + GetClassBaseSize();
+
+            #endregion
         }
 
         #endregion
@@ -294,9 +436,34 @@ namespace sones.GraphFS.InternalObjects
         /// </summary>
         public DirectoryEntry(String myObjectStream, IEnumerable<ExtendedPosition> myINodePositions)
         {
-            _INodePositions         = new HashSet<ExtendedPosition>(myINodePositions);
-            _InlineData             = null;
-            _ObjectStreamsList      = new HashSet<String>{ myObjectStream };
+            #region INodePosition
+
+            _INodePositions = new HashSet<ExtendedPosition>();
+            _estimatedSize += EstimatedSizeConstants.HashSet;
+
+            foreach (var aInodePosition in myINodePositions)
+            {
+                _INodePositions.Add(aInodePosition);
+                _estimatedSize += EstimatedSizeConstants.ExtendedPosition;
+            }
+
+            #endregion
+
+            #region InlineData
+
+            _InlineData = null;
+
+            #endregion
+
+            #region ObjectStreamList
+
+            _ObjectStreamsList = new HashSet<String> { myObjectStream };
+
+            _estimatedSize += EstimatedSizeConstants.HashSet + EstimatedSizeConstants.Char * EstimatedSizeConstants.EstimatedObjectStreamNameLength;
+
+            #endregion
+
+            _estimatedSize += GetClassBaseSize();
         }
 
         #endregion
@@ -319,15 +486,15 @@ namespace sones.GraphFS.InternalObjects
 
             if (_INodePositions != null)
             {
-                
+
                 newEntry._INodePositions = new HashSet<ExtendedPosition>();
-                
+
                 foreach (var _ExtendedPosition in _INodePositions)
                     newEntry._INodePositions.Add(new ExtendedPosition(_ExtendedPosition.StorageUUID, _ExtendedPosition.Position));
 
             }
 
-            newEntry._isDirty   = _isDirty;
+            newEntry._isDirty = _isDirty;
 
             if (_ObjectStreamsList != null)
             {
@@ -338,6 +505,12 @@ namespace sones.GraphFS.InternalObjects
                     newEntry._ObjectStreamsList.Add(_ObjectStream);
 
             }
+
+            #region estimatedSize
+
+            newEntry._estimatedSize = this._estimatedSize;
+
+            #endregion
 
             return newEntry;
 
@@ -396,7 +569,7 @@ namespace sones.GraphFS.InternalObjects
 
         public void Deserialize(ref SerializationReader mySerializationReader)
         {
-            Deserialize(ref mySerializationReader, this);               
+            Deserialize(ref mySerializationReader, this);
         }
 
         #endregion
@@ -461,9 +634,24 @@ namespace sones.GraphFS.InternalObjects
 
                 myDirectoryEntry._InlineData = mySerializationReader.ReadByteArray();
 
+                #region Estimated Size
+
+                if (myDirectoryEntry._InlineData != null)
+                {
+                    myDirectoryEntry._estimatedSize += Convert.ToUInt64(myDirectoryEntry._InlineData.Length) * EstimatedSizeConstants.Byte;
+                }
+
+                #endregion
+
                 #endregion
 
                 #region Read the INodePositions
+
+                #region Estimated Size
+
+                myDirectoryEntry._estimatedSize += EstimatedSizeConstants.HashSet;
+
+                #endregion
 
                 var _NumOfINodePositions = mySerializationReader.ReadUInt32();
 
@@ -474,6 +662,13 @@ namespace sones.GraphFS.InternalObjects
                         StorageUUID ID = new StorageUUID();
                         ID.Deserialize(ref mySerializationReader);
                         myDirectoryEntry._INodePositions.Add(new ExtendedPosition(ID, mySerializationReader.ReadUInt64()));
+
+                        #region Estimated Size
+
+                        myDirectoryEntry._estimatedSize += EstimatedSizeConstants.ExtendedPosition;
+
+                        #endregion
+
                     }
                 }
 
@@ -481,12 +676,27 @@ namespace sones.GraphFS.InternalObjects
 
                 #region Read the ObjectStreamsList
 
+                #region Estimated Size
+
+                myDirectoryEntry._estimatedSize += EstimatedSizeConstants.HashSet;
+
+                #endregion
+
                 var _NumberOfObjectStreamTypes = mySerializationReader.ReadUInt32();
 
                 if (_NumberOfObjectStreamTypes > 0)
                 {
                     for (var j = 0UL; j < _NumberOfObjectStreamTypes; j++)
+                    {
                         myDirectoryEntry._ObjectStreamsList.Add(mySerializationReader.ReadString());
+
+                        #region Estimated Size
+
+                        myDirectoryEntry._estimatedSize += EstimatedSizeConstants.Char * EstimatedSizeConstants.EstimatedObjectStreamNameLength;
+
+                        #endregion
+
+                    }
                 }
 
                 #endregion
@@ -517,12 +727,12 @@ namespace sones.GraphFS.InternalObjects
 
         public void Serialize(SerializationWriter mySerializationWriter, object myObject)
         {
-            Serialize(ref mySerializationWriter, (DirectoryEntry) myObject);
+            Serialize(ref mySerializationWriter, (DirectoryEntry)myObject);
         }
 
         public object Deserialize(SerializationReader mySerializationReader, Type myType)
         {
-            DirectoryEntry thisObject = (DirectoryEntry) Activator.CreateInstance(myType);
+            DirectoryEntry thisObject = (DirectoryEntry)Activator.CreateInstance(myType);
             return Deserialize(ref mySerializationReader, thisObject);
         }
 
@@ -572,6 +782,20 @@ namespace sones.GraphFS.InternalObjects
 
             return _DirectoryEntryString.ToString();
 
+        }
+
+        #endregion
+
+        #region IEstimable
+
+        public ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private ulong GetClassBaseSize()
+        {
+            return EstimatedSizeConstants.ClassDefaultSize + EstimatedSizeConstants.UInt64 + EstimatedSizeConstants.UInt32;
         }
 
         #endregion

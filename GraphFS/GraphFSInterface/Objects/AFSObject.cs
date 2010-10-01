@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * AFSObject
  * (c) Achim Friedland, 2008 - 2010
  */
@@ -29,8 +49,8 @@ namespace sones.GraphFS.Objects
     /// <summary>
     /// The abstract class for all GraphFS objects.
     /// </summary>
-    
-    public abstract class AFSObject : AFSObjectOntology, IFastSerialize
+
+    public abstract class AFSObject : AFSObjectOntology, IFastSerialize, IEstimable
     {
 
 
@@ -498,8 +518,6 @@ namespace sones.GraphFS.Objects
                     _SerializedAGraphStructure = _TmpSerializedAGraphStructure;
 
 
-                _EstimatedSize = (UInt64)_TmpSerializedAGraphStructure.LongLength;
-
                 return _TmpSerializedAGraphStructure;
 
             }
@@ -677,7 +695,6 @@ namespace sones.GraphFS.Objects
             }
 
             _SerializedAGraphStructure = mySerializedData;
-            _EstimatedSize = (UInt64)_SerializedAGraphStructure.LongLength;
 
             return new Exceptional();
 
@@ -748,6 +765,12 @@ namespace sones.GraphFS.Objects
 
         #endregion
 
+        #region Members of IEstimable
+
+        public abstract ulong GetEstimatedSize();
+
+        #endregion
+
 
         #region Deserialize(mySerializedData, myAAFSObject)
 
@@ -782,8 +805,6 @@ namespace sones.GraphFS.Objects
         }
 
         #endregion
-
-
     }
 
 }

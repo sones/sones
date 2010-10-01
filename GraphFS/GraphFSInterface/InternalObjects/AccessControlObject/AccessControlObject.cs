@@ -1,6 +1,26 @@
-ï»¿/* <id Name=â€GraphFS â€“ AccessControlObjectâ€ />
- * <copyright file=â€AccessControlObject.csâ€
- *            company=â€sones GmbHâ€>
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id Name=”GraphFS – AccessControlObject” />
+ * <copyright file=”AccessControlObject.cs”
+ *            company=”sones GmbH”>
  * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Henning Rauch</developer>
@@ -46,6 +66,12 @@ namespace sones.GraphFS.InternalObjects
 
 
         #region Properties
+
+        #region Estimated Size
+
+        private UInt64 _estimatedSize = 0;
+
+        #endregion
 
         #region DefaultRule
 
@@ -183,8 +209,24 @@ namespace sones.GraphFS.InternalObjects
             _DefaultRule            = myDefaultRule;
             _NotificationHandling   = myNotificationHandling;
 
-        }
+            #region calc estimated size
 
+            #region AllowACL
+
+            _estimatedSize += CalcACLSize(myAllowACL);
+
+            #endregion
+
+            #region DenyACL
+
+            _estimatedSize += CalcACLSize(myDenyACL);
+
+            #endregion
+
+            _estimatedSize += EstimatedSizeConstants.EnumByte + EstimatedSizeConstants.EnumUInt64 + GetClassDefaultSize();
+
+            #endregion
+        }
 
         #endregion
 
@@ -253,15 +295,21 @@ namespace sones.GraphFS.InternalObjects
             {
 
                 if (_AllowACL.ContainsKey(myRightUUID))
+                {
                     _AllowACL[myRightUUID].Add(myEntityUUID);
-
+                }
                 else
                 {
                     // Create new RightKey and empty HashSet within the AllowACL
                     HashSet<EntityUUID> _HashSet = new HashSet<EntityUUID>();
                     _HashSet.Add(myEntityUUID);
                     _AllowACL.Add(myRightUUID, _HashSet);
+
+                    _estimatedSize += EstimatedSizeConstants.HashSet;
+                    _estimatedSize += EstimatedSizeConstants.CalcUUIDSize(myRightUUID);
                 }
+
+                _estimatedSize += EstimatedSizeConstants.CalcUUIDSize(myEntityUUID);
 
             }
 
@@ -292,7 +340,12 @@ namespace sones.GraphFS.InternalObjects
             {
 
                 if (_AllowACL.ContainsKey(myRightUUID))
-                    _AllowACL[myRightUUID].Remove(myEntityUUID);
+                {
+                    if (_AllowACL[myRightUUID].Remove(myEntityUUID))
+                    {
+                        _estimatedSize -= EstimatedSizeConstants.CalcUUIDSize(myEntityUUID);
+                    }
+                }
 
             }
 
@@ -332,8 +385,12 @@ namespace sones.GraphFS.InternalObjects
                     HashSet<EntityUUID> _HashSet = new HashSet<EntityUUID>();
                     _HashSet.Add(myEntityUUID);
                     _DenyACL.Add(myRightUUID, _HashSet);
+
+                    _estimatedSize += EstimatedSizeConstants.HashSet;
+                    _estimatedSize += EstimatedSizeConstants.CalcUUIDSize(myRightUUID);
                 }
 
+                _estimatedSize += EstimatedSizeConstants.CalcUUIDSize(myEntityUUID);
             }
 
             isDirty = true;
@@ -362,7 +419,12 @@ namespace sones.GraphFS.InternalObjects
             {
 
                 if (_DenyACL.ContainsKey(myRightUUID))
-                    _DenyACL[myRightUUID].Remove(myEntityUUID);
+                {
+                    if (_DenyACL[myRightUUID].Remove(myEntityUUID))
+                    {
+                        _estimatedSize -= EstimatedSizeConstants.CalcUUIDSize(myEntityUUID);
+                    }
+                }
 
             }
 
@@ -411,8 +473,7 @@ namespace sones.GraphFS.InternalObjects
 
         #endregion
 
-
-
+        #region IFastSerialize
 
         public override void Serialize(ref SerializationWriter mySerializationWriter)
         {
@@ -458,7 +519,7 @@ namespace sones.GraphFS.InternalObjects
                 #region DenyACL
 
                 // Write number of DenyACL items
-                mySerializationWriter.WriteUInt64( (UInt64) _DenyACL.Count);
+                mySerializationWriter.WriteUInt64((UInt64)_DenyACL.Count);
 
                 foreach (KeyValuePair<RightUUID, HashSet<EntityUUID>> _KeyValuePair in _DenyACL)
                 {
@@ -468,7 +529,7 @@ namespace sones.GraphFS.InternalObjects
 
                     // VALUE:
                     // Write number of HashSet elements
-                    mySerializationWriter.WriteUInt64( (UInt64) _KeyValuePair.Value.Count);
+                    mySerializationWriter.WriteUInt64((UInt64)_KeyValuePair.Value.Count);
 
                     // Write the elements itself
                     foreach (EntityUUID _HashItem in _KeyValuePair.Value)
@@ -487,7 +548,6 @@ namespace sones.GraphFS.InternalObjects
 
         }
 
-
         public override void Deserialize(ref SerializationReader mySerializationReader)
         {
 
@@ -501,6 +561,8 @@ namespace sones.GraphFS.InternalObjects
 
             #endregion
 
+            _estimatedSize = 0;
+
             try
             {
 
@@ -508,39 +570,76 @@ namespace sones.GraphFS.InternalObjects
 
                 _NotificationHandling = (NHAccessControlObject)mySerializationReader.ReadOptimizedByte();
 
+                #region Estimated size
+
+                _estimatedSize += EstimatedSizeConstants.EnumUInt64;
+
+                #endregion
+
                 #endregion
 
                 #region DefaultRule
 
                 _DefaultRule = (DefaultRuleTypes)mySerializationReader.ReadOptimizedByte();
 
+                #region Estimated size
+
+                _estimatedSize += EstimatedSizeConstants.EnumByte;
+
+                #endregion
+
                 #endregion
 
                 #region AllowACL
+
+                #region Estimated size
+
+                _estimatedSize += EstimatedSizeConstants.Dictionary;
+
+                #endregion
 
                 _AllowACL = new Dictionary<RightUUID, HashSet<EntityUUID>>();
 
                 _NumberOfACLs = mySerializationReader.ReadUInt64();
 
-                for (UInt64 i=0; i<_NumberOfACLs; i++)
+                for (UInt64 i=0; i < _NumberOfACLs; i++)
                 {
 
                     #region KEY
 
                     _RightUUID = new RightUUID(mySerializationReader.ReadByteArray());
 
+                    #region Estimated size
+
+                    _estimatedSize += EstimatedSizeConstants.CalcUUIDSize(_RightUUID);
+
+                    #endregion
+
                     #endregion
 
                     #region VALUE
+
+                    #region Estimated size
+
+                    _estimatedSize += EstimatedSizeConstants.HashSet;
+
+                    #endregion
 
                     _EntityUUIDHashSet = new HashSet<EntityUUID>();
 
                     _NumberOfEntityUUIDs = mySerializationReader.ReadUInt64();
 
-                    for (UInt64 j=0; j<_NumberOfEntityUUIDs; j++)
+                    for (UInt64 j=0; j < _NumberOfEntityUUIDs; j++)
                     {
+
                         _EntityUUID = new EntityUUID(mySerializationReader.ReadByteArray());
                         _EntityUUIDHashSet.Add(_EntityUUID);
+
+                        #region Estimated size
+
+                        _estimatedSize += EstimatedSizeConstants.CalcUUIDSize(_EntityUUID);
+
+                        #endregion
                     }
 
                     // Finally... add it to the AllowACL!
@@ -554,29 +653,53 @@ namespace sones.GraphFS.InternalObjects
 
                 #region DenyACL
 
+                #region Estimated size
+
+                _estimatedSize += EstimatedSizeConstants.Dictionary;
+
+                #endregion
+
                 _DenyACL = new Dictionary<RightUUID, HashSet<EntityUUID>>();
 
                 _NumberOfACLs = mySerializationReader.ReadUInt64();
 
-                for (UInt64 i=0; i<_NumberOfACLs; i++)
+                for (UInt64 i=0; i < _NumberOfACLs; i++)
                 {
 
                     #region KEY
 
                     _RightUUID = new RightUUID(mySerializationReader.ReadByteArray());
 
+                    #region Estimated size
+
+                    _estimatedSize += EstimatedSizeConstants.CalcUUIDSize(_RightUUID);
+
+                    #endregion
+
                     #endregion
 
                     #region VALUE
+
+                    #region Estimated size
+
+                    _estimatedSize += EstimatedSizeConstants.HashSet;
+
+                    #endregion
 
                     _EntityUUIDHashSet = new HashSet<EntityUUID>();
 
                     _NumberOfEntityUUIDs = mySerializationReader.ReadUInt64();
 
-                    for (UInt64 j=0; j<_NumberOfEntityUUIDs; j++)
+                    for (UInt64 j=0; j < _NumberOfEntityUUIDs; j++)
                     {
                         _EntityUUID = new EntityUUID(mySerializationReader.ReadByteArray());
                         _EntityUUIDHashSet.Add(_EntityUUID);
+
+                        #region Estimated size
+
+                        _estimatedSize += EstimatedSizeConstants.CalcUUIDSize(_EntityUUID);
+
+                        #endregion
                     }
 
                     // Finally... add it to the DenyACL!
@@ -587,7 +710,6 @@ namespace sones.GraphFS.InternalObjects
                 }
 
                 #endregion
-
             }
 
             catch (Exception e)
@@ -595,8 +717,50 @@ namespace sones.GraphFS.InternalObjects
                 throw new GraphFSException_AccessControlObjectCouldNotBeDeserialized("AccessControlObject could not be deserialized!\n\n" + e);
             }
 
+            #region remaining estimated size impacts
+            _estimatedSize += GetClassDefaultSize();
+
+            #endregion
+
         }
 
+        #endregion
+
+        #region IEstimable Members
+
+        public override ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private ulong GetClassDefaultSize()
+        {
+            //ClassDeffaultSize, EstimatedSize, SizeOfADBBAseObject
+            return EstimatedSizeConstants.GetStandardSizes() + GetAFSObjectOntologyEstimatedSize();
+        }
+
+        private UInt64 CalcACLSize(Dictionary<RightUUID, HashSet<EntityUUID>> myAllowACL)
+        {
+            UInt64 estimatedSize = EstimatedSizeConstants.Dictionary;
+
+            foreach (var aAllowElement in myAllowACL)
+            {
+                //key
+                estimatedSize += EstimatedSizeConstants.CalcUUIDSize(aAllowElement.Key);
+
+                //value
+                estimatedSize += EstimatedSizeConstants.HashSet;
+
+                foreach (var aHashSetElemt in aAllowElement.Value)
+                {
+                    estimatedSize += EstimatedSizeConstants.CalcUUIDSize(aHashSetElemt);
+                }
+            }
+
+            return estimatedSize;
+        }
+
+        #endregion
 
     }
 

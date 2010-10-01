@@ -1,4 +1,24 @@
-﻿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * XML_IO_Extensions
  * Achim 'ahzf' Friedland, 2009 - 2010
  */
@@ -316,41 +336,28 @@ namespace sones.GraphIO.XML
                 ));
 
             // results ------------------------------
-            _Query.Add(new XElement("results", GetXMLFromResult(myQueryResult.Vertices)));
-            
+            if (myQueryResult.Vertices != null)
+                _Query.Add(new XElement("results",
+                    from _Vertex in myQueryResult.Vertices select _Vertex.ToXML()));
+
             return _Query;
 
         }
 
         #endregion
 
-        private static IEnumerable<XElement> GetXMLFromResult(IEnumerable<Vertex> myVertices)
+        #region ToXML(this myIVertex)
+
+        public static XElement ToXML(this IVertex myIVertex)
         {
-
-            if (myVertices != null)
-            {
-                foreach (var _XElement in from _Vertex in myVertices select _Vertex.ToXML())
-                {
-                    yield return _XElement;
-                }
-            }
-
-            yield break;
-
-        }
-
-        #region ToXML(this myVertex)
-
-        public static XElement ToXML(this Vertex myVertex)
-        {
-            return myVertex.ToXML(false);
+            return myIVertex.ToXML(false);
         }
 
         #endregion
 
-        #region (private) ToXML(this myVertex, myRecursion)
+        #region (private) ToXML(this myIVertex, myRecursion)
 
-        private static XElement ToXML(this Vertex myVertex, Boolean myRecursion)
+        private static XElement ToXML(this IVertex myIVertex, Boolean myRecursion)
         {
 
             Type _AttributeType       = null;
@@ -359,13 +366,13 @@ namespace sones.GraphIO.XML
 
             VertexGroup             _VertexGroup           = null;
             Vertex_WeightedEdges    _WeightedDBObject      = null;
-            IEnumerable<Vertex>     _Vertices              = null;
+            IEdge                   _IEdge                  = null;
             IEnumerable<Object>     _AttributeValueList    = null;
             IGetName                _IGetName              = null;
 
             #region VertexHavingWeightedEdges
 
-            var _WeightedDBObject1 = myVertex as Vertex_WeightedEdges;
+            var _WeightedDBObject1 = myIVertex as Vertex_WeightedEdges;
 
             if (_WeightedDBObject1 != null)
             {
@@ -376,7 +383,7 @@ namespace sones.GraphIO.XML
 
             #region VertexGroup
 
-            var _GroupedDBObject1 = myVertex as VertexGroup;
+            var _GroupedDBObject1 = myIVertex as VertexGroup;
 
             if (_GroupedDBObject1 != null)
             {
@@ -395,7 +402,7 @@ namespace sones.GraphIO.XML
 
             #endregion
 
-            foreach (var _Attribute in myVertex)
+            foreach (var _Attribute in myIVertex.Attributes())
             {
 
                 if (_Attribute.Value != null)
@@ -434,25 +441,21 @@ namespace sones.GraphIO.XML
 
                     #endregion
 
-                    #region IEnumerable<Vertex>
+                    #region IEdge
 
-                    _Vertices = _Attribute.Value as IEnumerable<Vertex>;
-
-                    if (_Vertices != null && _Vertices.Count() > 0)
+                    _IEdge = _Attribute.Value as IEdge;
+                    if (_IEdge != null)
                     {
-
-                        var _EdgeInfo = (_Attribute.Value as Edge);
-                        var _EdgeType = (_EdgeInfo != null) ? _EdgeInfo.EdgeTypeName : "";
 
                         var _ListAttribute = new XElement("edge",
                             new XAttribute("name", _Attribute.Key.EscapeForXMLandHTML()),
-                            new XAttribute("type", _EdgeType));
+                            new XAttribute("type", _IEdge.EdgeTypeName));
 
                         // An edgelabel for all edges together...
                         _ListAttribute.Add(new XElement("hyperedgelabel"));
 
-                        foreach (var _DBObjectReadout in _Vertices)
-                            _ListAttribute.Add(_DBObjectReadout.ToXML());
+                        foreach (var _Vertex in _IEdge.TargetVertices)
+                            _ListAttribute.Add(_Vertex.ToXML());
 
                         __Vertex.Add(_ListAttribute);
                         continue;

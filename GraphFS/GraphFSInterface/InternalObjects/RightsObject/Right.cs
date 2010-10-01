@@ -1,4 +1,24 @@
-﻿/* GraphFS - Right
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* GraphFS - Right
  * (c) Henning Rauch, 2009
  *     Achim Friedland, 2009
  *  
@@ -20,6 +40,7 @@ using System.Runtime.Serialization;
 
 using sones.Lib.NewFastSerializer;
 using sones.GraphFS.Exceptions;
+using sones.Lib;
 
 #endregion
 
@@ -31,7 +52,7 @@ namespace sones.GraphFS.InternalObjects
     /// </summary>
     
     [AllowNonEmptyConstructor]
-    public class Right : IFastSerialize, IComparable, IComparable<Right>, IFastSerializationTypeSurrogate
+    public class Right : IFastSerialize, IComparable, IComparable<Right>, IFastSerializationTypeSurrogate, IEstimable
     {
 
 
@@ -599,6 +620,14 @@ namespace sones.GraphFS.InternalObjects
 
         #endregion
 
+        #region Iestimable
+
+        public ulong GetEstimatedSize()
+        {
+            return EstimatedSizeConstants.UndefinedObjectSize;
+        }
+
+        #endregion
     }
 
 }

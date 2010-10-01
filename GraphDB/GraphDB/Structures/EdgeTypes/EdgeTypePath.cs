@@ -1,4 +1,24 @@
-﻿/* <id name="EdgeTypePath" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="EdgeTypePath" />
  * <copyright file="AListReferenceEdgeType.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -128,21 +148,22 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
                 var res = resolvePath(myVertexPath, myPathEntries.Skip(1), myGetAllAttributesFromVertex);
 
-                if (_Vertex.ObsoleteAttributes.ContainsKey(_pathAttribute.Name))
+                if (_Vertex.HasAttribute(_pathAttribute.Name))
                 {
-                    var listOfVertices = _Vertex.ObsoleteAttributes[_pathAttribute.Name] as List<Vertex>;
+
+                    var listOfVertices = _Vertex.ObsoleteAttributes[_pathAttribute.Name] as List<IVertex>;
+                    
                     if (listOfVertices == null)
                     {
-                        _Vertex.ObsoleteAttributes[_pathAttribute.Name] = new Edge(null, new List<Vertex>() { res }, _typeOfObjects.Name);
+                        _Vertex.ObsoleteAttributes[_pathAttribute.Name] = new Edge(null, new List<IVertex>() { res }) { EdgeTypeName = _typeOfObjects.Name };
                     }
+                    
                     else
                     {
-                        //((List<DBObjectReadout>)(dbReadout.Attributes[_pathAttribute.Name] as Edge)).Add(res);
-
-                        var newContent = new List<Vertex>(_Vertex.ObsoleteAttributes[_pathAttribute.Name] as Edge);
+                        var newContent = new List<IVertex>(_Vertex.GetNeighbors(_pathAttribute.Name));
                         newContent.Add(res);
 
-                        _Vertex.ObsoleteAttributes[_pathAttribute.Name] = new Edge(null, new List<Vertex>(newContent), _typeOfObjects.Name);
+                        _Vertex.ObsoleteAttributes[_pathAttribute.Name] = new Edge(null, new List<IVertex>(newContent)) { EdgeTypeName = _typeOfObjects.Name };
                     }
 
                 }
@@ -150,7 +171,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
                 else
                 {
 
-                    _Vertex.ObsoleteAttributes.Add(_pathAttribute.Name, new Edge(null, new List<Vertex>() { res }, _typeOfObjects.Name));
+                    _Vertex.ObsoleteAttributes.Add(_pathAttribute.Name, new Edge(null, new List<IVertex>() { res }) { EdgeTypeName = _typeOfObjects.Name});
                 }
 
             }
@@ -311,6 +332,15 @@ namespace sones.GraphDB.Structures.EdgeTypes
         public override int CompareTo(object obj)
         {
             throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region IObject
+
+        public override ulong GetEstimatedSize()
+        {
+            return 1;
         }
 
         #endregion

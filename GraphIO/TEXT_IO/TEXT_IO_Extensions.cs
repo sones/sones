@@ -1,4 +1,24 @@
-﻿/* 
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* 
  * TEXT_IO_Extensions
  * Achim 'ahzf' Friedland, 2009-2010
  */
@@ -90,30 +110,30 @@ namespace sones.GraphIO.TEXT
         #endregion
 
 
-        #region ToTEXT(myVertex, myRecursion)
+        #region ToTEXT(myIVertex, myRecursion)
 
-        public static Object ToTEXT(this Vertex myVertex)
+        public static Object ToTEXT(this IVertex myIVertex)
         {
-            return ToTEXT(myVertex, new StringBuilder(), 0);
+            return ToTEXT(myIVertex, new StringBuilder(), 0);
         }
 
         #endregion
 
-        #region (private) ToTEXT(myDBObjectReadout, myStringBuilder, myIndendLevel = 0)
+        #region (private) ToTEXT(myVertex, myStringBuilder, myIndendLevel = 0)
 
-        private static object ToTEXT(this Vertex myVertex, StringBuilder myStringBuilder, Int32 myIndent = 0)
+        private static object ToTEXT(this IVertex myIVertex, StringBuilder myStringBuilder, Int32 myIndent = 0)
         {
 
-            var _Type = myVertex.TYPE;
-            var _UUID = myVertex.UUID;
+            var _Type = myIVertex.TYPE;
+            var _UUID = myIVertex.UUID;
 
-            IEnumerable<Vertex> _Vertices           = null;
+            IEdge               _IEdge              = null;
             IEnumerable<Object> _AttributeValueList = null;
 
 
             #region Vertex_WeightedEdges
 
-            var _WeightedDBObject1 = myVertex as Vertex_WeightedEdges;
+            var _WeightedDBObject1 = myIVertex as Vertex_WeightedEdges;
 
             if (_WeightedDBObject1 != null)
             {
@@ -128,14 +148,13 @@ namespace sones.GraphIO.TEXT
 
             #endregion
 
-            foreach (var _Attribute in myVertex)
+            foreach (var _Attribute in myIVertex.Attributes())
             {
 
-                switch (_Attribute.Key)
+                switch (_Attribute.Key.ToUpper())
                 {
 
                     case "TYPE":
-                    case "Type":
 
                         var _ThisTypeObject = _Attribute.Value as GraphDBType;
 
@@ -160,23 +179,19 @@ namespace sones.GraphIO.TEXT
 
                             myStringBuilder.Append(_Attribute.Key.ToString() + ": ");
 
-                            #region IEnumerable<Vertex>
+                            #region IEdge
 
-                            _Vertices = _Attribute.Value as IEnumerable<Vertex>;
-
-                            if (_Vertices != null && _Vertices.Count() > 0)
+                            _IEdge = _Attribute.Value as IEdge;
+                            if (_IEdge != null)
                             {
-
-                                var _EdgeInfo = (_Attribute.Value as Edge);
-                                var _EdgeType = (_EdgeInfo != null) ? _EdgeInfo.EdgeTypeName : "";
 
                                 myStringBuilder.AppendLine();
 
                                 // An edgelabel for all edges together...
                                 //_ListAttribute.Add(new XElement("hyperedgelabel"));
 
-                                foreach (var _DBObjectReadout in _Vertices)
-                                    _DBObjectReadout.ToTEXT(myStringBuilder, myIndent++);
+                                foreach (var _Vertex in _IEdge.TargetVertices)
+                                    _Vertex.ToTEXT(myStringBuilder, myIndent++);
 
                                 continue;
 

@@ -1,4 +1,24 @@
-﻿/*
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/*
  * IGraphDBInterface
  * (c) Achim Friedland, 2008 - 2010
  */
@@ -72,10 +92,10 @@ namespace sones.GraphDB
         /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
         /// <returns></returns>
         T TraversePath<T>(          SessionToken                             mySessionToken,
-                                    Vertex                                 myStartVertex,
+                                    IVertex                                  myStartVertex,
                                     TraversalOperation                       TraversalOperation  = TraversalOperation.BreathFirst,
-                                    Func<DBPath, EdgeLabel, Boolean> myFollowThisEdge = null,
-                                    Func<DBPath, EdgeLabel, Vertex, Boolean> myFollowThisPath = null,
+                                    Func<DBPath, IEdge, Boolean>             myFollowThisEdge    = null,
+                                    Func<DBPath, IEdge, IVertex, Boolean>    myFollowThisPath    = null,
                                     Func<DBPath, Boolean>                    myMatchEvaluator    = null,
                                     Action<DBPath>                           myMatchAction       = null,
                                     Func<TraversalState, Boolean>            myStopEvaluator     = null,
@@ -94,14 +114,14 @@ namespace sones.GraphDB
         /// <param name="myStopEvaluator">Will stop the traversal on a condition</param>
         /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
         /// <returns></returns>
-        T TraverseVertex<T>(        SessionToken                            mySessionToken,
-                                    Vertex                                myStartVertex,
-                                    TraversalOperation                      TraversalOperation  = TraversalOperation.BreathFirst,
-                                    Func<Vertex, EdgeLabel, Boolean> myFollowThisEdge = null,
-                                    Func<Vertex, Boolean>                 myMatchEvaluator    = null,
-                                    Action<Vertex>                        myMatchAction       = null,
-                                    Func<TraversalState, Boolean>           myStopEvaluator     = null,
-                                    Func<IEnumerable<Vertex>, T>          myWhenFinished      = null);
+        T TraverseVertex<T>(        SessionToken                           mySessionToken,
+                                    IVertex                                myStartVertex,
+                                    TraversalOperation                     TraversalOperation  = TraversalOperation.BreathFirst,
+                                    Func<IVertex, IEdge, Boolean> myFollowThisEdge = null,
+                                    Func<IVertex, Boolean>                 myMatchEvaluator    = null,
+                                    Action<IVertex>                        myMatchAction       = null,
+                                    Func<TraversalState, Boolean>          myStopEvaluator     = null,
+                                    Func<IEnumerable<IVertex>, T>          myWhenFinished      = null);
 
         #endregion
     }

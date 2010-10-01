@@ -1,4 +1,24 @@
-﻿using System;
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+using System;
 using System.Collections.Generic;
 
 using sones.GraphDB;
@@ -101,11 +121,19 @@ namespace GraphDBAPI
         /// <returns></returns>
         public BulkInsertDBO Insert(ObjectUUID myObjectUUID)
         {
+            var dbContext = (DBContext)_DBTransaction.GetDBContext();
 
-            var DBObjectStream = new DBObjectStream(myObjectUUID, _Type, new Dictionary<AttributeUUID, IObject>());
-            DBObjectStream.ObjectLocation = new ObjectLocation(DBObjectStream.ObjectLocation.Path, DBObjectStream.ObjectUUID.ToString());
+            if (myObjectUUID == null)
+            {
+                myObjectUUID = ObjectUUID.NewUUID;
+            }
 
-            return new BulkInsertDBO((DBContext)_DBTransaction.GetDBContext(), _Type, DBObjectStream, this);
+            var DBObjectStream = new DBObjectStream(myObjectUUID, 
+                                                    _Type, 
+                                                    new Dictionary<AttributeUUID, IObject>(),
+                                                    new ObjectLocation(_Type.ObjectLocation, DBConstants.DBObjectsLocation, dbContext.DBObjectManager.GetDBObjectStreamShard(_Type, myObjectUUID), myObjectUUID.ToString()));
+
+            return new BulkInsertDBO(dbContext, _Type, DBObjectStream, this);
 
         }
 

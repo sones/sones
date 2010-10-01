@@ -1,4 +1,24 @@
-﻿/* <id name="GraphDB – Main Database Code" />
+/*
+* sones GraphDB - Open Source Edition - http://www.sones.com
+* Copyright (C) 2007-2010 sones GmbH
+*
+* This file is part of sones GraphDB Open Source Edition (OSE).
+*
+* sones GraphDB OSE is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, version 3 of the License.
+* 
+* sones GraphDB OSE is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
+* 
+*/
+
+/* <id name="GraphDB � Main Database Code" />
  * <copyright file="GraphDatabase.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -848,18 +868,22 @@ namespace sones.GraphDB
                 ObjectManipulationManager _ObjectManipulationManager = new ObjectManipulationManager();
 
                 var graphDBType = dbInnerContext.DBTypeManager.GetTypeByName(myTypeName);
+                
                 if (graphDBType == null)
                 {
                     return new QueryResult(new Error_TypeDoesNotExist(myTypeName));
                 }
 
-                var attrsResult = _ObjectManipulationManager.EvaluateAttributes(dbInnerContext, graphDBType, myAttributeAssignList);
-                if (!attrsResult.Success())
+                var evalResult = _ObjectManipulationManager.EvaluateAttributes(dbInnerContext, graphDBType, myAttributeAssignList);
+                
+                if (evalResult.Failed())
                 {
-                    return new QueryResult(attrsResult);
+                    return new QueryResult(evalResult);
                 }
 
-                var result = _ObjectManipulationManager.Insert(dbInnerContext, graphDBType, attrsResult.Value);
+                var result = _ObjectManipulationManager.Insert(dbInnerContext, graphDBType, evalResult.Value);
+                
+                result.PushIExceptional(evalResult);
 
                 #region Commit transaction and add all Warnings and Errors
 
@@ -1364,10 +1388,10 @@ namespace sones.GraphDB
         /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
         /// <returns></returns>
         public T TraversePath<T>(SessionToken mySessionToken,
-                                    Vertex myStartVertex,
+                                    IVertex myStartVertex,
                                     TraversalOperation TraversalOperation = TraversalOperation.BreathFirst,
-                                    Func<DBPath, EdgeLabel, Boolean> myFollowThisEdge = null,
-                                    Func<DBPath, EdgeLabel, Vertex, Boolean> myFollowThisPath = null,
+                                    Func<DBPath, IEdge, Boolean> myFollowThisEdge = null,
+                                    Func<DBPath, IEdge, IVertex, Boolean> myFollowThisPath = null,
                                     Func<DBPath, Boolean> myMatchEvaluator = null,
                                     Action<DBPath> myMatchAction = null,
                                     Func<TraversalState, Boolean> myStopEvaluator = null,
@@ -1394,13 +1418,13 @@ namespace sones.GraphDB
         /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
         /// <returns></returns>
         public T TraverseVertex<T>(SessionToken mySessionToken,
-                                    Vertex myStartVertex,
+                                    IVertex myStartVertex,
                                     TraversalOperation TraversalOperation = TraversalOperation.BreathFirst,
-                                    Func<Vertex, EdgeLabel, Boolean> myFollowThisEdge = null,
-                                    Func<Vertex, Boolean> myMatchEvaluator = null,
-                                    Action<Vertex> myMatchAction = null,
+                                    Func<IVertex, IEdge, Boolean> myFollowThisEdge = null,
+                                    Func<IVertex, Boolean> myMatchEvaluator = null,
+                                    Action<IVertex> myMatchAction = null,
                                     Func<TraversalState, Boolean> myStopEvaluator = null,
-                                    Func<IEnumerable<Vertex>, T> myWhenFinished = null)
+                                    Func<IEnumerable<IVertex>, T> myWhenFinished = null)
         {
             TraversalState myTraversalState = new TraversalState(myStartVertex);
 
@@ -1490,14 +1514,14 @@ namespace sones.GraphDB
         /// <param name="stopEvaluator">Will stop the traversal on a condition</param>
         /// <param name="traversalState">The traversal state</param>
         /// <returns>An IEnumerable of DBVertex</returns>
-        private IEnumerable<Vertex> TraverseVertex_private(     SessionToken                        sessionToken,
-                                                                Vertex                              currentVertex,
-                                                                EdgeLabel                           viaEdge,
+        private IEnumerable<IVertex> TraverseVertex_private(     SessionToken                        sessionToken,
+                                                                IVertex                             currentVertex,
+                                                                IEdge                               viaEdge,
                                                                 TraversalOperation                  traversalOperation,
                                                                 Boolean                             myAvoidCircles,
-                                                                Func<Vertex, EdgeLabel, bool>       followThisEdge,
-                                                                Func<Vertex, bool>                  matchEvaluator,
-                                                                Action<Vertex>                      matchAction,
+                                                                Func<IVertex, IEdge, bool>          followThisEdge,
+                                                                Func<IVertex, bool>                 matchEvaluator,
+                                                                Action<IVertex>                     matchAction,
                                                                 Func<TraversalState, bool>          stopEvaluator,
                                                                 TraversalState                      traversalState)
         {
@@ -1592,7 +1616,7 @@ namespace sones.GraphDB
 
                     #region DepthFirst
 
-                    foreach (var aEdge in currentVertex.GetEdgeInfo())
+                    foreach (var _IEdge in currentVertex.GetEdges())
                     {
 
                         #region try to traverse via aEdge
@@ -1603,7 +1627,7 @@ namespace sones.GraphDB
                             #region check traversal state
                             //check the traversal state for circles... if there is one, break!
 
-                            if (traversalState.AlreadyVisitedVertexViaEdge(aEdge))
+                            if (traversalState.AlreadyVisitedVertexViaEdge(_IEdge))
                             {
                                 continue;
                             }
@@ -1617,7 +1641,7 @@ namespace sones.GraphDB
                             #region check edge
                             //check if the edge should be followed... if not, break!
 
-                            if (!followThisEdge(currentVertex, aEdge))
+                            if (!followThisEdge(currentVertex, _IEdge))
                             {
                                 continue;
                             }
@@ -1626,7 +1650,7 @@ namespace sones.GraphDB
                         }
 
                         //move recursive in depth
-                        foreach (var aMatchingVertex in TraverseVertex_private(sessionToken, aEdge.TargetVertex, aEdge, traversalOperation, myAvoidCircles, followThisEdge, matchEvaluator, matchAction, stopEvaluator, traversalState))
+                        foreach (var aMatchingVertex in TraverseVertex_private(sessionToken, _IEdge.TargetVertex, _IEdge, traversalOperation, myAvoidCircles, followThisEdge, matchEvaluator, matchAction, stopEvaluator, traversalState))
                         {
                             yield return aMatchingVertex;
                         }
@@ -1732,6 +1756,7 @@ namespace sones.GraphDB
         #endregion
 
         #endregion
+    
     }
 
 }
