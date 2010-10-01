@@ -1,0 +1,177 @@
+<html>
+	<head>
+
+        <title>sones VisualGraph</title>
+
+        <meta name="description" content="sones VisualGraph is a tool to visualize the results of a graph query" />
+        <meta name="keywords"    content="sones, graphdb, visualgraph, protovis" />
+        <meta name="author"      content="Achim Friedland <achim@sones.de>" />
+
+		<script type="text/javascript" src="/resources/libs/jQuery/jquery-1.4.2.min.js"></script>
+		<script type="text/javascript" src="/resources/libs/protovis-r3.2.js"></script>
+
+		<style type="text/css">
+			body {
+				margin: 0;
+			}
+		</style>
+
+	</head>
+
+	<body id="body">
+
+        <script type="text/javascript+protovis">
+
+            function escapeArrowBrackets(text) {
+              text = text.replace(/</g, "&lt;");
+              text = text.replace(/>/g, "&gt;");
+              return text;
+            }
+
+			var gexf4js           = {};
+				gexf4js.type      = 'graph'; // default to graph
+				gexf4js.nodes     = [];
+				gexf4js.links     = [];
+				gexf4js.nodeIdMap = [];
+
+
+			function getGEXF(gexfUrl) {
+
+				$.ajax({
+                    beforeSend: function(xhrObj) {
+                        xhrObj.setRequestHeader("Accept", "application/gexf");
+                    },
+					type:       "GET",
+					url:        "/gql?" + gexfUrl,
+					success:    xmlParser,
+                    error:function (xhr, ajaxOptions, thrownError) {
+                        alert("Error " + xhr.status + "\n" + data.responseText + "\n" + thrownError);
+                    }
+				});
+
+			}
+
+
+			function xmlParser(xml) {
+
+                document.getElementById("output").innerHTML = "<pre>" + escapeArrowBrackets(xml) + "</pre>";
+
+			    gexf4js.nodes = [];
+			    gexf4js.links = [];
+			    gexf4js.nodeIdMap = [];
+
+                // Process Nodes
+				$(xml).find('node').each(
+                    function() {
+	  				    var id    = $(this).attr('id');
+                        var _type = $(this).attr('type');
+					    var label = $(this).attr('label');
+					    gexf4js.nodeIdMap[id] = gexf4js.nodes.length;
+					    gexf4js.nodes.push({
+                            uuid: id,
+                            type: _type,
+						    nodeName: label,
+						    group: 1
+					    });
+				    });
+
+                // Process Edges
+				$(xml).find('edge').each(function() {
+					var s = $(this).attr('source');
+					var t = $(this).attr('target');
+					s = gexf4js.nodeIdMap[s];
+					t = gexf4js.nodeIdMap[t];
+					gexf4js.links.push({
+						source: s,
+						target: t,
+						value: 1
+					});
+				});
+
+                drawGraph(vizType);
+
+			}
+
+
+            // Graph Visualization
+			function drawGraph() {
+
+				var force = null;
+                
+                if (vizType == "Arc")
+                {
+                    force = vis.add(pv.Layout.Arc)
+					    .nodes(gexf4js.nodes)
+					    .links(gexf4js.links);
+                }
+                else
+                {
+                    force = vis.add(pv.Layout.Force)
+					    .nodes(gexf4js.nodes)
+					    .links(gexf4js.links);
+                }
+
+
+				force.link.add(pv.Line);
+
+                force.node.add(pv.Dot)
+                    .size(function(d) (16*d.linkDegree + 42) * Math.pow(this.scale, -1.5))
+                    .fillStyle(pv.Colors.category20().by(function(d) d.type))
+                    .strokeStyle(function() this.fillStyle().darker())
+                    .lineWidth(1)
+                    .title(function(d) d.nodeName)
+                    .event("mousedown", pv.Behavior.drag())
+                    .event("drag", force)
+                    .anchor("right").add(pv.Label).textStyle("black").text(function(d) d.nodeName);
+<!--                     .fillStyle(function(d) d.fix ? "brown" : colors(d.group)) -->
+
+				vis.render();
+
+			}
+
+            function getQueryString() {
+			    
+                var assoc       = new Array();
+			    var queryString = unescape(location.search.substring(1));
+			    var keyValues   = queryString.split('&');
+			    
+                for (var i in keyValues) {
+			        var key = keyValues[i].split('=');
+			        assoc[key[0]] = key[1];
+			    }
+
+			    return assoc;
+
+			}
+
+			var qsArray = getQueryString(),
+				gexfUrl = qsArray['url'],
+				vizType = qsArray['vizType'] != null ? qsArray['vizType'] : 'Arc';
+
+            var w      = document.body.clientWidth;
+			var h      = document.body.clientHeight;
+			var colors = pv.Colors.category19();
+
+			var vis = new pv.Panel()
+					.width(w)
+					.height(h)
+					.fillStyle("white")
+                    .strokeStyle("black")
+					.event("mousedown",  pv.Behavior.pan())
+					.event("mousewheel", pv.Behavior.zoom())
+
+            // Initial draw!
+            getGEXF(gexfUrl);
+
+          </script>
+
+        <div id="output">
+         ...<br />
+         &nbsp;<br />
+         &nbsp;<br />
+        </div>
+
+
+	</body>
+
+</html>
