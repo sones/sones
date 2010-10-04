@@ -39,6 +39,8 @@ follow the instructions for your operating system ( http://developers.sones.de/w
 
 In short you'll have to do this:
 
+git clone git://github.com/mono/mono.git
+
 after having done that you can use this command:
 
 ./autogen.sh --with-large-heap=yes --with-profile4=yes --prefix=/opt/mono
