@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* 
+﻿/* 
  * UndefinedAttributesStream
  * (c) Dirk Bludau, 2010
  *     Achim Friedland, 2010
@@ -45,7 +25,7 @@ namespace sones.GraphDB.ObjectManagement
     /// <summary>
     /// Contains undefined attributes of an particular DBObject.
     /// </summary>
-    public class UndefinedAttributesStream : AIndexObject<String, IObject>// ADictionaryObject<String, IObject>
+    public class UndefinedAttributesStream : ADictionaryObject<String, IObject>
     {
 
 
@@ -105,7 +85,7 @@ namespace sones.GraphDB.ObjectManagement
         /// <param name="myValue">the value for the attribute</param>
         public void AddAttribute(String myName, IObject myValue)
         {
-            Set(myName, myValue, IndexSetStrategy.REPLACE);
+            base.Set(myName, myValue);
             isDirty = true;
         }
         
@@ -134,7 +114,7 @@ namespace sones.GraphDB.ObjectManagement
         /// <returns></returns>
         public IDictionary<String, IObject> GetAllAttributes()
         {
-            return base.GetIDictionary().ToDictionary(k => k.Key, v => v.Value.First());
+            return base.GetIDictionary().ToDictionary(k => k.Key, v => v.Value);
         }
 
 
@@ -150,7 +130,7 @@ namespace sones.GraphDB.ObjectManagement
             {
                 
                 if (ContainsAttribute(myName))
-                    return base[myName].First();
+                    return base[myName];
                 
                 return null;
 
@@ -189,7 +169,17 @@ namespace sones.GraphDB.ObjectManagement
 
         public override ulong GetEstimatedSize()
         {
-            return EstimatedSizeConstants.UndefinedObjectSize;
+            return _estimatedSize;
+        }
+
+        public override ulong GetEstimatedSizeOfKey(string myTKey)
+        {
+            return EstimatedSizeConstants.CalcStringSize(myTKey);
+        }
+
+        public override ulong GetEstimatedSizeOfValue(IObject myTValue)
+        {
+            return myTValue.GetEstimatedSize();
         }
 
         #endregion

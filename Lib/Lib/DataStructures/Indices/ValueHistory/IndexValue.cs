@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * IndexValue
  * (c) Achim Friedland, 2009 - 2010
  */
@@ -37,13 +17,16 @@ namespace sones.Lib.DataStructures.Indices
     /// to be used within index datastructures
     /// </summary>
     /// <typeparam name="TValue">The type of the stored value</typeparam>
-    public class IndexValue<TValue>
+    public class IndexValue<TValue> : IEstimable
+        where TValue : IEstimable
     {
 
         #region Properties
 
         public  TValue    Value             { get; set; }
         public  Byte[]    SerializedValue   { get; set; }
+
+        private UInt64    _estimatedSize = 0;
 
         #endregion
 
@@ -58,6 +41,17 @@ namespace sones.Lib.DataStructures.Indices
         {
             Value               = default(TValue);
             SerializedValue     = null;
+
+            #region estimatedSize
+
+            _estimatedSize = GetBaseSize();
+
+            if (Value != null)
+            {
+                _estimatedSize += Value.GetEstimatedSize();
+            }
+
+            #endregion
         }
 
         #endregion
@@ -72,6 +66,17 @@ namespace sones.Lib.DataStructures.Indices
         {
             Value               = myValue;
             SerializedValue     = null;
+
+            #region estimatedSize
+
+            _estimatedSize = GetBaseSize();
+
+            if (myValue != null)
+            {
+                _estimatedSize += Value.GetEstimatedSize();
+            }
+
+            #endregion
         }
 
         #endregion
@@ -88,6 +93,22 @@ namespace sones.Lib.DataStructures.Indices
         {
             Value               = myValue;
             SerializedValue     = mySerializedValue;
+
+            #region estimatedSize
+
+            _estimatedSize =  GetBaseSize();
+
+            if (myValue != null)
+            {
+                _estimatedSize += Value.GetEstimatedSize();
+            }
+
+            if (mySerializedValue != null)
+            {
+                _estimatedSize += mySerializedValue.ULongLength() * EstimatedSizeConstants.Byte;
+            }
+
+            #endregion
         }
 
         #endregion
@@ -131,6 +152,20 @@ namespace sones.Lib.DataStructures.Indices
 
         #endregion
 
+
+        #region IEstimable members
+
+        public ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private ulong GetBaseSize()
+        {
+            return EstimatedSizeConstants.ClassDefaultSize + EstimatedSizeConstants.UInt64;
+        }
+
+        #endregion
     }
 
 }

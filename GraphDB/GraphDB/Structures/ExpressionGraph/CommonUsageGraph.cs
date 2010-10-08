@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB ñ Graph" />
+Ôªø/* <id name="GraphDB ‚Äì Graph" />
  * <copyright file="CommonUsageGraph.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -76,7 +56,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
         private Dictionary<int, IExpressionLevel> _Levels;
 
         ///// <summary>
-        ///// Es wird ein BackwardEdge level aufgelˆst (U.Friends.Friends.Friends.Name = >lˆst nur ...[BE]Friends.Name auf - aber nicht bis U
+        ///// Es wird ein BackwardEdge level aufgel√∂st (U.Friends.Friends.Friends.Name = >l√∂st nur ...[BE]Friends.Name auf - aber nicht bis U
         ///// Es wird validiert! Aber nicht im graphen gespeichert.
         ///// </summary>
         //private int _defaultBackwardResolution = 0;

@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * IndexValueHistory
  * (c) Achim Friedland, 2009 - 2010
  */
@@ -39,7 +19,8 @@ namespace sones.Lib.DataStructures.Indices
     /// to be used within index datastructures
     /// </summary>
     /// <typeparam name="TValue">The type of the stored value</typeparam>
-    public class IndexValueHistory<TValue>
+    public class IndexValueHistory<TValue> : IEstimable
+        where TValue : IEstimable
     {
 
         #region Properties
@@ -47,6 +28,8 @@ namespace sones.Lib.DataStructures.Indices
         public  UInt64            Timestamp   { get; set; }
         public  HashSet<TValue>   AddSet      { get; set; }
         public  HashSet<TValue>   RemSet      { get; set; }
+
+        private UInt64            _estimatedSize = 0;
 
         #endregion
 
@@ -63,6 +46,9 @@ namespace sones.Lib.DataStructures.Indices
             Timestamp           = default(Int64);
             AddSet              = new HashSet<TValue>();
             RemSet              = new HashSet<TValue>();
+
+            //ClassDefaultSize + EstimatedSize + TimeStamp + AddSet + RemoveSet
+            _estimatedSize = GetBaseSize();
         }
 
         #endregion
@@ -86,19 +72,65 @@ namespace sones.Lib.DataStructures.Indices
         /// </summary>
         public IndexValueHistory(UInt64 myTimestamp, IEnumerable<TValue> myAddSet, IEnumerable<TValue> myRemSet)
         {
+            #region estimated size
+
+            _estimatedSize = GetBaseSize();
+
+            #endregion
 
             Timestamp = myTimestamp;
 
-            if (myAddSet == null)
+            #region AddSet
+
+            if (AddSet == null)
+            {
                 AddSet = new HashSet<TValue>();
-            else
-                AddSet = new HashSet<TValue>(myAddSet);
+            }
 
-            if (myRemSet == null)
+            if (myAddSet != null)
+            {
+                foreach (var aAddElement in myAddSet)
+                {
+                    AddSet.Add(aAddElement);
+
+                    #region estimated size
+
+                    if (aAddElement != null)
+                    {
+                        _estimatedSize += aAddElement.GetEstimatedSize();
+                    }
+
+                    #endregion
+                }
+            }
+
+            #endregion
+
+            #region RemSet
+
+            if (RemSet == null)
+            {
                 RemSet = new HashSet<TValue>();
-            else
-                RemSet = new HashSet<TValue>(myRemSet);
+            }
 
+            if (myRemSet != null)
+            {
+                foreach (var aRemElement in myRemSet)
+                {
+                    RemSet.Add(aRemElement);
+
+                    #region estimated size
+
+                    if (aRemElement != null)
+                    {
+                        _estimatedSize += aRemElement.GetEstimatedSize();
+                    }
+
+                    #endregion
+                }
+            }
+
+            #endregion
         }
 
         #endregion
@@ -115,6 +147,19 @@ namespace sones.Lib.DataStructures.Indices
 
         #endregion
 
+        #region IEstimable members
+
+        public ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private ulong GetBaseSize()
+        {
+            return EstimatedSizeConstants.ClassDefaultSize + EstimatedSizeConstants.UInt64 + EstimatedSizeConstants.UInt64 + EstimatedSizeConstants.HashSet + EstimatedSizeConstants.HashSet;
+        }
+
+        #endregion
     }
 
 }

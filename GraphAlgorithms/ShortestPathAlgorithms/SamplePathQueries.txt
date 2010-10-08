@@ -1,4 +1,4 @@
-﻿definition
+definition
 
 dbquery 'FROM %type% SELECT path(%type%.%edge%, %type%.%attribute% = %value%, %maximum Depth%, %maximum path length%, %only shortest%, %find all%) where %type%.%attribute% = %value%'
 

@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* Lib - Estimated size constants in bytes
+﻿/* Lib - Estimated size constants in bytes
  * (c) sones Team, 2009
  * 
  * 
@@ -52,6 +32,33 @@ namespace sones.Lib
         /// </summary>
         public const UInt64 UndefinedObjectSize                     = 1000;
 
+#if __MonoCS__
+        public const UInt64 TypeAttribute                           = 2500;
+        public const UInt64 UInt64                                  = 80;
+        public const UInt64 UInt32                                  = 40;
+        public const UInt64 Char                                    = 20;
+        public const UInt64 DateTime                                = 80;
+        public const UInt64 Boolean                                 = 10;
+        public const UInt64 Int32                                   = 40;
+        public const UInt64 WeakReference                           = 320;
+        public const UInt64 EnumByte                                = 10;
+        public const UInt64 EnumUInt64                              = 80;
+        public const UInt64 SortedDictionary                        = 1200;
+        public const UInt64 Dictionary                              = 880;
+        public const UInt64 List                                    = 400;
+        public const UInt64 KeyValuePair                            = 240;
+        public const UInt64 Tuple                                   = 320;
+        public const UInt64 HashSet                                 = 640;
+        public const UInt64 AFSObjectOntologyObject                 = 40000;
+        public const UInt64 ObjectLocator                           = 30000;
+        public const UInt64 ExtendedPosition                        = 1000;
+        public const UInt64 Byte                                    = 10;
+        public const UInt64 EstimatedObjectStreamNameLength         = 100;
+        public const UInt64 EstimatedKeyInDictionarySize            = 1000;
+        public const UInt64 DictionaryValueHistory                  = 720;
+        public const UInt64 BigDictionary                           = 1800;
+        public const UInt64 LinkedList                              = 60; //TO be verified
+#else
         public const UInt64 TypeAttribute                           = 250;
         public const UInt64 UInt64                                  = 8;
         public const UInt64 UInt32                                  = 4;
@@ -76,7 +83,15 @@ namespace sones.Lib
         public const UInt64 EstimatedKeyInDictionarySize            = 100;
         public const UInt64 DictionaryValueHistory                  = 72;
         public const UInt64 BigDictionary                           = 180;
+        public const UInt64 LinkedList                              = 60; //TO be verified
+#endif
+
+        public const UInt64 EstimatedValueInDictionarySize          = 100;
         public const UInt64 UInt16                                  = 2;
+        public const UInt64 StringBase                              = 26;
+
+        
+        
 
 
 
@@ -89,7 +104,19 @@ namespace sones.Lib
         {
             if (aString != null)
             {
-                return (EstimatedSizeConstants.Char * Convert.ToUInt64(aString.Length));
+                return StringBase + (EstimatedSizeConstants.Char * Convert.ToUInt64(aString.Length));
+            }
+            else
+            {
+                return 0UL;
+            }
+        }
+
+        public static UInt64 CalcByteArray(Byte[] myByteArray)
+        {
+            if (myByteArray != null)
+            {
+                return (UInt64)myByteArray.Length * EstimatedSizeConstants.Byte + EstimatedSizeConstants.ClassDefaultSize;
             }
             else
             {

@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* 
+﻿/* 
  * VersionedBPlusTreeIndexObject
  * (c) Achim Friedland, 2009 - 2010
  * 
@@ -54,12 +34,14 @@ namespace sones.GraphFS.Objects
     }
 
     public class VersionedBPlusTreeIndexObject<TKey, TValue> : AFSObject, IVersionedIndexObject<TKey, TValue>
-        where TKey : IComparable
+        where TKey : IComparable, IEstimable
         where TValue : IEstimable
     {
         #region Data
 
         protected IVersionedBPlusTree<TKey, TValue> _VersionedBPlusTree;
+
+        private UInt64 _estimatedSize = 0;
 
         #endregion
 

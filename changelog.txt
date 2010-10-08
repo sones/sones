@@ -1,5 +1,10 @@
 sones GraphDB 1.2 (developer) Changelog:
 
+08.10.2010
+-GraphDSSetting implementation including AttributeIdxShardsSetting, ObjectsDirectoryShardsSetting, ObjectCacheCapacitySetting implementation
+-IObjectCache upgrades
+-more size estimation to get a more accurate cache fill level
+
 01.10.2010
 - this version should be compatible with the java client library which can be found on http://github.com/sones/sones-javaclient
 - added IEstimable as generic constraint to TValue in AVersionedIndexObject IVersionedIndexObject in favour of AttributeIndex

@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="Networking – HttpHeader" />
+ï»¿/* <id name="Networking â€“ HttpHeader" />
  * <copyright file="HttpHandler.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -185,7 +165,7 @@ namespace sones.Networking.HTTP
                     HttpMethodString = HTTPMethodHeader[0];
                 }
 
-                // Decode UTF-8 Hex encoding "%C3%B6" -> "ö" etc...
+                // Decode UTF-8 Hex encoding "%C3%B6" -> "Ã¶" etc...
                 Destination = RawUrl = HTTPMethodHeader[1];// HttpUtility.UrlDecode(HTTPMethodHeader[1]);
                 //if (Destination.Length > 1 && Destination.EndsWith("/") && !Destination.Contains("/?"))
                 //{

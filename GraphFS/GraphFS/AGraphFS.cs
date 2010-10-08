@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * AGraphFS
  * (c) Achim Friedland, 2010
  */
@@ -42,11 +22,13 @@ using sones.GraphFS.Exceptions;
 using sones.GraphFS.Transactions;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.InternalObjects;
+using sones.GraphFS.Settings;
 
 using sones.Lib;
 using sones.Lib.ErrorHandling;
 using sones.Lib.DataStructures;
 using sones.Lib.DataStructures.Indices;
+using sones.Lib.Settings;
 
 using sones.Notifications;
 
@@ -75,6 +57,7 @@ namespace sones
         protected readonly  MountpointLookup        _GraphFSLookuptable;
         protected const     UInt64                  NUMBER_OF_DEFAULT_DIRECTORYENTRIES = 6;
         protected           IObjectCache            _ObjectCache;
+        protected readonly  GraphAppSettings         _GraphAppSettings;
 
         #endregion
 
@@ -505,7 +488,7 @@ namespace sones
 
         #region AGraphFS()
 
-        public AGraphFS()
+        public AGraphFS(GraphAppSettings myGraphAppSettings)
         {
             _ForestUUID                         = ForestUUID.NewUUID;
             FileSystemUUID                      = FileSystemUUID.NewUUID;
@@ -514,12 +497,24 @@ namespace sones
             ParentFileSystem                    = null;
             _GraphFSLookuptable                 = new MountpointLookup();
             _MoreThanOnePathSeperatorRegExpr    = new Regex("\\" + FSPathConstants.PathDelimiter + "\\" + FSPathConstants.PathDelimiter);
+            _GraphAppSettings                    = myGraphAppSettings;
         }
 
-        public AGraphFS(IObjectCache myIObjectCache)
-            : this()
+        public AGraphFS(IObjectCache myIObjectCache, GraphAppSettings myGraphAppSettings)
+            : this(myGraphAppSettings)
         {
             _ObjectCache                        = myIObjectCache;
+            myGraphAppSettings.Subscribe<ObjectCacheCapacitySetting>(myGraphAppSettings_OnSettingChanging);
+        }
+
+        Exceptional myGraphAppSettings_OnSettingChanging(GraphSettingChangingEventArgs myGraphDSSetting)
+        {
+            if (myGraphDSSetting.Setting is ObjectCacheCapacitySetting)
+            {
+                IObjectCache.Capacity = UInt64.Parse(myGraphDSSetting.SettingValue);
+            }
+
+            return new Exceptional();
         }
 
         #endregion

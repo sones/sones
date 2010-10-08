@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="DBContext" />
+﻿/* <id name="DBContext" />
  * <copyright file="DBContext.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -42,6 +22,8 @@ using sones.GraphDB.Context;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Session;
 using sones.Lib.ErrorHandling;
+using sones.Lib.Settings;
+using sones.Lib.Settings;
 
 #endregion
 
@@ -108,19 +90,29 @@ namespace sones.GraphDB
             set { _DBObjectCache = value; }
         }
 
+        public GraphAppSettings GraphAppSettings
+        {
+            get;
+            private set;
+        }
+
         #endregion
 
         #endregion
 
         #region Constructor
 
-        public DBContext() { }
+        public DBContext(GraphAppSettings myGraphAppSettings)
+        {
+            GraphAppSettings = myGraphAppSettings;
+        }
 
         /// <summary>
         /// This will create a new dbContext, based on <paramref name="dbContext"/> reusing all shared data
         /// </summary>
         /// <param name="dbContext"></param>
-        public DBContext(DBContext dbContext)
+        public DBContext(GraphAppSettings myGraphAppSettings, DBContext dbContext)
+            :this(myGraphAppSettings)
         {
 
             #region Immutable objects
@@ -148,7 +140,8 @@ namespace sones.GraphDB
         /// </summary>
         /// <param name="myIGraphDBSession">The filesystem where the information is stored.</param>
         /// <param name="DatabaseRootPath">The database root path.</param>
-        public DBContext(IGraphFSSession graphFSSession, ObjectLocation myDatabaseRootPath, EntityUUID myUserID, Dictionary<String, ADBSettingsBase> myDBSettings, Boolean myRebuildIndices, DBPluginManager myDBPluginManager, DBSessionSettings sessionSettings = null)
+        public DBContext(GraphAppSettings myGraphAppSettings, IGraphFSSession graphFSSession, ObjectLocation myDatabaseRootPath, EntityUUID myUserID, Dictionary<String, ADBSettingsBase> myDBSettings, Boolean myRebuildIndices, DBPluginManager myDBPluginManager, DBSessionSettings sessionSettings = null)
+            : this(myGraphAppSettings)
         {
 
             _DBPluginManager    = myDBPluginManager;
@@ -175,7 +168,7 @@ namespace sones.GraphDB
         
         public IDBContext CopyMe()
         {
-            return new DBContext(this);
+            return new DBContext(GraphAppSettings, this);
         }
 
 

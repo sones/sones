@@ -46,6 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DBExtensions.cs" />
+    <Compile Include="DSSettings\AttributeIdxShardsSetting.cs" />
+    <Compile Include="DSSettings\ObjectsDirectoryShardsSetting.cs" />
     <Compile Include="Errors\AggregateErrors\Error_AggregateDoesNotMatchGroupLevel.cs" />
     <Compile Include="Errors\AggregateErrors\GraphDBAggregateError.cs" />
     <Compile Include="Errors\AttributeAssignmentErrors\Error_InvalidUndefAttrType.cs" />

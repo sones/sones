@@ -1,26 +1,6 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name=”Libraries Datastructures – BStarTree” />
- * <copyright file=”Node.cs”
- *            company=”sones GmbH”>
+ï»¿/* <id name=â€Libraries Datastructures â€“ BStarTreeâ€ />
+ * <copyright file=â€Node.csâ€
+ *            company=â€sones GmbHâ€>
  * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
  * <developer>Martin Junghanns</developer>
@@ -39,8 +19,9 @@ using sones.Lib.DataStructures.Indices;
 
 namespace sones.Lib.DataStructures.BPlusTree.Versioned
 {
-    abstract class VersionedNode<TKey, TValue>
-        where TKey : IComparable
+    abstract class VersionedNode<TKey, TValue> : IEstimable
+        where TKey : IComparable, IEstimable
+        where TValue : IEstimable
     {
         #region private members
 
@@ -329,6 +310,14 @@ namespace sones.Lib.DataStructures.BPlusTree.Versioned
 
         #endregion
 
+        #region IEstimable Members
+
+        public ulong GetEstimatedSize()
+        {
+            return EstimatedSizeConstants.UndefinedObjectSize;
+        }
+
+        #endregion
     }
 
     /// <summary>
@@ -341,7 +330,8 @@ namespace sones.Lib.DataStructures.BPlusTree.Versioned
     /// <typeparam name="TKey">The key which has to be inserted in the parent node</typeparam>
     /// <typeparam name="TValue">A reference to the keys new right child</typeparam>
     class VersionedSplitInfo<TKey, TValue>
-        where TKey : IComparable
+        where TKey : IComparable, IEstimable
+        where TValue : IEstimable
     {
         #region private members
 

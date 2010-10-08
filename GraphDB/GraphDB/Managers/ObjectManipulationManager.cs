@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � ObjectManipulationManager" />
+﻿/* <id name="GraphDB – ObjectManipulationManager" />
  * <copyright file="ObjectManipulationManager.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -837,6 +817,14 @@ namespace sones.GraphDB.Managers
 
                             if ((Boolean)myDBContext.DBSettingsManager.GetSetting(SettingDefaultsOnMandatory.UUID, myDBContext, TypesSettingScope.TYPE, Attr.GetRelatedType(myDBContext.DBTypeManager)).Value.Value.Value)
                             {
+                                //the attribute will be removed from the dbobject --> update index
+                                var removeAttributefromIdxResult = RemoveDBObjectFromIndex(aDBO.Value, Attr.UUID, myDBContext);
+
+                                if (removeAttributefromIdxResult.Failed())
+                                {
+                                    return new Exceptional<IEnumerable<Vertex>>(removeAttributefromIdxResult);
+                                }
+
                                 var defaultExcept = SetDefaultValue(Attr, aDBO, myDBContext);
 
                                 if (defaultExcept.Failed())
@@ -844,6 +832,18 @@ namespace sones.GraphDB.Managers
 
                                 if (!defaultExcept.Value)
                                     return new Exceptional<IEnumerable<Vertex>>(new Error_UpdateAttributeValue(Attr));
+
+                                #region update idx
+
+                                //--> update index
+                                var updateAttributefromIdxResult = InsertDBObjectIntoIndex(aDBO.Value, Attr.UUID, myDBContext);
+
+                                if (updateAttributefromIdxResult.Failed())
+                                {
+                                    return new Exceptional<IEnumerable<Vertex>>(updateAttributefromIdxResult);
+                                }
+
+                                #endregion
                             }
                             else
                                 return new Exceptional<IEnumerable<Vertex>>(new Error_MandatoryConstraintViolation(Attr.Name));
@@ -853,8 +853,19 @@ namespace sones.GraphDB.Managers
                         }
                         else
                         {
+                            //the attribute will be removed from the dbobject --> update index
+                            var removeAttributefromIdxResult = RemoveDBObjectFromIndex(aDBO.Value, Attr.UUID, myDBContext);
+
+                            if (removeAttributefromIdxResult.Failed())
+                            {
+                                return new Exceptional<IEnumerable<Vertex>>(removeAttributefromIdxResult);
+                            }
+
                             if (!aDBO.Value.RemoveAttribute(Attr.UUID))
+                            {
                                 return new Exceptional<IEnumerable<Vertex>>(new Error_RemoveTypeAttribute(myGraphDBType, Attr));
+                            }
+                            
                         }
                     }
 
@@ -910,6 +921,56 @@ namespace sones.GraphDB.Managers
 
             return new Exceptional<IEnumerable<Vertex>>(new List<Vertex>());
 
+        }
+
+        /// <summary>
+        /// Inserts into all indices that are affected if a DBObject is updated on a certain attibute
+        /// </summary>
+        /// <param name="dBObjectStream"></param>
+        /// <param name="attributeUUID"></param>
+        /// <param name="myDBContext"></param>
+        /// <returns></returns>
+        private Exceptional InsertDBObjectIntoIndex(DBObjectStream dBObjectStream, AttributeUUID attributeUUID, DBContext myDBContext)
+        {
+            foreach (var aType in myDBContext.DBTypeManager.GetAllParentTypes(myDBContext.DBTypeManager.GetTypeByUUID(dBObjectStream.TypeUUID), true, false))
+            {
+                foreach (var aAttributeIdx in aType.GetAttributeIndices(attributeUUID))
+                {
+                    var result = aAttributeIdx.Insert(dBObjectStream, aType, myDBContext);
+
+                    if (result.Failed())
+                    {
+                        return new Exceptional(result);
+                    }
+                }
+            }
+
+            return new Exceptional();
+        }
+
+        /// <summary>
+        /// Removes index entries corresponding to a DBObject
+        /// </summary>
+        /// <param name="dBObjectStream"></param>
+        /// <param name="attributeUUID"></param>
+        /// <param name="myDBContext"></param>
+        /// <returns></returns>
+        private Exceptional RemoveDBObjectFromIndex(DBObjectStream dBObjectStream, AttributeUUID attributeUUID, DBContext myDBContext)
+        {
+            foreach (var aType in myDBContext.DBTypeManager.GetAllParentTypes(myDBContext.DBTypeManager.GetTypeByUUID(dBObjectStream.TypeUUID), true, false))
+            {
+                foreach (var aAttributeIdx in aType.GetAttributeIndices(attributeUUID))
+                {
+                    var result = aAttributeIdx.Remove(dBObjectStream, aType, myDBContext);
+
+                    if (result.Failed())
+                    {
+                        return new Exceptional(result);
+                    }
+                }
+            }
+
+            return new Exceptional();
         }
 
         /// <summary>

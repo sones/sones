@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* 
+﻿/* 
  * AGraphDSSharp
  * (c) Achim 'ahzf' Friedland, 2009 - 2010
  */
@@ -28,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -36,6 +17,7 @@ using sones.GraphFS;
 using sones.GraphFS.Caches;
 using sones.GraphFS.DataStructures;
 using sones.GraphFS.Events;
+using sones.GraphFS.InternalObjects;
 using sones.GraphFS.Objects;
 using sones.GraphFS.Session;
 using sones.GraphFS.Transactions;
@@ -51,12 +33,12 @@ using sones.GraphDS.API.CSharp.Linq;
 using sones.GraphDS.API.CSharp.Reflection;
 
 using sones.Lib;
+using sones.Lib.DataStructures;
 using sones.Lib.ErrorHandling;
+using sones.Lib.Settings;
 
 using sones.Notifications;
-using sones.Lib.DataStructures;
-using System.IO;
-using sones.GraphFS.InternalObjects;
+
 using sones.GraphIO;
 using sones.GraphIO.XML;
 
@@ -70,6 +52,7 @@ namespace sones.GraphDS.API.CSharp
 
         #region Data
 
+        private const string GraphAppSettingsLocation = "GraphAppSettings.xml";
         protected ISessionInfo  _SessionInfo;
         protected SessionToken  _SessionToken;
 
@@ -86,6 +69,8 @@ namespace sones.GraphDS.API.CSharp
         public ObjectCacheSettings    ObjectCacheSettings    { get; set; }        
         public NotificationSettings   NotificationSettings   { get; set; }
         public NotificationDispatcher NotificationDispatcher { get; set; }
+
+        public GraphAppSettings GraphAppSettings  { get; private set; }
 
         #region StorageLocation
 
@@ -188,6 +173,8 @@ namespace sones.GraphDS.API.CSharp
             _SessionInfo                    = new FSSessionInfo("root");
             _SessionToken                   = new SessionToken(_SessionInfo);
             _IGraphFSParametersDictionary   = new Dictionary<String, Object>();
+            GraphAppSettings                 = new GraphAppSettings();
+            GraphAppSettings.LoadXML(GraphAppSettingsLocation);
         }
 
         #endregion
@@ -555,7 +542,7 @@ namespace sones.GraphDS.API.CSharp
 
         #region Shutdown()
 
-        public virtual Boolean Shutdown()
+        public virtual Boolean Shutdown(Boolean myWipeFilesystem = true)
         {
 
             try
@@ -566,6 +553,13 @@ namespace sones.GraphDS.API.CSharp
 
                 IGraphDBSession.Shutdown();
                 IGraphFS.UnmountAllFileSystems(_SessionToken);
+                GraphAppSettings.SaveXML(GraphAppSettingsLocation);
+
+                if (myWipeFilesystem)
+                {
+                    IGraphFS.WipeFileSystem(_SessionToken);
+                    File.Delete(GraphAppSettingsLocation);
+                }
 
                 IGraphDBSession = null;
 

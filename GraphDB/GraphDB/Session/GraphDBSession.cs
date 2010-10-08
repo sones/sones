@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * GraphDBSession
  * (c) sones GmbH, 2009 - 2010
  */
@@ -94,7 +74,7 @@ namespace sones.GraphDB
             _DBPluginManager = new Plugin.DBPluginManager(null);
 
             //TODO: remove true for rebuild indices as soon as they are really persistent
-            _DBContext = new DBContext(myGraphDB.GraphFSSession, _GraphDB.DatabaseRootPath, null, _GraphDB.DBSettings, false, _DBPluginManager, new DBSessionSettings(_SessionToken.SessionSettings));
+            _DBContext = new DBContext(myGraphDB.GraphAppSettings, myGraphDB.GraphFSSession, _GraphDB.DatabaseRootPath, null, _GraphDB.DBSettings, false, _DBPluginManager, new DBSessionSettings(_SessionToken.SessionSettings));
 
             //_QueryManager = new QueryManager(_DBContext.DBPluginManager);
         }
@@ -110,7 +90,7 @@ namespace sones.GraphDB
             _DBPluginManager = myDBPluginManager;
 
             //TODO: remove true for rebuild indices as soon as they are really persistent
-            _DBContext = new DBContext(myGraphDB.GraphFSSession, _GraphDB.DatabaseRootPath, null, _GraphDB.DBSettings, false, _DBPluginManager, new DBSessionSettings(_SessionToken.SessionSettings));
+            _DBContext = new DBContext(myGraphDB.GraphAppSettings, myGraphDB.GraphFSSession, _GraphDB.DatabaseRootPath, null, _GraphDB.DBSettings, false, _DBPluginManager, new DBSessionSettings(_SessionToken.SessionSettings));
 
             //_QueryManager = new QueryManager(_DBContext.DBPluginManager);
         }

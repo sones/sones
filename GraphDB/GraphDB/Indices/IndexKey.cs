@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphdbDB � IndexKey" />
+﻿/* <id name="GraphdbDB – IndexKey" />
  * <copyright file="IndexKey.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -38,6 +18,7 @@ using sones.GraphDB.TypeManagement;
 using sones.Lib.NewFastSerializer;
 using sones.Lib.Serializer;
 using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.Lib;
 
 #endregion
 
@@ -46,12 +27,13 @@ namespace sones.GraphDB.Indices
     /// <summary>
     /// IndexKey for any AttributeIndex
     /// </summary>
-    public class IndexKey : IFastSerialize, IComparable, IFastSerializationTypeSurrogate
+    public class IndexKey : IFastSerialize, IComparable, IFastSerializationTypeSurrogate, IEstimable
     {
 
         #region Data
 
-        private int _hashCode = 0;
+        private int     _hashCode = 0;
+        private UInt64  _estimatedSize = 0;
 
         private List<ADBBaseObject> _indexKeyValues = new List<ADBBaseObject>();
         public List<ADBBaseObject> IndexKeyValues { get { return _indexKeyValues; } }
@@ -82,6 +64,8 @@ namespace sones.GraphDB.Indices
             }
             else
             {
+                _estimatedSize = GetBaseSize();
+
                 AddAAKey(myAttributeUUID, myIndexKeyPayload);
             }
         }
@@ -93,6 +77,8 @@ namespace sones.GraphDB.Indices
         /// <param name="myIndexDefinition">The corresponding IndexKeyDefinition</param>
         public IndexKey(Dictionary<AttributeUUID, ADBBaseObject> myIndexKeyValues, IndexKeyDefinition myIndexDefinition)
         {
+            _estimatedSize = GetBaseSize();
+
             foreach (var aDefElement in myIndexDefinition.IndexKeyAttributeUUIDs)
             {
                 if (!myIndexKeyValues.ContainsKey(aDefElement))
@@ -117,7 +103,17 @@ namespace sones.GraphDB.Indices
         {
             _hashCode = myStartingIndexKey.GetHashCode();
 
-            _indexKeyValues.AddRange(myStartingIndexKey.IndexKeyValues);
+            #region IEstimable
+
+            _estimatedSize = GetBaseSize();
+
+            foreach (var aADBBaseObject in myStartingIndexKey.IndexKeyValues)
+            {
+                _indexKeyValues.Add(aADBBaseObject);
+                _estimatedSize += aADBBaseObject.GetEstimatedSize();
+            }
+
+            #endregion
 
             if (!myIndexDefinition.IndexKeyAttributeUUIDs.Contains(myAttributeUUID))
             {
@@ -156,6 +152,8 @@ namespace sones.GraphDB.Indices
         {
             _indexKeyValues.Add(myADBBaseObject);
 
+            _estimatedSize += myADBBaseObject.GetEstimatedSize();
+
             CalcNewHashCode(myADBBaseObject, ref _hashCode);
         }
 
@@ -171,12 +169,21 @@ namespace sones.GraphDB.Indices
 
         private object Deserialize(ref SerializationReader mySerializationReader, IndexKey myValue)
         {
+            #region IEstimable
+
+            myValue._estimatedSize = GetBaseSize();
+
+            #endregion
+
+
             UInt32 count = mySerializationReader.ReadUInt32();
             for (UInt32 i = 0; i < count; i++)
             {
                 var a = (ADBBaseObject)mySerializationReader.ReadObject();
 
                 myValue._indexKeyValues.Add(a);
+
+                _estimatedSize += a.GetEstimatedSize();
 
                 CalcNewHashCode(a, ref myValue._hashCode);
             }
@@ -397,6 +404,20 @@ namespace sones.GraphDB.Indices
 
         #endregion
 
+        #region IEstimable Members
+
+        public ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private ulong GetBaseSize()
+        {
+            //ClassDefaultSize + IndexKeyValues + EstimatedSize + HashCode
+            return EstimatedSizeConstants.ClassDefaultSize + EstimatedSizeConstants.List + EstimatedSizeConstants.UInt64 + EstimatedSizeConstants.Int32;
+        }
+
+        #endregion
     }
 
 }

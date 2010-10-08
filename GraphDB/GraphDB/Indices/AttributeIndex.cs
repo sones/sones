@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � AttributeIndex" />
+﻿/* <id name="GraphDB – AttributeIndex" />
  * <copyright file="AttributeIndex.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -74,16 +54,17 @@ namespace sones.GraphDB.Indices
         /// <param name="myIndexType">The IndexType e.g. HashMap, BTree of this AttributeIndex</param>
         /// <param name="correspondingType">The corresponding type of this index, used to get the file system location</param>
         /// <param name="myFileSystemLocation">The location oif the index. If null it will be generated based on the <paramref name="correspondingType"/>.</param>
-        public AttributeIndex(String myIndexName, String myIndexEdition, List<AttributeUUID> myAttributes, GraphDBType correspondingType, String myIndexType = null, UInt64 myKeyCount = 0, UInt64 myValueCount = 0)
-            : this(myIndexName, new IndexKeyDefinition(myAttributes), correspondingType, myIndexType, myIndexEdition, myKeyCount, myValueCount)
+        public AttributeIndex(String myIndexName, String myIndexEdition, List<AttributeUUID> myAttributes, GraphDBType correspondingType, UInt16 myObjectDirectoryShards, String myIndexType = null, UInt64 myKeyCount = 0, UInt64 myValueCount = 0)
+            : this(myIndexName, new IndexKeyDefinition(myAttributes), correspondingType, myObjectDirectoryShards, myIndexType, myIndexEdition, myKeyCount, myValueCount)
         { }
 
-        public AttributeIndex(string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, string indexType = null, string indexEdition = DBConstants.DEFAULTINDEX, UInt64 myKeyCount = 0, UInt64 myValueCount = 0)
+        public AttributeIndex(string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, UInt16 myAttributeIdxShards, string indexType = null, string indexEdition = DBConstants.DEFAULTINDEX, UInt64 myKeyCount = 0, UInt64 myValueCount = 0)
         {
             IndexName          = indexName;
             IndexEdition       = indexEdition;
             IndexKeyDefinition = idxKey;
             IndexRelatedTypeUUID = correspondingType.UUID;
+            AttributeIdxShards = myAttributeIdxShards;
 
             _keyCount = myKeyCount;
             _valueCount = myValueCount;
@@ -853,7 +834,7 @@ namespace sones.GraphDB.Indices
         private int GetIndexShardID(IndexKey aIndexKey)
         {
             //stupid... might be solved by constant hashing or sth like that
-            return Math.Abs(aIndexKey.GetHashCode()) % DBConstants.AttributeIdxShards;
+            return Math.Abs(aIndexKey.GetHashCode()) % AttributeIdxShards;
         }
 
         private void IncreaseValueCount()
@@ -931,7 +912,7 @@ namespace sones.GraphDB.Indices
         private IEnumerable<UInt16> GetAllIdxShardIDs()
         {
             //stupid
-            for (UInt16 i = 0; i < DBConstants.AttributeIdxShards; i++)
+            for (UInt16 i = 0; i < AttributeIdxShards; i++)
             {
                 yield return i;
             }

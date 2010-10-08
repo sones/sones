@@ -24,6 +24,8 @@ fi
 ./clearDirectory.sh Libraries *.dll *.exe *.mdb *.pdb *.FilesWrittenAbsolute.txt
 ./clearDirectory.sh Notifications *.dll *.exe *.mdb *.pdb *.FilesWrittenAbsolute.txt
 ./clearDirectory.sh StorageEngines *.dll *.exe *.mdb *.pdb *.FilesWrittenAbsolute.txt
+./clearDirectory.sh GraphIO *.dll *.exe *.mdb *.pdb *.FilesWrittenAbsolute.txt
+./clearDirectory.sh GraphDSClient *.dll *.exe *.mdb *.pdb *.FilesWrittenAbsolute.txt
 
 if [ $option = "-r" ]; then
 	xbuild /property:Configuration=Release

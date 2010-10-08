@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * AutoDiscovery<T>
  * (c) Achim Friedland, 2008 - 2010
  */
@@ -130,7 +110,7 @@ namespace sones.Lib.Reflection
 
 
                 Assembly _Assembly = null;
-                Type[] _AllTypes = null;
+                Type[] _AllTypes   = null;
 
                 if (myClear)
                     _DictionaryT.Clear();
@@ -214,7 +194,7 @@ namespace sones.Lib.Reflection
         /// </summary>
         /// <param name="myImplementationID">The identification string of the implementation to activate</param>
         /// <returns>An activated instance of T</returns>
-        protected Exceptional<T> ActivateT_protected(String myImplementationID)
+        protected Exceptional<T> ActivateT_protected(String myImplementationID, params Object[] args)
         {
 
             lock (this)
@@ -227,7 +207,7 @@ namespace sones.Lib.Reflection
 
                     if (_DictionaryT.TryGetValue(myImplementationID, out _Type))
                         if (_Type != null)
-                            return new Exceptional<T>( (T) Activator.CreateInstance(_Type));
+                            return new Exceptional<T>((T)Activator.CreateInstance(_Type, args));
 
                 }
                 catch (Exception e)

@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* 
+﻿/* 
  * VersionedHashIndexObject
  * (c) Achim Friedland, 2009 - 2010
  */
@@ -59,14 +39,14 @@ namespace sones.GraphFS.Objects
     /// </summary>
     /// <typeparam name="TKey">Must implement IComparable</typeparam>
     public class VersionedHashIndexObject<TKey, TValue> : AFSObject, IVersionedIndexObject<TKey, TValue>
-        where TKey : IComparable
+        where TKey : IComparable, IEstimable
         where TValue : IEstimable
     {
-
 
         #region Data
 
         protected IDictionary<TKey, IndexValueHistoryList<TValue>> _IDictionary;
+        protected UInt64 _estimatedSize = 0;
 
         #endregion
 
@@ -126,6 +106,12 @@ namespace sones.GraphFS.Objects
         public VersionedHashIndexObject(IDictionary<TKey, TValue> myIDictionary)
         {
 
+            #region estimated size
+
+            _estimatedSize = GetBaseSize();
+
+            #endregion
+
             // Members of AGraphStructure
             _StructureVersion       = 1;
 
@@ -147,6 +133,15 @@ namespace sones.GraphFS.Objects
             _IDictionary = _IDictionaryGenericType as IDictionary<TKey, IndexValueHistoryList<TValue>>;
             if (_IDictionary == null)
                 throw new ArgumentException("Type '" + _IDictionaryGenericType.ToString() + "' does not implement IDictionary<..., ...>!");
+
+            #region estimated size
+
+            foreach (var aKV in _IDictionary)
+            {
+                _estimatedSize += aKV.Key.GetEstimatedSize() + aKV.Value.GetEstimatedSize();
+            }
+
+            #endregion
 
         }
 
@@ -229,6 +224,12 @@ namespace sones.GraphFS.Objects
             try
             {
 
+                #region IEstimable
+
+                _estimatedSize = GetBaseSize();
+
+                #endregion
+
                 #region NotificationHandling
 
                 UInt64 _NotificationHandling = (UInt64) mySerializationReader.ReadObject();
@@ -262,14 +263,36 @@ namespace sones.GraphFS.Objects
                             while (_IndexValueHistoryList.VersionCount > _HistorySize)
                                 _IndexValueHistoryList.RemoveLatestFromHistory();
 
+                            #region Estimated size
+
+                            _estimatedSize += _IndexValueHistoryList.GetEstimatedSize();
+
+                            #endregion
+
                         }
 
                         else
                         {
                             if (_OP == OP.ADD)
-                                _IDictionary.Add(_Key, new IndexValueHistoryList<TValue>(_Value));
+                            {
+                                _IndexValueHistoryList = new IndexValueHistoryList<TValue>(_Value);
+
+                                _IDictionary.Add(_Key, _IndexValueHistoryList);
+
+                                #region Estimated size
+
+                                _estimatedSize += _IndexValueHistoryList.GetEstimatedSize();
+
+                                #endregion
+                            }
                         }
-                    
+
+                        #region Estimated size
+
+                        _estimatedSize += _Key.GetEstimatedSize();
+
+                        #endregion
+
                     }
 
                 }
@@ -418,6 +441,13 @@ namespace sones.GraphFS.Objects
                 // The key already exists!
                 if (_IDictionary.TryGetValue(myKey, out _IndexValueHistoryList))
                 {
+                    #region estimated size
+                    //remove the old value
+
+                    _estimatedSize -= _IndexValueHistoryList.GetEstimatedSize();
+
+                    #endregion
+
 
                     _IndexValueHistoryList.Set(myValue, _Timestamp, myIndexSetStrategy);
 
@@ -430,9 +460,18 @@ namespace sones.GraphFS.Objects
 
                 else
                 {
-                    _IDictionary.Add(myKey, new IndexValueHistoryList<TValue>(myValue));
+                    _IndexValueHistoryList = new IndexValueHistoryList<TValue>(myValue);
+
+                    _IDictionary.Add(myKey, _IndexValueHistoryList);
                     SetOnFileSystem(myKey, myValue, _Timestamp, OP.ADD);
                 }
+
+                #region estimated size
+                //update
+
+                _estimatedSize += _IndexValueHistoryList.GetEstimatedSize();
+
+                #endregion
 
                 isDirty = true;
 
@@ -455,6 +494,12 @@ namespace sones.GraphFS.Objects
                 // The key already exists!
                 if (_IDictionary.TryGetValue(myKey, out _IndexValueHistoryList))
                 {
+                    #region estimated size
+                    //remove the old value
+
+                    _estimatedSize -= _IndexValueHistoryList.GetEstimatedSize();
+
+                    #endregion
 
                     _IndexValueHistoryList.Set(myValues, myIndexSetStrategy);
 
@@ -462,9 +507,20 @@ namespace sones.GraphFS.Objects
                         _IndexValueHistoryList.RemoveLatestFromHistory();
 
                 }
-
                 else
+                {
                     _IDictionary.Add(myKey, new IndexValueHistoryList<TValue>(myValues));
+                }
+
+                #region estimated size
+                //update
+
+                if (_IndexValueHistoryList != null)
+                {
+                    _estimatedSize += _IndexValueHistoryList.GetEstimatedSize();
+                }
+
+                #endregion
 
                 isDirty = true;
 
@@ -921,6 +977,8 @@ namespace sones.GraphFS.Objects
 
         public void Clear()
         {
+            _estimatedSize = GetBaseSize();
+
             _IDictionary.Clear();
         }
 
@@ -1646,7 +1704,12 @@ namespace sones.GraphFS.Objects
 
         public override ulong GetEstimatedSize()
         {
-            return EstimatedSizeConstants.UndefinedObjectSize;
+            return _estimatedSize;
+        }
+
+        private ulong GetBaseSize()
+        {
+            return EstimatedSizeConstants.AFSObjectOntologyObject;
         }
 
         #endregion

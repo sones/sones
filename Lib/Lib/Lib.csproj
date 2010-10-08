@@ -205,6 +205,13 @@
     <Compile Include="Reflection\AutoDiscoveryError.cs" />
     <Compile Include="RessourceLock.cs" />
     <Compile Include="SeperatorTypes.cs" />
+    <Compile Include="Settings\Errors\GraphSettingError.cs" />
+    <Compile Include="Settings\Errors\GraphSettingError_CouldNotLoadSettingsFile.cs" />
+    <Compile Include="Settings\Errors\GraphSettingError_DataTypeMismatch.cs" />
+    <Compile Include="Settings\Errors\GraphSettingError_InvalidXMLFormat.cs" />
+    <Compile Include="Settings\GraphAppSettings.cs" />
+    <Compile Include="Settings\GraphSettingChangingEvent.cs" />
+    <Compile Include="Settings\IGraphSetting.cs" />
     <Compile Include="SimpleLogger\ConsoleOutputLogger.cs" />
     <Compile Include="Singleton\Singleton.cs" />
     <Compile Include="UnitTestHelper\DynamicUnitTestHelper.cs" />

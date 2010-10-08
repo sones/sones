@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-#region Using
+﻿#region Using
 
 using System;
 using System.Collections.Generic;
@@ -88,16 +68,7 @@ namespace sones.GraphFS
 
         #region Capacity
 
-        private UInt64 _Capacity;
-
-        public UInt64 Capacity
-        {
-
-            get
-            {
-                return _Capacity;
-            }        
-        }
+        public UInt64 Capacity { get; set; }
 
         #endregion
 
@@ -167,7 +138,7 @@ namespace sones.GraphFS
             if (myCapacity < _DefaultCapacity)
                 myCapacity = _DefaultCapacity;
 
-            _Capacity               = myCapacity;
+            Capacity                = myCapacity;
             _ObjectLocatorCache     = new Dictionary<ObjectLocation, LinkedListNode<ObjectLocator>>();
             _ObjectLocatorLRU       = new LinkedList<ObjectLocator>();
             _AFSObjectStore         = new Dictionary<CacheUUID, AFSObject>();
@@ -189,26 +160,7 @@ namespace sones.GraphFS
 
         private void DecLevel(UInt64 myDecValue)
         { 
-            //_FillLevel -= myDecValue;
-
-            if (_FillLevel < myDecValue)
-            {
-                _FillLevel = 0;
-
-                foreach (var item in _ObjectLocatorCache.Values)
-                {
-                    _FillLevel += item.Value.GetEstimatedSize();
-                }
-
-                foreach (var item in _AFSObjectStore.Values)
-                {
-                    _FillLevel += item.GetEstimatedSize();
-                }
-            }
-            else
-            {
-                _FillLevel -= myDecValue;
-            }
+            _FillLevel -= myDecValue;
         }
 
         #endregion
@@ -249,7 +201,7 @@ namespace sones.GraphFS
             lock (this)
             {
 
-                if (myObjectLocator.GetEstimatedSize() > _Capacity)
+                if (myObjectLocator.GetEstimatedSize() > Capacity)
                 {
                     return new Exceptional<ObjectLocator>(myObjectLocator);
                 }
@@ -262,8 +214,9 @@ namespace sones.GraphFS
 
                     return new Exceptional<ObjectLocator>();
                 }
-                
-                while (myObjectLocator.GetEstimatedSize() + _FillLevel >= _Capacity)
+
+                var objectLocatorSize = myObjectLocator.GetEstimatedSize();
+                while (objectLocatorSize + _FillLevel >= Capacity)
                 {                    
                     // Remove oldest LinkedListNode from LRUList and add new ObjectLocator to the ObjectCache
                     if (DiscardingOldestItem != null)
@@ -324,7 +277,7 @@ namespace sones.GraphFS
 
             lock (this)
             {
-                if (myAFSObject.GetEstimatedSize() > _Capacity)
+                if (myAFSObject.GetEstimatedSize() > Capacity)
                 {
                     return new Exceptional<AFSObject>(myAFSObject);
                 }
@@ -333,7 +286,8 @@ namespace sones.GraphFS
                 
                 Debug.Assert(_CacheUUID != null);                
 
-                while (_FillLevel + myAFSObject.GetEstimatedSize() >= _Capacity)
+                var afsObjectSize = myAFSObject.GetEstimatedSize();
+                while (_FillLevel + afsObjectSize >= Capacity)
                 {                                       
                     var oldestLocator = _ObjectLocatorLRU.First;
 
@@ -503,7 +457,8 @@ namespace sones.GraphFS
 
                         _ObjectLocatorNode.Value.ObjectLocationSetter = _NewLocation;
                         
-                        while (_FillLevel + _ObjectLocatorNode.Value.GetEstimatedSize() > _Capacity)
+                        var objectLocatorSize = _ObjectLocatorNode.Value.GetEstimatedSize();
+                        while (_FillLevel + objectLocatorSize > Capacity)
                         {                            
                             var _LastObjectLocatorNode = _ObjectLocatorLRU.First;
 
@@ -706,11 +661,6 @@ namespace sones.GraphFS
 
                     _EstimatedAFSObjectSize.Remove(myCacheUUID);
 
-                    //if (_ObjectLocatorCache.Remove(remObject.ObjectLocation))
-                    //{
-                    //    DecLevel(remObject.ObjectLocatorReference.GetEstimatedSize());
-                    //    _ObjectLocatorLRU.Remove(remObject.ObjectLocatorReference);
-                    //}
                 }
             }
             //ValidateFillLevel();
@@ -797,7 +747,13 @@ namespace sones.GraphFS
 
         #endregion
 
-
+        public ICollection<AFSObject> GetObjects
+        {
+            get
+            {
+                return _AFSObjectStore.Values;
+            }
+        }
     }
 
 }

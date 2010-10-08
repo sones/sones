@@ -132,6 +132,7 @@
     <Compile Include="GraphFSSession.cs" />
     <Compile Include="ObjectStore.cs" />
     <Compile Include="GraphFS1.cs" />
+    <Compile Include="Settings\ObjectCacheCapacitySetting.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Lib\Lib\Lib.csproj">

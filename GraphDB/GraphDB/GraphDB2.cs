@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* <id name="GraphDB � Main Database Code" />
+﻿/* <id name="GraphDB – Main Database Code" />
  * <copyright file="GraphDatabase.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
@@ -61,6 +41,8 @@ using sones.Lib.ErrorHandling;
 using sones.Notifications;
 using sones.GraphDB.NewAPI;
 using System.Threading;
+using sones.Lib.Settings;
+using sones.Lib.Settings;
 
 #endregion
 
@@ -113,12 +95,18 @@ namespace sones.GraphDB
             return this._InternalUserID;
         }
 
+        public GraphAppSettings GraphAppSettings
+        {
+            get;
+            private set;
+        }
+
         #endregion
 
         #region Constructor(s)
 
-        public GraphDB2(UUID myDatabaseInstanceUUID, ObjectLocation myDatabaseRootPath, IGraphFSSession myIGraphFSSession, Boolean myCreateNewIfNotExisting)
-            : this(myDatabaseInstanceUUID, myDatabaseRootPath, myIGraphFSSession, myCreateNewIfNotExisting, true)
+        public GraphDB2(GraphAppSettings myGraphAppSettings, UUID myDatabaseInstanceUUID, ObjectLocation myDatabaseRootPath, IGraphFSSession myIGraphFSSession, Boolean myCreateNewIfNotExisting)
+            : this(myGraphAppSettings, myDatabaseInstanceUUID, myDatabaseRootPath, myIGraphFSSession, myCreateNewIfNotExisting, true)
         {
         }
 
@@ -129,15 +117,16 @@ namespace sones.GraphDB
         /// <param name="DatabaseRootPath">where is the database - a path inside the Graph Filessystem, including the name of the database like "/database1"</param>
         /// <param name="GraphVFSInstance">Graph Virtual myIGraphFS Instance</param>
         /// <param name="CreateNewIfNotExisting">if true an empty database scheme and settings structure will be established at the given root path</param>
-        public GraphDB2(UUID myDatabaseInstanceUUID, ObjectLocation myDatabaseRootPath, IGraphFSSession myIGraphFSSession, Boolean myCreateNewIfNotExisting, Boolean myRebuildIndices)
+        public GraphDB2(GraphAppSettings myGraphAppSettings, UUID myDatabaseInstanceUUID, ObjectLocation myDatabaseRootPath, IGraphFSSession myIGraphFSSession, Boolean myCreateNewIfNotExisting, Boolean myRebuildIndices)
         {
 
             #region Data
 
-            _DatabaseRootPath = myDatabaseRootPath;
-            _IGraphFSSession = myIGraphFSSession;
+            _DatabaseRootPath     = myDatabaseRootPath;
+            _IGraphFSSession      = myIGraphFSSession;
             _InternalDatabaseUUID = myDatabaseInstanceUUID;
-            _InternalUserID = EntityUUID.NewUUID;
+            _InternalUserID       = EntityUUID.NewUUID;
+            GraphAppSettings       = myGraphAppSettings;
 
             #endregion
 

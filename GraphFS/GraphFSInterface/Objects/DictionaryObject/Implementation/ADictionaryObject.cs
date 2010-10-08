@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* GraphFS - ADictionaryObject
+﻿/* GraphFS - ADictionaryObject
  * (c) Achim Friedland, 2009
  * 
  * Lead programmer:
@@ -59,8 +39,7 @@ namespace sones.GraphFS.Objects
     
 
     public abstract class ADictionaryObject<TKey, TValue> : AFSObject
-        where TKey : IComparable, IEstimable
-        where TValue : IEstimable
+        where TKey : IComparable
     {
 
 
@@ -103,7 +82,7 @@ namespace sones.GraphFS.Objects
             //Hack: This might influence the overall performance
             foreach (var aKV in myIDictionary)
             {
-                _estimatedSize += aKV.Key.GetEstimatedSize() + aKV.Value.GetEstimatedSize();
+                _estimatedSize += GetEstimatedSizeOfKey(aKV.Key) + GetEstimatedSizeOfValue(aKV.Value);
             }
 
             #endregion
@@ -235,7 +214,7 @@ namespace sones.GraphFS.Objects
 
                         #region estimated size
 
-                        _estimatedSize += KeyObject.GetEstimatedSize() + ValueObject.GetEstimatedSize();
+                        _estimatedSize += GetEstimatedSizeOfKey(KeyObject) + GetEstimatedSizeOfValue(ValueObject);
 
                         #endregion
 
@@ -296,7 +275,7 @@ namespace sones.GraphFS.Objects
 
                     #region estimated Size
 
-                    _estimatedSize += myKey.GetEstimatedSize() + myValue.GetEstimatedSize();
+                    _estimatedSize += GetEstimatedSizeOfKey(myKey) + GetEstimatedSizeOfValue(myValue);
 
                     #endregion
 
@@ -329,7 +308,7 @@ namespace sones.GraphFS.Objects
 
                     #region estimated Size
 
-                    _estimatedSize += myKeyValuePair.Key.GetEstimatedSize() + myKeyValuePair.Value.GetEstimatedSize();
+                    _estimatedSize += GetEstimatedSizeOfKey(myKeyValuePair.Key) + GetEstimatedSizeOfValue(myKeyValuePair.Value);
 
                     #endregion
 
@@ -367,7 +346,7 @@ namespace sones.GraphFS.Objects
                     
                     #region estimated Size
 
-                    _estimatedSize += _KeyValuePair.Key.GetEstimatedSize() + _KeyValuePair.Value.GetEstimatedSize();
+                    _estimatedSize += GetEstimatedSizeOfKey(_KeyValuePair.Key) + GetEstimatedSizeOfValue(_KeyValuePair.Value);
 
                     #endregion
                 }
@@ -404,7 +383,7 @@ namespace sones.GraphFS.Objects
 
                     #region estimated Size
 
-                    _estimatedSize += _KeyValuePair.Key.GetEstimatedSize() + _KeyValuePair.Value.GetEstimatedSize();
+                    _estimatedSize += GetEstimatedSizeOfKey(_KeyValuePair.Key) + GetEstimatedSizeOfValue(_KeyValuePair.Value);
 
                     #endregion
 
@@ -438,15 +417,14 @@ namespace sones.GraphFS.Objects
             lock (this)
             {
 
-                TValue _Value;
-
-                if (_IDictionary.TryGetValue(myKey, out _Value))
+                //if (_IDictionary.TryGetValue(myKey, out _Value)) <-- this won't work due to the _Value does not work as a reference - so the value won't be overwritten
+                if (_IDictionary.ContainsKey(myKey))
                 {
-                    _Value = myValue;
+                    _IDictionary[myKey] = myValue;
 
                     #region estimated Size
 
-                    _estimatedSize += myValue.GetEstimatedSize();
+                    _estimatedSize += GetEstimatedSizeOfValue(myValue);
 
                     #endregion
                 }
@@ -456,7 +434,7 @@ namespace sones.GraphFS.Objects
 
                     #region estimated Size
 
-                    _estimatedSize += myKey.GetEstimatedSize() + myValue.GetEstimatedSize();
+                    _estimatedSize += GetEstimatedSizeOfKey(myKey) + GetEstimatedSizeOfValue(myValue);
 
                     #endregion
                 }
@@ -551,7 +529,7 @@ namespace sones.GraphFS.Objects
 
                         #region estimated Size
 
-                        _estimatedSize += myNewValue.GetEstimatedSize();
+                        _estimatedSize += GetEstimatedSizeOfValue(myNewValue);
 
                         #endregion
 
@@ -963,7 +941,7 @@ namespace sones.GraphFS.Objects
                 if (removal)
                 {
                     //Do not estimate value here, because I do not want to get it first
-                    _estimatedSize -= myKey.GetEstimatedSize();
+                    _estimatedSize -= GetEstimatedSizeOfKey(myKey);
                 }
 
                 #endregion
@@ -1018,7 +996,7 @@ namespace sones.GraphFS.Objects
                         {
                             #region estimated size
 
-                            _estimatedSize -= _Enumerator.Current.Key.GetEstimatedSize();
+                            _estimatedSize -= GetEstimatedSizeOfKey(_Enumerator.Current.Key);
 
                             #endregion
                         }
@@ -1051,6 +1029,16 @@ namespace sones.GraphFS.Objects
         private ulong GetBaseSize()
         {
             return EstimatedSizeConstants.AFSObjectOntologyObject;
+        }
+
+        public virtual UInt64 GetEstimatedSizeOfKey(TKey myTKey)
+        {
+            return EstimatedSizeConstants.EstimatedKeyInDictionarySize;
+        }
+
+        public virtual UInt64 GetEstimatedSizeOfValue(TValue myTValue)
+        {
+            return EstimatedSizeConstants.EstimatedValueInDictionarySize;
         }
 
         #endregion

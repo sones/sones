@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* 
+﻿/* 
  * TypeAttribute
  * Stefan Licht, 2009-2010
  * Henning Rauch, 2009-2010
@@ -55,6 +35,7 @@ using System.Diagnostics;
 using sones.GraphDB.Result;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.ObjectManagement;
+using sones.GraphFS.Settings;
 
 #endregion
 
@@ -321,7 +302,7 @@ namespace sones.GraphDB.TypeManagement
         /// </summary>
         /// <param name="myIGraphFS"></param>
         /// <param name="myObjectLocation">the location (object myPath and Name) of the requested GraphType within the file system</param>
-        public GraphDBType(IGraphFSSession myIGraphFSSession, ObjectLocation myObjectLocation, Boolean myIsUserDefined, Boolean myIsAbstract)
+        public GraphDBType(IGraphFSSession myIGraphFSSession, ObjectLocation myObjectLocation, Boolean myIsUserDefined, Boolean myIsAbstract, UInt16 myObjectDirectoryShards)
             : this()
         {
 
@@ -337,6 +318,7 @@ namespace sones.GraphDB.TypeManagement
             _TypeAttributeLookupTable   = new Dictionary<AttributeUUID,TypeAttribute>();
             _MandatoryAttributes        = new HashSet<AttributeUUID>();
             _UniqueAttributes           = new List<AttributeUUID>();
+            ObjectDirectoryShards       = myObjectDirectoryShards;
 
             LoadGraphType(myIGraphFSSession, myObjectLocation);
 
@@ -349,7 +331,7 @@ namespace sones.GraphDB.TypeManagement
 
         #region GraphDBType(myUUID, myObjectLocation, myTypeName, myParentType, myAttributes, myIsListType, myIsUserDefined, myIsAbstract)
 
-        public GraphDBType(TypeUUID myUUID, ObjectLocation myDBRootPath, String myTypeName, TypeUUID myParentType, Dictionary<AttributeUUID, TypeAttribute> myAttributes, Boolean myIsUserDefined, Boolean myIsAbstract, String myComment, UInt16 myObjectDirectoryShards = DBConstants.ObjectDirectoryShards)
+        public GraphDBType(TypeUUID myUUID, ObjectLocation myDBRootPath, String myTypeName, TypeUUID myParentType, Dictionary<AttributeUUID, TypeAttribute> myAttributes, Boolean myIsUserDefined, Boolean myIsAbstract, String myComment, UInt16 myObjectDirectoryShards)
             : this(myDBRootPath + myTypeName)
         {
 
@@ -633,12 +615,12 @@ namespace sones.GraphDB.TypeManagement
 
         #region Index
 
-        public Exceptional CreateUUIDIndex(DBContext _DBContext, AttributeUUID myUUID)
+        public Exceptional CreateUUIDIndex(DBContext myDBContext, AttributeUUID myUUID)
         {
-            
-            var _NewUUIDIndex = new UUIDIndex(SpecialTypeAttribute_UUID.AttributeName, new IndexKeyDefinition(myUUID), this);
 
-            return new Exceptional(AddAttributeIndex(_NewUUIDIndex, _DBContext));
+            var _NewUUIDIndex = new UUIDIndex(SpecialTypeAttribute_UUID.AttributeName, new IndexKeyDefinition(myUUID), this, ObjectDirectoryShards);
+
+            return new Exceptional(AddAttributeIndex(_NewUUIDIndex, myDBContext));
 
         }
 
@@ -678,7 +660,7 @@ namespace sones.GraphDB.TypeManagement
         /// <param name="myAttributeName">The name of the attribute we want an index for.</param>
         /// <param name="myIndexEdition">THe name of the index edition. May be null</param>
         /// <returns>The index for the given myAttributes if one exist. Else, null.</returns>
-        public AAttributeIndex GetAttributeIndex(String myIndexName, String myIndexEdition)
+        public AAttributeIndex GetAttributeIndex(String myIndexName, String myIndexEdition = DBConstants.DEFAULTINDEX)
         {
 
             if (_AttributeIndicesNameLookup.ContainsKey(myIndexName) && _AttributeIndices[_AttributeIndicesNameLookup[myIndexName]].ContainsKey(myIndexEdition))
@@ -850,7 +832,9 @@ namespace sones.GraphDB.TypeManagement
 
             }
 
-            var _NewAttributeIndex = new AttributeIndex(myIndexName, myIndexEdition, myAttributeUUIDs, this, myIndexType);
+            var objectDirectoryShards = UInt16.Parse(myDBContext.GraphAppSettings.Get<AttributeIdxShardsSetting>());
+
+            var _NewAttributeIndex = new AttributeIndex(myIndexName, myIndexEdition, myAttributeUUIDs, this, objectDirectoryShards, myIndexType);
 
             var CreateExcept = AddAttributeIndex(_NewAttributeIndex, myDBContext);
 
@@ -1004,12 +988,30 @@ namespace sones.GraphDB.TypeManagement
             return _AttributeIndices.ContainsKey(myIndexDefinition);
         }
 
-        public List<AAttributeIndex> GetAttributeIndices(IndexKeyDefinition IndexName)
+        public IEnumerable<AAttributeIndex> GetAttributeIndices(AttributeUUID myAttributeUUID)
+        {
+            foreach (var aIdx in AttributeIndices.Where(kv => kv.Key.IndexKeyAttributeUUIDs.Contains(myAttributeUUID)).Select(item => item.Value))
+            {
+                foreach (var aIdxEdition in aIdx)
+                {
+                    yield return aIdxEdition.Value;
+                }
+            }
+            yield break;
+        }
+
+        public IEnumerable<AAttributeIndex> GetAttributeIndices(IndexKeyDefinition IndexName)
         {
             if (_AttributeIndices.ContainsKey(IndexName))
-                return new List<AAttributeIndex>(_AttributeIndices[IndexName].Values);
+            {
+                foreach (var aIdx in _AttributeIndices[IndexName])
+                {
+                    yield return aIdx.Value;
+                }
 
-            return null;
+            }
+
+            yield break;
         }
 
         public Exceptional<Boolean> RenameAttribute(AttributeUUID attributeUUID, string newName)
@@ -1828,6 +1830,7 @@ namespace sones.GraphDB.TypeManagement
                             mySerializationWriter.WriteBoolean(idxType.Value is UUIDIndex);
                             mySerializationWriter.WriteUInt64(idxType.Value.GetKeyCount());
                             mySerializationWriter.WriteUInt64(idxType.Value.GetValueCount());
+                            mySerializationWriter.WriteUInt16(idxType.Value.AttributeIdxShards);
                         }
                     }
 
@@ -1938,16 +1941,17 @@ namespace sones.GraphDB.TypeManagement
                             var isUUIDIdx           = mySerializationReader.ReadBoolean();
                             var keyCount            = mySerializationReader.ReadUInt64();
                             var valueCount          = mySerializationReader.ReadUInt64();
+                            var attributeIdxShards = mySerializationReader.ReadUInt16();
 
                             //var CreateIdxExcept = CreateAttributeIndex(indexName, idxKey.IndexKeyAttributeUUIDs, indexEdition, indexObjectType, fileSystemLocation);
 
                             if (isUUIDIdx)
                             {
-                                AddAttributeIndex(new UUIDIndex(indexName, idxKey, this, indexType, indexEdition, keyCount));
+                                AddAttributeIndex(new UUIDIndex(indexName, idxKey, this, attributeIdxShards, indexType, indexEdition, keyCount));
                             }
                             else
                             {
-                                AddAttributeIndex(new AttributeIndex(indexName, idxKey, this, indexType, indexEdition, keyCount, valueCount));
+                                AddAttributeIndex(new AttributeIndex(indexName, idxKey, this, attributeIdxShards, indexType, indexEdition, keyCount, valueCount));
                             }
 
                             //if (CreateIdxExcept.Failed())

@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/*
+﻿/*
  * IndexValueHistoryList
  * (c) Achim Friedland, 2009 - 2010
  */
@@ -37,7 +17,8 @@ using sones.Lib.DataStructures.Indices;
 namespace sones.Lib.DataStructures.Indices
 {
 
-    public class IndexValueHistoryList<TValue>
+    public class IndexValueHistoryList<TValue> : IEstimable
+        where TValue : IEstimable
     {
 
 
@@ -49,6 +30,9 @@ namespace sones.Lib.DataStructures.Indices
         // A datastructure to hold the history of the most recent
         // modifications of the _IndexValueList datastructure
         LinkedList<IndexValueHistory<TValue>>  _IndexValueHistoryList;
+
+        // The estimated size of the current instance
+        UInt64                                 _estimatedSize = 0;
 
         #endregion
 
@@ -95,23 +79,50 @@ namespace sones.Lib.DataStructures.Indices
             }
             set
             {
+                #region IndexValueHistoryList
+
+                //do no size estimation here, because it would be too much overhead (remember old value, decrease, increase....)
                 _IndexValueHistoryList = value;
 
+                #endregion
+                
                 _IndexValueList = new HashSet<IndexValue<TValue>>();
 
-                var val = new IndexValue<TValue>();
+                #region size estimation
+
+                _estimatedSize += EstimatedSizeConstants.HashSet;
+
+                #endregion
+
+                IndexValue<TValue> val = null;
 
                 //rebuild the indexvaluelist by adding/removing all sets of the history items
                 foreach (var indexValueHistory in _IndexValueHistoryList.Reverse())
                 {
                     
                     foreach (var remVal in indexValueHistory.RemSet)
-                    {                        
-                        _IndexValueList.Remove(new IndexValue<TValue>(remVal));
+                    {
+                        val = new IndexValue<TValue>(remVal);
+
+                        #region size estimation
+
+                        _estimatedSize -= val.GetEstimatedSize();
+
+                        #endregion
+
+                        _IndexValueList.Remove(val);
                     }
                     foreach (var addVal in indexValueHistory.AddSet)
                     {
-                        _IndexValueList.Add(new IndexValue<TValue>(addVal));
+                        val = new IndexValue<TValue>(addVal);
+
+                        #region size estimation
+
+                        _estimatedSize += val.GetEstimatedSize();
+
+                        #endregion
+
+                        _IndexValueList.Add(val);
                     }
                 }
             }
@@ -204,6 +215,8 @@ namespace sones.Lib.DataStructures.Indices
         {
             _IndexValueList        = new HashSet<IndexValue<TValue>>();
             _IndexValueHistoryList = new LinkedList<IndexValueHistory<TValue>>();
+
+            _estimatedSize = GetBaseSize() + EstimatedSizeConstants.HashSet + EstimatedSizeConstants.LinkedList;
         }
 
         #endregion
@@ -217,6 +230,8 @@ namespace sones.Lib.DataStructures.Indices
         public IndexValueHistoryList(TValue myValue)
             : this()
         {
+            //size estimation within Add
+
             Add(myValue);
         }
 
@@ -231,6 +246,8 @@ namespace sones.Lib.DataStructures.Indices
         public IndexValueHistoryList(IEnumerable<TValue> myValues)
             : this()
         {
+            //size estimation within Add
+
             Add(myValues);
         }
 
@@ -263,6 +280,8 @@ namespace sones.Lib.DataStructures.Indices
         public IndexValueHistoryList(TValue myValue, UInt64 myTimestamp)
             : this()
         {
+
+            //size estimation within Add
             Add(myValue, myTimestamp);
         }
 
@@ -404,6 +423,8 @@ namespace sones.Lib.DataStructures.Indices
                     // If there is nothing to add, then there's no need for a new revision
                     if (NewValues.Count > 0)
                     {
+                        IndexValueHistory<TValue> aValueHistory = null;
+
                         switch (myIndexSetStrategy)
                         {
 
@@ -414,9 +435,15 @@ namespace sones.Lib.DataStructures.Indices
                                 OldValues.ExceptWith(InterSect);
 
                                 // Add all to the history log
-                                _IndexValueHistoryList.AddFirst(new IndexValueHistory<TValue>(myTimestamp, NewValues, OldValues));
+                                aValueHistory = new IndexValueHistory<TValue>(myTimestamp, NewValues, OldValues);
+                                _estimatedSize += aValueHistory.GetEstimatedSize();
+                                _IndexValueHistoryList.AddFirst(aValueHistory);
 
                                 // Remove all old values
+                                foreach (var aIndexValue in _IndexValueList)
+                                {
+                                    _estimatedSize -= aIndexValue.GetEstimatedSize();
+                                }
                                 _IndexValueList.Clear();
 
                                 break;
@@ -427,15 +454,22 @@ namespace sones.Lib.DataStructures.Indices
                                 NewValues.ExceptWith(OldValues);
 
                                 // Add all to the history log
-                                _IndexValueHistoryList.AddFirst(new IndexValueHistory<TValue>(myTimestamp, NewValues, null));
+                                aValueHistory = new IndexValueHistory<TValue>(myTimestamp, NewValues, null);
+                                _estimatedSize += aValueHistory.GetEstimatedSize();
+                                _IndexValueHistoryList.AddFirst(aValueHistory);
 
                                 break;
 
                         }
 
                         // Add new values
+                        IndexValue<TValue> aValue = null;
                         foreach (var Item in NewValues)
-                            _IndexValueList.Add(new IndexValue<TValue>(Item));
+                        {
+                            aValue = new IndexValue<TValue>(Item);
+                            _estimatedSize += aValue.GetEstimatedSize();
+                            _IndexValueList.Add(aValue);
+                        }
                     }
 
                 }
@@ -452,16 +486,30 @@ namespace sones.Lib.DataStructures.Indices
 
         public Boolean Remove(TValue myValue)
         {
-
-            //var _Success = (from ll in _IndexValueList where ll.Value.Equals(myValue) select _IndexValueList.Remove(ll)).First<Boolean>();
-            var _Success = (from ll in _IndexValueList where ll.Value.Equals(myValue) select _IndexValueList.Remove(ll)).FirstOrDefault<Boolean>();
+            var _Success = (from ll in _IndexValueList where ll.Value.Equals(myValue) select RemoveAValue(_IndexValueList, ll)).FirstOrDefault<Boolean>();
 
             // Add Remove-Operation to the HistoryLog
             if (_Success)
-                _IndexValueHistoryList.AddFirst(new LinkedListNode<IndexValueHistory<TValue>>(new IndexValueHistory<TValue>(null, new HashSet<TValue>{ myValue })));
+            {
+                IndexValueHistory<TValue> aValue = new IndexValueHistory<TValue>(null, new HashSet<TValue> { myValue });
+                _estimatedSize += aValue.GetEstimatedSize();
+
+                _IndexValueHistoryList.AddFirst(new LinkedListNode<IndexValueHistory<TValue>>(aValue));
+            }
 
             return _Success;
 
+        }
+
+        private bool RemoveAValue(HashSet<IndexValue<TValue>> myIndexValueList, IndexValue<TValue> ll)
+        {
+            if (myIndexValueList.Remove(ll))
+            {
+                _estimatedSize -= ll.GetEstimatedSize();
+                return true;
+            }
+
+            return false;
         }
 
         #endregion
@@ -472,11 +520,16 @@ namespace sones.Lib.DataStructures.Indices
         {
 
             //var _Success = (from ll in _IndexValueList where ll.Value.Equals(myValue) select _IndexValueList.Remove(ll)).First<Boolean>();
-            var _Success = (from ll in _IndexValueList where ll.Value.Equals(myValue) select _IndexValueList.Remove(ll)).FirstOrDefault<Boolean>();
+            var _Success = (from ll in _IndexValueList where ll.Value.Equals(myValue) select RemoveAValue(_IndexValueList, ll)).FirstOrDefault<Boolean>();
 
             // Add Remove-Operation to the HistoryLog
             if (_Success)
-                _IndexValueHistoryList.AddFirst(new LinkedListNode<IndexValueHistory<TValue>>(new IndexValueHistory<TValue>(myTimestamp, null, new HashSet<TValue> { myValue })));
+            {
+                IndexValueHistory<TValue> aValue = new IndexValueHistory<TValue>(myTimestamp, null, new HashSet<TValue> { myValue });
+                _estimatedSize += aValue.GetEstimatedSize();
+
+                _IndexValueHistoryList.AddFirst(new LinkedListNode<IndexValueHistory<TValue>>(aValue));
+            }
 
             return _Success;
 
@@ -492,10 +545,12 @@ namespace sones.Lib.DataStructures.Indices
             var _HashSet  = new HashSet<TValue>(from Item in _IndexValueList select Item.Value);
             var _ToDelete = new HashSet<TValue>(_HashSet.Intersect<TValue>(myValues));
 
-            var _Success  = (from Item in _IndexValueList where _ToDelete.Contains<TValue>(Item.Value) select _IndexValueList.Remove(Item)).Max<Boolean>();
+            var _Success  = (from Item in _IndexValueList where _ToDelete.Contains<TValue>(Item.Value) select RemoveAValue(_IndexValueList, Item)).Max<Boolean>();
 
             // Add Remove-Operation to the HistoryLog
-            _IndexValueHistoryList.AddFirst(new LinkedListNode<IndexValueHistory<TValue>>(new IndexValueHistory<TValue>(null, _ToDelete)));
+            IndexValueHistory<TValue> aValue =new IndexValueHistory<TValue>(null, _ToDelete);
+            _estimatedSize += aValue.GetEstimatedSize();
+            _IndexValueHistoryList.AddFirst(new LinkedListNode<IndexValueHistory<TValue>>(aValue));
 
             return _Success;
 
@@ -511,10 +566,12 @@ namespace sones.Lib.DataStructures.Indices
             var _HashSet = new HashSet<TValue>(from Item in _IndexValueList select Item.Value);
             var _ToDelete = new HashSet<TValue>(_HashSet.Intersect<TValue>(myValues));
 
-            var _Success = (from Item in _IndexValueList where _ToDelete.Contains<TValue>(Item.Value) select _IndexValueList.Remove(Item)).Max<Boolean>();
+            var _Success = (from Item in _IndexValueList where _ToDelete.Contains<TValue>(Item.Value) select RemoveAValue(_IndexValueList, Item)).Max<Boolean>();
 
             // Add Remove-Operation to the HistoryLog
-            _IndexValueHistoryList.AddFirst(new LinkedListNode<IndexValueHistory<TValue>>(new IndexValueHistory<TValue>(myTimestamp, null, _ToDelete)));
+            IndexValueHistory<TValue> aValue =new IndexValueHistory<TValue>(myTimestamp, null, _ToDelete);
+            _estimatedSize += aValue.GetEstimatedSize();
+            _IndexValueHistoryList.AddFirst(new LinkedListNode<IndexValueHistory<TValue>>(aValue));
 
             return _Success;
 
@@ -536,16 +593,27 @@ namespace sones.Lib.DataStructures.Indices
 
                     if (_HashSet.Count > 0)
                     {
-
+                        foreach (var aIndexValue in _IndexValueList)
+                        {
+                            _estimatedSize -= aIndexValue.GetEstimatedSize();
+                        }
                         _IndexValueList.Clear();
 
                         // Add Remove-Operation to the HistoryLog
-                        _IndexValueHistoryList.AddFirst(new LinkedListNode<IndexValueHistory<TValue>>(new IndexValueHistory<TValue>(null, _HashSet)));
+                        IndexValueHistory<TValue> aValue =new IndexValueHistory<TValue>(null, _HashSet);
+                        _estimatedSize += aValue.GetEstimatedSize();
+                        _IndexValueHistoryList.AddFirst(new LinkedListNode<IndexValueHistory<TValue>>(aValue));
 
                     }
 
                 }
             }
+
+            #region estimated size
+
+            _estimatedSize = GetBaseSize() + EstimatedSizeConstants.LinkedList + EstimatedSizeConstants.HashSet;
+
+            #endregion
 
         }
 
@@ -565,11 +633,16 @@ namespace sones.Lib.DataStructures.Indices
 
                     if (_HashSet.Count > 0)
                     {
-
+                        foreach (var aIndexValue in _IndexValueList)
+                        {
+                            _estimatedSize -= aIndexValue.GetEstimatedSize();
+                        }
                         _IndexValueList.Clear();
 
                         // Add Remove-Operation to the HistoryLog
-                        _IndexValueHistoryList.AddFirst(new LinkedListNode<IndexValueHistory<TValue>>(new IndexValueHistory<TValue>(myTimestamp, null, _HashSet)));
+                        IndexValueHistory<TValue> aValue =new IndexValueHistory<TValue>(myTimestamp, null, _HashSet);
+                        _estimatedSize += aValue.GetEstimatedSize();
+                        _IndexValueHistoryList.AddFirst(new LinkedListNode<IndexValueHistory<TValue>>(aValue));
 
                     }
 
@@ -740,22 +813,30 @@ namespace sones.Lib.DataStructures.Indices
         /// <returns>true if sucseeded, false if not</returns>
         public Boolean RemoveLatestFromHistory()
         {
-
-            if (_IndexValueHistoryList.Count > 1)
+            lock (_IndexValueHistoryList)
             {
+                if (_IndexValueHistoryList.Count > 1)
+                {
+                    RemoveLastFromHistory(_IndexValueHistoryList);
 
-                _IndexValueHistoryList.RemoveLast();
+                    // There might be some empty entries
+                    while (_IndexValueHistoryList.Last.Value.AddSet.Count == 0 && _IndexValueHistoryList.Last.Value.RemSet.Count == 0)
+                    {
+                        RemoveLastFromHistory(_IndexValueHistoryList);
+                    }
 
-                // There might be some empty entries
-                while (_IndexValueHistoryList.Last.Value.AddSet.Count == 0 && _IndexValueHistoryList.Last.Value.RemSet.Count == 0)
-                    _IndexValueHistoryList.RemoveLast();
+                    return true;
 
-                return true;
+                }
 
+                return false;
             }
+        }
 
-            return false;
-
+        private void RemoveLastFromHistory(LinkedList<IndexValueHistory<TValue>> myIndexValueHistoryList)
+        {
+            _estimatedSize -= myIndexValueHistoryList.Last.Value.GetEstimatedSize();
+            myIndexValueHistoryList.RemoveLast();
         }
 
         #endregion
@@ -770,8 +851,10 @@ namespace sones.Lib.DataStructures.Indices
 
             lock (_IndexValueHistoryList)
             {
-                while ( (UInt64) _IndexValueHistoryList.Count > myNewHistorySize)
-                    _IndexValueHistoryList.RemoveLast();
+                while ((UInt64)_IndexValueHistoryList.Count > myNewHistorySize)
+                {
+                    RemoveLastFromHistory(_IndexValueHistoryList);
+                }
             }
 
         }
@@ -790,8 +873,15 @@ namespace sones.Lib.DataStructures.Indices
 
                 var _HashSet = new HashSet<TValue>(from Item in _IndexValueList select Item.Value);
 
+                foreach (var aValueHistoryElement in _IndexValueHistoryList)
+                {
+                    _estimatedSize -= aValueHistoryElement.GetEstimatedSize();
+                }
                 _IndexValueHistoryList.Clear();
-                _IndexValueHistoryList.AddFirst(new LinkedListNode<IndexValueHistory<TValue>>(new IndexValueHistory<TValue>(_HashSet, null)));
+
+                IndexValueHistory<TValue> aValue = new IndexValueHistory<TValue>(_HashSet, null);
+                _estimatedSize += aValue.GetEstimatedSize();
+                _IndexValueHistoryList.AddFirst(new LinkedListNode<IndexValueHistory<TValue>>(aValue));
 
             }
         }
@@ -800,6 +890,32 @@ namespace sones.Lib.DataStructures.Indices
 
         #endregion
 
+        #region IEstimable
+
+        public ulong GetEstimatedSize()
+        {
+            return _estimatedSize;
+        }
+
+        private ulong GetBaseSize()
+        {
+            //ClassDefaultSize + estimatedSize
+            return EstimatedSizeConstants.ClassDefaultSize + EstimatedSizeConstants.UInt64;
+        }
+
+        private ulong CalcSizeOfIndexValueHistoryList(LinkedList<IndexValueHistory<TValue>> myIndexValueHistoryList)
+        {
+            UInt64 result = EstimatedSizeConstants.LinkedList;
+
+            foreach (var aListElement in myIndexValueHistoryList)
+            {
+                result += aListElement.GetEstimatedSize();
+            }
+
+            return result;
+        }
+
+        #endregion
     }
 
 }

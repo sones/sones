@@ -1,24 +1,4 @@
-/*
-* sones GraphDB - Open Source Edition - http://www.sones.com
-* Copyright (C) 2007-2010 sones GmbH
-*
-* This file is part of sones GraphDB Open Source Edition (OSE).
-*
-* sones GraphDB OSE is free software: you can redistribute it and/or modify
-* it under the terms of the GNU Affero General Public License as published by
-* the Free Software Foundation, version 3 of the License.
-* 
-* sones GraphDB OSE is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU Affero General Public License for more details.
-*
-* You should have received a copy of the GNU Affero General Public License
-* along with sones GraphDB OSE. If not, see <http://www.gnu.org/licenses/>.
-* 
-*/
-
-/* GraphFS - BlockIntegrityObject
+﻿/* GraphFS - BlockIntegrityObject
  * (c) Achim Friedland, 2008 - 2009
  * 
  * This represents a structure for saving the block integrity check
@@ -110,7 +90,7 @@ namespace sones.GraphFS.InternalObjects
     /// This structure can handle multiple block integrity check arrays using
     /// different block sizes.
     /// </summary>
-    public class BlockIntegrityObject : ADictionaryObject<UInt64ArrayWrapper, ByteArrayWrapper>
+    public class BlockIntegrityObject : ADictionaryObject<UInt64, Byte[]>
     {
 
         #region Data
@@ -251,6 +231,16 @@ namespace sones.GraphFS.InternalObjects
         public override ulong GetEstimatedSize()
         {
             return EstimatedSizeConstants.UndefinedObjectSize;
+        }
+
+        public override ulong GetEstimatedSizeOfKey(UInt64 myTKey)
+        {
+            return EstimatedSizeConstants.UInt64;
+        }
+
+        public override ulong GetEstimatedSizeOfValue(Byte[] myTValue)
+        {
+            return EstimatedSizeConstants.CalcByteArray(myTValue);
         }
 
         #endregion
