@@ -341,7 +341,7 @@ namespace sones.Networking.HTTP
                             #region Check HTTPSecurity
 
                             // the server switched on authentication AND the method does not explicit allow not authentication
-                            if (HTTPSecurity != null && !(parsedCallback.Item1.NeedsExplicitAuthentication.HasValue && !parsedCallback.Item1.NeedsExplicitAuthentication.Value))
+                            if (HTTPSecurity != null)// && !(parsedCallback.Item1.NeedsExplicitAuthentication.HasValue && !parsedCallback.Item1.NeedsExplicitAuthentication.Value))
                             {
 
                                 #region Authentication

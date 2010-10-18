@@ -504,17 +504,6 @@ namespace sones
             : this(myGraphAppSettings)
         {
             _ObjectCache                        = myIObjectCache;
-            myGraphAppSettings.Subscribe<ObjectCacheCapacitySetting>(myGraphAppSettings_OnSettingChanging);
-        }
-
-        Exceptional myGraphAppSettings_OnSettingChanging(GraphSettingChangingEventArgs myGraphDSSetting)
-        {
-            if (myGraphDSSetting.Setting is ObjectCacheCapacitySetting)
-            {
-                IObjectCache.Capacity = UInt64.Parse(myGraphDSSetting.SettingValue);
-            }
-
-            return new Exceptional();
         }
 
         #endregion
@@ -1181,6 +1170,8 @@ namespace sones
                 //// Register the mountedFS object in the list of ChildFileSystems
                 _GraphFSLookuptable.Set(myMountPoint, myIGraphFS);
 
+                //// Subscribe to cache setting change - will be unsubscribed on unmount
+                _GraphAppSettings.Subscribe<ObjectCacheCapacitySetting>(myGraphAppSettings_OnSettingChanging);
 
             }
 
@@ -1233,6 +1224,9 @@ namespace sones
             //_NotificationDispatcher.Dispose();
             _ObjectCache.Clear();
 
+            _GraphAppSettings.UnSubscribe<ObjectCacheCapacitySetting>(myGraphAppSettings_OnSettingChanging);
+
+
             return Exceptional.OK;
 
         }
@@ -1244,6 +1238,7 @@ namespace sones
         public Exceptional UnmountFileSystem(SessionToken mySessionToken, ObjectLocation myMountPoint)
         {
             var _ChildIGraphFS = GetChildFileSystem(myMountPoint, false, mySessionToken);
+
             return _ChildIGraphFS.UnmountFileSystem(mySessionToken);
         }
 
@@ -1303,6 +1298,19 @@ namespace sones
 
         #endregion
 
+        #region myGraphAppSettings_OnSettingChanging
+
+        protected Exceptional myGraphAppSettings_OnSettingChanging(GraphSettingChangingEventArgs myGraphDSSetting)
+        {
+            if (myGraphDSSetting.Setting is ObjectCacheCapacitySetting)
+            {
+                IObjectCache.Capacity = UInt64.Parse(myGraphDSSetting.SettingValue);
+            }
+
+            return new Exceptional();
+        }
+        
+        #endregion
 
         #region INode and ObjectLocator
 
@@ -2267,7 +2275,7 @@ namespace sones
                                     //_LoadObjectExceptional.Value.ObjectLocatorReference = _ObjectLocatorExceptional.Value;
 
                                     // Cache the loaded object
-                                    _ObjectCache.StoreAFSObject(_LoadObjectExceptional.Value, false);
+                                    _ObjectCache.StoreAFSObject(_LoadObjectExceptional.Value, CachePriority.LOW);
                                     //_ObjectCache.StoreAFSObject(_LoadObjectExceptional.Value.ObjectUUID, _LoadObjectExceptional.Value, false);
 
                                     //_Exceptional.Value = _LoadObjectExceptional.Value;
@@ -2613,8 +2621,8 @@ namespace sones
 
                 #region Cache ObjectLocator and AFSObject
 
-                _ObjectCache.StoreObjectLocator(myAFSObject.ObjectLocatorReference, false);
-                _ObjectCache.StoreAFSObject(myAFSObject, false);
+                _ObjectCache.StoreObjectLocator(myAFSObject.ObjectLocatorReference, CachePriority.LOW);
+                _ObjectCache.StoreAFSObject(myAFSObject, CachePriority.LOW);
 
                 #endregion
 
@@ -2645,7 +2653,11 @@ namespace sones
 
                         }
 
-                    _ObjectEdition1.Remove(_ObjectEdition1.OldestRevisionID);
+                    var removeResult = RemoveObjectRevision(myAFSObject.ObjectLocatorReference, myAFSObject.ObjectStream, _ObjectEdition1, _ObjectEdition1.OldestRevisionID);
+                    if (removeResult.Failed())
+                    {
+                        return removeResult;
+                    }
 
                 }
 
@@ -2658,6 +2670,7 @@ namespace sones
             // Most low-level implementations run their virtual-override at this point!
 
         }
+
 
         #endregion
 
@@ -4974,8 +4987,15 @@ namespace sones
         }
 
 
-        
+        #region RemoveObjectRevision
 
+        protected virtual Exceptional RemoveObjectRevision(ObjectLocator myObjectLocator, String myObjectStream, ObjectEdition myObjectEdition, ObjectRevisionID myObjectRevisionIDToDelete)
+        {
+            myObjectEdition.Remove(myObjectRevisionIDToDelete);
+            return new Exceptional();
+        }
+
+        #endregion
 
         #region ResolveObjectLocation(myObjectLocation, ..., SessionToken mySessionToken)
 

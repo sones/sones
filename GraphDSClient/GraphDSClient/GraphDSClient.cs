@@ -27,8 +27,6 @@ using sones.GraphDB.Transactions;
 
 using sones.GraphIO;
 
-using sones.GraphDS.API.CSharp;
-
 using sones.Lib;
 using sones.Lib.DataStructures;
 using sones.Lib.ErrorHandling;
@@ -39,7 +37,7 @@ using sones.GraphDB.NewAPI;
 namespace sones.GraphDSClient
 {
 
-    public class GraphDSClient1 : AGraphDSSharp
+    public class GraphDSClient1 : ANewGraphDSSharp
     {
 
         #region Data
@@ -385,7 +383,8 @@ namespace sones.GraphDSClient
 
         public override SelectToObjectGraph QuerySelect(String myQuery)
         {
-            return new SelectToObjectGraph(QueryAsString(myQuery).Value);
+            //return new SelectToObjectGraph(QueryAsString(myQuery).Value);
+            return new SelectToObjectGraph(Query(myQuery));
         }
 
         #endregion

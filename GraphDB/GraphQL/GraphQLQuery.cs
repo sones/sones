@@ -26,6 +26,15 @@ namespace sones.GraphDB.GraphQL
         GraphQueryLanguage graphQL;
         Compiler _IronyCompiler;
 
+        #region (public,static) EncodeToQueryText(string)
+
+        public static string EncodeQueryText(string queryText)
+        {
+            return queryText.Replace("'", "''");
+        }
+
+        #endregion
+
         public GraphQLQuery(sones.GraphDB.Plugin.DBPluginManager pluginManager)
         {
 

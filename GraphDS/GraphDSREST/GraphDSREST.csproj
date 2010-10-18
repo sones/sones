@@ -207,6 +207,10 @@
       <Project>{0A4A8E31-9ED5-4581-932F-62BAF97C36DD}</Project>
       <Name>GraphDSCLI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GraphDSCommon\GraphDSCommon.csproj">
+      <Project>{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90}</Project>
+      <Name>GraphDSCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GraphDSSharp\GraphDSSharp.csproj">
       <Project>{5C3DCC64-FBBE-4050-A7F5-17F52D85DC8F}</Project>
       <Name>GraphDSSharp</Name>

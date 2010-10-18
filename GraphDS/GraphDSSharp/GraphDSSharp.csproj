@@ -74,10 +74,8 @@
   <ItemGroup>
     <Compile Include="AGraphDSSharp.cs" />
     <Compile Include="CodeGeneration\CodeGenerator.cs" />
-    <Compile Include="Errors\GraphDSError.cs" />
     <Compile Include="FluentInterface\FluentExtensions.cs" />
     <Compile Include="GraphDSSharp.cs" />
-    <Compile Include="Errors\GraphDSSharpExceptions.cs" />
     <Compile Include="Linq\LinqExtensions.cs" />
     <Compile Include="Linq\LinqQueryable.cs" />
     <Compile Include="Linq\LinqQueryProvider.cs" />
@@ -152,10 +150,6 @@
       <Project>{A9AE40FF-1A21-414A-9FE7-3BE13644CC6D}</Project>
       <Name>Newtonsoft.Json</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Lib\Irony\Irony.csproj">
-      <Project>{CDD9C45F-F285-4A80-B39F-3B1B8B7B5214}</Project>
-      <Name>Irony</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Lib\Lib\Lib.csproj">
       <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
       <Name>Lib</Name>
@@ -168,13 +162,9 @@
       <Project>{81E75577-B787-4537-B191-F3326C6E5865}</Project>
       <Name>Notifications %28Dependencies\Notifications\Notifications%29</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\StorageEngines\StorageEnginesInterface\StorageEnginesInterface.csproj">
-      <Project>{F3BF32FF-7113-4DE6-801B-BB234A76539B}</Project>
-      <Name>StorageEnginesInterface</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\StorageEngines\StorageEngines\StorageEngines.csproj">
-      <Project>{274DBD0D-0D7A-4A6F-B193-15238E89BE81}</Project>
-      <Name>StorageEngines %28Dependencies\StorageEngines\StorageEngines%29</Name>
+    <ProjectReference Include="..\GraphDSCommon\GraphDSCommon.csproj">
+      <Project>{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90}</Project>
+      <Name>GraphDSCommon</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

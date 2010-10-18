@@ -2154,8 +2154,17 @@ namespace sones.GraphDB.Managers.Select
                             }
                             else
                             {
+                                GraphDBType type = null;
+                                if (res.Value.TypeAttribute.IsBackwardEdge)
+                                {
+                                    type = _DBContext.DBTypeManager.GetTypeByUUID(res.Value.TypeAttribute.BackwardEdgeDefinition.TypeUUID);
+                                }
+                                else
+                                {
+                                    type = res.Value.TypeAttribute.GetDBType(_DBContext.DBTypeManager);
+                                }
 
-                                Attributes.Add(alias, GetNotResolvedReferenceEdgeAttributeValue(res.Value.Value as IReferenceEdge, res.Value.TypeAttribute.GetDBType(_DBContext.DBTypeManager), _DBContext));
+                                Attributes.Add(alias, GetNotResolvedReferenceEdgeAttributeValue(res.Value.Value as IReferenceEdge, type, _DBContext));
 
                             }
 

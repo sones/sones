@@ -791,7 +791,7 @@ namespace sones.GraphDB.NewAPI
                 return false;
 
             var _Object = myObject as IVertex;
-            if (_Object == null)
+            if (_Object != null)
                 return (Equals(_Object));
 
             return false;

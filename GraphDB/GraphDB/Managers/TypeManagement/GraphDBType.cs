@@ -832,9 +832,9 @@ namespace sones.GraphDB.TypeManagement
 
             }
 
-            var objectDirectoryShards = UInt16.Parse(myDBContext.GraphAppSettings.Get<AttributeIdxShardsSetting>());
+            var attributeIdxShards = UInt16.Parse(myDBContext.GraphAppSettings.Get<AttributeIdxShardsSetting>());
 
-            var _NewAttributeIndex = new AttributeIndex(myIndexName, myIndexEdition, myAttributeUUIDs, this, objectDirectoryShards, myIndexType);
+            var _NewAttributeIndex = new AttributeIndex(myIndexName, myIndexEdition, myAttributeUUIDs, this, attributeIdxShards, myIndexType);
 
             var CreateExcept = AddAttributeIndex(_NewAttributeIndex, myDBContext);
 

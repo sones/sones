@@ -7,7 +7,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
 
 using sones.GraphFS;
 using sones.GraphFS.Caches;
@@ -19,7 +23,6 @@ using sones.GraphFS.Session;
 using sones.GraphFS.Transactions;
 
 using sones.GraphDB;
-using sones.GraphDB.GraphQL;
 using sones.GraphDB.NewAPI;
 using sones.GraphDB.Result;
 using sones.GraphDB.Transactions;
@@ -31,12 +34,15 @@ using sones.Lib.Settings;
 
 using sones.Notifications;
 
+using sones.GraphIO;
+using sones.GraphIO.XML;
+
 #endregion
 
-namespace sones.GraphDS.API.CSharp
+namespace sones.GraphDSClient
 {
 
-    public abstract class AGraphDSSharp : IGraphFSSession
+    public abstract class ANewGraphDSSharp : IGraphFSSession
     {
 
         #region Data
@@ -140,9 +146,7 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
-        protected GraphQLQuery _GQLQuery;
-
-        public IGraphDBSession IGraphDBSession { get; protected set; }
+ //       public IGraphDBSession IGraphDBSession { get; protected set; }
 
         #endregion
 
@@ -156,7 +160,7 @@ namespace sones.GraphDS.API.CSharp
 
         #region Constructor(s)
 
-        public AGraphDSSharp()
+        public ANewGraphDSSharp()
         {
             FileSystemSize                  = 50000000;
             _SessionInfo                    = new FSSessionInfo("root");
@@ -235,11 +239,7 @@ namespace sones.GraphDS.API.CSharp
         public Exceptional<IEnumerable<T>> Query<T>(String myQueryString, Action<QueryResult> myAction = null, Action<QueryResult> mySuccessAction = null, Action<QueryResult> myPartialSuccessAction = null, Action<QueryResult> myFailureAction = null)
             where T : Vertex, new()
         {
-
-            var _QueryResultString = QueryAsString(myQueryString);
-
-            return new Exceptional<IEnumerable<T>>(new SelectToObjectGraph(_QueryResultString.Value).ToVertexType<T>());
-
+            return new Exceptional<IEnumerable<T>>(new SelectToObjectGraph(Query(myQueryString)).ToVertexType<T>());
         }
 
         #endregion
@@ -524,48 +524,6 @@ namespace sones.GraphDS.API.CSharp
         public abstract Exceptional<IGraphFSStream> OpenStream(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevision, ulong myObjectCopy);
 
         public abstract Exceptional<IGraphFSStream> OpenStream(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevision, ulong myObjectCopy, FileMode myFileMode, FileAccess myFileAccess, FileShare myFileShare, FileOptions myFileOptions, ulong myBufferSize);
-
-        #endregion
-
-
-
-        #region Shutdown()
-
-        public virtual Exceptional Shutdown(Boolean myWipeFilesystem = true)
-        {
-
-            Exceptional retVal = new Exceptional();
-
-            try
-            {
-
-                if (ShutdownEvent != null)
-                    ShutdownEvent(this, EventArgs.Empty);
-
-                IGraphDBSession.Shutdown();
-                retVal.PushIExceptional(IGraphFS.UnmountAllFileSystems(_SessionToken));
-
-                retVal.PushIExceptional(GraphAppSettings.SaveXML(GraphAppSettingsLocation));
-                GraphAppSettings.UnsubscribeAll();
-
-                if (myWipeFilesystem)
-                {
-                    retVal.PushIExceptional(IGraphFS.WipeFileSystem(_SessionToken));
-                    File.Delete(GraphAppSettingsLocation);
-                }
-
-                IGraphDBSession = null;
-
-            }
-
-            catch (Exception e)
-            {
-                return retVal.PushIError(new UnspecifiedError(e.ToString()));
-            }
-
-            return retVal;
-
-        }
 
         #endregion
 

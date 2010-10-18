@@ -165,6 +165,10 @@
       <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
       <Name>Lib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\GraphDSCommon\GraphDSCommon.csproj">
+      <Project>{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90}</Project>
+      <Name>GraphDSCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GraphDSSharp\GraphDSSharp.csproj">
       <Project>{5C3DCC64-FBBE-4050-A7F5-17F52D85DC8F}</Project>
       <Name>GraphDSSharp</Name>

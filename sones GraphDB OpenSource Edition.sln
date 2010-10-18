@@ -83,9 +83,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphDBAPI", "GraphDB\Graph
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphQLImportExport", "GraphDB\ImportExportGQL\GraphQLImportExport.csproj", "{3F0E3C18-6B9C-4F27-AD00-104DE47F2D5D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphDSCommon", "GraphDS\GraphDSCommon\GraphDSCommon.csproj", "{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 31
+		SccNumberOfProjects = 32
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010:8080/tfs/sones
 		SccLocalPath0 = .
@@ -208,6 +210,10 @@ Global
 		SccProjectTopLevelParentUniqueName30 = sones\u0020GraphDB\u0020OpenSource\u0020Edition.sln
 		SccProjectName30 = GraphDB/ImportExportGQL
 		SccLocalPath30 = GraphDB\\ImportExportGQL
+		SccProjectUniqueName31 = GraphDS\\GraphDSCommon\\GraphDSCommon.csproj
+		SccProjectTopLevelParentUniqueName31 = sones\u0020GraphDB\u0020OpenSource\u0020Edition.sln
+		SccProjectName31 = GraphDS/GraphDSCommon
+		SccLocalPath31 = GraphDS\\GraphDSCommon
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -598,6 +604,18 @@ Global
 		{3F0E3C18-6B9C-4F27-AD00-104DE47F2D5D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{3F0E3C18-6B9C-4F27-AD00-104DE47F2D5D}.Release|x64.ActiveCfg = Release|Any CPU
 		{3F0E3C18-6B9C-4F27-AD00-104DE47F2D5D}.Release|x86.ActiveCfg = Release|Any CPU
+		{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90}.Debug|x64.ActiveCfg = Debug|x86
+		{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90}.Debug|x86.ActiveCfg = Debug|x86
+		{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90}.Debug|x86.Build.0 = Debug|x86
+		{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90}.Release|Any CPU.ActiveCfg = Release|x86
+		{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90}.Release|Mixed Platforms.Build.0 = Release|x86
+		{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90}.Release|x64.ActiveCfg = Release|x86
+		{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90}.Release|x86.ActiveCfg = Release|x86
+		{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -623,6 +641,7 @@ Global
 		{1AE9C2A9-4916-488D-B825-7B8657C0BDE5} = {B120BB3A-778D-4540-A1B8-34FB0E1090D2}
 		{5C3DCC64-FBBE-4050-A7F5-17F52D85DC8F} = {B120BB3A-778D-4540-A1B8-34FB0E1090D2}
 		{64D2E3F3-2FE6-4532-AE33-3707C7CC708C} = {B120BB3A-778D-4540-A1B8-34FB0E1090D2}
+		{0AE6C6E2-73F8-4FF9-9DBB-A4C953FF5F90} = {B120BB3A-778D-4540-A1B8-34FB0E1090D2}
 		{97235BF0-C3C4-4B4C-9583-0869CD3632AC} = {15763A39-71A7-4D3D-B571-8F2C04E99D92}
 		{B23FDA3D-8229-4CDD-91FD-9AFD7301D315} = {15763A39-71A7-4D3D-B571-8F2C04E99D92}
 		{F21EB154-C84E-4390-87CF-271E3DF4F059} = {1B6208BD-BBF8-4212-9194-639F0C736F18}
