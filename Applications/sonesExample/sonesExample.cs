@@ -227,9 +227,23 @@ namespace sonesExample
             // Start a REST service on localhost port 9975
             var _RESTService      = _GraphDSSharp.StartREST(IPAddress.Any, 9975, _HttpSecurity);
 
+            if (_RESTService.IErrors.Count() > 0)
+            {
+                Console.WriteLine(_RESTService.GetIErrorsAsString());
+                _GraphDSSharp.Shutdown();
+                Environment.Exit(-1);
+            }
+
 
             // Start a WebDAV service on localhost port 9978
             var _WebDAVService    = _GraphDSSharp.StartWebDAV(IPAddress.Any, 9978, _HttpSecurity);
+
+            if (_WebDAVService.IErrors.Count() > 0)
+            {
+                Console.WriteLine(_WebDAVService.GetIErrorsAsString());
+                _GraphDSSharp.Shutdown();
+                Environment.Exit(-1);
+            }
 
 
             // Send GraphDS notification

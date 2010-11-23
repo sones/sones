@@ -1,5 +1,8 @@
 sones GraphDB 1.2 (developer) Changelog:
 
+23.11.2010
+- fixed target platform
+
 18.10.2010
 - Removed GraphDB project reference from GraphDSClient
 - ALRUObjectCache added
