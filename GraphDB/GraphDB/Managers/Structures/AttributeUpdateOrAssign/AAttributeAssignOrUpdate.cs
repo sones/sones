@@ -22,11 +22,14 @@ using sones.GraphDB.TypeManagement;
 namespace sones.GraphDB.Managers.Structures
 {
 
+    /// <summary>
+    /// Abstract class to assign or update attributes
+    /// </summary>
     public abstract class AAttributeAssignOrUpdate : AAttributeAssignOrUpdateOrRemove
     {
 
         #region Ctors
-
+        
         public AAttributeAssignOrUpdate() { }
 
         public AAttributeAssignOrUpdate(IDChainDefinition myIDChainDefinition)
@@ -38,12 +41,26 @@ namespace sones.GraphDB.Managers.Structures
 
         #region abstract GetValueForAttribute
 
-        public abstract Exceptional<IObject> GetValueForAttribute(DBObjectStream aDBObject, DBContext dbContext, GraphDBType myGraphDBType);
+        /// <summary>
+        /// Return the value of an attribute
+        /// </summary>
+        /// <param name="myDBObject">The db object stream that contains the attribute</param>
+        /// <param name="_dbContext">The db context</param>
+        /// <param name="_graphDBType">The _graphDBType of the attribute</param>
+        /// <returns>An exceptional of IObjects</returns>
+        public abstract Exceptional<IObject> GetValueForAttribute(DBObjectStream myDBObject, DBContext myDBContext, GraphDBType myGraphDBType);
 
         #endregion
 
         #region Update
 
+        /// <summary>
+        /// Updates an existing attribute value
+        /// </summary>
+        /// <param name="_dbContext">The db context</param>
+        /// <param name="myDBObjectStream">The objectstream to update</param>
+        /// <param name="_graphDBType">The _graphDBType of the db objectstream</param>
+        /// <returns>An excpetional with results</returns>
         public override Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>> Update(DBContext myDBContext, DBObjectStream myDBObjectStream, GraphDBType myGraphDBType)
         {
 
@@ -242,8 +259,8 @@ namespace sones.GraphDB.Managers.Structures
                 Dictionary<AttributeUUID, IObject> userdefinedAttributes = new Dictionary<AttributeUUID, IObject>();
                 userdefinedAttributes.Add(myAAttributeAssign.AttributeIDChain.LastAttribute.UUID, newValue);
 
-                var omm = new ObjectManipulationManager();
-                var setBackEdges = omm.SetBackwardEdges(myGraphDBType, userdefinedAttributes, myDBObject.ObjectUUID, myDBContext);
+                var omm = new ObjectManipulationManager(myDBContext, myGraphDBType);
+                var setBackEdges = omm.SetBackwardEdges(userdefinedAttributes, myDBObject.ObjectUUID);
 
                 if (setBackEdges.Failed())
                     return new Exceptional<Tuple<string, TypeAttribute, IObject>>(setBackEdges);

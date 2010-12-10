@@ -124,6 +124,22 @@ namespace sones.GraphDS.Connectors.REST
         void GetResources(String myResource);
 
         /// <summary>
+        /// Will return internal resources
+        /// </summary>
+        /// <returns>internal resources</returns>
+        [OperationContract, NoAuthentication]
+        [WebGet(UriTemplate = "/ClientAccessPolicy.xml")]
+        void GetClientAccessPolicy();
+        
+        /// <summary>
+        /// Will return internal resources
+        /// </summary>
+        /// <returns>internal resources</returns>
+        [OperationContract, NoAuthentication]
+        [WebGet(UriTemplate = "/CrossDomain.xml")]
+        void GetCrossDomain();
+        
+        /// <summary>
         /// Get Landingpage
         /// </summary>
         /// <returns>Some HTML and JavaScript</returns>

@@ -12,6 +12,7 @@ using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.TypeManagement;
 
 using sones.Lib.ErrorHandling;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -35,7 +36,7 @@ namespace sones.GraphDB.Aggregates
 
         #region Attribute aggregate
 
-        public override Exceptional<IObject> Aggregate(IEnumerable<DBObjectStream> myDBObjects, TypeAttribute myTypeAttribute, DBContext myDBContext, params Functions.ParameterValue[] myParameters)
+        public override Exceptional<FuncParameter> Aggregate(IEnumerable<DBObjectStream> myDBObjects, TypeAttribute myTypeAttribute, DBContext myDBContext, params Functions.ParameterValue[] myParameters)
         {
             var aggregateResult = new DBDouble(0d);
             var total = 0UL;
@@ -45,7 +46,7 @@ namespace sones.GraphDB.Aggregates
                 var attr = dbo.GetAttribute(myTypeAttribute, myTypeAttribute.GetDBType(myDBContext.DBTypeManager), myDBContext);
                 if (attr.Failed())
                 {
-                    return attr;
+                    return new Exceptional<FuncParameter>(attr);
                 }
                 if (attr.Value != null && attr.Value is ADBBaseObject && aggregateResult.IsValidValue((attr.Value as ADBBaseObject).Value))
                 {
@@ -54,23 +55,23 @@ namespace sones.GraphDB.Aggregates
                 }
                 else
                 {
-                    return new Exceptional<IObject>(new Error_AggregateIsNotValidOnThisAttribute(myTypeAttribute.Name));
+                    return new Exceptional<FuncParameter>(new Error_AggregateIsNotValidOnThisAttribute(myTypeAttribute.Name));
                 }
             }
             aggregateResult.Div(new DBUInt64(total));
 
-            return new Exceptional<IObject>(aggregateResult);
+            return new Exceptional<FuncParameter>(new FuncParameter(aggregateResult));
         }
 
         #endregion
 
         #region Index aggregate
 
-        public override Exceptional<IObject> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext)
+        public override Exceptional<FuncParameter> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext)
         {
             if (attributeIndex is UUIDIndex)
             {
-                return new Exceptional<IObject>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "AVG(UUID) is not implemented!"));
+                return new Exceptional<FuncParameter>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "AVG(UUID) is not implemented!"));
             }
 
             var indexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(attributeIndex.IndexRelatedTypeUUID);
@@ -87,7 +88,7 @@ namespace sones.GraphDB.Aggregates
             }
             aADBBaseObject.Div(total);
 
-            return new Exceptional<IObject>(aADBBaseObject);
+            return new Exceptional<FuncParameter>(new FuncParameter(aADBBaseObject));
         }
 
         #endregion

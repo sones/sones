@@ -1,5 +1,45 @@
 sones GraphDB 1.2 (developer) Changelog:
 
+10.12.2010
+- Aggregate version compatibility change
+- ResolveEdge function bugfix
+- Aggregate enhancements
+- fixed compile error on Application solution
+- removed ObjectsDirectoryShardsSetting 
+- deintegration of ObjectsDirectorySharding
+- Changed import to use a stream as input
+- ResolveEdge function added Always show UUID and TYPE in the select result
+- Some refactoring around ObjectManipulationManager. Should allow to easy fix 674 in next step.
+- added new DirectoryObjectReloaded
+- bugfixing on the alter type command
+- another step towards a working traverser ( + some refactoring) 
+- Partially fix for bug 674. Fix the problem in INSERTORUPDATE.
+- integrated Traverser into (I)GraphDBSession
+- fixed Wortschatz query export
+- CrossDomain.xml added to REST
+- ClientAccessPolicy added as resource to REST
+- Export fix
+- Fix for bug 660. 
+- fix for bug 681. 
+- Fix for Bug 680
+- fixed bug 664 
+- several changes at traverser api moved typeuuid from GraphDB to GraphDBInterface added traverser tests
+- VersionedPlugin added to GraphDB For any changes at the GraphDB assembly you need to changed the compatible versions in ...
+- fix bug 679. Added a timeout for the JQuery request.
+- Add versionedPlugin to IGraphFS interface and GraphFSFactory. For any changes on IGraphFS change AssemblyVersion AND IGr...
+- Pass edge properties with SETOFUUIDS
+- fixing bug 656 showed another small bug, fixed now
+- VersionedPluginManager added to Lib solution
+- Changed obsolete warning for truncate
+- changed platform targets
+- ChainPartTypeOrAttributeDefinition.ToString implemented
+- fix bug 668...proof in DBTypeManager.GetBackwardReferencesForAttribute, if backward edge definition equals attribute UUI...
+- added some more source code documentation
+- Add a user function
+- Fix for the evil bug 666. Now setting the value of DBBoolean checks, if the value is castable to ADBBaseObject and takes...
+- Added a logger for some perfomance logging
+- implemented changing the objects directory and attribute index shard count
+
 23.11.2010
 - fixed target platform
 

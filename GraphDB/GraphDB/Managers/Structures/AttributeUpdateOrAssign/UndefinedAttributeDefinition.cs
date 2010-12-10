@@ -25,9 +25,18 @@ using sones.GraphDB.TypeManagement;
 namespace sones.GraphDB.Managers.Structures
 {
 
+    /// <summary>
+    /// The definition class for undefined attributes
+    /// </summary>
     public class UndefinedAttributeDefinition
     {
+        /// <summary>
+        /// The undefined attribute name
+        /// </summary>
         public String AttributeName { get; set; }
+        /// <summary>
+        /// The undefined attribute value
+        /// </summary>
         public IObject AttributeValue { get; set; }
     }
 

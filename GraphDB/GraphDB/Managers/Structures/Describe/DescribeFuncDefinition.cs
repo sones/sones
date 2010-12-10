@@ -22,11 +22,17 @@ using sones.GraphDB.NewAPI;
 
 namespace sones.GraphDB.Managers.Structures.Describe
 {
+    /// <summary>
+    /// Describes a function
+    /// </summary>
     public class DescribeFuncDefinition : ADescribeDefinition
     {
 
         #region Data
 
+        /// <summary>
+        /// The function name
+        /// </summary>
         private String _FuncName;
 
         #endregion
@@ -42,6 +48,9 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
         #region ADescribeDefinition
 
+        /// <summary>
+        /// <seealso cref=" ADescribeDefinition"/>
+        /// </summary>
         public override Exceptional<IEnumerable<Vertex>> GetResult(DBContext myDBContext)
         {
             if (!String.IsNullOrEmpty(_FuncName))

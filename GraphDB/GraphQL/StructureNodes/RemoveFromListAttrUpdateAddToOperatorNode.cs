@@ -25,8 +25,8 @@ namespace sones.GraphDB.GraphQL.StructureNodes
         {
             var idChain = ((IDNode)parseNode.ChildNodes[0].AstNode).IDChainDefinition;
             var AttrName = parseNode.ChildNodes[0].FirstChild.FirstChild.Token.ValueString;
-            var tupleDefinition = ((TupleNode)parseNode.ChildNodes[2].AstNode).TupleDefinition;
-            AttributeRemoveList = new Managers.Structures.AttributeRemoveList(idChain, AttrName, tupleDefinition);
+            var definition = ((RemoveFromListAttrUpdateScopeNode)parseNode.ChildNodes[1].AstNode).TupleDefinition;
+            AttributeRemoveList = new Managers.Structures.AttributeRemoveList(idChain, AttrName, definition);
         }
 
     }

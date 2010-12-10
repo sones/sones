@@ -884,7 +884,6 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
-
         
         #region Information Methods
 
@@ -1410,6 +1409,15 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
+        #region MoveObjectLocation(fromLocation, toLocation)
+
+        public override Exceptional MoveObjectLocation(ObjectLocation myFromLocation, ObjectLocation myToLocation)
+        {
+            return IGraphFS.MoveObjectLocation(myFromLocation, myToLocation, SessionToken);
+        }
+
+        #endregion
+
         #endregion
 
 
@@ -1517,7 +1525,17 @@ namespace sones.GraphDS.API.CSharp
 
         #endregion
 
+        #region GetDirectoryObject(myObjectLocation)
+
+        public override Exceptional<IDirectoryObject> GetDirectoryObject(ObjectLocation objectLocation)
+        {
+            throw new NotImplementedException();
+        }
+ 
+	    #endregion
+
         #endregion
+
 
         #region Metadata Maintenance
 

@@ -110,6 +110,10 @@
       <Project>{32A56958-2C05-44C6-B661-2A2C6610E073}</Project>
       <Name>GraphDB %28Dependencies\GraphDB\GraphDB%29</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\GraphDB\Plugins\GraphDBFunction\GraphDBFunction.csproj">
+      <Project>{4BADE6A2-9AB0-4B11-AFAE-5A90F3240170}</Project>
+      <Name>GraphDBFunction</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\GraphFS\GraphFSInterface\GraphFSInterface.csproj">
       <Project>{B23FDA3D-8229-4CDD-91FD-9AFD7301D315}</Project>
       <Name>GraphFSInterface</Name>
@@ -122,6 +126,9 @@
       <Project>{F3BF32FF-7113-4DE6-801B-BB234A76539B}</Project>
       <Name>StorageEnginesInterface</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DepthFirstSearch\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

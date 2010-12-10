@@ -19,12 +19,24 @@ using sones.GraphDB.NewAPI;
 namespace sones.GraphDB.Managers.AlterType
 {
 
+    /// <summary>
+    /// Change the name of an vertex attribute
+    /// </summary>
     public class AlterType_RenameAttribute : AAlterTypeCommand
     {
 
+        /// <summary>
+        /// The old name of the attribute
+        /// </summary>
         public String OldName { get; set; }
+        /// <summary>
+        /// The new name of the attribute
+        /// </summary>
         public String NewName { get; set; }
 
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>
         public override TypesOfAlterCmd AlterType
         {
             get { return TypesOfAlterCmd.RenameAttribute; }
@@ -32,15 +44,16 @@ namespace sones.GraphDB.Managers.AlterType
 
         /// <summary>
         /// Executes the renaming of the attribute of a given type.
+        /// <seealso cref=" AAlterTypeCommand"/>
         /// </summary>
-        /// <param name="dbContext"></param>
-        /// <param name="graphDBType"></param>
-        /// <returns></returns>
         public override Exceptional Execute(DBContext myDBContext, GraphDBType myGraphDBType)
         {
             return myDBContext.DBTypeManager.RenameAttributeOfType(myGraphDBType, OldName, NewName);
         }
 
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>        
         public override IEnumerable<Vertex> CreateVertex(DBContext myDBContext, GraphDBType myGraphDBType)
         {
             return CreateRenameResult("RENAME ATTRIBUTE", OldName, NewName, myGraphDBType);

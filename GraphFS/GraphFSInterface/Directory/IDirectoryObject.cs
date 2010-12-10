@@ -22,6 +22,8 @@ using sones.StorageEngines;
 using sones.GraphFS.DataStructures;
 using sones.Lib.DataStructures.UUID;
 using sones.Lib.DataStructures.WeakReference;
+using sones.GraphFS.InternalObjects;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
@@ -53,6 +55,33 @@ namespace sones.GraphFS.Objects
 
         WeakReference<IGraphFS> IGraphFSReference { get; set; }
 
+        /// <summary>
+        /// Adds a complete directory entry to the directory object
+        /// </summary>
+        /// <param name="entryName">The name of the directory entry</param>
+        /// <param name="aDirectoryEntry">The directory entry itself</param>
+        void AddDirectoryEntry(String entryName, DirectoryEntry aDirectoryEntry);
+
+        /// <summary>
+        /// Renames an IDirectoryObject
+        /// </summary>
+        /// <param name="myObjectName">The old name of the DirectoryEntry</param>
+        /// <param name="myNewObjectName">The new name of the DirectoryEntry</param>
+        /// <returns></returns>
+        Boolean RenameDirectoryEntry(String myObjectName, String myNewObjectName);
+
+        /// <summary>
+        /// Removes an ObjectLocation
+        /// </summary>
+        /// <param name="myObjectName">The name of the DirectoryEntry that is going to be deleted</param>
+        /// <param name="myForce"></param>
+        void RemoveObjectLocation(String myObjectName, Boolean myForce = false);
+
+        /// <summary>
+        /// Wipe the directory object
+        /// </summary>
+        /// <returns></returns>
+        Exceptional Wipe();
 
         #region Members of IDictionaryObject
 
@@ -126,7 +155,6 @@ namespace sones.GraphFS.Objects
         #endregion
 
         #endregion
-
 
     }
 

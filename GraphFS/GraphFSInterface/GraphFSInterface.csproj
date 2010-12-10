@@ -128,6 +128,7 @@
     <Compile Include="Events\ExceptionOccuredEvent.cs" />
     <Compile Include="Events\IDirectoryEventHandlers.cs" />
     <Compile Include="Events\GraphFSEventHandlers.cs" />
+    <Compile Include="InternalObjects\DirectoryObject\DirectoryObject.cs" />
     <Compile Include="Session\ISessionInfo.cs" />
     <Compile Include="Session\ISettings.cs" />
     <Compile Include="Session\SessionInfos.cs" />
@@ -178,7 +179,6 @@
     <Compile Include="InternalObjects\AccessControlObject\DefaultRuleTypes.cs" />
     <Compile Include="InternalObjects\AccessControlObject\NHAccessControlObject.cs" />
     <Compile Include="InternalObjects\BlockIntegrityObject\BlockIntegrityObject.cs" />
-    <Compile Include="InternalObjects\DirectoryObject\DirectoryObject.cs" />
     <Compile Include="InternalObjects\DirectoryObject\SimpleDirectoryEntryInformation.cs" />
     <Compile Include="InternalObjects\EntitiesObject\ContactTypes.cs" />
     <Compile Include="InternalObjects\EntitiesObject\EntitiesObject.cs" />
@@ -298,9 +298,17 @@
     <Compile Include="Transactions\TransactionDisposedHandler.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Lib\BPlusDotNetTree\BplusDotNet\BplusDotNet.csproj">
+      <Project>{45F6BE30-989A-4749-B6A0-69099C8661F4}</Project>
+      <Name>BplusDotNet</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Lib\Lib\Lib.csproj">
       <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
       <Name>Lib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Lib\VersionedPluginManager\PluginManager.csproj">
+      <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
+      <Name>PluginManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Notifications\Notifications\Notifications.csproj">
       <Project>{81E75577-B787-4537-B191-F3326C6E5865}</Project>

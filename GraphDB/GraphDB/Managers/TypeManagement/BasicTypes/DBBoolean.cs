@@ -94,12 +94,24 @@ namespace sones.GraphDB.TypeManagement.BasicTypes
             set
             {
                 if (value is DBBoolean)
+                {
                     _Value = ((DBBoolean)value)._Value;
-                else if (value != null)
-                    _Value = Convert.ToBoolean(value);
+                }
+                else if (value is ADBBaseObject)
+                {
+                    _Value = Convert.ToBoolean((value as ADBBaseObject).Value);
+                }
                 else
-                    _Value = false;
-
+                {
+                    try
+                    {
+                        _Value = Convert.ToBoolean(value);
+                    }
+                    catch (InvalidCastException)
+                    {
+                        _Value = false;
+                    }
+                }
                 CalcEstimatedSize(this);
 
             }

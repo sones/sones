@@ -35,8 +35,8 @@ namespace sones.GraphDB.NewAPI
         // Must be IGraphDBSession cause of the SessionToken!
         // But first IGraphDB and IGraphDBSession has to be cleaned
         // from graphdb-internal datastructures!
-        protected          IGraphDB     GraphDBInterface;
-        protected          SessionToken SessionToken;
+        public IGraphDB     GraphDBInterface { get; set; }
+        public SessionToken SessionToken     { get; set; }
 
         protected readonly IDictionary<String, Object> _Attributes;
 

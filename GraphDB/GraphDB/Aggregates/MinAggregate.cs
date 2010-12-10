@@ -19,6 +19,7 @@ using sones.GraphDB.TypeManagement.BasicTypes;
 
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.TypeManagement;
+using sones.GraphDB.Managers.Structures;
 
 
 #endregion
@@ -43,7 +44,7 @@ namespace sones.GraphDB.Aggregates
 
         #region Attribute aggregate
 
-        public override Exceptional<IObject> Aggregate(IEnumerable<DBObjectStream> myDBObjects, TypeAttribute myTypeAttribute, DBContext myDBContext, params Functions.ParameterValue[] myParameters)
+        public override Exceptional<FuncParameter> Aggregate(IEnumerable<DBObjectStream> myDBObjects, TypeAttribute myTypeAttribute, DBContext myDBContext, params Functions.ParameterValue[] myParameters)
         {
             var aggregateResult = myTypeAttribute.GetADBBaseObjectType(myDBContext.DBTypeManager);
             var foundFirstMin = false;
@@ -52,7 +53,7 @@ namespace sones.GraphDB.Aggregates
                 var attrResult = dbo.GetAttribute(myTypeAttribute, myTypeAttribute.GetDBType(myDBContext.DBTypeManager), myDBContext);
                 if (attrResult.Failed())
                 {
-                    return attrResult;
+                    return new Exceptional<FuncParameter>(attrResult);
                 }
                 var attr = attrResult.Value;
 
@@ -79,21 +80,21 @@ namespace sones.GraphDB.Aggregates
                 }
                 else
                 {
-                    return new Exceptional<IObject>(new Error_AggregateIsNotValidOnThisAttribute(myTypeAttribute.Name));
+                    return new Exceptional<FuncParameter>(new Error_AggregateIsNotValidOnThisAttribute(myTypeAttribute.Name));
                 }
             }
-            return new Exceptional<IObject>(aggregateResult);
+            return new Exceptional<FuncParameter>(new FuncParameter(aggregateResult));
         }
 
         #endregion
 
         #region Index aggregate
 
-        public override Exceptional<IObject> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext)
+        public override Exceptional<FuncParameter> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext)
         {
             var indexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(attributeIndex.IndexRelatedTypeUUID);
 
-            return new Exceptional<IObject>(attributeIndex.GetKeys(indexRelatedType, dbContext).Min().IndexKeyValues[0]);
+            return new Exceptional<FuncParameter>(new FuncParameter(attributeIndex.GetKeys(indexRelatedType, dbContext).Min().IndexKeyValues[0]));
         }
         
         #endregion

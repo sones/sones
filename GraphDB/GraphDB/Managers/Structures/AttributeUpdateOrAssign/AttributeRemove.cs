@@ -3,6 +3,8 @@
  * (c) Stefan Licht, 2010
  */
 
+#region Usings
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +17,8 @@ using sones.GraphDB.Errors;
 using sones.Lib;
 using sones.GraphDB.TypeManagement;
 
+#endregion
+
 namespace sones.GraphDB.Managers.Structures
 {
 
@@ -26,6 +30,9 @@ namespace sones.GraphDB.Managers.Structures
         
         #region Properties
 
+        /// <summary>
+        /// The list of attributes to remove
+        /// </summary>
         public List<string> ToBeRemovedAttributes { get; private set; }
 
         #endregion
@@ -42,6 +49,9 @@ namespace sones.GraphDB.Managers.Structures
 
         #region override AAttributeAssignOrUpdateOrRemove.Update
 
+        /// <summary>
+        /// <seealso cref=" AAttributeAssignOrUpdateOrRemove"/>
+        /// </summary>
         public override Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>> Update(DBContext myDBContext, DBObjectStream myDBObjectStream, GraphDBType myGraphDBType)
         {
 
@@ -132,7 +142,15 @@ namespace sones.GraphDB.Managers.Structures
 
         }
 
-        private Exceptional<List<TypeAttribute>> ApplyRemoveAttribute(List<string> myAttrsToRemove, DBContext dbContext, DBObjectStream aDBObject, GraphDBType myGraphDBType)
+        /// <summary>
+        /// Execute the remove of attributes
+        /// </summary>
+        /// <param name="myAttrsToRemove">The list of attributes to remove</param>
+        /// <param name="myDBContext">The db context</param>
+        /// <param name="myDBDBObject">The db object from which the attributes should be deleted</param>
+        /// <param name="myGraphDBType">The type of the db object</param>
+        /// <returns>The list of removed attributes</returns>
+        private Exceptional<List<TypeAttribute>> ApplyRemoveAttribute(List<string> myAttrsToRemove, DBContext myDBContext, DBObjectStream myDBDBObject, GraphDBType myGraphDBType)
         {
             #region data
 
@@ -140,28 +158,28 @@ namespace sones.GraphDB.Managers.Structures
 
             #endregion
 
-            var MandatoryTypeAttrib = myGraphDBType.GetMandatoryAttributesUUIDs(dbContext.DBTypeManager);
+            var MandatoryTypeAttrib = myGraphDBType.GetMandatoryAttributesUUIDs(myDBContext.DBTypeManager);
             foreach (String aAttribute in myAttrsToRemove)
             {
                 TypeAttribute typeAttribute = myGraphDBType.GetTypeAttributeByName(aAttribute);
 
-                if (aDBObject.HasAttribute(typeAttribute.UUID, myGraphDBType))
+                if (myDBDBObject.HasAttribute(typeAttribute.UUID, myGraphDBType))
                 {
                     if (!MandatoryTypeAttrib.Contains(typeAttribute.UUID))
                     {
                         #region remove backward edges
 
-                        if (typeAttribute.GetDBType(dbContext.DBTypeManager).IsUserDefined)
+                        if (typeAttribute.GetDBType(myDBContext.DBTypeManager).IsUserDefined)
                         {
                             var userdefinedAttributes = new Dictionary<AttributeUUID, object>();
-                            userdefinedAttributes.Add(typeAttribute.UUID, aDBObject.GetAttribute(typeAttribute.UUID));
+                            userdefinedAttributes.Add(typeAttribute.UUID, myDBDBObject.GetAttribute(typeAttribute.UUID));
 
-                            RemoveBackwardEdges(myGraphDBType.UUID, userdefinedAttributes, aDBObject.ObjectUUID, dbContext);
+                            RemoveBackwardEdges(myGraphDBType.UUID, userdefinedAttributes, myDBDBObject.ObjectUUID, myDBContext);
                         }
 
                         #endregion
 
-                        aDBObject.RemoveAttribute(typeAttribute.UUID);
+                        myDBDBObject.RemoveAttribute(typeAttribute.UUID);
                         removedAttributes.Add(typeAttribute);
                     }
                     else

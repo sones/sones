@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region Usings
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,15 +14,27 @@ using sones.GraphDB.TypeManagement;
 using sones.GraphDB.Result;
 using sones.GraphDB.NewAPI;
 
+#endregion
+
 namespace sones.GraphDB.Managers.Structures.Setting
 {
 
+    /// <summary>
+    /// Manipulate a attribute setting
+    /// </summary>
     public class SettingAttributeDefinition : ASettingDefinition
     {
 
         #region Fields
 
+        /// <summary>
+        /// The settings for the attribute
+        /// </summary>
         private Dictionary<string, List<ADBSettingsBase>> _SettingTypeAttr = new Dictionary<string, List<ADBSettingsBase>>();
+
+        /// <summary>
+        /// The Attributes
+        /// </summary>
         private Dictionary<String, List<IDChainDefinition>> _Attributes;
 
         #endregion
@@ -37,7 +51,13 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
         #region override ASettingDefinition.*
 
-        public override Exceptional<IEnumerable<Vertex>> ExtractData(Dictionary<string, string> mySettingName, DBContext context)
+        #region extract
+        
+        /// <summary>
+        /// Extracts values for attribute settings
+        /// <seealso cref=" ASettingDefinition"/>
+        /// </summary>
+        public override Exceptional<IEnumerable<Vertex>> ExtractData(Dictionary<string, string> mySettingName, DBContext myDBContext)
         {
             Dictionary<String, Object> SettingPair;
             var SettingList = new List<Vertex>();
@@ -46,7 +66,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
             foreach (var keyValPair in _Attributes)
             {
-                var type = context.DBTypeManager.GetTypeByName(keyValPair.Key);
+                var type = myDBContext.DBTypeManager.GetTypeByName(keyValPair.Key);
                 if (type == null)
                 {
                     return new Exceptional<IEnumerable<Vertex>>(new Error_TypeDoesNotExist(keyValPair.Key));
@@ -55,7 +75,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
                 foreach (var idChain in keyValPair.Value)
                 {
 
-                    var validateResult = idChain.Validate(context, false, type);
+                    var validateResult = idChain.Validate(myDBContext, false, type);
                     if (validateResult.Failed())
                     {
                         return new Exceptional<IEnumerable<Vertex>>(validateResult);
@@ -65,7 +85,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
                     foreach (var pSetting in mySettingName)
                     {
-                        ADBSettingsBase Setting = context.DBSettingsManager.GetSetting(pSetting.Key.ToUpper(), context, TypesSettingScope.ATTRIBUTE, Entry.GetRelatedType(context.DBTypeManager), Entry).Value;
+                        ADBSettingsBase Setting = myDBContext.DBSettingsManager.GetSetting(pSetting.Key.ToUpper(), myDBContext, TypesSettingScope.ATTRIBUTE, Entry.GetRelatedType(myDBContext.DBTypeManager), Entry).Value;
                         if (Setting != null)
                         {
                             if (!_SettingTypeAttr.ContainsKey(Entry.Name))
@@ -88,7 +108,15 @@ namespace sones.GraphDB.Managers.Structures.Setting
             return new Exceptional<IEnumerable<Vertex>>(SettingList);
         }
 
-        public override Exceptional<IEnumerable<Vertex>> SetData(Dictionary<string, string> mySettingValues, DBContext _DBContext)
+        #endregion
+
+        #region set data
+
+        /// <summary>
+        /// Set the data for the attribute setting
+        /// <seealso cref=" ASettingDefinition"/>
+        /// </summary>
+        public override Exceptional<IEnumerable<Vertex>> SetData(Dictionary<string, string> mySettingValues, DBContext myDBContext)
         {
 
             List<Vertex> resultingReadouts = new List<Vertex>();
@@ -97,7 +125,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
             foreach (var keyValPair in _Attributes)
             {
 
-                var type = _DBContext.DBTypeManager.GetTypeByName(keyValPair.Key);
+                var type = myDBContext.DBTypeManager.GetTypeByName(keyValPair.Key);
                 if (type == null)
                 {
                     return new Exceptional<IEnumerable<Vertex>>(new Error_TypeDoesNotExist(keyValPair.Key));
@@ -106,7 +134,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
                 foreach (var idChain in keyValPair.Value)
                 {
 
-                    var validateResult = idChain.Validate(_DBContext, false, type);
+                    var validateResult = idChain.Validate(myDBContext, false, type);
                     if (validateResult.Failed())
                     {
                         return new Exceptional<IEnumerable<Vertex>>(validateResult);
@@ -114,9 +142,9 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
                     foreach (var pSetting in mySettingValues)
                     {
-                        if (_DBContext.DBSettingsManager.HasSetting(pSetting.Key.ToUpper()))
+                        if (myDBContext.DBSettingsManager.HasSetting(pSetting.Key.ToUpper()))
                         {
-                            var setSettingResult = _DBContext.DBSettingsManager.SetSetting(pSetting.Key.ToUpper(), GetValueForSetting(_DBContext.DBSettingsManager.AllSettingsByName[pSetting.Key.ToUpper()], pSetting.Value), _DBContext, TypesSettingScope.ATTRIBUTE, type, idChain.LastAttribute);
+                            var setSettingResult = myDBContext.DBSettingsManager.SetSetting(pSetting.Key.ToUpper(), GetValueForSetting(myDBContext.DBSettingsManager.AllSettingsByName[pSetting.Key.ToUpper()], pSetting.Value), myDBContext, TypesSettingScope.ATTRIBUTE, type, idChain.LastAttribute);
                             if (setSettingResult.Failed())
                             {
                                 return new Exceptional<IEnumerable<Vertex>>(setSettingResult);
@@ -134,16 +162,23 @@ namespace sones.GraphDB.Managers.Structures.Setting
             }
 
             return new Exceptional<IEnumerable<Vertex>>(resultingReadouts);
-
         }
 
-        public override Exceptional<IEnumerable<Vertex>> RemoveData(Dictionary<String, String> mySettings, DBContext _DBContext)
+        #endregion
+
+        #region remove data
+        
+        /// <summary>
+        /// Remove data from the attribute setting
+        /// <seealso cref=" ASettingDefinition"/>
+        /// </summary>
+        public override Exceptional<IEnumerable<Vertex>> RemoveData(Dictionary<String, String> mySettings, DBContext myDBContext)
         {
 
             foreach (var keyValPair in _Attributes)
             {
 
-                var graphDBType = _DBContext.DBTypeManager.GetTypeByName(keyValPair.Key);
+                var graphDBType = myDBContext.DBTypeManager.GetTypeByName(keyValPair.Key);
                 if (graphDBType == null)
                 {
                     return new Exceptional<IEnumerable<Vertex>>(new Error_TypeDoesNotExist(keyValPair.Key));
@@ -152,7 +187,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
                 foreach (var idChain in keyValPair.Value)
                 {
 
-                    Exceptional validateResult = idChain.Validate(_DBContext, false);
+                    Exceptional validateResult = idChain.Validate(myDBContext, false);
                     if (validateResult.Failed())
                     {
                         return new Exceptional<IEnumerable<Vertex>>(validateResult);
@@ -160,7 +195,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
                     foreach (var Setting in mySettings)
                     {
-                        var removeResult = idChain.LastAttribute.RemovePersistentSetting(Setting.Key.ToUpper(), _DBContext.DBTypeManager);
+                        var removeResult = idChain.LastAttribute.RemovePersistentSetting(Setting.Key.ToUpper(), myDBContext.DBTypeManager);
                         if (removeResult.Failed())
                         {
                             return new Exceptional<IEnumerable<Vertex>>(removeResult);
@@ -175,6 +210,18 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
         }
 
+        #endregion
+
+        #region private helper
+        
+        /// <summary>
+        /// Create a new readout on setting a new value to an attribute setting
+        /// </summary>
+        /// <param name="myTypesSettingScope">The setting scope</param>
+        /// <param name="myDBType"></param>
+        /// <param name="myAttributes"></param>
+        /// <param name="mySettings"></param>
+        /// <returns>The readout</returns>
         private Vertex CreateNewATTRIBUTESettingReadoutOnSet(TypesSettingScope myTypesSettingScope, GraphDBType myDBType, List<IDChainDefinition> myAttributes, Dictionary<String, String> mySettings)
         {
 
@@ -205,6 +252,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
             return new Vertex(payload);
 
         }
+        #endregion
 
         #endregion
 

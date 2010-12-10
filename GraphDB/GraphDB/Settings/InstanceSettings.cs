@@ -36,9 +36,9 @@ namespace sones.GraphDB.DataStructures.Settings
         public InstanceSettings()
         {
             Identifier = Guid.NewGuid().ToString();
-            VersionMajor = Version.VersionMajor;
-            VersionMinor = Version.VersionMinor;
-            BuildNumber = Version.BuildNumber;
+            VersionMajor = GraphDBVersion.VersionMajor;
+            VersionMinor = GraphDBVersion.VersionMinor;
+            BuildNumber = GraphDBVersion.BuildNumber;
             
             Features = new LicensedFeatures();
         }

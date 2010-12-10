@@ -83,7 +83,7 @@
     <OutputPath>bin\x64\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
@@ -125,7 +125,6 @@
     <Compile Include="AGraphFS.cs" />
     <Compile Include="ObjectCaches\ALRUObjectCache.cs" />
     <Compile Include="ObjectCaches\CachePriority.cs" />
-    <Compile Include="ObjectCaches\ESObjectCache_Reloaded.cs" />
     <Compile Include="ObjectCaches\IObjectCache.cs" />
     <Compile Include="MountpointLookup.cs" />
     <Compile Include="ObjectCaches\LRUObjectCache.cs" />

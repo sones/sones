@@ -112,7 +112,7 @@ namespace sones.GraphIO.MediaRSS
 
         #region ToMediaRSS(this myVertex)
 
-        public static String ToMediaRSS(this Vertex myVertex)
+        public static String ToMediaRSS(this IVertex myVertex)
         {
 
             var myStringBuilder = new StringBuilder();

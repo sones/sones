@@ -26,6 +26,8 @@ using sones.GraphFS.DataStructures;
 using sones.GraphDB.Result;
 using sones.GraphDB.Transactions;
 using sones.GraphDB.Managers.Select;
+using sones.GraphDB.NewAPI;
+using sones.GraphDB.TypeManagement;
 
 #endregion
 
@@ -231,6 +233,26 @@ namespace sones.GraphDB
 
             return _GraphDB.Update(_SessionToken, _DBContext, myTypeName, myListOfUpdates, myWhereExpression);
 
+        }
+
+        public QueryResult GetIVertex(TypeUUID myVertexTypeUUID, ObjectUUID myVertexUUID)
+        {
+            return _GraphDB.GetIVertex(_SessionToken, _DBContext, myVertexTypeUUID, myVertexUUID);
+        }
+
+        public QueryResult GetIVertex(String myVertexTypeName, ObjectUUID myVertexUUID)
+        {
+            return _GraphDB.GetIVertex(_SessionToken, _DBContext, myVertexTypeName, myVertexUUID);
+        }
+
+        public IEnumerable<IVertex> TraverseVertex(     IVertex myStartVertex,
+                                                        TraversalOperation TraversalOperation = TraversalOperation.BreathFirst,
+                                                        Func<IVertex, IEdge, Boolean> myFollowThisEdge = null,
+                                                        Func<IVertex, Boolean> myMatchEvaluator = null,
+                                                        Action<IVertex> myMatchAction = null,
+                                                        Func<TraversalState, Boolean> myStopEvaluator = null)
+        {
+            return _GraphDB.TraverseVertex(_SessionToken, _DBContext, myStartVertex, TraversalOperation, myFollowThisEdge, myMatchEvaluator, myMatchAction, myStopEvaluator);
         }
 
         #endregion

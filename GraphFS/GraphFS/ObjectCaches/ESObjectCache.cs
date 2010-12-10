@@ -19,6 +19,7 @@ using sones.Lib.DataStructures.Big;
 using sones.GraphFS.Errors;
 using System.Diagnostics;
 using System.Collections;
+using sones.GraphFS.InternalObjects;
 
 #endregion
 
@@ -44,6 +45,7 @@ namespace sones.GraphFS
         private readonly LinkedList<ObjectLocator>                                              _ObjectLocatorLRU;
         private readonly Dictionary<CacheUUID, AFSObject>                                       _AFSObjectStore;
         private readonly Dictionary<CacheUUID, UInt64>                                          _EstimatedAFSObjectSize;
+        private readonly HashSet<ObjectLocation>                                                _PinnedLocations;
 
         public  event    EventHandler                                                           DiscardingOldestItem;        
 
@@ -169,6 +171,7 @@ namespace sones.GraphFS
             _ObjectLocatorLRU       = new LinkedList<ObjectLocator>();
             _AFSObjectStore         = new Dictionary<CacheUUID, AFSObject>();
             _EstimatedAFSObjectSize = new Dictionary<CacheUUID, UInt64>();
+            _PinnedLocations        = new HashSet<ObjectLocation>();
 
         }
 
@@ -207,6 +210,11 @@ namespace sones.GraphFS
 
             _Exceptional.Value.INodeReferenceSetter = myINode;
 
+            if (myCachePriority == CachePriority.PINNED)
+            {
+                _PinnedLocations.Add(myObjectLocation);
+            }
+
             return new Exceptional<INode>();
 
         }
@@ -231,7 +239,12 @@ namespace sones.GraphFS
                 {
                     return new Exceptional<ObjectLocator>(myObjectLocator);
                 }
-                
+
+                if (myCachePriority == CachePriority.PINNED)
+                {
+                    _PinnedLocations.Add(myObjectLocator.ObjectLocation);
+                }
+
                 if (_ObjectLocatorCache.ContainsKey(myObjectLocator.ObjectLocation))
                 {
                     // Remove LinkedListNode from LRUList and update ObjectLocator within the ObjectCache
@@ -242,26 +255,11 @@ namespace sones.GraphFS
                 }
 
                 var objectLocatorSize = myObjectLocator.GetEstimatedSize();
-                while (objectLocatorSize + _FillLevel >= Capacity)
-                {                    
-                    // Remove oldest LinkedListNode from LRUList and add new ObjectLocator to the ObjectCache
-                    if (DiscardingOldestItem != null)
-                        DiscardingOldestItem(this, new EventArgs());
-                    
-                    var oldestEntry = _ObjectLocatorLRU.First;
 
-                    MoveRootToEnd(oldestEntry);
-
-                    oldestEntry = _ObjectLocatorLRU.First;
-
-                    if (oldestEntry.Value.ObjectLocation != ObjectLocation.Root)
-                    {
-                        RemoveObjectLocator(oldestEntry.Value);
-                    }
-                    else
-                    {
+                if (!CheckFillLevel(objectLocatorSize))
+                {
+                    if (!_PinnedLocations.Contains(myObjectLocator.ObjectLocation)) // Objects to pinned locations MUST be stored in cache!
                         return new Exceptional<ObjectLocator>(myObjectLocator);
-                    }
                 }
 
                 // Add new ObjectLocator to the ObjectCache and add it to the LRUList                
@@ -277,6 +275,38 @@ namespace sones.GraphFS
         }
 
         #endregion
+
+        /// <summary>
+        /// Check the current <paramref name="_FillLevel"/> and try to free up to <paramref name="mySizeNeeded"/>.
+        /// Return false if there can't be get free <paramref name="mySizeNeeded"/>
+        /// </summary>
+        /// <param name="mySizeNeeded"></param>
+        /// <returns></returns>
+        private Boolean CheckFillLevel(ulong mySizeNeeded)
+        {
+            while (mySizeNeeded + _FillLevel >= Capacity)
+            {
+                // Remove oldest LinkedListNode from LRUList and add new ObjectLocator to the ObjectCache
+                if (DiscardingOldestItem != null)
+                    DiscardingOldestItem(this, new EventArgs());
+
+                var oldestEntry = _ObjectLocatorLRU.First;
+
+                MoveRootToEnd(oldestEntry);
+
+                oldestEntry = _ObjectLocatorLRU.First;
+
+                if (oldestEntry.Value.ObjectLocation != ObjectLocation.Root && !_PinnedLocations.Contains(oldestEntry.Value.ObjectLocation))
+                {
+                    RemoveObjectLocator(oldestEntry.Value, myDisposeAFSObject: false);
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
         public void MoveRootToEnd(LinkedListNode<ObjectLocator> myLocation)
         {
@@ -307,30 +337,24 @@ namespace sones.GraphFS
                 {
                     return new Exceptional<AFSObject>(myAFSObject);
                 }
-                
+
+                if (myCachePriority == CachePriority.PINNED)
+                {
+                    _PinnedLocations.Add(myAFSObject.ObjectLocation);
+                }
+
                 var _CacheUUID = myAFSObject.ObjectLocatorReference[myAFSObject.ObjectStream][myAFSObject.ObjectEdition][myAFSObject.ObjectRevisionID].CacheUUID;
                 
                 Debug.Assert(_CacheUUID != null);                
 
                 var afsObjectSize = myAFSObject.GetEstimatedSize();
-                while (_FillLevel + afsObjectSize >= Capacity)
-                {                                       
-                    var oldestLocator = _ObjectLocatorLRU.First;
-
-                    MoveRootToEnd(oldestLocator);
-
-                    oldestLocator = _ObjectLocatorLRU.First;
-
-                    if (oldestLocator.Value.ObjectLocation != ObjectLocation.Root)
+                if (!CheckFillLevel(afsObjectSize))
+                {
+                    if (!_PinnedLocations.Contains(myAFSObject.ObjectLocation)) // Objects to pinned locations MUST be stored in cache!
                     {
-                        RemoveObjectLocator(oldestLocator.Value);
-                    }
-                    else
-                    {
-                        return new Exceptional<AFSObject>(myAFSObject);    
+                        return new Exceptional<AFSObject>(myAFSObject);
                     }
                 }
-
                     
                 if (_AFSObjectStore.ContainsKey(_CacheUUID))
                 {
@@ -350,6 +374,11 @@ namespace sones.GraphFS
                 {
                     _ObjectLocatorCache.Add(myAFSObject.ObjectLocation, _ObjectLocatorLRU.AddLast(myAFSObject.ObjectLocatorReference));
                     IncLevel(myAFSObject.ObjectLocatorReference.GetEstimatedSize());
+                }
+                else
+                {
+                    _ObjectLocatorLRU.Remove( (_ObjectLocatorCache[myAFSObject.ObjectLocation]) );
+                    _ObjectLocatorLRU.AddLast(_ObjectLocatorCache[myAFSObject.ObjectLocation]);
                 }
             }
             //ValidateFillLevel();
@@ -440,8 +469,16 @@ namespace sones.GraphFS
                         var _ObjectLocatorNode = _ObjectLocatorCache[_ObjectLocation];
 
                         // Remove the ObjectLocator from LRU-list and readd it!                        
-                        RemoveObjectLocator(_ObjectLocatorNode.Value);
-                        StoreAFSObject(_AFSObject);
+                        //Removing the ObjectLocator will remove ALL depending FSObjects!!! But only 1 is readded!!!
+                        //RemoveObjectLocator(_ObjectLocatorNode.Value, myDisposeAFSObject: false);
+                        if (_PinnedLocations.Contains(_ObjectLocation))
+                        {
+                            StoreAFSObject(_AFSObject, CachePriority.PINNED);
+                        }
+                        else
+                        {
+                            StoreAFSObject(_AFSObject);
+                        }
                     }
 
                     return new Exceptional<PT>(_AFSObject as PT);
@@ -484,22 +521,10 @@ namespace sones.GraphFS
                         _ObjectLocatorNode.Value.ObjectLocationSetter = _NewLocation;
                         
                         var objectLocatorSize = _ObjectLocatorNode.Value.GetEstimatedSize();
-                        while (_FillLevel + objectLocatorSize > Capacity)
-                        {                            
-                            var _LastObjectLocatorNode = _ObjectLocatorLRU.First;
-
-                            MoveRootToEnd(_LastObjectLocatorNode);
-
-                            _LastObjectLocatorNode = _ObjectLocatorLRU.First;
-
-                            if (_LastObjectLocatorNode.Value.ObjectLocation != ObjectLocation.Root)
-                            {
-                                RemoveObjectLocator(_LastObjectLocatorNode.Value);
-                            }
-                            else
-                            {
+                        if (!CheckFillLevel(objectLocatorSize))
+                        {
+                            if (!_PinnedLocations.Contains(_ObjectLocatorNode.Value.ObjectLocation)) // Objects to pinned locations MUST be stored in cache!
                                 return Exceptional.OK;
-                            }                                                        
                         }
 
                         StoreObjectLocator(_ObjectLocatorNode.Value);
@@ -556,9 +581,9 @@ namespace sones.GraphFS
         #endregion
 
 
-        #region RemoveObjectLocator(myObjectLocator, myRecursion = false)
+        #region RemoveObjectLocator(myObjectLocator, myRecursion = false, myDisposeAFSObject = true)
 
-        public virtual Exceptional RemoveObjectLocator(ObjectLocator myObjectLocator, Boolean myRecursion = false)
+        public virtual Exceptional RemoveObjectLocator(ObjectLocator myObjectLocator, Boolean myRecursion = false, Boolean myDisposeAFSObject = true)
         {
 
             Debug.Assert(myObjectLocator                != null);
@@ -566,15 +591,15 @@ namespace sones.GraphFS
             Debug.Assert(_ObjectLocatorCache            != null);
             Debug.Assert(_AFSObjectStore                != null);
 
-            return RemoveObjectLocation(myObjectLocator.ObjectLocation, myRecursion);
+            return RemoveObjectLocation(myObjectLocator.ObjectLocation, myRecursion, myDisposeAFSObject);
 
         }
 
         #endregion
 
-        #region RemoveObjectLocation(myObjectLocation, myRecursion = false, myRemovedSize = 0)
+        #region RemoveObjectLocation(myObjectLocation, myRecursion = false, myDisposeAFSObject = true)
 
-        public virtual Exceptional RemoveObjectLocation(ObjectLocation myObjectLocation, Boolean myRecursion = false)
+        public virtual Exceptional RemoveObjectLocation(ObjectLocation myObjectLocation, Boolean myRecursion = false, Boolean myDisposeAFSObject = true)
         {
 
             Debug.Assert(myObjectLocation       != null);
@@ -606,21 +631,24 @@ namespace sones.GraphFS
                         {
                             // Remove subordinated ObjectLocations recursively!
                             if (_String_ObjectStream_Pair.Key == FSConstants.DIRECTORYSTREAM)
-                            {                                
-                                RemoveObjectLocation(new ObjectLocation(myObjectLocation, _String_ObjectStream_Pair.Key), true);
+                            {
+                                foreach (var aLocation in _ObjectLocatorCache.Where(kv => kv.Key.ToString().StartsWith(myObjectLocation.ToString() + "/")).ToList())
+                                {
+                                    RemoveObjectLocation(aLocation.Key, false, myDisposeAFSObject);
+                                }
                             }
 
                             foreach (var _String_ObjectEdition_Pair in _String_ObjectStream_Pair.Value)
                             {
                                 foreach (var _RevisionIDRevision in _String_ObjectEdition_Pair.Value)
                                 {
-                                    RemoveAFSObject(_RevisionIDRevision.Value.CacheUUID);
+                                    RemoveAFSObject(_RevisionIDRevision.Value.CacheUUID, myDisposeAFSObject);
                                 }
                             }
                         }
 
                         // Remove ObjectLocator
-                        RemoveObjectLocation(myObjectLocation);
+                        RemoveObjectLocation(myObjectLocation, false, myDisposeAFSObject);
                     }
 
                     #endregion
@@ -636,7 +664,7 @@ namespace sones.GraphFS
                             {
                                 foreach (var _RevisionIDRevision in _StringEdition.Value)
                                 {
-                                    RemoveAFSObject(_RevisionIDRevision.Value.CacheUUID);
+                                    RemoveAFSObject(_RevisionIDRevision.Value.CacheUUID, myDisposeAFSObject);
                                 }
                             }
                         }
@@ -666,9 +694,9 @@ namespace sones.GraphFS
 
         #endregion
 
-        #region RemoveAFSObject(myCacheUUID)        
+        #region RemoveAFSObject(myCacheUUID, myDisposeAFSObject = true)
 
-        public virtual Exceptional RemoveAFSObject(CacheUUID myCacheUUID)
+        public virtual Exceptional RemoveAFSObject(CacheUUID myCacheUUID, Boolean myDisposeAFSObject = true)
         {
 
             Debug.Assert(myCacheUUID        != null);
@@ -681,7 +709,19 @@ namespace sones.GraphFS
                 if (_AFSObjectStore.TryGetValue(myCacheUUID, out remObject))
                 {
 
-                    _AFSObjectStore.Remove(myCacheUUID);
+                    if (_AFSObjectStore.Remove(myCacheUUID))
+                    {
+                        #region Dispose AFSObject
+                        if (myDisposeAFSObject)
+                        {
+                            var toBeDisposedObject = remObject as IDisposable;
+                            if (toBeDisposedObject != null)
+                            {
+                                toBeDisposedObject.Dispose();
+                            }
+                        } 
+                        #endregion
+                    }
 
                     DecLevel(_EstimatedAFSObjectSize[myCacheUUID]);
 
@@ -716,6 +756,11 @@ namespace sones.GraphFS
 
         }
 
+        public void SetPinned(ObjectLocation myObjectLocation)
+        {
+            _PinnedLocations.Add(myObjectLocation);
+        }
+
         #region Clear()
 
         public Exceptional Clear()
@@ -730,6 +775,21 @@ namespace sones.GraphFS
 
                 _ObjectLocatorCache.Clear();
                 _ObjectLocatorLRU.Clear();
+
+                #region Dispose AFSObject
+
+                foreach (var aAFSObject in _AFSObjectStore)
+                {
+                    var aDisposableObject = aAFSObject.Value as IDisposable;
+
+                    if (aDisposableObject != null)
+                    {
+                        aDisposableObject.Dispose();
+                    }
+                }
+ 
+                #endregion
+
                 _AFSObjectStore.Clear();
                 _EstimatedAFSObjectSize.Clear();
                 _FillLevel = 0;

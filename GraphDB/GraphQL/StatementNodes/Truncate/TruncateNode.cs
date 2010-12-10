@@ -48,11 +48,11 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Truncate
 
             // get Name
             _TypeName = myParseTreeNode.ChildNodes.Last().Token.ValueString;
-            if (myParseTreeNode.ChildNodes[1].Token == null || myParseTreeNode.ChildNodes[1].Token.AsSymbol != grammar.S_TYPE)
+            if (myParseTreeNode.ChildNodes[1].Token == null || myParseTreeNode.ChildNodes[1].Token.AsSymbol != grammar.S_VERTEX)
             {
                 ParsingResult.PushIWarning(new Warnings.Warning_ObsoleteGQL(
                     String.Format("TRUNCATE {0}", _TypeName),
-                    String.Format("TRUNCATE TYPE {0}", _TypeName)));
+                    String.Format("TRUNCATE VERTEX {0}", _TypeName)));
             }
 
         }

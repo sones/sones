@@ -128,6 +128,7 @@
     <Compile Include="ErrorHandling\Warnings\GraphDBWarning.cs" />
     <Compile Include="ErrorHandling\Warnings\GraphDBWarningException.cs" />
     <Compile Include="ErrorHandling\Warnings\Warning_NoFSTransaction.cs" />
+    <Compile Include="TypeManagement\TypeUUID.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\GraphFS\GraphFSInterface\GraphFSInterface.csproj">
@@ -164,7 +165,6 @@
     <Folder Include="Context\" />
     <Folder Include="Linq\" />
     <Folder Include="ObjectManagement\" />
-    <Folder Include="TypeManagement\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -20,7 +20,14 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
         #region Fields
 
+        /// <summary>
+        /// The settings for the type
+        /// </summary>
         private Dictionary<string, List<ADBSettingsBase>> _SettingTypeAttr = new Dictionary<string, List<ADBSettingsBase>>();
+
+        /// <summary>
+        /// Type names
+        /// </summary>
         private List<string> _TypeNames;
 
         #endregion
@@ -37,7 +44,13 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
         #region override ASettingDefinition.*
 
-        public override Exceptional<IEnumerable<Vertex>> ExtractData(Dictionary<string, string> mySetting, DBContext context)
+        #region extract
+        
+        /// <summary>
+        /// Extract values from type
+        /// <seealso cref=" ASettingDefinition"/>
+        /// </summary>
+        public override Exceptional<IEnumerable<Vertex>> ExtractData(Dictionary<string, string> mySetting, DBContext myDBContext)
         {
 
             Dictionary<String, Object> SettingPair;
@@ -47,7 +60,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
             foreach (var typeName in _TypeNames)
             {
 
-                var Type = context.DBTypeManager.GetTypeByName(typeName);
+                var Type = myDBContext.DBTypeManager.GetTypeByName(typeName);
                 if (Type == null)
                 {
                     return new Exceptional<IEnumerable<Vertex>>(new Error_TypeDoesNotExist(typeName));
@@ -56,7 +69,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
                 foreach (var pSetting in mySetting)
                 {
 
-                    ADBSettingsBase Setting = context.DBSettingsManager.GetSetting(pSetting.Key.ToUpper(), context, TypesSettingScope.TYPE, Type).Value;
+                    ADBSettingsBase Setting = myDBContext.DBSettingsManager.GetSetting(pSetting.Key.ToUpper(), myDBContext, TypesSettingScope.TYPE, Type).Value;
                     if (Setting != null)
                     {
                         if (!_SettingTypeAttr.ContainsKey(Type.Name))
@@ -78,7 +91,16 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
         }
 
-        public override Exceptional<IEnumerable<Vertex>> SetData(Dictionary<string, string> mySettingValues, DBContext _DBContext)
+        #endregion
+
+
+        #region set
+        
+        /// <summary>
+        /// Set values for type settings
+        /// <seealso cref=" ASettingDefinition"/>
+        /// </summary>
+        public override Exceptional<IEnumerable<Vertex>> SetData(Dictionary<string, string> mySettingValues, DBContext myDBContext)
         {
 
             var resultingReadouts = new List<Vertex>();
@@ -86,7 +108,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
             foreach (var typeName in _TypeNames)
             {
 
-                var Type = _DBContext.DBTypeManager.GetTypeByName(typeName);
+                var Type = myDBContext.DBTypeManager.GetTypeByName(typeName);
                 if (Type == null)
                 {
                     return new Exceptional<IEnumerable<Vertex>>(new Error_TypeDoesNotExist(typeName));
@@ -94,9 +116,9 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
                 foreach (var pSetting in mySettingValues)
                 {
-                    if (_DBContext.DBSettingsManager.HasSetting(pSetting.Key.ToUpper()))
+                    if (myDBContext.DBSettingsManager.HasSetting(pSetting.Key.ToUpper()))
                     {
-                        var setSettingResult = _DBContext.DBSettingsManager.SetSetting(pSetting.Key.ToUpper(), GetValueForSetting(_DBContext.DBSettingsManager.AllSettingsByName[pSetting.Key.ToUpper()], pSetting.Value), _DBContext, TypesSettingScope.TYPE, Type);
+                        var setSettingResult = myDBContext.DBSettingsManager.SetSetting(pSetting.Key.ToUpper(), GetValueForSetting(myDBContext.DBSettingsManager.AllSettingsByName[pSetting.Key.ToUpper()], pSetting.Value), myDBContext, TypesSettingScope.TYPE, Type);
                         if (setSettingResult.Failed())
                         {
                             return new Exceptional<IEnumerable<Vertex>>(setSettingResult);
@@ -118,12 +140,20 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
         }
 
-        public override Exceptional<IEnumerable<Vertex>> RemoveData(Dictionary<String, String> mySettings, DBContext _DBContext)
+        #endregion
+
+        #region remove
+        
+        /// <summary>
+        /// Remove values from type settings
+        /// <seealso cref=" ASettingDefinition"/>
+        /// </summary>
+        public override Exceptional<IEnumerable<Vertex>> RemoveData(Dictionary<String, String> mySettings, DBContext myDBContext)
         {
 
             foreach (var typeName in _TypeNames)
             {
-                var type = _DBContext.DBTypeManager.GetTypeByName(typeName);
+                var type = myDBContext.DBTypeManager.GetTypeByName(typeName);
                 if (type == null)
                 {
                     return new Exceptional<IEnumerable<Vertex>>(new Error_TypeDoesNotExist(typeName));
@@ -131,7 +161,7 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
                 foreach (var Setting in mySettings)
                 {
-                    var removeResult = type.RemovePersistentSetting(Setting.Key.ToUpper(), _DBContext.DBTypeManager);
+                    var removeResult = type.RemovePersistentSetting(Setting.Key.ToUpper(), myDBContext.DBTypeManager);
                     if (removeResult.Failed())
                     {
                         return new Exceptional<IEnumerable<Vertex>>(removeResult);
@@ -143,6 +173,10 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
         }
 
+        #endregion
+
+        #region private helper
+        
         private Vertex CreateNewTYPESettingReadoutOnSet(TypesSettingScope typesSettingScope, String aType, Dictionary<String, String> _Settings)
         {
 
@@ -159,6 +193,8 @@ namespace sones.GraphDB.Managers.Structures.Setting
             return new Vertex(payload);
 
         }
+
+        #endregion
 
         #endregion
 

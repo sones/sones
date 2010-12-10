@@ -16,7 +16,7 @@ using sones.Lib.ErrorHandling;
 namespace sones.GraphDB.NewAPI
 {
 
-    public interface IVertex : IEquatable<IVertex>
+    public interface IVertex : IEquatable<IVertex>, IEnumerable<KeyValuePair<String, Object>>
     {
 
         #region IVertex Properties
@@ -28,7 +28,7 @@ namespace sones.GraphDB.NewAPI
         String               Comment                { get; set; }
 
         #endregion
-
+        
         #region Attributes ( == Properties + Edges)
 
         Boolean              HasAttribute           (String myAttributeName);
@@ -100,25 +100,6 @@ namespace sones.GraphDB.NewAPI
 
         #endregion
 
-        #region Traverse
-
-        T TraversePath<T>   (TraversalOperation                    TraversalOperation  = TraversalOperation.BreathFirst,
-                             Func<DBPath, IEdge, Boolean>          myFollowThisEdge    = null,
-                             Func<DBPath, IEdge, IVertex, Boolean> myFollowThisPath    = null,
-                             Func<DBPath, Boolean>                 myMatchEvaluator    = null,
-                             Action<DBPath>                        myMatchAction       = null,
-                             Func<TraversalState, Boolean>         myStopEvaluator     = null,
-                             Func<IEnumerable<DBPath>, T>          myWhenFinished      = null);
-
-        T TraverseVertex<T> (TraversalOperation                    TraversalOperation  = TraversalOperation.BreathFirst,
-                             Func<IVertex, IEdge, Boolean>         myFollowThisEdge    = null,
-                             Func<IVertex, Boolean>                myMatchEvaluator    = null,
-                             Action<IVertex>                       myMatchAction       = null,
-                             Func<TraversalState, Boolean>         myStopEvaluator     = null,
-                             Func<IEnumerable<IVertex>, T>         myWhenFinished      = null);
-
-        #endregion
- 
     }
 
 }

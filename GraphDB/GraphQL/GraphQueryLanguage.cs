@@ -652,11 +652,12 @@ namespace sones.GraphDB.GraphQL
             var RemoveFromListAttrUpdate    = new NonTerminal("RemoveFromListAttrUpdate", typeof(RemoveFromListAttrUpdateNode));
             var RemoveFromListAttrUpdateAddToRemoveFrom = new NonTerminal("RemoveFromListAttrUpdateAddToRemoveFrom", CreateRemoveFromListAttrUpdateAddToRemoveFromNode);
             var RemoveFromListAttrUpdateAddToOperator   = new NonTerminal("RemoveFromListAttrUpdateAddToOperator", CreateRemoveFromListAttrUpdateAddToOperatorNode);
-            var AttrUpdateOrAssign          = new NonTerminal("AttrUpdateOrAssign");
-            var CollectionOfDBObjects       = new NonTerminal("ListOfDBObjects", typeof(CollectionOfDBObjectsNode));
-            var CollectionTuple = new NonTerminal("CollectionTuple", typeof(TupleNode));
-            var ExtendedExpressionList = new NonTerminal("ExtendedExpressionList");
-            var ExtendedExpression = new NonTerminal("ExtendedExpression", typeof(ExpressionOfAListNode));
+            var RemoveFromListAttrUpdateScope   = new NonTerminal("RemoveFromListAttrUpdateScope", CreateRemoveFromListAttrUpdateScope);
+            var AttrUpdateOrAssign              = new NonTerminal("AttrUpdateOrAssign");
+            var CollectionOfDBObjects           = new NonTerminal("ListOfDBObjects", typeof(CollectionOfDBObjectsNode));
+            var CollectionTuple                 = new NonTerminal("CollectionTuple", typeof(TupleNode));
+            var ExtendedExpressionList          = new NonTerminal("ExtendedExpressionList");
+            var ExtendedExpression              = new NonTerminal("ExtendedExpression", typeof(ExpressionOfAListNode));            
 
             #endregion
 
@@ -1381,8 +1382,8 @@ namespace sones.GraphDB.GraphQL
                                             |       RemoveFromListAttrUpdateAddToOperator;
 
             RemoveFromListAttrUpdateAddToRemoveFrom.Rule = S_REMOVE + S_FROM + Id + tuple;
-            RemoveFromListAttrUpdateAddToOperator.Rule = Id + S_REMOVEFROMLIST + tuple;
-
+            RemoveFromListAttrUpdateAddToOperator.Rule = Id + RemoveFromListAttrUpdateScope;
+            RemoveFromListAttrUpdateScope.Rule = S_REMOVEFROMLIST + tuple | S_REMOVEFROMLIST + CollectionOfDBObjects;
 
             #endregion
 
@@ -2136,6 +2137,15 @@ namespace sones.GraphDB.GraphQL
             attrDefaultValueNode.GetContent(context, parseNode);
 
             parseNode.AstNode = attrDefaultValueNode;
+        }
+
+        private void CreateRemoveFromListAttrUpdateScope(CompilerContext context, ParseTreeNode parseNode)
+        {
+            var removeFromListAttrUpdateScopeNode = new RemoveFromListAttrUpdateScopeNode();
+
+            removeFromListAttrUpdateScopeNode.GetContent(context, parseNode);
+
+            parseNode.AstNode = removeFromListAttrUpdateScopeNode;        
         }
 
         #region RebuildIndices
@@ -2955,9 +2965,9 @@ namespace sones.GraphDB.GraphQL
             var dbNumber = myADBBaseObject as DBNumber;
 
             if (dbNumber != null)
-                return dbNumber.ToString(new CultureInfo("en-US"));
+                return dbNumber.ToString(new CultureInfo("en-US"));//new CultureInfo("en-US"));
 
-            return String.Concat("'", myADBBaseObject.ToString(new CultureInfo("en-US")), "'");
+            return String.Concat("'", myADBBaseObject.ToString().Replace("'", "''"), "'");
 
         }
 

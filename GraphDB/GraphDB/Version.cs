@@ -16,7 +16,7 @@ namespace sones.GraphDB
     /// <summary>
     /// The version information of this Graph Database build
     /// </summary>
-    public static class Version
+    public static class GraphDBVersion
     {
         public static UInt16 VersionMajor = 4;
         public static UInt16 VersionMinor = 1;

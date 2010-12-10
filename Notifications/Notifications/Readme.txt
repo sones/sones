@@ -1,4 +1,4 @@
-Every Notificationtype which is public and should be accessible inside the UI goes in here. 
+﻿Every Notificationtype which is public and should be accessible inside the UI goes in here. 
 
 DO NOT ADD A REFERENCE TO GraphFS OR GraphDB!
 

@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region Usings
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using sones.GraphDB.Errors;
@@ -8,11 +10,16 @@ using sones.GraphDB.TypeManagement;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.TypeManagement;
 
+#endregion
+
 namespace sones.GraphDB.Managers.Structures
 {
 
     #region AttributeAssignOrUpdateList - This might be the same as AttributeAssignOrUpdateBasicCollection!?!
 
+    /// <summary>
+    /// Assign or update a list attribute
+    /// </summary>
     public class AttributeAssignOrUpdateList : AAttributeAssignOrUpdate
     {
 
@@ -23,10 +30,6 @@ namespace sones.GraphDB.Managers.Structures
 
         #endregion
 
-        #region Fields
-
-
-        #endregion
 
         #region Ctor
 
@@ -47,6 +50,9 @@ namespace sones.GraphDB.Managers.Structures
 
         #region override AAttributeAssignOrUpdateOrRemove.Update - Refactor!!! Merge with the base update
 
+        /// <summary>
+        /// <seealso cref=" AAttributeAssignOrUpdateOrRemove"/>
+        /// </summary>
         public override Exceptional<Dictionary<String, Tuple<TypeAttribute, IObject>>> Update(DBContext myDBContext, DBObjectStream myDBObjectStream, GraphDBType myGraphDBType)
         {
 
@@ -236,8 +242,8 @@ namespace sones.GraphDB.Managers.Structures
                 Dictionary<AttributeUUID, IObject> userdefinedAttributes = new Dictionary<AttributeUUID, IObject>();
                 userdefinedAttributes.Add(AttributeIDChain.LastAttribute.UUID, elementsToBeAdded);
 
-                var omm = new ObjectManipulationManager();
-                var setBackEdgesExcept = omm.SetBackwardEdges(myGraphDBType, userdefinedAttributes, myDBObjectStream.ObjectUUID, myDBContext);
+                var omm = new ObjectManipulationManager(myDBContext, myGraphDBType);
+                var setBackEdgesExcept = omm.SetBackwardEdges(userdefinedAttributes, myDBObjectStream.ObjectUUID);
 
                 if (setBackEdgesExcept.Failed())
                     return new Exceptional<Dictionary<String, Tuple<TypeAttribute, IObject>>>(setBackEdgesExcept);
@@ -258,19 +264,22 @@ namespace sones.GraphDB.Managers.Structures
 
         #region override AAttributeAssignOrUpdate.GetValueForAttribute
 
-        public override Exceptional<IObject> GetValueForAttribute(DBObjectStream aDBObject, DBContext dbContext, GraphDBType _Type)
+        /// <summary>
+        /// <seealso cref=" AAttributeAssignOrUpdateOrRemove"/>
+        /// </summary>
+        public override Exceptional<IObject> GetValueForAttribute(DBObjectStream myDBObject, DBContext myDBContext, GraphDBType myGraphDBType)
         {
 
             #region ListOfDBObjects
 
-            if (AttributeIDChain.LastAttribute.GetDBType(dbContext.DBTypeManager).IsUserDefined)
+            if (AttributeIDChain.LastAttribute.GetDBType(myDBContext.DBTypeManager).IsUserDefined)
             {
                 //userdefined
                 //value = aSetNode.GetCorrespondigDBObjectUUIDs(aTaskNode.AttributeIDNodee, typeManager, dbObjectCache, mySessionToken);
 
                 if (CollectionDefinition.CollectionType == CollectionType.SetOfUUIDs)
                 {
-                    var retVal = CollectionDefinition.TupleDefinition.GetAsUUIDEdge(dbContext, AttributeIDChain.LastAttribute);
+                    var retVal = CollectionDefinition.TupleDefinition.GetAsUUIDEdge(myDBContext, AttributeIDChain.LastAttribute);
                     if (!retVal.Success())
                     {
                         return new Exceptional<IObject>(retVal);
@@ -282,7 +291,7 @@ namespace sones.GraphDB.Managers.Structures
                 }
                 else
                 {
-                    var edge = (IEdgeType)(CollectionDefinition.TupleDefinition.GetCorrespondigDBObjectUUIDAsList(_Type, dbContext, AttributeIDChain.LastAttribute.EdgeType.GetNewInstance(), AttributeIDChain.LastAttribute.GetDBType(dbContext.DBTypeManager)).Value);
+                    var edge = (IEdgeType)(CollectionDefinition.TupleDefinition.GetCorrespondigDBObjectUUIDAsList(myGraphDBType, myDBContext, AttributeIDChain.LastAttribute.EdgeType.GetNewInstance(), AttributeIDChain.LastAttribute.GetDBType(myDBContext.DBTypeManager)).Value);
                     return new Exceptional<IObject>(edge);
                 }
             }
@@ -290,7 +299,7 @@ namespace sones.GraphDB.Managers.Structures
             {
                 //not userdefined
 
-                var edge = GetBasicList(dbContext);
+                var edge = GetBasicList(myDBContext);
                 if (edge.Failed())
                 {
                     return new Exceptional<IObject>(edge);
@@ -320,10 +329,10 @@ namespace sones.GraphDB.Managers.Structures
             //add some basic elements like FavoriteNumbers
             foreach (TupleElement aTupleElement in CollectionDefinition.TupleDefinition)
             {
-                //if (GraphDBTypeMapper.IsAValidAttributeType(attr.GetDBType(dbContext.DBTypeManager), aTupleElement.TypeOfValue, dbContext, aTupleElement.Value))
+                //if (GraphDBTypeMapper.IsAValidAttributeType(attr.GetDBType(_dbContext.DBTypeManager), aTupleElement.TypeOfValue, _dbContext, aTupleElement.Value))
                 if (aTupleElement.Value is ValueDefinition)
                 {
-                    //edge.Add(GraphDBTypeMapper.GetGraphObjectFromTypeName(attr.GetDBType(dbContext.DBTypeManager).Name, aTupleElement.Value), aTupleElement.Parameters.ToArray());
+                    //edge.Add(GraphDBTypeMapper.GetGraphObjectFromTypeName(attr.GetDBType(_dbContext.DBTypeManager).Name, aTupleElement.Value), aTupleElement.Parameters.ToArray());
                     if (!(aTupleElement.Value as ValueDefinition).IsDefined)
                     {
                         (aTupleElement.Value as ValueDefinition).ChangeType(attr.GetDBType(dbContext.DBTypeManager).UUID);
@@ -349,7 +358,7 @@ namespace sones.GraphDB.Managers.Structures
                     }
                     else
                     {
-                        //throw new GraphDBException(new Error_SetOfAssignment("Invalid type (" + aAttributeAssignNode.AttributeType + ") of attribute (" + attr.Name + ") for GraphType \"" + myType.Name + "\"."));
+                        //throw new GraphDBException(new Error_SetOfAssignment("Invalid _graphDBType (" + aAttributeAssignNode.AttributeType + ") of attribute (" + attr.Name + ") for GraphType \"" + myType.Name + "\"."));
                         return new Exceptional<IBaseEdge>(new Error_InvalidAssignOfSet(attr.Name));
                     }
                 }

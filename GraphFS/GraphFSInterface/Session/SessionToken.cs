@@ -10,6 +10,9 @@
 namespace sones.GraphFS.Session
 {
 
+    /// <summary>
+    /// Session infos like credentials
+    /// </summary>
     public class SessionToken
     {
 
@@ -17,7 +20,6 @@ namespace sones.GraphFS.Session
 
         public ISessionInfo    SessionInfo     { get; set; }
         public SessionSettings SessionSettings { get; set; }
-        //public ATransaction    Transaction     { get; set; }
 
         #endregion
 
@@ -29,7 +31,6 @@ namespace sones.GraphFS.Session
         {
             SessionInfo     = mySessionInfo;
             SessionSettings = new SessionSettings();
-          //  Transaction     = null;
         }
 
         #endregion

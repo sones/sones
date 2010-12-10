@@ -8,7 +8,6 @@ using sones.GraphDB.Errors;
 using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement;
 using sones.Lib.ErrorHandling;
 
 #endregion
@@ -23,8 +22,10 @@ namespace sones.GraphDB.Functions
     /// SubstringFunc(): The constructor fills the _Parameters dictionary which defines the function parameters
     /// ExecFunc(...): Is the function itself and will containing the logic. You MUST call GraphResult result =
     /// base.ExecFunc(myParams); at the beginning to verify the parameters number and types
+    /// 
+    /// 
     /// </summary>
-    public abstract class ABaseFunction
+    public abstract class ABaseFunction : IGraphDBFunction
     {
 
         #region Abstract methods

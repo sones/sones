@@ -30,6 +30,7 @@ using sones.Lib.ErrorHandling;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.NewAPI;
 using System.Diagnostics;
+using sones.GraphDB.ObjectManagement;
 
 #endregion
 
@@ -126,11 +127,16 @@ namespace sones.GraphDB.Indices
 
                 var index = myDBTypeStream.GetAttributeIndex(myIndexName, myIndexEdition);
 
-                index.ClearAndRemoveFromDisc(this);
+                if (index.Failed())
+                {
+                    return new Exceptional<ResultType>(index);
+                }
+
+                index.Value.ClearAndRemoveFromDisc(this);
                 
                     foreach (var loc in allDBOLocations)
                     {
-                        var dbo = _DBContext.DBObjectManager.LoadDBObject(new ObjectLocation(myDBTypeStream.ObjectLocation, DBConstants.DBObjectsLocation, _DBContext.DBObjectManager.GetDBObjectStreamShard(myDBTypeStream, new ObjectUUID(loc)), loc));
+                        var dbo = _DBContext.DBObjectManager.LoadDBObject(new ObjectLocation(myDBTypeStream.ObjectLocation, DBConstants.DBObjectsLocation, loc));
 
                         if (dbo.Failed())
                         {
@@ -144,9 +150,9 @@ namespace sones.GraphDB.Indices
                         }
                         else
                         {
-                            if (dbo.Value.HasAtLeastOneAttribute(index.IndexKeyDefinition.IndexKeyAttributeUUIDs, myDBTypeStream, null))
+                            if (dbo.Value.HasAtLeastOneAttribute(index.Value.IndexKeyDefinition.IndexKeyAttributeUUIDs, myDBTypeStream, null))
                             {
-                                var insertResult = index.Insert(dbo.Value, myIndexSetStrategy, myDBTypeStream, _DBContext);
+                                var insertResult = index.Value.Insert(dbo.Value, myIndexSetStrategy, myDBTypeStream, _DBContext);
                                 if (!insertResult.Success())
                                 {
                                     return new Exceptional<ResultType>(insertResult);
@@ -178,6 +184,11 @@ namespace sones.GraphDB.Indices
 
         }
 
+        public Exceptional<Boolean> RebuildIndices(GraphDBType aUserDefinedType)
+        {
+            return RebuildIndices(new List<GraphDBType>() { aUserDefinedType });
+        }
+
         public Exceptional<Boolean> RebuildIndices(IEnumerable<GraphDBType> myUserDefinedTypes)
         {
 
@@ -204,7 +215,8 @@ namespace sones.GraphDB.Indices
                 // Get all DBObjects from DirectoryListing
                 try
                 {
-                    allDBOLocations = _DBContext.DBObjectManager.GetAllStreamsRecursive(_DBObjectsLocation, DBConstants.DBOBJECTSTREAM);
+                    //this is the fasted way to get all UUIDs of a certain vertex type
+                    allDBOLocations = _IGraphFSSession.GetDirectoryListing(_DBObjectsLocation).Value;
                 }
                 catch (Exception e)
                 {
@@ -218,22 +230,24 @@ namespace sones.GraphDB.Indices
 
                 foreach (var _DBObjectLocation in allDBOLocations)
                 {
-
-                    var _DBObjectExceptional = _DBContext.DBObjectManager.LoadDBObject(new ObjectLocation(_DBObjectsLocation, _DBContext.DBObjectManager.GetDBObjectStreamShard(_UserDefinedType, new ObjectUUID(_DBObjectLocation)), _DBObjectLocation));
-                    if (_DBObjectExceptional.Failed())
+                    //the "allDBOLocations" are elements of a FS-directory-listing... so there might be default directory entries
+                    if (!_DBObjectLocation.StartsWith(DBConstants.DefaultDirectoryEntryPrefix))
                     {
-                        return new Exceptional<Boolean>(_DBObjectExceptional);
-                    }
-
-                    //rebuild everything but the UUIDidx
-                    foreach (var _KeyValuePair in _UserDefinedType.AttributeIndices.Where(aIDX => aIDX.Key != UUIDIdxIndexKey))
-                    {
-                        foreach (var _AttributeIndex in _KeyValuePair.Value.Values)
+                        var _DBObjectExceptional = _DBContext.DBObjectManager.LoadDBObject(new ObjectLocation(_DBObjectsLocation, _DBObjectLocation));
+                        if (_DBObjectExceptional.Failed())
                         {
-                            _AttributeIndex.Insert(_DBObjectExceptional.Value, _UserDefinedType, _DBContext);
+                            return new Exceptional<Boolean>(_DBObjectExceptional);
+                        }
+
+                        //rebuild everything but the UUIDidx
+                        foreach (var _KeyValuePair in _UserDefinedType.AttributeIndices.Where(aIDX => aIDX.Key != UUIDIdxIndexKey))
+                        {
+                            foreach (var _AttributeIndex in _KeyValuePair.Value.Values)
+                            {
+                                _AttributeIndex.Insert(_DBObjectExceptional.Value, _UserDefinedType, _DBContext);
+                            }
                         }
                     }
-
                 }
             }
 
@@ -320,7 +334,7 @@ namespace sones.GraphDB.Indices
 
         #endregion
 
-        #region ReCreateDBIndex()
+        #region RemoveDBIndex()
 
         internal Exceptional RemoveDBIndex(ObjectLocation myObjectLocation)
         {
@@ -409,6 +423,7 @@ namespace sones.GraphDB.Indices
             IEnumerable<Vertex> resultOutput = null;
 
             var dbObjectType = myDBContext.DBTypeManager.GetTypeByName(myDBType);
+
             if (dbObjectType == null)
             {
                 return new Exceptional<IEnumerable<Vertex>>(new Error_TypeDoesNotExist(myDBType));
@@ -422,6 +437,7 @@ namespace sones.GraphDB.Indices
             {
 
                 var validateResult = createIndexAttributeNode.IndexAttribute.Validate(myDBContext, false, dbObjectType);
+
                 if (validateResult.Failed())
                 {
                     return new Exceptional<IEnumerable<Vertex>>(validateResult);
@@ -457,6 +473,7 @@ namespace sones.GraphDB.Indices
             #region checking for reference attributes
 
             TypeAttribute aIdxAttribute;
+
             foreach (var aAttributeUUID in indexAttributes)
             {
                 aIdxAttribute = dbObjectType.GetTypeAttributeByUUID(aAttributeUUID);
@@ -475,6 +492,7 @@ namespace sones.GraphDB.Indices
                 #region Create the index
 
                 var createdIDx = item.CreateAttributeIndex(myDBContext, myIndexName, indexAttributes, myIndexEdition, myIndexType);
+
                 if (createdIDx.Failed())
                 {
                     return new Exceptional<IEnumerable<Vertex>>(createdIDx);
@@ -495,6 +513,7 @@ namespace sones.GraphDB.Indices
                 #region (Re)build index
 
                 var rebuildResult = myDBContext.DBIndexManager.RebuildIndex(createdIDx.Value.IndexName, createdIDx.Value.IndexEdition, item, IndexSetStrategy.MERGE);
+
                 if (rebuildResult.Failed())
                 {
                     return new Exceptional<IEnumerable<Vertex>>(rebuildResult);
@@ -506,6 +525,7 @@ namespace sones.GraphDB.Indices
                 #region Flush type
 
                 var flushResult = myDBContext.DBTypeManager.FlushType(item);
+
                 if (flushResult.Failed())
                 {
                     return new Exceptional<IEnumerable<Vertex>>(flushResult);
@@ -545,6 +565,69 @@ namespace sones.GraphDB.Indices
         }
 
         #endregion
+
+        #region ReOrganize index
+
+        public Exceptional ReOrganizeIndexShards(AttributeIndex _AttributeIndex, GraphDBType relatedType, UInt16 oldShardValue, UInt16 newShardValue)
+        {
+            foreach (var aIndexShard in _AttributeIndex.GetAllIdxShards(_DBContext))
+            {
+                if (aIndexShard.Item2.Failed())
+                {
+                    return new Exceptional(aIndexShard.Item2);
+                }
+
+                Dictionary<int, KeyValuePair<IndexKey, HashSet<ObjectUUID>>> toBeMovedItems = new Dictionary<int, KeyValuePair<IndexKey, HashSet<ObjectUUID>>>();
+
+                foreach (var aIndexShardPayload in aIndexShard.Item2.Value.ToList())
+                {
+                    var newIndexShardID = GetIndexShardID(aIndexShardPayload.Key, newShardValue);
+
+                    if (newIndexShardID != aIndexShard.Item1)
+                    {
+                        toBeMovedItems.Add(newIndexShardID, aIndexShardPayload);
+
+                        var removeException = _AttributeIndex.Remove(aIndexShardPayload.Key, aIndexShard.Item1, this);
+
+                        if(removeException.Failed())
+                        {
+                            return removeException;
+                        }
+                    }
+                }
+
+                #region insert into other shards
+
+                foreach (var item in toBeMovedItems)
+                {
+                    var insertException = _AttributeIndex.Insert(item.Value.Key, item.Value.Value, item.Key, this, relatedType);
+
+                    if (insertException.Failed())
+                    {
+                        return insertException;
+                    }
+
+                }
+
+                #endregion
+
+            }
+
+            return Exceptional.OK;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Get the shard id corresponding to an indexKey
+        /// </summary>
+        /// <param name="aIndexKey">An IndexKey</param>
+        /// <returns>The shard id</returns>
+        public int GetIndexShardID(IndexKey aIndexKey, UInt16 shardCount)
+        {
+            //stupid... might be solved by constant hashing or sth like that
+            return Math.Abs(aIndexKey.GetHashCode()) % shardCount;
+        }
 
     }
 }

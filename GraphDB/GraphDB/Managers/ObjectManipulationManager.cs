@@ -42,28 +42,30 @@ namespace sones.GraphDB.Managers
     /// <summary>
     /// This class will handle all manipulations on DBObjects coming from Irony statement nodes like InsertNode, UpdateNode, DeleteNode, etc
     /// </summary>
-    public class ObjectManipulationManager
+    public sealed class ObjectManipulationManager
     {
 
         #region Data & Properties
-        
+        private DBContext _dbContext;
+        private GraphDBType _graphDBType;
+            
         #endregion
 
-        public ObjectManipulationManager(DBContext dbContext = null)
+        public ObjectManipulationManager(DBContext dbContext = null, GraphDBType myGraphDBType = null)
         {
+            this._dbContext = dbContext;
+            this._graphDBType = myGraphDBType;
         }
 
-        #region update methods
+        #region Update methods
 
         /// <summary>
         /// This will evaluate the <paramref name="myWhereExpression"/> and add some warnings coming from 
         /// </summary>
         /// <param name="myWhereExpression"></param>
         /// <param name="myListOfUpdates"></param>
-        /// <param name="undefAttributeNodes"></param>
-        /// <param name="dbObjectCache"></param>
         /// <returns></returns>
-        public QueryResult Update(IEnumerable<AAttributeAssignOrUpdateOrRemove> myListOfUpdates, DBContext myDBContext, GraphDBType myGraphDBType, BinaryExpressionDefinition myWhereExpression = null)
+        public QueryResult Update(IEnumerable<AAttributeAssignOrUpdateOrRemove> myListOfUpdates, BinaryExpressionDefinition myWhereExpression = null)
         {
             IEnumerable<Exceptional<DBObjectStream>> _dbobjects;
             IEnumerable<IWarning> warnings = null;
@@ -74,13 +76,13 @@ namespace sones.GraphDB.Managers
             {
                 #region get guids via where
 
-                myWhereExpression.Validate(myDBContext);
+                myWhereExpression.Validate(_dbContext);
                 if (myWhereExpression.ValidateResult.Failed())
                 {
                     return new QueryResult(myWhereExpression.ValidateResult);
                 }
 
-                var _tempGraphResult = myWhereExpression.Calculon(myDBContext, new CommonUsageGraph(myDBContext), false);
+                var _tempGraphResult = myWhereExpression.Calculon(_dbContext, new CommonUsageGraph(_dbContext), false);
 
                 if (_tempGraphResult.Failed())
                 {
@@ -88,7 +90,7 @@ namespace sones.GraphDB.Managers
                 }
                 else
                 {
-                    _dbobjects = _tempGraphResult.Value.Select(new LevelKey(myGraphDBType, myDBContext.DBTypeManager), null, true);
+                    _dbobjects = _tempGraphResult.Value.Select(new LevelKey(_graphDBType, _dbContext.DBTypeManager), null, true);
                     if (!_tempGraphResult.Success())
                     {
                         warnings = _tempGraphResult.IWarnings;
@@ -101,14 +103,14 @@ namespace sones.GraphDB.Managers
             {
                 #region get guids via guid-idx
 
-                _dbobjects = myDBContext.DBObjectCache.SelectDBObjectsForLevelKey(new LevelKey(myGraphDBType, myDBContext.DBTypeManager), myDBContext);
+                _dbobjects = _dbContext.DBObjectCache.SelectDBObjectsForLevelKey(new LevelKey(_graphDBType, _dbContext.DBTypeManager), _dbContext);
 
                 #endregion
             }
 
             #endregion
 
-            var updateResult = Update(_dbobjects, myListOfUpdates, myDBContext, myGraphDBType);
+            var updateResult = Update(_dbobjects, myListOfUpdates);
 
             #region expressionGraph error handling
 
@@ -124,26 +126,25 @@ namespace sones.GraphDB.Managers
         }
 
         /// <summary>
-        /// This is the update method which will change some <paramref name="myDBObjects"/> an behalf of the <paramref name="myListOfUpdates"/>
+        /// This is the update method which will change some <paramref name="myDBObjects"/> on behalf of the <paramref name="myListOfUpdates"/>
         /// </summary>
         /// <param name="myDBObjects">Some dbobjects</param>
         /// <param name="myListOfUpdates">The list of update tasks (assign, delete, etc)</param>
         /// <param name="dbObjectCache"></param>
         /// <returns></returns>
-        public QueryResult Update(IEnumerable<Exceptional<DBObjectStream>> myDBObjects, IEnumerable<AAttributeAssignOrUpdateOrRemove> myListOfUpdates, DBContext myDBContext, GraphDBType myGraphDBType)
+        private QueryResult Update(IEnumerable<Exceptional<DBObjectStream>> myDBObjects, IEnumerable<AAttributeAssignOrUpdateOrRemove> myListOfUpdates)
         {
 
             #region Data
 
             var queryResultContent = new List<Vertex>();
             var queryResult = new QueryResult();
-            Warning_UndefinedAttribute undefAttrWarning = null;
 
             #endregion
 
             #region check for undefined attributes setting
 
-            var undefAttrSetting = myDBContext.DBSettingsManager.GetSetting(SettingUndefAttrBehaviour.UUID, myDBContext, TypesSettingScope.DB);
+            var undefAttrSetting = _dbContext.DBSettingsManager.GetSetting(SettingUndefAttrBehaviour.UUID, _dbContext, TypesSettingScope.DB);
 
             if (!undefAttrSetting.Success())
             {
@@ -156,66 +157,63 @@ namespace sones.GraphDB.Managers
 
             #region Validate attributes
 
+            var definedAttributeAssignments = new Dictionary<AttributeUUID, AAttributeAssignOrUpdate>();
+            
             foreach (var updateOrAssign in myListOfUpdates)
             {
                 System.Diagnostics.Debug.Assert(updateOrAssign != null);
-                if (updateOrAssign is AAttributeAssignOrUpdateOrRemove && !(updateOrAssign is AttributeRemove))
+                if (!(updateOrAssign is AttributeRemove))
                 {
-                    var result = (updateOrAssign as AAttributeAssignOrUpdateOrRemove).AttributeIDChain.Validate(myDBContext, true);
-
-                    if (updateOrAssign.IsUndefinedAttributeAssign)
-                    {
-                        switch (undefSettingVal)
-                        {
-                            case UndefAttributeBehaviour.disallow:
-                                return new QueryResult(new Error_UndefinedAttributes());
-
-                            case UndefAttributeBehaviour.warn:
-                                if (undefAttrWarning == null)
-                                {
-                                    undefAttrWarning = new Warning_UndefinedAttribute();
-                                }
-
-                                queryResult.PushIWarning(undefAttrWarning);
-                                break;
-                        }
-                    }
+                    var result = updateOrAssign.AttributeIDChain.Validate(_dbContext, true);
 
                     if (result.Failed())
                     {
                         return new QueryResult(result);
                     }
+
+                    if (updateOrAssign.IsUndefinedAttributeAssign)
+                    {
+                        #region handle undefined attributes
+                        switch (undefSettingVal)
+                        {
+                            case UndefAttributeBehaviour.disallow:
+                                return new QueryResult(new Error_UndefinedAttributes());
+                            case UndefAttributeBehaviour.warn:
+                                queryResult.PushIWarning(new Warning_UndefinedAttribute(updateOrAssign.AttributeIDChain));
+                                break;
+                        }
+                        #endregion
+                    }
+                    else
+                    {
+                        //here a dictionary is used, because myListOfUpdates will be traversed many times now (maybe CachedEnumerator can be used instead)
+                        if (updateOrAssign is AAttributeAssignOrUpdate)
+                            definedAttributeAssignments[GetAttributesToCheckForUnique(updateOrAssign)] = updateOrAssign as AAttributeAssignOrUpdate;
+                    }
                 }
             }
 
-            //var undefinedAttributeAssignments = myListOfUpdates.Where(a => a.IsUndefinedAttributeAssign);
-            var definedAttributeAssignments = myListOfUpdates.Where(a => !a.IsUndefinedAttributeAssign);
-            
+
             #endregion
 
-            #region check unique constraint - refactor!!
+            #region check unique constraint
 
             if (definedAttributeAssignments.CountIsGreater(0))
             {
 
                 Exceptional<Boolean> CheckConstraint = null;
 
-                IEnumerable<GraphDBType> parentTypes = myDBContext.DBTypeManager.GetAllParentTypes(myGraphDBType, true, false);
-                Dictionary<AttributeUUID, IObject> ChkForUnique = new Dictionary<AttributeUUID, IObject>();
+                IEnumerable<GraphDBType> parentTypes = _dbContext.DBTypeManager.GetAllParentTypes(_graphDBType, true, false);
 
                 foreach (var entry in myDBObjects)
                 {
-                    //all attributes, that are going to be changed
-                    var attrsToCheck = entry.Value.GetAttributes().Where(item => definedAttributeAssignments.Select(updAttrs => GetAttributesToCheckForUnique(updAttrs)).Contains(item.Key));
-
-                    foreach (var attrValue in attrsToCheck)
-                    {
-                        if (!ChkForUnique.ContainsKey(attrValue.Key))
-                            ChkForUnique.Add(attrValue.Key, attrValue.Value);
-                    }
-
-                    CheckConstraint = myDBContext.DBIndexManager.CheckUniqueConstraint(myGraphDBType, parentTypes, ChkForUnique);
-                    ChkForUnique.Clear();
+                    //here all attributes are listed, that will change their value
+                    var changingAttributes = (from CurrentAttribute in entry.Value.GetAttributes()
+                                              join Update in definedAttributeAssignments on CurrentAttribute.Key equals Update.Key
+                                              where !CurrentAttribute.Value.Equals(Update.Value.GetValueForAttribute(entry.Value, _dbContext, _graphDBType).Value)
+                                              select new {Key = CurrentAttribute.Key, Value = CurrentAttribute.Value}).ToDictionary(x=>x.Key, x=>x.Value);
+                                             
+                    CheckConstraint = _dbContext.DBIndexManager.CheckUniqueConstraint(_graphDBType, parentTypes, changingAttributes);
 
                     if (CheckConstraint.Failed())
                         return new QueryResult(CheckConstraint.IErrors);
@@ -251,7 +249,7 @@ namespace sones.GraphDB.Managers
                 foreach (var attributeUpdateOrAssign in myListOfUpdates)
                 {
 
-                    var updateResult = attributeUpdateOrAssign.Update(myDBContext, aDBO.Value, myGraphDBType);
+                    var updateResult = attributeUpdateOrAssign.Update(_dbContext, aDBO.Value, _graphDBType);
                     if (updateResult.Failed())
                     {
                         return new QueryResult(updateResult);
@@ -269,16 +267,16 @@ namespace sones.GraphDB.Managers
                 
                 if (sthChanged)
                 {
-                    var definedAttributes = ExtractDefinedAttributes(attrsForResult, myDBContext.DBTypeManager);
+                    var definedAttributes = ExtractDefinedAttributes(attrsForResult, _dbContext.DBTypeManager);
 
                     #region update Idx
 
-                    foreach (var _AttributeIndex in myGraphDBType.GetAllAttributeIndices())
+                    foreach (var _AttributeIndex in _graphDBType.GetAllAttributeIndices())
                     {
                         if(definedAttributes.Exists(item => _AttributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs.Contains(item.Key.Definition.UUID)))
                         {
                             //execute update
-                            _AttributeIndex.Update(aDBO.Value, myGraphDBType, myDBContext);
+                            _AttributeIndex.Update(aDBO.Value, _graphDBType, _dbContext);
                         }
                     }
 
@@ -287,7 +285,7 @@ namespace sones.GraphDB.Managers
 
                     #region update dbobjects on fs
 
-                    var flushResult = myDBContext.DBObjectManager.FlushDBObject(aDBO.Value);
+                    var flushResult = _dbContext.DBObjectManager.FlushDBObject(aDBO.Value);
                     if (!flushResult.Success())
                     {
                         return new QueryResult(flushResult);
@@ -295,7 +293,7 @@ namespace sones.GraphDB.Managers
 
                     #endregion
 
-                    var resultSet = GetManipulationResultSet(myDBContext, aDBO, myGraphDBType, undefinedAttributes: ExtractUndefindedAttributes(attrsForResult), attributes: definedAttributes);
+                    var resultSet = GetManipulationResultSet(aDBO, undefinedAttributes: ExtractUndefindedAttributes(attrsForResult), attributes: definedAttributes);
                     if (!resultSet.Success())
                     {
                         /*
@@ -332,7 +330,7 @@ namespace sones.GraphDB.Managers
 
         #region AttributesToCheckForUnique
 
-        public AttributeUUID GetAttributesToCheckForUnique(AAttributeAssignOrUpdateOrRemove myAAttributeAssignOrUpdateOrRemove)
+        private AttributeUUID GetAttributesToCheckForUnique(AAttributeAssignOrUpdateOrRemove myAAttributeAssignOrUpdateOrRemove)
         {
 
             if (myAAttributeAssignOrUpdateOrRemove is AAttributeRemove)
@@ -356,8 +354,8 @@ namespace sones.GraphDB.Managers
 
         #endregion
 
-
-        public Exceptional<Tuple<String, TypeAttribute, IListOrSetEdgeType>> ApplyUpdateListAttribute(AAttributeAssignOrUpdateOrRemove myAttributeUpdateOrAssign, DBContext dbContext, DBObjectStream aDBObject, GraphDBType _Type)
+/* not in use
+        public Exceptional<Tuple<String, TypeAttribute, IListOrSetEdgeType>> ApplyUpdateListAttribute(AAttributeAssignOrUpdateOrRemove myAttributeUpdateOrAssign, DBContext _dbContext, DBObjectStream aDBObject, GraphDBType _Type)
         {
 
             if (myAttributeUpdateOrAssign is AttributeAssignOrUpdateList)
@@ -375,22 +373,22 @@ namespace sones.GraphDB.Managers
 
             return new Exceptional<Tuple<String, TypeAttribute, IListOrSetEdgeType>>(null as Tuple<String, TypeAttribute, IListOrSetEdgeType>);
         }
-
+*/
         
         #endregion
 
         #region insert methods
 
-        public QueryResult Insert(DBContext dbContext, GraphDBType type, ManipulationAttributes myManipulationAttributes, Boolean checkUniqueness = true)
+        public QueryResult Insert(ManipulationAttributes myManipulationAttributes, Boolean checkUniqueness = true)
         {
 
             var attributes              = myManipulationAttributes.Attributes;
             var undefinedAttributes     = myManipulationAttributes.UndefinedAttributes;
             var specialTypeAttributes   = myManipulationAttributes.SpecialTypeAttributes;
 
-            if (type.IsAbstract)
+            if (_graphDBType.IsAbstract)
             {
-                return new QueryResult(new Error_InvalidType(type, "It is not possible to insert DBObjects of an abstract type"));
+                return new QueryResult(new Error_InvalidType(_graphDBType, "It is not possible to insert DBObjects of an abstract _graphDBType"));
             }
 
             #region Data
@@ -401,7 +399,7 @@ namespace sones.GraphDB.Managers
 
             #region create new DBObject
 
-            dbObjectStream = dbContext.DBObjectManager.CreateNewDBObject(type, attributes.ToDictionary(key => key.Key.Definition.Name, value => value.Value), undefinedAttributes, specialTypeAttributes, dbContext.SessionSettings, checkUniqueness);
+            dbObjectStream = _dbContext.DBObjectManager.CreateNewDBObject(_graphDBType, attributes.ToDictionary(key => key.Key.Definition.Name, value => value.Value), undefinedAttributes, specialTypeAttributes, _dbContext.SessionSettings, checkUniqueness);
 
             if (dbObjectStream.Failed())
             {
@@ -416,7 +414,7 @@ namespace sones.GraphDB.Managers
 
             if (userdefinedAttributes.CountIsGreater(0))
             {
-                var setBackEdges = SetBackwardEdges(type, userdefinedAttributes.ToDictionary(key => key.Key.Definition.UUID, value => value.Value), dbObjectStream.Value.ObjectUUID, dbContext);
+                var setBackEdges = SetBackwardEdges(userdefinedAttributes.ToDictionary(key => key.Key.Definition.UUID, value => value.Value), dbObjectStream.Value.ObjectUUID);
 
                 if (setBackEdges.Failed())
                     return new QueryResult(setBackEdges.IErrors);
@@ -426,7 +424,7 @@ namespace sones.GraphDB.Managers
 
             #region Create QueryResult
 
-            var readOut = GetManipulationResultSet(dbContext, dbObjectStream, type, attributes, undefinedAttributes, specialTypeAttributes);
+            var readOut = GetManipulationResultSet(dbObjectStream, attributes, undefinedAttributes, specialTypeAttributes);
             var selResultSet = new List<Vertex> { readOut.Value };
             var queryResult = new QueryResult(selResultSet);
 
@@ -449,7 +447,7 @@ namespace sones.GraphDB.Managers
 
         #region InsertOrReplace
 
-        public QueryResult InsertOrReplace(DBContext myDBContext, GraphDBType myGraphDBType, List<AAttributeAssignOrUpdate> myAttributeAssignList, BinaryExpressionDefinition myBinaryExpressionDefinition = null)
+        public QueryResult InsertOrReplace(List<AAttributeAssignOrUpdate> myAttributeAssignList, BinaryExpressionDefinition myBinaryExpressionDefinition = null)
         {
 
             List<IWarning> warnings = new List<IWarning>();
@@ -459,17 +457,17 @@ namespace sones.GraphDB.Managers
 
             if (myBinaryExpressionDefinition != null)
             {
-                myBinaryExpressionDefinition.Validate(myDBContext);
+                myBinaryExpressionDefinition.Validate(_dbContext);
                 if (myBinaryExpressionDefinition.ValidateResult.Failed())
                 {
                     return new QueryResult(myBinaryExpressionDefinition.ValidateResult);
                 }
 
-                var _whereGraphResult = myBinaryExpressionDefinition.Calculon(myDBContext, new CommonUsageGraph(myDBContext), false);
+                var _whereGraphResult = myBinaryExpressionDefinition.Calculon(_dbContext, new CommonUsageGraph(_dbContext), false);
 
                 if (_whereGraphResult.Success())
                 {
-                    myDBObjects = _whereGraphResult.Value.Select(new LevelKey(myGraphDBType, myDBContext.DBTypeManager), null, true);
+                    myDBObjects = _whereGraphResult.Value.Select(new LevelKey(_graphDBType, _dbContext.DBTypeManager), null, true);
                 }
                 else
                 {
@@ -490,11 +488,11 @@ namespace sones.GraphDB.Managers
 
             #endregion
 
-            IEnumerable<GraphDBType> parentTypes = myDBContext.DBTypeManager.GetAllParentTypes(myGraphDBType, true, false);
+            IEnumerable<GraphDBType> parentTypes = _dbContext.DBTypeManager.GetAllParentTypes(_graphDBType, true, false);
 
             #region Get attribute assignies prior to deletion to act on errors
 
-            var attrsResult = EvaluateAttributes(myDBContext, myGraphDBType, myAttributeAssignList);
+            var attrsResult = EvaluateAttributes(myAttributeAssignList);
             if (!attrsResult.Success())
             {
                 return new QueryResult(attrsResult);
@@ -502,7 +500,7 @@ namespace sones.GraphDB.Managers
 
             var assingedAttrs = attrsResult.Value.Attributes.ToDictionary(key => key.Key.Definition.UUID, value => value.Value);
 
-            var checkUniqueVal = myDBContext.DBIndexManager.CheckUniqueConstraint(myGraphDBType, parentTypes, assingedAttrs);
+            var checkUniqueVal = _dbContext.DBIndexManager.CheckUniqueConstraint(_graphDBType, parentTypes, assingedAttrs);
             if (checkUniqueVal.Failed())
                 return new QueryResult(checkUniqueVal.IErrors);
 
@@ -521,7 +519,7 @@ namespace sones.GraphDB.Managers
                     #region delete
 
 
-                    var DeleteResult = DeleteDBObjects(myGraphDBType, null, myDBObjects, myDBContext);
+                    var DeleteResult = DeleteDBObjects(_graphDBType, null, myDBObjects);
 
                     if (DeleteResult.Failed())
                     {
@@ -538,7 +536,7 @@ namespace sones.GraphDB.Managers
             #region Insert with new values
 
             //Insert
-            var result = Insert(myDBContext, myGraphDBType, attrsResult.Value, false);
+            var result = Insert(attrsResult.Value, false);
             result.PushIWarnings(warnings);
             //if there were any warnings during this process, the need to be added
 
@@ -549,16 +547,16 @@ namespace sones.GraphDB.Managers
         }
 
         #endregion
-
+         
         #region InsertOrUpdate
 
-        public QueryResult InsertOrUpdate(DBContext myDBContext, GraphDBType myGraphDBType, List<AAttributeAssignOrUpdate>  _AttributeAssignList, BinaryExpressionDefinition myBinaryExpressionDefinition = null)
+        public QueryResult InsertOrUpdate(List<AAttributeAssignOrUpdate> _AttributeAssignList, BinaryExpressionDefinition myBinaryExpressionDefinition = null)
         {
 
             List<IWarning> warnings = new List<IWarning>();
             IEnumerable<Exceptional<DBObjectStream>> extractedDBOs = null;
 
-            var manipulationAttributes = EvaluateAttributes(myDBContext, myGraphDBType, _AttributeAssignList);
+            var manipulationAttributes = EvaluateAttributes(_AttributeAssignList);
             if (!manipulationAttributes.Success())
             {
                 return new QueryResult(manipulationAttributes);
@@ -567,16 +565,16 @@ namespace sones.GraphDB.Managers
 
             if (myBinaryExpressionDefinition != null)
             {
-                myBinaryExpressionDefinition.Validate(myDBContext);
+                myBinaryExpressionDefinition.Validate(_dbContext);
                 if (myBinaryExpressionDefinition.ValidateResult.Failed())
                 {
                     return new QueryResult(myBinaryExpressionDefinition.ValidateResult);
                 }
-                var _whereGraphResult = myBinaryExpressionDefinition.Calculon(myDBContext, new CommonUsageGraph(myDBContext), false);
+                var _whereGraphResult = myBinaryExpressionDefinition.Calculon(_dbContext, new CommonUsageGraph(_dbContext), false);
 
                 if (_whereGraphResult.Success())
                 {
-                    extractedDBOs = _whereGraphResult.Value.Select(new LevelKey(myGraphDBType, myDBContext.DBTypeManager), null, true);
+                    extractedDBOs = _whereGraphResult.Value.Select(new LevelKey(_graphDBType, _dbContext.DBTypeManager), null, true);
                 }
                 else
                 {
@@ -599,14 +597,14 @@ namespace sones.GraphDB.Managers
             if (extractedDBOs.Count() == 0)
             {
 
-                result = Insert(myDBContext, myGraphDBType, manipulationAttributes.Value, true);
+                result = Insert(manipulationAttributes.Value, true);
             }
             else
             {
                 if (extractedDBOs.Count() > 1)
                     return new QueryResult(new Error_MultipleResults());
 
-                result = Update(extractedDBOs, attributeAssignOrUpdateOrRemoveList, myDBContext, myGraphDBType);
+                result = Update(extractedDBOs, attributeAssignOrUpdateOrRemoveList);
             }
 
             result.PushIWarnings(warnings);
@@ -620,23 +618,23 @@ namespace sones.GraphDB.Managers
         
         #region Replace
 
-        public QueryResult Replace(DBContext myDBContext, GraphDBType myGraphDBType, List<AAttributeAssignOrUpdate> myAttributeAssignList, BinaryExpressionDefinition myBinaryExpressionDefinition)
+        public QueryResult Replace(List<AAttributeAssignOrUpdate> myAttributeAssignList, BinaryExpressionDefinition myBinaryExpressionDefinition)
         {
 
             List<IWarning> warnings = new List<IWarning>();
             IEnumerable<Exceptional<DBObjectStream>> _dbObjects = null;
 
-            myBinaryExpressionDefinition.Validate(myDBContext);
+            myBinaryExpressionDefinition.Validate(_dbContext);
             if (myBinaryExpressionDefinition.ValidateResult.Failed())
             {
                 return new QueryResult(myBinaryExpressionDefinition.ValidateResult);
             }
 
-            var _whereGraphResult = myBinaryExpressionDefinition.Calculon(myDBContext, new CommonUsageGraph(myDBContext), false);
+            var _whereGraphResult = myBinaryExpressionDefinition.Calculon(_dbContext, new CommonUsageGraph(_dbContext), false);
 
             if (_whereGraphResult.Success())
             {
-                _dbObjects = _whereGraphResult.Value.Select(new LevelKey(myGraphDBType, myDBContext.DBTypeManager), null, true);
+                _dbObjects = _whereGraphResult.Value.Select(new LevelKey(_graphDBType, _dbContext.DBTypeManager), null, true);
             }
             else
             {
@@ -660,10 +658,10 @@ namespace sones.GraphDB.Managers
                 return new QueryResult(new List<IError>(), warnings);
             }
 
-            IEnumerable<GraphDBType> parentTypes = myDBContext.DBTypeManager.GetAllParentTypes(myGraphDBType, true, false);
+            IEnumerable<GraphDBType> parentTypes = _dbContext.DBTypeManager.GetAllParentTypes(_graphDBType, true, false);
             Exceptional<Boolean> checkUniqueVal = null;
 
-            var attrsResult = EvaluateAttributes(myDBContext, myGraphDBType, myAttributeAssignList);
+            var attrsResult = EvaluateAttributes(myAttributeAssignList);
             if (!attrsResult.Success())
             {
                 return new QueryResult(attrsResult);
@@ -671,18 +669,18 @@ namespace sones.GraphDB.Managers
 
             var assingedAttrs = attrsResult.Value.Attributes.ToDictionary(key => key.Key.Definition.UUID, value => value.Value);
 
-            checkUniqueVal = myDBContext.DBIndexManager.CheckUniqueConstraint(myGraphDBType, parentTypes, assingedAttrs);
+            checkUniqueVal = _dbContext.DBIndexManager.CheckUniqueConstraint(_graphDBType, parentTypes, assingedAttrs);
             if (!checkUniqueVal.Success())
                 return new QueryResult(checkUniqueVal);
 
-            var DeleteResult = DeleteDBObjects(myGraphDBType, null, _dbObjects, myDBContext);
+            var DeleteResult = DeleteDBObjects(_graphDBType, null, _dbObjects);
 
             if (!DeleteResult.Success())
             {
                 return new QueryResult(DeleteResult);
             }
 
-            var result = Insert(myDBContext, myGraphDBType, attrsResult.Value, false);
+            var result = Insert(attrsResult.Value, false);
 
             result.PushIWarnings(warnings);
 
@@ -694,7 +692,7 @@ namespace sones.GraphDB.Managers
 
         #region SetBackwardEdges
 
-        internal Exceptional SetBackwardEdges(GraphDBType aType, Dictionary<AttributeUUID, IObject> userdefinedAttributes, ObjectUUID reference, DBContext dbContext)
+        internal Exceptional SetBackwardEdges(Dictionary<AttributeUUID, IObject> userdefinedAttributes, ObjectUUID reference)
         {
 
             var returnVal = new Exceptional();
@@ -712,15 +710,15 @@ namespace sones.GraphDB.Managers
 
                 #region get GraphType of Attribute
 
-                //attributesOfType = aType.Attributes[aUserDefinedAttribute.Key];
-                attributesOfType = aType.GetTypeAttributeByUUID(aUserDefinedAttribute.Key);
+                //attributesOfType = _graphDBType.Attributes[aUserDefinedAttribute.Key];
+                attributesOfType = _graphDBType.GetTypeAttributeByUUID(aUserDefinedAttribute.Key);
 
-                typeOFAttribute = dbContext.DBTypeManager.GetTypeByUUID(attributesOfType.DBTypeUUID);
+                typeOFAttribute = _dbContext.DBTypeManager.GetTypeByUUID(attributesOfType.DBTypeUUID);
 
                 #endregion
 
                 /* The DBO independent version */
-                var beEdge = new EdgeKey(aType.UUID, attributesOfType.UUID);
+                var beEdge = new EdgeKey(_graphDBType.UUID, attributesOfType.UUID);
                 
                 var runMT = DBConstants.RunMT;
                 runMT = false;
@@ -733,7 +731,7 @@ namespace sones.GraphDB.Managers
                     /* The parallel version */
                     Parallel.ForEach(((IReferenceEdge)aUserDefinedAttribute.Value).GetAllReferenceIDs(), (uuid) =>
                     {
-                        var addExcept = dbContext.DBObjectManager.AddBackwardEdge(uuid, attributesOfType.DBTypeUUID, beEdge, reference);
+                        var addExcept = _dbContext.DBObjectManager.AddBackwardEdge(uuid, attributesOfType.DBTypeUUID, beEdge, reference);
 
                         if (!addExcept.Success())
                         {
@@ -757,7 +755,7 @@ namespace sones.GraphDB.Managers
 
                     foreach (var uuid in ((IReferenceEdge)aUserDefinedAttribute.Value).GetAllReferenceIDs())
                     {
-                        var addExcept = dbContext.DBObjectManager.AddBackwardEdge(uuid, attributesOfType.DBTypeUUID, beEdge, reference);
+                        var addExcept = _dbContext.DBObjectManager.AddBackwardEdge(uuid, attributesOfType.DBTypeUUID, beEdge, reference);
 
                         if (addExcept.Failed())
                         {
@@ -782,14 +780,14 @@ namespace sones.GraphDB.Managers
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="myGraphDBType"></param>
+        /// <param name="_graphDBType"></param>
         /// <param name="myAttributes">Pass null if you want to delete the whole object with all attributes</param>
         /// <param name="myListOfAffectedDBObjectUUIDs"></param>
-        /// <param name="myDBContext"></param>
+        /// <param name="_dbContext"></param>
         /// <param name="myToken"></param>
         /// <param name="myDBObjectCache"></param>
         /// <returns></returns>
-        public Exceptional<IEnumerable<Vertex>> DeleteDBObjects(GraphDBType myGraphDBType, List<TypeAttribute> myAttributes, IEnumerable<Exceptional<DBObjectStream>> myListOfAffectedDBObjects, DBContext myDBContext)
+        public Exceptional<IEnumerable<Vertex>> DeleteDBObjects(GraphDBType myGraphDBType, List<TypeAttribute> myAttributes, IEnumerable<Exceptional<DBObjectStream>> myListOfAffectedDBObjects)
         {
             //some stuff for queryResult
             UInt64 deletionCounter = 0;
@@ -810,22 +808,22 @@ namespace sones.GraphDB.Managers
 
                     foreach (var Attr in myAttributes)
                     {
-                        if (Attr.GetRelatedType(myDBContext.DBTypeManager).GetMandatoryAttributesUUIDs(myDBContext.DBTypeManager).Contains(Attr.UUID))
+                        if (Attr.GetRelatedType(_dbContext.DBTypeManager).GetMandatoryAttributesUUIDs(_dbContext.DBTypeManager).Contains(Attr.UUID))
                         {
 
                             #region Attribute is mandatory - set default value
 
-                            if ((Boolean)myDBContext.DBSettingsManager.GetSetting(SettingDefaultsOnMandatory.UUID, myDBContext, TypesSettingScope.TYPE, Attr.GetRelatedType(myDBContext.DBTypeManager)).Value.Value.Value)
+                            if ((Boolean)_dbContext.DBSettingsManager.GetSetting(SettingDefaultsOnMandatory.UUID, _dbContext, TypesSettingScope.TYPE, Attr.GetRelatedType(_dbContext.DBTypeManager)).Value.Value.Value)
                             {
                                 //the attribute will be removed from the dbobject --> update index
-                                var removeAttributefromIdxResult = RemoveDBObjectFromIndex(aDBO.Value, Attr.UUID, myDBContext);
+                                var removeAttributefromIdxResult = RemoveDBObjectFromIndex(aDBO.Value, Attr.UUID);
 
                                 if (removeAttributefromIdxResult.Failed())
                                 {
                                     return new Exceptional<IEnumerable<Vertex>>(removeAttributefromIdxResult);
                                 }
 
-                                var defaultExcept = SetDefaultValue(Attr, aDBO, myDBContext);
+                                var defaultExcept = SetDefaultValue(Attr, aDBO);
 
                                 if (defaultExcept.Failed())
                                     return new Exceptional<IEnumerable<Vertex>>(defaultExcept);
@@ -836,7 +834,7 @@ namespace sones.GraphDB.Managers
                                 #region update idx
 
                                 //--> update index
-                                var updateAttributefromIdxResult = InsertDBObjectIntoIndex(aDBO.Value, Attr.UUID, myDBContext);
+                                var updateAttributefromIdxResult = InsertDBObjectIntoIndex(aDBO.Value, Attr.UUID);
 
                                 if (updateAttributefromIdxResult.Failed())
                                 {
@@ -854,7 +852,7 @@ namespace sones.GraphDB.Managers
                         else
                         {
                             //the attribute will be removed from the dbobject --> update index
-                            var removeAttributefromIdxResult = RemoveDBObjectFromIndex(aDBO.Value, Attr.UUID, myDBContext);
+                            var removeAttributefromIdxResult = RemoveDBObjectFromIndex(aDBO.Value, Attr.UUID);
 
                             if (removeAttributefromIdxResult.Failed())
                             {
@@ -886,14 +884,14 @@ namespace sones.GraphDB.Managers
 
                     var objID = aDBO.Value.ObjectUUID;
 
-                    var backwardEdgeLoadExcept = myDBContext.DBObjectManager.LoadBackwardEdge(aDBO.Value.ObjectLocation);
+                    var backwardEdgeLoadExcept = _dbContext.DBObjectManager.LoadBackwardEdge(aDBO.Value.ObjectLocation);
 
                     if (!backwardEdgeLoadExcept.Success())
                         return new Exceptional<IEnumerable<Vertex>>(backwardEdgeLoadExcept.IErrors.First());
 
                     var backwarEdges = backwardEdgeLoadExcept.Value;
 
-                    var removeResult = myDBContext.DBObjectManager.RemoveDBObject(myGraphDBType, aDBO.Value, myDBContext.DBObjectCache, myDBContext.SessionSettings);
+                    var removeResult = _dbContext.DBObjectManager.RemoveDBObject(myGraphDBType, aDBO.Value, _dbContext.DBObjectCache, _dbContext.SessionSettings);
 
                     if (!removeResult.Success())
                     {
@@ -902,7 +900,7 @@ namespace sones.GraphDB.Managers
 
                     if (backwarEdges != null)
                     {
-                        var delEdgeRefs = DeleteObjectReferences(objID, backwarEdges, myDBContext);
+                        var delEdgeRefs = DeleteObjectReferences(objID, backwarEdges);
 
                         if (!delEdgeRefs.Success())
                             return new Exceptional<IEnumerable<Vertex>>(delEdgeRefs.IErrors.First());
@@ -928,15 +926,15 @@ namespace sones.GraphDB.Managers
         /// </summary>
         /// <param name="dBObjectStream"></param>
         /// <param name="attributeUUID"></param>
-        /// <param name="myDBContext"></param>
+        /// <param name="_dbContext"></param>
         /// <returns></returns>
-        private Exceptional InsertDBObjectIntoIndex(DBObjectStream dBObjectStream, AttributeUUID attributeUUID, DBContext myDBContext)
+        private Exceptional InsertDBObjectIntoIndex(DBObjectStream dBObjectStream, AttributeUUID attributeUUID)
         {
-            foreach (var aType in myDBContext.DBTypeManager.GetAllParentTypes(myDBContext.DBTypeManager.GetTypeByUUID(dBObjectStream.TypeUUID), true, false))
+            foreach (var aType in _dbContext.DBTypeManager.GetAllParentTypes(_dbContext.DBTypeManager.GetTypeByUUID(dBObjectStream.TypeUUID), true, false))
             {
                 foreach (var aAttributeIdx in aType.GetAttributeIndices(attributeUUID))
                 {
-                    var result = aAttributeIdx.Insert(dBObjectStream, aType, myDBContext);
+                    var result = aAttributeIdx.Insert(dBObjectStream, aType, _dbContext);
 
                     if (result.Failed())
                     {
@@ -953,15 +951,15 @@ namespace sones.GraphDB.Managers
         /// </summary>
         /// <param name="dBObjectStream"></param>
         /// <param name="attributeUUID"></param>
-        /// <param name="myDBContext"></param>
+        /// <param name="_dbContext"></param>
         /// <returns></returns>
-        private Exceptional RemoveDBObjectFromIndex(DBObjectStream dBObjectStream, AttributeUUID attributeUUID, DBContext myDBContext)
+        private Exceptional RemoveDBObjectFromIndex(DBObjectStream dBObjectStream, AttributeUUID attributeUUID)
         {
-            foreach (var aType in myDBContext.DBTypeManager.GetAllParentTypes(myDBContext.DBTypeManager.GetTypeByUUID(dBObjectStream.TypeUUID), true, false))
+            foreach (var aType in _dbContext.DBTypeManager.GetAllParentTypes(_dbContext.DBTypeManager.GetTypeByUUID(dBObjectStream.TypeUUID), true, false))
             {
                 foreach (var aAttributeIdx in aType.GetAttributeIndices(attributeUUID))
                 {
-                    var result = aAttributeIdx.Remove(dBObjectStream, aType, myDBContext);
+                    var result = aAttributeIdx.Remove(dBObjectStream, aType, _dbContext);
 
                     if (result.Failed())
                     {
@@ -977,12 +975,12 @@ namespace sones.GraphDB.Managers
         /// 
         /// </summary>
         /// <param name="myWhereExpression"></param>
-        /// <param name="myDBContext"></param>
+        /// <param name="_dbContext"></param>
         /// <param name="myTypeWithUndefAttrs">Type, List of undef attrs</param>
         /// <param name="myDBTypeAttributeToDelete">Type, List of attributes</param>
-        /// <param name="myReferenceTypeLookup">reference, type</param>
+        /// <param name="myReferenceTypeLookup">reference, _graphDBType</param>
         /// <returns></returns>
-        public QueryResult Delete(BinaryExpressionDefinition myWhereExpression, DBContext myDBContext, Dictionary<GraphDBType, List<string>> myTypeWithUndefAttrs, Dictionary<GraphDBType, List<TypeAttribute>> myDBTypeAttributeToDelete, Dictionary<String, GraphDBType> myReferenceTypeLookup)
+        public QueryResult Delete(BinaryExpressionDefinition myWhereExpression, Dictionary<GraphDBType, List<string>> myTypeWithUndefAttrs, Dictionary<GraphDBType, List<TypeAttribute>> myDBTypeAttributeToDelete, Dictionary<String, GraphDBType> myReferenceTypeLookup)
         {
 
             QueryResult result = new QueryResult();
@@ -997,13 +995,13 @@ namespace sones.GraphDB.Managers
 
                     #region _WhereExpression
 
-                    myWhereExpression.Validate(myDBContext);
+                    myWhereExpression.Validate(_dbContext);
                     if (myWhereExpression.ValidateResult.Failed())
                     {
                         return new QueryResult(myWhereExpression.ValidateResult);
                     }
 
-                    var resultGraph = myWhereExpression.Calculon(myDBContext, new CommonUsageGraph(myDBContext), false);
+                    var resultGraph = myWhereExpression.Calculon(_dbContext, new CommonUsageGraph(_dbContext), false);
                     if (resultGraph.Failed())
                     {
                         return new QueryResult(resultGraph.IErrors);
@@ -1015,13 +1013,13 @@ namespace sones.GraphDB.Managers
 
                     foreach (var type in myTypeWithUndefAttrs)
                     {
-                        _dbobjects = resultGraph.Value.Select(new LevelKey(type.Key, myDBContext.DBTypeManager), null, false);
+                        _dbobjects = resultGraph.Value.Select(new LevelKey(type.Key, _dbContext.DBTypeManager), null, false);
 
                         foreach (var dbObj in _dbobjects)
                         {
                             foreach (var undefAttr in type.Value)
                             {
-                                var removeExcept = myDBContext.DBObjectManager.RemoveUndefinedAttribute(undefAttr, dbObj.Value);
+                                var removeExcept = _dbContext.DBObjectManager.RemoveUndefinedAttribute(undefAttr, dbObj.Value);
 
                                 if (removeExcept.Failed())
                                     return new QueryResult(removeExcept.IErrors);
@@ -1046,7 +1044,7 @@ namespace sones.GraphDB.Managers
                             generateLevel = true;
                         }
 
-                        var deleteResult = DeleteDBObjects(aToBeDeletedAttribute.Key, aToBeDeletedAttribute.Value, resultGraph.Value.Select(new LevelKey(aToBeDeletedAttribute.Key, myDBContext.DBTypeManager), null, generateLevel), myDBContext);
+                        var deleteResult = DeleteDBObjects(aToBeDeletedAttribute.Key, aToBeDeletedAttribute.Value, resultGraph.Value.Select(new LevelKey(aToBeDeletedAttribute.Key, _dbContext.DBTypeManager), null, generateLevel));
 
                         if (deleteResult.Failed())
                         {
@@ -1086,8 +1084,8 @@ namespace sones.GraphDB.Managers
 
                         foreach (var type in myTypeWithUndefAttrs)
                         {
-                            var listOfAffectedDBObjects = myDBContext.DBObjectCache.SelectDBObjectsForLevelKey(new LevelKey(type.Key, myDBContext.DBTypeManager), myDBContext);
-                            RemoveUndefAttrs(listOfAffectedDBObjects, type.Value, myDBContext);
+                            var listOfAffectedDBObjects = _dbContext.DBObjectCache.SelectDBObjectsForLevelKey(new LevelKey(type.Key, _dbContext.DBTypeManager), _dbContext);
+                            RemoveUndefAttrs(listOfAffectedDBObjects, type.Value);
                         }
 
                         #endregion
@@ -1099,10 +1097,10 @@ namespace sones.GraphDB.Managers
 
                         foreach (var attributeToDelete in myDBTypeAttributeToDelete)
                         {
-                            var listOfAffectedDBObjects = myDBContext.DBObjectCache.SelectDBObjectsForLevelKey(new LevelKey(attributeToDelete.Key, myDBContext.DBTypeManager), myDBContext).ToList();
+                            var listOfAffectedDBObjects = _dbContext.DBObjectCache.SelectDBObjectsForLevelKey(new LevelKey(attributeToDelete.Key, _dbContext.DBTypeManager), _dbContext).ToList();
 
                             if (myTypeWithUndefAttrs.ContainsKey(attributeToDelete.Key))
-                                RemoveUndefAttrs(listOfAffectedDBObjects, myTypeWithUndefAttrs[attributeToDelete.Key], myDBContext);
+                                RemoveUndefAttrs(listOfAffectedDBObjects, myTypeWithUndefAttrs[attributeToDelete.Key]);
 
                             List<TypeAttribute> attributes = new List<TypeAttribute>();
                             foreach (var attr in attributeToDelete.Value)
@@ -1110,7 +1108,7 @@ namespace sones.GraphDB.Managers
                                 attributes.Add(attr);
                             }
 
-                            var Result = DeleteDBObjects(attributeToDelete.Key, attributes, listOfAffectedDBObjects, myDBContext);
+                            var Result = DeleteDBObjects(attributeToDelete.Key, attributes, listOfAffectedDBObjects);
 
                             if (Result.Failed())
                             {
@@ -1137,18 +1135,18 @@ namespace sones.GraphDB.Managers
             return result;
         }
 
-        internal Exceptional<Boolean> DeleteObjectReferences(ObjectUUID myObjectUUID, BackwardEdgeStream myObjectBackwardEdges, DBContext dbContext)
+        private Exceptional<Boolean> DeleteObjectReferences(ObjectUUID myObjectUUID, BackwardEdgeStream myObjectBackwardEdges)
         {            
             foreach (var item in myObjectBackwardEdges)
             {
-                var type = dbContext.DBTypeManager.GetTypeByUUID(item.Key.TypeUUID);
+                var type = _dbContext.DBTypeManager.GetTypeByUUID(item.Key.TypeUUID);
 
                 if (type == null)
                 {
                     return new Exceptional<Boolean>(new Error_TypeDoesNotExist(""));
                 }
 
-                foreach (var objID in item.Value.GetAllEdgeDestinations(dbContext.DBObjectCache))
+                foreach (var objID in item.Value.GetAllEdgeDestinations(_dbContext.DBObjectCache))
                 {
                     if (objID.Failed())
                     {
@@ -1177,7 +1175,7 @@ namespace sones.GraphDB.Managers
                         }
                     }
 
-                    var flushExcept = dbContext.DBObjectManager.FlushDBObject(objID.Value);
+                    var flushExcept = _dbContext.DBObjectManager.FlushDBObject(objID.Value);
 
                     if (!flushExcept.Success())
                         return new Exceptional<bool>(flushExcept.IErrors.First());
@@ -1193,14 +1191,14 @@ namespace sones.GraphDB.Managers
         /// <param name="myAttr">the attribute</param>
         /// <param name="myDBObjectCache">the object cache</param>
         /// <returns>true if the value was changed</returns>
-        private Exceptional<Boolean> SetDefaultValue(TypeAttribute myAttr, Exceptional<DBObjectStream> myDBO, DBContext dbContext)
+        private Exceptional<Boolean> SetDefaultValue(TypeAttribute myAttr, Exceptional<DBObjectStream> myDBO)
         {
             if (myDBO.Success())
             {
                 IObject defaultValue = myAttr.DefaultValue;
 
                 if (defaultValue == null)
-                    defaultValue = myAttr.GetDefaultValue(dbContext);
+                    defaultValue = myAttr.GetDefaultValue(_dbContext);
                 
                 var alterExcept = myDBO.Value.AlterAttribute(myAttr.UUID, defaultValue);
 
@@ -1220,17 +1218,17 @@ namespace sones.GraphDB.Managers
             return new Exceptional<bool>(true);
         }
 
-        private Exceptional RemoveUndefAttrs(IEnumerable<Exceptional<DBObjectStream>> myDBObjStream, List<String> myUndefAttrs, DBContext dbContext)
+        private Exceptional RemoveUndefAttrs(IEnumerable<Exceptional<DBObjectStream>> myDBObjStream, List<String> myUndefAttrs)
         {
             #region delete undefined attributes
 
             foreach (var objects in myDBObjStream)
             {
-                var undefAttrsStream = myUndefAttrs.Where(item => objects.Value.GetUndefinedAttributePayload(dbContext.DBObjectManager).Value.ContainsKey(item));
+                var undefAttrsStream = myUndefAttrs.Where(item => objects.Value.GetUndefinedAttributePayload(_dbContext.DBObjectManager).Value.ContainsKey(item));
 
                 foreach (var undefAttr in undefAttrsStream)
                 {
-                    var removeExcept = dbContext.DBObjectManager.RemoveUndefinedAttribute(undefAttr, objects.Value);
+                    var removeExcept = _dbContext.DBObjectManager.RemoveUndefinedAttribute(undefAttr, objects.Value);
 
                     if (removeExcept.Failed())
                         return new Exceptional(removeExcept);
@@ -1254,12 +1252,12 @@ namespace sones.GraphDB.Managers
         /// <param name="undefinedAttributes"></param>
         /// <param name="specialTypeAttributes"></param>
         /// <returns></returns>
-        private Exceptional<Vertex> GetManipulationResultSet(DBContext myDBContext, Exceptional<DBObjectStream> myDBObjectStreamExceptional, GraphDBType myGraphDBType, Dictionary<TypeAndAttributeDefinition, IObject> attributes = null, Dictionary<String, IObject> undefinedAttributes = null, Dictionary<ASpecialTypeAttribute, Object> specialTypeAttributes = null)
+        private Exceptional<Vertex> GetManipulationResultSet(Exceptional<DBObjectStream> myDBObjectStreamExceptional, Dictionary<TypeAndAttributeDefinition, IObject> attributes = null, Dictionary<String, IObject> undefinedAttributes = null, Dictionary<ASpecialTypeAttribute, Object> specialTypeAttributes = null)
         {
 
             Vertex _Vertex = null;
 
-            #region Return inserted attributes
+          #region Return inserted attributes
 
             #region attributes
 
@@ -1307,7 +1305,7 @@ namespace sones.GraphDB.Managers
             if (!_Vertex.HasAttribute(SpecialTypeAttribute_UUID.AttributeName))
             {
 
-                var extractedValue = new SpecialTypeAttribute_UUID().ExtractValue(myDBObjectStreamExceptional.Value, myGraphDBType, myDBContext);
+                var extractedValue = new SpecialTypeAttribute_UUID().ExtractValue(myDBObjectStreamExceptional.Value, _graphDBType, _dbContext);
                 
                 if (extractedValue.Failed())
                 {
@@ -1325,7 +1323,7 @@ namespace sones.GraphDB.Managers
             if (!_Vertex.HasAttribute(SpecialTypeAttribute_REVISION.AttributeName)) // If it was updated by SpecialTypeAttributes we do not need to add them again
             {
 
-                var extractedValue = new SpecialTypeAttribute_REVISION().ExtractValue(myDBObjectStreamExceptional.Value, myGraphDBType, myDBContext);
+                var extractedValue = new SpecialTypeAttribute_REVISION().ExtractValue(myDBObjectStreamExceptional.Value, _graphDBType, _dbContext);
                 if (extractedValue.Failed())
                 {
                     return new Exceptional<Vertex>(extractedValue);
@@ -1347,17 +1345,17 @@ namespace sones.GraphDB.Managers
 
         #region EvaluateAttributes
 
-        public Exceptional<ManipulationAttributes> EvaluateAttributes(DBContext myDBContext, GraphDBType myGraphDBType, List<AAttributeAssignOrUpdate> myAttributeAssigns)
+        public Exceptional<ManipulationAttributes> EvaluateAttributes(List<AAttributeAssignOrUpdate> myAttributeAssigns)
         {
 
-            var result = GetRecursiveAttributes(myAttributeAssigns, myDBContext, myGraphDBType);
+            var result = GetRecursiveAttributes(myAttributeAssigns, _dbContext, _graphDBType);
             
             if (result.Failed())
             {
                 return result;
             }
 
-            result.PushIExceptional(AddMandatoryAttributes(myDBContext, myGraphDBType, result.Value));
+            result.PushIExceptional(AddMandatoryAttributes(_dbContext, _graphDBType, result.Value));
 
             return result;
 
@@ -1378,7 +1376,7 @@ namespace sones.GraphDB.Managers
             {
                 if (!myManipulationAttributes.MandatoryAttributes.Contains(attrib))
                 {
-                    //if we have mandatory attributes in type but not in the current statement and USE_DEFAULTS_ON_MANDATORY is true then do this
+                    //if we have mandatory attributes in _graphDBType but not in the current statement and USE_DEFAULTS_ON_MANDATORY is true then do this
                     if (mandatoryDefaults)
                     {
                         typeAttr = myGraphDBType.GetTypeAttributeByUUID(attrib);
@@ -1472,12 +1470,7 @@ namespace sones.GraphDB.Managers
                             return new Exceptional<ManipulationAttributes>(new Error_UndefinedAttributes());
 
                         case UndefAttributeBehaviour.warn:
-                            if (undefAttrWarning == null)
-                            {
-                                undefAttrWarning = new Warning_UndefinedAttribute();
-                            }
-
-                            resultExcept.PushIWarning(undefAttrWarning);
+                            resultExcept.PushIWarning(new Warning_UndefinedAttribute(aAttributeAssign.AttributeIDChain));
                             break;
                     }
 
@@ -1823,14 +1816,14 @@ namespace sones.GraphDB.Managers
 
         #region Truncate
 
-        public Exceptional Truncate(DBContext myDBContext, GraphDBType myGraphDBType)
+        public Exceptional Truncate()
         {
 
             #region Remove
 
             #region remove dbobjects
 
-            var listOfAffectedDBObjects = myDBContext.DBObjectCache.SelectDBObjectsForLevelKey(new LevelKey(myGraphDBType, myDBContext.DBTypeManager), myDBContext).ToList();
+            var listOfAffectedDBObjects = _dbContext.DBObjectCache.SelectDBObjectsForLevelKey(new LevelKey(_graphDBType, _dbContext.DBTypeManager), _dbContext).ToList();
 
             foreach (var aDBO in listOfAffectedDBObjects)
             {
@@ -1842,14 +1835,14 @@ namespace sones.GraphDB.Managers
 
                 var dbObjID = aDBO.Value.ObjectUUID;
 
-                var dbBackwardEdgeLoadExcept = myDBContext.DBObjectManager.LoadBackwardEdge(aDBO.Value.ObjectLocation);
+                var dbBackwardEdgeLoadExcept = _dbContext.DBObjectManager.LoadBackwardEdge(aDBO.Value.ObjectLocation);
 
                 if (!dbBackwardEdgeLoadExcept.Success())
                     return new Exceptional(dbBackwardEdgeLoadExcept);
 
                 var dbBackwardEdges = dbBackwardEdgeLoadExcept.Value;
 
-                var result = myDBContext.DBObjectManager.RemoveDBObject(myGraphDBType, aDBO.Value, myDBContext.DBObjectCache, myDBContext.SessionSettings);
+                var result = _dbContext.DBObjectManager.RemoveDBObject(_graphDBType, aDBO.Value, _dbContext.DBObjectCache, _dbContext.SessionSettings);
 
                 if (!result.Success())
                 {
@@ -1858,7 +1851,7 @@ namespace sones.GraphDB.Managers
 
                 if (dbBackwardEdges != null)
                 {
-                    var deleteReferences = DeleteObjectReferences(dbObjID, dbBackwardEdges, myDBContext);
+                    var deleteReferences = DeleteObjectReferences(dbObjID, dbBackwardEdges);
 
                     if (!deleteReferences.Success())
                         return new Exceptional(deleteReferences);
@@ -1870,10 +1863,10 @@ namespace sones.GraphDB.Managers
 
             #region remove indices
 
-            Parallel.ForEach(myGraphDBType.GetAllAttributeIndices(false), aIdx =>
+            Parallel.ForEach(_graphDBType.GetAllAttributeIndices(false), aIdx =>
                 {
                     //it is not necessary to clear the UUID IDX because this is done by deleting the objects in the fs
-                    aIdx.ClearAndRemoveFromDisc(myDBContext.DBIndexManager);
+                    aIdx.ClearAndRemoveFromDisc(_dbContext.DBIndexManager);
                 });
 
             #endregion
@@ -1885,6 +1878,37 @@ namespace sones.GraphDB.Managers
         }
 
         #endregion
-        
+
+        /*
+        private IEnumerable<Exceptional<DBObjectStream>> getExtractedDBObjects(BinaryExpressionDefinition myBinaryExpressionDefinition)
+        {
+
+            if (myBinaryExpressionDefinition != null)
+            {
+                myBinaryExpressionDefinition.Validate(_dbContext);
+                if (myBinaryExpressionDefinition.ValidateResult.Failed())
+                {
+                    return new IEnumerable<Exceptional<DBObjectStream>>(myBinaryExpressionDefinition.ValidateResult.IErrors);
+                }
+                var _whereGraphResult = myBinaryExpressionDefinition.Calculon(_dbContext, new CommonUsageGraph(_dbContext), false);
+
+                if (_whereGraphResult.Success())
+                {
+                    return  _whereGraphResult.Value.Select(new LevelKey(_graphDBType, _dbContext.DBTypeManager), null, true);
+                }
+                else
+                {
+                    return new IEnumerable<Exceptional<DBObjectStream>>(_whereGraphResult.IErrors);
+                }
+
+
+            }
+            else
+            {
+                return new IEnumerable<Exceptional<DBObjectStream>>(new List<Exceptional<DBObjectStream>>());
+            }
+
+        }
+        */
     }
 }

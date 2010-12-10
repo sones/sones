@@ -43,12 +43,14 @@ namespace sones.GraphFS
         Exceptional                 CopyToLocation       (ObjectLocation mySourceLocation, ObjectLocation myTargetLocation);
         Exceptional                 MoveToLocation       (ObjectLocation mySourceLocation, ObjectLocation myTargetLocation);
 
-        Exceptional                 RemoveObjectLocator  (ObjectLocator  myObjectLocator,  Boolean myRecursion = false);
-        Exceptional                 RemoveObjectLocation (ObjectLocation myObjectLocation, Boolean myRecursion = false);
-        Exceptional                 RemoveAFSObject      (CacheUUID      myCacheUUID);
+        Exceptional                 RemoveObjectLocator  (ObjectLocator  myObjectLocator,  Boolean myRecursion = false, Boolean myDisposeAFSObject = true);
+        Exceptional                 RemoveObjectLocation (ObjectLocation myObjectLocation, Boolean myRecursion = false, Boolean myDisposeAFSObject = true);
+        Exceptional                 RemoveAFSObject      (CacheUUID      myCacheUUID,      Boolean myDisposeAFSObject = true);
 
         Exceptional                 Clear();
     
+        void                        SetPinned(ObjectLocation myObjectLocation);
+
     }
 
 }

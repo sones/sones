@@ -27,15 +27,32 @@ using sones.GraphDB.NewAPI;
 
 namespace sones.GraphDB.Managers.Structures.Describe
 {
-
+    /// <summary>
+    /// Describes a setting
+    /// </summary>
     public class DescribeSettingDefinition : ADescribeDefinition
     {
 
         #region Data
 
+        /// <summary>
+        /// The settings scope
+        /// </summary>
         private TypesSettingScope? _SettingType;
+
+        /// <summary>
+        /// The setting name
+        /// </summary>
         private String _SettingName;
+
+        /// <summary>
+        /// The type name of the setting
+        /// </summary>
         private String _SettingTypeName;
+
+        /// <summary>
+        /// The chain definition of the setting
+        /// </summary>
         private IDChainDefinition _SettingAttribute;
 
         #endregion
@@ -56,6 +73,9 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
         #region ADescribeDefinition
 
+        /// <summary>
+        /// <seealso cref=" ADescribeDefinition"/>
+        /// </summary>
         public override Exceptional<IEnumerable<Vertex>> GetResult(DBContext myDBContext)
         {
 
@@ -250,8 +270,8 @@ namespace sones.GraphDB.Managers.Structures.Describe
         /// <summary>
         /// generate a output result if no database, session, type or attribute is requested, then you can get information about the setting
         /// </summary>
-        /// <param name="mySettingName">the name of the setting</param>
-        /// <param name="myDBContext"></param>
+        /// <param name="mySettingName">The name of the setting</param>
+        /// <param name="myDBContext">The db context</param>
         private Exceptional<Vertex> GenerateStdResult(string mySettingName, DBContext myDBContext)
         {
 
@@ -273,11 +293,11 @@ namespace sones.GraphDB.Managers.Structures.Describe
         #region output result for a attribute
 
         /// <summary>
-        /// generate a output result for setting on a attribute
+        /// Generate a output result for setting on a attribute
         /// </summary>
-        /// <param name="mySettingName">the name of the setting</param>
-        /// <param name="myTypeNode">typenode</param>
-        /// <param name="mySessionToken"></param>
+        /// <param name="mySettingName">The name of the setting</param>
+        /// <param name="myTypeNode">The typenode</param>
+        /// <param name="myDBContext">The db context</param>
         private Exceptional<Vertex> GenerateAttrResult(string mySettingName, TypeAttribute myAttribute, DBContext myDBContext)
         {
             var setting = myDBContext.DBSettingsManager.GetSetting(mySettingName, myDBContext, TypesSettingScope.ATTRIBUTE, myAttribute.GetRelatedType(myDBContext.DBTypeManager), myAttribute);
@@ -290,7 +310,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
         }
 
         /// <summary>
-        /// generate a output result for setting on a attribute
+        /// Generate a output result for setting on a attribute
         /// </summary>
         /// <param name="mySettingName">the name of the setting</param>
         /// <param name="myTypeNode">typenode</param>
@@ -313,11 +333,11 @@ namespace sones.GraphDB.Managers.Structures.Describe
         #region generate a output result for a db setting
         
         /// <summary>
-        /// generate a output result for a database setting
+        /// Generate a output result for a database setting
         /// </summary>
-        /// <param name="mySettingName">the name of the setting</param>
-        /// <param name="myDBContext"></param>
-        private Exceptional<Vertex> GenerateDBResult(string mySettingName, DBContext myDBContext)
+        /// <param name="mySettingName">The name of the setting</param>
+        /// <param name="myDBContext">The db context</param>
+        private Exceptional<Vertex> GenerateDBResult(String mySettingName, DBContext myDBContext)
         {
             var setting = myDBContext.DBSettingsManager.GetSetting(mySettingName, myDBContext, TypesSettingScope.DB, includingDefaults: false);
             if (setting.Failed())
@@ -329,7 +349,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
         }
 
         /// <summary>
-        /// generate a output result for a database setting
+        /// Generate a output result for a database setting
         /// </summary>
         /// <param name="myDBContext"></param>
         private Exceptional<List<Vertex>> GenerateDBResult(DBContext myDBContext)
@@ -350,10 +370,10 @@ namespace sones.GraphDB.Managers.Structures.Describe
         #region generate a output result for a session setting
 
         /// <summary>
-        /// generate a output result for a session setting
+        /// Generate a output result for a session setting
         /// </summary>
-        /// <param name="mySettingName">the name of the setting</param>
-        /// <param name="mySessionToken"></param>
+        /// <param name="mySettingName">The name of the setting</param>
+        /// <param name="myDBContext">The db context</param>
         private Exceptional<Vertex> GenerateSessionResult(string mySettingName, DBContext myDBContext)
         {
             var setting = myDBContext.DBSettingsManager.GetSetting(mySettingName, myDBContext, TypesSettingScope.SESSION);
@@ -366,9 +386,9 @@ namespace sones.GraphDB.Managers.Structures.Describe
         }
 
         /// <summary>
-        /// generate a output result for a session setting
+        /// Generate a output result for a session setting
         /// </summary>
-        /// <param name="mySessionToken"></param>
+        /// <param name="myDBContext">The db context</param>
         private Exceptional<List<Vertex>> GenerateSessionResult(DBContext myDBContext)
         {
             List<Vertex> resultingReadouts = new List<Vertex>();
@@ -385,10 +405,10 @@ namespace sones.GraphDB.Managers.Structures.Describe
         #region output for a type
 
         /// <summary>
-        /// generate a output result for settings on a type
+        /// Generate a output result for settings on a type
         /// </summary>
-        /// <param name="myType">type</param>
-        /// <param name="mySessionToken">session token</param>
+        /// <param name="myType">The type</param>
+        /// <param name="myDBContext">The db context</param>
         private Exceptional<List<Vertex>> GenerateTypeResult(GraphDBType myType, DBContext myDBContext)
         {
             List<Vertex> resultingReadouts = new List<Vertex>();
@@ -404,8 +424,8 @@ namespace sones.GraphDB.Managers.Structures.Describe
         /// <summary>
         /// generate a output result for settings on a type
         /// </summary>
-        /// <param name="myType">type</param>
-        /// <param name="mySessionToken">session token</param>
+        /// <param name="myType">The type</param>
+        /// <param name="myDBContext">The db context</param>
         private Exceptional<List<Vertex>> GenerateTypeResult(string mySettingName, GraphDBType myType, DBContext myDBContext)
         {
 
@@ -422,17 +442,17 @@ namespace sones.GraphDB.Managers.Structures.Describe
         #endregion
 
         /// <summary>
-        /// generate a output result
+        /// Generate a output result
         /// </summary>
-        /// <param name="mySetting">the setting</param>
-        /// <param name="myReadOutList">list of dbreadouts</param>
-        private Vertex GenerateResult(ADBSettingsBase mySetting, DBTypeManager typeManager)
+        /// <param name="mySetting">The setting</param>
+        /// <param name="myTypeManager">The db type manager</param>
+        private Vertex GenerateResult(ADBSettingsBase mySetting, DBTypeManager myTypeManager)
         {
 
             var Setting = new Dictionary<String, Object>();
             Setting.Add("Name", mySetting.Name);
             Setting.Add("ID", mySetting.ID);
-            Setting.Add("Type", typeManager.GetTypeByUUID(mySetting.Type).Name);
+            Setting.Add("Type", myTypeManager.GetTypeByUUID(mySetting.Type).Name);
             Setting.Add("Desc", mySetting.Description);
             Setting.Add("Default", mySetting.Default);
             Setting.Add("Value", mySetting.Value);

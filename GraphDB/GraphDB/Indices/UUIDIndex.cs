@@ -25,6 +25,7 @@ using sones.Lib.ErrorHandling;
 using System.Threading.Tasks;
 using System.Threading;
 using sones.GraphFS.Settings;
+using sones.GraphFS.Objects;
 
 #endregion
 
@@ -54,17 +55,18 @@ namespace sones.GraphDB.Indices
         /// <param name="myIndexType">The IndexType e.g. HashMap, BTree of this AttributeIndex</param>
         /// <param name="correspondingType">The corresponding type of this index, used to get the file system location</param>
         /// <param name="myFileSystemLocation">The location oif the index. If null it will be generated based on the <paramref name="correspondingType"/>.</param>
-        public UUIDIndex(String myIndexName, String myIndexEdition, List<AttributeUUID> myAttributes, GraphDBType correspondingType, UInt16 myAttributeIdxShards, String myIndexType = null, UInt64 myKeyCount = 0)
-            : this(myIndexName, new IndexKeyDefinition(myAttributes), correspondingType, myAttributeIdxShards, myIndexType, myIndexEdition, myKeyCount)
+        public UUIDIndex(String myIndexName, String myIndexEdition, List<AttributeUUID> myAttributes, GraphDBType correspondingType, String myIndexType = null, UInt64 myKeyCount = 0)
+            : this(myIndexName, new IndexKeyDefinition(myAttributes), correspondingType, myIndexType, myIndexEdition, myKeyCount)
         { }
 
-        public UUIDIndex(string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, UInt16 myAttributeIdxShards, string indexType = null, string indexEdition = DBConstants.DEFAULTINDEX, UInt64 myKeyCount = 0)
+        public UUIDIndex(string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, string indexType = null, string indexEdition = DBConstants.DEFAULTINDEX, UInt64 myKeyCount = 0)
         {
             IndexName          = indexName;
             IndexEdition       = indexEdition;
             IndexKeyDefinition = idxKey;
             IndexRelatedTypeUUID = correspondingType.UUID;
-            AttributeIdxShards = myAttributeIdxShards;
+
+            AttributeIdxShards = 0;
 
             _numberOfObjects = myKeyCount;
             //valueCount is irrellevant, because valueCount = keyCount
@@ -178,7 +180,7 @@ namespace sones.GraphDB.Indices
                 }
                 else
                 {
-                    return GetDirectoryObject(myTypeOfDBObject, uuid, dbContext).ObjectExists(uuid.ToString());
+                    return Contains_private(GetDirectoryObject(myTypeOfDBObject, dbContext), uuid.ToString());
                 }
             }
             else
@@ -187,9 +189,14 @@ namespace sones.GraphDB.Indices
             }
         }
 
+        private bool Contains_private(IDirectoryObject myIDirectoryObject, string myUUIDAsString)
+        {
+            return myIDirectoryObject.ObjectExists(myUUIDAsString) && myIDirectoryObject.GetDirectoryEntry(myUUIDAsString).ObjectStreamsList.Contains(DBConstants.DBOBJECTSTREAM);
+        }
+
         public Boolean Contains(ObjectUUID myUUID, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            return GetDirectoryObject(myTypeOfDBObject, myUUID, dbContext).ObjectExists(myUUID.ToString());
+            return Contains_private(GetDirectoryObject(myTypeOfDBObject, dbContext), myUUID.ToString());
         }
 
         #endregion
@@ -407,15 +414,9 @@ namespace sones.GraphDB.Indices
 
         public IEnumerable<ObjectUUID> GetAllUUIDs(GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            for (UInt16 i = 0; i < AttributeIdxShards; i++)
-            {
-                foreach (var aUUID in GetDirectoryObject(myTypeOfDBObject, i, dbContext).GetDirectoryListing(null, null, null, new List<String>(new String[] { DBConstants.DBOBJECTSTREAM }), null).Select(item => new ObjectUUID(item)))
-                {
-                    yield return aUUID;
-                }
-            }
-
-            yield break;
+            return GetDirectoryObject(myTypeOfDBObject, dbContext).
+                GetDirectoryListing(null, null, null, new List<string>() {DBConstants.DBOBJECTSTREAM}, null).
+                        Select(aUUIDString => new ObjectUUID(aUUIDString));
         }
 
         #endregion
@@ -560,21 +561,9 @@ namespace sones.GraphDB.Indices
 
         #region private helper
 
-        private DirectoryObject GetDirectoryObject(GraphDBType myTypeOfDBObject, ObjectUUID uuid, DBContext dbContext)
+        private IDirectoryObject GetDirectoryObject(GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            var directoryException = dbContext.DBTypeManager.GetObjectsDirectory(myTypeOfDBObject, uuid);
-
-            if (directoryException.Failed())
-            {
-                throw new GraphDBException(new Error_CouldNotGetIndexReference(directoryException.IErrors, IndexName, IndexEdition));
-            }
-
-            return directoryException.Value;
-        }
-
-        private DirectoryObject GetDirectoryObject(GraphDBType myTypeOfDBObject, UInt16 shard, DBContext dbContext)
-        {
-            var directoryException = dbContext.DBTypeManager.GetObjectsDirectory(myTypeOfDBObject, shard);
+            var directoryException = dbContext.DBTypeManager.GetObjectsDirectory(myTypeOfDBObject);
 
             if (directoryException.Failed())
             {

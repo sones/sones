@@ -120,9 +120,9 @@ namespace sones.GraphDB.Indices
         #region Shards
 
         /// <summary>
-        /// The name of the index
+        /// The count of attribute idnex shards
         /// </summary>
-        public virtual UInt16 AttributeIdxShards { get; protected set; }
+        public virtual UInt16 AttributeIdxShards { get; set; }
 
         #endregion
 
@@ -130,33 +130,126 @@ namespace sones.GraphDB.Indices
 
         #region IAttributeIndex methods
 
-        public abstract Exceptional Update(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext);
+        /// <summary>
+        /// This method updates the idx corresponding to an DBObject
+        /// </summary>
+        /// <param name="myDBObject">The DBObject that should be updated</param>
+        /// <param name="myTypeOfDBObject">The type of the DBObject</param>
+        /// <param name="myDBContext">The db context</param>
+        /// <returns>an exceptional</returns>
+        public abstract Exceptional Update(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext myDBContext);
 
-        public abstract Exceptional Insert(DBObjectStream myDBObject, GraphDBType myTypeOfDBobject, DBContext dbContext);
+        /// <summary>
+        /// This method inserts the given DBObject into the index
+        /// </summary>
+        /// <param name="myDBObject">The DBObject that should be inserted</param>
+        /// <param name="myTypeOfDBobject">The type of the DBObject</param>
+        /// <param name="myDBContext">The db context</param>
+        /// <returns>an exceptional</returns>
+        public abstract Exceptional Insert(DBObjectStream myDBObject, GraphDBType myTypeOfDBobject, DBContext myDBContext);
 
-        public abstract Exceptional Insert(DBObjectStream myDBObject, IndexSetStrategy myIndexSetStrategy, GraphDBType myTypeOfDBObject, DBContext dbContext);
+        /// <summary>
+        /// This method inserts the given DBObject into the index
+        /// </summary>
+        /// <param name="myDBObject">The DBObject that should be inserted</param>
+        /// <param name="myIndexSetStrategy">The index merge strategy</param>
+        /// <param name="myTypeOfDBObject">The type of the DBObject</param>
+        /// <param name="myDBContext">The db context</param>
+        /// <returns>an exceptional</returns>
+        public abstract Exceptional Insert(DBObjectStream myDBObject, IndexSetStrategy myIndexSetStrategy, GraphDBType myTypeOfDBObject, DBContext myDBContext);
 
-        public abstract bool Contains(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext);
+        /// <summary>
+        /// This method checks if the current attribute index contains a DBObject
+        /// </summary>
+        /// <param name="myDBObject">The DBObject that should be checked</param>
+        /// <param name="myTypeOfDBObject">The Type of the DBObject</param>
+        /// <param name="myDBContext">The db context</param>
+        /// <returns>boolean</returns>
+        public abstract bool Contains(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext myDBContext);
 
-        public abstract bool Contains(IndexKey myIndeyKey, GraphDBType myTypeOfDBObject, DBContext dbContext);
+        /// <summary>
+        /// This method checks if the current attribute index contains a DBObject
+        /// </summary>
+        /// <param name="myIndexKey">The DBObject that should be checked</param>
+        /// <param name="myTypeOfDBObject">The Type of the DBObject</param>
+        /// <param name="myDBContext">The db context</param>
+        /// <returns>boolean</returns>
+        public abstract bool Contains(IndexKey myIndexKey, GraphDBType myTypeOfDBObject, DBContext myDBContext);
 
-        public abstract Exceptional Remove(DBObjectStream myDBObject, GraphDBType myTypeOfDBObjects, DBContext dbContext);
+        /// <summary>
+        /// This method removes a given DBObject from the index
+        /// </summary>
+        /// <param name="myDBObject">The DBObject that should be removed</param>
+        /// <param name="myTypeOfDBObjects">The type of the DBObject</param>
+        /// <param name="myDBContext">The db context</param>
+        /// <returns>An exceptional</returns>
+        public abstract Exceptional Remove(DBObjectStream myDBObject, GraphDBType myTypeOfDBObjects, DBContext myDBContext);
 
-        public abstract Exceptional ClearAndRemoveFromDisc(DBIndexManager indexManager);
+        /// <summary>
+        /// Clear and clean up all indices
+        /// </summary>
+        /// <param name="myIndexManager">The DBIndexManager</param>
+        /// <returns>An exceptional</returns>
+        public abstract Exceptional ClearAndRemoveFromDisc(DBIndexManager myIndexManager);
 
-        public abstract IEnumerable<IndexKey> GetKeys(GraphDBType myTypeOfDBObject, DBContext dbContext);
+        /// <summary>
+        /// Get the index keys for a type
+        /// </summary>
+        /// <param name="myTypeOfDBObject">The db type</param>
+        /// <paramr name="myDBContext">The db context</param>
+        /// <returns>An enumerable of index keys</returns>
+        public abstract IEnumerable<IndexKey> GetKeys(GraphDBType myTypeOfDBObject, DBContext myDBContext);
 
-        public abstract IEnumerable<IEnumerable<ObjectUUID>> GetAllValues(GraphDBType myTypeOfDBObject, DBContext dbContext);
+        /// <summary>
+        /// Return all object uuid's of an db type
+        /// </summary>
+        /// <param name="myTypeOfDBObject">The db type</param>
+        /// <param name="myDBContext">The db context</param>
+        /// <returns>An enumerable of an enumerable that contain all object uuid's</returns>
+        public abstract IEnumerable<IEnumerable<ObjectUUID>> GetAllValues(GraphDBType myTypeOfDBObject, DBContext myDBContext);
 
-        public abstract IEnumerable<ObjectUUID> GetValues(IndexKey myIndeyKey, GraphDBType myTypeOfDBObject, DBContext dbContext);
+        /// <summary>
+        /// Return all object uuid's of an index with the given index key
+        /// </summary>
+        /// <param name="myIndeyKey">The index key</param>
+        /// <param name="myTypeOfDBObject">The db type</param>
+        /// <param name="myDBContext">The db context</param>
+        /// <returns>An enumerable of object uuid's</returns>
+        public abstract IEnumerable<ObjectUUID> GetValues(IndexKey myIndeyKey, GraphDBType myTypeOfDBObject, DBContext myDBContext);
 
-        public abstract IEnumerable<KeyValuePair<IndexKey, HashSet<ObjectUUID>>> GetKeyValues(GraphDBType myTypeOfDBObject, DBContext dbContext);
+        /// <summary>
+        /// Return the keys and values of this index
+        /// this is an key value pair with the index key and the corresponding object uuid's 
+        /// </summary>
+        /// <param name="myTypeOfDBObject">The db type</param>
+        /// <param name="myDBContext">The db context</param>
+        /// <returns>an enumerable of key value pairs</returns>
+        public abstract IEnumerable<KeyValuePair<IndexKey, HashSet<ObjectUUID>>> GetKeyValues(GraphDBType myTypeOfDBObject, DBContext myDBContext);
 
+        /// <summary>
+        /// Return the number of objects for this index
+        /// </summary>
+        /// <returns>The number of values</returns>
         public abstract UInt64 GetValueCount();
 
+        /// <summary>
+        /// Return the number of keys for this index
+        /// </summary>
+        /// <returns>The number of keys</returns>
         public abstract UInt64 GetKeyCount();
 
-        public abstract IEnumerable<ObjectUUID> InRange(IndexKey fromIndexKey, IndexKey toIndexKey, bool myOrEqualFromKey, bool myOrEqualToKey, GraphDBType myTypeOfDBObject, DBContext dbContext);
+        /// <summary>
+        /// This is an in range operator
+        /// returns all objects that are in range from an index key to an index key
+        /// </summary>
+        /// <param name="fromIndexKey">Start of the region</param>
+        /// <param name="toIndexKey">End of region</param>
+        /// <param name="myOrEqualFromKey">Currently not used</param>
+        /// <param name="myOrEqualToKey">Currently not used</param>
+        /// <param name="myTypeOfDBObject">The type of the db object</param>
+        /// <param name="myDBContext"/>The db context
+        /// <returns></returns>
+        public abstract IEnumerable<ObjectUUID> InRange(IndexKey fromIndexKey, IndexKey toIndexKey, bool myOrEqualFromKey, bool myOrEqualToKey, GraphDBType myTypeOfDBObject, DBContext myDBContext);
 
         #endregion
     }

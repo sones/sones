@@ -37,6 +37,7 @@ using sones.GraphDB.Settings.DatabaseSettings;
 using sones.GraphFS.Settings;
 using sones.Lib.Settings;
 using sones.Lib.Settings;
+using sones.GraphDB.Transactions;
 
 #endregion
 
@@ -118,18 +119,6 @@ namespace sones.GraphDB.TypeManagement
             _DatabaseRootPath                               = myDatabaseRootPath;
             _IGraphFSSession                                = myIGraphFS;
             _ObjectLocationsOfAllUserDefinedDatabaseTypes   = LoadListOfTypeLocations(myDatabaseRootPath);
-
-            dbContext.GraphAppSettings.Subscribe<ObjectsDirectoryShardsSetting>(GraphSettingChanged);
-
-        }
-
-        Exceptional GraphSettingChanged(GraphSettingChangingEventArgs myEventArgs)
-        {
-            if (myEventArgs.Setting is ObjectsDirectoryShardsSetting)
-            {
-                // TODO
-            }
-            return new Exceptional();
         }
 
         public DBTypeManager(DBTypeManager dBTypeManager)
@@ -210,12 +199,10 @@ namespace sones.GraphDB.TypeManagement
             
             #endregion
 
-            var objectDirectoryShards = UInt16.Parse(_DBContext.GraphAppSettings.Get<ObjectsDirectoryShardsSetting>());
-
             #region DBObject - The base of all database types
             // DBObject is a child of DBBaseObject
 
-            var typeDBBaseObject = new GraphDBType(DBBaseObject.UUID, myDatabaseLocation, DBBaseObject.Name, null, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all database types", DBConstants.ObjectDirectoryShards);
+            var typeDBBaseObject = new GraphDBType(DBBaseObject.UUID, myDatabaseLocation, DBBaseObject.Name, null, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all database types");
             _SystemTypes.Add(typeDBBaseObject.UUID, typeDBBaseObject);
 
             #endregion
@@ -224,11 +211,11 @@ namespace sones.GraphDB.TypeManagement
             // DBObject is a child of DBBaseObject
 
             // == DBObject!
-            var typeDBReference = new GraphDBType(DBReference.UUID, myDatabaseLocation, DBReference.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all user defined database types", DBConstants.ObjectDirectoryShards);
+            var typeDBReference = new GraphDBType(DBReference.UUID, myDatabaseLocation, DBReference.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all user defined database types");
 
             #region DBVertex           
 
-            var typeDBVertex = new GraphDBType(DBVertex.UUID, myDatabaseLocation, DBVertex.Name, DBReference.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all user defined database vertices", DBConstants.ObjectDirectoryShards);
+            var typeDBVertex = new GraphDBType(DBVertex.UUID, myDatabaseLocation, DBVertex.Name, DBReference.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all user defined database vertices");
             _SystemTypes.Add(typeDBVertex.UUID, typeDBVertex);
 
             #endregion
@@ -379,7 +366,7 @@ namespace sones.GraphDB.TypeManagement
 
             #region DBEdge
 
-            var typeDBEdge = new GraphDBType(new TypeUUID(DBConstants.DBEdgeID), myDatabaseLocation, DBConstants.DBEdgeName, DBReference.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all user defined database edges", DBConstants.ObjectDirectoryShards);
+            var typeDBEdge = new GraphDBType(new TypeUUID(DBConstants.DBEdgeID), myDatabaseLocation, DBConstants.DBEdgeName, DBReference.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all user defined database edges");
 
             _SystemTypes.Add(typeDBEdge.UUID, typeDBEdge);
 
@@ -388,15 +375,15 @@ namespace sones.GraphDB.TypeManagement
             #region Build-in basic database types
             // These are children of DBBaseObject
 
-            _BasicTypes.Add(DBBoolean.UUID, new GraphDBType(DBBoolean.UUID, new ObjectLocation(myDatabaseLocation), DBBoolean.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "", DBConstants.ObjectDirectoryShards));
-            _BasicTypes.Add(DBDateTime.UUID, new GraphDBType(DBDateTime.UUID, new ObjectLocation(myDatabaseLocation), DBDateTime.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "", DBConstants.ObjectDirectoryShards));
-            _BasicTypes.Add(DBDouble.UUID, new GraphDBType(DBDouble.UUID, new ObjectLocation(myDatabaseLocation), DBDouble.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "", DBConstants.ObjectDirectoryShards));
-            _BasicTypes.Add(DBInt64.UUID, new GraphDBType(DBInt64.UUID, new ObjectLocation(myDatabaseLocation), DBInt64.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "", DBConstants.ObjectDirectoryShards));
-            _BasicTypes.Add(DBInt32.UUID, new GraphDBType(DBInt32.UUID, new ObjectLocation(myDatabaseLocation), DBInt32.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "", DBConstants.ObjectDirectoryShards));
-            _BasicTypes.Add(DBUInt64.UUID, new GraphDBType(DBUInt64.UUID, new ObjectLocation(myDatabaseLocation), DBUInt64.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "", DBConstants.ObjectDirectoryShards));
-            _BasicTypes.Add(DBString.UUID, new GraphDBType(DBString.UUID, new ObjectLocation(myDatabaseLocation), DBString.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "", DBConstants.ObjectDirectoryShards));
+            _BasicTypes.Add(DBBoolean.UUID, new GraphDBType(DBBoolean.UUID, new ObjectLocation(myDatabaseLocation), DBBoolean.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, ""));
+            _BasicTypes.Add(DBDateTime.UUID, new GraphDBType(DBDateTime.UUID, new ObjectLocation(myDatabaseLocation), DBDateTime.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, ""));
+            _BasicTypes.Add(DBDouble.UUID, new GraphDBType(DBDouble.UUID, new ObjectLocation(myDatabaseLocation), DBDouble.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, ""));
+            _BasicTypes.Add(DBInt64.UUID, new GraphDBType(DBInt64.UUID, new ObjectLocation(myDatabaseLocation), DBInt64.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, ""));
+            _BasicTypes.Add(DBInt32.UUID, new GraphDBType(DBInt32.UUID, new ObjectLocation(myDatabaseLocation), DBInt32.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, ""));
+            _BasicTypes.Add(DBUInt64.UUID, new GraphDBType(DBUInt64.UUID, new ObjectLocation(myDatabaseLocation), DBUInt64.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, ""));
+            _BasicTypes.Add(DBString.UUID, new GraphDBType(DBString.UUID, new ObjectLocation(myDatabaseLocation), DBString.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, ""));
 
-            _BasicTypes.Add(DBBackwardEdgeType.UUID, new GraphDBType(DBBackwardEdgeType.UUID, new ObjectLocation(myDatabaseLocation), DBBackwardEdgeType.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "", DBConstants.ObjectDirectoryShards));
+            _BasicTypes.Add(DBBackwardEdgeType.UUID, new GraphDBType(DBBackwardEdgeType.UUID, new ObjectLocation(myDatabaseLocation), DBBackwardEdgeType.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, ""));
 
             #endregion
 
@@ -641,11 +628,6 @@ namespace sones.GraphDB.TypeManagement
 
             mytype.AddAttribute(myTypeAttribute, this, true);
 
-            var FlushExcept = FlushType(mytype);
-
-            if (FlushExcept.Failed())
-                return new Exceptional<ResultType>(FlushExcept);
-
             #endregion
 
             #region update lookup tables ob sub-classes
@@ -799,21 +781,6 @@ namespace sones.GraphDB.TypeManagement
 
                 if (Result.Failed())
                     return new Exceptional<Boolean>(Result);
-
-
-                var FlushExcept = FlushType(myType);
-
-                if (FlushExcept.Failed())
-                {
-
-                    Result = myType.RenameAttribute(typeAttribute.UUID, oldName);
-
-                    if (Result.Failed())
-                        return new Exceptional<Boolean>(Result);
-
-                    return new Exceptional<Boolean>(FlushExcept);
-                }
-
             }
             else
             {
@@ -963,7 +930,7 @@ namespace sones.GraphDB.TypeManagement
                 {
                     if (aAttribute.IsBackwardEdge)
                     {
-                        if (aAttribute.BackwardEdgeDefinition.AttrUUID == myAttribute.UUID)
+                        if (aAttribute.BackwardEdgeDefinition.AttrUUID == myAttribute.UUID && aAttribute.BackwardEdgeDefinition.TypeUUID == myAttribute.RelatedGraphDBTypeUUID)
                         {
                             result.Add(aAttribute);
                         }
@@ -1120,19 +1087,13 @@ namespace sones.GraphDB.TypeManagement
                     GraphDBType parentType = GetTypeByName(aTypeDef.ParentType);
                     Dictionary<AttributeUUID, TypeAttribute> attributes = new Dictionary<AttributeUUID, TypeAttribute>();
 
-                    #region objectDirectoryShards
-
-                    var objectDirectoryShards = UInt16.Parse(currentContext.GraphAppSettings.Get<ObjectsDirectoryShardsSetting>());
-
-                    #endregion
-
                     #region Add type
 
                     TypeUUID parentUUID = (parentType == null) ? null : parentType.UUID;
 
                     #region hack
 
-                    GraphDBType _NewGraphType = new GraphDBType(null, new ObjectLocation(_DatabaseRootPath), aTypeDef.Name, parentUUID, attributes, true, aTypeDef.IsAbstract, aTypeDef.Comment, objectDirectoryShards);
+                    GraphDBType _NewGraphType = new GraphDBType(null, new ObjectLocation(_DatabaseRootPath), aTypeDef.Name, parentUUID, attributes, true, aTypeDef.IsAbstract, aTypeDef.Comment);
 
                     #endregion
 
@@ -1164,6 +1125,7 @@ namespace sones.GraphDB.TypeManagement
                     if (aType.ParentTypeUUID == null)
                     {
                         parentType = addedTypes.Where(item => item.Name == aTypeDef.ParentType).FirstOrDefault();
+
                         if (parentType == null)
                         {
                             RemoveRecentlyAddedTypes(addedTypes);
@@ -1207,6 +1169,7 @@ namespace sones.GraphDB.TypeManagement
                     foreach (var attributeDef in aTypeDef.Attributes)
                     {
                         var attribute = attributeDef.Key.CreateTypeAttribute(currentContext, addedTypes, attributeCounter);
+
                         if (attribute.Failed())
                         {
                             return new Exceptional<QueryResult>(attribute);
@@ -1219,9 +1182,11 @@ namespace sones.GraphDB.TypeManagement
                         }
 
                         GraphDBType attrType = GetTypeByName(attributeDef.Value);
+
                         if (attrType == null)
                         {
                             attrType = addedTypes.Where(item => item.Name == attributeDef.Value).FirstOrDefault();
+
                             if (attrType == null)
                             {
                                 RemoveRecentlyAddedTypes(addedTypes);
@@ -1382,6 +1347,7 @@ namespace sones.GraphDB.TypeManagement
                             }
                             
                             var idxName = index.IndexName;
+
                             if (String.IsNullOrEmpty(index.IndexName))
                             {
                                 idxName = index.IndexAttributeDefinitions.Aggregate(new StringBuilder(DBConstants.IndexKeyPrefix), (stringB, elem) => { stringB.Append(String.Concat(DBConstants.IndexKeySeperator, elem.IndexAttribute.LastAttribute.Name)); return stringB; }).ToString();
@@ -1759,20 +1725,6 @@ namespace sones.GraphDB.TypeManagement
             if (FlushExcept.Failed())
                 return new Exceptional<bool>(FlushExcept);
 
-            #region create Objects directory shards
-
-            Exceptional<IDirectoryObject> createObjectsDirectoryShard = null;
-            for (int i = 0; i < myGraphType.ObjectDirectoryShards; i++)
-            {
-                //create object directory shards
-                createObjectsDirectoryShard = _IGraphFSSession.CreateDirectoryObject(new ObjectLocation(typeDir, DBConstants.DBObjectsLocation, i.ToString()));
-
-                if (createObjectsDirectoryShard.Failed())
-                    return new Exceptional<bool>(createObjectsDirectoryShard);
-            }
-
-            #endregion
-
             return new Exceptional<bool>(true);
         }
 
@@ -1933,39 +1885,6 @@ namespace sones.GraphDB.TypeManagement
 
             using (var _Transaction = _IGraphFSSession.BeginFSTransaction())
             {
-                #region remove Objects directory
-
-                foreach (var aObjectDirectoryShard in GetObjectDirectoryShards(toBeDeletedType))
-                {
-                    #region remove every DBObjectStream
-
-                    var shardsDir = toBeDeletedType.ObjectLocation + DBConstants.DBObjectsLocation + aObjectDirectoryShard;
-
-                    foreach (var aDBObject in _IGraphFSSession.GetDirectoryListing(shardsDir, kv => kv.Value.ObjectStreamsList.Contains(DBConstants.DBOBJECTSTREAM)).Value)
-                    {
-                        //make shure that BackwardEdgeStream and UndefinedAttributeStream are also deleted
-                        var removeIdxShardExcept = _IGraphFSSession.RemoveFSObject(shardsDir + aDBObject, DBConstants.DBOBJECTSTREAM, null, null);
-
-                        if (removeIdxShardExcept.Failed())
-                        {
-                            return new Exceptional<bool>(removeIdxShardExcept); // return and rollback transaction
-                        }
-                    }
-
-                    #endregion
-
-                    #region remove the shard directory
-
-                    var removeObjectShardExcept = _IGraphFSSession.RemoveDirectoryObject(shardsDir, true);
-
-                    if (removeObjectShardExcept.Failed())
-                    {
-                        return new Exceptional<bool>(removeObjectShardExcept); // return and rollback transaction
-                    }
-
-                    #endregion
-                }
-
                 #region remove the Objects directory
 
                 var removeObjectsDirExcept = _IGraphFSSession.RemoveDirectoryObject(toBeDeletedType.ObjectLocation + DBConstants.DBObjectsLocation, true);
@@ -1977,37 +1896,50 @@ namespace sones.GraphDB.TypeManagement
 
                 #endregion
 
-                #endregion
-
                 #region remove Indices directory
 
                 foreach (var aAttributeIDX in toBeDeletedType.GetAllAttributeIndices(false))
                 {
                     #region remove the shards
 
-                    var shards = _IGraphFSSession.GetDirectoryListing(aAttributeIDX.FileSystemLocation, kv => kv.Value.ObjectStreamsList.Contains(DBConstants.DBINDEXSTREAM));
+                    var objExist = _IGraphFSSession.ObjectExists(aAttributeIDX.FileSystemLocation);
 
-                    foreach (var aIdxShard in shards.Value)
+                    if(objExist.Failed())
                     {
-                        var removeIdxShardExcept = _IGraphFSSession.RemoveFSObject(aAttributeIDX.FileSystemLocation + aIdxShard, DBConstants.DBINDEXSTREAM, null, null);
-
-                        if (removeIdxShardExcept.Failed())
-                        {
-                            return new Exceptional<bool>(removeIdxShardExcept); // return and rollback transaction
-                        }
+                        return new Exceptional<bool>(objExist);
                     }
+                    
+                    if (objExist.Value)
+                    {
+
+                        var shards = _IGraphFSSession.GetDirectoryListing(aAttributeIDX.FileSystemLocation, kv => kv.Value.ObjectStreamsList.Contains(DBConstants.DBINDEXSTREAM));
+
+                        if (shards.Failed())
+                        {
+                            return new Exceptional<Boolean>(shards);
+                        }
+
+                        foreach (var aIdxShard in shards.Value)
+                        {
+                            var removeIdxShardExcept = _IGraphFSSession.RemoveFSObject(aAttributeIDX.FileSystemLocation + aIdxShard, DBConstants.DBINDEXSTREAM, null, null);
+
+                            if (removeIdxShardExcept.Failed())
+                            {
+                                return new Exceptional<bool>(removeIdxShardExcept); // return and rollback transaction
+                            }
+                        }
 
                     #endregion
 
-                    #region remove the idx directory itself
+                        #region remove the idx directory itself
 
-                    var removeIDXDirExcept = _IGraphFSSession.RemoveDirectoryObject(aAttributeIDX.FileSystemLocation, true);
+                        var removeIDXDirExcept = _IGraphFSSession.RemoveDirectoryObject(aAttributeIDX.FileSystemLocation, true);
 
-                    if (removeIDXDirExcept.Failed())
-                    {
-                        return new Exceptional<bool>(removeIDXDirExcept); // return and rollback transaction
+                        if (removeIDXDirExcept.Failed())
+                        {
+                            return new Exceptional<bool>(removeIDXDirExcept); // return and rollback transaction
+                        }
                     }
-
                     #endregion
                 }
 
@@ -2038,22 +1970,6 @@ namespace sones.GraphDB.TypeManagement
             return new Exceptional<bool>(true);
         }
 
-        /// <summary>
-        /// Get all the index shards of a GraphDBType
-        /// </summary>
-        /// <param name="myGraphDBType">The interesting type</param>
-        /// <returns>An enumerable of shard ids</returns>
-        private IEnumerable<string> GetObjectDirectoryShards(GraphDBType myGraphDBType)
-        {
-            //stupid --> might be something dynamic in the future
-            for (UInt16 i = 0; i < myGraphDBType.ObjectDirectoryShards; i++)
-            {
-                yield return i.ToString();
-            }
-
-            yield break;
-        }
-
         #endregion
 
         #region RenameType
@@ -2082,6 +1998,7 @@ namespace sones.GraphDB.TypeManagement
             _ObjectLocationsOfAllUserDefinedDatabaseTypes.Add(myType.ObjectLocation.ToString());
             
             var saveResult = _ObjectLocationsOfAllUserDefinedDatabaseTypes.Save();
+
             if (!saveResult.Success())
             {
                 return new Exceptional<bool>(saveResult);
@@ -2102,18 +2019,7 @@ namespace sones.GraphDB.TypeManagement
 
             myGraphDBType.SetComment(myComment);
 
-            var flushExcept = FlushType(myGraphDBType);
-
-            if (!flushExcept.Success())
-            {
-                return new Exceptional<Boolean>(true);
-            }
-            
-            else
-            {
-                return new Exceptional<Boolean>(flushExcept);
-            }
-
+            return new Exceptional<Boolean>(true);            
         }
 
         #endregion
@@ -2401,16 +2307,9 @@ namespace sones.GraphDB.TypeManagement
 
         #endregion
 
-        public Exceptional<DirectoryObject> GetObjectsDirectory(GraphDBType myTypeOfDBObject, ObjectUUID uuid)
+        public Exceptional<IDirectoryObject> GetObjectsDirectory(GraphDBType myTypeOfDBObject)
         {
-            return _IGraphFSSession.GetFSObject<DirectoryObject>(new ObjectLocation(myTypeOfDBObject.ObjectLocation, DBConstants.DBObjectsLocation, ObjectManager.GetDBObjectStreamShard(myTypeOfDBObject, uuid)));
+            return _IGraphFSSession.GetDirectoryObject(new ObjectLocation(myTypeOfDBObject.ObjectLocation, DBConstants.DBObjectsLocation));
         }
-
-        public Exceptional<DirectoryObject> GetObjectsDirectory(GraphDBType myTypeOfDBObject, UInt16 shard)
-        {
-            return _IGraphFSSession.GetFSObject<DirectoryObject>(new ObjectLocation(myTypeOfDBObject.ObjectLocation, DBConstants.DBObjectsLocation, shard.ToString()));
-        }
-
     }
-
 }

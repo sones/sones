@@ -47,12 +47,12 @@
   <ItemGroup>
     <Compile Include="DBExtensions.cs" />
     <Compile Include="DSSettings\AttributeIdxShardsSetting.cs" />
-    <Compile Include="DSSettings\ObjectsDirectoryShardsSetting.cs" />
     <Compile Include="Errors\AggregateErrors\Error_AggregateDoesNotMatchGroupLevel.cs" />
     <Compile Include="Errors\AggregateErrors\GraphDBAggregateError.cs" />
     <Compile Include="Errors\AttributeAssignmentErrors\Error_InvalidUndefAttrType.cs" />
     <Compile Include="Errors\AttributeAssignmentErrors\GraphDBAttributeAssignmentError.cs" />
     <Compile Include="Errors\BackwardEdgeErrors\GraphDBBackwardEdgeError.cs" />
+    <Compile Include="Errors\DBObjectErrors\Error_CouldNotGetVertex.cs" />
     <Compile Include="Errors\DBObjectErrors\Error_UndefinedAttributeNotFound.cs" />
     <Compile Include="Errors\DBObjectErrors\GraphDBObjectError.cs" />
     <Compile Include="Errors\DBOperatorErrors\GraphDBOperatorError.cs" />
@@ -101,6 +101,7 @@
     <Compile Include="Errors\TransactionErrors\Error_NoTransaction.cs" />
     <Compile Include="Errors\TypeAttributeErrors\GraphDBAttributeError.cs" />
     <Compile Include="Functions\ParameterValue.cs" />
+    <Compile Include="Functions\ResolveEdgeFunction.cs" />
     <Compile Include="Functions\ToLowerFunc.cs" />
     <Compile Include="ImportExport\AGraphDBExport.cs" />
     <Compile Include="ImportExport\AGraphDBImport.cs" />
@@ -273,7 +274,6 @@
     <Compile Include="Managers\TypeManagement\BasicTypes\BasicType.cs" />
     <Compile Include="Managers\TypeManagement\BasicTypes\DBObjectRevisionID.cs" />
     <Compile Include="Managers\TypeManagement\BasicTypes\DBVertex.cs" />
-    <Compile Include="Managers\TypeManagement\TypeUUID.cs" />
     <Compile Include="Managers\TypeManagement\UndefinedTypeAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\DatabaseSettings\SettingUndefAttrBehaviour.cs" />
@@ -461,8 +461,6 @@
     <Compile Include="Warnings\Warning_UndefinedAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="buildSolution.sh" />
-    <None Include="clearDirectory.sh" />
     <None Include="NLog.config" />
     <None Include="Settings\SettingsClassDiagram.cd" />
   </ItemGroup>
@@ -484,6 +482,10 @@
       <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
       <Name>Lib</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Lib\VersionedPluginManager\PluginManager.csproj">
+      <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
+      <Name>PluginManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Notifications\Notifications\Notifications.csproj">
       <Project>{81E75577-B787-4537-B191-F3326C6E5865}</Project>
       <Name>Notifications %28Dependencies\Notifications\Notifications%29</Name>
@@ -491,6 +493,18 @@
     <ProjectReference Include="..\GraphDBInterface\GraphDBInterface.csproj">
       <Project>{72319FF7-E9D9-4AE9-AA0B-2E006442B1ED}</Project>
       <Name>GraphDBInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Plugins\GraphDBAggregate\GraphDBAggregate.csproj">
+      <Project>{0E6D4D05-ED67-400A-BF42-6C0717E1DD99}</Project>
+      <Name>GraphDBAggregate</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Plugins\GraphDBFunction\GraphDBFunction.csproj">
+      <Project>{4BADE6A2-9AB0-4B11-AFAE-5A90F3240170}</Project>
+      <Name>GraphDBFunction</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Plugins\GraphDBSetting\GraphDBSetting.csproj">
+      <Project>{FC3A00C4-DA81-46AC-B9B9-4738AE6B5B2B}</Project>
+      <Name>GraphDBSetting</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

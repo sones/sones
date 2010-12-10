@@ -21,11 +21,17 @@ using sones.GraphDB.NewAPI;
 
 namespace sones.GraphDB.Managers.Structures.Describe
 {
+    /// <summary>
+    /// Describes aggregates
+    /// </summary>
     public class DescribeAggregateDefinition : ADescribeDefinition
     {
 
         #region Data
 
+        /// <summary>
+        /// The aggregate name
+        /// </summary>
         private String _AggregateName;
 
         #endregion
@@ -41,6 +47,9 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
         #region ADescribeDefinition
 
+        /// <summary>
+        /// <seealso cref=" ADescribeDefinition"/>
+        /// </summary>
         public override Exceptional<IEnumerable<Vertex>> GetResult(DBContext myDBContext)
         {
 

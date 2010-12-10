@@ -36,6 +36,28 @@ namespace sones.GraphDB.Managers.Structures
     public class TupleDefinition : AOperationDefinition, IEnumerable<TupleElement>
     {
 
+        #region statics
+
+        /// <summary>
+        /// Create a new Tuple of type <paramref name="myTupleElementType"/> and values <paramref name="myValues"/>
+        /// </summary>
+        /// <param name="myTupleElementType"></param>
+        /// <param name="myValues"></param>
+        /// <returns></returns>
+        public static TupleDefinition Create(BasicType myTupleElementType, params ADBBaseObject[] myValues)
+        {
+
+            var elements = new TupleDefinition(myBasicType: myTupleElementType);
+            foreach (var value in myValues)
+            {
+                elements.AddElement(new TupleElement(new ValueDefinition(value)));
+            }
+            return elements;
+
+        }
+
+        #endregion
+
         #region Properties
 
         public KindOfTuple KindOfTuple { get; private set; }
@@ -46,10 +68,10 @@ namespace sones.GraphDB.Managers.Structures
 
         #region Ctors
 
-        public TupleDefinition(KindOfTuple kindOfTuple = KindOfTuple.Inclusive)
+        public TupleDefinition(KindOfTuple kindOfTuple = KindOfTuple.Inclusive, BasicType myBasicType = BasicType.Unknown)
         {
             TupleElements = new List<TupleElement>();
-            TypeOfOperatorResult = BasicType.Unknown;
+            TypeOfOperatorResult = myBasicType;
             KindOfTuple = kindOfTuple;
         }
 
@@ -160,7 +182,7 @@ namespace sones.GraphDB.Managers.Structures
 
                         if (curAttr != null)
                         {
-                            var val = new ValueDefinition(aTypeOfOperatorResult, _Vertex.ObsoleteAttributes[curAttr.Name]);
+                            var val = new ValueDefinition(aTypeOfOperatorResult, _Vertex.GetProperty(curAttr.Name));
                             newTuple.Add(new TupleElement(aTypeOfOperatorResult, val));
                         }
                         else
@@ -217,16 +239,34 @@ namespace sones.GraphDB.Managers.Structures
             foreach (TupleElement aTupleElement in TupleElements)
             {
 
-                if (!(aTupleElement.Value is ValueDefinition))
+                /*if (!(aTupleElement.Value is ValueDefinition))
                 {
                     return new Exceptional<ASetOfReferencesEdgeType>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
                 }
                 else
+                {*/
+
+                if (aTupleElement.Value is ValueDefinition)
                 {
-
-                    edge.Add(ObjectUUID.FromString((aTupleElement.Value as ValueDefinition).Value.ToString()), attr.DBTypeUUID);
-
+                    edge.Add(ObjectUUID.FromString((aTupleElement.Value as ValueDefinition).Value.ToString()), attr.DBTypeUUID, aTupleElement.Parameters.ToArray());
                 }
+                else
+                {                    
+                    if (aTupleElement.Value is BinaryExpressionDefinition)
+                    {
+                        var expression = (aTupleElement.Value as BinaryExpressionDefinition);
+                        
+                        if (expression.TypeOfBinaryExpression == TypesOfBinaryExpression.Atom)
+                        {
+                            if (expression.Right is ValueDefinition)
+                            {
+                                edge.Add(ObjectUUID.FromString((expression.Right as ValueDefinition).Value.ToString()), attr.DBTypeUUID, aTupleElement.Parameters.ToArray());
+                            }
+                        }
+                    }
+                }
+
+                //}
 
             }
 

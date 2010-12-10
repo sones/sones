@@ -24,6 +24,9 @@ using sones.GraphDB.NewAPI;
 
 namespace sones.GraphDB.Managers.Structures.Describe
 {
+    /// <summary>
+    /// Describes an index
+    /// </summary>
     public class DescribeIndexDefinition : ADescribeDefinition
     {
         #region Data
@@ -49,6 +52,9 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
         #region ADescribeDefinition
 
+        /// <summary>
+        /// <seealso cref=" ADescribeDefinition"/>
+        /// </summary>        
         public override Exceptional<IEnumerable<Vertex>> GetResult(DBContext myDBContext)
         {
 
@@ -67,11 +73,17 @@ namespace sones.GraphDB.Managers.Structures.Describe
                 {
                     _IndexEdition = DBConstants.DEFAULTINDEX;
                 }
+
                 var attrIndex = type.GetAttributeIndex(_IndexName, _IndexEdition);
+
+                if (attrIndex.Failed())
+                {
+                    return new Exceptional<IEnumerable<Vertex>>(attrIndex);
+                }
 
                 if (attrIndex != null)
                 {
-                    return new Exceptional<IEnumerable<Vertex>>(new List<Vertex>(){(GenerateOutput(attrIndex, _IndexName))});
+                    return new Exceptional<IEnumerable<Vertex>>(new List<Vertex>(){(GenerateOutput(attrIndex.Value, _IndexName))});
                 }
                 else
                 {
@@ -111,11 +123,11 @@ namespace sones.GraphDB.Managers.Structures.Describe
         #region Output
 
         /// <summary>
-        /// generate an output for an index
+        /// Generate an output for an index
         /// </summary>
-        /// <param name="myIndex">the index</param>
-        /// <param name="myName">the index name</param>
-        /// <returns>list of readouts which contain the index information</returns>
+        /// <param name="myIndex">The index</param>
+        /// <param name="myName">The index name</param>
+        /// <returns>List of readouts which contain the index information</returns>
         private Vertex GenerateOutput(AAttributeIndex myIndex, String myName)
         {
 

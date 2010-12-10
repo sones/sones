@@ -466,6 +466,11 @@ namespace sones.GraphDB.Managers.Structures
 			TypeOrAttributeName = myTypeOrAttributeName;
 		}
 
+        public override string ToString()
+        {
+            return TypeOrAttributeName;
+        }
+
 	}
 	
 	#endregion
@@ -497,6 +502,26 @@ namespace sones.GraphDB.Managers.Structures
 
 	public class IDChainDefinition : ATermDefinition, IEnumerable<AIDChainPart>
 	{
+
+        #region statics
+
+        /// <summary>
+        /// Create a new IDCHainDefinition of the <paramref name="myType"/> and the chain of attributes.
+        /// </summary>
+        /// <param name="myType"></param>
+        /// <param name="myAttribute"></param>
+        /// <returns></returns>
+        public static IDChainDefinition Create(String myType, params String[] myAttribute)
+        {
+            var chain = new IDChainDefinition(myType + "." + myAttribute, new List<TypeReferenceDefinition>() { new TypeReferenceDefinition(myType, myType) });
+            foreach (var attr in myAttribute)
+            {
+                chain.AddPart(new ChainPartTypeOrAttributeDefinition(attr));
+            }
+            return chain;
+        }
+
+        #endregion
 
 		#region Properties
 
@@ -771,7 +796,7 @@ namespace sones.GraphDB.Managers.Structures
 			{
 				if (myListOfReferences.Count != 1)
 				{
-					ValidateResult.PushIError(new Error_DuplicateReferenceOccurence(""));
+					return ValidateResult.PushIError(new Error_DuplicateReferenceOccurence(""));
 				}
 				//typeOrAttr.DBType = myListOfReferences.First().Value;
 
@@ -862,7 +887,7 @@ namespace sones.GraphDB.Managers.Structures
 
                         if (_LastAttribute is UndefinedTypeAttribute || !(_LastAttribute.GetDBType(myDBContext.DBTypeManager).IsUserDefined || _LastAttribute.GetDBType(myDBContext.DBTypeManager).IsBackwardEdge))
                         {
-                            ValidateResult.PushIError(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
+                            return ValidateResult.PushIError(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
                         }
                         
                         #endregion
@@ -889,7 +914,7 @@ namespace sones.GraphDB.Managers.Structures
                             }
 							else
 							{
-								ValidateResult.PushIError(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
+								return ValidateResult.PushIError(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
 							}
 
 							#endregion
@@ -941,7 +966,7 @@ namespace sones.GraphDB.Managers.Structures
 
 							if (typesWithAttibute != null)
 							{
-								ValidateResult.PushIError(new Error_DuplicateReferenceOccurence(typeOrAttr.TypeOrAttributeName));
+								return ValidateResult.PushIError(new Error_DuplicateReferenceOccurence(typeOrAttr.TypeOrAttributeName));
 							}
 
 							#endregion
@@ -983,7 +1008,7 @@ namespace sones.GraphDB.Managers.Structures
 									
 									if (foundSth == true)
 									{
-										ValidateResult.PushIError(new Error_AmbiguousAttribute("The attribute or type \"" + typeOrAttr.TypeOrAttributeName + "\" has been used ambigous."));
+										return ValidateResult.PushIError(new Error_AmbiguousAttribute("The attribute or type \"" + typeOrAttr.TypeOrAttributeName + "\" has been used ambigous."));
 									}
 									else
 									{
@@ -1021,7 +1046,7 @@ namespace sones.GraphDB.Managers.Structures
 
 									#region Calling an attribute on an undefined attribute is not allowed
 
-									ValidateResult.PushIError(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
+									return ValidateResult.PushIError(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
 									//ValidateResult.Push(new Error_InvalidUndefinedAttributeName());
 
 									#endregion
@@ -1036,7 +1061,7 @@ namespace sones.GraphDB.Managers.Structures
 
 									if (myListOfReferences.Count != 1)
 									{
-										ValidateResult.PushIError(new Error_AmbiguousAttribute("The attribute or type \"" + typeOrAttr.TypeOrAttributeName + "\" has been used ambigous."));
+										return ValidateResult.PushIError(new Error_AmbiguousAttribute("The attribute or type \"" + typeOrAttr.TypeOrAttributeName + "\" has been used ambigous."));
 									}
 									else
 									{
@@ -1085,8 +1110,8 @@ namespace sones.GraphDB.Managers.Structures
 							{                                
 								#region Calling an attribute on an undefined attribute is not allowed - so we assume a typo
 
-								ValidateResult.PushIError(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
-								continue;
+								return ValidateResult.PushIError(new Error_AttributeIsNotDefined(typeOrAttr.TypeOrAttributeName));
+								//continue;
 
 								#endregion
 

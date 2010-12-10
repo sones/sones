@@ -26,6 +26,7 @@ using sones.GraphFS.Objects;
 using sones.Lib.DataStructures.UUID;
 using sones.GraphFS.Exceptions;
 using sones.GraphFS.DataStructures;
+using sones.Lib.ErrorHandling;
 
 #endregion
 
@@ -61,7 +62,7 @@ namespace sones.GraphFS.InternalObjects
 
         #endregion
 
-        #region DirectoryObject()
+        #region DirectoryObject(ObjectUUID)
 
         /// <summary>
         /// This will create an empty DirectoryObject
@@ -443,6 +444,37 @@ namespace sones.GraphFS.InternalObjects
 
         #endregion
 
+        #region RemoveObjectLocation
+
+        public void RemoveObjectLocation(String myObjectName, Boolean myForce = false)
+        {
+            //TODO: update estimated size
+
+
+            if (myObjectName.StartsWith("./"))
+                myObjectName = myObjectName.Substring(2, myObjectName.Length - 2);
+
+            if (ObjectExists(myObjectName) == Trinary.TRUE)
+            {
+                if (myForce)
+                {
+                    base.Remove(myObjectName);
+                }
+                else
+                {
+                    // Remove the entire object
+                    if (base[myObjectName].ObjectStreamsList.Count == 0)
+                        base.Remove(myObjectName);
+                }
+                
+                // Mark this directory dirty...
+                isDirty = true;
+            }
+
+        }
+
+        #endregion
+
         #region GetDirectoryEntry(myObjectName)
 
         /// <summary>
@@ -571,7 +603,6 @@ namespace sones.GraphFS.InternalObjects
                     throw new GraphFSException_ObjectAlreadyExists("Inline data could not ba added as '" + myObjectName + "' already exists!");
 
             }
-
             else
             {
 
@@ -1164,6 +1195,24 @@ namespace sones.GraphFS.InternalObjects
 
         }
 
+        #endregion
+
+        #region AddDirectoryEntry(entryName, aDirectoryEntry)
+
+        public void AddDirectoryEntry(String entryName, DirectoryEntry aDirectoryEntry)
+        {
+            base.Add(entryName, aDirectoryEntry);
+        } 
+
+        #endregion
+
+        #region Wipe
+        
+        public Exceptional Wipe()
+        {
+            return Exceptional.OK;
+        }
+ 
         #endregion
 
         #endregion

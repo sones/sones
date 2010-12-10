@@ -91,14 +91,13 @@ namespace sones.GraphDB
         /// <returns>Ture, if the attribute could be added to the target class. Else, false. (attribute contained in superclass)</returns>
         public static Exceptional<ResultType> AddAttributeToType(this DBTypeManager typeManager, String targetClass, String attributeName, String attributeType)
         {
-
-
             if (String.IsNullOrEmpty(attributeType))
             {
                 return new Exceptional<ResultType>(new Error_ArgumentNullOrEmpty("attributeType"));
             }
 
             KindsOfType kindOfType = KindsOfType.SingleReference;
+
             if (attributeType.StartsWith(DBConstants.LIST_PREFIX) && attributeType.EndsWith(DBConstants.LIST_POSTFIX))
             {
                 attributeType = attributeType.Substring(DBConstants.LIST_PREFIX.Length, attributeType.Length - DBConstants.LIST_PREFIX.Length - DBConstants.LIST_POSTFIX.Length);
@@ -106,6 +105,7 @@ namespace sones.GraphDB
             }
 
             var attrType = typeManager.GetTypeByName(attributeType);
+
             if (attrType == null)
             {
                 return new Exceptional<ResultType>(new Error_TypeDoesNotExist(attributeType));
@@ -114,8 +114,28 @@ namespace sones.GraphDB
             //if we reach this code, no other superclass contains an attribute with this name, so add it!
             TypeAttribute ta = new TypeAttribute() { DBTypeUUID = attrType.UUID, Name = attributeName, KindOfType = kindOfType };
 
-            return typeManager.AddAttributeToType(typeManager.GetTypeByName(targetClass), ta);
+            var dbType = typeManager.GetTypeByName(targetClass);
 
+            if(dbType == null)
+            {
+                return new Exceptional<ResultType>(new Error_TypeDoesNotExist(targetClass));
+            }
+            
+            var addResult = typeManager.AddAttributeToType(dbType, ta);
+
+            if(addResult.Failed())
+            {
+                return new Exceptional<ResultType>(addResult);
+            }
+
+            var flushResult = typeManager.FlushType(dbType);
+
+            if (flushResult.Failed())
+            {
+                return new Exceptional<ResultType>(flushResult);
+            }
+
+            return new Exceptional<ResultType>(ResultType.Successful);
         }
 
         #endregion

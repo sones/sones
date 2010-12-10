@@ -24,6 +24,9 @@ using sones.Lib.ErrorHandling;
 namespace sones.GraphDB.Managers.AlterType
 {
 
+    /// <summary>
+    /// Adds attributes to a vertex
+    /// </summary>
     public class AlterType_AddAttributes : AAlterTypeCommand
     {
 
@@ -36,6 +39,9 @@ namespace sones.GraphDB.Managers.AlterType
             _BackwardEdgeInformation = backwardEdgeInformation;
         }
 
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>
         public override TypesOfAlterCmd AlterType
         {
             get { return TypesOfAlterCmd.Add; }
@@ -43,10 +49,8 @@ namespace sones.GraphDB.Managers.AlterType
 
         /// <summary>
         /// Adds myAttributes to a certain graphDBType.
-        /// </summary>
-        /// <param name="myGraphDBType">The type that should be added some myAttributes.</param>
-        /// <param name="myDBContext">The DBContext.</param>
-        /// <returns>A Exceptional.</returns>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>        
         public override Exceptional Execute(DBContext myDBContext, GraphDBType myGraphDBType)
         {
 
@@ -70,6 +74,7 @@ namespace sones.GraphDB.Managers.AlterType
             {
 
                 var typeAttributeExceptional = aAttributeDefinition.CreateTypeAttribute(myDBContext);
+
                 if (typeAttributeExceptional.Failed())
                 {
                     return typeAttributeExceptional;
@@ -116,7 +121,6 @@ namespace sones.GraphDB.Managers.AlterType
 
             #endregion
 
-
             #region add BackwardEdges
 
             if (_BackwardEdgeInformation != null)
@@ -158,6 +162,9 @@ namespace sones.GraphDB.Managers.AlterType
 
         }
 
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>        
         public override IEnumerable<Vertex> CreateVertex(DBContext myDBContext, GraphDBType myGraphDBType)
         {
 

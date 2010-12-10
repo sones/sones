@@ -20,6 +20,9 @@ using sones.GraphDB.Errors;
 using sones.GraphDB.Warnings;
 using System.Threading;
 using sones.GraphDB.NewAPI;
+using System.IO;
+using sones.GraphDB.Managers.Structures;
+using sones.GraphDB.TypeManagement.BasicTypes;
 
 #endregion
 
@@ -37,20 +40,22 @@ namespace sones.GraphDB.ImportExport
             get { return "GQL"; }
         }
 
-        public override QueryResult Import(IEnumerable<String> myLines, IGraphDBSession myIGraphDBSession, DBContext myDBContext, UInt32 parallelTasks = 1, IEnumerable<String> comments = null, ulong? offset = null, ulong? limit = null, VerbosityTypes verbosityTypes = VerbosityTypes.Errors)
+        public override QueryResult Import(System.IO.Stream myInputStream, IGraphDBSession myIGraphDBSession, DBContext myDBContext, UInt32 myParallelTasks = 1, IEnumerable<String> myComments = null, ulong? myOffset = null, ulong? myLimit = null, VerbosityTypes myVerbosityType = VerbosityTypes.Errors)
         {
 
             var gqlQuery = new GraphQLQuery(myDBContext.DBPluginManager);
 
+            var lines = ReadLinesFromStream(myInputStream);
+
             #region Evaluate Limit and Offset
 
-            if (offset != null)
+            if (myOffset != null)
             {
-                myLines = myLines.SkipULong(offset.Value);
+                lines = lines.SkipULong(myOffset.Value);
             }
-            if (limit != null)
+            if (myLimit != null)
             {
-                myLines = myLines.TakeULong(limit.Value);
+                lines = lines.TakeULong(myLimit.Value);
             }
 
             #endregion
@@ -59,13 +64,13 @@ namespace sones.GraphDB.ImportExport
 
             #region Import queries
 
-            if (parallelTasks > 1)
+            if (myParallelTasks > 1)
             {
-                queryResult = ExecuteAsParallel(myLines, myIGraphDBSession, gqlQuery, verbosityTypes, parallelTasks, comments);
+                queryResult = ExecuteAsParallel(lines, myIGraphDBSession, gqlQuery, myVerbosityType, myParallelTasks, myComments);
             }
             else
             {
-                queryResult = ExecuteAsSingleThread(myLines, myIGraphDBSession, gqlQuery, verbosityTypes, comments);
+                queryResult = ExecuteAsSingleThread(lines, myIGraphDBSession, gqlQuery, myVerbosityType, myComments);
             }
 
             #endregion
@@ -74,12 +79,11 @@ namespace sones.GraphDB.ImportExport
 
         }
 
-
         private QueryResult ExecuteAsParallel(IEnumerable<String> myLines, IGraphDBSession myIGraphDBSession, GraphQLQuery myGQLQuery, VerbosityTypes verbosityTypes, UInt32 parallelTasks = 1, IEnumerable<String> comments = null)
         {
 
             var queryResult       = new QueryResult();
-            var aggregatedResults = new List<IEnumerable<Vertex>>();
+            var aggregatedResults = new List<IEnumerable<IVertex>>();
 
             #region Create parallel options
 
@@ -152,7 +156,7 @@ namespace sones.GraphDB.ImportExport
             var queryResult1 = new QueryResult();
             Int64 numberOfLine = 0;
             var query = String.Empty;
-            var aggregatedResults = new List<IEnumerable<Vertex>>();
+            var aggregatedResults = new List<IEnumerable<IVertex>>();
 
             foreach (var _Line in myLines)
             {
@@ -226,7 +230,7 @@ namespace sones.GraphDB.ImportExport
         /// </summary>
         /// <param name="myListOfListOfVertices"></param>
         /// <returns></returns>
-        private IEnumerable<Vertex> AggregateListOfListOfVertices(List<IEnumerable<Vertex>> myListOfListOfVertices)
+        private IEnumerable<IVertex> AggregateListOfListOfVertices(List<IEnumerable<IVertex>> myListOfListOfVertices)
         {
 
             foreach (var _ListOfVertices in myListOfListOfVertices)

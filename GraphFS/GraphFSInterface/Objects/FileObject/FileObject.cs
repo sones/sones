@@ -199,7 +199,7 @@ namespace sones.GraphFS.Objects
 
         public override ulong GetEstimatedSize()
         {
-            return EstimatedSizeConstants.UndefinedObjectSize;
+            return EstimatedSizeConstants.CalcByteArray(_ObjectData);
         }
 
         #endregion

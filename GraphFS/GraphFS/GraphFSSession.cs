@@ -1183,6 +1183,15 @@ namespace sones.GraphFS.Session
 
         #endregion
 
+        #region MoveObjectLocation(fromLocation, toLocation)
+
+        public Exceptional MoveObjectLocation(ObjectLocation myFromLocation, ObjectLocation myToLocation)
+        {
+            return IGraphFS.MoveObjectLocation(myFromLocation, myToLocation, SessionToken);
+        }
+
+        #endregion
+
         #endregion
 
 
@@ -1288,6 +1297,20 @@ namespace sones.GraphFS.Session
         {
             return IGraphFS.EraseDirectoryObject(myObjectLocation, MyEraseRecursive, SessionToken);
         }
+
+        #endregion
+
+        #region GetDirectoryObject(myObjectLocation)
+
+        /// <summary>
+        /// Gets an IDirectoryObject
+        /// </summary>
+        /// <param name="myObjectLocation">The location of the IDirectoryObject</param>
+        /// <returns>An IDirectoryObject</returns>
+        public Exceptional<IDirectoryObject> GetDirectoryObject(ObjectLocation myObjectLocation)
+        {
+            return IGraphFS.GetDirectoryObject(SessionToken, myObjectLocation);
+        } 
 
         #endregion
 

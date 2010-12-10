@@ -330,10 +330,6 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                         else
                         {
                             //take the forwardEdges
-
-                            TypeAttribute currentAttribute = _DBContext.DBTypeManager.GetTypeByUUID(myLevelKey.LastEdge.TypeUUID).GetTypeAttributeByUUID(myLevelKey.LastEdge.AttrUUID);
-                            GraphDBType myType = GetTypeOfAttribute(currentAttribute.GetRelatedType(_DBContext.DBTypeManager), currentAttribute);
-
                             if (this._Levels[predecessorLevelKey.Level].ExpressionLevels[predecessorLevelKey].Nodes[mySourceDBObject.ObjectUUID].ForwardEdges.ContainsKey(myLevelKey.LastEdge))
                             {
                                 foreach (var aUUID in this._Levels[predecessorLevelKey.Level].ExpressionLevels[predecessorLevelKey].Nodes[mySourceDBObject.ObjectUUID].ForwardEdges[myLevelKey.LastEdge].Select(item => item.Destination))
@@ -341,11 +337,11 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                                     yield return aUUID;
                                 }
                             }
-                            else
-                            {
-                                AddNode(mySourceDBObject, myLevelKey);
-                                //var attrVal = mySourceDBObject.GetAttribute(myLevelKey.LastEdge.AttrUUID);
-                            }
+                            //else
+                            //{
+                            //    AddNode(mySourceDBObject, myLevelKey);
+                            //    //var attrVal = mySourceDBObject.GetAttribute(myLevelKey.LastEdge.AttrUUID);
+                            //}
                         }
                     }
                     else
@@ -388,7 +384,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                     {
                         _Levels[leftLevelKey.Level].RemoveNode(leftLevelKey, leftDBObject.Value.ObjectUUID);
                     }
-                    if (ContainsLevelKey(leftLevelKey))
+                    if (ContainsLevelKey(rightLevelKey))
                     {
                         _Levels[rightLevelKey.Level].RemoveNode(rightLevelKey, rightDBObject.Value.ObjectUUID);
                     }
@@ -1756,11 +1752,6 @@ namespace sones.GraphDB.Structures.ExpressionGraph
             switch (interestingAttribute.KindOfType)
             {
                 case KindsOfType.SingleReference:
-
-                    yield return ((ASingleReferenceEdgeType)currentDBObject.GetAttribute(interestingAttribute.UUID)).GetUUID();
-
-                    break;
-
                 case KindsOfType.SetOfReferences:
 
                     if (interestingAttribute.IsBackwardEdge)
@@ -1783,7 +1774,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                     }
                     else
                     {
-                        foreach (var aObjectUUID in ((ASetOfReferencesEdgeType)currentDBObject.GetAttribute(interestingAttribute.UUID)).GetAllReferenceIDs())
+                        foreach (var aObjectUUID in ((IReferenceEdge)currentDBObject.GetAttribute(interestingAttribute.UUID)).GetAllReferenceIDs())
                         {
                             yield return aObjectUUID;
                         }

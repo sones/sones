@@ -1549,6 +1549,24 @@ namespace sones.GraphDS.Connectors.REST
 
         #endregion
 
+        #region GetClientAccessPolicy
+
+        public void GetClientAccessPolicy()
+        {
+            GetResources("ClientAccessPolicy.xml");
+        }
+
+        #endregion
+
+        #region GetCrossDomain
+
+        public void GetCrossDomain()
+        {
+            GetResources("CrossDomain.xml");
+        }
+
+        #endregion
+
         #endregion
 
 

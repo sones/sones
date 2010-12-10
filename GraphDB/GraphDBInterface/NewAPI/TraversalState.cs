@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Collections.Concurrent;
 using sones.GraphFS.DataStructures;
+using sones.Lib.ErrorHandling;
 
 namespace sones.GraphDB.NewAPI
 {
@@ -46,6 +47,16 @@ namespace sones.GraphDB.NewAPI
         /// </summary>
         public Dictionary<ObjectUUID, HashSet<ObjectUUID>>  VisitedVertices     { get; private set; }
 
+        /// <summary>
+        /// Errors that occure(d) during traversal
+        /// </summary>
+        public List<IError> Errors       { get; private set; }
+        
+        /// <summary>
+        /// Warnings that occure(d) during traversal
+        /// </summary>
+        public List<IWarning> Warnings   { get; private set; }
+
         #endregion
 
         #region Constructor
@@ -54,6 +65,8 @@ namespace sones.GraphDB.NewAPI
         {
             StartNode = myStartNode;
             VisitedVertices = new Dictionary<ObjectUUID, HashSet<ObjectUUID>>();
+            Errors = new List<IError>();
+            Warnings = new List<IWarning>();
         }
 
         #endregion
@@ -101,6 +114,24 @@ namespace sones.GraphDB.NewAPI
         public bool AlreadyVisitedVertexViaEdge(IEdge myIEdge)
         {
             return VisitedVertices.ContainsKey(myIEdge.TargetVertex.UUID) && VisitedVertices[myIEdge.TargetVertex.UUID].Contains(myIEdge.UUID);
+        }
+
+        /// <summary>
+        /// Adds a new error
+        /// </summary>
+        /// <param name="myNewError">The error to be added</param>
+        public void AddError(IError myNewError)
+        {
+            Errors.Add(myNewError);
+        }
+
+        /// <summary>
+        /// Adds a new warning
+        /// </summary>
+        /// <param name="myNewWarning">The warning to be added</param>
+        public void AddWarning(IWarning myNewWarning)
+        {
+            Warnings.Add(myNewWarning);
         }
 
         #endregion

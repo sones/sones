@@ -23,11 +23,17 @@ using sones.Lib.DataStructures.UUID;
 
 namespace sones.GraphDB.Managers.Structures.Describe
 {
+    /// <summary>
+    /// Describes an db type an all its derived types
+    /// </summary>
     public class DescribeTypeDefinition : ADescribeDefinition
     {
         
         #region Data
 
+        /// <summary>
+        /// The type name
+        /// </summary>
         private String _TypeName;
         
         #endregion
@@ -43,6 +49,9 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
         #region ADescribeDefinition
 
+        /// <summary>
+        /// <seealso cref=" ADescribeDefinition"/>
+        /// </summary>
         public override Exceptional<IEnumerable<Vertex>> GetResult(DBContext myDBContext)
         {
 
@@ -89,7 +98,9 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
         /// <summary>
         /// Generate an output for an type with the attributes of the types and all parent types
-        /// </summary>
+        /// </summary>         
+        /// <param name="myGraphDBType">The db type</param>
+        /// <param name="myDBContext">The db context</param>
         private Vertex GenerateOutput(DBContext myDBContext, GraphDBType myGraphDBType)
         {
 
@@ -115,8 +126,8 @@ namespace sones.GraphDB.Managers.Structures.Describe
         /// <summary>
         /// output for the type attributes
         /// </summary>
-        /// <param name="myGraphDBType">the type</param>
-        /// <param name="myDBContext">typemanager</param>
+        /// <param name="myGraphDBType">The db type</param>
+        /// <param name="myDBContext">The db context</param>
         /// <returns>a list of readouts, contains the attributes</returns>
         private IEnumerable<Vertex> GenerateAttributeOutput(GraphDBType myGraphDBType, DBContext myDBContext)
         {

@@ -340,7 +340,7 @@ namespace sones.GraphDB.ObjectManagement
             return objectManager.LoadUndefinedAttributes(myLocation);
         }
 
-        public Exceptional<Boolean> AddUndefinedAttribute(String myName, IObject myValue, DBObjectManager myDBObjectManager)
+        public Exceptional<Boolean> AddUndefinedAttribute(String myName, IObject myValue, DBObjectManager myDBObjectManager, Boolean myStore = true)
         {
 
             var retVal = LoadUndefAttributes(ObjectLocation, myDBObjectManager);
@@ -354,18 +354,21 @@ namespace sones.GraphDB.ObjectManagement
                 return new Exceptional<Boolean>(retVal);
             }
 
-            var storeExcepts = myDBObjectManager.StoreUndefinedAttributes(retVal.Value);
+            if (myStore)
+            {
+                var storeExcepts = myDBObjectManager.StoreUndefinedAttributes(retVal.Value);
 
-            if (storeExcepts.Failed())
-                return new Exceptional<bool>(storeExcepts);
+                if (storeExcepts.Failed())
+                    return new Exceptional<bool>(storeExcepts);
+            }
 
             return new Exceptional<bool>(true);
 
         }
 
-        public Exceptional<Boolean> RemoveUndefinedAttribute(string myName, DBObjectManager objectManager)
+        public Exceptional<Boolean> RemoveUndefinedAttribute(string myName, DBObjectManager myObjectManager)
         {
-            var retVal = LoadUndefAttributes(this.ObjectLocation, objectManager);
+            var retVal = LoadUndefAttributes(this.ObjectLocation, myObjectManager);
 
             if (retVal.Success())
             {
@@ -375,11 +378,12 @@ namespace sones.GraphDB.ObjectManagement
             {
                 return new Exceptional<bool>(retVal);
             }
-
-            var storeExcepts = objectManager.StoreUndefinedAttributes(retVal.Value);
+                        
+            var storeExcepts = myObjectManager.StoreUndefinedAttributes(retVal.Value);
 
             if (storeExcepts.Failed())
                 return new Exceptional<bool>(storeExcepts);
+            
 
             return new Exceptional<bool>(true);
         }

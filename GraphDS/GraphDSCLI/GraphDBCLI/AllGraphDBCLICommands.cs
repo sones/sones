@@ -277,7 +277,6 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
 
         #endregion
 
-
         // Helper functions
 
         #region CheckResult(myQueryResult)
@@ -370,10 +369,10 @@ namespace sones.GraphDB.Connectors.GraphDBCLI
         #endregion
 
         #region printVertex(myVertex, level)
-
-        private void printVertex(Vertex myVertex, UInt16 level)
+        
+        private void printVertex(IVertex myVertex, UInt16 level)
         {
-            foreach (KeyValuePair<String, Object> attribute in myVertex.ObsoleteAttributes)
+            foreach (var attribute in myVertex)
             {
                 if (attribute.Value != null)
                 {

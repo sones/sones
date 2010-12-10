@@ -453,7 +453,7 @@ namespace sones.GraphDB.ObjectManagement
         /// <returns>A BackwardEdge</returns>
         private Exceptional<BackwardEdgeStream> LoadDBBackwardEdgeInternal(GraphDBType myType, ObjectUUID myObjectUUID)
         {
-            return _DBObjectManager.LoadBackwardEdge(new ObjectLocation(myType.ObjectLocation, DBConstants.DBObjectsLocation, _DBObjectManager.GetDBObjectStreamShard(myType, myObjectUUID), myObjectUUID.ToString()));
+            return _DBObjectManager.LoadBackwardEdge(new ObjectLocation(myType.ObjectLocation, DBConstants.DBObjectsLocation, myObjectUUID.ToString()));
         }
 
         private Exceptional<BackwardEdgeStream> GetBackwardEdgeStreamViaWeakReference(ObjectUUID myObjectUUID, GraphDBType myType, WeakReference weakReference)

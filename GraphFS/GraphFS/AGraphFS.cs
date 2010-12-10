@@ -1426,7 +1426,7 @@ namespace sones
 
         #region ObjectExists_protected(myObjectLocation)
 
-        protected Exceptional<Trinary> ObjectExists_protected(ObjectLocation myObjectLocation)
+        protected virtual Exceptional<Trinary> ObjectExists_protected(ObjectLocation myObjectLocation)
         {
 
             var _Exceptional = new Exceptional<Trinary>();
@@ -1477,14 +1477,10 @@ namespace sones
             #endregion
 
             var _Exceptional = new Exceptional<Trinary>();
-            var _ParentDirectoryObjectExceptional = GetAFSObject<DirectoryObject>(
-                                                        mySessionToken,
-                                                        new ObjectLocation(myObjectLocation.Path),
-                                                        FSConstants.DIRECTORYSTREAM,
-                                                        null,
-                                                        null,
-                                                        0,
-                                                        false);
+
+            var _ParentDirectoryObjectExceptional = GetDirectoryObject_protected(
+                                                        new ObjectLocation(myObjectLocation.Path)
+                                                        );
 
             if (_ParentDirectoryObjectExceptional.IsValid())
             {
@@ -1701,14 +1697,8 @@ namespace sones
                 else
                 {
 
-                    var _ParentDirectoryObjectExceptional = GetAFSObject<DirectoryObject>(
-                                                                mySessionToken,
-                                                                new ObjectLocation(myObjectLocation.Path),
-                                                                FSConstants.DIRECTORYSTREAM,
-                                                                null,
-                                                                null,
-                                                                0,
-                                                                false);
+                    var _ParentDirectoryObjectExceptional = GetDirectoryObject_protected(
+                                                                new ObjectLocation(myObjectLocation.Path));
 
                     if (_ParentDirectoryObjectExceptional.IsValid())
                     {
@@ -2095,7 +2085,7 @@ namespace sones
 
         #region GetAFSObject_protected<PT>(myFunc, myObjectLocation, myObjectStream = null, myObjectEdition = null, myObjectRevisionID = null, myObjectCopy = 0, myIgnoreIntegrityCheckFailures = false)
 
-        protected Exceptional<PT> GetAFSObject_protected<PT>(Func<PT> myFunc, ObjectLocation myObjectLocation, String myObjectStream = null, String myObjectEdition = null, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject
+        protected Exceptional<PT> GetAFSObject_protected<PT>(Func<PT> myFunc, ObjectLocation myObjectLocation, String myObjectStream = null, String myObjectEdition = null, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false, CachePriority myCachePriority = CachePriority.LOW) where PT : AFSObject
         {
 
             lock (this)
@@ -2107,13 +2097,15 @@ namespace sones
                 //Debug.Assert(myObjectRevisionID != null); => LatestRevision
                 Debug.Assert(myFunc             != null);
 
-                PT newT = myFunc();
+                PT newT = null;
 
                 #region Input validation
 
                 if (myObjectStream == null)
                 {
-                    
+
+                    newT = myFunc();
+
                     if (newT.ObjectStream == null)
                         return new Exceptional<PT>(new GraphFSError("newT.ObjectStream == null!"));
 
@@ -2255,6 +2247,11 @@ namespace sones
                                     Debug.WriteLine("_ObjectRevision.Count > 2");
                                 }
 
+                                if (newT == null)
+                                {
+                                    newT = myFunc();
+                                }
+
                                 newT.ObjectStream           = myObjectStream;
                                 newT.ObjectEdition          = myObjectEdition;
                                 newT.ObjectRevisionID       = myObjectRevisionID;
@@ -2275,7 +2272,7 @@ namespace sones
                                     //_LoadObjectExceptional.Value.ObjectLocatorReference = _ObjectLocatorExceptional.Value;
 
                                     // Cache the loaded object
-                                    _ObjectCache.StoreAFSObject(_LoadObjectExceptional.Value, CachePriority.LOW);
+                                    _ObjectCache.StoreAFSObject(_LoadObjectExceptional.Value, myCachePriority);
                                     //_ObjectCache.StoreAFSObject(_LoadObjectExceptional.Value.ObjectUUID, _LoadObjectExceptional.Value, false);
 
                                     //_Exceptional.Value = _LoadObjectExceptional.Value;
@@ -2370,7 +2367,7 @@ namespace sones
 
         #region (protected) StoreAFSObject_protected(myObjectLocation, myAGraphObject, myAllowToOverwrite = false)
 
-        protected virtual Exceptional StoreAFSObject_protected(ObjectLocation myObjectLocation, AFSObject myAFSObject, Boolean myAllowToOverwrite = false)
+        protected virtual Exceptional StoreAFSObject_protected(SessionToken mySessionToken, ObjectLocation myObjectLocation, AFSObject myAFSObject, Boolean myAllowToOverwrite = false)
         {
 
             lock (this)
@@ -2719,7 +2716,7 @@ namespace sones
 
                 #endregion
 
-                _Exceptional = StoreAFSObject_protected(myObjectLocation, myAFSObject, myAllowToOverwrite);
+                _Exceptional = StoreAFSObject_protected(mySessionToken, myObjectLocation, myAFSObject, myAllowToOverwrite);
                 if (_Exceptional.Failed())
                     return _Exceptional;
 
@@ -2746,7 +2743,7 @@ namespace sones
         /// </summary>
         /// <param name="myObjectLocation">The current ObjectLocation.</param>
         /// <param name="myNewObjectName">The new name of the AFSObjects at the given ObjectLocation.</param>
-        protected virtual Exceptional RenameAFSObjects_protected(ObjectLocation myObjectLocation, String myNewObjectName)
+        protected virtual Exceptional RenameAFSObjects_protected(ObjectLocation myObjectLocation, String myNewObjectName, SessionToken mySessionToken)
         {
 
             // Most low-level implementations call their virtual-override first!
@@ -2756,7 +2753,7 @@ namespace sones
 
                 var _Exceptional = Exceptional.OK;
 
-                var _ParentDirectoryObjectExceptional = GetAFSObject_protected<DirectoryObject>(myObjectLocation.Path, FSConstants.DIRECTORYSTREAM, null, null, 0, false);
+                var _ParentDirectoryObjectExceptional = GetDirectoryObject_protected(myObjectLocation.Path);
                 if (_ParentDirectoryObjectExceptional.IsValid())
                 {
 
@@ -2815,7 +2812,7 @@ namespace sones
 
                 //ToDo: Check mySessionToken!
 
-                return RenameAFSObjects_protected(myObjectLocation, myNewObjectName);
+                return RenameAFSObjects_protected(myObjectLocation, myNewObjectName, mySessionToken);
 
             }
 
@@ -2833,7 +2830,7 @@ namespace sones
         /// <param name="myObjectStream">The ObjectStream of the AFSObject to remove.</param>
         /// <param name="myObjectEdition">The ObjectEdition of the AFSObject to remove.</param>
         /// <param name="myObjectRevisionID">The ObjectRevisionID of the AFSObject to remove.</param>
-        protected virtual Exceptional RemoveAFSObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID)
+        protected virtual Exceptional RemoveAFSObject_protected(ObjectLocator myObjectLocator, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID, SessionToken mySessionToken)
         {
 
             lock (this)
@@ -2908,9 +2905,9 @@ namespace sones
 
                 #region Remove ObjectStream from ParentIDirectoryObject
 
-                var _Exceptional3 = GetAFSObject_protected<DirectoryObject>(myObjectLocator.ObjectLocation.Path, null, null, null, 0, false).
-                    WhenFailed<DirectoryObject>(e => e.PushIErrorT(new GraphFSError_DirectoryObjectNotFound(myObjectLocator.ObjectLocation.Path))).
-                    WhenSucceded<DirectoryObject>(e =>
+                var _Exceptional3 = GetDirectoryObject_protected(myObjectLocator.ObjectLocation.Path).
+                    WhenFailed<IDirectoryObject>(e => e.PushIErrorT(new GraphFSError_DirectoryObjectNotFound(myObjectLocator.ObjectLocation.Path))).
+                    WhenSucceded<IDirectoryObject>(e =>
                     {
 
                         e.Value.IGraphFSReference = this;
@@ -2922,7 +2919,7 @@ namespace sones
                             _ObjectStreamsList.CountIs(2))
                             e.Value.RemoveObjectStream(myObjectLocator.ObjectLocation.Name, FSConstants.ACCESSCONTROLSTREAM);
 
-                        e.PushIExceptional(StoreAFSObject_protected(myObjectLocator.ObjectLocation.Path, e.Value, true));
+                        e.PushIExceptional(StoreDirectoryObject_protected(mySessionToken, myObjectLocator.ObjectLocation.Path, e.Value, true));
 
                         return e;
 
@@ -2935,6 +2932,11 @@ namespace sones
 
             }
 
+        }
+
+        protected virtual Exceptional StoreDirectoryObject_protected(SessionToken mySessionToken, ObjectLocation objectLocation, IDirectoryObject iDirectoryObject, bool p)
+        {
+            return StoreAFSObject(mySessionToken, objectLocation, (DirectoryObject)iDirectoryObject, p);
         }
 
         #endregion
@@ -2982,7 +2984,7 @@ namespace sones
                 if (_ObjectLocatorExceptional.IsInvalid())
                     return _ObjectLocatorExceptional;
 
-                var _Exceptional = RemoveAFSObject_protected(_ObjectLocatorExceptional.Value, myObjectStream, myObjectEdition, myObjectRevisionID);
+                var _Exceptional = RemoveAFSObject_protected(_ObjectLocatorExceptional.Value, myObjectStream, myObjectEdition, myObjectRevisionID, mySessionToken);
                 if (_Exceptional.Failed())
                     return _Exceptional;
 
@@ -3035,13 +3037,106 @@ namespace sones
 
         #endregion
 
+        #region MoveObjectLocation(FromLocation, ToLocation, SessionToken)
 
+        public Exceptional MoveObjectLocation(ObjectLocation myFromLocation, ObjectLocation myToLocation, SessionToken mySessionToken)
+        {
+            lock (this)
+            {
+
+                #region Resolve all symlinks and call myself on a possible ChildFileSystem...
+
+                if (!IsMounted)
+                    return new Exceptional(new GraphFSError_NoFileSystemMounted());
+
+                if (myFromLocation == null)
+                    return new Exceptional(new ArgumentNullOrEmptyError("myObjectLocation"));
+
+                var _ChildIGraphFS = GetChildFileSystem(myFromLocation, false, mySessionToken);
+
+                if (_ChildIGraphFS != this)
+                    return _ChildIGraphFS.MoveObjectLocation(myFromLocation, myToLocation, mySessionToken);
+
+                #endregion
+
+                //TOdo check for subdirectories --> recursion
+
+                var moveResult = MoveObjectLocation_protected(myFromLocation, myToLocation, mySessionToken);
+                if (moveResult.Failed())
+                {
+                    return moveResult;
+                }
+
+                #region update parent directories
+
+                #region from
+                var parentFromDirectory = GetDirectoryObject_protected(myFromLocation.Path);
+                if (parentFromDirectory.Failed())
+                {
+                    return parentFromDirectory;
+                }
+
+                var aDirectoryEntry = parentFromDirectory.Value.GetDirectoryEntry(myFromLocation.Name);
+
+                parentFromDirectory.Value.RemoveObjectLocation(myFromLocation.Name, true);
+                #endregion
+
+                #region to
+
+                var parentToDirectory = GetDirectoryObject_protected(myToLocation.Path);
+                if (parentToDirectory.Failed())
+                {
+                    return parentToDirectory;
+                }
+
+                parentToDirectory.Value.AddDirectoryEntry(myToLocation.Name, aDirectoryEntry);
+                #endregion
+
+                #endregion
+
+                #region store parent directories
+
+                var storeExceptional = StoreDirectoryObject_protected(mySessionToken, myFromLocation.Path, parentFromDirectory.Value, true);
+                if (storeExceptional.Failed())
+                {
+                    return storeExceptional;
+                }
+
+                storeExceptional = StoreDirectoryObject_protected(mySessionToken, myToLocation.Path, parentToDirectory.Value, true);
+                if (storeExceptional.Failed())
+                {
+                    return storeExceptional;
+                }
+
+                #endregion
+
+                #region invalidate cache
+
+                var moveOnCacheResult = IObjectCache.MoveToLocation(myFromLocation, myToLocation);
+                if (moveOnCacheResult.Failed())
+                {
+                    return moveOnCacheResult;
+                }
+
+                #endregion
+
+                return Exceptional.OK;
+
+            }
+        }
+
+        protected virtual Exceptional MoveObjectLocation_protected(ObjectLocation myFromLocation, ObjectLocation myToLocation, SessionToken mySessionToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
 
         #region Symlink methods
 
         #region AddSymlink_protected(myObjectLocation, myTargetLocation, mySessionToken)
 
-        protected Exceptional AddSymlink_protected(ObjectLocation myObjectLocation, ObjectLocation myTargetLocation)
+        protected Exceptional AddSymlink_protected(ObjectLocation myObjectLocation, ObjectLocation myTargetLocation, SessionToken mySessionToken)
         {
 
             lock (this)
@@ -3050,7 +3145,7 @@ namespace sones
                 var _Exceptional = new Exceptional();
 
                 // Add symlink to ParentIDirectoryObject
-                var _ParentIDirectoryObject = GetAFSObject_protected<DirectoryObject>(new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false);
+                var _ParentIDirectoryObject = GetDirectoryObject_protected(new ObjectLocation(myObjectLocation.Path));
 
                 if (_ParentIDirectoryObject.Failed())
                 {
@@ -3090,7 +3185,7 @@ namespace sones
 
             #endregion
 
-            return AddSymlink_protected(myObjectLocation, myTargetLocation);
+            return AddSymlink_protected(myObjectLocation, myTargetLocation, mySessionToken);
 
         }
 
@@ -3126,7 +3221,7 @@ namespace sones
                 var _Exceptional = new Exceptional<Trinary>();
 
                 // Add symlink to ParentIDirectoryObject
-                var _ParentIDirectoryObject = GetAFSObject<DirectoryObject>(mySessionToken, new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false);
+                var _ParentIDirectoryObject = GetDirectoryObject_protected(new ObjectLocation(myObjectLocation.Path));
 
                 if (_ParentIDirectoryObject.Failed())
                 {
@@ -3163,7 +3258,7 @@ namespace sones
                 var _Exceptional = new Exceptional<ObjectLocation>();
 
                 // Add symlink to ParentIDirectoryObject
-                var _ParentIDirectoryObject = GetAFSObject<DirectoryObject>(mySessionToken, new ObjectLocation(myObjectLocation.Path), null, null, null, 0, false);
+                var _ParentIDirectoryObject = GetDirectoryObject_protected( new ObjectLocation(myObjectLocation.Path));
 
                 if (_ParentIDirectoryObject.Failed())
                 {
@@ -3228,12 +3323,16 @@ namespace sones
         #endregion
 
         #region DirectoryObject Methods
+        
+        #region InitDirectoryObject_protected
 
         protected abstract Exceptional<IDirectoryObject> InitDirectoryObject_protected(ObjectLocation myObjectLocation, UInt64 myBlocksize = 0);
 
+        #endregion
+
         #region (protected) CreateDirectoryObject(myObjectLocation, myBlocksize, myRecursive = false, myAction = null)
 
-        protected Exceptional<IDirectoryObject> CreateDirectoryObject_protected(ObjectLocation myObjectLocation, UInt64 myBlocksize = 0, Boolean myRecursive = false, Action<IDirectoryObject> myAction = null)
+        protected Exceptional<IDirectoryObject> CreateDirectoryObject_protected(SessionToken mySessionToken, ObjectLocation myObjectLocation, UInt64 myBlocksize = 0, Boolean myRecursive = false, Action<IDirectoryObject> myAction = null)
         {
 
             //if (mySessionToken.Transaction == null)
@@ -3279,7 +3378,7 @@ namespace sones
                     if (_AFSObject == null)
                         throw new GraphFSException("'_AFSObject = _IDirectoryObject as AFSObject' failed!");
 
-                    using (var _StoreDirectoryObjectExceptional = StoreAFSObject_protected(myObjectLocation, _AFSObject, true))
+                    using (var _StoreDirectoryObjectExceptional = StoreAFSObject_protected(mySessionToken, myObjectLocation, _AFSObject, true))
                     {
                         if (_StoreDirectoryObjectExceptional.Failed())
                             return _StoreDirectoryObjectExceptional.Convert<IDirectoryObject>().PushIErrorT(new GraphFSError_CreateDirectoryFailed(myObjectLocation));
@@ -3356,7 +3455,7 @@ namespace sones
 
                 #endregion
 
-                return CreateDirectoryObject_protected(myObjectLocation, myBlocksize, myRecursive);
+                return CreateDirectoryObject_protected(mySessionToken, myObjectLocation, myBlocksize, myRecursive);
 
             }
 
@@ -3364,6 +3463,33 @@ namespace sones
 
         #endregion
 
+        #region GetDirectoryObject(SessionToken, myObjectLocation)
+
+        /// <summary>
+        /// Returns a DirectoryObject
+        /// </summary>
+        /// <param name="SessionToken">the current session token</param>
+        /// <param name="myObjectLocation">the location of the directory object</param>
+        /// <returns>an IDirectoryObject</returns>
+        public Exceptional<IDirectoryObject> GetDirectoryObject(SessionToken SessionToken, ObjectLocation myObjectLocation)
+        {
+            lock (this)
+            {
+
+                //ToDo: Resolve SymLinks!
+
+                var _ChildIGraphFS = GetChildFileSystem(myObjectLocation, false, SessionToken);
+
+                if (_ChildIGraphFS != this)
+                    return _ChildIGraphFS.GetDirectoryObject(SessionToken, myObjectLocation);
+
+                // Get DirectoryObject and return the directory listing
+
+                return GetDirectoryObject_protected(myObjectLocation);
+            }
+        } 
+
+        #endregion
 
         #region IsIDirectoryObject(myObjectLocation, mySessionToken)
 
@@ -3401,11 +3527,16 @@ namespace sones
                     return _ChildIGraphFS.GetDirectoryListing(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), mySessionToken);
 
                 // Get DirectoryObject and return the directory listing
-                return GetAFSObject<DirectoryObject>(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false).
-                       ConvertWithFunc<DirectoryObject, IEnumerable<String>>(v => v.GetDirectoryListing());
 
+                return GetDirectoryListing_protected(myObjectLocation, mySessionToken);
             }
 
+        }
+
+        protected virtual Exceptional<IEnumerable<String>> GetDirectoryListing_protected(ObjectLocation myObjectLocation, SessionToken mySessionToken)
+        {
+            return GetAFSObject<DirectoryObject>(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false).
+                   ConvertWithFunc<DirectoryObject, IEnumerable<String>>(v => v.GetDirectoryListing());
         }
 
         #endregion
@@ -3426,9 +3557,9 @@ namespace sones
                     return _ChildIGraphFS.GetDirectoryListing(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myFunc, mySessionToken);
 
                 // Get DirectoryObject and return the directory listing
-                return GetAFSObject<DirectoryObject>(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false).
-                       ConvertWithFunc<DirectoryObject, IEnumerable<String>>(v => v.GetDirectoryListing(myFunc));
 
+                return GetDirectoryObject_protected(myObjectLocation).
+                       ConvertWithFunc<IDirectoryObject, IEnumerable<String>>(v => v.GetDirectoryListing(myFunc));
             }
 
         }
@@ -3452,8 +3583,8 @@ namespace sones
             Boolean _AddEntry;
 
             // Get DirectoryObject and return the filtered directory listing
-            return GetAFSObject<DirectoryObject>(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false).
-                   ConvertWithFunc<DirectoryObject, IEnumerable<String>>(v => v.GetDirectoryListing(myName, myIgnoreName, myRegExpr, myObjectStreams, myIgnoreObjectStreams)).
+            return GetDirectoryObject_protected(myObjectLocation).
+                   ConvertWithFunc<IDirectoryObject, IEnumerable<String>>(v => v.GetDirectoryListing(myName, myIgnoreName, myRegExpr, myObjectStreams, myIgnoreObjectStreams)).
                    WhenSucceded<IEnumerable<String>>(_Exceptional =>
                    {
 
@@ -3628,8 +3759,8 @@ namespace sones
                     return _ChildIGraphFS.GetExtendedDirectoryListing(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), mySessionToken);
 
                 // Get DirectoryObject and return the extended directory listing
-                return GetAFSObject<DirectoryObject>(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false).
-                       ConvertWithFunc<DirectoryObject, IEnumerable<DirectoryEntryInformation>>(v => v.GetExtendedDirectoryListing());
+                return GetDirectoryObject_protected(myObjectLocation).
+                       ConvertWithFunc<IDirectoryObject, IEnumerable<DirectoryEntryInformation>>(v => v.GetExtendedDirectoryListing());
 
             }
 
@@ -3653,9 +3784,8 @@ namespace sones
                     return _ChildIGraphFS.GetExtendedDirectoryListing(GetObjectLocationOnChildFileSystem(myObjectLocation, mySessionToken), myFunc, mySessionToken);
 
                 // Get DirectoryObject and return the extended directory listing
-                return GetAFSObject<DirectoryObject>(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, FSConstants.DefaultEdition, null, 0, false).
-                       ConvertWithFunc<DirectoryObject, IEnumerable<DirectoryEntryInformation>>(v => v.GetExtendedDirectoryListing(myFunc));
-
+                return GetDirectoryObject_protected(myObjectLocation).
+                       ConvertWithFunc<IDirectoryObject, IEnumerable<DirectoryEntryInformation>>(v => v.GetExtendedDirectoryListing(myFunc));
             }
 
         }
@@ -3681,7 +3811,7 @@ namespace sones
 
             #region _IDirectoryObject.GetExtendedDirectoryListing(...)
 
-            var _IDirectoryObject = (IDirectoryObject) GetAFSObject<DirectoryObject>(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, null, null, 0, false).Value;
+            var _IDirectoryObject =  GetDirectoryObject_protected(myObjectLocation).Value;
             var _DirectoryListing = _IDirectoryObject.GetExtendedDirectoryListing(myName, myIgnoreName, myRegExpr, myObjectStreams, myIgnoreObjectStreamTypes);
             var _Output = new List<DirectoryEntryInformation>(); ;
 
@@ -4028,6 +4158,13 @@ namespace sones
                 return _ObjectLocatorExceptional.PushIError(new GraphFSError_CouldNotGetObjectLocator(myObjectLocation));
             }
 
+            //Get the directoryObject, to be able to wipe it
+            var toBeDeletedDirectoryObject = GetDirectoryObject(mySessionToken, myObjectLocation);
+            if (toBeDeletedDirectoryObject.Failed())
+            {
+                return toBeDeletedDirectoryObject;
+            }
+
             // Remove the $DefaultEditon and $LatestRevision
             var _RemoveObjectExceptional = RemoveAFSObject(mySessionToken, myObjectLocation, FSConstants.DIRECTORYSTREAM, _ObjectLocatorExceptional.Value[FSConstants.DIRECTORYSTREAM].DefaultEditionName, _ObjectLocatorExceptional.Value[FSConstants.DIRECTORYSTREAM].DefaultEdition.LatestRevisionID);
 
@@ -4035,6 +4172,8 @@ namespace sones
             {
                 return _RemoveObjectExceptional.PushIError(new GraphFSError_CouldNotRemoveDirectoryObject(myObjectLocation));
             }
+
+            toBeDeletedDirectoryObject.Value.Wipe();
 
             return _Exceptional;
 
@@ -4163,6 +4302,35 @@ namespace sones
 
             return new Exceptional<Boolean>();
 
+        }
+
+        #endregion
+
+        #region GetDirectoryObject_protected(myObjectLocation)
+
+        /// <summary>
+        /// Returns an IDirectoryObject
+        /// </summary>
+        /// <param name="myObjectLocation">The location of the directory</param>
+        /// <returns>An IDirectory</returns>
+        protected virtual Exceptional<IDirectoryObject> GetDirectoryObject_protected(ObjectLocation myObjectLocation)
+        {
+            var exceptional = GetAFSObject_protected<DirectoryObject>(
+                                                        myObjectLocation,
+                                                        FSConstants.DIRECTORYSTREAM,
+                                                        null,
+                                                        null,
+                                                        0,
+                                                        false);
+
+            if (exceptional.Failed())
+            {
+                return new Exceptional<IDirectoryObject>(exceptional);
+            }
+            else
+            {
+                return new Exceptional<IDirectoryObject>(exceptional.Value);
+            }
         }
 
         #endregion
@@ -5005,8 +5173,6 @@ namespace sones
         //public abstract ObjectLocation ResolveObjectLocation(ObjectLocation myObjectLocation, Boolean myThrowObjectNotFoundException, SessionToken mySessionToken);
 
         #endregion
-
-
     }
 
 }

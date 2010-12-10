@@ -18,16 +18,29 @@ using sones.Lib.ErrorHandling;
 namespace sones.GraphDB.Managers.AlterType
 {
 
+    /// <summary>
+    /// Set the mandatory flag for an attribute
+    /// </summary>
     public class AlterType_SetMandatory : AAlterTypeCommand
     {
 
+        /// <summary>
+        /// List of mandatory attributes of the given vertex
+        /// </summary>
         public List<String> MandatoryAttributes { get; set; }
 
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>
         public override TypesOfAlterCmd AlterType
         {
             get { return TypesOfAlterCmd.Mandatory; }
         }
 
+        /// <summary>
+        /// Set the mandatory flag
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>
         public override Exceptional Execute(DBContext myDBContext, GraphDBType myGraphDBType)
         {
             return myGraphDBType.ChangeMandatoryAttributes(MandatoryAttributes, myDBContext.DBTypeManager);

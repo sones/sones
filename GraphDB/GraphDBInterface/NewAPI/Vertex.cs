@@ -691,63 +691,6 @@ namespace sones.GraphDB.NewAPI
 
         #endregion
 
-        #region Traverse
-
-        #region TraversePath(...)
-
-        /// <summary>
-        /// Starts a traversal and returns the found paths or an aggreagted result
-        /// </summary>
-        /// <typeparam name="T">The resulttype after applying the result transformation</typeparam>
-        /// <param name="TraversalOperation">BreathFirst|DepthFirst</param>
-        /// <param name="myFollowThisEdge">Follow this edge? Based on its TYPE or any other property/characteristic...</param>
-        /// <param name="myFollowThisPath">Follow this path (== actual path + NEW edge + NEW dbobject? Based on edge/object UUID, TYPE or any other property/characteristic...</param>
-        /// <param name="myMatchEvaluator">Mhm, this vertex/path looks interesting!</param>
-        /// <param name="myMatchAction">Hey! I have found something interesting!</param>
-        /// <param name="myStopEvaluator">Will stop the traversal on a condition</param>
-        /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
-        /// <returns></returns>
-        public T TraversePath<T>(TraversalOperation                         TraversalOperation = TraversalOperation.BreathFirst,
-                                 Func<DBPath, IEdge, Boolean>           myFollowThisEdge = null,
-                                 Func<DBPath, IEdge, IVertex, Boolean>   myFollowThisPath = null,
-                                 Func<DBPath, Boolean>                      myMatchEvaluator = null,
-                                 Action<DBPath>                             myMatchAction = null,
-                                 Func<TraversalState, Boolean>              myStopEvaluator = null,
-                                 Func<IEnumerable<DBPath>, T>               myWhenFinished = null)
-        {
-            return GraphDBInterface.TraversePath(SessionToken, this, TraversalOperation, myFollowThisEdge, myFollowThisPath, myMatchEvaluator, myMatchAction, myStopEvaluator, myWhenFinished);
-        }
-
-        #endregion
-
-        #region TraverseVertex(...)
-
-        /// <summary>
-        /// Starts a traversal and returns the found vertices or an aggreagted result
-        /// </summary>
-        /// <typeparam name="T">The resulttype after applying the result transformation</typeparam>
-        /// <param name="TraversalOperation">BreathFirst|DepthFirst</param>
-        /// <param name="myFollowThisEdge">Follow this edge? Based on its TYPE or any other property/characteristic...</param>
-        /// <param name="myMatchEvaluator">Mhm, this vertex/path looks interesting!</param>
-        /// <param name="myMatchAction">Hey! I have found something interesting!</param>
-        /// <param name="myStopEvaluator">Will stop the traversal on a condition</param>
-        /// <param name="myWhenFinished">Finish this traversal by calling (a result transformation method and) an external method...</param>
-        /// <returns></returns>
-        public T TraverseVertex<T>(TraversalOperation                       TraversalOperation = TraversalOperation.BreathFirst,
-                                    Func<IVertex, IEdge, Boolean>        myFollowThisEdge = null,
-                                    Func<IVertex, Boolean>                   myMatchEvaluator = null,
-                                    Action<IVertex>                          myMatchAction = null,
-                                    Func<TraversalState, Boolean>           myStopEvaluator = null,
-                                    Func<IEnumerable<IVertex>, T>            myWhenFinished = null)
-        {
-            return GraphDBInterface.TraverseVertex(SessionToken, this, TraversalOperation, myFollowThisEdge, myMatchEvaluator, myMatchAction, myStopEvaluator, myWhenFinished);
-        }
-
-        #endregion
-
-        #endregion
-
-
         #region Operator overloading
 
         #region Operator == (myDBObject1, myDBVertex2)
@@ -845,8 +788,7 @@ namespace sones.GraphDB.NewAPI
         }
 
         #endregion
-
-    
+       
     }
 
 }

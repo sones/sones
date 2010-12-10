@@ -28,6 +28,32 @@ using sones.Lib.Settings;
 namespace sones
 {
 
+    #region IGraphFSVersionCompatibility
+
+    /// <summary>
+    /// A static implementation of the compatible IGraphFS plugin versions. 
+    /// Defines the min and max version for all IGraphFS implementations which will be activated used this IGraphFS.
+    /// </summary>
+    internal static class IGraphFSVersionCompatibility
+    {
+        public static Version MinVersion
+        {
+            get
+            {
+                return new Version("1.1.1.0");
+            }
+        }
+        public static Version MaxVersion
+        {
+            get
+            {
+                return new Version("1.1.1.0");
+            }
+        }
+    }
+
+    #endregion
+
     /// <summary>
     /// The interface for all Graph file systems.
     /// </summary>
@@ -451,6 +477,14 @@ namespace sones
         Exceptional RemoveAFSObject  (SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID);
         Exceptional EraseAFSObject   (SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID);
 
+        /// <summary>
+        /// Moves an objectlocation from A to B
+        /// </summary>
+        /// <param name="myFromLocation">The location that should be moved.</param>
+        /// <param name="myToLocation">The place where it should be moved to.</param>
+        /// <param name="mySessionToken">The current session token.</param>
+        Exceptional MoveObjectLocation(ObjectLocation myFromLocation, ObjectLocation myToLocation, SessionToken mySessionToken);
+
         #endregion
         
 
@@ -548,6 +582,14 @@ namespace sones
         /// <param name="myObjectLocation">the location of this object (ObjectPath and ObjectName) of the directory within the file system</param>
         /// <param name="myRemoveRecursive">erase the directory recursive</param>        
         Exceptional EraseDirectoryObject(ObjectLocation myObjectLocation, Boolean myRemoveRecursive, SessionToken mySessionToken);
+
+        /// <summary>
+        /// Gets an IDirectoryObject
+        /// </summary>
+        /// <param name="SessionToken">The current session token</param>
+        /// <param name="myObjectLocation">The location of the IDirectoryObject</param>
+        /// <returns>An IDirectoryObject</returns>
+        Exceptional<IDirectoryObject> GetDirectoryObject(SessionToken SessionToken, ObjectLocation myObjectLocation);
 
         #endregion
 
@@ -827,8 +869,6 @@ namespace sones
         Exceptional SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken);
 
         #endregion
-
-
     }
 
 }

@@ -82,10 +82,8 @@ namespace sones.GraphDS.Connectors.WebDAV
         /// <param name="myHttpWebSecurity">A HTTPSecurity class for checking security parameters like user credentials</param>
         public static Exceptional<HTTPServer<GraphDSWebDAV_Service>> StartWebDAV(this AGraphDSSharp myAGraphDSSharp, IPAddress myIPAddress, UInt16 myPort, HTTPSecurity myHttpWebSecurity = null)
         {
-
             try
             {
-
                 // Initialize WebDAV service
                 var _HttpWebServer = new HTTPServer<GraphDSWebDAV_Service>(
                     myIPAddress,

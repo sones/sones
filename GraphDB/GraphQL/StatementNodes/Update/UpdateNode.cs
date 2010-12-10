@@ -77,7 +77,6 @@ namespace sones.GraphDB.GraphQL.StatementNodes.Update
         /// </summary>
         /// <param name="context">CompilerContext of Irony.</param>
         /// <param name="parseNode">The current ParseNode.</param>
-        /// <param name="typeManager">The TypeManager of the GraphDB.</param>
         public override void GetContent(CompilerContext myCompilerContext, ParseTreeNode myParseTreeNode)
         {
 

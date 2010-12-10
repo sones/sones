@@ -435,6 +435,13 @@ namespace sones.GraphFS.Session
         Exceptional RemoveFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null);
         Exceptional EraseFSObject (ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null);
 
+        /// <summary>
+        /// Moves an objectlocation from A to B
+        /// </summary>
+        /// <param name="myFromLocation">The location that should be moved.</param>
+        /// <param name="myToLocation">The place where it should be moved to.</param>
+        Exceptional MoveObjectLocation(ObjectLocation myFromLocation, ObjectLocation myToLocation);
+
         #endregion
 
 
@@ -530,10 +537,28 @@ namespace sones.GraphFS.Session
 
         #endregion
 
-
+        /// <summary>
+        /// Removes a directory object
+        /// </summary>
+        /// <param name="myObjectLocation">The location of the directory object</param>
+        /// <param name="removeRecursive">Remove recursive?</param>
+        /// <returns></returns>
         Exceptional RemoveDirectoryObject(ObjectLocation myObjectLocation, Boolean removeRecursive);
 
+        /// <summary>
+        /// Erase a directory object
+        /// </summary>
+        /// <param name="myObjectLocation">The location of the directory object</param>
+        /// <param name="eradeRecursive">Erase recursive?</param>
+        /// <returns></returns>
         Exceptional EraseDirectoryObject(ObjectLocation myObjectLocation, Boolean eradeRecursive);
+
+        /// <summary>
+        /// Gets a IDirectoryObject
+        /// </summary>
+        /// <param name="objectLocation">The location of the IDirectoryObject</param>
+        /// <returns>An IDirectoryObject</returns>
+        Exceptional<IDirectoryObject> GetDirectoryObject(ObjectLocation objectLocation);
 
         #endregion
 
@@ -943,6 +968,5 @@ namespace sones.GraphFS.Session
 
         Exceptional<IGraphFSStream> OpenStream(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevision, UInt64 myObjectCopy,
                                     FileMode myFileMode, FileAccess myFileAccess, FileShare myFileShare, FileOptions myFileOptions, UInt64 myBufferSize);
-
     }
 }

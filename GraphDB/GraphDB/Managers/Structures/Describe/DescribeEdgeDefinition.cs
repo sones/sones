@@ -21,11 +21,17 @@ using sones.GraphDB.NewAPI;
 namespace sones.GraphDB.Managers.Structures.Describe
 {
 
+    /// <summary>
+    /// Describes a edge
+    /// </summary>
     public class DescribeEdgeDefinition : ADescribeDefinition
     {
 
         #region Data
 
+        /// <summary>
+        /// The name of the edge
+        /// </summary>
         private String _EdgeName;
 
         #endregion
@@ -41,6 +47,9 @@ namespace sones.GraphDB.Managers.Structures.Describe
 
         #region ADescribeDefinition
 
+        /// <summary>
+        /// <seealso cref=" ADescribeDefinition"/>
+        /// </summary>
         public override Exceptional<IEnumerable<Vertex>> GetResult(DBContext myDBContext)
         {
             if (!String.IsNullOrEmpty(_EdgeName))

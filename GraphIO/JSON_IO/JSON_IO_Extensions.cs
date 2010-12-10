@@ -111,7 +111,7 @@ namespace sones.GraphIO.JSON
 
         #endregion
 
-        private static IEnumerable<JObject> GetJObjectsFromResult(IEnumerable<Vertex> myResultSet)
+        private static IEnumerable<JObject> GetJObjectsFromResult(IEnumerable<IVertex> myResultSet)
         {
             if (myResultSet != null)
             {

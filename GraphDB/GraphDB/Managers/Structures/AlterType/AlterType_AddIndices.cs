@@ -22,6 +22,9 @@ using sones.Lib.ErrorHandling;
 namespace sones.GraphDB.Managers.AlterType
 {
 
+    /// <summary>
+    /// Adds indices to a vertex
+    /// </summary>
     public class AlterType_AddIndices : AAlterTypeCommand
     {
 
@@ -32,11 +35,20 @@ namespace sones.GraphDB.Managers.AlterType
             _IdxDefinitionList = listOfIndices;
         }
 
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>
         public override TypesOfAlterCmd AlterType
         {
             get { throw new NotImplementedException(); }
         }
 
+        /// <summary>
+        /// Checks whether the index can be changed
+        /// </summary>
+        /// <param name="idxDef">List of index attribute definitions</param>
+        /// <param name="type">The db type that is to be altered</param>
+        /// <returns>An exceptional</returns>
         private Exceptional CheckIndexTypeReference(List<IndexAttributeDefinition> idxDef, GraphDBType type)
         {
             foreach (var idx in idxDef)
@@ -50,7 +62,11 @@ namespace sones.GraphDB.Managers.AlterType
             return Exceptional.OK;
         }
 
-        public override Exceptional Execute(DBContext dbContext, GraphDBType graphDBType)
+        /// <summary>
+        /// Add indices to a vertex
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>        
+        public override Exceptional Execute(DBContext myDBContext, GraphDBType myGraphDBType)
         {
 
             var retExceptional = new Exceptional();
@@ -58,7 +74,7 @@ namespace sones.GraphDB.Managers.AlterType
             foreach (var idxDef in _IdxDefinitionList)
             {
 
-                var checkIdx = CheckIndexTypeReference(idxDef.IndexAttributeDefinitions, graphDBType);
+                var checkIdx = CheckIndexTypeReference(idxDef.IndexAttributeDefinitions, myGraphDBType);
 
                 if (!checkIdx.Success())
                 {
@@ -66,7 +82,7 @@ namespace sones.GraphDB.Managers.AlterType
                 }
                 else
                 {
-                    var result = dbContext.DBIndexManager.CreateIndex(dbContext, graphDBType.Name, idxDef.IndexName, idxDef.Edition, idxDef.IndexType, idxDef.IndexAttributeDefinitions);
+                    var result = myDBContext.DBIndexManager.CreateIndex(myDBContext, myGraphDBType.Name, idxDef.IndexName, idxDef.Edition, idxDef.IndexType, idxDef.IndexAttributeDefinitions);
 
                     if (!result.Success())
                     {
@@ -80,6 +96,9 @@ namespace sones.GraphDB.Managers.AlterType
 
         }
 
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>        
         public override IEnumerable<Vertex> CreateVertex(DBContext myDBContext, GraphDBType myGraphDBType)
         {
 
@@ -123,11 +142,6 @@ namespace sones.GraphDB.Managers.AlterType
             }
 
             return new List<Vertex> { new Vertex(payload) };
-
         }
-
     }
-
-
-
 }

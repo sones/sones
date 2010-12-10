@@ -24,6 +24,9 @@ using sones.Lib.ErrorHandling;
 namespace sones.GraphDB.Managers.AlterType
 {
 
+    /// <summary>
+    /// Create defined attributes for undefined attributes
+    /// </summary>
     public class AlterType_DefineAttributes : AAlterTypeCommand
     {
 
@@ -43,15 +46,19 @@ namespace sones.GraphDB.Managers.AlterType
             _ListOfAttributes = listOfAttributes;
         }
 
-        public override Exceptional Execute(DBContext dbContext, GraphDBType graphDBType)
+        /// <summary>
+        /// Execute the definition of undefined attributes
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>        
+        public override Exceptional Execute(DBContext myDBContext, GraphDBType myGraphDBType)
         {
             var listOfTypeAttributes = new Dictionary<TypeAttribute, GraphDBType>();
             var retExcept = new Exceptional();
-            var existingTypeAttributes = graphDBType.GetAllAttributes(dbContext);
+            var existingTypeAttributes = myGraphDBType.GetAllAttributes(myDBContext);
 
             foreach (var attr in _ListOfAttributes)
             {
-                var createExcept = attr.CreateTypeAttribute(dbContext);
+                var createExcept = attr.CreateTypeAttribute(myDBContext);
 
                 if (!createExcept.Success())
                 {
@@ -63,7 +70,7 @@ namespace sones.GraphDB.Managers.AlterType
                     retExcept.PushIExceptional(new Exceptional(new Error_AttributeAlreadyExists(createExcept.Value.Name)));
                 }
 
-                var attrType = dbContext.DBTypeManager.GetTypeByName(attr.AttributeType.Name);
+                var attrType = myDBContext.DBTypeManager.GetTypeByName(attr.AttributeType.Name);
 
                 if (attrType == null)
                 {
@@ -78,21 +85,14 @@ namespace sones.GraphDB.Managers.AlterType
                 }
 
                 createExcept.Value.DBTypeUUID = attrType.UUID;
-                createExcept.Value.RelatedGraphDBTypeUUID = graphDBType.UUID;
+                createExcept.Value.RelatedGraphDBTypeUUID = myGraphDBType.UUID;
 
-                graphDBType.AddAttribute(createExcept.Value, dbContext.DBTypeManager, true);
-
-                var flushExcept = dbContext.DBTypeManager.FlushType(graphDBType);
-
-                if (!flushExcept.Success())
-                {
-                    retExcept.PushIExceptional(flushExcept);
-                }
+                myGraphDBType.AddAttribute(createExcept.Value, myDBContext.DBTypeManager, true);
 
                 listOfTypeAttributes.Add(createExcept.Value, attrType);
             }
 
-            var dbobjects = dbContext.DBObjectCache.SelectDBObjectsForLevelKey(new LevelKey(graphDBType, dbContext.DBTypeManager), dbContext);
+            var dbobjects = myDBContext.DBObjectCache.SelectDBObjectsForLevelKey(new LevelKey(myGraphDBType, myDBContext.DBTypeManager), myDBContext);
 
             foreach (var item in dbobjects)
             {
@@ -102,7 +102,7 @@ namespace sones.GraphDB.Managers.AlterType
                 }
                 else
                 {
-                    var undefAttrExcept = item.Value.GetUndefinedAttributePayload(dbContext.DBObjectManager);
+                    var undefAttrExcept = item.Value.GetUndefinedAttributePayload(myDBContext.DBObjectManager);
 
                     if (!undefAttrExcept.Success())
                     {
@@ -117,18 +117,18 @@ namespace sones.GraphDB.Managers.AlterType
                         {
                             var typeOfOperator = GraphDBTypeMapper.ConvertGraph2CSharp(attr.Value.Name);
 
-                            if (GraphDBTypeMapper.IsAValidAttributeType(attr.Value, typeOfOperator, dbContext, value))
+                            if (GraphDBTypeMapper.IsAValidAttributeType(attr.Value, typeOfOperator, myDBContext, value))
                             {
                                 item.Value.AddAttribute(attr.Key.UUID, value);
 
-                                var removeExcept = item.Value.RemoveUndefinedAttribute(attr.Key.Name, dbContext.DBObjectManager);
+                                var removeExcept = item.Value.RemoveUndefinedAttribute(attr.Key.Name, myDBContext.DBObjectManager);
 
                                 if (!removeExcept.Success())
                                 {
                                     retExcept.PushIExceptional(removeExcept);
                                 }
 
-                                var flushExcept = dbContext.DBObjectManager.FlushDBObject(item.Value);
+                                var flushExcept = myDBContext.DBObjectManager.FlushDBObject(item.Value);
 
                                 if (!flushExcept.Success())
                                 {
@@ -147,11 +147,13 @@ namespace sones.GraphDB.Managers.AlterType
             return Exceptional.OK;
         }
 
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>
         public override IEnumerable<Vertex> CreateVertex(DBContext dbContext, GraphDBType graphDBType)
         {
             return base.CreateVertex(dbContext, graphDBType);
         }
-
     }
 
 }

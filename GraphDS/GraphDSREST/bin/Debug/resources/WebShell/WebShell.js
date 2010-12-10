@@ -249,6 +249,7 @@
             url: target,
             cache: false,
             async: false,
+            timeout: 0,
             error: function (xhr, ajaxOptions, thrownError) {
                 return ("AJAX Error " + xhr.status + "\n" + data.responseText + "\n" + thrownError);
             },

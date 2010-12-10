@@ -525,6 +525,10 @@ namespace sones.GraphDSClient
 
         public abstract Exceptional<IGraphFSStream> OpenStream(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevision, ulong myObjectCopy, FileMode myFileMode, FileAccess myFileAccess, FileShare myFileShare, FileOptions myFileOptions, ulong myBufferSize);
 
+        public abstract Exceptional MoveObjectLocation(ObjectLocation myFromLocation, ObjectLocation myToLocation);
+
+        public abstract Exceptional<IDirectoryObject> GetDirectoryObject(ObjectLocation objectLocation);
+
         #endregion
 
 

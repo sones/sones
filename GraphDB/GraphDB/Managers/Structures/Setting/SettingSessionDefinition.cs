@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region Usings
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,14 +14,27 @@ using sones.GraphDB.TypeManagement;
 using sones.GraphDB.Result;
 using sones.GraphDB.NewAPI;
 
+#endregion
+
+
 namespace sones.GraphDB.Managers.Structures.Setting
 {
 
+    /// <summary>
+    /// Manipulate a session settings
+    /// </summary>
     public class SettingSessionDefinition : ASettingDefinition
     {
 
         #region override ASettingDefinition.*
 
+
+        #region extract
+        
+        /// <summary>
+        /// Extract values from session settings
+        /// <seealso cref=" ASettingDefinition"/>
+        /// </summary>        
         public override Exceptional<IEnumerable<Vertex>> ExtractData(Dictionary<String, String> mySetting, DBContext _DBContext)
         {
 
@@ -44,6 +59,14 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
         }
 
+        #endregion
+
+        #region set
+        
+        /// <summary>
+        /// Set values to session settings
+        /// <seealso cref=" ASettingDefinition"/>
+        /// </summary>
         public override Exceptional<IEnumerable<Vertex>> SetData(Dictionary<string, string> mySettingValues, DBContext _DBContext)
         {
 
@@ -62,6 +85,14 @@ namespace sones.GraphDB.Managers.Structures.Setting
 
         }
 
+        #endregion
+
+        #region remove 
+        
+        /// <summary>
+        /// Remove values from session settings
+        /// <seealso cref=" ASettingDefinition"/>
+        /// </summary>
         public override Exceptional<IEnumerable<Vertex>> RemoveData(Dictionary<String, String> mySettings, DBContext _DBContext)
         {
             foreach (var Setting in mySettings)
@@ -76,6 +107,8 @@ namespace sones.GraphDB.Managers.Structures.Setting
             return new Exceptional<IEnumerable<Vertex>>();
 
         }
+
+        #endregion
 
         #endregion
 

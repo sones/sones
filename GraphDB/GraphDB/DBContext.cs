@@ -126,7 +126,6 @@ namespace sones.GraphDB
             _SessionSettings = new DBSessionSettings(dbContext.SessionSettings);
             _DBObjectManager = new ObjectManagement.DBObjectManager(this, _IGraphFSSession);
 
-            //
             _DBIndexManager = new Indices.DBIndexManager(_IGraphFSSession, this);
 
             _DBTypeManager = new DBTypeManager(dbContext.DBTypeManager);

@@ -19,21 +19,37 @@ using sones.Lib.ErrorHandling;
 namespace sones.GraphDB.Managers.AlterType
 {
 
+    /// <summary>
+    /// Change the comment on a vertex
+    /// </summary>
     public class AlterType_ChangeComment : AAlterTypeCommand
     {
 
+        /// <summary>
+        /// The new comment on a vertex
+        /// </summary>
         public String NewComment { get; set; }
 
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>
         public override TypesOfAlterCmd AlterType
         {
             get { return TypesOfAlterCmd.ChangeComment; }
         }
 
+        /// <summary>
+        /// Execute the change of a comment change
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>        
         public override Exceptional Execute(DBContext myDBContext, GraphDBType myGraphDBType)
         {
             return myDBContext.DBTypeManager.ChangeCommentOnType(myGraphDBType, NewComment);
         }
 
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>        
         public override IEnumerable<Vertex> CreateVertex(DBContext myDBContext, GraphDBType myGraphDBType)
         {
 

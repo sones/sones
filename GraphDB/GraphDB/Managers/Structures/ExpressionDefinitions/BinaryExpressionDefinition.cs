@@ -533,7 +533,7 @@ namespace sones.GraphDB.Managers.Structures
 
                             if (curAttr != null)
                             {
-                                var val = new ValueDefinition(aTypeOfOperatorResult, _Vertex.ObsoleteAttributes[curAttr.Name]);
+                                var val = new ValueDefinition(aTypeOfOperatorResult, _Vertex.GetProperty(curAttr.Name));
                                 retVal.AddElement(new TupleElement(aTypeOfOperatorResult, val));
                             }
                             else
@@ -1244,29 +1244,32 @@ namespace sones.GraphDB.Managers.Structures
 
                         if (runMT)
                         {
-                            var leftTask = Task<Exceptional<IExpressionGraph>>.Factory.StartNew(() =>
-                            {
-                                return ((BinaryExpressionDefinition)this.Left).Calculon(dbContext, resultGraph.GetNewInstance(dbContext), aggregateAllowed);
-                            });
+                            Exceptional<IExpressionGraph> leftResult = null;
+                            Exceptional<IExpressionGraph> rightResult = null;
 
-                            var rightTask = Task<Exceptional<IExpressionGraph>>.Factory.StartNew(() =>
-                            {
-                                return ((BinaryExpressionDefinition)this.Right).Calculon(dbContext, resultGraph.GetNewInstance(dbContext), aggregateAllowed);
-                            });
+                            Parallel.Invoke(
+                                () =>
+                                {
+                                    leftResult = ((BinaryExpressionDefinition)this.Left).Calculon(dbContext, resultGraph.GetNewInstance(dbContext), aggregateAllowed);
+                                }, 
+                                () =>
+                                {
+                                    rightResult = ((BinaryExpressionDefinition)this.Right).Calculon(dbContext, resultGraph.GetNewInstance(dbContext), aggregateAllowed);
+                                });
 
-                            if (!leftTask.Result.Success())
+                            if (!leftResult.Success())
                             {
-                                return new Exceptional<IExpressionGraph>(leftTask.Result);
+                                return new Exceptional<IExpressionGraph>(leftResult);
                             }
 
-                            if (!rightTask.Result.Success())
+                            if (!rightResult.Success())
                             {
-                                return new Exceptional<IExpressionGraph>(rightTask.Result);
+                                return new Exceptional<IExpressionGraph>(rightResult);
                             }
 
                             return (this.Operator as ABinaryLogicalOperator).TypeOperation(
-                                leftTask.Result.Value,
-                                rightTask.Result.Value,
+                                leftResult.Value,
+                                rightResult.Value,
                                 dbContext,
                                 this.TypeOfBinaryExpression, TypesOfAssociativity.Neutral, resultGraph.GetNewInstance(dbContext), aggregateAllowed);
                             //*/

@@ -26,6 +26,9 @@ namespace sones.GraphDB.Managers.Structures
 
         #region Properties
 
+        /// <summary>
+        /// The name of the attribute
+        /// </summary>
         public string AttributeName { get; private set; }
         public TupleDefinition TupleDefinition { get; private set; }
 
@@ -45,6 +48,9 @@ namespace sones.GraphDB.Managers.Structures
 
         #region override AAttributeAssignOrUpdateOrRemove.Update
 
+        /// <summary>
+        /// <seealso cref=" AAttributeAssignOrUpdateOrRemove"/>
+        /// </summary>
         public override Exceptional<Dictionary<string, Tuple<TypeAttribute, IObject>>> Update(DBContext myDBContext, DBObjectStream myDBObjectStream, GraphDBType myGraphDBType)
         {
 

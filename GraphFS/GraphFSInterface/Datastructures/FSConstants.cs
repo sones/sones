@@ -95,6 +95,10 @@ namespace sones.GraphFS.DataStructures
         public static UInt64 MIN_NUMBER_OF_COPIES               = 2;
         public static UInt64 MAX_NUMBER_OF_COPIES               = 2;
 
+        public const String ObjectLocatorSuffix                 = ".ObjectLocator";
+        public const String INodeSuffix                         = ".INode";
+
+        
 
     }
 

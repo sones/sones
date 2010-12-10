@@ -227,7 +227,7 @@ namespace sones.GraphFS
 
         #region (protected) StoreAFSObject_protected(myObjectLocation, myAFSObject, myAllowToOverwrite = false)
 
-        protected override Exceptional StoreAFSObject_protected(ObjectLocation myObjectLocation, AFSObject myAFSObject, Boolean myAllowToOverwrite = false)
+        protected override Exceptional StoreAFSObject_protected(SessionToken mySessionToken, ObjectLocation myObjectLocation, AFSObject myAFSObject, Boolean myAllowToOverwrite = false)
         {
 
             lock (this)
@@ -243,9 +243,10 @@ namespace sones.GraphFS
 
                 // Call StoreAFSObject_protected on AGraphFS in order to check the
                 // ObjectHierachy and cache the AFSObject.
-                var _Exceptional =  base.StoreAFSObject_protected(myObjectLocation,
-                                                                  myAFSObject,
-                                                                  myAllowToOverwrite);
+                var _Exceptional =  base.StoreAFSObject_protected(  mySessionToken,
+                                                                    myObjectLocation,
+                                                                    myAFSObject,
+                                                                    myAllowToOverwrite);
 
                 #region Additional Checks
 

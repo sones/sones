@@ -10,6 +10,7 @@ using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphDB.TypeManagement;
 using sones.Lib;
 using sones.Lib.ErrorHandling;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -24,6 +25,10 @@ namespace sones.GraphDB.Aggregates
 
         #region Properties
 
+        /// <summary>
+        /// Aggregate name
+        /// <seealso cref=" ABaseAggregate"/>
+        /// </summary>
         public override string FunctionName
         {
             get { return "COUNT"; }
@@ -33,16 +38,24 @@ namespace sones.GraphDB.Aggregates
 
         #region Attribute aggregation
 
-        public override Exceptional<IObject> Aggregate(IEnumerable<DBObjectStream> myDBObjects, TypeAttribute myTypeAttribute, DBContext myDBContext, params Functions.ParameterValue[] myParameters)
+        /// <summary>
+        /// Count the elements
+        /// <seealso cref=" ABaseAggregate"/>
+        /// </summary>
+        public override Exceptional<FuncParameter> Aggregate(IEnumerable<DBObjectStream> myDBObjects, TypeAttribute myTypeAttribute, DBContext myDBContext, params Functions.ParameterValue[] myParameters)
         {
-            return new Exceptional<IObject>(new DBUInt64(myDBObjects.ULongCount()));
+            return new Exceptional<FuncParameter>(new FuncParameter(new DBUInt64(myDBObjects.ULongCount())));
         }
 
         #endregion
 
         #region Index aggregation
 
-        public override Exceptional<IObject> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext)
+        /// <summary>
+        /// Count the index elements
+        /// <seealso cref=" ABaseAggregate"/>
+        /// </summary>
+        public override Exceptional<FuncParameter> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext)
         {
             //if (graphDBType.IsAbstract)
             //{
@@ -68,7 +81,7 @@ namespace sones.GraphDB.Aggregates
 
                 var indexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(attributeIndex.IndexRelatedTypeUUID);
 
-                return new Exceptional<IObject>(new DBUInt64(attributeIndex.GetValueCount()));
+                return new Exceptional<FuncParameter>(new FuncParameter(new DBUInt64(attributeIndex.GetValueCount())));
 
                 #endregion
             //}

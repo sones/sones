@@ -14,13 +14,14 @@ using sones.GraphDB.Exceptions;
 
 using sones.GraphDB.Warnings;
 using sones.GraphDB.Result;
+using sones.GraphDB.Interfaces;
 
 #endregion
 
 namespace sones.GraphDB.GraphQL
 {
 
-    public class GraphQLQuery
+    public class GraphQLQuery : IQueryableLanguage
     {
 
         GraphQueryLanguage graphQL;

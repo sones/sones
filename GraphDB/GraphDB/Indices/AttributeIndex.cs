@@ -123,16 +123,13 @@ namespace sones.GraphDB.Indices
         #region Update
 
         /// <summary>
-        /// This method updates the idx corresponding to an DBObject
-        /// </summary>
-        /// <param name="myDBObject">The DBObject that should be updated</param>
-        /// <param name="myTypeOfDBObject">The type of the DBObject</param>
-        /// <param name="myToken">The SessionInfos</param>
-        public override Exceptional Update(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext)
+        /// <seealso cref=" AAtributeIndex"/>
+        /// </summary>        
+        public override Exceptional Update(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext myDBContext)
         {
             #region remove DBObject from idx --> inperformant like hell
 
-            foreach (var aIdxShardExceptional in GetAllIdxShards(dbContext))
+            foreach (var aIdxShardExceptional in GetAllIdxShards(myDBContext))
             {
                 #region get the shard
 
@@ -153,7 +150,7 @@ namespace sones.GraphDB.Indices
                     if (aKeyValue.Value.Remove(myDBObject.ObjectUUID))
                     {
                         //there has been something removed
-                        DecreaseValueCount();
+                        DecreaseValueCount(1UL);
                     }
 
                     if (aKeyValue.Value.Count == 0)
@@ -177,13 +174,13 @@ namespace sones.GraphDB.Indices
 
             #region insert new values
 
-            if (myDBObject.HasAtLeastOneAttribute(this.IndexKeyDefinition.IndexKeyAttributeUUIDs, myTypeOfDBObject, dbContext.SessionSettings))
+            if (myDBObject.HasAtLeastOneAttribute(this.IndexKeyDefinition.IndexKeyAttributeUUIDs, myTypeOfDBObject, myDBContext.SessionSettings))
             {
                 //insert
-                foreach (var aIndexKey in this.GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, dbContext))
+                foreach (var aIndexKey in this.GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext))
                 {
                     //get the actual shard
-                    var currentIdxShard = GetIndexReference(dbContext.DBIndexManager, GetIndexShardID(aIndexKey));
+                    var currentIdxShard = GetIndexReference(myDBContext.DBIndexManager, myDBContext.DBIndexManager.GetIndexShardID(aIndexKey, this.AttributeIdxShards));
 
                     if (!currentIdxShard.Success())
                     {
@@ -205,31 +202,24 @@ namespace sones.GraphDB.Indices
         #region Insert
 
         /// <summary>
-        /// This method inserts the given DBObject into the index
+        /// <seealso cref=" IAtributeIndex"/>
         /// </summary>
-        /// <param name="myDBObject">The DBObject that should be inserted</param>
-        /// <param name="myTypeOfDBobject">The type of the DBObject</param>
-        /// <param name="myToken">The SessionInfos</param>
-        public override Exceptional Insert(DBObjectStream myDBObject, GraphDBType myTypeOfDBobject, DBContext dbContext)
+        public override Exceptional Insert(DBObjectStream myDBObject, GraphDBType myTypeOfDBobject, DBContext myDBContext)
         {
-            return Insert(myDBObject, IndexSetStrategy.MERGE, myTypeOfDBobject, dbContext);
+            return Insert(myDBObject, IndexSetStrategy.MERGE, myTypeOfDBobject, myDBContext);
         }
 
         /// <summary>
-        /// This method inserts the given DBObject into the index
-        /// </summary>
-        /// <param name="myDBObject">The DBObject that should be inserted</param>
-        /// <param name="myIndexSetStrategy">The index merge strategy</param>
-        /// <param name="myTypeOfDBObject">The type of the DBObject</param>
-        /// <param name="myToken">The SessionInfos</param>
-        public override Exceptional Insert(DBObjectStream myDBObject, IndexSetStrategy myIndexSetStrategy, GraphDBType myTypeOfDBObject, DBContext dbContext)
+        /// <seealso cref=" IAtributeIndex"/>
+        /// </summary>        
+        public override Exceptional Insert(DBObjectStream myDBObject, IndexSetStrategy myIndexSetStrategy, GraphDBType myTypeOfDBObject, DBContext myDBContext)
         {
-            foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, dbContext))
+            foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext))
             {
                 #region get the shard
 
                 //get the actual shard
-                var currentIdxShard = GetIndexReference(dbContext.DBIndexManager, GetIndexShardID(aIndexKex));
+                var currentIdxShard = GetIndexReference(myDBContext.DBIndexManager, myDBContext.DBIndexManager.GetIndexShardID(aIndexKex, this.AttributeIdxShards));
 
                 if (!currentIdxShard.Success())
                 {
@@ -258,30 +248,72 @@ namespace sones.GraphDB.Indices
 
         }
 
+        internal Exceptional Insert(IndexKey indexKey, HashSet<ObjectUUID> hashSet, int shard, DBIndexManager dBIndexManager, GraphDBType myTypeOfDBObject)
+        {
+            //get the actual shard
+            var currentIdxShard = GetIndexReference(dBIndexManager, shard);
+
+            if (!currentIdxShard.Success())
+            {
+                return new Exceptional(currentIdxShard);
+            }
+
+            #region Check for uniqueness - TODO: remove me as soon as we have a unique indexObject implementation
+
+            if (IsUniqueAttributeIndex)
+            {
+                if (currentIdxShard.Value.ContainsKey(indexKey))
+                {
+                    return new Exceptional(new Error_UniqueConstrainViolation(myTypeOfDBObject.Name, IndexName));
+                }
+            }
+
+            #endregion
+
+            UInt64 previousKeyCount = currentIdxShard.Value.KeyCount();
+
+            HashSet<ObjectUUID> value = null;
+
+            currentIdxShard.Value.TryGetValue(indexKey, out value);
+
+            if (value == null)
+            {
+                currentIdxShard.Value.Set(indexKey, hashSet, IndexSetStrategy.MERGE);
+
+                IncreaseKeyCount();
+
+                IncreaseValueCount((UInt64)hashSet.Count);
+            }
+            else
+            {
+                currentIdxShard.Value.Add(indexKey, hashSet);
+
+                IncreaseValueCount((UInt64)currentIdxShard.Value[indexKey].Count);
+            }
+
+            return Exceptional.OK;
+        }
+
         #endregion
 
         #region Contains
        
         /// <summary>
-        /// This method checks if the current attribute index contains a DBObject
-        /// </summary>
-        /// <param name="myDBObject">The DBObject that should be checked</param>
-        /// <param name="myTypeOfDBObject">The Type of the DBObject</param>
-        /// <param name="myToken">The SessionInfos</param>
-        /// <returns>A Trinary</returns>
-        public override Boolean Contains(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext)
+        /// <seealso cref=" IAttributeIndex"/>
+        /// </summary>        
+        public override Boolean Contains(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext myDBContext)
         {
 
-            foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, dbContext))
+            foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext))
             {
                 #region get the shard
 
                 //get the actual shard
-                var currentIdxShard = GetIndexReference(dbContext.DBIndexManager, GetIndexShardID(aIndexKex));
+                var currentIdxShard = GetIndexReference(myDBContext.DBIndexManager, myDBContext.DBIndexManager.GetIndexShardID(aIndexKex, this.AttributeIdxShards));
 
                 if (!currentIdxShard.Success())
                 {
-                    throw new GraphDBException(new Error_CouldNotGetIndexReference(currentIdxShard.IErrors, IndexName, IndexEdition, GetIndexShardID(aIndexKex)));
+                    throw new GraphDBException(new Error_CouldNotGetIndexReference(currentIdxShard.IErrors, IndexName, IndexEdition, myDBContext.DBIndexManager.GetIndexShardID(aIndexKex, this.AttributeIdxShards)));
                 }
                 
                 var currentIdxShardValue = currentIdxShard.Value;
@@ -297,23 +329,26 @@ namespace sones.GraphDB.Indices
             return false;
         }
 
-        public override Boolean Contains(IndexKey myIndeyKey, GraphDBType myTypeOfDBObject, DBContext dbContext)
+        /// <summary>
+        /// <seealso cref=" IAtributeIndex"/>
+        /// </summary>        
+        public override Boolean Contains(IndexKey myIndexKey, GraphDBType myTypeOfDBObject, DBContext myDBContext)
         {
             #region get the shard
 
             //get the actual shard
-            var currentIdxShard = GetIndexReference(dbContext.DBIndexManager, GetIndexShardID(myIndeyKey));
+            var currentIdxShard = GetIndexReference(myDBContext.DBIndexManager, myDBContext.DBIndexManager.GetIndexShardID(myIndexKey, this.AttributeIdxShards));
 
             if (!currentIdxShard.Success())
             {
-                throw new GraphDBException(new Error_CouldNotGetIndexReference(currentIdxShard.IErrors, IndexName, IndexEdition, GetIndexShardID(myIndeyKey)));
+                throw new GraphDBException(new Error_CouldNotGetIndexReference(currentIdxShard.IErrors, IndexName, IndexEdition, myDBContext.DBIndexManager.GetIndexShardID(myIndexKey, this.AttributeIdxShards)));
             }
 
             var currentIdxShardValue = currentIdxShard.Value;
 
             #endregion
 
-            return currentIdxShardValue.ContainsKey(myIndeyKey);
+            return currentIdxShardValue.ContainsKey(myIndexKey);
         }
 
         #endregion
@@ -321,11 +356,8 @@ namespace sones.GraphDB.Indices
         #region Remove
 
         /// <summary>
-        /// This method removes a given DBObject from the index
-        /// </summary>
-        /// <param name="myDBObject">The DBObject that should be removed</param>
-        /// <param name="myTypeOfDBObjects">The type of the DBObject</param>
-        /// <param name="myToken">The SessionInfos</param>
+        /// <seealso cref=" IAttributeIndex"/>
+        /// </summary>        
         public override Exceptional Remove(DBObjectStream myDBObject, GraphDBType myTypeOfDBObjects, DBContext dbContext)
         {
             foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObjects, dbContext))
@@ -333,7 +365,7 @@ namespace sones.GraphDB.Indices
                 #region get the shard
 
                 //get the actual shard
-                var currentIdxShard = GetIndexReference(dbContext.DBIndexManager, GetIndexShardID(aIndexKex));
+                var currentIdxShard = GetIndexReference(dbContext.DBIndexManager, dbContext.DBIndexManager.GetIndexShardID(aIndexKex, this.AttributeIdxShards));
 
                 if (!currentIdxShard.Success())
                 {
@@ -346,7 +378,7 @@ namespace sones.GraphDB.Indices
                 if (currentIdxShardValue.Remove(aIndexKex, myDBObject.ObjectUUID))
                 {
                     //the ObjectUUID has been deleted from this idx... so decrease the valueCount
-                    DecreaseValueCount();
+                    DecreaseValueCount(1UL);
                 }
 
                 if (currentIdxShardValue[aIndexKex].Count == 0)
@@ -360,10 +392,40 @@ namespace sones.GraphDB.Indices
 
         }
 
+       
+        internal Exceptional Remove(IndexKey indexKey, int shard, DBIndexManager myDBIndexManager)
+        {
+            //get the actual shard
+            var currentIdxShard = GetIndexReference(myDBIndexManager, shard);
+            
+            if (!currentIdxShard.Success())
+            {
+                return new Exceptional(currentIdxShard);
+            }
+
+            HashSet<ObjectUUID> removedItems = null;
+
+            currentIdxShard.Value.TryGetValue(indexKey, out removedItems);
+
+            if (removedItems != null)
+            {
+                currentIdxShard.Value.Remove(indexKey);
+
+                DecreaseKeyCount();
+
+                DecreaseValueCount((UInt64)removedItems.Count);
+            }
+
+            return Exceptional.OK;
+        }
+
         #endregion
 
         #region Clear
 
+        /// <summary>
+        /// <seealso cref=" IAttributeIndex"/>
+        /// </summary>        
         public override Exceptional ClearAndRemoveFromDisc(DBIndexManager indexManager)
         {
             lock (_lockObject)
@@ -471,9 +533,12 @@ namespace sones.GraphDB.Indices
 
         #region GetKeys
 
-        public override IEnumerable<IndexKey> GetKeys(GraphDBType myTypeOfDBObject, DBContext dbContext)
+        /// <summary>
+        /// <seealso cref=" IAttributeIndex"/>
+        /// </summary>        
+        public override IEnumerable<IndexKey> GetKeys(GraphDBType myTypeOfDBObject, DBContext myDBContext)
         {
-            foreach (var aIdxShardExceptional in GetAllIdxShards(dbContext))
+            foreach (var aIdxShardExceptional in GetAllIdxShards(myDBContext))
             {
                 #region get the shard
 
@@ -499,16 +564,19 @@ namespace sones.GraphDB.Indices
 
         #region GetValues
 
+        /// <summary>
+        /// <seealso cref=" IAttributeIndex"/>
+        /// </summary>
         public override IEnumerable<ObjectUUID> GetValues(IndexKey myIndeyKey, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
             #region get the shard
 
             //get the actual shard
-            var currentIdxShard = GetIndexReference(dbContext.DBIndexManager, GetIndexShardID(myIndeyKey));
+            var currentIdxShard = GetIndexReference(dbContext.DBIndexManager, dbContext.DBIndexManager.GetIndexShardID(myIndeyKey, this.AttributeIdxShards));
 
             if (!currentIdxShard.Success())
             {
-                throw new GraphDBException(new Error_CouldNotGetIndexReference(currentIdxShard.IErrors, IndexName, IndexEdition, GetIndexShardID(myIndeyKey)));
+                throw new GraphDBException(new Error_CouldNotGetIndexReference(currentIdxShard.IErrors, IndexName, IndexEdition, dbContext.DBIndexManager.GetIndexShardID(myIndeyKey, this.AttributeIdxShards)));
             }
             var currentIdxShardValue = currentIdxShard.Value;
 
@@ -521,6 +589,9 @@ namespace sones.GraphDB.Indices
 
         #region GetAllValues
 
+        /// <summary>
+        /// <seealso cref=" IAttributeIndex"/>
+        /// </summary>
         public override IEnumerable<IEnumerable<ObjectUUID>> GetAllValues(GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
             foreach (var aIdxShardExceptional in GetAllIdxShards(dbContext))
@@ -549,6 +620,9 @@ namespace sones.GraphDB.Indices
 
         #region GetKeyValues
 
+        /// <summary>
+        /// <seealso cref=" IAttributeIndex"/>
+        /// </summary>
         public override IEnumerable<KeyValuePair<IndexKey, HashSet<ObjectUUID>>> GetKeyValues(GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
             foreach (var aIdxShardExceptional in GetAllIdxShards(dbContext))
@@ -578,6 +652,9 @@ namespace sones.GraphDB.Indices
 
         #region GetValueCount
 
+        /// <summary>
+        /// <seealso cref=" IAttributeIndex"/>
+        /// </summary>
         public override UInt64 GetValueCount()
         {
             return _valueCount;
@@ -587,6 +664,9 @@ namespace sones.GraphDB.Indices
 
         #region GetKeyCount
 
+        /// <summary>
+        /// <seealso cref=" IAttributeIndex"/>
+        /// </summary>
         public override UInt64 GetKeyCount()
         {
             return _keyCount;
@@ -596,11 +676,14 @@ namespace sones.GraphDB.Indices
 
         #region InRange
 
-        public override IEnumerable<ObjectUUID> InRange(IndexKey fromIndexKey, IndexKey toIndexKey, bool myOrEqualFromKey, bool myOrEqualToKey, GraphDBType myTypeOfDBObject, DBContext dbContext)
+        /// <summary>
+        /// <seealso cref=" IAttributeIndex"/>
+        /// </summary>
+        public override IEnumerable<ObjectUUID> InRange(IndexKey fromIndexKey, IndexKey toIndexKey, bool myOrEqualFromKey, bool myOrEqualToKey, GraphDBType myTypeOfDBObject, DBContext myDBContext)
         {
             //TODO: PERFORMANCE BUG!!!!!!!
 
-            foreach (var aIdxShardExceptional in GetAllIdxShards(dbContext))
+            foreach (var aIdxShardExceptional in GetAllIdxShards(myDBContext))
             {
                 #region get the shard
 
@@ -638,7 +721,7 @@ namespace sones.GraphDB.Indices
         /// <param name="indexManager">The database index manager</param>
         /// <param name="idxShard">The shard that should be loaded</param>
         /// <returns>A versioned idx object</returns>
-        private Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>> GetIndexReference(DBIndexManager indexManager, int idxShard)
+        public Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>> GetIndexReference(DBIndexManager indexManager, int idxShard)
         {
             if (!indexManager.HasIndex(IndexType))
             {
@@ -826,22 +909,11 @@ namespace sones.GraphDB.Indices
 
         #endregion
 
-        /// <summary>
-        /// Get the shard id corresponding to an indexKey
-        /// </summary>
-        /// <param name="aIndexKey">An IndexKey</param>
-        /// <returns>The shard id</returns>
-        private int GetIndexShardID(IndexKey aIndexKey)
-        {
-            //stupid... might be solved by constant hashing or sth like that
-            return Math.Abs(aIndexKey.GetHashCode()) % AttributeIdxShards;
-        }
-
-        private void IncreaseValueCount()
+        private void IncreaseValueCount(UInt64 increase)
         {
             lock (_lockObject)
             {
-                _valueCount++;
+                _valueCount += increase;
             }
         }
 
@@ -861,11 +933,11 @@ namespace sones.GraphDB.Indices
             }
         }
 
-        private void DecreaseValueCount()
+        private void DecreaseValueCount(UInt64 decrease)
         {
             lock (_lockObject)
             {
-                _valueCount--;
+                _valueCount -= decrease;
             }
         }
 
@@ -874,7 +946,7 @@ namespace sones.GraphDB.Indices
         /// </summary>
         /// <param name="dbContext">The current database context</param>
         /// <returns>An enumerable of shardID/IVersionedIndexObject</returns>
-        private IEnumerable<Tuple<int, Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>>> GetAllIdxShards(DBContext dbContext)
+        internal IEnumerable<Tuple<int, Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>>> GetAllIdxShards(DBContext dbContext)
         {
             foreach (var aIdxShardID in GetAllIdxShardIDs())
             {
@@ -908,7 +980,7 @@ namespace sones.GraphDB.Indices
         /// <summary>
         /// Returns all index shard ids
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Number of shards</returns>
         private IEnumerable<UInt16> GetAllIdxShardIDs()
         {
             //stupid
@@ -935,7 +1007,7 @@ namespace sones.GraphDB.Indices
                 IncreaseKeyCount();
             }
 
-            IncreaseValueCount();
+            IncreaseValueCount(1UL);
         }
 
         #endregion

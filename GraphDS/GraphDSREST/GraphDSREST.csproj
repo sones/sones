@@ -277,6 +277,8 @@
     <EmbeddedResource Include="resources\libs\jQuery\jquery.url.parser.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="resources\ClientAccessPolicy.xml" />
+    <Content Include="resources\CrossDomain.xml" />
     <Content Include="resources\JitExamples\AreaChart\example1.html" />
     <Content Include="resources\JitExamples\AreaChart\example1.js" />
     <Content Include="resources\JitExamples\BarChart\example1.html" />

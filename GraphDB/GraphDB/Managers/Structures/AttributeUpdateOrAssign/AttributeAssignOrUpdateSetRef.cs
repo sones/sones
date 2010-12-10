@@ -3,6 +3,8 @@
  * (c) Stefan Licht, 2010
  */
 
+#region Usings
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,16 +19,24 @@ using sones.GraphDB.Structures.EdgeTypes;
 using sones.GraphDB.Errors;
 using sones.GraphDB.TypeManagement;
 
+#endregion
+
 namespace sones.GraphDB.Managers.Structures
 {
 
     #region AttributeAssignOrUpdateSetRef
 
+    /// <summary>
+    /// Assign or update reference values for attributes
+    /// </summary>
     public class AttributeAssignOrUpdateSetRef : AAttributeAssignOrUpdate
     {
 
         #region Properties
 
+        /// <summary>
+        /// The reference definition
+        /// </summary>
         public SetRefDefinition SetRefDefinition { get; private set; }
 
         #endregion
@@ -52,12 +62,15 @@ namespace sones.GraphDB.Managers.Structures
 
         #region override AAttributeAssignOrUpdate.GetValueForAttribute
 
-        public override Exceptional<IObject> GetValueForAttribute(DBObjectStream aDBObject, DBContext dbContext, GraphDBType _Type)
+        /// <summary>
+        /// <seealso cref=" AAttributeAssignOrUpdateOrRemove"/>
+        /// </summary>
+        public override Exceptional<IObject> GetValueForAttribute(DBObjectStream myDBObject, DBContext myDBContext, GraphDBType myDBType)
         {
 
             #region reference
 
-            var validationResult = AttributeIDChain.Validate(dbContext, true, _Type);
+            var validationResult = AttributeIDChain.Validate(myDBContext, true, myDBType);
             if (validationResult.Failed())
             {
                 return new Exceptional<IObject>(validationResult);
@@ -69,14 +82,14 @@ namespace sones.GraphDB.Managers.Structures
             }
 
             // if we have a Userdefined Type, than all assignments will work on this type
-            if (!AttributeIDChain.LastAttribute.GetDBType(dbContext.DBTypeManager).IsUserDefined)
+            if (!AttributeIDChain.LastAttribute.GetDBType(myDBContext.DBTypeManager).IsUserDefined)
             {
                 //attributeType = _Type;
             }
 
             var value = AttributeIDChain.LastAttribute.EdgeType.GetNewInstance();
 
-            var dbos = SetRefDefinition.GetCorrespondigDBObjects(AttributeIDChain.LastAttribute.GetDBType(dbContext.DBTypeManager), dbContext, AttributeIDChain.LastAttribute.GetRelatedType(dbContext.DBTypeManager));
+            var dbos = SetRefDefinition.GetCorrespondigDBObjects(AttributeIDChain.LastAttribute.GetDBType(myDBContext.DBTypeManager), myDBContext, AttributeIDChain.LastAttribute.GetRelatedType(myDBContext.DBTypeManager));
 
             foreach (var dbo in dbos)
             {

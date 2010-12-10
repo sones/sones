@@ -111,7 +111,7 @@ namespace GraphDBAPI
             var DBObjectStream = new DBObjectStream(myObjectUUID, 
                                                     _Type, 
                                                     new Dictionary<AttributeUUID, IObject>(),
-                                                    new ObjectLocation(_Type.ObjectLocation, DBConstants.DBObjectsLocation, dbContext.DBObjectManager.GetDBObjectStreamShard(_Type, myObjectUUID), myObjectUUID.ToString()));
+                                                    new ObjectLocation(_Type.ObjectLocation, DBConstants.DBObjectsLocation, myObjectUUID.ToString()));
 
             return new BulkInsertDBO(dbContext, _Type, DBObjectStream, this);
 

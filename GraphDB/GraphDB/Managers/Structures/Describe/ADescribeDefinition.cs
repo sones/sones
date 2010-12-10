@@ -15,9 +15,16 @@ using sones.GraphDB.NewAPI;
 
 namespace sones.GraphDB.Managers.Structures.Describe
 {
-
+    /// <summary>
+    /// The abstract base class for all describe commands
+    /// </summary>
     public abstract class ADescribeDefinition
     {
+        /// <summary>
+        /// Return the result of a describe command
+        /// </summary>
+        /// <param name="myDBContext">The db context</param>
+        /// <returns>An exceptional that contains an enumerable of vertices</returns>
         public abstract Exceptional<IEnumerable<Vertex>> GetResult(DBContext myDBContext);
     }
 

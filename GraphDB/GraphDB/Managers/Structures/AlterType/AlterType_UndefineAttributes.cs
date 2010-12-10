@@ -22,6 +22,9 @@ using sones.GraphDB.Indices;
 namespace sones.GraphDB.Managers.AlterType
 {
 
+    /// <summary>
+    /// Converts defined attributes to undefined attributes
+    /// </summary>
     public class AlterType_UndefineAttributes : AAlterTypeCommand
     {
 
@@ -31,16 +34,30 @@ namespace sones.GraphDB.Managers.AlterType
 
         #endregion
 
+        #region constructors
+        
         public AlterType_UndefineAttributes(List<String> listOfAttributes)
         {
             _ListOfAttributes = listOfAttributes;
         }
 
+        #endregion
+
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>
         public override TypesOfAlterCmd AlterType
         {
             get { throw new NotImplementedException(); }
         }
 
+
+        #region Execute
+        
+        /// <summary>
+        /// Execute the conversion of defined attributes
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>
         public override Exceptional Execute(DBContext dbContext, GraphDBType graphDBType)
         {
 
@@ -134,23 +151,25 @@ namespace sones.GraphDB.Managers.AlterType
 
                 idxToDelete.Clear();
                 graphDBType.RemoveAttribute(attr.UUID);
-
-                var flushExcept = dbContext.DBTypeManager.FlushType(graphDBType);
-
-                if (!flushExcept.Success())
-                {
-                    retExcept.PushIExceptional(flushExcept);
-                }
             }
 
             return retExcept;
 
         }
 
+        #endregion
+
+        #region readout
+
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>
         public override IEnumerable<Vertex> CreateVertex(DBContext dbContext, GraphDBType graphDBType)
         {
             return base.CreateVertex(dbContext, graphDBType);
         }
+
+        #endregion
 
     }
 

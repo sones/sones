@@ -113,6 +113,7 @@
     <Compile Include="StructureNodes\BulkTypeNode.cs" />
     <Compile Include="StructureNodes\CollectionOfDBObjectsNode.cs" />
     <Compile Include="StructureNodes\AliasNode.cs" />
+    <Compile Include="StructureNodes\RemoveFromListAttrUpdateScopeNode.cs" />
     <Compile Include="StructureNodes\ShardsNode.cs" />
     <Compile Include="StructureNodes\SelectValueAssignmentNode.cs" />
     <Compile Include="StructureNodes\DefaultValueDefNode.cs" />
@@ -184,6 +185,18 @@
     <ProjectReference Include="..\GraphDB\GraphDB.csproj">
       <Project>{32A56958-2C05-44C6-B661-2A2C6610E073}</Project>
       <Name>GraphDB %28Dependencies\GraphDB\GraphDB%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Plugins\GraphDBAggregate\GraphDBAggregate.csproj">
+      <Project>{0E6D4D05-ED67-400A-BF42-6C0717E1DD99}</Project>
+      <Name>GraphDBAggregate</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Plugins\GraphDBFunction\GraphDBFunction.csproj">
+      <Project>{4BADE6A2-9AB0-4B11-AFAE-5A90F3240170}</Project>
+      <Name>GraphDBFunction</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Plugins\GraphDBSetting\GraphDBSetting.csproj">
+      <Project>{FC3A00C4-DA81-46AC-B9B9-4738AE6B5B2B}</Project>
+      <Name>GraphDBSetting</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

@@ -20,12 +20,23 @@ using sones.Lib.ErrorHandling;
 namespace sones.GraphDB.Managers.AlterType
 {
 
+    /// <summary>
+    /// Change the name of a backwardedge
+    /// </summary>
     public class AlterType_RenameBackwardedge : AAlterTypeCommand
     {
-
+        /// <summary>
+        /// The old name of the backwardedge
+        /// </summary>
         public String OldName { get; set; }
+        /// <summary>
+        /// The new name of the backwardedge
+        /// </summary>
         public String NewName { get; set; }
 
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>
         public override TypesOfAlterCmd AlterType
         {
             get { return TypesOfAlterCmd.RenameBackwardedge; }
@@ -33,10 +44,8 @@ namespace sones.GraphDB.Managers.AlterType
 
         /// <summary>
         /// Execute the renaming of the backwardedge of a given type.
+        /// <seealso cref=" AAlterTypeCommand"/>
         /// </summary>
-        /// <param name="myDBContext"></param>
-        /// <param name="myGraphDBType"></param>
-        /// <returns></returns>
         public override Exceptional Execute(DBContext myDBContext, GraphDBType myGraphDBType)
         {
 
@@ -51,6 +60,9 @@ namespace sones.GraphDB.Managers.AlterType
 
         }
 
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>
         public override IEnumerable<Vertex> CreateVertex(DBContext myDBContext, GraphDBType myGraphDBType)
         {
             return CreateRenameResult("RENAME BACKWARDEDGE", OldName, NewName, myGraphDBType);

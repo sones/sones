@@ -75,7 +75,7 @@ namespace sones.GraphDB.ObjectManagement
         /// <summary>
         /// Creates a new DBObject of a given GraphType inserts its UUID into all indices of the given GraphType.
         /// </summary>
-        /// <param name="myGraphDBType">The GraphType of the DBObject to create</param>
+        /// <param name="_graphDBType">The GraphType of the DBObject to create</param>
         /// <param name="myDBObjectAttributes">A dictionary of attributes for the new DBObject</param>
         /// <param name="myExtractSettings">Special values which should be set to a object</param>
         /// <returns>The UUID of the new DBObject</returns>
@@ -92,7 +92,7 @@ namespace sones.GraphDB.ObjectManagement
         /// <summary>
         /// Creates a new DBObject of a given GraphType inserts its UUID into all indices of the given GraphType.
         /// </summary>
-        /// <param name="myGraphDBType">The GraphType of the DBObject to create</param>
+        /// <param name="_graphDBType">The GraphType of the DBObject to create</param>
         /// <param name="myDBObjectAttributes">A dictionary of attributes for the new DBObject</param>
         /// <param name="mySpecialTypeAttributes">Special values which should be set to a object</param>
         /// <param name="myCheckUniqueness">check for unique constraints</param> 
@@ -139,12 +139,12 @@ namespace sones.GraphDB.ObjectManagement
                 if (mySpecialTypeAttributes.TryGetValue(_SpecialTypeAttribute_UUID_Key, out _SpecialTypeAttribute_UUID_Value))
                 {
 
-                    // User-defined ObjectUUID of type UInt64
+                    // User-defined ObjectUUID of _graphDBType UInt64
                     var _ValueAsUInt64 = _SpecialTypeAttribute_UUID_Value as UInt64?;
                     if (_ValueAsUInt64 != null)
                         _NewObjectUUID = new ObjectUUID(_ValueAsUInt64.Value);
 
-                    // User-defined ObjectUUID of type String or anything else...
+                    // User-defined ObjectUUID of _graphDBType String or anything else...
                     else
                     {
 
@@ -173,7 +173,7 @@ namespace sones.GraphDB.ObjectManagement
             _NewDBObjectStream = new DBObjectStream(_NewObjectUUID, 
                                                     myGraphDBType, 
                                                     myDBObjectAttributes,
-                                                    new ObjectLocation(myGraphDBType.ObjectLocation, DBConstants.DBObjectsLocation, GetDBObjectStreamShard(myGraphDBType, _NewObjectUUID), _NewObjectUUID.ToString()));
+                                                    new ObjectLocation(myGraphDBType.ObjectLocation, DBConstants.DBObjectsLocation, _NewObjectUUID.ToString()));
 
             #endregion
 
@@ -200,7 +200,7 @@ namespace sones.GraphDB.ObjectManagement
                 _NewDBObjectStream = new DBObjectStream(newUUID, 
                                                         myGraphDBType, 
                                                         myDBObjectAttributes,
-                                                        new ObjectLocation(myGraphDBType.ObjectLocation, DBConstants.DBObjectsLocation, GetDBObjectStreamShard(myGraphDBType, newUUID), newUUID.ToString()));
+                                                        new ObjectLocation(myGraphDBType.ObjectLocation, DBConstants.DBObjectsLocation, newUUID.ToString()));
 
                 _DBObjectStreamAlreadyExistsResult = ObjectExistsOnFS(_NewDBObjectStream);
 
@@ -282,11 +282,6 @@ namespace sones.GraphDB.ObjectManagement
 
         }
 
-        public String GetDBObjectStreamShard(GraphDBType myGraphDBType, ObjectUUID objectUUID)
-        {
-            return (Math.Abs(objectUUID.GetHashCode()) % myGraphDBType.ObjectDirectoryShards).ToString();
-        }
-
         private Exceptional<Trinary> ObjectExistsOnFS(DBObjectStream NewDBObject)
         {
 
@@ -324,7 +319,7 @@ namespace sones.GraphDB.ObjectManagement
 
         public Exceptional<DBObjectStream> LoadDBObject(GraphDBType myGraphDBType, ObjectUUID myObjectUUID, String myNameOfType)
         {
-            return LoadDBObject(new ObjectLocation(myGraphDBType.ObjectLocation, DBConstants.DBObjectsLocation, GetDBObjectStreamShard(myGraphDBType, myObjectUUID), myObjectUUID.ToString()));
+            return LoadDBObject(new ObjectLocation(myGraphDBType.ObjectLocation, DBConstants.DBObjectsLocation, myObjectUUID.ToString()));
         }
 
         public Exceptional<DBObjectStream> LoadDBObject(ObjectLocation myObjectLocation)

@@ -402,6 +402,11 @@ namespace sones.GraphDSClient
 
         #region IGraphFSSession
 
+        public override Exceptional<IDirectoryObject> GetDirectoryObject(ObjectLocation objectLocation)
+        {
+            throw new NotImplementedException();
+        }
+
         public override FSTransaction BeginFSTransaction(Boolean myDistributed = false, Boolean myLongRunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable, String myName = "", DateTime? myCreated = null)
         {
             throw new NotImplementedException();
@@ -945,6 +950,10 @@ namespace sones.GraphDSClient
             throw new NotImplementedException();
         }
 
+        public override Exceptional MoveObjectLocation(ObjectLocation myFromLocation, ObjectLocation myToLocation)
+        {
+            throw new NotImplementedException();
+        }
 
         #region File system event
 

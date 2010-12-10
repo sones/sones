@@ -84,7 +84,7 @@ namespace sones.GraphIO.HTML
 
         #region ToHTML(this myVertex)
 
-        public static String ToHTML(this Vertex myVertex)
+        public static String ToHTML(this IVertex myVertex)
         {
             return myVertex.ToHTML(false);
         }
@@ -93,7 +93,7 @@ namespace sones.GraphIO.HTML
 
         #region (private) ToHTML(this myVertex, myRecursion)
 
-        private static String ToHTML(this Vertex myVertex, Boolean myRecursion)
+        private static String ToHTML(this IVertex myVertex, Boolean myRecursion)
         {
 
             var _StringBuilder = new StringBuilder();
@@ -121,7 +121,7 @@ namespace sones.GraphIO.HTML
 
             #endregion
 
-            foreach (var _Attribute in myVertex.ObsoleteAttributes)
+            foreach (var _Attribute in myVertex)
             {
 
                 switch (_Attribute.Key)

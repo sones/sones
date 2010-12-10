@@ -34,6 +34,7 @@ namespace sones.GraphDB
         public static String DBTypeDefinition                   = "TypeDefinition";
 
         public static String DBObjectsLocation                  = "Objects";
+        public static String DBObjectsTempLocation              = "ObjectsTemp";
         public static String DBAttributesLocation               = "Attributes";
         public static String DBSettingsLocation                 = "Settings";
         public static String DBIndicesLocation                  = "Indices";
@@ -149,8 +150,8 @@ namespace sones.GraphDB
         public const UInt16 DefaultTypeAttributeIDStart         = 100;
         public const UInt16 DefaultBackwardEdgeIDStart          = 500;
 
-        
-        
+        public const String DefaultDirectoryEntryPrefix         = ".";
+
         #if __MonoCS__
         public const Boolean RunMT                              = false;  
         #else
@@ -158,9 +159,6 @@ namespace sones.GraphDB
         #endif
 
         public const Boolean UseThreadedSelect                  = true;
-
-        public const UInt16  ObjectDirectoryShards              = 10;
-        //public const UInt16  AttributeIdxShards                 = 10;
     }
 
 }

@@ -33,7 +33,7 @@ namespace sones.GraphDB.Settings
     /// <summary>
     /// Base class for settings
     /// </summary>
-    public abstract class ADBSettingsBase : ISettings, IFastSerialize, IFastSerializationTypeSurrogate
+    public abstract class ADBSettingsBase : ISettings, IFastSerialize, IFastSerializationTypeSurrogate, IGraphDBSetting
     {
 
         #region Properties

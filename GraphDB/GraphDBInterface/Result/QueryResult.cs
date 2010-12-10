@@ -26,7 +26,7 @@ namespace sones.GraphDB.Result
     /// <summary>
     /// This class hold all the data that comes out of the database after a query is run
     /// </summary>
-    public class QueryResult : IEnumerable<Vertex>, IDisposable
+    public class QueryResult : IEnumerable<IVertex>, IDisposable
     {
 
         #region Properties
@@ -127,7 +127,7 @@ namespace sones.GraphDB.Result
 
         #region Vertices
 
-        public IEnumerable<Vertex> Vertices { get; set; }
+        public IEnumerable<IVertex> Vertices { get; set; }
 
         #endregion
 
@@ -172,7 +172,7 @@ namespace sones.GraphDB.Result
         {
             _IErrors    = new Stack<IError>();
             _IWarnings  = new Stack<IWarning>();
-            Vertices     = new List<Vertex>();
+            Vertices     = new List<IVertex>();
         }
 
         #endregion
@@ -246,14 +246,14 @@ namespace sones.GraphDB.Result
 
         #region QueryResult(myVertex, myIWarnings = null)
 
-        public QueryResult(Vertex myVertex, IEnumerable<IWarning> myIWarnings = null)
+        public QueryResult(IVertex myVertex, IEnumerable<IWarning> myIWarnings = null)
             : this()
         {
 
             PushIWarnings(myIWarnings);
 
             if (myVertex != null)
-                Vertices = new List<Vertex>{ myVertex };
+                Vertices = new List<IVertex>{ myVertex };
 
         }
 
@@ -261,7 +261,7 @@ namespace sones.GraphDB.Result
 
         #region QueryResult(myVertices, myIWarnings = null)
 
-        public QueryResult(IEnumerable<Vertex> myVertices, IEnumerable<IWarning> myIWarnings = null)
+        public QueryResult(IEnumerable<IVertex> myVertices, IEnumerable<IWarning> myIWarnings = null)
             : this()
         {
 
@@ -498,7 +498,7 @@ namespace sones.GraphDB.Result
         /// <param name="attributeValue"></param>
         /// <exception cref="ArgumentException"></exception>
         /// <returns>Null if no element was found or the element itself</returns>
-        public Vertex SearchVertex(params Tuple<String, Object>[] myAttributes)
+        public IVertex SearchVertex(params Tuple<String, Object>[] myAttributes)
         {
 
             var _Vertices = Vertices.Where(_Vertex =>
@@ -516,7 +516,7 @@ namespace sones.GraphDB.Result
 
         #region IEnumerable<Vertex> Members
 
-        public IEnumerator<Vertex> GetEnumerator()
+        public IEnumerator<IVertex> GetEnumerator()
         {
             return Vertices.GetEnumerator();
         }

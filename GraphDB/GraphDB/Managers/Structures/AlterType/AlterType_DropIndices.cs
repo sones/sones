@@ -19,9 +19,15 @@ using sones.Lib.ErrorHandling;
 namespace sones.GraphDB.Managers.AlterType
 {
 
+    /// <summary>
+    /// Removal of attribute indices
+    /// </summary>
     public class AlterType_DropIndices : AAlterTypeCommand
     {
 
+        /// <summary>
+        /// The list of the indices
+        /// </summary>
         private Dictionary<String, String> _IdxDropList;
 
         public AlterType_DropIndices(Dictionary<String, String> myIndices)
@@ -29,11 +35,18 @@ namespace sones.GraphDB.Managers.AlterType
             _IdxDropList = myIndices;
         }
 
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>
         public override TypesOfAlterCmd AlterType
         {
             get { throw new NotImplementedException(); }
         }
 
+        /// <summary>
+        /// Execute the removal of attribute indices
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>        
         public override Exceptional Execute(DBContext myDBContext, GraphDBType myGraphDBType)
         {
 
@@ -53,6 +66,9 @@ namespace sones.GraphDB.Managers.AlterType
 
         }
 
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>        
         public override IEnumerable<Vertex> CreateVertex(DBContext myDBContext, GraphDBType myGraphDBType)
         {
             return base.CreateVertex(myDBContext, myGraphDBType);

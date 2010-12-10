@@ -16,14 +16,24 @@ using sones.Lib.ErrorHandling;
 namespace sones.GraphDB.Managers.AlterType
 {
 
+    /// <summary>
+    /// Drops the unique flag of an attribute
+    /// </summary>
     public class AlterType_DropUnique : AAlterTypeCommand
     {
 
+        /// <summary>
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>
         public override TypesOfAlterCmd AlterType
         {
             get { return TypesOfAlterCmd.DropUnqiue; }
         }
 
+        /// <summary>
+        /// Drops the unique flag of an attribute
+        /// <seealso cref=" AAlterTypeCommand"/>
+        /// </summary>
         public override Exceptional Execute(DBContext myDBContext, GraphDBType myGraphDBType)
         {
             return myGraphDBType.DropUniqueAttributes(myDBContext.DBTypeManager);
