@@ -1,5 +1,5 @@
 ﻿using System;
-using GraphFS.Element;
+using sones.GraphFS.Element;
 
 namespace sones.InMemoryNonRevisioned.Element
 {

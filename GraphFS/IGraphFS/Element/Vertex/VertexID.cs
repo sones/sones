@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GraphFS.Element
+namespace sones.GraphFS.Element
 {
     /// <summary>
     /// The id of a vertex. It consists of a Guid and an vertex-type-name

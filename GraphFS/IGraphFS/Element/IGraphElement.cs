@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GraphFS.Element
+namespace sones.GraphFS.Element
 {
     /// <summary>
     /// The interface for graph elements like vertices or edges

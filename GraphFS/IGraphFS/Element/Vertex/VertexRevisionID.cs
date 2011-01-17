@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace GraphFS.Element
+namespace sones.GraphFS.Element
 {
     public sealed class VertexRevisionID : IComparable, IComparable<VertexRevisionID>, IEquatable<VertexRevisionID>
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace GraphFS.Element
+namespace sones.GraphFS.Element
 {
     /// <summary>
     /// The interface for vertices

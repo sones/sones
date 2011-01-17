@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using GraphFS.Element;
 using sones.Library.Internal.Security;
 using sones.Library.Internal.Token;
+using sones.Library.Internal.Definitions;
+using sones.GraphFS.Element;
 
 namespace sones.GraphFS
 {
@@ -177,14 +178,41 @@ namespace sones.GraphFS
         /// <returns>An IEnumerable of VertexRevisionIDs</returns>
         IEnumerable<VertexRevisionID> GetVertexRevisionIDs(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, String myEdition);
 
+        /// <summary>
+        /// Adds a new vertex to the graph fs
+        /// </summary>
+        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myIVertex">The vertex that is going to be added</param>
+        /// <param name="myEdition">The name of the edition of the new vertex</param>
+        /// <param name="myVertexRevisionID">The revision id of the vertex</param>
         void AddVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, IVertex myIVertex, String myEdition = null, VertexRevisionID myVertexRevisionID = null);
 
+        /// <summary>
+        /// Removes a certain edition/revision of a vertex
+        /// </summary>
+        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myVertexID">The id of the vertex</param>
+        /// <param name="myEdition">The name of the edition that should be removed</param>
+        /// <param name="myVertexRevisionID">The revision id of the vertex that should be removed</param>
+        /// <returns>True if a vertex has been removed, false otherwise</returns>
         bool RemoveVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, String myEdition = null, VertexRevisionID myVertexRevisionID = null);
 
+        /// <summary>
+        /// Erases a vertex entirely
+        /// </summary>
+        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myVertexID">The id of the vertex</param>
+        /// <returns>True if a vertex has been erased, false otherwise</returns>
         bool EraseVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID);
 
-        bool UpdateVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, IVertex myIVertex);
+        
+        //Todo: Update
 
         #endregion
+
+        //Todo: Sync
     }
 }

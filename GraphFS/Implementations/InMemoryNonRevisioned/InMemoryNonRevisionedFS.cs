@@ -1,6 +1,7 @@
 ﻿using sones.GraphFS;
 using sones.Library.Internal.Token;
 using sones.Library.Internal.Security;
+using sones.GraphFS.Element;
 
 namespace sones.InMemoryNonRevisioned
 {
@@ -9,6 +10,8 @@ namespace sones.InMemoryNonRevisioned
     /// </summary>
     public sealed class InMemoryNonRevisionedFS : IGraphFS
     {
+        #region IGraphFS Members
+
         public bool IsPersistent
         {
             get { throw new System.NotImplementedException(); }
@@ -34,89 +37,86 @@ namespace sones.InMemoryNonRevisioned
             throw new System.NotImplementedException();
         }
 
-        public AccessModeTypes GetAccessMode(sones.Library.Internal.Token.SessionToken mySessionToken)
+        public AccessModeTypes GetAccessMode(SessionToken mySessionToken)
         {
             throw new System.NotImplementedException();
         }
 
-        public void MakeFileSystem(sones.Library.Internal.Token.SessionToken mySessionToken, string myDescription, ulong myNumberOfBytes, bool myOverwriteExistingFileSystem)
+        public void MakeFileSystem(SessionToken mySessionToken, string myDescription, ulong myNumberOfBytes, bool myOverwriteExistingFileSystem)
         {
             throw new System.NotImplementedException();
         }
 
-        public ulong GrowFileSystem(sones.Library.Internal.Token.SessionToken mySessionToken, ulong myNumberOfBytesToAdd)
+        public ulong GrowFileSystem(SessionToken mySessionToken, ulong myNumberOfBytesToAdd)
         {
             throw new System.NotImplementedException();
         }
 
-        public ulong ShrinkFileSystem(sones.Library.Internal.Token.SessionToken mySessionToken, ulong myNumberOfBytesToRemove)
+        public ulong ShrinkFileSystem(SessionToken mySessionToken, ulong myNumberOfBytesToRemove)
         {
             throw new System.NotImplementedException();
         }
 
-        public void WipeFileSystem(sones.Library.Internal.Token.SessionToken mySessionToken)
+        public void WipeFileSystem(SessionToken mySessionToken)
         {
             throw new System.NotImplementedException();
         }
 
-        public void MountFileSystem(sones.Library.Internal.Token.SessionToken mySessionToken, sones.Library.Internal.Security.AccessModeTypes myAccessMode)
+        public void MountFileSystem(SessionToken mySessionToken, AccessModeTypes myAccessMode)
         {
             throw new System.NotImplementedException();
         }
 
-        public void RemountFileSystem(sones.Library.Internal.Token.SessionToken mySessionToken, sones.Library.Internal.Security.AccessModeTypes myFSAccessMode)
+        public void RemountFileSystem(SessionToken mySessionToken, AccessModeTypes myFSAccessMode)
         {
             throw new System.NotImplementedException();
         }
 
-        public void UnmountFileSystem(sones.Library.Internal.Token.SessionToken mySessionToken)
+        public void UnmountFileSystem(SessionToken mySessionToken)
         {
             throw new System.NotImplementedException();
         }
 
-        public void UnmountAllFileSystems(sones.Library.Internal.Token.SessionToken mySessionToken)
+        public void UnmountAllFileSystems(SessionToken mySessionToken)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool VertexExists(sones.Library.Internal.Token.SessionToken mySessionToken, sones.Library.Internal.Token.TransactionToken myTransactionToken, global::GraphFS.Element.VertexID myVertexID, string myEdition = null, global::GraphFS.Element.VertexRevisionID myVertexRevisionID = null)
+        public bool VertexExists(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new System.NotImplementedException();
         }
 
-        public global::GraphFS.Element.IVertex GetVertex(sones.Library.Internal.Token.SessionToken mySessionToken, sones.Library.Internal.Token.TransactionToken myTransactionToken, global::GraphFS.Element.VertexID myVertexID, string myEdition = null, global::GraphFS.Element.VertexRevisionID myVertexRevisionID = null)
+        public IVertex GetVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new System.NotImplementedException();
         }
 
-        public System.Collections.Generic.IEnumerable<string> GetVertexEditions(sones.Library.Internal.Token.SessionToken mySessionToken, sones.Library.Internal.Token.TransactionToken myTransactionToken, global::GraphFS.Element.VertexID myVertexID)
+        public System.Collections.Generic.IEnumerable<string> GetVertexEditions(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID)
         {
             throw new System.NotImplementedException();
         }
 
-        public System.Collections.Generic.IEnumerable<global::GraphFS.Element.VertexRevisionID> GetVertexRevisionIDs(sones.Library.Internal.Token.SessionToken mySessionToken, sones.Library.Internal.Token.TransactionToken myTransactionToken, global::GraphFS.Element.VertexID myVertexID, string myEdition)
+        public System.Collections.Generic.IEnumerable<VertexRevisionID> GetVertexRevisionIDs(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, string myEdition)
         {
             throw new System.NotImplementedException();
         }
 
-        public void AddVertex(sones.Library.Internal.Token.SessionToken mySessionToken, sones.Library.Internal.Token.TransactionToken myTransactionToken, global::GraphFS.Element.IVertex myIVertex, string myEdition = null, global::GraphFS.Element.VertexRevisionID myVertexRevisionID = null)
+        public void AddVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, IVertex myIVertex, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool RemoveVertex(sones.Library.Internal.Token.SessionToken mySessionToken, sones.Library.Internal.Token.TransactionToken myTransactionToken, global::GraphFS.Element.VertexID myVertexID, string myEdition = null, global::GraphFS.Element.VertexRevisionID myVertexRevisionID = null)
+        public bool RemoveVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool EraseVertex(sones.Library.Internal.Token.SessionToken mySessionToken, sones.Library.Internal.Token.TransactionToken myTransactionToken, global::GraphFS.Element.VertexID myVertexID)
+        public bool EraseVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool UpdateVertex(sones.Library.Internal.Token.SessionToken mySessionToken, sones.Library.Internal.Token.TransactionToken myTransactionToken, global::GraphFS.Element.VertexID myVertexID, global::GraphFS.Element.IVertex myIVertex)
-        {
-            throw new System.NotImplementedException();
-        }
+        #endregion
     }
 }
