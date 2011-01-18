@@ -8,6 +8,8 @@ namespace sones.GraphFS.Element
     /// </summary>
     public interface IVertexStatistics
     {
+        #region Degree
+
         /// <summary>
         /// For a vertex, the number of incoming edges is called the indegree 
         /// </summary>
@@ -25,5 +27,7 @@ namespace sones.GraphFS.Element
         /// </summary>
         /// <returns>An unsigned value</returns>
         UInt64 GetDegree();
+
+        #endregion
     }
 }

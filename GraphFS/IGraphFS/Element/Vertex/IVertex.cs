@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using sones.Library.Internal.Definitions;
+using System.IO;
 
 namespace sones.GraphFS.Element
 {
@@ -34,42 +35,97 @@ namespace sones.GraphFS.Element
         #region Edges
 
         #region Incoming
+        //Incoming edges are allways hyper edges
 
+        /// <summary>
+        /// Is there a specified incoming edge?
+        /// </summary>
+        /// <param name="myEdgePropertyID">The property id of the interesting edge</param>
+        /// <returns>True if there is a specified edge, otherwise false</returns>
         Boolean HasIncomingEdge(PropertyID myEdgePropertyID);
 
-        IEnumerable<IEdge> GetIncomingEdges();
+        /// <summary>
+        /// Returns all incoming edges
+        /// </summary>
+        /// <returns>An IEnumerable of edges</returns>
+        IEnumerable<IHyperEdge> GetAllIncomingEdges();
 
-        IEnumerable<IHyperEdge> GetIncomingHyperEdges();
-
-        IEnumerable<ISingleEdge> GetIncomingSingleEdges();
-
-        IEdge GetIncomingEdge(PropertyID myEdgePropertyID);
-
+        /// <summary>
+        /// Returns a specified incoming edge
+        /// </summary>
+        /// <param name="myEdgePropertyID"></param>
+        /// <returns></returns>
         IHyperEdge GetIncomingHyperEdge(PropertyID myEdgePropertyID);
-
-        ISingleEdge GetIncomingSingleEdge(PropertyID myEdgePropertyID);
 
         #endregion
 
         #region Outgoing
 
+        /// <summary>
+        /// Is there a specified outgoing edge?
+        /// </summary>
+        /// <param name="myEdgePropertyID">The property id of the interesting edge</param>
+        /// <returns>True if there is a specified edge, otherwise false</returns>
         Boolean HasOutgoingEdge(PropertyID myEdgePropertyID);
 
-        IEnumerable<IEdge> GetOutgoingEdges();
+        /// <summary>
+        /// Returns all outgoing edges
+        /// </summary>
+        /// <returns>An IEnumerable of outgoing edges</returns>
+        IEnumerable<IEdge> GetAllOutgoingEdges();
 
-        IEnumerable<IHyperEdge> GetOutgoingHyperEdges();
+        /// <summary>
+        /// Returns all outgoing hyper edges
+        /// </summary>
+        /// <returns>An IEnumerable of hyper edges</returns>
+        IEnumerable<IHyperEdge> GetAllOutgoingHyperEdges();
 
-        IEnumerable<ISingleEdge> GetOutgoingSingleEdges();
+        /// <summary>
+        /// Returns all outgoing single edges
+        /// </summary>
+        /// <returns>An IEnumerable of single edges</returns>
+        IEnumerable<ISingleEdge> GetAllOutgoingSingleEdges();
 
+        /// <summary>
+        /// Returns a specified edge
+        /// </summary>
+        /// <param name="myEdgePropertyID">The property id of the specified edge</param>
+        /// <returns>An IEdge</returns>
         IEdge GetOutgoingEdge(PropertyID myEdgePropertyID);
 
+        /// <summary>
+        /// Returns a specified hyper edge
+        /// </summary>
+        /// <param name="myEdgePropertyID">The property id of the specified edge</param>
+        /// <returns>A hyper edge</returns>
         IHyperEdge GetOutgoingHyperEdge(PropertyID myEdgePropertyID);
 
+        /// <summary>
+        /// Get a specified single edge
+        /// </summary>
+        /// <param name="myEdgePropertyID">The property id of the specified edge</param>
+        /// <returns>A single edge</returns>
         ISingleEdge GetOutgoingSingleEdge(PropertyID myEdgePropertyID);
 
         #endregion
 
         #endregion
 
+        #region Binary data
+
+        /// <summary>
+        /// Returns a specified binary property
+        /// </summary>
+        /// <param name="myPropertyID">The property id of the specified binary</param>
+        /// <returns>A stream</returns>
+        Stream GetBinaryProperty(PropertyID myPropertyID);
+
+        /// <summary>
+        /// Returns all binary properties
+        /// </summary>
+        /// <returns>An IEnumerable of streams</returns>
+        IEnumerable<Stream> GetAllBinaryProperties();
+
+        #endregion
     }
 }
