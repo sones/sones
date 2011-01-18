@@ -127,12 +127,6 @@ namespace sones.GraphFS
         /// <param name="mySessionToken">The SessionToken.</param>
         void UnmountFileSystem(SessionToken mySessionToken);
 
-        /// <summary>
-        /// Unmounts all file systems mounted via this file system.
-        /// </summary>
-        /// <param name="mySessionToken">The SessionToken.</param>
-        void UnmountAllFileSystems(SessionToken mySessionToken);
-
         #endregion
 
         #region Vertex

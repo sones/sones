@@ -6,14 +6,52 @@ namespace sones.GraphFS.Element
     /// <summary>
     /// The interface for vertices
     /// </summary>
-    public interface IVertex : IGraphElement
+    public interface IVertex : IGraphElement, IVertexStatistics
     {
+        #region Properties
+
+        /// <summary>
+        /// A vertex is identified by the name of its vertex type and Guid
+        /// </summary>
+        /// <returns>A vertex id</returns>
+        VertexID GetVertexID();
+
+        /// <summary>
+        /// Returns the revision id of this vertex
+        /// </summary>
+        /// <returns></returns>
+        VertexRevisionID GetVertexRevisionID();
+
+        /// <summary>
+        /// Returns the name of the edition of this vertex
+        /// </summary>
+        /// <returns></returns>
+        String GetEditionName();
+
+        #endregion
+
+        #region Edges
+
+        #region Incoming
+
+
+
+        #endregion
+
+        #region Outgoing
+
+        #endregion
+
+        #endregion
+
+
+
         /// Returns all vertices that aim to this vertex
         /// </summary>
         /// <param name="myTypeName">The vertex type of the incoming vertex</param>
         /// <param name="myEdgeName">The name of the incoming edge</param>
         /// <returns>All incoming vertices corresponding to their vertex type and edge</returns>
-        IEnumerable<IVertex> GetIncomingVertices(string myTypeName, string myEdgeName);
+        IEnumerable<IEdge> GetIncomingEdge(string myTypeName, string myEdgeName);
 
         /// <summary>
         /// Returns all vertices that are connected via an outgoing edge
@@ -40,11 +78,5 @@ namespace sones.GraphFS.Element
         /// </summary>
         /// <returns>An IEnumerable of outgoing edges</returns>
         IEnumerable<IEdge> GetAllOutgoingEdges();
-
-        /// <summary>
-        /// A vertex is identified by the name of its vertex type and Guid
-        /// </summary>
-        /// <returns>A vertex id</returns>
-        VertexID GetVertexID();
     }
 }

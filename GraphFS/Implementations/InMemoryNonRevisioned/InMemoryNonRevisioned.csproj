@@ -50,6 +50,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Library\Internal\Definitions\Definitions.csproj">
+      <Project>{2E1F1F44-8A47-428D-A6CF-BE30154EA83F}</Project>
+      <Name>Definitions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\Security\Security.csproj">
       <Project>{0E469CF5-BF78-4B66-BA2D-F9D5991BBCCD}</Project>
       <Name>Security</Name>
