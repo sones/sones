@@ -12,17 +12,17 @@ namespace sones.InMemoryNonRevisioned.Element
     {
         #region IHyperEdge
 
-        public IEnumerable<ISingleEdge> GetEdges()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<IVertex> GetTargetVertices()
+        public IEnumerable<ISingleEdge> GetEdges(Func<ISingleEdge, bool> myFilterFunction = null)
         {
             throw new NotImplementedException();
         }
 
         public IVertex GetSourceVertex()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IVertex> GetTargetVertices(Func<IVertex, bool> myFilterFunc = null)
         {
             throw new NotImplementedException();
         }
@@ -42,6 +42,11 @@ namespace sones.InMemoryNonRevisioned.Element
             throw new NotImplementedException();
         }
 
+        public IEnumerable<KeyValuePair<PropertyID, object>> GetAllProperties(Func<PropertyID, object, bool> myFilterFunc = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public T GetUnstructuredProperty<T>(string myPropertyName)
         {
             throw new NotImplementedException();
@@ -57,6 +62,11 @@ namespace sones.InMemoryNonRevisioned.Element
             throw new NotImplementedException();
         }
 
+        public IEnumerable<KeyValuePair<string, object>> GetAllProperties(Func<string, object, bool> myFilterFunc = null)
+        {
+            throw new NotImplementedException();
+        }
+
         public string GetComment()
         {
             throw new NotImplementedException();
@@ -68,5 +78,6 @@ namespace sones.InMemoryNonRevisioned.Element
         }
 
         #endregion
+
     }
 }

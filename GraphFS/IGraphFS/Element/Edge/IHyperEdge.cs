@@ -8,6 +8,11 @@ namespace sones.GraphFS.Element
     /// </summary>
     public interface IHyperEdge : IEdge
     {
-        IEnumerable<ISingleEdge> GetEdges();
+        /// <summary>
+        /// Gets all contained edges
+        /// </summary>
+        /// <param name="myFilterFunction">A function to filter those edges</param>
+        /// <returns>An IEnumerable of edges</returns>
+        IEnumerable<ISingleEdge> GetEdges(Func<ISingleEdge, bool> myFilterFunction = null);
     }
 }

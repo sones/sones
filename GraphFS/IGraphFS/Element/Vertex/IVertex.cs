@@ -47,8 +47,9 @@ namespace sones.GraphFS.Element
         /// <summary>
         /// Returns all incoming edges
         /// </summary>
-        /// <returns>An IEnumerable of edges</returns>
-        IEnumerable<IHyperEdge> GetAllIncomingEdges();
+        /// <param name="myFilterFunc">A function to filter those hyper edges</param>
+        /// <returns>An IEnumerable of propertyID/incoming edge KVP</returns>
+        IEnumerable<KeyValuePair<PropertyID, IHyperEdge>> GetAllIncomingEdges(Func<PropertyID, IHyperEdge, bool> myFilterFunc = null);
 
         /// <summary>
         /// Returns a specified incoming edge
@@ -71,20 +72,23 @@ namespace sones.GraphFS.Element
         /// <summary>
         /// Returns all outgoing edges
         /// </summary>
-        /// <returns>An IEnumerable of outgoing edges</returns>
-        IEnumerable<IEdge> GetAllOutgoingEdges();
+        /// <param name="myFilterFunc">A function to filter those edges</param>
+        /// <returns>An IEnumerable of propertyID/outgoing edges</returns>
+        IEnumerable<KeyValuePair<PropertyID, IEdge>> GetAllOutgoingEdges(Func<PropertyID, IEdge, bool> myFilterFunc = null);
 
         /// <summary>
         /// Returns all outgoing hyper edges
         /// </summary>
-        /// <returns>An IEnumerable of hyper edges</returns>
-        IEnumerable<IHyperEdge> GetAllOutgoingHyperEdges();
+        /// <param name="myFilterFunc">A function to filter those edges</param>
+        /// <returns>An IEnumerable of propertyID/hyper edge KVP</returns>
+        IEnumerable<KeyValuePair<PropertyID, IHyperEdge>> GetAllOutgoingHyperEdges(Func<PropertyID, IHyperEdge, bool> myFilterFunc = null);
 
         /// <summary>
         /// Returns all outgoing single edges
         /// </summary>
-        /// <returns>An IEnumerable of single edges</returns>
-        IEnumerable<ISingleEdge> GetAllOutgoingSingleEdges();
+        /// <param name="myFilterFunc">A function to filter those edges</param>
+        /// <returns>An IEnumerable of PropertyID/single edge KVP</returns>
+        IEnumerable<KeyValuePair<PropertyID, ISingleEdge>> GetAllOutgoingSingleEdges(Func<PropertyID, ISingleEdge, bool> myFilterFunc = null);
 
         /// <summary>
         /// Returns a specified edge
@@ -123,8 +127,9 @@ namespace sones.GraphFS.Element
         /// <summary>
         /// Returns all binary properties
         /// </summary>
-        /// <returns>An IEnumerable of streams</returns>
-        IEnumerable<Stream> GetAllBinaryProperties();
+        /// <param name="myFilterFunc">A function to filter the binary properties</param> 
+        /// <returns>An IEnumerable of PropertyID/stream KVP</returns>
+        IEnumerable<KeyValuePair<PropertyID,Stream>> GetAllBinaryProperties(Func<PropertyID, bool> myFilterFunc = null);
 
         #endregion
     }

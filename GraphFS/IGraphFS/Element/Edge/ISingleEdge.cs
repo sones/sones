@@ -8,6 +8,10 @@ namespace sones.GraphFS.Element
     /// </summary>
     public interface ISingleEdge : IEdge
     {
+        /// <summary>
+        /// Returns the target vertex
+        /// </summary>
+        /// <returns>The target vertex</returns>
         IVertex GetTargetVertex();
     }
 }

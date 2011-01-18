@@ -25,7 +25,7 @@ namespace sones.GraphFS.Element
         /// </summary>
         /// <param name="myFilterFunc">A function to filter vertices</param>
         /// <returns>A IEnumerable of vertices</returns>
-        IEnumerable<IVertex> GetTargetVertices(Func<IVertex> myFilterFunc = (aIVertex) => { return aIVertex; });
+        IEnumerable<IVertex> GetTargetVertices(Func<IVertex, bool> myFilterFunc = null);
 
         #endregion
     }

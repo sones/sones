@@ -1,5 +1,6 @@
 ﻿using System;
 using sones.Library.Internal.Definitions;
+using System.Collections.Generic;
 
 namespace sones.GraphFS.Element
 {
@@ -31,6 +32,13 @@ namespace sones.GraphFS.Element
         /// <returns>An unsigned value</returns>
         UInt64 GetCountOfProperties();
 
+        /// <summary>
+        /// Returns all properties
+        /// </summary>
+        /// <param name="myFilterFunc">A function to filter properties</param>
+        /// <returns>An IEnumerable of Property/Value</returns>
+        IEnumerable<KeyValuePair<PropertyID, Object>> GetAllProperties(Func<PropertyID, Object, bool> myFilterFunc = null);
+
         #endregion
 
         #region Unstructured data/properties
@@ -55,6 +63,13 @@ namespace sones.GraphFS.Element
         /// </summary>
         /// <returns>An unsigned value</returns>
         UInt64 GetCountOfUnstructuredProperties();
+
+        /// <summary>
+        /// Returns all unstructured properties
+        /// </summary>
+        /// <param name="myFilterFunc">A function to filter properties</param>
+        /// <returns>An IEnumerable of NameOfProperty/Value</returns>
+        IEnumerable<KeyValuePair<String, Object>> GetAllProperties(Func<String, Object, bool> myFilterFunc = null);
 
         #endregion
 
