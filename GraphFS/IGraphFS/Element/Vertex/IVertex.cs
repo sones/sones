@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using sones.Library.Internal.Definitions;
 
 namespace sones.GraphFS.Element
 {
@@ -34,49 +35,41 @@ namespace sones.GraphFS.Element
 
         #region Incoming
 
+        Boolean HasIncomingEdge(PropertyID myEdgePropertyID);
 
+        IEnumerable<IEdge> GetIncomingEdges();
+
+        IEnumerable<IHyperEdge> GetIncomingHyperEdges();
+
+        IEnumerable<ISingleEdge> GetIncomingSingleEdges();
+
+        IEdge GetIncomingEdge(PropertyID myEdgePropertyID);
+
+        IHyperEdge GetIncomingHyperEdge(PropertyID myEdgePropertyID);
+
+        ISingleEdge GetIncomingSingleEdge(PropertyID myEdgePropertyID);
 
         #endregion
 
         #region Outgoing
 
-        #endregion
+        Boolean HasOutgoingEdge(PropertyID myEdgePropertyID);
+
+        IEnumerable<IEdge> GetOutgoingEdges();
+
+        IEnumerable<IHyperEdge> GetOutgoingHyperEdges();
+
+        IEnumerable<ISingleEdge> GetOutgoingSingleEdges();
+
+        IEdge GetOutgoingEdge(PropertyID myEdgePropertyID);
+
+        IHyperEdge GetOutgoingHyperEdge(PropertyID myEdgePropertyID);
+
+        ISingleEdge GetOutgoingSingleEdge(PropertyID myEdgePropertyID);
 
         #endregion
 
+        #endregion
 
-
-        /// Returns all vertices that aim to this vertex
-        /// </summary>
-        /// <param name="myTypeName">The vertex type of the incoming vertex</param>
-        /// <param name="myEdgeName">The name of the incoming edge</param>
-        /// <returns>All incoming vertices corresponding to their vertex type and edge</returns>
-        IEnumerable<IEdge> GetIncomingEdge(string myTypeName, string myEdgeName);
-
-        /// <summary>
-        /// Returns all vertices that are connected via an outgoing edge
-        /// </summary>
-        /// <param name="myEdgeName">The name of the edge that targets on the interesting vertices</param>
-        /// <returns>Outgoing vertices</returns>
-        IEnumerable<IVertex> GetOutgoingVertices(string myEdgeName);
-
-        /// <summary>
-        /// Returns an outgoing edge
-        /// </summary>
-        /// <param name="myEdgeName">The name of the edge</param>
-        /// <returns>An outgoing edge</returns>
-        IEdge GetOutgoingEdge(string myEdgeName);
-
-        /// <summary>
-        /// Returns all incoming vertices
-        /// </summary>
-        /// <returns>An IEnumerable of incoming vertices</returns>
-        IEnumerable<IVertex> GetAllIncomingVertices();
-
-        /// <summary>
-        /// Returns all outgoing edges
-        /// </summary>
-        /// <returns>An IEnumerable of outgoing edges</returns>
-        IEnumerable<IEdge> GetAllOutgoingEdges();
     }
 }
