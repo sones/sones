@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using sones.Library.Internal.Security;
 using sones.Library.Internal.Token;
 using sones.Library.Internal.Definitions;
-using sones.GraphFS.Element;
+using sones.GraphInfrastructure.Element;
+using System.IO;
 
 namespace sones.GraphFS
 {
@@ -72,17 +73,21 @@ namespace sones.GraphFS
 
         #endregion
 
-
-        #region Make-/Grow-/Shrink-/WipeFileSystem
+        #region Make-/Grow-/Shrink-/Replicate-/WipeFileSystem
 
         /// <summary>
         /// This initialises a GraphFS in a given device or file using the given sizes
         /// </summary>
         /// <param name="myDescription">a distinguishable Name or description for the file system (can be changed later)</param>
         /// <param name="myNumberOfBytes">the size of the file system in byte</param>
-        /// <param name="myOverwriteExistingFileSystem">overwrite an existing file system [yes|no]</param>
         /// <returns>the UUID of the new file system</returns>
-        void MakeFileSystem(SessionToken mySessionToken, String myDescription, UInt64 myNumberOfBytes, Boolean myOverwriteExistingFileSystem);
+        void MakeFileSystem(SessionToken mySessionToken, String myDescription, UInt64 myNumberOfBytes);
+
+        /// <summary>
+        /// Initializes a GraphFS using the stream of a replicated one
+        /// </summary>
+        /// <param name="myReplicationStream">The stream of a replicated IGraphFS</param>
+        void MakeFileSystem(Stream myReplicationStream);
 
         /// <summary>
         /// This enlarges the size of a GraphFS
@@ -102,6 +107,13 @@ namespace sones.GraphFS
         /// Wipe the file system
         /// </summary>
         void WipeFileSystem(SessionToken mySessionToken);
+
+        /// <summary>
+        /// Replicates the IGraphFS instance into a stream
+        /// </summary>
+        /// <param name="mySessionToken">The current session token</param>
+        /// <returns>A stream that contains a IGraphFSReplication</returns>
+        Stream ReplicateFileSystem(SessionToken mySessionToken);
 
         #endregion
 
@@ -137,21 +149,33 @@ namespace sones.GraphFS
         /// <param name="mySessionToken">The current session token</param>
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
         /// <param name="myVertexID">The id of the vertex</param>
-        /// <param name="myEdition">The edition of the vertex</param>
-        /// <param name="myVertexRevisionID">The revision id if the vertex</param>
+        /// <param name="myEdition">The edition of the vertex  (if left out, the default edition is assumed)</param>
+        /// <param name="myVertexRevisionID">The revision id if the vertex (if left out, the latest revision is assumed)</param>
         /// <returns>True if the vertex exists, otherwise false</returns>
         Boolean VertexExists(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, String myEdition = null, VertexRevisionID myVertexRevisionID = null);
 
         /// <summary>
-        /// Gets a vertex
+        /// Gets a vertex 
+        /// If there is no edition or revision given, the default edition and the latest revision is returned
         /// </summary>
         /// <param name="mySessionToken">The current session token</param>
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
         /// <param name="myVertexID">The id of the vertex</param>
-        /// <param name="myEdition">The edition of the vertex</param>
-        /// <param name="myVertexRevisionID">The revision id if the vertex</param>
+        /// <param name="myEdition">The edition of the vertex (if left out, the default edition is returned)</param>
+        /// <param name="myVertexRevisionID">The revision id if the vertex (if left out, the latest revision is returned)</param>
         /// <returns>A vertex object or null if there is no such vertex</returns>
         IVertex GetVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, String myEdition = null, VertexRevisionID myVertexRevisionID = null);
+
+        /// <summary>
+        /// Returns all vertices.
+        /// It is possible to filter the vertex type and the vertices itself
+        /// </summary>
+        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myVertexTypeFilterFunc">A filter function to be able to filter certain vertex types</param>
+        /// <param name="myVertexFilterFunc">A filter function to be able to filter certain vertices</param>
+        /// <returns>An IEnumerable of vertices</returns>
+        IEnumerable<IVertex> GetAllVertices(SessionToken mySessionToken, TransactionToken myTransactionToken, Func<String, bool> myVertexTypeFilterFunc = null, Func<IVertex, bool> myVertexFilterFunc = null);
 
         /// <summary>
         /// Returns all editions corresponding to a certain vertex
@@ -206,7 +230,5 @@ namespace sones.GraphFS
         //Todo: Update
 
         #endregion
-
-        //Todo: Sync
     }
 }

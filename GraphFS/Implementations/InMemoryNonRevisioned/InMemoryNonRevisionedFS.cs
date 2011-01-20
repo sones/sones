@@ -2,8 +2,9 @@
 using sones.GraphFS;
 using sones.Library.Internal.Token;
 using sones.Library.Internal.Security;
-using sones.GraphFS.Element;
 using System.Collections.Generic;
+using sones.GraphInfrastructure.Element;
+using System.IO;
 
 namespace sones.InMemoryNonRevisioned
 {
@@ -43,7 +44,12 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public void MakeFileSystem(SessionToken mySessionToken, string myDescription, ulong myNumberOfBytes, bool myOverwriteExistingFileSystem)
+        public void MakeFileSystem(SessionToken mySessionToken, string myDescription, ulong myNumberOfBytes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MakeFileSystem(Stream myReplicationStream)
         {
             throw new NotImplementedException();
         }
@@ -59,6 +65,11 @@ namespace sones.InMemoryNonRevisioned
         }
 
         public void WipeFileSystem(SessionToken mySessionToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Stream ReplicateFileSystem(SessionToken mySessionToken)
         {
             throw new NotImplementedException();
         }
@@ -84,6 +95,11 @@ namespace sones.InMemoryNonRevisioned
         }
 
         public IVertex GetVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IVertex> GetAllVertices(SessionToken mySessionToken, TransactionToken myTransactionToken, Func<string, bool> myVertexTypeFilterFunc = null, Func<IVertex, bool> myVertexFilterFunc = null)
         {
             throw new NotImplementedException();
         }

@@ -1,7 +1,7 @@
 ﻿using System;
-using sones.GraphFS.Element;
 using sones.Library.Internal.Definitions;
 using System.Collections.Generic;
+using sones.GraphInfrastructure.Element;
 
 namespace sones.InMemoryNonRevisioned.Element
 {

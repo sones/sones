@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace sones.GraphFS.Element
+namespace sones.GraphInfrastructure.Element
 {
     /// <summary>
     /// The interface for all single-target edges

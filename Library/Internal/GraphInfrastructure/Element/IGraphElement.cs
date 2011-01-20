@@ -1,8 +1,7 @@
 ﻿using System;
-using sones.Library.Internal.Definitions;
 using System.Collections.Generic;
 
-namespace sones.GraphFS.Element
+namespace sones.GraphInfrastructure.Element
 {
     /// <summary>
     /// The interface for graph elements like vertices or edges
