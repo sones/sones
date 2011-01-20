@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="VertexUpdate.cs" />
     <Compile Include="Property\PropertyDefinition.cs" />
     <Compile Include="VertexTypeDefinition.cs" />
     <Compile Include="OutgoingEdgeDefinition.cs" />

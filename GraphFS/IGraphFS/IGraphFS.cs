@@ -152,7 +152,10 @@ namespace sones.GraphFS
         /// <param name="myEdition">The edition of the vertex  (if left out, the default edition is assumed)</param>
         /// <param name="myVertexRevisionID">The revision id if the vertex (if left out, the latest revision is assumed)</param>
         /// <returns>True if the vertex exists, otherwise false</returns>
-        Boolean VertexExists(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, String myEdition = null, VertexRevisionID myVertexRevisionID = null);
+        Boolean VertexExists(SessionToken mySessionToken, TransactionToken myTransactionToken, 
+            VertexID            myVertexID, 
+            String              myEdition = null, 
+            VertexRevisionID    myVertexRevisionID = null);
 
         /// <summary>
         /// Gets a vertex 
@@ -164,7 +167,10 @@ namespace sones.GraphFS
         /// <param name="myEdition">The edition of the vertex (if left out, the default edition is returned)</param>
         /// <param name="myVertexRevisionID">The revision id if the vertex (if left out, the latest revision is returned)</param>
         /// <returns>A vertex object or null if there is no such vertex</returns>
-        IVertex GetVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, String myEdition = null, VertexRevisionID myVertexRevisionID = null);
+        IVertex GetVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, 
+            VertexID            myVertexID, 
+            String              myEdition = null, 
+            VertexRevisionID    myVertexRevisionID = null);
 
         /// <summary>
         /// Returns all vertices.
@@ -174,8 +180,14 @@ namespace sones.GraphFS
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
         /// <param name="myVertexTypeFilterFunc">A filter function to be able to filter certain vertex types</param>
         /// <param name="myVertexFilterFunc">A filter function to be able to filter certain vertices</param>
+        /// <param name="myEditionFilterFunc">A filter function for the edition of the vertex</param>
+        /// <param name="myRevisionFilterFunc">A filter function for the revision of the vertex</param>
         /// <returns>An IEnumerable of vertices</returns>
-        IEnumerable<IVertex> GetAllVertices(SessionToken mySessionToken, TransactionToken myTransactionToken, Func<String, bool> myVertexTypeFilterFunc = null, Func<IVertex, bool> myVertexFilterFunc = null);
+        IEnumerable<IVertex> GetAllVertices(SessionToken mySessionToken, TransactionToken myTransactionToken, 
+            Func<String, bool>                  myVertexTypeFilterFunc = null, 
+            Func<IVertex, bool>                 myVertexFilterFunc = null,
+            Func<String, Boolean>               myEditionFilterFunc = null,
+            Func<VertexRevisionID, Boolean>     myRevisionFilterFunc = null);
 
         /// <summary>
         /// Returns all editions corresponding to a certain vertex
@@ -184,7 +196,8 @@ namespace sones.GraphFS
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <returns>An IEnumerable of editions</returns>
-        IEnumerable<String> GetVertexEditions(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID);
+        IEnumerable<String> GetVertexEditions(SessionToken mySessionToken, TransactionToken myTransactionToken, 
+            VertexID myVertexID);
 
         /// <summary>
         /// Returns all revision ids to a certain vertex and edition
@@ -192,9 +205,11 @@ namespace sones.GraphFS
         /// <param name="mySessionToken">The current session token</param>
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
         /// <param name="myVertexID">The id of the vertex</param>
-        /// <param name="myEdition">The edition of the vertex</param>
+        /// <param name="myEditionFilterFunc">A filter function for the vertex editions</param>
         /// <returns>An IEnumerable of VertexRevisionIDs</returns>
-        IEnumerable<VertexRevisionID> GetVertexRevisionIDs(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, String myEdition);
+        IEnumerable<VertexRevisionID> GetVertexRevisionIDs(SessionToken mySessionToken, TransactionToken myTransactionToken, 
+            VertexID                myVertexID,
+            Func<String, Boolean>   myEditionFilterFunc = null);
 
         /// <summary>
         /// Adds a new vertex to the graph fs
@@ -204,18 +219,24 @@ namespace sones.GraphFS
         /// <param name="myIVertex">The vertex that is going to be added</param>
         /// <param name="myEdition">The name of the edition of the new vertex</param>
         /// <param name="myVertexRevisionID">The revision id of the vertex</param>
-        void AddVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, IVertex myIVertex, String myEdition = null, VertexRevisionID myVertexRevisionID = null);
+        void AddVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, 
+            IVertex             myIVertex, 
+            String              myEdition = null, 
+            VertexRevisionID    myVertexRevisionID = null);
 
         /// <summary>
-        /// Removes a certain edition/revision of a vertex
+        /// Removes a certain editions/revisions of a vertex
         /// </summary>
         /// <param name="mySessionToken">The current session token</param>
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
         /// <param name="myVertexID">The id of the vertex</param>
-        /// <param name="myEdition">The name of the edition that should be removed</param>
-        /// <param name="myVertexRevisionID">The revision id of the vertex that should be removed</param>
+        /// <param name="myEditionFilterFunc">A filter function for the edition of the vertex</param>
+        /// <param name="myRevisionFilterFunc">A filter function for the revision of the vertex</param>
         /// <returns>True if a vertex has been removed, false otherwise</returns>
-        bool RemoveVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, String myEdition = null, VertexRevisionID myVertexRevisionID = null);
+        bool RemoveVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, 
+            VertexID                        myVertexID, 
+            Func<String, Boolean>           myEditionFilterFunc = null,
+            Func<VertexRevisionID, Boolean> myRevisionFilterFunc = null);
 
         /// <summary>
         /// Erases a vertex entirely
@@ -224,10 +245,25 @@ namespace sones.GraphFS
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <returns>True if a vertex has been erased, false otherwise</returns>
-        bool EraseVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID);
+        bool EraseVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, 
+            VertexID myVertexID);
 
-        
-        //Todo: Update
+        /// <summary>
+        /// Updates a vertex corresponding to a vertex id
+        /// </summary>
+        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myToBeUpdatedVertexID">The vertex id that is going to be updated</param>
+        /// <param name="myVertexUpdate">The update for the vertex</param>
+        /// <param name="myEditionFilterFunc">A filter function for the editions that should be updated</param>
+        /// <param name="myRevisionFilterFunc">A filter function for the revisions that should be updated</param>
+        /// <param name="myCreateNewRevision">Determines if it is necessary to create a new revision of the vertex</param>
+        void UpdateVertex(SessionToken mySessionToken, TransactionToken myTransactionToken,
+            VertexID                        myToBeUpdatedVertexID,
+            VertexUpdate                    myVertexUpdate,
+            Func<String, Boolean>           myEditionFilterFunc = null,
+            Func<VertexRevisionID, Boolean> myRevisionFilterFunc = null,
+            Boolean                         myCreateNewRevision = false);
 
         #endregion
     }

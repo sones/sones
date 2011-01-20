@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="AccessModeTypes.cs" />
     <Compile Include="Credentials.cs" />
+    <Compile Include="ICredentials.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

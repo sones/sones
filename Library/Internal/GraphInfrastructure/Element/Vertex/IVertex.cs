@@ -7,7 +7,7 @@ namespace sones.GraphInfrastructure.Element
     /// <summary>
     /// The interface for vertices
     /// </summary>
-    public interface IVertex : IGraphElement, IVertexStatistics
+    public interface IVertex : IGraphElement, IVertexStatistics, IGraphPartitionInformation
     {
         #region Properties
 

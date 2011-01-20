@@ -12,12 +12,12 @@ namespace sones.GraphInfrastructure.Element
         /// <summary>
         /// The type-global-id of the vertex
         /// </summary>
-        readonly public Guid VertexGuid;
+        readonly public String VertexName;
 
         /// <summary>
         /// The name of the vertex type
         /// </summary>
-        readonly public String TypeName;
+        readonly public String VertexTypeName;
 
         /// <summary>
         /// The hashcode of the VertexID
@@ -28,18 +28,33 @@ namespace sones.GraphInfrastructure.Element
 
         #region Constructor
 
+
         /// <summary>
         /// Creates a new VertexID
         /// </summary>
         /// <param name="myVertexGuid">The Guid of the vertex</param>
         /// <param name="myTypeName">The type name of the vertex</param>
-        public VertexID(Guid myVertexGuid, String myTypeName)
+
+        /// <summary>
+        /// Creates a new VertexID.
+        /// A VertexID consists of a vertex type name and a vertex name
+        /// </summary>
+        /// <param name="myTypeName">The vertex type name</param>
+        /// <param name="myVertexID">The vertex name (if left out, a name will be generated)</param>
+        public VertexID(String myTypeName, String myVertexName = null)
         {
-            VertexGuid = myVertexGuid;
+            if (myVertexName != null)
+            {
+                VertexName = myVertexName;
+            }
+            else
+            {
+                VertexName = Guid.NewGuid().ToString();
+            }
 
-            TypeName = myTypeName;
+            VertexTypeName = myTypeName;
 
-            _hashCode = VertexGuid.GetHashCode() ^ TypeName.GetHashCode();
+            _hashCode = VertexName.GetHashCode() ^ VertexTypeName.GetHashCode();
         }
 
         #endregion
@@ -72,7 +87,7 @@ namespace sones.GraphInfrastructure.Element
                 return false;
             }
 
-            return (this.VertexGuid == myVertex.VertexGuid) && (this.TypeName == myVertex.TypeName);
+            return (this.VertexName == myVertex.VertexName) && (this.VertexTypeName == myVertex.VertexTypeName);
         }
 
         public static Boolean operator ==(VertexID aVertex, VertexID bVertex)

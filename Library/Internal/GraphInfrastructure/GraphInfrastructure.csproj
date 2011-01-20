@@ -48,6 +48,7 @@
     <Compile Include="Element\Edge\IHyperEdge.cs" />
     <Compile Include="Element\Edge\ISingleEdge.cs" />
     <Compile Include="Element\IGraphElement.cs" />
+    <Compile Include="Element\Partition\IGraphPartitionInformation.cs" />
     <Compile Include="Element\Vertex\IVertex.cs" />
     <Compile Include="Element\Vertex\IVertexStatistics.cs" />
     <Compile Include="Element\Vertex\PropertyID.cs" />
@@ -55,6 +56,7 @@
     <Compile Include="Element\Vertex\VertexRevisionID.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

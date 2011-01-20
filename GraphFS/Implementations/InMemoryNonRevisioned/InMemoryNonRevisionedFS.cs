@@ -5,6 +5,7 @@ using sones.Library.Internal.Security;
 using System.Collections.Generic;
 using sones.GraphInfrastructure.Element;
 using System.IO;
+using sones.Library.Internal.Definitions;
 
 namespace sones.InMemoryNonRevisioned
 {
@@ -13,6 +14,7 @@ namespace sones.InMemoryNonRevisioned
     /// </summary>
     public sealed class InMemoryNonRevisionedFS : IGraphFS
     {
+        #region IGraphFS
 
         public bool IsPersistent
         {
@@ -99,7 +101,7 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IVertex> GetAllVertices(SessionToken mySessionToken, TransactionToken myTransactionToken, Func<string, bool> myVertexTypeFilterFunc = null, Func<IVertex, bool> myVertexFilterFunc = null)
+        public IEnumerable<IVertex> GetAllVertices(SessionToken mySessionToken, TransactionToken myTransactionToken, Func<string, bool> myVertexTypeFilterFunc = null, Func<IVertex, bool> myVertexFilterFunc = null, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null)
         {
             throw new NotImplementedException();
         }
@@ -109,7 +111,7 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, string myEdition)
+        public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null)
         {
             throw new NotImplementedException();
         }
@@ -119,7 +121,7 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public bool RemoveVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public bool RemoveVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null)
         {
             throw new NotImplementedException();
         }
@@ -128,5 +130,13 @@ namespace sones.InMemoryNonRevisioned
         {
             throw new NotImplementedException();
         }
+
+        public void UpdateVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myToBeUpdatedVertexID, VertexUpdate myVertexUpdate, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null, bool myCreateNewRevision = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
     }
 }

@@ -5,7 +5,7 @@ namespace sones.Library.Internal.Security
     /// <summary>
     /// Used for session authentication
     /// </summary>
-    public sealed class Credentials
+    public sealed class Credentials : ICredentials
     {
         #region data
 
@@ -41,6 +41,15 @@ namespace sones.Library.Internal.Security
         public override string ToString()
         {
             return String.Format("Login: {0}, PW-Hash: {1}", Login, PasswordHash);
+        }
+
+        #endregion
+
+        #region ICredentials
+
+        public string GetLogin()
+        {
+            return Login;
         }
 
         #endregion
