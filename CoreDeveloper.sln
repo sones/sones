@@ -67,9 +67,21 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISonesIndex", "Plugins\Inde
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonesIndices", "Plugins\Index\Indices\SonesIndices\SonesIndices.csproj", "{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GraphQL", "GraphQL", "{52780B9F-52B2-4659-A41C-0F1526DCAA49}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Implementations", "Implementations", "{22437279-5F02-40BE-847C-D7A425D468BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IGraphQL", "GraphQL\IGraphQL\IGraphQL.csproj", "{F751657F-0E6C-46C5-A59C-02D7A924A051}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonesGraphQueryLanguage", "GraphQL\Implementations\SonesGraphQueryLanguage\SonesGraphQueryLanguage.csproj", "{26BFEE62-82B9-4EFA-9F91-08FD947551A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPARQL", "GraphQL\Implementations\SPARQL\SPARQL.csproj", "{F14C5E6B-21FD-472B-9B63-84AFDF06BE39}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gremlin", "GraphQL\Implementations\Gremlin\Gremlin.csproj", "{B0759780-BECA-422E-9A54-89BAB1C02459}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 19
+		SccNumberOfProjects = 23
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -145,6 +157,22 @@ Global
 		SccProjectTopLevelParentUniqueName18 = CoreDeveloper.sln
 		SccProjectName18 = Plugins/Index/Indices/SonesIndices
 		SccLocalPath18 = Plugins\\Index\\Indices\\SonesIndices
+		SccProjectUniqueName19 = GraphQL\\IGraphQL\\IGraphQL.csproj
+		SccProjectTopLevelParentUniqueName19 = CoreDeveloper.sln
+		SccProjectName19 = GraphQL/IGraphQL
+		SccLocalPath19 = GraphQL\\IGraphQL
+		SccProjectUniqueName20 = GraphQL\\Implementations\\SonesGraphQueryLanguage\\SonesGraphQueryLanguage.csproj
+		SccProjectTopLevelParentUniqueName20 = CoreDeveloper.sln
+		SccProjectName20 = GraphQL/Implementations/SonesGraphQueryLanguage
+		SccLocalPath20 = GraphQL\\Implementations\\SonesGraphQueryLanguage
+		SccProjectUniqueName21 = GraphQL\\Implementations\\SPARQL\\SPARQL.csproj
+		SccProjectTopLevelParentUniqueName21 = CoreDeveloper.sln
+		SccProjectName21 = GraphQL/Implementations/SPARQL
+		SccLocalPath21 = GraphQL\\Implementations\\SPARQL
+		SccProjectUniqueName22 = GraphQL\\Implementations\\Gremlin\\Gremlin.csproj
+		SccProjectTopLevelParentUniqueName22 = CoreDeveloper.sln
+		SccProjectName22 = GraphQL/Implementations/Gremlin
+		SccLocalPath22 = GraphQL\\Implementations\\Gremlin
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -335,6 +363,46 @@ Global
 		{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{FCF3C622-5CF6-4C2A-B024-4046D6E4941C}.Release|x86.ActiveCfg = Release|Any CPU
+		{F751657F-0E6C-46C5-A59C-02D7A924A051}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F751657F-0E6C-46C5-A59C-02D7A924A051}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F751657F-0E6C-46C5-A59C-02D7A924A051}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F751657F-0E6C-46C5-A59C-02D7A924A051}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F751657F-0E6C-46C5-A59C-02D7A924A051}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F751657F-0E6C-46C5-A59C-02D7A924A051}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F751657F-0E6C-46C5-A59C-02D7A924A051}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F751657F-0E6C-46C5-A59C-02D7A924A051}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F751657F-0E6C-46C5-A59C-02D7A924A051}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F751657F-0E6C-46C5-A59C-02D7A924A051}.Release|x86.ActiveCfg = Release|Any CPU
+		{26BFEE62-82B9-4EFA-9F91-08FD947551A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26BFEE62-82B9-4EFA-9F91-08FD947551A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26BFEE62-82B9-4EFA-9F91-08FD947551A8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{26BFEE62-82B9-4EFA-9F91-08FD947551A8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{26BFEE62-82B9-4EFA-9F91-08FD947551A8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{26BFEE62-82B9-4EFA-9F91-08FD947551A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26BFEE62-82B9-4EFA-9F91-08FD947551A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{26BFEE62-82B9-4EFA-9F91-08FD947551A8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{26BFEE62-82B9-4EFA-9F91-08FD947551A8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{26BFEE62-82B9-4EFA-9F91-08FD947551A8}.Release|x86.ActiveCfg = Release|Any CPU
+		{F14C5E6B-21FD-472B-9B63-84AFDF06BE39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F14C5E6B-21FD-472B-9B63-84AFDF06BE39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F14C5E6B-21FD-472B-9B63-84AFDF06BE39}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F14C5E6B-21FD-472B-9B63-84AFDF06BE39}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F14C5E6B-21FD-472B-9B63-84AFDF06BE39}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F14C5E6B-21FD-472B-9B63-84AFDF06BE39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F14C5E6B-21FD-472B-9B63-84AFDF06BE39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F14C5E6B-21FD-472B-9B63-84AFDF06BE39}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F14C5E6B-21FD-472B-9B63-84AFDF06BE39}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F14C5E6B-21FD-472B-9B63-84AFDF06BE39}.Release|x86.ActiveCfg = Release|Any CPU
+		{B0759780-BECA-422E-9A54-89BAB1C02459}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0759780-BECA-422E-9A54-89BAB1C02459}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0759780-BECA-422E-9A54-89BAB1C02459}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B0759780-BECA-422E-9A54-89BAB1C02459}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B0759780-BECA-422E-9A54-89BAB1C02459}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B0759780-BECA-422E-9A54-89BAB1C02459}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0759780-BECA-422E-9A54-89BAB1C02459}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0759780-BECA-422E-9A54-89BAB1C02459}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B0759780-BECA-422E-9A54-89BAB1C02459}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B0759780-BECA-422E-9A54-89BAB1C02459}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -367,5 +435,10 @@ Global
 		{FACE26D6-DCE4-49EC-AEFD-96B580BB022B} = {48ACC5ED-F25B-458A-94E7-9128C17445B5}
 		{823E8AF4-CF92-4E74-8ABD-38693279EB1E} = {48ACC5ED-F25B-458A-94E7-9128C17445B5}
 		{FCF3C622-5CF6-4C2A-B024-4046D6E4941C} = {FACE26D6-DCE4-49EC-AEFD-96B580BB022B}
+		{22437279-5F02-40BE-847C-D7A425D468BE} = {52780B9F-52B2-4659-A41C-0F1526DCAA49}
+		{F751657F-0E6C-46C5-A59C-02D7A924A051} = {52780B9F-52B2-4659-A41C-0F1526DCAA49}
+		{26BFEE62-82B9-4EFA-9F91-08FD947551A8} = {22437279-5F02-40BE-847C-D7A425D468BE}
+		{F14C5E6B-21FD-472B-9B63-84AFDF06BE39} = {22437279-5F02-40BE-847C-D7A425D468BE}
+		{B0759780-BECA-422E-9A54-89BAB1C02459} = {22437279-5F02-40BE-847C-D7A425D468BE}
 	EndGlobalSection
 EndGlobal
