@@ -63,7 +63,7 @@ namespace sones.InMemoryNonRevisioned.Element
             throw new NotImplementedException();
         }
 
-        public IEnumerable<KeyValuePair<string, object>> GetAllProperties(Func<string, object, bool> myFilterFunc = null)
+        public IEnumerable<KeyValuePair<string, object>> GetAllUnstructuredProperties(Func<string, object, bool> myFilterFunc = null)
         {
             throw new NotImplementedException();
         }

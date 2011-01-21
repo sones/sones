@@ -23,9 +23,9 @@ namespace sones.GraphDB
 
         #region Constructor
 
-        public GraphDBConnection(IGraphDB myIGraphDB, Credentials rootCreds)
+        public GraphDBConnection(IGraphDB myIGraphDB, Credentials myCredentials)
         {
-            GraphSession = myIGraphDB.GetSession(rootCreds);
+            GraphSession = myIGraphDB.GetSession(myCredentials);
         }
 
         #endregion

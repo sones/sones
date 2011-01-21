@@ -28,13 +28,6 @@ namespace sones.GraphInfrastructure.Element
 
         #region Constructor
 
-
-        /// <summary>
-        /// Creates a new VertexID
-        /// </summary>
-        /// <param name="myVertexGuid">The Guid of the vertex</param>
-        /// <param name="myTypeName">The type name of the vertex</param>
-
         /// <summary>
         /// Creates a new VertexID.
         /// A VertexID consists of a vertex type name and a vertex name

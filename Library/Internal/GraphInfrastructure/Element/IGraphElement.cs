@@ -68,7 +68,7 @@ namespace sones.GraphInfrastructure.Element
         /// </summary>
         /// <param name="myFilterFunc">A function to filter properties</param>
         /// <returns>An IEnumerable of NameOfProperty/Value</returns>
-        IEnumerable<KeyValuePair<String, Object>> GetAllProperties(Func<String, Object, bool> myFilterFunc = null);
+        IEnumerable<KeyValuePair<String, Object>> GetAllUnstructuredProperties(Func<String, Object, bool> myFilterFunc = null);
 
         #endregion
 

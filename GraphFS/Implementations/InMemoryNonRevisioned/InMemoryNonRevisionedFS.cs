@@ -121,12 +121,12 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public bool RemoveVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null)
+        public bool RemoveVertexRevision(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null)
         {
             throw new NotImplementedException();
         }
 
-        public bool EraseVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID)
+        public bool RemoveVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID)
         {
             throw new NotImplementedException();
         }
@@ -136,7 +136,16 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        #endregion
+        public void MakeFileSystem(string myDescription, ulong myNumberOfBytes)
+        {
+            throw new NotImplementedException();
+        }
 
+        public bool RemoveVertexEdition(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

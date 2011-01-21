@@ -81,7 +81,7 @@ namespace sones.GraphFS
         /// <param name="myDescription">a distinguishable Name or description for the file system (can be changed later)</param>
         /// <param name="myNumberOfBytes">the size of the file system in byte</param>
         /// <returns>the UUID of the new file system</returns>
-        void MakeFileSystem(SessionToken mySessionToken, String myDescription, UInt64 myNumberOfBytes);
+        void MakeFileSystem(String myDescription, UInt64 myNumberOfBytes);
 
         /// <summary>
         /// Initializes a GraphFS using the stream of a replicated one
@@ -225,27 +225,39 @@ namespace sones.GraphFS
             VertexRevisionID    myVertexRevisionID = null);
 
         /// <summary>
-        /// Removes a certain editions/revisions of a vertex
+        /// Removes a certain revision of a vertex
         /// </summary>
         /// <param name="mySessionToken">The current session token</param>
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <param name="myEditionFilterFunc">A filter function for the edition of the vertex</param>
         /// <param name="myRevisionFilterFunc">A filter function for the revision of the vertex</param>
-        /// <returns>True if a vertex has been removed, false otherwise</returns>
-        bool RemoveVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, 
+        /// <returns>True if some revisions have been removed, false otherwise</returns>
+        bool RemoveVertexRevision(SessionToken mySessionToken, TransactionToken myTransactionToken, 
             VertexID                        myVertexID, 
             Func<String, Boolean>           myEditionFilterFunc = null,
             Func<VertexRevisionID, Boolean> myRevisionFilterFunc = null);
 
         /// <summary>
-        /// Erases a vertex entirely
+        /// Removes a certain edition of a vertex
+        /// </summary>
+        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myVertexID">The id of the vertex</param>
+        /// <param name="myEditionFilterFunc">A filter function for the edition of the vertex</param>
+        /// <returns>True if some revisions have been removed, false otherwise</returns>
+        bool RemoveVertexEdition(SessionToken mySessionToken, TransactionToken myTransactionToken,
+            VertexID myVertexID,
+            Func<String, Boolean> myEditionFilterFunc = null);
+
+        /// <summary>
+        /// Removes a vertex entirely
         /// </summary>
         /// <param name="mySessionToken">The current session token</param>
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <returns>True if a vertex has been erased, false otherwise</returns>
-        bool EraseVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, 
+        bool RemoveVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, 
             VertexID myVertexID);
 
         /// <summary>

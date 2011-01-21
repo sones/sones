@@ -34,21 +34,21 @@ namespace sones.GraphInfrastructure.Element
         #region Edges
 
         #region Incoming
-        //Incoming edges are allways hyper edges
+        //Incoming edges are always hyper edges
 
         /// <summary>
         /// Is there a specified incoming edge?
         /// </summary>
         /// <param name="myEdgePropertyID">The property id of the interesting edge</param>
         /// <returns>True if there is a specified edge, otherwise false</returns>
-        Boolean HasIncomingEdge(PropertyID myEdgePropertyID);
+        Boolean HasIncomingHyperEdge(PropertyID myEdgePropertyID);
 
         /// <summary>
         /// Returns all incoming edges
         /// </summary>
         /// <param name="myFilterFunc">A function to filter those hyper edges</param>
         /// <returns>An IEnumerable of propertyID/incoming edge KVP</returns>
-        IEnumerable<KeyValuePair<PropertyID, IHyperEdge>> GetAllIncomingEdges(Func<PropertyID, IHyperEdge, bool> myFilterFunc = null);
+        IEnumerable<KeyValuePair<PropertyID, IHyperEdge>> GetAllIncomingHyperEdges(Func<PropertyID, IHyperEdge, bool> myFilterFunc = null);
 
         /// <summary>
         /// Returns a specified incoming edge
