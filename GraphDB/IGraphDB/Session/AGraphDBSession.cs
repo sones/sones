@@ -6,7 +6,7 @@ using sones.Library.Internal.Token;
 using sones.GraphDB.Request;
 using sones.Library.Internal.Security;
 
-namespace sones.GraphDB.Context
+namespace sones.GraphDB.Session
 {
     /// <summary>
     /// The abstract class for all hg sessions

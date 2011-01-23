@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using sones.GraphInfrastructure.Element;
 using System.IO;
 using sones.Library.Internal.Definitions;
+using sones.GraphFS.Security;
 
 namespace sones.InMemoryNonRevisioned
 {
@@ -41,7 +42,7 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public AccessModeTypes GetAccessMode(SessionToken mySessionToken)
+        public FileSystemAccessModeEnum GetAccessMode(SessionToken mySessionToken)
         {
             throw new NotImplementedException();
         }
@@ -76,12 +77,12 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public void MountFileSystem(SessionToken mySessionToken, AccessModeTypes myAccessMode)
+        public void MountFileSystem(SessionToken mySessionToken, FileSystemAccessModeEnum myAccessMode)
         {
             throw new NotImplementedException();
         }
 
-        public void RemountFileSystem(SessionToken mySessionToken, AccessModeTypes myFSAccessMode)
+        public void RemountFileSystem(SessionToken mySessionToken, FileSystemAccessModeEnum myFSAccessMode)
         {
             throw new NotImplementedException();
         }

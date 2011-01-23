@@ -44,8 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Request\GraphDBAccessModeEnum.cs" />
+    <Compile Include="Session\AGraphDBSession.cs" />
     <Compile Include="GraphDBConnection.cs" />
-    <Compile Include="Context\IGraphDBSession.cs" />
+    <Compile Include="Session\IGraphDBSession.cs" />
     <Compile Include="Error\IError.cs" />
     <Compile Include="IGraphDB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

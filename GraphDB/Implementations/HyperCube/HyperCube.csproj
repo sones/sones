@@ -60,10 +60,6 @@
       <Project>{3291BC72-8F49-4E60-9BC7-349D5C635985}</Project>
       <Name>Token</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\GraphDBCommons\GraphDBCommons.csproj">
-      <Project>{AD815491-D6C0-4571-96AA-C7C85BFFB776}</Project>
-      <Name>GraphDBCommons</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>

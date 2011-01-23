@@ -5,6 +5,7 @@ using sones.Library.Internal.Token;
 using sones.Library.Internal.Definitions;
 using sones.GraphInfrastructure.Element;
 using System.IO;
+using sones.GraphFS.Security;
 
 namespace sones.GraphFS
 {
@@ -67,7 +68,7 @@ namespace sones.GraphFS
         /// Returns the access mode of this file system
         /// </summary>
         /// <returns>The access mode of this file system</returns>
-        AccessModeTypes GetAccessMode(SessionToken mySessionToken);
+        FileSystemAccessModeEnum GetAccessMode(SessionToken mySessionToken);
 
         #endregion
 
@@ -124,14 +125,14 @@ namespace sones.GraphFS
         /// </summary>
         /// <param name="mySessionToken">The SessionToken.</param>
         /// <param name="myAccessMode">The file system access mode, e.g. "read-write" or "read-only".</param>
-        void MountFileSystem(SessionToken mySessionToken, AccessModeTypes myAccessMode);
+        void MountFileSystem(SessionToken mySessionToken, FileSystemAccessModeEnum myAccessMode);
 
         /// <summary>
         /// Remounts a file system in order to change its access mode.
         /// </summary>
         /// <param name="mySessionToken">The SessionToken.</param>
         /// <param name="myAccessMode">The file system access mode, e.g. "read-write" or "read-only".</param>
-        void RemountFileSystem(SessionToken mySessionToken, AccessModeTypes myFSAccessMode);
+        void RemountFileSystem(SessionToken mySessionToken, FileSystemAccessModeEnum myFSAccessMode);
 
         /// <summary>
         /// Flush all caches and unmount this file system.

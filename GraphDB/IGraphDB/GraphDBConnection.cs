@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.Context;
 using sones.Library.Internal.Security;
+using sones.GraphDB.Session;
 
 namespace sones.GraphDB
 {

@@ -44,7 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccessModeTypes.cs" />
     <Compile Include="Credentials.cs" />
     <Compile Include="ICredentials.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

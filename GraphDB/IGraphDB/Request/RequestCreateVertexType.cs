@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using sones.GraphDB.Result;
 using sones.Library.Internal.Definitions;
+using sones.Library.Internal.Security;
 
 namespace sones.GraphDB.Request
 {
@@ -53,6 +54,11 @@ namespace sones.GraphDB.Request
         public TResult GenerateResult()
         {
             return _outputConverter(_result);
+        }
+
+        public GraphDBAccessModeEnum AccessMode
+        {
+            get { return GraphDBAccessModeEnum.TypeChange; }
         }
 
         #endregion

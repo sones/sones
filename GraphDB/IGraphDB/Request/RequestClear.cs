@@ -45,6 +45,11 @@ namespace sones.GraphDB.Request
             return _outputConverter(_result);
         }
 
+        public GraphDBAccessModeEnum AccessMode
+        {
+            get { return GraphDBAccessModeEnum.WriteOnly; }
+        }
+
         #endregion
     }
 }

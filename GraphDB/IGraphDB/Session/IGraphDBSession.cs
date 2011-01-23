@@ -2,7 +2,7 @@
 using sones.GraphDB.Request;
 using sones.Library.Internal.Token;
 
-namespace sones.GraphDB.Context
+namespace sones.GraphDB.Session
 {
     /// <summary>
     /// The interface for all sessions for the graphdb implementations
