@@ -10,6 +10,9 @@ namespace sones.GraphDB.Request
     /// <typeparam name="TResult">The result type of the request</typeparam>
     public interface IRequest<TResult>
     {
+        /// <summary>
+        /// The access mode for this request
+        /// </summary>
         GraphDBAccessModeEnum AccessMode { get; }
 
         /// <summary>
@@ -17,5 +20,11 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <returns>A generic result</returns>
         TResult GenerateResult();
+
+        /// <summary>
+        /// Sets the statistics
+        /// </summary>
+        /// <param name="myRequestStatistics">The request statistics</param>
+        void SetStatistics(IRequestStatistics myRequestStatistics);
     }
 }

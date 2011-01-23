@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.Result;
 using sones.Library.Internal.Definitions;
 using sones.Library.Internal.Security;
 
@@ -18,14 +17,14 @@ namespace sones.GraphDB.Request
         #region data
 
         /// <summary>
-        /// Transforms the output header into the desired result
+        /// Transforms the statistics into the desired result
         /// </summary>
-        private readonly Func<OutputHeader, TResult> _outputConverter = null;
+        private readonly Func<RequestStatistics, TResult> _outputConverter;
 
         /// <summary>
-        /// The result of the request
+        /// The stats of the request
         /// </summary>
-        private OutputHeader _result = null;
+        private RequestStatistics _stats = null;
 
         /// <summary>
         /// The definition of the vertex that is going to be created
@@ -41,7 +40,7 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myVertexTypeDefinition">Describes the vertex that is going to be created</param>
         /// <param name="myOutputConverter">A function that convertes the result into the desired output</param>
-        public RequestCreateVertexType(VertexTypeDefinition myVertexTypeDefinition, Func<OutputHeader, TResult> myOutputConverter)
+        public RequestCreateVertexType(VertexTypeDefinition myVertexTypeDefinition, Func<RequestStatistics, TResult> myOutputConverter)
         {
             _outputConverter = myOutputConverter;
             VertexTypeDefinition = myVertexTypeDefinition;
@@ -53,12 +52,17 @@ namespace sones.GraphDB.Request
 
         public TResult GenerateResult()
         {
-            return _outputConverter(_result);
+            return _outputConverter(_stats);
         }
 
         public GraphDBAccessModeEnum AccessMode
         {
             get { return GraphDBAccessModeEnum.TypeChange; }
+        }
+
+        public void SetStatistics(IRequestStatistics myRequestStatistics)
+        {
+            _stats = myRequestStatistics as RequestStatistics;
         }
 
         #endregion

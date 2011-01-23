@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using sones.GraphDB.Result;
 
 namespace sones.GraphDB.Request
 {
@@ -16,12 +15,12 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Transforms the output header into the desired result
         /// </summary>
-        private readonly Func<OutputHeader, TResult> _outputConverter = null;
+        private readonly Func<RequestStatistics, TResult> _outputGenerator;
 
         /// <summary>
-        /// The result of the request
+        /// The request stats
         /// </summary>
-        private OutputHeader _result = null;
+        private RequestStatistics _stats = null;
 
         #endregion
 
@@ -30,10 +29,9 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Creates a new request that clears the Graphdb
         /// </summary>
-        /// <param name="myOutputConverter">A function that convertes the result into the desired output</param>
-        public RequestClear(Func<OutputHeader, TResult> myOutputConverter)
+        public RequestClear(Func<RequestStatistics, TResult> myOutputGenerator)
         {
-            _outputConverter = myOutputConverter;
+            _outputGenerator = myOutputGenerator;
         }
 
         #endregion
@@ -42,12 +40,17 @@ namespace sones.GraphDB.Request
 
         public TResult GenerateResult()
         {
-            return _outputConverter(_result);
+            return _outputGenerator(_stats);
         }
 
         public GraphDBAccessModeEnum AccessMode
         {
             get { return GraphDBAccessModeEnum.WriteOnly; }
+        }
+
+        public void SetStatistics(IRequestStatistics myRequestStatistics)
+        {
+            _stats = myRequestStatistics as RequestStatistics;
         }
 
         #endregion
