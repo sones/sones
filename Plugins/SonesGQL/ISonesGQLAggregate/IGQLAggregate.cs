@@ -41,8 +41,7 @@ namespace sones.Plugins.SonesGQL
         /// <summary>
         /// Returns the name of the aggregate function
         /// </summary>
-        /// <returns></returns>
-        String GetAggregateName();
+        String Name { get; }
 
         //Todo: reactivate functions
 

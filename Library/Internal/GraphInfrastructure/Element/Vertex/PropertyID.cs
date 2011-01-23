@@ -15,9 +15,9 @@ namespace sones.GraphInfrastructure.Element
         readonly public String TypeName;
 
         /// <summary>
-        /// The name of the property
+        /// The id of the property
         /// </summary>
-        readonly public String PropertyName;
+        readonly public String ID;
 
         #endregion
 
@@ -26,12 +26,12 @@ namespace sones.GraphInfrastructure.Element
         /// <summary>
         /// Creates a new PropertyID
         /// </summary>
-        /// <param name="myPropertyName">The name of the property</param>
+        /// <param name="myID">The ID of the property</param>
         /// <param name="myPropertyType">The type of the property</param>
-        public PropertyID(String myPropertyName, Type myPropertyType)
+        public PropertyID(String myID, Type myPropertyType)
         {
             TypeName = myPropertyType.AssemblyQualifiedName;
-            PropertyName = myPropertyName;
+            ID = myID;
         }
 
         #endregion
@@ -64,7 +64,7 @@ namespace sones.GraphInfrastructure.Element
                 return false;
             }
 
-            return (this.TypeName == myVertex.TypeName) && (this.PropertyName == myVertex.PropertyName);
+            return (this.TypeName == myVertex.TypeName) && (this.ID == myVertex.ID);
         }
 
         public static Boolean operator ==(PropertyID aVertex, PropertyID bVertex)
@@ -89,7 +89,7 @@ namespace sones.GraphInfrastructure.Element
 
         public override int GetHashCode()
         {
-            return TypeName.GetHashCode() ^ PropertyName.GetHashCode();
+            return TypeName.GetHashCode() ^ ID.GetHashCode();
         }
 
         #endregion

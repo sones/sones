@@ -38,6 +38,13 @@ namespace sones.GraphInfrastructure.Element
         /// <returns>An IEnumerable of Property/Value</returns>
         IEnumerable<KeyValuePair<PropertyID, Object>> GetAllProperties(Func<PropertyID, Object, bool> myFilterFunc = null);
 
+        /// <summary>
+        /// Returns a property as string
+        /// </summary>
+        /// <param name="myPropertyID">The id of the property</param>
+        /// <returns>The string representation of the property</returns>
+        String GetPropertyAsString(PropertyID myPropertyID);
+
         #endregion
 
         #region Unstructured data/properties
@@ -70,6 +77,13 @@ namespace sones.GraphInfrastructure.Element
         /// <returns>An IEnumerable of NameOfProperty/Value</returns>
         IEnumerable<KeyValuePair<String, Object>> GetAllUnstructuredProperties(Func<String, Object, bool> myFilterFunc = null);
 
+        /// <summary>
+        /// Returns an unstructured property as string
+        /// </summary>
+        /// <param name="myPropertyID">The name of the unstructured property</param>
+        /// <returns>The string representation of the property</returns>
+        String GetUnstructuredPropertyAsString(String myPropertyName);
+
         #endregion
 
         #region Comment
@@ -77,18 +91,16 @@ namespace sones.GraphInfrastructure.Element
         /// <summary>
         /// Gets the comment of this graph element
         /// </summary>
-        /// <returns>A String</returns>
-        String GetComment();
+        String Comment { get; }
 
         #endregion
 
         #region Type
 
         /// <summary>
-        /// Gets the type of this graph element
+        /// Gets the type id of this graph element
         /// </summary>
-        /// <returns></returns>
-        String GetType();
+        String TypeID { get; }
 
         #endregion
     }

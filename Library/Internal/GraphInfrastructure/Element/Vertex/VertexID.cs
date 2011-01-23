@@ -12,12 +12,12 @@ namespace sones.GraphInfrastructure.Element
         /// <summary>
         /// The type-global-id of the vertex
         /// </summary>
-        readonly public String VertexName;
+        readonly public String Name;
 
         /// <summary>
-        /// The name of the vertex type
+        /// The id of the vertex type
         /// </summary>
-        readonly public String VertexTypeName;
+        readonly public String VertexTypeID;
 
         /// <summary>
         /// The hashcode of the VertexID
@@ -32,22 +32,22 @@ namespace sones.GraphInfrastructure.Element
         /// Creates a new VertexID.
         /// A VertexID consists of a vertex type name and a vertex name
         /// </summary>
-        /// <param name="myTypeName">The vertex type name</param>
+        /// <param name="myVertexTypeID">The vertex type name</param>
         /// <param name="myVertexID">The vertex name (if left out, a name will be generated)</param>
-        public VertexID(String myTypeName, String myVertexName = null)
+        public VertexID(String myVertexTypeID, String myName = null)
         {
-            if (myVertexName != null)
+            if (myName != null)
             {
-                VertexName = myVertexName;
+                Name = myName;
             }
             else
             {
-                VertexName = Guid.NewGuid().ToString();
+                Name = Guid.NewGuid().ToString();
             }
 
-            VertexTypeName = myTypeName;
+            VertexTypeID = myVertexTypeID;
 
-            _hashCode = VertexName.GetHashCode() ^ VertexTypeName.GetHashCode();
+            _hashCode = Name.GetHashCode() ^ VertexTypeID.GetHashCode();
         }
 
         #endregion
@@ -80,7 +80,7 @@ namespace sones.GraphInfrastructure.Element
                 return false;
             }
 
-            return (this.VertexName == myVertex.VertexName) && (this.VertexTypeName == myVertex.VertexTypeName);
+            return (this.Name == myVertex.Name) && (this.VertexTypeID == myVertex.VertexTypeID);
         }
 
         public static Boolean operator ==(VertexID aVertex, VertexID bVertex)

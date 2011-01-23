@@ -34,7 +34,7 @@ namespace sones.GraphDB.Context
         /// </summary>
         /// <param name="myCredentials">The credentials of the session</param>
         /// <param name="myHyperGraph">The current graphdb implementation</param>
-        protected AGraphDBSession(Credentials myCredentials, IGraphDB myHyperGraph)
+        protected AGraphDBSession(ICredentials myCredentials, IGraphDB myHyperGraph)
         {
             _SessionToken = new SessionToken(myCredentials);
             _iGraphDB = myHyperGraph;

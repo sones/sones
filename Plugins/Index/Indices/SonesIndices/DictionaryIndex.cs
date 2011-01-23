@@ -7,16 +7,17 @@ namespace sones.Plugins.Index
 {
     public sealed class DictionaryIndex : IIndex
     {
-        #region IIndex
 
-        public bool IsPersistent()
+        #region IIndex Members
+
+        public bool IsPersistent
         {
-            return false;
+            get { return false; }
         }
 
-        public string GetName()
+        public string Name
         {
-            return "Dictionary";
+            get { return "Dictionary"; }
         }
 
         #endregion

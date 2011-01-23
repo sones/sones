@@ -39,13 +39,11 @@ namespace sones.Plugins.Index
         /// <summary>
         /// Is this a persistent index?
         /// </summary>
-        /// <returns>True for persistence, false for in memory</returns>
-        Boolean IsPersistent();
+        Boolean IsPersistent { get; }
 
         /// <summary>
         /// Returns the name of the index
         /// </summary>
-        /// <returns>The name of the index</returns>
-        String GetName();
+        String Name { get; }
     }
 }

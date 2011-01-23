@@ -8,11 +8,12 @@ namespace sones.Plugins.SonesGQL
     /// </summary>
     public sealed class MaxAggregate : IGQLAggregate
     {
-        #region IGQLAggregate
-        
-        public string GetAggregateName()
+
+        #region IGQLAggregate Members
+
+        public string Name
         {
-            return "MAX";
+            get { return "MAX"; }
         }
 
         #endregion

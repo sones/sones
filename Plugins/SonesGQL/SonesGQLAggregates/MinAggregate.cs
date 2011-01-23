@@ -8,11 +8,12 @@ namespace sones.Plugins.SonesGQL
     /// </summary>
     public sealed class MinAggregate : IGQLAggregate
     {
-        #region IGQLAggregate
-        
-        public string GetAggregateName()
+
+        #region IGQLAggregate Members
+
+        public string Name
         {
-            return "MIN";
+            get { return "MIN"; }
         }
 
         #endregion

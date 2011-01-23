@@ -13,7 +13,7 @@ namespace sones.Library.Internal.Token
         /// <summary>
         /// The credentials of the session
         /// </summary>
-        public readonly Credentials Credentials;
+        public readonly ICredentials Credentials;
 
         /// <summary>
         /// The Guid of the session
@@ -28,7 +28,7 @@ namespace sones.Library.Internal.Token
         /// Create a new SessionToken
         /// </summary>
         /// <param name="myCredentials"></param>
-        public SessionToken(Credentials myCredentials)
+        public SessionToken(ICredentials myCredentials)
         {
             Credentials = myCredentials;
             Guid = Guid.NewGuid();

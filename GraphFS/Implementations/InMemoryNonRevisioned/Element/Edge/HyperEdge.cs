@@ -10,12 +10,17 @@ namespace sones.InMemoryNonRevisioned.Element
     /// </summary>
     public sealed class HyperEdge : IHyperEdge
     {
-        #region IHyperEdge
+
+        #region IHyperEdge Members
 
         public IEnumerable<ISingleEdge> GetEdges(Func<ISingleEdge, bool> myFilterFunction = null)
         {
             throw new NotImplementedException();
         }
+
+        #endregion
+
+        #region IEdge Members
 
         public IVertex GetSourceVertex()
         {
@@ -26,6 +31,10 @@ namespace sones.InMemoryNonRevisioned.Element
         {
             throw new NotImplementedException();
         }
+
+        #endregion
+
+        #region IGraphElement Members
 
         public T GetProperty<T>(PropertyID myPropertyID)
         {
@@ -43,6 +52,11 @@ namespace sones.InMemoryNonRevisioned.Element
         }
 
         public IEnumerable<KeyValuePair<PropertyID, object>> GetAllProperties(Func<PropertyID, object, bool> myFilterFunc = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetPropertyAsString(PropertyID myPropertyID)
         {
             throw new NotImplementedException();
         }
@@ -67,17 +81,21 @@ namespace sones.InMemoryNonRevisioned.Element
             throw new NotImplementedException();
         }
 
-        public string GetComment()
+        public string GetUnstructuredPropertyAsString(string myPropertyName)
         {
             throw new NotImplementedException();
         }
 
-        public new string GetType()
+        public string Comment
         {
-            throw new NotImplementedException();
+            get { throw new NotImplementedException(); }
+        }
+
+        public string TypeID
+        {
+            get { throw new NotImplementedException(); }
         }
 
         #endregion
-
     }
 }

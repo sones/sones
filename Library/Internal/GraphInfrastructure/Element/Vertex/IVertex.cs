@@ -14,20 +14,17 @@ namespace sones.GraphInfrastructure.Element
         /// <summary>
         /// A vertex is identified by the name of its vertex type and Guid
         /// </summary>
-        /// <returns>A vertex id</returns>
-        VertexID GetVertexID();
+        VertexID VertexID { get; }
 
         /// <summary>
         /// Returns the revision id of this vertex
         /// </summary>
-        /// <returns></returns>
-        VertexRevisionID GetVertexRevisionID();
+        VertexRevisionID VertexRevisionID { get; }
 
         /// <summary>
         /// Returns the name of the edition of this vertex
         /// </summary>
-        /// <returns></returns>
-        String GetEditionName();
+        String EditionName { get; }
 
         #endregion
 
