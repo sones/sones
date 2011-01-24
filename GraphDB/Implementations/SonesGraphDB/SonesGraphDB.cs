@@ -2,7 +2,6 @@
 using sones.Library.Internal.Security;
 using sones.Library.Internal.Token;
 using sones.GraphDB.Request;
-using sones.GraphDB.Session;
 
 namespace sones.GraphDB
 {
@@ -22,16 +21,6 @@ namespace sones.GraphDB
         /// <param name="myRequestCreateVertexType">The create vertex type request</param>
         /// <returns>A generic result</returns>
         public TResult CreateVertexType<TResult>(SessionToken mySessionToken, TransactionToken myTransactionToken, RequestCreateVertexType<TResult> myRequestCreateVertexType)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Creates a new session
-        /// </summary>
-        /// <param name="myCredentials">The credentials which are necessary for authentication</param>
-        /// <returns>A session</returns>
-        public IGraphDBSession GetSession(Credentials myCredentials)
         {
             throw new NotImplementedException();
         }

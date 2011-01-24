@@ -48,9 +48,6 @@
     <Compile Include="Request\GraphDBAccessModeEnum.cs" />
     <Compile Include="Request\Statistics\IRequestStatistics.cs" />
     <Compile Include="Request\Statistics\RequestStatistics.cs" />
-    <Compile Include="Session\AGraphDBSession.cs" />
-    <Compile Include="GraphDBConnection.cs" />
-    <Compile Include="Session\IGraphDBSession.cs" />
     <Compile Include="IGraphDB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Request\IRequest.cs" />

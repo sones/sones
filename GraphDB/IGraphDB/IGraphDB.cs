@@ -5,7 +5,6 @@ using System.Text;
 using sones.Library.Internal.Token;
 using sones.GraphDB.Request;
 using sones.Library.Internal.Security;
-using sones.GraphDB.Session;
 
 namespace sones.GraphDB
 {
@@ -14,9 +13,6 @@ namespace sones.GraphDB
     /// </summary>
     public interface IGraphDB
     {
-        #region internal methods
-        //Those methods are internal. Please use the session
-
         /// <summary>
         /// Creates a new type of vertex
         /// </summary>
@@ -41,13 +37,5 @@ namespace sones.GraphDB
                                             TransactionToken myTransactionToken,
                                             RequestClear<TResult> myRequestClear);
 
-        #endregion
-
-        /// <summary>
-        /// Returns a session for the graphdb
-        /// </summary>
-        /// <param name="myCredentials">The credentials that are going to be authorized</param>
-        /// <returns>An IGraphDBSession</returns>
-        IGraphDBSession GetSession(Credentials myCredentials);
     }
 }
