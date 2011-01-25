@@ -87,10 +87,7 @@ namespace sones.GraphDB.Result
             throw new NotImplementedException();
         }
 
-        public uint TypeCode
-        {
-            get { return UInt32.MaxValue - 2; }
-        }
+        public uint TypeCode { get { return UInt32.MaxValue - 2; } }
 
         #endregion
 

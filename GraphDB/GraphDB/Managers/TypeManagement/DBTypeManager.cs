@@ -76,6 +76,11 @@ namespace sones.GraphDB.TypeManagement
 
         DBContext _DBContext;
 
+        /// <summary>
+        /// This is needed for the UUID "index" because the DirCount is the only way to get the keyCount as fast as possible but this includes the special directory entries. These needs to be substracted.
+        /// </summary>
+        private UInt64 _DirCountDelta = 0UL;
+
         #region Manager
         
         public DBIndexManager DBIndexManager
@@ -441,7 +446,7 @@ namespace sones.GraphDB.TypeManagement
                     return new Exceptional<Boolean>(new Error_TypeAlreadyExist(_ActualObjectLocation.Name));
 
                 //ListOfDatabaseTypes.Add(new GraphType(_IGraphFS2Session, _ActualObjectLocation, true, this));
-                var pt = _IGraphFSSession.GetFSObject<GraphDBType>(_ActualObjectLocation);
+                var pt = _IGraphFSSession.GetFSObject<GraphDBType>(_ActualObjectLocation, DBConstants.DBTYPESTREAM, FSConstants.DefaultEdition);
 
                 if (pt.Failed())
                     return new Exceptional(pt);
@@ -1327,16 +1332,31 @@ namespace sones.GraphDB.TypeManagement
                 
                 #endregion
 
-                #region Create indices
+                #region Create directories and indices
 
                 foreach (GraphDBType aType in addedTypes)
                 {
+
+
+                    #region Create all default directories of that type
+
+                    var createDefaultDirectoriesResult = AddType_CreateDefaultDirectories(aType);
+                    if (createDefaultDirectoriesResult.Failed())
+                    {
+                        return new Exceptional<QueryResult>(result);
+                    }
+
+                    #endregion
+
+                    #region Create indices
+
                     #region Create userdefined Indices
 
                     var aTypeDef = TypeList.Where(item => item.Name == aType.Name).FirstOrDefault();
 
                     if (!aTypeDef.Indices.IsNullOrEmpty())
                     {
+
                         foreach (var index in aTypeDef.Indices)
                         {
 
@@ -1345,7 +1365,7 @@ namespace sones.GraphDB.TypeManagement
                                 RemoveRecentlyAddedTypes(addedTypes);
                                 return new Exceptional<QueryResult>(new Error_AttributeIsNotDefined(aType.Name, aType.Name));
                             }
-                            
+
                             var idxName = index.IndexName;
 
                             if (String.IsNullOrEmpty(index.IndexName))
@@ -1360,7 +1380,10 @@ namespace sones.GraphDB.TypeManagement
                                 var CreateIdxExcept = item.CreateAttributeIndex(currentContext, idxName, indexAttrs, index.Edition, index.IndexType);
 
                                 if (!CreateIdxExcept.Success())
+                                {
+                                    RemoveRecentlyAddedTypes(addedTypes);
                                     return new Exceptional<QueryResult>(CreateIdxExcept);
+                                }
                             }
                         }
                     }
@@ -1368,23 +1391,31 @@ namespace sones.GraphDB.TypeManagement
                     #endregion
 
                     //UUID index                    
-                    var createIndexExcept = aType.CreateUUIDIndex(_DBContext, GetUUIDTypeAttribute().UUID);
+
+                    var createIndexExcept = aType.CreateUUIDIndex(_DBContext, GetUUIDTypeAttribute().UUID, _IGraphFSSession.NumberOfSpecialDirectories);
 
                     if (!createIndexExcept.Success())
                     {
+                        RemoveRecentlyAddedTypes(addedTypes);
                         return new Exceptional<QueryResult>(createIndexExcept);
                     }
 
                     List<AttributeUUID> UniqueIDs = aType.GetAllUniqueAttributes(true, this);
-                    
+
                     if (UniqueIDs.Count() > 0)
                     {
                         var idxName = _DBContext.DBIndexManager.GetUniqueIndexName(UniqueIDs, aType); // UniqueIDs.Aggregate<AttributeUUID, String>("Idx", (result, item) => result = result + "_" + aType.GetTypeAttributeByUUID(item).Name);
                         var createIdxExcept = aType.CreateUniqueAttributeIndex(currentContext, idxName, UniqueIDs, DBConstants.UNIQUEATTRIBUTESINDEX);
 
                         if (!createIdxExcept.Success())
+                        {
+                            RemoveRecentlyAddedTypes(addedTypes);
                             return new Exceptional<QueryResult>(createIdxExcept);
+                        }
                     }
+
+                    #endregion
+
                 }
 
                 #endregion
@@ -1452,12 +1483,77 @@ namespace sones.GraphDB.TypeManagement
 
         }
 
+        private Exceptional AddType_CreateDefaultDirectories(GraphDBType aType)
+        {
+
+            var typeDir  = aType.ObjectLocation;
+
+            var isDirExcept = _IGraphFSSession.isIDirectoryObject(typeDir);
+
+            if (isDirExcept.Failed())
+                return isDirExcept;
+
+            if (isDirExcept.Value == Trinary.TRUE)
+                return new Exceptional(new Error_UnknownDBError("Default directory for the new type " + aType.Name + " could not be created, cause it already exists."));
+
+            #region Get blocksize of the TypeDirectory from "TYPEDIRBLOCKSIZE" setting
+
+            UInt64 TypeDirBlockSize = 0;
+            var blocksizeSetting = new SettingTypeDirBlocksize();
+            var _TypeDireBlockSizeExceptional = blocksizeSetting.Get(_DBContext, TypesSettingScope.DB);
+
+            if (!_TypeDireBlockSizeExceptional.Success())
+            {
+                return _TypeDireBlockSizeExceptional;
+                //throw new GraphDBException(new Error_SettingDoesNotExist("TYPEDIRBLOCKSIZE"));
+            }
+
+            if (_TypeDireBlockSizeExceptional.Value == null)
+            {
+                TypeDirBlockSize = (UInt64)(Int64)blocksizeSetting.Default.Value;
+            }
+            else
+            {
+                TypeDirBlockSize = (UInt64)(Int64)_TypeDireBlockSizeExceptional.Value.Value.Value;
+            }
+
+            #endregion
+
+            // Create the directory for the new type
+            var CreateDirExcept = _IGraphFSSession.CreateDirectoryObject(typeDir, TypeDirBlockSize);
+
+            if (CreateDirExcept.Failed())
+                return new Exceptional(CreateDirExcept);
+
+            // Create a subdirectory for the objects of this new type
+            CreateDirExcept = _IGraphFSSession.CreateDirectoryObject(new ObjectLocation(typeDir, DBConstants.DBObjectsLocation));
+
+            if (CreateDirExcept.Failed())
+                return CreateDirExcept;
+
+            // Create a subdirectory for the indices of this new type
+            CreateDirExcept = _IGraphFSSession.CreateDirectoryObject(new ObjectLocation(typeDir, DBConstants.DBIndicesLocation));
+
+            if (CreateDirExcept.Failed())
+                return CreateDirExcept;
+
+            return Exceptional.OK;
+        }
+
         private void RemoveRecentlyAddedTypes(List<GraphDBType> addedTypes)
         {
             addedTypes.ForEach(item =>
             {
                 _UserDefinedTypes.Remove(item.UUID);
                 _TypesNameLookUpTable.Remove(item.Name);
+
+                var isDirExcept = _IGraphFSSession.isIDirectoryObject(item.ObjectLocation);
+
+                if (isDirExcept.Success() && isDirExcept.Value == Trinary.TRUE)
+                {
+                    _IGraphFSSession.RemoveDirectoryObject(item.ObjectLocation, true);
+                }
+
             });
         }
 
@@ -1667,59 +1763,6 @@ namespace sones.GraphDB.TypeManagement
 
             #endregion
 
-            #region Store the new type on the file system
-
-            var isDirExcept = _IGraphFSSession.isIDirectoryObject(typeDir);
-
-            if(isDirExcept.Failed())
-                return new Exceptional<bool>(isDirExcept);
-            
-            if (isDirExcept.Value == Trinary.TRUE)
-                return new Exceptional<Boolean>(new Error_UnknownDBError("Default directory for the new type " + typeName + " could not be created, cause it already exists."));
-
-            #region Get blocksize of the TypeDirectory from "TYPEDIRBLOCKSIZE" setting
-
-            UInt64 TypeDirBlockSize = 0;
-            var blocksizeSetting = new SettingTypeDirBlocksize();
-            var _TypeDireBlockSizeExceptional = blocksizeSetting.Get(_DBContext, TypesSettingScope.DB);
-
-            if (!_TypeDireBlockSizeExceptional.Success())
-            {
-                return new Exceptional<Boolean>(_TypeDireBlockSizeExceptional);
-                //throw new GraphDBException(new Error_SettingDoesNotExist("TYPEDIRBLOCKSIZE"));
-            }
-
-            if (_TypeDireBlockSizeExceptional.Value == null)
-            {
-                TypeDirBlockSize = (UInt64)(Int64)blocksizeSetting.Default.Value;
-            }
-            else
-            {
-                TypeDirBlockSize = (UInt64)(Int64)_TypeDireBlockSizeExceptional.Value.Value.Value;
-            }
-
-            #endregion
-
-            // Create the directory for the new type
-            var CreateDirExcept = _IGraphFSSession.CreateDirectoryObject(typeDir, TypeDirBlockSize);
-
-            if (CreateDirExcept.Failed())
-                return new Exceptional<bool>(CreateDirExcept);
-
-            // Create a subdirectory for the objects of this new type
-            CreateDirExcept = _IGraphFSSession.CreateDirectoryObject(new ObjectLocation(typeDir, DBConstants.DBObjectsLocation));
-            
-            if (CreateDirExcept.Failed())
-                return new Exceptional<bool>(CreateDirExcept);
-
-            // Create a subdirectory for the indices of this new type
-            CreateDirExcept = _IGraphFSSession.CreateDirectoryObject(new ObjectLocation(typeDir, DBConstants.DBIndicesLocation));
-
-            if (CreateDirExcept.Failed())
-                return new Exceptional<bool>(CreateDirExcept);
-
-            #endregion
-
             var FlushExcept = FlushType(myGraphType);
 
             if (FlushExcept.Failed())
@@ -1736,7 +1779,7 @@ namespace sones.GraphDB.TypeManagement
         public Exceptional FlushType(GraphDBType myGraphType)
         {
             
-            var _Exceptional = _IGraphFSSession.StoreFSObject(myGraphType, true);
+            var _Exceptional = _IGraphFSSession.StoreFSObject(myGraphType, true, true);
 
             if (_Exceptional == null || _Exceptional.Failed())
                 return new Exceptional(_Exceptional);
@@ -1900,47 +1943,9 @@ namespace sones.GraphDB.TypeManagement
 
                 foreach (var aAttributeIDX in toBeDeletedType.GetAllAttributeIndices(false))
                 {
-                    #region remove the shards
 
-                    var objExist = _IGraphFSSession.ObjectExists(aAttributeIDX.FileSystemLocation);
+                    aAttributeIDX.ClearAndRemoveFromDisc(_DBContext);
 
-                    if(objExist.Failed())
-                    {
-                        return new Exceptional<bool>(objExist);
-                    }
-                    
-                    if (objExist.Value)
-                    {
-
-                        var shards = _IGraphFSSession.GetDirectoryListing(aAttributeIDX.FileSystemLocation, kv => kv.Value.ObjectStreamsList.Contains(DBConstants.DBINDEXSTREAM));
-
-                        if (shards.Failed())
-                        {
-                            return new Exceptional<Boolean>(shards);
-                        }
-
-                        foreach (var aIdxShard in shards.Value)
-                        {
-                            var removeIdxShardExcept = _IGraphFSSession.RemoveFSObject(aAttributeIDX.FileSystemLocation + aIdxShard, DBConstants.DBINDEXSTREAM, null, null);
-
-                            if (removeIdxShardExcept.Failed())
-                            {
-                                return new Exceptional<bool>(removeIdxShardExcept); // return and rollback transaction
-                            }
-                        }
-
-                    #endregion
-
-                        #region remove the idx directory itself
-
-                        var removeIDXDirExcept = _IGraphFSSession.RemoveDirectoryObject(aAttributeIDX.FileSystemLocation, true);
-
-                        if (removeIDXDirExcept.Failed())
-                        {
-                            return new Exceptional<bool>(removeIDXDirExcept); // return and rollback transaction
-                        }
-                    }
-                    #endregion
                 }
 
                 #endregion

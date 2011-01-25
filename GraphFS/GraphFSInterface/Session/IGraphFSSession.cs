@@ -429,7 +429,7 @@ namespace sones.GraphFS.Session
         Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures= false) where PT : AFSObject, new();
         Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, Func<PT> myFunc, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject;
 
-        Exceptional StoreFSObject(AFSObject myAGraphObject, Boolean myAllowOverwritting);
+        Exceptional StoreFSObject(AFSObject myAGraphObject, Boolean myAllowOverwritting, Boolean myPinObjectLocationInCache = false);
 
         Exceptional RenameFSObject(ObjectLocation myObjectLocation, String myNewObjectName);
         Exceptional RemoveFSObject(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null);
@@ -968,5 +968,8 @@ namespace sones.GraphFS.Session
 
         Exceptional<IGraphFSStream> OpenStream(ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevision, UInt64 myObjectCopy,
                                     FileMode myFileMode, FileAccess myFileAccess, FileShare myFileShare, FileOptions myFileOptions, UInt64 myBufferSize);
+
+
+        UInt64 NumberOfSpecialDirectories { get; }
     }
 }

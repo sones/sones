@@ -77,13 +77,24 @@ namespace sones.GraphDB.Aggregates
             //}
             //else
             //{
-                #region Return the count of idx values
+            #region Return the count of idx values
 
-                var indexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(attributeIndex.IndexRelatedTypeUUID);
+            var indexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(attributeIndex.IndexRelatedTypeUUID);
+            var count = attributeIndex.GetValueCount(dbContext, indexRelatedType);
 
-                return new Exceptional<FuncParameter>(new FuncParameter(new DBUInt64(attributeIndex.GetValueCount())));
 
-                #endregion
+            foreach (var type in dbContext.DBTypeManager.GetAllSubtypes(indexRelatedType, false))
+            {
+                var idx = type.GetAttributeIndex(attributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs, attributeIndex.IndexEdition);
+                if (idx.Success())
+                {
+                    count += idx.Value.GetValueCount(dbContext, type);
+                }
+            }
+
+            return new Exceptional<FuncParameter>(new FuncParameter(new DBUInt64(count)));
+
+            #endregion
             //}
         }
 

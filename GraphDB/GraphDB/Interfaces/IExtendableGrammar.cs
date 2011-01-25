@@ -57,7 +57,7 @@ namespace sones.GraphDB.Interfaces
         /// Add indices plugins to the grammar
         /// </summary>
         /// <param name="indices">Enumerable of IVersionedIndexObject</param>
-        void SetIndices         (IEnumerable<IVersionedIndexObject<IndexKey, ObjectUUID>> indices);
+        void SetIndices         (IEnumerable<AAttributeIndex> indices);
 
         /// <summary>
         /// Add importer plugins to the grammar

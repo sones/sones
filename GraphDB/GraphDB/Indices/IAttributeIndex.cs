@@ -16,6 +16,8 @@ using sones.GraphDB.TypeManagement;
 using sones.GraphFS.DataStructures;
 using sones.Lib.DataStructures.Indices;
 using sones.Lib.ErrorHandling;
+using sones.Lib.NewFastSerializer;
+using sones.Lib.Serializer;
 
 #endregion
 
@@ -24,8 +26,10 @@ namespace sones.GraphDB.Indices
     /// <summary>
     /// Interface for AttributeIndex and UUIDIdx
     /// </summary>
-    public interface IAttributeIndex
+    /// This could be deleted
+    public interface IAttributeIndex : IFastSerializationTypeSurrogate, IFastSerialize, IVersionedIndexInterface<IndexKey, ObjectUUID>
     {
+
         #region Update
 
         /// <summary>
@@ -150,5 +154,6 @@ namespace sones.GraphDB.Indices
         IEnumerable<ObjectUUID> InRange(IndexKey fromIndexKey, IndexKey toIndexKey, bool myOrEqualFromKey, bool myOrEqualToKey, GraphDBType myTypeOfDBObject, DBContext dbContext);
 
         #endregion
+
     }
 }

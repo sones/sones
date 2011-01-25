@@ -69,7 +69,7 @@ namespace sones.GraphDB.Aggregates
 
         public override Exceptional<FuncParameter> Aggregate(AAttributeIndex attributeIndex, GraphDBType graphDBType, DBContext dbContext)
         {
-            if (attributeIndex is UUIDIndex)
+            if (attributeIndex.IsUUIDIndex)
             {
                 return new Exceptional<FuncParameter>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "AVG(UUID) is not implemented!"));
             }

@@ -1455,7 +1455,7 @@ namespace sones.GraphDS.Connectors.REST
 
                                     foreach (var _result in e.Value)
                                     {
-                                        _StringBuilder.Append("<p><a href=\"/objects/").Append(_result).Append("/\">").Append(_result).Append("</a></p>");
+                                        _StringBuilder.Append("<p><a href=\"/vertices/").Append(_result).Append("/\">").Append(_result).Append("</a></p>");
                                     }
                                 });
 

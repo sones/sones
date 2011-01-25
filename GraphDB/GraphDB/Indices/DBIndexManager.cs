@@ -132,7 +132,7 @@ namespace sones.GraphDB.Indices
                     return new Exceptional<ResultType>(index);
                 }
 
-                index.Value.ClearAndRemoveFromDisc(this);
+                index.Value.Clear(_DBContext, myDBTypeStream);
                 
                     foreach (var loc in allDBOLocations)
                     {
@@ -199,7 +199,7 @@ namespace sones.GraphDB.Indices
                 foreach (var _AttributeIndex in _UserDefinedType.GetAllAttributeIndices(includeUUIDIndices: false))
                 {
                     // Clears the index and removes it from the file system!
-                    _AttributeIndex.ClearAndRemoveFromDisc(this);
+                    _AttributeIndex.Clear(_DBContext, _UserDefinedType);
                 }
             }
             
@@ -334,17 +334,9 @@ namespace sones.GraphDB.Indices
 
         #endregion
 
-        #region RemoveDBIndex()
-
-        internal Exceptional RemoveDBIndex(ObjectLocation myObjectLocation)
-        {
-            return _IGraphFSSession.RemoveDirectoryObject(myObjectLocation, true);
-        }
-        #endregion
-
         #region LoadOrCreateDBIndex()
 
-        internal Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>> LoadOrCreateDBIndex(ObjectLocation myShardObjectLocation, IVersionedIndexObject<IndexKey, ObjectUUID> myIIndexObject, AAttributeIndex correspondingIDX)
+        internal Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>> LoadOrCreateShardedDBIndex(ObjectLocation myShardObjectLocation, IVersionedIndexObject<IndexKey, ObjectUUID> myIIndexObject, AAttributeIndex correspondingIDX)
         {
 
             if (!(myIIndexObject is AFSObject))
@@ -406,7 +398,7 @@ namespace sones.GraphDB.Indices
         /// </summary>
         /// <param name="indexTypeName">The index name.</param>
         /// <returns>A new instance of the index object.</returns>
-        public Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>> GetIndex(String indexTypeName)
+        public Exceptional<AAttributeIndex> GetIndex(String indexTypeName)
         {
 
             return _DBContext.DBPluginManager.GetIndex(indexTypeName);
@@ -562,58 +554,6 @@ namespace sones.GraphDB.Indices
 
             return new Vertex(payload);
 
-        }
-
-        #endregion
-
-        #region ReOrganize index
-
-        public Exceptional ReOrganizeIndexShards(AttributeIndex _AttributeIndex, GraphDBType relatedType, UInt16 oldShardValue, UInt16 newShardValue)
-        {
-            foreach (var aIndexShard in _AttributeIndex.GetAllIdxShards(_DBContext))
-            {
-                if (aIndexShard.Item2.Failed())
-                {
-                    return new Exceptional(aIndexShard.Item2);
-                }
-
-                Dictionary<int, KeyValuePair<IndexKey, HashSet<ObjectUUID>>> toBeMovedItems = new Dictionary<int, KeyValuePair<IndexKey, HashSet<ObjectUUID>>>();
-
-                foreach (var aIndexShardPayload in aIndexShard.Item2.Value.ToList())
-                {
-                    var newIndexShardID = GetIndexShardID(aIndexShardPayload.Key, newShardValue);
-
-                    if (newIndexShardID != aIndexShard.Item1)
-                    {
-                        toBeMovedItems.Add(newIndexShardID, aIndexShardPayload);
-
-                        var removeException = _AttributeIndex.Remove(aIndexShardPayload.Key, aIndexShard.Item1, this);
-
-                        if(removeException.Failed())
-                        {
-                            return removeException;
-                        }
-                    }
-                }
-
-                #region insert into other shards
-
-                foreach (var item in toBeMovedItems)
-                {
-                    var insertException = _AttributeIndex.Insert(item.Value.Key, item.Value.Value, item.Key, this, relatedType);
-
-                    if (insertException.Failed())
-                    {
-                        return insertException;
-                    }
-
-                }
-
-                #endregion
-
-            }
-
-            return Exceptional.OK;
         }
 
         #endregion

@@ -177,7 +177,7 @@ namespace sones.GraphDB
 
 			#region subscriptions
 
-			myGraphAppSettings.Subscribe<AttributeIdxShardsSetting>(AttributeIdxShardsSettingChanged);
+			//myGraphAppSettings.Subscribe<AttributeIdxShardsSetting>(AttributeIdxShardsSettingChanged);
 
 			#endregion
 		}
@@ -1499,8 +1499,10 @@ namespace sones.GraphDB
 
         private Exceptional AttributeIdxShardsSettingChanged(GraphSettingChangingEventArgs myEventArgs)
         {
+            /*
             if (myEventArgs.Setting is AttributeIdxShardsSetting)
             {
+
                 //get the new shards count
                 var newValue = Convert.ToUInt16(myEventArgs.SettingValue);
 
@@ -1568,6 +1570,7 @@ namespace sones.GraphDB
                     fsTransaction.Commit();
                 }
             }
+                */
 
             return new Exceptional();
         }
@@ -1904,7 +1907,7 @@ namespace sones.GraphDB
 
 		public void Dispose()
 		{
-			GraphAppSettings.UnSubscribe<AttributeIdxShardsSetting>(AttributeIdxShardsSettingChanged);
+			//GraphAppSettings.UnSubscribe<AttributeIdxShardsSetting>(AttributeIdxShardsSettingChanged);
 		}
 
     }

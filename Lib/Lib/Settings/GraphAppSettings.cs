@@ -195,20 +195,24 @@ namespace sones.Lib.Settings
 				{
 					_Settings.Add(IGraphDSSetting.SettingName, new CurrentSetting() { IGraphDSSetting = IGraphDSSetting, CurrentValue = mySettingValue, GraphDSSettingChangingEvent = null });
 				}
-				else if (_Settings[IGraphDSSetting.SettingName].GraphDSSettingChangingEvent != null)
-				{
-					var curSet = _Settings[IGraphDSSetting.SettingName];
-					var result = curSet.GraphDSSettingChangingEvent(new GraphSettingChangingEventArgs(curSet.IGraphDSSetting, mySettingValue));
+                else if (_Settings[IGraphDSSetting.SettingName].GraphDSSettingChangingEvent != null)
+                {
+                    var curSet = _Settings[IGraphDSSetting.SettingName];
+                    var result = curSet.GraphDSSettingChangingEvent(new GraphSettingChangingEventArgs(curSet.IGraphDSSetting, mySettingValue));
 
-					if (result.Success())
-					{
-						curSet.CurrentValue = mySettingValue;
-					}
-					else
-					{
-						return result;
-					}
-				}
+                    if (result.Success())
+                    {
+                        curSet.CurrentValue = mySettingValue;
+                    }
+                    else
+                    {
+                        return result;
+                    }
+                }
+                else
+                {
+                    _Settings[IGraphDSSetting.SettingName].CurrentValue = mySettingValue;
+                }
 			}
 
 			#endregion
@@ -332,10 +336,11 @@ namespace sones.Lib.Settings
 
 			foreach (var settingKV in _Settings)
 			{
-
-				var setting = settingKV.Value;
-				sones.Add(new XElement("setting", new XAttribute("name", setting.IGraphDSSetting.SettingName), new XAttribute("value", setting.CurrentValue), new XAttribute("type", setting.IGraphDSSetting.SettingType.AssemblyQualifiedName)));
-
+                var setting = settingKV.Value;
+                if (setting.IGraphDSSetting != null)
+                {
+                    sones.Add(new XElement("setting", new XAttribute("name", setting.IGraphDSSetting.SettingName), new XAttribute("value", setting.CurrentValue), new XAttribute("type", setting.IGraphDSSetting.SettingType.AssemblyQualifiedName)));
+                }
 			}
 
 			xmlDocument.Add(sones);
@@ -365,6 +370,14 @@ namespace sones.Lib.Settings
         
         #endregion
 
+
+        public void Apply(GraphAppSettings myGraphAppSettings)
+        {
+            foreach (var setting in myGraphAppSettings._Settings)
+            {
+                ApplySetting(setting.Value.IGraphDSSetting, setting.Key);
+            }
+        }
     }
 
 

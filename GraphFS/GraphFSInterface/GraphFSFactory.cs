@@ -130,7 +130,7 @@ namespace sones.GraphFS
             #region Discover plugins
 
             var pm = new PluginManager()
-                .Register<IGraphFS>(IGraphFSVersionCompatibility.MinVersion, IGraphFSVersionCompatibility.MaxVersion, null, myGraphAppSettings)
+                .Register<IGraphFS>(IGraphFSVersionCompatibility.MinVersion, IGraphFSVersionCompatibility.MaxVersion, null)
                 .Discover(false, true);
 
             if (pm.Failed())
@@ -143,6 +143,8 @@ namespace sones.GraphFS
             #region Get FS implementation 
 
             var fs = pm.Value.GetPlugins<IGraphFS>((ifs) => ifs.GetType().Name == myImplementation).FirstOrDefault();
+
+            fs = Activator.CreateInstance(fs.GetType(), myGraphAppSettings) as IGraphFS;
 
             if (fs == null)
             {

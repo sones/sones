@@ -109,6 +109,9 @@
     <Compile Include="ImportExport\DumpTypes.cs" />
     <Compile Include="ImportExport\VerbosityTypes.cs" />
     <Compile Include="Indices\AAttributeIndex.cs" />
+    <Compile Include="Indices\HashTableIndexNonVersioned.cs" />
+    <Compile Include="Indices\HashTableIndex.cs" />
+    <Compile Include="Indices\ShardedHashTableIndex.cs" />
     <Compile Include="Indices\UUIDIndex.cs" />
     <Compile Include="Indices\IAttributeIndex.cs" />
     <Compile Include="Indices\DBIndexManager.cs" />
@@ -259,7 +262,6 @@
     <Compile Include="Indices\IndexKeyDefinition.cs" />
     <Compile Include="Indices\IndexKey.cs" />
     <Compile Include="Managers\ObjectManipulationManager.cs" />
-    <Compile Include="Indices\AttributeIndex.cs" />
     <Compile Include="Managers\ObjectManagement\BackwardEdgeStream.cs" />
     <Compile Include="Managers\ObjectManagement\DBObjectCache\DBObjectCache.cs" />
     <Compile Include="Managers\ObjectManagement\DBObjectGroup.cs" />

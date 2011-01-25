@@ -24,6 +24,7 @@ using sones.Lib;
 
 namespace sones.GraphDB.Indices
 {
+    
     /// <summary>
     /// IndexKey for any AttributeIndex
     /// </summary>
@@ -419,5 +420,4 @@ namespace sones.GraphDB.Indices
 
         #endregion
     }
-
 }

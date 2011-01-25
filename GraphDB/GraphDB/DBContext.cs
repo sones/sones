@@ -43,6 +43,10 @@ namespace sones.GraphDB
         #region Data
 
         private IGraphFSSession _IGraphFSSession;
+        public IGraphFSSession IGraphFSSession
+        {
+            get { return _IGraphFSSession; }
+        }
 
         #region Manager REMOVE SETTER AFTERWARDS
 

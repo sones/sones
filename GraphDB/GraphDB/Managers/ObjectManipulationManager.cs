@@ -1866,7 +1866,7 @@ namespace sones.GraphDB.Managers
             Parallel.ForEach(_graphDBType.GetAllAttributeIndices(false), aIdx =>
                 {
                     //it is not necessary to clear the UUID IDX because this is done by deleting the objects in the fs
-                    aIdx.ClearAndRemoveFromDisc(_dbContext.DBIndexManager);
+                    aIdx.Clear(_dbContext, _dbContext.DBTypeManager.GetTypeByUUID(aIdx.IndexRelatedTypeUUID));
                 });
 
             #endregion

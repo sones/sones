@@ -1,5 +1,5 @@
-﻿/* <id name="GraphDB – AttributeIndex" />
- * <copyright file="AttributeIndex.cs"
+﻿/* <id name="GraphDB – ShardedHashTableIndex" />
+ * <copyright file="ShardedHashTableIndex.cs"
  *            company="sones GmbH">
  * Copyright (c) sones GmbH. All rights reserved.
  * </copyright>
@@ -24,6 +24,7 @@ using sones.GraphFS.Objects;
 using sones.Lib.DataStructures.Indices;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphFS.Settings;
 
 #endregion
 
@@ -32,8 +33,14 @@ namespace sones.GraphDB.Indices
     /// <summary>
     /// This datastructure contains information concerning a single attribute index
     /// </summary>
-    public class AttributeIndex : AAttributeIndex
+    public class ShardedHashTableIndex : AAttributeIndex
     {
+        public const String INDEX_TYPE = "ShardedHashTable";
+        public override string IndexType
+        {
+            get { return INDEX_TYPE; }
+        }
+
         #region Properties
 
         Object _lockObject = new object();
@@ -41,80 +48,37 @@ namespace sones.GraphDB.Indices
         UInt64 _keyCount = 0;
         UInt64 _valueCount = 0;
 
+        #region Shards
+
+        /// <summary>
+        /// The count of attribute idnex shards
+        /// </summary>
+        public virtual UInt16 AttributeIdxShards { get; set; }
+
+        #endregion
+
+        private Boolean _IsUUIDIndex;
+        public override Boolean IsUUIDIndex
+        {
+            get
+            {
+                return _IsUUIDIndex;
+            }
+        }
         #endregion
 
         #region Constructor
 
         /// <summary>
-        /// Creates a new AttributeIndex object
+        /// Creates a new ShardedHashTableIndex object
         /// </summary>
         /// <param name="myIndexName">The user-defined name of this index</param>
         /// <param name="myIndexEdition">You may have different versions of an attribute index, e.g. HashMap, BTree to speed up different database operations</param>
         /// <param name="myAttributes">The list of attributes that is needed for the creation of a IndexKeyDefinition</param>
-        /// <param name="myIndexType">The IndexType e.g. HashMap, BTree of this AttributeIndex</param>
+        /// <param name="myIndexType">The IndexType e.g. HashMap, BTree of this ShardedHashTableIndex</param>
         /// <param name="correspondingType">The corresponding type of this index, used to get the file system location</param>
         /// <param name="myFileSystemLocation">The location oif the index. If null it will be generated based on the <paramref name="correspondingType"/>.</param>
-        public AttributeIndex(String myIndexName, String myIndexEdition, List<AttributeUUID> myAttributes, GraphDBType correspondingType, UInt16 myObjectDirectoryShards, String myIndexType = null, UInt64 myKeyCount = 0, UInt64 myValueCount = 0)
-            : this(myIndexName, new IndexKeyDefinition(myAttributes), correspondingType, myObjectDirectoryShards, myIndexType, myIndexEdition, myKeyCount, myValueCount)
-        { }
-
-        public AttributeIndex(string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, UInt16 myAttributeIdxShards, string indexType = null, string indexEdition = DBConstants.DEFAULTINDEX, UInt64 myKeyCount = 0, UInt64 myValueCount = 0)
-        {
-            IndexName          = indexName;
-            IndexEdition       = indexEdition;
-            IndexKeyDefinition = idxKey;
-            IndexRelatedTypeUUID = correspondingType.UUID;
-            AttributeIdxShards = myAttributeIdxShards;
-
-            _keyCount = myKeyCount;
-            _valueCount = myValueCount;
-
-            if (indexEdition == null)
-            {
-                IndexEdition = DBConstants.DEFAULTINDEX;
-            }
-            else
-            {
-                IndexEdition = indexEdition;
-            }
-
-            if (String.IsNullOrEmpty(indexType))
-            {
-                IndexType = VersionedHashIndexObject.Name;
-            }
-            else
-            {
-                IndexType = indexType;
-            }
-
-            #region Workaround for current IndexOperation of InOperator - just follow the IsListOfBaseObjectsIndex property
-
-            // better approach, use a special index key for a set of base objects
-            if (idxKey.IndexKeyAttributeUUIDs.Any(a =>
-            {
-                var typeAttr = correspondingType.GetTypeAttributeByUUID(a);
-                if (typeAttr != null && (typeAttr.EdgeType is IBaseEdge))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }))
-            {
-                IsListOfBaseObjectsIndex = true;
-            }
-            else
-            {
-                IsListOfBaseObjectsIndex = false;
-            }
-
-            #endregion
-
-            FileSystemLocation = (correspondingType.ObjectLocation + "Indices") + (IndexName + "#" + IndexEdition);
-           
-        }
+        public ShardedHashTableIndex() { }
 
         #endregion
 
@@ -299,7 +263,7 @@ namespace sones.GraphDB.Indices
         #region Contains
        
         /// <summary>
-        /// <seealso cref=" IAttributeIndex"/>
+        /// <seealso cref=" IShardedHashTableIndex"/>
         /// </summary>        
         public override Boolean Contains(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext myDBContext)
         {
@@ -356,7 +320,7 @@ namespace sones.GraphDB.Indices
         #region Remove
 
         /// <summary>
-        /// <seealso cref=" IAttributeIndex"/>
+        /// <seealso cref=" IShardedHashTableIndex"/>
         /// </summary>        
         public override Exceptional Remove(DBObjectStream myDBObject, GraphDBType myTypeOfDBObjects, DBContext dbContext)
         {
@@ -424,9 +388,9 @@ namespace sones.GraphDB.Indices
         #region Clear
 
         /// <summary>
-        /// <seealso cref=" IAttributeIndex"/>
+        /// <seealso cref=" IShardedHashTableIndex"/>
         /// </summary>        
-        public override Exceptional ClearAndRemoveFromDisc(DBIndexManager indexManager)
+        public override Exceptional ClearAndRemoveFromDisc(DBContext myDBContext)
         {
             lock (_lockObject)
             {
@@ -434,7 +398,28 @@ namespace sones.GraphDB.Indices
                 _keyCount = 0;
             }
 
-            return indexManager.RemoveDBIndex(FileSystemLocation);
+            return myDBContext.IGraphFSSession.RemoveDirectoryObject(FileSystemLocation, true);
+        }
+
+        /// <summary>
+        /// <seealso cref=" IAttributeIndex"/>
+        /// </summary>        
+        public override Exceptional Clear(DBContext myDBContext, GraphDBType myTypeOfDBObject)
+        {
+            lock (_lockObject)
+            {
+                _valueCount = 0;
+                _keyCount = 0;
+            }
+            foreach (var aIdxShardExceptional in GetAllIdxShards(myDBContext))
+            {
+                if (aIdxShardExceptional.Item2.Failed())
+                {
+                    return aIdxShardExceptional.Item2;
+                }
+                aIdxShardExceptional.Item2.Value.Clear();
+            }
+            return Exceptional.OK;
         }
 
         #endregion
@@ -458,9 +443,9 @@ namespace sones.GraphDB.Indices
             }
 
             // If parameter cannot be cast to Point return false.
-            if (obj is AttributeIndex)
+            if (obj is ShardedHashTableIndex)
             {
-                AttributeIndex p = (AttributeIndex)obj;
+                ShardedHashTableIndex p = (ShardedHashTableIndex)obj;
                 return Equals(p);
             }
             else
@@ -469,7 +454,7 @@ namespace sones.GraphDB.Indices
             }
         }
 
-        public Boolean Equals(AttributeIndex p)
+        public Boolean Equals(ShardedHashTableIndex p)
         {
             // If parameter is null return false:
             if ((object)p == null)
@@ -495,7 +480,7 @@ namespace sones.GraphDB.Indices
             return true;
         }
 
-        public static Boolean operator ==(AttributeIndex a, AttributeIndex b)
+        public static Boolean operator ==(ShardedHashTableIndex a, ShardedHashTableIndex b)
         {
             // If both are null, or both are same instance, return true.
             if (Object.ReferenceEquals(a, b))
@@ -513,7 +498,7 @@ namespace sones.GraphDB.Indices
             return a.Equals(b);
         }
 
-        public static Boolean operator !=(AttributeIndex a, AttributeIndex b)
+        public static Boolean operator !=(ShardedHashTableIndex a, ShardedHashTableIndex b)
         {
             return !(a == b);
         }
@@ -534,7 +519,7 @@ namespace sones.GraphDB.Indices
         #region GetKeys
 
         /// <summary>
-        /// <seealso cref=" IAttributeIndex"/>
+        /// <seealso cref=" IShardedHashTableIndex"/>
         /// </summary>        
         public override IEnumerable<IndexKey> GetKeys(GraphDBType myTypeOfDBObject, DBContext myDBContext)
         {
@@ -565,7 +550,7 @@ namespace sones.GraphDB.Indices
         #region GetValues
 
         /// <summary>
-        /// <seealso cref=" IAttributeIndex"/>
+        /// <seealso cref=" IShardedHashTableIndex"/>
         /// </summary>
         public override IEnumerable<ObjectUUID> GetValues(IndexKey myIndeyKey, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
@@ -590,7 +575,7 @@ namespace sones.GraphDB.Indices
         #region GetAllValues
 
         /// <summary>
-        /// <seealso cref=" IAttributeIndex"/>
+        /// <seealso cref=" IShardedHashTableIndex"/>
         /// </summary>
         public override IEnumerable<IEnumerable<ObjectUUID>> GetAllValues(GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
@@ -621,7 +606,7 @@ namespace sones.GraphDB.Indices
         #region GetKeyValues
 
         /// <summary>
-        /// <seealso cref=" IAttributeIndex"/>
+        /// <seealso cref=" IShardedHashTableIndex"/>
         /// </summary>
         public override IEnumerable<KeyValuePair<IndexKey, HashSet<ObjectUUID>>> GetKeyValues(GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
@@ -653,9 +638,9 @@ namespace sones.GraphDB.Indices
         #region GetValueCount
 
         /// <summary>
-        /// <seealso cref=" IAttributeIndex"/>
+        /// <seealso cref=" IShardedHashTableIndex"/>
         /// </summary>
-        public override UInt64 GetValueCount()
+        public override UInt64 GetValueCount(DBContext myDBContext, GraphDBType myTypeOfDBObject)
         {
             return _valueCount;
         }
@@ -665,9 +650,9 @@ namespace sones.GraphDB.Indices
         #region GetKeyCount
 
         /// <summary>
-        /// <seealso cref=" IAttributeIndex"/>
+        /// <seealso cref=" IShardedHashTableIndex"/>
         /// </summary>
-        public override UInt64 GetKeyCount()
+        public override UInt64 GetKeyCount(DBContext myDBContext, GraphDBType myTypeOfDBObject)
         {
             return _keyCount;
         }
@@ -677,7 +662,7 @@ namespace sones.GraphDB.Indices
         #region InRange
 
         /// <summary>
-        /// <seealso cref=" IAttributeIndex"/>
+        /// <seealso cref=" IShardedHashTableIndex"/>
         /// </summary>
         public override IEnumerable<ObjectUUID> InRange(IndexKey fromIndexKey, IndexKey toIndexKey, bool myOrEqualFromKey, bool myOrEqualToKey, GraphDBType myTypeOfDBObject, DBContext myDBContext)
         {
@@ -729,13 +714,9 @@ namespace sones.GraphDB.Indices
                 return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(new GraphDBError("Index is away!"));
             }
 
-            var emptyIdx = indexManager.GetIndex(IndexType);
-            if (!emptyIdx.Success())
-            {
-                return emptyIdx;
-            }
+            var emptyIdx = new VersionedHashIndexObject<IndexKey, ObjectUUID>();
 
-            var indexExceptional = indexManager.LoadOrCreateDBIndex(FileSystemLocation + idxShard.ToString(), emptyIdx.Value, this);
+            var indexExceptional = indexManager.LoadOrCreateShardedDBIndex(FileSystemLocation + idxShard.ToString(), emptyIdx, this);
 
             if (indexExceptional.Failed())
             {
@@ -1011,5 +992,96 @@ namespace sones.GraphDB.Indices
         }
 
         #endregion
+
+        public override AAttributeIndex GetNewInstance()
+        {
+            return new ShardedHashTableIndex();
+        }
+
+        #region IFastSerializationTypeSurrogate Members
+
+        public override bool SupportsType(Type type)
+        {
+            if (type == typeof(ShardedHashTableIndex)) return true;
+            return false;
+        }
+
+        public override void Serialize(ref Lib.NewFastSerializer.SerializationWriter mySerializationWriter)
+        {
+
+            mySerializationWriter.WriteString(FileSystemLocation.ToString());
+            mySerializationWriter.WriteString(IndexEdition);
+            mySerializationWriter.WriteString(IndexName);
+            mySerializationWriter.WriteBoolean(_IsUUIDIndex);
+            IndexRelatedTypeUUID.Serialize(ref mySerializationWriter);
+
+        }
+
+        public override void Deserialize(ref Lib.NewFastSerializer.SerializationReader mySerializationReader)
+        {
+            FileSystemLocation = new ObjectLocation(mySerializationReader.ReadString());
+            IndexEdition = mySerializationReader.ReadString();
+            IndexName = mySerializationReader.ReadString();
+            _IsUUIDIndex = mySerializationReader.ReadBoolean();
+            IndexRelatedTypeUUID = new TypeUUID(ref mySerializationReader);
+        }
+
+        public override uint TypeCode { get { return 1004; } }
+
+        #endregion
+
+        public override Exceptional Initialize(DBContext myDBContext, string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, string indexEdition = DBConstants.DEFAULTINDEX)
+        {
+
+            IndexName = indexName;
+            IndexEdition = indexEdition;
+            IndexKeyDefinition = idxKey;
+            IndexRelatedTypeUUID = correspondingType.UUID;
+            AttributeIdxShards = Convert.ToUInt16(myDBContext.GraphAppSettings.Get<AttributeIdxShardsSetting>());
+
+            _keyCount = 0;
+            _valueCount = 0;
+
+            if (indexEdition == null)
+            {
+                IndexEdition = DBConstants.DEFAULTINDEX;
+            }
+            else
+            {
+                IndexEdition = indexEdition;
+            }
+
+            _IsUUIDIndex = idxKey.IndexKeyAttributeUUIDs.Count == 1 && idxKey.IndexKeyAttributeUUIDs[0].Equals(myDBContext.DBTypeManager.GetUUIDTypeAttribute().UUID);
+
+            #region Workaround for current IndexOperation of InOperator - just follow the IsListOfBaseObjectsIndex property
+
+            // better approach, use a special index key for a set of base objects
+            if (idxKey.IndexKeyAttributeUUIDs.Any(a =>
+            {
+                var typeAttr = correspondingType.GetTypeAttributeByUUID(a);
+                if (typeAttr != null && (typeAttr.EdgeType is IBaseEdge))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }))
+            {
+                IsListOfBaseObjectsIndex = true;
+            }
+            else
+            {
+                IsListOfBaseObjectsIndex = false;
+            }
+
+            #endregion
+
+            FileSystemLocation = (correspondingType.ObjectLocation + "Indices") + (IndexName + "#" + IndexEdition);
+
+            return Exceptional.OK;
+        }
+
     }
 }

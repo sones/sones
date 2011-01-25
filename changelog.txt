@@ -1,5 +1,10 @@
 sones GraphDB 1.2 (developer) Changelog:
 
+24.01.2010
+- WebShell bugfix
+- INSERTORUPDATE bugfix
+- GraphAppSettings fixes
+
 10.12.2010
 - Aggregate version compatibility change
 - ResolveEdge function bugfix

@@ -1341,12 +1341,12 @@ namespace sones.GraphDS.API.CSharp
 
         #region StoreFSObject(myAFSObject, myAllowToOverwrite)
 
-        public override Exceptional StoreFSObject(AFSObject myAFSObject, Boolean myAllowToOverwrite = false)
+        public override Exceptional StoreFSObject(AFSObject myAFSObject, Boolean myAllowToOverwrite = false, Boolean myPinObjectLocationInCache = false)
         {
 
             myAFSObject.IGraphFSSessionReference = new WeakReference<IGraphFSSession>(this);
 
-            return IGraphFS.StoreAFSObject(SessionToken, myAFSObject.ObjectLocation, myAFSObject, myAllowToOverwrite);
+            return IGraphFS.StoreAFSObject(SessionToken, myAFSObject.ObjectLocation, myAFSObject, myAllowToOverwrite, myPinObjectLocationInCache);
 
         }
 

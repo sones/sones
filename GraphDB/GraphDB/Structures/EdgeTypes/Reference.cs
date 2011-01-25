@@ -273,10 +273,7 @@ namespace sones.GraphDB.Structures.EdgeTypes
             return myReference;
         }
 
-        public uint TypeCode
-        {
-            get { return 701; }
-        }
+        public uint TypeCode { get { return 701; } }
 
         #endregion
 

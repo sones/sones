@@ -1,6 +1,0 @@
-Parts of this product contain code and binary samples from these sources:
-
-Newtonsoft.JSON: Copyright (c) 2007 James Newton-King
-Irony: Copyright (c) 2008 Roman Ivantsov
-LZMA SDK: LZMA SDK is written and placed in the public domain by Igor Pavlov.
-

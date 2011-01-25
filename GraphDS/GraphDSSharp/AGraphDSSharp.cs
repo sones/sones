@@ -44,6 +44,7 @@ namespace sones.GraphDS.API.CSharp
         private const string GraphAppSettingsLocation = "GraphAppSettings.xml";
         protected ISessionInfo  _SessionInfo;
         protected SessionToken  _SessionToken;
+        protected readonly  Dictionary<Type, List<Action<AFSObject>>> _PostSerializationActions;
 
         #endregion
 
@@ -58,6 +59,7 @@ namespace sones.GraphDS.API.CSharp
         public ObjectCacheSettings    ObjectCacheSettings    { get; set; }        
         public NotificationSettings   NotificationSettings   { get; set; }
         public NotificationDispatcher NotificationDispatcher { get; set; }
+
 
         public GraphAppSettings GraphAppSettings  { get; private set; }
 
@@ -162,8 +164,9 @@ namespace sones.GraphDS.API.CSharp
             _SessionInfo                    = new FSSessionInfo("root");
             _SessionToken                   = new SessionToken(_SessionInfo);
             _IGraphFSParametersDictionary   = new Dictionary<String, Object>();
-            GraphAppSettings                 = new GraphAppSettings();
+            GraphAppSettings                = new GraphAppSettings();
             GraphAppSettings.LoadXML(GraphAppSettingsLocation);
+            _PostSerializationActions       = new Dictionary<Type,List<Action<AFSObject>>>();
         }
 
         #endregion
@@ -316,6 +319,14 @@ namespace sones.GraphDS.API.CSharp
             get { return _SessionToken; }
         }
 
+        public UInt64 NumberOfSpecialDirectories
+        {
+            get
+            {
+                return 6UL;
+            }
+        }
+        
         public abstract String Implementation { get; }
 
         public abstract IGraphFSSession CreateNewSession(String myUsername);
@@ -416,7 +427,7 @@ namespace sones.GraphDS.API.CSharp
 
         public abstract Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, Func<PT> myFunc, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null, ulong myObjectCopy = 0, bool myIgnoreIntegrityCheckFailures = false) where PT : GraphFS.Objects.AFSObject;
 
-        public abstract Exceptional StoreFSObject(AFSObject myAGraphObject, bool myAllowOverwritting);
+        public abstract Exceptional StoreFSObject(AFSObject myAGraphObject, bool myAllowOverwritting, Boolean myPinObjectLocationInCache = false);
 
         public abstract Exceptional<Trinary> ObjectExists(ObjectLocation myObjectLocatio);
 

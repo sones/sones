@@ -709,6 +709,13 @@ namespace sones.GraphFS.Session
 
         #endregion
 
+        public UInt64 NumberOfSpecialDirectories
+        {
+            get
+            {
+                return IGraphFS.NumberOfSpecialDirectories;
+            }
+        }
         
         public FileSystemUUID GetFileSystemUUID()
         {
@@ -1115,12 +1122,12 @@ namespace sones.GraphFS.Session
 
         #region StoreFSObject(myAFSObject, myAllowToOverwrite)
 
-        public Exceptional StoreFSObject(AFSObject myAFSObject, Boolean myAllowToOverwrite = false)
+        public Exceptional StoreFSObject(AFSObject myAFSObject, Boolean myAllowToOverwrite = false, Boolean myPinObjectLocationInCache = false)
         {
 
             myAFSObject.IGraphFSSessionReference = new WeakReference<IGraphFSSession>(this);
 
-            return IGraphFS.StoreAFSObject(SessionToken, myAFSObject.ObjectLocation, myAFSObject, myAllowToOverwrite);
+            return IGraphFS.StoreAFSObject(SessionToken, myAFSObject.ObjectLocation, myAFSObject, myAllowToOverwrite, myPinObjectLocationInCache);
 
         }
 
@@ -1143,28 +1150,6 @@ namespace sones.GraphFS.Session
 
             lock (this)
             {
-
-                var _Exceptional = new Exceptional();
-
-                if (myObjectEdition == null || myObjectRevisionID == null)
-                {
-
-                    return IGraphFS.GetObjectLocator(SessionToken, myObjectLocation).
-                        WhenFailed(e => e.PushIErrorT(new GraphFSError_CouldNotGetObjectLocator(myObjectLocation))).
-                        WhenSucceded<ObjectLocator>(e =>
-                        {
-                            if (myObjectEdition == null)
-                                myObjectEdition = e.Value[myObjectStream].DefaultEditionName;
-
-                            if (myObjectRevisionID == null)
-                                myObjectRevisionID = e.Value[myObjectStream].DefaultEdition.LatestRevisionID;
-
-                            return IGraphFS.RemoveAFSObject(SessionToken, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID).
-                                       Convert<ObjectLocator>();
-
-                        });
-
-                }
 
                 return IGraphFS.RemoveAFSObject(SessionToken, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID);
 
@@ -1619,7 +1604,7 @@ namespace sones.GraphFS.Session
 
         #endregion
 
-        //#region Rights
+        #region Rights
 
         //public Boolean AddRightsStreamToObject(ObjectLocation myObjectLocation, AccessControlObject myRightsObject)
         //{
@@ -1740,7 +1725,7 @@ namespace sones.GraphFS.Session
         //    return IGraphFS.ContainsRightUUID(myRightUUID, SessionToken);
         //}
 
-        //#endregion
+        #endregion
 
 
         #region Stream
@@ -1786,7 +1771,6 @@ namespace sones.GraphFS.Session
         #endregion
 
         #endregion
-
     }
 
 }

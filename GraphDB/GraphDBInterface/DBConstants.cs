@@ -159,6 +159,7 @@ namespace sones.GraphDB
         #endif
 
         public const Boolean UseThreadedSelect                  = true;
+
     }
 
 }

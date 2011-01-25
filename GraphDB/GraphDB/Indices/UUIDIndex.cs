@@ -36,15 +36,24 @@ namespace sones.GraphDB.Indices
     /// </summary>
     public class UUIDIndex : AAttributeIndex
     {
+        public const String INDEX_TYPE = "UUID";
+        public override string IndexType
+        {
+            get { return INDEX_TYPE; }
+        }
+
         #region Properties
 
         Object _lockObject = new object();
+        UInt64 _DirCountDelta = 0UL;
 
-        UInt64 _numberOfObjects = 0;
+        public override Boolean IsUUIDIndex { get { return true; } }
 
         #endregion
 
         #region Constructor
+
+        public UUIDIndex() { }
 
         /// <summary>
         /// Creates a new AttributeIndex object
@@ -55,48 +64,13 @@ namespace sones.GraphDB.Indices
         /// <param name="myIndexType">The IndexType e.g. HashMap, BTree of this AttributeIndex</param>
         /// <param name="correspondingType">The corresponding type of this index, used to get the file system location</param>
         /// <param name="myFileSystemLocation">The location oif the index. If null it will be generated based on the <paramref name="correspondingType"/>.</param>
-        public UUIDIndex(String myIndexName, String myIndexEdition, List<AttributeUUID> myAttributes, GraphDBType correspondingType, String myIndexType = null, UInt64 myKeyCount = 0)
-            : this(myIndexName, new IndexKeyDefinition(myAttributes), correspondingType, myIndexType, myIndexEdition, myKeyCount)
+        public UUIDIndex(DBContext myDBContext, String myIndexName, String myIndexEdition, List<AttributeUUID> myAttributes, GraphDBType correspondingType, ulong myDirectoryDelta)
+            : this(myDBContext, myIndexName, new IndexKeyDefinition(myAttributes), correspondingType, myDirectoryDelta, myIndexEdition)
         { }
 
-        public UUIDIndex(string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, string indexType = null, string indexEdition = DBConstants.DEFAULTINDEX, UInt64 myKeyCount = 0)
+        public UUIDIndex(DBContext myDBContext, string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, ulong myDirectoryDelta, String indexEdition = DBConstants.DEFAULTINDEX)
         {
-            IndexName          = indexName;
-            IndexEdition       = indexEdition;
-            IndexKeyDefinition = idxKey;
-            IndexRelatedTypeUUID = correspondingType.UUID;
-
-            AttributeIdxShards = 0;
-
-            _numberOfObjects = myKeyCount;
-            //valueCount is irrellevant, because valueCount = keyCount
-
-            if (indexEdition == null)
-            {
-                IndexEdition = DBConstants.DEFAULTINDEX;
-            }
-            else
-            {
-                IndexEdition = indexEdition;
-            }
-
-            if (String.IsNullOrEmpty(indexType))
-            {
-                IndexType = "UUIDIndex";
-            }
-            else
-            {
-                IndexType = indexType;
-            }
-
-            #region Workaround for current IndexOperation of InOperator - just follow the IsListOfBaseObjectsIndex property
-
-            IsListOfBaseObjectsIndex = false;
-
-            #endregion
-
-            FileSystemLocation = (correspondingType.ObjectLocation + "Indices") + (IndexName + "#" + IndexEdition);
-
+            Initialize(myDBContext, indexEdition, idxKey, correspondingType, myDirectoryDelta, indexEdition);
         }
 
         #endregion
@@ -142,14 +116,7 @@ namespace sones.GraphDB.Indices
         /// <param name="myToken">The SessionInfos</param>
         public override Exceptional Insert(DBObjectStream myDBObject, IndexSetStrategy myIndexSetStrategy, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            //do not insert anything, just update the number of objects
-
-            lock (_lockObject)
-            {
-                _numberOfObjects++;
-            }
-
-            return new Exceptional();
+            return Exceptional.OK;
         }
 
         #endregion
@@ -211,30 +178,21 @@ namespace sones.GraphDB.Indices
         /// <param name="myToken">The SessionInfos</param>
         public override Exceptional Remove(DBObjectStream myDBObject, GraphDBType myTypeOfDBObjects, DBContext dbContext)
         {
-            //do not remove anything, just update the number of objects
-
-            lock (_lockObject)
-            {
-                _numberOfObjects--;
-            }
-
-            return new Exceptional();
+            return Exceptional.OK;
         }
 
         #endregion
 
         #region Clear
 
-        public override Exceptional ClearAndRemoveFromDisc(DBIndexManager indexManager)
+        public override Exceptional ClearAndRemoveFromDisc(DBContext myDBContext)
         {
-            //do not clear anything, just update the number of objects
+            return Exceptional.OK;
+        }
 
-            lock (_lockObject)
-            {
-                _numberOfObjects = 0;
-            }
-
-            return new Exceptional();
+        public override Exceptional Clear(DBContext myDBContext, GraphDBType myDBTypeStream)
+        {
+            return Exceptional.OK;
         }
 
         #endregion
@@ -394,18 +352,18 @@ namespace sones.GraphDB.Indices
 
         #region GetValueCount
 
-        public override UInt64 GetValueCount()
+        public override UInt64 GetValueCount(DBContext myDBContext, GraphDBType myTypeOfDBObject)
         {
-            return _numberOfObjects;
+            return GetDirectoryObject(myTypeOfDBObject, myDBContext).DirCount - _DirCountDelta;
         }
 
         #endregion
 
         #region GetKeyCount
 
-        public override UInt64 GetKeyCount()
+        public override UInt64 GetKeyCount(DBContext myDBContext, GraphDBType myTypeOfDBObject)
         {
-            return _numberOfObjects;
+            return GetDirectoryObject(myTypeOfDBObject, myDBContext).DirCount - _DirCountDelta;
         }
 
         #endregion
@@ -574,5 +532,82 @@ namespace sones.GraphDB.Indices
         }
 
         #endregion
+
+        public override AAttributeIndex GetNewInstance()
+        {
+            return new UUIDIndex();
+        }
+
+        #region IFastSerializationTypeSurrogate Members
+
+        public override bool SupportsType(Type type)
+        {
+            if (type == typeof(UUIDIndex)) return true;
+            return false;
+        }
+
+
+        public override uint TypeCode { get { return 1001; } }
+
+        #endregion
+
+        #region IFastSerialize Members
+
+        public override void Serialize(ref Lib.NewFastSerializer.SerializationWriter mySerializationWriter)
+        {
+            mySerializationWriter.WriteUInt64(_DirCountDelta);
+            mySerializationWriter.WriteString(IndexName);
+            mySerializationWriter.WriteString(IndexEdition);
+            IndexRelatedTypeUUID.Serialize(ref mySerializationWriter);
+        }
+
+        public override void Deserialize(ref Lib.NewFastSerializer.SerializationReader mySerializationReader)
+        {
+            _DirCountDelta = mySerializationReader.ReadUInt64();
+            IndexName = mySerializationReader.ReadString();
+            IndexEdition = mySerializationReader.ReadString();
+            IndexRelatedTypeUUID = new TypeUUID(ref mySerializationReader);
+        }
+
+        #endregion
+
+        //public override Exceptional Initialize(DBContext myDBContext)
+        //{
+        //    return Exceptional.OK;
+        //}
+
+        public override Exceptional Initialize(DBContext myDBContext, string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, string indexEdition = DBConstants.DEFAULTINDEX)
+        {
+            return Initialize(myDBContext, indexName, idxKey, correspondingType, myDBContext.IGraphFSSession.NumberOfSpecialDirectories, indexEdition);
+        }
+
+        public Exceptional Initialize(DBContext myDBContext, string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, UInt64 myDirectoryDelta, string indexEdition = DBConstants.DEFAULTINDEX)
+        {
+            IndexName = indexName;
+            IndexEdition = indexEdition;
+            IndexKeyDefinition = idxKey;
+            IndexRelatedTypeUUID = correspondingType.UUID;
+
+            if (indexEdition == null)
+            {
+                IndexEdition = DBConstants.DEFAULTINDEX;
+            }
+            else
+            {
+                IndexEdition = indexEdition;
+            }
+
+            #region Workaround for current IndexOperation of InOperator - just follow the IsListOfBaseObjectsIndex property
+
+            IsListOfBaseObjectsIndex = false;
+
+            #endregion
+
+            FileSystemLocation = (correspondingType.ObjectLocation + "Indices") + (IndexName + "#" + IndexEdition);
+
+            _DirCountDelta = myDirectoryDelta;
+
+            return Exceptional.OK;
+        }
     }
 }

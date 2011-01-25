@@ -11,6 +11,7 @@
 #region Usings
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using sones.GraphDB.Errors;
@@ -74,7 +75,7 @@ namespace sones.GraphDB.GraphQL.StatementNodes.InsertOrUpdate
                 if (parseNode.ChildNodes[3] != null && parseNode.ChildNodes[3].HasChildNodes())
                 {
 
-                    _AttributeAssignList = (parseNode.ChildNodes[3].AstNode as AttrAssignListNode).AttributeAssigns;
+                    _AttributeAssignList = new List<AAttributeAssignOrUpdate>((parseNode.ChildNodes[3].AstNode as AttrUpdateOrAssignListNode).ListOfUpdate.Select(e => e as AAttributeAssignOrUpdate));
 
                 }
 

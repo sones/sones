@@ -1,4 +1,4 @@
-﻿
+
 Parsing\CompilerContext.cs
 sones.Lib.Frameworks.Irony.Parsing.CompilerContext
 

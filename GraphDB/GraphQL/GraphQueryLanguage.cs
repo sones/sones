@@ -1489,7 +1489,7 @@ namespace sones.GraphDB.GraphQL
 
             #region INSERTORUPDATE
 
-            insertorupdateStmt.Rule = S_INSERTORUPDATE + TypeWrapper + S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT + whereClauseOpt;
+            insertorupdateStmt.Rule = S_INSERTORUPDATE + TypeWrapper + S_VALUES + S_BRACKET_LEFT + AttrUpdateList + S_BRACKET_RIGHT + whereClauseOpt;
 
             #endregion
 
@@ -2580,7 +2580,7 @@ namespace sones.GraphDB.GraphQL
             foreach (var _AttributeIndex in myAttributeIndices)
             {
 
-                if (_AttributeIndex is UUIDIndex || _AttributeIndex.IndexEdition == DBConstants.UNIQUEATTRIBUTESINDEX)
+                if (_AttributeIndex.IsUUIDIndex || _AttributeIndex.IndexEdition == DBConstants.UNIQUEATTRIBUTESINDEX)
                     continue;
 
                 _StringBuilder.Append(String.Concat(S_BRACKET_LEFT, _AttributeIndex.IndexName));
@@ -2636,28 +2636,30 @@ namespace sones.GraphDB.GraphQL
                 var UUIDIdx = graphDBType.GetUUIDIndex(dbContext.DBTypeManager);
 
                 #region Take UUID index
-
-                foreach (var aDBO in dbContext.DBObjectCache.LoadListOfDBObjectStreams(graphDBType, UUIDIdx.GetAllUUIDs(graphDBType, dbContext)))
+                foreach (var ids in UUIDIdx.GetAllValues(graphDBType, dbContext))
                 {
-
-                    if (!aDBO.Success())
-                    {
-                        exceptional.PushIExceptional(aDBO);
-                    }
-                    else
+                    foreach (var aDBO in dbContext.DBObjectCache.LoadListOfDBObjectStreams(graphDBType, ids))
                     {
 
-                        var gdmlExceptional = CreateGraphDMLforDBObject(myDumpFormat, dbContext, graphDBType, aDBO.Value);
-
-                        if (!gdmlExceptional.Success())
+                        if (!aDBO.Success())
                         {
                             exceptional.PushIExceptional(aDBO);
                         }
                         else
                         {
-                            queries.Add(gdmlExceptional.Value);
-                        }
 
+                            var gdmlExceptional = CreateGraphDMLforDBObject(myDumpFormat, dbContext, graphDBType, aDBO.Value);
+
+                            if (!gdmlExceptional.Success())
+                            {
+                                exceptional.PushIExceptional(aDBO);
+                            }
+                            else
+                            {
+                                queries.Add(gdmlExceptional.Value);
+                            }
+
+                        }
                     }
                 }
 
@@ -3124,7 +3126,7 @@ namespace sones.GraphDB.GraphQL
             throw new NotImplementedException();
         }
 
-        public void SetIndices(IEnumerable<IVersionedIndexObject<IndexKey, ObjectUUID>> indices)
+        public void SetIndices(IEnumerable<AAttributeIndex> indices)
         {
 
             #region Add all plugins to the grammar
@@ -3140,11 +3142,11 @@ namespace sones.GraphDB.GraphQL
                 {
                     if (BNF_IndexTypeOpt.Rule == null)
                     {
-                        BNF_IndexTypeOpt.Rule = S_INDEXTYPE + Symbol(idx.IndexName);
+                        BNF_IndexTypeOpt.Rule = S_INDEXTYPE + Symbol(idx.IndexType);
                     }
                     else
                     {
-                        BNF_IndexTypeOpt.Rule |= S_INDEXTYPE + Symbol(idx.IndexName);
+                        BNF_IndexTypeOpt.Rule |= S_INDEXTYPE + Symbol(idx.IndexType);
                     }
                 }
             }

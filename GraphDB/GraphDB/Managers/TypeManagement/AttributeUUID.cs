@@ -27,10 +27,7 @@ namespace sones.GraphDB.TypeManagement
 
         #region TypeCode
         
-        public uint TypeCode
-        {
-            get { return 221; }
-        }
+        public uint TypeCode { get { return 221; } }
 
         #endregion
 

@@ -28,6 +28,10 @@ using sones.Lib.Settings;
 namespace sones
 {
 
+    public delegate void PostSerializationAction<in T1>(T1 myDeserializedObject)
+            where T1 : AFSObjectOntology;
+
+
     #region IGraphFSVersionCompatibility
 
     /// <summary>
@@ -118,6 +122,11 @@ namespace sones
 
         #endregion
 
+        #region NumberOfSpecialDirectories
+
+        ulong NumberOfSpecialDirectories { get; }
+
+        #endregion
 
         #region TraverseChildFSs(myFunc, myDepth, mySessionToken)
 
@@ -471,7 +480,7 @@ namespace sones
         Exceptional<PT> GetAFSObject<PT>         (SessionToken mySessionToken,                  ObjectLocation myObjectLocation, String myObjectStream = null, String myObjectEdition = null, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject, new();
         Exceptional<PT> GetAFSObject<PT>         (SessionToken mySessionToken, Func<PT> myFunc, ObjectLocation myObjectLocation, String myObjectStream = null, String myObjectEdition = null, ObjectRevisionID myObjectRevisionID = null, UInt64 myObjectCopy = 0, Boolean myIgnoreIntegrityCheckFailures = false) where PT : AFSObject;
 
-        Exceptional StoreAFSObject   (SessionToken mySessionToken, ObjectLocation myObjectLocation, AFSObject myAGraphObject, Boolean myAllowToOverwrite = false);
+        Exceptional StoreAFSObject(SessionToken mySessionToken, ObjectLocation myObjectLocation, AFSObject myAGraphObject, Boolean myAllowToOverwrite = false, Boolean myPinObjectLocationInCache = false);
 
         Exceptional RenameAFSObjects (SessionToken mySessionToken, ObjectLocation myObjectLocation, String myNewObjectName);
         Exceptional RemoveAFSObject  (SessionToken mySessionToken, ObjectLocation myObjectLocation, String myObjectStream, String myObjectEdition, ObjectRevisionID myObjectRevisionID);
@@ -869,6 +878,7 @@ namespace sones
         Exceptional SetObjectCacheSettings(ObjectLocation myObjectLocation, ObjectCacheSettings myObjectCacheSettings, SessionToken mySessionToken);
 
         #endregion
+
     }
 
 }

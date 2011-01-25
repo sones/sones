@@ -243,7 +243,7 @@ namespace sones.GraphDB.ObjectManagement
             {
                 foreach (var _AAttributeIndex in _GraphDBType.GetAllAttributeIndices(true))
                 {
-                    if (_AAttributeIndex is UUIDIndex)
+                    if (_AAttributeIndex.IsUUIDIndex)
                     {
                         _AAttributeIndex.Insert(_NewDBObjectStream, _GraphDBType, _DBContext);
                     }
@@ -326,7 +326,7 @@ namespace sones.GraphDB.ObjectManagement
         {
 
             var _DBExceptional        = new Exceptional<DBObjectStream>();
-            var _GetObjectExceptional = _IGraphFSSession.GetFSObject<DBObjectStream>(myObjectLocation, DBConstants.DBOBJECTSTREAM, null, null, 0, false);
+            var _GetObjectExceptional = _IGraphFSSession.GetFSObject<DBObjectStream>(myObjectLocation, DBConstants.DBOBJECTSTREAM, FSConstants.DefaultEdition, null, 0, false);
 
             if (_GetObjectExceptional == null || _GetObjectExceptional.Failed() || _GetObjectExceptional.Value == null)
             {
@@ -414,7 +414,7 @@ namespace sones.GraphDB.ObjectManagement
 
             #region Remove DBOBJECTSTREAM
 
-            var _RemoveObjectExceptional = _IGraphFSSession.RemoveObjectIfExists(myDBObjectLocation, DBConstants.DBOBJECTSTREAM);
+            var _RemoveObjectExceptional = _IGraphFSSession.RemoveObjectIfExists(myDBObjectLocation, DBConstants.DBOBJECTSTREAM, FSConstants.DefaultEdition);
             if (_RemoveObjectExceptional.Failed())
             {
                 return _RemoveObjectExceptional;
@@ -434,7 +434,7 @@ namespace sones.GraphDB.ObjectManagement
 
             #region Remove UNDEFATTRIBUTESSTREAM
 
-            _RemoveObjectExceptional = _IGraphFSSession.RemoveObjectIfExists(myDBObjectLocation, DBConstants.UNDEFATTRIBUTESSTREAM);
+            _RemoveObjectExceptional = _IGraphFSSession.RemoveObjectIfExists(myDBObjectLocation, DBConstants.UNDEFATTRIBUTESSTREAM, FSConstants.DefaultEdition);
             if (_RemoveObjectExceptional.Failed())
             {
                 return _RemoveObjectExceptional;

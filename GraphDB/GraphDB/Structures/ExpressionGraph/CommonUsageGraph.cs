@@ -1943,15 +1943,18 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                             var idx = _DBContext.DBTypeManager.GetTypeByUUID(lowestLevelKey.LastEdge.TypeUUID).GetUUIDIndex(_DBContext.DBTypeManager);
                             var indexRelatedType = _DBContext.DBTypeManager.GetTypeByUUID(idx.IndexRelatedTypeUUID);
 
-                            foreach (var aDBO in _DBObjectCache.LoadListOfDBObjectStreams(lowestType, idx.GetAllUUIDs(indexRelatedType, _DBContext)))
+                            foreach (var ids in idx.GetAllValues(indexRelatedType, _DBContext))
                             {
-                                if (aDBO.Failed())
+                                foreach (var aDBO in _DBObjectCache.LoadListOfDBObjectStreams(lowestType, ids))
                                 {
-                                    AddWarning(new Warning_CouldNotLoadDBObject(aDBO.IErrors, new System.Diagnostics.StackTrace(true)));
-                                }
-                                else
-                                {
-                                    this.AddNode(aDBO.Value, lowestLevelKey, 0);
+                                    if (aDBO.Failed())
+                                    {
+                                        AddWarning(new Warning_CouldNotLoadDBObject(aDBO.IErrors, new System.Diagnostics.StackTrace(true)));
+                                    }
+                                    else
+                                    {
+                                        this.AddNode(aDBO.Value, lowestLevelKey, 0);
+                                    }
                                 }
                             }
 

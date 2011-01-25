@@ -580,39 +580,42 @@ namespace sones.GraphDB.Structures.Operators
 
                 foreach (var aLeftIDX in leftIndices)
                 {
-                    UUIDIndex currentLeftIdx = null;
+                    AAttributeIndex currentLeftIdx = null;
 
                     #region get UUID idx
-                    if (!(aLeftIDX.Item2 is UUIDIndex))
+                    if (!(aLeftIDX.Item2.IsUUIDIndex))
                     {
                         currentLeftIdx = aLeftIDX.Item1.GetUUIDIndex(dbContext.DBTypeManager);
                     }
                     else
                     {
-                        currentLeftIdx = (UUIDIndex)aLeftIDX.Item2;
+                        currentLeftIdx = aLeftIDX.Item2;
                     }
 
                     #endregion
 
                     var currentIndexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(currentLeftIdx.IndexRelatedTypeUUID);
 
-                    foreach (var aObjectUUID_Left in currentLeftIdx.GetAllUUIDs(currentIndexRelatedType, dbContext))
+                    foreach (var aObjectUUIDs_Left in currentLeftIdx.GetAllValues(currentIndexRelatedType, dbContext))
                     {
-                        var leftDBObject = dbObjectCache.LoadDBObjectStream(aLeftIDX.Item1, aObjectUUID_Left);
-                        if (leftDBObject.Failed())
+                        foreach (var aObjectUUID_Left in aObjectUUIDs_Left)
                         {
-                            throw new NotImplementedException();
-                        }
-
-                        if (IsValidDBObjectStreamForBinExpr(leftDBObject.Value, data.IDChainDefinitions.Item1.LastAttribute, dbContext.DBTypeManager))
-                        {
-                            var oper = GetOperand(data.IDChainDefinitions.Item1, data.Extraordinaries.Item1, dbContext, leftDBObject.Value, dbObjectCache, mySessionToken);
-                            if (oper.Failed())
-                                return new Exceptional<bool>(oper);
-
-                            if (oper != null)
+                            var leftDBObject = dbObjectCache.LoadDBObjectStream(aLeftIDX.Item1, aObjectUUID_Left);
+                            if (leftDBObject.Failed())
                             {
-                                operandsLeft.Add(leftDBObject.Value, oper.Value);
+                                throw new NotImplementedException();
+                            }
+
+                            if (IsValidDBObjectStreamForBinExpr(leftDBObject.Value, data.IDChainDefinitions.Item1.LastAttribute, dbContext.DBTypeManager))
+                            {
+                                var oper = GetOperand(data.IDChainDefinitions.Item1, data.Extraordinaries.Item1, dbContext, leftDBObject.Value, dbObjectCache, mySessionToken);
+                                if (oper.Failed())
+                                    return new Exceptional<bool>(oper);
+
+                                if (oper != null)
+                                {
+                                    operandsLeft.Add(leftDBObject.Value, oper.Value);
+                                }
                             }
                         }
                     }
@@ -632,42 +635,45 @@ namespace sones.GraphDB.Structures.Operators
 
                 foreach (var aRightIDX in rightIndices)
                 {
-                    UUIDIndex currentRightIdx = null;
+                    AAttributeIndex currentRightIdx = null;
 
                     #region get UUID idx
                     //we have to calculate the real operand.
                     //TODO: try to use attribute idx instead of uuid idx
 
-                    if (!(aRightIDX.Item2 is UUIDIndex))
+                    if (!(aRightIDX.Item2.IsUUIDIndex))
                     {
                         currentRightIdx = aRightIDX.Item1.GetUUIDIndex(dbContext.DBTypeManager);
                     }
                     else
                     {
-                        currentRightIdx = (UUIDIndex)aRightIDX.Item2;
+                        currentRightIdx = aRightIDX.Item2;
                     }
 
                     #endregion
 
                     var currentIndexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(currentRightIdx.IndexRelatedTypeUUID);
 
-                    foreach (var aObjectUUID_Right in currentRightIdx.GetAllUUIDs(currentIndexRelatedType, dbContext))
+                    foreach (var aObjectUUIDs_Right in currentRightIdx.GetAllValues(currentIndexRelatedType, dbContext))
                     {
-                        var rightDBObject = dbObjectCache.LoadDBObjectStream(aRightIDX.Item1, aObjectUUID_Right);
-                        if (rightDBObject.Failed())
+                        foreach (var aObjectUUID_Right in aObjectUUIDs_Right)
                         {
-                            throw new NotImplementedException();
-                        }
-
-                        if (IsValidDBObjectStreamForBinExpr(rightDBObject.Value, data.IDChainDefinitions.Item2.LastAttribute, dbContext.DBTypeManager))
-                        {
-                            var oper = GetOperand(data.IDChainDefinitions.Item2, data.Extraordinaries.Item2, dbContext, rightDBObject.Value, dbObjectCache, mySessionToken);
-                            if (oper.Failed())
-                                return new Exceptional<bool>(oper);
-
-                            if (oper != null)
+                            var rightDBObject = dbObjectCache.LoadDBObjectStream(aRightIDX.Item1, aObjectUUID_Right);
+                            if (rightDBObject.Failed())
                             {
-                                operandsRight.Add(rightDBObject.Value, oper.Value);
+                                throw new NotImplementedException();
+                            }
+
+                            if (IsValidDBObjectStreamForBinExpr(rightDBObject.Value, data.IDChainDefinitions.Item2.LastAttribute, dbContext.DBTypeManager))
+                            {
+                                var oper = GetOperand(data.IDChainDefinitions.Item2, data.Extraordinaries.Item2, dbContext, rightDBObject.Value, dbObjectCache, mySessionToken);
+                                if (oper.Failed())
+                                    return new Exceptional<bool>(oper);
+
+                                if (oper != null)
+                                {
+                                    operandsRight.Add(rightDBObject.Value, oper.Value);
+                                }
                             }
                         }
                     }
@@ -900,7 +906,7 @@ namespace sones.GraphDB.Structures.Operators
 
             foreach (var aIDX in myIDX)
             {
-                if (aIDX.Item2 is UUIDIndex)
+                if (aIDX.Item2.IsUUIDIndex)
                 {
                     #region UUID idx
 
@@ -1045,13 +1051,21 @@ namespace sones.GraphDB.Structures.Operators
                 
                 #region Execution
 
-                if (aIDX.Item2 is UUIDIndex && (data.IDChainDefinitions.Item1.LastAttribute != dbContext.DBTypeManager.GetUUIDTypeAttribute()))
+                if (aIDX.Item2.IsUUIDIndex && (data.IDChainDefinitions.Item1.LastAttribute != dbContext.DBTypeManager.GetUUIDTypeAttribute()))
                 {
                     #region UUID idx - check ALL DBOs
 
                     var IndexRelatedType = dbContext.DBTypeManager.GetTypeByUUID(aIDX.Item2.IndexRelatedTypeUUID);
 
-                    var result = IntegrateUUID(data, dbContext, dbObjectCache, typeOfBinExpr, resultGraph, mySessionToken, myLevelKey, dbObjectCache.LoadListOfDBObjectStreams(aIDX.Item1, ((UUIDIndex)aIDX.Item2).GetAllUUIDs(IndexRelatedType, dbContext)));
+                    var idxKeyValues = (aIDX.Item2).GetAllValues(IndexRelatedType, dbContext);
+                    if (idxKeyValues.CountIs(0))
+                    {
+                        continue;
+                    }
+
+                    var uuids = idxKeyValues.Aggregate((elem, aggrresult) => aggrresult.Union(elem));
+
+                    var result = IntegrateUUID(data, dbContext, dbObjectCache, typeOfBinExpr, resultGraph, mySessionToken, myLevelKey, dbObjectCache.LoadListOfDBObjectStreams(aIDX.Item1, uuids));
                     if (result.Failed())
                     {
                         return new Exceptional<bool>(result);

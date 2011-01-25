@@ -1,1 +1,0 @@
-FROM SimpsonProfile S SELECT S.Freunde.Path(S.Name = "Bart Simpson", 10, 10, "true", "false") where S.Name = "Homer Simpson" depth 1

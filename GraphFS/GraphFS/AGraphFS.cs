@@ -58,6 +58,7 @@ namespace sones
         protected const     UInt64                  NUMBER_OF_DEFAULT_DIRECTORYENTRIES = 6;
         protected           IObjectCache            _ObjectCache;
         protected readonly  GraphAppSettings         _GraphAppSettings;
+        protected readonly  Dictionary<Type, List<Action<AFSObject>>> _PostSerializationActions;
 
         #endregion
 
@@ -497,7 +498,11 @@ namespace sones
             ParentFileSystem                    = null;
             _GraphFSLookuptable                 = new MountpointLookup();
             _MoreThanOnePathSeperatorRegExpr    = new Regex("\\" + FSPathConstants.PathDelimiter + "\\" + FSPathConstants.PathDelimiter);
-            _GraphAppSettings                    = myGraphAppSettings;
+            _PostSerializationActions           = new Dictionary<Type, List<Action<AFSObject>>>();
+            _GraphAppSettings = myGraphAppSettings;
+
+            myGraphAppSettings.Set<AttributeIndexTypeSetting>("HashTable");
+            myGraphAppSettings.Set<UUIDIndexTypeSetting>("UUID");
         }
 
         public AGraphFS(IObjectCache myIObjectCache, GraphAppSettings myGraphAppSettings)
@@ -541,6 +546,17 @@ namespace sones
 
         #endregion
 
+        #region NumberOfSpecialDirectories
+
+        public UInt64 NumberOfSpecialDirectories
+        {
+            get
+            {
+                return 6UL;
+            }
+        }
+
+        #endregion
 
         #region TraverseChildFSs(myFunc, myDepth, mySessionToken)
 
@@ -2277,7 +2293,7 @@ namespace sones
 
                                     //_Exceptional.Value = _LoadObjectExceptional.Value;
                                     _Exceptional.Value = _LoadObjectExceptional.Value as PT;
-
+                                    _Exceptional.Value.isNew = false;
                                 }
 
                                 else
@@ -2673,7 +2689,7 @@ namespace sones
 
         #region StoreAFSObject(mySessionToken, myObjectLocation, myAFSObject, myAllowToOverwrite = false)
 
-        public Exceptional StoreAFSObject(SessionToken mySessionToken, ObjectLocation myObjectLocation, AFSObject myAFSObject, Boolean myAllowToOverwrite = false)
+        public Exceptional StoreAFSObject(SessionToken mySessionToken, ObjectLocation myObjectLocation, AFSObject myAFSObject, Boolean myAllowToOverwrite = false, Boolean myPinObjectLocationInCache = false)
         {
 
             lock (this)
@@ -2719,6 +2735,11 @@ namespace sones
                 _Exceptional = StoreAFSObject_protected(mySessionToken, myObjectLocation, myAFSObject, myAllowToOverwrite);
                 if (_Exceptional.Failed())
                     return _Exceptional;
+
+                if (myPinObjectLocationInCache)
+                {
+                    _ObjectCache.SetPinned(myObjectLocation);
+                }
 
                 #region Call OnSavedEvents on this file system and the given AFSObject
 
@@ -2956,6 +2977,28 @@ namespace sones
             lock (this)
             {
 
+                var _Exceptional = new Exceptional();
+
+                if (myObjectEdition == null || myObjectRevisionID == null)
+                {
+
+                    return GetObjectLocator(mySessionToken, myObjectLocation).
+                        WhenFailed(e => e.PushIErrorT(new GraphFSError_CouldNotGetObjectLocator(myObjectLocation))).
+                        WhenSucceded<ObjectLocator>(e =>
+                        {
+                            if (myObjectEdition == null)
+                                myObjectEdition = e.Value[myObjectStream].DefaultEditionName;
+
+                            if (myObjectRevisionID == null)
+                                myObjectRevisionID = e.Value[myObjectStream].DefaultEdition.LatestRevisionID;
+
+                            return RemoveAFSObject(mySessionToken, myObjectLocation, myObjectStream, myObjectEdition, myObjectRevisionID).
+                                       Convert<ObjectLocator>();
+
+                        });
+
+                }
+
                 #region Resolve all symlinks and call myself on a possible ChildFileSystem...
 
                 if (!IsMounted)
@@ -2984,7 +3027,7 @@ namespace sones
                 if (_ObjectLocatorExceptional.IsInvalid())
                     return _ObjectLocatorExceptional;
 
-                var _Exceptional = RemoveAFSObject_protected(_ObjectLocatorExceptional.Value, myObjectStream, myObjectEdition, myObjectRevisionID, mySessionToken);
+                _Exceptional = RemoveAFSObject_protected(_ObjectLocatorExceptional.Value, myObjectStream, myObjectEdition, myObjectRevisionID, mySessionToken);
                 if (_Exceptional.Failed())
                     return _Exceptional;
 
@@ -5173,6 +5216,8 @@ namespace sones
         //public abstract ObjectLocation ResolveObjectLocation(ObjectLocation myObjectLocation, Boolean myThrowObjectNotFoundException, SessionToken mySessionToken);
 
         #endregion
+
+
     }
 
 }

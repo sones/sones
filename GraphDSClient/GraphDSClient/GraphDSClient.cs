@@ -670,7 +670,7 @@ namespace sones.GraphDSClient
             throw new NotImplementedException();
         }
 
-        public override Exceptional StoreFSObject(AFSObject myAGraphObject, Boolean myAllowOverwritting)
+        public override Exceptional StoreFSObject(AFSObject myAGraphObject, Boolean myAllowOverwritting, Boolean myPinObjectLocationInCache = false)
         {
             throw new NotImplementedException();
         }

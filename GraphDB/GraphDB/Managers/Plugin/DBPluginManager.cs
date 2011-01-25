@@ -81,8 +81,8 @@ namespace sones.GraphDB.Plugin
             set { _UserID = value; }
         }
 
-        private Dictionary<string, IVersionedIndexObject<IndexKey, ObjectUUID>> _Indices;
-        public Dictionary<string, IVersionedIndexObject<IndexKey, ObjectUUID>> Indices
+        private Dictionary<string, AAttributeIndex> _Indices;
+        public Dictionary<string, AAttributeIndex> Indices
         {
             get { return _Indices; }
             set { _Indices = value; }
@@ -114,7 +114,7 @@ namespace sones.GraphDB.Plugin
             _Operators = new Dictionary<string, ABinaryOperator>();
             _Settings = new Dictionary<string, ADBSettingsBase>();
             _EdgeTypes = new Dictionary<string, IEdgeType>();
-            _Indices = new Dictionary<string, IVersionedIndexObject<IndexKey, ObjectUUID>>();
+            _Indices = new Dictionary<string, AAttributeIndex>();
             _GraphDBImporter = new Dictionary<string, AGraphDBImport>();
             _GraphDBExporter = new Dictionary<string, AGraphDBExport>();
             _UserID = myUserID;
@@ -137,9 +137,7 @@ namespace sones.GraphDB.Plugin
                 .Register<AGraphDBImport>(new Version("1.0.0.0"))   // GraphDB assembly
                 .Register<AGraphDBExport>(new Version("1.0.0.0"))   // GraphDB assembly
 
-                .Register<AFSObject>(new Version("1.0.0.0"),
-                    myActivateDelegate: (t => (t.GetInterface(typeof(IVersionedIndexObject<IndexKey, ObjectUUID>).Name) != null)
-                                    ? Activator.CreateInstance(t.MakeGenericType(typeof(IndexKey), typeof(ObjectUUID))) : null)) // GraphFSInterface assembly
+                .Register<AAttributeIndex>(new Version("1.0.0.0")) // GraphDB assembly
                 ;
 
             _PluginManager.Discover(true, !myIncludePrivateClasses)
@@ -281,14 +279,14 @@ namespace sones.GraphDB.Plugin
             #region Index
 
             //foreach (var plugin in _PluginManager.GetPlugins<IVersionedIndexObject<IndexKey, ObjectUUID>>())
-            foreach (var plugin in _PluginManager.GetPlugins<AFSObject>())
+            foreach (var plugin in _PluginManager.GetPlugins<AAttributeIndex>())
             {
                 
                 //var idx = (IVersionedIndexObject<IndexKey, ObjectUUID>)Activator.CreateInstance(type.MakeGenericType(typeof(IndexKey), typeof(ObjectUUID)));
-                var idx = (IVersionedIndexObject<IndexKey, ObjectUUID>)plugin;
-                if (!_Indices.ContainsKey(idx.IndexName.ToUpper()))
+                var idx = plugin;
+                if (!_Indices.ContainsKey(idx.IndexType.ToUpper()))
                 {
-                    _Indices.Add(idx.IndexName.ToUpper(), idx);
+                    _Indices.Add(idx.IndexType.ToUpper(), idx);
                 }
             }
 
@@ -565,17 +563,17 @@ namespace sones.GraphDB.Plugin
         /// </summary>
         /// <param name="indexTypeName">The index name.</param>
         /// <returns>A new instance of the index object.</returns>
-        public Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>> GetIndex(String indexTypeName)
+        public Exceptional<AAttributeIndex> GetIndex(String indexTypeName)
         {
 
             var indexName = indexTypeName.ToUpper();
 
             if (!_Indices.ContainsKey(indexName))
             {
-                return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(new Error_IndexDoesNotExist(indexTypeName, ""));
+                return new Exceptional<AAttributeIndex>(new Error_IndexDoesNotExist(indexTypeName, ""));
             }
 
-            return new Exceptional<IVersionedIndexObject<IndexKey, ObjectUUID>>(_Indices[indexName].GetNewInstance2());
+            return new Exceptional<AAttributeIndex>(_Indices[indexName].GetNewInstance());
 
         }
 
@@ -587,7 +585,7 @@ namespace sones.GraphDB.Plugin
         /// Returns a hashset of all functions.
         /// </summary>
         /// <returns>A hashset of functions.</returns>
-        public Dictionary<string, IVersionedIndexObject<IndexKey, ObjectUUID>> GetAllIndices()
+        public Dictionary<string, AAttributeIndex> GetAllIndices()
         {
             return _Indices;
         }

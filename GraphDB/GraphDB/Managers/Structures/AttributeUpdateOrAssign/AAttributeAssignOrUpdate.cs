@@ -190,7 +190,7 @@ namespace sones.GraphDB.Managers.Structures
 
                 #region Update the value because it already exists
 
-                oldValue = myDBObject.GetAttribute(myAAttributeAssign.AttributeIDChain.LastAttribute.UUID);
+                oldValue = myDBObject.GetAttribute(myAAttributeAssign.AttributeIDChain.LastAttribute, myGraphDBType, myDBContext).Value;
 
                 switch (myAAttributeAssign.AttributeIDChain.LastAttribute.KindOfType)
                 {
@@ -232,6 +232,19 @@ namespace sones.GraphDB.Managers.Structures
                             ((ASingleReferenceEdgeType)oldValue).Merge((ASingleReferenceEdgeType)newValue);
                             newValue = (ASingleReferenceEdgeType)oldValue;
                         }
+                        break;
+
+                    case KindsOfType.SpecialAttribute: // Special attributes can't be updated currently
+
+                        if ((newValue as DBString) != null && (newValue as DBString).CompareTo(oldValue) == 0)
+                        {
+                            return new Exceptional<Tuple<string, GraphDB.TypeManagement.TypeAttribute, GraphDB.TypeManagement.IObject>>(new Tuple<string, GraphDB.TypeManagement.TypeAttribute, GraphDB.TypeManagement.IObject>(myAAttributeAssign.AttributeIDChain.LastAttribute.Name, myAAttributeAssign.AttributeIDChain.LastAttribute, newValue as IObject));
+                        }
+                        else
+                        {
+                            return new Exceptional<Tuple<String, TypeAttribute, IObject>>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                        }
+
                         break;
 
                     default:

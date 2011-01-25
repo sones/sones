@@ -203,9 +203,12 @@ namespace sones.GraphDB.ObjectManagement
                     var idx = typeOfDBObjects.GetUUIDIndex(dbContext.DBTypeManager);
                     var currentIndexType = dbContext.DBTypeManager.GetTypeByUUID(idx.IndexRelatedTypeUUID);
 
-                    foreach (var aDBO in LoadListOfDBObjectStreams(typeOfDBObjects, idx.GetAllUUIDs(currentIndexType, dbContext)))
+                    foreach (var ids in idx.GetAllValues(currentIndexType, dbContext))
                     {
-                        yield return aDBO;
+                        foreach (var aDBO in LoadListOfDBObjectStreams(typeOfDBObjects, ids))
+                        {
+                            yield return aDBO;
+                        }
                     }
                 }
                 else
@@ -217,9 +220,12 @@ namespace sones.GraphDB.ObjectManagement
                             var idx = aType.GetUUIDIndex(dbContext.DBTypeManager);
                             var currentIndexType = dbContext.DBTypeManager.GetTypeByUUID(idx.IndexRelatedTypeUUID);
 
-                            foreach (var aDBO in LoadListOfDBObjectStreams(aType, idx.GetAllUUIDs(currentIndexType, dbContext)))
+                            foreach (var ids in idx.GetAllValues(currentIndexType, dbContext))
                             {
-                                yield return aDBO;
+                                foreach (var aDBO in LoadListOfDBObjectStreams(aType, ids))
+                                {
+                                    yield return aDBO;
+                                }
                             }
                         }                        
                     }
@@ -270,11 +276,14 @@ namespace sones.GraphDB.ObjectManagement
                 var idx = typeOfDBObjects.GetUUIDIndex(dbContext.DBTypeManager);
                 var currentIndexType = dbContext.DBTypeManager.GetTypeByUUID(idx.IndexRelatedTypeUUID);
 
-                foreach (var aDBO in LoadListOfDBObjectStreams(typeOfDBObjects, idx.GetAllUUIDs(currentIndexType, dbContext)))
+                foreach (var ids in idx.GetAllValues(currentIndexType, dbContext))
                 {
-                    if (IsValidDBObjectForLevelKey(aDBO, myLevelKey, typeOfDBObjects))
+                    foreach (var aDBO in LoadListOfDBObjectStreams(typeOfDBObjects, ids))
                     {
-                        yield return aDBO;
+                        if (IsValidDBObjectForLevelKey(aDBO, myLevelKey, typeOfDBObjects))
+                        {
+                            yield return aDBO;
+                        }
                     }
                 }
             }

@@ -50,6 +50,7 @@ namespace sones.GraphDSClient
         private const string GraphAppSettingsLocation = "GraphAppSettings.xml";
         protected ISessionInfo  _SessionInfo;
         protected SessionToken  _SessionToken;
+        protected readonly  Dictionary<Type, List<Action<AFSObject>>> _PostSerializationActions;
 
         #endregion
 
@@ -168,6 +169,7 @@ namespace sones.GraphDSClient
             _IGraphFSParametersDictionary   = new Dictionary<String, Object>();
             GraphAppSettings                 = new GraphAppSettings();
             GraphAppSettings.LoadXML(GraphAppSettingsLocation);
+            _PostSerializationActions       = new Dictionary<Type,List<Action<AFSObject>>>();
         }
 
         #endregion
@@ -316,6 +318,14 @@ namespace sones.GraphDSClient
             get { return _SessionToken; }
         }
 
+        public UInt64 NumberOfSpecialDirectories
+        {
+            get
+            {
+                return 6UL;
+            }
+        }
+        
         public abstract String Implementation { get; }
 
         public abstract IGraphFSSession CreateNewSession(String myUsername);
@@ -416,7 +426,7 @@ namespace sones.GraphDSClient
 
         public abstract Exceptional<PT> GetFSObject<PT>(ObjectLocation myObjectLocation, String myObjectStream, Func<PT> myFunc, String myObjectEdition = FSConstants.DefaultEdition, ObjectRevisionID myObjectRevisionID = null, ulong myObjectCopy = 0, bool myIgnoreIntegrityCheckFailures = false) where PT : GraphFS.Objects.AFSObject;
 
-        public abstract Exceptional StoreFSObject(AFSObject myAGraphObject, bool myAllowOverwritting);
+        public abstract Exceptional StoreFSObject(AFSObject myAGraphObject, bool myAllowOverwritting, Boolean myPinObjectLocationInCache = false);
 
         public abstract Exceptional<Trinary> ObjectExists(ObjectLocation myObjectLocatio);
 
@@ -529,8 +539,30 @@ namespace sones.GraphDSClient
 
         public abstract Exceptional<IDirectoryObject> GetDirectoryObject(ObjectLocation objectLocation);
 
-        #endregion
+        public void SetPostSerializationAction(Action<AFSObject> myPostSerializationAction)
+        {
 
+            //if (!_PostSerializationActions.ContainsKey(typeof(T1)))
+            //{
+            //    _PostSerializationActions.Add(typeof(T1), new List<Action<AFSObject>>());
+            //}
+            //_PostSerializationActions[typeof(T1)].Add((Action<AFSObject>)myPostSerializationAction);
+
+        }
+
+        //public void SetPostSerializationAction<T1>(Action<T1> myPostSerializationAction)
+        //    where T1 : AFSObject
+        //{
+
+        //    if (!_PostSerializationActions.ContainsKey(typeof(T1)))
+        //    {
+        //        _PostSerializationActions.Add(typeof(T1), new List<Action<AFSObject>>());
+        //    }
+        //    _PostSerializationActions[typeof(T1)].Add((Action<AFSObject>)myPostSerializationAction);
+
+        //}
+
+        #endregion
 
     }
 

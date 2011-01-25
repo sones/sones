@@ -17,6 +17,7 @@ using sones.Lib.ErrorHandling;
 using sones.GraphDB.Errors;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphDB.TypeManagement.SpecialTypeAttributes;
 
 #endregion
 
@@ -71,7 +72,12 @@ namespace sones.GraphDB.Managers.Structures
 
             #region Simple value
 
-            if (GraphDBTypeMapper.IsAValidAttributeType(AttributeIDChain.LastAttribute.GetDBType(myDBContext.DBTypeManager), AttributeAssignType, myDBContext, Value))
+            var dbType = AttributeIDChain.LastAttribute.GetDBType(myDBContext.DBTypeManager);
+            if (AttributeIDChain.LastAttribute is SpecialTypeAttribute_UUID)
+            {
+                dbType = myDBContext.DBTypeManager.GetTypeByName(GraphDBTypeMapper.GetBaseObjectFromCSharpType(Value).ObjectName);//DBString.Name);
+            }
+            if (GraphDBTypeMapper.IsAValidAttributeType(dbType, AttributeAssignType, myDBContext, Value))
             {
                 return new Exceptional<IObject>(GraphDBTypeMapper.GetGraphObjectFromType(AttributeAssignType, Value)); ;
             }

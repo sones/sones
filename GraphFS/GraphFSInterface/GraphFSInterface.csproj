@@ -129,6 +129,7 @@
     <Compile Include="Events\IDirectoryEventHandlers.cs" />
     <Compile Include="Events\GraphFSEventHandlers.cs" />
     <Compile Include="InternalObjects\DirectoryObject\DirectoryObject.cs" />
+    <Compile Include="IPathBasedFS.cs" />
     <Compile Include="Session\ISessionInfo.cs" />
     <Compile Include="Session\ISettings.cs" />
     <Compile Include="Session\SessionInfos.cs" />
@@ -298,10 +299,6 @@
     <Compile Include="Transactions\TransactionDisposedHandler.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Lib\BPlusDotNetTree\BplusDotNet\BplusDotNet.csproj">
-      <Project>{45F6BE30-989A-4749-B6A0-69099C8661F4}</Project>
-      <Name>BplusDotNet</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Lib\Lib\Lib.csproj">
       <Project>{56277965-A00C-4219-BD4E-6E030D37343F}</Project>
       <Name>Lib</Name>

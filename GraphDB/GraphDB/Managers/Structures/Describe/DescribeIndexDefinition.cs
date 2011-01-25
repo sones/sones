@@ -136,7 +136,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
             _Index.Add("Name",                   myName);
             _Index.Add("Edition",                myIndex.IndexEdition);
             _Index.Add("IndexType",              myIndex.IndexType);
-            _Index.Add("IsUuidIndex",            myIndex is UUIDIndex);
+            _Index.Add("IsUuidIndex",            myIndex.IsUUIDIndex);
             _Index.Add("IsUniqueAttributeIndex", myIndex.IsUniqueAttributeIndex);
 
             return new Vertex(_Index);

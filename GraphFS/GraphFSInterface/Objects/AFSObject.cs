@@ -227,11 +227,11 @@ namespace sones.GraphFS.Objects
 
         #region Save()
 
-        public Exceptional Save()
+        public Exceptional Save(Boolean myPinObjectLocationInCache = false)
         {
 
             if (_IGraphFSSessionReference != null && _IGraphFSSessionReference.IsAlive)
-                return _IGraphFSSessionReference.Value.StoreFSObject(this, true);
+                return _IGraphFSSessionReference.Value.StoreFSObject(this, true, myPinObjectLocationInCache);
 
             return new Exceptional(new GraphFSError("No file system given!"));
 
@@ -336,7 +336,7 @@ namespace sones.GraphFS.Objects
 
                 var _Exceptional = _IGraphFSSessionReference.Value.RenameFSObject(this.ObjectLocation, myNewObjectName);
 
-                if (_Exceptional.Success())
+                if (_Exceptional.Success() && this.ObjectLocatorReference != null)
                     this.ObjectLocatorReference.ObjectLocationSetter = new ObjectLocation(ObjectPath, ObjectName);
 
                 return _Exceptional;
