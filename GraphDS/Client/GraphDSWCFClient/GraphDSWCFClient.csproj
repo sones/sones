@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</ProjectGuid>
+    <ProjectGuid>{1C0C7733-8220-449B-85A8-6F69D8B50444}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sones.GraphDB</RootNamespace>
-    <AssemblyName>IGraphDB</AssemblyName>
+    <RootNamespace>sones.GraphDSClient</RootNamespace>
+    <AssemblyName>GraphDSWCFClient</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -44,38 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ErrorHandling\IGraphDBException.cs" />
-    <Compile Include="Request\GraphDBAccessModeEnum.cs" />
-    <Compile Include="Request\Statistics\IRequestStatistics.cs" />
-    <Compile Include="Request\Statistics\RequestStatistics.cs" />
-    <Compile Include="IGraphDB.cs" />
+    <Compile Include="GraphDSWCFClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Request\IRequest.cs" />
-    <Compile Include="Request\RequestClear.cs" />
-    <Compile Include="Request\RequestCreateVertexType.cs" />
-    <Compile Include="Transaction\IsolationLevel.cs" />
-    <Compile Include="Transaction\ITransactionManager.cs" />
-    <Compile Include="Transaction\TransactionID.cs" />
-    <Compile Include="Transaction\TransactionState.cs" />
-    <Compile Include="Transaction\TransactionToken.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Library\Internal\Definitions\Definitions.csproj">
-      <Project>{2E1F1F44-8A47-428D-A6CF-BE30154EA83F}</Project>
-      <Name>Definitions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Library\Internal\GraphInfrastructure\GraphInfrastructure.csproj">
-      <Project>{09005D99-7E10-4E9B-9F7D-F874F76B9E52}</Project>
-      <Name>GraphInfrastructure</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Library\Internal\Security\Security.csproj">
-      <Project>{0E469CF5-BF78-4B66-BA2D-F9D5991BBCCD}</Project>
-      <Name>Security</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Library\Internal\Token\Token.csproj">
-      <Project>{3291BC72-8F49-4E60-9BC7-349D5C635985}</Project>
-      <Name>Token</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

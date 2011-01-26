@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.GraphQL.Result;
+using sones.GraphDB.Transaction;
+using sones.Library.Internal.Token;
 
 namespace sones.GraphQL
 {
     /// <summary>
     /// The interface for all graph query languages
     /// </summary>
-    public interface IGraphQL : IDumpable
+    public interface IGraphQL : IQueryableLanguage
     {
         /// <summary>
-        /// Returns a query result by passing a query string
+        /// The name of the graph query language (i.e. GQL, SPARQL, ...)
         /// </summary>
-        /// <param name="myQueryString">The query string that should be executed</param>
-        /// <returns>A query result</returns>
-        QueryResult Query(String myQueryString);
+        String Name { get; }
     }
 }

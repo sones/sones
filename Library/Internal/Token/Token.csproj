@@ -44,7 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="TransactionToken.cs" />
     <Compile Include="SessionToken.cs" />
     <Compile Include="RequestToken.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

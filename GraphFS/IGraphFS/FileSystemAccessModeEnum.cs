@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace sones.GraphFS.Security
+namespace sones.GraphFS
 {
     /// <summary>
     /// The different access modes (read/write, read-only, ...)

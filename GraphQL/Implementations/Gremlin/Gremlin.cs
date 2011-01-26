@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using sones.GraphQL;
 using sones.GraphQL.Result;
+using sones.GraphDB.Transaction;
+using sones.Library.Internal.Token;
 
 namespace Gremlin
 {
@@ -14,7 +16,12 @@ namespace Gremlin
     {
         #region IGraphQL
 
-        public QueryResult Query(string myQueryString)
+        public string Name
+        {
+            get { return "Gremlin"; }
+        }
+
+        public QueryResult Query(SessionToken mySessionToken, TransactionToken myTransactionToken, string myQueryString)
         {
             throw new NotImplementedException();
         }
@@ -30,5 +37,6 @@ namespace Gremlin
         }
 
         #endregion
+
     }
 }

@@ -77,9 +77,25 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SPARQL", "GraphQL\Implement
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gremlin", "GraphQL\Implementations\Gremlin\Gremlin.csproj", "{B0759780-BECA-422E-9A54-89BAB1C02459}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{D92AF9AE-48D1-4B1B-9B70-250F1CEEFABE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{15589123-5145-44D4-9514-214729FD9EF3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphDSRESTfulServer", "GraphDS\Server\GraphDSRESTfulServer\GraphDSRESTfulServer.csproj", "{BEA2DB9F-3EA4-4306-AC2C-AB8AC75CFCCB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphDSTCPServer", "GraphDS\Server\GraphDSTCPServer\GraphDSTCPServer.csproj", "{58DECC32-E273-4F44-A418-82348665DBF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphDSWCFServer", "GraphDS\Server\GraphDSWCFServer\GraphDSWCFServer.csproj", "{7EE58263-6B2D-433F-B7FC-43B804377F18}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphDSTCPClient", "GraphDS\Client\GraphDSTCPClient\GraphDSTCPClient.csproj", "{91D6F407-D15F-4AB6-953E-2573E95A9046}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphDSWCFClient", "GraphDS\Client\GraphDSWCFClient\GraphDSWCFClient.csproj", "{1C0C7733-8220-449B-85A8-6F69D8B50444}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphDSEmbeddedClient", "GraphDS\Client\GraphDSEmbeddedClient\GraphDSEmbeddedClient.csproj", "{02C66EA6-0672-475C-A0CF-03A127427C8C}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 22
+		SccNumberOfProjects = 28
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -167,6 +183,30 @@ Global
 		SccProjectTopLevelParentUniqueName21 = CoreDeveloper.sln
 		SccProjectName21 = GraphQL/Implementations/Gremlin
 		SccLocalPath21 = GraphQL\\Implementations\\Gremlin
+		SccProjectUniqueName22 = GraphDS\\Server\\GraphDSRESTfulServer\\GraphDSRESTfulServer.csproj
+		SccProjectTopLevelParentUniqueName22 = CoreDeveloper.sln
+		SccProjectName22 = GraphDS/Server/GraphDSRESTfulServer
+		SccLocalPath22 = GraphDS\\Server\\GraphDSRESTfulServer
+		SccProjectUniqueName23 = GraphDS\\Server\\GraphDSTCPServer\\GraphDSTCPServer.csproj
+		SccProjectTopLevelParentUniqueName23 = CoreDeveloper.sln
+		SccProjectName23 = GraphDS/Server/GraphDSTCPServer
+		SccLocalPath23 = GraphDS\\Server\\GraphDSTCPServer
+		SccProjectUniqueName24 = GraphDS\\Server\\GraphDSWCFServer\\GraphDSWCFServer.csproj
+		SccProjectTopLevelParentUniqueName24 = CoreDeveloper.sln
+		SccProjectName24 = GraphDS/Server/GraphDSWCFServer
+		SccLocalPath24 = GraphDS\\Server\\GraphDSWCFServer
+		SccProjectUniqueName25 = GraphDS\\Client\\GraphDSTCPClient\\GraphDSTCPClient.csproj
+		SccProjectTopLevelParentUniqueName25 = CoreDeveloper.sln
+		SccProjectName25 = GraphDS/Client/GraphDSTCPClient
+		SccLocalPath25 = GraphDS\\Client\\GraphDSTCPClient
+		SccProjectUniqueName26 = GraphDS\\Client\\GraphDSWCFClient\\GraphDSWCFClient.csproj
+		SccProjectTopLevelParentUniqueName26 = CoreDeveloper.sln
+		SccProjectName26 = GraphDS/Client/GraphDSWCFClient
+		SccLocalPath26 = GraphDS\\Client\\GraphDSWCFClient
+		SccProjectUniqueName27 = GraphDS\\Client\\GraphDSEmbeddedClient\\GraphDSEmbeddedClient.csproj
+		SccProjectTopLevelParentUniqueName27 = CoreDeveloper.sln
+		SccProjectName27 = GraphDS/Client/GraphDSEmbeddedClient
+		SccLocalPath27 = GraphDS\\Client\\GraphDSEmbeddedClient
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -387,6 +427,66 @@ Global
 		{B0759780-BECA-422E-9A54-89BAB1C02459}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B0759780-BECA-422E-9A54-89BAB1C02459}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B0759780-BECA-422E-9A54-89BAB1C02459}.Release|x86.ActiveCfg = Release|Any CPU
+		{BEA2DB9F-3EA4-4306-AC2C-AB8AC75CFCCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEA2DB9F-3EA4-4306-AC2C-AB8AC75CFCCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEA2DB9F-3EA4-4306-AC2C-AB8AC75CFCCB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{BEA2DB9F-3EA4-4306-AC2C-AB8AC75CFCCB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{BEA2DB9F-3EA4-4306-AC2C-AB8AC75CFCCB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BEA2DB9F-3EA4-4306-AC2C-AB8AC75CFCCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEA2DB9F-3EA4-4306-AC2C-AB8AC75CFCCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEA2DB9F-3EA4-4306-AC2C-AB8AC75CFCCB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{BEA2DB9F-3EA4-4306-AC2C-AB8AC75CFCCB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{BEA2DB9F-3EA4-4306-AC2C-AB8AC75CFCCB}.Release|x86.ActiveCfg = Release|Any CPU
+		{58DECC32-E273-4F44-A418-82348665DBF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58DECC32-E273-4F44-A418-82348665DBF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58DECC32-E273-4F44-A418-82348665DBF9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{58DECC32-E273-4F44-A418-82348665DBF9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{58DECC32-E273-4F44-A418-82348665DBF9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{58DECC32-E273-4F44-A418-82348665DBF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58DECC32-E273-4F44-A418-82348665DBF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58DECC32-E273-4F44-A418-82348665DBF9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{58DECC32-E273-4F44-A418-82348665DBF9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{58DECC32-E273-4F44-A418-82348665DBF9}.Release|x86.ActiveCfg = Release|Any CPU
+		{7EE58263-6B2D-433F-B7FC-43B804377F18}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EE58263-6B2D-433F-B7FC-43B804377F18}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EE58263-6B2D-433F-B7FC-43B804377F18}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{7EE58263-6B2D-433F-B7FC-43B804377F18}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{7EE58263-6B2D-433F-B7FC-43B804377F18}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7EE58263-6B2D-433F-B7FC-43B804377F18}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EE58263-6B2D-433F-B7FC-43B804377F18}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EE58263-6B2D-433F-B7FC-43B804377F18}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{7EE58263-6B2D-433F-B7FC-43B804377F18}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{7EE58263-6B2D-433F-B7FC-43B804377F18}.Release|x86.ActiveCfg = Release|Any CPU
+		{91D6F407-D15F-4AB6-953E-2573E95A9046}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91D6F407-D15F-4AB6-953E-2573E95A9046}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91D6F407-D15F-4AB6-953E-2573E95A9046}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{91D6F407-D15F-4AB6-953E-2573E95A9046}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{91D6F407-D15F-4AB6-953E-2573E95A9046}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{91D6F407-D15F-4AB6-953E-2573E95A9046}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91D6F407-D15F-4AB6-953E-2573E95A9046}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91D6F407-D15F-4AB6-953E-2573E95A9046}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{91D6F407-D15F-4AB6-953E-2573E95A9046}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{91D6F407-D15F-4AB6-953E-2573E95A9046}.Release|x86.ActiveCfg = Release|Any CPU
+		{1C0C7733-8220-449B-85A8-6F69D8B50444}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C0C7733-8220-449B-85A8-6F69D8B50444}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C0C7733-8220-449B-85A8-6F69D8B50444}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{1C0C7733-8220-449B-85A8-6F69D8B50444}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{1C0C7733-8220-449B-85A8-6F69D8B50444}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1C0C7733-8220-449B-85A8-6F69D8B50444}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C0C7733-8220-449B-85A8-6F69D8B50444}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C0C7733-8220-449B-85A8-6F69D8B50444}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{1C0C7733-8220-449B-85A8-6F69D8B50444}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{1C0C7733-8220-449B-85A8-6F69D8B50444}.Release|x86.ActiveCfg = Release|Any CPU
+		{02C66EA6-0672-475C-A0CF-03A127427C8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02C66EA6-0672-475C-A0CF-03A127427C8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02C66EA6-0672-475C-A0CF-03A127427C8C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{02C66EA6-0672-475C-A0CF-03A127427C8C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{02C66EA6-0672-475C-A0CF-03A127427C8C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{02C66EA6-0672-475C-A0CF-03A127427C8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02C66EA6-0672-475C-A0CF-03A127427C8C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02C66EA6-0672-475C-A0CF-03A127427C8C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{02C66EA6-0672-475C-A0CF-03A127427C8C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{02C66EA6-0672-475C-A0CF-03A127427C8C}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -405,6 +505,8 @@ Global
 		{A950D82D-E727-4CF5-B4D4-7B872D733E3C} = {0075FE7B-8E35-4770-997E-8C4190ECA6A8}
 		{EA38B67C-F886-43E3-9438-549E28000220} = {2DA0873C-260F-45B9-BC5C-3453249E00D9}
 		{6A6D0690-78A4-4134-AA2B-4A7A39535612} = {2DA0873C-260F-45B9-BC5C-3453249E00D9}
+		{D92AF9AE-48D1-4B1B-9B70-250F1CEEFABE} = {EA38B67C-F886-43E3-9438-549E28000220}
+		{15589123-5145-44D4-9514-214729FD9EF3} = {EA38B67C-F886-43E3-9438-549E28000220}
 		{A9124727-FB28-4629-B269-FF79EE3EDA54} = {F9FAFD9F-BC60-4EDD-8BA5-8961B7A3BAFF}
 		{3291BC72-8F49-4E60-9BC7-349D5C635985} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{0E469CF5-BF78-4B66-BA2D-F9D5991BBCCD} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
@@ -423,5 +525,11 @@ Global
 		{26BFEE62-82B9-4EFA-9F91-08FD947551A8} = {22437279-5F02-40BE-847C-D7A425D468BE}
 		{F14C5E6B-21FD-472B-9B63-84AFDF06BE39} = {22437279-5F02-40BE-847C-D7A425D468BE}
 		{B0759780-BECA-422E-9A54-89BAB1C02459} = {22437279-5F02-40BE-847C-D7A425D468BE}
+		{BEA2DB9F-3EA4-4306-AC2C-AB8AC75CFCCB} = {D92AF9AE-48D1-4B1B-9B70-250F1CEEFABE}
+		{58DECC32-E273-4F44-A418-82348665DBF9} = {D92AF9AE-48D1-4B1B-9B70-250F1CEEFABE}
+		{7EE58263-6B2D-433F-B7FC-43B804377F18} = {D92AF9AE-48D1-4B1B-9B70-250F1CEEFABE}
+		{91D6F407-D15F-4AB6-953E-2573E95A9046} = {15589123-5145-44D4-9514-214729FD9EF3}
+		{1C0C7733-8220-449B-85A8-6F69D8B50444} = {15589123-5145-44D4-9514-214729FD9EF3}
+		{02C66EA6-0672-475C-A0CF-03A127427C8C} = {15589123-5145-44D4-9514-214729FD9EF3}
 	EndGlobalSection
 EndGlobal

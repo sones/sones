@@ -5,6 +5,7 @@ using System.Text;
 using sones.GraphQL;
 using sones.GraphQL.Result;
 using sones.GraphDB;
+using sones.Library.Internal.Token;
 
 namespace sones.GraphQL
 {
@@ -49,7 +50,12 @@ namespace sones.GraphQL
             throw new NotImplementedException();
         }
 
-        public QueryResult Query(string myQueryString)
+        public string Name
+        {
+            get { return "GQL"; }
+        }
+
+        public QueryResult Query(SessionToken mySessionToken, GraphDB.Transaction.TransactionToken myTransactionToken, string myQueryString)
         {
             throw new NotImplementedException();
         }

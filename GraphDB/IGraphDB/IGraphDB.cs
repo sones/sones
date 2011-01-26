@@ -5,6 +5,7 @@ using System.Text;
 using sones.Library.Internal.Token;
 using sones.GraphDB.Request;
 using sones.Library.Internal.Security;
+using sones.GraphDB.Transaction;
 
 namespace sones.GraphDB
 {

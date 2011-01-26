@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using sones.GraphInfrastructure.Element;
 using System.IO;
 using sones.Library.Internal.Definitions;
-using sones.GraphFS.Security;
 
 namespace sones.InMemoryNonRevisioned
 {
@@ -15,6 +14,7 @@ namespace sones.InMemoryNonRevisioned
     /// </summary>
     public sealed class InMemoryNonRevisionedFS : IGraphFS
     {
+
         #region IGraphFS
 
         public bool IsPersistent
@@ -47,7 +47,7 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public void MakeFileSystem(SessionToken mySessionToken, string myDescription, ulong myNumberOfBytes)
+        public void MakeFileSystem(string myDescription, ulong myNumberOfBytes)
         {
             throw new NotImplementedException();
         }
@@ -92,61 +92,57 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public bool VertexExists(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public bool VertexExists(SessionToken mySessionToken, VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new NotImplementedException();
         }
 
-        public IVertex GetVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public IVertex GetVertex(SessionToken mySessionToken, VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IVertex> GetAllVertices(SessionToken mySessionToken, TransactionToken myTransactionToken, Func<string, bool> myVertexTypeFilterFunc = null, Func<IVertex, bool> myVertexFilterFunc = null, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null)
+        public IEnumerable<IVertex> GetAllVertices(SessionToken mySessionToken, Func<string, bool> myVertexTypeFilterFunc = null, Func<IVertex, bool> myVertexFilterFunc = null, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> GetVertexEditions(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID)
+        public IEnumerable<string> GetVertexEditions(SessionToken mySessionToken, VertexID myVertexID)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null)
+        public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(SessionToken mySessionToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null)
         {
             throw new NotImplementedException();
         }
 
-        public void AddVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, IVertex myIVertex, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public void AddVertex(SessionToken mySessionToken, IVertex myIVertex, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new NotImplementedException();
         }
 
-        public bool RemoveVertexRevision(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null)
+        public bool RemoveVertexRevision(SessionToken mySessionToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null)
         {
             throw new NotImplementedException();
         }
 
-        public bool RemoveVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID)
+        public bool RemoveVertexEdition(SessionToken mySessionToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateVertex(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myToBeUpdatedVertexID, VertexUpdate myVertexUpdate, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null, bool myCreateNewRevision = false)
+        public bool RemoveVertex(SessionToken mySessionToken, VertexID myVertexID)
         {
             throw new NotImplementedException();
         }
 
-        public void MakeFileSystem(string myDescription, ulong myNumberOfBytes)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool RemoveVertexEdition(SessionToken mySessionToken, TransactionToken myTransactionToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null)
+        public void UpdateVertex(SessionToken mySessionToken, VertexID myToBeUpdatedVertexID, VertexUpdate myVertexUpdate, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null, bool myCreateNewRevision = false)
         {
             throw new NotImplementedException();
         }
 
         #endregion
+
     }
 }

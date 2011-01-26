@@ -8,7 +8,7 @@
     <ProjectGuid>{F751657F-0E6C-46C5-A59C-02D7A924A051}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IGraphQL</RootNamespace>
+    <RootNamespace>sones.GraphQL</RootNamespace>
     <AssemblyName>IGraphQL</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -46,8 +46,19 @@
   <ItemGroup>
     <Compile Include="IDumpable.cs" />
     <Compile Include="IGraphQL.cs" />
+    <Compile Include="IQueryableLanguage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Result\QueryResult.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\GraphDB\IGraphDB\IGraphDB.csproj">
+      <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
+      <Name>IGraphDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\Token\Token.csproj">
+      <Project>{3291BC72-8F49-4E60-9BC7-349D5C635985}</Project>
+      <Name>Token</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -56,6 +56,10 @@
       <Project>{FFFB6BE4-9514-41CF-AB68-5FB7B8E3D2E4}</Project>
       <Name>IGraphFS</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\GraphQL\IGraphQL\IGraphQL.csproj">
+      <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
+      <Name>IGraphQL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Library\Internal\Definitions\Definitions.csproj">
       <Project>{2E1F1F44-8A47-428D-A6CF-BE30154EA83F}</Project>
       <Name>Definitions</Name>
