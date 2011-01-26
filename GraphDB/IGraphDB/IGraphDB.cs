@@ -12,7 +12,7 @@ namespace sones.GraphDB
     /// <summary>
     /// The interface for all graphdb implementations
     /// </summary>
-    public interface IGraphDB
+    public interface IGraphDB : ITransactionable
     {
         /// <summary>
         /// Creates a new type of vertex

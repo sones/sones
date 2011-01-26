@@ -38,6 +38,21 @@ namespace sones.GraphDB
             throw new NotImplementedException();
         }
 
+        public TransactionToken BeginTransaction(SessionToken mySessionToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CommitTransaction(SessionToken mySessionToken, TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RollbackTransaction(SessionToken mySessionToken, TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
     }

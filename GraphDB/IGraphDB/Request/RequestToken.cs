@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace sones.Library.Internal.Token
+namespace sones.GraphDB.Request
 {
     /// <summary>
     /// A class that containts informations concerning the current request

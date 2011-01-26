@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="ErrorHandling\IGraphDBException.cs" />
     <Compile Include="Request\GraphDBAccessModeEnum.cs" />
+    <Compile Include="Request\RequestToken.cs" />
     <Compile Include="Request\Statistics\IRequestStatistics.cs" />
     <Compile Include="Request\Statistics\RequestStatistics.cs" />
     <Compile Include="IGraphDB.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="Request\RequestClear.cs" />
     <Compile Include="Request\RequestCreateVertexType.cs" />
     <Compile Include="Transaction\IsolationLevel.cs" />
+    <Compile Include="Transaction\ITransactionable.cs" />
     <Compile Include="Transaction\ITransactionManager.cs" />
     <Compile Include="Transaction\TransactionID.cs" />
     <Compile Include="Transaction\TransactionState.cs" />

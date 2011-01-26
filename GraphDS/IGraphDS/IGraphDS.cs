@@ -18,12 +18,5 @@ namespace sones.GraphDS
         /// </summary>
         /// <param name="mySessionToken"></param>
         void Shutdown(SessionToken mySessionToken);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="myCredentials"></param>
-        /// <returns></returns>
-        SessionToken Authenticate(ICredentials myCredentials);
     }
 }
