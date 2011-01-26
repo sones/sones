@@ -20,19 +20,19 @@ namespace sones.GraphQL
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> ExportGraphDDL()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<string> ExportGraphDML()
-        {
-            throw new NotImplementedException();
-        }
-
         public string Name
         {
             get { return "SPARQL"; }
+        }
+
+        public IEnumerable<string> ExportGraphDDL(SessionToken mySessionToken, TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> ExportGraphDML(SessionToken mySessionToken, TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

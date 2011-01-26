@@ -60,6 +60,16 @@ namespace sones.GraphQL
             throw new NotImplementedException();
         }
 
+        public IEnumerable<string> ExportGraphDDL(SessionToken mySessionToken, GraphDB.Transaction.TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<string> ExportGraphDML(SessionToken mySessionToken, GraphDB.Transaction.TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
     }

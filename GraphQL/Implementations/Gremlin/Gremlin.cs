@@ -26,17 +26,16 @@ namespace Gremlin
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> ExportGraphDDL()
+        public IEnumerable<string> ExportGraphDDL(SessionToken mySessionToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> ExportGraphDML()
+        public IEnumerable<string> ExportGraphDML(SessionToken mySessionToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
 
         #endregion
-
     }
 }
