@@ -9,11 +9,20 @@
 #region Usings
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using sones.GraphDB.TypeManagement;
 using sones.Lib.NewFastSerializer;
 using sones.Lib.Serializer;
+using sones.GraphDB.Managers.Structures;
+using sones.Lib;
+using sones.GraphDB.ObjectManagement;
+using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.GraphDB.Structures.EdgeTypes;
+using sones.GraphDB.Exceptions;
+using sones.GraphDB.Errors;
+using sones.Lib.ErrorHandling;
 
 
 #endregion
@@ -31,6 +40,31 @@ namespace sones.GraphDB.Indices
 
         private List<AttributeUUID> _indexKeyAttributeUUIDs = new List<AttributeUUID>();
         public List<AttributeUUID> IndexKeyAttributeUUIDs { get { return _indexKeyAttributeUUIDs; } }
+
+        private Dictionary<AttributeUUID, String> _functions = new Dictionary<AttributeUUID,string>();
+
+        #endregion
+
+        #region Static
+
+        public static Exceptional<IndexKeyDefinition> CreateFromIDChainDefinitions(IEnumerable<IDChainDefinition> myIDChainDefinitions)
+        {
+            var indexKeyDefinition = new IndexKeyDefinition();
+            var retVal = new Exceptional<IndexKeyDefinition>(indexKeyDefinition);
+            foreach (var idChainDefinition in myIDChainDefinitions)
+            {
+                retVal.PushIExceptional(indexKeyDefinition.AddIDChainDefinition(idChainDefinition));
+            }
+            return retVal;
+        }
+
+        public static Exceptional<IndexKeyDefinition> CreateFromIDChainDefinition(IDChainDefinition myIDChainDefinition)
+        {
+            var indexKeyDefinition = new IndexKeyDefinition();
+            var retVal = new Exceptional<IndexKeyDefinition>(indexKeyDefinition);
+            retVal.PushIExceptional(indexKeyDefinition.AddIDChainDefinition(myIDChainDefinition));
+            return retVal;
+        }
 
         #endregion
 
@@ -73,6 +107,30 @@ namespace sones.GraphDB.Indices
 
         #region private helper
 
+        internal Exceptional AddIDChainDefinition(IDChainDefinition myIDChainDefinition)
+        {
+
+            var attr = (myIDChainDefinition.First() as ChainPartTypeOrAttributeDefinition).TypeAttribute;
+
+            if (myIDChainDefinition.Count() == 2) // we validate the ID in the IndexAttributeNode
+            {
+
+                if ((myIDChainDefinition.Last() as ChainPartFuncDefinition).Parameters.Count > 0)
+                {
+                    return new Exceptional(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                }
+
+                _functions[attr.UUID] = (myIDChainDefinition.Last() as ChainPartFuncDefinition).FuncName;
+
+            }
+
+            _indexKeyAttributeUUIDs.Add(attr.UUID);
+
+            CalcNewHashCode(attr.UUID);
+
+            return Exceptional.OK;
+        }
+
         /// <summary>
         /// Calculates a hashcode with the help of the old hashcode and a new AttributeUUID
         /// </summary>
@@ -83,6 +141,184 @@ namespace sones.GraphDB.Indices
         }
 
         #endregion
+
+
+        internal Exceptional<HashSet<IndexKey>> GetIndexkeysFromDBObject(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext myDBContext)
+        {
+            HashSet<IndexKey> result = new HashSet<IndexKey>();
+            TypeAttribute currentAttribute;
+
+            foreach (var aIndexAttributeUUID in IndexKeyAttributeUUIDs)
+            {
+                currentAttribute = myTypeOfDBObject.GetTypeAttributeByUUID(aIndexAttributeUUID);
+
+                if (!currentAttribute.GetDBType(myDBContext.DBTypeManager).IsUserDefined || this._functions.ContainsKey(aIndexAttributeUUID))
+                {
+                    #region base attribute
+
+                    if (myDBObject.HasAttribute(aIndexAttributeUUID, myTypeOfDBObject))
+                    {
+                        ADBBaseObject newIndexKeyItem = null;
+
+                        if (this._functions.ContainsKey(aIndexAttributeUUID))
+                        {
+                            var func = myDBContext.DBPluginManager.GetFunction(this._functions[aIndexAttributeUUID]);
+                            func.CallingAttribute = myTypeOfDBObject.GetTypeAttributeByUUID(aIndexAttributeUUID);
+                            func.CallingDBObjectStream = myDBObject;
+                            func.CallingObject = myDBObject.GetAttribute(aIndexAttributeUUID, myTypeOfDBObject, myDBContext);
+
+                            var funcResult = func.ExecFunc(myDBContext);
+
+                            if (funcResult.Failed())
+                            {
+                                return new Exceptional<HashSet<IndexKey>>(funcResult);
+                            }
+
+                            if (!(funcResult.Value.Value is ADBBaseObject))
+                            {
+                                return new Exceptional<HashSet<IndexKey>>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+                            }
+
+                            result.Add(new IndexKey(aIndexAttributeUUID, funcResult.Value.Value as ADBBaseObject, this));
+
+                            continue;
+
+                        }
+
+
+                        switch (currentAttribute.KindOfType)
+                        {
+                            #region List/Set
+
+                            case KindsOfType.ListOfNoneReferences:
+                            case KindsOfType.SetOfNoneReferences:
+
+                                var helperSet = new List<ADBBaseObject>();
+
+                                foreach (var aBaseObject in ((IBaseEdge)myDBObject.GetAttribute(aIndexAttributeUUID, myTypeOfDBObject, myDBContext)).GetBaseObjects())
+                                {
+                                    helperSet.Add((ADBBaseObject)aBaseObject);
+                                }
+
+                                if (result.Count != 0)
+                                {
+                                    #region update
+
+                                    HashSet<IndexKey> helperResultSet = new HashSet<IndexKey>();
+
+                                    foreach (var aNewItem in helperSet)
+                                    {
+                                        foreach (var aReturnVal in result)
+                                        {
+                                            helperResultSet.Add(new IndexKey(aReturnVal, aIndexAttributeUUID, aNewItem, this));
+                                        }
+                                    }
+
+                                    result = helperResultSet;
+
+                                    #endregion
+                                }
+                                else
+                                {
+                                    #region create new
+
+                                    foreach (var aNewItem in helperSet)
+                                    {
+                                        result.Add(new IndexKey(aIndexAttributeUUID, aNewItem, this));
+                                    }
+
+                                    #endregion
+                                }
+
+                                break;
+
+                            #endregion
+
+                            #region single/special
+
+                            case KindsOfType.SingleReference:
+                            case KindsOfType.SingleNoneReference:
+                            case KindsOfType.SpecialAttribute:
+
+                                newIndexKeyItem = (ADBBaseObject)myDBObject.GetAttribute(aIndexAttributeUUID, myTypeOfDBObject, myDBContext);
+
+                                if (result.Count != 0)
+                                {
+                                    #region update
+
+                                    foreach (var aResultItem in result)
+                                    {
+                                        aResultItem.AddAADBBAseObject(aIndexAttributeUUID, newIndexKeyItem);
+                                    }
+
+                                    #endregion
+                                }
+                                else
+                                {
+                                    #region create new
+
+                                    result.Add(new IndexKey(aIndexAttributeUUID, newIndexKeyItem, this));
+
+                                    #endregion
+                                }
+
+                                break;
+
+                            #endregion
+
+                            #region not implemented
+
+                            case KindsOfType.SetOfReferences:
+                            default:
+
+                                throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "Currently its not implemented to insert anything else than a List/Set/Single of base types"));
+
+                            #endregion
+                        }
+                    }
+                    else
+                    {
+                        //add default value
+
+                        var defaultADBBAseObject = GraphDBTypeMapper.GetADBBaseObjectFromUUID(currentAttribute.DBTypeUUID);
+                        defaultADBBAseObject.SetValue(DBObjectInitializeType.Default);
+
+                        if (result.Count != 0)
+                        {
+                            #region update
+
+                            foreach (var aResultItem in result)
+                            {
+                                aResultItem.AddAADBBAseObject(aIndexAttributeUUID, defaultADBBAseObject);
+                            }
+
+                            #endregion
+                        }
+                        else
+                        {
+                            #region create new
+
+                            result.Add(new IndexKey(aIndexAttributeUUID, defaultADBBAseObject, this));
+
+                            #endregion
+                        }
+
+                    }
+                    #endregion
+                }
+                else
+                {
+                    #region reference attribute
+
+                    throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
+
+                    #endregion
+                }
+            }
+
+            return new Exceptional<HashSet<IndexKey>>(result);
+
+        }
 
         #region Overrides
 
@@ -127,9 +363,22 @@ namespace sones.GraphDB.Indices
                 return false;
             }
 
+            if (this._functions.Count != p._functions.Count)
+            {
+                return false;
+            }
+
             for (int i = 0; i < _indexKeyAttributeUUIDs.Count; i++)
             {
                 if (this._indexKeyAttributeUUIDs[i] != p.IndexKeyAttributeUUIDs[i])
+                {
+                    return false;
+                }
+            }
+
+            foreach(var keyVal in _functions)
+            {
+                if (!p._functions.ContainsKey(keyVal.Key) || keyVal.Value != p._functions[keyVal.Key])
                 {
                     return false;
                 }

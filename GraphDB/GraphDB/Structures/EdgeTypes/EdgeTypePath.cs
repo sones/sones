@@ -68,6 +68,11 @@ namespace sones.GraphDB.Structures.EdgeTypes
         {
             throw new NotImplementedException();
         }
+        
+        public override IEnumerable<EdgeTypeParamDefinition> GetParams()
+        {
+            throw new NotImplementedException();
+        }
 
         public override IEdgeType GetNewInstance()
         {

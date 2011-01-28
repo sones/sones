@@ -121,7 +121,7 @@ namespace sones.GraphDB.Managers.AlterType
             }
 
 
-            var indices = graphDBType.GetAllAttributeIndices();
+            var indices = graphDBType.GetAllAttributeIndices(dbContext);
             List<AAttributeIndex> idxToDelete = new List<AAttributeIndex>();
 
             //remove attributes from type
@@ -141,7 +141,7 @@ namespace sones.GraphDB.Managers.AlterType
                 //remove indices
                 foreach (var idx in idxToDelete)
                 {
-                    var remExcept = graphDBType.RemoveIndex(idx.IndexName, idx.IndexEdition, dbContext.DBTypeManager);
+                    var remExcept = graphDBType.RemoveIndex(idx.IndexName, idx.IndexEdition, dbContext);
 
                     if (!remExcept.Success())
                     {

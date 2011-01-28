@@ -239,22 +239,19 @@ namespace sones.GraphDB.ObjectManagement
             
             #region Add UUID of the new DBObject to all indices of myGraphType
 
+            var uuidIndex = myGraphDBType.GetUUIDIndex(_DBContext);
+            uuidIndex.Insert(_NewDBObjectStream, myGraphDBType, _DBContext);
+
             foreach (var _GraphDBType in _DBContext.DBTypeManager.GetAllParentTypes(myGraphDBType, true, false))
             {
-                foreach (var _AAttributeIndex in _GraphDBType.GetAllAttributeIndices(true))
+                foreach (var _AAttributeIndex in _GraphDBType.GetAllAttributeIndices(_DBContext, false))
                 {
-                    if (_AAttributeIndex.IsUUIDIndex)
+
+                    //Find out if the dbobject carries all necessary attributes
+                    if (_NewDBObjectStream.HasAtLeastOneAttribute(_AAttributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs, _GraphDBType, mySessionSettings))
                     {
+                        //valid dbo for idx
                         _AAttributeIndex.Insert(_NewDBObjectStream, _GraphDBType, _DBContext);
-                    }
-                    else
-                    {
-                        //Find out if the dbobject carries all necessary attributes
-                        if (_NewDBObjectStream.HasAtLeastOneAttribute(_AAttributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs, _GraphDBType, mySessionSettings))
-                        {
-                            //valid dbo for idx
-                            _AAttributeIndex.Insert(_NewDBObjectStream, _GraphDBType, _DBContext);
-                        }
                     }
                 }
             }
@@ -403,7 +400,7 @@ namespace sones.GraphDB.ObjectManagement
 
             #region remove from attributeIDX
 
-            foreach (var anIndex in myTypeOfDBObject.GetAllAttributeIndices(true))
+            foreach (var anIndex in myTypeOfDBObject.GetAllAttributeIndices(_DBContext, true))
             {
                 anIndex.Remove(myDBObject, myTypeOfDBObject, _DBContext);
             }
@@ -544,24 +541,26 @@ namespace sones.GraphDB.ObjectManagement
 
             #endregion
 
-            var existExcept = _IGraphFSSession.ObjectStreamExists(myEdgeLocation, DBConstants.DBBACKWARDEDGESTREAM);
+            //var existExcept = _IGraphFSSession.ObjectStreamExists(myEdgeLocation, DBConstants.DBBACKWARDEDGESTREAM);
 
-            if (existExcept.Failed())
-                return new Exceptional<BackwardEdgeStream>(existExcept);
+            //if (existExcept.Failed())
+            //    return new Exceptional<BackwardEdgeStream>(existExcept);
 
-            if (existExcept.Value == Trinary.TRUE)
-            {
-                var loadException = _IGraphFSSession.GetFSObject<BackwardEdgeStream>(myEdgeLocation, DBConstants.DBBACKWARDEDGESTREAM, null, null, 0, false);
+            //if (existExcept.Value == Trinary.TRUE)
+            //{
+            //    var loadException = _IGraphFSSession.GetFSObject<BackwardEdgeStream>(myEdgeLocation, DBConstants.DBBACKWARDEDGESTREAM, null, null, 0, false);
 
-                if (loadException.Failed())
-                    return new Exceptional<BackwardEdgeStream>(loadException);
+            //    if (loadException.Failed())
+            //        return new Exceptional<BackwardEdgeStream>(loadException);
 
-                retDBBackwardEdge = loadException.Value;
-            }
-            else
-            {
-                retDBBackwardEdge = new BackwardEdgeStream(myEdgeLocation);
-            }
+            //    retDBBackwardEdge = loadException.Value;
+            //}
+            //else
+            //{
+            //    retDBBackwardEdge = new BackwardEdgeStream(myEdgeLocation);
+            //}
+
+            return _IGraphFSSession.GetOrCreateFSObject<BackwardEdgeStream>(myEdgeLocation, DBConstants.DBBACKWARDEDGESTREAM, () => new BackwardEdgeStream(myEdgeLocation), null, null, 0, false);
 
             return new Exceptional<BackwardEdgeStream>(retDBBackwardEdge);
         }

@@ -196,7 +196,8 @@ namespace sones.GraphDB.Structures.Operators
             IndexKey lookup = new IndexKey(myAttributeUUID, myOperationValue, myIndex.IndexKeyDefinition);
             var currentType = dbContext.DBTypeManager.GetTypeByUUID(myIndex.IndexRelatedTypeUUID);
 
-            if (myIndex.Contains(lookup, currentType, dbContext))
+            var result = myIndex.Contains(lookup, currentType, dbContext);
+            if (result.Value)
             {
                 foreach (var aUUID in myIndex.GetValues(lookup, currentType, dbContext))
                 {

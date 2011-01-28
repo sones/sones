@@ -181,6 +181,11 @@ namespace sones.GraphDB.Structures.EdgeTypes
         {
 
         }
+        
+        public override IEnumerable<EdgeTypeParamDefinition> GetParams()
+        {
+            yield break;
+        }
 
         public override String GetDescribeOutput(GraphDBType myGraphDBType)
         {

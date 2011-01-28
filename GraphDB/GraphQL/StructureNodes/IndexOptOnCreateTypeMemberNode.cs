@@ -76,6 +76,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
                     else if (child.AstNode is IndexAttributeListNode)
                     {
                         _IndexAttributeDefinitions = (child.AstNode as IndexAttributeListNode).IndexAttributes;
+                        ParsingResult.PushIExceptional((child.AstNode as IndexAttributeListNode).ParsingResult);
                     }
 
                 }

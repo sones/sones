@@ -640,7 +640,7 @@ namespace sones.GraphDB
 					return new QueryResult(new Error_TypeDoesNotExist(myTypeName));
 				}
 
-				var RemoveIdxException = graphDBTypeType.RemoveIndex(myIndexName, myIndexEdition, transactionContext.DBTypeManager);
+				var RemoveIdxException = graphDBTypeType.RemoveIndex(myIndexName, myIndexEdition, transactionContext);
 
 				if (!RemoveIdxException.Success())
 				{
@@ -1159,7 +1159,7 @@ namespace sones.GraphDB
 				}
                 var _ObjectManipulationManager = new ObjectManipulationManager(_DBInnerContext, _GraphDBType);
 
-				Exceptional truncateResult = _ObjectManipulationManager.Truncate();
+                Exceptional truncateResult = _ObjectManipulationManager.Truncate(_DBInnerContext);
 				if (truncateResult.Failed())
 				{
 					return new QueryResult(truncateResult);

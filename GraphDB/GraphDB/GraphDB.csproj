@@ -75,6 +75,7 @@
     <Compile Include="Errors\ImportErrors\Error_InvalidImportLocation.cs" />
     <Compile Include="Errors\ImportErrors\Error_ImporterDoesNotExist.cs" />
     <Compile Include="Errors\ImportErrors\GraphDBImportError.cs" />
+    <Compile Include="Errors\IndexErrors\Error_InvalidIndexAttribute.cs" />
     <Compile Include="Errors\IndexErrors\Error_IndexAlreadyExistWithSameEditionAndAttribute.cs" />
     <Compile Include="Errors\IndexErrors\Error_CouldNotAlterIndexOnType.cs" />
     <Compile Include="Errors\IndexErrors\Error_CouldNotGetIndexReference.cs" />

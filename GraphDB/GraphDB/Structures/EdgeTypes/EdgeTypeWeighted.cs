@@ -113,6 +113,13 @@ namespace sones.GraphDB.Structures.EdgeTypes
             CalcEstimatedSize(this);
         }
 
+        public override IEnumerable<EdgeTypeParamDefinition> GetParams()
+        {
+            yield return new EdgeTypeParamDefinition(ParamType.GraphType, weightDataType.ObjectName);
+            yield return new EdgeTypeParamDefinition(ParamType.DefaultValueDef, weightDataType.Value);
+            yield return new EdgeTypeParamDefinition(ParamType.Sort, weightedSet.SortDirection.ToString());
+        }
+
         public override String GetDescribeOutput(GraphDBType myGraphDBType)
         {
             return String.Concat("SET", "<", EdgeTypeName.ToUpper(), "(", weightDataType.ObjectName, ", ", "DEFAULT=", weightDataType.Value.ToString(), ", ", weightedSet.SortDirection.ToString(), ")", "<", myGraphDBType.Name, ">", ">");

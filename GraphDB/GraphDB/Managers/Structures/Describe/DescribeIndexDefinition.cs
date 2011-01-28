@@ -74,7 +74,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
                     _IndexEdition = DBConstants.DEFAULTINDEX;
                 }
 
-                var attrIndex = type.GetAttributeIndex(_IndexName, _IndexEdition);
+                var attrIndex = type.GetAttributeIndex(myDBContext, _IndexName, _IndexEdition);
 
                 if (attrIndex.Failed())
                 {
@@ -104,7 +104,7 @@ namespace sones.GraphDB.Managers.Structures.Describe
                 {
                     if (type.IsUserDefined)
                     {
-                        foreach (var index in type.GetAllAttributeIndices())
+                        foreach (var index in type.GetAllAttributeIndices(myDBContext))
                         {
                             resultingReadouts.Add(GenerateOutput(index, index.IndexName));
                         }

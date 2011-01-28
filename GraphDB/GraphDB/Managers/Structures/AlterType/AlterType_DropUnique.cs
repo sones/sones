@@ -36,7 +36,7 @@ namespace sones.GraphDB.Managers.AlterType
         /// </summary>
         public override Exceptional Execute(DBContext myDBContext, GraphDBType myGraphDBType)
         {
-            return myGraphDBType.DropUniqueAttributes(myDBContext.DBTypeManager);
+            return myGraphDBType.DropUniqueAttributes(myDBContext);
         }
 
     }

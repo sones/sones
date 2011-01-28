@@ -284,6 +284,7 @@ namespace sones.GraphFS
         /// <returns></returns>
         private Boolean CheckFillLevel(ulong mySizeNeeded)
         {
+
             while (mySizeNeeded + _FillLevel >= Capacity)
             {
                 // Remove oldest LinkedListNode from LRUList and add new ObjectLocator to the ObjectCache
@@ -296,9 +297,31 @@ namespace sones.GraphFS
 
                 oldestEntry = _ObjectLocatorLRU.First;
 
-                if (oldestEntry.Value.ObjectLocation != ObjectLocation.Root && !_PinnedLocations.Contains(oldestEntry.Value.ObjectLocation))
+                if (oldestEntry.Value.ObjectLocation != ObjectLocation.Root)
                 {
-                    RemoveObjectLocator(oldestEntry.Value, myDisposeAFSObject: false);
+                    if (_PinnedLocations.Contains(oldestEntry.Value.ObjectLocation))
+                    {
+                        #region Move pinned locations to the end
+
+                        #region If all locations are pinned we need to return false
+
+                        if (_PinnedLocations.Count == _ObjectLocatorCache.Count)
+                        {
+                            return false;
+                        }
+
+                        #endregion
+
+                        // move pinned to end and proceed
+                        _ObjectLocatorLRU.RemoveFirst();
+                        _ObjectLocatorLRU.AddLast(oldestEntry);
+
+                        #endregion
+                    }
+                    else
+                    {
+                        RemoveObjectLocator(oldestEntry.Value, myDisposeAFSObject: false);
+                    }
                 }
                 else
                 {
@@ -712,7 +735,8 @@ namespace sones.GraphFS
                     if (_AFSObjectStore.Remove(myCacheUUID))
                     {
                         #region Dispose AFSObject
-                        if (myDisposeAFSObject)
+                        // old revisions might be 
+                        if (myDisposeAFSObject && !_PinnedLocations.Contains(remObject.ObjectLocation))
                         {
                             var toBeDisposedObject = remObject as IDisposable;
                             if (toBeDisposedObject != null)

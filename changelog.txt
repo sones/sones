@@ -1,6 +1,11 @@
 sones GraphDB 1.2 (developer) Changelog:
 
-24.01.2010
+28.01.2011
+- Index on functions
+- Describe types/vertex
+- Bugfixes (index, settings, import)
+
+25.01.2011
 - WebShell bugfix
 - INSERTORUPDATE bugfix
 - GraphAppSettings fixes

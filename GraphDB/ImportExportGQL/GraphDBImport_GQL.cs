@@ -163,6 +163,11 @@ namespace sones.GraphDB.ImportExport
 
                 numberOfLine++;
 
+                if (String.IsNullOrWhiteSpace(_Line))
+                {
+                    continue;
+                }
+
                 #region Skip comments
 
                 if (IsComment(_Line, comments))

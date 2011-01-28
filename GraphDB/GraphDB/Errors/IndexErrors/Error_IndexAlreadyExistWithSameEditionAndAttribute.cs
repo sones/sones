@@ -24,7 +24,7 @@ namespace sones.GraphDB.Errors
             {
                 if (myDBContext != null)
                 {
-                    _IndexAttributes = IndexKeyDefinition.IndexKeyAttributeUUIDs.ToAggregatedString(a => myDBContext.DBTypeManager.GetTypeAttributeByAttributeUUID(a).Name);
+                    _IndexAttributes = IndexKeyDefinition.IndexKeyAttributeUUIDs.ToAggregatedString(a => a.ToString());
                 }
                 else
                 {

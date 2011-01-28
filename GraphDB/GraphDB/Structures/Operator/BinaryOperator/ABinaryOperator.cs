@@ -89,7 +89,6 @@ namespace sones.GraphDB.Structures.Operators
 
             #endregion
 
-
             if (myExtraordinary == null)
             {
                 #region eventual speedup
@@ -97,7 +96,7 @@ namespace sones.GraphDB.Structures.Operators
                 //direct match of idx
                 if (myType.HasAttributeIndices(myAttribute.UUID))
                 {
-                    yield return new Tuple<GraphDBType, AAttributeIndex>(myType, myType.GetAttributeIndex(myAttribute.UUID, null).Value);
+                    yield return new Tuple<GraphDBType, AAttributeIndex>(myType, myType.GetAttributeIndex(dbContext, new IndexKeyDefinition(myAttribute.UUID), null).Value);
                 }
                 else
                 {
@@ -106,11 +105,11 @@ namespace sones.GraphDB.Structures.Operators
                     {
                         if (aSubType.HasAttributeIndices(myAttribute.UUID))
                         {
-                            yield return new Tuple<GraphDBType, AAttributeIndex>(aSubType, aSubType.GetAttributeIndex(myAttribute.UUID, null).Value);
+                            yield return new Tuple<GraphDBType, AAttributeIndex>(aSubType, aSubType.GetAttributeIndex(dbContext, new IndexKeyDefinition(myAttribute.UUID), null).Value);
                         }
                         else
                         {
-                            yield return new Tuple<GraphDBType, AAttributeIndex>(aSubType, aSubType.GetUUIDIndex(dbContext.DBTypeManager));
+                            yield return new Tuple<GraphDBType, AAttributeIndex>(aSubType, aSubType.GetUUIDIndex(dbContext));
                         }
                     }
                 }
@@ -119,9 +118,21 @@ namespace sones.GraphDB.Structures.Operators
             }
             else
             {
-                foreach (var aSubType in dbContext.DBTypeManager.GetAllSubtypes(myType, true))
+                var checkResult = myType.HasAttributeIndices(myExtraordinary as IDChainDefinition);
+                if (checkResult.Failed())
                 {
-                    yield return new Tuple<GraphDBType, AAttributeIndex>(aSubType, aSubType.GetUUIDIndex(dbContext.DBTypeManager));
+                    throw new GraphDBException(checkResult.IErrors);
+                }
+                if (checkResult.Value)
+                {
+                    yield return new Tuple<GraphDBType, AAttributeIndex>(myType, myType.GetAttributeIndex(dbContext, myExtraordinary as IDChainDefinition).Value);
+                }
+                else
+                {
+                    foreach (var aSubType in dbContext.DBTypeManager.GetAllSubtypes(myType, true))
+                    {
+                        yield return new Tuple<GraphDBType, AAttributeIndex>(aSubType, aSubType.GetUUIDIndex(dbContext));
+                    }
                 }
             }
 

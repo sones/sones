@@ -905,7 +905,7 @@ namespace sones.GraphDB.GraphQL
 
             IndexAttributeMember.Rule = IndexAttributeType;// + AttributeOrderDirectionOpt;
 
-            IndexAttributeType.Rule = Id_simple | id_typeAndAttribute;
+            IndexAttributeType.Rule = IdOrFuncList;// Id_simple | id_typeAndAttribute;
 
             #endregion
 
@@ -2464,9 +2464,9 @@ namespace sones.GraphDB.GraphQL
 
                 #region Indices
 
-                if (myGraphDBType.GetAllAttributeIndices(false).CountIsGreater(0))
+                if (myGraphDBType.GetAllAttributeIndices(myDBContext, false).CountIsGreater(0))
                 {
-                    stringBuilder.Append(S_INDICES.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myDumpFormat, myGraphDBType.GetAllAttributeIndices(false), myGraphDBType) + S_BRACKET_RIGHT.Symbol + " ");
+                    stringBuilder.Append(S_INDICES.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myDumpFormat, myGraphDBType.GetAllAttributeIndices(myDBContext, false), myGraphDBType) + S_BRACKET_RIGHT.Symbol + " ");
                 }
 
                 #endregion
@@ -2633,7 +2633,7 @@ namespace sones.GraphDB.GraphQL
             foreach (var graphDBType in myTypesToDump)
             {
 
-                var UUIDIdx = graphDBType.GetUUIDIndex(dbContext.DBTypeManager);
+                var UUIDIdx = graphDBType.GetUUIDIndex(dbContext);
 
                 #region Take UUID index
                 foreach (var ids in UUIDIdx.GetAllValues(graphDBType, dbContext))

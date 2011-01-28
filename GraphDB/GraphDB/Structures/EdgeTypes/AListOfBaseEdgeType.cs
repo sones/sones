@@ -17,6 +17,7 @@ using sones.GraphDB.TypeManagement.BasicTypes;
 
 using sones.GraphDB.TypeManagement;
 using sones.Lib;
+using sones.GraphDB.Managers.Structures;
 
 
 namespace sones.GraphDB.Structures.EdgeTypes
@@ -182,5 +183,12 @@ namespace sones.GraphDB.Structures.EdgeTypes
             //TypeCode + EdgeUUID + TypeCode + classdefaultSize
             return EstimatedSizeConstants.UInt64 + EstimatedSizeConstants.UInt32 + EstimatedSizeConstants.ClassDefaultSize + EstimatedSizeConstants.CalcUUIDSize(EdgeTypeUUID);
         }
+
+        #region IEdgeType Members
+
+
+        public abstract IEnumerable<EdgeTypeParamDefinition> GetParams();
+
+        #endregion
     }
 }

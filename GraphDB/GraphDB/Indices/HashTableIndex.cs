@@ -23,6 +23,7 @@ using sones.GraphFS.Objects;
 using sones.Lib.DataStructures.Indices;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.TypeManagement.BasicTypes;
+using sones.Lib;
 
 #endregion
 
@@ -109,7 +110,12 @@ namespace sones.GraphDB.Indices
             if (myDBObject.HasAtLeastOneAttribute(this.IndexKeyDefinition.IndexKeyAttributeUUIDs, myTypeOfDBObject, myDBContext.SessionSettings))
             {
                 //insert
-                foreach (var aIndexKey in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext))
+                var result = GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext);
+                if (result.Failed())
+                {
+                    return result;
+                }
+                foreach (var aIndexKey in result.Value)
                 {
                     SetIndexKeyAndValue(aIndexKey, myDBObject.ObjectUUID, IndexSetStrategy.MERGE);
                 }
@@ -142,7 +148,13 @@ namespace sones.GraphDB.Indices
 
             System.Diagnostics.Debug.Assert(_indexDatastructure != null);
 
-            foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext))
+            var result = GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext);
+            if (result.Failed())
+            {
+                return result;
+            }
+
+            foreach (var aIndexKex in result.Value)
             {
                 #region Check for uniqueness - TODO: remove me as soon as we have a unique indexObject implementation
 
@@ -209,29 +221,35 @@ namespace sones.GraphDB.Indices
         /// <summary>
         /// <seealso cref=" IAttributeIndex"/>
         /// </summary>        
-        public override Boolean Contains(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext myDBContext)
+        public override Exceptional<Boolean> Contains(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext myDBContext)
         {
             VerifyIndexDatastructure(myDBContext, myTypeOfDBObject);
 
-            foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext))
+            var result = GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext);
+            if (result.Failed())
+            {
+                return result.Convert<Boolean>();
+            }
+
+            foreach (var aIndexKex in result.Value)
             {
 
                 if (_indexDatastructure.Contains(aIndexKex, myDBObject.ObjectUUID))
                 {
-                    return true;
+                    return new Exceptional<bool>(true);
                 }
             }
 
-            return false;
+            return new Exceptional<bool>(false);
         }
 
         /// <summary>
         /// <seealso cref=" IAtributeIndex"/>
         /// </summary>        
-        public override Boolean Contains(IndexKey myIndexKey, GraphDBType myTypeOfDBObject, DBContext myDBContext)
+        public override Exceptional<Boolean> Contains(IndexKey myIndexKey, GraphDBType myTypeOfDBObject, DBContext myDBContext)
         {
             VerifyIndexDatastructure(myDBContext, myTypeOfDBObject);
-            return _indexDatastructure.ContainsKey(myIndexKey);
+            return new Exceptional<bool>((bool) _indexDatastructure.ContainsKey(myIndexKey));
         }
 
         #endregion
@@ -245,7 +263,13 @@ namespace sones.GraphDB.Indices
         {
             VerifyIndexDatastructure(myDBContext, myTypeOfDBObject);
 
-            foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext))
+            var result = GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext);
+            if (result.Failed())
+            {
+                return result;
+            }
+
+            foreach (var aIndexKex in result.Value)
             {
                 if (_indexDatastructure.Remove(aIndexKex, myDBObject.ObjectUUID))
                 {
@@ -600,166 +624,6 @@ namespace sones.GraphDB.Indices
 
         #endregion
 
-        #region GetIndexkeysFromDBObject
-
-        /// <summary>
-        /// Creates IndexKeys from a DBObject.
-        /// </summary>
-        /// <param name="myDBObject">The DBObject reference for the resulting IndexKeys</param>
-        /// <param name="myTypeOfDBObject">The Type of the DBObject</param>
-        /// <param name="myToken">The SessionInfos</param>
-        /// <returns>A HashSet of IndexKeys</returns>
-        private HashSet<IndexKey> GetIndexkeysFromDBObject(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext)
-        {
-            HashSet<IndexKey> result = new HashSet<IndexKey>();
-            TypeAttribute currentAttribute;
-
-            foreach (var aIndexAttributeUUID in IndexKeyDefinition.IndexKeyAttributeUUIDs)
-            {
-                currentAttribute = myTypeOfDBObject.GetTypeAttributeByUUID(aIndexAttributeUUID);
-
-                if (!currentAttribute.GetDBType(dbContext.DBTypeManager).IsUserDefined)
-                {
-                    #region base attribute
-
-                    if (myDBObject.HasAttribute(aIndexAttributeUUID, myTypeOfDBObject))
-                    {
-                        ADBBaseObject newIndexKeyItem = null;
-
-                        switch (currentAttribute.KindOfType)
-                        {
-                            #region List/Set
-
-                            case KindsOfType.ListOfNoneReferences:
-                            case KindsOfType.SetOfNoneReferences:
-
-                                var helperSet = new List<ADBBaseObject>();
-
-                                foreach (var aBaseObject in ((IBaseEdge)myDBObject.GetAttribute(aIndexAttributeUUID, myTypeOfDBObject, dbContext)).GetBaseObjects())
-                                {
-                                    helperSet.Add((ADBBaseObject)aBaseObject);
-                                }
-
-                                if (result.Count != 0)
-                                {
-                                    #region update
-
-                                    HashSet<IndexKey> helperResultSet = new HashSet<IndexKey>();
-
-                                    foreach (var aNewItem in helperSet)
-                                    {
-                                        foreach (var aReturnVal in result)
-                                        {
-                                            helperResultSet.Add(new IndexKey(aReturnVal, aIndexAttributeUUID, aNewItem, this.IndexKeyDefinition));
-                                        }
-                                    }
-
-                                    result = helperResultSet;
-
-                                    #endregion
-                                }
-                                else
-                                {
-                                    #region create new
-
-                                    foreach (var aNewItem in helperSet)
-                                    {
-                                        result.Add(new IndexKey(aIndexAttributeUUID, aNewItem, this.IndexKeyDefinition));
-                                    }
-
-                                    #endregion
-                                }
-
-                                break;
-
-                            #endregion
-
-                            #region single/special
-
-                            case KindsOfType.SingleReference:
-                            case KindsOfType.SingleNoneReference:
-                            case KindsOfType.SpecialAttribute:
-
-                                newIndexKeyItem = (ADBBaseObject)myDBObject.GetAttribute(aIndexAttributeUUID, myTypeOfDBObject, dbContext);
-
-                                if (result.Count != 0)
-                                {
-                                    #region update
-
-                                    foreach (var aResultItem in result)
-                                    {
-                                        aResultItem.AddAADBBAseObject(aIndexAttributeUUID, newIndexKeyItem);
-                                    }
-
-                                    #endregion
-                                }
-                                else
-                                {
-                                    #region create new
-
-                                    result.Add(new IndexKey(aIndexAttributeUUID, newIndexKeyItem, this.IndexKeyDefinition));
-
-                                    #endregion
-                                }
-
-                                break;
-
-                            #endregion
-
-                            #region not implemented
-
-                            case KindsOfType.SetOfReferences:
-                            default:
-
-                                throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "Currently its not implemented to insert anything else than a List/Set/Single of base types"));
-
-                            #endregion
-                        }
-                    }
-                    else
-                    {
-                        //add default value
-
-                        var defaultADBBAseObject = GraphDBTypeMapper.GetADBBaseObjectFromUUID(currentAttribute.DBTypeUUID);
-                        defaultADBBAseObject.SetValue(DBObjectInitializeType.Default);
-
-                        if (result.Count != 0)
-                        {
-                            #region update
-
-                            foreach (var aResultItem in result)
-                            {
-                                aResultItem.AddAADBBAseObject(aIndexAttributeUUID, defaultADBBAseObject);
-                            }
-
-                            #endregion
-                        }
-                        else
-                        {
-                            #region create new
-
-                            result.Add(new IndexKey(aIndexAttributeUUID, defaultADBBAseObject, this.IndexKeyDefinition));
-
-                            #endregion
-                        }
-
-                    }
-                    #endregion
-                }
-                else
-                {
-                    #region reference attribute
-
-                    throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-
-                    #endregion
-                }
-            }
-
-            return result;
-        }
-
-        #endregion
 
         private void IncreaseValueCount(UInt64 increase)
         {
@@ -793,24 +657,33 @@ namespace sones.GraphDB.Indices
             }
         }
 
-        private void SetIndexKeyAndValue(IndexKey aIndexKex, ObjectUUID objectUUID, IndexSetStrategy myIndexSetStrategy)
+        private void SetIndexKeyAndValue(IndexKey myIndexKey, ObjectUUID objectUUID, IndexSetStrategy myIndexSetStrategy)
         {
-            UInt64 previousKeyCount = _indexDatastructure.KeyCount();
 
-            _indexDatastructure.Set(aIndexKex, objectUUID, myIndexSetStrategy);
+            HashSet<ObjectUUID> value = null;
 
-            UInt64 afterKeyCount = _indexDatastructure.KeyCount();
+            var valueCount = 1UL;
 
-            if (afterKeyCount > previousKeyCount)
+            if (!_indexDatastructure.TryGetValue(myIndexKey, out value))
             {
                 //so there is one more key...
                 IncreaseKeyCount();
+                IncreaseValueCount(valueCount);
+            }
+            else
+            {
+                if (!value.Contains(objectUUID))
+                {
+                    IncreaseValueCount(valueCount);
+                }
             }
 
-            IncreaseValueCount(1UL);
+            _indexDatastructure.Set(myIndexKey, objectUUID, myIndexSetStrategy);
+            this.Save();
         }
 
         #endregion
+
 
         public override AAttributeIndex GetNewInstance()
         {
@@ -831,6 +704,7 @@ namespace sones.GraphDB.Indices
             mySerializationWriter.WriteString(IndexEdition);
             mySerializationWriter.WriteString(IndexName);
             mySerializationWriter.WriteBoolean(_IsUUIDIndex);
+            IndexKeyDefinition.Serialize(ref mySerializationWriter);
             IndexRelatedTypeUUID.Serialize(ref mySerializationWriter);
         }
 
@@ -840,6 +714,8 @@ namespace sones.GraphDB.Indices
             IndexEdition        = mySerializationReader.ReadString();
             IndexName           = mySerializationReader.ReadString();
             _IsUUIDIndex        = mySerializationReader.ReadBoolean();
+            IndexKeyDefinition = new IndexKeyDefinition();
+            IndexKeyDefinition.Deserialize(ref mySerializationReader);
             IndexRelatedTypeUUID = new TypeUUID(ref mySerializationReader);
         }
 
@@ -847,10 +723,15 @@ namespace sones.GraphDB.Indices
 
         #endregion
 
-        //public override Exceptional Initialize(DBContext myDBContext)
-        //{
-        //    return SetIndexReference(myDBContext.DBIndexManager);
-        //}
+        public override AFSObject Clone()
+        {
+            return new HashTableIndex();
+        }
+
+        public override ulong GetEstimatedSize()
+        {
+            return EstimatedSizeConstants.AFSObjectOntologyObject;
+        }
 
         public override Exceptional Initialize(DBContext myDBContext, string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, string indexEdition = DBConstants.DEFAULTINDEX)
         {

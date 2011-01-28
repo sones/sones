@@ -1940,7 +1940,7 @@ namespace sones.GraphDB.Structures.ExpressionGraph
                             LevelKey lowestLevelKey = new LevelKey(myLevelKey.Edges[0].TypeUUID, _DBContext.DBTypeManager);
 
                             GraphDBType lowestType = _DBContext.DBTypeManager.GetTypeByUUID(lowestLevelKey.LastEdge.TypeUUID);
-                            var idx = _DBContext.DBTypeManager.GetTypeByUUID(lowestLevelKey.LastEdge.TypeUUID).GetUUIDIndex(_DBContext.DBTypeManager);
+                            var idx = _DBContext.DBTypeManager.GetTypeByUUID(lowestLevelKey.LastEdge.TypeUUID).GetUUIDIndex(_DBContext);
                             var indexRelatedType = _DBContext.DBTypeManager.GetTypeByUUID(idx.IndexRelatedTypeUUID);
 
                             foreach (var ids in idx.GetAllValues(indexRelatedType, _DBContext))

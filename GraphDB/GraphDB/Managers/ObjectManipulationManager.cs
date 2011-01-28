@@ -271,7 +271,7 @@ namespace sones.GraphDB.Managers
 
                     #region update Idx
 
-                    foreach (var _AttributeIndex in _graphDBType.GetAllAttributeIndices())
+                    foreach (var _AttributeIndex in _graphDBType.GetAllAttributeIndices(_dbContext))
                     {
                         if(definedAttributes.Exists(item => _AttributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs.Contains(item.Key.Definition.UUID)))
                         {
@@ -932,7 +932,7 @@ namespace sones.GraphDB.Managers
         {
             foreach (var aType in _dbContext.DBTypeManager.GetAllParentTypes(_dbContext.DBTypeManager.GetTypeByUUID(dBObjectStream.TypeUUID), true, false))
             {
-                foreach (var aAttributeIdx in aType.GetAttributeIndices(attributeUUID))
+                foreach (var aAttributeIdx in aType.GetAttributeIndices(_dbContext, attributeUUID))
                 {
                     var result = aAttributeIdx.Insert(dBObjectStream, aType, _dbContext);
 
@@ -957,7 +957,7 @@ namespace sones.GraphDB.Managers
         {
             foreach (var aType in _dbContext.DBTypeManager.GetAllParentTypes(_dbContext.DBTypeManager.GetTypeByUUID(dBObjectStream.TypeUUID), true, false))
             {
-                foreach (var aAttributeIdx in aType.GetAttributeIndices(attributeUUID))
+                foreach (var aAttributeIdx in aType.GetAttributeIndices(_dbContext, attributeUUID))
                 {
                     var result = aAttributeIdx.Remove(dBObjectStream, aType, _dbContext);
 
@@ -1776,6 +1776,11 @@ namespace sones.GraphDB.Managers
                     if (attr.KindOfType == KindsOfType.ListOfNoneReferences)
                         return new Exceptional<ManipulationAttributes>(new Error_InvalidTuple(attrVal.ToString()));
 
+                    if (attr.KindOfType != KindsOfType.SingleNoneReference)
+                    {
+                        return new Exceptional<ManipulationAttributes>(new Error_InvalidAttributeKind(attr.KindOfType, KindsOfType.SingleNoneReference));
+                    }
+
                     correspondingCSharpType = GraphDBTypeMapper.ConvertGraph2CSharp(attr, attr.GetDBType(myDBContext.DBTypeManager));
                     if (GraphDBTypeMapper.GetEmptyGraphObjectFromType(correspondingCSharpType).IsValidValue(attrVal.Value))
                     {
@@ -1816,7 +1821,7 @@ namespace sones.GraphDB.Managers
 
         #region Truncate
 
-        public Exceptional Truncate()
+        public Exceptional Truncate(DBContext myDBContext)
         {
 
             #region Remove
@@ -1863,7 +1868,7 @@ namespace sones.GraphDB.Managers
 
             #region remove indices
 
-            Parallel.ForEach(_graphDBType.GetAllAttributeIndices(false), aIdx =>
+            Parallel.ForEach(_graphDBType.GetAllAttributeIndices(myDBContext, false), aIdx =>
                 {
                     //it is not necessary to clear the UUID IDX because this is done by deleting the objects in the fs
                     aIdx.Clear(_dbContext, _dbContext.DBTypeManager.GetTypeByUUID(aIdx.IndexRelatedTypeUUID));

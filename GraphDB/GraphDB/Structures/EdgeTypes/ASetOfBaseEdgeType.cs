@@ -17,6 +17,7 @@ using sones.GraphDB.TypeManagement.BasicTypes;
 
 using sones.GraphDB.TypeManagement;
 using sones.Lib;
+using sones.GraphDB.Managers.Structures;
 
 
 namespace sones.GraphDB.Structures.EdgeTypes
@@ -101,6 +102,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
         }
 
         public abstract void ApplyParams(params Managers.Structures.EdgeTypeParamDefinition[] myParams);
+
+        public abstract IEnumerable<EdgeTypeParamDefinition> GetParams();
 
         public abstract string GetDescribeOutput(GraphDBType myGraphDBType);
 

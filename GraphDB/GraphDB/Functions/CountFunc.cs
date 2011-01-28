@@ -42,6 +42,11 @@ namespace sones.GraphDB.Functions
         {
         }
 
+        public override TypeManagement.IObject GetReturnType(TypeManagement.IObject myWorkingBase, TypeManagement.DBTypeManager myTypeManager)
+        {
+            return new DBUInt64();
+        }
+
         public override bool ValidateWorkingBase(IObject workingBase, DBTypeManager typeManager)
         {
             if (workingBase != null)

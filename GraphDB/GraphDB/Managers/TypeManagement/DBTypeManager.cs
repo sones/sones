@@ -216,11 +216,11 @@ namespace sones.GraphDB.TypeManagement
             // DBObject is a child of DBBaseObject
 
             // == DBObject!
-            var typeDBReference = new GraphDBType(DBReference.UUID, myDatabaseLocation, DBReference.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all user defined database types");
+            var typeDBReference = new GraphDBType(DBReference.UUID, myDatabaseLocation, DBReference.Name, DBBaseObject.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, true, "The base of all user defined database types");
 
             #region DBVertex           
 
-            var typeDBVertex = new GraphDBType(DBVertex.UUID, myDatabaseLocation, DBVertex.Name, DBReference.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, false, "The base of all user defined database vertices");
+            var typeDBVertex = new GraphDBType(DBVertex.UUID, myDatabaseLocation, DBVertex.Name, DBReference.UUID, new Dictionary<AttributeUUID, TypeAttribute>(), false, true, "The base of all user defined database vertices");
             _SystemTypes.Add(typeDBVertex.UUID, typeDBVertex);
 
             #endregion
@@ -1332,21 +1332,27 @@ namespace sones.GraphDB.TypeManagement
                 
                 #endregion
 
+                #region Create all default directories
+
+                foreach (GraphDBType aType in addedTypes)
+                {
+                    //verzeichnisse für andere typen bei create Types wird nicht angelegt
+
+                    var createDefaultDirectoriesResult = AddType_CreateDefaultDirectories(aType);
+                    if (createDefaultDirectoriesResult.Failed())
+                    {
+                        RemoveRecentlyAddedTypes(addedTypes);
+                        return new Exceptional<QueryResult>(createDefaultDirectoriesResult);
+                    }
+                }
+
+                #endregion
+
                 #region Create directories and indices
 
                 foreach (GraphDBType aType in addedTypes)
                 {
 
-
-                    #region Create all default directories of that type
-
-                    var createDefaultDirectoriesResult = AddType_CreateDefaultDirectories(aType);
-                    if (createDefaultDirectoriesResult.Failed())
-                    {
-                        return new Exceptional<QueryResult>(result);
-                    }
-
-                    #endregion
 
                     #region Create indices
 
@@ -1359,11 +1365,11 @@ namespace sones.GraphDB.TypeManagement
 
                         foreach (var index in aTypeDef.Indices)
                         {
-
-                            if (!index.IndexAttributeDefinitions.All(node => !node.IndexAttribute.Validate(currentContext, false, aType).Failed()))
+                            Exceptional indexErrors = new Exceptional();
+                            if (!index.IndexAttributeDefinitions.All(node => !indexErrors.PushIExceptional(node.IndexAttribute.Validate(currentContext, false, aType)).Failed()))
                             {
                                 RemoveRecentlyAddedTypes(addedTypes);
-                                return new Exceptional<QueryResult>(new Error_AttributeIsNotDefined(aType.Name, aType.Name));
+                                return new Exceptional<QueryResult>(indexErrors);
                             }
 
                             var idxName = index.IndexName;
@@ -1373,11 +1379,19 @@ namespace sones.GraphDB.TypeManagement
                                 idxName = index.IndexAttributeDefinitions.Aggregate(new StringBuilder(DBConstants.IndexKeyPrefix), (stringB, elem) => { stringB.Append(String.Concat(DBConstants.IndexKeySeperator, elem.IndexAttribute.LastAttribute.Name)); return stringB; }).ToString();
                             }
 
-                            List<AttributeUUID> indexAttrs = new List<AttributeUUID>(index.IndexAttributeDefinitions.Select(node => node.IndexAttribute.LastAttribute.UUID));
+                            //List<AttributeUUID> indexAttrs = new List<AttributeUUID>(index.IndexAttributeDefinitions.Select(node => node.IndexAttribute.LastAttribute.UUID));
+                            var indexAttrs = index.IndexAttributeDefinitions.Select(node => node.IndexAttribute);
 
                             foreach (var item in GetAllSubtypes(aType))
                             {
-                                var CreateIdxExcept = item.CreateAttributeIndex(currentContext, idxName, indexAttrs, index.Edition, index.IndexType);
+                                var IndexKeyDefinitionExcept = IndexKeyDefinition.CreateFromIDChainDefinitions(indexAttrs);
+                                if (IndexKeyDefinitionExcept.Failed())
+                                {
+                                    RemoveRecentlyAddedTypes(addedTypes);
+                                    return IndexKeyDefinitionExcept.Convert<QueryResult>();
+                                }
+
+                                var CreateIdxExcept = item.CreateAttributeIndex(currentContext, idxName, IndexKeyDefinitionExcept.Value, index.Edition, index.IndexType);
 
                                 if (!CreateIdxExcept.Success())
                                 {
@@ -1589,7 +1603,7 @@ namespace sones.GraphDB.TypeManagement
 
             //invalid backwardEdge destination
             #region
-            if (edgeAttribute.GetDBType(this) != myDBTypeStream)
+            if ((edgeAttribute.GetDBType(this) != myDBTypeStream) &&  !GetAllParentTypes(myDBTypeStream,false,false).Contains(edgeAttribute.GetDBType(this))) 
                 return new Exceptional<TypeAttribute>(new Error_BackwardEdgeDestinationIsInvalid(myDBTypeStream.Name, myBackwardEdgeNode.TypeAttributeName));
             #endregion
 
@@ -1898,7 +1912,7 @@ namespace sones.GraphDB.TypeManagement
 
                 #region remove type from fs
 
-                var removeTypeExcept = RemoveTypeFromFs(toBeDeletedTypes);
+                var removeTypeExcept = RemoveTypeFromFs(_DBContext, toBeDeletedTypes);
 
                 if (removeTypeExcept.Failed())
                 {
@@ -1923,7 +1937,7 @@ namespace sones.GraphDB.TypeManagement
         /// </summary>
         /// <param name="typeDir">The directory of the GraphType that is going to be deleted.</param>
         /// <returns>True for success or otherwise false.</returns>
-        private Exceptional<Boolean> RemoveTypeFromFs(GraphDBType toBeDeletedType)
+        private Exceptional<Boolean> RemoveTypeFromFs(DBContext myDBContext, GraphDBType toBeDeletedType)
         {
 
             using (var _Transaction = _IGraphFSSession.BeginFSTransaction())
@@ -1941,7 +1955,7 @@ namespace sones.GraphDB.TypeManagement
 
                 #region remove Indices directory
 
-                foreach (var aAttributeIDX in toBeDeletedType.GetAllAttributeIndices(false))
+                foreach (var aAttributeIDX in toBeDeletedType.GetAllAttributeIndices(myDBContext, false))
                 {
 
                     aAttributeIDX.ClearAndRemoveFromDisc(_DBContext);
@@ -2165,23 +2179,6 @@ namespace sones.GraphDB.TypeManagement
             return GetTypeByUUID(myEdgeKey.TypeUUID).GetTypeAttributeByUUID(myEdgeKey.AttrUUID);
         }
 
-        /// <summary>
-        /// Do not use this method if you have to care about performance!!!
-        /// It will return a TypeAttribute of the AttributeUUID
-        /// </summary>
-        /// <param name="myAttributeUUID"></param>
-        /// <returns>TypeAttribute or null if it was not found</returns>
-        public TypeAttribute GetTypeAttributeByAttributeUUID(AttributeUUID myAttributeUUID)
-        {
-            var found = from table in _TypesNameLookUpTable
-                        where table.Value.Attributes.ContainsKey(myAttributeUUID)
-                        select table.Value.Attributes[myAttributeUUID];
-
-            if (found.Count() == 0)
-                return null;
-
-            return found.First();
-        }
 
         #endregion
 

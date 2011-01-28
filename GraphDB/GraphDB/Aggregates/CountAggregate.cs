@@ -85,7 +85,7 @@ namespace sones.GraphDB.Aggregates
 
             foreach (var type in dbContext.DBTypeManager.GetAllSubtypes(indexRelatedType, false))
             {
-                var idx = type.GetAttributeIndex(attributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs, attributeIndex.IndexEdition);
+                var idx = type.GetAttributeIndex(dbContext, attributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs, attributeIndex.IndexEdition);
                 if (idx.Success())
                 {
                     count += idx.Value.GetValueCount(dbContext, type);

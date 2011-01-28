@@ -585,7 +585,7 @@ namespace sones.GraphDB.Structures.Operators
                     #region get UUID idx
                     if (!(aLeftIDX.Item2.IsUUIDIndex))
                     {
-                        currentLeftIdx = aLeftIDX.Item1.GetUUIDIndex(dbContext.DBTypeManager);
+                        currentLeftIdx = aLeftIDX.Item1.GetUUIDIndex(dbContext);
                     }
                     else
                     {
@@ -643,7 +643,7 @@ namespace sones.GraphDB.Structures.Operators
 
                     if (!(aRightIDX.Item2.IsUUIDIndex))
                     {
-                        currentRightIdx = aRightIDX.Item1.GetUUIDIndex(dbContext.DBTypeManager);
+                        currentRightIdx = aRightIDX.Item1.GetUUIDIndex(dbContext);
                     }
                     else
                     {

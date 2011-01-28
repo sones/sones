@@ -75,6 +75,11 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         }
 
+        public override IEnumerable<EdgeTypeParamDefinition> GetParams()
+        {
+            yield break;
+        }
+
         public override IEdgeType GetNewInstance()
         {
             return new EdgeTypeSingleReference();

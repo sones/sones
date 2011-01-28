@@ -93,8 +93,12 @@ namespace sones.GraphDB.Indices
                         if (AttrIndex != null)
                         {
                             var toBeCheckedIdxKey = GenerateIndexKeyForUniqueConstraint(toBeCheckedForUniqueConstraint, AttrIndex.IndexKeyDefinition, myGraphType);
-
-                            if (AttrIndex.Contains(toBeCheckedIdxKey, PType, _DBContext))
+                            var containsResult = AttrIndex.Contains(toBeCheckedIdxKey, PType, _DBContext);
+                            if (containsResult.Failed())
+                            {
+                                return containsResult;
+                            }
+                            if (containsResult.Value)
                             {
                                 return new Exceptional<Boolean>(new Error_UniqueConstrainViolation(PType.Name, AttrIndex.IndexName));
                             }
@@ -125,7 +129,7 @@ namespace sones.GraphDB.Indices
             try
             {
 
-                var index = myDBTypeStream.GetAttributeIndex(myIndexName, myIndexEdition);
+                var index = myDBTypeStream.GetAttributeIndex(_DBContext, myIndexName, myIndexEdition);
 
                 if (index.Failed())
                 {
@@ -196,7 +200,7 @@ namespace sones.GraphDB.Indices
 
             foreach (var _UserDefinedType in myUserDefinedTypes)
             {
-                foreach (var _AttributeIndex in _UserDefinedType.GetAllAttributeIndices(includeUUIDIndices: false))
+                foreach (var _AttributeIndex in _UserDefinedType.GetAllAttributeIndices(_DBContext, includeUUIDIndices: false))
                 {
                     // Clears the index and removes it from the file system!
                     _AttributeIndex.Clear(_DBContext, _UserDefinedType);
@@ -240,11 +244,11 @@ namespace sones.GraphDB.Indices
                         }
 
                         //rebuild everything but the UUIDidx
-                        foreach (var _KeyValuePair in _UserDefinedType.AttributeIndices.Where(aIDX => aIDX.Key != UUIDIdxIndexKey))
+                        foreach (var idx in _UserDefinedType.GetAllAttributeIndices(_DBContext, false))
                         {
-                            foreach (var _AttributeIndex in _KeyValuePair.Value.Values)
+                            //foreach (var _AttributeIndex in _KeyValuePair.Values)
                             {
-                                _AttributeIndex.Insert(_DBObjectExceptional.Value, _UserDefinedType, _DBContext);
+                                idx.Insert(_DBObjectExceptional.Value, _UserDefinedType, _DBContext);
                             }
                         }
                     }
@@ -423,7 +427,7 @@ namespace sones.GraphDB.Indices
 
             #region Get IndexAttributes
 
-            var indexAttributes = new List<AttributeUUID>();
+            var indexAttributes = new List<IDChainDefinition>();
 
             foreach (var createIndexAttributeNode in myAttributeList)
             {
@@ -434,7 +438,14 @@ namespace sones.GraphDB.Indices
                 {
                     return new Exceptional<IEnumerable<Vertex>>(validateResult);
                 }
-                var attrName = createIndexAttributeNode.IndexAttribute.LastAttribute.Name;
+
+                if (createIndexAttributeNode.IndexAttribute.Depth > 1)
+                {
+                    return new Exceptional<IEnumerable<Vertex>>(new Error_InvalidIndexAttribute(createIndexAttributeNode.IndexAttribute.ToString()));
+                }
+
+                var attr = createIndexAttributeNode.IndexAttribute.LastAttribute;
+                var attrName = attr.Name;
 
                 var validAttrExcept = myDBContext.DBTypeManager.AreValidAttributes(dbObjectType, attrName);
 
@@ -444,7 +455,7 @@ namespace sones.GraphDB.Indices
                 if (!validAttrExcept.Value)
                     throw new GraphDBException(new Error_AttributeIsNotDefined(dbObjectType.Name, attrName));
 
-                indexAttributes.Add(createIndexAttributeNode.IndexAttribute.LastAttribute.UUID);
+                indexAttributes.Add(createIndexAttributeNode.IndexAttribute);
 
             }
 
@@ -464,15 +475,11 @@ namespace sones.GraphDB.Indices
 
             #region checking for reference attributes
 
-            TypeAttribute aIdxAttribute;
-
-            foreach (var aAttributeUUID in indexAttributes)
+            foreach (var idChainDef in indexAttributes)
             {
-                aIdxAttribute = dbObjectType.GetTypeAttributeByUUID(aAttributeUUID);
-
-                if (aIdxAttribute.GetDBType(myDBContext.DBTypeManager).IsUserDefined)
+                if (idChainDef.LastAttribute.GetDBType(myDBContext.DBTypeManager).IsUserDefined && idChainDef.Last() is ChainPartTypeOrAttributeDefinition)
                 {
-                    return new Exceptional<IEnumerable<Vertex>>(new Error_NotImplemented(new StackTrace(true), String.Format("Currently it is not implemented to create an index on reference attributes like {0}", aIdxAttribute.Name)));
+                    return new Exceptional<IEnumerable<Vertex>>(new Error_NotImplemented(new StackTrace(true), String.Format("Currently it is not implemented to create an index on reference attributes like {0}", idChainDef.ToString())));
                 }
             }
 
@@ -483,7 +490,13 @@ namespace sones.GraphDB.Indices
 
                 #region Create the index
 
-                var createdIDx = item.CreateAttributeIndex(myDBContext, myIndexName, indexAttributes, myIndexEdition, myIndexType);
+                var indexKeyDefinitionExcept = IndexKeyDefinition.CreateFromIDChainDefinitions(indexAttributes);
+                if (indexKeyDefinitionExcept.Failed())
+                {
+                    return indexKeyDefinitionExcept.Convert<IEnumerable<Vertex>>();
+                }
+
+                var createdIDx = item.CreateAttributeIndex(myDBContext, myIndexName, indexKeyDefinitionExcept.Value, myIndexEdition, myIndexType);
 
                 if (createdIDx.Failed())
                 {

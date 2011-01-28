@@ -30,9 +30,10 @@ using sones.GraphDB.Structures.EdgeTypes;
 namespace sones.GraphDB.Indices
 {
     /// <summary>
-    /// A abstract class for AttributeIndex and UUIDIdx
+    /// A abstract class for AttributeIndex and UUIDIdx.
+    /// Even if this is a AFSObject it should not be used to store the index data but the structure around it.
     /// </summary>
-    public abstract class AAttributeIndex : IFastSerializationTypeSurrogate, IFastSerialize, IDisposable// : IAttributeIndex
+    public abstract class AAttributeIndex : AFSObject, IFastSerializationTypeSurrogate, IFastSerialize, IDisposable// : IAttributeIndex
     {
 
         #region Properties
@@ -173,7 +174,7 @@ namespace sones.GraphDB.Indices
         /// <param name="myTypeOfDBObject">The Type of the DBObject</param>
         /// <param name="myDBContext">The db context</param>
         /// <returns>boolean</returns>
-        public abstract bool Contains(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext myDBContext);
+        public abstract Exceptional<bool> Contains(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext myDBContext);
 
         /// <summary>
         /// This method checks if the current attribute index contains a DBObject
@@ -182,7 +183,7 @@ namespace sones.GraphDB.Indices
         /// <param name="myTypeOfDBObject">The Type of the DBObject</param>
         /// <param name="myDBContext">The db context</param>
         /// <returns>boolean</returns>
-        public abstract bool Contains(IndexKey myIndexKey, GraphDBType myTypeOfDBObject, DBContext myDBContext);
+        public abstract Exceptional<bool> Contains(IndexKey myIndexKey, GraphDBType myTypeOfDBObject, DBContext myDBContext);
 
         /// <summary>
         /// This method removes a given DBObject from the index
@@ -288,31 +289,6 @@ namespace sones.GraphDB.Indices
 
         #endregion
 
-        #region IFastSerialize Members
-
-        public bool isDirty
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public DateTime ModificationTime
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public abstract void Serialize(ref Lib.NewFastSerializer.SerializationWriter mySerializationWriter);
-
-        public abstract void Deserialize(ref Lib.NewFastSerializer.SerializationReader mySerializationReader);
-
-        #endregion
-
         //public abstract Exceptional Initialize(DBContext myDBContext);
 
         public abstract Exceptional Clear(DBContext myDBContext, GraphDBType myTypeOfDBObject);
@@ -332,154 +308,11 @@ namespace sones.GraphDB.Indices
         /// <param name="myTypeOfDBObject">The Type of the DBObject</param>
         /// <param name="myToken">The SessionInfos</param>
         /// <returns>A HashSet of IndexKeys</returns>
-        protected HashSet<IndexKey> GetIndexkeysFromDBObject(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext)
+        protected Exceptional<HashSet<IndexKey>> GetIndexkeysFromDBObject(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            HashSet<IndexKey> result = new HashSet<IndexKey>();
-            TypeAttribute currentAttribute;
 
-            foreach (var aIndexAttributeUUID in IndexKeyDefinition.IndexKeyAttributeUUIDs)
-            {
-                currentAttribute = myTypeOfDBObject.GetTypeAttributeByUUID(aIndexAttributeUUID);
+            return IndexKeyDefinition.GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, dbContext);
 
-                if (!currentAttribute.GetDBType(dbContext.DBTypeManager).IsUserDefined)
-                {
-                    #region base attribute
-
-                    if (myDBObject.HasAttribute(aIndexAttributeUUID, myTypeOfDBObject))
-                    {
-                        ADBBaseObject newIndexKeyItem = null;
-
-                        switch (currentAttribute.KindOfType)
-                        {
-                            #region List/Set
-
-                            case KindsOfType.ListOfNoneReferences:
-                            case KindsOfType.SetOfNoneReferences:
-
-                                var helperSet = new List<ADBBaseObject>();
-
-                                foreach (var aBaseObject in ((IBaseEdge)myDBObject.GetAttribute(aIndexAttributeUUID, myTypeOfDBObject, dbContext)).GetBaseObjects())
-                                {
-                                    helperSet.Add((ADBBaseObject)aBaseObject);
-                                }
-
-                                if (result.Count != 0)
-                                {
-                                    #region update
-
-                                    HashSet<IndexKey> helperResultSet = new HashSet<IndexKey>();
-
-                                    foreach (var aNewItem in helperSet)
-                                    {
-                                        foreach (var aReturnVal in result)
-                                        {
-                                            helperResultSet.Add(new IndexKey(aReturnVal, aIndexAttributeUUID, aNewItem, this.IndexKeyDefinition));
-                                        }
-                                    }
-
-                                    result = helperResultSet;
-
-                                    #endregion
-                                }
-                                else
-                                {
-                                    #region create new
-
-                                    foreach (var aNewItem in helperSet)
-                                    {
-                                        result.Add(new IndexKey(aIndexAttributeUUID, aNewItem, this.IndexKeyDefinition));
-                                    }
-
-                                    #endregion
-                                }
-
-                                break;
-
-                            #endregion
-
-                            #region single/special
-
-                            case KindsOfType.SingleReference:
-                            case KindsOfType.SingleNoneReference:
-                            case KindsOfType.SpecialAttribute:
-
-                                newIndexKeyItem = (ADBBaseObject)myDBObject.GetAttribute(aIndexAttributeUUID, myTypeOfDBObject, dbContext);
-
-                                if (result.Count != 0)
-                                {
-                                    #region update
-
-                                    foreach (var aResultItem in result)
-                                    {
-                                        aResultItem.AddAADBBAseObject(aIndexAttributeUUID, newIndexKeyItem);
-                                    }
-
-                                    #endregion
-                                }
-                                else
-                                {
-                                    #region create new
-
-                                    result.Add(new IndexKey(aIndexAttributeUUID, newIndexKeyItem, this.IndexKeyDefinition));
-
-                                    #endregion
-                                }
-
-                                break;
-
-                            #endregion
-
-                            #region not implemented
-
-                            case KindsOfType.SetOfReferences:
-                            default:
-
-                                throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true), "Currently its not implemented to insert anything else than a List/Set/Single of base types"));
-
-                            #endregion
-                        }
-                    }
-                    else
-                    {
-                        //add default value
-
-                        var defaultADBBAseObject = GraphDBTypeMapper.GetADBBaseObjectFromUUID(currentAttribute.DBTypeUUID);
-                        defaultADBBAseObject.SetValue(DBObjectInitializeType.Default);
-
-                        if (result.Count != 0)
-                        {
-                            #region update
-
-                            foreach (var aResultItem in result)
-                            {
-                                aResultItem.AddAADBBAseObject(aIndexAttributeUUID, defaultADBBAseObject);
-                            }
-
-                            #endregion
-                        }
-                        else
-                        {
-                            #region create new
-
-                            result.Add(new IndexKey(aIndexAttributeUUID, defaultADBBAseObject, this.IndexKeyDefinition));
-
-                            #endregion
-                        }
-
-                    }
-                    #endregion
-                }
-                else
-                {
-                    #region reference attribute
-
-                    throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-
-                    #endregion
-                }
-            }
-
-            return result;
         }
 
         #endregion

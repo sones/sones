@@ -34,9 +34,9 @@ namespace sones.GraphDB.Managers.Structures
 {
 
 
-	#region ChainPartFuncDefinition
+    #region ChainPartAggregateDefinition
 
-	public class ChainPartAggregateDefinition : ChainPartFuncDefinition
+    public class ChainPartAggregateDefinition : ChainPartFuncDefinition
 	{
 
 		public ChainPartAggregateDefinition(ChainPartFuncDefinition chainPartFuncDefinition)
@@ -518,6 +518,7 @@ namespace sones.GraphDB.Managers.Structures
             {
                 chain.AddPart(new ChainPartTypeOrAttributeDefinition(attr));
             }
+
             return chain;
         }
 
@@ -811,7 +812,7 @@ namespace sones.GraphDB.Managers.Structures
 				return ValidateResult;
 			}
 
-			while (curPart != null && ValidateResult.Success())
+            while (curPart != null && ValidateResult.Success())
 			{
 
 				#region Go through each part and try to fill lastType, lastAttribute etc...
@@ -850,19 +851,19 @@ namespace sones.GraphDB.Managers.Structures
 					{
 						if (returnType is DBTypeAttribute)
 						{
-							_LastAttribute = (returnType as DBTypeAttribute).GetValue();
-							_LastType = GetDBTypeByAttribute(myDBContext, _LastAttribute);
+							//_LastAttribute = (returnType as DBTypeAttribute).GetValue();
+							//_LastType = GetDBTypeByAttribute(myDBContext, _LastAttribute);
 						}
 						else if (returnType is DBType)
 						{
-							_LastAttribute = null;
-							_LastType = (returnType as DBType).GetValue();
-						}
+							//_LastAttribute = null;
+							//_LastType = (returnType as DBType).GetValue();
+                        }
 						else if (returnType is ADBBaseObject)
 						{
-							_LastAttribute = null;
-							_LastType = myDBContext.DBTypeManager.GetTypeByName((returnType as ADBBaseObject).ObjectName);
-						}
+							//_LastAttribute = null;
+							//_LastType = myDBContext.DBTypeManager.GetTypeByName((returnType as ADBBaseObject).ObjectName);
+                        }
 						else
 						{
 							return new Exceptional(new Error_InvalidFunctionReturnType(funcPart.FuncName, returnType.GetType(), typeof(DBTypeAttribute), typeof(DBType), typeof(ADBBaseObject)));

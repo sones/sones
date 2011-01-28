@@ -30,7 +30,13 @@ namespace sones.GraphDB.NewAPI
         #region SourceVertex
 
         [HideFromDatabase]
-        public IVertex SourceVertex { get; private set; }
+        public IVertex SourceVertex 
+        { 
+            get
+            {
+                return _SourceVertex;
+            }
+        }
 
         #endregion
 
@@ -46,6 +52,13 @@ namespace sones.GraphDB.NewAPI
         }
 
         #endregion
+
+        #region SourceVertex
+
+        private readonly IVertex _SourceVertex;
+
+        #endregion
+
 
         #region TargetVertices
 
@@ -76,7 +89,7 @@ namespace sones.GraphDB.NewAPI
 
         public Edge()
         {
-            SourceVertex    = null;
+            _SourceVertex   = null;
             _TargetVertices = null;
         }
 
@@ -87,7 +100,7 @@ namespace sones.GraphDB.NewAPI
         public Edge(IVertex mySourceVertex, IVertex myTargetVertex, IDictionary<String, Object> myAttributes = null)
         {
 
-            SourceVertex    = null;
+            _SourceVertex = mySourceVertex;
             _TargetVertices = new List<IVertex> { myTargetVertex };
 
             if (myAttributes != null && myAttributes.Any())
@@ -102,7 +115,7 @@ namespace sones.GraphDB.NewAPI
         public Edge(IVertex mySourceVertex, IEnumerable<IVertex> myTargetVertices, IDictionary<String, Object> myAttributes = null)
         {
 
-            SourceVertex    = mySourceVertex;
+            _SourceVertex    = mySourceVertex;
             _TargetVertices = myTargetVertices;
 
             if (myAttributes != null && myAttributes.Any())

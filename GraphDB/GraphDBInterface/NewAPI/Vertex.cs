@@ -308,6 +308,9 @@ namespace sones.GraphDB.NewAPI
             if (_Edge as IEnumerable<Vertex> != null)
                 return true;
 
+            if (_Edge as IEdge != null)
+                return true;
+
             return false;
 
         }

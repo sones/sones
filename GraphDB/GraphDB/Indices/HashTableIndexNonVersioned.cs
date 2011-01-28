@@ -6,6 +6,8 @@ using sones.GraphFS.DataStructures;
 using sones.Lib.DataStructures.Indices;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.Errors;
+using sones.GraphFS.Objects;
+using sones.Lib;
 
 namespace sones.GraphDB.Indices
 {
@@ -40,8 +42,13 @@ namespace sones.GraphDB.Indices
 
             if (myDBObject.HasAtLeastOneAttribute(this.IndexKeyDefinition.IndexKeyAttributeUUIDs, myTypeOfDBObject, myDBContext.SessionSettings))
             {
+                var result = GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext);
+                if (result.Failed())
+                {
+                    return result;
+                }
                 //insert
-                foreach (var aIndexKey in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext))
+                foreach (var aIndexKey in result.Value)
                 {
                     SetIndexKeyAndValue(aIndexKey, myDBObject.ObjectUUID, IndexSetStrategy.MERGE);
                 }
@@ -74,7 +81,13 @@ namespace sones.GraphDB.Indices
 
         public override Lib.ErrorHandling.Exceptional Insert(ObjectManagement.DBObjectStream myDBObject, Lib.DataStructures.Indices.IndexSetStrategy myIndexSetStrategy, TypeManagement.GraphDBType myTypeOfDBObject, DBContext myDBContext)
         {
-            foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext))
+            var result = GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext);
+            if (result.Failed())
+            {
+                return result;
+            }
+
+            foreach (var aIndexKex in result.Value)
             {
                 #region Check for uniqueness - TODO: remove me as soon as we have a unique indexObject implementation
 
@@ -94,33 +107,44 @@ namespace sones.GraphDB.Indices
             return Exceptional.OK;
         }
 
-        public override bool Contains(ObjectManagement.DBObjectStream myDBObject, TypeManagement.GraphDBType myTypeOfDBObject, DBContext myDBContext)
+        public override Exceptional<bool> Contains(ObjectManagement.DBObjectStream myDBObject, TypeManagement.GraphDBType myTypeOfDBObject, DBContext myDBContext)
         {
+            var result =  GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext);
+            if (result.Failed())
+            {
+                return result.Convert<bool>();
+            }
 
-            foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext))
+            foreach (var aIndexKex in result.Value)
             {
                 HashSet<ObjectUUID> values = null;
                 if (_Index.TryGetValue(aIndexKex, out values))
                 {
                     if (values.Contains(myDBObject.ObjectUUID))
                     {
-                        return true;
+                        return new Exceptional<bool>(true);
                     }
                 }
             }
 
-            return false;
+            return new Exceptional<bool>(false);
         }
 
-        public override bool Contains(IndexKey myIndexKey, TypeManagement.GraphDBType myTypeOfDBObject, DBContext myDBContext)
+        public override Exceptional<bool> Contains(IndexKey myIndexKey, TypeManagement.GraphDBType myTypeOfDBObject, DBContext myDBContext)
         {
-            return _Index.ContainsKey(myIndexKey);
+            return new Exceptional<bool>(_Index.ContainsKey(myIndexKey));
         }
 
         public override Lib.ErrorHandling.Exceptional Remove(ObjectManagement.DBObjectStream myDBObject, TypeManagement.GraphDBType myTypeOfDBObjects, DBContext myDBContext)
         {
+            var result = GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObjects, myDBContext);
 
-            foreach (var aIndexKey in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObjects, myDBContext))
+            if (result.Failed())
+            {
+                return result;
+            }
+
+            foreach (var aIndexKey in result.Value)
             {
                 HashSet<ObjectUUID> values = null;
                 if (_Index.TryGetValue(aIndexKey, out values))
@@ -315,5 +339,16 @@ namespace sones.GraphDB.Indices
             _Index.Clear();
             return Exceptional.OK;
         }
+
+        public override AFSObject Clone()
+        {
+            return new HashTableIndexNonVersioned();
+        }
+
+        public override ulong GetEstimatedSize()
+        {
+            return EstimatedSizeConstants.AFSObjectOntologyObject;
+        }
+
     }
 }

@@ -19,7 +19,7 @@ namespace sones.GraphDB.Errors
         {
             get
             {
-                return SyntaxError.Message;
+                return (SyntaxError != null)?SyntaxError.Message:"";
             }
         }
 

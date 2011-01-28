@@ -21,6 +21,7 @@ using sones.Lib;
 using sones.GraphDB.Result;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.NewAPI;
+using sones.GraphDB.Managers.Structures;
 
 
 #endregion
@@ -73,6 +74,8 @@ namespace sones.GraphDB.Structures.EdgeTypes
         }
 
         public abstract void ApplyParams(params Managers.Structures.EdgeTypeParamDefinition[] myParams);
+
+        public abstract IEnumerable<EdgeTypeParamDefinition> GetParams();
 
         public abstract string GetDescribeOutput(GraphDBType myGraphDBType);
 

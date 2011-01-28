@@ -54,7 +54,7 @@ namespace sones.GraphDB.Managers.AlterType
 
             foreach (var index in _IdxDropList)
             {
-                var dropIdxExcept = myGraphDBType.RemoveIndex(index.Key, index.Value, myDBContext.DBTypeManager);
+                var dropIdxExcept = myGraphDBType.RemoveIndex(index.Key, index.Value, myDBContext);
 
                 if (!dropIdxExcept.Success())
                 {

@@ -471,7 +471,7 @@ namespace sones.GraphDB.Managers.Select
 
 				if (edge.AttrUUID == null)
 				{
-					mySelectionPartAggregate.IndexAggregate = _DBContext.DBTypeManager.GetTypeByUUID(edge.TypeUUID).GetUUIDIndex(_DBContext.DBTypeManager);
+					mySelectionPartAggregate.IndexAggregate = _DBContext.DBTypeManager.GetTypeByUUID(edge.TypeUUID).GetUUIDIndex(_DBContext);
 					mySelectionPartAggregate.Element = _DBContext.DBTypeManager.GetUUIDTypeAttribute();
 				}
 
@@ -480,7 +480,7 @@ namespace sones.GraphDB.Managers.Select
 				else
 				{
 					// if the GetAttributeIndex did not return null we will pass this as the aggregate operation value
-					mySelectionPartAggregate.IndexAggregate = _DBContext.DBTypeManager.GetTypeByUUID(edge.TypeUUID).GetAttributeIndex(edge.AttrUUID, null).Value;
+					mySelectionPartAggregate.IndexAggregate = _DBContext.DBTypeManager.GetTypeByUUID(edge.TypeUUID).GetAttributeIndex(_DBContext, new Indices.IndexKeyDefinition(edge.AttrUUID), null).Value;
 					mySelectionPartAggregate.Element = _DBContext.DBTypeManager.GetTypeAttributeByEdge(edge);
 				}
 			}

@@ -37,6 +37,7 @@ using sones.GraphDB.TypeManagement;
 using sones.GraphDB.ObjectManagement;
 using sones.GraphFS.Settings;
 using sones.Lib.Settings;
+using sones.GraphDB.Managers.Structures;
 
 #endregion
 
@@ -50,6 +51,12 @@ namespace sones.GraphDB.TypeManagement
 
         new private Boolean isNew = true;
         private GraphDBType _ParentType = null;
+
+
+        /// <summary>
+        ///                                       IndexEdition  IndexType
+        /// </summary>
+        Dictionary<IndexKeyDefinition, Dictionary<String, Tuple<String, ObjectLocation>>> _AttributeIndexLocations;
 
         #endregion
 
@@ -475,6 +482,16 @@ namespace sones.GraphDB.TypeManagement
 
                 }
 
+                myAttributeIndex.ObjectLocation = ObjectLocation + DBConstants.DBIndicesLocation + myAttributeIndex.IndexName;
+                myAttributeIndex.ObjectName = myAttributeIndex.IndexName;
+                myAttributeIndex.ObjectEdition = myAttributeIndex.IndexEdition;
+                myAttributeIndex.ObjectStream = DBConstants.DBINDEXSTREAM;
+                var storeResult = myDBContext.IGraphFSSession.StoreFSObject(myAttributeIndex, true);
+                if (storeResult.Failed())
+                {
+                    return new Exceptional<bool>(storeResult);
+                }
+
             }
 
             return new Exceptional<Boolean>(true);
@@ -643,9 +660,10 @@ namespace sones.GraphDB.TypeManagement
         /// </summary>
         /// <param name="myAttributeName">The name of the attribute we want an index for.</param>
         /// <returns>An exceptional that contains the index for the given myAttributes if one exist. Else, an error.</returns>
-        public Exceptional<AAttributeIndex> GetDefaultAttributeIndex(AttributeUUID myAttributeName)
+        public Exceptional<AAttributeIndex> GetDefaultAttributeIndex(DBContext myDBContext, AttributeUUID myAttributeUUID)
         {
-            return GetAttributeIndex(myAttributeName, DBConstants.DEFAULTINDEX);
+            IndexKeyDefinition idxKey = new IndexKeyDefinition(new List<AttributeUUID>() { myAttributeUUID });
+            return GetAttributeIndex(myDBContext, idxKey, DBConstants.DEFAULTINDEX);
         }
 
         /// <summary>
@@ -654,17 +672,44 @@ namespace sones.GraphDB.TypeManagement
         /// <param name="myAttributeName">The name of the attribute we want an index for.</param>
         /// <param name="myIndexEdition">The name of the index edition. May be null</param>
         /// <returns>An exceptional that contains the index for the given myAttributes if one exist. Else, an error.</returns>
-        public Exceptional<AAttributeIndex> GetAttributeIndex(List<AttributeUUID> myAttributeNames, String myIndexEdition)
+        public Exceptional<AAttributeIndex> GetAttributeIndex(DBContext myDBContext, List<AttributeUUID> myAttributeNames, String myIndexEdition = DBConstants.DEFAULTINDEX)
         {
 
             IndexKeyDefinition idxKey = new IndexKeyDefinition(myAttributeNames);
 
-            if (_AttributeIndices.ContainsKey(idxKey) && _AttributeIndices[idxKey].ContainsKey(myIndexEdition))
-            {
-                return new Exceptional<AAttributeIndex>(_AttributeIndices[idxKey][myIndexEdition]);
-            }
+            return GetAttributeIndex(myDBContext, idxKey, myIndexEdition);
 
-            return new Exceptional<AAttributeIndex>(new Error_IndexDoesNotExist(myAttributeNames.ToAggregatedString(mySeperator: ", "), myIndexEdition));
+        }
+
+        /// <summary>
+        /// Returns the index of the given attribute
+        /// </summary>
+        /// <param name="myIDChainDefinition">The ID of the index</param>
+        /// <param name="myIndexEdition">The edition</param>
+        /// <returns></returns>
+        public Exceptional<AAttributeIndex> GetAttributeIndex(DBContext myDBContext, AttributeUUID myAttributeUUID, String myIndexEdition = DBConstants.DEFAULTINDEX)
+        {
+
+            return GetAttributeIndex(myDBContext, new IndexKeyDefinition(myAttributeUUID), myIndexEdition);
+
+        }
+
+       
+        /// <summary>
+        /// Returns the index of the given attribute
+        /// </summary>
+        /// <param name="myIDChainDefinition">The ID of the index</param>
+        /// <param name="myIndexEdition">The edition</param>
+        /// <returns></returns>
+        public Exceptional<AAttributeIndex> GetAttributeIndex(DBContext myDBContext, IDChainDefinition myIDChainDefinition, String myIndexEdition = DBConstants.DEFAULTINDEX)
+        {
+
+            var idxKey = IndexKeyDefinition.CreateFromIDChainDefinition(myIDChainDefinition);
+            if (idxKey.Failed())
+            {
+                return new Exceptional<AAttributeIndex>(idxKey);
+            }
+            return GetAttributeIndex(myDBContext, idxKey.Value, myIndexEdition);
 
         }
 
@@ -674,37 +719,25 @@ namespace sones.GraphDB.TypeManagement
         /// <param name="myAttributeName">The name of the attribute we want an index for.</param>
         /// <param name="myIndexEdition">THe name of the index edition. May be null</param>
         /// <returns>An exceptional that contains the index for the given myAttributes if one exist. Else, an error.</returns>
-        public Exceptional<AAttributeIndex> GetAttributeIndex(String myIndexName, String myIndexEdition = DBConstants.DEFAULTINDEX)
+        public Exceptional<AAttributeIndex> GetAttributeIndex(DBContext myDBContext, String myIndexName, String myIndexEdition = DBConstants.DEFAULTINDEX)
         {
 
-            if (_AttributeIndicesNameLookup.ContainsKey(myIndexName) && _AttributeIndices[_AttributeIndicesNameLookup[myIndexName]].ContainsKey(myIndexEdition))
-                return new Exceptional<AAttributeIndex>(_AttributeIndices[_AttributeIndicesNameLookup[myIndexName]][myIndexEdition]);
+            if (_AttributeIndicesNameLookup.ContainsKey(myIndexName))
+            {
+                var idx = GetAttributeIndex(myDBContext, _AttributeIndicesNameLookup[myIndexName], myIndexEdition);
+                if (idx.Failed())
+                {
+                    return new Exceptional<AAttributeIndex>(new Error_IndexDoesNotExist(myIndexName, myIndexEdition));
+                }
+                else
+                {
+                    return idx;
+                }
+            }
 
             return new Exceptional<AAttributeIndex>(new Error_IndexDoesNotExist(myIndexName, myIndexEdition));
 
         }
-
-        #region GetAttributeIndex(IndexKeyDefinition idxKey, string edition)
-
-        /// <summary>
-        /// Returns the attribute index with the specified key and edition.
-        /// </summary>
-        /// <param name="idxKey">The index key.</param>
-        /// <param name="edition">The index edition.</param>
-        /// <returns>The index or null if no index was found.</returns>
-        private AAttributeIndex GetAttributeIndex(IndexKeyDefinition idxKey, string edition)
-        {
-            
-            if (_AttributeIndices.ContainsKey(idxKey) && _AttributeIndices[idxKey].ContainsKey(DBConstants.UNIQUEATTRIBUTESINDEX))
-            {
-                return _AttributeIndices[idxKey][DBConstants.UNIQUEATTRIBUTESINDEX];
-            }
-            
-            return null;
-
-        }
-
-        #endregion
 
         /// <summary>
         /// Returns the index of the given attribute
@@ -712,17 +745,16 @@ namespace sones.GraphDB.TypeManagement
         /// <param name="myAttributeUUID">The name of the attribute we want an index for.</param>
         /// <param name="myIndexEdition">THe name of the index edition. May be null</param>
         /// <returns>The index for the given myAttributes if one exist. Else, null.</returns>
-        public Exceptional<AAttributeIndex> GetAttributeIndex(AttributeUUID myAttributeUUID, String myIndexEdition)
+        public Exceptional<AAttributeIndex> GetAttributeIndex(DBContext myDBContext, IndexKeyDefinition idxKey, String myIndexEdition)
         {
 
-            IndexKeyDefinition idxKey = new IndexKeyDefinition(new List<AttributeUUID>() { myAttributeUUID });
 
             lock (_AttributeIndices)
             {
 
                 if (_AttributeIndices.ContainsKey(idxKey))
                 {
-                    
+
                     if (myIndexEdition == null)
                     {
                         if (_AttributeIndices[idxKey].ContainsKey(DBConstants.DEFAULTINDEX))
@@ -730,17 +762,43 @@ namespace sones.GraphDB.TypeManagement
                         else
                             return new Exceptional<AAttributeIndex>(_AttributeIndices[idxKey].First().Value);
                     }
-                    
+
                     else if (_AttributeIndices[idxKey].ContainsKey(myIndexEdition))
                     {
                         return new Exceptional<AAttributeIndex>(_AttributeIndices[idxKey][myIndexEdition]);
                     }
 
                 }
+                else
+                {
+                    if (_AttributeIndexLocations.IsNotNullOrEmpty())
+                    {
+                        if (_AttributeIndexLocations.ContainsKey(idxKey))
+                        {
+                            if (myIndexEdition == null)
+                            {
+                                if (_AttributeIndexLocations[idxKey].ContainsKey(DBConstants.DEFAULTINDEX))
+                                {
+                                    return LoadAttributeIndexFromLocation(myDBContext, idxKey, DBConstants.DEFAULTINDEX);
+                                }
+                                else
+                                {
+                                    return new Exceptional<AAttributeIndex>(new Error_IndexDoesNotExist(idxKey.ToString(), DBConstants.DEFAULTINDEX));
+                                }
+                            }
+
+                            else if (_AttributeIndexLocations[idxKey].ContainsKey(myIndexEdition))
+                            {
+                                return LoadAttributeIndexFromLocation(myDBContext, idxKey, myIndexEdition);
+                            }
+
+                        }
+                    }
+                }
 
             }
 
-            return new Exceptional<AAttributeIndex>(new Error_IndexAttributeDoesNotExist(GetTypeAttributeByUUID(myAttributeUUID).Name));
+            return new Exceptional<AAttributeIndex>(new Error_IndexAttributeDoesNotExist(idxKey.ToString()));
 
         }
 
@@ -750,12 +808,12 @@ namespace sones.GraphDB.TypeManagement
         /// Removes the given index from this type.
         /// </summary>
         /// <param name="myIndexName">The name of index.</param>
-        public Exceptional<Boolean> RemoveIndex(String myIndexName, String myIndexEdition, DBTypeManager myTypeManager)
+        public Exceptional<Boolean> RemoveIndex(String myIndexName, String myIndexEdition, DBContext myDBContext)
         {
 
             myIndexEdition = myIndexEdition ?? DBConstants.DEFAULTINDEX;
 
-            foreach (var aidx in GetAllAttributeIndices())
+            foreach (var aidx in GetAllAttributeIndices(myDBContext))
             {
                 if (aidx.IndexName.ToLower() == myIndexName.ToLower() && _AttributeIndices[aidx.IndexKeyDefinition].ContainsKey(myIndexEdition))
                 {
@@ -781,7 +839,7 @@ namespace sones.GraphDB.TypeManagement
         /// <param name="myAttributeNames">The names of the myAttributes, over which the index was created.</param>
         public Exceptional<AAttributeIndex> CreateUniqueAttributeIndex(DBContext myDBContext, String myIndexName, AttributeUUID myAttributeName, String myIndexEdition)
         {
-            return CreateUniqueAttributeIndex(myDBContext, myIndexName, new List<AttributeUUID> { myAttributeName }, myIndexEdition);
+            return CreateAttributeIndex(myDBContext, myIndexName, new IndexKeyDefinition(myAttributeName), myIndexEdition).SuccessAction((idx => idx.Value.IsUniqueIndex = true));
         }
 
         #endregion
@@ -795,7 +853,24 @@ namespace sones.GraphDB.TypeManagement
         public Exceptional<AAttributeIndex> CreateUniqueAttributeIndex(DBContext myDBContext, String myIndexName, List<AttributeUUID> myAttributeUUIDs, String myIndexEdition)
         {
             // change this to a index type with a single value
-            return CreateAttributeIndex(myDBContext, myIndexName, myAttributeUUIDs, myIndexEdition).SuccessAction((idx => idx.Value.IsUniqueIndex = true));
+            return CreateAttributeIndex(myDBContext, myIndexName, new IndexKeyDefinition(myAttributeUUIDs), myIndexEdition).SuccessAction((idx => idx.Value.IsUniqueIndex = true));
+        }
+
+        /// <summary>
+        /// Creates an index for the given myAttribute by filling the given the index with the objects
+        /// of this type that are already stored.</summary>
+        /// <param name="myAttributeNames">The names of the myAttributes, over which the index was created.</param>
+        public Exceptional<AAttributeIndex> CreateUniqueAttributeIndex(DBContext myDBContext, String myIndexName, List<IDChainDefinition> myAttributeDefinitions, String myIndexEdition)
+        {
+            // change this to a index type with a single value
+
+            var indexKeyDefinitionExcept = IndexKeyDefinition.CreateFromIDChainDefinitions(myAttributeDefinitions);
+            if (indexKeyDefinitionExcept.Failed())
+            {
+                return indexKeyDefinitionExcept.Convert<AAttributeIndex>();
+            }
+
+            return CreateAttributeIndex(myDBContext, myIndexName, indexKeyDefinitionExcept.Value, myIndexEdition).SuccessAction((idx => idx.Value.IsUniqueIndex = true));
         }
 
         #endregion
@@ -808,7 +883,7 @@ namespace sones.GraphDB.TypeManagement
         /// <param name="myAttributeNames">The names of the myAttributes, over which the index was created.</param>
         public Exceptional<AAttributeIndex> CreateAttributeIndex(DBContext myDBContext, String myIndexName, AttributeUUID myAttributeName, String myIndexEdition, String myIndexType = null)
         {
-            return CreateAttributeIndex(myDBContext, myIndexName, new List<AttributeUUID> { myAttributeName }, myIndexEdition, myIndexType);
+            return CreateAttributeIndex(myDBContext, myIndexName, new IndexKeyDefinition( myAttributeName ), myIndexEdition, myIndexType);
         }
 
         #endregion
@@ -819,12 +894,12 @@ namespace sones.GraphDB.TypeManagement
         /// Create a new Index
         /// </summary>
         /// <param name="myIndexName"></param>
-        /// <param name="myAttributeUUIDs"></param>
+        /// <param name="myAttributeDefinitions"></param>
         /// <param name="myIndexEdition"></param>
         /// <param name="myIndexType">The index type name</param>
         /// <param name="myFileSystemLocation"></param>
         /// <returns></returns>
-        public Exceptional<AAttributeIndex> CreateAttributeIndex(DBContext myDBContext, String myIndexName, List<AttributeUUID> myAttributeUUIDs, String myIndexEdition, String myIndexType = null)
+        public Exceptional<AAttributeIndex> CreateAttributeIndex(DBContext myDBContext, String myIndexName, IndexKeyDefinition myIndexKeyDefinition, String myIndexEdition, String myIndexType = null)
         {
 
             if (!String.IsNullOrEmpty(myIndexType))
@@ -866,7 +941,7 @@ namespace sones.GraphDB.TypeManagement
                 return _NewAttributeIndex;
             }
 
-            var initializeResult = _NewAttributeIndex.Value.Initialize(myDBContext, myIndexName, new IndexKeyDefinition(myAttributeUUIDs), this, indexEdition: myIndexEdition);
+            var initializeResult = _NewAttributeIndex.Value.Initialize(myDBContext, myIndexName, myIndexKeyDefinition, this, indexEdition: myIndexEdition);
             if (initializeResult.Failed())
             {
                 return new Exceptional<AAttributeIndex>(initializeResult);
@@ -888,9 +963,9 @@ namespace sones.GraphDB.TypeManagement
         /// Returns the DEFAULT Guid index
         /// </summary>
         /// <returns>The default guid index.</returns>
-        public AAttributeIndex GetUUIDIndex(DBTypeManager myTypeManager)
+        public AAttributeIndex GetUUIDIndex(DBContext myDBContext)
         {
-            var defaultIDX = GetDefaultAttributeIndex(myTypeManager.GetUUIDTypeAttribute().UUID);
+            var defaultIDX = GetDefaultAttributeIndex(myDBContext, myDBContext.DBTypeManager.GetUUIDTypeAttribute().UUID);
 
             if (defaultIDX.Failed())
             {
@@ -899,6 +974,141 @@ namespace sones.GraphDB.TypeManagement
 
             return defaultIDX.Value;
         }
+
+        public IEnumerable<AAttributeIndex> GetAllAttributeIndices(DBContext myDBContext, Boolean includeUUIDIndices = true)
+        {
+
+            foreach (var __AttributeIndices in _AttributeIndices.Values)
+            {
+                foreach (var _AttributeIndex in __AttributeIndices)
+                {
+                    if (!(_AttributeIndex.Value.IsUUIDIndex) || includeUUIDIndices)
+                    {
+                        yield return _AttributeIndex.Value;
+                    }
+                }
+            }
+
+            if (_AttributeIndexLocations != null)
+            {
+                //foreach (var aIdx in _AttributeIndexLocations.ToArray())
+                while(_AttributeIndexLocations.Count > 0)
+                {
+                    var aIdx = _AttributeIndexLocations.First();
+                    //foreach (var aIdxEdition in aIdx.Value)
+                    while (aIdx.Value.Count > 0)
+                    {
+                        var aIdxEdition = aIdx.Value.First();
+                        var loadResult = LoadAttributeIndexFromLocation(myDBContext, aIdx.Key, aIdxEdition.Key);
+                        if (loadResult.Failed())
+                        {
+                            throw new GraphDBException(loadResult.IErrors);
+                        }
+                        if (!(loadResult.Value.IsUUIDIndex) || includeUUIDIndices)
+                        {
+                            yield return loadResult.Value;
+                        }
+                    }
+                }
+            }
+        }
+
+        public Boolean HasAttributeIndices(List<AttributeUUID> myAttributeUUIDs)
+        {
+            return HasAttributeIndices(new IndexKeyDefinition(myAttributeUUIDs));
+        }
+
+        public Boolean HasAttributeIndices(AttributeUUID myAttributeUUID)
+        {
+            return HasAttributeIndices(new IndexKeyDefinition(new List<AttributeUUID>() { myAttributeUUID }));
+        }
+
+        public Exceptional<Boolean> HasAttributeIndices(IDChainDefinition myIDChainDefinition)
+        {
+            var result = IndexKeyDefinition.CreateFromIDChainDefinition(myIDChainDefinition);
+            if (result.Failed())
+            {
+                //return result.Convert<Boolean>();
+                return new Exceptional<bool>(false);
+            }
+
+            return new Exceptional<bool>(HasAttributeIndices(result.Value));
+        }
+
+        public Boolean HasAttributeIndices(IndexKeyDefinition myIndexDefinition)
+        {
+            return _AttributeIndices.ContainsKey(myIndexDefinition) || (_AttributeIndexLocations.IsNotNullOrEmpty() && _AttributeIndexLocations.ContainsKey(myIndexDefinition));
+        }
+
+        private Exceptional<AAttributeIndex> LoadAttributeIndexFromLocation(DBContext myDBContext, IndexKeyDefinition indexKeyDefinition, string indexEdition)
+        {
+            var idx = _AttributeIndexLocations[indexKeyDefinition][indexEdition];
+            _AttributeIndexLocations[indexKeyDefinition].Remove(indexEdition);
+            if (_AttributeIndexLocations[indexKeyDefinition].Count == 0)
+            {
+                _AttributeIndexLocations.Remove(indexKeyDefinition);
+            }
+            var loadResult = myDBContext.IGraphFSSession.GetFSObject<AAttributeIndex>(idx.Item2,
+                        DBConstants.DBINDEXSTREAM,
+                        () => myDBContext.DBPluginManager.GetIndex(idx.Item1).Value, indexEdition);
+
+            if (!_AttributeIndices.ContainsKey(indexKeyDefinition))
+            {
+                _AttributeIndices.Add(indexKeyDefinition, new Dictionary<string, AAttributeIndex>());
+            }
+            _AttributeIndices[indexKeyDefinition][indexEdition] = loadResult.Value;
+
+            _AttributeIndicesNameLookup.Add(loadResult.Value.IndexName, loadResult.Value.IndexKeyDefinition);
+
+            return loadResult;
+        }
+
+        public IEnumerable<AAttributeIndex> GetAttributeIndices(DBContext myDBContext, AttributeUUID myAttributeUUID)
+        {
+            foreach (var aIdx in AttributeIndices.Where(kv => kv.Key.IndexKeyAttributeUUIDs.Contains(myAttributeUUID)).Select(item => item.Value))
+            {
+                foreach (var aIdxEdition in aIdx)
+                {
+                    yield return aIdxEdition.Value;
+                }
+            }
+
+            if (_AttributeIndexLocations.IsNotNullOrEmpty())
+            {
+                foreach (var aIdx in _AttributeIndexLocations.Where(kv => kv.Key.IndexKeyAttributeUUIDs.Contains(myAttributeUUID)))
+                {
+                    foreach (var aIdxEdition in aIdx.Value)
+                    {
+                        yield return LoadAttributeIndexFromLocation(myDBContext, aIdx.Key, aIdxEdition.Key).Value;
+                    }
+                }
+            }
+            yield break;
+        }
+        
+        public IEnumerable<AAttributeIndex> GetAttributeIndices(DBContext myDBContext, IndexKeyDefinition myIndexKeyDefinition)
+        {
+            if (_AttributeIndices.ContainsKey(myIndexKeyDefinition))
+            {
+                foreach (var aIdx in _AttributeIndices[myIndexKeyDefinition])
+                {
+                    yield return aIdx.Value;
+                }
+
+            }
+            if (_AttributeIndexLocations.IsNotNullOrEmpty())
+            {
+                if (_AttributeIndexLocations.ContainsKey(myIndexKeyDefinition))
+                {
+                    foreach (var aIdxEdition in _AttributeIndexLocations[myIndexKeyDefinition])
+                    {
+                        yield return LoadAttributeIndexFromLocation(myDBContext, myIndexKeyDefinition, aIdxEdition.Key).Value;
+                    }
+                }
+            }
+            yield break;
+        }
+
 
         #endregion
 
@@ -972,63 +1182,6 @@ namespace sones.GraphDB.TypeManagement
         public TypeAttribute GetTypeSpecificAttributeByUUID(AttributeUUID myAttributeUUID)
         {
             return _Attributes.FirstOrDefault(item => item.Value.UUID == myAttributeUUID).Value;
-        }
-
-        public IEnumerable<AAttributeIndex> GetAllAttributeIndices(Boolean includeUUIDIndices = true)
-        {
-
-            foreach (var __AttributeIndices in _AttributeIndices.Values)
-            {
-                foreach (var _AttributeIndex in __AttributeIndices)
-                {
-                    if (!(_AttributeIndex.Value.IsUUIDIndex) || includeUUIDIndices)
-                    {
-                        yield return _AttributeIndex.Value;
-                    }
-                }
-            }
-
-        }
-
-        public Boolean HasAttributeIndices(List<AttributeUUID> myAttributeUUIDs)
-        {
-            return _AttributeIndices.ContainsKey(new IndexKeyDefinition(myAttributeUUIDs));
-        }
-
-        public Boolean HasAttributeIndices(AttributeUUID myAttributeUUID)
-        {
-            return _AttributeIndices.ContainsKey(new IndexKeyDefinition(new List<AttributeUUID>() { myAttributeUUID }));
-        }
-
-        public Boolean HasAttributeIndices(IndexKeyDefinition myIndexDefinition)
-        {
-            return _AttributeIndices.ContainsKey(myIndexDefinition);
-        }
-
-        public IEnumerable<AAttributeIndex> GetAttributeIndices(AttributeUUID myAttributeUUID)
-        {
-            foreach (var aIdx in AttributeIndices.Where(kv => kv.Key.IndexKeyAttributeUUIDs.Contains(myAttributeUUID)).Select(item => item.Value))
-            {
-                foreach (var aIdxEdition in aIdx)
-                {
-                    yield return aIdxEdition.Value;
-                }
-            }
-            yield break;
-        }
-
-        public IEnumerable<AAttributeIndex> GetAttributeIndices(IndexKeyDefinition IndexName)
-        {
-            if (_AttributeIndices.ContainsKey(IndexName))
-            {
-                foreach (var aIdx in _AttributeIndices[IndexName])
-                {
-                    yield return aIdx.Value;
-                }
-
-            }
-
-            yield break;
         }
 
         public Exceptional<Boolean> RenameAttribute(AttributeUUID attributeUUID, string newName)
@@ -1427,7 +1580,7 @@ namespace sones.GraphDB.TypeManagement
 
                 #endregion
 
-                AttribIndex = GetAttributeIndex(idxKey, DBConstants.UNIQUEATTRIBUTESINDEX);
+                AttribIndex = GetAttributeIndex(myDBContext, idxKey, DBConstants.UNIQUEATTRIBUTESINDEX).Value;
 
                 if (!SubTypes.IsNullOrEmpty())
                 {
@@ -1460,9 +1613,9 @@ namespace sones.GraphDB.TypeManagement
         /// remove an unique attribute
         /// </summary>
         /// <param name="myAttribID"></param>
-        public Exceptional<Boolean> RemoveUniqueAttribute(AttributeUUID myAttribID, DBTypeManager myTypeManager)
+        public Exceptional<Boolean> RemoveUniqueAttribute(AttributeUUID myAttribID, DBContext myDBContext)
         {
-            List<GraphDBType> SubTypes = myTypeManager.GetAllSubtypes(this, false);
+            List<GraphDBType> SubTypes = myDBContext.DBTypeManager.GetAllSubtypes(this, false);
             List<AttributeUUID> AttrList = new List<AttributeUUID>();
             AttrList.Add(myAttribID);
 
@@ -1470,14 +1623,14 @@ namespace sones.GraphDB.TypeManagement
             {
                 Types._UniqueAttributes.Remove(myAttribID);
                 
-                var attrIdx = Types.GetAttributeIndex(AttrList, DBConstants.UNIQUEATTRIBUTESINDEX);
+                var attrIdx = Types.GetAttributeIndex(myDBContext, AttrList, DBConstants.UNIQUEATTRIBUTESINDEX);
 
                 if (attrIdx.Failed())
                 {
                     return new Exceptional<Boolean>(attrIdx);
                 }
 
-                var removeIdxExcept = Types.RemoveIndex(attrIdx.Value.IndexName, DBConstants.UNIQUEATTRIBUTESINDEX, myTypeManager);
+                var removeIdxExcept = Types.RemoveIndex(attrIdx.Value.IndexName, DBConstants.UNIQUEATTRIBUTESINDEX, myDBContext);
 
                 if (removeIdxExcept.Failed())
                     return new Exceptional<Boolean>(removeIdxExcept);
@@ -1505,7 +1658,7 @@ namespace sones.GraphDB.TypeManagement
             return _UniqueAttributes;
         }
 
-        public Exceptional<ResultType> DropUniqueAttributes(DBTypeManager myTypeManager)
+        public Exceptional<ResultType> DropUniqueAttributes(DBContext myDBContext)
         {
             #region Remove old unique index and attributes
 
@@ -1513,7 +1666,7 @@ namespace sones.GraphDB.TypeManagement
 
             if (mayBeUniqueIdx != null)
             {
-                var RemoveIdxExcept = RemoveIndex(mayBeUniqueIdx.IndexName, mayBeUniqueIdx.IndexEdition, myTypeManager);
+                var RemoveIdxExcept = RemoveIndex(mayBeUniqueIdx.IndexName, mayBeUniqueIdx.IndexEdition, myDBContext);
 
                 if (RemoveIdxExcept.Failed())
                 {
@@ -1522,9 +1675,9 @@ namespace sones.GraphDB.TypeManagement
 
                 foreach (var attrUUID in mayBeUniqueIdx.IndexKeyDefinition.IndexKeyAttributeUUIDs)
                 {
-                    foreach (var type in myTypeManager.GetAllSubtypes(this, false))
+                    foreach (var type in myDBContext.DBTypeManager.GetAllSubtypes(this, false))
                     {
-                        var RemoveUniqueExcept = type.RemoveUniqueAttribute(attrUUID, myTypeManager);
+                        var RemoveUniqueExcept = type.RemoveUniqueAttribute(attrUUID, myDBContext);
 
                         if (RemoveUniqueExcept.Failed())
                             return new Exceptional<ResultType>(RemoveUniqueExcept);
@@ -1564,7 +1717,7 @@ namespace sones.GraphDB.TypeManagement
 
             if (mayBeUniqueIdx != null)
             {
-                RemoveIndex(mayBeUniqueIdx.IndexName, mayBeUniqueIdx.IndexEdition, myDBContext.DBTypeManager);
+                RemoveIndex(mayBeUniqueIdx.IndexName, mayBeUniqueIdx.IndexEdition, myDBContext);
 
                 foreach (var attrUUID in mayBeUniqueIdx.IndexKeyDefinition.IndexKeyAttributeUUIDs)
                 {
@@ -1591,7 +1744,7 @@ namespace sones.GraphDB.TypeManagement
                     AddAttributeIndex(mayBeUniqueIdx, myDBContext);
                 }
 
-                var RemoveIdxExcept = RemoveIndex(idxName, DBConstants.UNIQUEATTRIBUTESINDEX, myDBContext.DBTypeManager);
+                var RemoveIdxExcept = RemoveIndex(idxName, DBConstants.UNIQUEATTRIBUTESINDEX, myDBContext);
 
                 if (RemoveIdxExcept.Failed())
                     return new Exceptional<ResultType>(RemoveIdxExcept);
@@ -1830,7 +1983,8 @@ namespace sones.GraphDB.TypeManagement
                         foreach (var idxType in idx.Value)
                         {
                             mySerializationWriter.WriteString(idxType.Key);
-                            mySerializationWriter.WriteObject(idxType.Value);
+                            mySerializationWriter.WriteString(idxType.Value.ObjectLocation.ToString());
+                            mySerializationWriter.WriteString(idxType.Value.IndexType);
                             //idxType.Value.Serialize(ref mySerializationWriter);
 
                             //mySerializationWriter.WriteString(idxType.Key);
@@ -1926,6 +2080,7 @@ namespace sones.GraphDB.TypeManagement
 
                     _AttributeIndices = new Dictionary<IndexKeyDefinition, Dictionary<String, AAttributeIndex>>();
                     _AttributeIndicesNameLookup = new Dictionary<String, IndexKeyDefinition>();
+                    _AttributeIndexLocations = new Dictionary<IndexKeyDefinition, Dictionary<string, Tuple<string, ObjectLocation>>>();
 
                     var idxCount = mySerializationReader.ReadUInt32();
                     for (var i = 0; i < idxCount; i++)
@@ -1938,35 +2093,19 @@ namespace sones.GraphDB.TypeManagement
 
                         var idxVersionCount = mySerializationReader.ReadUInt32();
 
+                        _AttributeIndexLocations.Add(idxKey, new Dictionary<string, Tuple<string, ObjectLocation>>());
                         for (var j = 0; j < idxVersionCount; j++)
                         {
 
                             var key                 = mySerializationReader.ReadString();
-                            var idx                 = mySerializationReader.ReadObject() as AAttributeIndex;
-                            idx.IndexKeyDefinition  = idxKey;
-                            AddAttributeIndex(idx as AAttributeIndex);
-                            //var fileSystemLocation  = new ObjectLocation(mySerializationReader.ReadString());
-                            //var indexEdition        = mySerializationReader.ReadString();
-                            //var indexName           = mySerializationReader.ReadString();
-                            //var indexType           = mySerializationReader.ReadString();
-                            //var isUUIDIdx           = mySerializationReader.ReadBoolean();
-                            //var keyCount            = mySerializationReader.ReadUInt64();
-                            //var valueCount          = mySerializationReader.ReadUInt64();
-                            //var attributeIdxShards  = mySerializationReader.ReadUInt16();
+                            var idxLocation         = mySerializationReader.ReadString();
+                            var indexType           = mySerializationReader.ReadString();
 
-                            ////var CreateIdxExcept = CreateAttributeIndex(indexName, idxKey.IndexKeyAttributeUUIDs, indexEdition, indexObjectType, fileSystemLocation);
-
-                            //if (isUUIDIdx)
-                            //{
-                            //    AddAttributeIndex(new UUIDIndex(indexName, idxKey, this, indexType, indexEdition, keyCount));
-                            //}
-                            //else
-                            //{
-                            //    AddAttributeIndex(new HashTableIndex(indexName, idxKey, this, keyCount, valueCount, indexEdition));
-                            //}
-
-                            //if (CreateIdxExcept.Failed())
-                            //    throw new GraphDBException(CreateIdxExcept.Errors);
+                            _AttributeIndexLocations[idxKey][key] = new Tuple<string,ObjectLocation>(indexType, new ObjectLocation(idxLocation));
+                
+                            //idx.IndexKeyDefinition  = idxKey;
+                            //AddAttributeIndex(idx as AAttributeIndex);
+                           
                         }
 
                     }

@@ -25,6 +25,7 @@ using sones.Lib.DataStructures.Indices;
 using sones.Lib.ErrorHandling;
 using sones.GraphDB.TypeManagement.BasicTypes;
 using sones.GraphFS.Settings;
+using sones.Lib;
 
 #endregion
 
@@ -265,7 +266,7 @@ namespace sones.GraphDB.Indices
         /// <summary>
         /// <seealso cref=" IShardedHashTableIndex"/>
         /// </summary>        
-        public override Boolean Contains(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext myDBContext)
+        public override Exceptional<bool> Contains(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext myDBContext)
         {
 
             foreach (var aIndexKex in GetIndexkeysFromDBObject(myDBObject, myTypeOfDBObject, myDBContext))
@@ -277,7 +278,7 @@ namespace sones.GraphDB.Indices
 
                 if (!currentIdxShard.Success())
                 {
-                    throw new GraphDBException(new Error_CouldNotGetIndexReference(currentIdxShard.IErrors, IndexName, IndexEdition, myDBContext.DBIndexManager.GetIndexShardID(aIndexKex, this.AttributeIdxShards)));
+                    return currentIdxShard.PushIError(new Error_CouldNotGetIndexReference(currentIdxShard.IErrors, IndexName, IndexEdition, myDBContext.DBIndexManager.GetIndexShardID(aIndexKex, this.AttributeIdxShards))).Convert<Boolean>();
                 }
                 
                 var currentIdxShardValue = currentIdxShard.Value;
@@ -286,17 +287,17 @@ namespace sones.GraphDB.Indices
 
                 if (currentIdxShardValue.Contains(aIndexKex, myDBObject.ObjectUUID))
                 {
-                    return true;
+                    return new Exceptional<bool>(true);
                 }
             }
 
-            return false;
+            return new Exceptional<bool>(false);
         }
 
         /// <summary>
         /// <seealso cref=" IAtributeIndex"/>
         /// </summary>        
-        public override Boolean Contains(IndexKey myIndexKey, GraphDBType myTypeOfDBObject, DBContext myDBContext)
+        public override Exceptional<bool> Contains(IndexKey myIndexKey, GraphDBType myTypeOfDBObject, DBContext myDBContext)
         {
             #region get the shard
 
@@ -312,7 +313,7 @@ namespace sones.GraphDB.Indices
 
             #endregion
 
-            return currentIdxShardValue.ContainsKey(myIndexKey);
+            return new Exceptional<bool>(currentIdxShardValue.ContainsKey(myIndexKey));
         }
 
         #endregion
@@ -996,6 +997,16 @@ namespace sones.GraphDB.Indices
         public override AAttributeIndex GetNewInstance()
         {
             return new ShardedHashTableIndex();
+        }
+
+        public override AFSObject Clone()
+        {
+            return new ShardedHashTableIndex();
+        }
+
+        public override ulong GetEstimatedSize()
+        {
+            return EstimatedSizeConstants.AFSObjectOntologyObject;
         }
 
         #region IFastSerializationTypeSurrogate Members

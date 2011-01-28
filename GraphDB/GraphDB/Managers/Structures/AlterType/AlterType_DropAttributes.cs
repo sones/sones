@@ -55,11 +55,11 @@ namespace sones.GraphDB.Managers.AlterType
 
                 if (attr != null)
                 {
-                    var idxs = new List<Indices.AAttributeIndex>(myGraphDBType.GetAttributeIndices(attr.UUID));
+                    var idxs = new List<Indices.AAttributeIndex>(myGraphDBType.GetAttributeIndices(myDBContext, attr.UUID));
 
                     foreach (var item in idxs)
                     {
-                        var remIdxResult = myGraphDBType.RemoveIndex(item.IndexName, item.IndexEdition, myDBContext.DBTypeManager);
+                        var remIdxResult = myGraphDBType.RemoveIndex(item.IndexName, item.IndexEdition, myDBContext);
 
                         if (remIdxResult.Failed())
                         {

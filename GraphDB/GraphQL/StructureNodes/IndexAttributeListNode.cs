@@ -54,6 +54,7 @@ namespace sones.GraphDB.GraphQL.StructureNodes
             {
                 if ((aNode.AstNode as IndexAttributeNode) != null)
                 {
+                    ParsingResult.PushIExceptional((aNode.AstNode as IndexAttributeNode).ParsingResult);
                     IndexAttributes.Add((aNode.AstNode as IndexAttributeNode).IndexAttributeDefinition);
                 }
             }

@@ -370,12 +370,15 @@ namespace sones.Lib.Settings
         
         #endregion
 
-
+        /// <summary>
+        /// Copies all settings from <paramref name="myGraphAppSettings"/> to the current settings. Any subscribers will be called.
+        /// </summary>
+        /// <param name="myGraphAppSettings"></param>
         public void Apply(GraphAppSettings myGraphAppSettings)
         {
             foreach (var setting in myGraphAppSettings._Settings)
             {
-                ApplySetting(setting.Value.IGraphDSSetting, setting.Key);
+                ApplySetting(setting.Value.IGraphDSSetting, setting.Value.CurrentValue);
             }
         }
     }

@@ -200,7 +200,7 @@ namespace sones.GraphDB.ObjectManagement
 
                 if (subTypes.IsNullOrEmpty())
                 {
-                    var idx = typeOfDBObjects.GetUUIDIndex(dbContext.DBTypeManager);
+                    var idx = typeOfDBObjects.GetUUIDIndex(dbContext);
                     var currentIndexType = dbContext.DBTypeManager.GetTypeByUUID(idx.IndexRelatedTypeUUID);
 
                     foreach (var ids in idx.GetAllValues(currentIndexType, dbContext))
@@ -215,9 +215,19 @@ namespace sones.GraphDB.ObjectManagement
                 {
                     foreach (var aType in subTypes)
                     {
-                        if (aType.AttributeIndices.Count != 0)
+
+                        #region If someone selected the "Vertex" DB owned type than there is no UUID index
+
+                        if (aType.IsAbstract)
                         {
-                            var idx = aType.GetUUIDIndex(dbContext.DBTypeManager);
+                            continue;
+                        }
+
+                        #endregion
+
+                        //if (aType.AttributeIndices.Count != 0)
+                        {
+                            var idx = aType.GetUUIDIndex(dbContext);
                             var currentIndexType = dbContext.DBTypeManager.GetTypeByUUID(idx.IndexRelatedTypeUUID);
 
                             foreach (var ids in idx.GetAllValues(currentIndexType, dbContext))
@@ -273,7 +283,7 @@ namespace sones.GraphDB.ObjectManagement
 
                 #region yield dbos
 
-                var idx = typeOfDBObjects.GetUUIDIndex(dbContext.DBTypeManager);
+                var idx = typeOfDBObjects.GetUUIDIndex(dbContext);
                 var currentIndexType = dbContext.DBTypeManager.GetTypeByUUID(idx.IndexRelatedTypeUUID);
 
                 foreach (var ids in idx.GetAllValues(currentIndexType, dbContext))

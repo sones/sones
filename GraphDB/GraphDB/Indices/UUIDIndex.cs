@@ -45,7 +45,7 @@ namespace sones.GraphDB.Indices
         #region Properties
 
         Object _lockObject = new object();
-        UInt64 _DirCountDelta = 0UL;
+        UInt64 _KeyCount = 0UL;
 
         public override Boolean IsUUIDIndex { get { return true; } }
 
@@ -65,12 +65,12 @@ namespace sones.GraphDB.Indices
         /// <param name="correspondingType">The corresponding type of this index, used to get the file system location</param>
         /// <param name="myFileSystemLocation">The location oif the index. If null it will be generated based on the <paramref name="correspondingType"/>.</param>
         public UUIDIndex(DBContext myDBContext, String myIndexName, String myIndexEdition, List<AttributeUUID> myAttributes, GraphDBType correspondingType, ulong myDirectoryDelta)
-            : this(myDBContext, myIndexName, new IndexKeyDefinition(myAttributes), correspondingType, myDirectoryDelta, myIndexEdition)
+            : this(myDBContext, myIndexName, new IndexKeyDefinition(myAttributes), correspondingType, myIndexEdition)
         { }
 
-        public UUIDIndex(DBContext myDBContext, string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, ulong myDirectoryDelta, String indexEdition = DBConstants.DEFAULTINDEX)
+        public UUIDIndex(DBContext myDBContext, string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, String indexEdition = DBConstants.DEFAULTINDEX)
         {
-            Initialize(myDBContext, indexEdition, idxKey, correspondingType, myDirectoryDelta, indexEdition);
+            Initialize(myDBContext, indexEdition, idxKey, correspondingType, indexEdition);
         }
 
         #endregion
@@ -116,7 +116,11 @@ namespace sones.GraphDB.Indices
         /// <param name="myToken">The SessionInfos</param>
         public override Exceptional Insert(DBObjectStream myDBObject, IndexSetStrategy myIndexSetStrategy, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            return Exceptional.OK;
+            lock (_lockObject)
+            {
+                _KeyCount++;
+                return this.Save();
+            }
         }
 
         #endregion
@@ -130,12 +134,12 @@ namespace sones.GraphDB.Indices
         /// <param name="myTypeOfDBObject">The Type of the DBObject</param>
         /// <param name="myToken">The SessionInfos</param>
         /// <returns>A Trinary</returns>
-        public override Boolean Contains(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext)
+        public override Exceptional<Boolean> Contains(DBObjectStream myDBObject, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            throw new NotImplementedException();
+            return new Exceptional<bool>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
         }
 
-        public override Boolean Contains(IndexKey myIndeyKey, GraphDBType myTypeOfDBObject, DBContext dbContext)
+        public override Exceptional<Boolean> Contains(IndexKey myIndeyKey, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
             if (myIndeyKey.IndexKeyValues.Count == 1)
             {
@@ -152,16 +156,16 @@ namespace sones.GraphDB.Indices
             }
             else
             {
-                throw new GraphDBException(new Error_InvalidIndexOperation(IndexName));
+                return new Exceptional<bool>(new Error_InvalidIndexOperation(IndexName));
             }
         }
 
-        private bool Contains_private(IDirectoryObject myIDirectoryObject, string myUUIDAsString)
+        private Exceptional<Boolean> Contains_private(IDirectoryObject myIDirectoryObject, string myUUIDAsString)
         {
-            return myIDirectoryObject.ObjectExists(myUUIDAsString) && myIDirectoryObject.GetDirectoryEntry(myUUIDAsString).ObjectStreamsList.Contains(DBConstants.DBOBJECTSTREAM);
+            return new Exceptional<Boolean>((bool)myIDirectoryObject.ObjectExists(myUUIDAsString) && myIDirectoryObject.GetDirectoryEntry(myUUIDAsString).ObjectStreamsList.Contains(DBConstants.DBOBJECTSTREAM));
         }
 
-        public Boolean Contains(ObjectUUID myUUID, GraphDBType myTypeOfDBObject, DBContext dbContext)
+        public Exceptional<Boolean> Contains(ObjectUUID myUUID, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
             return Contains_private(GetDirectoryObject(myTypeOfDBObject, dbContext), myUUID.ToString());
         }
@@ -178,6 +182,11 @@ namespace sones.GraphDB.Indices
         /// <param name="myToken">The SessionInfos</param>
         public override Exceptional Remove(DBObjectStream myDBObject, GraphDBType myTypeOfDBObjects, DBContext dbContext)
         {
+            lock (_lockObject)
+            {
+                _KeyCount--;
+                this.Save();
+            }
             return Exceptional.OK;
         }
 
@@ -192,6 +201,11 @@ namespace sones.GraphDB.Indices
 
         public override Exceptional Clear(DBContext myDBContext, GraphDBType myDBTypeStream)
         {
+            lock (_lockObject)
+            {
+                _KeyCount = 0;
+                this.Save();
+            }
             return Exceptional.OK;
         }
 
@@ -307,7 +321,8 @@ namespace sones.GraphDB.Indices
 
         public override IEnumerable<ObjectUUID> GetValues(IndexKey myIndeyKey, GraphDBType myTypeOfDBObject, DBContext dbContext)
         {
-            if (Contains(myIndeyKey, myTypeOfDBObject, dbContext))
+            var result = Contains(myIndeyKey, myTypeOfDBObject, dbContext);
+            if (result.Value)
             {
                 //this has to work, because the same thing has been tested during contains
                 yield return (ObjectUUID)myIndeyKey.IndexKeyValues[0].Value;
@@ -354,7 +369,10 @@ namespace sones.GraphDB.Indices
 
         public override UInt64 GetValueCount(DBContext myDBContext, GraphDBType myTypeOfDBObject)
         {
-            return GetDirectoryObject(myTypeOfDBObject, myDBContext).DirCount - _DirCountDelta;
+            lock (_lockObject)
+            {
+                return _KeyCount;
+            }
         }
 
         #endregion
@@ -363,7 +381,10 @@ namespace sones.GraphDB.Indices
 
         public override UInt64 GetKeyCount(DBContext myDBContext, GraphDBType myTypeOfDBObject)
         {
-            return GetDirectoryObject(myTypeOfDBObject, myDBContext).DirCount - _DirCountDelta;
+            lock (_lockObject)
+            {
+                return _KeyCount;
+            }
         }
 
         #endregion
@@ -444,8 +465,8 @@ namespace sones.GraphDB.Indices
                 if (fromUUID == toUUID)
                 {
                     #region ==
-
-                    if (Contains(fromIndexKey, myTypeOfDBObject, dbContext))
+                    var result = Contains(fromIndexKey, myTypeOfDBObject, dbContext);
+                    if (result.Value)
                     {
                         yield return (ObjectUUID)fromIndexKey.IndexKeyValues[0].Value;
                     }
@@ -555,34 +576,39 @@ namespace sones.GraphDB.Indices
 
         public override void Serialize(ref Lib.NewFastSerializer.SerializationWriter mySerializationWriter)
         {
-            mySerializationWriter.WriteUInt64(_DirCountDelta);
+            mySerializationWriter.WriteUInt64(_KeyCount);
             mySerializationWriter.WriteString(IndexName);
             mySerializationWriter.WriteString(IndexEdition);
+            IndexKeyDefinition.Serialize(ref mySerializationWriter);
             IndexRelatedTypeUUID.Serialize(ref mySerializationWriter);
         }
 
         public override void Deserialize(ref Lib.NewFastSerializer.SerializationReader mySerializationReader)
         {
-            _DirCountDelta = mySerializationReader.ReadUInt64();
+            _KeyCount = mySerializationReader.ReadUInt64();
             IndexName = mySerializationReader.ReadString();
             IndexEdition = mySerializationReader.ReadString();
+            IndexKeyDefinition = new IndexKeyDefinition();
+            IndexKeyDefinition.Deserialize(ref mySerializationReader);
             IndexRelatedTypeUUID = new TypeUUID(ref mySerializationReader);
         }
 
         #endregion
 
-        //public override Exceptional Initialize(DBContext myDBContext)
-        //{
-        //    return Exceptional.OK;
-        //}
+        public override AFSObject Clone()
+        {
+            return new UUIDIndex();
+        }
+
+        public override ulong GetEstimatedSize()
+        {
+            return EstimatedSizeConstants.AFSObjectOntologyObject + EstimatedSizeConstants.UInt64 + EstimatedSizeConstants.Boolean;
+        }
+
 
         public override Exceptional Initialize(DBContext myDBContext, string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, string indexEdition = DBConstants.DEFAULTINDEX)
         {
-            return Initialize(myDBContext, indexName, idxKey, correspondingType, myDBContext.IGraphFSSession.NumberOfSpecialDirectories, indexEdition);
-        }
-
-        public Exceptional Initialize(DBContext myDBContext, string indexName, IndexKeyDefinition idxKey, GraphDBType correspondingType, UInt64 myDirectoryDelta, string indexEdition = DBConstants.DEFAULTINDEX)
-        {
+        
             IndexName = indexName;
             IndexEdition = indexEdition;
             IndexKeyDefinition = idxKey;
@@ -605,7 +631,7 @@ namespace sones.GraphDB.Indices
 
             FileSystemLocation = (correspondingType.ObjectLocation + "Indices") + (IndexName + "#" + IndexEdition);
 
-            _DirCountDelta = myDirectoryDelta;
+            _KeyCount = 0;
 
             return Exceptional.OK;
         }

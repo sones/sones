@@ -95,6 +95,12 @@ namespace sones.GraphDB.Structures.EdgeTypes
 
         }
 
+        public override IEnumerable<EdgeTypeParamDefinition> GetParams()
+        {
+            yield return new EdgeTypeParamDefinition(ParamType.GraphType, _CountBy.ObjectName);
+            yield return new EdgeTypeParamDefinition(ParamType.DefaultValueDef, _CountBy.Value);
+        }
+
         public override IEdgeType GetNewInstance()
         {
             var edgeTypeCounted = new EdgeTypeCounted();

@@ -11,6 +11,7 @@ using System;
 using sones.GraphDB.Managers.Structures;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement;
+using System.Collections.Generic;
 
 namespace sones.GraphDB.Structures.EdgeTypes
 {
@@ -35,6 +36,12 @@ namespace sones.GraphDB.Structures.EdgeTypes
         /// </summary>
         /// <param name="myParams">A array ob parameters</param>
         void ApplyParams(params EdgeTypeParamDefinition[] myParams);
+
+        /// <summary>
+        /// Apply the given <paramref name="myParams"/> to the EdgeType
+        /// </summary>
+        /// <param name="myParams">A array ob parameters</param>
+        IEnumerable<EdgeTypeParamDefinition> GetParams();
 
         String ToString();
 
