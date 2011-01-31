@@ -6,7 +6,7 @@ namespace sones.GraphInfrastructure.Element
     /// <summary>
     /// The interface for all edge species
     /// </summary>
-    public interface IEdge : IGraphElement
+    public interface IEdge : IGraphElement, IEdgeProperties
     {
         #region Source
 

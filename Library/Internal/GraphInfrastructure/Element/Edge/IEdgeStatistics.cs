@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace sones.GraphInfrastructure.Element
 {
     /// <summary>
-    /// The interface for vertex statistics
+    /// The interface for all edge statistics
     /// </summary>
-    public interface IVertexStatistics : IGraphElementStatistics
+    public interface IEdgeStatistics : IGraphElementStatistics
     {
         //Todo: fill
     }

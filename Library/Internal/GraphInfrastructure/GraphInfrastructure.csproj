@@ -44,12 +44,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Element\Edge\IEdgeStatistics.cs" />
+    <Compile Include="Element\Edge\EdgeID.cs" />
+    <Compile Include="Element\Edge\IEdgeProperties.cs" />
+    <Compile Include="Element\IGraphElementStatistics.cs" />
     <Compile Include="Element\IGraphElementID.cs" />
     <Compile Include="Element\Edge\IEdge.cs" />
     <Compile Include="Element\Edge\IHyperEdge.cs" />
     <Compile Include="Element\Edge\ISingleEdge.cs" />
     <Compile Include="Element\IGraphElement.cs" />
     <Compile Include="Element\Partition\IGraphPartitionInformation.cs" />
+    <Compile Include="Element\Vertex\IVertexProperties.cs" />
     <Compile Include="Element\Vertex\IVertex.cs" />
     <Compile Include="Element\Vertex\IVertexStatistics.cs" />
     <Compile Include="Element\Vertex\PropertyID.cs" />

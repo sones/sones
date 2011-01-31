@@ -10,26 +10,18 @@ namespace sones.GraphDB.Transaction
 
         #region Data
 
-        public readonly String ID;
+        public readonly UInt64 ID;
 
         #endregion
 
         #region Constructor(s)
 
         /// <summary>
-        /// Generates a TransactionID based on the content of myString.
+        /// Creates a TransactionID
         /// </summary>
-        public TransactionID(String myString = null)
+        public TransactionID(UInt64 myID)
         {
-            if (myString == null)
-	{
-                ID = Guid.NewGuid().ToString();
-	}
-            else
-	{
-            ID = myString;
-
-	}
+            ID = myID;
         }
 
         #endregion
@@ -77,14 +69,6 @@ namespace sones.GraphDB.Transaction
             if ((Object)myTransactionID2 == null)
                 throw new ArgumentNullException("Parameter myTransactionID2 must not be null!");
 
-
-            // Check the length of the TransactionUUIDs
-            if (myTransactionID1.ID.Length < myTransactionID2.ID.Length)
-                return true;
-
-            if (myTransactionID1.ID.Length > myTransactionID2.ID.Length)
-                return false;
-
             return myTransactionID1.CompareTo(myTransactionID2) < 0;
 
         }
@@ -103,14 +87,6 @@ namespace sones.GraphDB.Transaction
             // Check if myTransactionID2 is null
             if ((Object)myTransactionID2 == null)
                 throw new ArgumentNullException("Parameter myTransactionID2 must not be null!");
-
-
-            // Check the length of the TransactionUUIDs
-            if (myTransactionID1.ID.Length > myTransactionID2.ID.Length)
-                return true;
-
-            if (myTransactionID1.ID.Length < myTransactionID2.ID.Length)
-                return false;
 
             return myTransactionID1.CompareTo(myTransactionID2) > 0;
 
@@ -223,9 +199,9 @@ namespace sones.GraphDB.Transaction
 
         #region ToString()
 
-        public override String ToString()
+        public override string ToString()
         {
-            return ID;
+            return ID.ToString();
         }
 
         #endregion

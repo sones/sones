@@ -22,7 +22,7 @@ namespace sones.GraphInfrastructure.Element
         /// <summary>
         /// A unique identification of the generation process of this revision.
         /// </summary>
-        readonly public String UUID;
+        readonly public UInt64 UUID;
 
         #endregion
 
@@ -38,18 +38,11 @@ namespace sones.GraphInfrastructure.Element
         /// </summary>
         /// <param name="myUUID">An unique identification for this generation process</param>
         /// <param name="myTimestamp">Any timestamp</param> 
-        public VertexRevisionID(String myUUID = null, UInt64 myTimeStamp = 0UL)
+        public VertexRevisionID(UInt64 myUUID = 0UL, UInt64 myTimeStamp = 0UL)
         {
             Timestamp = myTimeStamp;
 
-            if (myUUID == null)
-            {
-                UUID = Guid.NewGuid().ToString();
-            }
-            else
-            {
-                UUID = myUUID;
-            }
+            UUID = myUUID;
         }
 
         #endregion

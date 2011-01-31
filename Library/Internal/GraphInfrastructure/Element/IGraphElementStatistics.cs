@@ -4,13 +4,13 @@ using System.Collections.Generic;
 namespace sones.GraphInfrastructure.Element
 {
     /// <summary>
-    /// The interface for graph element ids
+    /// The interface for graph element statistics
     /// </summary>
-    public interface IGraphElementID
+    public interface IGraphElementStatistics
     {
         /// <summary>
-        /// The ID of the graph element type
+        /// The number of visits of this graph element
         /// </summary>
-        UInt64 TypeID { get; }
+        UInt64 Visits { get; }
     }
 }

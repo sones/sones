@@ -7,27 +7,8 @@ namespace sones.GraphInfrastructure.Element
     /// <summary>
     /// The interface for vertices
     /// </summary>
-    public interface IVertex : IGraphElement, IVertexStatistics, IGraphPartitionInformation
+    public interface IVertex : IGraphElement, IVertexStatistics, IGraphPartitionInformation, IVertexProperties
     {
-        #region Properties
-
-        /// <summary>
-        /// A vertex is identified by the name of its vertex type and Guid
-        /// </summary>
-        VertexID VertexID { get; }
-
-        /// <summary>
-        /// Returns the revision id of this vertex
-        /// </summary>
-        VertexRevisionID VertexRevisionID { get; }
-
-        /// <summary>
-        /// Returns the name of the edition of this vertex
-        /// </summary>
-        String EditionName { get; }
-
-        #endregion
-
         #region Edges
 
         #region Incoming

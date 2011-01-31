@@ -17,7 +17,7 @@ namespace sones.GraphInfrastructure.Element
         /// <summary>
         /// The id of the vertex type
         /// </summary>
-        readonly private String _vertexTypeID;
+        readonly private UInt64 _vertexTypeID;
 
         /// <summary>
         /// The hashcode of the VertexID
@@ -32,9 +32,9 @@ namespace sones.GraphInfrastructure.Element
         /// Creates a new VertexID.
         /// A VertexID consists of a vertex type name and a vertex name
         /// </summary>
-        /// <param name="myVertexTypeID">The vertex type name</param>
+        /// <param name="myVertexTypeID">The vertex type id</param>
         /// <param name="myVertexID">The vertex name (if left out, a name will be generated)</param>
-        public VertexID(String myVertexTypeID, String myName = null)
+        public VertexID(UInt64 myVertexTypeID, String myName = null)
         {
             if (myName != null)
             {
@@ -112,7 +112,7 @@ namespace sones.GraphInfrastructure.Element
 
         #region IGraphElementID Members
 
-        public string TypeID
+        public UInt64 TypeID
         {
             get { return _vertexTypeID; }
         }

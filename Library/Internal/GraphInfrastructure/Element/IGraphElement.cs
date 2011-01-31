@@ -6,7 +6,7 @@ namespace sones.GraphInfrastructure.Element
     /// <summary>
     /// The interface for graph elements like vertices or edges
     /// </summary>
-    public interface IGraphElement
+    public interface IGraphElement : IGraphElementStatistics
     {
         #region Properties
 
@@ -95,12 +95,21 @@ namespace sones.GraphInfrastructure.Element
 
         #endregion
 
-        #region ID
+        #region Creation date
 
         /// <summary>
-        /// Gets the id of this graph element
+        /// The date the graph element has been created
         /// </summary>
-        IGraphElementID ID { get; }
+        DateTime CreationDate { get; }
+
+        #endregion
+
+        #region Modification date
+
+        /// <summary>
+        /// The date the graph element has been modified the last time
+        /// </summary>
+        DateTime ModificationDate { get; }
 
         #endregion
     }

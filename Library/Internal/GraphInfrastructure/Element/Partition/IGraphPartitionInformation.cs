@@ -10,6 +10,6 @@ namespace sones.GraphInfrastructure.Element
         /// <summary>
         /// The partition id
         /// </summary>
-        String PartitionID { get; }
+        UInt64 PartitionID { get; }
     }
 }

@@ -3,49 +3,42 @@
 namespace sones.GraphInfrastructure.Element
 {
     /// <summary>
-    /// The definition for vertex properties
+    /// The id of an edge
     /// </summary>
-    public sealed class PropertyID
+    public sealed class EdgeID : IGraphElementID
     {
         #region Data
 
         /// <summary>
-        /// The name of the type (AssemblyQualifiedName)
+        /// The id of the vertex type
         /// </summary>
-        readonly public String TypeName;
-
-        /// <summary>
-        /// The id of the property
-        /// </summary>
-        readonly public UInt64 ID;
+        readonly private UInt64 _vertexTypeID;
 
         #endregion
 
         #region Constructor
 
         /// <summary>
-        /// Creates a new PropertyID
+        /// Creates a new EdgeID.
         /// </summary>
-        /// <param name="myID">The ID of the property</param>
-        /// <param name="myPropertyType">The type of the property</param>
-        public PropertyID(UInt64 myID, Type myPropertyType)
+        /// <param name="myEdgeTypeID">The edge type id</param>
+        public EdgeID(UInt64 myEdgeTypeID)
         {
-            TypeName = myPropertyType.AssemblyQualifiedName;
-            ID = myID;
+            _vertexTypeID = myEdgeTypeID;
         }
 
         #endregion
 
         #region Equals Overrides
 
-        public override Boolean Equals(System.Object obj)
+        public override Boolean Equals(Object obj)
         {
             if (obj == null)
             {
                 return false;
             }
 
-            PropertyID v = obj as PropertyID;
+            EdgeID v = obj as EdgeID;
 
             if (v != null)
             {
@@ -57,17 +50,17 @@ namespace sones.GraphInfrastructure.Element
             }
         }
 
-        public Boolean Equals(PropertyID myVertex)
+        public Boolean Equals(EdgeID myVertex)
         {
             if ((object)myVertex == null)
             {
                 return false;
             }
 
-            return (this.TypeName == myVertex.TypeName) && (this.ID == myVertex.ID);
+            return this.TypeID == myVertex.TypeID;
         }
 
-        public static Boolean operator ==(PropertyID aVertex, PropertyID bVertex)
+        public static Boolean operator ==(EdgeID aVertex, EdgeID bVertex)
         {
             if (Object.ReferenceEquals(aVertex, bVertex))
             {
@@ -82,14 +75,23 @@ namespace sones.GraphInfrastructure.Element
             return aVertex.Equals(bVertex);
         }
 
-        public static Boolean operator !=(PropertyID aVertex, PropertyID bVertex)
+        public static Boolean operator !=(EdgeID aVertex, EdgeID bVertex)
         {
             return !(aVertex == bVertex);
         }
 
         public override int GetHashCode()
         {
-            return TypeName.GetHashCode() ^ ID.GetHashCode();
+            return _vertexTypeID.GetHashCode();
+        }
+
+        #endregion
+
+        #region IGraphElementID Members
+
+        public UInt64 TypeID
+        {
+            get { return _vertexTypeID; }
         }
 
         #endregion

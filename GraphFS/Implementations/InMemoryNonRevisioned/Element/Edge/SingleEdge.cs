@@ -91,7 +91,30 @@ namespace sones.InMemoryNonRevisioned.Element
             get { throw new NotImplementedException(); }
         }
 
-        public IGraphElementID ID
+        public DateTime CreationDate
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public DateTime ModificationDate
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        #endregion
+
+        #region IGraphElementStatistics Members
+
+        public ulong Visits
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        #endregion
+
+        #region IEdgeProperties
+
+        public EdgeID EdgeID
         {
             get { throw new NotImplementedException(); }
         }

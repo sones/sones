@@ -1,16 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace sones.GraphInfrastructure.Element
 {
     /// <summary>
-    /// The interface for graph element ids
+    /// The interface for edge properties
     /// </summary>
-    public interface IGraphElementID
+    public interface IEdgeProperties
     {
+        #region ID
+
         /// <summary>
-        /// The ID of the graph element type
+        /// The edge id
         /// </summary>
-        UInt64 TypeID { get; }
+        EdgeID EdgeID { get; }
+
+        #endregion
     }
 }
