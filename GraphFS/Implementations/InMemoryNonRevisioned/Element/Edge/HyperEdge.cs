@@ -18,6 +18,11 @@ namespace sones.InMemoryNonRevisioned.Element
             throw new NotImplementedException();
         }
 
+        public TResult InvokeHyperEdgeFunc<TResult>(Func<IEnumerable<ISingleEdge>, TResult> myHyperEdgeFunction)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region IEdge Members
@@ -120,6 +125,5 @@ namespace sones.InMemoryNonRevisioned.Element
         }
 
         #endregion
-        
     }
 }
