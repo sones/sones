@@ -3,16 +3,16 @@
 namespace sones.Library.Internal.Security
 {
     /// <summary>
-    /// Used for session authentication
+    /// Used for authentication
     /// </summary>
-    public sealed class Credentials : ICredentials
+    public sealed class UserPasswordCredentials : ICredentials
     {
         #region data
 
         /// <summary>
         /// The login string
         /// </summary>
-        public readonly String Login;
+        private readonly String _login;
 
         /// <summary>
         /// The hashed password
@@ -28,9 +28,9 @@ namespace sones.Library.Internal.Security
         /// </summary>
         /// <param name="myLogin">The login string</param>
         /// <param name="myPassword">The password</param>
-        public Credentials(String myLogin, String myPassword)
+        public UserPasswordCredentials(String myLogin, String myPassword)
         {
-            Login = myLogin;
+            _login = myLogin;
             PasswordHash = myPassword.GetHashCode();
         }
 
@@ -40,19 +40,18 @@ namespace sones.Library.Internal.Security
 
         public override string ToString()
         {
-            return String.Format("Login: {0}, PW-Hash: {1}", Login, PasswordHash);
+            return String.Format("Login: {0}, PW-Hash: {1}", _login, PasswordHash);
         }
 
         #endregion
 
-        #region ICredentials
+        #region ICredentials Members
 
-        public string GetLogin()
+        public string Login
         {
-            return Login;
+            get { return _login; }
         }
 
         #endregion
-
     }
 }

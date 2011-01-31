@@ -8,7 +8,7 @@ namespace sones.Library.Internal.Definitions
     /// <summary>
     /// The species of an edge
     /// </summary>
-    public enum EdgeSpeciesEnum
+    public enum EdgeSpecies
     {
         /// <summary>
         /// 1-N relation

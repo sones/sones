@@ -5,7 +5,8 @@ using System.Text;
 using sones.GraphQL;
 using sones.GraphQL.Result;
 using sones.GraphDB.Transaction;
-using sones.Library.Internal.Token;
+using sones.Library.Internal.Security;
+
 
 namespace Gremlin
 {
@@ -21,17 +22,17 @@ namespace Gremlin
             get { return "Gremlin"; }
         }
 
-        public QueryResult Query(SessionToken mySessionToken, TransactionToken myTransactionToken, string myQueryString)
+        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> ExportGraphDDL(SessionToken mySessionToken, TransactionToken myTransactionToken)
+        public IEnumerable<string> ExportGraphDDL(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> ExportGraphDML(SessionToken mySessionToken, TransactionToken myTransactionToken)
+        public IEnumerable<string> ExportGraphDML(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }

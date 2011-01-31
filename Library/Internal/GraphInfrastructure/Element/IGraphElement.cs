@@ -95,12 +95,12 @@ namespace sones.GraphInfrastructure.Element
 
         #endregion
 
-        #region Type
+        #region ID
 
         /// <summary>
-        /// Gets the type id of this graph element
+        /// Gets the id of this graph element
         /// </summary>
-        String TypeID { get; }
+        IGraphElementID ID { get; }
 
         #endregion
     }

@@ -52,9 +52,9 @@
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\Token\Token.csproj">
-      <Project>{3291BC72-8F49-4E60-9BC7-349D5C635985}</Project>
-      <Name>Token</Name>
+    <ProjectReference Include="..\..\..\Library\Internal\Security\Security.csproj">
+      <Project>{0E469CF5-BF78-4B66-BA2D-F9D5991BBCCD}</Project>
+      <Name>Security</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\IGraphQL\IGraphQL.csproj">
       <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>

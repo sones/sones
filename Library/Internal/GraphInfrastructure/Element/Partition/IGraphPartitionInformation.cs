@@ -7,6 +7,9 @@ namespace sones.GraphInfrastructure.Element
     /// </summary>
     public interface IGraphPartitionInformation
     {
-        //Todo: think about interesting partition infos
+        /// <summary>
+        /// The partition id
+        /// </summary>
+        String PartitionID { get; }
     }
 }

@@ -12,7 +12,7 @@ namespace sones.Library.Internal.Definitions
         /// <summary>
         /// The species of the edge
         /// </summary>
-        readonly public EdgeSpeciesEnum EdgeSpecies;
+        readonly public EdgeSpecies EdgeSpecies;
 
         /// <summary>
         /// The vertex type this edge points to
@@ -40,7 +40,7 @@ namespace sones.Library.Internal.Definitions
         /// <param name="myEdgeTypeName">The type of the edge</param>
         /// <param name="myVertexSchemeName">The vertex type this edge points to</param>
         /// <param name="myEdgeSpecies">The species of the edge</param>
-        public OutgoingEdgeDefinition(String myEdgeName, String myEdgeTypeName, String myVertexSchemeName, EdgeSpeciesEnum myEdgeSpecies)
+        public OutgoingEdgeDefinition(String myEdgeName, String myEdgeTypeName, String myVertexSchemeName, EdgeSpecies myEdgeSpecies)
         {
             EdgeName = myEdgeName;
             EdgeTypeName = myEdgeTypeName;

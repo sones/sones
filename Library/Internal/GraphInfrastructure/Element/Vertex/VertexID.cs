@@ -3,9 +3,9 @@
 namespace sones.GraphInfrastructure.Element
 {
     /// <summary>
-    /// The id of a vertex. It consists of a Guid and an vertex-type-name
+    /// The id of a vertex
     /// </summary>
-    public sealed class VertexID
+    public sealed class VertexID : IGraphElementID
     {
         #region Data
 
@@ -17,7 +17,7 @@ namespace sones.GraphInfrastructure.Element
         /// <summary>
         /// The id of the vertex type
         /// </summary>
-        readonly public String VertexTypeID;
+        readonly private String _vertexTypeID;
 
         /// <summary>
         /// The hashcode of the VertexID
@@ -45,9 +45,9 @@ namespace sones.GraphInfrastructure.Element
                 Name = Guid.NewGuid().ToString();
             }
 
-            VertexTypeID = myVertexTypeID;
+            _vertexTypeID = myVertexTypeID;
 
-            _hashCode = Name.GetHashCode() ^ VertexTypeID.GetHashCode();
+            _hashCode = Name.GetHashCode() ^ _vertexTypeID.GetHashCode();
         }
 
         #endregion
@@ -80,7 +80,7 @@ namespace sones.GraphInfrastructure.Element
                 return false;
             }
 
-            return (this.Name == myVertex.Name) && (this.VertexTypeID == myVertex.VertexTypeID);
+            return (this.Name == myVertex.Name) && (this._vertexTypeID == myVertex._vertexTypeID);
         }
 
         public static Boolean operator ==(VertexID aVertex, VertexID bVertex)
@@ -106,6 +106,15 @@ namespace sones.GraphInfrastructure.Element
         public override int GetHashCode()
         {
             return _hashCode;
+        }
+
+        #endregion
+
+        #region IGraphElementID Members
+
+        public string TypeID
+        {
+            get { return _vertexTypeID; }
         }
 
         #endregion

@@ -91,7 +91,7 @@ namespace sones.InMemoryNonRevisioned.Element
             get { throw new NotImplementedException(); }
         }
 
-        public string TypeID
+        public IGraphElementID ID
         {
             get { throw new NotImplementedException(); }
         }

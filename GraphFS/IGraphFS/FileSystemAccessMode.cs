@@ -5,7 +5,7 @@ namespace sones.GraphFS
     /// <summary>
     /// The different access modes (read/write, read-only, ...)
     /// </summary>
-    public enum FileSystemAccessModeEnum
+    public enum FileSystemAccessMode
     {
         /// <summary>
         /// The filesystem should be opened for reading and writing 

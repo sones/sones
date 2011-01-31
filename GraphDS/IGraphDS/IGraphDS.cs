@@ -1,6 +1,6 @@
 ﻿using System;
 using sones.GraphFS;
-using sones.Library.Internal.Token;
+
 using sones.GraphDB;
 using sones.GraphQL;
 using sones.Library.Internal.Security;
@@ -12,23 +12,23 @@ namespace sones.GraphDS
     /// <summary>
     /// The interface for all graphDS
     /// </summary>
-    public interface IGraphDS : IGraphDB
+    public interface IGraphDS : IGraphDB, IUserAuthentication
     {
         /// <summary>
         /// Shutdown of the current database
         /// </summary>
-        /// <param name="mySessionToken"></param>
-        void Shutdown(SessionToken mySessionToken);
+        /// <param name="mySecurityToken"></param>
+        void Shutdown(SecurityToken mySecurityToken);
 
         /// <summary>
         /// Returns a query result by passing a query string
         /// </summary>
-        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
         /// <param name="myQueryString">The query string that should be executed</param>
         /// <param name="myQueryLanguageName">The identifier of the language that should be used for parsing the query</param>
         /// <returns>A query result</returns>
-        QueryResult Query(SessionToken mySessionToken, TransactionToken myTransactionToken,
+        QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
             String myQueryString,
             String myQueryLanguageName);
     }

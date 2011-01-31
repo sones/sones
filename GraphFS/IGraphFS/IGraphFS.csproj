@@ -44,7 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileSystemAccessModeEnum.cs" />
+    <Compile Include="FileSystemAccessMode.cs" />
     <Compile Include="IGraphFS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -60,10 +60,6 @@
     <ProjectReference Include="..\..\Library\Internal\Security\Security.csproj">
       <Project>{0E469CF5-BF78-4B66-BA2D-F9D5991BBCCD}</Project>
       <Name>Security</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Library\Internal\Token\Token.csproj">
-      <Project>{3291BC72-8F49-4E60-9BC7-349D5C635985}</Project>
-      <Name>Token</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

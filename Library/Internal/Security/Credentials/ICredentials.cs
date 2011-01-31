@@ -12,7 +12,6 @@ namespace sones.Library.Internal.Security
         /// <summary>
         /// Get the login
         /// </summary>
-        /// <returns></returns>
-        String GetLogin();
+        String Login { get; }
     }
 }

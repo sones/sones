@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.Library.Internal.Token;
+using sones.Library.Internal.Security;
+
 
 namespace sones.GraphDB.Transaction
 {
@@ -11,28 +12,28 @@ namespace sones.GraphDB.Transaction
         /// <summary>
         /// Starts a new transaction
         /// </summary>
-        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myLongrunning">Is this a long running transaction</param>
         /// <param name="myIsolationLevel">The isolation level</param>
         /// <returns>A transaction token</returns>
-        TransactionToken BeginTransaction(SessionToken mySessionToken, 
+        TransactionToken BeginTransaction(SecurityToken mySecurityToken, 
             Boolean         myLongrunning       = false, 
             IsolationLevel  myIsolationLevel    = IsolationLevel.Serializable);
 
         /// <summary>
         /// Commits a transaction
         /// </summary>
-        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The transaction token that identifies the transaction that shoulb be commited</param>
-        void CommitTransaction(SessionToken mySessionToken, 
+        void CommitTransaction(SecurityToken mySecurityToken, 
             TransactionToken myTransactionToken);
 
         /// <summary>
         /// Rollback of a transaction
         /// </summary>
-        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The transaction token that identifies the transaction that should be rolled back</param>
-        void RollbackTransaction(SessionToken mySessionToken,
+        void RollbackTransaction(SecurityToken mySecurityToken,
             TransactionToken myTransactionToken);
     }
 }

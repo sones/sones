@@ -1,6 +1,5 @@
 ﻿using System;
 using sones.GraphFS;
-using sones.Library.Internal.Token;
 using sones.Library.Internal.Security;
 using System.Collections.Generic;
 using sones.GraphInfrastructure.Element;
@@ -27,22 +26,22 @@ namespace sones.InMemoryNonRevisioned
             get { throw new NotImplementedException(); }
         }
 
-        public string GetFileSystemDescription(SessionToken mySessionToken)
+        public string GetFileSystemDescription(SecurityToken mySecurityToken)
         {
             throw new NotImplementedException();
         }
 
-        public ulong GetNumberOfBytes(SessionToken mySessionToken)
+        public ulong GetNumberOfBytes(SecurityToken mySecurityToken)
         {
             throw new NotImplementedException();
         }
 
-        public ulong GetNumberOfFreeBytes(SessionToken mySessionToken)
+        public ulong GetNumberOfFreeBytes(SecurityToken mySecurityToken)
         {
             throw new NotImplementedException();
         }
 
-        public FileSystemAccessModeEnum GetAccessMode(SessionToken mySessionToken)
+        public FileSystemAccessMode GetAccessMode(SecurityToken mySecurityToken)
         {
             throw new NotImplementedException();
         }
@@ -57,87 +56,87 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public ulong GrowFileSystem(SessionToken mySessionToken, ulong myNumberOfBytesToAdd)
+        public ulong GrowFileSystem(SecurityToken mySecurityToken, ulong myNumberOfBytesToAdd)
         {
             throw new NotImplementedException();
         }
 
-        public ulong ShrinkFileSystem(SessionToken mySessionToken, ulong myNumberOfBytesToRemove)
+        public ulong ShrinkFileSystem(SecurityToken mySecurityToken, ulong myNumberOfBytesToRemove)
         {
             throw new NotImplementedException();
         }
 
-        public void WipeFileSystem(SessionToken mySessionToken)
+        public void WipeFileSystem(SecurityToken mySecurityToken)
         {
             throw new NotImplementedException();
         }
 
-        public Stream ReplicateFileSystem(SessionToken mySessionToken)
+        public Stream ReplicateFileSystem(SecurityToken mySecurityToken)
         {
             throw new NotImplementedException();
         }
 
-        public void MountFileSystem(SessionToken mySessionToken, FileSystemAccessModeEnum myAccessMode)
+        public void MountFileSystem(SecurityToken mySecurityToken, FileSystemAccessMode myAccessMode)
         {
             throw new NotImplementedException();
         }
 
-        public void RemountFileSystem(SessionToken mySessionToken, FileSystemAccessModeEnum myFSAccessMode)
+        public void RemountFileSystem(SecurityToken mySecurityToken, FileSystemAccessMode myFSAccessMode)
         {
             throw new NotImplementedException();
         }
 
-        public void UnmountFileSystem(SessionToken mySessionToken)
+        public void UnmountFileSystem(SecurityToken mySecurityToken)
         {
             throw new NotImplementedException();
         }
 
-        public bool VertexExists(SessionToken mySessionToken, VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public bool VertexExists(SecurityToken mySecurityToken, VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new NotImplementedException();
         }
 
-        public IVertex GetVertex(SessionToken mySessionToken, VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public IVertex GetVertex(SecurityToken mySecurityToken, VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IVertex> GetAllVertices(SessionToken mySessionToken, Func<string, bool> myVertexTypeFilterFunc = null, Func<IVertex, bool> myVertexFilterFunc = null, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null)
+        public IEnumerable<IVertex> GetAllVertices(SecurityToken mySecurityToken, Func<string, bool> myVertexTypeFilterFunc = null, Func<IVertex, bool> myVertexFilterFunc = null, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> GetVertexEditions(SessionToken mySessionToken, VertexID myVertexID)
+        public IEnumerable<string> GetVertexEditions(SecurityToken mySecurityToken, VertexID myVertexID)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(SessionToken mySessionToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null)
+        public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(SecurityToken mySecurityToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null)
         {
             throw new NotImplementedException();
         }
 
-        public void AddVertex(SessionToken mySessionToken, IVertex myIVertex, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public void AddVertex(SecurityToken mySecurityToken, IVertex myIVertex, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new NotImplementedException();
         }
 
-        public bool RemoveVertexRevision(SessionToken mySessionToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null)
+        public bool RemoveVertexRevision(SecurityToken mySecurityToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null)
         {
             throw new NotImplementedException();
         }
 
-        public bool RemoveVertexEdition(SessionToken mySessionToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null)
+        public bool RemoveVertexEdition(SecurityToken mySecurityToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null)
         {
             throw new NotImplementedException();
         }
 
-        public bool RemoveVertex(SessionToken mySessionToken, VertexID myVertexID)
+        public bool RemoveVertex(SecurityToken mySecurityToken, VertexID myVertexID)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateVertex(SessionToken mySessionToken, VertexID myToBeUpdatedVertexID, VertexUpdate myVertexUpdate, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null, bool myCreateNewRevision = false)
+        public void UpdateVertex(SecurityToken mySecurityToken, VertexID myToBeUpdatedVertexID, VertexUpdate myVertexUpdate, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null, bool myCreateNewRevision = false)
         {
             throw new NotImplementedException();
         }

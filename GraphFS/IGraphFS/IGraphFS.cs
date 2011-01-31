@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using sones.Library.Internal.Security;
-using sones.Library.Internal.Token;
+
 using sones.Library.Internal.Definitions;
 using sones.GraphInfrastructure.Element;
 using System.IO;
@@ -37,7 +37,7 @@ namespace sones.GraphFS
         /// Returns the name or a description of this file system.
         /// </summary>
         /// <returns>The name or a description of this file system</returns>
-        String GetFileSystemDescription(SessionToken mySessionToken);
+        String GetFileSystemDescription(SecurityToken mySecurityToken);
 
         #endregion
 
@@ -47,7 +47,7 @@ namespace sones.GraphFS
         /// Returns the size (number of bytes) of this file system
         /// </summary>
         /// <returns>The size (number of bytes) of this file system</returns>
-        UInt64 GetNumberOfBytes(SessionToken mySessionToken);
+        UInt64 GetNumberOfBytes(SecurityToken mySecurityToken);
 
         #endregion
 
@@ -57,7 +57,7 @@ namespace sones.GraphFS
         /// Returns the number of free bytes of this file system
         /// </summary>
         /// <returns>The number of free bytes of this file system</returns>
-        UInt64 GetNumberOfFreeBytes(SessionToken mySessionToken);
+        UInt64 GetNumberOfFreeBytes(SecurityToken mySecurityToken);
 
         #endregion
 
@@ -67,7 +67,7 @@ namespace sones.GraphFS
         /// Returns the access mode of this file system
         /// </summary>
         /// <returns>The access mode of this file system</returns>
-        FileSystemAccessModeEnum GetAccessMode(SessionToken mySessionToken);
+        FileSystemAccessMode GetAccessMode(SecurityToken mySecurityToken);
 
         #endregion
 
@@ -94,26 +94,26 @@ namespace sones.GraphFS
         /// </summary>
         /// <param name="myNumberOfBytesToAdd">the number of bytes to add to the size of the current file system</param>
         /// <returns>New total number of bytes</returns>
-        UInt64 GrowFileSystem(SessionToken mySessionToken, UInt64 myNumberOfBytesToAdd);
+        UInt64 GrowFileSystem(SecurityToken mySecurityToken, UInt64 myNumberOfBytesToAdd);
 
         /// <summary>
         /// This reduces the size of a GraphFS
         /// </summary>
         /// <param name="myNumberOfBytesToRemove">the number of bytes to remove from the size of the current file system</param>
         /// <returns>New total number of bytes</returns>
-        UInt64 ShrinkFileSystem(SessionToken mySessionToken, UInt64 myNumberOfBytesToRemove);
+        UInt64 ShrinkFileSystem(SecurityToken mySecurityToken, UInt64 myNumberOfBytesToRemove);
 
         /// <summary>
         /// Wipe the file system
         /// </summary>
-        void WipeFileSystem(SessionToken mySessionToken);
+        void WipeFileSystem(SecurityToken mySecurityToken);
 
         /// <summary>
         /// Replicates the IGraphFS instance into a stream
         /// </summary>
-        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <returns>A stream that contains a IGraphFSReplication</returns>
-        Stream ReplicateFileSystem(SessionToken mySessionToken);
+        Stream ReplicateFileSystem(SecurityToken mySecurityToken);
 
         #endregion
 
@@ -122,22 +122,22 @@ namespace sones.GraphFS
         /// <summary>
         /// Mounts this file system.
         /// </summary>
-        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
         /// <param name="myAccessMode">The file system access mode, e.g. "read-write" or "read-only".</param>
-        void MountFileSystem(SessionToken mySessionToken, FileSystemAccessModeEnum myAccessMode);
+        void MountFileSystem(SecurityToken mySecurityToken, FileSystemAccessMode myAccessMode);
 
         /// <summary>
         /// Remounts a file system in order to change its access mode.
         /// </summary>
-        /// <param name="mySessionToken">The SessionToken.</param>
+        /// <param name="mySecurityToken">The SecurityToken.</param>
         /// <param name="myAccessMode">The file system access mode, e.g. "read-write" or "read-only".</param>
-        void RemountFileSystem(SessionToken mySessionToken, FileSystemAccessModeEnum myFSAccessMode);
+        void RemountFileSystem(SecurityToken mySecurityToken, FileSystemAccessMode myFSAccessMode);
 
         /// <summary>
         /// Flush all caches and unmount this file system.
         /// </summary>
-        /// <param name="mySessionToken">The SessionToken.</param>
-        void UnmountFileSystem(SessionToken mySessionToken);
+        /// <param name="mySecurityToken">The SecurityToken.</param>
+        void UnmountFileSystem(SecurityToken mySecurityToken);
 
         #endregion
 
@@ -146,12 +146,12 @@ namespace sones.GraphFS
         /// <summary>
         /// Checks if a vertex exists
         /// </summary>
-        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <param name="myEdition">The edition of the vertex  (if left out, the default edition is assumed)</param>
         /// <param name="myVertexRevisionID">The revision id if the vertex (if left out, the latest revision is assumed)</param>
         /// <returns>True if the vertex exists, otherwise false</returns>
-        Boolean VertexExists(SessionToken mySessionToken, 
+        Boolean VertexExists(SecurityToken mySecurityToken, 
             VertexID            myVertexID, 
             String              myEdition = null, 
             VertexRevisionID    myVertexRevisionID = null);
@@ -160,12 +160,12 @@ namespace sones.GraphFS
         /// Gets a vertex 
         /// If there is no edition or revision given, the default edition and the latest revision is returned
         /// </summary>
-        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <param name="myEdition">The edition of the vertex (if left out, the default edition is returned)</param>
         /// <param name="myVertexRevisionID">The revision id if the vertex (if left out, the latest revision is returned)</param>
         /// <returns>A vertex object or null if there is no such vertex</returns>
-        IVertex GetVertex(SessionToken mySessionToken, 
+        IVertex GetVertex(SecurityToken mySecurityToken, 
             VertexID            myVertexID, 
             String              myEdition = null, 
             VertexRevisionID    myVertexRevisionID = null);
@@ -174,13 +174,13 @@ namespace sones.GraphFS
         /// Returns all vertices.
         /// It is possible to filter the vertex type and the vertices itself
         /// </summary>
-        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myVertexTypeFilterFunc">A filter function to be able to filter certain vertex types</param>
         /// <param name="myVertexFilterFunc">A filter function to be able to filter certain vertices</param>
         /// <param name="myEditionFilterFunc">A filter function for the edition of the vertex</param>
         /// <param name="myRevisionFilterFunc">A filter function for the revision of the vertex</param>
         /// <returns>An IEnumerable of vertices</returns>
-        IEnumerable<IVertex> GetAllVertices(SessionToken mySessionToken, 
+        IEnumerable<IVertex> GetAllVertices(SecurityToken mySecurityToken, 
             Func<String, bool>                  myVertexTypeFilterFunc = null, 
             Func<IVertex, bool>                 myVertexFilterFunc = null,
             Func<String, Boolean>               myEditionFilterFunc = null,
@@ -189,31 +189,31 @@ namespace sones.GraphFS
         /// <summary>
         /// Returns all editions corresponding to a certain vertex
         /// </summary>
-        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <returns>An IEnumerable of editions</returns>
-        IEnumerable<String> GetVertexEditions(SessionToken mySessionToken, 
+        IEnumerable<String> GetVertexEditions(SecurityToken mySecurityToken, 
             VertexID myVertexID);
 
         /// <summary>
         /// Returns all revision ids to a certain vertex and edition
         /// </summary>
-        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <param name="myEditionFilterFunc">A filter function for the vertex editions</param>
         /// <returns>An IEnumerable of VertexRevisionIDs</returns>
-        IEnumerable<VertexRevisionID> GetVertexRevisionIDs(SessionToken mySessionToken, 
+        IEnumerable<VertexRevisionID> GetVertexRevisionIDs(SecurityToken mySecurityToken, 
             VertexID                myVertexID,
             Func<String, Boolean>   myEditionFilterFunc = null);
 
         /// <summary>
         /// Adds a new vertex to the graph fs
         /// </summary>
-        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myIVertex">The vertex that is going to be added</param>
         /// <param name="myEdition">The name of the edition of the new vertex</param>
         /// <param name="myVertexRevisionID">The revision id of the vertex</param>
-        void AddVertex(SessionToken mySessionToken, 
+        void AddVertex(SecurityToken mySecurityToken, 
             IVertex             myIVertex, 
             String              myEdition = null, 
             VertexRevisionID    myVertexRevisionID = null);
@@ -221,12 +221,12 @@ namespace sones.GraphFS
         /// <summary>
         /// Removes a certain revision of a vertex
         /// </summary>
-        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <param name="myEditionFilterFunc">A filter function for the edition of the vertex</param>
         /// <param name="myRevisionFilterFunc">A filter function for the revision of the vertex</param>
         /// <returns>True if some revisions have been removed, false otherwise</returns>
-        bool RemoveVertexRevision(SessionToken mySessionToken, 
+        bool RemoveVertexRevision(SecurityToken mySecurityToken, 
             VertexID                        myVertexID, 
             Func<String, Boolean>           myEditionFilterFunc = null,
             Func<VertexRevisionID, Boolean> myRevisionFilterFunc = null);
@@ -234,33 +234,33 @@ namespace sones.GraphFS
         /// <summary>
         /// Removes a certain edition of a vertex
         /// </summary>
-        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <param name="myEditionFilterFunc">A filter function for the edition of the vertex</param>
         /// <returns>True if some revisions have been removed, false otherwise</returns>
-        bool RemoveVertexEdition(SessionToken mySessionToken,
+        bool RemoveVertexEdition(SecurityToken mySecurityToken,
             VertexID myVertexID,
             Func<String, Boolean> myEditionFilterFunc = null);
 
         /// <summary>
         /// Removes a vertex entirely
         /// </summary>
-        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <returns>True if a vertex has been erased, false otherwise</returns>
-        bool RemoveVertex(SessionToken mySessionToken, 
+        bool RemoveVertex(SecurityToken mySecurityToken, 
             VertexID myVertexID);
 
         /// <summary>
         /// Updates a vertex corresponding to a vertex id
         /// </summary>
-        /// <param name="mySessionToken">The current session token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myToBeUpdatedVertexID">The vertex id that is going to be updated</param>
         /// <param name="myVertexUpdate">The update for the vertex</param>
         /// <param name="myEditionFilterFunc">A filter function for the editions that should be updated</param>
         /// <param name="myRevisionFilterFunc">A filter function for the revisions that should be updated</param>
         /// <param name="myCreateNewRevision">Determines if it is necessary to create a new revision of the vertex</param>
-        void UpdateVertex(SessionToken mySessionToken,
+        void UpdateVertex(SecurityToken mySecurityToken,
             VertexID                        myToBeUpdatedVertexID,
             VertexUpdate                    myVertexUpdate,
             Func<String, Boolean>           myEditionFilterFunc = null,

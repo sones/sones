@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.GraphQL.Result;
-using sones.Library.Internal.Token;
+
 using sones.GraphDB.Transaction;
+using sones.Library.Internal.Security;
 
 namespace sones.GraphQL
 {
@@ -15,7 +16,7 @@ namespace sones.GraphQL
     {
         #region IGraphQL
 
-        public QueryResult Query(SessionToken mySessionToken, TransactionToken myTransactionToken, string myQueryString)
+        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString)
         {
             throw new NotImplementedException();
         }
@@ -25,12 +26,12 @@ namespace sones.GraphQL
             get { return "SPARQL"; }
         }
 
-        public IEnumerable<string> ExportGraphDDL(SessionToken mySessionToken, TransactionToken myTransactionToken)
+        public IEnumerable<string> ExportGraphDDL(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> ExportGraphDML(SessionToken mySessionToken, TransactionToken myTransactionToken)
+        public IEnumerable<string> ExportGraphDML(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }

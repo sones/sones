@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Element\IGraphElementID.cs" />
     <Compile Include="Element\Edge\IEdge.cs" />
     <Compile Include="Element\Edge\IHyperEdge.cs" />
     <Compile Include="Element\Edge\ISingleEdge.cs" />

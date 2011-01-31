@@ -5,7 +5,8 @@ using System.Text;
 using sones.GraphQL;
 using sones.GraphQL.Result;
 using sones.GraphDB;
-using sones.Library.Internal.Token;
+using sones.Library.Internal.Security;
+
 
 namespace sones.GraphQL
 {
@@ -55,17 +56,17 @@ namespace sones.GraphQL
             get { return "GQL"; }
         }
 
-        public QueryResult Query(SessionToken mySessionToken, GraphDB.Transaction.TransactionToken myTransactionToken, string myQueryString)
+        public QueryResult Query(SecurityToken mySecurityToken, GraphDB.Transaction.TransactionToken myTransactionToken, string myQueryString)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> ExportGraphDDL(SessionToken mySessionToken, GraphDB.Transaction.TransactionToken myTransactionToken)
+        public IEnumerable<string> ExportGraphDDL(SecurityToken mySecurityToken, GraphDB.Transaction.TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> ExportGraphDML(SessionToken mySessionToken, GraphDB.Transaction.TransactionToken myTransactionToken)
+        public IEnumerable<string> ExportGraphDML(SecurityToken mySecurityToken, GraphDB.Transaction.TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
