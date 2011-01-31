@@ -13,8 +13,7 @@ namespace sones.InMemoryNonRevisioned
     /// </summary>
     public sealed class InMemoryNonRevisionedFS : IGraphFS
     {
-
-        #region IGraphFS
+        #region IGraphFS members
 
         public bool IsPersistent
         {
@@ -101,7 +100,7 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IVertex> GetAllVertices(SecurityToken mySecurityToken, Func<string, bool> myVertexTypeFilterFunc = null, Func<IVertex, bool> myVertexFilterFunc = null, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null)
+        public IEnumerable<IVertex> GetAllVertices(SecurityToken mySecurityToken, IEnumerable<ulong> myInterestingVertexTypeIDs = null, IEnumerable<VertexID> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
         {
             throw new NotImplementedException();
         }
@@ -111,7 +110,7 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(SecurityToken mySecurityToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null)
+        public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(SecurityToken mySecurityToken, VertexID myVertexID, IEnumerable<string> myInterestingEditions = null)
         {
             throw new NotImplementedException();
         }
@@ -121,12 +120,12 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public bool RemoveVertexRevision(SecurityToken mySecurityToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null)
+        public bool RemoveVertexRevision(SecurityToken mySecurityToken, VertexID myVertexID, IEnumerable<string> myInterestingEditions = null, IEnumerable<VertexRevisionID> myToBeRemovedRevisionIDs = null)
         {
             throw new NotImplementedException();
         }
 
-        public bool RemoveVertexEdition(SecurityToken mySecurityToken, VertexID myVertexID, Func<string, bool> myEditionFilterFunc = null)
+        public bool RemoveVertexEdition(SecurityToken mySecurityToken, VertexID myVertexID, IEnumerable<string> myToBeRemovedEditions = null)
         {
             throw new NotImplementedException();
         }
@@ -136,12 +135,11 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public void UpdateVertex(SecurityToken mySecurityToken, VertexID myToBeUpdatedVertexID, VertexUpdate myVertexUpdate, Func<string, bool> myEditionFilterFunc = null, Func<VertexRevisionID, bool> myRevisionFilterFunc = null, bool myCreateNewRevision = false)
+        public void UpdateVertex(SecurityToken mySecurityToken, VertexID myToBeUpdatedVertexID, VertexUpdate myVertexUpdate, IEnumerable<string> myToBeUpdatedEditions = null, IEnumerable<VertexRevisionID> myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
         {
             throw new NotImplementedException();
         }
 
         #endregion
-
     }
 }

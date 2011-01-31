@@ -175,16 +175,16 @@ namespace sones.GraphFS
         /// It is possible to filter the vertex type and the vertices itself
         /// </summary>
         /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myVertexTypeFilterFunc">A filter function to be able to filter certain vertex types</param>
-        /// <param name="myVertexFilterFunc">A filter function to be able to filter certain vertices</param>
-        /// <param name="myEditionFilterFunc">A filter function for the edition of the vertex</param>
-        /// <param name="myRevisionFilterFunc">A filter function for the revision of the vertex</param>
+        /// <param name="myInterestingVertexTypeIDs">Interesting vertex type ids</param>
+        /// <param name="myInterestingVertexIDs">Interesting vertex ids</param>
+        /// <param name="myInterestingEditionNames">Interesting editions of the vertex</param>
+        /// <param name="myInterestingRevisionIDs">Interesting revisions of the vertex</param>
         /// <returns>An IEnumerable of vertices</returns>
         IEnumerable<IVertex> GetAllVertices(SecurityToken mySecurityToken, 
-            Func<String, bool>                  myVertexTypeFilterFunc = null, 
-            Func<IVertex, bool>                 myVertexFilterFunc = null,
-            Func<String, Boolean>               myEditionFilterFunc = null,
-            Func<VertexRevisionID, Boolean>     myRevisionFilterFunc = null);
+            IEnumerable<UInt64>             myInterestingVertexTypeIDs  = null,
+            IEnumerable<VertexID>           myInterestingVertexIDs      = null,
+            IEnumerable<String>             myInterestingEditionNames   = null,
+            IEnumerable<VertexRevisionID>   myInterestingRevisionIDs    = null);
 
         /// <summary>
         /// Returns all editions corresponding to a certain vertex
@@ -200,11 +200,11 @@ namespace sones.GraphFS
         /// </summary>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myVertexID">The id of the vertex</param>
-        /// <param name="myEditionFilterFunc">A filter function for the vertex editions</param>
+        /// <param name="myInterestingEditions">The interesting vertex editions</param>
         /// <returns>An IEnumerable of VertexRevisionIDs</returns>
         IEnumerable<VertexRevisionID> GetVertexRevisionIDs(SecurityToken mySecurityToken, 
             VertexID                myVertexID,
-            Func<String, Boolean>   myEditionFilterFunc = null);
+            IEnumerable<String>     myInterestingEditions = null);
 
         /// <summary>
         /// Adds a new vertex to the graph fs
@@ -223,24 +223,24 @@ namespace sones.GraphFS
         /// </summary>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myVertexID">The id of the vertex</param>
-        /// <param name="myEditionFilterFunc">A filter function for the edition of the vertex</param>
-        /// <param name="myRevisionFilterFunc">A filter function for the revision of the vertex</param>
+        /// <param name="myInterestingEditions">The interesting editions of the vertex</param>
+        /// <param name="myToBeRemovedRevisionIDs">The revisions that should be removed</param>
         /// <returns>True if some revisions have been removed, false otherwise</returns>
         bool RemoveVertexRevision(SecurityToken mySecurityToken, 
-            VertexID                        myVertexID, 
-            Func<String, Boolean>           myEditionFilterFunc = null,
-            Func<VertexRevisionID, Boolean> myRevisionFilterFunc = null);
+            VertexID                        myVertexID,
+            IEnumerable<String>             myInterestingEditions = null,
+            IEnumerable<VertexRevisionID>   myToBeRemovedRevisionIDs = null);
 
         /// <summary>
         /// Removes a certain edition of a vertex
         /// </summary>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myVertexID">The id of the vertex</param>
-        /// <param name="myEditionFilterFunc">A filter function for the edition of the vertex</param>
+        /// <param name="myToBeRemovedEditions">The editions that should be removed</param>
         /// <returns>True if some revisions have been removed, false otherwise</returns>
         bool RemoveVertexEdition(SecurityToken mySecurityToken,
             VertexID myVertexID,
-            Func<String, Boolean> myEditionFilterFunc = null);
+            IEnumerable<String> myToBeRemovedEditions = null);
 
         /// <summary>
         /// Removes a vertex entirely
@@ -257,14 +257,14 @@ namespace sones.GraphFS
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myToBeUpdatedVertexID">The vertex id that is going to be updated</param>
         /// <param name="myVertexUpdate">The update for the vertex</param>
-        /// <param name="myEditionFilterFunc">A filter function for the editions that should be updated</param>
-        /// <param name="myRevisionFilterFunc">A filter function for the revisions that should be updated</param>
+        /// <param name="myToBeUpdatedEditions">The editions that should be updated</param>
+        /// <param name="myToBeUpdatedRevisionIDs">The revisions that should be updated</param>
         /// <param name="myCreateNewRevision">Determines if it is necessary to create a new revision of the vertex</param>
         void UpdateVertex(SecurityToken mySecurityToken,
             VertexID                        myToBeUpdatedVertexID,
             VertexUpdate                    myVertexUpdate,
-            Func<String, Boolean>           myEditionFilterFunc = null,
-            Func<VertexRevisionID, Boolean> myRevisionFilterFunc = null,
+            IEnumerable<String>             myToBeUpdatedEditions = null,
+            IEnumerable<VertexRevisionID>   myToBeUpdatedRevisionIDs = null,
             Boolean                         myCreateNewRevision = false);
 
         #endregion
