@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="DictionaryIndex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="BTreeIndex.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Library\Internal\GraphInfrastructure\GraphInfrastructure.csproj">

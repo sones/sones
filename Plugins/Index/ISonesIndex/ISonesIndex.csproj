@@ -45,6 +45,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IIndex.cs" />
+    <Compile Include="IMultipleValueIndex.cs" />
+    <Compile Include="Helper\IndexAddStrategy.cs" />
+    <Compile Include="IRangeIndex.cs" />
+    <Compile Include="IVersionedIndex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -52,6 +56,9 @@
       <Project>{09005D99-7E10-4E9B-9F7D-F874F76B9E52}</Project>
       <Name>GraphInfrastructure</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Exceptions\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
