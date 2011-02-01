@@ -7,7 +7,7 @@ namespace sones.Library.Internal.Security
     /// 
     /// there might be implementations for some kind of base authentication or via public key cryptography
     /// </summary>
-    public interface ICredentials
+    public interface IUserCredentials
     {
         /// <summary>
         /// Get the login

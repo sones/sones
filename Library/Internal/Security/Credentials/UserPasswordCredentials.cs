@@ -5,7 +5,7 @@ namespace sones.Library.Internal.Security
     /// <summary>
     /// Used for authentication
     /// </summary>
-    public sealed class UserPasswordCredentials : ICredentials
+    public sealed class UserPasswordCredentials : IUserCredentials
     {
         #region data
 

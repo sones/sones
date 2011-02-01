@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0E469CF5-BF78-4B66-BA2D-F9D5991BBCCD}</ProjectGuid>
+    <ProjectGuid>{20D600AA-CD60-423D-A8EE-BCD93F861879}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sones.Library.Internal.Security</RootNamespace>
-    <AssemblyName>Security</AssemblyName>
+    <RootNamespace>sones.GraphDSClient</RootNamespace>
+    <AssemblyName>GraphDSRESTClient</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -44,22 +44,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Credentials\UserPasswordCredentials.cs" />
-    <Compile Include="Authentication\IAuthentication.cs" />
-    <Compile Include="Credentials\IUserCredentials.cs" />
-    <Compile Include="Encryption\IEncryption.cs" />
-    <Compile Include="Authentication\IGraphElementAuthentication.cs" />
-    <Compile Include="Integrety\IIntegrity.cs" />
-    <Compile Include="ISecurityManager.cs" />
-    <Compile Include="Authentication\IUserAuthentication.cs" />
+    <Compile Include="GraphDSRESTClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Authentication\Right.cs" />
-    <Compile Include="Token\SecurityToken.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GraphInfrastructure\GraphInfrastructure.csproj">
-      <Project>{09005D99-7E10-4E9B-9F7D-F874F76B9E52}</Project>
-      <Name>GraphInfrastructure</Name>
+    <ProjectReference Include="..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
+      <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
+      <Name>IGraphDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
+      <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
+      <Name>IGraphQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Library\Internal\Security\Security.csproj">
+      <Project>{0E469CF5-BF78-4B66-BA2D-F9D5991BBCCD}</Project>
+      <Name>Security</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\IGraphDS\IGraphDS.csproj">
+      <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
+      <Name>IGraphDS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\IGraphDSClient\IGraphDSClient.csproj">
+      <Project>{89E70649-A81B-4A70-A9A1-B91EA96CE8A1}</Project>
+      <Name>IGraphDSClient</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

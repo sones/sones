@@ -15,7 +15,7 @@ namespace sones.Library.Internal.Security
         /// </summary>
         /// <param name="toBeAuthenticatedCredentials">The credentials that should be authenticated</param>
         /// <returns>A security token</returns>
-        SecurityToken LogOn(ICredentials toBeAuthenticatedCredentials);
+        SecurityToken LogOn(IUserCredentials toBeAuthenticatedCredentials);
 
         /// <summary>
         /// Log off
