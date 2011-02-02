@@ -2,11 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.Plugins.Index;
+using sones.Plugins.Index.Helper;
 
-namespace ISonesIndex
+namespace sones.Plugins.Index.Interfaces
 {
-    public interface IMultipleValueIndex<TKey, TValue> : IIndex<TKey, TValue>
+    /// <summary>
+    /// Interface defines indices which have a 1:n key-value relationship.
+    /// </summary>
+    /// <typeparam name="TKey">Type of the index-key</typeparam>
+    /// <typeparam name="TValue">Type of the values</typeparam>
+    public interface IMultipleValueIndex<TKey, TValue> : 
+        IIndex<TKey, TValue>, 
+        IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>>
         where TKey : IComparable
     {
         #region Add
@@ -57,7 +64,7 @@ namespace ISonesIndex
         /// Returns all value set of the index
         /// </summary>
         /// <returns>the value sets of the index</returns>
-        IEnumerable<IEnumerable<TValue>> GetValues();
+        IEnumerable<IEnumerable<TValue>> Values();
 
         #endregion
     }

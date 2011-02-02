@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Interface Name="sones.Plugins.Index.Interfaces.IIndex&lt;TKey, TValue&gt;">
+    <Position X="10.25" Y="1" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AABAAAAAAAAEAAAACAAABAQAAIAAAAAAAAAAAAAQABA=</HashCode>
+      <FileName>Interfaces\IIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Interfaces.ISingleValueVersionedIndex&lt;TKey, TValue, TVersion&gt;">
+    <Position X="7.25" Y="8" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Interfaces\ISingleValueVersionedIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Interfaces.IMultipleValueIndex&lt;TKey, TValue&gt;">
+    <Position X="15" Y="4.75" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAgAAAQAAA=</HashCode>
+      <FileName>Interfaces\IMultipleValueIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Interfaces.IMultipleValueRangeIndex&lt;TKey, TValue&gt;">
+    <Position X="17.5" Y="8" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AiAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IMultipleValueRangeIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Interfaces.IMultipleValueRangeVersionedIndex&lt;TKey, TValue, TVersion&gt;">
+    <Position X="14.25" Y="11" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>AiAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\IMultipleValueRangeVersionedIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Interfaces.IMultipleValueVersionedIndex&lt;TKey, TValue, TVersion&gt;">
+    <Position X="12" Y="8" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Interfaces\IMultipleValueVersionedIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Interfaces.ISingleValueIndex&lt;TKey, TValue&gt;">
+    <Position X="4.5" Y="4.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Interfaces\ISingleValueIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Interfaces.ISingleValueRangeIndex&lt;TKey, TValue&gt;">
+    <Position X="3.5" Y="8" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AiAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\ISingleValueRangeIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Interfaces.ISingleValueRangeVersionedIndex&lt;TKey, TValue, TVersion&gt;">
+    <Position X="4.75" Y="11" Width="4" />
+    <TypeIdentifier>
+      <HashCode>AiAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Interfaces\ISingleValueRangeVersionedIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.Plugins.Index.Interfaces.IVersionedIndex&lt;TKey, TValue, TVersion&gt;">
+    <Position X="10.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAACAAAAEAAAACAAAJAgAAAAAAAAAAAAAAAAQABA=</HashCode>
+      <FileName>Interfaces\IVersionedIndex.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

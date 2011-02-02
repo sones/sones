@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace sones.Plugins.Index
+namespace sones.Plugins.Index.Helper
 {
     /// <summary>
+    /// IndexAddStrategy defines what happens if a key already exists.
     /// 
     /// By default, the underlying type of an enum is int. 
     /// We don't need this space here, so we take byte.
@@ -17,7 +18,8 @@ namespace sones.Plugins.Index
         /// </summary>
         REPLACE,
         /// <summary>
-        /// Merge values of existing keys
+        /// Merge values of existing keys.
+        /// This works in multiple value inices
         /// </summary>
         MERGE,
         /// <summary>

@@ -44,11 +44,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IIndex.cs" />
-    <Compile Include="IMultipleValueIndex.cs" />
     <Compile Include="Helper\IndexAddStrategy.cs" />
-    <Compile Include="IRangeIndex.cs" />
-    <Compile Include="IVersionedIndex.cs" />
+    <Compile Include="Interfaces\IIndex.cs" />
+    <Compile Include="Interfaces\IMultipleValueIndex.cs" />
+    <Compile Include="Interfaces\IMultipleValueRangeIndex.cs" />
+    <Compile Include="Interfaces\IMultipleValueRangeVersionedIndex.cs" />
+    <Compile Include="Interfaces\IMultipleValueVersionedIndex.cs" />
+    <Compile Include="Interfaces\ISingleValueIndex.cs" />
+    <Compile Include="Interfaces\ISingleValueRangeIndex.cs" />
+    <Compile Include="Interfaces\ISingleValueRangeVersionedIndex.cs" />
+    <Compile Include="Interfaces\ISingleValueVersionedIndex.cs" />
+    <Compile Include="Interfaces\IVersionedIndex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -59,6 +65,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Exceptions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Interfaces\IndexInterfaces.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -2,32 +2,46 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.Plugins.Index;
-using System.Collections;
 using sones.Plugins.Index.Interfaces;
+using sones.Plugins.Index;
 using sones.Plugins.Index.Helper;
 
 namespace SonesIndices
 {
-    public class BTreeIndex<TKey, TValue> : ISingleValueIndex<TKey, TValue>
+    public class BPlusTreeIndex<TKey, TValue> : IMultipleValueRangeIndex<TKey, TValue>
         where TKey : IComparable
     {
-        public void Add(TKey myKey, TValue myValue, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
+        public IEnumerable<IEnumerable<TValue>> GreaterThan(TKey myKey, bool myOrEqual = true)
         {
             throw new NotImplementedException();
         }
 
-        public void Add(KeyValuePair<TKey, TValue> myKeyValuePair, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
+        public IEnumerable<IEnumerable<TValue>> LowerThan(TKey myKey, bool myOrEqual = true)
         {
             throw new NotImplementedException();
         }
 
-        public void Add(Dictionary<TKey, TValue> myDictionary, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
+        public IEnumerable<IEnumerable<TValue>> InRange(TKey myFromKey, TKey myToKey, bool myOrEqualFromKey = true, bool myOrEqualToKey = true)
         {
             throw new NotImplementedException();
         }
 
-        public TValue this[TKey myKey]
+        public void Add(TKey myKey, IEnumerable<TValue> myValues, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Add(KeyValuePair<TKey, IEnumerable<TValue>> myKeyValuesPair, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Add(Dictionary<TKey, IEnumerable<TValue>> myDictionary, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<TValue> this[TKey myKey]
         {
             get
             {
@@ -39,7 +53,12 @@ namespace SonesIndices
             }
         }
 
-        public IEnumerable<TValue> Values()
+        public bool Contains(TKey myKey, IEnumerable<TValue> myValues)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IEnumerable<TValue>> Values()
         {
             throw new NotImplementedException();
         }
@@ -89,12 +108,12 @@ namespace SonesIndices
             throw new NotImplementedException();
         }
 
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        public IEnumerator<KeyValuePair<TKey, IEnumerable<TValue>>> GetEnumerator()
         {
             throw new NotImplementedException();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             throw new NotImplementedException();
         }
