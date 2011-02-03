@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{AB7C27CC-534F-472E-BA56-A1287973B7E2}</ProjectGuid>
+    <ProjectGuid>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GraphFS</RootNamespace>
-    <AssemblyName>InMemoryNonRevisioned</AssemblyName>
+    <RootNamespace>sones.PropertyHyperGraph</RootNamespace>
+    <AssemblyName>PropertyHyperGraph</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -44,24 +44,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InMemoryNonRevisionedFS.cs" />
-    <Compile Include="Element\Edge\HyperEdge.cs" />
-    <Compile Include="Element\Edge\SingleEdge.cs" />
+    <Compile Include="Edge\EdgeID.cs" />
+    <Compile Include="Edge\IEdge.cs" />
+    <Compile Include="Edge\IEdgeProperties.cs" />
+    <Compile Include="Edge\IEdgeStatistics.cs" />
+    <Compile Include="Edge\IHyperEdge.cs" />
+    <Compile Include="Edge\ISingleEdge.cs" />
+    <Compile Include="IGraphElement.cs" />
+    <Compile Include="IGraphElementID.cs" />
+    <Compile Include="IGraphElementStatistics.cs" />
+    <Compile Include="Partition\IGraphPartitionInformation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Library\Internal\Definitions\Definitions.csproj">
-      <Project>{2E1F1F44-8A47-428D-A6CF-BE30154EA83F}</Project>
-      <Name>Definitions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
-      <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
-      <Name>PropertyHyperGraph</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\IGraphFS\IGraphFS.csproj">
-      <Project>{FFFB6BE4-9514-41CF-AB68-5FB7B8E3D2E4}</Project>
-      <Name>IGraphFS</Name>
-    </ProjectReference>
+    <Compile Include="Vertex\IVertex.cs" />
+    <Compile Include="Vertex\IVertexProperties.cs" />
+    <Compile Include="Vertex\IVertexStatistics.cs" />
+    <Compile Include="Vertex\PropertyID.cs" />
+    <Compile Include="Vertex\VertexID.cs" />
+    <Compile Include="Vertex\VertexRevisionID.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphInfrastructure.Element;
+using sones.PropertyHyperGraph;
 
 namespace sones.GraphDB.Security
 {

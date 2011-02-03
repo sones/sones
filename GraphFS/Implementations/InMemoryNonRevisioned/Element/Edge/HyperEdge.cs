@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using sones.Library.Internal.Definitions;
-using sones.GraphInfrastructure.Element;
+using sones.PropertyHyperGraph;
 
 namespace sones.InMemoryNonRevisioned.Element
 {

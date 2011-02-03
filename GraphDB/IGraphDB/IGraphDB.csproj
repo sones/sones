@@ -76,9 +76,9 @@
       <Project>{2E1F1F44-8A47-428D-A6CF-BE30154EA83F}</Project>
       <Name>Definitions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Library\Internal\GraphInfrastructure\GraphInfrastructure.csproj">
-      <Project>{09005D99-7E10-4E9B-9F7D-F874F76B9E52}</Project>
-      <Name>GraphInfrastructure</Name>
+    <ProjectReference Include="..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
+      <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
+      <Name>PropertyHyperGraph</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

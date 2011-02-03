@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using sones.GraphInfrastructure.Element;
 using sones.Library.Internal.Definitions;
+using sones.PropertyHyperGraph;
 
 namespace sones.GraphFS
 {
