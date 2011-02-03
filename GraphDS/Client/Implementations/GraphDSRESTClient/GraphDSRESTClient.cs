@@ -1,9 +1,9 @@
 ﻿using System;
 using sones.GraphDB.Request;
-using sones.GraphDB.Security;
-using sones.GraphDB.Transaction;
 using sones.GraphDS;
 using sones.GraphQL.Result;
+using sones.Security;
+using sones.Transaction;
 
 namespace sones.GraphDSClient
 {

@@ -89,9 +89,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphDSRESTClient", "GraphD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PropertyHyperGraph", "Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj", "{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transaction", "Library\Internal\Transaction\Transaction.csproj", "{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Security", "Library\Internal\Security\Security.csproj", "{3C13E344-937B-4010-B0EF-A164232E4454}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 22
+		SccNumberOfProjects = 24
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -179,6 +183,14 @@ Global
 		SccProjectTopLevelParentUniqueName21 = CoreDeveloper.sln
 		SccProjectName21 = Library/Internal/PropertyHyperGraph
 		SccLocalPath21 = Library\\Internal\\PropertyHyperGraph
+		SccProjectUniqueName22 = Library\\Internal\\Transaction\\Transaction.csproj
+		SccProjectTopLevelParentUniqueName22 = CoreDeveloper.sln
+		SccProjectName22 = Library/Internal/Transaction
+		SccLocalPath22 = Library\\Internal\\Transaction
+		SccProjectUniqueName23 = Library\\Internal\\Security\\Security.csproj
+		SccProjectTopLevelParentUniqueName23 = CoreDeveloper.sln
+		SccProjectName23 = Library/Internal/Security
+		SccLocalPath23 = Library\\Internal\\Security
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -399,6 +411,26 @@ Global
 		{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}.Release|x86.ActiveCfg = Release|Any CPU
+		{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}.Release|x86.ActiveCfg = Release|Any CPU
+		{3C13E344-937B-4010-B0EF-A164232E4454}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C13E344-937B-4010-B0EF-A164232E4454}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C13E344-937B-4010-B0EF-A164232E4454}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3C13E344-937B-4010-B0EF-A164232E4454}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3C13E344-937B-4010-B0EF-A164232E4454}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3C13E344-937B-4010-B0EF-A164232E4454}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C13E344-937B-4010-B0EF-A164232E4454}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C13E344-937B-4010-B0EF-A164232E4454}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3C13E344-937B-4010-B0EF-A164232E4454}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3C13E344-937B-4010-B0EF-A164232E4454}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -419,6 +451,8 @@ Global
 		{A9124727-FB28-4629-B269-FF79EE3EDA54} = {F9FAFD9F-BC60-4EDD-8BA5-8961B7A3BAFF}
 		{2E1F1F44-8A47-428D-A6CF-BE30154EA83F} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
+		{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
+		{3C13E344-937B-4010-B0EF-A164232E4454} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{2B34D970-2910-435E-AD67-69E29DB16492} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
 		{48ACC5ED-F25B-458A-94E7-9128C17445B5} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
 		{D5FD4D1D-0A5E-497D-8E30-F36EB76E9B74} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}

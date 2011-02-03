@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Net;
 using sones.GraphDB.Request;
-using sones.GraphDB.Transaction;
 using sones.GraphDS;
 using sones.GraphQL.Result;
-using sones.GraphDB.Security;
+using sones.Security;
+using sones.Transaction;
 
 namespace sones.GraphDSServer
 {

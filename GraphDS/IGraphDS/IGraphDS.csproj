@@ -68,6 +68,14 @@
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
       <Name>PropertyHyperGraph</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\Security\Security.csproj">
+      <Project>{3C13E344-937B-4010-B0EF-A164232E4454}</Project>
+      <Name>Security</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\Transaction\Transaction.csproj">
+      <Project>{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}</Project>
+      <Name>Transaction</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

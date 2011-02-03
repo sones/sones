@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.Security;
+using sones.Security;
 
-namespace sones.GraphDB.Transaction
+namespace sones.Transaction
 {
     public interface ITransactionable
     {

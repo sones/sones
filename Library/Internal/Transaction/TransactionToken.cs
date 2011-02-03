@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace sones.GraphDB.Transaction
+namespace sones.Transaction
 {
     /// <summary>
     /// A class that containts informations concerning the current Transaction

@@ -54,22 +54,6 @@
     <Compile Include="Request\IRequest.cs" />
     <Compile Include="Request\RequestClear.cs" />
     <Compile Include="Request\RequestCreateVertexType.cs" />
-    <Compile Include="Security\Authentication\IAuthentication.cs" />
-    <Compile Include="Security\Authentication\IGraphElementAuthentication.cs" />
-    <Compile Include="Security\Authentication\IUserAuthentication.cs" />
-    <Compile Include="Security\Authentication\Right.cs" />
-    <Compile Include="Security\Credentials\IUserCredentials.cs" />
-    <Compile Include="Security\Credentials\UserPasswordCredentials.cs" />
-    <Compile Include="Security\Encryption\IEncryption.cs" />
-    <Compile Include="Security\Integrety\IIntegrity.cs" />
-    <Compile Include="Security\ISecurityManager.cs" />
-    <Compile Include="Security\Token\SecurityToken.cs" />
-    <Compile Include="Transaction\IsolationLevel.cs" />
-    <Compile Include="Transaction\ITransactionable.cs" />
-    <Compile Include="Transaction\ITransactionManager.cs" />
-    <Compile Include="Transaction\TransactionID.cs" />
-    <Compile Include="Transaction\TransactionState.cs" />
-    <Compile Include="Transaction\TransactionToken.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Library\Internal\Definitions\Definitions.csproj">
@@ -79,6 +63,14 @@
     <ProjectReference Include="..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
       <Name>PropertyHyperGraph</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\Security\Security.csproj">
+      <Project>{3C13E344-937B-4010-B0EF-A164232E4454}</Project>
+      <Name>Security</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\Transaction\Transaction.csproj">
+      <Project>{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}</Project>
+      <Name>Transaction</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

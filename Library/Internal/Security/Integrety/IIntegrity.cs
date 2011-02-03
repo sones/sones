@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace sones.GraphDB.Security
+namespace sones.Security
 {
     /// <summary>
-    /// Interface for GraphElement encryption 
+    /// Interface for integrety actions on graph elements
     /// </summary>
-    public interface IEncryption
+    public interface IIntegrity
     {
     }
 }

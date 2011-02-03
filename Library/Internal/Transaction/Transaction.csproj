@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B0759780-BECA-422E-9A54-89BAB1C02459}</ProjectGuid>
+    <ProjectGuid>{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sones.GraphQL</RootNamespace>
-    <AssemblyName>Gremlin</AssemblyName>
+    <RootNamespace>sones.Transaction</RootNamespace>
+    <AssemblyName>Transaction</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -44,25 +44,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Gremlin.cs" />
+    <Compile Include="IsolationLevel.cs" />
+    <Compile Include="ITransactionable.cs" />
+    <Compile Include="ITransactionManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TransactionID.cs" />
+    <Compile Include="TransactionState.cs" />
+    <Compile Include="TransactionToken.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
-      <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
-      <Name>IGraphDB</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\Security\Security.csproj">
+    <ProjectReference Include="..\Security\Security.csproj">
       <Project>{3C13E344-937B-4010-B0EF-A164232E4454}</Project>
       <Name>Security</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\Transaction\Transaction.csproj">
-      <Project>{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}</Project>
-      <Name>Transaction</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\IGraphQL\IGraphQL.csproj">
-      <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
-      <Name>IGraphQL</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

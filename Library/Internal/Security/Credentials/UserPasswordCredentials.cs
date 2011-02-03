@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace sones.GraphDB.Security
+namespace sones.Security
 {
     /// <summary>
     /// Used for authentication

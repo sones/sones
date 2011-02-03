@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace sones.GraphDB.Transaction
+namespace sones.Transaction
 {
     public sealed class TransactionID : IComparable, IComparable<TransactionID>, IEquatable<TransactionID>
     {

@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using sones.GraphDB;
-using sones.GraphDB.Security;
 using sones.GraphQL.Result;
+using sones.Security;
+using sones.Transaction;
 
 namespace sones.GraphQL
 {
@@ -34,38 +35,24 @@ namespace sones.GraphQL
 
         #endregion
 
-        #region IGraphQL
-
-        public IEnumerable<string> ExportGraphDDL()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<string> ExportGraphDML()
-        {
-            throw new NotImplementedException();
-        }
-
         public string Name
         {
-            get { return "GQL"; }
+            get { throw new NotImplementedException(); }
         }
 
-        public QueryResult Query(SecurityToken mySecurityToken, GraphDB.Transaction.TransactionToken myTransactionToken, string myQueryString)
+        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> ExportGraphDDL(SecurityToken mySecurityToken, GraphDB.Transaction.TransactionToken myTransactionToken)
+        public IEnumerable<string> ExportGraphDDL(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> ExportGraphDML(SecurityToken mySecurityToken, GraphDB.Transaction.TransactionToken myTransactionToken)
+        public IEnumerable<string> ExportGraphDML(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
-
-        #endregion
     }
 }

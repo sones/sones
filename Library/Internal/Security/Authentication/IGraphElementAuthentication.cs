@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using sones.PropertyHyperGraph;
 
-namespace sones.GraphDB.Security
+namespace sones.Security
 {
     /// <summary>
     /// The interface for the graph element authentication
