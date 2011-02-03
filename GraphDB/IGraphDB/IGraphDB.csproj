@@ -75,7 +75,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Request\Insert\" />
-    <Folder Include="Request\Statistics\" />
     <Folder Include="Request\Update\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
