@@ -47,12 +47,10 @@
     <Compile Include="FileSystemAccessMode.cs" />
     <Compile Include="IGraphFS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VertexManipulation\VertexInsert.cs" />
+    <Compile Include="VertexManipulation\VertexUpdate.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Library\Internal\Definitions\Definitions.csproj">
-      <Project>{2E1F1F44-8A47-428D-A6CF-BE30154EA83F}</Project>
-      <Name>Definitions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
       <Name>PropertyHyperGraph</Name>

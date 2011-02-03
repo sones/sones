@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace sones.Library.Internal.Definitions
+namespace sones.GraphDB.Request
 {
     /// <summary>
     /// The definition for vertex properties

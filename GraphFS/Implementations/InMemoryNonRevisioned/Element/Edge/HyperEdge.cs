@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using sones.Library.Internal.Definitions;
 using sones.PropertyHyperGraph;
 
 namespace sones.InMemoryNonRevisioned.Element

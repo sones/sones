@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using sones.Library.Internal.Definitions;
 using sones.PropertyHyperGraph;
 
 namespace sones.GraphFS
@@ -195,17 +194,6 @@ namespace sones.GraphFS
             IEnumerable<String>     myInterestingEditions = null);
 
         /// <summary>
-        /// Adds a new vertex to the graph fs
-        /// </summary>
-        /// <param name="myIVertex">The vertex that is going to be added</param>
-        /// <param name="myEdition">The name of the edition of the new vertex</param>
-        /// <param name="myVertexRevisionID">The revision id of the vertex</param>
-        void AddVertex(
-            IVertex             myIVertex, 
-            String              myEdition = null, 
-            VertexRevisionID    myVertexRevisionID = null);
-
-        /// <summary>
         /// Removes a certain revision of a vertex
         /// </summary>
         /// <param name="myVertexID">The id of the vertex</param>
@@ -236,18 +224,29 @@ namespace sones.GraphFS
             VertexID myVertexID);
 
         /// <summary>
-        /// Updates a vertex corresponding to a vertex id
+        /// Adds a new vertex to the graph fs and returns it
+        /// </summary>
+        /// <param name="myVertexInsertDefinition">The definition of the vertex that is going to be inserted</param>
+        /// <param name="myEdition">The name of the edition of the new vertex</param>
+        /// <param name="myVertexRevisionID">The revision id of the vertex</param>
+        IVertex AddVertex(
+            VertexInsert myVertexInsertDefinition,
+            String myEdition = null,
+            VertexRevisionID myVertexRevisionID = null);
+
+        /// <summary>
+        /// Updates a vertex and returns it
         /// </summary>
         /// <param name="myToBeUpdatedVertexID">The vertex id that is going to be updated</param>
         /// <param name="myVertexUpdate">The update for the vertex</param>
         /// <param name="myToBeUpdatedEditions">The editions that should be updated</param>
         /// <param name="myToBeUpdatedRevisionIDs">The revisions that should be updated</param>
         /// <param name="myCreateNewRevision">Determines if it is necessary to create a new revision of the vertex</param>
-        void UpdateVertex(
+        IVertex UpdateVertex(
             VertexID                        myToBeUpdatedVertexID,
             VertexUpdate                    myVertexUpdate,
-            IEnumerable<String>             myToBeUpdatedEditions = null,
-            IEnumerable<VertexRevisionID>   myToBeUpdatedRevisionIDs = null,
+            String                          myToBeUpdatedEditions = null,
+            VertexRevisionID                myToBeUpdatedRevisionIDs = null,
             Boolean                         myCreateNewRevision = false);
 
         #endregion

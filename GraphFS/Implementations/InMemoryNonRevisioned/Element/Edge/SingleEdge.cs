@@ -1,5 +1,4 @@
 ﻿using System;
-using sones.Library.Internal.Definitions;
 using System.Collections.Generic;
 using sones.PropertyHyperGraph;
 

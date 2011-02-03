@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using sones.GraphFS;
-using sones.Library.Internal.Definitions;
 using sones.PropertyHyperGraph;
 
 namespace sones.InMemoryNonRevisioned
@@ -12,7 +11,6 @@ namespace sones.InMemoryNonRevisioned
     /// </summary>
     public sealed class InMemoryNonRevisionedFS : IGraphFS
     {
-        #region IGraphFS Members
 
         public bool IsPersistent
         {
@@ -114,11 +112,6 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public void AddVertex(IVertex myIVertex, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
-        {
-            throw new NotImplementedException();
-        }
-
         public bool RemoveVertexRevision(VertexID myVertexID, IEnumerable<string> myInterestingEditions = null, IEnumerable<VertexRevisionID> myToBeRemovedRevisionIDs = null)
         {
             throw new NotImplementedException();
@@ -134,12 +127,14 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public void UpdateVertex(VertexID myToBeUpdatedVertexID, VertexUpdate myVertexUpdate, IEnumerable<string> myToBeUpdatedEditions = null, IEnumerable<VertexRevisionID> myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
+        public IVertex AddVertex(VertexInsert myVertexInsertDefinition, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new NotImplementedException();
         }
 
-        #endregion
-
+        public IVertex UpdateVertex(VertexID myToBeUpdatedVertexID, VertexUpdate myVertexUpdate, string myToBeUpdatedEditions = null, VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

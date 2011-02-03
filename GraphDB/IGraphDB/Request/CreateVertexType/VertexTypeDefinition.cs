@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace sones.Library.Internal.Definitions
+namespace sones.GraphDB.Request
 {
     /// <summary>
     /// The definition for vertex types

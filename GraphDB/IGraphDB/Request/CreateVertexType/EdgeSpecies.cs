@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace sones.Library.Internal.Definitions
+namespace sones.GraphDB.Request
 {
     /// <summary>
     /// The species of an edge

@@ -1,5 +1,4 @@
 ﻿using System;
-using sones.Library.Internal.Definitions;
 
 namespace sones.GraphDB.Request
 {
