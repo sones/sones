@@ -56,10 +56,6 @@
       <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
       <Name>IGraphQL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Library\Internal\Security\Security.csproj">
-      <Project>{0E469CF5-BF78-4B66-BA2D-F9D5991BBCCD}</Project>
-      <Name>Security</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\IGraphDS\IGraphDS.csproj">
       <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
       <Name>IGraphDS</Name>

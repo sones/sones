@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphQL;
-using sones.GraphQL.Result;
 using sones.GraphDB;
-using sones.Library.Internal.Security;
-
+using sones.GraphDB.Security;
+using sones.GraphQL.Result;
 
 namespace sones.GraphQL
 {
@@ -37,7 +33,6 @@ namespace sones.GraphQL
         }
 
         #endregion
-
 
         #region IGraphQL
 
@@ -72,6 +67,5 @@ namespace sones.GraphQL
         }
 
         #endregion
-
     }
 }

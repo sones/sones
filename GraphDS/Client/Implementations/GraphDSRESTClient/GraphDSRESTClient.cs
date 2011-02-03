@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphDS;
-using sones.GraphDB.Transaction;
-using sones.Library.Internal.Security;
 using sones.GraphDB.Request;
+using sones.GraphDB.Security;
+using sones.GraphDB.Transaction;
+using sones.GraphDS;
 using sones.GraphQL.Result;
 
 namespace sones.GraphDSClient

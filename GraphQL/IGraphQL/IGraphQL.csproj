@@ -55,10 +55,6 @@
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Library\Internal\Security\Security.csproj">
-      <Project>{0E469CF5-BF78-4B66-BA2D-F9D5991BBCCD}</Project>
-      <Name>Security</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

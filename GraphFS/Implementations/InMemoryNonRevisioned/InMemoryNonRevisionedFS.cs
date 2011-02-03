@@ -1,9 +1,8 @@
 ﻿using System;
-using sones.GraphFS;
-using sones.Library.Internal.Security;
 using System.Collections.Generic;
-using sones.GraphInfrastructure.Element;
 using System.IO;
+using sones.GraphFS;
+using sones.GraphInfrastructure.Element;
 using sones.Library.Internal.Definitions;
 
 namespace sones.InMemoryNonRevisioned
@@ -13,7 +12,7 @@ namespace sones.InMemoryNonRevisioned
     /// </summary>
     public sealed class InMemoryNonRevisionedFS : IGraphFS
     {
-        #region IGraphFS members
+        #region IGraphFS Members
 
         public bool IsPersistent
         {
@@ -25,22 +24,22 @@ namespace sones.InMemoryNonRevisioned
             get { throw new NotImplementedException(); }
         }
 
-        public string GetFileSystemDescription(SecurityToken mySecurityToken)
+        public string GetFileSystemDescription()
         {
             throw new NotImplementedException();
         }
 
-        public ulong GetNumberOfBytes(SecurityToken mySecurityToken)
+        public ulong GetNumberOfBytes()
         {
             throw new NotImplementedException();
         }
 
-        public ulong GetNumberOfFreeBytes(SecurityToken mySecurityToken)
+        public ulong GetNumberOfFreeBytes()
         {
             throw new NotImplementedException();
         }
 
-        public FileSystemAccessMode GetAccessMode(SecurityToken mySecurityToken)
+        public FileSystemAccessMode GetAccessMode()
         {
             throw new NotImplementedException();
         }
@@ -55,91 +54,92 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public ulong GrowFileSystem(SecurityToken mySecurityToken, ulong myNumberOfBytesToAdd)
+        public ulong GrowFileSystem(ulong myNumberOfBytesToAdd)
         {
             throw new NotImplementedException();
         }
 
-        public ulong ShrinkFileSystem(SecurityToken mySecurityToken, ulong myNumberOfBytesToRemove)
+        public ulong ShrinkFileSystem(ulong myNumberOfBytesToRemove)
         {
             throw new NotImplementedException();
         }
 
-        public void WipeFileSystem(SecurityToken mySecurityToken)
+        public void WipeFileSystem()
         {
             throw new NotImplementedException();
         }
 
-        public Stream ReplicateFileSystem(SecurityToken mySecurityToken)
+        public Stream ReplicateFileSystem()
         {
             throw new NotImplementedException();
         }
 
-        public void MountFileSystem(SecurityToken mySecurityToken, FileSystemAccessMode myAccessMode)
+        public void MountFileSystem(FileSystemAccessMode myAccessMode)
         {
             throw new NotImplementedException();
         }
 
-        public void RemountFileSystem(SecurityToken mySecurityToken, FileSystemAccessMode myFSAccessMode)
+        public void RemountFileSystem(FileSystemAccessMode myFSAccessMode)
         {
             throw new NotImplementedException();
         }
 
-        public void UnmountFileSystem(SecurityToken mySecurityToken)
+        public void UnmountFileSystem()
         {
             throw new NotImplementedException();
         }
 
-        public bool VertexExists(SecurityToken mySecurityToken, VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public bool VertexExists(VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new NotImplementedException();
         }
 
-        public IVertex GetVertex(SecurityToken mySecurityToken, VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public IVertex GetVertex(VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IVertex> GetAllVertices(SecurityToken mySecurityToken, IEnumerable<ulong> myInterestingVertexTypeIDs = null, IEnumerable<VertexID> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
+        public IEnumerable<IVertex> GetAllVertices(IEnumerable<ulong> myInterestingVertexTypeIDs = null, IEnumerable<VertexID> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> GetVertexEditions(SecurityToken mySecurityToken, VertexID myVertexID)
+        public IEnumerable<string> GetVertexEditions(VertexID myVertexID)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(SecurityToken mySecurityToken, VertexID myVertexID, IEnumerable<string> myInterestingEditions = null)
+        public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(VertexID myVertexID, IEnumerable<string> myInterestingEditions = null)
         {
             throw new NotImplementedException();
         }
 
-        public void AddVertex(SecurityToken mySecurityToken, IVertex myIVertex, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public void AddVertex(IVertex myIVertex, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new NotImplementedException();
         }
 
-        public bool RemoveVertexRevision(SecurityToken mySecurityToken, VertexID myVertexID, IEnumerable<string> myInterestingEditions = null, IEnumerable<VertexRevisionID> myToBeRemovedRevisionIDs = null)
+        public bool RemoveVertexRevision(VertexID myVertexID, IEnumerable<string> myInterestingEditions = null, IEnumerable<VertexRevisionID> myToBeRemovedRevisionIDs = null)
         {
             throw new NotImplementedException();
         }
 
-        public bool RemoveVertexEdition(SecurityToken mySecurityToken, VertexID myVertexID, IEnumerable<string> myToBeRemovedEditions = null)
+        public bool RemoveVertexEdition(VertexID myVertexID, IEnumerable<string> myToBeRemovedEditions = null)
         {
             throw new NotImplementedException();
         }
 
-        public bool RemoveVertex(SecurityToken mySecurityToken, VertexID myVertexID)
+        public bool RemoveVertex(VertexID myVertexID)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateVertex(SecurityToken mySecurityToken, VertexID myToBeUpdatedVertexID, VertexUpdate myVertexUpdate, IEnumerable<string> myToBeUpdatedEditions = null, IEnumerable<VertexRevisionID> myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
+        public void UpdateVertex(VertexID myToBeUpdatedVertexID, VertexUpdate myVertexUpdate, IEnumerable<string> myToBeUpdatedEditions = null, IEnumerable<VertexRevisionID> myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
         {
             throw new NotImplementedException();
         }
 
         #endregion
+
     }
 }

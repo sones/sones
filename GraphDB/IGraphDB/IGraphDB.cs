@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-using sones.GraphDB.Request;
-using sones.Library.Internal.Security;
+﻿using sones.GraphDB.Request;
+using sones.GraphDB.Security;
 using sones.GraphDB.Transaction;
 
 namespace sones.GraphDB

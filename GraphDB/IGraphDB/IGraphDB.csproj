@@ -54,6 +54,16 @@
     <Compile Include="Request\IRequest.cs" />
     <Compile Include="Request\RequestClear.cs" />
     <Compile Include="Request\RequestCreateVertexType.cs" />
+    <Compile Include="Security\Authentication\IAuthentication.cs" />
+    <Compile Include="Security\Authentication\IGraphElementAuthentication.cs" />
+    <Compile Include="Security\Authentication\IUserAuthentication.cs" />
+    <Compile Include="Security\Authentication\Right.cs" />
+    <Compile Include="Security\Credentials\IUserCredentials.cs" />
+    <Compile Include="Security\Credentials\UserPasswordCredentials.cs" />
+    <Compile Include="Security\Encryption\IEncryption.cs" />
+    <Compile Include="Security\Integrety\IIntegrity.cs" />
+    <Compile Include="Security\ISecurityManager.cs" />
+    <Compile Include="Security\Token\SecurityToken.cs" />
     <Compile Include="Transaction\IsolationLevel.cs" />
     <Compile Include="Transaction\ITransactionable.cs" />
     <Compile Include="Transaction\ITransactionManager.cs" />
@@ -69,10 +79,6 @@
     <ProjectReference Include="..\..\Library\Internal\GraphInfrastructure\GraphInfrastructure.csproj">
       <Project>{09005D99-7E10-4E9B-9F7D-F874F76B9E52}</Project>
       <Name>GraphInfrastructure</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Library\Internal\Security\Security.csproj">
-      <Project>{0E469CF5-BF78-4B66-BA2D-F9D5991BBCCD}</Project>
-      <Name>Security</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

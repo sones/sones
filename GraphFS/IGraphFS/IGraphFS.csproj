@@ -57,10 +57,6 @@
       <Project>{09005D99-7E10-4E9B-9F7D-F874F76B9E52}</Project>
       <Name>GraphInfrastructure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Library\Internal\Security\Security.csproj">
-      <Project>{0E469CF5-BF78-4B66-BA2D-F9D5991BBCCD}</Project>
-      <Name>Security</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

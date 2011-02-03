@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sones.Library.Internal.Definitions;
-using sones.Library.Internal.Security;
 
 namespace sones.GraphDB.Request
 {

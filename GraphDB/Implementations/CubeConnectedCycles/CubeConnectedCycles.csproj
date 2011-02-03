@@ -52,10 +52,6 @@
       <Project>{2E1F1F44-8A47-428D-A6CF-BE30154EA83F}</Project>
       <Name>Definitions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\Security\Security.csproj">
-      <Project>{0E469CF5-BF78-4B66-BA2D-F9D5991BBCCD}</Project>
-      <Name>Security</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>

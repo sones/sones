@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using sones.Library.Internal.Security;
-
+﻿
 namespace sones.GraphDB.Request
 {
     /// <summary>
