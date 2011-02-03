@@ -32,17 +32,17 @@ namespace sones.GraphDSServer
             throw new NotImplementedException();
         }
 
-        public TransactionToken BeginTransaction(SecurityToken mySecurityToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
+        public TransactionToken Begin(SecurityToken mySecurityToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
         {
             throw new NotImplementedException();
         }
 
-        public void CommitTransaction(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public void Commit(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
 
-        public void RollbackTransaction(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public void Rollback(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }

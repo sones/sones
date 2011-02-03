@@ -15,7 +15,7 @@ namespace sones.GraphDB.Transaction
         /// <param name="myLongrunning">Is this a long running transaction</param>
         /// <param name="myIsolationLevel">The isolation level</param>
         /// <returns>A transaction token</returns>
-        TransactionToken BeginTransaction(SecurityToken mySecurityToken, 
+        TransactionToken Begin(SecurityToken mySecurityToken, 
             Boolean         myLongrunning       = false, 
             IsolationLevel  myIsolationLevel    = IsolationLevel.Serializable);
 
@@ -24,7 +24,7 @@ namespace sones.GraphDB.Transaction
         /// </summary>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The transaction token that identifies the transaction that shoulb be commited</param>
-        void CommitTransaction(SecurityToken mySecurityToken, 
+        void Commit(SecurityToken mySecurityToken, 
             TransactionToken myTransactionToken);
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace sones.GraphDB.Transaction
         /// </summary>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The transaction token that identifies the transaction that should be rolled back</param>
-        void RollbackTransaction(SecurityToken mySecurityToken,
+        void Rollback(SecurityToken mySecurityToken,
             TransactionToken myTransactionToken);
     }
 }
