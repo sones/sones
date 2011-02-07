@@ -50,6 +50,7 @@
     <Compile Include="Interfaces\IMultipleValueRangeIndex.cs" />
     <Compile Include="Interfaces\IMultipleValueRangeVersionedIndex.cs" />
     <Compile Include="Interfaces\IMultipleValueVersionedIndex.cs" />
+    <Compile Include="Interfaces\IRangeIndex.cs" />
     <Compile Include="Interfaces\ISingleValueIndex.cs" />
     <Compile Include="Interfaces\ISingleValueRangeIndex.cs" />
     <Compile Include="Interfaces\ISingleValueRangeVersionedIndex.cs" />

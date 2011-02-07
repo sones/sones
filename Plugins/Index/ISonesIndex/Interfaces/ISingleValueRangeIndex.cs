@@ -12,7 +12,8 @@ namespace sones.Plugins.Index.Interfaces
     /// <typeparam name="TKey">Type of the index-key</typeparam>
     /// <typeparam name="TValue">Type of the values</typeparam>
     public interface ISingleValueRangeIndex<TKey, TValue> :
-        ISingleValueIndex<TKey, TValue>
+        ISingleValueIndex<TKey, TValue>,
+        IRangeIndex<TKey, TValue>
         where TKey : IComparable
     {
         #region Range
