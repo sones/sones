@@ -6,7 +6,7 @@ namespace sones.GraphDB.Request
     /// <summary>
     /// A request for clearing the whole graphdb
     /// </summary>
-    /// <typeparam name="TResult"></typeparam>
+    /// <typeparam name="TResult">The type of the result</typeparam>
     public sealed class RequestClear<TResult> : IRequest<TResult>
     {
 

@@ -70,19 +70,7 @@ namespace sones.GraphFS
 
         #endregion
 
-        #region Make-/Grow-/Shrink-/Replicate-/WipeFileSystem
-
-        /// <summary>
-        /// This initialises a GraphFS in a given device or file using the given sizes
-        /// </summary>
-        /// <param name="myDescription">a distinguishable Name or description for the file system</param>
-        /// <param name="myNumberOfBytes">the size of the file system in byte</param>
-        void MakeFileSystem(String myDescription, UInt64 myNumberOfBytes);
-
-        /// <summary>
-        /// Initializes a GraphFS using the stream of a replicated one
-        /// </summary>
-        void MakeFileSystem(Stream myReplicationStream);
+        #region Grow-/Shrink-/Replicate-/WipeFileSystem
 
         /// <summary>
         /// This enlarges the size of a GraphFS
@@ -104,11 +92,15 @@ namespace sones.GraphFS
         void WipeFileSystem();
 
         /// <summary>
-        /// Replicates the IGraphFS instance into a stream
+        /// Clones the IGraphFS instance into a stream
         /// </summary>
-        /// <param name="mySecurityToken">The current security token</param>
-        /// <returns>A stream that contains a IGraphFSReplication</returns>
-        Stream ReplicateFileSystem();
+        /// <returns>A stream that contains a IGraphFS clone</returns>
+        Stream CloneFileSystem();
+
+        /// <summary>
+        /// Initializes a GraphFS using the stream of a replicated one
+        /// </summary>
+        void ReplicateFileSystem(Stream myReplicationStream);
 
         #endregion
 
@@ -143,9 +135,9 @@ namespace sones.GraphFS
         /// <param name="myVertexRevisionID">The revision id if the vertex (if left out, the latest revision is assumed)</param>
         /// <returns>True if the vertex exists, otherwise false</returns>
         Boolean VertexExists(
-            VertexID            myVertexID, 
-            String              myEdition = null, 
-            VertexRevisionID    myVertexRevisionID = null);
+            VertexID myVertexID,
+            String myEdition = null,
+            VertexRevisionID myVertexRevisionID = null);
 
         /// <summary>
         /// Gets a vertex 
@@ -156,9 +148,9 @@ namespace sones.GraphFS
         /// <param name="myVertexRevisionID">The revision id if the vertex (if left out, the latest revision is returned)</param>
         /// <returns>A vertex object or null if there is no such vertex</returns>
         IVertex GetVertex(
-            VertexID            myVertexID, 
-            String              myEdition = null, 
-            VertexRevisionID    myVertexRevisionID = null);
+            VertexID myVertexID,
+            String myEdition = null,
+            VertexRevisionID myVertexRevisionID = null);
 
         /// <summary>
         /// Returns all vertices.
@@ -170,10 +162,10 @@ namespace sones.GraphFS
         /// <param name="myInterestingRevisionIDs">Interesting revisions of the vertex</param>
         /// <returns>An IEnumerable of vertices</returns>
         IEnumerable<IVertex> GetAllVertices(
-            IEnumerable<UInt64>             myInterestingVertexTypeIDs  = null,
-            IEnumerable<VertexID>           myInterestingVertexIDs      = null,
-            IEnumerable<String>             myInterestingEditionNames   = null,
-            IEnumerable<VertexRevisionID>   myInterestingRevisionIDs    = null);
+            IEnumerable<UInt64> myInterestingVertexTypeIDs = null,
+            IEnumerable<VertexID> myInterestingVertexIDs = null,
+            IEnumerable<String> myInterestingEditionNames = null,
+            IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null);
 
         /// <summary>
         /// Returns all editions corresponding to a certain vertex
@@ -190,8 +182,8 @@ namespace sones.GraphFS
         /// <param name="myInterestingEditions">The interesting vertex editions</param>
         /// <returns>An IEnumerable of VertexRevisionIDs</returns>
         IEnumerable<VertexRevisionID> GetVertexRevisionIDs(
-            VertexID                myVertexID,
-            IEnumerable<String>     myInterestingEditions = null);
+            VertexID myVertexID,
+            IEnumerable<String> myInterestingEditions = null);
 
         /// <summary>
         /// Removes a certain revision of a vertex
@@ -201,9 +193,9 @@ namespace sones.GraphFS
         /// <param name="myToBeRemovedRevisionIDs">The revisions that should be removed</param>
         /// <returns>True if some revisions have been removed, false otherwise</returns>
         bool RemoveVertexRevision(
-            VertexID                        myVertexID,
-            IEnumerable<String>             myInterestingEditions = null,
-            IEnumerable<VertexRevisionID>   myToBeRemovedRevisionIDs = null);
+            VertexID myVertexID,
+            IEnumerable<String> myInterestingEditions = null,
+            IEnumerable<VertexRevisionID> myToBeRemovedRevisionIDs = null);
 
         /// <summary>
         /// Removes a certain edition of a vertex
@@ -226,11 +218,11 @@ namespace sones.GraphFS
         /// <summary>
         /// Adds a new vertex to the graph fs and returns it
         /// </summary>
-        /// <param name="myVertexInsertDefinition">The definition of the vertex that is going to be inserted</param>
+        /// <param name="myVertex">The vertex that is going to be inserted</param>
         /// <param name="myEdition">The name of the edition of the new vertex</param>
         /// <param name="myVertexRevisionID">The revision id of the vertex</param>
-        IVertex AddVertex(
-            VertexInsert myVertexInsertDefinition,
+        bool AddVertex(
+            IVertex myVertex,
             String myEdition = null,
             VertexRevisionID myVertexRevisionID = null);
 
@@ -238,16 +230,16 @@ namespace sones.GraphFS
         /// Updates a vertex and returns it
         /// </summary>
         /// <param name="myToBeUpdatedVertexID">The vertex id that is going to be updated</param>
-        /// <param name="myVertexUpdate">The update for the vertex</param>
+        /// <param name="myVertexUpdateDiff">The update for the vertex</param>
         /// <param name="myToBeUpdatedEditions">The editions that should be updated</param>
         /// <param name="myToBeUpdatedRevisionIDs">The revisions that should be updated</param>
         /// <param name="myCreateNewRevision">Determines if it is necessary to create a new revision of the vertex</param>
         IVertex UpdateVertex(
-            VertexID                        myToBeUpdatedVertexID,
-            VertexUpdate                    myVertexUpdate,
-            String                          myToBeUpdatedEditions = null,
-            VertexRevisionID                myToBeUpdatedRevisionIDs = null,
-            Boolean                         myCreateNewRevision = false);
+            VertexID myToBeUpdatedVertexID,
+            IVertex myVertexUpdateDiff,
+            String myToBeUpdatedEditions = null,
+            VertexRevisionID myToBeUpdatedRevisionIDs = null,
+            Boolean myCreateNewRevision = false);
 
         #endregion
     }

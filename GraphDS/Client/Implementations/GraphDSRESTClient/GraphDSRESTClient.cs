@@ -12,7 +12,6 @@ namespace sones.GraphDSClient
     /// </summary>
     public sealed class GraphDSRESTClient : IGraphDS, IGraphDSClient
     {
-        #region IGraphDS members
 
         public void Shutdown(SecurityToken mySecurityToken)
         {
@@ -30,6 +29,11 @@ namespace sones.GraphDSClient
         }
 
         public TResult Clear<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestClear<TResult> myRequestClear)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult Insert<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestInsertVertex<TResult> myRequestInsert)
         {
             throw new NotImplementedException();
         }
@@ -58,7 +62,5 @@ namespace sones.GraphDSClient
         {
             throw new NotImplementedException();
         }
-
-        #endregion
     }
 }

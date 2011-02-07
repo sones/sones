@@ -10,7 +10,16 @@ namespace sones.GraphDSServer
 {
     public sealed class GraphDSServer : IGraphDSServer, IGraphDS
     {
-        #region IGraphDS members
+
+        public void StartRESTService(string myServiceID, ushort myPort, IPAddress myIPAddress)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool StopRESTService(string myServiceID)
+        {
+            throw new NotImplementedException();
+        }
 
         public void Shutdown(SecurityToken mySecurityToken)
         {
@@ -28,6 +37,11 @@ namespace sones.GraphDSServer
         }
 
         public TResult Clear<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestClear<TResult> myRequestClear)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult Insert<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestInsertVertex<TResult> myRequestInsert)
         {
             throw new NotImplementedException();
         }
@@ -56,21 +70,5 @@ namespace sones.GraphDSServer
         {
             throw new NotImplementedException();
         }
-
-        #endregion
-
-        #region REST
-
-        public void StartRESTService(string myServiceID, ushort myPort, IPAddress myIPAddress)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool StopRESTService(string myServiceID)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
     }
 }

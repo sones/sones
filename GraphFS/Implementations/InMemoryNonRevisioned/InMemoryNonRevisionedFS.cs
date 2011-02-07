@@ -42,16 +42,6 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public void MakeFileSystem(string myDescription, ulong myNumberOfBytes)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void MakeFileSystem(Stream myReplicationStream)
-        {
-            throw new NotImplementedException();
-        }
-
         public ulong GrowFileSystem(ulong myNumberOfBytesToAdd)
         {
             throw new NotImplementedException();
@@ -67,7 +57,12 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public Stream ReplicateFileSystem()
+        public Stream CloneFileSystem()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ReplicateFileSystem(Stream myReplicationStream)
         {
             throw new NotImplementedException();
         }
@@ -127,12 +122,12 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public IVertex AddVertex(VertexInsert myVertexInsertDefinition, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public bool AddVertex(IVertex myVertex, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new NotImplementedException();
         }
 
-        public IVertex UpdateVertex(VertexID myToBeUpdatedVertexID, VertexUpdate myVertexUpdate, string myToBeUpdatedEditions = null, VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
+        public IVertex UpdateVertex(VertexID myToBeUpdatedVertexID, IVertex myVertexUpdateDiff, string myToBeUpdatedEditions = null, VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
         {
             throw new NotImplementedException();
         }
