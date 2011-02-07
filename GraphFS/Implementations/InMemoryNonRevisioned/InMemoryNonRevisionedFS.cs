@@ -11,7 +11,6 @@ namespace sones.InMemoryNonRevisioned
     /// </summary>
     public sealed class InMemoryNonRevisionedFS : IGraphFS
     {
-
         public bool IsPersistent
         {
             get { throw new NotImplementedException(); }
@@ -93,6 +92,26 @@ namespace sones.InMemoryNonRevisioned
         }
 
         public IEnumerable<IVertex> GetAllVertices(IEnumerable<ulong> myInterestingVertexTypeIDs = null, IEnumerable<VertexID> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<VertexID> myInterestingVertexIDs = null, Func<string, bool> myEditionsFilterFunc = null, Func<VertexRevisionID, bool> myInterestingRevisionIDFilterFunc = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<VertexID> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<VertexID> myInterestingVertexIDs)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<VertexRevisionID> myInterestingRevisions)
         {
             throw new NotImplementedException();
         }

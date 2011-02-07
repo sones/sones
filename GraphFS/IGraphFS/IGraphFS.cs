@@ -168,6 +168,64 @@ namespace sones.GraphFS
             IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null);
 
         /// <summary>
+        /// Returns all vertex by a given typeID. It's possible to filter interesting vertices.
+        /// Edition and Revision filtering works by using a filter func.
+        /// 
+        /// Beware: defining funcs means that the function has to be called on any vertex.
+        /// If you know the exact definitions use the overloaded version of this method using
+        /// IEnumerable instead.
+        /// </summary>
+        /// <param name="myTypeID">the considered vertex type</param>
+        /// <param name="myInterestingVertexIDs">a set of vertexID which shall be loaded</param>
+        /// <param name="myEditionsFilterFunc">func to filter editions</param>
+        /// <param name="myInterestingRevisionIDFilterFunc">func to filter revisions</param>
+        /// <returns>vertices</returns>
+        IEnumerable<IVertex> GetVerticesByTypeID(
+            UInt64                          myTypeID,
+            IEnumerable<VertexID>           myInterestingVertexIDs = null,
+            Func<String, bool>              myEditionsFilterFunc = null,
+            Func<VertexRevisionID, bool>    myInterestingRevisionIDFilterFunc = null);
+
+        /// <summary>
+        /// Returns all vertex by a given typeID. It's possible to filter interesting vertices.
+        /// It's also possible to filter specified vertices by id, their editions and revisions.
+        /// </summary>
+        /// <param name="myTypeID">the considered vertex type</param>
+        /// <param name="myInterestingVertexIDs">a set of vertexID which shall be loaded</param>
+        /// <param name="myInterestingEditionNames">a set of interesting editions of a vertex</param>
+        /// <param name="myInterestingRevisionIDs">a set of interesting revisions of a vertex</param>
+        /// <returns>vertices</returns>
+        IEnumerable<IVertex> GetVerticesByTypeID(
+            UInt64 myTypeID,
+            IEnumerable<VertexID>           myInterestingVertexIDs = null,
+            IEnumerable<String>             myInterestingEditionNames = null,
+            IEnumerable<VertexRevisionID>   myInterestingRevisionIDs = null);
+
+        /// <summary>
+        /// Returns all vertices considering a given vertex type.
+        /// 
+        /// The default edition and latest revision of an existing vertex will be returned.
+        /// </summary>
+        /// <param name="myTypeID">the considered vertex type</param>
+        /// <param name="myInterestingVertexIDs">a set of vertexID which shall be loaded</param>
+        /// <returns>all interesting vertices of given type with default edition and latest revision</returns>
+        IEnumerable<IVertex> GetVerticesByTypeID(
+            UInt64 myTypeID,
+            IEnumerable<VertexID> myInterestingVertexIDs);
+
+        /// <summary>
+        /// Returns all vertices considering a given vertex type.
+        /// 
+        /// The default edition of the vertex will be returned (if the defined revision exists)
+        /// </summary>
+        /// <param name="myTypeID">the considered vertex type</param>
+        /// <param name="myInterestingRevisions">a set of (vertex-)revisions which are of interest</param>
+        /// <returns>all vertices of given type which are available at the given revisions</returns>
+        IEnumerable<IVertex> GetVerticesByTypeID(
+            UInt64 myTypeID,
+            IEnumerable<VertexRevisionID> myInterestingRevisions);
+
+        /// <summary>
         /// Returns all editions corresponding to a certain vertex
         /// </summary>
         /// <param name="myVertexID">The id of the vertex</param>
