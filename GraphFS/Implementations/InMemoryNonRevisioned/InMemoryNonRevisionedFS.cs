@@ -11,6 +11,7 @@ namespace sones.InMemoryNonRevisioned
     /// </summary>
     public sealed class InMemoryNonRevisionedFS : IGraphFS
     {
+        #region IGraphFS Members
 
         public bool IsPersistent
         {
@@ -151,5 +152,7 @@ namespace sones.InMemoryNonRevisioned
         {
             throw new NotImplementedException();
         }
+
+        #endregion
     }
 }
