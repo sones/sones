@@ -11,6 +11,7 @@ namespace sones.InMemoryNonRevisioned
     /// </summary>
     public sealed class InMemoryNonRevisionedFS : IGraphFS
     {
+
         public bool IsPersistent
         {
             get { throw new NotImplementedException(); }
@@ -56,12 +57,12 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public Stream CloneFileSystem()
+        public IEnumerable<IVertex> CloneFileSystem(ulong myTimeStamp = 0UL)
         {
             throw new NotImplementedException();
         }
 
-        public void ReplicateFileSystem(Stream myReplicationStream)
+        public void ReplicateFileSystem(IEnumerable<IVertex> myReplicationStream)
         {
             throw new NotImplementedException();
         }

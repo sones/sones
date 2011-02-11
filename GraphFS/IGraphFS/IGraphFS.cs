@@ -94,13 +94,15 @@ namespace sones.GraphFS
         /// <summary>
         /// Clones the IGraphFS instance into a stream
         /// </summary>
-        /// <returns>A stream that contains a IGraphFS clone</returns>
-        Stream CloneFileSystem();
+        /// <param name="myTimeStamp">the starting timestamp of the clone. every vertex that has been created after this timestamp has to be returned</param>
+        /// <returns>An enumerable of to be cloned vertices</returns>
+        IEnumerable<IVertex> CloneFileSystem(UInt64 myTimeStamp = 0UL);
 
         /// <summary>
-        /// Initializes a GraphFS using the stream of a replicated one
+        /// Initializes a GraphFS using the replicated vertices
         /// </summary>
-        void ReplicateFileSystem(Stream myReplicationStream);
+        /// <param name="myReplicationStream">An enumerable of vertices</param>
+        void ReplicateFileSystem(IEnumerable<IVertex> myReplicationStream);
 
         #endregion
 
