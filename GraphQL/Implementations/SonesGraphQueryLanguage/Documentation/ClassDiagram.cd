@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="sones.GraphQL.SonesQueryLanguage">
+    <Position X="0.5" Y="0.5" Width="2.5" />
+    <Members>
+      <Method Name="SonesQueryLanguage" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAgAAAAAAAQAAAAAAAgAAAAAAIBAAAA=</HashCode>
+      <FileName>SonesQueryLanguage.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
