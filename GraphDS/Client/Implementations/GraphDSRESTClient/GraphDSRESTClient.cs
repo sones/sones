@@ -12,6 +12,12 @@ namespace sones.GraphDSClient
     /// </summary>
     public sealed class GraphDSRESTClient : IGraphDSClient
     {
+        #region IGraphDS Members
+
+        public GraphDB.IGraphDB GraphDB
+        {
+            get { throw new NotImplementedException(); }
+        }
 
         public void Shutdown(SecurityToken mySecurityToken)
         {
@@ -23,35 +29,9 @@ namespace sones.GraphDSClient
             throw new NotImplementedException();
         }
 
-        public TResult CreateVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateVertexType<TResult> myRequestCreateVertexType)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
 
-        public TResult Clear<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestClear<TResult> myRequestClear)
-        {
-            throw new NotImplementedException();
-        }
-
-        public TResult Insert<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestInsertVertex<TResult> myRequestInsert)
-        {
-            throw new NotImplementedException();
-        }
-
-        public TransactionToken Begin(SecurityToken mySecurityToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Commit(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Rollback(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
-        {
-            throw new NotImplementedException();
-        }
+        #region IUserAuthentication Members
 
         public SecurityToken LogOn(IUserCredentials toBeAuthenticatedCredentials)
         {
@@ -62,5 +42,7 @@ namespace sones.GraphDSClient
         {
             throw new NotImplementedException();
         }
+
+        #endregion
     }
 }

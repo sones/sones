@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using sones.GraphFS;
 using sones.PropertyHyperGraph;
+using System.Collections.Concurrent;
+using sones.Transaction;
 
 namespace sones.InMemoryNonRevisioned
 {
@@ -19,6 +21,16 @@ namespace sones.InMemoryNonRevisioned
         }
 
         public bool IsMounted
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public bool HasRevisions
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public bool HasEditions
         {
             get { throw new NotImplementedException(); }
         }
@@ -155,4 +167,5 @@ namespace sones.InMemoryNonRevisioned
 
         #endregion
     }
+
 }

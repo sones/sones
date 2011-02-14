@@ -107,18 +107,14 @@ namespace sones.InMemoryNonRevisioned.Element
 
         #endregion
 
-        #region IGraphElementStatistics Members
+        #region IEdgeProperties Members
 
-        public ulong Visits
+        public EdgeID EdgeID
         {
             get { throw new NotImplementedException(); }
         }
 
-        #endregion
-
-        #region IEdgeProperties
-
-        public EdgeID EdgeID
+        public IEdgeStatistics Statistics
         {
             get { throw new NotImplementedException(); }
         }

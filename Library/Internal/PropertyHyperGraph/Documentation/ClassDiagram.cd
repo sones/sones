@@ -1,101 +1,87 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Interface Name="sones.PropertyHyperGraph.IEdge" Collapsed="true">
-    <Position X="8.25" Y="4.25" Width="1.5" />
+    <Position X="8.75" Y="4" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
       <FileName>Edge\IEdge.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="sones.PropertyHyperGraph.IEdgeProperties" Collapsed="true">
-    <Position X="9.75" Y="2.75" Width="1.5" />
+  <Interface Name="sones.PropertyHyperGraph.IEdgeProperties">
+    <Position X="10.25" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAACAAAAAAAAA=</HashCode>
       <FileName>Edge\IEdgeProperties.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Statistics" />
+    </ShowAsAssociation>
   </Interface>
   <Interface Name="sones.PropertyHyperGraph.IEdgeStatistics" Collapsed="true">
-    <Position X="7.75" Y="2.75" Width="1.5" />
-    <InheritanceLine Type="sones.PropertyHyperGraph.IGraphElementStatistics" FixedFromPoint="true">
-      <Path>
-        <Point X="7.688" Y="1.062" />
-        <Point X="7.688" Y="1.437" />
-        <Point X="8.5" Y="1.437" />
-        <Point X="8.5" Y="2.75" />
-      </Path>
-    </InheritanceLine>
+    <Position X="6.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Edge\IEdgeStatistics.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="sones.PropertyHyperGraph.IHyperEdge" Collapsed="true">
-    <Position X="7.25" Y="5.75" Width="1.5" />
+    <Position X="10.25" Y="5.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Edge\IHyperEdge.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="sones.PropertyHyperGraph.ISingleEdge" Collapsed="true">
-    <Position X="9.25" Y="5.75" Width="1.5" />
+    <Position X="7.5" Y="5.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
       <FileName>Edge\ISingleEdge.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="sones.PropertyHyperGraph.IGraphElement" Collapsed="true">
-    <Position X="6.5" Y="1.75" Width="1.5" />
+    <Position X="5" Y="2.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>UAAAAAAEAAAAEAAAiAAAIAAAAgAEACAABBAAAAAIAAA=</HashCode>
       <FileName>IGraphElement.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="sones.PropertyHyperGraph.IGraphElementStatistics" Collapsed="true">
-    <Position X="6.5" Y="0.5" Width="1.5" />
+    <Position X="2.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>IGraphElementStatistics.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="sones.PropertyHyperGraph.IGraphPartitionInformation" Collapsed="true">
-    <Position X="0.5" Y="2.75" Width="1.5" />
+  <Interface Name="sones.PropertyHyperGraph.IGraphPartitionInformation">
+    <Position X="3.75" Y="4" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Partition\IGraphPartitionInformation.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="sones.PropertyHyperGraph.IVertex" Collapsed="true">
-    <Position X="2.5" Y="4.25" Width="1.5" />
-    <InheritanceLine Type="sones.PropertyHyperGraph.IGraphElement" FixedFromPoint="true">
-      <Path>
-        <Point X="6.688" Y="2.312" />
-        <Point X="6.688" Y="3.875" />
-        <Point X="3.25" Y="3.875" />
-        <Point X="3.25" Y="4.25" />
-      </Path>
-    </InheritanceLine>
+    <Position X="1.5" Y="6.25" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
     <TypeIdentifier>
       <HashCode>AQAAAAZAAAAgAgAAgAAAAAAAAAAABABAQAAAAAAQAAE=</HashCode>
       <FileName>Vertex\IVertex.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="sones.PropertyHyperGraph.IVertexProperties" Collapsed="true">
-    <Position X="4.5" Y="2.75" Width="1.5" />
+  <Interface Name="sones.PropertyHyperGraph.IVertexProperties">
+    <Position X="1.25" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>gAAAAAAAAAAAAAAAQAAAAAAAAAAQAAgAAAEAAAAAEAA=</HashCode>
+      <HashCode>gAAAAAAAAAAAAAAEQAAAAAAQAAAAABgAAAEAAAAAEAA=</HashCode>
       <FileName>Vertex\IVertexProperties.cs</FileName>
     </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="PartitionInformation" />
+      <Property Name="Statistics" />
+    </ShowAsAssociation>
   </Interface>
   <Interface Name="sones.PropertyHyperGraph.IVertexStatistics" Collapsed="true">
-    <Position X="2.5" Y="2.75" Width="1.5" />
-    <InheritanceLine Type="sones.PropertyHyperGraph.IGraphElementStatistics" ManuallyRouted="true" FixedFromPoint="true">
-      <Path>
-        <Point X="6.75" Y="1.062" />
-        <Point X="6.75" Y="1.493" />
-        <Point X="3.25" Y="1.493" />
-        <Point X="3.25" Y="2.75" />
-      </Path>
-    </InheritanceLine>
+    <Position X="1" Y="1.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Vertex\IVertexStatistics.cs</FileName>

@@ -38,12 +38,30 @@ namespace sones.PropertyHyperGraph
         /// <summary>
         /// For a vertex, the number outgoing edges is called the outdegree 
         /// </summary>
-        UInt64 GetOutDegree { get; }
+        UInt64 OutDegree { get; }
 
         /// <summary>
         /// For a vertex the number of incoming plus the number of outgoing edges is called the degree
         /// </summary>
-        UInt64 GetDegree { get; }
+        UInt64 Degree { get; }
+
+        #endregion
+
+        #region Statistics
+
+        /// <summary>
+        /// Statistics concerning the vertex
+        /// </summary>
+        IVertexStatistics Statistics { get; }
+
+        #endregion
+
+        #region PartitionInformation
+
+        /// <summary>
+        /// Informations concerning the current partition
+        /// </summary>
+        IGraphPartitionInformation PartitionInformation { get; }
 
         #endregion
     }

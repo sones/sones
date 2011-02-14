@@ -6,7 +6,7 @@ namespace sones.PropertyHyperGraph
     /// <summary>
     /// The interface for all edge species
     /// </summary>
-    public interface IEdge : IGraphElement, IEdgeProperties, IEdgeStatistics
+    public interface IEdge : IGraphElement, IEdgeProperties
     {
         #region Source
 

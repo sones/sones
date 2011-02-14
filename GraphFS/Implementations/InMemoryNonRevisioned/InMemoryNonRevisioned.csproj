@@ -54,6 +54,10 @@
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
       <Name>PropertyHyperGraph</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Transaction\Transaction.csproj">
+      <Project>{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}</Project>
+      <Name>Transaction</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\IGraphFS\IGraphFS.csproj">
       <Project>{FFFB6BE4-9514-41CF-AB68-5FB7B8E3D2E4}</Project>
       <Name>IGraphFS</Name>

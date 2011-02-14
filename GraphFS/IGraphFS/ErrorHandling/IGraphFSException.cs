@@ -4,9 +4,9 @@ using sones.ErrorHandling;
 namespace sones.GraphDB.ErrorHandling
 {
     /// <summary>
-    /// The interface for all GraphDB exceptions
+    /// The interface for all GraphFS exceptions
     /// </summary>
-    public abstract class AGraphDBException : ASonesException
+    public abstract class AGraphFSException : ASonesException
     {
        
     }

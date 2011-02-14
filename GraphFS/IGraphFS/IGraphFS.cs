@@ -28,6 +28,24 @@ namespace sones.GraphFS
 
         #endregion
 
+        #region HasRevisions
+
+        /// <summary>
+        /// Determines whether this filesystem uses revisions
+        /// </summary>
+        Boolean HasRevisions { get; }
+
+        #endregion
+
+        #region HasEditions
+
+        /// <summary>
+        /// Determines whether this filesystem uses editions
+        /// </summary>
+        Boolean HasEditions { get; }
+
+        #endregion
+
         #region GetFileSystemDescription(...)
 
         /// <summary>

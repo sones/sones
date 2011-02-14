@@ -17,5 +17,14 @@ namespace sones.PropertyHyperGraph
         EdgeID EdgeID { get; }
 
         #endregion
+
+        #region Statistics
+
+        /// <summary>
+        /// The statistics of an edge
+        /// </summary>
+        IEdgeStatistics Statistics { get; }
+
+        #endregion
     }
 }

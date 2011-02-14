@@ -9,8 +9,13 @@ namespace sones.GraphDS
     /// <summary>
     /// The interface for all graphDS
     /// </summary>
-    public interface IGraphDS : IGraphDB, IUserAuthentication
+    public interface IGraphDS : IUserAuthentication
     {
+        /// <summary>
+        /// The interface to the graph database
+        /// </summary>
+        IGraphDB GraphDB { get; }
+
         /// <summary>
         /// Shutdown of the current database
         /// </summary>

@@ -17,7 +17,7 @@ namespace sones.GraphDB
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
         /// <param name="myRequestCreateVertexType">The create vertex type request</param>
         /// <returns>A generic result</returns>
-        TResult CreateVertexType<TResult>(SecurityToken mySecurityToken,
+        TResult CreateVertexType<TResult>(  SecurityToken mySecurityToken,
                                             TransactionToken myTransactionToken,
                                             RequestCreateVertexType<TResult> myRequestCreateVertexType);
 
@@ -29,7 +29,7 @@ namespace sones.GraphDB
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
         /// <param name="myRequestClear">The clear request
         /// <returns>A generic Result</returns>
-        TResult Clear<TResult>(SecurityToken mySecurityToken,
+        TResult Clear<TResult>(             SecurityToken mySecurityToken,
                                             TransactionToken myTransactionToken,
                                             RequestClear<TResult> myRequestClear);
 
@@ -41,7 +41,7 @@ namespace sones.GraphDB
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
         /// <param name="myRequestCreateVertexType">The insert vertex request</param>
         /// <returns>A generic result</returns>
-        TResult Insert<TResult>(SecurityToken mySecurityToken,
+        TResult Insert<TResult>(             SecurityToken mySecurityToken,
                                             TransactionToken myTransactionToken,
                                             RequestInsertVertex<TResult> myRequestInsert);
     }

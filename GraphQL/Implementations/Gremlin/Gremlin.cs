@@ -12,17 +12,25 @@ namespace Gremlin
     /// </summary>
     public sealed class Gremlin : IGraphQL
     {
-        #region IGraphQL
+        #region IGraphQL Members
 
         public string Name
         {
-            get { return "Gremlin"; }
+            get { throw new NotImplementedException(); }
         }
+
+        #endregion
+
+        #region IQueryableLanguage Members
 
         public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString)
         {
             throw new NotImplementedException();
         }
+
+        #endregion
+
+        #region IDumpable Members
 
         public IEnumerable<string> ExportGraphDDL(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
