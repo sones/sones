@@ -8,7 +8,7 @@ using sones.Transaction;
 
 namespace sones.GraphDSServer
 {
-    public sealed class GraphDSServer : IGraphDSServer, IGraphDS
+    public sealed class GraphDSServer : IGraphDSServer
     {
 
         public void StartRESTService(string myServiceID, ushort myPort, IPAddress myIPAddress)

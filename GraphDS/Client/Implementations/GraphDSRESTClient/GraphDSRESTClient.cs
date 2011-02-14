@@ -10,7 +10,7 @@ namespace sones.GraphDSClient
     /// <summary>
     /// A GraphDS client that communicates via REST
     /// </summary>
-    public sealed class GraphDSRESTClient : IGraphDS, IGraphDSClient
+    public sealed class GraphDSRESTClient : IGraphDSClient
     {
 
         public void Shutdown(SecurityToken mySecurityToken)

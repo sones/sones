@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Interface Name="sones.GraphDSServer.IGraphDSREST">
+    <Position X="5.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAIAAAAAA=</HashCode>
+      <FileName>IGraphDSREST.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDSServer.IGraphDSServer" Collapsed="true">
+    <Position X="2.75" Y="7.5" Width="1.5" />
+    <InheritanceLine Type="sones.GraphDSServer.IGraphDSREST" FixedToPoint="true">
+      <Path>
+        <Point X="6.5" Y="6.796" />
+        <Point X="6.5" Y="7.125" />
+        <Point X="3.938" Y="7.125" />
+        <Point X="3.938" Y="7.5" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IGraphDSServer.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDS.IGraphDS">
+    <Position X="2.75" Y="5" Width="1.5" />
+    <InheritanceLine Type="sones.GraphDB.IGraphDB" FixedToPoint="true">
+      <Path>
+        <Point X="5.5" Y="4.367" />
+        <Point X="5.5" Y="4.625" />
+        <Point X="3.812" Y="4.625" />
+        <Point X="3.812" Y="5" />
+      </Path>
+    </InheritanceLine>
+    <InheritanceLine Type="sones.Security.IUserAuthentication" FixedToPoint="true">
+      <Path>
+        <Point X="1.5" Y="4.296" />
+        <Point X="1.5" Y="4.625" />
+        <Point X="3.125" Y="4.625" />
+        <Point X="3.125" Y="5" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="sones.GraphDB.IGraphDB">
+    <Position X="4.75" Y="2.75" Width="1.5" />
+    <InheritanceLine Type="sones.Transaction.ITransactionable" ManuallyRouted="true" FixedFromPoint="true">
+      <Path>
+        <Point X="3.875" Y="2.238" />
+        <Point X="3.875" Y="2.491" />
+        <Point X="5.5" Y="2.491" />
+        <Point X="5.5" Y="2.75" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="sones.Transaction.ITransactionable">
+    <Position X="2.75" Y="0.75" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="sones.Security.IUserAuthentication">
+    <Position X="0.75" Y="3" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

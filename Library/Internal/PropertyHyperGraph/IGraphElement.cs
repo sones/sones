@@ -6,7 +6,7 @@ namespace sones.PropertyHyperGraph
     /// <summary>
     /// The interface for graph elements like vertices or edges
     /// </summary>
-    public interface IGraphElement : IGraphElementStatistics
+    public interface IGraphElement
     {
         #region Properties
 

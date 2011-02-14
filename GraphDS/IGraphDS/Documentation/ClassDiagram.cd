@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Interface Name="sones.GraphDS.IGraphDS">
+    <Position X="3.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAQAAAAAAAAgAAAAAAAAAAAA=</HashCode>
+      <FileName>IGraphDS.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.IGraphDB">
+    <Position X="2" Y="2.5" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="sones.Security.IUserAuthentication">
+    <Position X="5.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="sones.Transaction.ITransactionable">
+    <Position X="2" Y="0.5" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
