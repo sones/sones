@@ -9,15 +9,6 @@ namespace sones.PropertyHyperGraph
     /// </summary>
     public interface IEdgeProperties
     {
-        #region ID
-
-        /// <summary>
-        /// The edge id
-        /// </summary>
-        EdgeID EdgeID { get; }
-
-        #endregion
-
         #region Statistics
 
         /// <summary>

@@ -4,7 +4,6 @@ using System.IO;
 using sones.GraphFS;
 using sones.PropertyHyperGraph;
 using System.Collections.Concurrent;
-using sones.Transaction;
 
 namespace sones.InMemoryNonRevisioned
 {
@@ -95,32 +94,32 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public bool VertexExists(VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public bool VertexExists(ulong myVertexID, ulong myVertexTypeID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new NotImplementedException();
         }
 
-        public IVertex GetVertex(VertexID myVertexID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public IVertex GetVertex(ulong myVertexID, ulong myVertexTypeID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IVertex> GetAllVertices(IEnumerable<ulong> myInterestingVertexTypeIDs = null, IEnumerable<VertexID> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
+        public IEnumerable<IVertex> GetAllVertices(IEnumerable<ulong> myInterestingVertexTypeIDs = null, IEnumerable<ulong> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<VertexID> myInterestingVertexIDs = null, Func<string, bool> myEditionsFilterFunc = null, Func<VertexRevisionID, bool> myInterestingRevisionIDFilterFunc = null)
+        public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<ulong> myInterestingVertexIDs = null, Func<string, bool> myEditionsFilterFunc = null, Func<VertexRevisionID, bool> myInterestingRevisionIDFilterFunc = null)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<VertexID> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
+        public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<ulong> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<VertexID> myInterestingVertexIDs)
+        public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<ulong> myInterestingVertexIDs)
         {
             throw new NotImplementedException();
         }
@@ -130,27 +129,27 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public IEnumerable<string> GetVertexEditions(VertexID myVertexID)
+        public IEnumerable<string> GetVertexEditions(ulong myVertexID, ulong myVertexTypeID)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(VertexID myVertexID, IEnumerable<string> myInterestingEditions = null)
+        public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(ulong myVertexID, ulong myVertexTypeID, IEnumerable<string> myInterestingEditions = null)
         {
             throw new NotImplementedException();
         }
 
-        public bool RemoveVertexRevision(VertexID myVertexID, IEnumerable<string> myInterestingEditions = null, IEnumerable<VertexRevisionID> myToBeRemovedRevisionIDs = null)
+        public bool RemoveVertexRevision(ulong myVertexID, ulong myVertexTypeID, IEnumerable<string> myInterestingEditions = null, IEnumerable<VertexRevisionID> myToBeRemovedRevisionIDs = null)
         {
             throw new NotImplementedException();
         }
 
-        public bool RemoveVertexEdition(VertexID myVertexID, IEnumerable<string> myToBeRemovedEditions = null)
+        public bool RemoveVertexEdition(ulong myVertexID, ulong myVertexTypeID, IEnumerable<string> myToBeRemovedEditions = null)
         {
             throw new NotImplementedException();
         }
 
-        public bool RemoveVertex(VertexID myVertexID)
+        public bool RemoveVertex(ulong myVertexID, ulong myVertexTypeID)
         {
             throw new NotImplementedException();
         }
@@ -160,7 +159,7 @@ namespace sones.InMemoryNonRevisioned
             throw new NotImplementedException();
         }
 
-        public IVertex UpdateVertex(VertexID myToBeUpdatedVertexID, IVertex myVertexUpdateDiff, string myToBeUpdatedEditions = null, VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
+        public IVertex UpdateVertex(ulong myToBeUpdatedVertexID, ulong myCorrespondingVertexTypeID, IVertex myVertexUpdateDiff, string myToBeUpdatedEditions = null, VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
         {
             throw new NotImplementedException();
         }

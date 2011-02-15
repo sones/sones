@@ -19,21 +19,21 @@ namespace sones.PropertyHyperGraph
         /// </summary>
         /// <param name="myEdgePropertyID">The property id of the interesting edge</param>
         /// <returns>True if there is a specified edge, otherwise false</returns>
-        Boolean HasIncomingHyperEdge(PropertyID myEdgePropertyID);
+        Boolean HasIncomingHyperEdge(UInt64 myEdgePropertyID);
 
         /// <summary>
         /// Returns all incoming edges
         /// </summary>
         /// <param name="myFilterFunc">A function to filter those hyper edges</param>
         /// <returns>An IEnumerable of propertyID/incoming edge KVP</returns>
-        IEnumerable<KeyValuePair<PropertyID, IHyperEdge>> GetAllIncomingHyperEdges(Func<PropertyID, IHyperEdge, bool> myFilterFunc = null);
+        IEnumerable<KeyValuePair<UInt64, IHyperEdge>> GetAllIncomingHyperEdges(Func<UInt64, IHyperEdge, bool> myFilterFunc = null);
 
         /// <summary>
         /// Returns a specified incoming edge
         /// </summary>
         /// <param name="myEdgePropertyID"></param>
         /// <returns></returns>
-        IHyperEdge GetIncomingHyperEdge(PropertyID myEdgePropertyID);
+        IHyperEdge GetIncomingHyperEdge(UInt64 myEdgePropertyID);
 
         #endregion
 
@@ -44,49 +44,49 @@ namespace sones.PropertyHyperGraph
         /// </summary>
         /// <param name="myEdgePropertyID">The property id of the interesting edge</param>
         /// <returns>True if there is a specified edge, otherwise false</returns>
-        Boolean HasOutgoingEdge(PropertyID myEdgePropertyID);
+        Boolean HasOutgoingEdge(UInt64 myEdgePropertyID);
 
         /// <summary>
         /// Returns all outgoing edges
         /// </summary>
         /// <param name="myFilterFunc">A function to filter those edges</param>
         /// <returns>An IEnumerable of propertyID/outgoing edges</returns>
-        IEnumerable<KeyValuePair<PropertyID, IEdge>> GetAllOutgoingEdges(Func<PropertyID, IEdge, bool> myFilterFunc = null);
+        IEnumerable<KeyValuePair<UInt64, IEdge>> GetAllOutgoingEdges(Func<UInt64, IEdge, bool> myFilterFunc = null);
 
         /// <summary>
         /// Returns all outgoing hyper edges
         /// </summary>
         /// <param name="myFilterFunc">A function to filter those edges</param>
         /// <returns>An IEnumerable of propertyID/hyper edge KVP</returns>
-        IEnumerable<KeyValuePair<PropertyID, IHyperEdge>> GetAllOutgoingHyperEdges(Func<PropertyID, IHyperEdge, bool> myFilterFunc = null);
+        IEnumerable<KeyValuePair<UInt64, IHyperEdge>> GetAllOutgoingHyperEdges(Func<UInt64, IHyperEdge, bool> myFilterFunc = null);
 
         /// <summary>
         /// Returns all outgoing single edges
         /// </summary>
         /// <param name="myFilterFunc">A function to filter those edges</param>
         /// <returns>An IEnumerable of PropertyID/single edge KVP</returns>
-        IEnumerable<KeyValuePair<PropertyID, ISingleEdge>> GetAllOutgoingSingleEdges(Func<PropertyID, ISingleEdge, bool> myFilterFunc = null);
+        IEnumerable<KeyValuePair<UInt64, ISingleEdge>> GetAllOutgoingSingleEdges(Func<UInt64, ISingleEdge, bool> myFilterFunc = null);
 
         /// <summary>
         /// Returns a specified edge
         /// </summary>
         /// <param name="myEdgePropertyID">The property id of the specified edge</param>
         /// <returns>An IEdge</returns>
-        IEdge GetOutgoingEdge(PropertyID myEdgePropertyID);
+        IEdge GetOutgoingEdge(UInt64 myEdgePropertyID);
 
         /// <summary>
         /// Returns a specified hyper edge
         /// </summary>
         /// <param name="myEdgePropertyID">The property id of the specified edge</param>
         /// <returns>A hyper edge</returns>
-        IHyperEdge GetOutgoingHyperEdge(PropertyID myEdgePropertyID);
+        IHyperEdge GetOutgoingHyperEdge(UInt64 myEdgePropertyID);
 
         /// <summary>
         /// Get a specified single edge
         /// </summary>
         /// <param name="myEdgePropertyID">The property id of the specified edge</param>
         /// <returns>A single edge</returns>
-        ISingleEdge GetOutgoingSingleEdge(PropertyID myEdgePropertyID);
+        ISingleEdge GetOutgoingSingleEdge(UInt64 myEdgePropertyID);
 
         #endregion
 
@@ -99,14 +99,14 @@ namespace sones.PropertyHyperGraph
         /// </summary>
         /// <param name="myPropertyID">The property id of the specified binary</param>
         /// <returns>A stream</returns>
-        Stream GetBinaryProperty(PropertyID myPropertyID);
+        Stream GetBinaryProperty(UInt64 myPropertyID);
 
         /// <summary>
         /// Returns all binary properties
         /// </summary>
         /// <param name="myFilterFunc">A function to filter the binary properties</param> 
         /// <returns>An IEnumerable of PropertyID/stream KVP</returns>
-        IEnumerable<KeyValuePair<PropertyID,Stream>> GetAllBinaryProperties(Func<PropertyID, bool> myFilterFunc = null);
+        IEnumerable<KeyValuePair<UInt64, Stream>> GetAllBinaryProperties(Func<UInt64, bool> myFilterFunc = null);
 
         #endregion
     }

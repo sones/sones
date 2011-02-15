@@ -16,14 +16,14 @@ namespace sones.PropertyHyperGraph
         /// <typeparam name="T">The type of the interesting property</typeparam>
         /// <param name="myPropertyID">The ID of the interesing property</param>
         /// <returns>A Property</returns>
-        T GetProperty<T>(PropertyID myPropertyID);
+        T GetProperty<T>(UInt64 myPropertyID);
 
         /// <summary>
         /// Checks whether the graph element is in possession of a certain property
         /// </summary>
         /// <param name="myPropertyID">The ID of the property</param>
         /// <returns>True if the property exists, otherwise false</returns>
-        bool HasProperty(PropertyID myPropertyID);
+        bool HasProperty(UInt64 myPropertyID);
 
         /// <summary>
         /// Returns the count of the vertex properties
@@ -36,14 +36,14 @@ namespace sones.PropertyHyperGraph
         /// </summary>
         /// <param name="myFilterFunc">A function to filter properties</param>
         /// <returns>An IEnumerable of Property/Value</returns>
-        IEnumerable<KeyValuePair<PropertyID, Object>> GetAllProperties(Func<PropertyID, Object, bool> myFilterFunc = null);
+        IEnumerable<KeyValuePair<UInt64, Object>> GetAllProperties(Func<UInt64, Object, bool> myFilterFunc = null);
 
         /// <summary>
         /// Returns a property as string
         /// </summary>
         /// <param name="myPropertyID">The id of the property</param>
         /// <returns>The string representation of the property</returns>
-        String GetPropertyAsString(PropertyID myPropertyID);
+        String GetPropertyAsString(UInt64 myPropertyID);
 
         #endregion
 
@@ -110,6 +110,15 @@ namespace sones.PropertyHyperGraph
         /// The date the graph element has been modified the last time
         /// </summary>
         DateTime ModificationDate { get; }
+
+        #endregion
+
+        #region TypeID
+
+        /// <summary>
+        /// The id of the vertex type
+        /// </summary>
+        UInt64 TypeID { get; }
 
         #endregion
     }

@@ -12,9 +12,9 @@ namespace sones.PropertyHyperGraph
         #region ID / Edition / Revision
 
         /// <summary>
-        /// A vertex is identified by the name of its vertex type and Guid
+        /// The id of the vertex
         /// </summary>
-        VertexID VertexID { get; }
+        UInt64 VertexID { get; }
 
         /// <summary>
         /// Returns the revision id of this vertex

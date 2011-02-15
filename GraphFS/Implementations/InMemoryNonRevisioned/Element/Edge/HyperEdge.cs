@@ -40,12 +40,12 @@ namespace sones.InMemoryNonRevisioned.Element
 
         #region IGraphElement Members
 
-        public T GetProperty<T>(PropertyID myPropertyID)
+        public T GetProperty<T>(ulong myPropertyID)
         {
             throw new NotImplementedException();
         }
 
-        public bool HasProperty(PropertyID myPropertyID)
+        public bool HasProperty(ulong myPropertyID)
         {
             throw new NotImplementedException();
         }
@@ -55,12 +55,12 @@ namespace sones.InMemoryNonRevisioned.Element
             throw new NotImplementedException();
         }
 
-        public IEnumerable<KeyValuePair<PropertyID, object>> GetAllProperties(Func<PropertyID, object, bool> myFilterFunc = null)
+        public IEnumerable<KeyValuePair<ulong, object>> GetAllProperties(Func<ulong, object, bool> myFilterFunc = null)
         {
             throw new NotImplementedException();
         }
 
-        public string GetPropertyAsString(PropertyID myPropertyID)
+        public string GetPropertyAsString(ulong myPropertyID)
         {
             throw new NotImplementedException();
         }
@@ -105,14 +105,14 @@ namespace sones.InMemoryNonRevisioned.Element
             get { throw new NotImplementedException(); }
         }
 
-        #endregion
-
-        #region IEdgeProperties Members
-
-        public EdgeID EdgeID
+        public ulong TypeID
         {
             get { throw new NotImplementedException(); }
         }
+
+        #endregion
+
+        #region IEdgeProperties Members
 
         public IEdgeStatistics Statistics
         {
