@@ -107,9 +107,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Implementation", "Implement
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphDBManager", "Plugins\GraphDB\Manager\Implementation\GraphDBManager\GraphDBManager.csproj", "{B63AEBDB-E99E-441C-A694-029F3CE395C4}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{94E9B2F2-AF4F-4981-AF9C-681544679444}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGraphDB", "Tests\TestGraphDB\TestGraphDB.csproj", "{79936D52-52EB-4238-8EF7-33C364C0FB98}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 26
+		SccNumberOfProjects = 27
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -213,6 +217,10 @@ Global
 		SccProjectTopLevelParentUniqueName25 = CoreDeveloper.sln
 		SccProjectName25 = Plugins/GraphDB/Manager/Implementation/GraphDBManager
 		SccLocalPath25 = Plugins\\GraphDB\\Manager\\Implementation\\GraphDBManager
+		SccProjectUniqueName26 = Tests\\TestGraphDB\\TestGraphDB.csproj
+		SccProjectTopLevelParentUniqueName26 = CoreDeveloper.sln
+		SccProjectName26 = Tests/TestGraphDB
+		SccLocalPath26 = Tests\\TestGraphDB
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -473,6 +481,16 @@ Global
 		{B63AEBDB-E99E-441C-A694-029F3CE395C4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B63AEBDB-E99E-441C-A694-029F3CE395C4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B63AEBDB-E99E-441C-A694-029F3CE395C4}.Release|x86.ActiveCfg = Release|Any CPU
+		{79936D52-52EB-4238-8EF7-33C364C0FB98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79936D52-52EB-4238-8EF7-33C364C0FB98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79936D52-52EB-4238-8EF7-33C364C0FB98}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{79936D52-52EB-4238-8EF7-33C364C0FB98}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{79936D52-52EB-4238-8EF7-33C364C0FB98}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{79936D52-52EB-4238-8EF7-33C364C0FB98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79936D52-52EB-4238-8EF7-33C364C0FB98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79936D52-52EB-4238-8EF7-33C364C0FB98}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{79936D52-52EB-4238-8EF7-33C364C0FB98}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{79936D52-52EB-4238-8EF7-33C364C0FB98}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -524,5 +542,6 @@ Global
 		{F8A5DBE6-F3F2-446D-9395-6904DCD04C78} = {6B82481E-B7E4-4A05-9AC5-E7B7FC6CAB08}
 		{7214C054-B081-42C3-93F8-80A77DB6F17A} = {6B82481E-B7E4-4A05-9AC5-E7B7FC6CAB08}
 		{B63AEBDB-E99E-441C-A694-029F3CE395C4} = {7214C054-B081-42C3-93F8-80A77DB6F17A}
+		{79936D52-52EB-4238-8EF7-33C364C0FB98} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 	EndGlobalSection
 EndGlobal
