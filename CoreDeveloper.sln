@@ -39,10 +39,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SonesGQL", "SonesGQL", "{2B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aggregates", "Aggregates", "{FC621147-A299-4DE4-A2CC-DA71FD57044A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISonesGQLAggregate", "Plugins\SonesGQL\ISonesGQLAggregate\ISonesGQLAggregate.csproj", "{B70DCE72-B636-442A-8825-F3BE78D86D34}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonesGQLAggregates", "Plugins\SonesGQL\SonesGQLAggregates\SonesGQLAggregates.csproj", "{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Index", "Index", "{48ACC5ED-F25B-458A-94E7-9128C17445B5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Indices", "Indices", "{FACE26D6-DCE4-49EC-AEFD-96B580BB022B}"
@@ -69,8 +65,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{155891
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RESTService", "RESTService", "{D5FD4D1D-0A5E-497D-8E30-F36EB76E9B74}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISonesRESTService", "Plugins\RESTService\ISonesRESTService\ISonesRESTService.csproj", "{0D7A14D7-9851-4624-9260-858741603F98}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{C0340C2A-2752-4739-ADF1-6F0F827475BF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Implementations", "Implementations", "{75F38D02-8EDB-4955-8D24-C1FF17732F9D}"
@@ -92,6 +86,20 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Security", "Library\Internal\Security\Security.csproj", "{3C13E344-937B-4010-B0EF-A164232E4454}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ErrorHandling", "Library\Internal\ErrorHandling\ErrorHandling.csproj", "{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GraphDS", "GraphDS", "{5AAE6106-287F-4C6E-B2A7-0B0695BBD521}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GraphQL", "GraphQL", "{601ADD59-4F38-422A-851A-8B0312872F8F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GraphDB", "GraphDB", "{A7B90BF6-6D23-4857-AA2B-5F0B88F9A59D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Manager", "Manager", "{6B82481E-B7E4-4A05-9AC5-E7B7FC6CAB08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISonesRESTService", "Plugins\GraphDS\RESTService\ISonesRESTService\ISonesRESTService.csproj", "{0D7A14D7-9851-4624-9260-858741603F98}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISonesGQLAggregate", "Plugins\GraphQL\SonesGQL\ISonesGQLAggregate\ISonesGQLAggregate.csproj", "{B70DCE72-B636-442A-8825-F3BE78D86D34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonesGQLAggregates", "Plugins\GraphQL\SonesGQL\Aggregates\SonesGQLAggregates\SonesGQLAggregates.csproj", "{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -123,74 +131,74 @@ Global
 		SccProjectTopLevelParentUniqueName6 = CoreDeveloper.sln
 		SccProjectName6 = GraphFS/Implementations/InMemoryNonRevisioned
 		SccLocalPath6 = GraphFS\\Implementations\\InMemoryNonRevisioned
-		SccProjectUniqueName7 = Plugins\\SonesGQL\\ISonesGQLAggregate\\ISonesGQLAggregate.csproj
+		SccProjectUniqueName7 = Plugins\\Index\\ISonesIndex\\ISonesIndex.csproj
 		SccProjectTopLevelParentUniqueName7 = CoreDeveloper.sln
-		SccProjectName7 = Plugins/SonesGQL/ISonesGQLAggregate
-		SccLocalPath7 = Plugins\\SonesGQL\\ISonesGQLAggregate
-		SccProjectUniqueName8 = Plugins\\SonesGQL\\SonesGQLAggregates\\SonesGQLAggregates.csproj
+		SccProjectName7 = Plugins/Index/ISonesIndex
+		SccLocalPath7 = Plugins\\Index\\ISonesIndex
+		SccProjectUniqueName8 = Plugins\\Index\\Indices\\SonesIndices\\SonesIndices.csproj
 		SccProjectTopLevelParentUniqueName8 = CoreDeveloper.sln
-		SccProjectName8 = Plugins/SonesGQL/SonesGQLAggregates
-		SccLocalPath8 = Plugins\\SonesGQL\\SonesGQLAggregates
-		SccProjectUniqueName9 = Plugins\\Index\\ISonesIndex\\ISonesIndex.csproj
+		SccProjectName8 = Plugins/Index/Indices/SonesIndices
+		SccLocalPath8 = Plugins\\Index\\Indices\\SonesIndices
+		SccProjectUniqueName9 = GraphQL\\IGraphQL\\IGraphQL.csproj
 		SccProjectTopLevelParentUniqueName9 = CoreDeveloper.sln
-		SccProjectName9 = Plugins/Index/ISonesIndex
-		SccLocalPath9 = Plugins\\Index\\ISonesIndex
-		SccProjectUniqueName10 = Plugins\\Index\\Indices\\SonesIndices\\SonesIndices.csproj
+		SccProjectName9 = GraphQL/IGraphQL
+		SccLocalPath9 = GraphQL\\IGraphQL
+		SccProjectUniqueName10 = GraphQL\\Implementations\\SonesGraphQueryLanguage\\SonesGraphQueryLanguage.csproj
 		SccProjectTopLevelParentUniqueName10 = CoreDeveloper.sln
-		SccProjectName10 = Plugins/Index/Indices/SonesIndices
-		SccLocalPath10 = Plugins\\Index\\Indices\\SonesIndices
-		SccProjectUniqueName11 = GraphQL\\IGraphQL\\IGraphQL.csproj
+		SccProjectName10 = GraphQL/Implementations/SonesGraphQueryLanguage
+		SccLocalPath10 = GraphQL\\Implementations\\SonesGraphQueryLanguage
+		SccProjectUniqueName11 = GraphQL\\Implementations\\SPARQL\\SPARQL.csproj
 		SccProjectTopLevelParentUniqueName11 = CoreDeveloper.sln
-		SccProjectName11 = GraphQL/IGraphQL
-		SccLocalPath11 = GraphQL\\IGraphQL
-		SccProjectUniqueName12 = GraphQL\\Implementations\\SonesGraphQueryLanguage\\SonesGraphQueryLanguage.csproj
+		SccProjectName11 = GraphQL/Implementations/SPARQL
+		SccLocalPath11 = GraphQL\\Implementations\\SPARQL
+		SccProjectUniqueName12 = GraphQL\\Implementations\\Gremlin\\Gremlin.csproj
 		SccProjectTopLevelParentUniqueName12 = CoreDeveloper.sln
-		SccProjectName12 = GraphQL/Implementations/SonesGraphQueryLanguage
-		SccLocalPath12 = GraphQL\\Implementations\\SonesGraphQueryLanguage
-		SccProjectUniqueName13 = GraphQL\\Implementations\\SPARQL\\SPARQL.csproj
+		SccProjectName12 = GraphQL/Implementations/Gremlin
+		SccLocalPath12 = GraphQL\\Implementations\\Gremlin
+		SccProjectUniqueName13 = GraphDS\\Server\\Implementations\\GraphDSServer\\GraphDSServer.csproj
 		SccProjectTopLevelParentUniqueName13 = CoreDeveloper.sln
-		SccProjectName13 = GraphQL/Implementations/SPARQL
-		SccLocalPath13 = GraphQL\\Implementations\\SPARQL
-		SccProjectUniqueName14 = GraphQL\\Implementations\\Gremlin\\Gremlin.csproj
+		SccProjectName13 = GraphDS/Server/Implementations/GraphDSServer
+		SccLocalPath13 = GraphDS\\Server\\Implementations\\GraphDSServer
+		SccProjectUniqueName14 = GraphDS\\Server\\IGraphDSServer\\IGraphDSServer.csproj
 		SccProjectTopLevelParentUniqueName14 = CoreDeveloper.sln
-		SccProjectName14 = GraphQL/Implementations/Gremlin
-		SccLocalPath14 = GraphQL\\Implementations\\Gremlin
-		SccProjectUniqueName15 = Plugins\\RESTService\\ISonesRESTService\\ISonesRESTService.csproj
+		SccProjectName14 = GraphDS/Server/IGraphDSServer
+		SccLocalPath14 = GraphDS\\Server\\IGraphDSServer
+		SccProjectUniqueName15 = GraphDS\\Client\\IGraphDSClient\\IGraphDSClient.csproj
 		SccProjectTopLevelParentUniqueName15 = CoreDeveloper.sln
-		SccProjectName15 = Plugins/RESTService/ISonesRESTService
-		SccLocalPath15 = Plugins\\RESTService\\ISonesRESTService
-		SccProjectUniqueName16 = GraphDS\\Server\\Implementations\\GraphDSServer\\GraphDSServer.csproj
+		SccProjectName15 = GraphDS/Client/IGraphDSClient
+		SccLocalPath15 = GraphDS\\Client\\IGraphDSClient
+		SccProjectUniqueName16 = GraphDS\\Client\\Implementations\\GraphDSRESTClient\\GraphDSRESTClient.csproj
 		SccProjectTopLevelParentUniqueName16 = CoreDeveloper.sln
-		SccProjectName16 = GraphDS/Server/Implementations/GraphDSServer
-		SccLocalPath16 = GraphDS\\Server\\Implementations\\GraphDSServer
-		SccProjectUniqueName17 = GraphDS\\Server\\IGraphDSServer\\IGraphDSServer.csproj
+		SccProjectName16 = GraphDS/Client/Implementations/GraphDSRESTClient
+		SccLocalPath16 = GraphDS\\Client\\Implementations\\GraphDSRESTClient
+		SccProjectUniqueName17 = Library\\Internal\\PropertyHyperGraph\\PropertyHyperGraph.csproj
 		SccProjectTopLevelParentUniqueName17 = CoreDeveloper.sln
-		SccProjectName17 = GraphDS/Server/IGraphDSServer
-		SccLocalPath17 = GraphDS\\Server\\IGraphDSServer
-		SccProjectUniqueName18 = GraphDS\\Client\\IGraphDSClient\\IGraphDSClient.csproj
+		SccProjectName17 = Library/Internal/PropertyHyperGraph
+		SccLocalPath17 = Library\\Internal\\PropertyHyperGraph
+		SccProjectUniqueName18 = Library\\Internal\\Transaction\\Transaction.csproj
 		SccProjectTopLevelParentUniqueName18 = CoreDeveloper.sln
-		SccProjectName18 = GraphDS/Client/IGraphDSClient
-		SccLocalPath18 = GraphDS\\Client\\IGraphDSClient
-		SccProjectUniqueName19 = GraphDS\\Client\\Implementations\\GraphDSRESTClient\\GraphDSRESTClient.csproj
+		SccProjectName18 = Library/Internal/Transaction
+		SccLocalPath18 = Library\\Internal\\Transaction
+		SccProjectUniqueName19 = Library\\Internal\\Security\\Security.csproj
 		SccProjectTopLevelParentUniqueName19 = CoreDeveloper.sln
-		SccProjectName19 = GraphDS/Client/Implementations/GraphDSRESTClient
-		SccLocalPath19 = GraphDS\\Client\\Implementations\\GraphDSRESTClient
-		SccProjectUniqueName20 = Library\\Internal\\PropertyHyperGraph\\PropertyHyperGraph.csproj
+		SccProjectName19 = Library/Internal/Security
+		SccLocalPath19 = Library\\Internal\\Security
+		SccProjectUniqueName20 = Library\\Internal\\ErrorHandling\\ErrorHandling.csproj
 		SccProjectTopLevelParentUniqueName20 = CoreDeveloper.sln
-		SccProjectName20 = Library/Internal/PropertyHyperGraph
-		SccLocalPath20 = Library\\Internal\\PropertyHyperGraph
-		SccProjectUniqueName21 = Library\\Internal\\Transaction\\Transaction.csproj
+		SccProjectName20 = Library/Internal/ErrorHandling
+		SccLocalPath20 = Library\\Internal\\ErrorHandling
+		SccProjectUniqueName21 = Plugins\\GraphDS\\RESTService\\ISonesRESTService\\ISonesRESTService.csproj
 		SccProjectTopLevelParentUniqueName21 = CoreDeveloper.sln
-		SccProjectName21 = Library/Internal/Transaction
-		SccLocalPath21 = Library\\Internal\\Transaction
-		SccProjectUniqueName22 = Library\\Internal\\Security\\Security.csproj
+		SccProjectName21 = Plugins/GraphDS/RESTService/ISonesRESTService
+		SccLocalPath21 = Plugins\\GraphDS\\RESTService\\ISonesRESTService
+		SccProjectUniqueName22 = Plugins\\GraphQL\\SonesGQL\\ISonesGQLAggregate\\ISonesGQLAggregate.csproj
 		SccProjectTopLevelParentUniqueName22 = CoreDeveloper.sln
-		SccProjectName22 = Library/Internal/Security
-		SccLocalPath22 = Library\\Internal\\Security
-		SccProjectUniqueName23 = Library\\Internal\\ErrorHandling\\ErrorHandling.csproj
+		SccProjectName22 = Plugins/GraphQL/SonesGQL/ISonesGQLAggregate
+		SccLocalPath22 = Plugins\\GraphQL\\SonesGQL\\ISonesGQLAggregate
+		SccProjectUniqueName23 = Plugins\\GraphQL\\SonesGQL\\Aggregates\\SonesGQLAggregates\\SonesGQLAggregates.csproj
 		SccProjectTopLevelParentUniqueName23 = CoreDeveloper.sln
-		SccProjectName23 = Library/Internal/ErrorHandling
-		SccLocalPath23 = Library\\Internal\\ErrorHandling
+		SccProjectName23 = Plugins/GraphQL/SonesGQL/Aggregates/SonesGQLAggregates
+		SccLocalPath23 = Plugins\\GraphQL\\SonesGQL\\Aggregates\\SonesGQLAggregates
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -261,26 +269,6 @@ Global
 		{6A6D0690-78A4-4134-AA2B-4A7A39535612}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{6A6D0690-78A4-4134-AA2B-4A7A39535612}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{6A6D0690-78A4-4134-AA2B-4A7A39535612}.Release|x86.ActiveCfg = Release|Any CPU
-		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Release|x86.ActiveCfg = Release|Any CPU
-		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Release|x86.ActiveCfg = Release|Any CPU
 		{823E8AF4-CF92-4E74-8ABD-38693279EB1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{823E8AF4-CF92-4E74-8ABD-38693279EB1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{823E8AF4-CF92-4E74-8ABD-38693279EB1E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -341,16 +329,6 @@ Global
 		{B0759780-BECA-422E-9A54-89BAB1C02459}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B0759780-BECA-422E-9A54-89BAB1C02459}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B0759780-BECA-422E-9A54-89BAB1C02459}.Release|x86.ActiveCfg = Release|Any CPU
-		{0D7A14D7-9851-4624-9260-858741603F98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0D7A14D7-9851-4624-9260-858741603F98}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0D7A14D7-9851-4624-9260-858741603F98}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{0D7A14D7-9851-4624-9260-858741603F98}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{0D7A14D7-9851-4624-9260-858741603F98}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{0D7A14D7-9851-4624-9260-858741603F98}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0D7A14D7-9851-4624-9260-858741603F98}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0D7A14D7-9851-4624-9260-858741603F98}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{0D7A14D7-9851-4624-9260-858741603F98}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{0D7A14D7-9851-4624-9260-858741603F98}.Release|x86.ActiveCfg = Release|Any CPU
 		{2FB38C4B-C29D-4F34-B42C-7A82E79A0C14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2FB38C4B-C29D-4F34-B42C-7A82E79A0C14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FB38C4B-C29D-4F34-B42C-7A82E79A0C14}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -431,6 +409,36 @@ Global
 		{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}.Release|x86.ActiveCfg = Release|Any CPU
+		{0D7A14D7-9851-4624-9260-858741603F98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D7A14D7-9851-4624-9260-858741603F98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D7A14D7-9851-4624-9260-858741603F98}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0D7A14D7-9851-4624-9260-858741603F98}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0D7A14D7-9851-4624-9260-858741603F98}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0D7A14D7-9851-4624-9260-858741603F98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D7A14D7-9851-4624-9260-858741603F98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D7A14D7-9851-4624-9260-858741603F98}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0D7A14D7-9851-4624-9260-858741603F98}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0D7A14D7-9851-4624-9260-858741603F98}.Release|x86.ActiveCfg = Release|Any CPU
+		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B70DCE72-B636-442A-8825-F3BE78D86D34}.Release|x86.ActiveCfg = Release|Any CPU
+		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -453,9 +461,11 @@ Global
 		{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{3C13E344-937B-4010-B0EF-A164232E4454} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
-		{2B34D970-2910-435E-AD67-69E29DB16492} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
+		{601ADD59-4F38-422A-851A-8B0312872F8F} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
 		{48ACC5ED-F25B-458A-94E7-9128C17445B5} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
-		{D5FD4D1D-0A5E-497D-8E30-F36EB76E9B74} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
+		{5AAE6106-287F-4C6E-B2A7-0B0695BBD521} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
+		{A7B90BF6-6D23-4857-AA2B-5F0B88F9A59D} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
+		{2B34D970-2910-435E-AD67-69E29DB16492} = {601ADD59-4F38-422A-851A-8B0312872F8F}
 		{FC621147-A299-4DE4-A2CC-DA71FD57044A} = {2B34D970-2910-435E-AD67-69E29DB16492}
 		{B70DCE72-B636-442A-8825-F3BE78D86D34} = {2B34D970-2910-435E-AD67-69E29DB16492}
 		{DEFB0F07-767B-47F8-BF8A-31EC0978AB51} = {FC621147-A299-4DE4-A2CC-DA71FD57044A}
@@ -471,9 +481,11 @@ Global
 		{1E30E203-20DE-4DA3-854A-18FEFADA6D7A} = {D92AF9AE-48D1-4B1B-9B70-250F1CEEFABE}
 		{89E70649-A81B-4A70-A9A1-B91EA96CE8A1} = {15589123-5145-44D4-9514-214729FD9EF3}
 		{49AD5B01-49DE-4330-BDDC-876ABA4C04A2} = {15589123-5145-44D4-9514-214729FD9EF3}
-		{0D7A14D7-9851-4624-9260-858741603F98} = {D5FD4D1D-0A5E-497D-8E30-F36EB76E9B74}
+		{D5FD4D1D-0A5E-497D-8E30-F36EB76E9B74} = {5AAE6106-287F-4C6E-B2A7-0B0695BBD521}
 		{C0340C2A-2752-4739-ADF1-6F0F827475BF} = {D5FD4D1D-0A5E-497D-8E30-F36EB76E9B74}
+		{0D7A14D7-9851-4624-9260-858741603F98} = {D5FD4D1D-0A5E-497D-8E30-F36EB76E9B74}
 		{2FB38C4B-C29D-4F34-B42C-7A82E79A0C14} = {75F38D02-8EDB-4955-8D24-C1FF17732F9D}
 		{20D600AA-CD60-423D-A8EE-BCD93F861879} = {49AD5B01-49DE-4330-BDDC-876ABA4C04A2}
+		{6B82481E-B7E4-4A05-9AC5-E7B7FC6CAB08} = {A7B90BF6-6D23-4857-AA2B-5F0B88F9A59D}
 	EndGlobalSection
 EndGlobal

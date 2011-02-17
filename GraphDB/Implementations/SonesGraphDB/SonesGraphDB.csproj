@@ -45,7 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Manager\MetaManager.cs" />
-    <Compile Include="Manager\RequestManager.cs" />
+    <Compile Include="Manager\Request\RequestManager.cs" />
     <Compile Include="Request\IPipelinableRequest.cs" />
     <Compile Include="SonesGraphDB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

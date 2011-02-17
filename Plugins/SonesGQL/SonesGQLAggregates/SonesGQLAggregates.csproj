@@ -53,10 +53,6 @@
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ISonesGQLAggregate\ISonesGQLAggregate.csproj">
-      <Project>{B70DCE72-B636-442A-8825-F3BE78D86D34}</Project>
-      <Name>ISonesGQLAggregate</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

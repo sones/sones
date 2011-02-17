@@ -89,6 +89,8 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// Stage 1 of Request processing
         /// Validation of the incoming requests. 
+        /// 
+        /// BEWARE!!! Cannot be executed more than once BEWARE!!!
         /// </summary>
         /// <param name="myIncomingRequests">The incoming requests</param>
         /// <param name="myExecuteAbleRequests">The result of this stage. Validated Requests</param>
