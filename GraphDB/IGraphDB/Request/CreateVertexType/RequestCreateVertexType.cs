@@ -5,16 +5,9 @@ namespace sones.GraphDB.Request
     /// <summary>
     /// A request for creating a new vertex type
     /// </summary>
-    /// <typeparam name="TResult"></typeparam>
-    public sealed class RequestCreateVertexType<TResult> : IRequest<TResult>
+    public sealed class RequestCreateVertexType : IRequest
     {
-
         #region data
-
-        /// <summary>
-        /// Transforms the statistics into the desired result
-        /// </summary>
-        private readonly Func<RequestStatistics, TResult> _outputConverter;
 
         /// <summary>
         /// The stats of the request
@@ -24,7 +17,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The definition of the vertex that is going to be created
         /// </summary>
-        public readonly VertexTypeDefinition VertexTypeDefinition = null;
+        public readonly VertexTypeDefinition VertexTypeDefinition;
 
         #endregion
 
@@ -34,10 +27,8 @@ namespace sones.GraphDB.Request
         /// Creates a new request that clears the Graphdb
         /// </summary>
         /// <param name="myVertexTypeDefinition">Describes the vertex that is going to be created</param>
-        /// <param name="myOutputConverter">A function that convertes the result into the desired output</param>
-        public RequestCreateVertexType(VertexTypeDefinition myVertexTypeDefinition, Func<RequestStatistics, TResult> myOutputConverter)
+        public RequestCreateVertexType(VertexTypeDefinition myVertexTypeDefinition)
         {
-            _outputConverter = myOutputConverter;
             VertexTypeDefinition = myVertexTypeDefinition;
         }
 
@@ -45,14 +36,9 @@ namespace sones.GraphDB.Request
 
         #region IRequest<TResult> Members
 
-        public TResult GenerateResult()
+        public GraphDBAccessMode AccessMode
         {
-            return _outputConverter(_stats);
-        }
-
-        public GraphDBAccessModeEnum AccessMode
-        {
-            get { return GraphDBAccessModeEnum.TypeChange; }
+            get { return GraphDBAccessMode.TypeChange; }
         }
 
         public void SetStatistics(IRequestStatistics myRequestStatistics)

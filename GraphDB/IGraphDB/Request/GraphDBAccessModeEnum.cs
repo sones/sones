@@ -5,17 +5,12 @@ namespace sones.GraphDB.Request
     /// <summary>
     /// The different GraphDB access modes
     /// </summary>
-    public enum GraphDBAccessModeEnum
+    public enum GraphDBAccessMode
     {
         /// <summary>
         /// vertex or edge type changes like alter, create
         /// </summary>
         TypeChange,
-        
-        /// <summary>
-        /// clear
-        /// </summary>
-        WriteOnly,
         
         /// <summary>
         /// graph traversal, get vertex

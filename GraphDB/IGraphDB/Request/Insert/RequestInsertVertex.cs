@@ -5,16 +5,9 @@ namespace sones.GraphDB.Request
     /// <summary>
     /// A request for creating a new vertex
     /// </summary>
-    /// <typeparam name="TResult">The result type</typeparam>
-    public sealed class RequestInsertVertex<TResult> : IRequest<TResult>
+    public sealed class RequestInsertVertex : IRequest
     {
-
         #region data
-
-        /// <summary>
-        /// Transforms the statistics into the desired result
-        /// </summary>
-        private readonly Func<RequestStatistics, TResult> _outputConverter;
 
         /// <summary>
         /// The stats of the request
@@ -24,7 +17,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The definition of the vertex that is going to be inserted
         /// </summary>
-        public readonly VertexInsert VertexInsertDefinition = null;
+        public readonly VertexInsert VertexInsertDefinition;
 
         #endregion
 
@@ -34,10 +27,8 @@ namespace sones.GraphDB.Request
         /// Creates a new request that clears the Graphdb
         /// </summary>
         /// <param name="myVertexInsertDefinition">Describes the vertex that is going to be inserted</param>
-        /// <param name="myOutputConverter">A function that convertes the result into the desired output</param>
-        public RequestInsertVertex(VertexInsert myVertexInsertDefinition, Func<RequestStatistics, TResult> myOutputConverter)
+        public RequestInsertVertex(VertexInsert myVertexInsertDefinition)
         {
-            _outputConverter = myOutputConverter;
             VertexInsertDefinition = myVertexInsertDefinition;
         }
 
@@ -45,14 +36,9 @@ namespace sones.GraphDB.Request
 
         #region IRequest<TResult> Members
 
-        public TResult GenerateResult()
+        public GraphDBAccessMode AccessMode
         {
-            return _outputConverter(_stats);
-        }
-
-        public GraphDBAccessModeEnum AccessMode
-        {
-            get { return GraphDBAccessModeEnum.ReadWrite; }
+            get { return GraphDBAccessMode.ReadWrite; }
         }
 
         public void SetStatistics(IRequestStatistics myRequestStatistics)

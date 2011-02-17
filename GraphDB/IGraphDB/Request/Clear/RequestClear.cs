@@ -6,16 +6,10 @@ namespace sones.GraphDB.Request
     /// <summary>
     /// A request for clearing the whole graphdb
     /// </summary>
-    /// <typeparam name="TResult">The type of the result</typeparam>
-    public sealed class RequestClear<TResult> : IRequest<TResult>
+    public sealed class RequestClear : IRequest
     {
 
         #region data
-
-        /// <summary>
-        /// Transforms the output header into the desired result
-        /// </summary>
-        private readonly Func<RequestStatistics, TResult> _outputGenerator;
 
         /// <summary>
         /// The request stats
@@ -29,23 +23,17 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Creates a new request that clears the Graphdb
         /// </summary>
-        public RequestClear(Func<RequestStatistics, TResult> myOutputGenerator)
+        public RequestClear()
         {
-            _outputGenerator = myOutputGenerator;
         }
 
         #endregion
 
         #region IRequest<TResult> Members
 
-        public TResult GenerateResult()
+        public GraphDBAccessMode AccessMode
         {
-            return _outputGenerator(_stats);
-        }
-
-        public GraphDBAccessModeEnum AccessMode
-        {
-            get { return GraphDBAccessModeEnum.WriteOnly; }
+            get { return GraphDBAccessMode.ReadWrite; }
         }
 
         public void SetStatistics(IRequestStatistics myRequestStatistics)

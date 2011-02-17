@@ -8,7 +8,7 @@
     <ProjectGuid>{1FC72801-4046-4CC7-BF83-8082FFD593BC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GraphDB</RootNamespace>
+    <RootNamespace>sones.GraphDB</RootNamespace>
     <AssemblyName>SonesGraphDB</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -44,7 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Manager\MetaManager.cs" />
     <Compile Include="Manager\RequestManager.cs" />
+    <Compile Include="Request\IPipelinableRequest.cs" />
     <Compile Include="SonesGraphDB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -66,7 +68,11 @@
       <Name>IGraphDB</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Request\Clear\" />
+    <Folder Include="Request\CreateVertexType\" />
+    <Folder Include="Request\Insert\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

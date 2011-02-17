@@ -5,18 +5,12 @@ namespace sones.GraphDB.Request
     /// A generic interface for requests
     /// </summary>
     /// <typeparam name="TResult">The result type of the request</typeparam>
-    public interface IRequest<TResult>
+    public interface IRequest
     {
         /// <summary>
         /// The access mode for this request
         /// </summary>
-        GraphDBAccessModeEnum AccessMode { get; }
-
-        /// <summary>
-        /// Generates the desired result
-        /// </summary>
-        /// <returns>A generic result</returns>
-        TResult GenerateResult();
+        GraphDBAccessMode AccessMode { get; }
 
         /// <summary>
         /// Sets the statistics

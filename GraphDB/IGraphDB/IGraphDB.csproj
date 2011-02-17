@@ -49,18 +49,17 @@
     <Compile Include="Request\CreateVertexType\EdgeSpecies.cs" />
     <Compile Include="Request\CreateVertexType\OutgoingEdgeDefinition.cs" />
     <Compile Include="Request\CreateVertexType\Property\PropertyDefinition.cs" />
+    <Compile Include="Request\CreateVertexType\RequestCreateVertexType.cs" />
     <Compile Include="Request\CreateVertexType\VertexTypeDefinition.cs" />
     <Compile Include="Request\GraphDBAccessModeEnum.cs" />
     <Compile Include="Request\Insert\EdgeDefinition.cs" />
     <Compile Include="Request\Insert\RequestInsertVertex.cs" />
     <Compile Include="Request\Insert\VertexInsert.cs" />
-    <Compile Include="Request\RequestToken.cs" />
     <Compile Include="Request\IRequestStatistics.cs" />
     <Compile Include="Request\RequestStatistics.cs" />
     <Compile Include="IGraphDB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Request\IRequest.cs" />
-    <Compile Include="Request\CreateVertexType\RequestCreateVertexType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
