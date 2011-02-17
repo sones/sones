@@ -125,7 +125,7 @@ namespace sones.GraphDB.Manager
 
             try
             {
-                foreach (IPipelinableRequest aPipelineRequest in myIncomingRequests.GetConsumingEnumerable())
+                foreach (var aPipelineRequest in myIncomingRequests.GetConsumingEnumerable())
                 {
                     pipelineRequest = aPipelineRequest;
 
@@ -151,7 +151,7 @@ namespace sones.GraphDB.Manager
                             #region dedicated single execution
 
                             //wait until the remaining stages are empty
-                            Boolean everyRequestIsExecuted = false;
+                            var everyRequestIsExecuted = false;
 
                             while (!everyRequestIsExecuted)
                             {
@@ -217,7 +217,7 @@ namespace sones.GraphDB.Manager
 
             try
             {
-                foreach (IPipelinableRequest aPipelineRequest in myExecuteAbleRequests.GetConsumingEnumerable())
+                foreach (var aPipelineRequest in myExecuteAbleRequests.GetConsumingEnumerable())
                 {
                     pipelineRequest = aPipelineRequest;
 
