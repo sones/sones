@@ -30,7 +30,15 @@ namespace sones.GraphDB.Manager
         /// </summary>
         private ConcurrentDictionary<Guid, IRequest> _results;
 
+        /// <summary>
+        /// The meta manager that contains all relevant manager
+        /// </summary>
         private readonly MetaManager _metaManager;
+
+        /// <summary>
+        /// The scheduler which decides whether some requests are executed in parallel
+        /// </summary>
+        private IRequestScheduler _requestScheduler;
 
         #endregion
 
@@ -42,8 +50,16 @@ namespace sones.GraphDB.Manager
         /// <param name="queueLengthForIncomingRequests">This number represents the count of parallel incoming requests that are supported</param>
         /// <param name="executionQueueLength">The number of requests for the execution queue</param>
         /// <param name="executionTaskCount">The number ob tasks that work in parallel on the execution queue</param>
+        /// <param name="myMetaManager">The meta manager that contains all relevant manager</param>
+        /// <param name="myRequestScheduler">The scheduler which decides whether some requests are executed in parallel</param>
         /// <param name="cts">The cancellation token source</param>
-        public RequestManager(int queueLengthForIncomingRequests, int executionQueueLength, int executionTaskCount, CancellationTokenSource cts, MetaManager myMetaManager)
+        public RequestManager(
+            int queueLengthForIncomingRequests, 
+            int executionQueueLength,
+            int executionTaskCount, 
+            MetaManager myMetaManager, 
+            IRequestScheduler myRequestScheduler,
+            CancellationTokenSource cts)
         {
             #region init
 
@@ -51,6 +67,7 @@ namespace sones.GraphDB.Manager
             _executableRequests = new BlockingCollection<IPipelinableRequest>(executionQueueLength);
             _results            = new ConcurrentDictionary<Guid, IRequest>();
             _metaManager        = myMetaManager;
+            _requestScheduler   = myRequestScheduler;
 
             #endregion
 
@@ -84,7 +101,7 @@ namespace sones.GraphDB.Manager
 
         #region stages
 
-        #region 1
+        #region stage 1
 
         /// <summary>
         /// Stage 1 of Request processing
@@ -103,7 +120,9 @@ namespace sones.GraphDB.Manager
             CancellationTokenSource cts)
         {
             var token = cts.Token;
+
             IPipelinableRequest pipelineRequest = null;
+            
             try
             {
                 foreach (var aPipelineRequest in myIncomingRequests.GetConsumingEnumerable())
@@ -115,12 +134,23 @@ namespace sones.GraphDB.Manager
 
                     if (pipelineRequest.Validate(_metaManager))
                     {
-                        if (ExecuteRequestInParallel(pipelineRequest.SecurityToken, pipelineRequest.TransactionToken, pipelineRequest.Request))
+                        #region valid
+
+                        if (_requestScheduler.ExecuteRequestInParallel(pipelineRequest.Request))
                         {
+                            #region execute in parallel
+
+                            //so the request is valid and the request scheduler agrees to execute it in parallel
+
                             myExecuteAbleRequests.Add(pipelineRequest, token);
+
+                            #endregion
+
                         }
                         else
                         {
+                            #region dedicated single execution
+
                             //wait until the remaining stages are empty
                             Boolean everyRequestIsExecuted = false;
 
@@ -134,11 +164,21 @@ namespace sones.GraphDB.Manager
 
                             //add the request to the result
                             myResults.TryAdd(pipelineRequest.ID, pipelineRequest.Request);
+
+                            #endregion
                         }
+
+                        #endregion
                     }
                     else
                     {
+                        #region invalid
+
+                        //the request is invalid and so it is transfered to the results
+
                         myResults.TryAdd(pipelineRequest.ID, pipelineRequest.Request);
+
+                        #endregion
                     }
 
                     pipelineRequest = null;
@@ -158,7 +198,7 @@ namespace sones.GraphDB.Manager
 
         #endregion
 
-        #region 2
+        #region stage 2
 
         /// <summary>
         /// Stage 2 of Request processing
@@ -173,7 +213,9 @@ namespace sones.GraphDB.Manager
             CancellationTokenSource cts)
         {
             var token = cts.Token;
+
             IPipelinableRequest pipelineRequest = null;
+            
             try
             {
                 foreach (var aPipelineRequest in myExecuteAbleRequests.GetConsumingEnumerable())
@@ -223,11 +265,6 @@ namespace sones.GraphDB.Manager
         }
 
         #endregion
-
-        private bool ExecuteRequestInParallel(SecurityToken securityToken, TransactionToken transactionToken, IRequest iRequest)
-        {
-            return iRequest.AccessMode != GraphDBAccessMode.TypeChange;
-        }
 
         #region RegisterRequest
 
