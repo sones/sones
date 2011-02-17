@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.PropertyHyperGraph;
 
 namespace sones.Security
 {
@@ -19,9 +15,9 @@ namespace sones.Security
         /// <param name="myCorrespondingVertexTypeID">The vertex that should be authenticated</param>
         /// <param name="myWantedAction">The requested action</param>
         /// <returns>True for successful authentication, otherwise false</returns>
-        Boolean Authenticate(SecurityToken mySecurityToken, 
-            UInt64 myToBeCheckedVertexID,
-            UInt64 myCorrespondingVertexTypeID,
-            Right myWantedAction = Right.Traverse);
+        Boolean Authenticate(SecurityToken mySecurityToken,
+                             UInt64 myToBeCheckedVertexID,
+                             UInt64 myCorrespondingVertexTypeID,
+                             Right myWantedAction = Right.Traverse);
     }
 }

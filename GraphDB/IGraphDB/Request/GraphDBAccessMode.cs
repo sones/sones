@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace sones.GraphDB.Request
+﻿namespace sones.GraphDB.Request
 {
     /// <summary>
     /// The different GraphDB access modes
@@ -11,12 +9,12 @@ namespace sones.GraphDB.Request
         /// vertex or edge type changes like alter, create
         /// </summary>
         TypeChange,
-        
+
         /// <summary>
         /// graph traversal, get vertex
         /// </summary>
         ReadOnly,
-        
+
         /// <summary>
         /// insert, update ...
         /// </summary>

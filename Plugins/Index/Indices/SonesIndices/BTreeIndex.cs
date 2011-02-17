@@ -1,42 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.Plugins.Index;
 using System.Collections;
-using sones.Plugins.Index.Interfaces;
+using System.Collections.Generic;
 using sones.Plugins.Index.Helper;
+using sones.Plugins.Index.Interfaces;
 
 namespace SonesIndices
 {
     public class BTreeIndex<TKey, TValue> : ISingleValueIndex<TKey, TValue>
         where TKey : IComparable
     {
+        #region ISingleValueIndex<TKey,TValue> Members
+
         public void Add(TKey myKey, TValue myValue, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
         {
             throw new NotImplementedException();
         }
 
-        public void Add(KeyValuePair<TKey, TValue> myKeyValuePair, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
+        public void Add(KeyValuePair<TKey, TValue> myKeyValuePair,
+                        IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
         {
             throw new NotImplementedException();
         }
 
-        public void Add(Dictionary<TKey, TValue> myDictionary, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
+        public void Add(Dictionary<TKey, TValue> myDictionary,
+                        IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
         {
             throw new NotImplementedException();
         }
 
         public TValue this[TKey myKey]
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
         }
 
         public IEnumerable<TValue> Values()
@@ -98,5 +93,7 @@ namespace SonesIndices
         {
             throw new NotImplementedException();
         }
+
+        #endregion
     }
 }

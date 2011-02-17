@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
-using sones.GraphDB.Request;
-using sones.GraphDS;
+using sones.GraphDB;
 using sones.GraphQL.Result;
 using sones.Security;
 using sones.Transaction;
@@ -10,7 +9,7 @@ namespace sones.GraphDSServer
 {
     public sealed class GraphDSServer : IGraphDSServer
     {
-        #region IGraphDSREST Members
+        #region IGraphDSServer Members
 
         public void StartRESTService(string myServiceID, ushort myPort, IPAddress myIPAddress)
         {
@@ -22,11 +21,7 @@ namespace sones.GraphDSServer
             throw new NotImplementedException();
         }
 
-        #endregion
-
-        #region IGraphDS Members
-
-        public GraphDB.IGraphDB GraphDB
+        public IGraphDB GraphDB
         {
             get { throw new NotImplementedException(); }
         }
@@ -36,14 +31,11 @@ namespace sones.GraphDSServer
             throw new NotImplementedException();
         }
 
-        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString, string myQueryLanguageName)
+        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
+                                 string myQueryString, string myQueryLanguageName)
         {
             throw new NotImplementedException();
         }
-
-        #endregion
-
-        #region IUserAuthentication Members
 
         public SecurityToken LogOn(IUserCredentials toBeAuthenticatedCredentials)
         {

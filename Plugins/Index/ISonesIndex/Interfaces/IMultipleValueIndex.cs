@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sones.Plugins.Index.Helper;
 
 namespace sones.Plugins.Index.Interfaces
@@ -11,12 +9,19 @@ namespace sones.Plugins.Index.Interfaces
     /// </summary>
     /// <typeparam name="TKey">Type of the index-key</typeparam>
     /// <typeparam name="TValue">Type of the values</typeparam>
-    public interface IMultipleValueIndex<TKey, TValue> : 
-        IIndex<TKey, TValue>, 
+    public interface IMultipleValueIndex<TKey, TValue> :
+        IIndex<TKey, TValue>,
         IEnumerable<KeyValuePair<TKey, IEnumerable<TValue>>>
         where TKey : IComparable
     {
         #region Add
+
+        /// <summary>
+        /// Gets / Sets the values with the specified key
+        /// </summary>
+        /// <param name="myKey"></param>
+        /// <returns></returns>
+        IEnumerable<TValue> this[TKey myKey] { get; set; }
 
         /// <summary>
         /// Adds a key and 1-n values assigned values to the index
@@ -25,24 +30,22 @@ namespace sones.Plugins.Index.Interfaces
         /// <param name="myValues">the associated 1-n values</param>
         /// <param name="myIndexAddStrategy">defines what to do if the key already exists</param>
         void Add(TKey myKey, IEnumerable<TValue> myValues, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE);
+
         /// <summary>
         /// Adds a keyvaluepair containing one key and 1-n values to the index
         /// </summary>
         /// <param name="myKeyValuesPair">KeyValuePair with one key and 1-n values</param>
         /// <param name="myIndexAddStrategy">defines what to do if the key already exists</param>
-        void Add(KeyValuePair<TKey, IEnumerable<TValue>> myKeyValuesPair, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE);
+        void Add(KeyValuePair<TKey, IEnumerable<TValue>> myKeyValuesPair,
+                 IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE);
+
         /// <summary>
         /// Adds a dictionary containing keys and the associated 1-n values to the graph
         /// </summary>
         /// <param name="myDictionary">a dictionary containing keys and the associated 1-n values</param>
         /// <param name="myIndexAddStrategy">defines what to do if the key already exists</param>
-        void Add(Dictionary<TKey, IEnumerable<TValue>> myDictionary, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE);
-        /// <summary>
-        /// Gets / Sets the values with the specified key
-        /// </summary>
-        /// <param name="myKey"></param>
-        /// <returns></returns>
-        IEnumerable<TValue> this[TKey myKey] { get; set; }
+        void Add(Dictionary<TKey, IEnumerable<TValue>> myDictionary,
+                 IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE);
 
         #endregion
 

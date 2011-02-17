@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace sones.Transaction
+﻿namespace sones.Transaction
 {
     /// <summary>
     /// A class that containts informations concerning the current Transaction

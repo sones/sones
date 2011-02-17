@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace sones.Plugins.SonesGQL
 {
@@ -16,17 +13,12 @@ namespace sones.Plugins.SonesGQL
     {
         public static Version MinVersion
         {
-            get
-            {
-                return new Version("1.0.0.1");
-            }
+            get { return new Version("1.0.0.1"); }
         }
+
         public static Version MaxVersion
         {
-            get
-            {
-                return new Version("1.0.0.1");
-            }
+            get { return new Version("1.0.0.1"); }
         }
     }
 
@@ -62,6 +54,5 @@ namespace sones.Plugins.SonesGQL
         ///// <param name="myParameters">Additional optional parameters for own designed aggregates</param>
         ///// <returns>The result of the aggregation</returns>
         //FuncParameter Aggregate(IEnumerable<IVertex> myDBObjects, TypeAttribute myTypeAttribute, DBContext myDBContext, params Functions.ParameterValue[] myParameters);
-
     }
 }

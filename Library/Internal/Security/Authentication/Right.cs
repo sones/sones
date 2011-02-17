@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace sones.Security
+﻿namespace sones.Security
 {
     /// <summary>
     /// The different rights for accessing a graph element
@@ -19,7 +14,7 @@ namespace sones.Security
         /// Write a graph element
         /// </summary>
         Write,
-        
+
         /// <summary>
         /// Execution of sth
         /// </summary>

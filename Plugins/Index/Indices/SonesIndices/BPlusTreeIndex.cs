@@ -1,16 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.Plugins.Index.Interfaces;
-using sones.Plugins.Index;
 using sones.Plugins.Index.Helper;
+using sones.Plugins.Index.Interfaces;
 
 namespace SonesIndices
 {
     public class BPlusTreeIndex<TKey, TValue> : IMultipleValueRangeIndex<TKey, TValue>
         where TKey : IComparable
     {
+        #region IMultipleValueRangeIndex<TKey,TValue> Members
+
         public IEnumerable<IEnumerable<TValue>> GreaterThan(TKey myKey, bool myOrEqual = true)
         {
             throw new NotImplementedException();
@@ -21,36 +21,34 @@ namespace SonesIndices
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IEnumerable<TValue>> InRange(TKey myFromKey, TKey myToKey, bool myOrEqualFromKey = true, bool myOrEqualToKey = true)
+        public IEnumerable<IEnumerable<TValue>> InRange(TKey myFromKey, TKey myToKey, bool myOrEqualFromKey = true,
+                                                        bool myOrEqualToKey = true)
         {
             throw new NotImplementedException();
         }
 
-        public void Add(TKey myKey, IEnumerable<TValue> myValues, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
+        public void Add(TKey myKey, IEnumerable<TValue> myValues,
+                        IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             throw new NotImplementedException();
         }
 
-        public void Add(KeyValuePair<TKey, IEnumerable<TValue>> myKeyValuesPair, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
+        public void Add(KeyValuePair<TKey, IEnumerable<TValue>> myKeyValuesPair,
+                        IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             throw new NotImplementedException();
         }
 
-        public void Add(Dictionary<TKey, IEnumerable<TValue>> myDictionary, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
+        public void Add(Dictionary<TKey, IEnumerable<TValue>> myDictionary,
+                        IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             throw new NotImplementedException();
         }
 
         public IEnumerable<TValue> this[TKey myKey]
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
         }
 
         public bool Contains(TKey myKey, IEnumerable<TValue> myValues)
@@ -113,9 +111,11 @@ namespace SonesIndices
             throw new NotImplementedException();
         }
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             throw new NotImplementedException();
         }
+
+        #endregion
     }
 }

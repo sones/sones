@@ -1,8 +1,8 @@
 ﻿using System;
-using sones.GraphDB.Request;
-using sones.Transaction;
-using sones.Security;
 using sones.GraphDB.Manager;
+using sones.GraphDB.Request;
+using sones.Security;
+using sones.Transaction;
 
 namespace sones.GraphDB
 {
@@ -11,30 +11,32 @@ namespace sones.GraphDB
     /// </summary>
     public sealed class SonesGraphDB : IGraphDB
     {
-        MetaManager _metaManager;
+        private MetaManager _metaManager;
 
         #region IGraphDB Members
 
-        public TResult CreateVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateVertexType myRequestCreateVertexType, Func<IRequestStatistics, TResult> myOutputconverter)
+        public TResult CreateVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
+                                                 RequestCreateVertexType myRequestCreateVertexType,
+                                                 Func<IRequestStatistics, TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }
 
-        public TResult Clear<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestClear myRequestClear, Func<IRequestStatistics, TResult> myOutputconverter)
+        public TResult Clear<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
+                                      RequestClear myRequestClear, Func<IRequestStatistics, TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }
 
-        public TResult Insert<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestInsertVertex myRequestInsert, Func<IRequestStatistics, TResult> myOutputconverter)
+        public TResult Insert<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
+                                       RequestInsertVertex myRequestInsert,
+                                       Func<IRequestStatistics, TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }
 
-        #endregion
-
-        #region ITransactionable Members
-
-        public TransactionToken Begin(SecurityToken mySecurityToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
+        public TransactionToken Begin(SecurityToken mySecurityToken, bool myLongrunning = false,
+                                      IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
         {
             throw new NotImplementedException();
         }

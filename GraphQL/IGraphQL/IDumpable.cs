@@ -5,7 +5,6 @@ using sones.Transaction;
 
 namespace sones.GraphQL
 {
-
     /// <summary>
     /// Marks a grammar as dump able
     /// </summary>

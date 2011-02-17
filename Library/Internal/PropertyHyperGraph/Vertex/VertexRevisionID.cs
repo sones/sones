@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Threading;
 
 namespace sones.PropertyHyperGraph
 {
     public sealed class VertexRevisionID : IComparable, IComparable<VertexRevisionID>, IEquatable<VertexRevisionID>
     {
-
         #region Properties
 
         #region Timestamp
@@ -13,7 +11,7 @@ namespace sones.PropertyHyperGraph
         /// <summary>
         /// The timestamp of this revision.
         /// </summary>
-        readonly public UInt64 Timestamp;
+        public readonly UInt64 Timestamp;
 
         #endregion
 
@@ -22,7 +20,7 @@ namespace sones.PropertyHyperGraph
         /// <summary>
         /// A unique identification of the generation process of this revision.
         /// </summary>
-        readonly public UInt64 UUID;
+        public readonly UInt64 UUID;
 
         #endregion
 
@@ -55,17 +53,15 @@ namespace sones.PropertyHyperGraph
 
         public static Boolean operator ==(VertexRevisionID myObjectRevisionID1, VertexRevisionID myObjectRevisionID2)
         {
-
             // If both are null, or both are same instance, return true.
-            if (System.Object.ReferenceEquals(myObjectRevisionID1, myObjectRevisionID2))
+            if (ReferenceEquals(myObjectRevisionID1, myObjectRevisionID2))
                 return true;
 
             // If one is null, but not both, return false.
-            if (((Object)myObjectRevisionID1 == null) || ((Object)myObjectRevisionID2 == null))
+            if (((Object) myObjectRevisionID1 == null) || ((Object) myObjectRevisionID2 == null))
                 return false;
 
             return myObjectRevisionID1.Equals(myObjectRevisionID2);
-
         }
 
         #endregion
@@ -83,7 +79,6 @@ namespace sones.PropertyHyperGraph
 
         public static Boolean operator <(VertexRevisionID myObjectRevisionID1, VertexRevisionID myObjectRevisionID2)
         {
-
             if (myObjectRevisionID1.Timestamp < myObjectRevisionID2.Timestamp)
                 return true;
 
@@ -91,7 +86,6 @@ namespace sones.PropertyHyperGraph
                 return false;
 
             return false;
-
         }
 
         #endregion
@@ -100,7 +94,6 @@ namespace sones.PropertyHyperGraph
 
         public static Boolean operator >(VertexRevisionID myObjectRevisionID1, VertexRevisionID myObjectRevisionID2)
         {
-
             if (myObjectRevisionID1.Timestamp > myObjectRevisionID2.Timestamp)
                 return true;
 
@@ -108,7 +101,6 @@ namespace sones.PropertyHyperGraph
                 return false;
 
             return false;
-
         }
 
         #endregion
@@ -133,26 +125,23 @@ namespace sones.PropertyHyperGraph
 
         #endregion
 
-
         #region IComparable Member
 
         public Int32 CompareTo(Object myObject)
         {
-
             // Check if myObject is null
             if (myObject == null)
                 throw new ArgumentNullException();
 
             // If parameter cannot be cast to Point return false.
             var _RevisionID = myObject as VertexRevisionID;
-            if ((Object)_RevisionID == null)
+            if ((Object) _RevisionID == null)
                 throw new ArgumentException("myObject is not of type RevisionID!");
 
             if (this < _RevisionID) return -1;
             if (this > _RevisionID) return +1;
 
             return 0;
-
         }
 
         #endregion
@@ -161,7 +150,6 @@ namespace sones.PropertyHyperGraph
 
         public Int32 CompareTo(VertexRevisionID myObjectRevisionID)
         {
-
             // Check if myObjectRevisionID is null
             if (myObjectRevisionID == null)
                 throw new ArgumentNullException();
@@ -170,38 +158,16 @@ namespace sones.PropertyHyperGraph
             if (this > myObjectRevisionID) return +1;
 
             return 0;
-
         }
 
         #endregion
 
-        #region IEquatable Members
-
-        public override Boolean Equals(Object myObject)
-        {
-
-            // Check if myObject is null
-            if (myObject == null)
-                return false;
-
-            // If parameter cannot be cast to RevisionID return false.
-            var _RevisionID = myObject as VertexRevisionID;
-            if ((Object)_RevisionID == null)
-                return false;
-
-            return Equals(_RevisionID);
-
-        }
-
-        #endregion
-
-        #region IEquatable<ObjectRevisionID> Members
+        #region IEquatable<VertexRevisionID> Members
 
         public Boolean Equals(VertexRevisionID myObjectRevisionID)
         {
-
             // If parameter is null return false:
-            if ((Object)myObjectRevisionID == null)
+            if ((Object) myObjectRevisionID == null)
                 return false;
 
             // Check if the inner fields have the same values
@@ -212,7 +178,6 @@ namespace sones.PropertyHyperGraph
                 return false;
 
             return true;
-
         }
 
         #endregion
@@ -234,10 +199,23 @@ namespace sones.PropertyHyperGraph
         /// <returns>A formated string representation of this revision</returns>
         public override String ToString()
         {
-            return String.Format("{0:yyyyddMM.HHmmss.fffffff}({1})", new DateTime((Int64)Timestamp), UUID.ToString());
+            return String.Format("{0:yyyyddMM.HHmmss.fffffff}({1})", new DateTime((Int64) Timestamp), UUID);
         }
 
         #endregion
 
+        public override Boolean Equals(Object myObject)
+        {
+            // Check if myObject is null
+            if (myObject == null)
+                return false;
+
+            // If parameter cannot be cast to RevisionID return false.
+            var _RevisionID = myObject as VertexRevisionID;
+            if ((Object) _RevisionID == null)
+                return false;
+
+            return Equals(_RevisionID);
+        }
     }
 }

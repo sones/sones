@@ -12,7 +12,6 @@ namespace sones.GraphQL
     /// </summary>
     public sealed class SonesQueryLanguage : IGraphQL
     {
-
         #region Data
 
         /// <summary>
@@ -35,12 +34,15 @@ namespace sones.GraphQL
 
         #endregion
 
+        #region IGraphQL Members
+
         public string Name
         {
             get { throw new NotImplementedException(); }
         }
 
-        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString)
+        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
+                                 string myQueryString)
         {
             throw new NotImplementedException();
         }
@@ -54,5 +56,7 @@ namespace sones.GraphQL
         {
             throw new NotImplementedException();
         }
+
+        #endregion
     }
 }

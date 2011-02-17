@@ -31,7 +31,7 @@ namespace sones.GraphDS
         /// <param name="myQueryLanguageName">The identifier of the language that should be used for parsing the query</param>
         /// <returns>A query result</returns>
         QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
-            String myQueryString,
-            String myQueryLanguageName);
+                          String myQueryString,
+                          String myQueryLanguageName);
     }
 }

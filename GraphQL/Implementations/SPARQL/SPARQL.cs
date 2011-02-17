@@ -13,7 +13,8 @@ namespace sones.GraphQL
     {
         #region IGraphQL
 
-        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString)
+        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
+                                 string myQueryString)
         {
             throw new NotImplementedException();
         }
@@ -34,6 +35,5 @@ namespace sones.GraphQL
         }
 
         #endregion
-
     }
 }

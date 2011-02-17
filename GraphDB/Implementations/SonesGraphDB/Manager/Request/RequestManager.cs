@@ -3,8 +3,6 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using sones.GraphDB.Request;
-using sones.Security;
-using sones.Transaction;
 
 namespace sones.GraphDB.Manager
 {
@@ -16,19 +14,14 @@ namespace sones.GraphDB.Manager
         #region data
 
         /// <summary>
-        /// The incoming requests... every incoming request is stored within this structure
-        /// </summary>
-        private BlockingCollection<IPipelinableRequest> _incomingRequests;
-
-        /// <summary>
         /// This structure contains requests that had been validated successfully
         /// </summary>
-        private BlockingCollection<IPipelinableRequest> _executableRequests;
+        private readonly BlockingCollection<IPipelinableRequest> _executableRequests;
 
         /// <summary>
-        /// The structure where the results are stored
+        /// The incoming requests... every incoming request is stored within this structure
         /// </summary>
-        private ConcurrentDictionary<Guid, IRequest> _results;
+        private readonly BlockingCollection<IPipelinableRequest> _incomingRequests;
 
         /// <summary>
         /// The meta manager that contains all relevant manager
@@ -38,7 +31,12 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// The scheduler which decides whether some requests are executed in parallel
         /// </summary>
-        private IRequestScheduler _requestScheduler;
+        private readonly IRequestScheduler _requestScheduler;
+
+        /// <summary>
+        /// The structure where the results are stored
+        /// </summary>
+        private readonly ConcurrentDictionary<Guid, IRequest> _results;
 
         #endregion
 
@@ -54,33 +52,35 @@ namespace sones.GraphDB.Manager
         /// <param name="myRequestScheduler">The scheduler which decides whether some requests are executed in parallel</param>
         /// <param name="cts">The cancellation token source</param>
         public RequestManager(
-            int queueLengthForIncomingRequests, 
+            int queueLengthForIncomingRequests,
             int executionQueueLength,
-            int executionTaskCount, 
-            MetaManager myMetaManager, 
+            int executionTaskCount,
+            MetaManager myMetaManager,
             IRequestScheduler myRequestScheduler,
             CancellationTokenSource cts)
         {
             #region init
 
-            _incomingRequests   = new BlockingCollection<IPipelinableRequest>(queueLengthForIncomingRequests);
+            _incomingRequests = new BlockingCollection<IPipelinableRequest>(queueLengthForIncomingRequests);
             _executableRequests = new BlockingCollection<IPipelinableRequest>(executionQueueLength);
-            _results            = new ConcurrentDictionary<Guid, IRequest>();
-            _metaManager        = myMetaManager;
-            _requestScheduler   = myRequestScheduler;
+            _results = new ConcurrentDictionary<Guid, IRequest>();
+            _metaManager = myMetaManager;
+            _requestScheduler = myRequestScheduler;
 
             #endregion
 
             try
             {
-                var f = new TaskFactory(CancellationToken.None, TaskCreationOptions.LongRunning, TaskContinuationOptions.None, TaskScheduler.Default);
+                var f = new TaskFactory(CancellationToken.None, TaskCreationOptions.LongRunning,
+                                        TaskContinuationOptions.None, TaskScheduler.Default);
 
                 // + 1 because of the validate task
-                Task[] tasks = (Task[])Array.CreateInstance(typeof(Task), executionTaskCount + 1);
+                var tasks = (Task[]) Array.CreateInstance(typeof (Task), executionTaskCount + 1);
                 int taskId = 0;
 
                 //start the validate stage
-                tasks[taskId++] = f.StartNew(() => ValidateRequest(_incomingRequests, _executableRequests, _results, cts));
+                tasks[taskId++] =
+                    f.StartNew(() => ValidateRequest(_incomingRequests, _executableRequests, _results, cts));
 
                 //start the execution stage
                 for (int i = 0; i < executionTaskCount; i++)
@@ -113,22 +113,22 @@ namespace sones.GraphDB.Manager
         /// <param name="myExecuteAbleRequests">The result of this stage. Validated Requests</param>
         /// <param name="myResults">The result of the whole request. This structure is used if a request failes during validation</param>
         /// <param name="cts">Responsible for task cancellation</param>
-        void ValidateRequest(
+        private void ValidateRequest(
             BlockingCollection<IPipelinableRequest> myIncomingRequests,
             BlockingCollection<IPipelinableRequest> myExecuteAbleRequests,
             ConcurrentDictionary<Guid, IRequest> myResults,
             CancellationTokenSource cts)
         {
-            var token = cts.Token;
+            CancellationToken token = cts.Token;
 
             IPipelinableRequest pipelineRequest = null;
-            
+
             try
             {
-                foreach (var aPipelineRequest in myIncomingRequests.GetConsumingEnumerable())
+                foreach (IPipelinableRequest aPipelineRequest in myIncomingRequests.GetConsumingEnumerable())
                 {
                     pipelineRequest = aPipelineRequest;
-                    
+
                     if (token.IsCancellationRequested)
                         break;
 
@@ -145,7 +145,6 @@ namespace sones.GraphDB.Manager
                             myExecuteAbleRequests.Add(pipelineRequest, token);
 
                             #endregion
-
                         }
                         else
                         {
@@ -207,18 +206,18 @@ namespace sones.GraphDB.Manager
         /// <param name="myExecuteAbleRequests">The already validated requests</param>
         /// <param name="myRequestResults">The result of this stage. Executed Requests</param>
         /// <param name="cts">Responsible for task cancellation</param>
-        void ExecuteRequest(
+        private void ExecuteRequest(
             BlockingCollection<IPipelinableRequest> myExecuteAbleRequests,
             ConcurrentDictionary<Guid, IRequest> myRequestResults,
             CancellationTokenSource cts)
         {
-            var token = cts.Token;
+            CancellationToken token = cts.Token;
 
             IPipelinableRequest pipelineRequest = null;
-            
+
             try
             {
-                foreach (var aPipelineRequest in myExecuteAbleRequests.GetConsumingEnumerable())
+                foreach (IPipelinableRequest aPipelineRequest in myExecuteAbleRequests.GetConsumingEnumerable())
                 {
                     pipelineRequest = aPipelineRequest;
 
@@ -237,10 +236,6 @@ namespace sones.GraphDB.Manager
                 cts.Cancel();
                 if (!(e is OperationCanceledException))
                     throw;
-            }
-            finally
-            {
-                //nothing to do
             }
         }
 

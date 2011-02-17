@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace sones.GraphFS
+﻿namespace sones.GraphFS
 {
     /// <summary>
     /// The different access modes (read/write, read-only, ...)

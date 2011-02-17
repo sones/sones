@@ -19,18 +19,11 @@ namespace Gremlin
             get { throw new NotImplementedException(); }
         }
 
-        #endregion
-
-        #region IQueryableLanguage Members
-
-        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString)
+        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
+                                 string myQueryString)
         {
             throw new NotImplementedException();
         }
-
-        #endregion
-
-        #region IDumpable Members
 
         public IEnumerable<string> ExportGraphDDL(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {

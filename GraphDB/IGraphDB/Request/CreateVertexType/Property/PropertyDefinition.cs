@@ -10,34 +10,29 @@ namespace sones.GraphDB.Request
         #region Data
 
         /// <summary>
-        /// The hashcode of the property type
-        /// </summary>
-        readonly private int _typeHashCode;
-
-        /// <summary>
-        /// The name of the type (AssemblyQualifiedName)
-        /// </summary>
-        readonly public String TypeName;
-
-        /// <summary>
-        /// The name of the property
-        /// </summary>
-        readonly public String PropertyName;
-
-        /// <summary>
         /// Should there be an index on the property?
         /// </summary>
-        readonly public Boolean IsIndexed;
-
-        /// <summary>
-        /// Should this property be unique?
-        /// </summary>
-        readonly public Boolean IsUnique;
+        public readonly Boolean IsIndexed;
 
         /// <summary>
         /// Should this property be mandatory?
         /// </summary>
-        readonly public Boolean IsMandatory;
+        public readonly Boolean IsMandatory;
+
+        /// <summary>
+        /// Should this property be unique?
+        /// </summary>
+        public readonly Boolean IsUnique;
+
+        /// <summary>
+        /// The name of the property
+        /// </summary>
+        public readonly String PropertyName;
+
+        /// <summary>
+        /// The name of the type (AssemblyQualifiedName)
+        /// </summary>
+        public readonly String TypeName;
 
         #endregion
 
@@ -51,9 +46,9 @@ namespace sones.GraphDB.Request
         /// <param name="myIsIndexed">Should there be an index on the property?</param>
         /// <param name="myIsUnique">Should this property be unique?</param>
         /// <param name="myIsMandatory">Should this property be mandatory?</param>
-        public PropertyDefinition(String myPropertyName, Type myPropertyType, Boolean myIsIndexed = false, Boolean myIsUnique = false, Boolean myIsMandatory = false)
+        public PropertyDefinition(String myPropertyName, Type myPropertyType, Boolean myIsIndexed = false,
+                                  Boolean myIsUnique = false, Boolean myIsMandatory = false)
         {
-            _typeHashCode = myPropertyType.GetHashCode();
             TypeName = myPropertyType.AssemblyQualifiedName;
             PropertyName = myPropertyName;
             IsIndexed = myIsIndexed;

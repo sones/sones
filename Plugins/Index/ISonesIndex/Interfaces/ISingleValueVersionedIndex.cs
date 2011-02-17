@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sones.Plugins.Index.Helper;
 
 namespace sones.Plugins.Index.Interfaces
@@ -22,13 +20,22 @@ namespace sones.Plugins.Index.Interfaces
         #region Add
 
         /// <summary>
+        /// Gets / Sets the associated value of the key
+        /// </summary>
+        /// <param name="myKey">the index key</param>
+        /// <param name="myVersion">the version of the index</param>
+        /// <returns>set returns the value (if it exists)</returns>
+        TValue this[TKey myKey, TVersion myVersion] { get; set; }
+
+        /// <summary>
         /// Adds a key and an associated value to the index
         /// </summary>
         /// <param name="myKey">the key to be inserted</param>
         /// <param name="myValue">the associated value</param>
         /// <param name="myVersion">the version of the index</param>
         /// <param name="myIndexAddStrategy">defines what to do if the key already exists</param>
-        void Add(TKey myKey, TValue myValue, TVersion myVersion, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE);
+        void Add(TKey myKey, TValue myValue, TVersion myVersion,
+                 IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE);
 
         /// <summary>
         /// Adds a KeyValuePair to the index
@@ -36,7 +43,8 @@ namespace sones.Plugins.Index.Interfaces
         /// <param name="myKeyValuePair">KeyValuePair</param>
         /// <param name="myVersion">the version of the index</param>
         /// <param name="myIndexAddStrategy">defines what to do if the key already exists</param>
-        void Add(KeyValuePair<TKey, TValue> myKeyValuePair, TVersion myVersion, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE);
+        void Add(KeyValuePair<TKey, TValue> myKeyValuePair, TVersion myVersion,
+                 IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE);
 
         /// <summary>
         /// Adds a dictionary containing keys and the associated value to the graph
@@ -44,15 +52,8 @@ namespace sones.Plugins.Index.Interfaces
         /// <param name="myDictionary">a dictionary containing keys and the associated value</param>
         /// <param name="myVersion">the version of the index</param>
         /// <param name="myIndexAddStrategy">defines what to do if the key already exists</param>
-        void Add(Dictionary<TKey, TValue> myDictionary, TVersion myVersion, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE);
-
-        /// <summary>
-        /// Gets / Sets the associated value of the key
-        /// </summary>
-        /// <param name="myKey">the index key</param>
-        /// <param name="myVersion">the version of the index</param>
-        /// <returns>set returns the value (if it exists)</returns>
-        TValue this[TKey myKey, TVersion myVersion] { get; set; }
+        void Add(Dictionary<TKey, TValue> myDictionary, TVersion myVersion,
+                 IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE);
 
         #endregion
 

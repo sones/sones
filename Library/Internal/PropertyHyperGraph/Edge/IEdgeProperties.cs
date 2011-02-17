@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-
-namespace sones.PropertyHyperGraph
+﻿namespace sones.PropertyHyperGraph
 {
     /// <summary>
     /// The interface for edge properties

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace sones.Security
+﻿namespace sones.Security
 {
     /// <summary>
     /// Authentication interface
@@ -11,6 +6,5 @@ namespace sones.Security
     /// </summary>
     public interface IAuthentication : IUserAuthentication, IGraphElementAuthentication
     {
-        
     }
 }

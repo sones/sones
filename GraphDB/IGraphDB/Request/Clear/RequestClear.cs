@@ -1,35 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace sones.GraphDB.Request
+﻿namespace sones.GraphDB.Request
 {
     /// <summary>
     /// A request for clearing the whole graphdb
     /// </summary>
     public sealed class RequestClear : IRequest
     {
-
         #region data
 
         /// <summary>
         /// The request stats
         /// </summary>
-        private RequestStatistics _stats = null;
+        private RequestStatistics _stats;
 
         #endregion
 
         #region Constructor
 
-        /// <summary>
-        /// Creates a new request that clears the Graphdb
-        /// </summary>
-        public RequestClear()
-        {
-        }
-
         #endregion
 
-        #region IRequest<TResult> Members
+        #region IRequest Members
 
         public GraphDBAccessMode AccessMode
         {

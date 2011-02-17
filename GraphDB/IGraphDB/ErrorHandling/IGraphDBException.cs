@@ -1,5 +1,4 @@
-﻿using System;
-using sones.ErrorHandling;
+﻿using sones.ErrorHandling;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -8,6 +7,5 @@ namespace sones.GraphDB.ErrorHandling
     /// </summary>
     public abstract class AGraphDBException : ASonesException
     {
-       
     }
 }

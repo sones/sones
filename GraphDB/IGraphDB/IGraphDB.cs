@@ -19,10 +19,10 @@ namespace sones.GraphDB
         /// <param name="myRequestCreateVertexType">The create vertex type request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
-        TResult CreateVertexType<TResult>(  SecurityToken           mySecurityToken,
-                                            TransactionToken        myTransactionToken,
-                                            RequestCreateVertexType myRequestCreateVertexType,
-                                            Func<IRequestStatistics, TResult> myOutputconverter);
+        TResult CreateVertexType<TResult>(SecurityToken mySecurityToken,
+                                          TransactionToken myTransactionToken,
+                                          RequestCreateVertexType myRequestCreateVertexType,
+                                          Func<IRequestStatistics, TResult> myOutputconverter);
 
         /// <summary>
         /// Clears the graphdb entirely
@@ -30,13 +30,13 @@ namespace sones.GraphDB
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
-        /// <param name="myRequestClear">The clear request
+        /// <param name="myRequestClear">The clear request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic Result</returns>
-        TResult Clear<TResult>(             SecurityToken       mySecurityToken,
-                                            TransactionToken    myTransactionToken,
-                                            RequestClear       myRequestClear,
-                                            Func<IRequestStatistics, TResult> myOutputconverter);
+        TResult Clear<TResult>(SecurityToken mySecurityToken,
+                               TransactionToken myTransactionToken,
+                               RequestClear myRequestClear,
+                               Func<IRequestStatistics, TResult> myOutputconverter);
 
         /// <summary>
         /// Inserts a new vertex
@@ -44,12 +44,12 @@ namespace sones.GraphDB
         /// <typeparam name="TResult">The type of the result of this request</typeparam>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
-        /// <param name="myRequestCreateVertexType">The insert vertex request</param>
+        /// <param name="myRequestInsert">The insert vertex request</param>
         /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
         /// <returns>A generic result</returns>
-        TResult Insert<TResult>(            SecurityToken       mySecurityToken,
-                                            TransactionToken    myTransactionToken,
-                                            RequestInsertVertex myRequestInsert,
-                                            Func<IRequestStatistics, TResult> myOutputconverter);
+        TResult Insert<TResult>(SecurityToken mySecurityToken,
+                                TransactionToken myTransactionToken,
+                                RequestInsertVertex myRequestInsert,
+                                Func<IRequestStatistics, TResult> myOutputconverter);
     }
 }

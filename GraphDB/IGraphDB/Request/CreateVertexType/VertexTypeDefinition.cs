@@ -13,7 +13,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The name of the vertex type that is going to be created
         /// </summary>
-        public readonly string VertexTypeName = null;
+        public readonly string VertexTypeName;
 
         /// <summary>
         /// The name of the vertex type this vertex types inherites from
@@ -40,7 +40,7 @@ namespace sones.GraphDB.Request
         /// <param name="myVertexTypeName">The name of the vertex type</param>
         public VertexTypeDefinition(String myVertexTypeName)
         {
-            if (myVertexTypeName == null || myVertexTypeName.Length == 0)
+            if (string.IsNullOrEmpty(myVertexTypeName))
             {
                 throw new ArgumentOutOfRangeException("Name of new vertex type", myVertexTypeName);
             }
@@ -61,11 +61,11 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="mySuperVertexTypeName">The name of the super vertex type</param>
         /// <returns>A vertex type definition</returns>
-        VertexTypeDefinition SetSuperVertexTypeName(String mySuperVertexTypeName)
+        private VertexTypeDefinition SetSuperVertexTypeName(String mySuperVertexTypeName)
         {
-            if (mySuperVertexTypeName != null && mySuperVertexTypeName.Length > 0)
+            if (!string.IsNullOrEmpty(mySuperVertexTypeName))
             {
-                this.SuperVertexTypeName = mySuperVertexTypeName;
+                SuperVertexTypeName = mySuperVertexTypeName;
             }
 
             return this;
@@ -76,11 +76,11 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myPropertyDefinition">The property definition that is going to be added</param>
         /// <returns>A vertex type definition</returns>
-        VertexTypeDefinition AddProperty(PropertyDefinition myPropertyDefinition)
+        private VertexTypeDefinition AddProperty(PropertyDefinition myPropertyDefinition)
         {
             if (myPropertyDefinition != null)
             {
-                this.Properties.Add(myPropertyDefinition);
+                Properties.Add(myPropertyDefinition);
             }
 
             return this;
@@ -91,11 +91,11 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myOutgoingEdgeDefinition">The definition of the outgoing edge</param>
         /// <returns>A vertex type definition</returns>
-        VertexTypeDefinition AddOutgoingEdge(OutgoingEdgeDefinition myOutgoingEdgeDefinition)
+        private VertexTypeDefinition AddOutgoingEdge(OutgoingEdgeDefinition myOutgoingEdgeDefinition)
         {
             if (myOutgoingEdgeDefinition != null)
             {
-                this.OutgoingEdges.Add(myOutgoingEdgeDefinition);
+                OutgoingEdges.Add(myOutgoingEdgeDefinition);
             }
 
             return this;

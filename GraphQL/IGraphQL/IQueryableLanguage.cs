@@ -1,7 +1,7 @@
 ﻿using System;
 using sones.GraphQL.Result;
-using sones.Transaction;
 using sones.Security;
+using sones.Transaction;
 
 namespace sones.GraphQL
 {
@@ -15,6 +15,6 @@ namespace sones.GraphQL
         /// <param name="myQueryString">The query string that should be executed</param>
         /// <returns>A query result</returns>
         QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken
-            , String myQueryString);
+                          , String myQueryString);
     }
 }

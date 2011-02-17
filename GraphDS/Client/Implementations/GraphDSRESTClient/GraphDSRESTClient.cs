@@ -1,6 +1,5 @@
 ﻿using System;
-using sones.GraphDB.Request;
-using sones.GraphDS;
+using sones.GraphDB;
 using sones.GraphQL.Result;
 using sones.Security;
 using sones.Transaction;
@@ -12,9 +11,9 @@ namespace sones.GraphDSClient
     /// </summary>
     public sealed class GraphDSRESTClient : IGraphDSClient
     {
-        #region IGraphDS Members
+        #region IGraphDSClient Members
 
-        public GraphDB.IGraphDB GraphDB
+        public IGraphDB GraphDB
         {
             get { throw new NotImplementedException(); }
         }
@@ -24,14 +23,11 @@ namespace sones.GraphDSClient
             throw new NotImplementedException();
         }
 
-        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString, string myQueryLanguageName)
+        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
+                                 string myQueryString, string myQueryLanguageName)
         {
             throw new NotImplementedException();
         }
-
-        #endregion
-
-        #region IUserAuthentication Members
 
         public SecurityToken LogOn(IUserCredentials toBeAuthenticatedCredentials)
         {

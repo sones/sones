@@ -1,6 +1,5 @@
 ﻿using System;
 
-
 namespace sones.GraphQL
 {
     /// <summary>

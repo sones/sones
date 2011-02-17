@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace sones.Plugins.Index.Interfaces
 {
@@ -68,8 +66,6 @@ namespace sones.Plugins.Index.Interfaces
 
         #endregion
 
-        #region Additional versioned index Members
-
         #region Version Counts
 
         /// <summary>
@@ -99,8 +95,6 @@ namespace sones.Plugins.Index.Interfaces
         /// </summary>
         /// <param name="myKey">the key</param>
         void ClearHistory(TKey myKey);
-
-        #endregion
 
         #endregion
     }

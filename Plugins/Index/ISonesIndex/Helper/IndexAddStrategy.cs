@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace sones.Plugins.Index.Helper
+﻿namespace sones.Plugins.Index.Helper
 {
     /// <summary>
     /// IndexAddStrategy defines what happens if a key already exists.

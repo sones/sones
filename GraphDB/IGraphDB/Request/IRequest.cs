@@ -1,10 +1,8 @@
-﻿
-namespace sones.GraphDB.Request
+﻿namespace sones.GraphDB.Request
 {
     /// <summary>
     /// A generic interface for requests
     /// </summary>
-    /// <typeparam name="TResult">The result type of the request</typeparam>
     public interface IRequest
     {
         /// <summary>

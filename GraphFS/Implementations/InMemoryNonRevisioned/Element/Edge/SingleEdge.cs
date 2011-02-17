@@ -9,17 +9,12 @@ namespace sones.InMemoryNonRevisioned.Element
     /// </summary>
     public sealed class SingleEdge : ISingleEdge
     {
-
         #region ISingleEdge Members
 
         public IVertex GetTargetVertex()
         {
             throw new NotImplementedException();
         }
-
-        #endregion
-
-        #region IEdge Members
 
         public IVertex GetSourceVertex()
         {
@@ -30,10 +25,6 @@ namespace sones.InMemoryNonRevisioned.Element
         {
             throw new NotImplementedException();
         }
-
-        #endregion
-
-        #region IGraphElement Members
 
         public T GetProperty<T>(ulong myPropertyID)
         {
@@ -75,7 +66,8 @@ namespace sones.InMemoryNonRevisioned.Element
             throw new NotImplementedException();
         }
 
-        public IEnumerable<KeyValuePair<string, object>> GetAllUnstructuredProperties(Func<string, object, bool> myFilterFunc = null)
+        public IEnumerable<KeyValuePair<string, object>> GetAllUnstructuredProperties(
+            Func<string, object, bool> myFilterFunc = null)
         {
             throw new NotImplementedException();
         }
@@ -104,10 +96,6 @@ namespace sones.InMemoryNonRevisioned.Element
         {
             get { throw new NotImplementedException(); }
         }
-
-        #endregion
-
-        #region IEdgeProperties Members
 
         public IEdgeStatistics Statistics
         {

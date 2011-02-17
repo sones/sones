@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace sones.GraphDB.Request
+﻿namespace sones.GraphDB.Request
 {
     /// <summary>
     /// A request for creating a new vertex type
@@ -10,14 +8,14 @@ namespace sones.GraphDB.Request
         #region data
 
         /// <summary>
-        /// The stats of the request
-        /// </summary>
-        private RequestStatistics _stats = null;
-
-        /// <summary>
         /// The definition of the vertex that is going to be created
         /// </summary>
         public readonly VertexTypeDefinition VertexTypeDefinition;
+
+        /// <summary>
+        /// The stats of the request
+        /// </summary>
+        private RequestStatistics _stats;
 
         #endregion
 
@@ -34,7 +32,7 @@ namespace sones.GraphDB.Request
 
         #endregion
 
-        #region IRequest<TResult> Members
+        #region IRequest Members
 
         public GraphDBAccessMode AccessMode
         {

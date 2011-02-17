@@ -10,24 +10,24 @@ namespace sones.GraphDB.Request
         #region Data
 
         /// <summary>
-        /// The species of the edge
-        /// </summary>
-        readonly public EdgeSpecies EdgeSpecies;
-
-        /// <summary>
-        /// The vertex type this edge points to
-        /// </summary>
-        readonly public String VertexTypeName;
-
-        /// <summary>
         /// The name of the edge
         /// </summary>
-        readonly public String EdgeName;
+        public readonly String EdgeName;
+
+        /// <summary>
+        /// The species of the edge
+        /// </summary>
+        public readonly EdgeSpecies EdgeSpecies;
 
         /// <summary>
         /// The name of the edge type
         /// </summary>
-        readonly public String EdgeTypeName;
+        public readonly String EdgeTypeName;
+
+        /// <summary>
+        /// The vertex type this edge points to
+        /// </summary>
+        public readonly String VertexTypeName;
 
         #endregion
 
@@ -40,7 +40,8 @@ namespace sones.GraphDB.Request
         /// <param name="myEdgeTypeName">The type of the edge</param>
         /// <param name="myVertexSchemeName">The vertex type this edge points to</param>
         /// <param name="myEdgeSpecies">The species of the edge</param>
-        public OutgoingEdgeDefinition(String myEdgeName, String myEdgeTypeName, String myVertexSchemeName, EdgeSpecies myEdgeSpecies)
+        public OutgoingEdgeDefinition(String myEdgeName, String myEdgeTypeName, String myVertexSchemeName,
+                                      EdgeSpecies myEdgeSpecies)
         {
             EdgeName = myEdgeName;
             EdgeTypeName = myEdgeTypeName;

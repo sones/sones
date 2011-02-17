@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
 using sones.GraphDS;
 
@@ -30,10 +27,9 @@ namespace ISonesRESTService
         /// <summary>
         /// Initialize the REST service
         /// </summary>
-        /// <param name="myID">The unique identifier of the rest service</param>
         /// <param name="myGraphDS">The GraphDS instance that should be requested</param>
         /// <param name="myPort">The used port</param>
-        /// <param name="myIPAdress">The used ip-address</param>
+        /// <param name="myIPAddress">The used ip-address</param>
         void Initialize(IGraphDS myGraphDS, UInt16 myPort, IPAddress myIPAddress);
     }
 }

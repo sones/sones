@@ -10,14 +10,14 @@ namespace sones.Security
         #region data
 
         /// <summary>
-        /// The login string
-        /// </summary>
-        private readonly String _login;
-
-        /// <summary>
         /// The hashed password
         /// </summary>
         public readonly int PasswordHash;
+
+        /// <summary>
+        /// The login string
+        /// </summary>
+        private readonly String _login;
 
         #endregion
 
@@ -45,7 +45,7 @@ namespace sones.Security
 
         #endregion
 
-        #region ICredentials Members
+        #region IUserCredentials Members
 
         public string Login
         {

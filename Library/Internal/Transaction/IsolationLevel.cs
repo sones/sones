@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace sones.Transaction
+﻿namespace sones.Transaction
 {
     public enum IsolationLevel
     {
-
         /// <summary>
         /// Data records retrieved by a query are not prevented from modification by some other transactions. 
         /// Non-repeatable reads may occur, meaning data retrieved in a SELECT statement may be modified by some 
@@ -34,6 +28,5 @@ namespace sones.Transaction
         /// only if the illusion of serial execution can be maintained. At this isolation level, phantom reads cannot occur.
         /// </summary>
         Serializable,
-
     }
 }

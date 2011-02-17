@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace sones.PropertyHyperGraph
+﻿namespace sones.PropertyHyperGraph
 {
     /// <summary>
     /// The interface for vertex statistics

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace sones.PropertyHyperGraph
+﻿namespace sones.PropertyHyperGraph
 {
     /// <summary>
     /// The interface for all edge statistics

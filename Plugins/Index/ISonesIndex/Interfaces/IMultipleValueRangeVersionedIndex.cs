@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace sones.Plugins.Index.Interfaces
 {
@@ -47,7 +45,8 @@ namespace sones.Plugins.Index.Interfaces
         /// <param name="myOrEqualFromKey">true if the lower bound shall be included in the range</param>
         /// <param name="myOrEqualToKey">true if the upper bound shall be included in the range</param>
         /// <returns>values from all keys in the given range</returns>
-        IEnumerable<IEnumerable<TValue>> InRange(TKey myFromKey, TKey myToKey, TVersion myVersion, bool myOrEqualFromKey = true, bool myOrEqualToKey = true);
+        IEnumerable<IEnumerable<TValue>> InRange(TKey myFromKey, TKey myToKey, TVersion myVersion,
+                                                 bool myOrEqualFromKey = true, bool myOrEqualToKey = true);
 
         #endregion
     }
