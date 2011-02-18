@@ -38,6 +38,16 @@ namespace sones.GraphDB.Manager
         /// </summary>
         private readonly ConcurrentDictionary<Guid, IRequest> _results;
 
+        /// <summary>
+        /// The cancellation token source
+        /// </summary>
+        private CancellationTokenSource _cts;
+
+        /// <summary>
+        /// The pipeline tasks
+        /// </summary>
+        private Task[] _tasks;
+
         #endregion
 
         #region Constructor
@@ -47,17 +57,13 @@ namespace sones.GraphDB.Manager
         /// </summary>
         /// <param name="queueLengthForIncomingRequests">This number represents the count of parallel incoming requests that are supported</param>
         /// <param name="executionQueueLength">The number of requests for the execution queue</param>
-        /// <param name="executionTaskCount">The number ob tasks that work in parallel on the execution queue</param>
         /// <param name="myMetaManager">The meta manager that contains all relevant manager</param>
         /// <param name="myRequestScheduler">The scheduler which decides whether some requests are executed in parallel</param>
-        /// <param name="cts">The cancellation token source</param>
         public RequestManager(
             int queueLengthForIncomingRequests,
             int executionQueueLength,
-            int executionTaskCount,
             MetaManager myMetaManager,
-            IRequestScheduler myRequestScheduler,
-            CancellationTokenSource cts)
+            IRequestScheduler myRequestScheduler)
         {
             #region init
 
@@ -68,33 +74,6 @@ namespace sones.GraphDB.Manager
             _requestScheduler = myRequestScheduler;
 
             #endregion
-
-            try
-            {
-                var f = new TaskFactory(CancellationToken.None, TaskCreationOptions.LongRunning,
-                                        TaskContinuationOptions.None, TaskScheduler.Default);
-
-                // + 1 because of the validate task
-                var tasks = (Task[]) Array.CreateInstance(typeof (Task), executionTaskCount + 1);
-                int taskId = 0;
-
-                //start the validate stage
-                tasks[taskId++] =
-                    f.StartNew(() => ValidateRequest(_incomingRequests, _executableRequests, _results, cts));
-
-                //start the execution stage
-                for (int i = 0; i < executionTaskCount; i++)
-                {
-                    tasks[taskId++] = f.StartNew(() => ExecuteRequest(_executableRequests, _results, cts));
-                }
-
-                Task.WaitAll(tasks);
-            }
-            finally
-            {
-                Complete(_incomingRequests);
-                Complete(_executableRequests);
-            }
         }
 
         #endregion
@@ -112,14 +91,12 @@ namespace sones.GraphDB.Manager
         /// <param name="myIncomingRequests">The incoming requests</param>
         /// <param name="myExecuteAbleRequests">The result of this stage. Validated Requests</param>
         /// <param name="myResults">The result of the whole request. This structure is used if a request failes during validation</param>
-        /// <param name="cts">Responsible for task cancellation</param>
         private void ValidateRequest(
             BlockingCollection<IPipelinableRequest> myIncomingRequests,
             BlockingCollection<IPipelinableRequest> myExecuteAbleRequests,
-            ConcurrentDictionary<Guid, IRequest> myResults,
-            CancellationTokenSource cts)
+            ConcurrentDictionary<Guid, IRequest> myResults)
         {
-            CancellationToken token = cts.Token;
+            CancellationToken token = _cts.Token;
 
             IPipelinableRequest pipelineRequest = null;
 
@@ -136,36 +113,7 @@ namespace sones.GraphDB.Manager
                     {
                         #region valid
 
-                        if (_requestScheduler.ExecuteRequestInParallel(pipelineRequest.Request))
-                        {
-                            #region execute in parallel
-
-                            //so the request is valid and the request scheduler agrees to execute it in parallel
-
-                            myExecuteAbleRequests.Add(pipelineRequest, token);
-
-                            #endregion
-                        }
-                        else
-                        {
-                            #region dedicated single execution
-
-                            //wait until the remaining stages are empty
-                            var everyRequestIsExecuted = false;
-
-                            while (!everyRequestIsExecuted)
-                            {
-                                everyRequestIsExecuted = _executableRequests.Count == 0;
-                            }
-
-                            //execute this request
-                            pipelineRequest.Execute(_metaManager);
-
-                            //add the request to the result
-                            myResults.TryAdd(pipelineRequest.ID, pipelineRequest.Request);
-
-                            #endregion
-                        }
+                        ProcessValidRequest(pipelineRequest, myExecuteAbleRequests, myResults, token);
 
                         #endregion
                     }
@@ -185,7 +133,7 @@ namespace sones.GraphDB.Manager
             }
             catch (Exception e)
             {
-                cts.Cancel();
+                _cts.Cancel();
                 if (!(e is OperationCanceledException))
                     throw;
             }
@@ -194,6 +142,8 @@ namespace sones.GraphDB.Manager
                 myExecuteAbleRequests.CompleteAdding();
             }
         }
+
+        
 
         #endregion
 
@@ -205,13 +155,11 @@ namespace sones.GraphDB.Manager
         /// </summary>
         /// <param name="myExecuteAbleRequests">The already validated requests</param>
         /// <param name="myRequestResults">The result of this stage. Executed Requests</param>
-        /// <param name="cts">Responsible for task cancellation</param>
         private void ExecuteRequest(
             BlockingCollection<IPipelinableRequest> myExecuteAbleRequests,
-            ConcurrentDictionary<Guid, IRequest> myRequestResults,
-            CancellationTokenSource cts)
+            ConcurrentDictionary<Guid, IRequest> myRequestResults)
         {
-            CancellationToken token = cts.Token;
+            CancellationToken token = _cts.Token;
 
             IPipelinableRequest pipelineRequest = null;
 
@@ -233,7 +181,7 @@ namespace sones.GraphDB.Manager
             }
             catch (Exception e)
             {
-                cts.Cancel();
+                _cts.Cancel();
                 if (!(e is OperationCanceledException))
                     throw;
             }
@@ -244,6 +192,37 @@ namespace sones.GraphDB.Manager
         #endregion
 
         #region Methods
+
+        #region Init
+
+        /// <summary>
+        /// Initializes the request manager
+        /// </summary>
+        /// <param name="executionTaskCount">The number ob tasks that work in parallel on the execution queue</param>
+        /// <param name="cts">The cancellation token source</param>
+        public void Init(int executionTaskCount, CancellationTokenSource cts)
+        {
+            _cts = cts;
+
+            var f = new TaskFactory(CancellationToken.None, TaskCreationOptions.LongRunning,
+                                    TaskContinuationOptions.None, TaskScheduler.Default);
+
+            // + 1 because of the validate task
+            _tasks = (Task[]) Array.CreateInstance(typeof (Task), executionTaskCount + 1);
+            int taskId = 0;
+
+            //start the validate stage
+            _tasks[taskId++] =
+                f.StartNew(() => ValidateRequest(_incomingRequests, _executableRequests, _results));
+
+            //start the execution stage
+            for (int i = 0; i < executionTaskCount; i++)
+            {
+                _tasks[taskId++] = f.StartNew(() => ExecuteRequest(_executableRequests, _results));
+            }
+        }
+
+        #endregion
 
         #region Complete
 
@@ -268,13 +247,80 @@ namespace sones.GraphDB.Manager
         /// </summary>
         /// <param name="myToBeAddedRequest">The request that should be registered</param>
         /// <returns>The unique id of the request</returns>
-        internal void RegisterRequest(IPipelinableRequest myToBeAddedRequest)
+        public void RegisterRequest(IPipelinableRequest myToBeAddedRequest)
         {
             _incomingRequests.Add(myToBeAddedRequest);
         }
 
         #endregion
 
+        #region Shutdown
+
+        /// <summary>
+        /// gracefully shutdown of the requestmanager
+        /// </summary>
+        public void Shutdown()
+        {
+            _cts.Cancel();
+            Complete(_incomingRequests);
+            Complete(_executableRequests);
+
+            Task.WaitAll(_tasks);
+        }
+
         #endregion
+
+        #region ProcessValidRequest
+
+        /// <summary>
+        /// Processes a valid request
+        /// </summary>
+        /// <param name="myPipelineRequest">A valid pipelone request</param>
+        /// <param name="myExecuteAbleRequests">The collection of executeable requests</param>
+        /// <param name="myResults">The results</param>
+        /// <param name="myToken">The cancellation token</param>
+        private void ProcessValidRequest(
+            IPipelinableRequest myPipelineRequest, 
+            BlockingCollection<IPipelinableRequest> myExecuteAbleRequests, 
+            ConcurrentDictionary<Guid, IRequest> myResults,
+            CancellationToken myToken)
+        {
+            if (_requestScheduler.ExecuteRequestInParallel(myPipelineRequest.Request))
+            {
+                #region execute in parallel
+
+                //so the request is valid and the request scheduler agrees to execute it in parallel
+
+                myExecuteAbleRequests.Add(myPipelineRequest, myToken);
+
+                #endregion
+            }
+            else
+            {
+                #region dedicated single execution
+
+                //wait until the remaining stages are empty
+                var everyRequestIsExecuted = false;
+
+                while (!everyRequestIsExecuted)
+                {
+                    everyRequestIsExecuted = _executableRequests.Count == 0;
+                }
+
+                //execute this request
+                myPipelineRequest.Execute(_metaManager);
+
+                //add the request to the result
+                myResults.TryAdd(myPipelineRequest.ID, myPipelineRequest.Request);
+
+                #endregion
+            }
+        }
+
+        #endregion
+
+        #endregion
+
+
     }
 }
