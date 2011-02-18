@@ -143,7 +143,7 @@ namespace sones.GraphDB.Manager
             }
         }
 
-        
+
 
         #endregion
 
@@ -208,7 +208,7 @@ namespace sones.GraphDB.Manager
                                     TaskContinuationOptions.None, TaskScheduler.Default);
 
             // + 1 because of the validate task
-            _tasks = (Task[]) Array.CreateInstance(typeof (Task), executionTaskCount + 1);
+            _tasks = (Task[])Array.CreateInstance(typeof(Task), executionTaskCount + 1);
             int taskId = 0;
 
             //start the validate stage
@@ -280,8 +280,8 @@ namespace sones.GraphDB.Manager
         /// <param name="myResults">The results</param>
         /// <param name="myToken">The cancellation token</param>
         private void ProcessValidRequest(
-            IPipelinableRequest myPipelineRequest, 
-            BlockingCollection<IPipelinableRequest> myExecuteAbleRequests, 
+            IPipelinableRequest myPipelineRequest,
+            BlockingCollection<IPipelinableRequest> myExecuteAbleRequests,
             ConcurrentDictionary<Guid, IRequest> myResults,
             CancellationToken myToken)
         {
@@ -320,7 +320,5 @@ namespace sones.GraphDB.Manager
         #endregion
 
         #endregion
-
-
     }
 }
