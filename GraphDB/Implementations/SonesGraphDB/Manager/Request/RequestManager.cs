@@ -88,13 +88,7 @@ namespace sones.GraphDB.Manager
         /// 
         /// BEWARE!!! Cannot be executed more than once BEWARE!!!
         /// </summary>
-        /// <param name="myIncomingRequests">The incoming requests</param>
-        /// <param name="myExecuteAbleRequests">The result of this stage. Validated Requests</param>
-        /// <param name="myResults">The result of the whole request. This structure is used if a request failes during validation</param>
-        private void ValidateRequest(
-            BlockingCollection<IPipelinableRequest> myIncomingRequests,
-            BlockingCollection<IPipelinableRequest> myExecuteAbleRequests,
-            ConcurrentDictionary<Guid, IRequest> myResults)
+        private void ValidateRequest()
         {
             CancellationToken token = _cts.Token;
 
@@ -102,7 +96,7 @@ namespace sones.GraphDB.Manager
 
             try
             {
-                foreach (var aPipelineRequest in myIncomingRequests.GetConsumingEnumerable())
+                foreach (var aPipelineRequest in _incomingRequests.GetConsumingEnumerable())
                 {
                     pipelineRequest = aPipelineRequest;
 
@@ -113,7 +107,7 @@ namespace sones.GraphDB.Manager
                     {
                         #region valid
 
-                        ProcessValidRequest(pipelineRequest, myExecuteAbleRequests, myResults, token);
+                        ProcessValidRequest(ref pipelineRequest, ref token);
 
                         #endregion
                     }
@@ -123,7 +117,7 @@ namespace sones.GraphDB.Manager
 
                         //the request is invalid and so it is transfered to the results
 
-                        myResults.TryAdd(pipelineRequest.ID, pipelineRequest.Request);
+                        _results.TryAdd(pipelineRequest.ID, pipelineRequest.Request);
 
                         #endregion
                     }
@@ -139,7 +133,7 @@ namespace sones.GraphDB.Manager
             }
             finally
             {
-                myExecuteAbleRequests.CompleteAdding();
+                _executableRequests.CompleteAdding();
             }
         }
 
@@ -153,11 +147,7 @@ namespace sones.GraphDB.Manager
         /// Stage 2 of Request processing
         /// Execution of the incoming requests. 
         /// </summary>
-        /// <param name="myExecuteAbleRequests">The already validated requests</param>
-        /// <param name="myRequestResults">The result of this stage. Executed Requests</param>
-        private void ExecuteRequest(
-            BlockingCollection<IPipelinableRequest> myExecuteAbleRequests,
-            ConcurrentDictionary<Guid, IRequest> myRequestResults)
+        private void ExecuteRequest()
         {
             CancellationToken token = _cts.Token;
 
@@ -165,7 +155,7 @@ namespace sones.GraphDB.Manager
 
             try
             {
-                foreach (var aPipelineRequest in myExecuteAbleRequests.GetConsumingEnumerable())
+                foreach (var aPipelineRequest in _executableRequests.GetConsumingEnumerable())
                 {
                     pipelineRequest = aPipelineRequest;
 
@@ -174,7 +164,7 @@ namespace sones.GraphDB.Manager
 
                     pipelineRequest.Execute(_metaManager);
 
-                    myRequestResults.TryAdd(pipelineRequest.ID, pipelineRequest.Request);
+                    _results.TryAdd(pipelineRequest.ID, pipelineRequest.Request);
 
                     pipelineRequest = null;
                 }
@@ -192,6 +182,30 @@ namespace sones.GraphDB.Manager
         #endregion
 
         #region Methods
+
+        #region GetResult
+
+        /// <summary>
+        /// Gets the resulting request corresponding
+        /// </summary>
+        /// <param name="myInterestingResult">The id of the pipelineable request</param>
+        /// <returns>The result of the request</returns>
+        public IRequest GetResult(Guid myInterestingResult)
+        {
+            IRequest interestingRequest = null;
+
+            while (true)
+            {
+                if (_results.TryGetValue(myInterestingResult, out interestingRequest))
+                {
+                    break;
+                }
+            }
+
+            return interestingRequest;
+        }
+
+        #endregion
 
         #region Init
 
@@ -213,12 +227,12 @@ namespace sones.GraphDB.Manager
 
             //start the validate stage
             _tasks[taskId++] =
-                f.StartNew(() => ValidateRequest(_incomingRequests, _executableRequests, _results));
+                f.StartNew(ValidateRequest);
 
             //start the execution stage
             for (int i = 0; i < executionTaskCount; i++)
             {
-                _tasks[taskId++] = f.StartNew(() => ExecuteRequest(_executableRequests, _results));
+                _tasks[taskId++] = f.StartNew(ExecuteRequest);
             }
         }
 
@@ -276,14 +290,10 @@ namespace sones.GraphDB.Manager
         /// Processes a valid request
         /// </summary>
         /// <param name="myPipelineRequest">A valid pipelone request</param>
-        /// <param name="myExecuteAbleRequests">The collection of executeable requests</param>
-        /// <param name="myResults">The results</param>
         /// <param name="myToken">The cancellation token</param>
         private void ProcessValidRequest(
-            IPipelinableRequest myPipelineRequest,
-            BlockingCollection<IPipelinableRequest> myExecuteAbleRequests,
-            ConcurrentDictionary<Guid, IRequest> myResults,
-            CancellationToken myToken)
+            ref IPipelinableRequest myPipelineRequest,
+            ref CancellationToken myToken)
         {
             if (_requestScheduler.ExecuteRequestInParallel(myPipelineRequest.Request))
             {
@@ -291,7 +301,7 @@ namespace sones.GraphDB.Manager
 
                 //so the request is valid and the request scheduler agrees to execute it in parallel
 
-                myExecuteAbleRequests.Add(myPipelineRequest, myToken);
+                _executableRequests.Add(myPipelineRequest, myToken);
 
                 #endregion
             }
@@ -311,7 +321,7 @@ namespace sones.GraphDB.Manager
                 myPipelineRequest.Execute(_metaManager);
 
                 //add the request to the result
-                myResults.TryAdd(myPipelineRequest.ID, myPipelineRequest.Request);
+                _results.TryAdd(myPipelineRequest.ID, myPipelineRequest.Request);
 
                 #endregion
             }
