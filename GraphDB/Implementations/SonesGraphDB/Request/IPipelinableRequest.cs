@@ -34,8 +34,7 @@ namespace sones.GraphDB.Request
         /// Validates the request
         /// </summary>
         /// <param name="myMetaManager">A manager that contains all necessary managers</param>
-        /// <returns>True if the request is valid, otherwise false</returns>
-        Boolean Validate(MetaManager myMetaManager);
+        void Validate(MetaManager myMetaManager);
 
         /// <summary>
         /// Executes the request

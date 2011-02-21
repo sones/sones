@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using sones.ErrorHandling;
 using sones.GraphDB.Request;
 
 namespace sones.GraphDB.Manager
@@ -88,7 +89,7 @@ namespace sones.GraphDB.Manager
         /// 
         /// BEWARE!!! Cannot be executed more than once BEWARE!!!
         /// </summary>
-        private void ValidateRequest()
+        private void ValidateRequests()
         {
             CancellationToken token = _cts.Token;
 
@@ -103,24 +104,9 @@ namespace sones.GraphDB.Manager
                     if (token.IsCancellationRequested)
                         break;
 
-                    if (pipelineRequest.Validate(_metaManager))
-                    {
-                        #region valid
+                    ValidateRequest(ref pipelineRequest);
 
-                        ProcessValidRequest(ref pipelineRequest, ref token);
-
-                        #endregion
-                    }
-                    else
-                    {
-                        #region invalid
-
-                        //the request is invalid and so it is transfered to the results
-
-                        _results.TryAdd(pipelineRequest.ID, pipelineRequest.Request);
-
-                        #endregion
-                    }
+                    ProcessValidRequest(ref pipelineRequest, ref token);
 
                     pipelineRequest = null;
                 }
@@ -137,8 +123,6 @@ namespace sones.GraphDB.Manager
             }
         }
 
-
-
         #endregion
 
         #region stage 2
@@ -147,7 +131,7 @@ namespace sones.GraphDB.Manager
         /// Stage 2 of Request processing
         /// Execution of the incoming requests. 
         /// </summary>
-        private void ExecuteRequest()
+        private void ExecuteRequests()
         {
             CancellationToken token = _cts.Token;
 
@@ -162,7 +146,7 @@ namespace sones.GraphDB.Manager
                     if (token.IsCancellationRequested)
                         break;
 
-                    pipelineRequest.Execute(_metaManager);
+                    ExecuteRequest(ref pipelineRequest);
 
                     _results.TryAdd(pipelineRequest.ID, pipelineRequest.Request);
 
@@ -227,12 +211,12 @@ namespace sones.GraphDB.Manager
 
             //start the validate stage
             _tasks[taskId++] =
-                f.StartNew(ValidateRequest);
+                f.StartNew(ValidateRequests);
 
             //start the execution stage
             for (int i = 0; i < executionTaskCount; i++)
             {
-                _tasks[taskId++] = f.StartNew(ExecuteRequest);
+                _tasks[taskId++] = f.StartNew(ExecuteRequests);
             }
         }
 
@@ -280,6 +264,8 @@ namespace sones.GraphDB.Manager
             Complete(_executableRequests);
 
             Task.WaitAll(_tasks);
+
+            _results.Clear();
         }
 
         #endregion
@@ -325,6 +311,70 @@ namespace sones.GraphDB.Manager
 
                 #endregion
             }
+        }
+
+        #endregion
+
+        #region ValidateRequest
+
+        /// <summary>
+        /// Validates a single request and catches exceptions
+        /// </summary>
+        /// <param name="pipelineRequest">The request that is going to be validated</param>
+        private void ValidateRequest(ref IPipelinableRequest pipelineRequest)
+        {
+            try
+            {
+                pipelineRequest.Validate(_metaManager);
+            }
+            catch (Exception e)
+            {
+                HandleErroneousRequest(ref pipelineRequest, e);
+            }
+        }
+
+        #endregion
+
+        #region ExecuteRequest
+
+        /// <summary>
+        /// Executes a single request and catches exceptions
+        /// </summary>
+        /// <param name="pipelineRequest">The request that is going to be executed</param>
+        private void ExecuteRequest(ref IPipelinableRequest pipelineRequest)
+        {
+            try
+            {
+                pipelineRequest.Execute(_metaManager);
+            }
+            catch (Exception e)
+            {
+                HandleErroneousRequest(ref pipelineRequest, e);
+            }
+        }
+
+        #endregion
+
+        #region HandleErroneousRequest
+
+        /// <summary>
+        /// Handles exceptions that occured while processing a request
+        /// </summary>
+        /// <param name="pipelineRequest">The request that has been processed</param>
+        /// <param name="e">The exception that has been thrown</param>
+        private void HandleErroneousRequest(ref IPipelinableRequest pipelineRequest, Exception e)
+        {
+            if (!(e is ASonesException))
+            {
+                //generate a valid exception and append it to the request
+
+                throw new NotImplementedException();
+            }
+
+            //add the exception to the request
+            throw new NotImplementedException();
+
+            _results.TryAdd(pipelineRequest.ID, pipelineRequest.Request);
         }
 
         #endregion
