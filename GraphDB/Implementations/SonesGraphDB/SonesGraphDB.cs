@@ -11,7 +11,8 @@ namespace sones.GraphDB
     /// </summary>
     public sealed class SonesGraphDB : IGraphDB
     {
-        private MetaManager _metaManager;
+        private readonly MetaManager _metaManager;
+        private readonly RequestManager _requestManager;
 
         #region IGraphDB Members
 
@@ -19,20 +20,26 @@ namespace sones.GraphDB
                                                  RequestCreateVertexType myRequestCreateVertexType,
                                                  Func<IRequestStatistics, TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            var Id = _requestManager.RegisterRequest(new PipelineableCreateVertexTypeRequest(myRequestCreateVertexType, mySecurityToken, myTransactionToken));
+
+            return _requestManager.GetResult(Id).GenerateRequestStatistics<TResult>(myOutputconverter);
         }
 
         public TResult Clear<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
                                       RequestClear myRequestClear, Func<IRequestStatistics, TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            var Id = _requestManager.RegisterRequest(new PipelineableClearRequest(myRequestClear, mySecurityToken, myTransactionToken));
+
+            return _requestManager.GetResult(Id).GenerateRequestStatistics<TResult>(myOutputconverter);
         }
 
         public TResult Insert<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
                                        RequestInsertVertex myRequestInsert,
                                        Func<IRequestStatistics, TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            var Id = _requestManager.RegisterRequest(new PipelineableInsertRequest(myRequestInsert, mySecurityToken, myTransactionToken));
+
+            return _requestManager.GetResult(Id).GenerateRequestStatistics<TResult>(myOutputconverter);
         }
 
         public TransactionToken Begin(SecurityToken mySecurityToken, bool myLongrunning = false,

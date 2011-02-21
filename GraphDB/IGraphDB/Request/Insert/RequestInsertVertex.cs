@@ -1,4 +1,5 @@
-﻿namespace sones.GraphDB.Request
+﻿using System;
+namespace sones.GraphDB.Request
 {
     /// <summary>
     /// A request for creating a new vertex
@@ -11,11 +12,6 @@
         /// The definition of the vertex that is going to be inserted
         /// </summary>
         public readonly VertexInsert VertexInsertDefinition;
-
-        /// <summary>
-        /// The stats of the request
-        /// </summary>
-        private RequestStatistics _stats;
 
         #endregion
 
@@ -37,11 +33,6 @@
         public GraphDBAccessMode AccessMode
         {
             get { return GraphDBAccessMode.ReadWrite; }
-        }
-
-        public void SetStatistics(IRequestStatistics myRequestStatistics)
-        {
-            _stats = myRequestStatistics as RequestStatistics;
         }
 
         #endregion

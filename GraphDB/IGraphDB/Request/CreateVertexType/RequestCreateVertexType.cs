@@ -12,11 +12,6 @@
         /// </summary>
         public readonly VertexTypeDefinition VertexTypeDefinition;
 
-        /// <summary>
-        /// The stats of the request
-        /// </summary>
-        private RequestStatistics _stats;
-
         #endregion
 
         #region Constructor
@@ -37,11 +32,6 @@
         public GraphDBAccessMode AccessMode
         {
             get { return GraphDBAccessMode.TypeChange; }
-        }
-
-        public void SetStatistics(IRequestStatistics myRequestStatistics)
-        {
-            _stats = myRequestStatistics as RequestStatistics;
         }
 
         #endregion

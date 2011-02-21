@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using sones.ErrorHandling;
 using sones.GraphDB.Request;
+using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphDB.Manager
 {
@@ -17,12 +18,12 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// This structure contains requests that had been validated successfully
         /// </summary>
-        private readonly BlockingCollection<IPipelinableRequest> _executableRequests;
+        private readonly BlockingCollection<APipelinableRequest> _executableRequests;
 
         /// <summary>
         /// The incoming requests... every incoming request is stored within this structure
         /// </summary>
-        private readonly BlockingCollection<IPipelinableRequest> _incomingRequests;
+        private readonly BlockingCollection<APipelinableRequest> _incomingRequests;
 
         /// <summary>
         /// The meta manager that contains all relevant manager
@@ -37,7 +38,7 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// The structure where the results are stored
         /// </summary>
-        private readonly ConcurrentDictionary<Guid, IRequest> _results;
+        private readonly ConcurrentDictionary<Guid, APipelinableRequest> _results;
 
         /// <summary>
         /// The cancellation token source
@@ -68,9 +69,9 @@ namespace sones.GraphDB.Manager
         {
             #region init
 
-            _incomingRequests = new BlockingCollection<IPipelinableRequest>(queueLengthForIncomingRequests);
-            _executableRequests = new BlockingCollection<IPipelinableRequest>(executionQueueLength);
-            _results = new ConcurrentDictionary<Guid, IRequest>();
+            _incomingRequests = new BlockingCollection<APipelinableRequest>(queueLengthForIncomingRequests);
+            _executableRequests = new BlockingCollection<APipelinableRequest>(executionQueueLength);
+            _results = new ConcurrentDictionary<Guid, APipelinableRequest>();
             _metaManager = myMetaManager;
             _requestScheduler = myRequestScheduler;
 
@@ -93,7 +94,7 @@ namespace sones.GraphDB.Manager
         {
             CancellationToken token = _cts.Token;
 
-            IPipelinableRequest pipelineRequest = null;
+            APipelinableRequest pipelineRequest = null;
 
             try
             {
@@ -135,7 +136,7 @@ namespace sones.GraphDB.Manager
         {
             CancellationToken token = _cts.Token;
 
-            IPipelinableRequest pipelineRequest = null;
+            APipelinableRequest pipelineRequest = null;
 
             try
             {
@@ -148,7 +149,7 @@ namespace sones.GraphDB.Manager
 
                     ExecuteRequest(ref pipelineRequest);
 
-                    _results.TryAdd(pipelineRequest.ID, pipelineRequest.Request);
+                    _results.TryAdd(pipelineRequest.ID, pipelineRequest);
 
                     pipelineRequest = null;
                 }
@@ -170,20 +171,29 @@ namespace sones.GraphDB.Manager
         #region GetResult
 
         /// <summary>
-        /// Gets the resulting request corresponding
+        /// Gets the result
+        /// 
+        /// If there was an error during validation or execution, the corresponding exception is thrown
         /// </summary>
         /// <param name="myInterestingResult">The id of the pipelineable request</param>
         /// <returns>The result of the request</returns>
-        public IRequest GetResult(Guid myInterestingResult)
+        public APipelinableRequest GetResult(Guid myInterestingResult)
         {
-            IRequest interestingRequest = null;
+            APipelinableRequest interestingRequest = null;
 
             while (true)
             {
-                if (_results.TryGetValue(myInterestingResult, out interestingRequest))
+                if (_results.TryRemove(myInterestingResult, out interestingRequest))
                 {
                     break;
                 }
+            }
+
+            if (interestingRequest.Exception != null)
+            {
+                //throw the exception and let the user handle it
+
+                throw interestingRequest.Exception;
             }
 
             return interestingRequest;
@@ -228,7 +238,7 @@ namespace sones.GraphDB.Manager
         /// Completes a blocking collection
         /// </summary>
         /// <param name="myCollection">The collection that should be completed</param>
-        private void Complete(BlockingCollection<IPipelinableRequest> myCollection)
+        private void Complete(BlockingCollection<APipelinableRequest> myCollection)
         {
             if (myCollection != null)
             {
@@ -245,9 +255,11 @@ namespace sones.GraphDB.Manager
         /// </summary>
         /// <param name="myToBeAddedRequest">The request that should be registered</param>
         /// <returns>The unique id of the request</returns>
-        public void RegisterRequest(IPipelinableRequest myToBeAddedRequest)
+        public Guid RegisterRequest(APipelinableRequest myToBeAddedRequest)
         {
             _incomingRequests.Add(myToBeAddedRequest);
+
+            return myToBeAddedRequest.ID;
         }
 
         #endregion
@@ -278,10 +290,10 @@ namespace sones.GraphDB.Manager
         /// <param name="myPipelineRequest">A valid pipelone request</param>
         /// <param name="myToken">The cancellation token</param>
         private void ProcessValidRequest(
-            ref IPipelinableRequest myPipelineRequest,
+            ref APipelinableRequest myPipelineRequest,
             ref CancellationToken myToken)
         {
-            if (_requestScheduler.ExecuteRequestInParallel(myPipelineRequest.Request))
+            if (_requestScheduler.ExecuteRequestInParallel(myPipelineRequest.GetRequest()))
             {
                 #region execute in parallel
 
@@ -307,7 +319,7 @@ namespace sones.GraphDB.Manager
                 myPipelineRequest.Execute(_metaManager);
 
                 //add the request to the result
-                _results.TryAdd(myPipelineRequest.ID, myPipelineRequest.Request);
+                _results.TryAdd(myPipelineRequest.ID, myPipelineRequest);
 
                 #endregion
             }
@@ -321,7 +333,7 @@ namespace sones.GraphDB.Manager
         /// Validates a single request and catches exceptions
         /// </summary>
         /// <param name="pipelineRequest">The request that is going to be validated</param>
-        private void ValidateRequest(ref IPipelinableRequest pipelineRequest)
+        private void ValidateRequest(ref APipelinableRequest pipelineRequest)
         {
             try
             {
@@ -341,7 +353,7 @@ namespace sones.GraphDB.Manager
         /// Executes a single request and catches exceptions
         /// </summary>
         /// <param name="pipelineRequest">The request that is going to be executed</param>
-        private void ExecuteRequest(ref IPipelinableRequest pipelineRequest)
+        private void ExecuteRequest(ref APipelinableRequest pipelineRequest)
         {
             try
             {
@@ -362,19 +374,20 @@ namespace sones.GraphDB.Manager
         /// </summary>
         /// <param name="pipelineRequest">The request that has been processed</param>
         /// <param name="e">The exception that has been thrown</param>
-        private void HandleErroneousRequest(ref IPipelinableRequest pipelineRequest, Exception e)
+        private void HandleErroneousRequest(ref APipelinableRequest pipelineRequest, Exception e)
         {
-            if (!(e is ASonesException))
+            var aSonesException = e as ASonesException;
+
+            if (aSonesException == null)
             {
                 //generate a valid exception and append it to the request
-
-                throw new NotImplementedException();
+                aSonesException = new UnknownException(e);
             }
 
             //add the exception to the request
-            throw new NotImplementedException();
+            pipelineRequest.Exception = aSonesException;
 
-            _results.TryAdd(pipelineRequest.ID, pipelineRequest.Request);
+            _results.TryAdd(pipelineRequest.ID, pipelineRequest);
         }
 
         #endregion

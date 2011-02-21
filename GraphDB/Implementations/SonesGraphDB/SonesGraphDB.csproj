@@ -44,9 +44,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorHandling\UnknownException.cs" />
     <Compile Include="Manager\MetaManager.cs" />
     <Compile Include="Manager\Request\RequestManager.cs" />
-    <Compile Include="Request\IPipelinableRequest.cs" />
+    <Compile Include="Request\Clear\PipelineableClearRequest.cs" />
+    <Compile Include="Request\APipelinableRequest.cs" />
+    <Compile Include="Request\CreateVertexType\PipelineableCreateVertexTypeRequest.cs" />
+    <Compile Include="Request\Insert\PipelineableInsertRequest.cs" />
     <Compile Include="SonesGraphDB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -76,11 +80,7 @@
       <Name>IGraphDB</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Request\Clear\" />
-    <Folder Include="Request\CreateVertexType\" />
-    <Folder Include="Request\Insert\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
