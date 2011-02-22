@@ -229,27 +229,71 @@ namespace sones.GraphFS
             return result;
         }
 
-        public bool RemoveVertexRevision(ulong myVertexID, ulong myVertexTypeID, IEnumerable<string> myInterestingEditions = null, IEnumerable<VertexRevisionID> myToBeRemovedRevisionIDs = null)
+        public bool RemoveVertexRevision(ulong myVertexID, ulong myVertexTypeID, string myInterestingEdition, VertexRevisionID myToBeRemovedRevisionID)
         {
-            throw new NotImplementedException();            
+            var vertex = GetVertex(myVertexID, myVertexTypeID);
+
+            if (vertex != null)
+            {
+                if ((vertex.EditionName == myInterestingEdition) && (vertex.VertexRevisionID == myToBeRemovedRevisionID))
+                {
+                    ConcurrentDictionary<UInt64, IVertex> vertices = null;
+
+                    if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
+                    {
+                        return vertices.TryRemove(vertex.VertexID, out vertex);
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return false;
         }
 
-        public bool RemoveVertexEdition(ulong myVertexID, ulong myVertexTypeID, IEnumerable<string> myToBeRemovedEditions = null)
+        public bool RemoveVertexEdition(ulong myVertexID, ulong myVertexTypeID, string myToBeRemovedEdition)
         {
-            throw new NotImplementedException();
+            var vertex = GetVertex(myVertexID, myVertexTypeID);
+
+            if (vertex != null)
+            {
+                if (vertex.EditionName == myToBeRemovedEdition)
+                {
+                    ConcurrentDictionary<UInt64, IVertex> vertices = null;
+
+                    if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
+                    {
+                        return vertices.TryRemove(vertex.VertexID, out vertex);
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return false;
         }
 
         public bool RemoveVertex(ulong myVertexID, ulong myVertexTypeID)
         {
-            throw new NotImplementedException();
+            ConcurrentDictionary<UInt64, IVertex> vertices = null;
+            IVertex vertex = null;
+
+            if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
+            {
+                return vertices.TryRemove(myVertexID, out vertex);
+            }
+
+            return false;
         }
 
-        public bool AddVertex(IVertex myVertex, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public UInt64 AddVertex(IVertex myVertex, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new NotImplementedException();
         }
 
-        public IVertex UpdateVertex(ulong myToBeUpdatedVertexID, ulong myCorrespondingVertexTypeID, IVertex myVertexUpdateDiff, string myToBeUpdatedEditions = null, VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
+        public void UpdateVertex(ulong myToBeUpdatedVertexID, ulong myCorrespondingVertexTypeID, IVertex myVertexUpdateDiff, string myToBeUpdatedEditions = null, VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
         {
             throw new NotImplementedException();
         }
