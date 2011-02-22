@@ -17,16 +17,6 @@ namespace sones.GraphFS
 
         #endregion
 
-        #region isMounted
-
-        /// <summary>
-        /// Returns true if the file system was mounted correctly
-        /// </summary>
-        /// <returns>true if the file system was mounted correctly</returns>
-        Boolean IsMounted { get; }
-
-        #endregion
-
         #region HasRevisions
 
         /// <summary>
@@ -110,25 +100,6 @@ namespace sones.GraphFS
         /// </summary>
         /// <param name="myReplicationStream">An enumerable of vertices</param>
         void ReplicateFileSystem(IEnumerable<IVertex> myReplicationStream);
-
-        #endregion
-
-        #region Mount-/Remount-/UnmountFileSystem
-
-        /// <summary>
-        /// Mounts this file system.
-        /// </summary>
-        void MountFileSystem();
-
-        /// <summary>
-        /// Remounts a file system
-        /// </summary>
-        void RemountFileSystem();
-
-        /// <summary>
-        /// Flush all caches and unmount this file system.
-        /// </summary>
-        void UnmountFileSystem();
 
         #endregion
 

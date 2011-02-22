@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using sones.GraphFS;
 using sones.PropertyHyperGraph;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 
 namespace sones.GraphFS
 {
@@ -35,13 +37,6 @@ namespace sones.GraphFS
         public bool IsPersistent
         {
             get { return false; }
-        }
-
-        public bool IsMounted
-        {
-            //this filesystem is always mounted
-
-            get { return true; }
         }
 
         public bool HasRevisions
@@ -86,37 +81,69 @@ namespace sones.GraphFS
 
         public IEnumerable<IVertex> CloneFileSystem(ulong myTimeStamp = 0UL)
         {
-            throw new NotImplementedException();
+            return _vertexStore.Values.
+                Select 
+                (aType => aType.Values.AsParallel().
+                    Where 
+                    (aVertex 
+                        => aVertex.VertexRevisionID.Timestamp > myTimeStamp)).
+                        Aggregate((EnumerableA, EnumerableB) =>
+                            {
+                                return EnumerableA.Union(EnumerableB);
+                            });
         }
 
         public void ReplicateFileSystem(IEnumerable<IVertex> myReplicationStream)
         {
-            throw new NotImplementedException();
-        }
+            var tempVertexStore = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, IVertex>>();
 
-        public void MountFileSystem()
-        {
-            throw new NotImplementedException();
-        }
+            Parallel.ForEach(myReplicationStream, aVertex =>
+                {
+                    if (!tempVertexStore.ContainsKey(aVertex.TypeID))
+                    {
+                        tempVertexStore.TryAdd(aVertex.TypeID, new ConcurrentDictionary<ulong, IVertex>());
+                    }
 
-        public void RemountFileSystem()
-        {
-            throw new NotImplementedException();
-        }
+                    tempVertexStore[aVertex.TypeID].TryAdd(aVertex.VertexID, aVertex);
+                });
 
-        public void UnmountFileSystem()
-        {
-            throw new NotImplementedException();
+            _vertexStore = tempVertexStore;
         }
 
         public bool VertexExists(ulong myVertexID, ulong myVertexTypeID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
-            throw new NotImplementedException();
+            ConcurrentDictionary<UInt64, IVertex> vertices = null;
+
+            if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
+            {
+                IVertex vertex = null;
+
+                if (vertices.TryGetValue(myVertexID, out vertex))
+                {
+                    //we found the vertex and return ... at this point we do not care about revisions or editions, because this filesystem 
+                    //does not implement those structures
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public IVertex GetVertex(ulong myVertexID, ulong myVertexTypeID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
-            throw new NotImplementedException();
+            ConcurrentDictionary<UInt64, IVertex> vertices = null;
+
+            if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
+            {
+                IVertex vertex = null;
+
+                if (vertices.TryGetValue(myVertexID, out vertex))
+                {
+                    return vertex;
+                }
+            }
+
+            return null;
         }
 
         public IEnumerable<IVertex> GetAllVertices(IEnumerable<ulong> myInterestingVertexTypeIDs = null, IEnumerable<ulong> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
