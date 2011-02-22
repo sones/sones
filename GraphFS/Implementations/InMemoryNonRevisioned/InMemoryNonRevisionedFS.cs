@@ -146,44 +146,92 @@ namespace sones.GraphFS
             return null;
         }
 
-        public IEnumerable<IVertex> GetAllVertices(IEnumerable<ulong> myInterestingVertexTypeIDs = null, IEnumerable<ulong> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
-        {
-            throw new NotImplementedException();
-        }
-
         public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<ulong> myInterestingVertexIDs = null, Func<string, bool> myEditionsFilterFunc = null, Func<VertexRevisionID, bool> myInterestingRevisionIDFilterFunc = null)
         {
-            throw new NotImplementedException();
+            if (myInterestingVertexIDs != null)
+            {
+                return GetVerticesByTypeID(myTypeID, myInterestingVertexIDs);
+            }
+            else
+            {
+                return GetVerticesByTypeID(myTypeID);
+            }
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<ulong> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
         {
-            throw new NotImplementedException();
+            if (myInterestingVertexIDs != null)
+            {
+                return GetVerticesByTypeID(myTypeID, myInterestingVertexIDs);
+            }
+            else
+            {
+                return GetVerticesByTypeID(myTypeID);
+            }
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<ulong> myInterestingVertexIDs)
         {
-            throw new NotImplementedException();
+            var interestingVertices = new HashSet<ulong>(myInterestingVertexIDs);
+
+            return GetVerticesByTypeID(myTypeID).Where(aVertex => interestingVertices.Contains(aVertex.VertexID));
         }
+
+        public IEnumerable<IVertex> GetVerticesByTypeID(ulong myVertexTypeID)
+        {
+            ConcurrentDictionary<UInt64, IVertex> vertices = null;
+
+            if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
+            {
+                foreach (var aVertex in vertices)
+                {
+                    yield return aVertex.Value;
+                }
+            }
+
+            yield break;
+        }
+
 
         public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<VertexRevisionID> myInterestingRevisions)
         {
-            throw new NotImplementedException();
+            return GetVerticesByTypeID(myTypeID);
         }
 
         public IEnumerable<string> GetVertexEditions(ulong myVertexID, ulong myVertexTypeID)
         {
-            throw new NotImplementedException();
+            var result = new List<String>();
+
+            var vertex = GetVertex(myVertexID, myVertexTypeID);
+
+            if (vertex != null)
+            {
+                result.Add(vertex.EditionName);
+            }
+
+            return result;
         }
 
         public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(ulong myVertexID, ulong myVertexTypeID, IEnumerable<string> myInterestingEditions = null)
         {
-            throw new NotImplementedException();
+            var result = new List<VertexRevisionID>();            
+
+            var vertex = GetVertex(myVertexID, myVertexTypeID);
+
+            if (vertex != null)
+            {
+                if (myInterestingEditions.Contains(vertex.EditionName))
+                {
+                    result.Add(vertex.VertexRevisionID);
+                }
+            }
+
+            return result;
         }
 
         public bool RemoveVertexRevision(ulong myVertexID, ulong myVertexTypeID, IEnumerable<string> myInterestingEditions = null, IEnumerable<VertexRevisionID> myToBeRemovedRevisionIDs = null)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException();            
         }
 
         public bool RemoveVertexEdition(ulong myVertexID, ulong myVertexTypeID, IEnumerable<string> myToBeRemovedEditions = null)

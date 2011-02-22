@@ -135,21 +135,6 @@ namespace sones.GraphFS
             VertexRevisionID myVertexRevisionID = null);
 
         /// <summary>
-        /// Returns all vertices.
-        /// It is possible to filter the vertex type and the vertices itself
-        /// </summary>
-        /// <param name="myInterestingVertexTypeIDs">Interesting vertex type ids</param>
-        /// <param name="myInterestingVertexIDs">Interesting vertex ids</param>
-        /// <param name="myInterestingEditionNames">Interesting editions of the vertex</param>
-        /// <param name="myInterestingRevisionIDs">Interesting revisions of the vertex</param>
-        /// <returns>An IEnumerable of vertices</returns>
-        IEnumerable<IVertex> GetAllVertices(
-            IEnumerable<UInt64> myInterestingVertexTypeIDs = null,
-            IEnumerable<UInt64> myInterestingVertexIDs = null,
-            IEnumerable<String> myInterestingEditionNames = null,
-            IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null);
-
-        /// <summary>
         /// Returns all vertex by a given typeID. It's possible to filter interesting vertices.
         /// Edition and Revision filtering works by using a filter func.
         /// 
@@ -194,6 +179,16 @@ namespace sones.GraphFS
         IEnumerable<IVertex> GetVerticesByTypeID(
             UInt64 myTypeID,
             IEnumerable<UInt64> myInterestingVertexIDs);
+
+        /// <summary>
+        /// Returns all vertices considering a given vertex type.
+        /// 
+        /// The default edition and latest revision of an existing vertex will be returned.
+        /// </summary>
+        /// <param name="myTypeID">the considered vertex type</param>
+        /// <returns>all interesting vertices of given type with default edition and latest revision</returns>
+        IEnumerable<IVertex> GetVerticesByTypeID(
+            UInt64 myTypeID);
 
         /// <summary>
         /// Returns all vertices considering a given vertex type.
