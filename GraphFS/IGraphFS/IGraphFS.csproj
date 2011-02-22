@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorHandling\IGraphFSException.cs" />
-    <Compile Include="FileSystemAccessMode.cs" />
     <Compile Include="IGraphFS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

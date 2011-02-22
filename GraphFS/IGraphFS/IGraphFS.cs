@@ -75,16 +75,6 @@ namespace sones.GraphFS
 
         #endregion
 
-        #region GetAccessMode(...)
-
-        /// <summary>
-        /// Returns the access mode of this file system
-        /// </summary>
-        /// <returns>The access mode of this file system</returns>
-        FileSystemAccessMode GetAccessMode();
-
-        #endregion
-
         #endregion
 
         #region Grow-/Shrink-/Replicate-/WipeFileSystem
@@ -128,14 +118,12 @@ namespace sones.GraphFS
         /// <summary>
         /// Mounts this file system.
         /// </summary>
-        /// <param name="myAccessMode">The file system access mode, e.g. "read-write" or "read-only".</param>
-        void MountFileSystem(FileSystemAccessMode myAccessMode);
+        void MountFileSystem();
 
         /// <summary>
-        /// Remounts a file system in order to change its access mode.
+        /// Remounts a file system
         /// </summary>
-        /// <param name="myFSAccessMode">The file system access mode, e.g. "read-write" or "read-only".</param>
-        void RemountFileSystem(FileSystemAccessMode myFSAccessMode);
+        void RemountFileSystem();
 
         /// <summary>
         /// Flush all caches and unmount this file system.
