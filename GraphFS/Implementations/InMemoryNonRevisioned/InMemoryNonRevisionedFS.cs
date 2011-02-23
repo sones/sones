@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using sones.GraphFS;
-using sones.PropertyHyperGraph;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using sones.GraphFS.Element;
 using sones.GraphDB.ErrorHandling;
+using sones.GraphFS.Element;
+using sones.PropertyHyperGraph;
 
 namespace sones.GraphFS
 {
