@@ -8,7 +8,7 @@
     <ProjectGuid>{FFFB6BE4-9514-41CF-AB68-5FB7B8E3D2E4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GraphFS</RootNamespace>
+    <RootNamespace>sones.GraphFS</RootNamespace>
     <AssemblyName>IGraphFS</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Definitions\VertexUpdate.cs" />
+    <Compile Include="Definitions\VertexAdd.cs" />
     <Compile Include="ErrorHandling\IGraphFSException.cs" />
     <Compile Include="IGraphFS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

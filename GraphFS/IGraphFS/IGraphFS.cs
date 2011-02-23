@@ -263,28 +263,28 @@ namespace sones.GraphFS
         /// <summary>
         /// Adds a new vertex to the graph fs and returns its id
         /// </summary>
-        /// <param name="myVertex">The vertex that is going to be inserted</param>
+        /// <param name="myVertexDefinition">The vertex definition that represents the new vertex</param>
         /// <param name="myEdition">The name of the edition of the new vertex</param>
         /// <param name="myVertexRevisionID">The revision id of the vertex</param>
         /// <returns>The id of the vertex</returns>        
         UInt64 AddVertex(
-            IVertex myVertex,
+            VertexAdd myVertexDefinition,
             String myEdition = null,
             VertexRevisionID myVertexRevisionID = null);
 
         /// <summary>
-        /// Updates a vertex and returns it
+        /// Updates a vertex
         /// </summary>
         /// <param name="myToBeUpdatedVertexID">The vertex id that is going to be updated</param>
         /// <param name="myCorrespondingVertexTypeID">The vertex type id that is going to be updated</param>
-        /// <param name="myVertexUpdateDiff">The update for the vertex</param>
+        /// <param name="myVertexUpdate">The update definition for the vertex</param>
         /// <param name="myToBeUpdatedEditions">The editions that should be updated</param>
         /// <param name="myToBeUpdatedRevisionIDs">The revisions that should be updated</param>
         /// <param name="myCreateNewRevision">Determines if it is necessary to create a new revision of the vertex</param>
         void UpdateVertex(
             UInt64 myToBeUpdatedVertexID,
             UInt64 myCorrespondingVertexTypeID,
-            IVertex myVertexUpdateDiff,
+            VertexUpdate myVertexUpdate,
             String myToBeUpdatedEditions = null,
             VertexRevisionID myToBeUpdatedRevisionIDs = null,
             Boolean myCreateNewRevision = false);

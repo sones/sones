@@ -288,12 +288,12 @@ namespace sones.GraphFS
             return false;
         }
 
-        public UInt64 AddVertex(IVertex myVertex, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public UInt64 AddVertex(VertexAdd myVertexDefinition, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             throw new NotImplementedException();
         }
 
-        public void UpdateVertex(ulong myToBeUpdatedVertexID, ulong myCorrespondingVertexTypeID, IVertex myVertexUpdateDiff, string myToBeUpdatedEditions = null, VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
+        public void UpdateVertex(ulong myToBeUpdatedVertexID, ulong myCorrespondingVertexTypeID, VertexUpdate myVertexUpdate, string myToBeUpdatedEditions = null, VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
         {
             throw new NotImplementedException();
         }
