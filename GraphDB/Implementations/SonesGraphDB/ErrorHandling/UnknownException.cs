@@ -9,20 +9,20 @@ namespace sones.GraphDB.ErrorHandling
     public sealed class UnknownException : AGraphDBException
     {
 
-        public Exception InnerException { get; private set; }
+        public Exception ThrownException { get; private set; }
 
         #region constructor
 
         public UnknownException(Exception e)
         {
-            InnerException = e;
+            ThrownException = e;
         }
 
         #endregion
 
         public override ushort ErrorCode
         {
-            get { return 0; }
+            get { return ErrorCodes.Unknown; }
         }
     }
 }

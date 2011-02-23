@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using sones.PropertyHyperGraph;
 
-namespace sones.InMemoryNonRevisioned.Element
+namespace sones.GraphFS.Element
 {
     /// <summary>
     /// A hyper edge is a 1-N relation within the property hypergraph

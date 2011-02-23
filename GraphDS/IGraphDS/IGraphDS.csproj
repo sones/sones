@@ -44,7 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ErrorHandling\IGraphDSException.cs" />
+    <Compile Include="ErrorHandling\AGraphDSException.cs" />
     <Compile Include="IGraphDS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

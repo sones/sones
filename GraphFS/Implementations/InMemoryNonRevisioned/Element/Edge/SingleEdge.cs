@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using sones.PropertyHyperGraph;
 
-namespace sones.InMemoryNonRevisioned.Element
+namespace sones.GraphFS.Element
 {
     /// <summary>
     /// The single edge defines a 1-1 relation within the property hypergraph

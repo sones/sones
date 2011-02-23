@@ -44,9 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Definitions\VertexUpdate.cs" />
-    <Compile Include="Definitions\VertexAdd.cs" />
-    <Compile Include="ErrorHandling\IGraphFSException.cs" />
+    <Compile Include="Definitions\VertexUpdateDefinition.cs" />
+    <Compile Include="Definitions\VertexDefinition.cs" />
+    <Compile Include="ErrorHandling\AGraphFSException.cs" />
+    <Compile Include="ErrorHandling\VertexDoesNotExistException.cs" />
     <Compile Include="IGraphFS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

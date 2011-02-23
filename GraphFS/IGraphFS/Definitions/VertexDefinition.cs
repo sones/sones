@@ -6,9 +6,10 @@ using System.Text;
 namespace sones.GraphFS
 {
     /// <summary>
-    /// This class represents the filesystem update definition for a vertex
+    /// This class represents the filesystem definition for a vertex
     /// </summary>
-    public sealed class VertexUpdate
+    public sealed class VertexDefinition
     {
+        public readonly UInt64 TypeID;
     }
 }

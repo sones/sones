@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorCodes.cs" />
     <Compile Include="SonesException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
