@@ -11,6 +11,28 @@ namespace sones.GraphFS.Element
     /// </summary>
     public sealed class InMemoryVertex : IVertex
     {
+        #region data
+
+        private readonly UInt64 _vertexID;
+
+        private readonly UInt64 _typeID;
+
+        private readonly String _comment;
+
+        private readonly DateTime _creationDate;
+        
+        private readonly DateTime _modificationDate;
+
+        private readonly VertexRevisionID _vertexRevisionID;
+
+        private readonly String _editionName;
+
+        private UInt64 _inDegree;
+        
+        private UInt64 _outDegree;
+
+        #endregion
+
         #region IVertex Members
 
         public bool HasIncomingHyperEdge(ulong myEdgePropertyID)
@@ -129,22 +151,22 @@ namespace sones.GraphFS.Element
 
         public string Comment
         {
-            get { throw new NotImplementedException(); }
+            get { return _comment; }
         }
 
         public DateTime CreationDate
         {
-            get { throw new NotImplementedException(); }
+            get { return _creationDate; }
         }
 
         public DateTime ModificationDate
         {
-            get { throw new NotImplementedException(); }
+            get { return _modificationDate; }
         }
 
         public ulong TypeID
         {
-            get { throw new NotImplementedException(); }
+            get { return _typeID; }
         }
 
         #endregion
@@ -153,42 +175,42 @@ namespace sones.GraphFS.Element
 
         public ulong VertexID
         {
-            get { throw new NotImplementedException(); }
+            get { return _vertexID; }
         }
 
         public VertexRevisionID VertexRevisionID
         {
-            get { throw new NotImplementedException(); }
+            get { return _vertexRevisionID; }
         }
 
         public string EditionName
         {
-            get { throw new NotImplementedException(); }
+            get { return _editionName; }
         }
 
         public ulong InDegree
         {
-            get { throw new NotImplementedException(); }
+            get { return _inDegree; }
         }
 
         public ulong OutDegree
         {
-            get { throw new NotImplementedException(); }
+            get { return _outDegree; }
         }
 
         public ulong Degree
         {
-            get { throw new NotImplementedException(); }
+            get { return InDegree + OutDegree; }
         }
 
         public IVertexStatistics Statistics
         {
-            get { throw new NotImplementedException(); }
+            get { return null; }
         }
 
         public IGraphPartitionInformation PartitionInformation
         {
-            get { throw new NotImplementedException(); }
+            get { return null; }
         }
 
         #endregion
