@@ -4,16 +4,18 @@ using System;
 namespace sones.GraphDB.ErrorHandling
 {
     /// <summary>
-    /// This class represents an unknown exception
+    /// This class represents an unknown graphdb exception
     /// </summary>
-    public sealed class UnknownException : AGraphDBException
+    public sealed class UnknownDBException : AGraphDBException
     {
-
+        /// <summary>
+        /// The exception that has been thrown
+        /// </summary>
         public Exception ThrownException { get; private set; }
 
         #region constructor
 
-        public UnknownException(Exception e)
+        public UnknownDBException(Exception e)
         {
             ThrownException = e;
         }
@@ -22,7 +24,7 @@ namespace sones.GraphDB.ErrorHandling
 
         public override ushort ErrorCode
         {
-            get { return ErrorCodes.Unknown; }
+            get { return ErrorCodes.UnknownDBError; }
         }
     }
 }

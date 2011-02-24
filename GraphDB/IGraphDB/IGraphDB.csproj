@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorHandling\AGraphDBException.cs" />
+    <Compile Include="ErrorHandling\UnknownDBException.cs" />
     <Compile Include="Request\Clear\RequestClear.cs" />
     <Compile Include="Request\CreateVertexType\EdgeSpecies.cs" />
     <Compile Include="Request\CreateVertexType\OutgoingEdgeDefinition.cs" />

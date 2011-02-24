@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using sones.Plugins.Index.Helper;
 using sones.Plugins.Index.Interfaces;
 
-namespace SonesIndices
+namespace sones.Plugin.Index
 {
     public class VersionedBPlusTreeIndex<TKey, TValue, TVersion> :
         IMultipleValueRangeVersionedIndex<TKey, TValue, TVersion>

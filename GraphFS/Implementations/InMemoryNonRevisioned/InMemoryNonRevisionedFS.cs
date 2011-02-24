@@ -3,9 +3,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using sones.GraphDB.ErrorHandling;
 using sones.GraphFS.Element;
 using sones.PropertyHyperGraph;
+using sones.GraphFS.ErrorHandling;
 
 namespace sones.GraphFS
 {
@@ -277,7 +277,7 @@ namespace sones.GraphFS
             return false;
         }
 
-        public UInt64 AddVertex(VertexDefinition myVertexDefinition, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public UInt64 AddVertex(VertexInsertDefinition myVertexDefinition, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
             if (!_vertexStore.ContainsKey(myVertexDefinition.TypeID))
             {
@@ -327,7 +327,7 @@ namespace sones.GraphFS
         /// </summary>
         /// <param name="myVertexDefinition">The definition of the vertex that is going to be creates</param>
         /// <returns>The resulting InMemoryVertex</returns>
-        private InMemoryVertex TransferToInMemoryVertex(VertexDefinition myVertexDefinition)
+        private InMemoryVertex TransferToInMemoryVertex(VertexInsertDefinition myVertexDefinition)
         {
             throw new NotImplementedException();
         }

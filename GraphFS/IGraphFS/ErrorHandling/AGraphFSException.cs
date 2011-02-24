@@ -1,6 +1,6 @@
 ﻿using sones.ErrorHandling;
 
-namespace sones.GraphDB.ErrorHandling
+namespace sones.GraphFS.ErrorHandling
 {
     /// <summary>
     /// The interface for all GraphFS exceptions

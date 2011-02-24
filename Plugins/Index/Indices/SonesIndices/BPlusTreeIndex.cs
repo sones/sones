@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using sones.Plugins.Index.Helper;
 using sones.Plugins.Index.Interfaces;
 
-namespace SonesIndices
+namespace sones.Plugin.Index
 {
     public class BPlusTreeIndex<TKey, TValue> : IMultipleValueRangeIndex<TKey, TValue>
         where TKey : IComparable

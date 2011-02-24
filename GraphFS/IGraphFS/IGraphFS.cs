@@ -268,7 +268,7 @@ namespace sones.GraphFS
         /// <param name="myVertexRevisionID">The revision id of the vertex</param>
         /// <returns>The id of the vertex</returns>        
         UInt64 AddVertex(
-            VertexDefinition myVertexDefinition,
+            VertexInsertDefinition myVertexDefinition,
             String myEdition = null,
             VertexRevisionID myVertexRevisionID = null);
 

@@ -16,6 +16,10 @@ namespace sones.GraphFS.Element
             throw new NotImplementedException();
         }
 
+        #endregion
+
+        #region IEdge Members
+
         public IVertex GetSourceVertex()
         {
             throw new NotImplementedException();
@@ -25,6 +29,10 @@ namespace sones.GraphFS.Element
         {
             throw new NotImplementedException();
         }
+
+        #endregion
+
+        #region IGraphElement Members
 
         public T GetProperty<T>(ulong myPropertyID)
         {
@@ -41,7 +49,7 @@ namespace sones.GraphFS.Element
             throw new NotImplementedException();
         }
 
-        public IEnumerable<KeyValuePair<ulong, object>> GetAllProperties(Func<ulong, object, bool> myFilterFunc = null)
+        public IEnumerable<Tuple<ulong, object>> GetAllProperties(Func<ulong, object, bool> myFilterFunc = null)
         {
             throw new NotImplementedException();
         }
@@ -66,8 +74,7 @@ namespace sones.GraphFS.Element
             throw new NotImplementedException();
         }
 
-        public IEnumerable<KeyValuePair<string, object>> GetAllUnstructuredProperties(
-            Func<string, object, bool> myFilterFunc = null)
+        public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(Func<string, object, bool> myFilterFunc = null)
         {
             throw new NotImplementedException();
         }
@@ -96,6 +103,10 @@ namespace sones.GraphFS.Element
         {
             get { throw new NotImplementedException(); }
         }
+
+        #endregion
+
+        #region IEdgeProperties Members
 
         public IEdgeStatistics Statistics
         {

@@ -4,9 +4,9 @@ using System;
 namespace sones.GraphFS.ErrorHandling
 {
     /// <summary>
-    /// A certain vertex does not exist
+    /// A certain unstructured vertex property does not exist
     /// </summary>
-    public sealed class VertexDoesNotExistException : AGraphFSException
+    public sealed class CouldNotFindUnStructuredVertexPropertyException : AGraphFSException
     {
         #region data
 
@@ -20,26 +20,33 @@ namespace sones.GraphFS.ErrorHandling
         /// </summary>
         public readonly UInt64 VertexID;
 
+        /// <summary>
+        /// The id of the desired property
+        /// </summary>
+        public readonly String PropertyName;
+
         #endregion
 
         #region constructor
 
         /// <summary>
-        /// Creates a new VertexDoesNotExist exception
+        /// Creates a new CouldNotFindUnStructuredVertexPropertyException exception
         /// </summary>
-        /// <param name="myTypeID">The vertex type id of the vertex</param>
+        /// <param name="myTypeID">The vertex type id</param>
         /// <param name="myVertexID">The id of the vertex</param>
-        public VertexDoesNotExistException(UInt64 myTypeID, UInt64 myVertexID)
+        /// <param name="myPropertyID">The desired property of the vertex</param>
+        public CouldNotFindUnStructuredVertexPropertyException(UInt64 myTypeID, UInt64 myVertexID, String myPropertyName)
         {
             TypeID = myTypeID;
             VertexID = myVertexID;
+            PropertyName = myPropertyName;
         }
 
         #endregion
 
         public override ushort ErrorCode
         {
-            get { return ErrorCodes.VertexDoesNotExist; }
+            get { return ErrorCodes.CouldNotFindUnStructuredVertexProperty; }
         }
     }
 }
