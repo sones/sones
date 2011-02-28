@@ -277,16 +277,16 @@ namespace sones.GraphFS
             return false;
         }
 
-        public UInt64 AddVertex(VertexInsertDefinition myVertexDefinition, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public UInt64 AddVertex(VertexAddDefinition myVertexDefinition, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
-            if (!_vertexStore.ContainsKey(myVertexDefinition.TypeID))
+            if (!_vertexStore.ContainsKey(myVertexDefinition.GraphElementInformation.TypeID))
             {
-                _vertexStore.TryAdd(myVertexDefinition.TypeID, new ConcurrentDictionary<ulong, InMemoryVertex>());
+                _vertexStore.TryAdd(myVertexDefinition.GraphElementInformation.TypeID, new ConcurrentDictionary<ulong, InMemoryVertex>());
             }
 
             var vertex = TransferToInMemoryVertex(myVertexDefinition);
 
-            _vertexStore[myVertexDefinition.TypeID].TryAdd(vertex.VertexID, vertex);
+            _vertexStore[myVertexDefinition.GraphElementInformation.TypeID].TryAdd(vertex.VertexID, vertex);
             
             return vertex.VertexID;
         }
@@ -327,7 +327,7 @@ namespace sones.GraphFS
         /// </summary>
         /// <param name="myVertexDefinition">The definition of the vertex that is going to be creates</param>
         /// <returns>The resulting InMemoryVertex</returns>
-        private InMemoryVertex TransferToInMemoryVertex(VertexInsertDefinition myVertexDefinition)
+        private InMemoryVertex TransferToInMemoryVertex(VertexAddDefinition myVertexDefinition)
         {
             throw new NotImplementedException();
         }

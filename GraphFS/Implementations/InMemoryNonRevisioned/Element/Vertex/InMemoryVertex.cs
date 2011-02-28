@@ -24,39 +24,9 @@ namespace sones.GraphFS.Element
         private readonly VertexRevisionID _vertexRevisionID;
 
         /// <summary>
-        /// The vertex type id of the vertex
-        /// </summary>
-        private readonly UInt64 _typeID;
-
-        /// <summary>
-        /// The comment of the vertex
-        /// </summary>
-        private readonly string _comment;
-
-        /// <summary>
-        /// The creation date of the vertex
-        /// </summary>
-        private readonly DateTime _creationDate;
-
-        /// <summary>
-        /// The modification date of the vertex
-        /// </summary>
-        private readonly DateTime _modificationDate;
-
-        /// <summary>
         /// The edition of the vertex
         /// </summary>
         private readonly string _edition;
-
-        /// <summary>
-        /// The structured properties of the vertex
-        /// </summary>
-        private readonly Dictionary<UInt64, Object> _structuredProperties;
-
-        /// <summary>
-        /// The unstructured properties of the vertex
-        /// </summary>
-        private readonly Dictionary<String, Object> _unstructuredProperties;
 
         /// <summary>
         /// The outgoing edges of the vertex
@@ -74,6 +44,11 @@ namespace sones.GraphFS.Element
         /// </summary>
         private readonly Dictionary<UInt64, Stream> _binaryProperties;
 
+        /// <summary>
+        /// The id of the vertex type
+        /// </summary>
+        private readonly InMemoryGraphElementInformation _inMemoryGraphElementInformation;
+
         #endregion
 
         #region constructor
@@ -87,23 +62,17 @@ namespace sones.GraphFS.Element
         public InMemoryVertex(
             UInt64 myVertexID,
             VertexRevisionID myVertexRevisionID,
-            VertexInsertDefinition myVertexDefinition)
+            VertexAddDefinition myVertexDefinition)
         {
             _vertexID = myVertexID;
             _vertexRevisionID = myVertexRevisionID;
-
-            _typeID = myVertexDefinition.TypeID;
-            _comment = myVertexDefinition.Comment;
-            _creationDate = myVertexDefinition.CreationDate;
-            _modificationDate = myVertexDefinition.ModificationDate;
             _edition = myVertexDefinition.Edition;
-
-            _structuredProperties = myVertexDefinition.StructuredProperties;
-            _unstructuredProperties = myVertexDefinition.UnstructuredProperties;
             _binaryProperties = myVertexDefinition.BinaryProperties;
 
-            _outgoingEdges = ConvertToIEdge(myVertexDefinition.OutgoingEdges);
+            _outgoingEdges = ConvertToIEdge(myVertexDefinition.OutgoingHyperEdges, myVertexDefinition.OutgoingSingleEdges);
             _incomingEdges = new Dictionary<ulong, Dictionary<ulong, HyperEdge>>();
+
+            _inMemoryGraphElementInformation = new InMemoryGraphElementInformation(myVertexDefinition.GraphElementInformation);
         }
 
         #endregion
@@ -248,53 +217,38 @@ namespace sones.GraphFS.Element
         {
             if (HasProperty(myPropertyID))
             {
-                return (T)_structuredProperties[myPropertyID];
+                return (T)_inMemoryGraphElementInformation.StructuredProperties[myPropertyID];
             }
             else
             {
-                throw new CouldNotFindStructuredVertexPropertyException(_typeID, _vertexID, myPropertyID);
+                throw new CouldNotFindStructuredVertexPropertyException(_inMemoryGraphElementInformation.TypeID, _vertexID, myPropertyID);
             }
         }
 
         public bool HasProperty(ulong myPropertyID)
         {
-            return _structuredProperties.ContainsKey(myPropertyID);
+            return _inMemoryGraphElementInformation.StructuredProperties.ContainsKey(myPropertyID);
         }
 
         public ulong GetCountOfProperties()
         {
-            return Convert.ToUInt64(_structuredProperties.Count);
+            return Convert.ToUInt64(_inMemoryGraphElementInformation.StructuredProperties.Count);
         }
 
         public IEnumerable<Tuple<ulong, object>> GetAllProperties(Func<ulong, object, bool> myFilterFunc = null)
         {
-            foreach (var aProperty in _structuredProperties)
-            {
-                if (myFilterFunc != null)
-                {
-                    if (myFilterFunc(aProperty.Key, aProperty.Value))
-                    {
-                        yield return new Tuple<ulong, object>(aProperty.Key, aProperty.Value);
-                    }
-                }
-                else
-                {
-                    yield return new Tuple<ulong, object>(aProperty.Key, aProperty.Value);
-                }
-            }
-
-            yield break;
+            return _inMemoryGraphElementInformation.GetAllProperties_protected(myFilterFunc);
         }
 
         public string GetPropertyAsString(ulong myPropertyID)
         {
             if (HasProperty(myPropertyID))
             {
-                return _structuredProperties[myPropertyID].ToString();
+                return _inMemoryGraphElementInformation.StructuredProperties[myPropertyID].ToString();
             }
             else
             {
-                throw new CouldNotFindStructuredVertexPropertyException(_typeID, _vertexID, myPropertyID);
+                throw new CouldNotFindStructuredVertexPropertyException(_inMemoryGraphElementInformation.TypeID, _vertexID, myPropertyID);
             }
         }
 
@@ -302,74 +256,59 @@ namespace sones.GraphFS.Element
         {
             if (HasUnstructuredProperty(myPropertyName))
             {
-                return (T)_unstructuredProperties[myPropertyName];
+                return (T)_inMemoryGraphElementInformation.UnstructuredProperties[myPropertyName];
             }
             else
             {
-                throw new CouldNotFindUnStructuredVertexPropertyException(_typeID, _vertexID, myPropertyName);
+                throw new CouldNotFindUnStructuredVertexPropertyException(_inMemoryGraphElementInformation.TypeID, _vertexID, myPropertyName);
             }
         }
 
         public bool HasUnstructuredProperty(string myPropertyName)
         {
-            return _unstructuredProperties.ContainsKey(myPropertyName);
+            return _inMemoryGraphElementInformation.UnstructuredProperties.ContainsKey(myPropertyName);
         }
 
         public ulong GetCountOfUnstructuredProperties()
         {
-            return Convert.ToUInt64(_unstructuredProperties.Count);
+            return Convert.ToUInt64(_inMemoryGraphElementInformation.UnstructuredProperties.Count);
         }
 
         public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(Func<string, object, bool> myFilterFunc = null)
         {
-            foreach (var aUnstructuredProperty in _unstructuredProperties)
-            {
-                if (myFilterFunc != null)
-                {
-                    if (myFilterFunc(aUnstructuredProperty.Key, aUnstructuredProperty.Value))
-                    {
-                        yield return new Tuple<String, object>(aUnstructuredProperty.Key, aUnstructuredProperty.Value);
-                    }
-                }
-                else
-                {
-                    yield return new Tuple<String, object>(aUnstructuredProperty.Key, aUnstructuredProperty.Value);
-                }
-            }
-
-            yield break;
+            return _inMemoryGraphElementInformation.GetAllUnstructuredProperties_protected(myFilterFunc);
         }
 
         public string GetUnstructuredPropertyAsString(string myPropertyName)
         {
             if (HasUnstructuredProperty(myPropertyName))
             {
-                return _unstructuredProperties[myPropertyName].ToString();
+                return _inMemoryGraphElementInformation.UnstructuredProperties[myPropertyName].ToString();
             }
             else
             {
-                throw new CouldNotFindUnStructuredVertexPropertyException(_typeID, _vertexID, myPropertyName);
+                throw new CouldNotFindUnStructuredVertexPropertyException(_inMemoryGraphElementInformation.TypeID, _vertexID, myPropertyName);
             }
         }
 
         public string Comment
         {
-            get { return _comment; }
+            get { return _inMemoryGraphElementInformation.Comment; }
         }
 
         public DateTime CreationDate
         {
-            get { return _creationDate; }
+            get { return _inMemoryGraphElementInformation.CreationDate; }
         }
 
         public DateTime ModificationDate
         {
-            get { return _modificationDate; }
+            get { return _inMemoryGraphElementInformation.ModificationDate; }
         }
 
         public ulong TypeID
         {
-            get { return _typeID; }
+            get { return _inMemoryGraphElementInformation.TypeID; }
         }
 
         #endregion
@@ -412,7 +351,9 @@ namespace sones.GraphFS.Element
         /// </summary>
         /// <param name="myEdgeDefinitions">The edge definitions</param>
         /// <returns>A dictionary that conains the iEdges</returns>
-        private Dictionary<ulong, IEdge> ConvertToIEdge(Dictionary<ulong, EdgeAddDefinition> myEdgeDefinitions)
+        private Dictionary<ulong, IEdge> ConvertToIEdge(
+            Dictionary<ulong, HyperEdgeAddDefinition> myHyperEdgeDefinitions,
+            Dictionary<ulong, SingleEdgeAddDefinition> mySingleEdgeDefinitions)
         {
             throw new NotImplementedException();
         }

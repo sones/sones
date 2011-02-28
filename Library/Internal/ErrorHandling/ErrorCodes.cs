@@ -40,6 +40,16 @@ namespace sones.ErrorHandling
         /// A certain unstructured property could not be found (on a vertex)
         /// </summary>
         public static UInt16 CouldNotFindUnStructuredVertexProperty = 203;
+        
+        /// <summary>
+        /// A certain structured property could not be found (on an edge)
+        /// </summary>
+        public static UInt16 CouldNotFindStructuredEdgeProperty     = 204;
+
+        /// <summary>
+        /// A certain unstructured property could not be found (on an edge)
+        /// </summary>
+        public static UInt16 CouldNotFindUnStructuredEdgeProperty   = 205;
 
         #endregion
 

@@ -44,10 +44,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Definitions\EdgeAddDefinition.cs" />
+    <Compile Include="Definitions\GraphElementDefinition.cs" />
+    <Compile Include="Definitions\HyperEdgeAddDefinition.cs" />
+    <Compile Include="Definitions\SingleEdgeAddDefinition.cs" />
+    <Compile Include="Definitions\VertexInformation.cs" />
     <Compile Include="Definitions\VertexUpdateDefinition.cs" />
     <Compile Include="Definitions\VertexAddDefinition.cs" />
     <Compile Include="ErrorHandling\AGraphFSException.cs" />
+    <Compile Include="ErrorHandling\CouldNotFindUnStructuredEdgePropertyException.cs" />
+    <Compile Include="ErrorHandling\CouldNotFindStructuredEdgePropertyException.cs" />
     <Compile Include="ErrorHandling\CouldNotFindUnStructuredVertexPropertyException.cs" />
     <Compile Include="ErrorHandling\CouldNotFindStructuredVertexPropertyException.cs" />
     <Compile Include="ErrorHandling\UnknownFSException.cs" />

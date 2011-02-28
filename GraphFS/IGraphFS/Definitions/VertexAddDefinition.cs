@@ -8,29 +8,11 @@ using System.IO;
 namespace sones.GraphFS
 {
     /// <summary>
-    /// This class represents the filesystem definition for a vertex
+    /// This struct represents the filesystem definition for a vertex
     /// </summary>
-    public sealed class VertexInsertDefinition
+    public struct VertexAddDefinition
     {
-        /// <summary>
-        /// The id of the vertex type
-        /// </summary>
-        public readonly UInt64 TypeID;
-
-        /// <summary>
-        /// A comment for the vertex
-        /// </summary>
-        public readonly string Comment;
-
-        /// <summary>
-        /// The creation date of the vertex
-        /// </summary>
-        public readonly DateTime CreationDate;
-
-        /// <summary>
-        /// The modification date of the vertex
-        /// </summary>
-        public readonly DateTime ModificationDate;
+        #region data
 
         /// <summary>
         /// The edition of the vertex
@@ -38,23 +20,52 @@ namespace sones.GraphFS
         public readonly string Edition;
 
         /// <summary>
-        /// The structured properties
+        /// The definition of the outgoing hyper edges
         /// </summary>
-        public readonly Dictionary<UInt64, Object> StructuredProperties;
+        public readonly Dictionary<UInt64, HyperEdgeAddDefinition> OutgoingHyperEdges;
 
         /// <summary>
-        /// The unstructured properties
+        /// The definition of the outgoing hyper edges
         /// </summary>
-        public readonly Dictionary<String, Object> UnstructuredProperties;
-
-        /// <summary>
-        /// The definition of the outgoing edges
-        /// </summary>
-        public readonly Dictionary<UInt64, EdgeAddDefinition> OutgoingEdges;
+        public readonly Dictionary<UInt64, SingleEdgeAddDefinition> OutgoingSingleEdges;
 
         /// <summary>
         /// The binary properties
         /// </summary>
         public readonly Dictionary<UInt64, Stream> BinaryProperties;
+
+        /// <summary>
+        /// The graph element properties
+        /// </summary>
+        public readonly GraphElementInformation GraphElementInformation;
+
+        #endregion
+
+        #region constructor
+
+        /// <summary>
+        /// Creates a new vertex add definition
+        /// </summary>
+        /// <param name="myGraphElementInformation">The graph element properties</param>
+        /// <param name="myEdition">The edition of the new vertex</param>
+        /// <param name="myOutgoingHyperEdges">The outgoing hyper edge definitions</param>
+        /// <param name="myOutgoingSingleEdges">The outgoing single edge definitions</param>
+        /// <param name="myBinaryProperties">The binary properties of the new vertex</param>
+        public VertexAddDefinition(
+            GraphElementInformation myGraphElementInformation,
+            String myEdition,
+            Dictionary<UInt64, HyperEdgeAddDefinition> myOutgoingHyperEdges,
+            Dictionary<UInt64, SingleEdgeAddDefinition> myOutgoingSingleEdges,
+            Dictionary<UInt64, Stream> myBinaryProperties)
+        {
+            Edition = myEdition;
+            OutgoingHyperEdges = myOutgoingHyperEdges;
+            OutgoingSingleEdges = myOutgoingSingleEdges;
+            BinaryProperties = myBinaryProperties;
+            GraphElementInformation = myGraphElementInformation;
+        }
+
+        #endregion
+
     }
 }
