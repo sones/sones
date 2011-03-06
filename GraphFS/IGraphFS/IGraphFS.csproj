@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConstantsFS.cs" />
     <Compile Include="Definitions\GraphElementDefinition.cs" />
     <Compile Include="Definitions\HyperEdgeAddDefinition.cs" />
     <Compile Include="Definitions\SingleEdgeAddDefinition.cs" />

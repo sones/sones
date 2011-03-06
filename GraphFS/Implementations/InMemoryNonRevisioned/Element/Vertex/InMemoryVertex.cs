@@ -60,23 +60,25 @@ namespace sones.GraphFS.Element.Vertex
         /// </summary>
         /// <param name="myVertexID">The id of this vertex</param>
         /// <param name="myVertexRevisionID">The revision id of this vertex</param>
-        /// <param name="myVertexDefinition">The definition of this vertex</param>
+        /// <param name="myEdition">The edition of this vertex</param>
+        /// <param name="myBinaryProperties">The binary properties of this vertex</param>
+        /// <param name="myOutgoingEdges">The outgoing edges of this vertex</param>
+        /// <param name="myGraphElementInformation">The graph element information of this vertex</param>
         public InMemoryVertex(
             Int64 myVertexID,
             VertexRevisionID myVertexRevisionID,
-            VertexAddDefinition myVertexDefinition)
+            String myEdition,
+            Dictionary<long, Stream> myBinaryProperties,
+            Dictionary<long, IEdge> myOutgoingEdges,
+            InMemoryGraphElementInformation myGraphElementInformation)
         {
             _vertexID = myVertexID;
             _vertexRevisionID = myVertexRevisionID;
-            _edition = myVertexDefinition.Edition;
-            _binaryProperties = myVertexDefinition.BinaryProperties;
-
-            _outgoingEdges = ConvertToIEdge(myVertexDefinition.OutgoingHyperEdges,
-                                            myVertexDefinition.OutgoingSingleEdges);
+            _edition = myEdition;
+            _binaryProperties = myBinaryProperties;
+            _outgoingEdges = myOutgoingEdges;
             _incomingEdges = new Dictionary<long, Dictionary<long, HyperEdge>>();
-
-            _inMemoryGraphElementInformation =
-                new InMemoryGraphElementInformation(myVertexDefinition.GraphElementInformation);
+            _inMemoryGraphElementInformation = myGraphElementInformation;
         }
 
         #endregion
@@ -332,23 +334,6 @@ namespace sones.GraphFS.Element.Vertex
         #endregion
 
         #region private helper
-
-        #region ConvertToIEdge
-
-        /// <summary>
-        /// Converts edge definitions into iEdges
-        /// </summary>
-        /// <param name="myHyperEdgeDefinitions">The hyper edge definitions</param>
-        /// <param name="mySingleEdgeDefinitions">The single edge definitions</param>
-        /// <returns>A dictionary that conains the iEdges</returns>
-        private Dictionary<long, IEdge> ConvertToIEdge(
-            Dictionary<long, HyperEdgeAddDefinition> myHyperEdgeDefinitions,
-            Dictionary<long, SingleEdgeAddDefinition> mySingleEdgeDefinitions)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
 
         #region GetAllOutgoingEdges_private
 

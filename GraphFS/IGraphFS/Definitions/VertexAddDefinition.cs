@@ -55,10 +55,14 @@ namespace sones.GraphFS.Definitions
             Dictionary<Int64, SingleEdgeAddDefinition> myOutgoingSingleEdges,
             Dictionary<Int64, Stream> myBinaryProperties)
         {
-            Edition = myEdition;
-            OutgoingHyperEdges = myOutgoingHyperEdges;
-            OutgoingSingleEdges = myOutgoingSingleEdges;
-            BinaryProperties = myBinaryProperties;
+            Edition = !string.IsNullOrEmpty(myEdition) ? myEdition : ConstantsFS.DefaultVertexEdition;
+
+            OutgoingHyperEdges = myOutgoingHyperEdges ?? new Dictionary<long, HyperEdgeAddDefinition>();
+
+            OutgoingSingleEdges = myOutgoingSingleEdges ?? new Dictionary<long, SingleEdgeAddDefinition>();
+
+            BinaryProperties = myBinaryProperties ?? new Dictionary<long, Stream>();
+
             GraphElementInformation = myGraphElementInformation;
         }
 

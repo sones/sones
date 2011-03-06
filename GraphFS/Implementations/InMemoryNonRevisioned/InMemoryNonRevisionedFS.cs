@@ -5,9 +5,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using sones.GraphFS.Definitions;
+using sones.GraphFS.Element;
 using sones.GraphFS.Element.Vertex;
 using sones.GraphFS.ErrorHandling;
 using sones.PropertyHyperGraph;
+using sones.GraphFS.Element.Edge;
 
 namespace sones.GraphFS
 {
@@ -294,7 +296,7 @@ namespace sones.GraphFS
             return false;
         }
 
-        public Int64 AddVertex(VertexAddDefinition myVertexDefinition, string myEdition = null,
+        public Int64 AddVertex(VertexAddDefinition myVertexDefinition,
                                VertexRevisionID myVertexRevisionID = null)
         {
             if (!_vertexStore.ContainsKey(myVertexDefinition.GraphElementInformation.TypeID))
@@ -361,7 +363,32 @@ namespace sones.GraphFS
         /// <returns>The resulting InMemoryVertex</returns>
         private InMemoryVertex TransferToInMemoryVertex(VertexAddDefinition myVertexDefinition)
         {
-            return new InMemoryVertex(GetNextVertexID(), new VertexRevisionID(DateTime.UtcNow), myVertexDefinition);
+            return new InMemoryVertex(GetNextVertexID(), new VertexRevisionID(DateTime.UtcNow),
+                                      myVertexDefinition.Edition, myVertexDefinition.BinaryProperties,
+                                      ConvertToIEdge(myVertexDefinition.OutgoingHyperEdges,
+                                                     myVertexDefinition.OutgoingSingleEdges,
+                                                     GetVertex_private),
+                                      new InMemoryGraphElementInformation(myVertexDefinition.GraphElementInformation));
+        }
+
+        private Dictionary<long, IEdge> ConvertToIEdge(
+            Dictionary<long, HyperEdgeAddDefinition> outgoingHyperEdges, 
+            Dictionary<long, SingleEdgeAddDefinition> outgoingSingleEdges, 
+            Func<long, long, InMemoryVertex> getVertexPrivate)
+        {
+            var result = new Dictionary<long, IEdge>();
+
+            foreach (var aSingleEdgeDefinition in outgoingSingleEdges)
+            {
+                result.Add(aSingleEdgeDefinition.Key, new SingleEdge(aSingleEdgeDefinition.Value, getVertexPrivate));
+            }
+
+            foreach (var aHyperEdge in outgoingHyperEdges)
+            {
+                result.Add(aHyperEdge.Key, new HyperEdge(aHyperEdge.Value, getVertexPrivate));
+            }
+
+            return result;
         }
 
         /// <summary>

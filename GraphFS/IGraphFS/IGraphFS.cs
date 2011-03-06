@@ -265,12 +265,10 @@ namespace sones.GraphFS
         /// Adds a new vertex to the graph fs and returns its id
         /// </summary>
         /// <param name="myVertexDefinition">The vertex definition that represents the new vertex</param>
-        /// <param name="myEdition">The name of the edition of the new vertex</param>
         /// <param name="myVertexRevisionID">The revision id of the vertex</param>
         /// <returns>The id of the vertex</returns>        
         Int64 AddVertex(
             VertexAddDefinition myVertexDefinition,
-            String myEdition = null,
             VertexRevisionID myVertexRevisionID = null);
 
         /// <summary>
