@@ -16,6 +16,9 @@ namespace sones.GraphFS
     /// </summary>
     public sealed class InMemoryNonRevisionedFS : IGraphFS
     {
+        /// <summary>
+        /// The id that has been assigned to the latest vertex
+        /// </summary>
         private Int64 _currentID;
 
         /// <summary>
@@ -32,8 +35,7 @@ namespace sones.GraphFS
         /// </summary>
         public InMemoryNonRevisionedFS()
         {
-            _vertexStore = new ConcurrentDictionary<long, ConcurrentDictionary<long, InMemoryVertex>>();
-            _currentID = Int64.MinValue;
+            Init();
         }
 
         #endregion
@@ -82,7 +84,7 @@ namespace sones.GraphFS
 
         public void WipeFileSystem()
         {
-            _vertexStore = new ConcurrentDictionary<long, ConcurrentDictionary<long, InMemoryVertex>>();
+            Init();
         }
 
         public IEnumerable<IVertex> CloneFileSystem(Int64 myTimeStamp = 0L)
@@ -93,28 +95,30 @@ namespace sones.GraphFS
                               Where
                               (aVertex
                                => aVertex.VertexRevisionID.Timestamp > myTimeStamp)).
-                Aggregate((EnumerableA, EnumerableB) => EnumerableA.Union(EnumerableB));
+                Aggregate((enumerableA, enumerableB) => enumerableA.Union(enumerableB));
         }
 
         public void ReplicateFileSystem(IEnumerable<IVertex> myReplicationStream)
         {
             var tempVertexStore = new ConcurrentDictionary<long, ConcurrentDictionary<long, InMemoryVertex>>();
 
+            var counter = Int32.MinValue;
+
             Parallel.ForEach(myReplicationStream, aVertex =>
                                                       {
                                                           if (!tempVertexStore.ContainsKey(aVertex.TypeID))
                                                           {
                                                               tempVertexStore.TryAdd(aVertex.TypeID,
-                                                                                     new ConcurrentDictionary
-                                                                                         <long, InMemoryVertex>());
+                                                                                     new ConcurrentDictionary<long, InMemoryVertex>());
                                                           }
 
-                                                          tempVertexStore[aVertex.TypeID].TryAdd(aVertex.VertexID,
-                                                                                                 TransferToInMemoryVertex
-                                                                                                     (aVertex));
+                                                          tempVertexStore[aVertex.TypeID].TryAdd(aVertex.VertexID,TransferToInMemoryVertex(aVertex));
+
+                                                          Interlocked.Increment(ref counter);
                                                       });
 
             _vertexStore = tempVertexStore;
+            _currentID = counter;
         }
 
         public bool VertexExists(long myVertexID, long myVertexTypeID, string myEdition = null,
@@ -328,6 +332,15 @@ namespace sones.GraphFS
         #region private helper
 
         /// <summary>
+        /// Initializes the fs
+        /// </summary>
+        private void Init()
+        {
+            _vertexStore = new ConcurrentDictionary<long, ConcurrentDictionary<long, InMemoryVertex>>();
+            _currentID = Int64.MinValue;
+        }
+
+        /// <summary>
         /// Updates an InMemoryVertex
         /// </summary>
         /// <param name="toBeUpdatedVertex">The vertex that should be updated</param>
@@ -348,8 +361,6 @@ namespace sones.GraphFS
         /// <returns>The resulting InMemoryVertex</returns>
         private InMemoryVertex TransferToInMemoryVertex(VertexAddDefinition myVertexDefinition)
         {
-            throw new NotImplementedException();
-
             return new InMemoryVertex(GetNextVertexID(), new VertexRevisionID(DateTime.UtcNow), myVertexDefinition);
         }
 

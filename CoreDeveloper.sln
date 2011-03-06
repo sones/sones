@@ -111,9 +111,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{94E9B2F2
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGraphDB", "Tests\TestGraphDB\TestGraphDB.csproj", "{79936D52-52EB-4238-8EF7-33C364C0FB98}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGraphFS", "Tests\TestGraphFS\TestGraphFS.csproj", "{B1395807-0386-4CDF-892C-6EF082920552}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 27
+		SccNumberOfProjects = 28
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -221,6 +223,10 @@ Global
 		SccProjectTopLevelParentUniqueName26 = CoreDeveloper.sln
 		SccProjectName26 = Tests/TestGraphDB
 		SccLocalPath26 = Tests\\TestGraphDB
+		SccProjectUniqueName27 = Tests\\TestGraphFS\\TestGraphFS.csproj
+		SccProjectTopLevelParentUniqueName27 = CoreDeveloper.sln
+		SccProjectName27 = Tests/TestGraphFS
+		SccLocalPath27 = Tests\\TestGraphFS
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -491,6 +497,16 @@ Global
 		{79936D52-52EB-4238-8EF7-33C364C0FB98}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{79936D52-52EB-4238-8EF7-33C364C0FB98}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{79936D52-52EB-4238-8EF7-33C364C0FB98}.Release|x86.ActiveCfg = Release|Any CPU
+		{B1395807-0386-4CDF-892C-6EF082920552}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1395807-0386-4CDF-892C-6EF082920552}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1395807-0386-4CDF-892C-6EF082920552}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B1395807-0386-4CDF-892C-6EF082920552}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B1395807-0386-4CDF-892C-6EF082920552}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B1395807-0386-4CDF-892C-6EF082920552}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1395807-0386-4CDF-892C-6EF082920552}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1395807-0386-4CDF-892C-6EF082920552}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B1395807-0386-4CDF-892C-6EF082920552}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B1395807-0386-4CDF-892C-6EF082920552}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -543,5 +559,6 @@ Global
 		{7214C054-B081-42C3-93F8-80A77DB6F17A} = {6B82481E-B7E4-4A05-9AC5-E7B7FC6CAB08}
 		{B63AEBDB-E99E-441C-A694-029F3CE395C4} = {7214C054-B081-42C3-93F8-80A77DB6F17A}
 		{79936D52-52EB-4238-8EF7-33C364C0FB98} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
+		{B1395807-0386-4CDF-892C-6EF082920552} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 	EndGlobalSection
 EndGlobal
