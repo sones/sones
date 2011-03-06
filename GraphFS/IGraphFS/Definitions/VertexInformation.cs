@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sones.PropertyHyperGraph;
 
 namespace sones.GraphFS.Definitions
@@ -14,24 +11,24 @@ namespace sones.GraphFS.Definitions
         #region data
 
         /// <summary>
-        /// The type id of this vertex
+        /// The vertex edition name
         /// </summary>
-        public readonly UInt64 VertexTypeID;
-        
+        public readonly String VertexEditionName;
+
         /// <summary>
         /// The id of this vertex
         /// </summary>
-        public readonly UInt64 VertexID;
-        
+        public readonly Int64 VertexID;
+
         /// <summary>
         /// The vertex revision id
         /// </summary>
         public readonly VertexRevisionID VertexRevisionID;
-        
+
         /// <summary>
-        /// The vertex edition name
+        /// The type id of this vertex
         /// </summary>
-        public readonly String VertexEditionName;
+        public readonly Int64 VertexTypeID;
 
         #endregion
 
@@ -45,8 +42,8 @@ namespace sones.GraphFS.Definitions
         /// <param name="myVertexRevisionID">The vertex revision id</param>
         /// <param name="myVertexEditionName">The vertex edition name</param>
         public VertexInformation(
-            UInt64 myVertexTypeID, 
-            UInt64 myVertexID,
+            Int64 myVertexTypeID,
+            Int64 myVertexID,
             VertexRevisionID myVertexRevisionID,
             String myVertexEditionName)
         {
@@ -57,6 +54,5 @@ namespace sones.GraphFS.Definitions
         }
 
         #endregion
-
     }
 }

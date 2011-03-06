@@ -12,6 +12,11 @@ namespace sones.ErrorHandling
         /// </summary>
         public Exception ThrownException { get; private set; }
 
+        public override ushort ErrorCode
+        {
+            get { return ErrorCodes.UnknownError; }
+        }
+
         #region constructor
 
         /// <summary>
@@ -24,10 +29,5 @@ namespace sones.ErrorHandling
         }
 
         #endregion
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.UnknownError; }
-        }
     }
 }

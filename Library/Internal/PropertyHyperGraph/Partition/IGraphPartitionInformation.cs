@@ -10,6 +10,6 @@ namespace sones.PropertyHyperGraph
         /// <summary>
         /// The partition id
         /// </summary>
-        UInt64 PartitionID { get; }
+        Int64 PartitionID { get; }
     }
 }

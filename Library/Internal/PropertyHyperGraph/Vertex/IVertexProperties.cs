@@ -12,7 +12,7 @@ namespace sones.PropertyHyperGraph
         /// <summary>
         /// The id of the vertex
         /// </summary>
-        UInt64 VertexID { get; }
+        Int64 VertexID { get; }
 
         /// <summary>
         /// Returns the revision id of this vertex

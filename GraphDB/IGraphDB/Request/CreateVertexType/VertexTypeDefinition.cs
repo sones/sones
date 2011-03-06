@@ -42,7 +42,7 @@ namespace sones.GraphDB.Request
         {
             if (string.IsNullOrEmpty(myVertexTypeName))
             {
-                throw new ArgumentOutOfRangeException("Name of new vertex type", myVertexTypeName);
+                throw new ArgumentOutOfRangeException("myVertexTypeName", myVertexTypeName);
             }
 
             VertexTypeName = myVertexTypeName;

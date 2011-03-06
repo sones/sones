@@ -14,14 +14,9 @@ namespace sones.GraphFS.Element
         #region data
 
         /// <summary>
-        /// The id of the vertex
+        /// The binary properties of this vertex
         /// </summary>
-        private readonly UInt64 _vertexID;
-
-        /// <summary>
-        /// The revision id of the vertex
-        /// </summary>
-        private readonly VertexRevisionID _vertexRevisionID;
+        private readonly Dictionary<Int64, Stream> _binaryProperties;
 
         /// <summary>
         /// The edition of the vertex
@@ -29,25 +24,30 @@ namespace sones.GraphFS.Element
         private readonly string _edition;
 
         /// <summary>
-        /// The outgoing edges of the vertex
+        /// The id of the vertex type
         /// </summary>
-        private readonly Dictionary<UInt64, IEdge> _outgoingEdges;
+        private readonly InMemoryGraphElementInformation _inMemoryGraphElementInformation;
 
         /// <summary>
         /// The incoming edges of the vertex
         /// (VertexTypeID of the vertex type that points to this vertex, PropertyID of the edge that points to this vertex, HyperEdge)
         /// </summary>
-        private Dictionary<UInt64, Dictionary<UInt64, HyperEdge>> _incomingEdges;
+        private readonly Dictionary<Int64, Dictionary<Int64, HyperEdge>> _incomingEdges;
 
         /// <summary>
-        /// The binary properties of this vertex
+        /// The outgoing edges of the vertex
         /// </summary>
-        private readonly Dictionary<UInt64, Stream> _binaryProperties;
+        private readonly Dictionary<Int64, IEdge> _outgoingEdges;
 
         /// <summary>
-        /// The id of the vertex type
+        /// The id of the vertex
         /// </summary>
-        private readonly InMemoryGraphElementInformation _inMemoryGraphElementInformation;
+        private readonly Int64 _vertexID;
+
+        /// <summary>
+        /// The revision id of the vertex
+        /// </summary>
+        private readonly VertexRevisionID _vertexRevisionID;
 
         #endregion
 
@@ -60,7 +60,7 @@ namespace sones.GraphFS.Element
         /// <param name="myVertexRevisionID">The revision id of this vertex</param>
         /// <param name="myVertexDefinition">The definition of this vertex</param>
         public InMemoryVertex(
-            UInt64 myVertexID,
+            Int64 myVertexID,
             VertexRevisionID myVertexRevisionID,
             VertexAddDefinition myVertexDefinition)
         {
@@ -69,22 +69,26 @@ namespace sones.GraphFS.Element
             _edition = myVertexDefinition.Edition;
             _binaryProperties = myVertexDefinition.BinaryProperties;
 
-            _outgoingEdges = ConvertToIEdge(myVertexDefinition.OutgoingHyperEdges, myVertexDefinition.OutgoingSingleEdges);
-            _incomingEdges = new Dictionary<ulong, Dictionary<ulong, HyperEdge>>();
+            _outgoingEdges = ConvertToIEdge(myVertexDefinition.OutgoingHyperEdges,
+                                            myVertexDefinition.OutgoingSingleEdges);
+            _incomingEdges = new Dictionary<long, Dictionary<long, HyperEdge>>();
 
-            _inMemoryGraphElementInformation = new InMemoryGraphElementInformation(myVertexDefinition.GraphElementInformation);
+            _inMemoryGraphElementInformation =
+                new InMemoryGraphElementInformation(myVertexDefinition.GraphElementInformation);
         }
 
         #endregion
 
         #region IVertex Members
 
-        public bool HasIncomingEdge(ulong myVertexTypeID, ulong myEdgePropertyID)
+        public bool HasIncomingEdge(long myVertexTypeID, long myEdgePropertyID)
         {
-            return _incomingEdges.ContainsKey(myVertexTypeID) && _incomingEdges[myVertexTypeID].ContainsKey(myEdgePropertyID);
+            return _incomingEdges.ContainsKey(myVertexTypeID) &&
+                   _incomingEdges[myVertexTypeID].ContainsKey(myEdgePropertyID);
         }
 
-        public IEnumerable<Tuple<ulong, ulong, IHyperEdge>> GetAllIncomingEdges(Func<ulong, ulong, IHyperEdge, bool> myFilterFunc = null)
+        public IEnumerable<Tuple<long, long, IHyperEdge>> GetAllIncomingEdges(
+            Func<long, long, IHyperEdge, bool> myFilterFunc = null)
         {
             foreach (var aType in _incomingEdges)
             {
@@ -94,12 +98,12 @@ namespace sones.GraphFS.Element
                     {
                         if (myFilterFunc(aType.Key, aEdge.Key, aEdge.Value))
                         {
-                            yield return new Tuple<ulong, ulong, IHyperEdge>(aType.Key, aEdge.Key, aEdge.Value);                            
+                            yield return new Tuple<long, long, IHyperEdge>(aType.Key, aEdge.Key, aEdge.Value);
                         }
                     }
                     else
                     {
-                        yield return new Tuple<ulong, ulong, IHyperEdge>(aType.Key, aEdge.Key, aEdge.Value);
+                        yield return new Tuple<long, long, IHyperEdge>(aType.Key, aEdge.Key, aEdge.Value);
                     }
                 }
             }
@@ -107,24 +111,17 @@ namespace sones.GraphFS.Element
             yield break;
         }
 
-        public IHyperEdge GetIncomingHyperEdge(ulong myVertexTypeID, ulong myEdgePropertyID)
+        public IHyperEdge GetIncomingHyperEdge(long myVertexTypeID, long myEdgePropertyID)
         {
-            if (HasIncomingEdge(myVertexTypeID, myEdgePropertyID))
-            {
-                return _incomingEdges[myVertexTypeID][myEdgePropertyID];
-            }
-            else
-            {
-                return null;
-            }
+            return HasIncomingEdge(myVertexTypeID, myEdgePropertyID) ? _incomingEdges[myVertexTypeID][myEdgePropertyID] : null;
         }
 
-        public bool HasOutgoingEdge(ulong myEdgePropertyID)
+        public bool HasOutgoingEdge(long myEdgePropertyID)
         {
             return _outgoingEdges.ContainsKey(myEdgePropertyID);
         }
 
-        public IEnumerable<Tuple<ulong, IEdge>> GetAllOutgoingEdges(Func<ulong, IEdge, bool> myFilterFunc = null)
+        public IEnumerable<Tuple<long, IEdge>> GetAllOutgoingEdges(Func<long, IEdge, bool> myFilterFunc = null)
         {
             foreach (var aEdge in _outgoingEdges)
             {
@@ -132,63 +129,55 @@ namespace sones.GraphFS.Element
                 {
                     if (myFilterFunc(aEdge.Key, aEdge.Value))
                     {
-                        yield return new Tuple<ulong, IEdge>(aEdge.Key, aEdge.Value);                        
+                        yield return new Tuple<long, IEdge>(aEdge.Key, aEdge.Value);
                     }
                 }
                 else
                 {
-                    yield return new Tuple<ulong, IEdge>(aEdge.Key, aEdge.Value);
+                    yield return new Tuple<long, IEdge>(aEdge.Key, aEdge.Value);
                 }
             }
 
             yield break;
         }
 
-        public IEnumerable<Tuple<ulong, IHyperEdge>> GetAllOutgoingHyperEdges(Func<ulong, IHyperEdge, bool> myFilterFunc = null)
+        public IEnumerable<Tuple<long, IHyperEdge>> GetAllOutgoingHyperEdges(
+            Func<long, IHyperEdge, bool> myFilterFunc = null)
         {
-            return GetAllOutgoingEdges_private<IHyperEdge>(myFilterFunc);
+            return GetAllOutgoingEdges_private(myFilterFunc);
         }
 
-        public IEnumerable<Tuple<ulong, ISingleEdge>> GetAllOutgoingSingleEdges(Func<ulong, ISingleEdge, bool> myFilterFunc = null)
+        public IEnumerable<Tuple<long, ISingleEdge>> GetAllOutgoingSingleEdges(
+            Func<long, ISingleEdge, bool> myFilterFunc = null)
         {
-            return GetAllOutgoingEdges_private<ISingleEdge>(myFilterFunc);
+            return GetAllOutgoingEdges_private(myFilterFunc);
         }
 
-        public IEdge GetOutgoingEdge(ulong myEdgePropertyID)
+        public IEdge GetOutgoingEdge(long myEdgePropertyID)
         {
-            if (HasOutgoingEdge(myEdgePropertyID))
-            {
-                return _outgoingEdges[myEdgePropertyID];
-            }
-
-            return null;
+            return HasOutgoingEdge(myEdgePropertyID) ? _outgoingEdges[myEdgePropertyID] : null;
         }
 
-        public IHyperEdge GetOutgoingHyperEdge(ulong myEdgePropertyID)
+        public IHyperEdge GetOutgoingHyperEdge(long myEdgePropertyID)
         {
             var edge = GetOutgoingEdge(myEdgePropertyID);
 
             return edge as IHyperEdge;
         }
 
-        public ISingleEdge GetOutgoingSingleEdge(ulong myEdgePropertyID)
+        public ISingleEdge GetOutgoingSingleEdge(long myEdgePropertyID)
         {
             var edge = GetOutgoingEdge(myEdgePropertyID);
 
             return edge as ISingleEdge;
         }
 
-        public Stream GetBinaryProperty(ulong myPropertyID)
+        public Stream GetBinaryProperty(long myPropertyID)
         {
-            if (_binaryProperties.ContainsKey(myPropertyID))
-            {
-                return _binaryProperties[myPropertyID];
-            }
-
-            return null;
+            return _binaryProperties.ContainsKey(myPropertyID) ? _binaryProperties[myPropertyID] : null;
         }
 
-        public IEnumerable<Tuple<ulong, Stream>> GetAllBinaryProperties(Func<ulong, Stream, bool> myFilterFunc = null)
+        public IEnumerable<Tuple<long, Stream>> GetAllBinaryProperties(Func<long, Stream, bool> myFilterFunc = null)
         {
             foreach (var aBinary in _binaryProperties)
             {
@@ -196,51 +185,47 @@ namespace sones.GraphFS.Element
                 {
                     if (myFilterFunc(aBinary.Key, aBinary.Value))
                     {
-                        yield return new Tuple<ulong, Stream>(aBinary.Key, aBinary.Value);
+                        yield return new Tuple<long, Stream>(aBinary.Key, aBinary.Value);
                     }
                 }
                 else
                 {
-                    yield return new Tuple<ulong, Stream>(aBinary.Key, aBinary.Value);
+                    yield return new Tuple<long, Stream>(aBinary.Key, aBinary.Value);
                 }
-
             }
 
             yield break;
         }
 
-        #endregion
-
-        #region IGraphElement Members
-
-        public T GetProperty<T>(ulong myPropertyID)
+        public T GetProperty<T>(long myPropertyID)
         {
             if (HasProperty(myPropertyID))
             {
-                return (T)_inMemoryGraphElementInformation.StructuredProperties[myPropertyID];
+                return (T) _inMemoryGraphElementInformation.StructuredProperties[myPropertyID];
             }
             else
             {
-                throw new CouldNotFindStructuredVertexPropertyException(_inMemoryGraphElementInformation.TypeID, _vertexID, myPropertyID);
+                throw new CouldNotFindStructuredVertexPropertyException(_inMemoryGraphElementInformation.TypeID,
+                                                                        _vertexID, myPropertyID);
             }
         }
 
-        public bool HasProperty(ulong myPropertyID)
+        public bool HasProperty(long myPropertyID)
         {
             return _inMemoryGraphElementInformation.StructuredProperties.ContainsKey(myPropertyID);
         }
 
-        public ulong GetCountOfProperties()
+        public int GetCountOfProperties()
         {
-            return Convert.ToUInt64(_inMemoryGraphElementInformation.StructuredProperties.Count);
+            return _inMemoryGraphElementInformation.StructuredProperties.Count;
         }
 
-        public IEnumerable<Tuple<ulong, object>> GetAllProperties(Func<ulong, object, bool> myFilterFunc = null)
+        public IEnumerable<Tuple<long, object>> GetAllProperties(Func<long, object, bool> myFilterFunc = null)
         {
             return _inMemoryGraphElementInformation.GetAllProperties_protected(myFilterFunc);
         }
 
-        public string GetPropertyAsString(ulong myPropertyID)
+        public string GetPropertyAsString(long myPropertyID)
         {
             if (HasProperty(myPropertyID))
             {
@@ -248,7 +233,8 @@ namespace sones.GraphFS.Element
             }
             else
             {
-                throw new CouldNotFindStructuredVertexPropertyException(_inMemoryGraphElementInformation.TypeID, _vertexID, myPropertyID);
+                throw new CouldNotFindStructuredVertexPropertyException(_inMemoryGraphElementInformation.TypeID,
+                                                                        _vertexID, myPropertyID);
             }
         }
 
@@ -256,11 +242,12 @@ namespace sones.GraphFS.Element
         {
             if (HasUnstructuredProperty(myPropertyName))
             {
-                return (T)_inMemoryGraphElementInformation.UnstructuredProperties[myPropertyName];
+                return (T) _inMemoryGraphElementInformation.UnstructuredProperties[myPropertyName];
             }
             else
             {
-                throw new CouldNotFindUnStructuredVertexPropertyException(_inMemoryGraphElementInformation.TypeID, _vertexID, myPropertyName);
+                throw new CouldNotFindUnStructuredVertexPropertyException(_inMemoryGraphElementInformation.TypeID,
+                                                                          _vertexID, myPropertyName);
             }
         }
 
@@ -269,12 +256,13 @@ namespace sones.GraphFS.Element
             return _inMemoryGraphElementInformation.UnstructuredProperties.ContainsKey(myPropertyName);
         }
 
-        public ulong GetCountOfUnstructuredProperties()
+        public int GetCountOfUnstructuredProperties()
         {
-            return Convert.ToUInt64(_inMemoryGraphElementInformation.UnstructuredProperties.Count);
+            return _inMemoryGraphElementInformation.UnstructuredProperties.Count;
         }
 
-        public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(Func<string, object, bool> myFilterFunc = null)
+        public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(
+            Func<string, object, bool> myFilterFunc = null)
         {
             return _inMemoryGraphElementInformation.GetAllUnstructuredProperties_protected(myFilterFunc);
         }
@@ -287,7 +275,8 @@ namespace sones.GraphFS.Element
             }
             else
             {
-                throw new CouldNotFindUnStructuredVertexPropertyException(_inMemoryGraphElementInformation.TypeID, _vertexID, myPropertyName);
+                throw new CouldNotFindUnStructuredVertexPropertyException(_inMemoryGraphElementInformation.TypeID,
+                                                                          _vertexID, myPropertyName);
             }
         }
 
@@ -306,16 +295,12 @@ namespace sones.GraphFS.Element
             get { return _inMemoryGraphElementInformation.ModificationDate; }
         }
 
-        public ulong TypeID
+        public long TypeID
         {
             get { return _inMemoryGraphElementInformation.TypeID; }
         }
 
-        #endregion
-
-        #region IVertexProperties Members
-
-        public ulong VertexID
+        public long VertexID
         {
             get { return _vertexID; }
         }
@@ -349,11 +334,12 @@ namespace sones.GraphFS.Element
         /// <summary>
         /// Converts edge definitions into iEdges
         /// </summary>
-        /// <param name="myEdgeDefinitions">The edge definitions</param>
+        /// <param name="myHyperEdgeDefinitions">The hyper edge definitions</param>
+        /// <param name="mySingleEdgeDefinitions">The single edge definitions</param>
         /// <returns>A dictionary that conains the iEdges</returns>
-        private Dictionary<ulong, IEdge> ConvertToIEdge(
-            Dictionary<ulong, HyperEdgeAddDefinition> myHyperEdgeDefinitions,
-            Dictionary<ulong, SingleEdgeAddDefinition> mySingleEdgeDefinitions)
+        private Dictionary<long, IEdge> ConvertToIEdge(
+            Dictionary<long, HyperEdgeAddDefinition> myHyperEdgeDefinitions,
+            Dictionary<long, SingleEdgeAddDefinition> mySingleEdgeDefinitions)
         {
             throw new NotImplementedException();
         }
@@ -368,27 +354,25 @@ namespace sones.GraphFS.Element
         /// <typeparam name="T">The type of the result</typeparam>
         /// <param name="myFilterFunc">The optional filter function</param>
         /// <returns>All matching outgoing edges</returns>
-        private IEnumerable<Tuple<ulong, T>> GetAllOutgoingEdges_private<T>(Func<ulong, T, bool> myFilterFunc) where T : class
+        private IEnumerable<Tuple<long, T>> GetAllOutgoingEdges_private<T>(Func<long, T, bool> myFilterFunc)
+            where T : class
         {
-            T interestingEdge;
-
             foreach (var aEdge in _outgoingEdges)
             {
-                interestingEdge = aEdge.Value as T;
+                var interestingEdge = aEdge.Value as T;
 
-                if (interestingEdge != null)
+                if (interestingEdge == null) continue;
+
+                if (myFilterFunc != null)
                 {
-                    if (myFilterFunc != null)
+                    if (myFilterFunc(aEdge.Key, interestingEdge))
                     {
-                        if (myFilterFunc(aEdge.Key, interestingEdge))
-                        {
-                            yield return new Tuple<ulong, T>(aEdge.Key, interestingEdge);
-                        }
+                        yield return new Tuple<long, T>(aEdge.Key, interestingEdge);
                     }
-                    else
-                    {
-                        yield return new Tuple<ulong, T>(aEdge.Key, interestingEdge);
-                    }
+                }
+                else
+                {
+                    yield return new Tuple<long, T>(aEdge.Key, interestingEdge);
                 }
             }
 

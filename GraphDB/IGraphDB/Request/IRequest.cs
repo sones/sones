@@ -1,5 +1,4 @@
-﻿using System;
-namespace sones.GraphDB.Request
+﻿namespace sones.GraphDB.Request
 {
     /// <summary>
     /// A generic interface for requests

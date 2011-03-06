@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphFS.ErrorHandling;
 
 namespace sones.GraphFS.Element
 {
@@ -12,21 +9,6 @@ namespace sones.GraphFS.Element
     public struct InMemoryGraphElementInformation
     {
         #region data
-
-        /// <summary>
-        /// The structured properties of the vertex
-        /// </summary>
-        public readonly Dictionary<UInt64, Object> StructuredProperties;
-
-        /// <summary>
-        /// The unstructured properties of the vertex
-        /// </summary>
-        public readonly Dictionary<String, Object> UnstructuredProperties;
-
-        /// <summary>
-        /// The vertex type id of the vertex
-        /// </summary>
-        public readonly UInt64 TypeID;
 
         /// <summary>
         /// The comment of the vertex
@@ -42,6 +24,21 @@ namespace sones.GraphFS.Element
         /// The modification date of the vertex
         /// </summary>
         public readonly DateTime ModificationDate;
+
+        /// <summary>
+        /// The structured properties of the vertex
+        /// </summary>
+        public readonly Dictionary<Int64, Object> StructuredProperties;
+
+        /// <summary>
+        /// The vertex type id of the vertex
+        /// </summary>
+        public readonly Int64 TypeID;
+
+        /// <summary>
+        /// The unstructured properties of the vertex
+        /// </summary>
+        public readonly Dictionary<String, Object> UnstructuredProperties;
 
         #endregion
 
@@ -73,7 +70,7 @@ namespace sones.GraphFS.Element
         /// </summary>
         /// <param name="myFilterFunc">An optional filter function</param>
         /// <returns>An enumerable of propertyID/propertyValue</returns>
-        internal IEnumerable<Tuple<ulong, object>> GetAllProperties_protected(Func<ulong, object, bool> myFilterFunc)
+        internal IEnumerable<Tuple<long, object>> GetAllProperties_protected(Func<long, object, bool> myFilterFunc)
         {
             foreach (var aProperty in StructuredProperties)
             {
@@ -81,12 +78,12 @@ namespace sones.GraphFS.Element
                 {
                     if (myFilterFunc(aProperty.Key, aProperty.Value))
                     {
-                        yield return new Tuple<ulong, object>(aProperty.Key, aProperty.Value);
+                        yield return new Tuple<long, object>(aProperty.Key, aProperty.Value);
                     }
                 }
                 else
                 {
-                    yield return new Tuple<ulong, object>(aProperty.Key, aProperty.Value);
+                    yield return new Tuple<long, object>(aProperty.Key, aProperty.Value);
                 }
             }
 
@@ -102,7 +99,8 @@ namespace sones.GraphFS.Element
         /// </summary>
         /// <param name="myFilterFunc">An optional filter function</param>
         /// <returns>An enumerable of propertyName/PropertyValue</returns>
-        internal IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties_protected(Func<string, object, bool> myFilterFunc)
+        internal IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties_protected(
+            Func<string, object, bool> myFilterFunc)
         {
             foreach (var aUnstructuredProperty in UnstructuredProperties)
             {
@@ -125,6 +123,5 @@ namespace sones.GraphFS.Element
         #endregion
 
         #endregion
-
     }
 }

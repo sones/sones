@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace sones.GraphFS
 {
     public struct GraphElementInformation
     {
         #region data
-
-        /// <summary>
-        /// The id of the vertex type
-        /// </summary>
-        public readonly UInt64 TypeID;
 
         /// <summary>
         /// A comment for the vertex
@@ -32,7 +25,12 @@ namespace sones.GraphFS
         /// <summary>
         /// The structured properties
         /// </summary>
-        public readonly Dictionary<UInt64, Object> StructuredProperties;
+        public readonly Dictionary<Int64, Object> StructuredProperties;
+
+        /// <summary>
+        /// The id of the vertex type
+        /// </summary>
+        public readonly Int64 TypeID;
 
         /// <summary>
         /// The unstructured properties
@@ -53,11 +51,11 @@ namespace sones.GraphFS
         /// <param name="myStructuredProperties">The structured properties of this element</param>
         /// <param name="myUnstructuredProperties">The unstructured properties of this element</param>
         public GraphElementInformation(
-            UInt64 myTypeID,
+            Int64 myTypeID,
             String myComment,
             DateTime myCreationDate,
             DateTime myModificationDate,
-            Dictionary<UInt64, Object> myStructuredProperties,
+            Dictionary<Int64, Object> myStructuredProperties,
             Dictionary<String, Object> myUnstructuredProperties)
         {
             TypeID = myTypeID;

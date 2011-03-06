@@ -1,5 +1,5 @@
-﻿using sones.ErrorHandling;
-using System;
+﻿using System;
+using sones.ErrorHandling;
 
 namespace sones.GraphFS.ErrorHandling
 {
@@ -13,8 +13,13 @@ namespace sones.GraphFS.ErrorHandling
         /// </summary>
         public Exception ThrownException { get; private set; }
 
+        public override ushort ErrorCode
+        {
+            get { return ErrorCodes.UnknownFSError; }
+        }
+
         #region constructor
-        
+
         /// <summary>
         /// Creates a new UnknownFS excepetion
         /// </summary>
@@ -25,10 +30,5 @@ namespace sones.GraphFS.ErrorHandling
         }
 
         #endregion
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.UnknownFSError; }
-        }
     }
 }

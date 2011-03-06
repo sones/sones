@@ -55,12 +55,12 @@ namespace sones.Transaction
         public static Boolean operator <(TransactionID myTransactionID1, TransactionID myTransactionID2)
         {
             // Check if myTransactionID1 is null
-            if ((Object) myTransactionID1 == null)
-                throw new ArgumentNullException("Parameter myTransactionID1 must not be null!");
+            if (myTransactionID1 == null)
+                throw new ArgumentNullException("myTransactionID1");
 
             // Check if myTransactionID2 is null
-            if ((Object) myTransactionID2 == null)
-                throw new ArgumentNullException("Parameter myTransactionID2 must not be null!");
+            if (myTransactionID2 == null)
+                throw new ArgumentNullException("myTransactionID2");
 
             return myTransactionID1.CompareTo(myTransactionID2) < 0;
         }
@@ -72,12 +72,12 @@ namespace sones.Transaction
         public static Boolean operator >(TransactionID myTransactionID1, TransactionID myTransactionID2)
         {
             // Check if myTransactionID1 is null
-            if ((Object) myTransactionID1 == null)
-                throw new ArgumentNullException("Parameter myTransactionID1 must not be null!");
+            if (myTransactionID1 == null)
+                throw new ArgumentNullException("myTransactionID1");
 
             // Check if myTransactionID2 is null
-            if ((Object) myTransactionID2 == null)
-                throw new ArgumentNullException("Parameter myTransactionID2 must not be null!");
+            if (myTransactionID2 == null)
+                throw new ArgumentNullException("myTransactionID2");
 
             return myTransactionID1.CompareTo(myTransactionID2) > 0;
         }
@@ -110,12 +110,12 @@ namespace sones.Transaction
         {
             // Check if myObject is null
             if (myObject == null)
-                throw new ArgumentNullException("myObject must not be null!");
+                throw new ArgumentNullException("myObject");
 
             // Check if myObject can be casted to an TransactionUUID object
             var myTransactionUUID = myObject as TransactionID;
-            if ((Object) myTransactionUUID == null)
-                throw new ArgumentException("myObject is not of type TransactionID!");
+            if (myTransactionUUID == null)
+                throw new ArgumentException("myTransactionUUID");
 
             return CompareTo(myTransactionUUID);
         }
@@ -128,7 +128,7 @@ namespace sones.Transaction
         {
             // Check if myTransactionUUID is null
             if (myTransactionUUID == null)
-                throw new ArgumentNullException("myTransactionID must not be null!");
+                throw new ArgumentNullException("myTransactionUUID");
 
             return ID.CompareTo(myTransactionUUID.ID);
         }
@@ -141,12 +141,12 @@ namespace sones.Transaction
         {
             // Check if myObject is null
             if (myObject == null)
-                throw new ArgumentNullException("Parameter myObject must not be null!");
+                throw new ArgumentNullException("myObject");
 
             // Check if myObject can be cast to TransactionUUID
             var myTransactionUUID = myObject as TransactionID;
-            if ((Object) myTransactionUUID == null)
-                throw new ArgumentException("Parameter myObject could not be casted to type TransactionID!");
+            if (myTransactionUUID == null)
+                throw new ArgumentException("myTransactionUUID");
 
             return Equals(myTransactionUUID);
         }
@@ -159,7 +159,7 @@ namespace sones.Transaction
         {
             // Check if myTransactionUUID is null
             if (myTransactionUUID == null)
-                throw new ArgumentNullException("Parameter myTransactionUUID must not be null!");
+                throw new ArgumentNullException("myTransactionUUID");
 
             return ID.Equals(myTransactionUUID.ID);
         }

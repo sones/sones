@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using sones.GraphFS.ErrorHandling;
-using sones.PropertyHyperGraph;
 
 namespace sones.GraphFS.Element
 {
@@ -16,12 +12,12 @@ namespace sones.GraphFS.Element
         /// <summary>
         /// The id of the vertex
         /// </summary>
-        public readonly UInt64 VertexID;
+        public readonly Int64 VertexID;
 
         /// <summary>
         /// The id of the vertex type
         /// </summary>
-        public readonly UInt64 VertexTypeID;
+        public readonly Int64 VertexTypeID;
 
         #endregion
 
@@ -32,7 +28,7 @@ namespace sones.GraphFS.Element
         /// </summary>
         /// <param name="myVertexTypeID">The type id of the vertex</param>
         /// <param name="myVertexID">The id of the vertex</param>
-        public VertexLocation (UInt64 myVertexTypeID, UInt64 myVertexID)
+        public VertexLocation(Int64 myVertexTypeID, Int64 myVertexID)
         {
             VertexID = myVertexID;
 
@@ -43,9 +39,8 @@ namespace sones.GraphFS.Element
 
         #region Equals Overrides
 
-        public override Boolean Equals(System.Object obj)
+        public override Boolean Equals(Object obj)
         {
-
             // If parameter is null return false.
             if (obj == null)
             {
@@ -54,41 +49,21 @@ namespace sones.GraphFS.Element
 
             if (obj is VertexLocation)
             {
-                return Equals((VertexLocation)obj);
+                return Equals((VertexLocation) obj);
             }
             else
             {
                 return false;
             }
-
-
         }
 
         public Boolean Equals(VertexLocation p)
         {
-            // If parameter is null return false:
-            if ((object)p == null)
-            {
-                return false;
-            }
-
-            return (this.VertexID == p.VertexID) && (this.VertexTypeID == p.VertexTypeID);
+            return (VertexID == p.VertexID) && (VertexTypeID == p.VertexTypeID);
         }
 
         public static Boolean operator ==(VertexLocation a, VertexLocation b)
         {
-            // If both are null, or both are same instance, return true.
-            if (System.Object.ReferenceEquals(a, b))
-            {
-                return true;
-            }
-
-            // If one is null, but not both, return false.
-            if (((object)a == null) || ((object)b == null))
-            {
-                return false;
-            }
-
             // Return true if the fields match:
             return a.Equals(b);
         }

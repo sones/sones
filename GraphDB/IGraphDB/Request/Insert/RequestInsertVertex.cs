@@ -1,5 +1,4 @@
-﻿using System;
-namespace sones.GraphDB.Request
+﻿namespace sones.GraphDB.Request
 {
     /// <summary>
     /// A request for creating a new vertex

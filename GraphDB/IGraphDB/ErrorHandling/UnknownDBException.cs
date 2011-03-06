@@ -1,5 +1,5 @@
-﻿using sones.ErrorHandling;
-using System;
+﻿using System;
+using sones.ErrorHandling;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -13,6 +13,11 @@ namespace sones.GraphDB.ErrorHandling
         /// </summary>
         public Exception ThrownException { get; private set; }
 
+        public override ushort ErrorCode
+        {
+            get { return ErrorCodes.UnknownDBError; }
+        }
+
         #region constructor
 
         public UnknownDBException(Exception e)
@@ -21,10 +26,5 @@ namespace sones.GraphDB.ErrorHandling
         }
 
         #endregion
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.UnknownDBError; }
-        }
     }
 }

@@ -11,7 +11,7 @@ namespace sones.PropertyHyperGraph
         /// <summary>
         /// The timestamp of this revision.
         /// </summary>
-        public readonly UInt64 Timestamp;
+        public readonly Int64 Timestamp;
 
         #endregion
 
@@ -20,7 +20,7 @@ namespace sones.PropertyHyperGraph
         /// <summary>
         /// A unique identification of the generation process of this revision.
         /// </summary>
-        public readonly UInt64 UUID;
+        public readonly UInt64 ID;
 
         #endregion
 
@@ -34,13 +34,13 @@ namespace sones.PropertyHyperGraph
         /// A constructor used for generating an RevisionID based on the actual
         /// DateTime and the given (system) UUID.
         /// </summary>
-        /// <param name="myUUID">An unique identification for this generation process</param>
-        /// <param name="myTimestamp">Any timestamp</param> 
-        public VertexRevisionID(UInt64 myUUID = 0UL, UInt64 myTimeStamp = 0UL)
+        /// <param name="myTimeStamp">Any timestamp</param> 
+        /// <param name="myID">An unique identification for this generation process</param>
+        public VertexRevisionID(DateTime myTimeStamp, UInt64 myID = 0UL)
         {
-            Timestamp = myTimeStamp;
+            Timestamp = myTimeStamp.ToBinary();
 
-            UUID = myUUID;
+            ID = myID;
         }
 
         #endregion
@@ -79,13 +79,7 @@ namespace sones.PropertyHyperGraph
 
         public static Boolean operator <(VertexRevisionID myObjectRevisionID1, VertexRevisionID myObjectRevisionID2)
         {
-            if (myObjectRevisionID1.Timestamp < myObjectRevisionID2.Timestamp)
-                return true;
-
-            if (myObjectRevisionID1.Timestamp > myObjectRevisionID2.Timestamp)
-                return false;
-
-            return false;
+            return myObjectRevisionID1.Timestamp < myObjectRevisionID2.Timestamp;
         }
 
         #endregion
@@ -94,13 +88,7 @@ namespace sones.PropertyHyperGraph
 
         public static Boolean operator >(VertexRevisionID myObjectRevisionID1, VertexRevisionID myObjectRevisionID2)
         {
-            if (myObjectRevisionID1.Timestamp > myObjectRevisionID2.Timestamp)
-                return true;
-
-            if (myObjectRevisionID1.Timestamp < myObjectRevisionID2.Timestamp)
-                return false;
-
-            return false;
+            return myObjectRevisionID1.Timestamp > myObjectRevisionID2.Timestamp;
         }
 
         #endregion
@@ -174,10 +162,7 @@ namespace sones.PropertyHyperGraph
             if (Timestamp != myObjectRevisionID.Timestamp)
                 return false;
 
-            if (UUID != myObjectRevisionID.UUID)
-                return false;
-
-            return true;
+            return ID == myObjectRevisionID.ID;
         }
 
         #endregion
@@ -186,7 +171,7 @@ namespace sones.PropertyHyperGraph
 
         public override Int32 GetHashCode()
         {
-            return Timestamp.GetHashCode() ^ UUID.GetHashCode();
+            return Timestamp.GetHashCode() ^ ID.GetHashCode();
         }
 
         #endregion
@@ -199,7 +184,7 @@ namespace sones.PropertyHyperGraph
         /// <returns>A formated string representation of this revision</returns>
         public override String ToString()
         {
-            return String.Format("{0:yyyyddMM.HHmmss.fffffff}({1})", new DateTime((Int64) Timestamp), UUID);
+            return String.Format("{0:yyyyddMM.HHmmss.fffffff}({1})", new DateTime(Timestamp), ID);
         }
 
         #endregion
@@ -212,10 +197,8 @@ namespace sones.PropertyHyperGraph
 
             // If parameter cannot be cast to RevisionID return false.
             var _RevisionID = myObject as VertexRevisionID;
-            if ((Object) _RevisionID == null)
-                return false;
 
-            return Equals(_RevisionID);
+            return (Object) _RevisionID != null && Equals(_RevisionID);
         }
     }
 }

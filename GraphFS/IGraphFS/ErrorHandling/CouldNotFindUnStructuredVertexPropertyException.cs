@@ -1,5 +1,5 @@
-﻿using sones.ErrorHandling;
-using System;
+﻿using System;
+using sones.ErrorHandling;
 
 namespace sones.GraphFS.ErrorHandling
 {
@@ -11,19 +11,19 @@ namespace sones.GraphFS.ErrorHandling
         #region data
 
         /// <summary>
+        /// The id of the desired property
+        /// </summary>
+        public readonly String PropertyName;
+
+        /// <summary>
         /// The id of the type of the vertex
         /// </summary>
-        public readonly UInt64 TypeID;
+        public readonly Int64 TypeID;
 
         /// <summary>
         /// The id of the desired vertex
         /// </summary>
-        public readonly UInt64 VertexID;
-
-        /// <summary>
-        /// The id of the desired property
-        /// </summary>
-        public readonly String PropertyName;
+        public readonly Int64 VertexID;
 
         #endregion
 
@@ -34,8 +34,8 @@ namespace sones.GraphFS.ErrorHandling
         /// </summary>
         /// <param name="myTypeID">The vertex type id</param>
         /// <param name="myVertexID">The id of the vertex</param>
-        /// <param name="myPropertyID">The desired property of the vertex</param>
-        public CouldNotFindUnStructuredVertexPropertyException(UInt64 myTypeID, UInt64 myVertexID, String myPropertyName)
+        /// <param name="myPropertyName">The desired property of the vertex</param>
+        public CouldNotFindUnStructuredVertexPropertyException(Int64 myTypeID, Int64 myVertexID, String myPropertyName)
         {
             TypeID = myTypeID;
             VertexID = myVertexID;

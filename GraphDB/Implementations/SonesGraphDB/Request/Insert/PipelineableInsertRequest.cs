@@ -16,7 +16,7 @@ namespace sones.GraphDB.Request
         /// The request that contains the todo
         /// </summary>
         private readonly RequestInsertVertex _request;
-        
+
         #endregion
 
         #region Constructor
@@ -27,8 +27,9 @@ namespace sones.GraphDB.Request
         /// <param name="myInsertVertexRequest">The insert vertex type request</param>
         /// <param name="mySecurityToken">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The current transaction token</param>
-        public PipelineableInsertRequest(RequestInsertVertex myInsertVertexRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
-            :base (mySecurityToken, myTransactionToken)
+        public PipelineableInsertRequest(RequestInsertVertex myInsertVertexRequest, SecurityToken mySecurityToken,
+                                         TransactionToken myTransactionToken)
+            : base(mySecurityToken, myTransactionToken)
         {
             _request = myInsertVertexRequest;
         }

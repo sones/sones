@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.PropertyHyperGraph;
 using System.IO;
 
 namespace sones.GraphFS
@@ -15,29 +12,29 @@ namespace sones.GraphFS
         #region data
 
         /// <summary>
+        /// The binary properties
+        /// </summary>
+        public readonly Dictionary<Int64, Stream> BinaryProperties;
+
+        /// <summary>
         /// The edition of the vertex
         /// </summary>
         public readonly string Edition;
 
         /// <summary>
-        /// The definition of the outgoing hyper edges
-        /// </summary>
-        public readonly Dictionary<UInt64, HyperEdgeAddDefinition> OutgoingHyperEdges;
-
-        /// <summary>
-        /// The definition of the outgoing hyper edges
-        /// </summary>
-        public readonly Dictionary<UInt64, SingleEdgeAddDefinition> OutgoingSingleEdges;
-
-        /// <summary>
-        /// The binary properties
-        /// </summary>
-        public readonly Dictionary<UInt64, Stream> BinaryProperties;
-
-        /// <summary>
         /// The graph element properties
         /// </summary>
         public readonly GraphElementInformation GraphElementInformation;
+
+        /// <summary>
+        /// The definition of the outgoing hyper edges
+        /// </summary>
+        public readonly Dictionary<Int64, HyperEdgeAddDefinition> OutgoingHyperEdges;
+
+        /// <summary>
+        /// The definition of the outgoing hyper edges
+        /// </summary>
+        public readonly Dictionary<Int64, SingleEdgeAddDefinition> OutgoingSingleEdges;
 
         #endregion
 
@@ -54,9 +51,9 @@ namespace sones.GraphFS
         public VertexAddDefinition(
             GraphElementInformation myGraphElementInformation,
             String myEdition,
-            Dictionary<UInt64, HyperEdgeAddDefinition> myOutgoingHyperEdges,
-            Dictionary<UInt64, SingleEdgeAddDefinition> myOutgoingSingleEdges,
-            Dictionary<UInt64, Stream> myBinaryProperties)
+            Dictionary<Int64, HyperEdgeAddDefinition> myOutgoingHyperEdges,
+            Dictionary<Int64, SingleEdgeAddDefinition> myOutgoingSingleEdges,
+            Dictionary<Int64, Stream> myBinaryProperties)
         {
             Edition = myEdition;
             OutgoingHyperEdges = myOutgoingHyperEdges;
@@ -66,6 +63,5 @@ namespace sones.GraphFS
         }
 
         #endregion
-
     }
 }

@@ -16,7 +16,7 @@ namespace sones.GraphDB.Request
         /// The request that contains the todo
         /// </summary>
         private readonly RequestCreateVertexType _request;
-        
+
         #endregion
 
         #region Constructor
@@ -27,8 +27,9 @@ namespace sones.GraphDB.Request
         /// <param name="myCreateVertexTypeRequest">The create vertex type request</param>
         /// <param name="mySecurityToken">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The current transaction token</param>
-        public PipelineableCreateVertexTypeRequest(RequestCreateVertexType myCreateVertexTypeRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
-            :base(mySecurityToken, myTransactionToken)
+        public PipelineableCreateVertexTypeRequest(RequestCreateVertexType myCreateVertexTypeRequest,
+                                                   SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+            : base(mySecurityToken, myTransactionToken)
         {
             _request = myCreateVertexTypeRequest;
         }

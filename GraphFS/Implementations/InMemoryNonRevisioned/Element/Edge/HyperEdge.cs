@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using sones.PropertyHyperGraph;
+using System.Linq;
 using sones.GraphFS.ErrorHandling;
+using sones.PropertyHyperGraph;
 
 namespace sones.GraphFS.Element
 {
@@ -14,14 +14,19 @@ namespace sones.GraphFS.Element
         #region data
 
         /// <summary>
-        /// Properties
-        /// </summary>
-        private readonly InMemoryGraphElementInformation _inMemoryGraphElementInformation;
-
-        /// <summary>
         /// The single edges that are contained within this hyper edge
         /// </summary>
         private readonly HashSet<SingleEdge> _containedSingleEdges;
+
+        /// <summary>
+        /// A function to resolve the source vertex or the target vertices
+        /// </summary>
+        private readonly Func<long, long, IVertex> _getVertexFunc;
+
+        /// <summary>
+        /// Properties
+        /// </summary>
+        private readonly InMemoryGraphElementInformation _inMemoryGraphElementInformation;
 
         /// <summary>
         /// The location of the source vertex
@@ -32,11 +37,6 @@ namespace sones.GraphFS.Element
         /// All the target locations
         /// </summary>
         private readonly HashSet<VertexLocation> _targetLocations;
-
-        /// <summary>
-        /// A function to resolve the source vertex or the target vertices
-        /// </summary>
-        private readonly Func<ulong, ulong, IVertex> _getVertexFunc;
 
         #endregion
 
@@ -49,20 +49,23 @@ namespace sones.GraphFS.Element
         /// <param name="myGetVertex">The function to resolve either the source vertex or the target vertices</param>
         public HyperEdge(
             HyperEdgeAddDefinition myEdgeDefinition,
-            Func<ulong, ulong, IVertex> myGetVertex)
+            Func<long, long, IVertex> myGetVertex)
         {
-            _inMemoryGraphElementInformation = new InMemoryGraphElementInformation(myEdgeDefinition.GraphElementInformation);
+            _inMemoryGraphElementInformation =
+                new InMemoryGraphElementInformation(myEdgeDefinition.GraphElementInformation);
 
             _getVertexFunc = myGetVertex;
 
-            _sourceLocation = new VertexLocation(myEdgeDefinition.SourceVertex.VertexTypeID, myEdgeDefinition.SourceVertex.VertexID);
+            _sourceLocation = new VertexLocation(myEdgeDefinition.SourceVertex.VertexTypeID,
+                                                 myEdgeDefinition.SourceVertex.VertexID);
 
             _targetLocations = new HashSet<VertexLocation>();
             _containedSingleEdges = new HashSet<SingleEdge>();
             foreach (var aSingleEdge in myEdgeDefinition.ContainedSingleEdges)
             {
                 _containedSingleEdges.Add(new SingleEdge(aSingleEdge, myGetVertex));
-                _targetLocations.Add(new VertexLocation(aSingleEdge.TargetVertexInformation.VertexTypeID, aSingleEdge.TargetVertexInformation.VertexID));
+                _targetLocations.Add(new VertexLocation(aSingleEdge.TargetVertexInformation.VertexTypeID,
+                                                        aSingleEdge.TargetVertexInformation.VertexID));
             }
         }
 
@@ -72,12 +75,10 @@ namespace sones.GraphFS.Element
 
         public IEnumerable<ISingleEdge> GetEdges(Func<ISingleEdge, bool> myFilterFunction = null)
         {
-            foreach (var aSingleEdge in _containedSingleEdges)
+            foreach (var aSingleEdge in
+                _containedSingleEdges.Where(aSingleEdge => (myFilterFunction != null) && (myFilterFunction(aSingleEdge))))
             {
-                if ((myFilterFunction != null) && (myFilterFunction(aSingleEdge)))
-                {
-                    yield return aSingleEdge;
-                }
+                yield return aSingleEdge;
             }
 
             yield break;
@@ -88,10 +89,6 @@ namespace sones.GraphFS.Element
             return myHyperEdgeFunction(_containedSingleEdges);
         }
 
-        #endregion
-
-        #region IEdge Members
-
         public IVertex GetSourceVertex()
         {
             return _getVertexFunc(_sourceLocation.VertexID, _sourceLocation.VertexTypeID);
@@ -99,12 +96,9 @@ namespace sones.GraphFS.Element
 
         public IEnumerable<IVertex> GetTargetVertices(Func<IVertex, bool> myFilterFunc = null)
         {
-            IVertex targetVertex = null;
-
-            foreach (var aTargetVertexLocation in _targetLocations)
+            foreach (var targetVertex in
+                _targetLocations.Select(aTargetVertexLocation => _getVertexFunc(aTargetVertexLocation.VertexID, aTargetVertexLocation.VertexTypeID)))
             {
-                targetVertex = _getVertexFunc(aTargetVertexLocation.VertexID, aTargetVertexLocation.VertexTypeID);
-
                 if (myFilterFunc != null)
                 {
                     if (myFilterFunc(targetVertex))
@@ -121,38 +115,35 @@ namespace sones.GraphFS.Element
             yield break;
         }
 
-        #endregion
-
-        #region IGraphElement Members
-
-        public T GetProperty<T>(ulong myPropertyID)
+        public T GetProperty<T>(long myPropertyID)
         {
             if (HasProperty(myPropertyID))
             {
-                return (T)_inMemoryGraphElementInformation.StructuredProperties[myPropertyID];
+                return (T) _inMemoryGraphElementInformation.StructuredProperties[myPropertyID];
             }
             else
             {
-                throw new CouldNotFindStructuredEdgePropertyException(_inMemoryGraphElementInformation.TypeID, myPropertyID);
+                throw new CouldNotFindStructuredEdgePropertyException(_inMemoryGraphElementInformation.TypeID,
+                                                                      myPropertyID);
             }
         }
 
-        public bool HasProperty(ulong myPropertyID)
+        public bool HasProperty(long myPropertyID)
         {
-            return _inMemoryGraphElementInformation.StructuredProperties.ContainsKey(myPropertyID);            
+            return _inMemoryGraphElementInformation.StructuredProperties.ContainsKey(myPropertyID);
         }
 
-        public ulong GetCountOfProperties()
+        public int GetCountOfProperties()
         {
-            return Convert.ToUInt64(_inMemoryGraphElementInformation.StructuredProperties.Count);            
+            return _inMemoryGraphElementInformation.StructuredProperties.Count;
         }
 
-        public IEnumerable<Tuple<ulong, object>> GetAllProperties(Func<ulong, object, bool> myFilterFunc = null)
+        public IEnumerable<Tuple<long, object>> GetAllProperties(Func<long, object, bool> myFilterFunc = null)
         {
-            return _inMemoryGraphElementInformation.GetAllProperties_protected(myFilterFunc);            
+            return _inMemoryGraphElementInformation.GetAllProperties_protected(myFilterFunc);
         }
 
-        public string GetPropertyAsString(ulong myPropertyID)
+        public string GetPropertyAsString(long myPropertyID)
         {
             if (HasProperty(myPropertyID))
             {
@@ -160,7 +151,8 @@ namespace sones.GraphFS.Element
             }
             else
             {
-                throw new CouldNotFindStructuredEdgePropertyException(_inMemoryGraphElementInformation.TypeID, myPropertyID);
+                throw new CouldNotFindStructuredEdgePropertyException(_inMemoryGraphElementInformation.TypeID,
+                                                                      myPropertyID);
             }
         }
 
@@ -168,27 +160,29 @@ namespace sones.GraphFS.Element
         {
             if (HasUnstructuredProperty(myPropertyName))
             {
-                return (T)_inMemoryGraphElementInformation.UnstructuredProperties[myPropertyName];
+                return (T) _inMemoryGraphElementInformation.UnstructuredProperties[myPropertyName];
             }
             else
             {
-                throw new CouldNotFindUnStructuredEdgePropertyException(_inMemoryGraphElementInformation.TypeID, myPropertyName);
+                throw new CouldNotFindUnStructuredEdgePropertyException(_inMemoryGraphElementInformation.TypeID,
+                                                                        myPropertyName);
             }
         }
 
         public bool HasUnstructuredProperty(string myPropertyName)
         {
-            return _inMemoryGraphElementInformation.UnstructuredProperties.ContainsKey(myPropertyName);            
+            return _inMemoryGraphElementInformation.UnstructuredProperties.ContainsKey(myPropertyName);
         }
 
-        public ulong GetCountOfUnstructuredProperties()
+        public int GetCountOfUnstructuredProperties()
         {
-            return Convert.ToUInt64(_inMemoryGraphElementInformation.UnstructuredProperties.Count);            
+            return _inMemoryGraphElementInformation.UnstructuredProperties.Count;
         }
 
-        public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(Func<string, object, bool> myFilterFunc = null)
+        public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(
+            Func<string, object, bool> myFilterFunc = null)
         {
-            return _inMemoryGraphElementInformation.GetAllUnstructuredProperties_protected(myFilterFunc);            
+            return _inMemoryGraphElementInformation.GetAllUnstructuredProperties_protected(myFilterFunc);
         }
 
         public string GetUnstructuredPropertyAsString(string myPropertyName)
@@ -199,7 +193,8 @@ namespace sones.GraphFS.Element
             }
             else
             {
-                throw new CouldNotFindUnStructuredEdgePropertyException(_inMemoryGraphElementInformation.TypeID, myPropertyName);
+                throw new CouldNotFindUnStructuredEdgePropertyException(_inMemoryGraphElementInformation.TypeID,
+                                                                        myPropertyName);
             }
         }
 
@@ -218,14 +213,10 @@ namespace sones.GraphFS.Element
             get { return _inMemoryGraphElementInformation.ModificationDate; }
         }
 
-        public ulong TypeID
+        public long TypeID
         {
             get { return _inMemoryGraphElementInformation.TypeID; }
         }
-
-        #endregion
-
-        #region IEdgeProperties Members
 
         public IEdgeStatistics Statistics
         {

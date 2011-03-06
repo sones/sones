@@ -1,5 +1,5 @@
-﻿using sones.ErrorHandling;
-using System;
+﻿using System;
+using sones.ErrorHandling;
 
 namespace sones.GraphFS.ErrorHandling
 {
@@ -13,12 +13,12 @@ namespace sones.GraphFS.ErrorHandling
         /// <summary>
         /// The id of the type of the vertex
         /// </summary>
-        public readonly UInt64 TypeID;
+        public readonly Int64 TypeID;
 
         /// <summary>
         /// The id of the desired vertex
         /// </summary>
-        public readonly UInt64 VertexID;
+        public readonly Int64 VertexID;
 
         #endregion
 
@@ -29,7 +29,7 @@ namespace sones.GraphFS.ErrorHandling
         /// </summary>
         /// <param name="myTypeID">The vertex type id of the vertex</param>
         /// <param name="myVertexID">The id of the vertex</param>
-        public VertexDoesNotExistException(UInt64 myTypeID, UInt64 myVertexID)
+        public VertexDoesNotExistException(Int64 myTypeID, Int64 myVertexID)
         {
             TypeID = myTypeID;
             VertexID = myVertexID;

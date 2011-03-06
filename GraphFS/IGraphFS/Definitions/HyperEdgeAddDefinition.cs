@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.PropertyHyperGraph;
-using System.IO;
+﻿using System.Collections.Generic;
 using sones.GraphFS.Definitions;
 
 namespace sones.GraphFS
@@ -19,12 +14,12 @@ namespace sones.GraphFS
         /// The single edges that are contained in this hyperedge
         /// </summary>
         public readonly IEnumerable<SingleEdgeAddDefinition> ContainedSingleEdges;
-        
+
         /// <summary>
         /// Properties
         /// </summary>
         public readonly GraphElementInformation GraphElementInformation;
-        
+
         /// <summary>
         /// The source vertex for this hyper edge
         /// </summary>

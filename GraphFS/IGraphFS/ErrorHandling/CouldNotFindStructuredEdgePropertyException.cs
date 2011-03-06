@@ -1,5 +1,5 @@
-﻿using sones.ErrorHandling;
-using System;
+﻿using System;
+using sones.ErrorHandling;
 
 namespace sones.GraphFS.ErrorHandling
 {
@@ -11,14 +11,14 @@ namespace sones.GraphFS.ErrorHandling
         #region data
 
         /// <summary>
-        /// The id of the type of the edge
-        /// </summary>
-        public readonly UInt64 TypeID;
-
-        /// <summary>
         /// The id of the desired property
         /// </summary>
-        public readonly UInt64 PropertyID;
+        public readonly Int64 PropertyID;
+
+        /// <summary>
+        /// The id of the type of the edge
+        /// </summary>
+        public readonly Int64 TypeID;
 
         #endregion
 
@@ -29,7 +29,7 @@ namespace sones.GraphFS.ErrorHandling
         /// </summary>
         /// <param name="myTypeID">The edge type id</param>
         /// <param name="myPropertyID">The desired property of the edge</param>
-        public CouldNotFindStructuredEdgePropertyException(UInt64 myTypeID, UInt64 myPropertyID)
+        public CouldNotFindStructuredEdgePropertyException(Int64 myTypeID, Int64 myPropertyID)
         {
             TypeID = myTypeID;
             PropertyID = myPropertyID;

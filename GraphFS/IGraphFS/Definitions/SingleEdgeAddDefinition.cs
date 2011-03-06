@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.PropertyHyperGraph;
-using System.IO;
-using sones.GraphFS.Definitions;
+﻿using sones.GraphFS.Definitions;
 
 namespace sones.GraphFS
 {
@@ -16,19 +10,19 @@ namespace sones.GraphFS
         #region data
 
         /// <summary>
+        /// The graph element properties
+        /// </summary>
+        public readonly GraphElementInformation GraphElementInformation;
+
+        /// <summary>
         /// The source vertex information
         /// </summary>
         public readonly VertexInformation SourceVertexInformation;
-        
+
         /// <summary>
         /// The target vertex informantion
         /// </summary>
         public readonly VertexInformation TargetVertexInformation;
-        
-        /// <summary>
-        /// The graph element properties
-        /// </summary>
-        public readonly GraphElementInformation GraphElementInformation;
 
         #endregion
 

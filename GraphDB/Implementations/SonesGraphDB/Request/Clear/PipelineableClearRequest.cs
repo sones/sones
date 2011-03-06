@@ -2,7 +2,6 @@
 using sones.GraphDB.Manager;
 using sones.Security;
 using sones.Transaction;
-using sones.ErrorHandling;
 
 namespace sones.GraphDB.Request
 {
@@ -25,7 +24,8 @@ namespace sones.GraphDB.Request
         /// <param name="myClearRequest">The clear request</param>
         /// <param name="mySecurityToken">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The current transaction token</param>
-        public PipelineableClearRequest(RequestClear myClearRequest, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public PipelineableClearRequest(RequestClear myClearRequest, SecurityToken mySecurityToken,
+                                        TransactionToken myTransactionToken)
             : base(mySecurityToken, myTransactionToken)
         {
             _request = myClearRequest;

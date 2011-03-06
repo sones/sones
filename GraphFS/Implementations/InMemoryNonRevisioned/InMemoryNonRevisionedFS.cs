@@ -2,10 +2,11 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using sones.GraphFS.Element;
-using sones.PropertyHyperGraph;
 using sones.GraphFS.ErrorHandling;
+using sones.PropertyHyperGraph;
 
 namespace sones.GraphFS
 {
@@ -14,12 +15,14 @@ namespace sones.GraphFS
     /// </summary>
     public sealed class InMemoryNonRevisionedFS : IGraphFS
     {
+        private Int64 _currentID;
+
         /// <summary>
         /// The concurrent datastructure where all the vertices are stored
         /// 
         /// TypeID ( VertexID, IVertex)
         /// </summary>
-        private ConcurrentDictionary<UInt64, ConcurrentDictionary<UInt64,InMemoryVertex>> _vertexStore;
+        private ConcurrentDictionary<Int64, ConcurrentDictionary<Int64, InMemoryVertex>> _vertexStore;
 
         #region Constructor
 
@@ -28,7 +31,8 @@ namespace sones.GraphFS
         /// </summary>
         public InMemoryNonRevisionedFS()
         {
-            _vertexStore = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, InMemoryVertex>>();
+            _vertexStore = new ConcurrentDictionary<long, ConcurrentDictionary<long, InMemoryVertex>>();
+            _currentID = Int64.MinValue;
         }
 
         #endregion
@@ -77,47 +81,49 @@ namespace sones.GraphFS
 
         public void WipeFileSystem()
         {
-            _vertexStore = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, InMemoryVertex>>();
+            _vertexStore = new ConcurrentDictionary<long, ConcurrentDictionary<long, InMemoryVertex>>();
         }
 
-        public IEnumerable<IVertex> CloneFileSystem(ulong myTimeStamp = 0UL)
+        public IEnumerable<IVertex> CloneFileSystem(Int64 myTimeStamp = 0L)
         {
             return _vertexStore.Values.
-                Select 
+                Select
                 (aType => aType.Values.AsParallel().
-                    Where 
-                    (aVertex 
-                        => aVertex.VertexRevisionID.Timestamp > myTimeStamp)).
-                        Aggregate((EnumerableA, EnumerableB) =>
-                            {
-                                return EnumerableA.Union(EnumerableB);
-                            });
+                              Where
+                              (aVertex
+                               => aVertex.VertexRevisionID.Timestamp > myTimeStamp)).
+                Aggregate((EnumerableA, EnumerableB) => EnumerableA.Union(EnumerableB));
         }
 
         public void ReplicateFileSystem(IEnumerable<IVertex> myReplicationStream)
         {
-            var tempVertexStore = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, InMemoryVertex>>();
+            var tempVertexStore = new ConcurrentDictionary<long, ConcurrentDictionary<long, InMemoryVertex>>();
 
             Parallel.ForEach(myReplicationStream, aVertex =>
-                {
-                    if (!tempVertexStore.ContainsKey(aVertex.TypeID))
-                    {
-                        tempVertexStore.TryAdd(aVertex.TypeID, new ConcurrentDictionary<ulong, InMemoryVertex>());
-                    }
+                                                      {
+                                                          if (!tempVertexStore.ContainsKey(aVertex.TypeID))
+                                                          {
+                                                              tempVertexStore.TryAdd(aVertex.TypeID,
+                                                                                     new ConcurrentDictionary
+                                                                                         <long, InMemoryVertex>());
+                                                          }
 
-                    tempVertexStore[aVertex.TypeID].TryAdd(aVertex.VertexID, TransferToInMemoryVertex(aVertex));
-                });
+                                                          tempVertexStore[aVertex.TypeID].TryAdd(aVertex.VertexID,
+                                                                                                 TransferToInMemoryVertex
+                                                                                                     (aVertex));
+                                                      });
 
             _vertexStore = tempVertexStore;
         }
 
-        public bool VertexExists(ulong myVertexID, ulong myVertexTypeID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public bool VertexExists(long myVertexID, long myVertexTypeID, string myEdition = null,
+                                 VertexRevisionID myVertexRevisionID = null)
         {
-            ConcurrentDictionary<UInt64, InMemoryVertex> vertices = null;
+            ConcurrentDictionary<Int64, InMemoryVertex> vertices;
 
             if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
             {
-                InMemoryVertex vertex = null;
+                InMemoryVertex vertex;
 
                 if (vertices.TryGetValue(myVertexID, out vertex))
                 {
@@ -130,45 +136,37 @@ namespace sones.GraphFS
             return false;
         }
 
-        public IVertex GetVertex(ulong myVertexID, ulong myVertexTypeID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public IVertex GetVertex(long myVertexID, long myVertexTypeID, string myEdition = null,
+                                 VertexRevisionID myVertexRevisionID = null)
         {
             return GetVertex_private(myVertexID, myVertexTypeID);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<ulong> myInterestingVertexIDs = null, Func<string, bool> myEditionsFilterFunc = null, Func<VertexRevisionID, bool> myInterestingRevisionIDFilterFunc = null)
+        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null,
+                                                        Func<string, bool> myEditionsFilterFunc = null,
+                                                        Func<VertexRevisionID, bool> myInterestingRevisionIDFilterFunc =
+                                                            null)
         {
-            if (myInterestingVertexIDs != null)
-            {
-                return GetVerticesByTypeID(myTypeID, myInterestingVertexIDs);
-            }
-            else
-            {
-                return GetVerticesByTypeID(myTypeID);
-            }
+            return myInterestingVertexIDs != null ? GetVerticesByTypeID(myTypeID, myInterestingVertexIDs) : GetVerticesByTypeID(myTypeID);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<ulong> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
+        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null,
+                                                        IEnumerable<string> myInterestingEditionNames = null,
+                                                        IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
         {
-            if (myInterestingVertexIDs != null)
-            {
-                return GetVerticesByTypeID(myTypeID, myInterestingVertexIDs);
-            }
-            else
-            {
-                return GetVerticesByTypeID(myTypeID);
-            }
+            return myInterestingVertexIDs != null ? GetVerticesByTypeID(myTypeID, myInterestingVertexIDs) : GetVerticesByTypeID(myTypeID);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<ulong> myInterestingVertexIDs)
+        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs)
         {
-            var interestingVertices = new HashSet<ulong>(myInterestingVertexIDs);
+            var interestingVertices = new HashSet<long>(myInterestingVertexIDs);
 
             return GetVerticesByTypeID(myTypeID).Where(aVertex => interestingVertices.Contains(aVertex.VertexID));
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(ulong myVertexTypeID)
+        public IEnumerable<IVertex> GetVerticesByTypeID(long myVertexTypeID)
         {
-            ConcurrentDictionary<UInt64, InMemoryVertex> vertices = null;
+            ConcurrentDictionary<Int64, InMemoryVertex> vertices;
 
             if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
             {
@@ -182,12 +180,13 @@ namespace sones.GraphFS
         }
 
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(ulong myTypeID, IEnumerable<VertexRevisionID> myInterestingRevisions)
+        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID,
+                                                        IEnumerable<VertexRevisionID> myInterestingRevisions)
         {
             return GetVerticesByTypeID(myTypeID);
         }
 
-        public IEnumerable<string> GetVertexEditions(ulong myVertexID, ulong myVertexTypeID)
+        public IEnumerable<string> GetVertexEditions(long myVertexID, long myVertexTypeID)
         {
             var result = new List<String>();
 
@@ -201,15 +200,23 @@ namespace sones.GraphFS
             return result;
         }
 
-        public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(ulong myVertexID, ulong myVertexTypeID, IEnumerable<string> myInterestingEditions = null)
+        public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(long myVertexID, long myVertexTypeID,
+                                                                  IEnumerable<string> myInterestingEditions = null)
         {
-            var result = new List<VertexRevisionID>();            
+            var result = new List<VertexRevisionID>();
 
             var vertex = GetVertex(myVertexID, myVertexTypeID);
 
             if (vertex != null)
             {
-                if (myInterestingEditions.Contains(vertex.EditionName))
+                if (myInterestingEditions != null)
+                {
+                    if (myInterestingEditions.Contains(vertex.EditionName))
+                    {
+                        result.Add(vertex.VertexRevisionID);
+                    }
+                }
+                else
                 {
                     result.Add(vertex.VertexRevisionID);
                 }
@@ -218,15 +225,16 @@ namespace sones.GraphFS
             return result;
         }
 
-        public bool RemoveVertexRevision(ulong myVertexID, ulong myVertexTypeID, string myInterestingEdition, VertexRevisionID myToBeRemovedRevisionID)
+        public bool RemoveVertexRevision(long myVertexID, long myVertexTypeID, string myInterestingEdition,
+                                         VertexRevisionID myToBeRemovedRevisionID)
         {
-            InMemoryVertex vertex = GetVertex_private(myVertexID, myVertexTypeID);
+            var vertex = GetVertex_private(myVertexID, myVertexTypeID);
 
             if (vertex != null)
             {
                 if ((vertex.EditionName == myInterestingEdition) && (vertex.VertexRevisionID == myToBeRemovedRevisionID))
                 {
-                    ConcurrentDictionary<UInt64, InMemoryVertex> vertices = null;
+                    ConcurrentDictionary<Int64, InMemoryVertex> vertices;
 
                     if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
                     {
@@ -241,7 +249,7 @@ namespace sones.GraphFS
             return false;
         }
 
-        public bool RemoveVertexEdition(ulong myVertexID, ulong myVertexTypeID, string myToBeRemovedEdition)
+        public bool RemoveVertexEdition(long myVertexID, long myVertexTypeID, string myToBeRemovedEdition)
         {
             var vertex = GetVertex_private(myVertexID, myVertexTypeID);
 
@@ -249,7 +257,7 @@ namespace sones.GraphFS
             {
                 if (vertex.EditionName == myToBeRemovedEdition)
                 {
-                    ConcurrentDictionary<UInt64, InMemoryVertex> vertices = null;
+                    ConcurrentDictionary<Int64, InMemoryVertex> vertices;
 
                     if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
                     {
@@ -264,34 +272,38 @@ namespace sones.GraphFS
             return false;
         }
 
-        public bool RemoveVertex(ulong myVertexID, ulong myVertexTypeID)
+        public bool RemoveVertex(long myVertexID, long myVertexTypeID)
         {
-            ConcurrentDictionary<UInt64, InMemoryVertex> vertices = null;
-            InMemoryVertex vertex = null;
+            ConcurrentDictionary<Int64, InMemoryVertex> vertices;
 
             if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
             {
+                InMemoryVertex vertex;
                 return vertices.TryRemove(myVertexID, out vertex);
             }
 
             return false;
         }
 
-        public UInt64 AddVertex(VertexAddDefinition myVertexDefinition, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public Int64 AddVertex(VertexAddDefinition myVertexDefinition, string myEdition = null,
+                               VertexRevisionID myVertexRevisionID = null)
         {
             if (!_vertexStore.ContainsKey(myVertexDefinition.GraphElementInformation.TypeID))
             {
-                _vertexStore.TryAdd(myVertexDefinition.GraphElementInformation.TypeID, new ConcurrentDictionary<ulong, InMemoryVertex>());
+                _vertexStore.TryAdd(myVertexDefinition.GraphElementInformation.TypeID,
+                                    new ConcurrentDictionary<long, InMemoryVertex>());
             }
 
             var vertex = TransferToInMemoryVertex(myVertexDefinition);
 
             _vertexStore[myVertexDefinition.GraphElementInformation.TypeID].TryAdd(vertex.VertexID, vertex);
-            
+
             return vertex.VertexID;
         }
 
-        public void UpdateVertex(ulong myToBeUpdatedVertexID, ulong myCorrespondingVertexTypeID, VertexUpdateDefinition myVertexUpdate, string myToBeUpdatedEditions = null, VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
+        public void UpdateVertex(long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID,
+                                 VertexUpdateDefinition myVertexUpdate, string myToBeUpdatedEditions = null,
+                                 VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
         {
             var toBeUpdatedVertex = GetVertex_private(myToBeUpdatedVertexID, myCorrespondingVertexTypeID);
 
@@ -301,7 +313,8 @@ namespace sones.GraphFS
             }
             else
             {
-                _vertexStore[myCorrespondingVertexTypeID][myToBeUpdatedVertexID] = UpdateVertex_private(toBeUpdatedVertex, myVertexUpdate);
+                _vertexStore[myCorrespondingVertexTypeID][myToBeUpdatedVertexID] =
+                    UpdateVertex_private(toBeUpdatedVertex, myVertexUpdate);
             }
         }
 
@@ -315,7 +328,8 @@ namespace sones.GraphFS
         /// <param name="toBeUpdatedVertex">The vertex that should be updated</param>
         /// <param name="myVertexUpdate">The definition of the vertex update</param>
         /// <returns>The updated vertex</returns>
-        private InMemoryVertex UpdateVertex_private(InMemoryVertex toBeUpdatedVertex, VertexUpdateDefinition myVertexUpdate)
+        private InMemoryVertex UpdateVertex_private(InMemoryVertex toBeUpdatedVertex,
+                                                    VertexUpdateDefinition myVertexUpdate)
         {
             throw new NotImplementedException();
         }
@@ -330,6 +344,17 @@ namespace sones.GraphFS
         private InMemoryVertex TransferToInMemoryVertex(VertexAddDefinition myVertexDefinition)
         {
             throw new NotImplementedException();
+
+            return new InMemoryVertex(GetNextVertexID(), new VertexRevisionID(DateTime.UtcNow), myVertexDefinition);
+        }
+
+        /// <summary>
+        /// Gets the nexct vertex id
+        /// </summary>
+        /// <returns>A vertexID</returns>
+        private long GetNextVertexID()
+        {
+            return Interlocked.Increment(ref _currentID);
         }
 
         /// <summary>
@@ -348,13 +373,13 @@ namespace sones.GraphFS
         /// <param name="myVertexID">The interesting vertex id</param>
         /// <param name="myVertexTypeID">The interesting vertex type id</param>
         /// <returns>An InMemoryVertex, or null if there is no such vertex</returns>
-        private InMemoryVertex GetVertex_private(ulong myVertexID, ulong myVertexTypeID)
+        private InMemoryVertex GetVertex_private(long myVertexID, long myVertexTypeID)
         {
-            ConcurrentDictionary<UInt64, InMemoryVertex> vertices = null;
+            ConcurrentDictionary<Int64, InMemoryVertex> vertices;
 
             if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
             {
-                InMemoryVertex vertex = null;
+                InMemoryVertex vertex;
 
                 if (vertices.TryGetValue(myVertexID, out vertex))
                 {

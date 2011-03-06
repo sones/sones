@@ -1,6 +1,4 @@
-﻿using sones.Plugins.SonesGQL;
-
-namespace sones.Plugins.SonesGQL.Aggregates
+﻿namespace sones.Plugins.SonesGQL.Aggregates
 {
     public sealed class MinAggregate : IGQLAggregate
     {

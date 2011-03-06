@@ -16,34 +16,34 @@ namespace sones.PropertyHyperGraph
         /// <typeparam name="T">The type of the interesting property</typeparam>
         /// <param name="myPropertyID">The ID of the interesing property</param>
         /// <returns>A Property</returns>
-        T GetProperty<T>(UInt64 myPropertyID);
+        T GetProperty<T>(Int64 myPropertyID);
 
         /// <summary>
         /// Checks whether the graph element is in possession of a certain property
         /// </summary>
         /// <param name="myPropertyID">The ID of the property</param>
         /// <returns>True if the property exists, otherwise false</returns>
-        bool HasProperty(UInt64 myPropertyID);
+        bool HasProperty(Int64 myPropertyID);
 
         /// <summary>
         /// Returns the count of the vertex properties
         /// </summary>
         /// <returns>An unsigned value</returns>
-        UInt64 GetCountOfProperties();
+        int GetCountOfProperties();
 
         /// <summary>
         /// Returns all properties
         /// </summary>
         /// <param name="myFilterFunc">A function to filter properties</param>
         /// <returns>An IEnumerable of Property/Value</returns>
-        IEnumerable<Tuple<UInt64, Object>> GetAllProperties(Func<UInt64, Object, bool> myFilterFunc = null);
+        IEnumerable<Tuple<Int64, Object>> GetAllProperties(Func<Int64, Object, bool> myFilterFunc = null);
 
         /// <summary>
         /// Returns a property as string
         /// </summary>
         /// <param name="myPropertyID">The id of the property</param>
         /// <returns>The string representation of the property</returns>
-        String GetPropertyAsString(UInt64 myPropertyID);
+        String GetPropertyAsString(Int64 myPropertyID);
 
         #endregion
 
@@ -68,7 +68,7 @@ namespace sones.PropertyHyperGraph
         /// Returns the count of the unstructured vertex properties
         /// </summary>
         /// <returns>An unsigned value</returns>
-        UInt64 GetCountOfUnstructuredProperties();
+        int GetCountOfUnstructuredProperties();
 
         /// <summary>
         /// Returns all unstructured properties
@@ -81,7 +81,7 @@ namespace sones.PropertyHyperGraph
         /// <summary>
         /// Returns an unstructured property as string
         /// </summary>
-        /// <param name="myPropertyID">The name of the unstructured property</param>
+        /// <param name="myPropertyName">The name of the unstructured property</param>
         /// <returns>The string representation of the property</returns>
         String GetUnstructuredPropertyAsString(String myPropertyName);
 
@@ -119,7 +119,7 @@ namespace sones.PropertyHyperGraph
         /// <summary>
         /// The id of the vertex type
         /// </summary>
-        UInt64 TypeID { get; }
+        Int64 TypeID { get; }
 
         #endregion
     }

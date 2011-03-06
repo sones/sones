@@ -1,5 +1,4 @@
-﻿using System;
-namespace sones.GraphDB.Request
+﻿namespace sones.GraphDB.Request
 {
     /// <summary>
     /// A request for clearing the whole graphdb
@@ -7,14 +6,6 @@ namespace sones.GraphDB.Request
     public sealed class RequestClear : IRequest
     {
         #region Constructor
-        
-        /// <summary>
-        /// Create a new clear request
-        /// </summary>
-        public RequestClear()
-        {
-
-        }
 
         #endregion
 

@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using sones.ErrorHandling;
 using sones.GraphDB.Request;
-using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphDB.Manager
 {
@@ -92,15 +91,13 @@ namespace sones.GraphDB.Manager
         /// </summary>
         private void ValidateRequests()
         {
-            CancellationToken token = _cts.Token;
-
-            APipelinableRequest pipelineRequest = null;
+            var token = _cts.Token;
 
             try
             {
                 foreach (var aPipelineRequest in _incomingRequests.GetConsumingEnumerable())
                 {
-                    pipelineRequest = aPipelineRequest;
+                    var pipelineRequest = aPipelineRequest;
 
                     if (token.IsCancellationRequested)
                         break;
@@ -108,8 +105,6 @@ namespace sones.GraphDB.Manager
                     ValidateRequest(ref pipelineRequest);
 
                     ProcessValidRequest(ref pipelineRequest, ref token);
-
-                    pipelineRequest = null;
                 }
             }
             catch (Exception e)
@@ -134,7 +129,7 @@ namespace sones.GraphDB.Manager
         /// </summary>
         private void ExecuteRequests()
         {
-            CancellationToken token = _cts.Token;
+            var token = _cts.Token;
 
             APipelinableRequest pipelineRequest = null;
 
@@ -150,8 +145,6 @@ namespace sones.GraphDB.Manager
                     ExecuteRequest(ref pipelineRequest);
 
                     _results.TryAdd(pipelineRequest.ID, pipelineRequest);
-
-                    pipelineRequest = null;
                 }
             }
             catch (Exception e)
@@ -216,15 +209,15 @@ namespace sones.GraphDB.Manager
                                     TaskContinuationOptions.None, TaskScheduler.Default);
 
             // + 1 because of the validate task
-            _tasks = (Task[])Array.CreateInstance(typeof(Task), executionTaskCount + 1);
-            int taskId = 0;
+            _tasks = (Task[]) Array.CreateInstance(typeof (Task), executionTaskCount + 1);
+            var taskId = 0;
 
             //start the validate stage
             _tasks[taskId++] =
                 f.StartNew(ValidateRequests);
 
             //start the execution stage
-            for (int i = 0; i < executionTaskCount; i++)
+            for (var i = 0; i < executionTaskCount; i++)
             {
                 _tasks[taskId++] = f.StartNew(ExecuteRequests);
             }
@@ -376,13 +369,7 @@ namespace sones.GraphDB.Manager
         /// <param name="e">The exception that has been thrown</param>
         private void HandleErroneousRequest(ref APipelinableRequest pipelineRequest, Exception e)
         {
-            var aSonesException = e as ASonesException;
-
-            if (aSonesException == null)
-            {
-                //generate a valid exception and append it to the request
-                aSonesException = new UnknownException(e);
-            }
+            var aSonesException = e as ASonesException ?? new UnknownException(e);
 
             //add the exception to the request
             pipelineRequest.Exception = aSonesException;

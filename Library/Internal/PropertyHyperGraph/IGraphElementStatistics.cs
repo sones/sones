@@ -10,6 +10,6 @@ namespace sones.PropertyHyperGraph
         /// <summary>
         /// The number of visits of this graph element
         /// </summary>
-        UInt64 Visits { get; }
+        Int64 Visits { get; }
     }
 }

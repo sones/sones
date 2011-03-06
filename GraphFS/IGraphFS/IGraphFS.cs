@@ -93,7 +93,7 @@ namespace sones.GraphFS
         /// </summary>
         /// <param name="myTimeStamp">the starting timestamp of the clone. every vertex that has been created after this timestamp has to be returned</param>
         /// <returns>An enumerable of to be cloned vertices</returns>
-        IEnumerable<IVertex> CloneFileSystem(UInt64 myTimeStamp = 0UL);
+        IEnumerable<IVertex> CloneFileSystem(Int64 myTimeStamp = 0L);
 
         /// <summary>
         /// Initializes a GraphFS using the replicated vertices
@@ -114,8 +114,8 @@ namespace sones.GraphFS
         /// <param name="myVertexRevisionID">The revision id if the vertex (if left out, the latest revision is assumed)</param>
         /// <returns>True if the vertex exists, otherwise false</returns>
         Boolean VertexExists(
-            UInt64 myVertexID,
-            UInt64 myVertexTypeID,
+            Int64 myVertexID,
+            Int64 myVertexTypeID,
             String myEdition = null,
             VertexRevisionID myVertexRevisionID = null);
 
@@ -129,8 +129,8 @@ namespace sones.GraphFS
         /// <param name="myVertexRevisionID">The revision id if the vertex (if left out, the latest revision is returned)</param>
         /// <returns>A vertex object or null if there is no such vertex</returns>
         IVertex GetVertex(
-            UInt64 myVertexID,
-            UInt64 myVertexTypeID,
+            Int64 myVertexID,
+            Int64 myVertexTypeID,
             String myEdition = null,
             VertexRevisionID myVertexRevisionID = null);
 
@@ -148,8 +148,8 @@ namespace sones.GraphFS
         /// <param name="myInterestingRevisionIDFilterFunc">func to filter revisions</param>
         /// <returns>vertices</returns>
         IEnumerable<IVertex> GetVerticesByTypeID(
-            UInt64 myTypeID,
-            IEnumerable<UInt64> myInterestingVertexIDs = null,
+            Int64 myTypeID,
+            IEnumerable<Int64> myInterestingVertexIDs = null,
             Func<String, bool> myEditionsFilterFunc = null,
             Func<VertexRevisionID, bool> myInterestingRevisionIDFilterFunc = null);
 
@@ -163,8 +163,8 @@ namespace sones.GraphFS
         /// <param name="myInterestingRevisionIDs">a set of interesting revisions of a vertex</param>
         /// <returns>vertices</returns>
         IEnumerable<IVertex> GetVerticesByTypeID(
-            UInt64 myTypeID,
-            IEnumerable<UInt64> myInterestingVertexIDs = null,
+            Int64 myTypeID,
+            IEnumerable<Int64> myInterestingVertexIDs = null,
             IEnumerable<String> myInterestingEditionNames = null,
             IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null);
 
@@ -177,8 +177,8 @@ namespace sones.GraphFS
         /// <param name="myInterestingVertexIDs">a set of vertexID which shall be loaded</param>
         /// <returns>all interesting vertices of given type with default edition and latest revision</returns>
         IEnumerable<IVertex> GetVerticesByTypeID(
-            UInt64 myTypeID,
-            IEnumerable<UInt64> myInterestingVertexIDs);
+            Int64 myTypeID,
+            IEnumerable<Int64> myInterestingVertexIDs);
 
         /// <summary>
         /// Returns all vertices considering a given vertex type.
@@ -188,7 +188,7 @@ namespace sones.GraphFS
         /// <param name="myTypeID">the considered vertex type</param>
         /// <returns>all interesting vertices of given type with default edition and latest revision</returns>
         IEnumerable<IVertex> GetVerticesByTypeID(
-            UInt64 myTypeID);
+            Int64 myTypeID);
 
         /// <summary>
         /// Returns all vertices considering a given vertex type.
@@ -199,7 +199,7 @@ namespace sones.GraphFS
         /// <param name="myInterestingRevisions">a set of (vertex-)revisions which are of interest</param>
         /// <returns>all vertices of given type which are available at the given revisions</returns>
         IEnumerable<IVertex> GetVerticesByTypeID(
-            UInt64 myTypeID,
+            Int64 myTypeID,
             IEnumerable<VertexRevisionID> myInterestingRevisions);
 
         /// <summary>
@@ -209,8 +209,8 @@ namespace sones.GraphFS
         /// <param name="myVertexTypeID">The id of the vertex type</param>
         /// <returns>An IEnumerable of editions</returns>
         IEnumerable<String> GetVertexEditions(
-            UInt64 myVertexID,
-            UInt64 myVertexTypeID);
+            Int64 myVertexID,
+            Int64 myVertexTypeID);
 
         /// <summary>
         /// Returns all revision ids to a certain vertex and edition
@@ -220,8 +220,8 @@ namespace sones.GraphFS
         /// <param name="myInterestingEditions">The interesting vertex editions</param>
         /// <returns>An IEnumerable of VertexRevisionIDs</returns>
         IEnumerable<VertexRevisionID> GetVertexRevisionIDs(
-            UInt64 myVertexID,
-            UInt64 myVertexTypeID,
+            Int64 myVertexID,
+            Int64 myVertexTypeID,
             IEnumerable<String> myInterestingEditions = null);
 
         /// <summary>
@@ -233,8 +233,8 @@ namespace sones.GraphFS
         /// <param name="myToBeRemovedRevisionID">The revision that should be removed</param>
         /// <returns>True if the revision have been removed, false otherwise</returns>
         bool RemoveVertexRevision(
-            UInt64 myVertexID,
-            UInt64 myVertexTypeID,
+            Int64 myVertexID,
+            Int64 myVertexTypeID,
             String myInterestingEdition,
             VertexRevisionID myToBeRemovedRevisionID);
 
@@ -246,8 +246,8 @@ namespace sones.GraphFS
         /// <param name="myToBeRemovedEdition">The edition that should be removed</param>
         /// <returns>True if the revision have been removed, false otherwise</returns>
         bool RemoveVertexEdition(
-            UInt64 myVertexID,
-            UInt64 myVertexTypeID,
+            Int64 myVertexID,
+            Int64 myVertexTypeID,
             String myToBeRemovedEdition);
 
         /// <summary>
@@ -257,8 +257,8 @@ namespace sones.GraphFS
         /// <param name="myVertexTypeID">The id of the vertex type</param>
         /// <returns>True if a vertex has been erased, false otherwise</returns>
         bool RemoveVertex(
-            UInt64 myVertexID,
-            UInt64 myVertexTypeID);
+            Int64 myVertexID,
+            Int64 myVertexTypeID);
 
         /// <summary>
         /// Adds a new vertex to the graph fs and returns its id
@@ -267,7 +267,7 @@ namespace sones.GraphFS
         /// <param name="myEdition">The name of the edition of the new vertex</param>
         /// <param name="myVertexRevisionID">The revision id of the vertex</param>
         /// <returns>The id of the vertex</returns>        
-        UInt64 AddVertex(
+        Int64 AddVertex(
             VertexAddDefinition myVertexDefinition,
             String myEdition = null,
             VertexRevisionID myVertexRevisionID = null);
@@ -282,8 +282,8 @@ namespace sones.GraphFS
         /// <param name="myToBeUpdatedRevisionIDs">The revisions that should be updated</param>
         /// <param name="myCreateNewRevision">Determines if it is necessary to create a new revision of the vertex</param>
         void UpdateVertex(
-            UInt64 myToBeUpdatedVertexID,
-            UInt64 myCorrespondingVertexTypeID,
+            Int64 myToBeUpdatedVertexID,
+            Int64 myCorrespondingVertexTypeID,
             VertexUpdateDefinition myVertexUpdate,
             String myToBeUpdatedEditions = null,
             VertexRevisionID myToBeUpdatedRevisionIDs = null,

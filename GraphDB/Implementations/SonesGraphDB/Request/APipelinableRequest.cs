@@ -1,8 +1,8 @@
 ﻿using System;
+using sones.ErrorHandling;
 using sones.GraphDB.Manager;
 using sones.Security;
 using sones.Transaction;
-using sones.ErrorHandling;
 
 namespace sones.GraphDB.Request
 {
@@ -52,8 +52,6 @@ namespace sones.GraphDB.Request
 
         #endregion
 
-        #region IPipelinableRequest Members
-
         public abstract void Validate(MetaManager myMetaManager);
 
         public abstract void Execute(MetaManager myMetaManager);
@@ -64,7 +62,5 @@ namespace sones.GraphDB.Request
         {
             return myOutputconverter(Statistics);
         }
-
-        #endregion
     }
 }
