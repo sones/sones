@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using sones.GraphFS.Definitions;
-using sones.GraphFS.Element;
 using sones.GraphFS.Element.Vertex;
 using sones.GraphFS.ErrorHandling;
 using sones.PropertyHyperGraph;
@@ -149,14 +148,18 @@ namespace sones.GraphFS
                                                         Func<VertexRevisionID, bool> myInterestingRevisionIDFilterFunc =
                                                             null)
         {
-            return myInterestingVertexIDs != null ? GetVerticesByTypeID(myTypeID, myInterestingVertexIDs) : GetVerticesByTypeID(myTypeID);
+            return myInterestingVertexIDs != null
+                       ? GetVerticesByTypeID(myTypeID, myInterestingVertexIDs)
+                       : GetVerticesByTypeID(myTypeID);
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null,
                                                         IEnumerable<string> myInterestingEditionNames = null,
                                                         IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
         {
-            return myInterestingVertexIDs != null ? GetVerticesByTypeID(myTypeID, myInterestingVertexIDs) : GetVerticesByTypeID(myTypeID);
+            return myInterestingVertexIDs != null
+                       ? GetVerticesByTypeID(myTypeID, myInterestingVertexIDs)
+                       : GetVerticesByTypeID(myTypeID);
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs)

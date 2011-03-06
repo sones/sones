@@ -115,7 +115,9 @@ namespace sones.GraphFS.Element.Vertex
 
         public IHyperEdge GetIncomingHyperEdge(long myVertexTypeID, long myEdgePropertyID)
         {
-            return HasIncomingEdge(myVertexTypeID, myEdgePropertyID) ? _incomingEdges[myVertexTypeID][myEdgePropertyID] : null;
+            return HasIncomingEdge(myVertexTypeID, myEdgePropertyID)
+                       ? _incomingEdges[myVertexTypeID][myEdgePropertyID]
+                       : null;
         }
 
         public bool HasOutgoingEdge(long myEdgePropertyID)

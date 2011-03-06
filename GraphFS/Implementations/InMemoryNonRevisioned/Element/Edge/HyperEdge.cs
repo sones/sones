@@ -78,7 +78,8 @@ namespace sones.GraphFS.Element.Edge
         public IEnumerable<ISingleEdge> GetEdges(Func<ISingleEdge, bool> myFilterFunction = null)
         {
             foreach (var aSingleEdge in
-                _containedSingleEdges.Where(aSingleEdge => (myFilterFunction != null) && (myFilterFunction(aSingleEdge))))
+                _containedSingleEdges.Where(aSingleEdge => (myFilterFunction != null) && (myFilterFunction(aSingleEdge)))
+                )
             {
                 yield return aSingleEdge;
             }
@@ -99,7 +100,9 @@ namespace sones.GraphFS.Element.Edge
         public IEnumerable<IVertex> GetTargetVertices(Func<IVertex, bool> myFilterFunc = null)
         {
             foreach (var targetVertex in
-                _targetLocations.Select(aTargetVertexLocation => _getVertexFunc(aTargetVertexLocation.VertexID, aTargetVertexLocation.VertexTypeID)))
+                _targetLocations.Select(
+                    aTargetVertexLocation =>
+                    _getVertexFunc(aTargetVertexLocation.VertexID, aTargetVertexLocation.VertexTypeID)))
             {
                 if (myFilterFunc != null)
                 {

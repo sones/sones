@@ -82,7 +82,7 @@ namespace sones.GraphFS.Element.Edge
                 if (myFilterFunc(targetVertex))
                 {
                     yield return targetVertex;
-                }    
+                }
             }
             else
             {
