@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using sones.GraphFS.Definitions;
 using sones.GraphFS.Element;
+using sones.GraphFS.Element.Vertex;
 using sones.GraphFS.ErrorHandling;
 using sones.PropertyHyperGraph;
 

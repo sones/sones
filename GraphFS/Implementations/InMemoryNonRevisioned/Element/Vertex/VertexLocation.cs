@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace sones.GraphFS.Element
+namespace sones.GraphFS.Element.Vertex
 {
     /// <summary>
     /// The in memory location of a vertex

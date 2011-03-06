@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace sones.GraphFS
+namespace sones.GraphFS.Definitions
 {
     public struct GraphElementInformation
     {

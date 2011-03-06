@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using sones.GraphFS.Definitions;
 
-namespace sones.GraphFS
+namespace sones.GraphFS.Definitions
 {
     /// <summary>
     /// This struct represents the filesystem definition for an edge

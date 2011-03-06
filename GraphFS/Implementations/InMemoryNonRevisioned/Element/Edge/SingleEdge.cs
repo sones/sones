@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using sones.GraphFS.Definitions;
+using sones.GraphFS.Element.Vertex;
 using sones.GraphFS.ErrorHandling;
 using sones.PropertyHyperGraph;
 
-namespace sones.GraphFS.Element
+namespace sones.GraphFS.Element.Edge
 {
     /// <summary>
     /// The single edge defines a 1-1 relation within the property hypergraph

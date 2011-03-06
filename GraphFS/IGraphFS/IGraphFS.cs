@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using sones.GraphFS.Definitions;
 using sones.PropertyHyperGraph;
 
 namespace sones.GraphFS

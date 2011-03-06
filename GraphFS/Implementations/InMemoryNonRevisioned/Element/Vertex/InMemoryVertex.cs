@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using sones.GraphFS.Definitions;
+using sones.GraphFS.Element.Edge;
 using sones.GraphFS.ErrorHandling;
 using sones.PropertyHyperGraph;
 
-namespace sones.GraphFS.Element
+namespace sones.GraphFS.Element.Vertex
 {
     /// <summary>
     /// The in memory representation of an ivertex
@@ -32,7 +34,7 @@ namespace sones.GraphFS.Element
         /// The incoming edges of the vertex
         /// (VertexTypeID of the vertex type that points to this vertex, PropertyID of the edge that points to this vertex, HyperEdge)
         /// </summary>
-        private readonly Dictionary<Int64, Dictionary<Int64, HyperEdge>> _incomingEdges;
+        private readonly Dictionary<Int64, Dictionary<long, HyperEdge>> _incomingEdges;
 
         /// <summary>
         /// The outgoing edges of the vertex

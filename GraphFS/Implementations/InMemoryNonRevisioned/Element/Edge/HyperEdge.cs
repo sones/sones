@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using sones.GraphFS.Definitions;
+using sones.GraphFS.Element.Vertex;
 using sones.GraphFS.ErrorHandling;
 using sones.PropertyHyperGraph;
 
-namespace sones.GraphFS.Element
+namespace sones.GraphFS.Element.Edge
 {
     /// <summary>
     /// A hyper edge is a 1-N relation within the property hypergraph
