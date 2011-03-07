@@ -113,9 +113,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGraphDB", "Tests\TestGr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGraphFS", "Tests\TestGraphFS\TestGraphFS.csproj", "{B1395807-0386-4CDF-892C-6EF082920552}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Irony", "Library\External\Irony\Irony.csproj", "{D81F5C91-D7DB-46E5-BC99-49488FB6814C}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 28
+		SccNumberOfProjects = 29
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -227,6 +229,10 @@ Global
 		SccProjectTopLevelParentUniqueName27 = CoreDeveloper.sln
 		SccProjectName27 = Tests/TestGraphFS
 		SccLocalPath27 = Tests\\TestGraphFS
+		SccProjectUniqueName28 = Library\\External\\Irony\\Irony.csproj
+		SccProjectTopLevelParentUniqueName28 = CoreDeveloper.sln
+		SccProjectName28 = Library/External/Irony
+		SccLocalPath28 = Library\\External\\Irony
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -507,6 +513,16 @@ Global
 		{B1395807-0386-4CDF-892C-6EF082920552}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{B1395807-0386-4CDF-892C-6EF082920552}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{B1395807-0386-4CDF-892C-6EF082920552}.Release|x86.ActiveCfg = Release|Any CPU
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -529,6 +545,7 @@ Global
 		{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{3C13E344-937B-4010-B0EF-A164232E4454} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
+		{D81F5C91-D7DB-46E5-BC99-49488FB6814C} = {A950D82D-E727-4CF5-B4D4-7B872D733E3C}
 		{601ADD59-4F38-422A-851A-8B0312872F8F} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
 		{48ACC5ED-F25B-458A-94E7-9128C17445B5} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
 		{5AAE6106-287F-4C6E-B2A7-0B0695BBD521} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
