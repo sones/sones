@@ -378,16 +378,22 @@ namespace sones.GraphFS
         {
             var result = new Dictionary<long, IEdge>();
 
-            foreach (var aSingleEdgeDefinition in outgoingSingleEdges)
+            if (outgoingSingleEdges != null)
             {
-                result.Add(aSingleEdgeDefinition.Key, new SingleEdge(aSingleEdgeDefinition.Value, getVertexPrivate));
+                foreach (var aSingleEdgeDefinition in outgoingSingleEdges)
+                {
+                    result.Add(aSingleEdgeDefinition.Key, new SingleEdge(aSingleEdgeDefinition.Value, getVertexPrivate));
+                }
             }
 
-            foreach (var aHyperEdge in outgoingHyperEdges)
+            if (outgoingHyperEdges != null)
             {
-                result.Add(aHyperEdge.Key, new HyperEdge(aHyperEdge.Value, getVertexPrivate));
+                foreach (var aHyperEdge in outgoingHyperEdges)
+                {
+                    result.Add(aHyperEdge.Key, new HyperEdge(aHyperEdge.Value, getVertexPrivate));
+                }
             }
-
+            
             return result;
         }
 

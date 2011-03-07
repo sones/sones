@@ -57,11 +57,11 @@ namespace sones.GraphFS.Definitions
         {
             Edition = !string.IsNullOrEmpty(myEdition) ? myEdition : ConstantsFS.DefaultVertexEdition;
 
-            OutgoingHyperEdges = myOutgoingHyperEdges ?? new Dictionary<long, HyperEdgeAddDefinition>();
+            OutgoingHyperEdges = myOutgoingHyperEdges;
 
-            OutgoingSingleEdges = myOutgoingSingleEdges ?? new Dictionary<long, SingleEdgeAddDefinition>();
+            OutgoingSingleEdges = myOutgoingSingleEdges;
 
-            BinaryProperties = myBinaryProperties ?? new Dictionary<long, Stream>();
+            BinaryProperties = myBinaryProperties;
 
             GraphElementInformation = myGraphElementInformation;
         }
