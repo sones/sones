@@ -89,7 +89,7 @@ namespace sones.GraphFS
             Init();
         }
 
-        public IEnumerable<IVertex> CloneFileSystem(Int64 myTimeStamp = 0L)
+        public IEnumerable<IVertex> CloneFileSystem(DateTime myTimeStamp)
         {
             return _vertexStore.Values.
                 Select
@@ -363,7 +363,7 @@ namespace sones.GraphFS
         /// <returns>The resulting InMemoryVertex</returns>
         private InMemoryVertex TransferToInMemoryVertex(VertexAddDefinition myVertexDefinition)
         {
-            return new InMemoryVertex(GetNextVertexID(), new VertexRevisionID(DateTime.UtcNow),
+            return new InMemoryVertex(GetNextVertexID(), new VertexRevisionID(myVertexDefinition.GraphElementInformation.ModificationDate),
                                       myVertexDefinition.Edition, myVertexDefinition.BinaryProperties,
                                       ConvertToIEdge(myVertexDefinition.OutgoingHyperEdges,
                                                      myVertexDefinition.OutgoingSingleEdges,

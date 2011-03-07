@@ -94,7 +94,7 @@ namespace sones.GraphFS
         /// </summary>
         /// <param name="myTimeStamp">the starting timestamp of the clone. every vertex that has been created after this timestamp has to be returned</param>
         /// <returns>An enumerable of to be cloned vertices</returns>
-        IEnumerable<IVertex> CloneFileSystem(Int64 myTimeStamp = 0L);
+        IEnumerable<IVertex> CloneFileSystem(DateTime myTimeStamp);
 
         /// <summary>
         /// Initializes a GraphFS using the replicated vertices

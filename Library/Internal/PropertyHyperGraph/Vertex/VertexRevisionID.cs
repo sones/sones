@@ -11,7 +11,7 @@ namespace sones.PropertyHyperGraph
         /// <summary>
         /// The timestamp of this revision.
         /// </summary>
-        public readonly Int64 Timestamp;
+        public readonly DateTime Timestamp;
 
         #endregion
 
@@ -38,7 +38,7 @@ namespace sones.PropertyHyperGraph
         /// <param name="myID">An unique identification for this generation process</param>
         public VertexRevisionID(DateTime myTimeStamp, UInt64 myID = 0UL)
         {
-            Timestamp = myTimeStamp.ToBinary();
+            Timestamp = myTimeStamp;
 
             ID = myID;
         }
@@ -184,7 +184,7 @@ namespace sones.PropertyHyperGraph
         /// <returns>A formated string representation of this revision</returns>
         public override String ToString()
         {
-            return String.Format("{0:yyyyddMM.HHmmss.fffffff}({1})", new DateTime(Timestamp), ID);
+            return String.Format("{0:yyyyddMM.HHmmss.fffffff}({1})", Timestamp, ID);
         }
 
         #endregion

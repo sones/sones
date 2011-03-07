@@ -62,8 +62,8 @@ namespace sones.GraphFS.Definitions
             Comment = myComment;
             CreationDate = myCreationDate;
             ModificationDate = myModificationDate;
-            StructuredProperties = myStructuredProperties;
-            UnstructuredProperties = myUnstructuredProperties;
+            StructuredProperties = myStructuredProperties ?? new Dictionary<Int64, Object>();
+            UnstructuredProperties = myUnstructuredProperties ?? new Dictionary<String, Object>();
         }
 
         #endregion
