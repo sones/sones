@@ -307,7 +307,7 @@ namespace sones.GraphFS
 
             var vertex = TransferToInMemoryVertex(myVertexDefinition);
 
-            _vertexStore[myVertexDefinition.GraphElementInformation.TypeID].TryAdd(vertex.VertexID, vertex);
+            _vertexStore[myVertexDefinition.GraphElementInformation.TypeID][vertex.VertexID] = vertex;
 
             return vertex.VertexID;
         }
