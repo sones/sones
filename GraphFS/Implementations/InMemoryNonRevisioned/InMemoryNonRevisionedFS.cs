@@ -305,11 +305,73 @@ namespace sones.GraphFS
                                     new ConcurrentDictionary<long, InMemoryVertex>());
             }
 
-            var vertex = TransferToInMemoryVertex(myVertexDefinition);
+            #region create new vertex
 
+            var vertexID = GetNextVertexID();
+            var vertexRevisionID = new VertexRevisionID(myVertexDefinition.GraphElementInformation.ModificationDate);
+            var graphElementInformation = new InMemoryGraphElementInformation(myVertexDefinition.GraphElementInformation);
+
+            #region process edges
+
+            Dictionary<Int64, IEdge> edges = null;
+
+            if (myVertexDefinition.OutgoingSingleEdges != null || myVertexDefinition.OutgoingHyperEdges != null)
+            {
+                edges = new Dictionary<long, IEdge>();
+                SingleEdge singleEdge;
+
+                if (myVertexDefinition.OutgoingSingleEdges != null)
+                {
+                    foreach (var aSingleEdgeDefinition in myVertexDefinition.OutgoingSingleEdges)
+                    {
+                        //create the new Edge
+                        singleEdge = new SingleEdge(aSingleEdgeDefinition.Value, GetVertex_private);
+                        UpdateIncomingEdgesOnTargetVertex(aSingleEdgeDefinition.Value.TargetVertexInformation,
+                                                          myVertexDefinition.GraphElementInformation.TypeID,
+                                                          aSingleEdgeDefinition.Key,
+                                                          singleEdge);
+
+                        edges.Add(aSingleEdgeDefinition.Key, singleEdge);
+                    }
+                }
+
+                if (myVertexDefinition.OutgoingHyperEdges != null)
+                {
+                    HashSet<SingleEdge> containedSingleEdges;
+
+                    foreach (var aHyperEdgeDefinition in myVertexDefinition.OutgoingHyperEdges)
+                    {
+                        containedSingleEdges = new HashSet<SingleEdge>();
+
+                        foreach (var aSingleEdgeDefinition in aHyperEdgeDefinition.Value.ContainedSingleEdges)
+                        {
+                            singleEdge = new SingleEdge(aSingleEdgeDefinition, GetVertex_private);
+
+                            UpdateIncomingEdgesOnTargetVertex(aSingleEdgeDefinition.TargetVertexInformation,
+                                                              myVertexDefinition.GraphElementInformation.TypeID,
+                                                              aHyperEdgeDefinition.Key,
+                                                              singleEdge);
+
+                            containedSingleEdges.Add(singleEdge);
+                        }
+
+                        //create the new edge
+                        edges.Add(aHyperEdgeDefinition.Key, new HyperEdge(containedSingleEdges, aHyperEdgeDefinition.Value.GraphElementInformation, aHyperEdgeDefinition.Value.SourceVertex, GetVertex_private));
+
+                    }
+                }
+            }
+
+            #endregion
+
+            var vertex = new InMemoryVertex(vertexID, vertexRevisionID, myVertexDefinition.Edition, myVertexDefinition.BinaryProperties, edges, graphElementInformation);
+
+            #endregion
+
+            //store the new vertex
             _vertexStore[myVertexDefinition.GraphElementInformation.TypeID][vertex.VertexID] = vertex;
 
-            return vertex.VertexID;
+            return vertexID;
         }
 
         public void UpdateVertex(long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID,
@@ -334,6 +396,18 @@ namespace sones.GraphFS
         #region private helper
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="myTargetVertexInformation"></param>
+        /// <param name="myIncomingVertexTypeID"></param>
+        /// <param name="myIncomingEdgeID"></param>
+        /// <param name="mySingleEdge"></param>
+        private void UpdateIncomingEdgesOnTargetVertex(VertexInformation myTargetVertexInformation, Int64 myIncomingVertexTypeID, Int64 myIncomingEdgeID, SingleEdge mySingleEdge)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
         /// Initializes the fs
         /// </summary>
         private void Init()
@@ -352,49 +426,6 @@ namespace sones.GraphFS
                                                     VertexUpdateDefinition myVertexUpdate)
         {
             throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Creates a new InMemoryVertex from a VertexDefinition
-        /// 
-        /// It also Generates the VertexID
-        /// </summary>
-        /// <param name="myVertexDefinition">The definition of the vertex that is going to be creates</param>
-        /// <returns>The resulting InMemoryVertex</returns>
-        private InMemoryVertex TransferToInMemoryVertex(VertexAddDefinition myVertexDefinition)
-        {
-            return new InMemoryVertex(GetNextVertexID(), new VertexRevisionID(myVertexDefinition.GraphElementInformation.ModificationDate),
-                                      myVertexDefinition.Edition, myVertexDefinition.BinaryProperties,
-                                      ConvertToIEdge(myVertexDefinition.OutgoingHyperEdges,
-                                                     myVertexDefinition.OutgoingSingleEdges,
-                                                     GetVertex_private),
-                                      new InMemoryGraphElementInformation(myVertexDefinition.GraphElementInformation));
-        }
-
-        private Dictionary<long, IEdge> ConvertToIEdge(
-            Dictionary<long, HyperEdgeAddDefinition> outgoingHyperEdges, 
-            Dictionary<long, SingleEdgeAddDefinition> outgoingSingleEdges, 
-            Func<long, long, InMemoryVertex> getVertexPrivate)
-        {
-            var result = new Dictionary<long, IEdge>();
-
-            if (outgoingSingleEdges != null)
-            {
-                foreach (var aSingleEdgeDefinition in outgoingSingleEdges)
-                {
-                    result.Add(aSingleEdgeDefinition.Key, new SingleEdge(aSingleEdgeDefinition.Value, getVertexPrivate));
-                }
-            }
-
-            if (outgoingHyperEdges != null)
-            {
-                foreach (var aHyperEdge in outgoingHyperEdges)
-                {
-                    result.Add(aHyperEdge.Key, new HyperEdge(aHyperEdge.Value, getVertexPrivate));
-                }
-            }
-            
-            return result;
         }
 
         /// <summary>

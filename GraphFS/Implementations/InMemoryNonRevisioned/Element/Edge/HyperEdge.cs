@@ -47,27 +47,28 @@ namespace sones.GraphFS.Element.Edge
         /// <summary>
         /// Creates a new hyper edge
         /// </summary>
-        /// <param name="myEdgeDefinition">The definition of the hyper edge</param>
+        /// <param name="myContainedSingleEdges">The single edges that are contained within the hyper edge</param>
+        /// <param name="myGraphElementInformation">The graph element information of the hyper edge</param>
+        /// <param name="mySourceVertex">Informations concerning the source vertex</param>
         /// <param name="myGetVertex">The function to resolve either the source vertex or the target vertices</param>
         public HyperEdge(
-            HyperEdgeAddDefinition myEdgeDefinition,
+            HashSet<SingleEdge> myContainedSingleEdges,
+            GraphElementInformation myGraphElementInformation,
+            VertexInformation mySourceVertex,
             Func<long, long, IVertex> myGetVertex)
         {
-            _inMemoryGraphElementInformation =
-                new InMemoryGraphElementInformation(myEdgeDefinition.GraphElementInformation);
+            _inMemoryGraphElementInformation = new InMemoryGraphElementInformation(myGraphElementInformation);
 
             _getVertexFunc = myGetVertex;
 
-            _sourceLocation = new VertexLocation(myEdgeDefinition.SourceVertex.VertexTypeID,
-                                                 myEdgeDefinition.SourceVertex.VertexID);
+            _sourceLocation = new VertexLocation(mySourceVertex.VertexTypeID,
+                                                 mySourceVertex.VertexID);
 
             _targetLocations = new HashSet<VertexLocation>();
-            _containedSingleEdges = new HashSet<SingleEdge>();
-            foreach (var aSingleEdge in myEdgeDefinition.ContainedSingleEdges)
+            _containedSingleEdges = myContainedSingleEdges;
+            foreach (var aSingleEdge in myContainedSingleEdges)
             {
-                _containedSingleEdges.Add(new SingleEdge(aSingleEdge, myGetVertex));
-                _targetLocations.Add(new VertexLocation(aSingleEdge.TargetVertexInformation.VertexTypeID,
-                                                        aSingleEdge.TargetVertexInformation.VertexID));
+                _targetLocations.Add(aSingleEdge.TargetLocation);
             }
         }
 
@@ -77,11 +78,22 @@ namespace sones.GraphFS.Element.Edge
 
         public IEnumerable<ISingleEdge> GetEdges(Func<ISingleEdge, bool> myFilterFunction = null)
         {
-            foreach (var aSingleEdge in
-                _containedSingleEdges.Where(aSingleEdge => (myFilterFunction != null) && (myFilterFunction(aSingleEdge)))
-                )
+            if (myFilterFunction != null)
             {
-                yield return aSingleEdge;
+                foreach (var aSingleEdge in _containedSingleEdges)
+                {
+                    if (myFilterFunction(aSingleEdge))
+                    {
+                        yield return aSingleEdge;
+                    }
+                }
+            }
+            else
+            {
+                foreach (var aSingleEdge in _containedSingleEdges)
+                {
+                    yield return aSingleEdge;
+                }
             }
 
             yield break;

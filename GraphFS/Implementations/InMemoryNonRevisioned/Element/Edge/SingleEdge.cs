@@ -27,12 +27,12 @@ namespace sones.GraphFS.Element.Edge
         /// <summary>
         /// The location of the source vertex
         /// </summary>
-        private readonly VertexLocation _sourceLocation;
+        internal readonly VertexLocation SourceLocation;
 
         /// <summary>
         /// The location of the target vertex
         /// </summary>
-        private readonly VertexLocation _targetLocation;
+        internal readonly VertexLocation TargetLocation;
 
         #endregion
 
@@ -49,10 +49,10 @@ namespace sones.GraphFS.Element.Edge
         {
             _getVertexFunc = myGetVertex;
 
-            _sourceLocation = new VertexLocation(myEdgeDefinition.SourceVertexInformation.VertexTypeID,
+            SourceLocation = new VertexLocation(myEdgeDefinition.SourceVertexInformation.VertexTypeID,
                                                  myEdgeDefinition.SourceVertexInformation.VertexID);
 
-            _targetLocation = new VertexLocation(myEdgeDefinition.TargetVertexInformation.VertexTypeID,
+            TargetLocation = new VertexLocation(myEdgeDefinition.TargetVertexInformation.VertexTypeID,
                                                  myEdgeDefinition.TargetVertexInformation.VertexID);
 
             _inMemoryGraphElementInformation =
@@ -65,12 +65,12 @@ namespace sones.GraphFS.Element.Edge
 
         public IVertex GetTargetVertex()
         {
-            return _getVertexFunc(_targetLocation.VertexID, _targetLocation.VertexTypeID);
+            return _getVertexFunc(TargetLocation.VertexID, TargetLocation.VertexTypeID);
         }
 
         public IVertex GetSourceVertex()
         {
-            return _getVertexFunc(_sourceLocation.VertexID, _sourceLocation.VertexTypeID);
+            return _getVertexFunc(SourceLocation.VertexID, SourceLocation.VertexTypeID);
         }
 
         public IEnumerable<IVertex> GetTargetVertices(Func<IVertex, bool> myFilterFunc = null)
@@ -226,8 +226,8 @@ namespace sones.GraphFS.Element.Edge
                 return false;
             }
 
-            return (_sourceLocation == p._sourceLocation)
-                   && (_targetLocation == p._targetLocation)
+            return (SourceLocation == p.SourceLocation)
+                   && (TargetLocation == p.TargetLocation)
                    && (_inMemoryGraphElementInformation.TypeID == p._inMemoryGraphElementInformation.TypeID);
         }
 
@@ -256,7 +256,7 @@ namespace sones.GraphFS.Element.Edge
 
         public override int GetHashCode()
         {
-            return _sourceLocation.GetHashCode() ^ _targetLocation.GetHashCode();
+            return SourceLocation.GetHashCode() ^ TargetLocation.GetHashCode();
         }
 
         #endregion
