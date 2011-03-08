@@ -77,7 +77,6 @@ namespace sones.GraphFS.Element.Vertex
             _edition = myEdition;
             _binaryProperties = myBinaryProperties;
             _outgoingEdges = myOutgoingEdges;
-            _incomingEdges = new Dictionary<long, Dictionary<long, HyperEdge>>();
             _inMemoryGraphElementInformation = myGraphElementInformation;
         }
 
