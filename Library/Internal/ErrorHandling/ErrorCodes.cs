@@ -62,11 +62,6 @@ namespace sones.ErrorHandling
         #region Library (prefix: 4)
 
         /// <summary>
-        /// An unknown Library error
-        /// </summary>
-        public static UInt16 UnknownLibError = 400;
-
-        /// <summary>
         /// An assembly file could not loaded
         /// </summary>
         public static UInt16 CouldNotLoadAssembly = 401;
