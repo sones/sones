@@ -8,7 +8,7 @@
     <ProjectGuid>{3C13E344-937B-4010-B0EF-A164232E4454}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sones.Security</RootNamespace>
+    <RootNamespace>sones.Library.Security</RootNamespace>
     <AssemblyName>Security</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

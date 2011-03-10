@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace sones.VersionedPluginManager.ErrorHandling
+namespace sones.Library.VersionedPluginManager
 {
     /// <summary>
     /// Defines the min and max version of the plugin.

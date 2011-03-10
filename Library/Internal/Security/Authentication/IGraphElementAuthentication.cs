@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace sones.Security
+namespace sones.Library.Security
 {
     /// <summary>
     /// The interface for the graph element authentication

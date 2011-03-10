@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace sones.PropertyHyperGraph
+namespace sones.Library.PropertyHyperGraph
 {
     public sealed class VertexRevisionID : IComparable, IComparable<VertexRevisionID>, IEquatable<VertexRevisionID>
     {

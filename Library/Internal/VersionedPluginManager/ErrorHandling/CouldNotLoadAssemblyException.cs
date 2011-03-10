@@ -1,7 +1,7 @@
 ﻿using System;
 using sones.Library.ErrorHandling;
 
-namespace sones.VersionedPluginManager.ErrorHandling
+namespace sones.Library.VersionedPluginManager
 {
     /// <summary>
     /// This exception occurs if a assembly could not be loaded due to a incompatible platform etc.

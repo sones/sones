@@ -1,6 +1,7 @@
 ﻿using System;
+using sones.Library.VersionedPluginManager;
 
-namespace sones.VersionedPluginManager.ErrorHandling.Events
+namespace sones.Library.VersionedPluginManager
 {
 
     #region PluginFoundEvent

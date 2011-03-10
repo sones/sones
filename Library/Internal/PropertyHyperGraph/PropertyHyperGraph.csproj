@@ -8,7 +8,7 @@
     <ProjectGuid>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sones.PropertyHyperGraph</RootNamespace>
+    <RootNamespace>sones.Library.PropertyHyperGraph</RootNamespace>
     <AssemblyName>PropertyHyperGraph</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

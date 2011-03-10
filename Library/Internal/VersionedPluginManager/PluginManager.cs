@@ -4,10 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using sones.Library.ErrorHandling;
-using sones.VersionedPluginManager.ErrorHandling;
-using sones.VersionedPluginManager.ErrorHandling.Events;
 
-namespace sones.VersionedPluginManager
+namespace sones.Library.VersionedPluginManager
 {
     public class PluginManager
     {

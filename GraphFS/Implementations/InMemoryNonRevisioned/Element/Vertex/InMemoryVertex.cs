@@ -4,7 +4,7 @@ using System.IO;
 using sones.GraphFS.Definitions;
 using sones.GraphFS.Element.Edge;
 using sones.GraphFS.ErrorHandling;
-using sones.PropertyHyperGraph;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphFS.Element.Vertex
 {

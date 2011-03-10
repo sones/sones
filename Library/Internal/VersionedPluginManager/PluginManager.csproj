@@ -8,7 +8,7 @@
     <ProjectGuid>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sones.Lib.VersionedPluginManager</RootNamespace>
+    <RootNamespace>sones.Library.VersionedPluginManager</RootNamespace>
     <AssemblyName>VersionedPluginManager</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

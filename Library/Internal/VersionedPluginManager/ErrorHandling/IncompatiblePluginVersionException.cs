@@ -2,7 +2,7 @@
 using System.Reflection;
 using sones.Library.ErrorHandling;
 
-namespace sones.VersionedPluginManager.ErrorHandling
+namespace sones.Library.VersionedPluginManager
 {
     /// <summary>
     /// This exception occurs if a version of a plugin does not match the expected version.

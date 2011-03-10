@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace sones.PropertyHyperGraph
+namespace sones.Library.PropertyHyperGraph
 {
     /// <summary>
     /// The interface for vertices

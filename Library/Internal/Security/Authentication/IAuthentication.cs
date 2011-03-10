@@ -1,4 +1,4 @@
-﻿namespace sones.Security
+﻿namespace sones.Library.Security
 {
     /// <summary>
     /// Authentication interface

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Reflection;
+using sones.Library.VersionedPluginManager;
 
-namespace sones.VersionedPluginManager.ErrorHandling.Events
+namespace sones.Library.VersionedPluginManager
 {
 
     #region PluginIncompatibleVersionEvent

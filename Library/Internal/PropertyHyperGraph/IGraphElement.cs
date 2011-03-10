@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace sones.PropertyHyperGraph
+namespace sones.Library.PropertyHyperGraph
 {
     /// <summary>
     /// The interface for graph elements like vertices or edges

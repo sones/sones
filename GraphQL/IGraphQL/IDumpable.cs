@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using sones.Library.Security;
 using sones.Library.Transaction;
-using sones.Security;
 
 namespace sones.GraphQL
 {

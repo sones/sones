@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using sones.Library.PropertyHyperGraph;
 
-namespace sones.PropertyHyperGraph
+namespace sones.Library.PropertyHyperGraph
 {
     /// <summary>
     /// The interface for all edge species
