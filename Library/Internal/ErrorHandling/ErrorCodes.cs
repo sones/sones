@@ -58,5 +58,25 @@ namespace sones.ErrorHandling
         public static UInt16 UnknownDBError = 300;
 
         #endregion
+
+        #region Library (prefix: 4)
+
+        /// <summary>
+        /// An unknown Library error
+        /// </summary>
+        public static UInt16 UnknownLibError = 400;
+
+        /// <summary>
+        /// An assembly file could not loaded
+        /// </summary>
+        public static UInt16 CouldNotLoadAssembly = 401;
+
+        /// <summary>
+        /// A plugin version is incompatible
+        /// </summary>
+        public static UInt16 IncompatiblePluginVersion = 402;
+
+
+        #endregion
     }
 }

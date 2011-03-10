@@ -15,7 +15,7 @@ namespace sones.GraphDB.ErrorHandling
 
         public override ushort ErrorCode
         {
-            get { return ErrorCodes.UnknownDBError; }
+            get { return ErrorCodes.UnknownLibError; }
         }
 
         #region constructor

@@ -115,9 +115,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGraphFS", "Tests\TestGr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Irony", "Library\External\Irony\Irony.csproj", "{D81F5C91-D7DB-46E5-BC99-49488FB6814C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginManager", "Library\Internal\VersionedPluginManager\PluginManager.csproj", "{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLibrary", "TestLibrary\TestLibrary.csproj", "{E7867583-67E8-4250-9286-D96970184958}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 29
+		SccNumberOfProjects = 31
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -233,6 +237,14 @@ Global
 		SccProjectTopLevelParentUniqueName28 = CoreDeveloper.sln
 		SccProjectName28 = Library/External/Irony
 		SccLocalPath28 = Library\\External\\Irony
+		SccProjectUniqueName29 = Library\\Internal\\VersionedPluginManager\\PluginManager.csproj
+		SccProjectTopLevelParentUniqueName29 = CoreDeveloper.sln
+		SccProjectName29 = Library/Internal/VersionedPluginManager
+		SccLocalPath29 = Library\\Internal\\VersionedPluginManager
+		SccProjectUniqueName30 = TestLibrary\\TestLibrary.csproj
+		SccProjectTopLevelParentUniqueName30 = CoreDeveloper.sln
+		SccProjectName30 = TestLibrary
+		SccLocalPath30 = TestLibrary
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -523,6 +535,26 @@ Global
 		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{D81F5C91-D7DB-46E5-BC99-49488FB6814C}.Release|x86.ActiveCfg = Release|Any CPU
+		{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}.Release|x86.ActiveCfg = Release|Any CPU
+		{E7867583-67E8-4250-9286-D96970184958}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7867583-67E8-4250-9286-D96970184958}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7867583-67E8-4250-9286-D96970184958}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E7867583-67E8-4250-9286-D96970184958}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E7867583-67E8-4250-9286-D96970184958}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E7867583-67E8-4250-9286-D96970184958}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7867583-67E8-4250-9286-D96970184958}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7867583-67E8-4250-9286-D96970184958}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E7867583-67E8-4250-9286-D96970184958}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E7867583-67E8-4250-9286-D96970184958}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -545,6 +577,7 @@ Global
 		{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{3C13E344-937B-4010-B0EF-A164232E4454} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
+		{1F652BC0-ECEE-409B-8EFB-51276C41EAD1} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{D81F5C91-D7DB-46E5-BC99-49488FB6814C} = {A950D82D-E727-4CF5-B4D4-7B872D733E3C}
 		{601ADD59-4F38-422A-851A-8B0312872F8F} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
 		{48ACC5ED-F25B-458A-94E7-9128C17445B5} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
@@ -577,5 +610,6 @@ Global
 		{B63AEBDB-E99E-441C-A694-029F3CE395C4} = {7214C054-B081-42C3-93F8-80A77DB6F17A}
 		{79936D52-52EB-4238-8EF7-33C364C0FB98} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 		{B1395807-0386-4CDF-892C-6EF082920552} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
+		{E7867583-67E8-4250-9286-D96970184958} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 	EndGlobalSection
 EndGlobal
