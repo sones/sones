@@ -148,13 +148,13 @@ namespace sones.GraphFS.Element.Vertex
         public IEnumerable<Tuple<long, IHyperEdge>> GetAllOutgoingHyperEdges(
             Func<long, IHyperEdge, bool> myFilterFunc = null)
         {
-            return GetAllOutgoingEdges_private(myFilterFunc);
+            return GetAllOutgoingEdgesPrivate(myFilterFunc);
         }
 
         public IEnumerable<Tuple<long, ISingleEdge>> GetAllOutgoingSingleEdges(
             Func<long, ISingleEdge, bool> myFilterFunc = null)
         {
-            return GetAllOutgoingEdges_private(myFilterFunc);
+            return GetAllOutgoingEdgesPrivate(myFilterFunc);
         }
 
         public IEdge GetOutgoingEdge(long myEdgePropertyID)
@@ -226,7 +226,7 @@ namespace sones.GraphFS.Element.Vertex
 
         public IEnumerable<Tuple<long, object>> GetAllProperties(Func<long, object, bool> myFilterFunc = null)
         {
-            return _inMemoryGraphElementInformation.GetAllProperties_protected(myFilterFunc);
+            return _inMemoryGraphElementInformation.GetAllPropertiesProtected(myFilterFunc);
         }
 
         public string GetPropertyAsString(long myPropertyID)
@@ -268,7 +268,7 @@ namespace sones.GraphFS.Element.Vertex
         public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(
             Func<string, object, bool> myFilterFunc = null)
         {
-            return _inMemoryGraphElementInformation.GetAllUnstructuredProperties_protected(myFilterFunc);
+            return _inMemoryGraphElementInformation.GetAllUnstructuredPropertiesProtected(myFilterFunc);
         }
 
         public string GetUnstructuredPropertyAsString(string myPropertyName)
@@ -341,7 +341,7 @@ namespace sones.GraphFS.Element.Vertex
         /// <typeparam name="T">The type of the result</typeparam>
         /// <param name="myFilterFunc">The optional filter function</param>
         /// <returns>All matching outgoing edges</returns>
-        private IEnumerable<Tuple<long, T>> GetAllOutgoingEdges_private<T>(Func<long, T, bool> myFilterFunc)
+        private IEnumerable<Tuple<long, T>> GetAllOutgoingEdgesPrivate<T>(Func<long, T, bool> myFilterFunc)
             where T : class
         {
             foreach (var aEdge in _outgoingEdges)

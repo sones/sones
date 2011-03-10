@@ -20,33 +20,33 @@ namespace sones.GraphDB
                                                  RequestCreateVertexType myRequestCreateVertexType,
                                                  Func<IRequestStatistics, TResult> myOutputconverter)
         {
-            var Id =
+            var id =
                 _requestManager.RegisterRequest(new PipelineableCreateVertexTypeRequest(myRequestCreateVertexType,
                                                                                         mySecurityToken,
                                                                                         myTransactionToken));
 
-            return _requestManager.GetResult(Id).GenerateRequestStatistics(myOutputconverter);
+            return _requestManager.GetResult(id).GenerateRequestStatistics(myOutputconverter);
         }
 
         public TResult Clear<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
                                       RequestClear myRequestClear, Func<IRequestStatistics, TResult> myOutputconverter)
         {
-            var Id =
+            var id =
                 _requestManager.RegisterRequest(new PipelineableClearRequest(myRequestClear, mySecurityToken,
                                                                              myTransactionToken));
 
-            return _requestManager.GetResult(Id).GenerateRequestStatistics(myOutputconverter);
+            return _requestManager.GetResult(id).GenerateRequestStatistics(myOutputconverter);
         }
 
         public TResult Insert<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
                                        RequestInsertVertex myRequestInsert,
                                        Func<IRequestStatistics, TResult> myOutputconverter)
         {
-            var Id =
+            var id =
                 _requestManager.RegisterRequest(new PipelineableInsertRequest(myRequestInsert, mySecurityToken,
                                                                               myTransactionToken));
 
-            return _requestManager.GetResult(Id).GenerateRequestStatistics(myOutputconverter);
+            return _requestManager.GetResult(id).GenerateRequestStatistics(myOutputconverter);
         }
 
         public TransactionToken Begin(SecurityToken mySecurityToken, bool myLongrunning = false,

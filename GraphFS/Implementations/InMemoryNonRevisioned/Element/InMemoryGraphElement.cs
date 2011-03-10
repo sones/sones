@@ -71,7 +71,7 @@ namespace sones.GraphFS.Element
         /// </summary>
         /// <param name="myFilterFunc">An optional filter function</param>
         /// <returns>An enumerable of propertyID/propertyValue</returns>
-        internal IEnumerable<Tuple<long, object>> GetAllProperties_protected(Func<long, object, bool> myFilterFunc)
+        internal IEnumerable<Tuple<long, object>> GetAllPropertiesProtected(Func<long, object, bool> myFilterFunc)
         {
             foreach (var aProperty in StructuredProperties)
             {
@@ -100,7 +100,7 @@ namespace sones.GraphFS.Element
         /// </summary>
         /// <param name="myFilterFunc">An optional filter function</param>
         /// <returns>An enumerable of propertyName/PropertyValue</returns>
-        internal IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties_protected(
+        internal IEnumerable<Tuple<string, object>> GetAllUnstructuredPropertiesProtected(
             Func<string, object, bool> myFilterFunc)
         {
             foreach (var aUnstructuredProperty in UnstructuredProperties)

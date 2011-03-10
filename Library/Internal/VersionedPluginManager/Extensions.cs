@@ -96,7 +96,6 @@ namespace sones.Library.VersionedPluginManager
             referencesToCheck.Enqueue(myAssembly);
 
             Assembly curAssembly;
-            int depth = 0;
             while (referencesToCheck.Count > 0)
             {
                 curAssembly = referencesToCheck.Dequeue();
@@ -138,11 +137,13 @@ namespace sones.Library.VersionedPluginManager
                             try
                             {
                                 loadedAssembly =
-                                    Assembly.LoadFrom(new DirectoryInfo(curAssembly.Location).Parent.Name +
-                                                      Path.DirectorySeparatorChar + refAss.Name + ".dll");
+                                Assembly.LoadFrom(string.Format("{0}{1}{2}.dll",
+                                                                new DirectoryInfo(curAssembly.Location).Parent.Name,
+                                                                Path.DirectorySeparatorChar, refAss.Name));
                             }
-                            catch
+                            catch (Exception)
                             {
+                                //do nothing here
                             }
 
                             #endregion
@@ -161,7 +162,6 @@ namespace sones.Library.VersionedPluginManager
 
                         referencesToCheck.Enqueue(loadedAssembly);
                     }
-                    depth++;
                 }
 
                 #endregion

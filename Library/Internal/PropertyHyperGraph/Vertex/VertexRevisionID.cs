@@ -122,12 +122,12 @@ namespace sones.Library.PropertyHyperGraph
                 throw new ArgumentNullException();
 
             // If parameter cannot be cast to Point return false.
-            var _RevisionID = myObject as VertexRevisionID;
-            if ((Object) _RevisionID == null)
+            var revisionID = myObject as VertexRevisionID;
+            if ((Object) revisionID == null)
                 throw new ArgumentException("myObject is not of type RevisionID!");
 
-            if (this < _RevisionID) return -1;
-            if (this > _RevisionID) return +1;
+            if (this < revisionID) return -1;
+            if (this > revisionID) return +1;
 
             return 0;
         }
@@ -196,9 +196,9 @@ namespace sones.Library.PropertyHyperGraph
                 return false;
 
             // If parameter cannot be cast to RevisionID return false.
-            var _RevisionID = myObject as VertexRevisionID;
+            var revisionID = myObject as VertexRevisionID;
 
-            return (Object) _RevisionID != null && Equals(_RevisionID);
+            return (Object) revisionID != null && Equals(revisionID);
         }
     }
 }

@@ -146,7 +146,7 @@ namespace sones.GraphFS
         public IVertex GetVertex(long myVertexID, long myVertexTypeID, string myEdition = null,
                                  VertexRevisionID myVertexRevisionID = null)
         {
-            return GetVertex_private(myVertexID, myVertexTypeID);
+            return GetVertexPrivate(myVertexID, myVertexTypeID);
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null,
@@ -239,7 +239,7 @@ namespace sones.GraphFS
         public bool RemoveVertexRevision(long myVertexID, long myVertexTypeID, string myInterestingEdition,
                                          VertexRevisionID myToBeRemovedRevisionID)
         {
-            var vertex = GetVertex_private(myVertexID, myVertexTypeID);
+            var vertex = GetVertexPrivate(myVertexID, myVertexTypeID);
 
             if (vertex != null)
             {
@@ -262,7 +262,7 @@ namespace sones.GraphFS
 
         public bool RemoveVertexEdition(long myVertexID, long myVertexTypeID, string myToBeRemovedEdition)
         {
-            var vertex = GetVertex_private(myVertexID, myVertexTypeID);
+            var vertex = GetVertexPrivate(myVertexID, myVertexTypeID);
 
             if (vertex != null)
             {
@@ -325,7 +325,7 @@ namespace sones.GraphFS
                     foreach (var aSingleEdgeDefinition in myVertexDefinition.OutgoingSingleEdges)
                     {
                         //create the new Edge
-                        singleEdge = new SingleEdge(aSingleEdgeDefinition.Value, GetVertex_private);
+                        singleEdge = new SingleEdge(aSingleEdgeDefinition.Value, GetVertexPrivate);
                         UpdateIncomingEdgesOnTargetVertex(aSingleEdgeDefinition.Value.TargetVertexInformation,
                                                           myVertexDefinition.GraphElementInformation.TypeID,
                                                           aSingleEdgeDefinition.Key,
@@ -345,7 +345,7 @@ namespace sones.GraphFS
 
                         foreach (var aSingleEdgeDefinition in aHyperEdgeDefinition.Value.ContainedSingleEdges)
                         {
-                            singleEdge = new SingleEdge(aSingleEdgeDefinition, GetVertex_private);
+                            singleEdge = new SingleEdge(aSingleEdgeDefinition, GetVertexPrivate);
 
                             UpdateIncomingEdgesOnTargetVertex(aSingleEdgeDefinition.TargetVertexInformation,
                                                               myVertexDefinition.GraphElementInformation.TypeID,
@@ -356,7 +356,7 @@ namespace sones.GraphFS
                         }
 
                         //create the new edge
-                        edges.Add(aHyperEdgeDefinition.Key, new HyperEdge(containedSingleEdges, aHyperEdgeDefinition.Value.GraphElementInformation, aHyperEdgeDefinition.Value.SourceVertex, GetVertex_private));
+                        edges.Add(aHyperEdgeDefinition.Key, new HyperEdge(containedSingleEdges, aHyperEdgeDefinition.Value.GraphElementInformation, aHyperEdgeDefinition.Value.SourceVertex, GetVertexPrivate));
 
                     }
                 }
@@ -378,7 +378,7 @@ namespace sones.GraphFS
                                  VertexUpdateDefinition myVertexUpdate, string myToBeUpdatedEditions = null,
                                  VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
         {
-            var toBeUpdatedVertex = GetVertex_private(myToBeUpdatedVertexID, myCorrespondingVertexTypeID);
+            var toBeUpdatedVertex = GetVertexPrivate(myToBeUpdatedVertexID, myCorrespondingVertexTypeID);
 
             if (toBeUpdatedVertex == null)
             {
@@ -453,7 +453,7 @@ namespace sones.GraphFS
         /// <param name="myVertexID">The interesting vertex id</param>
         /// <param name="myVertexTypeID">The interesting vertex type id</param>
         /// <returns>An InMemoryVertex, or null if there is no such vertex</returns>
-        private InMemoryVertex GetVertex_private(long myVertexID, long myVertexTypeID)
+        private InMemoryVertex GetVertexPrivate(long myVertexID, long myVertexTypeID)
         {
             ConcurrentDictionary<Int64, InMemoryVertex> vertices;
 

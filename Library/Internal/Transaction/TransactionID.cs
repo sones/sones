@@ -113,24 +113,24 @@ namespace sones.Library.Transaction
                 throw new ArgumentNullException("myObject");
 
             // Check if myObject can be casted to an TransactionUUID object
-            var myTransactionUUID = myObject as TransactionID;
-            if (myTransactionUUID == null)
-                throw new ArgumentException("myTransactionUUID");
+            var myTransactionID = myObject as TransactionID;
+            if (myTransactionID == null)
+                throw new ArgumentException("myTransactionID");
 
-            return CompareTo(myTransactionUUID);
+            return CompareTo(myTransactionID);
         }
 
         #endregion
 
         #region IComparable<TransactionID> Members
 
-        public Int32 CompareTo(TransactionID myTransactionUUID)
+        public Int32 CompareTo(TransactionID myTransactionID)
         {
-            // Check if myTransactionUUID is null
-            if (myTransactionUUID == null)
-                throw new ArgumentNullException("myTransactionUUID");
+            // Check if myTransactionID is null
+            if (myTransactionID == null)
+                throw new ArgumentNullException("myTransactionID");
 
-            return ID.CompareTo(myTransactionUUID.ID);
+            return ID.CompareTo(myTransactionID.ID);
         }
 
         #endregion
@@ -144,24 +144,24 @@ namespace sones.Library.Transaction
                 throw new ArgumentNullException("myObject");
 
             // Check if myObject can be cast to TransactionUUID
-            var myTransactionUUID = myObject as TransactionID;
-            if (myTransactionUUID == null)
-                throw new ArgumentException("myTransactionUUID");
+            var transactionID = myObject as TransactionID;
+            if (transactionID == null)
+                throw new ArgumentException("myTransactionID");
 
-            return Equals(myTransactionUUID);
+            return Equals(transactionID);
         }
 
         #endregion
 
-        #region Equals(myTransactionUUID)
+        #region Equals(myTransactionID)
 
-        public Boolean Equals(TransactionID myTransactionUUID)
+        public Boolean Equals(TransactionID myTransactionID)
         {
-            // Check if myTransactionUUID is null
-            if (myTransactionUUID == null)
-                throw new ArgumentNullException("myTransactionUUID");
+            // Check if myTransactionID is null
+            if (myTransactionID == null)
+                throw new ArgumentNullException("myTransactionID");
 
-            return ID.Equals(myTransactionUUID.ID);
+            return ID.Equals(myTransactionID.ID);
         }
 
         #endregion

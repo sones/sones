@@ -131,7 +131,7 @@ namespace sones.GraphDB.Manager
         {
             var token = _cts.Token;
 
-            APipelinableRequest pipelineRequest = null;
+            APipelinableRequest pipelineRequest;
 
             try
             {
@@ -172,7 +172,7 @@ namespace sones.GraphDB.Manager
         /// <returns>The result of the request</returns>
         public APipelinableRequest GetResult(Guid myInterestingResult)
         {
-            APipelinableRequest interestingRequest = null;
+            APipelinableRequest interestingRequest;
 
             while (true)
             {

@@ -157,7 +157,7 @@ namespace sones.GraphFS.Element.Edge
 
         public IEnumerable<Tuple<long, object>> GetAllProperties(Func<long, object, bool> myFilterFunc = null)
         {
-            return _inMemoryGraphElementInformation.GetAllProperties_protected(myFilterFunc);
+            return _inMemoryGraphElementInformation.GetAllPropertiesProtected(myFilterFunc);
         }
 
         public string GetPropertyAsString(long myPropertyID)
@@ -199,7 +199,7 @@ namespace sones.GraphFS.Element.Edge
         public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(
             Func<string, object, bool> myFilterFunc = null)
         {
-            return _inMemoryGraphElementInformation.GetAllUnstructuredProperties_protected(myFilterFunc);
+            return _inMemoryGraphElementInformation.GetAllUnstructuredPropertiesProtected(myFilterFunc);
         }
 
         public string GetUnstructuredPropertyAsString(string myPropertyName)

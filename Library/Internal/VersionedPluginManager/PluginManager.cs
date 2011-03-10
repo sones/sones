@@ -192,19 +192,18 @@ namespace sones.Library.VersionedPluginManager
         {
             #region Get all files in the _LookupLocations
 
-            if (Directory.Exists(myPath))
+            if (!Directory.Exists(myPath)) return;
+
+            IEnumerable<string> files = Directory.EnumerateFiles(myPath, "*.dll")
+                .Union(Directory.EnumerateFiles(myPath, "*.exe"));
+
+            #endregion
+
+            foreach (string file in files)
             {
-                IEnumerable<string> files = Directory.EnumerateFiles(myPath, "*.dll")
-                    .Union(Directory.EnumerateFiles(myPath, "*.exe"));
+                //retVal.PushIExceptional(DiscoverFile(myThrowExceptionOnIncompatibleVersion, myPublicOnly, file));
 
-                #endregion
-
-                foreach (string file in files)
-                {
-                    //retVal.PushIExceptional(DiscoverFile(myThrowExceptionOnIncompatibleVersion, myPublicOnly, file));
-
-                    DiscoverFile(myThrowExceptionOnIncompatibleVersion, myPublicOnly, file);
-                }
+                DiscoverFile(myThrowExceptionOnIncompatibleVersion, myPublicOnly, file);
             }
         }
 
@@ -240,7 +239,7 @@ namespace sones.Library.VersionedPluginManager
                     //return retVal;
                 }
             }
-            catch (ReflectionTypeLoadException e)
+            catch (ReflectionTypeLoadException)
             {
                 #region Do we have a conflict of an plugin implementation?
 
@@ -254,6 +253,7 @@ namespace sones.Library.VersionedPluginManager
                 {
                     IEnumerable<KeyValuePair<Type, Tuple<ActivatorInfo, List<object>>>> matchings =
                         _inheritTypeAndInstance.Where(kv => Assembly.GetAssembly(kv.Key).GetName().Name == assembly.Name);
+                    
                     if (matchings != null)
                     {
                         foreach (var matchAss in matchings)
@@ -340,7 +340,7 @@ namespace sones.Library.VersionedPluginManager
                                  pluginReferencedAssembly, activatorInfo);
                 }
 
-                catch (Exception e)
+                catch (Exception)
                 {
                     continue;
                 }
