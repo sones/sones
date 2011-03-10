@@ -19,11 +19,6 @@ namespace sones.GraphFS
     public sealed class InMemoryNonRevisionedFS : IGraphFS
     {
         /// <summary>
-        /// The id that has been assigned to the latest vertex
-        /// </summary>
-        private Int64 _currentID;
-
-        /// <summary>
         /// The concurrent datastructure where all the vertices are stored
         /// 
         /// TypeID ( VertexID, IVertex)
@@ -61,7 +56,7 @@ namespace sones.GraphFS
 
         public string GetFileSystemDescription()
         {
-            return String.Format("A simple in memory fi^lesystem without any revision or edition handling.");
+            return String.Format("A simple in memory filesystem without any revision or edition handling.");
         }
 
         public ulong GetNumberOfBytes()
@@ -120,7 +115,6 @@ namespace sones.GraphFS
                                                       });
 
             _vertexStore = tempVertexStore;
-            _currentID = counter;
         }
 
         public bool VertexExists(long myVertexID, long myVertexTypeID, string myEdition = null,
@@ -130,14 +124,7 @@ namespace sones.GraphFS
 
             if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
             {
-                InMemoryVertex vertex;
-
-                if (vertices.TryGetValue(myVertexID, out vertex))
-                {
-                    //we found the vertex and return ... at this point we do not care about revisions or editions, because this filesystem 
-                    //does not implement those structures
-                    return true;
-                }
+                return vertices.ContainsKey(myVertexID);
             }
 
             return false;
@@ -199,14 +186,14 @@ namespace sones.GraphFS
 
         public IEnumerable<string> GetVertexEditions(long myVertexID, long myVertexTypeID)
         {
-            var result = new List<String>();
-
             var vertex = GetVertex(myVertexID, myVertexTypeID);
 
-            if (vertex != null)
+            if (vertex == null)
             {
-                result.Add(vertex.EditionName);
+                throw new VertexDoesNotExistException(myVertexTypeID, myVertexID);
             }
+
+            List<String> result = new List<string> {vertex.EditionName};
 
             return result;
         }
@@ -214,24 +201,27 @@ namespace sones.GraphFS
         public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(long myVertexID, long myVertexTypeID,
                                                                   IEnumerable<string> myInterestingEditions = null)
         {
-            var result = new List<VertexRevisionID>();
-
             var vertex = GetVertex(myVertexID, myVertexTypeID);
 
-            if (vertex != null)
+            if (vertex == null)
             {
-                if (myInterestingEditions != null)
-                {
-                    if (myInterestingEditions.Contains(vertex.EditionName))
-                    {
-                        result.Add(vertex.VertexRevisionID);
-                    }
-                }
-                else
+                throw new VertexDoesNotExistException(myVertexTypeID, myVertexID);
+            }
+
+            var result = new List<VertexRevisionID>();
+
+            if (myInterestingEditions != null)
+            {
+                if (myInterestingEditions.Contains(vertex.EditionName))
                 {
                     result.Add(vertex.VertexRevisionID);
                 }
             }
+            else
+            {
+                result.Add(vertex.VertexRevisionID);
+            }
+
 
             return result;
         }
@@ -296,9 +286,10 @@ namespace sones.GraphFS
             return false;
         }
 
-        public Int64 AddVertex(VertexAddDefinition myVertexDefinition,
+        public void AddVertex(VertexAddDefinition myVertexDefinition,
                                VertexRevisionID myVertexRevisionID = null)
         {
+            //check for vertex type
             if (!_vertexStore.ContainsKey(myVertexDefinition.GraphElementInformation.TypeID))
             {
                 _vertexStore.TryAdd(myVertexDefinition.GraphElementInformation.TypeID,
@@ -307,7 +298,6 @@ namespace sones.GraphFS
 
             #region create new vertex
 
-            var vertexID = GetNextVertexID();
             var vertexRevisionID = new VertexRevisionID(myVertexDefinition.GraphElementInformation.ModificationDate);
             var graphElementInformation = new InMemoryGraphElementInformation(myVertexDefinition.GraphElementInformation);
 
@@ -319,6 +309,8 @@ namespace sones.GraphFS
             {
                 edges = new Dictionary<long, IEdge>();
                 SingleEdge singleEdge;
+
+                #region single edges
 
                 if (myVertexDefinition.OutgoingSingleEdges != null)
                 {
@@ -334,6 +326,10 @@ namespace sones.GraphFS
                         edges.Add(aSingleEdgeDefinition.Key, singleEdge);
                     }
                 }
+
+                #endregion
+
+                #region hyper edges
 
                 if (myVertexDefinition.OutgoingHyperEdges != null)
                 {
@@ -360,18 +356,22 @@ namespace sones.GraphFS
 
                     }
                 }
+
+                #endregion
             }
 
             #endregion
 
-            var vertex = new InMemoryVertex(vertexID, vertexRevisionID, myVertexDefinition.Edition, myVertexDefinition.BinaryProperties, edges, graphElementInformation);
+            var vertex = new InMemoryVertex(myVertexDefinition.VertexID, vertexRevisionID, myVertexDefinition.Edition, myVertexDefinition.BinaryProperties, edges, graphElementInformation);
 
             #endregion
 
             //store the new vertex
-            _vertexStore[myVertexDefinition.GraphElementInformation.TypeID][vertex.VertexID] = vertex;
-
-            return vertexID;
+            if (!_vertexStore[myVertexDefinition.GraphElementInformation.TypeID].TryAdd(vertex.VertexID, vertex))
+            {
+                throw new VertexAlreadyExistException(myVertexDefinition.GraphElementInformation.TypeID,
+                                                      myVertexDefinition.VertexID);
+            }
         }
 
         public void UpdateVertex(long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID,
@@ -384,11 +384,9 @@ namespace sones.GraphFS
             {
                 throw new VertexDoesNotExistException(myCorrespondingVertexTypeID, myToBeUpdatedVertexID);
             }
-            else
-            {
-                _vertexStore[myCorrespondingVertexTypeID][myToBeUpdatedVertexID] =
-                    UpdateVertex_private(toBeUpdatedVertex, myVertexUpdate);
-            }
+            
+            _vertexStore[myCorrespondingVertexTypeID][myToBeUpdatedVertexID] =
+                UpdateVertex_private(toBeUpdatedVertex, myVertexUpdate);
         }
 
         #endregion
@@ -413,7 +411,6 @@ namespace sones.GraphFS
         private void Init()
         {
             _vertexStore = new ConcurrentDictionary<long, ConcurrentDictionary<long, InMemoryVertex>>();
-            _currentID = Int64.MinValue;
         }
 
         /// <summary>
@@ -426,15 +423,6 @@ namespace sones.GraphFS
                                                     VertexUpdateDefinition myVertexUpdate)
         {
             throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Gets the nexct vertex id
-        /// </summary>
-        /// <returns>A vertexID</returns>
-        private long GetNextVertexID()
-        {
-            return Interlocked.Increment(ref _currentID);
         }
 
         /// <summary>

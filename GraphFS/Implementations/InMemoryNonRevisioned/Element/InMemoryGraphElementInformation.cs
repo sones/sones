@@ -73,21 +73,23 @@ namespace sones.GraphFS.Element
         /// <returns>An enumerable of propertyID/propertyValue</returns>
         internal IEnumerable<Tuple<long, object>> GetAllPropertiesProtected(Func<long, object, bool> myFilterFunc)
         {
-            foreach (var aProperty in StructuredProperties)
+            if (StructuredProperties != null)
             {
-                if (myFilterFunc != null)
+                foreach (var aProperty in StructuredProperties)
                 {
-                    if (myFilterFunc(aProperty.Key, aProperty.Value))
+                    if (myFilterFunc != null)
+                    {
+                        if (myFilterFunc(aProperty.Key, aProperty.Value))
+                        {
+                            yield return new Tuple<long, object>(aProperty.Key, aProperty.Value);
+                        }
+                    }
+                    else
                     {
                         yield return new Tuple<long, object>(aProperty.Key, aProperty.Value);
                     }
                 }
-                else
-                {
-                    yield return new Tuple<long, object>(aProperty.Key, aProperty.Value);
-                }
             }
-
             yield break;
         }
 
@@ -103,21 +105,24 @@ namespace sones.GraphFS.Element
         internal IEnumerable<Tuple<string, object>> GetAllUnstructuredPropertiesProtected(
             Func<string, object, bool> myFilterFunc)
         {
-            foreach (var aUnstructuredProperty in UnstructuredProperties)
+            if (UnstructuredProperties != null)
             {
-                if (myFilterFunc != null)
+                foreach (var aUnstructuredProperty in UnstructuredProperties)
                 {
-                    if (myFilterFunc(aUnstructuredProperty.Key, aUnstructuredProperty.Value))
+                    if (myFilterFunc != null)
+                    {
+                        if (myFilterFunc(aUnstructuredProperty.Key, aUnstructuredProperty.Value))
+                        {
+                            yield return
+                                new Tuple<String, object>(aUnstructuredProperty.Key, aUnstructuredProperty.Value);
+                        }
+                    }
+                    else
                     {
                         yield return new Tuple<String, object>(aUnstructuredProperty.Key, aUnstructuredProperty.Value);
                     }
                 }
-                else
-                {
-                    yield return new Tuple<String, object>(aUnstructuredProperty.Key, aUnstructuredProperty.Value);
-                }
             }
-
             yield break;
         }
 

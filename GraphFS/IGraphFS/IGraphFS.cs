@@ -266,8 +266,7 @@ namespace sones.GraphFS
         /// </summary>
         /// <param name="myVertexDefinition">The vertex definition that represents the new vertex</param>
         /// <param name="myVertexRevisionID">The revision id of the vertex</param>
-        /// <returns>The id of the vertex</returns>        
-        Int64 AddVertex(
+        void AddVertex(
             VertexAddDefinition myVertexDefinition,
             VertexRevisionID myVertexRevisionID = null);
 

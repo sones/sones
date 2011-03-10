@@ -29,25 +29,30 @@ namespace sones.Library.ErrorHandling
         public static UInt16 VertexDoesNotExist = 201;
 
         /// <summary>
+        /// The desired vertex already exists
+        /// </summary>
+        public static UInt16 VertexAlreadyExist = 202;
+
+        /// <summary>
         /// A certain structured property could not be found (on a vertex)
         /// </summary>
-        public static UInt16 CouldNotFindStructuredVertexProperty = 202;
+        public static UInt16 CouldNotFindStructuredVertexProperty = 210;
 
         /// <summary>
         /// A certain unstructured property could not be found (on a vertex)
         /// </summary>
-        public static UInt16 CouldNotFindUnStructuredVertexProperty = 203;
+        public static UInt16 CouldNotFindUnStructuredVertexProperty = 211;
 
         /// <summary>
         /// A certain structured property could not be found (on an edge)
         /// </summary>
-        public static UInt16 CouldNotFindStructuredEdgeProperty = 204;
+        public static UInt16 CouldNotFindStructuredEdgeProperty = 212;
 
         /// <summary>
         /// A certain unstructured property could not be found (on an edge)
         /// </summary>
-        public static UInt16 CouldNotFindUnStructuredEdgeProperty = 205;
-
+        public static UInt16 CouldNotFindUnStructuredEdgeProperty = 213;
+        
         #endregion
 
         #region IGraphDB (prefix: 3)
