@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace sones.Transaction
+namespace sones.Library.Transaction
 {
     public sealed class TransactionID : IComparable, IComparable<TransactionID>, IEquatable<TransactionID>
     {

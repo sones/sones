@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Reflection;
-using sones.ErrorHandling;
+using sones.Library.ErrorHandling;
 
 namespace sones.VersionedPluginManager.ErrorHandling
 {

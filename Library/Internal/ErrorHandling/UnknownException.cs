@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace sones.ErrorHandling
+namespace sones.Library.ErrorHandling
 {
     /// <summary>
     /// This class represents an unknown sones exception

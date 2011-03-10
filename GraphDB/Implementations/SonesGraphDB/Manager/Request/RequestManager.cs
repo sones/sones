@@ -2,8 +2,8 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using sones.ErrorHandling;
 using sones.GraphDB.Request;
+using sones.Library.ErrorHandling;
 
 namespace sones.GraphDB.Manager
 {

@@ -8,7 +8,7 @@
     <ProjectGuid>{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sones.Transaction</RootNamespace>
+    <RootNamespace>sones.Library.Transaction</RootNamespace>
     <AssemblyName>Transaction</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -57,9 +57,6 @@
       <Project>{3C13E344-937B-4010-B0EF-A164232E4454}</Project>
       <Name>Security</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Documentation\ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -8,7 +8,7 @@
     <ProjectGuid>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sones.ErrorHandling</RootNamespace>
+    <RootNamespace>sones.Library.ErrorHandling</RootNamespace>
     <AssemblyName>ErrorHandling</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

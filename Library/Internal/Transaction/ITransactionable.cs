@@ -1,7 +1,7 @@
 ﻿using System;
 using sones.Security;
 
-namespace sones.Transaction
+namespace sones.Library.Transaction
 {
     public interface ITransactionable
     {

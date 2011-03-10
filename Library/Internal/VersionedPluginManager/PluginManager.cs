@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using sones.ErrorHandling;
+using sones.Library.ErrorHandling;
 using sones.VersionedPluginManager.ErrorHandling;
 using sones.VersionedPluginManager.ErrorHandling.Events;
 

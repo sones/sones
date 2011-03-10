@@ -1,4 +1,4 @@
-﻿namespace sones.Transaction
+﻿namespace sones.Library.Transaction
 {
     /// <summary>
     /// A class that containts informations concerning the current Transaction

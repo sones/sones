@@ -1,4 +1,4 @@
-﻿using sones.ErrorHandling;
+﻿using sones.Library.ErrorHandling;
 
 namespace sones.GraphFS.ErrorHandling
 {

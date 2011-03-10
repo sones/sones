@@ -1,4 +1,4 @@
-﻿namespace sones.Transaction
+﻿namespace sones.Library.Transaction
 {
     public enum IsolationLevel
     {

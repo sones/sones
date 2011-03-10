@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace sones.ErrorHandling
+namespace sones.Library.ErrorHandling
 {
     /// <summary>
     /// An abstrac class for all sones exceptions

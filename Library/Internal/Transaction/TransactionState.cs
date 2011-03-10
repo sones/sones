@@ -1,4 +1,4 @@
-﻿namespace sones.Transaction
+﻿namespace sones.Library.Transaction
 {
     /// <summary>
     /// The state of a transaction

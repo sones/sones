@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace sones.ErrorHandling
+namespace sones.Library.ErrorHandling
 {
     /// <summary>
     /// Contains static ErrorCodes

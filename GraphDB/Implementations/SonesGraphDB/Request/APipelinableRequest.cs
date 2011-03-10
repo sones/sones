@@ -1,8 +1,8 @@
 ﻿using System;
-using sones.ErrorHandling;
 using sones.GraphDB.Manager;
+using sones.Library.ErrorHandling;
+using sones.Library.Transaction;
 using sones.Security;
-using sones.Transaction;
 
 namespace sones.GraphDB.Request
 {
