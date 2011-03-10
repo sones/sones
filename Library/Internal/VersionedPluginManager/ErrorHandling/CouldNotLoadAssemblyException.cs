@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sones.ErrorHandling;
 
 namespace sones.VersionedPluginManager.ErrorHandling
@@ -9,7 +6,6 @@ namespace sones.VersionedPluginManager.ErrorHandling
     /// <summary>
     /// This exception occurs if a assembly could not be loaded due to a incompatible platform etc.
     /// </summary>
-    
     public sealed class CouldNotLoadAssemblyException : ASonesException
     {
         #region data
@@ -21,12 +17,11 @@ namespace sones.VersionedPluginManager.ErrorHandling
 
         #endregion
 
-
         #region constructor
 
         public CouldNotLoadAssemblyException(String myAssemblyFile)
         {
-            this.AssemblyFile = myAssemblyFile;
+            AssemblyFile = myAssemblyFile;
         }
 
         public override ushort ErrorCode
@@ -35,5 +30,5 @@ namespace sones.VersionedPluginManager.ErrorHandling
         }
 
         #endregion
-    }    
+    }
 }

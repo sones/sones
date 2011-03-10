@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Reflection;
 
 namespace sones.VersionedPluginManager.ErrorHandling.Events
@@ -9,10 +6,11 @@ namespace sones.VersionedPluginManager.ErrorHandling.Events
 
     #region PluginIncompatibleVersionEvent
 
-    public delegate void PluginIncompatibleVersionEvent(PluginManager myPluginManager, PluginIncompatibleVersionEventArgs myPluginIncompatibleVersionEventArgs);
+    public delegate void PluginIncompatibleVersionEvent(
+        PluginManager myPluginManager, PluginIncompatibleVersionEventArgs myPluginIncompatibleVersionEventArgs);
+
     public class PluginIncompatibleVersionEventArgs : EventArgs
     {
-
         #region Properties
 
         public Version PluginVersion { get; private set; }
@@ -23,17 +21,16 @@ namespace sones.VersionedPluginManager.ErrorHandling.Events
 
         #endregion
 
-        public PluginIncompatibleVersionEventArgs(Assembly myPluginAssembly, Version myPluginVersion, Version myMinVersion, Version myMaxVersion, Type myPluginType)
+        public PluginIncompatibleVersionEventArgs(Assembly myPluginAssembly, Version myPluginVersion,
+                                                  Version myMinVersion, Version myMaxVersion, Type myPluginType)
         {
-            this.PluginVersion = myPluginVersion;
-            this.MinVersion = myMinVersion;
-            this.MaxVersion = myMaxVersion;
-            this.PluginType = myPluginType;
-            this.PluginAssembly = myPluginAssembly;
+            PluginVersion = myPluginVersion;
+            MinVersion = myMinVersion;
+            MaxVersion = myMaxVersion;
+            PluginType = myPluginType;
+            PluginAssembly = myPluginAssembly;
         }
-
     }
 
     #endregion
-    
 }

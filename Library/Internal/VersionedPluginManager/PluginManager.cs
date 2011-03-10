@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
 using System.IO;
-using sones.VersionedPluginManager.ErrorHandling.Events;
-using sones.VersionedPluginManager.ErrorHandling;
+using System.Linq;
+using System.Reflection;
 using sones.ErrorHandling;
+using sones.VersionedPluginManager.ErrorHandling;
+using sones.VersionedPluginManager.ErrorHandling.Events;
 
 namespace sones.VersionedPluginManager
 {
-
-
     public class PluginManager
     {
-
         #region Data
 
         #region struct ActivatorInfo
@@ -37,12 +33,12 @@ namespace sones.VersionedPluginManager
         /// This will store the plugin inherit type and the Activator info containing the compatible version and a list of 
         /// valid plugin instances
         /// </summary>
-        Dictionary<Type, Tuple<ActivatorInfo, List<Object>>> _InheritTypeAndInstance;
-        
+        private readonly Dictionary<Type, Tuple<ActivatorInfo, List<Object>>> _inheritTypeAndInstance;
+
         /// <summary>
         /// The locations to search for plugins
         /// </summary>
-        String[] _LookupLocations;
+        private readonly String[] _lookupLocations;
 
         #endregion
 
@@ -65,10 +61,9 @@ namespace sones.VersionedPluginManager
         /// <summary>
         /// Creates a new instance of the PluginActivator which searches at the plugin folder of the executing assembly directory for valid plugins.
         /// </summary>
-
         public PluginManager()
         {
-            var assem = Assembly.GetEntryAssembly();
+            Assembly assem = Assembly.GetEntryAssembly();
 
             // ensured the execution of the tests
             assem = assem ?? Assembly.GetExecutingAssembly();
@@ -77,20 +72,19 @@ namespace sones.VersionedPluginManager
             {
                 throw new FileNotFoundException("Executing Assembly could not founded");
             }
-
             else
             {
                 //notice for the refactoring                 
                 // todo: recursive search into depth starting from the plugin folder
 
-                var location = Path.GetDirectoryName(assem.Location);
-                _LookupLocations = new string[] { location + Path.DirectorySeparatorChar + "plugins", location };
-                if (_LookupLocations.IsNullOrEmpty())
+                string location = Path.GetDirectoryName(assem.Location);
+                _lookupLocations = new[] {location + Path.DirectorySeparatorChar + "plugins", location};
+                if (_lookupLocations.IsNullOrEmpty())
                 {
-                    _LookupLocations = new string[] { Environment.CurrentDirectory };
+                    _lookupLocations = new[] {Environment.CurrentDirectory};
                 }
 
-                _InheritTypeAndInstance = new Dictionary<Type, Tuple<ActivatorInfo, List<object>>>();
+                _inheritTypeAndInstance = new Dictionary<Type, Tuple<ActivatorInfo, List<object>>>();
             }
         }
 
@@ -108,26 +102,26 @@ namespace sones.VersionedPluginManager
         /// <param name="myActivateDelegate">Using this delegate you can activate the type instance.</param>
         /// <param name="myCtorArgs">Optional constructor parameters which will be used at the activation time.</param>
         /// <returns>The same instance to register more types in a fluent way.</returns>
-        public PluginManager Register<T1>(Version myMinVersion, Version myMaxVersion = null, Func<Type, Object> myActivateDelegate = null, params Object[] myCtorArgs)
+        public PluginManager Register<T1>(Version myMinVersion, Version myMaxVersion = null,
+                                          Func<Type, Object> myActivateDelegate = null, params Object[] myCtorArgs)
         {
-            
-            if (_InheritTypeAndInstance.ContainsKey(typeof(T1)))
+            if (_inheritTypeAndInstance.ContainsKey(typeof (T1)))
             {
-                throw new Exception("Duplicate activator type '" + typeof(T1).Name + "'");
+                throw new Exception("Duplicate activator type '" + typeof (T1).Name + "'");
             }
 
-            var activatorInfo = new ActivatorInfo()
-            {
-                Type = typeof(T1),
-                MinVersion = myMinVersion,
-                MaxVersion = myMaxVersion,
-                CtorArgs = myCtorArgs,
-                ActivateDelegate = myActivateDelegate
-            };
-            _InheritTypeAndInstance.Add(typeof(T1), new Tuple<ActivatorInfo, List<object>>(activatorInfo, new List<object>()));
+            var activatorInfo = new ActivatorInfo
+                                    {
+                                        Type = typeof (T1),
+                                        MinVersion = myMinVersion,
+                                        MaxVersion = myMaxVersion,
+                                        CtorArgs = myCtorArgs,
+                                        ActivateDelegate = myActivateDelegate
+                                    };
+            _inheritTypeAndInstance.Add(typeof (T1),
+                                        new Tuple<ActivatorInfo, List<object>>(activatorInfo, new List<object>()));
 
             return this;
-
         }
 
         /// <summary>
@@ -138,32 +132,36 @@ namespace sones.VersionedPluginManager
         /// <returns></returns>
         public PluginManager Register<T1>(params Object[] myCtorArgs)
         {
-            
-            if (_InheritTypeAndInstance.ContainsKey(typeof(T1)))
+            if (_inheritTypeAndInstance.ContainsKey(typeof (T1)))
             {
-                throw new Exception("Duplicate activator type '" + typeof(T1).Name + "'");
+                throw new Exception("Duplicate activator type '" + typeof (T1).Name + "'");
             }
 
-            var assembly = System.Reflection.Assembly.GetCallingAssembly();
-            var assemblyVersionCompatibilityAttributes = assembly.GetCustomAttributes(typeof(AssemblyVersionCompatibilityAttribute), false);
+            Assembly assembly = Assembly.GetCallingAssembly();
+            object[] assemblyVersionCompatibilityAttributes =
+                assembly.GetCustomAttributes(typeof (AssemblyVersionCompatibilityAttribute), false);
             AssemblyVersionCompatibilityAttribute assemblyVersionCompatibilityAttribute = null;
 
             if (assemblyVersionCompatibilityAttributes.Length > 0)
             {
-                assemblyVersionCompatibilityAttribute = assemblyVersionCompatibilityAttributes.Where(avc => (avc as AssemblyVersionCompatibilityAttribute).PluginName == typeof(T1).Name).FirstOrDefault() as AssemblyVersionCompatibilityAttribute;
+                assemblyVersionCompatibilityAttribute =
+                    assemblyVersionCompatibilityAttributes.Where(
+                        avc => ((AssemblyVersionCompatibilityAttribute) avc).PluginName == typeof (T1).Name).
+                        FirstOrDefault() as AssemblyVersionCompatibilityAttribute;
             }
 
             if (assemblyVersionCompatibilityAttribute != null)
             {
-                return Register<T1>(assemblyVersionCompatibilityAttribute.MinVersion, assemblyVersionCompatibilityAttribute.MaxVersion, null, myCtorArgs);
+                return Register<T1>(assemblyVersionCompatibilityAttribute.MinVersion,
+                                    assemblyVersionCompatibilityAttribute.MaxVersion, null, myCtorArgs);
             }
             else
             {
-                var version = System.Reflection.Assembly.GetAssembly(typeof(T1)).GetName().Version;
+                Version version = Assembly.GetAssembly(typeof (T1)).GetName().Version;
                 return Register<T1>(version, version, null, myCtorArgs);
             }
-
         }
+
         #endregion
 
         #region Discover
@@ -173,40 +171,37 @@ namespace sones.VersionedPluginManager
         /// All newly registered types need to be activated again!
         /// </summary>
         /// <returns></returns>
-        
-        public void Discover (Boolean myThrowExceptionOnIncompatibleVersion = true, Boolean myPublicOnly = true)
+        public void Discover(Boolean myThrowExceptionOnIncompatibleVersion = true, Boolean myPublicOnly = true)
         {
-
             #region Clean up old plugins
 
-            foreach (var kv in _InheritTypeAndInstance)
+            foreach (var kv in _inheritTypeAndInstance)
             {
-                _InheritTypeAndInstance[kv.Key].Item2.Clear();
+                _inheritTypeAndInstance[kv.Key].Item2.Clear();
             }
 
             #endregion
 
-            foreach (var folder in _LookupLocations)
+            foreach (string folder in _lookupLocations)
             {
                 //retVal.PushIExceptional(DiscoverPath(myThrowExceptionOnIncompatibleVersion, myPublicOnly, folder));
-                                
-                DiscoverPath(myThrowExceptionOnIncompatibleVersion, myPublicOnly, folder); 
+
+                DiscoverPath(myThrowExceptionOnIncompatibleVersion, myPublicOnly, folder);
             }
         }
 
         private void DiscoverPath(Boolean myThrowExceptionOnIncompatibleVersion, Boolean myPublicOnly, String myPath)
         {
-            
             #region Get all files in the _LookupLocations
 
             if (Directory.Exists(myPath))
             {
-                var files = Directory.EnumerateFiles(myPath, "*.dll")
+                IEnumerable<string> files = Directory.EnumerateFiles(myPath, "*.dll")
                     .Union(Directory.EnumerateFiles(myPath, "*.exe"));
 
-            #endregion
+                #endregion
 
-                foreach (var file in files)
+                foreach (string file in files)
                 {
                     //retVal.PushIExceptional(DiscoverFile(myThrowExceptionOnIncompatibleVersion, myPublicOnly, file));
 
@@ -217,8 +212,7 @@ namespace sones.VersionedPluginManager
 
         private void DiscoverFile(Boolean myThrowExceptionOnIncompatibleVersion, Boolean myPublicOnly, String myFile)
         {
-
-            Assembly loadedPluginAssembly;            
+            Assembly loadedPluginAssembly;
 
             #region Try to load assembly from the filename
 
@@ -228,10 +222,10 @@ namespace sones.VersionedPluginManager
             {
                 loadedPluginAssembly = Assembly.LoadFrom(myFile);
             }
-            catch (CouldNotLoadAssemblyException e)
+            catch (CouldNotLoadAssemblyException)
             {
                 throw new CouldNotLoadAssemblyException(myFile);
-                
+
                 //Console.WriteLine(e.ToString());
                 //return retVal.PushIError(new Error_CouldNotLoadAssembly(myFile));
             }
@@ -250,31 +244,31 @@ namespace sones.VersionedPluginManager
             }
             catch (ReflectionTypeLoadException e)
             {
-
                 #region Do we have a conflict of an plugin implementation?
+
                 // Check all referenced assembly of this failed loadedPluginAssembly.GetTypes() and find all matching assemblies with 
                 // all types in _InheritTypeAndInstance
 
                 //TODO: check more than only one reference depth...
 
                 //var matchingAssemblies = new List<Tuple<AssemblyName, AssemblyName>>();
-                foreach (var assembly in loadedPluginAssembly.GetReferencedAssemblies())
+                foreach (AssemblyName assembly in loadedPluginAssembly.GetReferencedAssemblies())
                 {
-                    var matchings = _InheritTypeAndInstance.Where(kv => Assembly.GetAssembly(kv.Key).GetName().Name == assembly.Name);
+                    IEnumerable<KeyValuePair<Type, Tuple<ActivatorInfo, List<object>>>> matchings =
+                        _inheritTypeAndInstance.Where(kv => Assembly.GetAssembly(kv.Key).GetName().Name == assembly.Name);
                     if (matchings != null)
                     {
                         foreach (var matchAss in matchings)
                         {
                             //matchingAssemblies.Add(new Tuple<AssemblyName, AssemblyName>(Assembly.GetAssembly(matchAss.Key).GetName(), assembly));
 
-                            CheckVersion(myThrowExceptionOnIncompatibleVersion, loadedPluginAssembly, Assembly.GetAssembly(matchAss.Key).GetName(), assembly, matchAss.Value.Item1);                            
+                            CheckVersion(myThrowExceptionOnIncompatibleVersion, loadedPluginAssembly,
+                                         Assembly.GetAssembly(matchAss.Key).GetName(), assembly, matchAss.Value.Item1);
                         }
                     }
-
                 }
 
                 #endregion
-
             }
 
             #endregion
@@ -283,9 +277,8 @@ namespace sones.VersionedPluginManager
 
             #region Get all types of the assembly
 
-            foreach (var type in loadedPluginAssembly.GetTypes())
+            foreach (Type type in loadedPluginAssembly.GetTypes())
             {
-
                 #region Type validation
 
                 if (!type.IsClass || type.IsAbstract)
@@ -314,7 +307,6 @@ namespace sones.VersionedPluginManager
             }
 
             #endregion
-            
         }
 
         /// <summary>
@@ -323,39 +315,37 @@ namespace sones.VersionedPluginManager
         /// <param name="myThrowExceptionOnIncompatibleVersion"></param>
         /// <param name="myLoadedPluginAssembly">The assembly from which the <paramref name="myCurrentPluginType"/> comes from.</param>
         /// <param name="myCurrentPluginType">The current plugin (or not).</param>
-        private void FindAndActivateTypes(bool myThrowExceptionOnIncompatibleVersion, Assembly myLoadedPluginAssembly, Type myCurrentPluginType)
+        private void FindAndActivateTypes(bool myThrowExceptionOnIncompatibleVersion, Assembly myLoadedPluginAssembly,
+                                          Type myCurrentPluginType)
         {
-
-            var validBaseTypes = _InheritTypeAndInstance.Where(kv => kv.Key.IsBaseType(myCurrentPluginType) || kv.Key.IsInterfaceOf(myCurrentPluginType));
+            IEnumerable<KeyValuePair<Type, Tuple<ActivatorInfo, List<object>>>> validBaseTypes =
+                _inheritTypeAndInstance.Where(
+                    kv => kv.Key.IsBaseType(myCurrentPluginType) || kv.Key.IsInterfaceOf(myCurrentPluginType));
 
             #region Take each baseType which is valid (either base or interface) and verify version and add
 
             foreach (var baseType in validBaseTypes)
             {
-                var activatorInfo = _InheritTypeAndInstance[baseType.Key].Item1;
+                ActivatorInfo activatorInfo = _inheritTypeAndInstance[baseType.Key].Item1;
 
                 #region Get baseTypeAssembly and plugin referenced assembly
 
-                var baseTypeAssembly = Assembly.GetAssembly(baseType.Key).GetName();
-                var pluginReferencedAssembly = myLoadedPluginAssembly.GetReferencedAssembly(baseTypeAssembly.Name);
+                AssemblyName baseTypeAssembly = Assembly.GetAssembly(baseType.Key).GetName();
+                AssemblyName pluginReferencedAssembly =
+                    myLoadedPluginAssembly.GetReferencedAssembly(baseTypeAssembly.Name);
 
                 #endregion
 
                 try
                 {
-                    CheckVersion(myThrowExceptionOnIncompatibleVersion, myLoadedPluginAssembly, baseTypeAssembly, pluginReferencedAssembly, activatorInfo);
+                    CheckVersion(myThrowExceptionOnIncompatibleVersion, myLoadedPluginAssembly, baseTypeAssembly,
+                                 pluginReferencedAssembly, activatorInfo);
                 }
 
                 catch (Exception e)
                 {
                     continue;
                 }
-
-                //retVal.PushIExceptional(CheckVersion(myThrowExceptionOnIncompatibleVersion, myLoadedPluginAssembly, baseTypeAssembly, pluginReferencedAssembly, activatorInfo));
-                //if (retVal.Failed())
-                //{
-                //    continue;
-                //}
 
                 #region Create instance and add to lookup dict
 
@@ -370,9 +360,10 @@ namespace sones.VersionedPluginManager
                     {
                         instance = Activator.CreateInstance(myCurrentPluginType, activatorInfo.CtorArgs);
                     }
+
                     if (instance != null)
                     {
-                        _InheritTypeAndInstance[baseType.Key].Item2.Add(instance);
+                        _inheritTypeAndInstance[baseType.Key].Item2.Add(instance);
 
                         if (OnPluginFound != null)
                         {
@@ -386,18 +377,16 @@ namespace sones.VersionedPluginManager
                     //retVal.PushIError(new GeneralError(ex.ToString()));
                 }
 
-
                 #endregion
-
             }
 
             #endregion
-
         }
 
-        private void CheckVersion(bool myThrowExceptionOnIncompatibleVersion, Assembly myPluginAssembly, AssemblyName myBaseTypeAssembly, AssemblyName myPluginReferencedAssembly, ActivatorInfo myActivatorInfo)
+        private void CheckVersion(bool myThrowExceptionOnIncompatibleVersion, Assembly myPluginAssembly,
+                                  AssemblyName myBaseTypeAssembly, AssemblyName myPluginReferencedAssembly,
+                                  ActivatorInfo myActivatorInfo)
         {
-
             #region Check version
 
             if (myBaseTypeAssembly.Version != myPluginReferencedAssembly.Version)
@@ -405,7 +394,6 @@ namespace sones.VersionedPluginManager
                 //Console.WriteLine("Assembly version does not match! Expected '{0}' but current is '{1}'", myLoadedPluginAssembly.GetName().Version, pluginReferencedAssembly.Version);
                 if (myActivatorInfo.MaxVersion != null)
                 {
-
                     #region Compare min and max version
 
                     if (myPluginReferencedAssembly.Version.CompareTo(myActivatorInfo.MinVersion) < 0
@@ -413,11 +401,22 @@ namespace sones.VersionedPluginManager
                     {
                         if (OnPluginIncompatibleVersion != null)
                         {
-                            OnPluginIncompatibleVersion(this, new PluginIncompatibleVersionEventArgs(myPluginAssembly, myPluginReferencedAssembly.Version, myActivatorInfo.MinVersion, myActivatorInfo.MaxVersion, myActivatorInfo.Type));
+                            OnPluginIncompatibleVersion(this,
+                                                        new PluginIncompatibleVersionEventArgs(myPluginAssembly,
+                                                                                               myPluginReferencedAssembly
+                                                                                                   .Version,
+                                                                                               myActivatorInfo.
+                                                                                                   MinVersion,
+                                                                                               myActivatorInfo.
+                                                                                                   MaxVersion,
+                                                                                               myActivatorInfo.Type));
                         }
                         if (myThrowExceptionOnIncompatibleVersion)
                         {
-                            throw new IncompatiblePluginVersionException(myPluginAssembly, myPluginReferencedAssembly.Version, myActivatorInfo.MinVersion, myActivatorInfo.MaxVersion);
+                            throw new IncompatiblePluginVersionException(myPluginAssembly,
+                                                                         myPluginReferencedAssembly.Version,
+                                                                         myActivatorInfo.MinVersion,
+                                                                         myActivatorInfo.MaxVersion);
                         }
                         //retVal.PushIError(new IncompatiblePluginVersion(myPluginAssembly, myPluginReferencedAssembly.Version, myActivatorInfo.MinVersion, myActivatorInfo.MaxVersion));                        
                     }
@@ -427,22 +426,30 @@ namespace sones.VersionedPluginManager
                     }
 
                     #endregion
-
                 }
                 else
                 {
-
                     #region Compare min version
 
                     if (myPluginReferencedAssembly.Version.CompareTo(myActivatorInfo.MinVersion) < 0)
                     {
                         if (OnPluginIncompatibleVersion != null)
                         {
-                            OnPluginIncompatibleVersion(this, new PluginIncompatibleVersionEventArgs(myPluginAssembly, myPluginReferencedAssembly.Version, myActivatorInfo.MinVersion, myActivatorInfo.MaxVersion, myActivatorInfo.Type));
+                            OnPluginIncompatibleVersion(this,
+                                                        new PluginIncompatibleVersionEventArgs(myPluginAssembly,
+                                                                                               myPluginReferencedAssembly
+                                                                                                   .Version,
+                                                                                               myActivatorInfo.
+                                                                                                   MinVersion,
+                                                                                               myActivatorInfo.
+                                                                                                   MaxVersion,
+                                                                                               myActivatorInfo.Type));
                         }
                         if (myThrowExceptionOnIncompatibleVersion)
                         {
-                            throw new IncompatiblePluginVersionException(myPluginAssembly, myPluginReferencedAssembly.Version, myActivatorInfo.MinVersion);
+                            throw new IncompatiblePluginVersionException(myPluginAssembly,
+                                                                         myPluginReferencedAssembly.Version,
+                                                                         myActivatorInfo.MinVersion);
                         }
                         //retVal.PushIError(new IncompatiblePluginVersion(myPluginAssembly, myPluginReferencedAssembly.Version, myActivatorInfo.MinVersion, null));
                     }
@@ -452,13 +459,10 @@ namespace sones.VersionedPluginManager
                     }
 
                     #endregion
-
                 }
-
             }
 
             #endregion
- 
         }
 
         #endregion
@@ -473,22 +477,20 @@ namespace sones.VersionedPluginManager
         /// <returns>The plugins.</returns>
         public IEnumerable<T1> GetPlugins<T1>(Func<T1, Boolean> mySelector = null)
         {
-
-            if (_InheritTypeAndInstance.ContainsKey(typeof(T1)))
+            if (_inheritTypeAndInstance.ContainsKey(typeof (T1)))
             {
-                foreach (var instance in _InheritTypeAndInstance[typeof(T1)].Item2)
+                foreach (object instance in _inheritTypeAndInstance[typeof (T1)].Item2)
                 {
-                    if (mySelector == null || (mySelector != null && mySelector((T1)instance)))
+                    if (mySelector == null || (mySelector != null && mySelector((T1) instance)))
                     {
-                        yield return (T1)instance;
+                        yield return (T1) instance;
                     }
                 }
             }
 
             yield break;
-
         }
-        
+
         #endregion
 
         #region HasPlugins
@@ -501,25 +503,21 @@ namespace sones.VersionedPluginManager
         /// <returns>True if any plugin exists.</returns>
         public Boolean HasPlugins<T1>(Func<T1, Boolean> mySelector = null)
         {
-
-            if (!_InheritTypeAndInstance.ContainsKey(typeof(T1)))
+            if (!_inheritTypeAndInstance.ContainsKey(typeof (T1)))
             {
                 return false;
             }
 
             if (mySelector == null)
             {
-                return !_InheritTypeAndInstance[typeof(T1)].Item2.IsNullOrEmpty();
+                return !_inheritTypeAndInstance[typeof (T1)].Item2.IsNullOrEmpty();
             }
             else
             {
-                return _InheritTypeAndInstance[typeof(T1)].Item2.Any(o => mySelector((T1)o));
+                return _inheritTypeAndInstance[typeof (T1)].Item2.Any(o => mySelector((T1) o));
             }
-
         }
 
         #endregion
-
     }
-
 }

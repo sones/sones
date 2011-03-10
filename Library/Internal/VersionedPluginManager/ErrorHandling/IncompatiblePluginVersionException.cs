@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using sones.ErrorHandling;
 
 namespace sones.VersionedPluginManager.ErrorHandling
@@ -15,42 +12,44 @@ namespace sones.VersionedPluginManager.ErrorHandling
         #region data
 
         /// <summary>
-        /// The plugin assembly which implements the incompatible version.
-        /// </summary>
-        public readonly Assembly PluginAssembly;
-
-        /// <summary>
         /// The current plugin version.
         /// </summary>
         public readonly Version CurrentVersion;
-                
-        /// <summary>
-        /// The minimum accepted version.
-        /// </summary>
-        public readonly Version MinVersion;
 
         /// <summary>
         /// The maximum accepted version.
         /// </summary>
         public readonly Version MaxVersion;
 
+        /// <summary>
+        /// The minimum accepted version.
+        /// </summary>
+        public readonly Version MinVersion;
+
+        /// <summary>
+        /// The plugin assembly which implements the incompatible version.
+        /// </summary>
+        public readonly Assembly PluginAssembly;
+
         #endregion
 
         #region constructor
 
-        public IncompatiblePluginVersionException(Assembly myPluginAssembly, Version myCurrentVersion, Version myMinVersion)            
+        public IncompatiblePluginVersionException(Assembly myPluginAssembly, Version myCurrentVersion,
+                                                  Version myMinVersion)
         {
-            this.PluginAssembly = myPluginAssembly;
-            this.CurrentVersion = myCurrentVersion;
-            this.MinVersion = myMinVersion;
+            PluginAssembly = myPluginAssembly;
+            CurrentVersion = myCurrentVersion;
+            MinVersion = myMinVersion;
         }
 
-        public IncompatiblePluginVersionException(Assembly myPluginAssembly, Version myCurrentVersion, Version myMinVersion, Version myMaxVersion)            
+        public IncompatiblePluginVersionException(Assembly myPluginAssembly, Version myCurrentVersion,
+                                                  Version myMinVersion, Version myMaxVersion)
         {
-            this.PluginAssembly = myPluginAssembly;
-            this.CurrentVersion = myCurrentVersion;
-            this.MinVersion = myMinVersion;
-            this.MaxVersion = myMaxVersion;
+            PluginAssembly = myPluginAssembly;
+            CurrentVersion = myCurrentVersion;
+            MinVersion = myMinVersion;
+            MaxVersion = myMaxVersion;
         }
 
         public override ushort ErrorCode

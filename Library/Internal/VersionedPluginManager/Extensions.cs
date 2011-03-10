@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace sones.VersionedPluginManager.ErrorHandling
 {
     public static class Extensions
     {
-
         internal static Boolean IsNullOrEmpty<T1>(this IEnumerable<T1> myEnumeration)
         {
             return myEnumeration == null || !myEnumeration.Any();
@@ -23,7 +23,7 @@ namespace sones.VersionedPluginManager.ErrorHandling
         /// <returns></returns>
         public static Boolean IsBaseType(this Type myBaseType, Type myType)
         {
-            var curType = myType;
+            Type curType = myType;
             while (curType != null)
             {
                 if (curType.BaseType == myBaseType)
@@ -44,7 +44,7 @@ namespace sones.VersionedPluginManager.ErrorHandling
         /// <returns></returns>
         public static Boolean HasBaseType(this Type myType, String myBaseType)
         {
-            var curType = myType;
+            Type curType = myType;
             while (curType != null && curType.BaseType != null)
             {
                 if (curType.BaseType.FullName == myBaseType)
@@ -64,7 +64,6 @@ namespace sones.VersionedPluginManager.ErrorHandling
 
         public static String ErrorsToString(this CompilerErrorCollection myCompilerErrorCollection)
         {
-
             if (myCompilerErrorCollection == null || myCompilerErrorCollection.Count == 0)
             {
                 return string.Empty;
@@ -72,18 +71,16 @@ namespace sones.VersionedPluginManager.ErrorHandling
 
             var strBuilder = new StringBuilder();
             strBuilder.AppendLine("Errors(" + myCompilerErrorCollection.Count + "): ");
-            foreach (var error in myCompilerErrorCollection)
+            foreach (object error in myCompilerErrorCollection)
             {
-                strBuilder.AppendLine("["+error.ToString()+"]");
+                strBuilder.AppendLine("[" + error + "]");
             }
 
             return strBuilder.ToString();
-
         }
 
         public static AssemblyName GetReferencedAssembly(this Assembly myAssembly, String myTargetAssemblyName)
         {
-
             #region Check whether the current assembly is already the target assembly
 
             if (myAssembly.GetName().Name == myTargetAssemblyName)
@@ -93,21 +90,21 @@ namespace sones.VersionedPluginManager.ErrorHandling
 
             #endregion
 
-            Queue<Assembly> referencesToCheck      = new Queue<Assembly>();
-            HashSet<String> assemblyAlreadyChecked = new HashSet<string>();
+            var referencesToCheck = new Queue<Assembly>();
+            var assemblyAlreadyChecked = new HashSet<string>();
 
             referencesToCheck.Enqueue(myAssembly);
 
             Assembly curAssembly;
-            var depth = 0;
+            int depth = 0;
             while (referencesToCheck.Count > 0)
             {
                 curAssembly = referencesToCheck.Dequeue();
 
                 #region Check the ReferencedAssemblies whether thy have the myTargetAssemblyName
 
-                var assembly = curAssembly.GetReferencedAssemblies()
-                                    .Where(an => an.Name == myTargetAssemblyName).FirstOrDefault();
+                AssemblyName assembly = curAssembly.GetReferencedAssemblies()
+                    .Where(an => an.Name == myTargetAssemblyName).FirstOrDefault();
 
                 if (assembly != null)
                 {
@@ -122,7 +119,7 @@ namespace sones.VersionedPluginManager.ErrorHandling
 
                 #region Load all referenced assemblies to check their referenced assemblies as well
 
-                foreach (var refAss in curAssembly.GetReferencedAssemblies())
+                foreach (AssemblyName refAss in curAssembly.GetReferencedAssemblies())
                 {
                     if (!assemblyAlreadyChecked.Contains(refAss.FullName))
                     {
@@ -134,19 +131,21 @@ namespace sones.VersionedPluginManager.ErrorHandling
                         {
                             loadedAssembly = Assembly.Load(refAss.FullName);
                         }
-                        catch (System.IO.FileNotFoundException)
+                        catch (FileNotFoundException)
                         {
-
                             #region Try to load from the same path at the source assembly
 
                             try
                             {
-                                loadedAssembly = Assembly.LoadFrom(new System.IO.DirectoryInfo(curAssembly.Location).Parent.Name + System.IO.Path.DirectorySeparatorChar + refAss.Name + ".dll");
+                                loadedAssembly =
+                                    Assembly.LoadFrom(new DirectoryInfo(curAssembly.Location).Parent.Name +
+                                                      Path.DirectorySeparatorChar + refAss.Name + ".dll");
                             }
-                            catch { }
+                            catch
+                            {
+                            }
 
                             #endregion
-
                         }
 
                         #endregion
@@ -166,12 +165,9 @@ namespace sones.VersionedPluginManager.ErrorHandling
                 }
 
                 #endregion
-
             }
 
             return null;
-
         }
-
     }
 }
