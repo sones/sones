@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using sones.GraphFS.Definitions;
 using sones.GraphFS.Element.Edge;
 using sones.GraphFS.ErrorHandling;
 using sones.Library.PropertyHyperGraph;

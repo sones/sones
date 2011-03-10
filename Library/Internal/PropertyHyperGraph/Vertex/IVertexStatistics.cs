@@ -1,5 +1,4 @@
 ﻿using System;
-using sones.Library.PropertyHyperGraph;
 
 namespace sones.Library.PropertyHyperGraph
 {

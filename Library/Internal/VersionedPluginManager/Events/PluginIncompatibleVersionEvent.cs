@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using sones.Library.VersionedPluginManager;
 
 namespace sones.Library.VersionedPluginManager
 {

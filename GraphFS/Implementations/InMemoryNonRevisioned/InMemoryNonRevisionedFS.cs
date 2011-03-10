@@ -6,10 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using sones.GraphFS.Definitions;
 using sones.GraphFS.Element;
+using sones.GraphFS.Element.Edge;
 using sones.GraphFS.Element.Vertex;
 using sones.GraphFS.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
-using sones.GraphFS.Element.Edge;
 
 namespace sones.GraphFS
 {
