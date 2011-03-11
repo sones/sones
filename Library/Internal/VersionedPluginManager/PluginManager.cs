@@ -227,6 +227,11 @@ namespace sones.Library.VersionedPluginManager
                 //return retVal.PushIError(new Error_CouldNotLoadAssembly(myFile));
             }
 
+            catch (Exception e)
+            {
+                throw e;
+            }
+
             #endregion
 
             #region Check all types of the assembly - this might throw a ReflectionTypeLoadException if the plugin definition des no longer match the plugin implementation
