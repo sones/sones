@@ -99,8 +99,6 @@ namespace sones.GraphFS
         {
             var tempVertexStore = new ConcurrentDictionary<long, ConcurrentDictionary<long, InMemoryVertex>>();
 
-            var counter = Int32.MinValue;
-
             Parallel.ForEach(myReplicationStream, aVertex =>
                                                       {
                                                           if (!tempVertexStore.ContainsKey(aVertex.TypeID))
@@ -110,8 +108,6 @@ namespace sones.GraphFS
                                                           }
 
                                                           tempVertexStore[aVertex.TypeID].TryAdd(aVertex.VertexID,TransferToInMemoryVertex(aVertex));
-
-                                                          Interlocked.Increment(ref counter);
                                                       });
 
             _vertexStore = tempVertexStore;
@@ -124,7 +120,7 @@ namespace sones.GraphFS
 
             if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
             {
-                return vertices.ContainsKey(myVertexID);
+                return vertices.ContainsKey(myVertexID) && !vertices[myVertexID].IsBulkVertex;
             }
 
             return false;
@@ -170,7 +166,10 @@ namespace sones.GraphFS
             {
                 foreach (var aVertex in vertices)
                 {
-                    yield return aVertex.Value;
+                    if (!aVertex.Value.IsBulkVertex)
+                    {
+                        yield return aVertex.Value;
+                    }
                 }
             }
 
@@ -318,7 +317,8 @@ namespace sones.GraphFS
                     {
                         //create the new Edge
                         singleEdge = new SingleEdge(aSingleEdgeDefinition.Value, GetVertexPrivate);
-                        UpdateIncomingEdgesOnTargetVertex(aSingleEdgeDefinition.Value.TargetVertexInformation,
+                        UpdateIncomingEdgesOnTargetVertex(aSingleEdgeDefinition.Value.TargetVertexInformation.VertexTypeID,
+                                                          aSingleEdgeDefinition.Value.TargetVertexInformation.VertexID,
                                                           myVertexDefinition.GraphElementInformation.TypeID,
                                                           aSingleEdgeDefinition.Key,
                                                           singleEdge);
@@ -343,7 +343,8 @@ namespace sones.GraphFS
                         {
                             singleEdge = new SingleEdge(aSingleEdgeDefinition, GetVertexPrivate);
 
-                            UpdateIncomingEdgesOnTargetVertex(aSingleEdgeDefinition.TargetVertexInformation,
+                            UpdateIncomingEdgesOnTargetVertex(aSingleEdgeDefinition.TargetVertexInformation.VertexTypeID,
+                                                              aSingleEdgeDefinition.TargetVertexInformation.VertexID,
                                                               myVertexDefinition.GraphElementInformation.TypeID,
                                                               aHyperEdgeDefinition.Key,
                                                               singleEdge);
@@ -366,12 +367,25 @@ namespace sones.GraphFS
 
             #endregion
 
-            //store the new vertex
-            if (!_vertexStore[myVertexDefinition.GraphElementInformation.TypeID].TryAdd(vertex.VertexID, vertex))
-            {
-                throw new VertexAlreadyExistException(myVertexDefinition.GraphElementInformation.TypeID,
+            #region store the new vertex
+            
+            _vertexStore[myVertexDefinition.GraphElementInformation.TypeID].AddOrUpdate(vertex.VertexID,
+                (_) =>
+                {
+                    return vertex;
+                },
+                (vid, oldVertex) =>
+                {
+                    if (oldVertex.IsBulkVertex)
+                    {
+                        return InMemoryVertex.CopyFromBulkVertex(oldVertex, vertex);
+                    }
+
+                    throw new VertexAlreadyExistException(myVertexDefinition.GraphElementInformation.TypeID,
                                                       myVertexDefinition.VertexID);
-            }
+                });
+
+            #endregion
         }
 
         public void UpdateVertex(long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID,
@@ -400,9 +414,24 @@ namespace sones.GraphFS
         /// <param name="myIncomingVertexTypeID"></param>
         /// <param name="myIncomingEdgeID"></param>
         /// <param name="mySingleEdge"></param>
-        private void UpdateIncomingEdgesOnTargetVertex(VertexInformation myTargetVertexInformation, Int64 myIncomingVertexTypeID, Int64 myIncomingEdgeID, SingleEdge mySingleEdge)
+        private void UpdateIncomingEdgesOnTargetVertex(Int64 myTargetVertexTypeID, Int64 myTargetVertexID, Int64 myIncomingVertexTypeID, Int64 myIncomingEdgeID, SingleEdge mySingleEdge)
         {
-            throw new NotImplementedException();
+            //check for vertex type
+            if (!_vertexStore.ContainsKey(myTargetVertexTypeID))
+            {
+                _vertexStore.TryAdd(myTargetVertexTypeID,
+                                    new ConcurrentDictionary<long, InMemoryVertex>());
+            }
+
+            _vertexStore[myTargetVertexTypeID].AddOrUpdate(myTargetVertexID,
+                (_) =>
+                {
+                    return InMemoryVertex.CreateBulkVertexWithIncomingEdge(myIncomingVertexTypeID, myIncomingEdgeID, mySingleEdge);
+                },
+                (vertexID, oldVertex) =>
+                {
+                    return InMemoryVertex.CopyAndAddIncomingEdge(oldVertex, myIncomingVertexTypeID, myIncomingEdgeID, mySingleEdge);
+                });
         }
 
         /// <summary>
@@ -432,7 +461,7 @@ namespace sones.GraphFS
         /// <returns>An InMemoryVertex implementation of an IVertex</returns>
         private InMemoryVertex TransferToInMemoryVertex(IVertex aVertex)
         {
-            throw new NotImplementedException();
+            return InMemoryVertex.CopyFromIVertex(aVertex);
         }
 
         /// <summary>
@@ -451,7 +480,10 @@ namespace sones.GraphFS
 
                 if (vertices.TryGetValue(myVertexID, out vertex))
                 {
-                    return vertex;
+                    if (!vertex.IsBulkVertex)
+                    {
+                        return vertex;
+                    }
                 }
             }
 

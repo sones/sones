@@ -13,8 +13,6 @@ namespace sones.Library.PropertyHyperGraph
 
         #region Incoming
 
-        //Incoming edges are always hyper edges
-
         /// <summary>
         /// Is there a specified incoming edge?
         /// </summary>
@@ -26,18 +24,18 @@ namespace sones.Library.PropertyHyperGraph
         /// <summary>
         /// Returns all incoming edges
         /// </summary>
-        /// <param name="myFilterFunc">A function to filter those hyper edges (VertexTypeID, EdgeID, HyperEdge, Bool)</param>
-        /// <returns>An IEnumerable of incoming hyper edges</returns>
-        IEnumerable<Tuple<Int64, Int64, IHyperEdge>> GetAllIncomingEdges(
-            Func<Int64, Int64, IHyperEdge, bool> myFilterFunc = null);
+        /// <param name="myFilterFunc">A function to filter those incoming edges (VertexTypeID, EdgeID, ISingleEdges, Bool)</param>
+        /// <returns>An IEnumerable of incoming edges</returns>
+        IEnumerable<Tuple<Int64, Int64, IEnumerable<ISingleEdge>>> GetAllIncomingEdges(
+            Func<Int64, Int64, IEnumerable<ISingleEdge>, bool> myFilterFunc = null);
 
         /// <summary>
         /// Returns a specified incoming edge
         /// </summary>
         /// <param name="myVertexTypeID">The id of the vertex type that defines the edge</param>
         /// <param name="myEdgePropertyID">The property id of the interesting edge</param>
-        /// <returns>The specified incoming edge or null</returns>
-        IHyperEdge GetIncomingHyperEdge(Int64 myVertexTypeID, Int64 myEdgePropertyID);
+        /// <returns>The specified incoming edges or null</returns>
+        IEnumerable<ISingleEdge> GetIncomingHyperEdge(Int64 myVertexTypeID, Int64 myEdgePropertyID);
 
         #endregion
 

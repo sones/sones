@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using sones.GraphFS.Element.Edge;
@@ -13,6 +14,11 @@ namespace sones.GraphFS.Element.Vertex
     public sealed class InMemoryVertex : IVertex
     {
         #region data
+
+        /// <summary>
+        /// Determines whether a vertex has been created because of a bulk import
+        /// </summary>
+        public readonly Boolean IsBulkVertex;
 
         /// <summary>
         /// The binary properties of this vertex
@@ -31,9 +37,9 @@ namespace sones.GraphFS.Element.Vertex
 
         /// <summary>
         /// The incoming edges of the vertex
-        /// (VertexTypeID of the vertex type that points to this vertex, PropertyID of the edge that points to this vertex, HyperEdge)
+        /// (VertexTypeID of the vertex type that points to this vertex, PropertyID of the edge that points to this vertex, SingleEdges)
         /// </summary>
-        private readonly Dictionary<Int64, Dictionary<long, HyperEdge>> _incomingEdges;
+        private Dictionary<Int64, Dictionary<long, HashSet<SingleEdge>>> _incomingEdges;
 
         /// <summary>
         /// The outgoing edges of the vertex
@@ -49,7 +55,7 @@ namespace sones.GraphFS.Element.Vertex
         /// The revision id of the vertex
         /// </summary>
         private readonly VertexRevisionID _vertexRevisionID;
-
+       
         #endregion
 
         #region constructor
@@ -78,6 +84,43 @@ namespace sones.GraphFS.Element.Vertex
             _outgoingEdges = myOutgoingEdges;
             _inMemoryGraphElementInformation = myGraphElementInformation;
             _incomingEdges = null;
+            IsBulkVertex = false;
+        }
+
+        /// <summary>
+        /// Creates a new bulk in memory vertex in favour of adding an incoming edge
+        /// </summary>
+        /// <param name="myIncomingVertexTypeID">The id of the vertex type that aims to this vertex</param>
+        /// <param name="myIncomingEdgeID">The outgoing edge property id that points to this vertex</param>
+        /// <param name="mySingleEdge">The incoming edge</param>
+        private InMemoryVertex(long myIncomingVertexTypeID, long myIncomingEdgeID, SingleEdge mySingleEdge)
+        {
+            IsBulkVertex = true;
+
+            AddIncomingEdge(mySingleEdge, myIncomingVertexTypeID, myIncomingEdgeID);
+        }
+
+        /// <summary>
+        /// Creates a new in memory vertex
+        /// </summary>
+        /// <param name="myVertexID">The id of this vertex</param>
+        /// <param name="myVertexRevisionID">The revision id of this vertex</param>
+        /// <param name="myEdition">The edition of this vertex</param>
+        /// <param name="myBinaryProperties">The binary properties of this vertex</param>
+        /// <param name="myOutgoingEdges">The outgoing edges of this vertex</param>
+        /// <param name="myGraphElementInformation">The graph element information of this vertex</param>
+        /// <param name="myIncomingEdges">The incoming edges</param>
+        private InMemoryVertex(
+            Int64 myVertexID,
+            VertexRevisionID myVertexRevisionID,
+            String myEdition,
+            Dictionary<long, Stream> myBinaryProperties,
+            Dictionary<long, IEdge> myOutgoingEdges,
+            InMemoryGraphElementInformation myGraphElementInformation,
+            Dictionary<long, Dictionary<long, HashSet<SingleEdge>>> myIncomingEdges)
+            :this(myVertexID, myVertexRevisionID, myEdition, myBinaryProperties, myOutgoingEdges, myGraphElementInformation)
+        {
+            _incomingEdges = myIncomingEdges;
         }
 
         #endregion
@@ -91,8 +134,8 @@ namespace sones.GraphFS.Element.Vertex
                    _incomingEdges[myVertexTypeID].ContainsKey(myEdgePropertyID);
         }
 
-        public IEnumerable<Tuple<long, long, IHyperEdge>> GetAllIncomingEdges(
-            Func<long, long, IHyperEdge, bool> myFilterFunc = null)
+        public IEnumerable<Tuple<long, long, IEnumerable<ISingleEdge>>> GetAllIncomingEdges(
+            Func<long, long, IEnumerable<ISingleEdge>, bool> myFilterFunc = null)
         {
             if (_incomingEdges != null)
             {
@@ -104,12 +147,12 @@ namespace sones.GraphFS.Element.Vertex
                         {
                             if (myFilterFunc(aType.Key, aEdge.Key, aEdge.Value))
                             {
-                                yield return new Tuple<long, long, IHyperEdge>(aType.Key, aEdge.Key, aEdge.Value);
+                                yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aType.Key, aEdge.Key, aEdge.Value);
                             }
                         }
                         else
                         {
-                            yield return new Tuple<long, long, IHyperEdge>(aType.Key, aEdge.Key, aEdge.Value);
+                            yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aType.Key, aEdge.Key, aEdge.Value);
                         }
                     }
                 }
@@ -119,7 +162,7 @@ namespace sones.GraphFS.Element.Vertex
             yield break;
         }
 
-        public IHyperEdge GetIncomingHyperEdge(long myVertexTypeID, long myEdgePropertyID)
+        public IEnumerable<ISingleEdge> GetIncomingHyperEdge(long myVertexTypeID, long myEdgePropertyID)
         {
             return HasIncomingEdge(myVertexTypeID, myEdgePropertyID)
                        ? _incomingEdges[myVertexTypeID][myEdgePropertyID]
@@ -378,6 +421,96 @@ namespace sones.GraphFS.Element.Vertex
 
         #endregion
 
+        /// <summary>
+        /// Adds an incoming edge to the vertex
+        /// </summary>
+        /// <param name="myIncomingEdge">The edge that should be added</param>
+        /// <param name="myIncomingVertexTypeID">The id of the vertex type that aims to this vertex</param>
+        /// <param name="myIncomingEdgePropertyID">The outgoing edge property id that points to this vertex</param>
+        private void AddIncomingEdge(SingleEdge myIncomingEdge, Int64 myIncomingVertexTypeID, Int64 myIncomingEdgePropertyID)
+        {
+            if (_incomingEdges == null)
+            {
+                _incomingEdges = new Dictionary<long, Dictionary<long, HashSet<SingleEdge>>>();
+            }
+
+            if (!_incomingEdges.ContainsKey(myIncomingVertexTypeID))
+            {
+                _incomingEdges.Add(myIncomingVertexTypeID, new Dictionary<long, HashSet<SingleEdge>>());
+            }
+
+            if (!_incomingEdges[myIncomingVertexTypeID].ContainsKey(myIncomingEdgePropertyID))
+            {
+                _incomingEdges[myIncomingVertexTypeID].Add(myIncomingEdgePropertyID, new HashSet<SingleEdge>() { myIncomingEdge });
+            }
+            else
+            {
+                _incomingEdges[myIncomingVertexTypeID][myIncomingEdgePropertyID].Add(myIncomingEdge);
+            }
+        }
+
         #endregion
+
+        #region static methods
+
+        internal static InMemoryVertex CopyAndAddIncomingEdge(InMemoryVertex myToBeCopiedVertex, long myIncomingVertexTypeID, long myIncomingEdgeID, SingleEdge mySingleEdge)
+        {
+            //copy the ones that are not interesting
+            var incomingEdges = new Dictionary<long, Dictionary<long, HashSet<SingleEdge>>>(myToBeCopiedVertex._incomingEdges);
+
+            if (incomingEdges.ContainsKey(myIncomingVertexTypeID) && incomingEdges[myIncomingVertexTypeID].ContainsKey(myIncomingEdgeID))
+            {
+                //there is sth to update
+                HashSet<SingleEdge> toBeUpdated = new HashSet<SingleEdge>(incomingEdges[myIncomingVertexTypeID][myIncomingEdgeID]);
+
+                toBeUpdated.Add(mySingleEdge);
+
+                incomingEdges[myIncomingVertexTypeID][myIncomingEdgeID] = toBeUpdated;
+            }
+            else
+            {
+                //create a new one
+                if (!incomingEdges.ContainsKey(myIncomingVertexTypeID))
+                {
+                    incomingEdges.Add(myIncomingVertexTypeID, new Dictionary<long, HashSet<SingleEdge>>());
+                }
+
+                incomingEdges[myIncomingVertexTypeID].Add(myIncomingEdgeID, new HashSet<SingleEdge>() { mySingleEdge });
+            }
+
+            return new InMemoryVertex(
+                myToBeCopiedVertex._vertexID,
+                myToBeCopiedVertex._vertexRevisionID,
+                myToBeCopiedVertex._edition,
+                myToBeCopiedVertex._binaryProperties,
+                myToBeCopiedVertex._outgoingEdges,
+                myToBeCopiedVertex._inMemoryGraphElementInformation,
+                incomingEdges);
+        }
+
+        internal static InMemoryVertex CreateBulkVertexWithIncomingEdge(long myIncomingVertexTypeID, long myIncomingEdgeID, SingleEdge mySingleEdge)
+        {
+            return new InMemoryVertex(myIncomingVertexTypeID, myIncomingEdgeID, mySingleEdge);
+        }
+
+        internal static InMemoryVertex CopyFromBulkVertex(InMemoryVertex oldBulkVertex, InMemoryVertex myVertex)
+        {
+            return new InMemoryVertex(
+                myVertex._vertexID,
+                myVertex._vertexRevisionID,
+                myVertex._edition,
+                myVertex._binaryProperties,
+                myVertex._outgoingEdges,
+                myVertex._inMemoryGraphElementInformation,
+                oldBulkVertex._incomingEdges);
+        }
+
+        internal static InMemoryVertex CopyFromIVertex(IVertex aVertex)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
     }
 }
