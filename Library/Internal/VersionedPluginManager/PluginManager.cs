@@ -234,7 +234,7 @@ namespace sones.Library.VersionedPluginManager
 
             #endregion
 
-            #region Check all types of the assembly - this might throw a ReflectionTypeLoadException if the plugin definition des no longer match the plugin implementation
+            #region Check all types of the assembly - this might throw a ReflectionTypeLoadException if the plugin definition does no longer match the plugin implementation
 
             try
             {
@@ -322,8 +322,7 @@ namespace sones.Library.VersionedPluginManager
                                           Type myCurrentPluginType)
         {
             IEnumerable<KeyValuePair<Type, Tuple<ActivatorInfo, List<object>>>> validBaseTypes =
-                _inheritTypeAndInstance.Where(
-                    kv => kv.Key.IsBaseType(myCurrentPluginType) || kv.Key.IsInterfaceOf(myCurrentPluginType));
+                _inheritTypeAndInstance.Where(kv => kv.Key.IsBaseType(myCurrentPluginType) || kv.Key.IsInterfaceOf(myCurrentPluginType));
 
             #region Take each baseType which is valid (either base or interface) and verify version and add
 
