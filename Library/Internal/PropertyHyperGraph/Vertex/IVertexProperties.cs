@@ -10,6 +10,11 @@ namespace sones.Library.PropertyHyperGraph
         #region ID / Edition / Revision
 
         /// <summary>
+        /// The id of the vertex type
+        /// </summary>
+        Int64 VertexTypeID { get; }
+
+        /// <summary>
         /// The id of the vertex
         /// </summary>
         Int64 VertexID { get; }

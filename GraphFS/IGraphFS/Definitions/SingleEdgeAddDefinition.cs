@@ -14,6 +14,11 @@ namespace sones.GraphFS.Definitions
         public readonly Int64 PropertyID;
 
         /// <summary>
+        /// The edge type id of this edge
+        /// </summary>
+        public readonly Int64 EdgeTypeID;
+
+        /// <summary>
         /// The graph element properties
         /// </summary>
         public readonly GraphElementInformation GraphElementInformation;
@@ -36,16 +41,19 @@ namespace sones.GraphFS.Definitions
         /// Creates a new single edge definition
         /// </summary>
         /// <param name="myPropertyID">The id of the edge property</param>
+        /// <param name="myEdgeTypeID">The id of this edge type</param>
         /// <param name="myGraphElementInformation">The source vertex information</param>
         /// <param name="mySourceVertexInformation">The target vertex informantion</param>
         /// <param name="myTargetVertexInformation">The graph element properties</param>
         public SingleEdgeAddDefinition(
             Int64 myPropertyID,
+            Int64 myEdgeTypeID,
             GraphElementInformation myGraphElementInformation,
             VertexInformation mySourceVertexInformation,
             VertexInformation myTargetVertexInformation)
         {
             PropertyID = myPropertyID;
+            EdgeTypeID = myEdgeTypeID;
             SourceVertexInformation = mySourceVertexInformation;
             TargetVertexInformation = myTargetVertexInformation;
             GraphElementInformation = myGraphElementInformation;

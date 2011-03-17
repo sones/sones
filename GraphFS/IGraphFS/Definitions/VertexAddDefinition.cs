@@ -16,6 +16,11 @@ namespace sones.GraphFS.Definitions
         public readonly Int64 VertexID;
 
         /// <summary>
+        /// The ID of the vertex type
+        /// </summary>
+        public readonly Int64 VertexTypeID;
+
+        /// <summary>
         /// The binary properties
         /// </summary>
         public readonly IEnumerable<StreamAddDefinition> BinaryProperties;
@@ -48,6 +53,7 @@ namespace sones.GraphFS.Definitions
         /// Creates a new vertex add definition
         /// </summary>
         /// <param name="myVertexID">The id of the vertex</param>
+        /// <param name="myVertexTypeID">The id of the vertex type</param>
         /// <param name="myGraphElementInformation">The graph element properties</param>
         /// <param name="myEdition">The edition of the new vertex</param>
         /// <param name="myOutgoingHyperEdges">The outgoing hyper edge definitions</param>
@@ -55,6 +61,7 @@ namespace sones.GraphFS.Definitions
         /// <param name="myBinaryProperties">The binary properties of the new vertex</param>
         public VertexAddDefinition(
             Int64 myVertexID,
+            Int64 myVertexTypeID,
             GraphElementInformation myGraphElementInformation,
             String myEdition,
             IEnumerable<HyperEdgeAddDefinition> myOutgoingHyperEdges,
@@ -64,6 +71,8 @@ namespace sones.GraphFS.Definitions
             Edition = !string.IsNullOrEmpty(myEdition) ? myEdition : ConstantsFS.DefaultVertexEdition;
 
             VertexID = myVertexID;
+
+            VertexTypeID = myVertexTypeID;
 
             OutgoingHyperEdges = myOutgoingHyperEdges;
 

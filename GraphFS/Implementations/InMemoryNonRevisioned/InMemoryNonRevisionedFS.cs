@@ -100,13 +100,13 @@ namespace sones.GraphFS
 
             Parallel.ForEach(myReplicationStream, aVertex =>
                                                       {
-                                                          if (!tempVertexStore.ContainsKey(aVertex.TypeID))
+                                                          if (!tempVertexStore.ContainsKey(aVertex.VertexTypeID))
                                                           {
-                                                              tempVertexStore.TryAdd(aVertex.TypeID,
+                                                              tempVertexStore.TryAdd(aVertex.VertexTypeID,
                                                                                      new ConcurrentDictionary<long, InMemoryVertex>());
                                                           }
 
-                                                          tempVertexStore[aVertex.TypeID].TryAdd(aVertex.VertexID,TransferToInMemoryVertex(aVertex));
+                                                          tempVertexStore[aVertex.VertexTypeID].TryAdd(aVertex.VertexID,TransferToInMemoryVertex(aVertex));
                                                       });
 
             _vertexStore = tempVertexStore;
@@ -300,9 +300,9 @@ namespace sones.GraphFS
             #region create vertex type entry
 
             //check for vertex type
-            if (!_vertexStore.ContainsKey(myVertexDefinition.GraphElementInformation.TypeID))
+            if (!_vertexStore.ContainsKey(myVertexDefinition.VertexTypeID))
             {
-                _vertexStore.TryAdd(myVertexDefinition.GraphElementInformation.TypeID,
+                _vertexStore.TryAdd(myVertexDefinition.VertexTypeID,
                                     new ConcurrentDictionary<long, InMemoryVertex>());
             }
 
@@ -310,7 +310,7 @@ namespace sones.GraphFS
 
             #region create new vertex
 
-            var vertexRevisionID = new VertexRevisionID(myVertexDefinition.GraphElementInformation.ModificationDate);
+            var vertexRevisionID = new VertexRevisionID(0L);
 
             Dictionary<Int64, Stream> binaryProperties;
             if (myVertexDefinition.BinaryProperties == null)
@@ -330,7 +330,7 @@ namespace sones.GraphFS
                 edges = new Dictionary<long, IEdge>();
             }
 
-            InMemoryVertex toBeAddedVertex = new InMemoryVertex(myVertexDefinition.VertexID, vertexRevisionID, myVertexDefinition.Edition, binaryProperties, edges, myVertexDefinition.GraphElementInformation);
+            InMemoryVertex toBeAddedVertex = new InMemoryVertex(myVertexDefinition.VertexID, myVertexDefinition.VertexTypeID, vertexRevisionID, myVertexDefinition.Edition, binaryProperties, edges, myVertexDefinition.GraphElementInformation);
 
             #endregion
 
@@ -357,7 +357,7 @@ namespace sones.GraphFS
 
                         CreateOrUpdateIncomingEdgesOnVertex(
                             targetVertex,
-                            myVertexDefinition.GraphElementInformation.TypeID,
+                            myVertexDefinition.VertexTypeID,
                             aSingleEdgeDefinition.PropertyID,
                             singleEdge);
 
@@ -383,7 +383,7 @@ namespace sones.GraphFS
 
                             CreateOrUpdateIncomingEdgesOnVertex(
                                 targetVertex,
-                                myVertexDefinition.GraphElementInformation.TypeID,
+                                myVertexDefinition.VertexTypeID,
                                 aSingleEdgeDefinition.PropertyID,
                                 singleEdge);
 
@@ -395,6 +395,7 @@ namespace sones.GraphFS
                             aHyperEdgeDefinition.PropertyID,
                             new HyperEdge(
                                 containedSingleEdges,
+                                aHyperEdgeDefinition.EdgeTypeID,
                                 aHyperEdgeDefinition.GraphElementInformation,
                                 toBeAddedVertex));
 
@@ -409,14 +410,14 @@ namespace sones.GraphFS
 
             #region store the new vertex
 
-            _vertexStore[myVertexDefinition.GraphElementInformation.TypeID].
+            _vertexStore[myVertexDefinition.VertexTypeID].
                 AddOrUpdate(toBeAddedVertex.VertexID,
                             _ => toBeAddedVertex,
                             (id, oldVertex) =>
                             {
                                 if (!oldVertex.IsBulkVertex)
                                 {
-                                    throw new VertexAlreadyExistException(myVertexDefinition.GraphElementInformation.TypeID, myVertexDefinition.VertexID);
+                                    throw new VertexAlreadyExistException(myVertexDefinition.VertexTypeID, myVertexDefinition.VertexID);
                                 }
                                 
                                 toBeAddedVertex.IncomingEdges = oldVertex.IncomingEdges;

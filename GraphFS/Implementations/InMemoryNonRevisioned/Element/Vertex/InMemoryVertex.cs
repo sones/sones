@@ -49,6 +49,11 @@ namespace sones.GraphFS.Element.Vertex
         private readonly Int64 _vertexID;
 
         /// <summary>
+        /// The vertex type id
+        /// </summary>
+        private readonly Int64 _vertexTypeID;
+
+        /// <summary>
         /// The revision id of the vertex
         /// </summary>
         private readonly VertexRevisionID _vertexRevisionID;
@@ -61,6 +66,7 @@ namespace sones.GraphFS.Element.Vertex
         /// Creates a new in memory vertex
         /// </summary>
         /// <param name="myVertexID">The id of this vertex</param>
+        /// <param name="myVertexTypeID">The id of the vertex type</param>
         /// <param name="myVertexRevisionID">The revision id of this vertex</param>
         /// <param name="myEdition">The edition of this vertex</param>
         /// <param name="myBinaryProperties">The binary properties of this vertex</param>
@@ -68,6 +74,7 @@ namespace sones.GraphFS.Element.Vertex
         /// <param name="myGraphElementInformation">The graph element information of this vertex</param>
         public InMemoryVertex(
             Int64 myVertexID,
+            Int64 myVertexTypeID,
             VertexRevisionID myVertexRevisionID,
             String myEdition,
             Dictionary<long, Stream> myBinaryProperties,
@@ -75,13 +82,13 @@ namespace sones.GraphFS.Element.Vertex
             GraphElementInformation myGraphElementInformation)
         {
             _vertexID = myVertexID;
+            _vertexTypeID = myVertexTypeID;
             _vertexRevisionID = myVertexRevisionID;
             _edition = myEdition;
             _binaryProperties = myBinaryProperties;
             _outgoingEdges = myOutgoingEdges;
             _graphElementInformation = myGraphElementInformation;
-            IncomingEdges = null;
-
+            
             IsBulkVertex = false;
         }
 
@@ -95,9 +102,9 @@ namespace sones.GraphFS.Element.Vertex
             Int64 myVertexTypeID)
         {
             _vertexID = myVertexID;
-            _graphElementInformation = new GraphElementInformation(myVertexTypeID, null, 0L , 0L, null, null);
+            _vertexTypeID = myVertexTypeID;
+            
             IsBulkVertex = true;
-            IncomingEdges = null;
         }
 
         #endregion
@@ -296,7 +303,7 @@ namespace sones.GraphFS.Element.Vertex
                 return (T) _graphElementInformation.StructuredProperties[myPropertyID];
             }
             
-            throw new CouldNotFindStructuredVertexPropertyException(_graphElementInformation.TypeID,
+            throw new CouldNotFindStructuredVertexPropertyException(_vertexTypeID,
                                                                     _vertexID, myPropertyID);
         }
 
@@ -323,7 +330,7 @@ namespace sones.GraphFS.Element.Vertex
                 return _graphElementInformation.StructuredProperties[myPropertyID].ToString();
             }
             
-            throw new CouldNotFindStructuredVertexPropertyException(_graphElementInformation.TypeID,
+            throw new CouldNotFindStructuredVertexPropertyException(_vertexTypeID,
                                                                     _vertexID, myPropertyID);
         }
 
@@ -334,7 +341,7 @@ namespace sones.GraphFS.Element.Vertex
                 return (T) _graphElementInformation.UnstructuredProperties[myPropertyName];
             }
             
-            throw new CouldNotFindUnStructuredVertexPropertyException(_graphElementInformation.TypeID,
+            throw new CouldNotFindUnStructuredVertexPropertyException(_vertexTypeID,
                                                                       _vertexID, myPropertyName);
         }
 
@@ -362,7 +369,7 @@ namespace sones.GraphFS.Element.Vertex
                 return _graphElementInformation.UnstructuredProperties[myPropertyName].ToString();
             }
             
-            throw new CouldNotFindUnStructuredVertexPropertyException(_graphElementInformation.TypeID,
+            throw new CouldNotFindUnStructuredVertexPropertyException(_vertexTypeID,
                                                                       _vertexID, myPropertyName);
         }
 
@@ -381,9 +388,9 @@ namespace sones.GraphFS.Element.Vertex
             get { return _graphElementInformation.ModificationDate; }
         }
 
-        public long TypeID
+        public long VertexTypeID
         {
-            get { return _graphElementInformation.TypeID; }
+            get { return _vertexTypeID; }
         }
 
         public long VertexID
@@ -465,7 +472,7 @@ namespace sones.GraphFS.Element.Vertex
             }
 
             return _vertexID == p._vertexID
-                   && (_graphElementInformation.TypeID == p._graphElementInformation.TypeID);
+                   && (_vertexTypeID == p._vertexTypeID);
         }
 
         public static Boolean operator ==(InMemoryVertex a, InMemoryVertex b)
@@ -493,7 +500,7 @@ namespace sones.GraphFS.Element.Vertex
 
         public override int GetHashCode()
         {
-            return _vertexID.GetHashCode() ^ _graphElementInformation.TypeID.GetHashCode();
+            return _vertexID.GetHashCode() ^ _vertexTypeID.GetHashCode();
         }
 
         #endregion

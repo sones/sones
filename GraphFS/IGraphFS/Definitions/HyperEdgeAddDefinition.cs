@@ -16,6 +16,11 @@ namespace sones.GraphFS.Definitions
         public readonly Int64 PropertyID;
 
         /// <summary>
+        /// The edge type id of this edge
+        /// </summary>
+        public readonly Int64 EdgeTypeID;
+
+        /// <summary>
         /// The single edges that are contained in this hyperedge
         /// </summary>
         public readonly IEnumerable<SingleEdgeAddDefinition> ContainedSingleEdges;
@@ -38,16 +43,19 @@ namespace sones.GraphFS.Definitions
         /// Creates a new hyper edge definition
         /// </summary>
         /// <param name="myPropertyID">The property id of the edge</param>
+        /// <param name="myEdgeTypeID">The id of this edge type</param>
         /// <param name="myGraphElementInformation">The graph element properties for this hyperedge</param>
         /// <param name="mySourceVertex">The source vertex of this hyper edge</param>
         /// <param name="myContainedSingleEdges">The single edges that are contained within this hyper edge</param>
         public HyperEdgeAddDefinition(
             Int64 myPropertyID,
+            Int64 myEdgeTypeID,
             GraphElementInformation myGraphElementInformation,
             VertexInformation mySourceVertex,
             IEnumerable<SingleEdgeAddDefinition> myContainedSingleEdges)
         {
             PropertyID = myPropertyID;
+            EdgeTypeID = myEdgeTypeID;
             SourceVertex = mySourceVertex;
             ContainedSingleEdges = myContainedSingleEdges;
             GraphElementInformation = myGraphElementInformation;

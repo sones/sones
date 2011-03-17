@@ -15,6 +15,11 @@ namespace sones.GraphFS.Element.Edge
         #region Properties
 
         /// <summary>
+        /// The edge type id
+        /// </summary>
+        private readonly Int64 _edgeTypeID;
+
+        /// <summary>
         /// Properties
         /// </summary>
         private readonly GraphElementInformation _graphElementInformation;
@@ -91,7 +96,7 @@ namespace sones.GraphFS.Element.Edge
                 return (T)_graphElementInformation.StructuredProperties[myPropertyID];
             }
             
-            throw new CouldNotFindStructuredEdgePropertyException(_graphElementInformation.TypeID,
+            throw new CouldNotFindStructuredEdgePropertyException(_edgeTypeID,
                                                                   myPropertyID);
         }
 
@@ -117,7 +122,7 @@ namespace sones.GraphFS.Element.Edge
                 return _graphElementInformation.StructuredProperties[myPropertyID].ToString();
             }
             
-            throw new CouldNotFindStructuredEdgePropertyException(_graphElementInformation.TypeID,
+            throw new CouldNotFindStructuredEdgePropertyException(_edgeTypeID,
                                                                   myPropertyID);
         }
 
@@ -128,7 +133,7 @@ namespace sones.GraphFS.Element.Edge
                 return (T)_graphElementInformation.UnstructuredProperties[myPropertyName];
             }
 
-            throw new CouldNotFindUnStructuredEdgePropertyException(_graphElementInformation.TypeID,
+            throw new CouldNotFindUnStructuredEdgePropertyException(_edgeTypeID,
                                                                     myPropertyName);
         }
 
@@ -155,7 +160,7 @@ namespace sones.GraphFS.Element.Edge
                 return _graphElementInformation.UnstructuredProperties[myPropertyName].ToString();
             }
 
-            throw new CouldNotFindUnStructuredEdgePropertyException(_graphElementInformation.TypeID,
+            throw new CouldNotFindUnStructuredEdgePropertyException(_edgeTypeID,
                                                                     myPropertyName);
         }
 
@@ -174,9 +179,9 @@ namespace sones.GraphFS.Element.Edge
             get { return _graphElementInformation.ModificationDate; }
         }
 
-        public long TypeID
+        public long EdgeTypeID
         {
-            get { return _graphElementInformation.TypeID; }
+            get { return _edgeTypeID; }
         }
 
         public IEdgeStatistics Statistics
@@ -212,7 +217,7 @@ namespace sones.GraphFS.Element.Edge
 
             return Equals(_sourceVertex, p._sourceVertex)
                 && Equals(_targetVertex, p._targetVertex) 
-                && (_graphElementInformation.TypeID == p._graphElementInformation.TypeID);
+                && (_edgeTypeID == p._edgeTypeID);
         }
 
         public static Boolean operator ==(SingleEdge a, SingleEdge b)

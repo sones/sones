@@ -113,14 +113,5 @@ namespace sones.Library.PropertyHyperGraph
         long ModificationDate { get; }
 
         #endregion
-
-        #region TypeID
-
-        /// <summary>
-        /// The id of the vertex type
-        /// </summary>
-        Int64 TypeID { get; }
-
-        #endregion
     }
 }
