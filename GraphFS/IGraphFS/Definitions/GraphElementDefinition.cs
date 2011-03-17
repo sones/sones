@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphFS.Definitions
 {
@@ -75,17 +76,17 @@ namespace sones.GraphFS.Definitions
         /// <summary>
         /// Returns all properties of this graph element
         /// </summary>
-        /// <param name="myFilterFunc">An optional filter function</param>
+        /// <param name="myFilter">An optional filter function</param>
         /// <returns>An enumerable of propertyID/propertyValue</returns>
-        public IEnumerable<Tuple<long, object>> GetAllPropertiesProtected(Func<long, object, bool> myFilterFunc)
+        public IEnumerable<Tuple<long, object>> GetAllPropertiesProtected(Filter.GraphElementStructuredPropertyFilter myFilter = null)
         {
             if (StructuredProperties != null)
             {
                 foreach (var aProperty in StructuredProperties)
                 {
-                    if (myFilterFunc != null)
+                    if (myFilter != null)
                     {
-                        if (myFilterFunc(aProperty.Key, aProperty.Value))
+                        if (myFilter(aProperty.Key, aProperty.Value))
                         {
                             yield return new Tuple<long, object>(aProperty.Key, aProperty.Value);
                         }
@@ -106,18 +107,18 @@ namespace sones.GraphFS.Definitions
         /// <summary>
         /// Returns all unstructured properties of this graph element
         /// </summary>
-        /// <param name="myFilterFunc">An optional filter function</param>
+        /// <param name="myFilter">An optional filter function</param>
         /// <returns>An enumerable of propertyName/PropertyValue</returns>
         public IEnumerable<Tuple<string, object>> GetAllUnstructuredPropertiesProtected(
-            Func<string, object, bool> myFilterFunc)
+            Filter.GraphElementUnStructuredPropertyFilter myFilter = null)
         {
             if (UnstructuredProperties != null)
             {
                 foreach (var aUnstructuredProperty in UnstructuredProperties)
                 {
-                    if (myFilterFunc != null)
+                    if (myFilter != null)
                     {
-                        if (myFilterFunc(aUnstructuredProperty.Key, aUnstructuredProperty.Value))
+                        if (myFilter(aUnstructuredProperty.Key, aUnstructuredProperty.Value))
                         {
                             yield return
                                 new Tuple<String, object>(aUnstructuredProperty.Key, aUnstructuredProperty.Value);

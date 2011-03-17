@@ -56,13 +56,13 @@ namespace sones.GraphFS.Element.Edge
 
         #region IHyperEdge Members
 
-        public IEnumerable<ISingleEdge> GetEdges(Func<ISingleEdge, bool> myFilterFunction = null)
+        public IEnumerable<ISingleEdge> GetEdges(Filter.SingleEdgeFilter myFilter = null)
         {
-            if (myFilterFunction != null)
+            if (myFilter != null)
             {
                 foreach (var aSingleEdge in _containedSingleEdges)
                 {
-                    if (myFilterFunction(aSingleEdge))
+                    if (myFilter(aSingleEdge))
                     {
                         yield return aSingleEdge;
                     }
@@ -89,15 +89,15 @@ namespace sones.GraphFS.Element.Edge
             return _sourceVertex;
         }
 
-        public IEnumerable<IVertex> GetTargetVertices(Func<IVertex, bool> myFilterFunc = null)
+        public IEnumerable<IVertex> GetTargetVertices(Filter.TargetVertexFilter myFilter = null)
         {
             foreach (var targetVertex in
                 _containedSingleEdges.Select(aSingleEdge =>
                                              aSingleEdge.GetTargetVertex()))
             {
-                if (myFilterFunc != null)
+                if (myFilter != null)
                 {
-                    if (myFilterFunc(targetVertex))
+                    if (myFilter(targetVertex))
                     {
                         yield return targetVertex;
                     }
@@ -131,9 +131,9 @@ namespace sones.GraphFS.Element.Edge
             return _graphElementInformation.StructuredProperties.Count;
         }
 
-        public IEnumerable<Tuple<long, object>> GetAllProperties(Func<long, object, bool> myFilterFunc = null)
+        public IEnumerable<Tuple<long, object>> GetAllProperties(Filter.GraphElementStructuredPropertyFilter myFilter = null)
         {
-            return _graphElementInformation.GetAllPropertiesProtected(myFilterFunc);
+            return _graphElementInformation.GetAllPropertiesProtected(myFilter);
         }
 
         public string GetPropertyAsString(long myPropertyID)
@@ -169,9 +169,9 @@ namespace sones.GraphFS.Element.Edge
         }
 
         public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(
-            Func<string, object, bool> myFilterFunc = null)
+            Filter.GraphElementUnStructuredPropertyFilter myFilter = null)
         {
-            return _graphElementInformation.GetAllUnstructuredPropertiesProtected(myFilterFunc);
+            return _graphElementInformation.GetAllUnstructuredPropertiesProtected(myFilter);
         }
 
         public string GetUnstructuredPropertyAsString(string myPropertyName)

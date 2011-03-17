@@ -313,9 +313,9 @@ namespace sones.GraphFS.Element.Vertex
             return _graphElementInformation.StructuredProperties == null ? 0 : _graphElementInformation.StructuredProperties.Count;
         }
 
-        public IEnumerable<Tuple<long, object>> GetAllProperties(Func<long, object, bool> myFilterFunc = null)
+        public IEnumerable<Tuple<long, object>> GetAllProperties(Filter.GraphElementStructuredPropertyFilter myFilter = null)
         {
-            return _graphElementInformation.GetAllPropertiesProtected(myFilterFunc);
+            return _graphElementInformation.GetAllPropertiesProtected(myFilter);
         }
 
         public string GetPropertyAsString(long myPropertyID)
@@ -352,9 +352,9 @@ namespace sones.GraphFS.Element.Vertex
         }
 
         public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(
-            Func<string, object, bool> myFilterFunc = null)
+            Filter.GraphElementUnStructuredPropertyFilter myFilter = null)
         {
-            return _graphElementInformation.GetAllUnstructuredPropertiesProtected(myFilterFunc);
+            return _graphElementInformation.GetAllUnstructuredPropertiesProtected(myFilter);
         }
 
         public string GetUnstructuredPropertyAsString(string myPropertyName)

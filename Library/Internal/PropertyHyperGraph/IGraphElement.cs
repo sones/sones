@@ -34,9 +34,9 @@ namespace sones.Library.PropertyHyperGraph
         /// <summary>
         /// Returns all properties
         /// </summary>
-        /// <param name="myFilterFunc">A function to filter properties</param>
+        /// <param name="myFilter">A function to filter properties</param>
         /// <returns>An IEnumerable of Property/Value</returns>
-        IEnumerable<Tuple<Int64, Object>> GetAllProperties(Func<Int64, Object, bool> myFilterFunc = null);
+        IEnumerable<Tuple<Int64, Object>> GetAllProperties(Filter.GraphElementStructuredPropertyFilter myFilter = null);
 
         /// <summary>
         /// Returns a property as string
@@ -73,10 +73,10 @@ namespace sones.Library.PropertyHyperGraph
         /// <summary>
         /// Returns all unstructured properties
         /// </summary>
-        /// <param name="myFilterFunc">A function to filter properties</param>
+        /// <param name="myFilter">A function to filter properties</param>
         /// <returns>An IEnumerable of NameOfProperty/Value</returns>
         IEnumerable<Tuple<String, Object>> GetAllUnstructuredProperties(
-            Func<String, Object, bool> myFilterFunc = null);
+            Filter.GraphElementUnStructuredPropertyFilter myFilter = null);
 
         /// <summary>
         /// Returns an unstructured property as string

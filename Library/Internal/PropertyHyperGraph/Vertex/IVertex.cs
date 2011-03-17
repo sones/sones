@@ -61,7 +61,8 @@ namespace sones.Library.PropertyHyperGraph
         /// </summary>
         /// <param name="myFilter">A function to filter those edges (EdgeID, IEdge, Bool)</param>
         /// <returns>An IEnumerable of all outgoing edges</returns>
-        IEnumerable<Tuple<Int64, IEdge>> GetAllOutgoingEdges(Filter.OutgoingEdgeFilter myFilter = null);
+        IEnumerable<Tuple<Int64, IEdge>> GetAllOutgoingEdges(
+            Filter.OutgoingEdgeFilter myFilter = null);
 
         /// <summary>
         /// Returns all outgoing hyper edges

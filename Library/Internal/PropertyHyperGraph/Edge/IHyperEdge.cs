@@ -11,9 +11,9 @@ namespace sones.Library.PropertyHyperGraph
         /// <summary>
         /// Gets all contained edges
         /// </summary>
-        /// <param name="myFilterFunction">A function to filter those edges</param>
+        /// <param name="myFilter">A function to filter those edges</param>
         /// <returns>An IEnumerable of edges</returns>
-        IEnumerable<ISingleEdge> GetEdges(Func<ISingleEdge, bool> myFilterFunction = null);
+        IEnumerable<ISingleEdge> GetEdges(Filter.SingleEdgeFilter myFilter = null);
 
         /// <summary>
         /// Invokes a function on a hyper edge

@@ -23,9 +23,9 @@ namespace sones.Library.PropertyHyperGraph
         /// <summary>
         /// Get all target vertices
         /// </summary>
-        /// <param name="myFilterFunc">A function to filter vertices</param>
+        /// <param name="myFilter">A function to filter vertices</param>
         /// <returns>A IEnumerable of vertices</returns>
-        IEnumerable<IVertex> GetTargetVertices(Func<IVertex, bool> myFilterFunc = null);
+        IEnumerable<IVertex> GetTargetVertices(Filter.TargetVertexFilter myFilter = null);
 
         #endregion
     }
