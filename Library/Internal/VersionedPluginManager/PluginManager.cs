@@ -181,9 +181,7 @@ namespace sones.Library.VersionedPluginManager
             #endregion
 
             foreach (string folder in _lookupLocations)
-            {
-                //retVal.PushIExceptional(DiscoverPath(myThrowExceptionOnIncompatibleVersion, myPublicOnly, folder));
-
+            {                
                 DiscoverPath(myThrowExceptionOnIncompatibleVersion, myPublicOnly, folder);
             }
         }
@@ -201,8 +199,6 @@ namespace sones.Library.VersionedPluginManager
 
             foreach (string file in files)
             {
-                //retVal.PushIExceptional(DiscoverFile(myThrowExceptionOnIncompatibleVersion, myPublicOnly, file));
-
                 DiscoverFile(myThrowExceptionOnIncompatibleVersion, myPublicOnly, file);
             }
         }
@@ -221,10 +217,7 @@ namespace sones.Library.VersionedPluginManager
             }
             catch (CouldNotLoadAssemblyException)
             {
-                throw new CouldNotLoadAssemblyException(myFile);
-
-                //Console.WriteLine(e.ToString());
-                //return retVal.PushIError(new Error_CouldNotLoadAssembly(myFile));
+                throw new CouldNotLoadAssemblyException(myFile);                
             }
 
             catch (Exception e)
@@ -240,8 +233,7 @@ namespace sones.Library.VersionedPluginManager
             {
                 if (loadedPluginAssembly.GetTypes().IsNullOrEmpty())
                 {
-                    return;
-                    //return retVal;
+                    return;                    
                 }
             }
             catch (ReflectionTypeLoadException)
@@ -305,8 +297,7 @@ namespace sones.Library.VersionedPluginManager
 
                 #endregion
 
-                FindAndActivateTypes(myThrowExceptionOnIncompatibleVersion, loadedPluginAssembly, type);
-                //retVal.PushIExceptional(FindAndActivateTypes(myThrowExceptionOnIncompatibleVersion, loadedPluginAssembly, type));
+                FindAndActivateTypes(myThrowExceptionOnIncompatibleVersion, loadedPluginAssembly, type);                
             }
 
             #endregion
@@ -315,7 +306,7 @@ namespace sones.Library.VersionedPluginManager
         /// <summary>
         /// Will seach all registered type whether it is an plugin definition of <paramref name="myCurrentPluginType"/>.
         /// </summary>
-        /// <param name="myThrowExceptionOnIncompatibleVersion"></param>
+        /// <param name="myThrowExceptionOnIncompatibleVersion">Truth value of throw an exception</param>
         /// <param name="myLoadedPluginAssembly">The assembly from which the <paramref name="myCurrentPluginType"/> comes from.</param>
         /// <param name="myCurrentPluginType">The current plugin (or not).</param>
         private void FindAndActivateTypes(bool myThrowExceptionOnIncompatibleVersion, Assembly myLoadedPluginAssembly,
@@ -333,15 +324,16 @@ namespace sones.Library.VersionedPluginManager
                 #region Get baseTypeAssembly and plugin referenced assembly
 
                 AssemblyName baseTypeAssembly = Assembly.GetAssembly(baseType.Key).GetName();
-                AssemblyName pluginReferencedAssembly =
-                    myLoadedPluginAssembly.GetReferencedAssembly(baseTypeAssembly.Name);
+                AssemblyName pluginReferencedAssembly = myLoadedPluginAssembly.GetReferencedAssembly(baseTypeAssembly.Name);
 
                 #endregion
 
+                Boolean _validVersion = false;
+
                 try
                 {
-                    CheckVersion(myThrowExceptionOnIncompatibleVersion, myLoadedPluginAssembly, baseTypeAssembly,
-                                 pluginReferencedAssembly, activatorInfo);
+                    if (CheckVersion(myThrowExceptionOnIncompatibleVersion, myLoadedPluginAssembly, baseTypeAssembly, pluginReferencedAssembly, activatorInfo))
+                        _validVersion = true;
                 }
 
                 catch (Exception)
@@ -351,32 +343,34 @@ namespace sones.Library.VersionedPluginManager
 
                 #region Create instance and add to lookup dict
 
-                try
+                if (_validVersion == true)
                 {
-                    Object instance;
-                    if (activatorInfo.ActivateDelegate != null)
+                    try
                     {
-                        instance = activatorInfo.ActivateDelegate(myCurrentPluginType);
-                    }
-                    else
-                    {
-                        instance = Activator.CreateInstance(myCurrentPluginType, activatorInfo.CtorArgs);
-                    }
-
-                    if (instance != null)
-                    {
-                        _inheritTypeAndInstance[baseType.Key].Item2.Add(instance);
-
-                        if (OnPluginFound != null)
+                        Object instance;
+                        if (activatorInfo.ActivateDelegate != null)
                         {
-                            OnPluginFound(this, new PluginFoundEventArgs(myCurrentPluginType, instance));
+                            instance = activatorInfo.ActivateDelegate(myCurrentPluginType);
+                        }
+                        else
+                        {
+                            instance = Activator.CreateInstance(myCurrentPluginType, activatorInfo.CtorArgs);
+                        }
+
+                        if (instance != null)
+                        {
+                            _inheritTypeAndInstance[baseType.Key].Item2.Add(instance);
+
+                            if (OnPluginFound != null)
+                            {
+                                OnPluginFound(this, new PluginFoundEventArgs(myCurrentPluginType, instance));
+                            }
                         }
                     }
-                }
-                catch (Exception e)
-                {
-                    throw new UnknownException(e);
-                    //retVal.PushIError(new GeneralError(ex.ToString()));
+                    catch (Exception e)
+                    {
+                        throw new UnknownException(e);                        
+                    }
                 }
 
                 #endregion
@@ -385,14 +379,16 @@ namespace sones.Library.VersionedPluginManager
             #endregion
         }
 
-        private void CheckVersion(bool myThrowExceptionOnIncompatibleVersion, Assembly myPluginAssembly,
+        private Boolean CheckVersion(bool myThrowExceptionOnIncompatibleVersion, Assembly myPluginAssembly,
                                   AssemblyName myBaseTypeAssembly, AssemblyName myPluginReferencedAssembly,
                                   ActivatorInfo myActivatorInfo)
         {
+            Boolean _validVersion = false;
+
             #region Check version
 
-            if (myBaseTypeAssembly.Version != myPluginReferencedAssembly.Version)
-            {
+            //if (myBaseTypeAssembly.Version != myPluginReferencedAssembly.Version)
+            
                 //Console.WriteLine("Assembly version does not match! Expected '{0}' but current is '{1}'", myLoadedPluginAssembly.GetName().Version, pluginReferencedAssembly.Version);
                 if (myActivatorInfo.MaxVersion != null)
                 {
@@ -401,6 +397,8 @@ namespace sones.Library.VersionedPluginManager
                     if (myPluginReferencedAssembly.Version.CompareTo(myActivatorInfo.MinVersion) < 0
                         || myPluginReferencedAssembly.Version.CompareTo(myActivatorInfo.MaxVersion) > 0)
                     {
+                        _validVersion = false;
+
                         if (OnPluginIncompatibleVersion != null)
                         {
                             OnPluginIncompatibleVersion(this,
@@ -419,12 +417,11 @@ namespace sones.Library.VersionedPluginManager
                                                                          myPluginReferencedAssembly.Version,
                                                                          myActivatorInfo.MinVersion,
                                                                          myActivatorInfo.MaxVersion);
-                        }
-                        //retVal.PushIError(new IncompatiblePluginVersion(myPluginAssembly, myPluginReferencedAssembly.Version, myActivatorInfo.MinVersion, myActivatorInfo.MaxVersion));                        
+                        }                                               
                     }
                     else
-                    {
-                        // valid version
+                    {                        
+                        _validVersion = true;
                     }
 
                     #endregion
@@ -435,6 +432,8 @@ namespace sones.Library.VersionedPluginManager
 
                     if (myPluginReferencedAssembly.Version.CompareTo(myActivatorInfo.MinVersion) < 0)
                     {
+                        _validVersion = false;
+
                         if (OnPluginIncompatibleVersion != null)
                         {
                             OnPluginIncompatibleVersion(this,
@@ -452,19 +451,19 @@ namespace sones.Library.VersionedPluginManager
                             throw new IncompatiblePluginVersionException(myPluginAssembly,
                                                                          myPluginReferencedAssembly.Version,
                                                                          myActivatorInfo.MinVersion);
-                        }
-                        //retVal.PushIError(new IncompatiblePluginVersion(myPluginAssembly, myPluginReferencedAssembly.Version, myActivatorInfo.MinVersion, null));
+                        }                        
                     }
                     else
-                    {
-                        // valid version
+                    {                        
+                        _validVersion = true;
                     }
 
                     #endregion
-                }
-            }
+                }            
 
             #endregion
+
+                return _validVersion;
         }
 
         #endregion
