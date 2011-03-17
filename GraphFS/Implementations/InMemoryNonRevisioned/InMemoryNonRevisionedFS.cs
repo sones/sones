@@ -10,6 +10,7 @@ using sones.GraphFS.Element.Edge;
 using sones.GraphFS.Element.Vertex;
 using sones.GraphFS.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
+using System.IO;
 
 namespace sones.GraphFS
 {
@@ -129,7 +130,14 @@ namespace sones.GraphFS
         public IVertex GetVertex(long myVertexID, long myVertexTypeID, string myEdition = null,
                                  VertexRevisionID myVertexRevisionID = null)
         {
-            return GetVertexPrivate(myVertexID, myVertexTypeID);
+            var vertex = GetVertexPrivate(myVertexID, myVertexTypeID);
+
+            if (vertex != null && !vertex.IsBulkVertex)
+            {
+                return vertex;
+            }
+
+            return null;
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null,
@@ -168,7 +176,7 @@ namespace sones.GraphFS
                 {
                     if (!aVertex.Value.IsBulkVertex)
                     {
-                        yield return aVertex.Value;
+                        yield return aVertex.Value;                        
                     }
                 }
             }
@@ -192,7 +200,7 @@ namespace sones.GraphFS
                 throw new VertexDoesNotExistException(myVertexTypeID, myVertexID);
             }
 
-            List<String> result = new List<string> {vertex.EditionName};
+            var result = new List<string> {vertex.EditionName};
 
             return result;
         }
@@ -230,7 +238,7 @@ namespace sones.GraphFS
         {
             var vertex = GetVertexPrivate(myVertexID, myVertexTypeID);
 
-            if (vertex != null)
+            if (vertex != null && !vertex.IsBulkVertex)
             {
                 if ((vertex.EditionName == myInterestingEdition) && (vertex.VertexRevisionID == myToBeRemovedRevisionID))
                 {
@@ -253,7 +261,7 @@ namespace sones.GraphFS
         {
             var vertex = GetVertexPrivate(myVertexID, myVertexTypeID);
 
-            if (vertex != null)
+            if (vertex != null && !vertex.IsBulkVertex)
             {
                 if (vertex.EditionName == myToBeRemovedEdition)
                 {
@@ -274,6 +282,8 @@ namespace sones.GraphFS
 
         public bool RemoveVertex(long myVertexID, long myVertexTypeID)
         {
+            //Todo: remove references on this vertex
+
             ConcurrentDictionary<Int64, InMemoryVertex> vertices;
 
             if (_vertexStore.TryGetValue(myVertexTypeID, out vertices))
@@ -286,8 +296,11 @@ namespace sones.GraphFS
         }
 
         public void AddVertex(VertexAddDefinition myVertexDefinition,
-                               VertexRevisionID myVertexRevisionID = null)
+                              VertexRevisionID myVertexRevisionID = null,
+                              Boolean myCreateIncomingEdges = true)
         {
+            #region create vertex type entry
+
             //check for vertex type
             if (!_vertexStore.ContainsKey(myVertexDefinition.GraphElementInformation.TypeID))
             {
@@ -295,35 +308,62 @@ namespace sones.GraphFS
                                     new ConcurrentDictionary<long, InMemoryVertex>());
             }
 
+            #endregion
+
             #region create new vertex
 
             var vertexRevisionID = new VertexRevisionID(myVertexDefinition.GraphElementInformation.ModificationDate);
-            var graphElementInformation = new InMemoryGraphElementInformation(myVertexDefinition.GraphElementInformation);
+
+            Dictionary<Int64, Stream> binaryProperties;
+            if (myVertexDefinition.BinaryProperties == null)
+            {
+                binaryProperties = null;
+            }
+            else
+            {
+                binaryProperties = myVertexDefinition.BinaryProperties.ToDictionary(key => key.PropertyID,
+                                                                                    value => value.Stream);
+            }
+
+            Boolean addEdges = myVertexDefinition.OutgoingSingleEdges != null || myVertexDefinition.OutgoingHyperEdges != null;
+            Dictionary<Int64, IEdge> edges = null;
+            if (true)
+            {
+                edges = new Dictionary<long, IEdge>();
+            }
+
+            InMemoryVertex toBeAddedVertex = new InMemoryVertex(myVertexDefinition.VertexID, vertexRevisionID, myVertexDefinition.Edition, binaryProperties, edges, myVertexDefinition.GraphElementInformation);
+
+            #endregion
 
             #region process edges
 
-            Dictionary<Int64, IEdge> edges = null;
-
-            if (myVertexDefinition.OutgoingSingleEdges != null || myVertexDefinition.OutgoingHyperEdges != null)
+            if (addEdges)
             {
-                edges = new Dictionary<long, IEdge>();
+
                 SingleEdge singleEdge;
+                InMemoryVertex targetVertex;
 
                 #region single edges
+
+                //create the single edges
 
                 if (myVertexDefinition.OutgoingSingleEdges != null)
                 {
                     foreach (var aSingleEdgeDefinition in myVertexDefinition.OutgoingSingleEdges)
                     {
-                        //create the new Edge
-                        singleEdge = new SingleEdge(aSingleEdgeDefinition.Value, GetVertexPrivate);
-                        UpdateIncomingEdgesOnTargetVertex(aSingleEdgeDefinition.Value.TargetVertexInformation.VertexTypeID,
-                                                          aSingleEdgeDefinition.Value.TargetVertexInformation.VertexID,
-                                                          myVertexDefinition.GraphElementInformation.TypeID,
-                                                          aSingleEdgeDefinition.Key,
-                                                          singleEdge);
+                        targetVertex = GetOrCreateTargetVertex(aSingleEdgeDefinition.TargetVertexInformation.VertexTypeID, aSingleEdgeDefinition.TargetVertexInformation.VertexID);
 
-                        edges.Add(aSingleEdgeDefinition.Key, singleEdge);
+                        //create the new Edge
+                        singleEdge = new SingleEdge(toBeAddedVertex, targetVertex, aSingleEdgeDefinition.GraphElementInformation);
+
+                        CreateOrUpdateIncomingEdgesOnVertex(
+                            targetVertex,
+                            myVertexDefinition.GraphElementInformation.TypeID,
+                            aSingleEdgeDefinition.PropertyID,
+                            singleEdge);
+
+                        edges.Add(aSingleEdgeDefinition.PropertyID, singleEdge);
                     }
                 }
 
@@ -333,57 +373,60 @@ namespace sones.GraphFS
 
                 if (myVertexDefinition.OutgoingHyperEdges != null)
                 {
-                    HashSet<SingleEdge> containedSingleEdges;
-
                     foreach (var aHyperEdgeDefinition in myVertexDefinition.OutgoingHyperEdges)
                     {
-                        containedSingleEdges = new HashSet<SingleEdge>();
+                        var containedSingleEdges = new List<SingleEdge>();
 
-                        foreach (var aSingleEdgeDefinition in aHyperEdgeDefinition.Value.ContainedSingleEdges)
+                        foreach (var aSingleEdgeDefinition in aHyperEdgeDefinition.ContainedSingleEdges)
                         {
-                            singleEdge = new SingleEdge(aSingleEdgeDefinition, GetVertexPrivate);
+                            targetVertex = GetOrCreateTargetVertex(aSingleEdgeDefinition.TargetVertexInformation.VertexTypeID, aSingleEdgeDefinition.TargetVertexInformation.VertexID);
 
-                            UpdateIncomingEdgesOnTargetVertex(aSingleEdgeDefinition.TargetVertexInformation.VertexTypeID,
-                                                              aSingleEdgeDefinition.TargetVertexInformation.VertexID,
-                                                              myVertexDefinition.GraphElementInformation.TypeID,
-                                                              aHyperEdgeDefinition.Key,
-                                                              singleEdge);
+                            singleEdge = new SingleEdge(toBeAddedVertex, targetVertex, aSingleEdgeDefinition.GraphElementInformation);
+
+                            CreateOrUpdateIncomingEdgesOnVertex(
+                                targetVertex,
+                                myVertexDefinition.GraphElementInformation.TypeID,
+                                aSingleEdgeDefinition.PropertyID,
+                                singleEdge);
 
                             containedSingleEdges.Add(singleEdge);
                         }
 
                         //create the new edge
-                        edges.Add(aHyperEdgeDefinition.Key, new HyperEdge(containedSingleEdges, aHyperEdgeDefinition.Value.GraphElementInformation, aHyperEdgeDefinition.Value.SourceVertex, GetVertexPrivate));
+                        edges.Add(
+                            aHyperEdgeDefinition.PropertyID,
+                            new HyperEdge(
+                                containedSingleEdges,
+                                aHyperEdgeDefinition.GraphElementInformation,
+                                toBeAddedVertex));
 
                     }
                 }
 
                 #endregion
+
             }
 
             #endregion
 
-            var vertex = new InMemoryVertex(myVertexDefinition.VertexID, vertexRevisionID, myVertexDefinition.Edition, myVertexDefinition.BinaryProperties, edges, graphElementInformation);
-
-            #endregion
-
             #region store the new vertex
-            
-            _vertexStore[myVertexDefinition.GraphElementInformation.TypeID].AddOrUpdate(vertex.VertexID,
-                (_) =>
-                {
-                    return vertex;
-                },
-                (vid, oldVertex) =>
-                {
-                    if (oldVertex.IsBulkVertex)
-                    {
-                        return InMemoryVertex.CopyFromBulkVertex(oldVertex, vertex);
-                    }
 
-                    throw new VertexAlreadyExistException(myVertexDefinition.GraphElementInformation.TypeID,
-                                                      myVertexDefinition.VertexID);
-                });
+            _vertexStore[myVertexDefinition.GraphElementInformation.TypeID].
+                AddOrUpdate(toBeAddedVertex.VertexID,
+                            _ => toBeAddedVertex,
+                            (id, oldVertex) =>
+                            {
+                                if (!oldVertex.IsBulkVertex)
+                                {
+                                    throw new VertexAlreadyExistException(myVertexDefinition.GraphElementInformation.TypeID, myVertexDefinition.VertexID);
+                                }
+                                else
+                                {
+                                    toBeAddedVertex.IncomingEdges = oldVertex.IncomingEdges;
+
+                                    return toBeAddedVertex;
+                                }
+                            });
 
             #endregion
         }
@@ -394,7 +437,7 @@ namespace sones.GraphFS
         {
             var toBeUpdatedVertex = GetVertexPrivate(myToBeUpdatedVertexID, myCorrespondingVertexTypeID);
 
-            if (toBeUpdatedVertex == null)
+            if (toBeUpdatedVertex == null || toBeUpdatedVertex.IsBulkVertex)
             {
                 throw new VertexDoesNotExistException(myCorrespondingVertexTypeID, myToBeUpdatedVertexID);
             }
@@ -408,30 +451,64 @@ namespace sones.GraphFS
         #region private helper
 
         /// <summary>
-        /// 
+        /// Gets or creates the target vertex of an edge
         /// </summary>
-        /// <param name="myTargetVertexInformation"></param>
-        /// <param name="myIncomingVertexTypeID"></param>
-        /// <param name="myIncomingEdgeID"></param>
-        /// <param name="mySingleEdge"></param>
-        private void UpdateIncomingEdgesOnTargetVertex(Int64 myTargetVertexTypeID, Int64 myTargetVertexID, Int64 myIncomingVertexTypeID, Int64 myIncomingEdgeID, SingleEdge mySingleEdge)
+        /// <param name="myTargetVertexTypeID">The target vertex type id</param>
+        /// <param name="myTargetVertexID">The target vertex id</param>
+        /// <returns>The target vertex</returns>
+        private InMemoryVertex GetOrCreateTargetVertex(Int64 myTargetVertexTypeID, Int64 myTargetVertexID)
         {
-            //check for vertex type
             if (!_vertexStore.ContainsKey(myTargetVertexTypeID))
             {
                 _vertexStore.TryAdd(myTargetVertexTypeID,
                                     new ConcurrentDictionary<long, InMemoryVertex>());
             }
 
-            _vertexStore[myTargetVertexTypeID].AddOrUpdate(myTargetVertexID,
-                (_) =>
+            InMemoryVertex targetVertex = null;
+
+            if (_vertexStore[myTargetVertexTypeID].TryGetValue(myTargetVertexID, out targetVertex))
+            {
+                return targetVertex;
+            }
+
+            _vertexStore[myTargetVertexTypeID].AddOrUpdate(
+                myTargetVertexID,
+                _ =>
                 {
-                    return InMemoryVertex.CreateBulkVertexWithIncomingEdge(myIncomingVertexTypeID, myIncomingEdgeID, mySingleEdge);
+                    targetVertex = InMemoryVertex.CreateNewBulkVertex(myTargetVertexID, myTargetVertexTypeID);
+                    return targetVertex;
                 },
-                (vertexID, oldVertex) =>
+                (id, oldVertex) =>
                 {
-                    return InMemoryVertex.CopyAndAddIncomingEdge(oldVertex, myIncomingVertexTypeID, myIncomingEdgeID, mySingleEdge);
+                    targetVertex = oldVertex;
+                    return oldVertex;
                 });
+
+            return targetVertex;
+        }
+
+        /// <summary>
+        /// Creates or updates incoming edges on vertices
+        /// </summary>
+        /// <param name="myTargetVertex">The vertex that should be updated</param>
+        /// <param name="myIncomingVertexTypeID">The id of the incoming vertex type</param>
+        /// <param name="myIncomingEdgeID">The id of the incoming edge property</param>
+        /// <param name="mySingleEdge">The incoming single edge</param>
+        private void CreateOrUpdateIncomingEdgesOnVertex(InMemoryVertex myTargetVertex, Int64 myIncomingVertexTypeID, Int64 myIncomingEdgeID, SingleEdge mySingleEdge)
+        {
+            var incomingEdgeKey = new IncomingEdgeKey(myIncomingVertexTypeID, myIncomingEdgeID);
+
+            lock (myTargetVertex.IncomingEdges)
+            {
+                if (myTargetVertex.IncomingEdges.ContainsKey(incomingEdgeKey))
+                {
+                    myTargetVertex.IncomingEdges[incomingEdgeKey].Add(mySingleEdge);
+                }
+                else
+                {
+                    myTargetVertex.IncomingEdges.Add(incomingEdgeKey, new HashSet<SingleEdge> { mySingleEdge });
+                }
+            }
         }
 
         /// <summary>
@@ -480,10 +557,7 @@ namespace sones.GraphFS
 
                 if (vertices.TryGetValue(myVertexID, out vertex))
                 {
-                    if (!vertex.IsBulkVertex)
-                    {
-                        return vertex;
-                    }
+                    return vertex;
                 }
             }
 

@@ -266,9 +266,11 @@ namespace sones.GraphFS
         /// </summary>
         /// <param name="myVertexDefinition">The vertex definition that represents the new vertex</param>
         /// <param name="myVertexRevisionID">The revision id of the vertex</param>
+        /// <param name="myCreateIncomingEdges">Create the incoming edges</param>
         void AddVertex(
             VertexAddDefinition myVertexDefinition,
-            VertexRevisionID myVertexRevisionID = null);
+            VertexRevisionID myVertexRevisionID = null,
+            Boolean myCreateIncomingEdges = true);
 
         /// <summary>
         /// Updates a vertex

@@ -44,8 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Element\InMemoryGraphElementInformation.cs" />
-    <Compile Include="Element\Vertex\VertexLocation.cs" />
+    <Compile Include="Element\Edge\IncomingEdgeKey.cs" />
     <Compile Include="Element\Vertex\InMemoryVertex.cs" />
     <Compile Include="InMemoryNonRevisionedFS.cs" />
     <Compile Include="Element\Edge\HyperEdge.cs" />

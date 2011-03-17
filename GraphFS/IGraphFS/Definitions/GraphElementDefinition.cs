@@ -30,7 +30,7 @@ namespace sones.GraphFS.Definitions
         /// <summary>
         /// The id of the vertex type
         /// </summary>
-        public readonly Int64 TypeID;
+        public Int64 TypeID;
 
         /// <summary>
         /// The unstructured properties
@@ -65,6 +65,74 @@ namespace sones.GraphFS.Definitions
             StructuredProperties = myStructuredProperties;
             UnstructuredProperties = myUnstructuredProperties;
         }
+
+        #endregion
+
+        #region helper
+
+        #region GetAllProperties_protected
+
+        /// <summary>
+        /// Returns all properties of this graph element
+        /// </summary>
+        /// <param name="myFilterFunc">An optional filter function</param>
+        /// <returns>An enumerable of propertyID/propertyValue</returns>
+        public IEnumerable<Tuple<long, object>> GetAllPropertiesProtected(Func<long, object, bool> myFilterFunc)
+        {
+            if (StructuredProperties != null)
+            {
+                foreach (var aProperty in StructuredProperties)
+                {
+                    if (myFilterFunc != null)
+                    {
+                        if (myFilterFunc(aProperty.Key, aProperty.Value))
+                        {
+                            yield return new Tuple<long, object>(aProperty.Key, aProperty.Value);
+                        }
+                    }
+                    else
+                    {
+                        yield return new Tuple<long, object>(aProperty.Key, aProperty.Value);
+                    }
+                }
+            }
+            yield break;
+        }
+
+        #endregion
+
+        #region GetAllUnstructuredProperties_protected
+
+        /// <summary>
+        /// Returns all unstructured properties of this graph element
+        /// </summary>
+        /// <param name="myFilterFunc">An optional filter function</param>
+        /// <returns>An enumerable of propertyName/PropertyValue</returns>
+        public IEnumerable<Tuple<string, object>> GetAllUnstructuredPropertiesProtected(
+            Func<string, object, bool> myFilterFunc)
+        {
+            if (UnstructuredProperties != null)
+            {
+                foreach (var aUnstructuredProperty in UnstructuredProperties)
+                {
+                    if (myFilterFunc != null)
+                    {
+                        if (myFilterFunc(aUnstructuredProperty.Key, aUnstructuredProperty.Value))
+                        {
+                            yield return
+                                new Tuple<String, object>(aUnstructuredProperty.Key, aUnstructuredProperty.Value);
+                        }
+                    }
+                    else
+                    {
+                        yield return new Tuple<String, object>(aUnstructuredProperty.Key, aUnstructuredProperty.Value);
+                    }
+                }
+            }
+            yield break;
+        }
+
+        #endregion
 
         #endregion
     }

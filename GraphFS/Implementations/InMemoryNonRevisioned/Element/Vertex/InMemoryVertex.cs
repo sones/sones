@@ -5,6 +5,8 @@ using System.IO;
 using sones.GraphFS.Element.Edge;
 using sones.GraphFS.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
+using sones.GraphFS.Definitions;
+using System.Collections.Concurrent;
 
 namespace sones.GraphFS.Element.Vertex
 {
@@ -15,10 +17,7 @@ namespace sones.GraphFS.Element.Vertex
     {
         #region data
 
-        /// <summary>
-        /// Determines whether a vertex has been created because of a bulk import
-        /// </summary>
-        public readonly Boolean IsBulkVertex;
+        public readonly Boolean IsBulkVertex = true;
 
         /// <summary>
         /// The binary properties of this vertex
@@ -33,13 +32,13 @@ namespace sones.GraphFS.Element.Vertex
         /// <summary>
         /// The id of the vertex type
         /// </summary>
-        private readonly InMemoryGraphElementInformation _inMemoryGraphElementInformation;
+        private readonly GraphElementInformation _graphElementInformation;
 
         /// <summary>
         /// The incoming edges of the vertex
         /// (VertexTypeID of the vertex type that points to this vertex, PropertyID of the edge that points to this vertex, SingleEdges)
         /// </summary>
-        private Dictionary<Int64, Dictionary<long, HashSet<SingleEdge>>> _incomingEdges;
+        public Dictionary<IncomingEdgeKey, HashSet<SingleEdge>> IncomingEdges;
 
         /// <summary>
         /// The outgoing edges of the vertex
@@ -75,52 +74,32 @@ namespace sones.GraphFS.Element.Vertex
             String myEdition,
             Dictionary<long, Stream> myBinaryProperties,
             Dictionary<long, IEdge> myOutgoingEdges,
-            InMemoryGraphElementInformation myGraphElementInformation)
+            GraphElementInformation myGraphElementInformation)
         {
             _vertexID = myVertexID;
             _vertexRevisionID = myVertexRevisionID;
             _edition = myEdition;
             _binaryProperties = myBinaryProperties;
             _outgoingEdges = myOutgoingEdges;
-            _inMemoryGraphElementInformation = myGraphElementInformation;
-            _incomingEdges = null;
+            _graphElementInformation = myGraphElementInformation;
+            IncomingEdges = new Dictionary<IncomingEdgeKey, HashSet<SingleEdge>>();
+
             IsBulkVertex = false;
         }
 
         /// <summary>
-        /// Creates a new bulk in memory vertex in favour of adding an incoming edge
+        /// Creates a new bulk vertex
         /// </summary>
-        /// <param name="myIncomingVertexTypeID">The id of the vertex type that aims to this vertex</param>
-        /// <param name="myIncomingEdgeID">The outgoing edge property id that points to this vertex</param>
-        /// <param name="mySingleEdge">The incoming edge</param>
-        private InMemoryVertex(long myIncomingVertexTypeID, long myIncomingEdgeID, SingleEdge mySingleEdge)
-        {
-            IsBulkVertex = true;
-
-            AddIncomingEdge(mySingleEdge, myIncomingVertexTypeID, myIncomingEdgeID);
-        }
-
-        /// <summary>
-        /// Creates a new in memory vertex
-        /// </summary>
-        /// <param name="myVertexID">The id of this vertex</param>
-        /// <param name="myVertexRevisionID">The revision id of this vertex</param>
-        /// <param name="myEdition">The edition of this vertex</param>
-        /// <param name="myBinaryProperties">The binary properties of this vertex</param>
-        /// <param name="myOutgoingEdges">The outgoing edges of this vertex</param>
-        /// <param name="myGraphElementInformation">The graph element information of this vertex</param>
-        /// <param name="myIncomingEdges">The incoming edges</param>
+        /// <param name="myVertexID">The id of the vertex</param>
+        /// <param name="myVertexTypeID">The vertex type id</param>
         private InMemoryVertex(
             Int64 myVertexID,
-            VertexRevisionID myVertexRevisionID,
-            String myEdition,
-            Dictionary<long, Stream> myBinaryProperties,
-            Dictionary<long, IEdge> myOutgoingEdges,
-            InMemoryGraphElementInformation myGraphElementInformation,
-            Dictionary<long, Dictionary<long, HashSet<SingleEdge>>> myIncomingEdges)
-            :this(myVertexID, myVertexRevisionID, myEdition, myBinaryProperties, myOutgoingEdges, myGraphElementInformation)
+            Int64 myVertexTypeID)
         {
-            _incomingEdges = myIncomingEdges;
+            _vertexID = myVertexID;
+            _graphElementInformation = new GraphElementInformation() { TypeID = myVertexTypeID };
+            IsBulkVertex = true;
+            IncomingEdges = new Dictionary<IncomingEdgeKey, HashSet<SingleEdge>>();
         }
 
         #endregion
@@ -129,31 +108,27 @@ namespace sones.GraphFS.Element.Vertex
 
         public bool HasIncomingEdge(long myVertexTypeID, long myEdgePropertyID)
         {
-            return _incomingEdges != null &&
-                   _incomingEdges.ContainsKey(myVertexTypeID) &&
-                   _incomingEdges[myVertexTypeID].ContainsKey(myEdgePropertyID);
+            return IncomingEdges != null &&
+                   IncomingEdges.ContainsKey(new IncomingEdgeKey(myVertexTypeID, myEdgePropertyID));
         }
 
         public IEnumerable<Tuple<long, long, IEnumerable<ISingleEdge>>> GetAllIncomingEdges(
             Func<long, long, IEnumerable<ISingleEdge>, bool> myFilterFunc = null)
         {
-            if (_incomingEdges != null)
+            if (IncomingEdges != null)
             {
-                foreach (var aType in _incomingEdges)
+                foreach (var aIncomingEdge in IncomingEdges)
                 {
-                    foreach (var aEdge in aType.Value)
+                    if (myFilterFunc != null)
                     {
-                        if (myFilterFunc != null)
+                        if (myFilterFunc(aIncomingEdge.Key.VertexTypeID, aIncomingEdge.Key.EdgePropertyID, aIncomingEdge.Value))
                         {
-                            if (myFilterFunc(aType.Key, aEdge.Key, aEdge.Value))
-                            {
-                                yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aType.Key, aEdge.Key, aEdge.Value);
-                            }
+                            yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aIncomingEdge.Key.VertexTypeID, aIncomingEdge.Key.EdgePropertyID, aIncomingEdge.Value);
                         }
-                        else
-                        {
-                            yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aType.Key, aEdge.Key, aEdge.Value);
-                        }
+                    }
+                    else
+                    {
+                        yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aIncomingEdge.Key.VertexTypeID, aIncomingEdge.Key.EdgePropertyID, aIncomingEdge.Value);
                     }
                 }
 
@@ -165,7 +140,7 @@ namespace sones.GraphFS.Element.Vertex
         public IEnumerable<ISingleEdge> GetIncomingHyperEdge(long myVertexTypeID, long myEdgePropertyID)
         {
             return HasIncomingEdge(myVertexTypeID, myEdgePropertyID)
-                       ? _incomingEdges[myVertexTypeID][myEdgePropertyID]
+                       ? IncomingEdges[new IncomingEdgeKey(myVertexTypeID, myEdgePropertyID)]
                        : null;
         }
 
@@ -261,37 +236,37 @@ namespace sones.GraphFS.Element.Vertex
         {
             if (HasProperty(myPropertyID))
             {
-                return (T) _inMemoryGraphElementInformation.StructuredProperties[myPropertyID];
+                return (T) _graphElementInformation.StructuredProperties[myPropertyID];
             }
             
-            throw new CouldNotFindStructuredVertexPropertyException(_inMemoryGraphElementInformation.TypeID,
+            throw new CouldNotFindStructuredVertexPropertyException(_graphElementInformation.TypeID,
                                                                     _vertexID, myPropertyID);
         }
 
         public bool HasProperty(long myPropertyID)
         {
-            return _inMemoryGraphElementInformation.StructuredProperties != null &&
-                   _inMemoryGraphElementInformation.StructuredProperties.ContainsKey(myPropertyID);
+            return _graphElementInformation.StructuredProperties != null &&
+                   _graphElementInformation.StructuredProperties.ContainsKey(myPropertyID);
         }
 
         public int GetCountOfProperties()
         {
-            return _inMemoryGraphElementInformation.StructuredProperties == null ? 0 : _inMemoryGraphElementInformation.StructuredProperties.Count;
+            return _graphElementInformation.StructuredProperties == null ? 0 : _graphElementInformation.StructuredProperties.Count;
         }
 
         public IEnumerable<Tuple<long, object>> GetAllProperties(Func<long, object, bool> myFilterFunc = null)
         {
-            return _inMemoryGraphElementInformation.GetAllPropertiesProtected(myFilterFunc);
+            return _graphElementInformation.GetAllPropertiesProtected(myFilterFunc);
         }
 
         public string GetPropertyAsString(long myPropertyID)
         {
             if (HasProperty(myPropertyID))
             {
-                return _inMemoryGraphElementInformation.StructuredProperties[myPropertyID].ToString();
+                return _graphElementInformation.StructuredProperties[myPropertyID].ToString();
             }
             
-            throw new CouldNotFindStructuredVertexPropertyException(_inMemoryGraphElementInformation.TypeID,
+            throw new CouldNotFindStructuredVertexPropertyException(_graphElementInformation.TypeID,
                                                                     _vertexID, myPropertyID);
         }
 
@@ -299,59 +274,59 @@ namespace sones.GraphFS.Element.Vertex
         {
             if (HasUnstructuredProperty(myPropertyName))
             {
-                return (T) _inMemoryGraphElementInformation.UnstructuredProperties[myPropertyName];
+                return (T) _graphElementInformation.UnstructuredProperties[myPropertyName];
             }
             
-            throw new CouldNotFindUnStructuredVertexPropertyException(_inMemoryGraphElementInformation.TypeID,
+            throw new CouldNotFindUnStructuredVertexPropertyException(_graphElementInformation.TypeID,
                                                                       _vertexID, myPropertyName);
         }
 
         public bool HasUnstructuredProperty(string myPropertyName)
         {
-            return _inMemoryGraphElementInformation.UnstructuredProperties != null &&
-                   _inMemoryGraphElementInformation.UnstructuredProperties.ContainsKey(myPropertyName);
+            return _graphElementInformation.UnstructuredProperties != null &&
+                   _graphElementInformation.UnstructuredProperties.ContainsKey(myPropertyName);
         }
 
         public int GetCountOfUnstructuredProperties()
         {
-            return _inMemoryGraphElementInformation.UnstructuredProperties == null ? 0 : _inMemoryGraphElementInformation.UnstructuredProperties.Count;
+            return _graphElementInformation.UnstructuredProperties == null ? 0 : _graphElementInformation.UnstructuredProperties.Count;
         }
 
         public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(
             Func<string, object, bool> myFilterFunc = null)
         {
-            return _inMemoryGraphElementInformation.GetAllUnstructuredPropertiesProtected(myFilterFunc);
+            return _graphElementInformation.GetAllUnstructuredPropertiesProtected(myFilterFunc);
         }
 
         public string GetUnstructuredPropertyAsString(string myPropertyName)
         {
             if (HasUnstructuredProperty(myPropertyName))
             {
-                return _inMemoryGraphElementInformation.UnstructuredProperties[myPropertyName].ToString();
+                return _graphElementInformation.UnstructuredProperties[myPropertyName].ToString();
             }
             
-            throw new CouldNotFindUnStructuredVertexPropertyException(_inMemoryGraphElementInformation.TypeID,
+            throw new CouldNotFindUnStructuredVertexPropertyException(_graphElementInformation.TypeID,
                                                                       _vertexID, myPropertyName);
         }
 
         public string Comment
         {
-            get { return _inMemoryGraphElementInformation.Comment; }
+            get { return _graphElementInformation.Comment; }
         }
 
         public DateTime CreationDate
         {
-            get { return _inMemoryGraphElementInformation.CreationDate; }
+            get { return _graphElementInformation.CreationDate; }
         }
 
         public DateTime ModificationDate
         {
-            get { return _inMemoryGraphElementInformation.ModificationDate; }
+            get { return _graphElementInformation.ModificationDate; }
         }
 
         public long TypeID
         {
-            get { return _inMemoryGraphElementInformation.TypeID; }
+            get { return _graphElementInformation.TypeID; }
         }
 
         public long VertexID
@@ -421,96 +396,91 @@ namespace sones.GraphFS.Element.Vertex
 
         #endregion
 
-        /// <summary>
-        /// Adds an incoming edge to the vertex
-        /// </summary>
-        /// <param name="myIncomingEdge">The edge that should be added</param>
-        /// <param name="myIncomingVertexTypeID">The id of the vertex type that aims to this vertex</param>
-        /// <param name="myIncomingEdgePropertyID">The outgoing edge property id that points to this vertex</param>
-        private void AddIncomingEdge(SingleEdge myIncomingEdge, Int64 myIncomingVertexTypeID, Int64 myIncomingEdgePropertyID)
-        {
-            if (_incomingEdges == null)
-            {
-                _incomingEdges = new Dictionary<long, Dictionary<long, HashSet<SingleEdge>>>();
-            }
-
-            if (!_incomingEdges.ContainsKey(myIncomingVertexTypeID))
-            {
-                _incomingEdges.Add(myIncomingVertexTypeID, new Dictionary<long, HashSet<SingleEdge>>());
-            }
-
-            if (!_incomingEdges[myIncomingVertexTypeID].ContainsKey(myIncomingEdgePropertyID))
-            {
-                _incomingEdges[myIncomingVertexTypeID].Add(myIncomingEdgePropertyID, new HashSet<SingleEdge>() { myIncomingEdge });
-            }
-            else
-            {
-                _incomingEdges[myIncomingVertexTypeID][myIncomingEdgePropertyID].Add(myIncomingEdge);
-            }
-        }
-
         #endregion
 
         #region static methods
 
-        internal static InMemoryVertex CopyAndAddIncomingEdge(InMemoryVertex myToBeCopiedVertex, long myIncomingVertexTypeID, long myIncomingEdgeID, SingleEdge mySingleEdge)
-        {
-            //copy the ones that are not interesting
-            var incomingEdges = new Dictionary<long, Dictionary<long, HashSet<SingleEdge>>>(myToBeCopiedVertex._incomingEdges);
-
-            if (incomingEdges.ContainsKey(myIncomingVertexTypeID) && incomingEdges[myIncomingVertexTypeID].ContainsKey(myIncomingEdgeID))
-            {
-                //there is sth to update
-                HashSet<SingleEdge> toBeUpdated = new HashSet<SingleEdge>(incomingEdges[myIncomingVertexTypeID][myIncomingEdgeID]);
-
-                toBeUpdated.Add(mySingleEdge);
-
-                incomingEdges[myIncomingVertexTypeID][myIncomingEdgeID] = toBeUpdated;
-            }
-            else
-            {
-                //create a new one
-                if (!incomingEdges.ContainsKey(myIncomingVertexTypeID))
-                {
-                    incomingEdges.Add(myIncomingVertexTypeID, new Dictionary<long, HashSet<SingleEdge>>());
-                }
-
-                incomingEdges[myIncomingVertexTypeID].Add(myIncomingEdgeID, new HashSet<SingleEdge>() { mySingleEdge });
-            }
-
-            return new InMemoryVertex(
-                myToBeCopiedVertex._vertexID,
-                myToBeCopiedVertex._vertexRevisionID,
-                myToBeCopiedVertex._edition,
-                myToBeCopiedVertex._binaryProperties,
-                myToBeCopiedVertex._outgoingEdges,
-                myToBeCopiedVertex._inMemoryGraphElementInformation,
-                incomingEdges);
-        }
-
-        internal static InMemoryVertex CreateBulkVertexWithIncomingEdge(long myIncomingVertexTypeID, long myIncomingEdgeID, SingleEdge mySingleEdge)
-        {
-            return new InMemoryVertex(myIncomingVertexTypeID, myIncomingEdgeID, mySingleEdge);
-        }
-
-        internal static InMemoryVertex CopyFromBulkVertex(InMemoryVertex oldBulkVertex, InMemoryVertex myVertex)
-        {
-            return new InMemoryVertex(
-                myVertex._vertexID,
-                myVertex._vertexRevisionID,
-                myVertex._edition,
-                myVertex._binaryProperties,
-                myVertex._outgoingEdges,
-                myVertex._inMemoryGraphElementInformation,
-                oldBulkVertex._incomingEdges);
-        }
-
+        /// <summary>
+        /// Creates a new InMemoryVertex from an IVertex
+        /// </summary>
+        /// <param name="aVertex">The vertex template</param>
+        /// <returns>A new InMemoryVertex</returns>
         internal static InMemoryVertex CopyFromIVertex(IVertex aVertex)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Creates a new bulk vertex
+        /// </summary>
+        /// <param name="myVertexID">The id of the vertex</param>
+        /// <param name="myVertexTypeID">The vertex type id</param>
+        /// <returns>A new bulk InMemoryVertex</returns>
+        internal static InMemoryVertex CreateNewBulkVertex(
+            Int64 myVertexID,
+            Int64 myVertexTypeID)
+        {
+            return new InMemoryVertex(myVertexID, myVertexTypeID);
+        }
+
         #endregion
 
+        #region Equals Overrides
+
+        public override Boolean Equals(Object obj)
+        {
+            // If parameter is null return false.
+            if (obj == null)
+            {
+                return false;
+            }
+
+            // If parameter cannot be cast to Point return false.
+            var p = obj as InMemoryVertex;
+
+            return p != null && Equals(p);
+        }
+
+        public Boolean Equals(InMemoryVertex p)
+        {
+            // If parameter is null return false:
+            if ((object)p == null)
+            {
+                return false;
+            }
+
+            return _vertexID == p._vertexID
+                   && (_graphElementInformation.TypeID == p._graphElementInformation.TypeID);
+        }
+
+        public static Boolean operator ==(InMemoryVertex a, InMemoryVertex b)
+        {
+            // If both are null, or both are same instance, return true.
+            if (ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            // If one is null, but not both, return false.
+            if (((object)a == null) || ((object)b == null))
+            {
+                return false;
+            }
+
+            // Return true if the fields match:
+            return a.Equals(b);
+        }
+
+        public static Boolean operator !=(InMemoryVertex a, InMemoryVertex b)
+        {
+            return !(a == b);
+        }
+
+        public override int GetHashCode()
+        {
+            return _vertexID.GetHashCode() ^ _graphElementInformation.TypeID.GetHashCode();
+        }
+
+        #endregion
     }
 }

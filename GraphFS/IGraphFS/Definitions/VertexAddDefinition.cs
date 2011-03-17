@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace sones.GraphFS.Definitions
 {
@@ -19,7 +18,7 @@ namespace sones.GraphFS.Definitions
         /// <summary>
         /// The binary properties
         /// </summary>
-        public readonly Dictionary<Int64, Stream> BinaryProperties;
+        public readonly IEnumerable<StreamAddDefinition> BinaryProperties;
 
         /// <summary>
         /// The edition of the vertex
@@ -34,12 +33,12 @@ namespace sones.GraphFS.Definitions
         /// <summary>
         /// The definition of the outgoing hyper edges
         /// </summary>
-        public readonly Dictionary<Int64, HyperEdgeAddDefinition> OutgoingHyperEdges;
+        public readonly IEnumerable<HyperEdgeAddDefinition> OutgoingHyperEdges;
 
         /// <summary>
         /// The definition of the outgoing hyper edges
         /// </summary>
-        public readonly Dictionary<Int64, SingleEdgeAddDefinition> OutgoingSingleEdges;
+        public readonly IEnumerable<SingleEdgeAddDefinition> OutgoingSingleEdges;
 
         #endregion
 
@@ -58,9 +57,9 @@ namespace sones.GraphFS.Definitions
             Int64 myVertexID,
             GraphElementInformation myGraphElementInformation,
             String myEdition,
-            Dictionary<Int64, HyperEdgeAddDefinition> myOutgoingHyperEdges,
-            Dictionary<Int64, SingleEdgeAddDefinition> myOutgoingSingleEdges,
-            Dictionary<Int64, Stream> myBinaryProperties)
+            IEnumerable<HyperEdgeAddDefinition> myOutgoingHyperEdges,
+            IEnumerable<SingleEdgeAddDefinition> myOutgoingSingleEdges,
+            IEnumerable<StreamAddDefinition> myBinaryProperties)
         {
             Edition = !string.IsNullOrEmpty(myEdition) ? myEdition : ConstantsFS.DefaultVertexEdition;
 

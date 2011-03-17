@@ -1,18 +1,18 @@
 ﻿using System;
 
-namespace sones.GraphFS.Element.Vertex
+namespace sones.GraphFS.Element.Edge
 {
     /// <summary>
-    /// The in memory location of a vertex
+    /// The definition of an incoming edge
     /// </summary>
-    public struct VertexLocation
+    public struct IncomingEdgeKey
     {
         #region data
 
         /// <summary>
-        /// The id of the vertex
+        /// The id of the edge property
         /// </summary>
-        public readonly Int64 VertexID;
+        public readonly Int64 EdgePropertyID;
 
         /// <summary>
         /// The id of the vertex type
@@ -24,13 +24,13 @@ namespace sones.GraphFS.Element.Vertex
         #region Constructor
 
         /// <summary>
-        /// creates a new vertex location
+        /// Creates a new incoming edge key
         /// </summary>
-        /// <param name="myVertexTypeID">The type id of the vertex</param>
-        /// <param name="myVertexID">The id of the vertex</param>
-        public VertexLocation(Int64 myVertexTypeID, Int64 myVertexID)
+        /// <param name="myVertexTypeID">The id of the vertex type</param>
+        /// <param name="myEdgePropertyID">The id of the edge property</param>
+        public IncomingEdgeKey(Int64 myVertexTypeID, Int64 myEdgePropertyID)
         {
-            VertexID = myVertexID;
+            EdgePropertyID = myEdgePropertyID;
 
             VertexTypeID = myVertexTypeID;
         }
@@ -47,9 +47,9 @@ namespace sones.GraphFS.Element.Vertex
                 return false;
             }
 
-            if (obj is VertexLocation)
+            if (obj is IncomingEdgeKey)
             {
-                return Equals((VertexLocation) obj);
+                return Equals((IncomingEdgeKey)obj);
             }
             else
             {
@@ -57,25 +57,25 @@ namespace sones.GraphFS.Element.Vertex
             }
         }
 
-        public Boolean Equals(VertexLocation p)
+        public Boolean Equals(IncomingEdgeKey p)
         {
-            return (VertexID == p.VertexID) && (VertexTypeID == p.VertexTypeID);
+            return (EdgePropertyID == p.EdgePropertyID) && (VertexTypeID == p.VertexTypeID);
         }
 
-        public static Boolean operator ==(VertexLocation a, VertexLocation b)
+        public static Boolean operator ==(IncomingEdgeKey a, IncomingEdgeKey b)
         {
             // Return true if the fields match:
             return a.Equals(b);
         }
 
-        public static Boolean operator !=(VertexLocation a, VertexLocation b)
+        public static Boolean operator !=(IncomingEdgeKey a, IncomingEdgeKey b)
         {
             return !(a == b);
         }
 
         public override int GetHashCode()
         {
-            return VertexID.GetHashCode() ^ VertexTypeID.GetHashCode();
+            return EdgePropertyID.GetHashCode() ^ VertexTypeID.GetHashCode();
         }
 
         #endregion

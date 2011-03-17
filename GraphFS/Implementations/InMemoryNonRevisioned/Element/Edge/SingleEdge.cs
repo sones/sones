@@ -15,24 +15,19 @@ namespace sones.GraphFS.Element.Edge
         #region Properties
 
         /// <summary>
-        /// THe function to resolve the source or target vertex
-        /// </summary>
-        private readonly Func<long, long, IVertex> _getVertexFunc;
-
-        /// <summary>
         /// Properties
         /// </summary>
-        private readonly InMemoryGraphElementInformation _inMemoryGraphElementInformation;
+        private readonly GraphElementInformation _graphElementInformation;
 
         /// <summary>
-        /// The location of the source vertex
+        /// The source vertex
         /// </summary>
-        internal readonly VertexLocation SourceLocation;
+        private readonly InMemoryVertex _sourceVertex;
 
         /// <summary>
-        /// The location of the target vertex
+        /// The target vertex
         /// </summary>
-        internal readonly VertexLocation TargetLocation;
+        private readonly InMemoryVertex _targetVertex;
 
         #endregion
 
@@ -41,22 +36,19 @@ namespace sones.GraphFS.Element.Edge
         /// <summary>
         /// Creates a new single edge
         /// </summary>
-        /// <param name="myEdgeDefinition">The definition of this edge</param>
-        /// <param name="myGetVertex">The function to resolve either the source or the target vertex</param>
+        /// <param name="mySourceVertex">The source vertex</param>
+        /// <param name="myTargetVertex">The target vertex</param>
+        /// <param name="myGraphElementInformation">The graph element information</param>
         public SingleEdge(
-            SingleEdgeAddDefinition myEdgeDefinition,
-            Func<long, long, IVertex> myGetVertex)
+            InMemoryVertex mySourceVertex,
+            InMemoryVertex myTargetVertex,
+            GraphElementInformation myGraphElementInformation)
         {
-            _getVertexFunc = myGetVertex;
+            _sourceVertex = mySourceVertex;
 
-            SourceLocation = new VertexLocation(myEdgeDefinition.SourceVertexInformation.VertexTypeID,
-                                                 myEdgeDefinition.SourceVertexInformation.VertexID);
+            _targetVertex = myTargetVertex;
 
-            TargetLocation = new VertexLocation(myEdgeDefinition.TargetVertexInformation.VertexTypeID,
-                                                 myEdgeDefinition.TargetVertexInformation.VertexID);
-
-            _inMemoryGraphElementInformation =
-                new InMemoryGraphElementInformation(myEdgeDefinition.GraphElementInformation);
+            _graphElementInformation = myGraphElementInformation;
         }
 
         #endregion
@@ -65,12 +57,12 @@ namespace sones.GraphFS.Element.Edge
 
         public IVertex GetTargetVertex()
         {
-            return _getVertexFunc(TargetLocation.VertexID, TargetLocation.VertexTypeID);
+            return _targetVertex;
         }
 
         public IVertex GetSourceVertex()
         {
-            return _getVertexFunc(SourceLocation.VertexID, SourceLocation.VertexTypeID);
+            return _sourceVertex;
         }
 
         public IEnumerable<IVertex> GetTargetVertices(Func<IVertex, bool> myFilterFunc = null)
@@ -96,103 +88,95 @@ namespace sones.GraphFS.Element.Edge
         {
             if (HasProperty(myPropertyID))
             {
-                return (T) _inMemoryGraphElementInformation.StructuredProperties[myPropertyID];
+                return (T)_graphElementInformation.StructuredProperties[myPropertyID];
             }
-            else
-            {
-                throw new CouldNotFindStructuredEdgePropertyException(_inMemoryGraphElementInformation.TypeID,
-                                                                      myPropertyID);
-            }
+            
+            throw new CouldNotFindStructuredEdgePropertyException(_graphElementInformation.TypeID,
+                                                                  myPropertyID);
         }
 
         public bool HasProperty(long myPropertyID)
         {
-            return _inMemoryGraphElementInformation.StructuredProperties.ContainsKey(myPropertyID);
+            return _graphElementInformation.StructuredProperties.ContainsKey(myPropertyID);
         }
 
         public int GetCountOfProperties()
         {
-            return _inMemoryGraphElementInformation.StructuredProperties.Count;
+            return _graphElementInformation.StructuredProperties.Count;
         }
 
         public IEnumerable<Tuple<long, object>> GetAllProperties(Func<long, object, bool> myFilterFunc = null)
         {
-            return _inMemoryGraphElementInformation.GetAllPropertiesProtected(myFilterFunc);
+            return _graphElementInformation.GetAllPropertiesProtected(myFilterFunc);
         }
 
         public string GetPropertyAsString(long myPropertyID)
         {
             if (HasProperty(myPropertyID))
             {
-                return _inMemoryGraphElementInformation.StructuredProperties[myPropertyID].ToString();
+                return _graphElementInformation.StructuredProperties[myPropertyID].ToString();
             }
-            else
-            {
-                throw new CouldNotFindStructuredEdgePropertyException(_inMemoryGraphElementInformation.TypeID,
-                                                                      myPropertyID);
-            }
+            
+            throw new CouldNotFindStructuredEdgePropertyException(_graphElementInformation.TypeID,
+                                                                  myPropertyID);
         }
 
         public T GetUnstructuredProperty<T>(string myPropertyName)
         {
             if (HasUnstructuredProperty(myPropertyName))
             {
-                return (T) _inMemoryGraphElementInformation.UnstructuredProperties[myPropertyName];
+                return (T)_graphElementInformation.UnstructuredProperties[myPropertyName];
             }
-            else
-            {
-                throw new CouldNotFindUnStructuredEdgePropertyException(_inMemoryGraphElementInformation.TypeID,
-                                                                        myPropertyName);
-            }
+
+            throw new CouldNotFindUnStructuredEdgePropertyException(_graphElementInformation.TypeID,
+                                                                    myPropertyName);
         }
 
         public bool HasUnstructuredProperty(string myPropertyName)
         {
-            return _inMemoryGraphElementInformation.UnstructuredProperties.ContainsKey(myPropertyName);
+            return _graphElementInformation.UnstructuredProperties.ContainsKey(myPropertyName);
         }
 
         public int GetCountOfUnstructuredProperties()
         {
-            return _inMemoryGraphElementInformation.UnstructuredProperties.Count;
+            return _graphElementInformation.UnstructuredProperties.Count;
         }
 
         public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(
             Func<string, object, bool> myFilterFunc = null)
         {
-            return _inMemoryGraphElementInformation.GetAllUnstructuredPropertiesProtected(myFilterFunc);
+            return _graphElementInformation.GetAllUnstructuredPropertiesProtected(myFilterFunc);
         }
 
         public string GetUnstructuredPropertyAsString(string myPropertyName)
         {
             if (HasUnstructuredProperty(myPropertyName))
             {
-                return _inMemoryGraphElementInformation.UnstructuredProperties[myPropertyName].ToString();
+                return _graphElementInformation.UnstructuredProperties[myPropertyName].ToString();
             }
-            else
-            {
-                throw new CouldNotFindUnStructuredEdgePropertyException(_inMemoryGraphElementInformation.TypeID,
-                                                                        myPropertyName);
-            }
+
+            throw new CouldNotFindUnStructuredEdgePropertyException(_graphElementInformation.TypeID,
+                                                                    myPropertyName);
         }
 
         public string Comment
         {
-            get { return _inMemoryGraphElementInformation.Comment; }
+            get { return _graphElementInformation.Comment; }
         }
 
         public DateTime CreationDate
         {
-            get { return _inMemoryGraphElementInformation.CreationDate; }
+            get { return _graphElementInformation.CreationDate; }
         }
 
         public DateTime ModificationDate
         {
-            get { return _inMemoryGraphElementInformation.ModificationDate; }
+            get { return _graphElementInformation.ModificationDate; }
         }
 
         public long TypeID
         {
-            get { return _inMemoryGraphElementInformation.TypeID; }
+            get { return _graphElementInformation.TypeID; }
         }
 
         public IEdgeStatistics Statistics
@@ -215,20 +199,20 @@ namespace sones.GraphFS.Element.Edge
             // If parameter cannot be cast to Point return false.
             var p = obj as SingleEdge;
 
-            return (Object) p != null && Equals(p);
+            return (Object)p != null && Equals(p);
         }
 
         public Boolean Equals(SingleEdge p)
         {
             // If parameter is null return false:
-            if ((object) p == null)
+            if ((object)p == null)
             {
                 return false;
             }
 
-            return (SourceLocation == p.SourceLocation)
-                   && (TargetLocation == p.TargetLocation)
-                   && (_inMemoryGraphElementInformation.TypeID == p._inMemoryGraphElementInformation.TypeID);
+            return Equals(_sourceVertex, p._sourceVertex)
+                && Equals(_targetVertex, p._targetVertex) 
+                && (_graphElementInformation.TypeID == p._graphElementInformation.TypeID);
         }
 
         public static Boolean operator ==(SingleEdge a, SingleEdge b)
@@ -240,7 +224,7 @@ namespace sones.GraphFS.Element.Edge
             }
 
             // If one is null, but not both, return false.
-            if (((object) a == null) || ((object) b == null))
+            if (((object)a == null) || ((object)b == null))
             {
                 return false;
             }
@@ -256,7 +240,7 @@ namespace sones.GraphFS.Element.Edge
 
         public override int GetHashCode()
         {
-            return SourceLocation.GetHashCode() ^ TargetLocation.GetHashCode();
+            return _sourceVertex.GetHashCode() ^ _targetVertex.GetHashCode();
         }
 
         #endregion
