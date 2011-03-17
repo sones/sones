@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using sones.GraphFS.Element.Edge;
 using sones.GraphFS.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphFS.Definitions;
-using System.Collections.Concurrent;
 
 namespace sones.GraphFS.Element.Vertex
 {

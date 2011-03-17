@@ -141,7 +141,7 @@ namespace sones.Library.VersionedPluginManager
                                                                 new DirectoryInfo(curAssembly.Location).Parent.Name,
                                                                 Path.DirectorySeparatorChar, refAss.Name));
                             }
-                            catch (Exception)
+                            catch
                             {
                                 //do nothing here
                             }

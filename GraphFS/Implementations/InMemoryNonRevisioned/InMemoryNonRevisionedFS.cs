@@ -2,10 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using sones.GraphFS.Definitions;
-using sones.GraphFS.Element;
 using sones.GraphFS.Element.Edge;
 using sones.GraphFS.Element.Vertex;
 using sones.GraphFS.ErrorHandling;
@@ -327,7 +325,7 @@ namespace sones.GraphFS
 
             Boolean addEdges = myVertexDefinition.OutgoingSingleEdges != null || myVertexDefinition.OutgoingHyperEdges != null;
             Dictionary<Int64, IEdge> edges = null;
-            if (true)
+            if (addEdges)
             {
                 edges = new Dictionary<long, IEdge>();
             }
@@ -420,12 +418,10 @@ namespace sones.GraphFS
                                 {
                                     throw new VertexAlreadyExistException(myVertexDefinition.GraphElementInformation.TypeID, myVertexDefinition.VertexID);
                                 }
-                                else
-                                {
-                                    toBeAddedVertex.IncomingEdges = oldVertex.IncomingEdges;
+                                
+                                toBeAddedVertex.IncomingEdges = oldVertex.IncomingEdges;
 
-                                    return toBeAddedVertex;
-                                }
+                                return toBeAddedVertex;
                             });
 
             #endregion
@@ -464,7 +460,7 @@ namespace sones.GraphFS
                                     new ConcurrentDictionary<long, InMemoryVertex>());
             }
 
-            InMemoryVertex targetVertex = null;
+            InMemoryVertex targetVertex;
 
             if (_vertexStore[myTargetVertexTypeID].TryGetValue(myTargetVertexID, out targetVertex))
             {
@@ -494,7 +490,7 @@ namespace sones.GraphFS
                     myTargetVertex.IncomingEdges = new Dictionary<IncomingEdgeKey, HashSet<SingleEdge>>();
                 }
 
-                HashSet<SingleEdge> incomingEdges = null;
+                HashSet<SingleEdge> incomingEdges;
 
                 if (myTargetVertex.IncomingEdges.TryGetValue(incomingEdgeKey, out incomingEdges))
                 {

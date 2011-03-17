@@ -51,10 +51,8 @@ namespace sones.GraphFS.Element.Edge
             {
                 return Equals((IncomingEdgeKey)obj);
             }
-            else
-            {
-                return false;
-            }
+            
+            return false;
         }
 
         public Boolean Equals(IncomingEdgeKey p)

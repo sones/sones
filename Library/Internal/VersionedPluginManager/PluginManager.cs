@@ -70,20 +70,18 @@ namespace sones.Library.VersionedPluginManager
             {
                 throw new FileNotFoundException("Executing Assembly could not founded");
             }
-            else
+            
+            //notice for the refactoring                 
+            // todo: recursive search into depth starting from the plugin folder
+
+            string location = Path.GetDirectoryName(assem.Location);
+            _lookupLocations = new[] {location + Path.DirectorySeparatorChar + "plugins", location};
+            if (_lookupLocations.IsNullOrEmpty())
             {
-                //notice for the refactoring                 
-                // todo: recursive search into depth starting from the plugin folder
-
-                string location = Path.GetDirectoryName(assem.Location);
-                _lookupLocations = new[] {location + Path.DirectorySeparatorChar + "plugins", location};
-                if (_lookupLocations.IsNullOrEmpty())
-                {
-                    _lookupLocations = new[] {Environment.CurrentDirectory};
-                }
-
-                _inheritTypeAndInstance = new Dictionary<Type, Tuple<ActivatorInfo, List<object>>>();
+                _lookupLocations = new[] {Environment.CurrentDirectory};
             }
+
+            _inheritTypeAndInstance = new Dictionary<Type, Tuple<ActivatorInfo, List<object>>>();
         }
 
         #endregion
@@ -153,11 +151,9 @@ namespace sones.Library.VersionedPluginManager
                 return Register<T1>(assemblyVersionCompatibilityAttribute.MinVersion,
                                     assemblyVersionCompatibilityAttribute.MaxVersion, null, myCtorArgs);
             }
-            else
-            {
-                Version version = Assembly.GetAssembly(typeof (T1)).GetName().Version;
-                return Register<T1>(version, version, null, myCtorArgs);
-            }
+            
+            Version version = Assembly.GetAssembly(typeof (T1)).GetName().Version;
+            return Register<T1>(version, version, null, myCtorArgs);
         }
 
         #endregion
@@ -218,11 +214,6 @@ namespace sones.Library.VersionedPluginManager
             catch (CouldNotLoadAssemblyException)
             {
                 throw new CouldNotLoadAssemblyException(myFile);                
-            }
-
-            catch (Exception e)
-            {
-                throw e;
             }
 
             #endregion
@@ -343,7 +334,7 @@ namespace sones.Library.VersionedPluginManager
 
                 #region Create instance and add to lookup dict
 
-                if (_validVersion == true)
+                if (_validVersion)
                 {
                     try
                     {
@@ -513,10 +504,8 @@ namespace sones.Library.VersionedPluginManager
             {
                 return !_inheritTypeAndInstance[typeof (T1)].Item2.IsNullOrEmpty();
             }
-            else
-            {
-                return _inheritTypeAndInstance[typeof (T1)].Item2.Any(o => mySelector((T1) o));
-            }
+            
+            return _inheritTypeAndInstance[typeof (T1)].Item2.Any(o => mySelector((T1) o));
         }
 
         #endregion
