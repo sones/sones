@@ -92,7 +92,7 @@ namespace sones.GraphFS
                 (aType => aType.Values.AsParallel().
                               Where
                               (aVertex
-                               => aVertex.VertexRevisionID.Timestamp > myTimeStamp)).
+                               => aVertex.VertexRevisionID.Timestamp > myTimeStamp.Ticks)).
                 Aggregate((enumerableA, enumerableB) => enumerableA.Union(enumerableB));
         }
 
@@ -471,18 +471,7 @@ namespace sones.GraphFS
                 return targetVertex;
             }
 
-            _vertexStore[myTargetVertexTypeID].AddOrUpdate(
-                myTargetVertexID,
-                _ =>
-                {
-                    targetVertex = InMemoryVertex.CreateNewBulkVertex(myTargetVertexID, myTargetVertexTypeID);
-                    return targetVertex;
-                },
-                (id, oldVertex) =>
-                {
-                    targetVertex = oldVertex;
-                    return oldVertex;
-                });
+            targetVertex = _vertexStore[myTargetVertexTypeID].GetOrAdd(myTargetVertexID, InMemoryVertex.CreateNewBulkVertex(myTargetVertexID, myTargetVertexTypeID));
 
             return targetVertex;
         }
@@ -498,11 +487,18 @@ namespace sones.GraphFS
         {
             var incomingEdgeKey = new IncomingEdgeKey(myIncomingVertexTypeID, myIncomingEdgeID);
 
-            lock (myTargetVertex.IncomingEdges)
+            lock (myTargetVertex)
             {
-                if (myTargetVertex.IncomingEdges.ContainsKey(incomingEdgeKey))
+                if (myTargetVertex.IncomingEdges == null)
                 {
-                    myTargetVertex.IncomingEdges[incomingEdgeKey].Add(mySingleEdge);
+                    myTargetVertex.IncomingEdges = new Dictionary<IncomingEdgeKey, HashSet<SingleEdge>>();
+                }
+
+                HashSet<SingleEdge> incomingEdges = null;
+
+                if (myTargetVertex.IncomingEdges.TryGetValue(incomingEdgeKey, out incomingEdges))
+                {
+                    incomingEdges.Add(mySingleEdge);
                 }
                 else
                 {

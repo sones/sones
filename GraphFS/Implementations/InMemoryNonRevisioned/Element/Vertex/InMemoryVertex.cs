@@ -82,7 +82,7 @@ namespace sones.GraphFS.Element.Vertex
             _binaryProperties = myBinaryProperties;
             _outgoingEdges = myOutgoingEdges;
             _graphElementInformation = myGraphElementInformation;
-            IncomingEdges = new Dictionary<IncomingEdgeKey, HashSet<SingleEdge>>();
+            IncomingEdges = null;
 
             IsBulkVertex = false;
         }
@@ -97,9 +97,9 @@ namespace sones.GraphFS.Element.Vertex
             Int64 myVertexTypeID)
         {
             _vertexID = myVertexID;
-            _graphElementInformation = new GraphElementInformation() { TypeID = myVertexTypeID };
+            _graphElementInformation = new GraphElementInformation(myVertexTypeID, null, 0L , 0L, null, null);
             IsBulkVertex = true;
-            IncomingEdges = new Dictionary<IncomingEdgeKey, HashSet<SingleEdge>>();
+            IncomingEdges = null;
         }
 
         #endregion
@@ -373,12 +373,12 @@ namespace sones.GraphFS.Element.Vertex
             get { return _graphElementInformation.Comment; }
         }
 
-        public DateTime CreationDate
+        public long CreationDate
         {
             get { return _graphElementInformation.CreationDate; }
         }
 
-        public DateTime ModificationDate
+        public long ModificationDate
         {
             get { return _graphElementInformation.ModificationDate; }
         }

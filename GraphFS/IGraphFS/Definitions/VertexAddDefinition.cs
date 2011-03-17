@@ -6,7 +6,7 @@ namespace sones.GraphFS.Definitions
     /// <summary>
     /// This struct represents the filesystem definition for a vertex
     /// </summary>
-    public struct VertexAddDefinition
+    public sealed class VertexAddDefinition
     {
         #region data
 

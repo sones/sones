@@ -6,7 +6,7 @@ namespace sones.GraphFS.Definitions
     /// <summary>
     /// This struct represents the filesystem definition for an edge
     /// </summary>
-    public struct HyperEdgeAddDefinition
+    public sealed class HyperEdgeAddDefinition
     {
         #region data
 

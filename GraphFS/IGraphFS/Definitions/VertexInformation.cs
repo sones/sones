@@ -6,7 +6,7 @@ namespace sones.GraphFS.Definitions
     /// <summary>
     /// The information / loaction definition of a vertex
     /// </summary>
-    public struct VertexInformation
+    public sealed class VertexInformation
     {
         #region data
 

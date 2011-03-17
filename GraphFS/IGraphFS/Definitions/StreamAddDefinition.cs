@@ -5,7 +5,7 @@ namespace sones.GraphFS.Definitions
     /// <summary>
     /// This struct represents the filesystem definition for a stream
     /// </summary>
-    public struct StreamAddDefinition
+    public sealed class StreamAddDefinition
     {
         #region data
 

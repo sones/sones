@@ -101,7 +101,7 @@ namespace sones.Library.PropertyHyperGraph
         /// <summary>
         /// The date the graph element has been created
         /// </summary>
-        DateTime CreationDate { get; }
+        long CreationDate { get; }
 
         #endregion
 
@@ -110,7 +110,7 @@ namespace sones.Library.PropertyHyperGraph
         /// <summary>
         /// The date the graph element has been modified the last time
         /// </summary>
-        DateTime ModificationDate { get; }
+        long ModificationDate { get; }
 
         #endregion
 

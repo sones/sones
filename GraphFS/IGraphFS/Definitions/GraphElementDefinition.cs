@@ -4,7 +4,7 @@ using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphFS.Definitions
 {
-    public struct GraphElementInformation
+    public sealed class GraphElementInformation
     {
         #region data
 
@@ -16,12 +16,12 @@ namespace sones.GraphFS.Definitions
         /// <summary>
         /// The creation date of the vertex
         /// </summary>
-        public readonly DateTime CreationDate;
+        public readonly long CreationDate;
 
         /// <summary>
         /// The modification date of the vertex
         /// </summary>
-        public readonly DateTime ModificationDate;
+        public readonly long ModificationDate;
 
         /// <summary>
         /// The structured properties
@@ -54,8 +54,8 @@ namespace sones.GraphFS.Definitions
         public GraphElementInformation(
             Int64 myTypeID,
             String myComment,
-            DateTime myCreationDate,
-            DateTime myModificationDate,
+            long myCreationDate,
+            long myModificationDate,
             Dictionary<Int64, Object> myStructuredProperties,
             Dictionary<String, Object> myUnstructuredProperties)
         {

@@ -164,12 +164,12 @@ namespace sones.GraphFS.Element.Edge
             get { return _graphElementInformation.Comment; }
         }
 
-        public DateTime CreationDate
+        public long CreationDate
         {
             get { return _graphElementInformation.CreationDate; }
         }
 
-        public DateTime ModificationDate
+        public long ModificationDate
         {
             get { return _graphElementInformation.ModificationDate; }
         }

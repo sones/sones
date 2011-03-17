@@ -11,7 +11,7 @@ namespace sones.Library.PropertyHyperGraph
         /// <summary>
         /// The timestamp of this revision.
         /// </summary>
-        public readonly DateTime Timestamp;
+        public readonly long Timestamp;
 
         #endregion
 
@@ -36,7 +36,7 @@ namespace sones.Library.PropertyHyperGraph
         /// </summary>
         /// <param name="myTimeStamp">Any timestamp</param> 
         /// <param name="myID">An unique identification for this generation process</param>
-        public VertexRevisionID(DateTime myTimeStamp, UInt64 myID = 0UL)
+        public VertexRevisionID(long myTimeStamp, UInt64 myID = 0UL)
         {
             Timestamp = myTimeStamp;
 
