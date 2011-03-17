@@ -49,6 +49,7 @@
     <Compile Include="Edge\IEdgeStatistics.cs" />
     <Compile Include="Edge\IHyperEdge.cs" />
     <Compile Include="Edge\ISingleEdge.cs" />
+    <Compile Include="Filter.cs" />
     <Compile Include="IGraphElement.cs" />
     <Compile Include="IGraphElementStatistics.cs" />
     <Compile Include="Partition\IGraphPartitionInformation.cs" />

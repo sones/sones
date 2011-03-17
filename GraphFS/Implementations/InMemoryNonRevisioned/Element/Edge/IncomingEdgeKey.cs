@@ -26,8 +26,8 @@ namespace sones.GraphFS.Element.Edge
         /// <summary>
         /// Creates a new incoming edge key
         /// </summary>
-        /// <param name="myVertexTypeID">The id of the vertex type</param>
-        /// <param name="myEdgePropertyID">The id of the edge property</param>
+        /// <param name="myVertexTypeID">The id of the incoming vertex type</param>
+        /// <param name="myEdgePropertyID">The id of the incoming edge property</param>
         public IncomingEdgeKey(Int64 myVertexTypeID, Int64 myEdgePropertyID)
         {
             EdgePropertyID = myEdgePropertyID;

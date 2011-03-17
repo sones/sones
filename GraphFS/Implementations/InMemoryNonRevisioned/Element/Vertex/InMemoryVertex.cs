@@ -113,15 +113,15 @@ namespace sones.GraphFS.Element.Vertex
         }
 
         public IEnumerable<Tuple<long, long, IEnumerable<ISingleEdge>>> GetAllIncomingEdges(
-            Func<long, long, IEnumerable<ISingleEdge>, bool> myFilterFunc = null)
+            Filter.IncomingEdgeFilter myFilter = null)
         {
             if (IncomingEdges != null)
             {
                 foreach (var aIncomingEdge in IncomingEdges)
                 {
-                    if (myFilterFunc != null)
+                    if (myFilter != null)
                     {
-                        if (myFilterFunc(aIncomingEdge.Key.VertexTypeID, aIncomingEdge.Key.EdgePropertyID, aIncomingEdge.Value))
+                        if (myFilter(aIncomingEdge.Key.VertexTypeID, aIncomingEdge.Key.EdgePropertyID, aIncomingEdge.Value))
                         {
                             yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aIncomingEdge.Key.VertexTypeID, aIncomingEdge.Key.EdgePropertyID, aIncomingEdge.Value);
                         }
@@ -137,11 +137,26 @@ namespace sones.GraphFS.Element.Vertex
             yield break;
         }
 
-        public IEnumerable<ISingleEdge> GetIncomingHyperEdge(long myVertexTypeID, long myEdgePropertyID)
+        public IEnumerable<ISingleEdge> GetIncomingEdges(long myVertexTypeID, long myEdgePropertyID)
         {
             return HasIncomingEdge(myVertexTypeID, myEdgePropertyID)
                        ? IncomingEdges[new IncomingEdgeKey(myVertexTypeID, myEdgePropertyID)]
-                       : null;
+                       : new HashSet<SingleEdge>();
+        }
+
+        public IEnumerable<IVertex> GetIncomingVertices(Int64 myVertexTypeID, Int64 myEdgePropertyID)
+        {
+            var incomingEdges = GetIncomingEdges(myVertexTypeID, myEdgePropertyID);
+
+            if (incomingEdges != null)
+            {
+                foreach (var aIncomingEdge in incomingEdges)
+                {
+                    yield return aIncomingEdge.GetSourceVertex();
+                }
+            }
+
+            yield break;
         }
 
         public bool HasOutgoingEdge(long myEdgePropertyID)
@@ -150,15 +165,15 @@ namespace sones.GraphFS.Element.Vertex
                    _outgoingEdges.ContainsKey(myEdgePropertyID);
         }
 
-        public IEnumerable<Tuple<long, IEdge>> GetAllOutgoingEdges(Func<long, IEdge, bool> myFilterFunc = null)
+        public IEnumerable<Tuple<long, IEdge>> GetAllOutgoingEdges(Filter.OutgoingEdgeFilter myFilter = null)
         {
             if (_outgoingEdges != null)
             {
                 foreach (var aEdge in _outgoingEdges)
                 {
-                    if (myFilterFunc != null)
+                    if (myFilter != null)
                     {
-                        if (myFilterFunc(aEdge.Key, aEdge.Value))
+                        if (myFilter(aEdge.Key, aEdge.Value))
                         {
                             yield return new Tuple<long, IEdge>(aEdge.Key, aEdge.Value);
                         }
@@ -174,15 +189,59 @@ namespace sones.GraphFS.Element.Vertex
         }
 
         public IEnumerable<Tuple<long, IHyperEdge>> GetAllOutgoingHyperEdges(
-            Func<long, IHyperEdge, bool> myFilterFunc = null)
+            Filter.OutgoingHyperEdgeFilter myFilter = null)
         {
-            return GetAllOutgoingEdgesPrivate(myFilterFunc);
+            if (_outgoingEdges != null)
+            {
+                foreach (var aEdge in _outgoingEdges)
+                {
+                    var interestingEdge = aEdge.Value as IHyperEdge;
+
+                    if (interestingEdge == null) continue;
+
+                    if (myFilter != null)
+                    {
+                        if (myFilter(aEdge.Key, interestingEdge))
+                        {
+                            yield return new Tuple<long, IHyperEdge>(aEdge.Key, interestingEdge);
+                        }
+                    }
+                    else
+                    {
+                        yield return new Tuple<long, IHyperEdge>(aEdge.Key, interestingEdge);
+                    }
+                }
+            }
+
+            yield break;
         }
 
         public IEnumerable<Tuple<long, ISingleEdge>> GetAllOutgoingSingleEdges(
-            Func<long, ISingleEdge, bool> myFilterFunc = null)
+            Filter.OutgoingSingleEdgeFilter myFilter = null)
         {
-            return GetAllOutgoingEdgesPrivate(myFilterFunc);
+            if (_outgoingEdges != null)
+            {
+                foreach (var aEdge in _outgoingEdges)
+                {
+                    var interestingEdge = aEdge.Value as ISingleEdge;
+
+                    if (interestingEdge == null) continue;
+
+                    if (myFilter != null)
+                    {
+                        if (myFilter(aEdge.Key, interestingEdge))
+                        {
+                            yield return new Tuple<long, ISingleEdge>(aEdge.Key, interestingEdge);
+                        }
+                    }
+                    else
+                    {
+                        yield return new Tuple<long, ISingleEdge>(aEdge.Key, interestingEdge);
+                    }
+                }
+            }
+
+            yield break;
         }
 
         public IEdge GetOutgoingEdge(long myEdgePropertyID)
@@ -209,15 +268,15 @@ namespace sones.GraphFS.Element.Vertex
             return _binaryProperties != null && _binaryProperties.ContainsKey(myPropertyID) ? _binaryProperties[myPropertyID] : null;
         }
 
-        public IEnumerable<Tuple<long, Stream>> GetAllBinaryProperties(Func<long, Stream, bool> myFilterFunc = null)
+        public IEnumerable<Tuple<long, Stream>> GetAllBinaryProperties(Filter.BinaryPropertyFilter myFilter = null)
         {
             if (_binaryProperties != null)
             {
                 foreach (var aBinary in _binaryProperties)
                 {
-                    if (myFilterFunc != null)
+                    if (myFilter != null)
                     {
-                        if (myFilterFunc(aBinary.Key, aBinary.Value))
+                        if (myFilter(aBinary.Key, aBinary.Value))
                         {
                             yield return new Tuple<long, Stream>(aBinary.Key, aBinary.Value);
                         }
@@ -353,48 +412,6 @@ namespace sones.GraphFS.Element.Vertex
         {
             get { return null; }
         }
-
-        #endregion
-
-        #region private helper
-
-        #region GetAllOutgoingEdges_private
-
-        /// <summary>
-        /// Returns all outgoing edges corresponding to their type and an optional filter function
-        /// </summary>
-        /// <typeparam name="T">The type of the result</typeparam>
-        /// <param name="myFilterFunc">The optional filter function</param>
-        /// <returns>All matching outgoing edges</returns>
-        private IEnumerable<Tuple<long, T>> GetAllOutgoingEdgesPrivate<T>(Func<long, T, bool> myFilterFunc)
-            where T : class
-        {
-            if (_outgoingEdges != null)
-            {
-                foreach (var aEdge in _outgoingEdges)
-                {
-                    var interestingEdge = aEdge.Value as T;
-
-                    if (interestingEdge == null) continue;
-
-                    if (myFilterFunc != null)
-                    {
-                        if (myFilterFunc(aEdge.Key, interestingEdge))
-                        {
-                            yield return new Tuple<long, T>(aEdge.Key, interestingEdge);
-                        }
-                    }
-                    else
-                    {
-                        yield return new Tuple<long, T>(aEdge.Key, interestingEdge);
-                    }
-                }
-            }
-
-            yield break;
-        }
-
-        #endregion
 
         #endregion
 
