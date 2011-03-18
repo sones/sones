@@ -4,6 +4,27 @@ using sones.GraphDS;
 
 namespace ISonesRESTService
 {
+    #region ISonesRESTServiceCompatibility
+
+    /// <summary>
+    /// A static implementation of the compatible ISonesRESTService plugin versions. 
+    /// Defines the min and max version for all ISonesRESTService implementations which will be activated used this ISonesRESTService.
+    /// </summary>
+    public static class ISonesRESTServiceCompatibility
+    {
+        public static Version MinVersion
+        {
+            get { return new Version("2.0.0.0"); }
+        }
+
+        public static Version MaxVersion
+        {
+            get { return new Version("2.0.0.0"); }
+        }
+    }
+
+    #endregion
+
     /// <summary>
     /// The interface for all sones RESTful webservices
     /// </summary>

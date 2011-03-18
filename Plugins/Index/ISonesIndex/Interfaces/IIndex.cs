@@ -3,6 +3,27 @@ using System.Collections.Generic;
 
 namespace sones.Plugins.Index.Interfaces
 {
+    #region IIndexVersionCompatibility
+
+    /// <summary>
+    /// A static implementation of the compatible IIndex plugin versions. 
+    /// Defines the min and max version for all IIndex implementations which will be activated used this IIndex.
+    /// </summary>
+    public static class IIndexVersionCompatibility
+    {
+        public static Version MinVersion
+        {
+            get { return new Version("2.0.0.0"); }
+        }
+
+        public static Version MaxVersion
+        {
+            get { return new Version("2.0.0.0"); }
+        }
+    }
+
+    #endregion
+
     /// <summary>
     /// Root interface for all kinds of indices
     /// </summary>

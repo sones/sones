@@ -13,12 +13,12 @@ namespace sones.Plugins.SonesGQL
     {
         public static Version MinVersion
         {
-            get { return new Version("1.0.0.1"); }
+            get { return new Version("2.0.0.0"); }
         }
 
         public static Version MaxVersion
         {
-            get { return new Version("1.0.0.1"); }
+            get { return new Version("2.0.0.0"); }
         }
     }
 
