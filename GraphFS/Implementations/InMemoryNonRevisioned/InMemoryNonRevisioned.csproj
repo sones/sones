@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Element\AGraphElement.cs" />
     <Compile Include="Element\Edge\IncomingEdgeKey.cs" />
     <Compile Include="Element\Vertex\InMemoryVertex.cs" />
     <Compile Include="InMemoryNonRevisionedFS.cs" />

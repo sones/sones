@@ -4,14 +4,13 @@ using System.IO;
 using sones.GraphFS.Element.Edge;
 using sones.GraphFS.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
-using sones.GraphFS.Definitions;
 
 namespace sones.GraphFS.Element.Vertex
 {
     /// <summary>
     /// The in memory representation of an ivertex
     /// </summary>
-    public sealed class InMemoryVertex : IVertex
+    public sealed class InMemoryVertex : AGraphElement, IVertex
     {
         #region data
 
@@ -26,11 +25,6 @@ namespace sones.GraphFS.Element.Vertex
         /// The edition of the vertex
         /// </summary>
         private readonly string _edition;
-
-        /// <summary>
-        /// The id of the vertex type
-        /// </summary>
-        private readonly GraphElementInformation _graphElementInformation;
 
         /// <summary>
         /// The incoming edges of the vertex
@@ -71,7 +65,11 @@ namespace sones.GraphFS.Element.Vertex
         /// <param name="myEdition">The edition of this vertex</param>
         /// <param name="myBinaryProperties">The binary properties of this vertex</param>
         /// <param name="myOutgoingEdges">The outgoing edges of this vertex</param>
-        /// <param name="myGraphElementInformation">The graph element information of this vertex</param>
+        /// <param name="myComment">The comment on this graph element</param>
+        /// <param name="myCreationDate">The creation date of this element</param>
+        /// <param name="myModificationDate">The modification date of this element</param>
+        /// <param name="myStructuredProperties">The structured properties of this element</param>
+        /// <param name="myUnstructuredProperties">The unstructured properties of this element</param>
         public InMemoryVertex(
             Int64 myVertexID,
             Int64 myVertexTypeID,
@@ -79,7 +77,12 @@ namespace sones.GraphFS.Element.Vertex
             String myEdition,
             Dictionary<long, Stream> myBinaryProperties,
             Dictionary<long, IEdge> myOutgoingEdges,
-            GraphElementInformation myGraphElementInformation)
+            String myComment,
+            long myCreationDate,
+            long myModificationDate,
+            Dictionary<Int64, Object> myStructuredProperties,
+            Dictionary<String, Object> myUnstructuredProperties)
+            :base(myComment, myCreationDate, myModificationDate, myStructuredProperties, myUnstructuredProperties)
         {
             _vertexID = myVertexID;
             _vertexTypeID = myVertexTypeID;
@@ -87,7 +90,6 @@ namespace sones.GraphFS.Element.Vertex
             _edition = myEdition;
             _binaryProperties = myBinaryProperties;
             _outgoingEdges = myOutgoingEdges;
-            _graphElementInformation = myGraphElementInformation;
             
             IsBulkVertex = false;
         }
@@ -300,7 +302,7 @@ namespace sones.GraphFS.Element.Vertex
         {
             if (HasProperty(myPropertyID))
             {
-                return (T) _graphElementInformation.StructuredProperties[myPropertyID];
+                return (T) _structuredProperties[myPropertyID];
             }
             
             throw new CouldNotFindStructuredVertexPropertyException(_vertexTypeID,
@@ -309,25 +311,25 @@ namespace sones.GraphFS.Element.Vertex
 
         public bool HasProperty(long myPropertyID)
         {
-            return _graphElementInformation.StructuredProperties != null &&
-                   _graphElementInformation.StructuredProperties.ContainsKey(myPropertyID);
+            return _structuredProperties != null &&
+                   _structuredProperties.ContainsKey(myPropertyID);
         }
 
         public int GetCountOfProperties()
         {
-            return _graphElementInformation.StructuredProperties == null ? 0 : _graphElementInformation.StructuredProperties.Count;
+            return _structuredProperties == null ? 0 : _structuredProperties.Count;
         }
 
         public IEnumerable<Tuple<long, object>> GetAllProperties(Filter.GraphElementStructuredPropertyFilter myFilter = null)
         {
-            return _graphElementInformation.GetAllPropertiesProtected(myFilter);
+            return GetAllPropertiesProtected(myFilter);
         }
 
         public string GetPropertyAsString(long myPropertyID)
         {
             if (HasProperty(myPropertyID))
             {
-                return _graphElementInformation.StructuredProperties[myPropertyID].ToString();
+                return _structuredProperties[myPropertyID].ToString();
             }
             
             throw new CouldNotFindStructuredVertexPropertyException(_vertexTypeID,
@@ -338,7 +340,7 @@ namespace sones.GraphFS.Element.Vertex
         {
             if (HasUnstructuredProperty(myPropertyName))
             {
-                return (T) _graphElementInformation.UnstructuredProperties[myPropertyName];
+                return (T) _unstructuredProperties[myPropertyName];
             }
             
             throw new CouldNotFindUnStructuredVertexPropertyException(_vertexTypeID,
@@ -347,26 +349,26 @@ namespace sones.GraphFS.Element.Vertex
 
         public bool HasUnstructuredProperty(string myPropertyName)
         {
-            return _graphElementInformation.UnstructuredProperties != null &&
-                   _graphElementInformation.UnstructuredProperties.ContainsKey(myPropertyName);
+            return _unstructuredProperties != null &&
+                   _unstructuredProperties.ContainsKey(myPropertyName);
         }
 
         public int GetCountOfUnstructuredProperties()
         {
-            return _graphElementInformation.UnstructuredProperties == null ? 0 : _graphElementInformation.UnstructuredProperties.Count;
+            return _unstructuredProperties == null ? 0 : _unstructuredProperties.Count;
         }
 
         public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(
             Filter.GraphElementUnStructuredPropertyFilter myFilter = null)
         {
-            return _graphElementInformation.GetAllUnstructuredPropertiesProtected(myFilter);
+            return GetAllUnstructuredPropertiesProtected(myFilter);
         }
 
         public string GetUnstructuredPropertyAsString(string myPropertyName)
         {
             if (HasUnstructuredProperty(myPropertyName))
             {
-                return _graphElementInformation.UnstructuredProperties[myPropertyName].ToString();
+                return _unstructuredProperties[myPropertyName].ToString();
             }
             
             throw new CouldNotFindUnStructuredVertexPropertyException(_vertexTypeID,
@@ -375,17 +377,17 @@ namespace sones.GraphFS.Element.Vertex
 
         public string Comment
         {
-            get { return _graphElementInformation.Comment; }
+            get { return _comment; }
         }
 
         public long CreationDate
         {
-            get { return _graphElementInformation.CreationDate; }
+            get { return _creationDate; }
         }
 
         public long ModificationDate
         {
-            get { return _graphElementInformation.ModificationDate; }
+            get { return _modificationDate; }
         }
 
         public long VertexTypeID

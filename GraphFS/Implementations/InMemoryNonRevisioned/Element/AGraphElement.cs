@@ -2,61 +2,68 @@
 using System.Collections.Generic;
 using sones.Library.PropertyHyperGraph;
 
-namespace sones.GraphFS.Definitions
+namespace sones.GraphFS.Element
 {
-    public sealed class GraphElementInformation
+    /// <summary>
+    /// The abstract graph element
+    /// </summary>
+    public abstract class AGraphElement
     {
         #region data
 
         /// <summary>
         /// A comment for the vertex
         /// </summary>
-        public readonly string Comment;
+        protected readonly string _comment;
 
         /// <summary>
         /// The creation date of the vertex
         /// </summary>
-        public readonly long CreationDate;
+        protected readonly long _creationDate;
 
         /// <summary>
         /// The modification date of the vertex
         /// </summary>
-        public readonly long ModificationDate;
+        protected readonly long _modificationDate;
 
         /// <summary>
         /// The structured properties
         /// </summary>
-        public readonly Dictionary<Int64, Object> StructuredProperties;
+        protected readonly Dictionary<Int64, Object> _structuredProperties;
 
         /// <summary>
         /// The unstructured properties
         /// </summary>
-        public readonly Dictionary<String, Object> UnstructuredProperties;
+        protected readonly Dictionary<String, Object> _unstructuredProperties;
 
         #endregion
 
         #region constructor
 
         /// <summary>
-        /// Creates a new graph element information
+        /// Creates a new abstract graph element
         /// </summary>
         /// <param name="myComment">The comment on this graph element</param>
         /// <param name="myCreationDate">The creation date of this element</param>
         /// <param name="myModificationDate">The modification date of this element</param>
         /// <param name="myStructuredProperties">The structured properties of this element</param>
         /// <param name="myUnstructuredProperties">The unstructured properties of this element</param>
-        public GraphElementInformation(
+        protected AGraphElement(
             String myComment,
             long myCreationDate,
             long myModificationDate,
             Dictionary<Int64, Object> myStructuredProperties,
             Dictionary<String, Object> myUnstructuredProperties)
         {
-            Comment = myComment;
-            CreationDate = myCreationDate;
-            ModificationDate = myModificationDate;
-            StructuredProperties = myStructuredProperties;
-            UnstructuredProperties = myUnstructuredProperties;
+            _comment = myComment;
+            _creationDate = myCreationDate;
+            _modificationDate = myModificationDate;
+            _structuredProperties = myStructuredProperties;
+            _unstructuredProperties = myUnstructuredProperties;
+        }
+
+        protected AGraphElement()
+        {
         }
 
         #endregion
@@ -70,11 +77,11 @@ namespace sones.GraphFS.Definitions
         /// </summary>
         /// <param name="myFilter">An optional filter function</param>
         /// <returns>An enumerable of propertyID/propertyValue</returns>
-        public IEnumerable<Tuple<long, object>> GetAllPropertiesProtected(Filter.GraphElementStructuredPropertyFilter myFilter = null)
+        protected IEnumerable<Tuple<long, object>> GetAllPropertiesProtected(Filter.GraphElementStructuredPropertyFilter myFilter = null)
         {
-            if (StructuredProperties != null)
+            if (_structuredProperties != null)
             {
-                foreach (var aProperty in StructuredProperties)
+                foreach (var aProperty in _structuredProperties)
                 {
                     if (myFilter != null)
                     {
@@ -101,12 +108,12 @@ namespace sones.GraphFS.Definitions
         /// </summary>
         /// <param name="myFilter">An optional filter function</param>
         /// <returns>An enumerable of propertyName/PropertyValue</returns>
-        public IEnumerable<Tuple<string, object>> GetAllUnstructuredPropertiesProtected(
+        protected IEnumerable<Tuple<string, object>> GetAllUnstructuredPropertiesProtected(
             Filter.GraphElementUnStructuredPropertyFilter myFilter = null)
         {
-            if (UnstructuredProperties != null)
+            if (_unstructuredProperties != null)
             {
-                foreach (var aUnstructuredProperty in UnstructuredProperties)
+                foreach (var aUnstructuredProperty in _unstructuredProperties)
                 {
                     if (myFilter != null)
                     {

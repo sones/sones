@@ -330,7 +330,18 @@ namespace sones.GraphFS
                 edges = new Dictionary<long, IEdge>();
             }
 
-            InMemoryVertex toBeAddedVertex = new InMemoryVertex(myVertexDefinition.VertexID, myVertexDefinition.VertexTypeID, vertexRevisionID, myVertexDefinition.Edition, binaryProperties, edges, myVertexDefinition.GraphElementInformation);
+            InMemoryVertex toBeAddedVertex = new InMemoryVertex(
+                myVertexDefinition.VertexID, 
+                myVertexDefinition.VertexTypeID, 
+                vertexRevisionID, 
+                myVertexDefinition.Edition, 
+                binaryProperties, 
+                edges, 
+                myVertexDefinition.Comment, 
+                myVertexDefinition.CreationDate, 
+                myVertexDefinition.ModificationDate, 
+                myVertexDefinition.StructuredProperties, 
+                myVertexDefinition.UnstructuredProperties);
 
             #endregion
 
@@ -350,10 +361,16 @@ namespace sones.GraphFS
                 {
                     foreach (var aSingleEdgeDefinition in myVertexDefinition.OutgoingSingleEdges)
                     {
-                        targetVertex = GetOrCreateTargetVertex(aSingleEdgeDefinition.TargetVertexInformation.VertexTypeID, aSingleEdgeDefinition.TargetVertexInformation.VertexID);
+                        targetVertex =
+                            GetOrCreateTargetVertex(aSingleEdgeDefinition.TargetVertexInformation.VertexTypeID,
+                                                    aSingleEdgeDefinition.TargetVertexInformation.VertexID);
 
                         //create the new Edge
-                        singleEdge = new SingleEdge(toBeAddedVertex, targetVertex, aSingleEdgeDefinition.GraphElementInformation);
+                        singleEdge = new SingleEdge(aSingleEdgeDefinition.PropertyID, toBeAddedVertex, targetVertex,
+                                                    aSingleEdgeDefinition.Comment, aSingleEdgeDefinition.CreationDate,
+                                                    aSingleEdgeDefinition.ModificationDate,
+                                                    aSingleEdgeDefinition.StructuredProperties,
+                                                    aSingleEdgeDefinition.UnstructuredProperties);
 
                         CreateOrUpdateIncomingEdgesOnVertex(
                             targetVertex,
@@ -377,9 +394,16 @@ namespace sones.GraphFS
 
                         foreach (var aSingleEdgeDefinition in aHyperEdgeDefinition.ContainedSingleEdges)
                         {
-                            targetVertex = GetOrCreateTargetVertex(aSingleEdgeDefinition.TargetVertexInformation.VertexTypeID, aSingleEdgeDefinition.TargetVertexInformation.VertexID);
+                            targetVertex =
+                                GetOrCreateTargetVertex(aSingleEdgeDefinition.TargetVertexInformation.VertexTypeID,
+                                                        aSingleEdgeDefinition.TargetVertexInformation.VertexID);
 
-                            singleEdge = new SingleEdge(toBeAddedVertex, targetVertex, aSingleEdgeDefinition.GraphElementInformation);
+                            singleEdge = new SingleEdge(aSingleEdgeDefinition.PropertyID, toBeAddedVertex, targetVertex,
+                                                        aSingleEdgeDefinition.Comment,
+                                                        aSingleEdgeDefinition.CreationDate,
+                                                        aSingleEdgeDefinition.ModificationDate,
+                                                        aSingleEdgeDefinition.StructuredProperties,
+                                                        aSingleEdgeDefinition.UnstructuredProperties);
 
                             CreateOrUpdateIncomingEdgesOnVertex(
                                 targetVertex,
@@ -396,8 +420,12 @@ namespace sones.GraphFS
                             new HyperEdge(
                                 containedSingleEdges,
                                 aHyperEdgeDefinition.EdgeTypeID,
-                                aHyperEdgeDefinition.GraphElementInformation,
-                                toBeAddedVertex));
+                                toBeAddedVertex,
+                                aHyperEdgeDefinition.Comment,
+                                aHyperEdgeDefinition.CreationDate,
+                                aHyperEdgeDefinition.ModificationDate,
+                                aHyperEdgeDefinition.StructuredProperties,
+                                aHyperEdgeDefinition.UnstructuredProperties));
 
                     }
                 }

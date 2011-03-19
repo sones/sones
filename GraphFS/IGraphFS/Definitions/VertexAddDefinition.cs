@@ -6,7 +6,7 @@ namespace sones.GraphFS.Definitions
     /// <summary>
     /// This struct represents the filesystem definition for a vertex
     /// </summary>
-    public sealed class VertexAddDefinition
+    public sealed class VertexAddDefinition : AGraphElementDefinition
     {
         #region data
 
@@ -31,11 +31,6 @@ namespace sones.GraphFS.Definitions
         public readonly string Edition;
 
         /// <summary>
-        /// The graph element properties
-        /// </summary>
-        public readonly GraphElementInformation GraphElementInformation;
-
-        /// <summary>
         /// The definition of the outgoing hyper edges
         /// </summary>
         public readonly IEnumerable<HyperEdgeAddDefinition> OutgoingHyperEdges;
@@ -54,19 +49,28 @@ namespace sones.GraphFS.Definitions
         /// </summary>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <param name="myVertexTypeID">The id of the vertex type</param>
-        /// <param name="myGraphElementInformation">The graph element properties</param>
         /// <param name="myEdition">The edition of the new vertex</param>
         /// <param name="myOutgoingHyperEdges">The outgoing hyper edge definitions</param>
         /// <param name="myOutgoingSingleEdges">The outgoing single edge definitions</param>
         /// <param name="myBinaryProperties">The binary properties of the new vertex</param>
+        /// <param name="myComment">The comment on this graph element</param>
+        /// <param name="myCreationDate">The creation date of this element</param>
+        /// <param name="myModificationDate">The modification date of this element</param>
+        /// <param name="myStructuredProperties">The structured properties of this element</param>
+        /// <param name="myUnstructuredProperties">The unstructured properties of this element</param>
         public VertexAddDefinition(
             Int64 myVertexID,
             Int64 myVertexTypeID,
-            GraphElementInformation myGraphElementInformation,
             String myEdition,
             IEnumerable<HyperEdgeAddDefinition> myOutgoingHyperEdges,
             IEnumerable<SingleEdgeAddDefinition> myOutgoingSingleEdges,
-            IEnumerable<StreamAddDefinition> myBinaryProperties)
+            IEnumerable<StreamAddDefinition> myBinaryProperties,
+            String myComment,
+            long myCreationDate,
+            long myModificationDate,
+            Dictionary<Int64, Object> myStructuredProperties,
+            Dictionary<String, Object> myUnstructuredProperties)
+            : base(myComment, myCreationDate, myModificationDate, myStructuredProperties, myUnstructuredProperties)
         {
             Edition = !string.IsNullOrEmpty(myEdition) ? myEdition : ConstantsFS.DefaultVertexEdition;
 
@@ -79,8 +83,6 @@ namespace sones.GraphFS.Definitions
             OutgoingSingleEdges = myOutgoingSingleEdges;
 
             BinaryProperties = myBinaryProperties;
-
-            GraphElementInformation = myGraphElementInformation;
         }
 
         #endregion
