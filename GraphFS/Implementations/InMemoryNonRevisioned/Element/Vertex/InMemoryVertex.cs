@@ -30,7 +30,7 @@ namespace sones.GraphFS.Element.Vertex
         /// The incoming edges of the vertex
         /// (VertexTypeID of the vertex type that points to this vertex, PropertyID of the edge that points to this vertex, SingleEdges)
         /// </summary>
-        public Dictionary<IncomingEdgeKey, HashSet<SingleEdge>> IncomingEdges;
+        public Dictionary<Int64, Dictionary<Int64, HashSet<SingleEdge>>> IncomingEdges;
 
         /// <summary>
         /// The outgoing edges of the vertex
@@ -116,7 +116,8 @@ namespace sones.GraphFS.Element.Vertex
         public bool HasIncomingEdge(long myVertexTypeID, long myEdgePropertyID)
         {
             return IncomingEdges != null &&
-                   IncomingEdges.ContainsKey(new IncomingEdgeKey(myVertexTypeID, myEdgePropertyID));
+                   IncomingEdges.ContainsKey(myVertexTypeID) &&
+                   IncomingEdges[myVertexTypeID].ContainsKey(myEdgePropertyID);
         }
 
         public IEnumerable<Tuple<long, long, IEnumerable<ISingleEdge>>> GetAllIncomingEdges(
@@ -124,21 +125,23 @@ namespace sones.GraphFS.Element.Vertex
         {
             if (IncomingEdges != null)
             {
-                foreach (var aIncomingEdge in IncomingEdges)
+                foreach (var aType in IncomingEdges)
                 {
-                    if (myFilter != null)
+                    foreach (var aEdge in aType.Value)
                     {
-                        if (myFilter(aIncomingEdge.Key.VertexTypeID, aIncomingEdge.Key.EdgePropertyID, aIncomingEdge.Value))
+                        if (myFilter != null)
                         {
-                            yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aIncomingEdge.Key.VertexTypeID, aIncomingEdge.Key.EdgePropertyID, aIncomingEdge.Value);
+                            if (myFilter(aType.Key, aEdge.Key, aEdge.Value))
+                            {
+                                yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aType.Key, aEdge.Key, aEdge.Value);
+                            }
+                        }
+                        else
+                        {
+                            yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aType.Key, aEdge.Key, aEdge.Value);
                         }
                     }
-                    else
-                    {
-                        yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aIncomingEdge.Key.VertexTypeID, aIncomingEdge.Key.EdgePropertyID, aIncomingEdge.Value);
-                    }
                 }
-
             }
 
             yield break;
@@ -147,7 +150,7 @@ namespace sones.GraphFS.Element.Vertex
         public IEnumerable<ISingleEdge> GetIncomingEdges(long myVertexTypeID, long myEdgePropertyID)
         {
             return HasIncomingEdge(myVertexTypeID, myEdgePropertyID)
-                       ? IncomingEdges[new IncomingEdgeKey(myVertexTypeID, myEdgePropertyID)]
+                       ? IncomingEdges[myVertexTypeID][myEdgePropertyID]
                        : new HashSet<SingleEdge>();
         }
 
