@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DBConstants.cs" />
+    <Compile Include="Grammar\SonesGQLGrammar.cs" />
     <Compile Include="SonesQueryLanguage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -51,6 +53,10 @@
     <ProjectReference Include="..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\External\Irony\Irony.csproj">
+      <Project>{D81F5C91-D7DB-46E5-BC99-49488FB6814C}</Project>
+      <Name>Irony</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\Security\Security.csproj">
       <Project>{3C13E344-937B-4010-B0EF-A164232E4454}</Project>
