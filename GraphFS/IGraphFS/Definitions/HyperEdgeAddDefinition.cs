@@ -6,9 +6,34 @@ namespace sones.GraphFS.Definitions
     /// <summary>
     /// This struct represents the filesystem definition for an edge
     /// </summary>
-    public sealed class HyperEdgeAddDefinition : AGraphElementDefinition
+    public struct HyperEdgeAddDefinition
     {
         #region data
+
+        /// <summary>
+        /// A comment for the vertex
+        /// </summary>
+        public readonly string Comment;
+
+        /// <summary>
+        /// The creation date of the vertex
+        /// </summary>
+        public readonly long CreationDate;
+
+        /// <summary>
+        /// The modification date of the vertex
+        /// </summary>
+        public readonly long ModificationDate;
+
+        /// <summary>
+        /// The structured properties
+        /// </summary>
+        public readonly Dictionary<Int64, Object> StructuredProperties;
+
+        /// <summary>
+        /// The unstructured properties
+        /// </summary>
+        public readonly Dictionary<String, Object> UnstructuredProperties;
 
         /// <summary>
         /// The property id of the edge
@@ -56,12 +81,16 @@ namespace sones.GraphFS.Definitions
             long myModificationDate,
             Dictionary<Int64, Object> myStructuredProperties,
             Dictionary<String, Object> myUnstructuredProperties)
-            : base(myComment, myCreationDate, myModificationDate, myStructuredProperties, myUnstructuredProperties)
         {
             PropertyID = myPropertyID;
             EdgeTypeID = myEdgeTypeID;
             SourceVertex = mySourceVertex;
             ContainedSingleEdges = myContainedSingleEdges;
+            Comment = myComment;
+            CreationDate = myCreationDate;
+            ModificationDate = myModificationDate;
+            StructuredProperties = myStructuredProperties;
+            UnstructuredProperties = myUnstructuredProperties;
         }
 
         #endregion

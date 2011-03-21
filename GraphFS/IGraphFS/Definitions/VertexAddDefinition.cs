@@ -6,9 +6,34 @@ namespace sones.GraphFS.Definitions
     /// <summary>
     /// This struct represents the filesystem definition for a vertex
     /// </summary>
-    public sealed class VertexAddDefinition : AGraphElementDefinition
+    public struct VertexAddDefinition
     {
         #region data
+
+        /// <summary>
+        /// A comment for the vertex
+        /// </summary>
+        public readonly string Comment;
+
+        /// <summary>
+        /// The creation date of the vertex
+        /// </summary>
+        public readonly long CreationDate;
+
+        /// <summary>
+        /// The modification date of the vertex
+        /// </summary>
+        public readonly long ModificationDate;
+
+        /// <summary>
+        /// The structured properties
+        /// </summary>
+        public readonly Dictionary<Int64, Object> StructuredProperties;
+
+        /// <summary>
+        /// The unstructured properties
+        /// </summary>
+        public readonly Dictionary<String, Object> UnstructuredProperties;
 
         /// <summary>
         /// The vertex id
@@ -70,7 +95,6 @@ namespace sones.GraphFS.Definitions
             long myModificationDate,
             Dictionary<Int64, Object> myStructuredProperties,
             Dictionary<String, Object> myUnstructuredProperties)
-            : base(myComment, myCreationDate, myModificationDate, myStructuredProperties, myUnstructuredProperties)
         {
             Edition = !string.IsNullOrEmpty(myEdition) ? myEdition : ConstantsFS.DefaultVertexEdition;
 
@@ -83,6 +107,16 @@ namespace sones.GraphFS.Definitions
             OutgoingSingleEdges = myOutgoingSingleEdges;
 
             BinaryProperties = myBinaryProperties;
+
+            Comment = myComment;
+
+            CreationDate = myCreationDate;
+
+            ModificationDate = myModificationDate;
+
+            StructuredProperties = myStructuredProperties;
+
+            UnstructuredProperties = myUnstructuredProperties;
         }
 
         #endregion

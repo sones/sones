@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConstantsFS.cs" />
-    <Compile Include="Definitions\AGraphElementDefinition.cs" />
     <Compile Include="Definitions\StreamAddDefinition.cs" />
     <Compile Include="Definitions\HyperEdgeAddDefinition.cs" />
     <Compile Include="Definitions\SingleEdgeAddDefinition.cs" />
