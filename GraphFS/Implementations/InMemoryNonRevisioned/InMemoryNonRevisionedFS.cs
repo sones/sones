@@ -390,7 +390,7 @@ namespace sones.GraphFS
                 {
                     foreach (var aHyperEdgeDefinition in myVertexDefinition.OutgoingHyperEdges)
                     {
-                        var containedSingleEdges = new List<SingleEdge>();
+                        List<SingleEdge> containedSingleEdges = new List<SingleEdge>();
 
                         foreach (var aSingleEdgeDefinition in aHyperEdgeDefinition.ContainedSingleEdges)
                         {
@@ -514,11 +514,11 @@ namespace sones.GraphFS
             {
                 if (myTargetVertex.IncomingEdges == null)
                 {
-                    myTargetVertex.IncomingEdges = new Dictionary<long, Dictionary<long, HashSet<SingleEdge>>>();
+                    myTargetVertex.IncomingEdges = new Dictionary<long, Dictionary<long, SingleEdgeCollection>>();
 
-                    var payload = new HashSet<SingleEdge> { mySingleEdge };
+                    var payload = new SingleEdgeCollection( mySingleEdge );
 
-                    var innerDict = new Dictionary<Int64, HashSet<SingleEdge>> { { myIncomingEdgeID, payload } };
+                    var innerDict = new Dictionary<Int64, SingleEdgeCollection> { { myIncomingEdgeID, payload } };
 
                     myTargetVertex.IncomingEdges.Add(myIncomingVertexTypeID, innerDict);
                 }
@@ -528,18 +528,18 @@ namespace sones.GraphFS
                     {
                         if (myTargetVertex.IncomingEdges[myIncomingVertexTypeID].ContainsKey(myIncomingEdgeID))
                         {
-                            myTargetVertex.IncomingEdges[myIncomingVertexTypeID][myIncomingEdgeID].Add(mySingleEdge);
+                            myTargetVertex.IncomingEdges[myIncomingVertexTypeID][myIncomingEdgeID].AddEdge(mySingleEdge);
                         }
                         else
                         {
-                            myTargetVertex.IncomingEdges[myIncomingVertexTypeID][myIncomingEdgeID] = new HashSet<SingleEdge> { mySingleEdge };
+                            myTargetVertex.IncomingEdges[myIncomingVertexTypeID][myIncomingEdgeID] = new SingleEdgeCollection( mySingleEdge );
                         }
                     }
                     else
                     {
-                        var payload = new HashSet<SingleEdge> { mySingleEdge };
+                        var payload = new SingleEdgeCollection(mySingleEdge);
 
-                        var innerDict = new Dictionary<Int64, HashSet<SingleEdge>> { { myIncomingEdgeID, payload } };
+                        var innerDict = new Dictionary<Int64, SingleEdgeCollection> { { myIncomingEdgeID, payload } };
 
                         myTargetVertex.IncomingEdges.Add(myIncomingVertexTypeID, innerDict);
                     }

@@ -30,7 +30,7 @@ namespace sones.GraphFS.Element.Vertex
         /// The incoming edges of the vertex
         /// (VertexTypeID of the vertex type that points to this vertex, PropertyID of the edge that points to this vertex, SingleEdges)
         /// </summary>
-        public Dictionary<Int64, Dictionary<Int64, HashSet<SingleEdge>>> IncomingEdges;
+        public Dictionary<Int64, Dictionary<Int64, SingleEdgeCollection>> IncomingEdges;
 
         /// <summary>
         /// The outgoing edges of the vertex
@@ -131,14 +131,14 @@ namespace sones.GraphFS.Element.Vertex
                     {
                         if (myFilter != null)
                         {
-                            if (myFilter(aType.Key, aEdge.Key, aEdge.Value))
+                            if (myFilter(aType.Key, aEdge.Key, aEdge.Value.GetAllEdges()))
                             {
-                                yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aType.Key, aEdge.Key, aEdge.Value);
+                                yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aType.Key, aEdge.Key, aEdge.Value.GetAllEdges());
                             }
                         }
                         else
                         {
-                            yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aType.Key, aEdge.Key, aEdge.Value);
+                            yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aType.Key, aEdge.Key, aEdge.Value.GetAllEdges());
                         }
                     }
                 }
@@ -150,8 +150,8 @@ namespace sones.GraphFS.Element.Vertex
         public IEnumerable<ISingleEdge> GetIncomingEdges(long myVertexTypeID, long myEdgePropertyID)
         {
             return HasIncomingEdge(myVertexTypeID, myEdgePropertyID)
-                       ? IncomingEdges[myVertexTypeID][myEdgePropertyID]
-                       : new HashSet<SingleEdge>();
+                       ? IncomingEdges[myVertexTypeID][myEdgePropertyID].GetAllEdges()
+                       : new SingleEdge[0];
         }
 
         public IEnumerable<IVertex> GetIncomingVertices(Int64 myVertexTypeID, Int64 myEdgePropertyID)
