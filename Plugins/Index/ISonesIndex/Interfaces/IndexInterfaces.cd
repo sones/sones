@@ -9,22 +9,6 @@
   </Interface>
   <Interface Name="sones.Plugins.Index.Interfaces.ISingleValueVersionedIndex&lt;TKey, TValue, TVersion&gt;">
     <Position X="7.25" Y="8.5" Width="3.75" />
-    <InheritanceLine Type="sones.Plugins.Index.Interfaces.ISingleValueIndex&lt;TKey, TValue&gt;" FixedFromPoint="true">
-      <Path>
-        <Point X="6.875" Y="6.756" />
-        <Point X="6.875" Y="8.125" />
-        <Point X="9.125" Y="8.125" />
-        <Point X="9.125" Y="8.5" />
-      </Path>
-    </InheritanceLine>
-    <InheritanceLine Type="sones.Plugins.Index.Interfaces.IVersionedIndex&lt;TKey, TValue, TVersion&gt;" FixedToPoint="true">
-      <Path>
-        <Point X="10.5" Y="7.329" />
-        <Point X="10.5" Y="8.125" />
-        <Point X="10" Y="8.125" />
-        <Point X="10" Y="8.5" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAIAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
       <FileName>Interfaces\ISingleValueVersionedIndex.cs</FileName>
@@ -32,16 +16,6 @@
   </Interface>
   <Interface Name="sones.Plugins.Index.Interfaces.IMultipleValueIndex&lt;TKey, TValue&gt;">
     <Position X="15" Y="4.75" Width="3.5" />
-    <InheritanceLine Type="sones.Plugins.Index.Interfaces.IIndex&lt;TKey, TValue&gt;" ManuallyRouted="true" FixedFromPoint="true">
-      <Path>
-        <Point X="11.5" Y="3.901" />
-        <Point X="11.5" Y="4.372" />
-        <Point X="12.042" Y="4.372" Type="JumpStart" />
-        <Point X="12.208" Y="4.372" Type="JumpEnd" />
-        <Point X="16.75" Y="4.372" />
-        <Point X="16.75" Y="4.75" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAIAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAgAAAQAAA=</HashCode>
       <FileName>Interfaces\IMultipleValueIndex.cs</FileName>
@@ -49,26 +23,6 @@
   </Interface>
   <Interface Name="sones.Plugins.Index.Interfaces.IMultipleValueRangeIndex&lt;TKey, TValue&gt;">
     <Position X="17.5" Y="8.5" Width="3" />
-    <InheritanceLine Type="sones.Plugins.Index.Interfaces.IMultipleValueIndex&lt;TKey, TValue&gt;" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="16.75" Y="6.948" />
-        <Point X="16.75" Y="8.134" />
-        <Point X="18.688" Y="8.134" />
-        <Point X="18.688" Y="8.5" />
-      </Path>
-    </InheritanceLine>
-    <InheritanceLine Type="sones.Plugins.Index.Interfaces.IRangeIndex&lt;TKey, TValue&gt;" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="12.688" Y="5.441" />
-        <Point X="12.688" Y="7.657" />
-        <Point X="16.167" Y="7.657" Type="JumpStart" />
-        <Point X="16.333" Y="7.657" Type="JumpEnd" />
-        <Point X="16.667" Y="7.657" Type="JumpStart" />
-        <Point X="16.833" Y="7.657" Type="JumpEnd" />
-        <Point X="19.5" Y="7.657" />
-        <Point X="19.5" Y="8.5" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AiAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Interfaces\IMultipleValueRangeIndex.cs</FileName>
@@ -83,22 +37,6 @@
   </Interface>
   <Interface Name="sones.Plugins.Index.Interfaces.IMultipleValueVersionedIndex&lt;TKey, TValue, TVersion&gt;">
     <Position X="12" Y="8.5" Width="3.75" />
-    <InheritanceLine Type="sones.Plugins.Index.Interfaces.IMultipleValueIndex&lt;TKey, TValue&gt;" FixedFromPoint="true">
-      <Path>
-        <Point X="16.25" Y="6.948" />
-        <Point X="16.25" Y="8.125" />
-        <Point X="13.875" Y="8.125" />
-        <Point X="13.875" Y="8.5" />
-      </Path>
-    </InheritanceLine>
-    <InheritanceLine Type="sones.Plugins.Index.Interfaces.IVersionedIndex&lt;TKey, TValue, TVersion&gt;" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="10.938" Y="7.329" />
-        <Point X="10.938" Y="8.125" />
-        <Point X="13.312" Y="8.125" />
-        <Point X="13.312" Y="8.5" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAIAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
       <FileName>Interfaces\IMultipleValueVersionedIndex.cs</FileName>
@@ -106,16 +44,6 @@
   </Interface>
   <Interface Name="sones.Plugins.Index.Interfaces.ISingleValueIndex&lt;TKey, TValue&gt;">
     <Position X="4.5" Y="4.75" Width="2.75" />
-    <InheritanceLine Type="sones.Plugins.Index.Interfaces.IIndex&lt;TKey, TValue&gt;" ManuallyRouted="true" FixedFromPoint="true">
-      <Path>
-        <Point X="11.062" Y="3.901" />
-        <Point X="11.062" Y="4.372" />
-        <Point X="10.583" Y="4.372" Type="JumpStart" />
-        <Point X="10.417" Y="4.372" Type="JumpEnd" />
-        <Point X="5.875" Y="4.372" />
-        <Point X="5.875" Y="4.75" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAIAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
       <FileName>Interfaces\ISingleValueIndex.cs</FileName>
@@ -123,28 +51,6 @@
   </Interface>
   <Interface Name="sones.Plugins.Index.Interfaces.ISingleValueRangeIndex&lt;TKey, TValue&gt;">
     <Position X="3.5" Y="8.5" Width="2.75" />
-    <InheritanceLine Type="sones.Plugins.Index.Interfaces.ISingleValueIndex&lt;TKey, TValue&gt;" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="5.5" Y="6.756" />
-        <Point X="5.5" Y="8.5" />
-      </Path>
-    </InheritanceLine>
-    <InheritanceLine Type="sones.Plugins.Index.Interfaces.IRangeIndex&lt;TKey, TValue&gt;" ManuallyRouted="true" FixedFromPoint="true">
-      <Path>
-        <Point X="11.812" Y="5.441" />
-        <Point X="11.812" Y="7.685" />
-        <Point X="11.021" Y="7.685" Type="JumpStart" />
-        <Point X="10.854" Y="7.685" Type="JumpEnd" />
-        <Point X="10.583" Y="7.685" Type="JumpStart" />
-        <Point X="10.417" Y="7.685" Type="JumpEnd" />
-        <Point X="6.958" Y="7.685" Type="JumpStart" />
-        <Point X="6.792" Y="7.685" Type="JumpEnd" />
-        <Point X="5.583" Y="7.685" Type="JumpStart" />
-        <Point X="5.417" Y="7.685" Type="JumpEnd" />
-        <Point X="4.875" Y="7.685" />
-        <Point X="4.875" Y="8.5" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AiAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Interfaces\ISingleValueRangeIndex.cs</FileName>
@@ -158,13 +64,7 @@
     </TypeIdentifier>
   </Interface>
   <Interface Name="sones.Plugins.Index.Interfaces.IVersionedIndex&lt;TKey, TValue, TVersion&gt;">
-    <Position X="9.75" Y="4.75" Width="1.5" />
-    <InheritanceLine Type="sones.Plugins.Index.Interfaces.IIndex&lt;TKey, TValue&gt;" ManuallyRouted="true" FixedFromPoint="true">
-      <Path>
-        <Point X="10.5" Y="3.901" />
-        <Point X="10.5" Y="4.75" />
-      </Path>
-    </InheritanceLine>
+    <Position X="8" Y="4.75" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAAACAAAAkAAAACAAABAgAAAAAAAAAAAAAAAAQABA=</HashCode>
       <FileName>Interfaces\IVersionedIndex.cs</FileName>
@@ -172,12 +72,6 @@
   </Interface>
   <Interface Name="sones.Plugins.Index.Interfaces.IRangeIndex&lt;TKey, TValue&gt;" Collapsed="true">
     <Position X="11.5" Y="4.75" Width="1.5" />
-    <InheritanceLine Type="sones.Plugins.Index.Interfaces.IIndex&lt;TKey, TValue&gt;" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="12.125" Y="3.901" />
-        <Point X="12.125" Y="4.75" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Interfaces\IRangeIndex.cs</FileName>

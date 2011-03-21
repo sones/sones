@@ -126,7 +126,8 @@ namespace sones.GraphFS
         /// Initializes a GraphFS using the replicated vertices
         /// </summary>
         /// <param name="myReplicationStream">An enumerable of vertices</param>
-        void ReplicateFileSystem(IEnumerable<IVertex> myReplicationStream);
+        /// <param name="myAppend">False: create a new FS, True: append to the current one</param>
+        void ReplicateFileSystem(IEnumerable<IVertex> myReplicationStream, Boolean myAppend = false);
 
         #endregion
 

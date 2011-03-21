@@ -94,7 +94,7 @@ namespace sones.GraphFS
                 Aggregate((enumerableA, enumerableB) => enumerableA.Union(enumerableB));
         }
 
-        public void ReplicateFileSystem(IEnumerable<IVertex> myReplicationStream)
+        public void ReplicateFileSystem(IEnumerable<IVertex> myReplicationStream, Boolean myAppend = false)
         {
             var tempVertexStore = new ConcurrentDictionary<long, ConcurrentDictionary<long, InMemoryVertex>>();
 
