@@ -10,7 +10,7 @@ namespace sones.Library.PropertyHyperGraph
         #region EdgeTypeID
 
         /// <summary>
-        /// The id of the vertex type
+        /// The id of the edge type
         /// </summary>
         Int64 EdgeTypeID { get; }
 

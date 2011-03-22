@@ -61,6 +61,11 @@
     <Compile Include="IGraphDB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Request\IRequest.cs" />
+    <Compile Include="Result\Edge\IHyperEdgeView.cs" />
+    <Compile Include="Result\Edge\IEdgeView.cs" />
+    <Compile Include="Result\IGraphElementView.cs" />
+    <Compile Include="Result\Edge\ISingleEdgeView.cs" />
+    <Compile Include="Result\Vertex\IVertexView.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
