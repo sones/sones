@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Interface Name="sones.Plugins.Index.Interfaces.IIndex&lt;TKey, TValue&gt;">
     <Position X="10.25" Y="1" Width="2" />

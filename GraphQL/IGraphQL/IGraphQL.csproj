@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorHandling\AGraphQLException.cs" />
+    <Compile Include="ErrorHandling\UnknownQLException.cs" />
     <Compile Include="IDumpable.cs" />
     <Compile Include="IExtendableGrammar.cs" />
     <Compile Include="IGraphQL.cs" />

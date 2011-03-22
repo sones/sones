@@ -7,7 +7,7 @@ using System.Text;
 
 #endregion
 
-namespace sones.GraphDB.GraphQL
+namespace sones.GraphQL
 {
 
     /// <summary>

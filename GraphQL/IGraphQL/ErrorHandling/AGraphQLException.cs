@@ -1,6 +1,6 @@
 ﻿using sones.Library.ErrorHandling;
 
-namespace sones.GraphDB.ErrorHandling
+namespace sones.GraphQL.ErrorHandling
 {
     /// <summary>
     /// The interface for all GraphQL exceptions

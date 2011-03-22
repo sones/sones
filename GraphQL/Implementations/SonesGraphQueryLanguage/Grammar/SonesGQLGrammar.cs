@@ -13,13 +13,15 @@ using System.Globalization;
 using System.Text;
 using Irony.Parsing;
 using Irony.Ast;
+using sones.GraphQL.StatementNodes;
+using sones.GraphQL.StructureNodes;
 
 
 
 
 #endregion
 
-namespace sones.GraphDB.GraphQL
+namespace sones.GraphQL
 {
 
     /// <summary>
@@ -462,16 +464,14 @@ namespace sones.GraphDB.GraphQL
 
             #region ID related
 
-            //var Id = new NonTerminal("Id", CreateIDNode);
-            var Id = new NonTerminal("Id");   
+            var Id = new NonTerminal("Id", CreateIDNode);            
             var Id_simple = new NonTerminal("id_simple", typeof(AstNode));
             var id_typeAndAttribute = new NonTerminal("id_typeAndAttribute");
             var idlist = new NonTerminal("idlist");
             var id_simpleList = new NonTerminal("id_simpleList");
             var id_simpleDotList = new NonTerminal("id_simpleDotList");
             var IdOrFunc = new NonTerminal("IdOrFunc");
-            //var IdOrFuncList = new NonTerminal("IdOrFuncList", CreateIDNode);
-            var IdOrFuncList = new NonTerminal("IdOrFuncList");
+            var IdOrFuncList = new NonTerminal("IdOrFuncList", CreateIDNode);            
             var IDOrFuncDelimiter = new NonTerminal("IDOrFuncDelimiter");
             //var dotWrapper = new NonTerminal("dotWrapper", CreateDotDelimiter);
             var dotWrapper = new NonTerminal("dotWrapper");
@@ -492,8 +492,7 @@ namespace sones.GraphDB.GraphQL
             var createTableStmt = new NonTerminal("createTableStmt");
             //var createIndexStmt = new NonTerminal("createIndexStmt", CreateCreateIndexStatementNode);
             var createIndexStmt = new NonTerminal("createIndexStmt");
-            //var alterStmt = new NonTerminal("alterStmt", CreateAlterStmNode);
-            var alterStmt = new NonTerminal("alterStmt");
+            var alterStmt = new NonTerminal("alterStmt", CreateAlterStmNode);            
             //var dropTypeStmt = new NonTerminal("dropTypeStmt", CreateDropTypeStmNode);
             var dropTypeStmt = new NonTerminal("dropTypeStmt");
             //var dropIndexStmt = new NonTerminal("dropIndexStmt", CreateDropIndexStmNode);
@@ -1706,16 +1705,16 @@ namespace sones.GraphDB.GraphQL
 
         //}
 
-        //private void CreateIDNode(ParsingContext context, ParseTreeNode parseNode)
-        //{
+        private void CreateIDNode(ParsingContext context, ParseTreeNode parseNode)
+        {
 
-        //    IDNode aIDNode = new IDNode();
+            IDNode aIDNode = new IDNode();
 
-        //    aIDNode.GetContent(context, parseNode);
+            aIDNode.GetContent(context, parseNode);
 
-        //    parseNode.AstNode = (object)aIDNode;
+            parseNode.AstNode = (object)aIDNode;
 
-        //}
+        }
 
         //private void CreateDotDelimiter(ParsingContext context, ParseTreeNode parseNode)
         //{
@@ -1837,14 +1836,14 @@ namespace sones.GraphDB.GraphQL
         //    }
         //}
 
-        //private void CreateAlterStmNode(ParsingContext context, ParseTreeNode parseNode)
-        //{
-        //    AlterTypeNode aAlterTypeStatementNode = new AlterTypeNode();
+        private void CreateAlterStmNode(ParsingContext context, ParseTreeNode parseNode)
+        {
+            AlterTypeNode aAlterTypeStatementNode = new AlterTypeNode();
 
-        //    aAlterTypeStatementNode.GetContent(context, parseNode);
+            aAlterTypeStatementNode.GetContent(context, parseNode);
 
-        //    parseNode.AstNode = (object)aAlterTypeStatementNode;
-        //}
+            parseNode.AstNode = (object)aAlterTypeStatementNode;
+        }
 
         //private void CreatePartialSelectStmtNode(ParsingContext context, ParseTreeNode parseNode)
         //{

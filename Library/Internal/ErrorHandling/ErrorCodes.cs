@@ -64,17 +64,26 @@ namespace sones.Library.ErrorHandling
 
         #endregion
 
-        #region Library (prefix: 4)
+        #region IGraphQL (prefix: 4)
+
+        /// <summary>
+        /// An unknown GraphQL error
+        /// </summary>
+        public static UInt16 UnknownQLError = 400;      
+        
+        #endregion
+
+        #region Library (prefix: 5)
 
         /// <summary>
         /// An assembly file could not loaded
         /// </summary>
-        public static UInt16 CouldNotLoadAssembly = 401;
+        public static UInt16 CouldNotLoadAssembly = 501;
 
         /// <summary>
         /// A plugin version is incompatible
         /// </summary>
-        public static UInt16 IncompatiblePluginVersion = 402;
+        public static UInt16 IncompatiblePluginVersion = 502;
 
 
         #endregion

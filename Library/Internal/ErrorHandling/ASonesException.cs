@@ -3,7 +3,7 @@
 namespace sones.Library.ErrorHandling
 {
     /// <summary>
-    /// An abstrac class for all sones exceptions
+    /// An abstract class for all sones exceptions
     /// </summary>
     public abstract class ASonesException : Exception
     {
