@@ -105,6 +105,11 @@ namespace sones.Plugins.Index.Interfaces
         /// <returns></returns>
         bool Remove(TKey myKey);
 
+        /// <summary>
+        /// Clears the index
+        /// </summary>
+        void ClearIndex();
+
         #endregion
     }
 }

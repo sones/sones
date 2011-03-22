@@ -44,7 +44,7 @@ namespace sones.Plugins.Index.Interfaces
         /// </summary>
         /// <param name="myDictionary">a dictionary containing keys and the associated 1-n values</param>
         /// <param name="myIndexAddStrategy">defines what to do if the key already exists</param>
-        void Add(Dictionary<TKey, IEnumerable<TValue>> myDictionary,
+        void Add(IDictionary<TKey, IEnumerable<TValue>> myDictionary,
                  IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE);
 
         #endregion

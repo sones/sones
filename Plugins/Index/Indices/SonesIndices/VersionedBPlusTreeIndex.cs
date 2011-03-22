@@ -57,7 +57,7 @@ namespace sones.Plugin.Index
             throw new NotImplementedException();
         }
 
-        public void Add(Dictionary<TKey, IEnumerable<TValue>> myDictionary,
+        public void Add(IDictionary<TKey, IEnumerable<TValue>> myDictionary,
                         IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             throw new NotImplementedException();
@@ -207,6 +207,12 @@ namespace sones.Plugin.Index
         {
             throw new NotImplementedException();
         }
+
+        public void ClearIndex()
+        {
+            throw new NotImplementedException();
+        }
+        
 
         #endregion
     }

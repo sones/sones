@@ -94,6 +94,11 @@ namespace sones.Plugin.Index
             throw new NotImplementedException();
         }
 
+        public void ClearIndex()
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }
