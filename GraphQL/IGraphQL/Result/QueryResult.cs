@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Collections;
 using sones.GraphDB.Result;
+using sones.Library.ErrorHandling;
 
 namespace sones.GraphQL.Result
 {
@@ -12,6 +13,11 @@ namespace sones.GraphQL.Result
     public sealed class QueryResult : IEnumerable<IVertexView>
     {
         #region Data
+
+        /// <summary>
+        /// An error that occured during the query process
+        /// </summary>
+        public ASonesException Error { get; set; }
 
         /// <summary>
         /// The vertices that are contained in this QueryResult
@@ -41,13 +47,12 @@ namespace sones.GraphQL.Result
             get
             {
 
-                var _NumberOfAffectedVertices = 0UL;
+                var numberOfAffectedVertices = 0UL;
 
                 if (Vertices != null)
-                    _NumberOfAffectedVertices = (UInt64)Vertices.Count();
+                    numberOfAffectedVertices = (UInt64)Vertices.Count();
 
-                return _NumberOfAffectedVertices;
-
+                return numberOfAffectedVertices;
             }
         }
 
@@ -64,7 +69,7 @@ namespace sones.GraphQL.Result
         /// <param name="myVertices">The vertices that should be available within the query result</param>
         public QueryResult(String myQuery, String myQLName, UInt64 myDuration, IEnumerable<IVertexView> myVertices = null)
         {
-            Vertices = myVertices != null ? myVertices : new List<IVertexView>();
+            Vertices = myVertices ?? new List<IVertexView>();
             Query = myQuery;
             NameOfQuerylanguage = myQLName;
             Duration = myDuration;
