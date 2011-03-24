@@ -66,6 +66,7 @@
     <Compile Include="Result\IGraphElementView.cs" />
     <Compile Include="Result\Edge\ISingleEdgeView.cs" />
     <Compile Include="Result\Vertex\IVertexView.cs" />
+    <Compile Include="TypeSystem\IVertexType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">

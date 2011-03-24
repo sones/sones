@@ -15,37 +15,65 @@ using sones.GraphQL.StatementNodes.DML;
 using sones.GraphQL.StatementNodes.DDL;
 using sones.GraphQL.StatementNodes.Settings;
 using sones.GraphQL.StatementNodes.Transactions;
+using sones.GraphDB;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphQL
 {
     public sealed class SonesGQLGrammar : Grammar //, IDumpable, IExtendableGrammar
     {
-         #region Consts
+        #region Data
 
-        public const String DOT                     = ".";
-        public const String TERMINAL_BRACKET_LEFT   = "(";
-        public const String TERMINAL_BRACKET_RIGHT  = ")";
-        public const String TERMINAL_QUEUESIZE      = "QUEUESIZE";
-        public const String TERMINAL_WEIGHTED       = "WEIGHTED";
-        public const String TERMINAL_UNIQUE         = "UNIQUE";
-        public const String TERMINAL_MANDATORY      = "MANDATORY";
-        public const String TERMINAL_SORTED         = "SORTED";        
-        public const String TERMINAL_ASC            = "ASC";
-        public const String TERMINAL_DESC           = "DESC";
-        public const String TERMINAL_TRUE           = "TRUE";
-        public const String TERMINAL_FALSE          = "FALSE";
-        public const String TERMINAL_LIST           = "LIST";
-        public const String TERMINAL_SET            = "SET";
-        public const String TERMINAL_LT             = "<";
-        public const String TERMINAL_GT             = ">";
-        
+        /// <summary>
+        /// The IGraphDB instance that is used to get some information
+        /// </summary>
+        private readonly IGraphDB _iGraphDB;
+
+        #region Consts
+
+        public const String DOT = ".";
+        public const String TERMINAL_BRACKET_LEFT = "(";
+        public const String TERMINAL_BRACKET_RIGHT = ")";
+        public const String TERMINAL_QUEUESIZE = "QUEUESIZE";
+        public const String TERMINAL_WEIGHTED = "WEIGHTED";
+        public const String TERMINAL_UNIQUE = "UNIQUE";
+        public const String TERMINAL_MANDATORY = "MANDATORY";
+        public const String TERMINAL_SORTED = "SORTED";
+        public const String TERMINAL_ASC = "ASC";
+        public const String TERMINAL_DESC = "DESC";
+        public const String TERMINAL_TRUE = "TRUE";
+        public const String TERMINAL_FALSE = "FALSE";
+        public const String TERMINAL_LIST = "LIST";
+        public const String TERMINAL_SET = "SET";
+        public const String TERMINAL_LT = "<";
+        public const String TERMINAL_GT = ">";
+
         #endregion
 
-        #region Properties
+        #endregion
+
+        #region KeyTerms/Nonterms
 
         #region NonTerminals
 
         public NonTerminal BNF_TypesOrVertices { get; private set; }
+
+        #region class scope NonTerminal - need for IExtendableGrammar
+
+        private NonTerminal BNF_ImportStmt;     //If no import format is found from plugin the statement must be removed
+        private NonTerminal BNF_ImportFormat;
+
+        private NonTerminal BNF_FuncCall;
+        private NonTerminal BNF_FunArgs;
+
+        private NonTerminal BNF_Aggregate;
+        private NonTerminal BNF_AggregateArg;
+
+        private NonTerminal selectionSource;    // If no aggregates where found we must remove them from selectionSource;
+
+        private NonTerminal BNF_IndexTypeOpt;
+
+        #endregion
 
         #endregion
 
@@ -242,28 +270,13 @@ namespace sones.GraphQL
 
         #endregion
 
-        #region class scope NonTerminal - need for IExtendableGrammar
-
-        private NonTerminal BNF_ImportStmt;     //If no import format is found from plugin the statement must be removed
-        private NonTerminal BNF_ImportFormat;
-
-        private NonTerminal BNF_FuncCall;
-        private NonTerminal BNF_FunArgs;
-
-        private NonTerminal BNF_Aggregate;
-        private NonTerminal BNF_AggregateArg;
-
-        private NonTerminal selectionSource;    // If no aggregates where found we must remove them from selectionSource;
-
-        private NonTerminal BNF_IndexTypeOpt;
-        
-        #endregion
-
         #region Constructor and Definitions
 
-        public SonesGQLGrammar()
+        public SonesGQLGrammar(IGraphDB iGraphDb)
             : base(false)
         {
+
+            _iGraphDB = iGraphDb;
 
             #region SetLanguageFlags
 
@@ -2332,15 +2345,15 @@ namespace sones.GraphQL
 
         //#region Export GraphDDL
 
-        //public Exceptional<List<String>> ExportGraphDDL(DumpFormats myDumpFormat, DBContext myDBContext, IEnumerable<GraphDBType> myTypesToDump)
+        //public List<String> ExportGraphDDL(IEnumerable<IVertexType> myTypesToDump)
         //{
-            
+
         //    var stringBuilder = new StringBuilder(String.Concat(S_CREATE.ToUpperString(), " ", S_TYPES.ToUpperString(), " "));
         //    var delimiter = ", ";
 
-        //    foreach (var _GraphDBType in myTypesToDump)
+        //    foreach (var vertexType in myTypesToDump)
         //    {
-        //        stringBuilder.Append(String.Concat(CreateGraphDDL(myDumpFormat, _GraphDBType, myDBContext), delimiter));
+        //        stringBuilder.Append(String.Concat(CreateGraphDDL(vertexType), delimiter));
         //    }
 
         //    var retString = stringBuilder.ToString();
@@ -2350,62 +2363,62 @@ namespace sones.GraphQL
         //        retString = retString.Substring(0, retString.Length - delimiter.Length);
         //    }
 
-        //    return new Exceptional<List<String>>(new List<String>() { retString });
+        //    return new List<String> { retString };
 
         //}
 
-        //private String CreateGraphDDL(DumpFormats myDumpFormat, GraphDBType myGraphDBType, DBContext myDBContext)
+        //private String CreateGraphDDL(IVertexType myVertexType)
         //{
 
         //    var stringBuilder = new StringBuilder();
-        //    stringBuilder.AppendFormat("{0} ", myGraphDBType.Name);
+        //    stringBuilder.AppendFormat("{0} ", myVertexType.Name);
 
-        //    if (myGraphDBType.ParentTypeUUID != null)
+        //    if (myVertexType.HasParentTypes())
         //    {
 
-        //        stringBuilder.AppendFormat("{0} {1} ", S_EXTENDS.ToUpperString(), myGraphDBType.GetParentType(myDBContext.DBTypeManager).Name);//builder.AppendLine();
+        //        stringBuilder.AppendFormat("{0} {1} ", S_EXTENDS.ToUpperString(), myVertexType.GetParentType().Name);//builder.AppendLine();
 
         //        #region Not backwardEdge attributes
 
-        //        if (myGraphDBType.GetFilteredAttributes(ta => !ta.IsBackwardEdge).CountIsGreater(0))
+        //        if (myVertexType.HasOutgoingEdges())
         //        {
-        //            stringBuilder.Append(S_ATTRIBUTES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfAttributes(myDumpFormat, myGraphDBType.GetFilteredAttributes(ta => !ta.IsBackwardEdge), myDBContext) + S_BRACKET_RIGHT.ToUpperString() + " ");
+        //            stringBuilder.Append(S_ATTRIBUTES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfAttributes(myVertexType.GetOutgoingEdges()) + S_BRACKET_RIGHT.ToUpperString() + " ");
         //        }
 
         //        #endregion
 
         //        #region BackwardEdge attributes
 
-        //        if (myGraphDBType.GetFilteredAttributes(ta => ta.IsBackwardEdge).CountIsGreater(0))
+        //        if (myVertexType.HasVisibleIncomingEdges())
         //        {
-        //            stringBuilder.Append(S_BACKWARDEDGES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfBackwardEdges(myDumpFormat, myGraphDBType.GetFilteredAttributes(ta => ta.IsBackwardEdge), myDBContext) + S_BRACKET_RIGHT.ToUpperString() + " ");
+        //            stringBuilder.Append(S_BACKWARDEDGES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfBackwardEdges(myVertexType.GetAllVisibleIncomingEdges()) + S_BRACKET_RIGHT.ToUpperString() + " ");
         //        }
 
         //        #endregion
 
         //        #region Uniques
 
-        //        if (myGraphDBType.GetUniqueAttributes().CountIsGreater(0))
+        //        if (myVertexType.GetUniqueAttributes().CountIsGreater(0))
         //        {
-        //            stringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myDumpFormat, myGraphDBType.GetUniqueAttributes(), myGraphDBType) + S_BRACKET_RIGHT.Symbol + " ");
+        //            stringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myDumpFormat, myVertexType.GetUniqueAttributes(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
         //        }
 
         //        #endregion
 
         //        #region Mandatory attributes
 
-        //        if (myGraphDBType.GetMandatoryAttributes().CountIsGreater(0))
+        //        if (myVertexType.GetMandatoryAttributes().CountIsGreater(0))
         //        {
-        //            stringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myDumpFormat, myGraphDBType.GetMandatoryAttributes(), myGraphDBType) + S_BRACKET_RIGHT.Symbol + " ");
+        //            stringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myDumpFormat, myVertexType.GetMandatoryAttributes(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
         //        }
 
         //        #endregion
 
         //        #region Indices
 
-        //        if (myGraphDBType.GetAllAttributeIndices(myDBContext, false).CountIsGreater(0))
+        //        if (myVertexType.GetAllAttributeIndices(myDBContext, false).CountIsGreater(0))
         //        {
-        //            stringBuilder.Append(S_INDICES.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myDumpFormat, myGraphDBType.GetAllAttributeIndices(myDBContext, false), myGraphDBType) + S_BRACKET_RIGHT.Symbol + " ");
+        //            stringBuilder.Append(S_INDICES.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myDumpFormat, myVertexType.GetAllAttributeIndices(myDBContext, false), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
         //        }
 
         //        #endregion
