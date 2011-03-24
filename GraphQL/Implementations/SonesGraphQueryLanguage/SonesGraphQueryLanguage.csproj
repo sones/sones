@@ -44,36 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Grammar\SonesGQLGrammar.cs" />
     <Compile Include="SonesQueryLanguage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StatementNodes\AStatement.cs" />
-    <Compile Include="StatementNodes\TypesOfStatements.cs" />
-    <Compile Include="Structure\Helper\ExpressionDefinition\AExpressionDefinition.cs" />
-    <Compile Include="Structure\Helper\ExpressionDefinition\AggregateDefinition.cs" />
-    <Compile Include="Structure\Helper\ExpressionDefinition\AOperationDefinition.cs" />
-    <Compile Include="Structure\Helper\ExpressionDefinition\ATermDefinition.cs" />
-    <Compile Include="Structure\Helper\ExpressionDefinition\BinaryExpressionDefinition.cs" />
-    <Compile Include="Structure\Helper\ExpressionDefinition\ExpressionGraphDefinition.cs" />
-    <Compile Include="Structure\Helper\ExpressionDefinition\KindOfTuple.cs" />
-    <Compile Include="Structure\Helper\ExpressionDefinition\SelectDefinition.cs" />
-    <Compile Include="Structure\Helper\ExpressionDefinition\TupleDefinition.cs" />
-    <Compile Include="Structure\Helper\ExpressionDefinition\TupleElement.cs" />
-    <Compile Include="Structure\Helper\ExpressionDefinition\UnaryExpressionDefinition.cs" />
-    <Compile Include="Structure\Helper\ExpressionDefinition\ValueDefinition.cs" />
-    <Compile Include="Structure\Helper\Misc\IDChain\AIDChainPart.cs" />
-    <Compile Include="Structure\Helper\Misc\IDChain\ChainPartAggregateDefinition.cs" />
-    <Compile Include="Structure\Helper\Misc\IDChain\ChainPartFuncDefinition.cs" />
-    <Compile Include="Structure\Helper\Misc\IDChain\ChainPartTypeOrAttributeDefinition.cs" />
-    <Compile Include="Structure\Helper\Misc\IDChain\IDChainDefinition.cs" />
-    <Compile Include="Structure\Helper\Misc\IDChain\IDChainDelemiter.cs" />
-    <Compile Include="Structure\Helper\Misc\TypeReferenceDefinition.cs" />
-    <Compile Include="Structure\Nodes\AStructureNode.cs" />
-    <Compile Include="Structure\Nodes\Expressions\AggregateNode.cs" />
-    <Compile Include="Structure\Nodes\Expressions\BinaryExpressionNode.cs" />
-    <Compile Include="Structure\Nodes\Expressions\TupleNode.cs" />
-    <Compile Include="Structure\Nodes\Expressions\UnaryExpressionNode.cs" />
-    <Compile Include="Structure\Nodes\Misc\IDNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
@@ -100,7 +72,14 @@
   <ItemGroup>
     <None Include="Documentation\ClassDiagram.cd" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Grammar\" />
+    <Folder Include="StatementNodes\" />
+    <Folder Include="Structure\Helper\ExpressionDefinition\" />
+    <Folder Include="Structure\Helper\Misc\IDChain\" />
+    <Folder Include="Structure\Nodes\Expressions\" />
+    <Folder Include="Structure\Nodes\Misc\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
