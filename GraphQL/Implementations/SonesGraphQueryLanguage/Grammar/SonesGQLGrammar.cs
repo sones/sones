@@ -29,7 +29,7 @@ namespace sones.GraphQL
     /// </summary>
     
     //todo: Lösung finden für IDumpable und IExtendableGrammar
-    public class GraphQueryLanguage : Grammar //, IDumpable, IExtendableGrammar
+    public class SonesGQLGrammar : Grammar //, IDumpable, IExtendableGrammar
     {
 
         #region Consts
@@ -274,7 +274,7 @@ namespace sones.GraphQL
         #region Constructor and Definitions
 
         
-        public GraphQueryLanguage()
+        public SonesGQLGrammar()
             : base(false)
         {
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using sones.GraphQL.StructureNodes;
 using Irony.Parsing;
-using sones.GraphQL.Structures.Enums;
 using sones.Library.Security;
 using sones.Library.Transaction;
 using sones.GraphQL.Result;
@@ -15,25 +14,10 @@ namespace sones.GraphQL.StatementNodes
     /// </summary>
     public abstract class AStatement : AStructureNode
     {
-
-        #region Data
-
-
-        //NLOG: temporarily commented
-        //protected static Logger Logger = LogManager.GetCurrentClassLogger();
-
-        #endregion
-
         #region General Command Infos
 
         public abstract String StatementName { get; }
         public abstract TypesOfStatements TypeOfStatement { get; }
-
-        #endregion
-
-        #region Protected properties
-
-        //protected Exceptional ParsingResult { get; private set; }
 
         #endregion
 
