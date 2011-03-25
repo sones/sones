@@ -19,16 +19,20 @@ namespace sones.Library.VersionedPluginManager
 
         #region constructor
 
+        /// <summary>
+        /// Creates a new CouldNotLoadAssemblyException exception
+        /// </summary>
+        /// <param name="myAssemblyFile">The path of the assembly file</param>
         public CouldNotLoadAssemblyException(String myAssemblyFile)
         {
             AssemblyFile = myAssemblyFile;
         }
 
+        #endregion
+
         public override ushort ErrorCode
         {
             get { return ErrorCodes.CouldNotLoadAssembly; }
-        }
-
-        #endregion
+        }        
     }
 }

@@ -35,6 +35,12 @@ namespace sones.Library.VersionedPluginManager
 
         #region constructor
 
+        /// <summary>
+        /// Creates a new IncompatiblePluginVersionException exception
+        /// </summary>
+        /// <param name="myPluginAssembly">The current plugin assembly</param>
+        /// <param name="myCurrentVersion">The current version of the plugin interface</param>
+        /// <param name="myMinVersion">The minimum expected verion of the plugin interface</param>
         public IncompatiblePluginVersionException(Assembly myPluginAssembly, Version myCurrentVersion,
                                                   Version myMinVersion)
         {
@@ -43,6 +49,13 @@ namespace sones.Library.VersionedPluginManager
             MinVersion = myMinVersion;
         }
 
+        /// <summary>
+        /// Creates a new IncompatiblePluginVersionException exception
+        /// </summary>
+        /// <param name="myPluginAssembly">The current plugin assembly</param>
+        /// <param name="myCurrentVersion">The current version of the plugin interface</param>
+        /// <param name="myMinVersion">The minimum expected verion of the plugin interface</param>
+        /// <param name="myMaxVersion">The maximum expected verion of the plugin interface</param>
         public IncompatiblePluginVersionException(Assembly myPluginAssembly, Version myCurrentVersion,
                                                   Version myMinVersion, Version myMaxVersion)
         {

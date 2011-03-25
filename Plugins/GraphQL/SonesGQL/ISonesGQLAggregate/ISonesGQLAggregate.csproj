@@ -44,6 +44,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorHandling\AggregateDoesNotMatchGroupLevelException.cs" />
+    <Compile Include="ErrorHandling\AggregateIsNotValidOnThisAttributeException.cs" />
+    <Compile Include="ErrorHandling\AggregateNotAllowedException.cs" />
+    <Compile Include="ErrorHandling\AggregateOnMultiAttributesNotAllowedException.cs" />
+    <Compile Include="ErrorHandling\AggregateOrFunctionDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\AggregateParameterCountMismatchException.cs" />
+    <Compile Include="ErrorHandling\NotImplementedAggregateTargetException.cs" />
+    <Compile Include="ErrorHandling\ASonesQLAggregateException.cs" />
+    <Compile Include="ErrorHandling\UnknownAggregateException.cs" />
     <Compile Include="IGQLAggregate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -56,7 +65,12 @@
       <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
       <Name>IGraphQL</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
+      <Name>ErrorHandling</Name>
+    </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

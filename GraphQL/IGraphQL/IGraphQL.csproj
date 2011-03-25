@@ -45,6 +45,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorHandling\AGraphQLException.cs" />
+    <Compile Include="ErrorHandling\AttributeAssignmentErrors\InvalidAssignOfSetException.cs" />
+    <Compile Include="ErrorHandling\AttributeAssignmentErrors\InvalidAttrDefaultValueAssignmentException.cs" />
+    <Compile Include="ErrorHandling\AttributeAssignmentErrors\InvalidReferenceAssignmentOfUndefAttrException.cs" />
+    <Compile Include="ErrorHandling\AttributeAssignmentErrors\InvalidUndefAttrTypeException.cs" />
+    <Compile Include="ErrorHandling\AttributeAssignmentErrors\ReferenceAssignmentException.cs" />
+    <Compile Include="ErrorHandling\AttributeAssignmentErrors\ReferenceAssignmentExpectedException.cs" />
+    <Compile Include="ErrorHandling\AttributeAssignmentErrors\ReferenceAssignmentEmptyValueException.cs" />
     <Compile Include="ErrorHandling\UnknownQLException.cs" />
     <Compile Include="IDumpable.cs" />
     <Compile Include="IExtendableGrammar.cs" />
@@ -74,6 +81,7 @@
   <ItemGroup>
     <None Include="Documentation\ClassDiagram.cd" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

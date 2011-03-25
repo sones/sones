@@ -64,28 +64,147 @@ namespace sones.Library.ErrorHandling
 
         #endregion
 
-        #region IGraphQL (prefix: 4)
+        #region IGraphDS (prefix: 4)
+
+        
+
+        #endregion
+
+        #region IGraphQL (prefix: 5)
+        
+
+        #region AttributeAssignmentErrors
 
         /// <summary>
         /// An unknown GraphQL error
         /// </summary>
-        public static UInt16 UnknownQLError = 400;      
+        public static UInt16 UnknownQLError = 500;
+
+        /// <summary>
+        /// An assignment of a certain reference type with a list is not allowed
+        /// </summary>
+        public static UInt16 InvalidAssignOfSet = 501;
+
+        /// <summary>
+        /// An assignment for an attribute from a certain type with a value of a second type is not valid
+        /// </summary>
+        public static UInt16 InvalidAttrDefaultValueAssignment = 502;
+
+        /// <summary>
+        /// An reference assignment for undefined attributes is not allowed
+        /// </summary>
+        public static UInt16 InvalidReferenceAssignmentOfUndefAttr = 503;
+
+        /// <summary>
+        /// Could not assign the value of the undefined attribute to an defined attribute of a certain type 
+        /// </summary>
+        public static UInt16 InvalidUndefAttrType = 504;
+
+        /// <summary>
+        /// A single reference attribute does not contain any value
+        /// </summary>
+        public static UInt16 ReferenceAssignmentEmptyValue = 505;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static UInt16 ReferenceAssignment = 506;
+
+        /// <summary>
+        /// A attribute expects a Reference assignment
+        /// </summary>
+        public static UInt16 ReferenceAssignmentExpected = 507;
+
+        #endregion
+
+        
         
         #endregion
 
-        #region Library (prefix: 5)
+        #region Library (prefix: 6)
+
+        #region PluginManager 
 
         /// <summary>
         /// An assembly file could not loaded
         /// </summary>
-        public static UInt16 CouldNotLoadAssembly = 501;
+        public static UInt16 CouldNotLoadAssembly = 601;
 
         /// <summary>
         /// A plugin version is incompatible
         /// </summary>
-        public static UInt16 IncompatiblePluginVersion = 502;
+        public static UInt16 IncompatiblePluginVersion = 602;
+
+        #endregion
+
+
+        #region PropertyHyperGraph 
+
+        #endregion
+
+
+        #region Security 
+
+        #endregion
+
+
+        #region Transaction 
+
+        #endregion
 
 
         #endregion
+
+
+        #region Plugins (prefix: 7)
+
+        #region QGLAggregates 
+
+        /// <summary>
+        /// An unknown QGLAggregates error
+        /// </summary>
+        public static UInt16 UnknownAggregateError = 700;
+        
+        /// <summary>
+        /// The aggregate does not match the group level
+        /// </summary>
+        public static UInt16 AggregateDoesNotMatchGroupLevel = 701;
+
+        /// <summary>
+        /// The aggregate is not valid on this attribute
+        /// </summary>
+        public static UInt16 AggregateIsNotValidOnThisAttribute = 702;
+
+        /// <summary>
+        /// The aggregate is not allowed in this context
+        /// </summary>
+        public static UInt16 AggregateNotAllowed = 703;
+
+        /// <summary>
+        /// The aggregate is on multi attributes not allowed
+        /// </summary>
+        public static UInt16 AggregateOnMultiAttributesNotAllowed = 704;
+
+        /// <summary>
+        /// The aggregate or function does not exist
+        /// </summary>
+        public static UInt16 AggregateOrFunctionDoesNotExist = 705;
+
+        /// <summary>
+        /// The number of parameters of the function does not match the definition
+        /// </summary>
+        public static UInt16 AggregateParameterCountMismatch = 706;
+
+        /// <summary>
+        /// The type is not implemented for aggregates
+        /// </summary>
+        public static UInt16 NotImplementedAggregateTarget = 707;                      
+
+        #endregion
+
+        
+
+        #endregion
+
     }
 }
