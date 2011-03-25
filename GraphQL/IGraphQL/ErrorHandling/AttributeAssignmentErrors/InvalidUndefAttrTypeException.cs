@@ -3,6 +3,9 @@ using sones.Library.ErrorHandling;
 
 namespace sones.GraphQL.ErrorHandling
 {
+    /// <summary>
+    /// Could not assign the value of the undefined attribute to an defined attribute of a certain type
+    /// </summary>
     public sealed class InvalidUndefAttrTypeException : AGraphQLException
     {        
         public String Attribute     { get; private set; }

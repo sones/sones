@@ -117,13 +117,33 @@ namespace sones.Library.ErrorHandling
 
         #endregion
 
-        
-        
+        #region DumpErrors
+
+        /// <summary>
+        /// The dump format is invalid
+        /// </summary>
+        public static UInt16 InvalidDumpFormat = 508;        
+
+        /// <summary>
+        /// The desire dump type is not supported
+        /// </summary>
+        public static UInt16 InvalidDumpType = 509;
+
+        /// <summary>
+        /// The grammar is not dumpable
+        /// </summary>
+        public static UInt16 NotADumpableGrammar = 510;
+
+
+        #endregion
+
+
+
         #endregion
 
         #region Library (prefix: 6)
 
-        #region PluginManager 
+        #region PluginManager
 
         /// <summary>
         /// An assembly file could not loaded
@@ -171,22 +191,22 @@ namespace sones.Library.ErrorHandling
         public static UInt16 AggregateDoesNotMatchGroupLevel = 701;
 
         /// <summary>
-        /// The aggregate is not valid on this attribute
+        /// An aggregate is not valid on an attribute
         /// </summary>
         public static UInt16 AggregateIsNotValidOnThisAttribute = 702;
 
         /// <summary>
-        /// The aggregate is not allowed in this context
+        /// An aggregate is not allowed in a context
         /// </summary>
         public static UInt16 AggregateNotAllowed = 703;
 
         /// <summary>
-        /// The aggregate is on multi attributes not allowed
+        /// An aggregate is on multi attributes not allowed
         /// </summary>
         public static UInt16 AggregateOnMultiAttributesNotAllowed = 704;
 
         /// <summary>
-        /// The aggregate or function does not exist
+        /// An aggregate or function does not exist
         /// </summary>
         public static UInt16 AggregateOrFunctionDoesNotExist = 705;
 
@@ -196,7 +216,7 @@ namespace sones.Library.ErrorHandling
         public static UInt16 AggregateParameterCountMismatch = 706;
 
         /// <summary>
-        /// The type is not implemented for aggregates
+        /// A type is not implemented for aggregates
         /// </summary>
         public static UInt16 NotImplementedAggregateTarget = 707;                      
 

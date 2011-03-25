@@ -3,6 +3,9 @@ using sones.Library.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.Aggregates.ErrorHandling
 {
+    /// <summary>
+    /// An aggregate is not allowed in a context
+    /// </summary>
     public sealed class AggregateNotAllowedException : ASonesQLAggregateException
     {
         public ChainPartFuncDefinition Aggregate { get; private set; }

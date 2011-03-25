@@ -3,6 +3,9 @@ using sones.Library.ErrorHandling;
 
 namespace sones.GraphQL.ErrorHandling
 {
+    /// <summary>
+    /// A single reference attribute does not contain any value
+    /// </summary>
     public sealed class ReferenceAssignmentEmptyValueException : AGraphQLException
     {
         public String AttributeName { get; private set; }

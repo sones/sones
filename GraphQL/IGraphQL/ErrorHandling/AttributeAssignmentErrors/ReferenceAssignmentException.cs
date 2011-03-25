@@ -3,6 +3,9 @@ using sones.Library.ErrorHandling;
 
 namespace sones.GraphQL.ErrorHandling
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public sealed class ReferenceAssignmentException : AGraphQLException
     {
         public String Info { get; private set; }

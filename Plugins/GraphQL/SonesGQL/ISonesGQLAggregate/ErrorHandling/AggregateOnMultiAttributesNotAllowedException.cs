@@ -3,6 +3,9 @@ using sones.Library.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.Aggregates.ErrorHandling
 {
+    /// <summary>
+    /// An aggregate is on multi attributes not allowed
+    /// </summary>
     public sealed class AggregateOnMultiAttributesNotAllowedException : ASonesQLAggregateException
     {
         public String Info { get; private set; }

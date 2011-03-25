@@ -52,6 +52,9 @@
     <Compile Include="ErrorHandling\AttributeAssignmentErrors\ReferenceAssignmentException.cs" />
     <Compile Include="ErrorHandling\AttributeAssignmentErrors\ReferenceAssignmentExpectedException.cs" />
     <Compile Include="ErrorHandling\AttributeAssignmentErrors\ReferenceAssignmentEmptyValueException.cs" />
+    <Compile Include="ErrorHandling\DumpErrors\InvalidDumpFormatException.cs" />
+    <Compile Include="ErrorHandling\DumpErrors\InvalidDumpTypeException.cs" />
+    <Compile Include="ErrorHandling\DumpErrors\NotADumpableGrammarException.cs" />
     <Compile Include="ErrorHandling\UnknownQLException.cs" />
     <Compile Include="IDumpable.cs" />
     <Compile Include="IExtendableGrammar.cs" />

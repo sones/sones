@@ -1,20 +1,20 @@
 ﻿using System;
 using sones.Library.ErrorHandling;
 
-namespace sones.Plugins.SonesGQL.Aggregates.ErrorHandling
+namespace sones.GraphQL.ErrorHandling
 {
     /// <summary>
-    /// An aggregate is not valid on an attribute
+    /// The grammar is not dumpable
     /// </summary>
-    public sealed class AggregateIsNotValidOnThisAttributeException : ASonesQLAggregateException
+    public sealed class NotADumpableGrammarException : AGraphQLException
     {
         public String Info { get; private set; }
 
         /// <summary>
-        /// Creates a new AggregateIsNotValidOnThisAttributeException exception
+        /// Create a new NotADumpableGrammarException exception
         /// </summary>
         /// <param name="myInfo"></param>
-        public AggregateIsNotValidOnThisAttributeException(String myInfo)
+        public NotADumpableGrammarException(String myInfo)
         {
             Info = myInfo;
         }
@@ -26,7 +26,7 @@ namespace sones.Plugins.SonesGQL.Aggregates.ErrorHandling
 
         public override ushort ErrorCode
         {
-            get { return ErrorCodes.AggregateIsNotValidOnThisAttribute; }
-        }  
+            get { return ErrorCodes.NotADumpableGrammar; }
+        } 
     }
 }

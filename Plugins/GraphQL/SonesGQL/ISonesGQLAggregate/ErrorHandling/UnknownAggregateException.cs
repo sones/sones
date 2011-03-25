@@ -4,7 +4,7 @@ using sones.Library.ErrorHandling;
 namespace sones.Plugins.SonesGQL.Aggregates.ErrorHandling
 {    
     /// <summary>
-    /// This class represents an unknown graphql exception
+    /// This class represents an unknown aggregate exception
     /// </summary>
     public sealed class UnknownAggregateException : ASonesQLAggregateException
     {

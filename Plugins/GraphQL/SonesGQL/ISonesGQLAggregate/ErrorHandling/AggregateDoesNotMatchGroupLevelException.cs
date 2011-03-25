@@ -4,7 +4,7 @@ using sones.Library.ErrorHandling;
 namespace sones.Plugins.SonesGQL.Aggregates.ErrorHandling
 {
     /// <summary>
-    /// 
+    /// The aggregate does not match the group level
     /// </summary>
     public sealed class AggregateDoesNotMatchGroupLevelException : ASonesQLAggregateException
     {
@@ -16,6 +16,10 @@ namespace sones.Plugins.SonesGQL.Aggregates.ErrorHandling
 
         #region constructor
 
+        /// <summary>
+        /// Creates a new AggregateDoesNotMatchGroupLevelException exception
+        /// </summary>
+        /// <param name="myInfo"></param>
         public AggregateDoesNotMatchGroupLevelException(String myInfo)
         {
             Info = myInfo;

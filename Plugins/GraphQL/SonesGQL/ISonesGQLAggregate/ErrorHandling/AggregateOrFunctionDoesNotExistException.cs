@@ -3,6 +3,9 @@ using sones.Library.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.Aggregates.ErrorHandling
 {
+    /// <summary>
+    /// An aggregate or function does not exist
+    /// </summary>
     public sealed class AggregateOrFunctionDoesNotExistException : ASonesQLAggregateException
     {
         public String AggregateOrFunctionName { get; private set; }

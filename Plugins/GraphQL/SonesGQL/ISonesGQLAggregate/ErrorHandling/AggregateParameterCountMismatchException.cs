@@ -3,6 +3,9 @@ using sones.Library.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.Aggregates.ErrorHandling
 {
+    /// <summary>
+    /// The number of parameters of the function does not match the definition
+    /// </summary>
     public sealed class AggregateParameterCountMismatchException : ASonesQLAggregateException
     {
 

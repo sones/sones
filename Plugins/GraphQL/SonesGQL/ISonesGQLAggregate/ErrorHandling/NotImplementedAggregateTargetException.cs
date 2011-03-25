@@ -3,6 +3,9 @@ using sones.Library.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.Aggregates.ErrorHandling
 {
+    /// <summary>
+    /// A type is not implemented for aggregates
+    /// </summary>
     public sealed class NotImplementedAggregateTargetException : ASonesQLAggregateException
     {
         public Type AggregateTarget { get; private set; }

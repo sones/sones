@@ -3,6 +3,9 @@ using sones.Library.ErrorHandling;
 
 namespace sones.GraphQL.ErrorHandling
 {
+    /// <summary>
+    /// An assignment of a certain reference type with a list is not allowed
+    /// </summary>
     public sealed class InvalidAssignOfSetException : AGraphQLException
     {
         public String AttributeName { get; private set; }

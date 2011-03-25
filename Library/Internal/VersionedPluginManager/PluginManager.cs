@@ -211,7 +211,7 @@ namespace sones.Library.VersionedPluginManager
             {
                 loadedPluginAssembly = Assembly.LoadFrom(myFile);
             }
-            catch (CouldNotLoadAssemblyException)
+            catch (Exception)
             {
                 throw new CouldNotLoadAssemblyException(myFile);                
             }
