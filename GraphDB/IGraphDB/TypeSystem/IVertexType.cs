@@ -14,6 +14,10 @@ namespace sones.GraphDB.TypeSystem
         /// </summary>
         String Name { get; }
 
+        IBehaviour Behaviour { get; }
+
+        String Comment { get; }
+
         #region inheritance
 
         /// <summary>
@@ -44,12 +48,23 @@ namespace sones.GraphDB.TypeSystem
 
         #region Attributes
 
+        IEnumerable<IAttributeDefinition> GetAllAttributeDefinitions();
+
         #region Properties
+        
+        /// <summary>
+        /// Get all visible incoming edges
+        /// </summary>
+        /// <returns>An enumerable of incoming edge attributes</returns>
+        IEnumerable<IPropertyDefinition> GetAllProperties();
+        
         #endregion
 
         #region Edges
 
         #region Incoming
+
+        IIncomingEdgeDefinition GetIncomingEdgeDefinition(String myEdgeName);
 
         /// <summary>
         /// Has this vertex type any visible incoming edges?
@@ -61,12 +76,14 @@ namespace sones.GraphDB.TypeSystem
         /// Get all visible incoming edges
         /// </summary>
         /// <returns>An enumerable of incoming edge attributes</returns>
-        object GetAllVisibleIncomingEdges();
+        IEnumerable<IIncomingEdgeDefinition> GetAllIncomingEdges();
 
         #endregion
 
         #region Outgoing
-        
+
+        IIncomingEdgeDefinition GetOutgoingEdgeDefinition(String myEdgeName);
+
         /// <summary>
         /// Has this vertex type any outgoing edges?
         /// </summary>
@@ -77,7 +94,7 @@ namespace sones.GraphDB.TypeSystem
         /// Get all outgoing edges
         /// </summary>
         /// <returns>An enumerable of outgoing edge attributes</returns>
-        object GetOutgoingEdges();
+        IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdges();
 
         #endregion
 
@@ -85,5 +102,16 @@ namespace sones.GraphDB.TypeSystem
 
         #endregion
 
+        #region Uniques
+
+        IEnumerable<IUniqueDefinition> GetAllUniqueDefinitions();
+
+        #endregion
+
+        #region Indices
+
+        IEnumerable<IIndexDefinition> GetAllIndexDefinitions();
+
+        #endregion
     }
 }

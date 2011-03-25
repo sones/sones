@@ -46,12 +46,11 @@
   <ItemGroup>
     <Compile Include="ErrorHandling\AggregateDoesNotMatchGroupLevelException.cs" />
     <Compile Include="ErrorHandling\AggregateIsNotValidOnThisAttributeException.cs" />
-    <Compile Include="ErrorHandling\AggregateNotAllowedException.cs" />
     <Compile Include="ErrorHandling\AggregateOnMultiAttributesNotAllowedException.cs" />
     <Compile Include="ErrorHandling\AggregateOrFunctionDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\AggregateParameterCountMismatchException.cs" />
-    <Compile Include="ErrorHandling\NotImplementedAggregateTargetException.cs" />
     <Compile Include="ErrorHandling\ASonesQLAggregateException.cs" />
+    <Compile Include="ErrorHandling\NotImplementedAggregateTargetException.cs" />
     <Compile Include="ErrorHandling\UnknownAggregateException.cs" />
     <Compile Include="IGQLAggregate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

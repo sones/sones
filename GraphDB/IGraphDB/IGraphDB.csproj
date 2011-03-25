@@ -66,6 +66,15 @@
     <Compile Include="Result\IGraphElementView.cs" />
     <Compile Include="Result\Edge\ISingleEdgeView.cs" />
     <Compile Include="Result\Vertex\IVertexView.cs" />
+    <Compile Include="TypeSystem\AttributeType.cs" />
+    <Compile Include="TypeSystem\IAttributeDefinition.cs" />
+    <Compile Include="TypeSystem\IBehaviour.cs" />
+    <Compile Include="TypeSystem\IEdgeType.cs" />
+    <Compile Include="TypeSystem\IIncomingEdgeDefinition.cs" />
+    <Compile Include="TypeSystem\IIndexDefinition.cs" />
+    <Compile Include="TypeSystem\IOutgoingEdgeDefinition.cs" />
+    <Compile Include="TypeSystem\IPropertyDefinition.cs" />
+    <Compile Include="TypeSystem\IUniqueDefinition.cs" />
     <Compile Include="TypeSystem\IVertexType.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -84,6 +93,10 @@
     <ProjectReference Include="..\..\Library\Internal\Transaction\Transaction.csproj">
       <Project>{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}</Project>
       <Name>Transaction</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Plugins\Index\ISonesIndex\ISonesIndex.csproj">
+      <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>
+      <Name>ISonesIndex</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

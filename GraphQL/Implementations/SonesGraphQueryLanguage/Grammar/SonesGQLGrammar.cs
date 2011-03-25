@@ -17,6 +17,7 @@ using sones.GraphQL.StatementNodes.Settings;
 using sones.GraphQL.StatementNodes.Transactions;
 using sones.GraphDB;
 using sones.GraphDB.TypeSystem;
+using System.Globalization;
 
 namespace sones.GraphQL
 {
@@ -2373,10 +2374,10 @@ namespace sones.GraphQL
         //    var stringBuilder = new StringBuilder();
         //    stringBuilder.AppendFormat("{0} ", myVertexType.Name);
 
-        //    if (myVertexType.HasParentTypes())
+        //    if (myVertexType.HasParentVertexType())
         //    {
 
-        //        stringBuilder.AppendFormat("{0} {1} ", S_EXTENDS.ToUpperString(), myVertexType.GetParentType().Name);//builder.AppendLine();
+        //        stringBuilder.AppendFormat("{0} {1} ", S_EXTENDS.ToUpperString(), myVertexType.GetParentVertexType().Name);//builder.AppendLine();
 
         //        #region Not backwardEdge attributes
 
@@ -2400,7 +2401,7 @@ namespace sones.GraphQL
 
         //        if (myVertexType.GetUniqueAttributes().CountIsGreater(0))
         //        {
-        //            stringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myDumpFormat, myVertexType.GetUniqueAttributes(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
+        //            stringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myVertexType.GetUniqueAttributes(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
         //        }
 
         //        #endregion
@@ -2409,16 +2410,16 @@ namespace sones.GraphQL
 
         //        if (myVertexType.GetMandatoryAttributes().CountIsGreater(0))
         //        {
-        //            stringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myDumpFormat, myVertexType.GetMandatoryAttributes(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
+        //            stringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myVertexType.GetMandatoryAttributes(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
         //        }
 
         //        #endregion
 
         //        #region Indices
 
-        //        if (myVertexType.GetAllAttributeIndices(myDBContext, false).CountIsGreater(0))
+        //        if (myVertexType.GetAllAttributeIndices().CountIsGreater(0))
         //        {
-        //            stringBuilder.Append(S_INDICES.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myDumpFormat, myVertexType.GetAllAttributeIndices(myDBContext, false), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
+        //            stringBuilder.Append(S_INDICES.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myVertexType.GetAllAttributeIndices(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
         //        }
 
         //        #endregion
@@ -2429,7 +2430,7 @@ namespace sones.GraphQL
 
         //}
 
-        //private String CreateGraphDDLOfAttributes(DumpFormats myDumpFormat, IEnumerable<TypeAttribute> myTypeAttributes, DBContext myDBContext)
+        //private String CreateGraphDDLOfAttributes(IEnumerable<TypeAttribute> myTypeAttributes)
         //{
 
         //    var stringBuilder = new StringBuilder();
@@ -2437,7 +2438,7 @@ namespace sones.GraphQL
 
         //    foreach (var _Attribute in myTypeAttributes)
         //    {
-        //        stringBuilder.Append(CreateGraphDDLOfAttributeDefinition(myDumpFormat, _Attribute, myDBContext));
+        //        stringBuilder.Append(CreateGraphDDLOfAttributeDefinition(_Attribute));
         //        stringBuilder.Append(delimiter);
         //    }
 
@@ -2450,7 +2451,7 @@ namespace sones.GraphQL
 
         //}
 
-        //private String CreateGraphDDLOfAttributeDefinition(DumpFormats myDumpFormat, TypeAttribute myTypeAttribute, DBContext myDBContext)
+        //private String CreateGraphDDLOfAttributeDefinition(TypeAttribute myTypeAttribute)
         //{
 
         //    if (myTypeAttribute.EdgeType != null)
@@ -2464,7 +2465,7 @@ namespace sones.GraphQL
 
         //}
 
-        //private String CreateGraphDDLOfBackwardEdges(DumpFormats myDumpFormat, IEnumerable<TypeAttribute> myTypeAttributes, DBContext myDBContext)
+        //private String CreateGraphDDLOfBackwardEdges(IEnumerable<TypeAttribute> myTypeAttributes)
         //{
 
         //    var stringBuilder = new StringBuilder();
@@ -2494,7 +2495,7 @@ namespace sones.GraphQL
         ///// <param name="indent"></param>
         ///// <param name="indentWidth"></param>
         ///// <returns></returns>
-        //private String CreateGraphDDLOfAttributeUUIDs(DumpFormats myDumpFormat, IEnumerable<AttributeUUID> myAttributes, GraphDBType myGraphDBType)
+        //private String CreateGraphDDLOfAttributeUUIDs(IEnumerable<AttributeUUID> myAttributes)
         //{
 
         //    var stringBuilder = new StringBuilder();
@@ -2523,7 +2524,7 @@ namespace sones.GraphQL
         ///// <param name="indent"></param>
         ///// <param name="indentWidth"></param>
         ///// <returns></returns>
-        //private String CreateGraphDDLOfIndices(DumpFormats myDumpFormat, IEnumerable<AAttributeIndex> myAttributeIndices, GraphDBType myGraphDBType)
+        //private String CreateGraphDDLOfIndices(IEnumerable<AAttributeIndex> myAttributeIndices)
         //{
 
         //    var _StringBuilder = new StringBuilder();
@@ -2545,7 +2546,7 @@ namespace sones.GraphQL
         //        _StringBuilder.Append(String.Concat(" ", S_EDITION.ToUpperString(), " ", _AttributeIndex.IndexEdition));
 
         //        _StringBuilder.Append(String.Concat(" ", S_INDEXTYPE.ToUpperString(), " ", _AttributeIndex.IndexType.ToString()));
-        //        _StringBuilder.Append(String.Concat(" ", S_ON.ToUpperString(), " " + S_ATTRIBUTES.ToUpperString(), " ", CreateGraphDDLOfAttributeUUIDs(myDumpFormat, _AttributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs, myGraphDBType)));
+        //        _StringBuilder.Append(String.Concat(" ", S_ON.ToUpperString(), " " + S_ATTRIBUTES.ToUpperString(), " ", CreateGraphDDLOfAttributeUUIDs(_AttributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs, myGraphDBType)));
 
         //        _StringBuilder.Append(S_BRACKET_RIGHT);
 
@@ -2573,7 +2574,7 @@ namespace sones.GraphQL
         ///// <param name="dbContext"></param>
         ///// <param name="objectManager"></param>
         ///// <returns></returns>
-        //public Exceptional<List<String>> ExportGraphDML(DumpFormats myDumpFormat, DBContext dbContext, IEnumerable<GraphDBType> myTypesToDump)
+        //public List<String> ExportGraphDML(IEnumerable<IVertexType> myTypesToDump)
         //{
 
         //    //var _StringBuilder  = new StringBuilder();
@@ -2628,7 +2629,7 @@ namespace sones.GraphQL
 
         //}
 
-        //private Exceptional<String> CreateGraphDMLforDBObject(DumpFormats myDumpFormat, DBContext myDBContext, GraphDBType myGraphDBType, DBObjectStream myDBObjectStream)
+        //private String CreateGraphDMLforDBObject(IVertexType myGraphDBType, IVertexType myDBObjectStream)
         //{
 
         //    var stringBuilder = new StringBuilder();
@@ -2639,7 +2640,7 @@ namespace sones.GraphQL
 
         //    #region CreateGraphDMLforDBODefinedAttributes
 
-        //    var defAttrsDML = CreateGraphDMLforDBObjectDefinedAttributes(myDumpFormat, myDBObjectStream.GetAttributes(), myGraphDBType, myDBObjectStream, myDBContext);
+        //    var defAttrsDML = CreateGraphDMLforDBObjectDefinedAttributes(myDBObjectStream.GetAttributes(), myGraphDBType, myDBObjectStream);
 
         //    if (!defAttrsDML.Success())
         //    {
@@ -2647,7 +2648,7 @@ namespace sones.GraphQL
         //    }
 
         //    stringBuilder.Append(defAttrsDML.Value);
-            
+
         //    #endregion
 
         //    #region CreateGDMLforDBOUnDefinedAttributes
@@ -2678,11 +2679,11 @@ namespace sones.GraphQL
         //    stringBuilder.RemoveSuffix(delimiter);
         //    stringBuilder.Append(S_BRACKET_RIGHT);
 
-        //    return new Exceptional<String>(stringBuilder.ToString());
+        //    return stringBuilder.ToString();
 
         //}
 
-        //private Exceptional<String> CreateGraphDMLforDBObjectDefinedAttributes(DumpFormats myDumpFormat, IDictionary<AttributeUUID, IObject> myAttributes, GraphDBType myGraphDBType, DBObjectStream myDBObjectStream, DBContext myDBContext)
+        //private String CreateGraphDMLforDBObjectDefinedAttributes(IDictionary<AttributeUUID, IObject> myAttributes, IVertexType myGraphDBType, IVertexType myDBObjectStream)
         //{
 
         //    var stringBuilder = new StringBuilder();
@@ -2859,11 +2860,11 @@ namespace sones.GraphQL
 
         //    }
 
-        //    return new Exceptional<String>(stringBuilder.ToString());
+        //    return stringBuilder.ToString();
 
         //}
 
-        //private Exceptional<String> CreateGraphDMLforDBObjectUndefinedAttributes(DumpFormats myDumpFormat, IDictionary<String, IObject> myAttributes, GraphDBType myGraphDBType, DBObjectStream myDBObjectStream)
+        //private String CreateGraphDMLforDBObjectUndefinedAttributes(IDictionary<String, IObject> myAttributes, GraphDBType myGraphDBType, DBObjectStream myDBObjectStream)
         //{
 
         //    var stringBuilder = new StringBuilder();
@@ -2909,11 +2910,11 @@ namespace sones.GraphQL
 
         //    }
 
-        //    return new Exceptional<String>(stringBuilder.ToString());
+        //    return stringBuilder.ToString();
 
         //}
 
-        //private String CreateGraphDMLforADBBaseObject(DumpFormats myDumpFormat, ADBBaseObject myADBBaseObject)
+        //private String CreateGraphDMLforADBBaseObject(ADBBaseObject myADBBaseObject)
         //{
 
         //    var dbNumber = myADBBaseObject as DBNumber;
@@ -2927,13 +2928,13 @@ namespace sones.GraphQL
 
         //#endregion
 
-        //#endregion   
-    
+        //#endregion
+
         //#region IExtendableGrammar Members
 
         //public void SetAggregates(IEnumerable<ABaseAggregate> aggregates)
         //{
-            
+
         //    #region Add all plugins to the grammar
 
         //    if (aggregates.IsNullOrEmpty())
@@ -2988,7 +2989,7 @@ namespace sones.GraphQL
         //            if (funcParams.IsNullOrEmpty())
         //            {
         //                funcNonTerminal.Rule = func.FunctionName + S_BRACKET_LEFT + S_BRACKET_RIGHT;
-                        
+
         //            }
         //            else
         //            {
@@ -3029,7 +3030,7 @@ namespace sones.GraphQL
         //            {
         //                BNF_FuncCall.Rule |= funcNonTerminal;
         //            }
-                    
+
         //            #endregion
 
         //        }
@@ -3037,45 +3038,6 @@ namespace sones.GraphQL
 
         //    #endregion
 
-        //}
-
-        //public void SetOperators(IEnumerable<ABinaryOperator> operators)
-        //{
-        //    /* At first, the enums must be removed from operators - lot of impacts....
-        //    #region Add all plugins to the grammar
-
-        //    if (operators.IsNullOrEmpty())
-        //    {
-        //        /// empty is not the best solution, Maybe: remove complete import rule if no importer exist
-        //        BNF_IndexTypeOpt.Rule = Empty;
-        //    }
-        //    else
-        //    {
-        //        foreach (var op in operators)
-        //        {
-        //            if (BNF_IndexTypeOpt.Rule == null)
-        //            {
-        //                BNF_IndexTypeOpt.Rule = S_INDEXTYPE + ToTerm(op.IndexName);
-        //            }
-        //            else
-        //            {
-        //                BNF_IndexTypeOpt.Rule |= S_INDEXTYPE + ToTerm(op.IndexName);
-        //            }
-        //        }
-        //    }
-
-        //    #endregion
-        //    */
-        //}
-
-        //public void SetSettings(IEnumerable<ADBSettingsBase> settings)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public void SetEdges(IEnumerable<IEdgeType> edges)
-        //{
-        //    throw new NotImplementedException();
         //}
 
         //public void SetIndices(IEnumerable<AAttributeIndex> indices)
