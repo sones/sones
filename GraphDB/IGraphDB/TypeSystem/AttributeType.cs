@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace sones.GraphDB.TypeSystem
+﻿namespace sones.GraphDB.TypeSystem
 {
+    /// <summary>
+    /// The type of an attribute.
+    /// </summary>
     public enum AttributeType
     {
         Property,

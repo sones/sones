@@ -1,29 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace sones.GraphDB.TypeSystem
 {
+    /// <summary>
+    /// An interface that represents an edge type.
+    /// </summary>
     public interface IEdgeType
     {
         /// <summary>
-        /// The name of the VertexType
+        /// The name of the EdgeType.
         /// </summary>
+        /// <remarks>
+        /// The name must be unique for alle edge types in one database
+        /// </remarks>
         String Name { get; }
 
+        /// <summary>
+        /// The behaviour for this edge type.
+        /// </summary>
+        /// <remarks>
+        /// If no behaviour is defined, this property is <c>NULL</c>.
+        /// </remarks>
         IBehaviour Behaviour { get; }
 
+        /// <summary>
+        /// The comment for this edge type.
+        /// </summary>
+        /// <value>A user defined string, never <c>NULL</c>.</value>
         String Comment { get; }
 
+        /// <summary>
+        /// Defines whether this edge type is abstract. 
+        /// </summary>
+        /// <value>
+        /// If true, this edge type can not be used directly on vertex definitions.
+        /// </value>
         Boolean IsAbstract { get; }
 
-        #region inheritance
+        #region Inheritance
 
         /// <summary>
-        /// Has this vertex type a parent vertex type?
+        /// Has this edge type a parent edge type?
         /// </summary>
-        /// <returns>True or false</returns>
+        /// <returns>True, if this edge type has a parent edge type, otherwise false.</returns>
         bool HasParentEdgeType();
 
         /// <summary>
@@ -33,15 +53,15 @@ namespace sones.GraphDB.TypeSystem
         IEdgeType GetParentEdgeType();
 
         /// <summary>
-        /// Has this vertex type child vertex types?
+        /// Has this edge type child edge types?
         /// </summary>
-        /// <returns>True or false</returns>
+        /// <returns>False, if this edge type has no child edge type, otherwise true.</returns>
         bool HasChildEdgeTypes();
 
         /// <summary>
-        /// Get all child vertex types
+        /// Get all child edge types
         /// </summary>
-        /// <returns>An enumerable of child vertex types</returns>
+        /// <returns>An enumerable of child edge types, never <c>NULL</c>.</returns>
         IEnumerable<IEdgeType> GetChildEdgeTypes();
 
         #endregion

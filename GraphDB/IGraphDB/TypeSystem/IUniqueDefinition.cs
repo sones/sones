@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace sones.GraphDB.TypeSystem
 {
+    /// <summary>
+    /// An interface that represents an uniqueness definition for attributes on an vertex type definition.
+    /// </summary>
     public interface IUniqueDefinition
     {
-        UInt16 Count { get; }
-
+        /// <summary>
+        /// The attributes that are unique together.
+        /// </summary>
+        /// <returns>A set of attribute definitions that together must be unique. Never <c>NULL</c>.</returns>
         IEnumerable<IAttributeDefinition> GetUniqueAttributeDefinitions();
     }
 }
