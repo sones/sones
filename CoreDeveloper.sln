@@ -129,9 +129,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultipleValueIndex", "Plugi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestIndices", "Tests\TestIndices\TestIndices.csproj", "{3DFEC979-07F3-4D36-9CE1-0BA0191320AD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PagedFSNonRevisioned", "GraphFS\Implementations\PagedFSNonRevisioned\PagedFSNonRevisioned.csproj", "{4B7457CB-A618-4A23-AABC-0C2A7031AC26}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPagedFSNonRevisioned", "Tests\TestPagedFSNonRevisioned\TestPagedFSNonRevisioned.csproj", "{528F13FB-BA06-4188-B344-666EF735EB47}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 34
+		SccNumberOfProjects = 36
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -267,6 +271,14 @@ Global
 		SccProjectTopLevelParentUniqueName33 = CoreDeveloper.sln
 		SccProjectName33 = Tests/TestIndices
 		SccLocalPath33 = Tests\\TestIndices
+		SccProjectUniqueName34 = GraphFS\\Implementations\\PagedFSNonRevisioned\\PagedFSNonRevisioned.csproj
+		SccProjectTopLevelParentUniqueName34 = CoreDeveloper.sln
+		SccProjectName34 = GraphFS/Implementations/PagedFSNonRevisioned
+		SccLocalPath34 = GraphFS\\Implementations\\PagedFSNonRevisioned
+		SccProjectUniqueName35 = Tests\\TestPagedFSNonRevisioned\\TestPagedFSNonRevisioned.csproj
+		SccProjectTopLevelParentUniqueName35 = CoreDeveloper.sln
+		SccProjectName35 = Tests/TestPagedFSNonRevisioned
+		SccLocalPath35 = Tests\\TestPagedFSNonRevisioned
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -608,6 +620,26 @@ Global
 		{3DFEC979-07F3-4D36-9CE1-0BA0191320AD}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{3DFEC979-07F3-4D36-9CE1-0BA0191320AD}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{3DFEC979-07F3-4D36-9CE1-0BA0191320AD}.Release|x86.ActiveCfg = Release|Any CPU
+		{4B7457CB-A618-4A23-AABC-0C2A7031AC26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B7457CB-A618-4A23-AABC-0C2A7031AC26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B7457CB-A618-4A23-AABC-0C2A7031AC26}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4B7457CB-A618-4A23-AABC-0C2A7031AC26}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4B7457CB-A618-4A23-AABC-0C2A7031AC26}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4B7457CB-A618-4A23-AABC-0C2A7031AC26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B7457CB-A618-4A23-AABC-0C2A7031AC26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B7457CB-A618-4A23-AABC-0C2A7031AC26}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4B7457CB-A618-4A23-AABC-0C2A7031AC26}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4B7457CB-A618-4A23-AABC-0C2A7031AC26}.Release|x86.ActiveCfg = Release|Any CPU
+		{528F13FB-BA06-4188-B344-666EF735EB47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{528F13FB-BA06-4188-B344-666EF735EB47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{528F13FB-BA06-4188-B344-666EF735EB47}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{528F13FB-BA06-4188-B344-666EF735EB47}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{528F13FB-BA06-4188-B344-666EF735EB47}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{528F13FB-BA06-4188-B344-666EF735EB47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{528F13FB-BA06-4188-B344-666EF735EB47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{528F13FB-BA06-4188-B344-666EF735EB47}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{528F13FB-BA06-4188-B344-666EF735EB47}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{528F13FB-BA06-4188-B344-666EF735EB47}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -619,6 +651,7 @@ Global
 		{FBB96F45-4DA8-4586-8ADC-CB5BA88ABD89} = {39E890D9-4800-4C79-8604-593F9618214E}
 		{FFFB6BE4-9514-41CF-AB68-5FB7B8E3D2E4} = {39E890D9-4800-4C79-8604-593F9618214E}
 		{AB7C27CC-534F-472E-BA56-A1287973B7E2} = {FBB96F45-4DA8-4586-8ADC-CB5BA88ABD89}
+		{4B7457CB-A618-4A23-AABC-0C2A7031AC26} = {FBB96F45-4DA8-4586-8ADC-CB5BA88ABD89}
 		{CD3B461E-EBA3-4B35-9003-7E6067145472} = {0075FE7B-8E35-4770-997E-8C4190ECA6A8}
 		{A950D82D-E727-4CF5-B4D4-7B872D733E3C} = {0075FE7B-8E35-4770-997E-8C4190ECA6A8}
 		{EA38B67C-F886-43E3-9438-549E28000220} = {2DA0873C-260F-45B9-BC5C-3453249E00D9}
@@ -667,6 +700,7 @@ Global
 		{ADD65738-D314-4D47-89D7-D1C9FA96F085} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 		{8D65A058-04E7-4C4A-A533-678F43914D68} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 		{3DFEC979-07F3-4D36-9CE1-0BA0191320AD} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
+		{528F13FB-BA06-4188-B344-666EF735EB47} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 		{6628A55D-BEEF-4499-B07B-26606289B6F4} = {8D65A058-04E7-4C4A-A533-678F43914D68}
 	EndGlobalSection
 EndGlobal
