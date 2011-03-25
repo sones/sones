@@ -22,8 +22,8 @@ namespace sones.GraphDB.TypeSystem
         /// </summary>
         /// <remarks>
         /// If Kind is <c>Property</c> you can cast this IAttributeDefinition to IPropertyDefinition.
-        /// If Kind is <c>IncomingEdge</c> you can cast this IAttributeDefinition to IIncomingEdgeDefintiton.
-        /// If Kind is <c>OutgoingEdge</c> you can cast this IAttributeDefinition to IOutgoingEdgeDefinition.
+        /// If Kind is <c>IncomingEdge</c> you can cast this IAttributeDefinition to IEdgeDefintiton.
+        /// If Kind is <c>OutgoingEdge</c> you can cast this IAttributeDefinition to IEdgeDefinition.
         /// </remarks>
         AttributeType Kind { get; }
     }
