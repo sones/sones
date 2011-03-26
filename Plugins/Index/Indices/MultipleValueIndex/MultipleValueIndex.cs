@@ -9,6 +9,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using sones.Plugins.Index.Interfaces;
 using sones.Plugins.Index.Helper;
+using System.Threading;
 
 #endregion
 
@@ -59,17 +60,13 @@ namespace sones.Plugin.Index
 
                     if (!Contains(myKey, myValues))
                     {
-                        _Indexer.TryAdd(myKey, new ConcurrentBag<TValue>(myValues));
+                        _Indexer.TryAdd(myKey, new ConcurrentBag<TValue>(myValues.Reverse()));
                     }
                     else
                     {
-                        ConcurrentBag<TValue> val = null;
-
-                        _Indexer.TryGetValue(myKey, out val);
-
                         Parallel.ForEach(myValues, (item) =>
                         {
-                            val.Add(item);
+                            _Indexer[myKey].Add(item);
                         });
                     }
 
@@ -83,14 +80,14 @@ namespace sones.Plugin.Index
                     }
                     else
                     {
-                        _Indexer.TryAdd(myKey, new ConcurrentBag<TValue>(myValues));
+                        _Indexer.TryAdd(myKey, new ConcurrentBag<TValue>(myValues.Reverse()));
                     }
 
                     break;
 
                 case IndexAddStrategy.REPLACE:
 
-                    _Indexer.AddOrUpdate(myKey, new ConcurrentBag<TValue>(myValues), null);
+                    _Indexer.TryAdd(myKey, new ConcurrentBag<TValue>(myValues.Reverse()));
 
                     break;
             }
@@ -132,12 +129,26 @@ namespace sones.Plugin.Index
 
         public bool Contains(TKey myKey, IEnumerable<TValue> myValues)
         {
-            if (!_Indexer.ContainsKey(myKey))
+            ConcurrentBag<TValue> val = null;
+            
+            if (!_Indexer.TryGetValue(myKey, out val))
             {
                 return false;
             }
 
-            return _Indexer.AsParallel().Any(item => item.Value.Equals(myValues));
+            /*var pOptions = new ParallelOptions();
+            
+            Parallel.ForEach(val, pOptions, (item) =>
+            {   
+                if(!myValues.Contains(item))
+                {
+                    pOptions.CancellationToken = new CancellationToken(true);
+                }
+            });
+
+            return pOptions.CancellationToken.IsCancellationRequested ? false : true;*/
+
+            return val.SequenceEqual(myValues);
         }
 
         public IEnumerable<IEnumerable<TValue>> Values()
@@ -152,7 +163,7 @@ namespace sones.Plugin.Index
 
         public string Name
         {
-            get { return "MultiValue"; }
+            get { return "MultiValueIndex"; }
         }
 
         public long KeyCount()
