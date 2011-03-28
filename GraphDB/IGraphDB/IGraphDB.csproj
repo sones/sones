@@ -47,6 +47,7 @@
     <Compile Include="ErrorHandling\AGraphDBException.cs" />
     <Compile Include="ErrorHandling\UnknownDBException.cs" />
     <Compile Include="Request\Clear\RequestClear.cs" />
+    <Compile Include="Request\CreateEdgeType\EdgeTypeDefinition.cs" />
     <Compile Include="Request\CreateVertexType\EdgeSpecies.cs" />
     <Compile Include="Request\CreateVertexType\OutgoingEdgeDefinition.cs" />
     <Compile Include="Request\CreateVertexType\Property\PropertyDefinition.cs" />
@@ -100,6 +101,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Request\Update\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="IGraphDB.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

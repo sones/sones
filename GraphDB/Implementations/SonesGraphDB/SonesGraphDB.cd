@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="sones.GraphDB.Manager.MetaManager" Collapsed="true">
+    <Position X="7.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Manager\MetaManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.Manager.RequestManager" Collapsed="true">
+    <Position X="9.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQgAAAAAAACAAAIQAAQIASAAAAIAQAQAAEIiAACAAAA=</HashCode>
+      <FileName>Manager\Request\RequestManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.Request.APipelinableRequest" Collapsed="true">
+    <Position X="2.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAACAgAQEAAEAAACAAAAAAEAAAABAAAAAAAA=</HashCode>
+      <FileName>Request\APipelinableRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.Request.PipelineableClearRequest" Collapsed="true">
+    <Position X="0.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAQAQAAAAACAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Request\Clear\PipelineableClearRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.Request.PipelineableCreateVertexTypeRequest" Collapsed="true">
+    <Position X="2.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAQAQAAAAACAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Request\CreateVertexType\PipelineableCreateVertexTypeRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.Request.PipelineableInsertRequest" Collapsed="true">
+    <Position X="5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAQAQAAAAACAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Request\Insert\PipelineableInsertRequest.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.SonesGraphDB" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="7.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAgAAAAACAAAAAAAEAAAAUAAAAAAAAABAAAA=</HashCode>
+      <FileName>SonesGraphDB.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="sones.GraphDB.Manager.Typemanagement.TypeManager">
+    <Position X="8" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <FileName>Manager\Typemanagement\TypeManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

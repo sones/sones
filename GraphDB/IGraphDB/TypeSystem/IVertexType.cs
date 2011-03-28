@@ -73,7 +73,7 @@ namespace sones.GraphDB.TypeSystem
         /// Gets all attributes defined on this vertex type.
         /// </summary>
         /// <returns>An enumerable of attribute definitions</returns>
-        IEnumerable<IAttributeDefinition> GetAllAttributeDefinitions();
+        IEnumerable<IAttributeDefinition> GetAttributeDefinitions();
 
         #region Properties
 
@@ -81,7 +81,7 @@ namespace sones.GraphDB.TypeSystem
         /// Gets all properties defined on this vertex type.
         /// </summary>
         /// <returns>An enumerable of property definitions</returns>
-        IEnumerable<IPropertyDefinition> GetAllProperties();
+        IEnumerable<IPropertyDefinition> GetPropertyDefinitions();
         
         #endregion
 
@@ -101,7 +101,7 @@ namespace sones.GraphDB.TypeSystem
         /// Get all incoming edges
         /// </summary>
         /// <returns>An enumerable of incoming edge attributes</returns>
-        IEnumerable<IEdgeDefinition> GetAllIncomingEdges();
+        IEnumerable<IEdgeDefinition> GetIncomingEdgeDefinitions();
 
         #endregion
 
@@ -119,7 +119,7 @@ namespace sones.GraphDB.TypeSystem
         /// Get all outgoing edges
         /// </summary>
         /// <returns>An enumerable of outgoing edge attributes</returns>
-        IEnumerable<IEdgeDefinition> GetOutgoingEdges();
+        IEnumerable<IEdgeDefinition> GetOutgoingEdgeDefinitions();
 
         #endregion
 
@@ -133,7 +133,7 @@ namespace sones.GraphDB.TypeSystem
         /// A set of uniqueness definitions.
         /// </summary>
         /// <returns>An enumerable of uniqueness definitions. Never <c>NULL</c>.</returns>
-        IEnumerable<IUniqueDefinition> GetAllUniqueDefinitions();
+        IEnumerable<IUniqueDefinition> GetUniqueDefinitions();
 
         #endregion
 
@@ -143,7 +143,7 @@ namespace sones.GraphDB.TypeSystem
         /// A set of index definitions.
         /// </summary>
         /// <returns>An enumerable of index definitions. Never <c>NULL</c>.</returns>
-        IEnumerable<IIndexDefinition> GetAllIndexDefinitions();
+        IEnumerable<IIndexDefinition> GetIndexDefinitions();
 
         #endregion
     }

@@ -2387,11 +2387,11 @@ namespace sones.GraphQL
 
             #region attributes
 
-            if (myVertexType.GetAllAttributeDefinitions().Count() > 0)
+            if (myVertexType.GetAttributeDefinitions().Count() > 0)
             {
                 #region !incomingEdges
 
-                if (myVertexType.GetAllAttributeDefinitions().Any(aAttribute => aAttribute.Kind != AttributeType.IncomingEdge))
+                if (myVertexType.GetAttributeDefinitions().Any(aAttribute => aAttribute.Kind != AttributeType.IncomingEdge))
                 {
                     //so, there are attributes that are no incoming edges
 
@@ -2399,18 +2399,18 @@ namespace sones.GraphQL
 
                     #region properties
 
-                    if (myVertexType.GetAllAttributeDefinitions().Any(aAttribute => aAttribute.Kind == AttributeType.Property))
+                    if (myVertexType.GetAttributeDefinitions().Any(aAttribute => aAttribute.Kind == AttributeType.Property))
                     {
-                        stringBuilder.Append(CreateGraphDDLOfProperties(myVertexType.GetAllProperties()) + " ");
+                        stringBuilder.Append(CreateGraphDDLOfProperties(myVertexType.GetPropertyDefinitions()) + " ");
                     }
 
                     #endregion
 
                     #region outgoing edges
 
-                    if (myVertexType.GetAllAttributeDefinitions().Any(aAttribute => aAttribute.Kind == AttributeType.OutgoingEdge))
+                    if (myVertexType.GetAttributeDefinitions().Any(aAttribute => aAttribute.Kind == AttributeType.OutgoingEdge))
                     {
-                        stringBuilder.Append(CreateGraphDDLOfOutgoingEdges(myVertexType.GetOutgoingEdges()) + " ");
+                        stringBuilder.Append(CreateGraphDDLOfOutgoingEdges(myVertexType.GetOutgoingEdgeDefinitions()) + " ");
                     }
 
                     #endregion
@@ -2423,9 +2423,9 @@ namespace sones.GraphQL
 
                 #region incomingEdges
 
-                if (myVertexType.GetAllAttributeDefinitions().Any(aAttribute => aAttribute.Kind == AttributeType.IncomingEdge))
+                if (myVertexType.GetAttributeDefinitions().Any(aAttribute => aAttribute.Kind == AttributeType.IncomingEdge))
                 {
-                    stringBuilder.Append(S_BACKWARDEDGES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfIncomingEdges(myVertexType.GetAllIncomingEdges()) + S_BRACKET_RIGHT.ToUpperString() + " ");
+                    stringBuilder.Append(S_BACKWARDEDGES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfIncomingEdges(myVertexType.GetIncomingEdgeDefinitions()) + S_BRACKET_RIGHT.ToUpperString() + " ");
                 }
 
                 #endregion
@@ -2435,27 +2435,27 @@ namespace sones.GraphQL
 
             #region Uniques
 
-            if (myVertexType.GetAllUniqueDefinitions().Count() > 0)
+            if (myVertexType.GetUniqueDefinitions().Count() > 0)
             {
-                stringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfUniqueAttributes(myVertexType.GetAllUniqueDefinitions(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
+                stringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfUniqueAttributes(myVertexType.GetUniqueDefinitions(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
             }
 
             #endregion
 
             #region Mandatory attributes
 
-            if (myVertexType.GetAllProperties().Any(aProperty => aProperty.IsMandatory))
+            if (myVertexType.GetPropertyDefinitions().Any(aProperty => aProperty.IsMandatory))
             {
-                stringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfMandatoryAttributes(myVertexType.GetAllProperties().Where(aProperty => aProperty.IsMandatory), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
+                stringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfMandatoryAttributes(myVertexType.GetPropertyDefinitions().Where(aProperty => aProperty.IsMandatory), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
             }
 
             #endregion
 
             #region Indices
 
-            if (myVertexType.GetAllIndexDefinitions().Count() > 0)
+            if (myVertexType.GetIndexDefinitions().Count() > 0)
             {
-                stringBuilder.Append(S_INDICES.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myVertexType.GetAllIndexDefinitions(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
+                stringBuilder.Append(S_INDICES.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myVertexType.GetIndexDefinitions(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
             }
 
             #endregion

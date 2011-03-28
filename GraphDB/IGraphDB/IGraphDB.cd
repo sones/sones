@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="sones.GraphDB.ErrorHandling.AGraphDBException" Collapsed="true">
+    <Position X="5.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>ErrorHandling\AGraphDBException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.ErrorHandling.UnknownDBException" Collapsed="true">
+    <Position X="5.5" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>ErrorHandling\UnknownDBException.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.IGraphDBVersionCompatibility" Collapsed="true">
+    <Position X="9.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAACAAAAAAIAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IGraphDB.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.Request.RequestClear" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="8" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Request\Clear\RequestClear.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="sones.GraphDB.Request.OutgoingEdgeDefinition" Collapsed="true">
+    <Position X="11.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgQAIAAAAAAAAAAAQAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Request\CreateVertexType\OutgoingEdgeDefinition.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.Request.PropertyDefinition" Collapsed="true">
+    <Position X="13.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAgAAIAABAAAAAAAABAAAA=</HashCode>
+      <FileName>Request\CreateVertexType\Property\PropertyDefinition.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.Request.RequestCreateVertexType" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="9.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAA=</HashCode>
+      <FileName>Request\CreateVertexType\RequestCreateVertexType.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="sones.GraphDB.Request.VertexTypeDefinition" Collapsed="true">
+    <Position X="9.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAQAAAAAAAQAQAAAAAAAAIAIAAAAACAAA=</HashCode>
+      <FileName>Request\CreateVertexType\VertexTypeDefinition.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.Request.EdgeDefinition" Collapsed="true">
+    <Position X="8" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Request\Insert\EdgeDefinition.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.Request.RequestInsertVertex" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="11.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Request\Insert\RequestInsertVertex.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="sones.GraphDB.Request.VertexInsert" Collapsed="true">
+    <Position X="8" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAgAAAYAAACgAAAAEAAAAAAEAAAIAAAAQAAAA=</HashCode>
+      <FileName>Request\Insert\VertexInsert.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.Request.RequestStatistics" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="13.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAACA=</HashCode>
+      <FileName>Request\RequestStatistics.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Interface Name="sones.GraphDB.IGraphDB" Collapsed="true">
+    <Position X="11.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAABAAAA=</HashCode>
+      <FileName>IGraphDB.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.Request.IRequest" Collapsed="true">
+    <Position X="8" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Request\IRequest.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.Request.IRequestStatistics" Collapsed="true">
+    <Position X="9.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Request\IRequestStatistics.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.Result.IEdgeView" Collapsed="true">
+    <Position X="4" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAoAAAAAAAAAAAAAAAAAAAACAAAAAAAAAA=</HashCode>
+      <FileName>Result\Edge\IEdgeView.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.Result.IHyperEdgeView" Collapsed="true">
+    <Position X="3" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Result\Edge\IHyperEdgeView.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.Result.ISingleEdgeView" Collapsed="true">
+    <Position X="5.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI=</HashCode>
+      <FileName>Result\Edge\ISingleEdgeView.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.Result.IGraphElementView" Collapsed="true">
+    <Position X="3" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>UAAAAAAEAAAAAAAAgAAAIAAAAAAAACAABBAAAAAAAAA=</HashCode>
+      <FileName>Result\IGraphElementView.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.Result.IVertexView" Collapsed="true">
+    <Position X="0.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAQAAAAAYgAAQAAAAAAgQAAAAAhAQAEAAIAQAAA=</HashCode>
+      <FileName>Result\Vertex\IVertexView.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.TypeSystem.IAttributeDefinition" Collapsed="true">
+    <Position X="1.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAAABAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypeSystem\IAttributeDefinition.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.TypeSystem.IBehaviour" Collapsed="true">
+    <Position X="8" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TypeSystem\IBehaviour.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.TypeSystem.IEdgeDefinition" Collapsed="true">
+    <Position X="0.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAACAAAAAIAAAAAgAAAAA=</HashCode>
+      <FileName>TypeSystem\IEdgeDefinition.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.TypeSystem.IEdgeType">
+    <Position X="18.5" Y="4.75" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAIACAAEABEAAAEAAAAAAAQAAAAAAABACAAAAAAAAAA=</HashCode>
+      <FileName>TypeSystem\IEdgeType.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.TypeSystem.IIndexDefinition">
+    <Position X="13" Y="4.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAgAAAAAAAAAAAQAAAAAAAAAAAAAAgAAAAA=</HashCode>
+      <FileName>TypeSystem\IIndexDefinition.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.TypeSystem.IPropertyDefinition" Collapsed="true">
+    <Position X="2.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>TypeSystem\IPropertyDefinition.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.TypeSystem.IUniqueDefinition">
+    <Position X="13" Y="6.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>TypeSystem\IUniqueDefinition.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="sones.GraphDB.TypeSystem.IVertexType">
+    <Position X="15.5" Y="4.75" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AEgIAAAEABEAAAQABEAIIAQACEAgAAAAAAACAAAAKAA=</HashCode>
+      <FileName>TypeSystem\IVertexType.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="sones.GraphDB.Request.EdgeSpecies" Collapsed="true">
+    <Position X="9.75" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
+      <FileName>Request\CreateVertexType\EdgeSpecies.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="sones.GraphDB.Request.GraphDBAccessMode" Collapsed="true">
+    <Position X="10.75" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAACAAAAAAAgAAAAAIAAAAAAA=</HashCode>
+      <FileName>Request\GraphDBAccessMode.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="sones.GraphDB.TypeSystem.AttributeType" Collapsed="true">
+    <Position X="8" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAgAAAAAAAABAAAAAAQAAAAA=</HashCode>
+      <FileName>TypeSystem\AttributeType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

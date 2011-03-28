@@ -72,7 +72,7 @@ namespace sones.GraphDB.TypeSystem
         /// Get all visible incoming edges
         /// </summary>
         /// <returns>An enumerable of incoming edge attributes</returns>
-        IEnumerable<IPropertyDefinition> GetAllProperties();
+        IEnumerable<IPropertyDefinition> GetProperties();
 
         #endregion
     }
