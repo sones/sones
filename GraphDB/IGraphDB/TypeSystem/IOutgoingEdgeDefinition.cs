@@ -3,7 +3,7 @@
     /// <summary>
     /// An interface that represents an edge definition on a vertex type definition.
     /// </summary>
-    public interface IEdgeDefinition : IAttributeDefinition
+    public interface IOutgoingEdgeDefinition : IAttributeDefinition
     {
         /// <summary>
         /// The type of the edge. Never <c>NULL</c>.

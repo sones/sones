@@ -71,8 +71,9 @@
     <Compile Include="TypeSystem\IAttributeDefinition.cs" />
     <Compile Include="TypeSystem\IBehaviour.cs" />
     <Compile Include="TypeSystem\IEdgeType.cs" />
+    <Compile Include="TypeSystem\IIncomingEdgeDefinition.cs" />
     <Compile Include="TypeSystem\IIndexDefinition.cs" />
-    <Compile Include="TypeSystem\IEdgeDefinition.cs" />
+    <Compile Include="TypeSystem\IOutgoingEdgeDefinition.cs" />
     <Compile Include="TypeSystem\IPropertyDefinition.cs" />
     <Compile Include="TypeSystem\IUniqueDefinition.cs" />
     <Compile Include="TypeSystem\IVertexType.cs" />

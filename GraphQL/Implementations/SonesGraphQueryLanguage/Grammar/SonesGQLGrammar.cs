@@ -2557,7 +2557,7 @@ namespace sones.GraphQL
             return stringBuilder.ToString();
         }
 
-        private string CreateGraphDDLOfIncomingEdges(IEnumerable<IEdgeDefinition> myIncomingEdgeDefinitions)
+        private string CreateGraphDDLOfIncomingEdges(IEnumerable<IIncomingEdgeDefinition> myIncomingEdgeDefinitions)
         {
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
@@ -2576,7 +2576,7 @@ namespace sones.GraphQL
             return stringBuilder.ToString();
         }
 
-        private string CreateGraphDDLOfOutgoingEdges(IEnumerable<IEdgeDefinition> myOutgoingEdgeDefinitions)
+        private string CreateGraphDDLOfOutgoingEdges(IEnumerable<IOutgoingEdgeDefinition> myOutgoingEdgeDefinitions)
         {
             throw new NotImplementedException();
         }

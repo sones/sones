@@ -89,7 +89,7 @@ namespace sones.GraphDB.TypeSystem
 
         #region Incoming
 
-        IEdgeDefinition GetIncomingEdgeDefinition(String myEdgeName);
+        IIncomingEdgeDefinition GetIncomingEdgeDefinition(String myEdgeName);
 
         /// <summary>
         /// Has this vertex type any visible incoming edges?
@@ -101,13 +101,13 @@ namespace sones.GraphDB.TypeSystem
         /// Get all incoming edges
         /// </summary>
         /// <returns>An enumerable of incoming edge attributes</returns>
-        IEnumerable<IEdgeDefinition> GetIncomingEdgeDefinitions();
+        IEnumerable<IIncomingEdgeDefinition> GetIncomingEdgeDefinitions();
 
         #endregion
 
         #region Outgoing
 
-        IEdgeDefinition GetOutgoingEdgeDefinition(String myEdgeName);
+        IOutgoingEdgeDefinition GetOutgoingEdgeDefinition(String myEdgeName);
 
         /// <summary>
         /// Has this vertex type any outgoing edges?
@@ -119,7 +119,7 @@ namespace sones.GraphDB.TypeSystem
         /// Get all outgoing edges
         /// </summary>
         /// <returns>An enumerable of outgoing edge attributes</returns>
-        IEnumerable<IEdgeDefinition> GetOutgoingEdgeDefinitions();
+        IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions();
 
         #endregion
 
