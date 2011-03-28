@@ -80,23 +80,23 @@ namespace sones.GraphQL
 
         #region KeyTerms
 
-        public KeyTerm S_CREATE                          { get; private set; }
-        public KeyTerm S_comma                           { get; private set; }
-        public KeyTerm S_dot                             { get; private set; }
-        public KeyTerm S_ASTERISK                        { get; private set; }
-        public KeyTerm S_RHOMB                           { get; private set; }
-        public KeyTerm S_MINUS                           { get; private set; }
-        public KeyTerm S_AD                              { get; private set; }
-        public KeyTerm S_colon                           { get; private set; }
-        public KeyTerm S_EQUALS                          { get; private set; }
-        public KeyTerm S_QUESTIONMARK_EQUALS             { get; private set; }
+        public KeyTerm S_CREATE { get; private set; }
+        public KeyTerm S_comma { get; private set; }
+        public KeyTerm S_dot { get; private set; }
+        public KeyTerm S_ASTERISK { get; private set; }
+        public KeyTerm S_RHOMB { get; private set; }
+        public KeyTerm S_MINUS { get; private set; }
+        public KeyTerm S_AD { get; private set; }
+        public KeyTerm S_colon { get; private set; }
+        public KeyTerm S_EQUALS { get; private set; }
+        public KeyTerm S_QUESTIONMARK_EQUALS { get; private set; }
 
         #region Brackets
 
-        public KeyTerm S_BRACKET_LEFT                    { get; private set; }
-        public KeyTerm S_BRACKET_RIGHT                   { get; private set; }
-        public KeyTerm S_TUPLE_BRACKET_LEFT              { get; private set; }
-        public KeyTerm S_TUPLE_BRACKET_RIGHT             { get; private set; }
+        public KeyTerm S_BRACKET_LEFT { get; private set; }
+        public KeyTerm S_BRACKET_RIGHT { get; private set; }
+        public KeyTerm S_TUPLE_BRACKET_LEFT { get; private set; }
+        public KeyTerm S_TUPLE_BRACKET_RIGHT { get; private set; }
         public KeyTerm S_TUPLE_BRACKET_LEFT_EXCLUSIVE
         {
             get { return S_BRACKET_LEFT; }
@@ -108,147 +108,147 @@ namespace sones.GraphQL
 
         #endregion
 
-        public KeyTerm S_edgeInformationDelimiterSymbol  { get; private set; }
-        public KeyTerm S_edgeTraversalDelimiter          { get; private set; }
-        public KeyTerm S_NULL                            { get; private set; }
-        public KeyTerm S_NOT                             { get; private set; }
-        public KeyTerm S_UNIQUE                          { get; private set; }
-        public KeyTerm S_WITH                            { get; private set; }
-        public KeyTerm S_TABLE                           { get; private set; }
-        public KeyTerm S_ALTER                           { get; private set; }
-        public KeyTerm S_ADD                             { get; private set; }
-        public KeyTerm S_TO                              { get; private set; }
-        public KeyTerm S_COLUMN                          { get; private set; }
-        public KeyTerm S_DROP                            { get; private set; }
-        public KeyTerm S_RENAME          { get; private set; }
-        public KeyTerm S_CONSTRAINT      { get; private set; }
-        public KeyTerm S_INDEX           { get; private set; }
-        public KeyTerm S_INDICES         { get; private set; }
-        public KeyTerm S_ON              { get; private set; }
-        public KeyTerm S_KEY             { get; private set; }
-        public KeyTerm S_PRIMARY         { get; private set; }
-        public KeyTerm S_INSERT          { get; private set; }
-        public KeyTerm S_INTO            { get; private set; }
-        public KeyTerm S_UPDATE          { get; private set; }
-        public KeyTerm S_INSERTORUPDATE  { get; private set; }
+        public KeyTerm S_edgeInformationDelimiterSymbol { get; private set; }
+        public KeyTerm S_edgeTraversalDelimiter { get; private set; }
+        public KeyTerm S_NULL { get; private set; }
+        public KeyTerm S_NOT { get; private set; }
+        public KeyTerm S_UNIQUE { get; private set; }
+        public KeyTerm S_WITH { get; private set; }
+        public KeyTerm S_TABLE { get; private set; }
+        public KeyTerm S_ALTER { get; private set; }
+        public KeyTerm S_ADD { get; private set; }
+        public KeyTerm S_TO { get; private set; }
+        public KeyTerm S_COLUMN { get; private set; }
+        public KeyTerm S_DROP { get; private set; }
+        public KeyTerm S_RENAME { get; private set; }
+        public KeyTerm S_CONSTRAINT { get; private set; }
+        public KeyTerm S_INDEX { get; private set; }
+        public KeyTerm S_INDICES { get; private set; }
+        public KeyTerm S_ON { get; private set; }
+        public KeyTerm S_KEY { get; private set; }
+        public KeyTerm S_PRIMARY { get; private set; }
+        public KeyTerm S_INSERT { get; private set; }
+        public KeyTerm S_INTO { get; private set; }
+        public KeyTerm S_UPDATE { get; private set; }
+        public KeyTerm S_INSERTORUPDATE { get; private set; }
         public KeyTerm S_INSERTORREPLACE { get; private set; }
-        public KeyTerm S_REPLACE         { get; private set; }
-        public KeyTerm S_SET             { get; private set; }
-        public KeyTerm S_REMOVE          { get; private set; }
-        public KeyTerm S_VALUES          { get; private set; }
-        public KeyTerm S_DELETE          { get; private set; }
-        public KeyTerm S_SELECT          { get; private set; }
-        public KeyTerm S_FROM            { get; private set; }
-        public KeyTerm S_AS              { get; private set; }
-        public KeyTerm S_COUNT           { get; private set; }
-        public KeyTerm S_JOIN            { get; private set; }
-        public KeyTerm S_BY              { get; private set; }
-        public KeyTerm S_WHERE           { get; private set; }
-        public KeyTerm S_TYPE            { get; private set; }
-        public KeyTerm S_TYPES           { get; private set; }
-        public KeyTerm S_VERTEX          { get; private set; }
-        public KeyTerm S_VERTICES        { get; private set; }
-        public KeyTerm S_EDITION         { get; private set; }
-        public KeyTerm S_INDEXTYPE       { get; private set; }
-        public KeyTerm S_LIST            { get; private set; }
-        public KeyTerm S_ListTypePrefix  { get; private set; }
+        public KeyTerm S_REPLACE { get; private set; }
+        public KeyTerm S_SET { get; private set; }
+        public KeyTerm S_REMOVE { get; private set; }
+        public KeyTerm S_VALUES { get; private set; }
+        public KeyTerm S_DELETE { get; private set; }
+        public KeyTerm S_SELECT { get; private set; }
+        public KeyTerm S_FROM { get; private set; }
+        public KeyTerm S_AS { get; private set; }
+        public KeyTerm S_COUNT { get; private set; }
+        public KeyTerm S_JOIN { get; private set; }
+        public KeyTerm S_BY { get; private set; }
+        public KeyTerm S_WHERE { get; private set; }
+        public KeyTerm S_TYPE { get; private set; }
+        public KeyTerm S_TYPES { get; private set; }
+        public KeyTerm S_VERTEX { get; private set; }
+        public KeyTerm S_VERTICES { get; private set; }
+        public KeyTerm S_EDITION { get; private set; }
+        public KeyTerm S_INDEXTYPE { get; private set; }
+        public KeyTerm S_LIST { get; private set; }
+        public KeyTerm S_ListTypePrefix { get; private set; }
         public KeyTerm S_ListTypePostfix { get; private set; }
-        public KeyTerm S_EXTENDS         { get; private set; }
-        public KeyTerm S_ATTRIBUTES      { get; private set; }
-        public KeyTerm S_MATCHES         { get; private set; }
-        public KeyTerm S_LIMIT           { get; private set; }
-        public KeyTerm S_DEPTH           { get; private set; }
-        public KeyTerm S_DEFINE          { get; private set; }
-        public KeyTerm S_UNDEFINE        { get; private set; }
-        public KeyTerm S_SHARDS          { get; private set; }
+        public KeyTerm S_EXTENDS { get; private set; }
+        public KeyTerm S_ATTRIBUTES { get; private set; }
+        public KeyTerm S_MATCHES { get; private set; }
+        public KeyTerm S_LIMIT { get; private set; }
+        public KeyTerm S_DEPTH { get; private set; }
+        public KeyTerm S_DEFINE { get; private set; }
+        public KeyTerm S_UNDEFINE { get; private set; }
+        public KeyTerm S_SHARDS { get; private set; }
 
         #region REF/REFUUID/...
 
-        public KeyTerm S_REF             { get; private set; }
-        public KeyTerm S_REFERENCE       { get; private set; }
-        public KeyTerm S_REFUUID         { get; private set; }
-        public KeyTerm S_REFERENCEUUID   { get; private set; }
+        public KeyTerm S_REF { get; private set; }
+        public KeyTerm S_REFERENCE { get; private set; }
+        public KeyTerm S_REFUUID { get; private set; }
+        public KeyTerm S_REFERENCEUUID { get; private set; }
 
         #endregion
 
         #region LISTOF/SETOF/SETOFUUIDS
 
-        public KeyTerm S_LISTOF          { get; private set; }
-        public KeyTerm S_SETOF           { get; private set; }
-        public KeyTerm S_SETOFUUIDS      { get; private set; }
-       
+        public KeyTerm S_LISTOF { get; private set; }
+        public KeyTerm S_SETOF { get; private set; }
+        public KeyTerm S_SETOFUUIDS { get; private set; }
+
         #endregion
 
-        public KeyTerm S_UUID            { get; private set; }
-        public KeyTerm S_OFFSET          { get; private set; }
-        public KeyTerm S_TRUNCATE        { get; private set; }
-        public KeyTerm S_TRUE            { get; private set; }
-        public KeyTerm S_FALSE           { get; private set; }
-        public KeyTerm S_SORTED          { get; private set; }
-        public KeyTerm S_ASC             { get; private set; }
-        public KeyTerm S_DESC            { get; private set; }
+        public KeyTerm S_UUID { get; private set; }
+        public KeyTerm S_OFFSET { get; private set; }
+        public KeyTerm S_TRUNCATE { get; private set; }
+        public KeyTerm S_TRUE { get; private set; }
+        public KeyTerm S_FALSE { get; private set; }
+        public KeyTerm S_SORTED { get; private set; }
+        public KeyTerm S_ASC { get; private set; }
+        public KeyTerm S_DESC { get; private set; }
 
-        public KeyTerm S_DESCRIBE        { get; private set; }
-        public KeyTerm S_QUEUESIZE       { get; private set; }
-        public KeyTerm S_WEIGHTED        { get; private set; }
-        public KeyTerm S_SETTING         { get; private set; }
-        public KeyTerm S_GET             { get; private set; }
-        public KeyTerm S_DB              { get; private set; }
-        public KeyTerm S_SESSION         { get; private set; }
-        public KeyTerm S_ATTRIBUTE       { get; private set; }
-        public KeyTerm S_DEFAULT         { get; private set; }        
+        public KeyTerm S_DESCRIBE { get; private set; }
+        public KeyTerm S_QUEUESIZE { get; private set; }
+        public KeyTerm S_WEIGHTED { get; private set; }
+        public KeyTerm S_SETTING { get; private set; }
+        public KeyTerm S_GET { get; private set; }
+        public KeyTerm S_DB { get; private set; }
+        public KeyTerm S_SESSION { get; private set; }
+        public KeyTerm S_ATTRIBUTE { get; private set; }
+        public KeyTerm S_DEFAULT { get; private set; }
 
-        public KeyTerm S_BACKWARDEDGES   { get; private set; }
-        public KeyTerm S_BACKWARDEDGE    { get; private set; }
-        public KeyTerm S_FUNCTION        { get; private set; }
-        public KeyTerm S_AGGREGATE       { get; private set; }
-        public KeyTerm S_AGGREGATES      { get; private set; }
-        public KeyTerm S_SETTINGS        { get; private set; }
-        public KeyTerm S_FUNCTIONS       { get; private set; }
-        public KeyTerm S_EDGE            { get; private set; }
-        public KeyTerm S_EDGES           { get; private set; }
-        public KeyTerm S_MANDATORY       { get; private set; }
-        public KeyTerm S_ABSTRACT        { get; private set; }
+        public KeyTerm S_BACKWARDEDGES { get; private set; }
+        public KeyTerm S_BACKWARDEDGE { get; private set; }
+        public KeyTerm S_FUNCTION { get; private set; }
+        public KeyTerm S_AGGREGATE { get; private set; }
+        public KeyTerm S_AGGREGATES { get; private set; }
+        public KeyTerm S_SETTINGS { get; private set; }
+        public KeyTerm S_FUNCTIONS { get; private set; }
+        public KeyTerm S_EDGE { get; private set; }
+        public KeyTerm S_EDGES { get; private set; }
+        public KeyTerm S_MANDATORY { get; private set; }
+        public KeyTerm S_ABSTRACT { get; private set; }
 
         #region Transactions
 
-        public KeyTerm S_BEGIN                   { get; private set; }
-        public KeyTerm S_TRANSACTION             { get; private set; }
-        public KeyTerm S_TRANSACTDISTRIBUTED     { get; private set; }
-        public KeyTerm S_TRANSACTLONGRUNNING     { get; private set; }
-        public KeyTerm S_TRANSACTISOLATION       { get; private set; }
-        public KeyTerm S_TRANSACTNAME            { get; private set; }
-        public KeyTerm S_TRANSACTTIMESTAMP       { get; private set; }
-        public KeyTerm S_TRANSACTCOMMIT          { get; private set; }
-        public KeyTerm S_TRANSACTROLLBACK        { get; private set; }
-        public KeyTerm S_TRANSACTCOMROLLASYNC    { get; private set; }
+        public KeyTerm S_BEGIN { get; private set; }
+        public KeyTerm S_TRANSACTION { get; private set; }
+        public KeyTerm S_TRANSACTDISTRIBUTED { get; private set; }
+        public KeyTerm S_TRANSACTLONGRUNNING { get; private set; }
+        public KeyTerm S_TRANSACTISOLATION { get; private set; }
+        public KeyTerm S_TRANSACTNAME { get; private set; }
+        public KeyTerm S_TRANSACTTIMESTAMP { get; private set; }
+        public KeyTerm S_TRANSACTCOMMIT { get; private set; }
+        public KeyTerm S_TRANSACTROLLBACK { get; private set; }
+        public KeyTerm S_TRANSACTCOMROLLASYNC { get; private set; }
 
         #endregion
 
-        public KeyTerm S_REMOVEFROMLIST          { get; private set; }
-        public KeyTerm S_ADDTOLIST               { get; private set; }
-        public KeyTerm S_COMMENT                 { get; private set; }
-        public KeyTerm S_REBUILD                 { get; private set; }
+        public KeyTerm S_REMOVEFROMLIST { get; private set; }
+        public KeyTerm S_ADDTOLIST { get; private set; }
+        public KeyTerm S_COMMENT { get; private set; }
+        public KeyTerm S_REBUILD { get; private set; }
 
         #region IMPORT
 
-        public KeyTerm S_IMPORT                  { get; private set; }
-        public KeyTerm S_COMMENTS                { get; private set; }
-        public KeyTerm S_PARALLELTASKS           { get; private set; }
-        public KeyTerm S_VERBOSITY               { get; private set; }
-        public KeyTerm S_FORMAT                  { get; private set; }
+        public KeyTerm S_IMPORT { get; private set; }
+        public KeyTerm S_COMMENTS { get; private set; }
+        public KeyTerm S_PARALLELTASKS { get; private set; }
+        public KeyTerm S_VERBOSITY { get; private set; }
+        public KeyTerm S_FORMAT { get; private set; }
 
         #endregion
 
         #region DUMP
 
-        public KeyTerm S_DUMP            { get; private set; }
-        public KeyTerm S_EXPORT          { get; private set; }
-        public KeyTerm S_ALL             { get; private set; }
-        public KeyTerm S_GDDL            { get; private set; }
-        public KeyTerm S_GDML            { get; private set; }
-        public KeyTerm S_GQL             { get; private set; }
-        public KeyTerm S_CSV             { get; private set; }
+        public KeyTerm S_DUMP { get; private set; }
+        public KeyTerm S_EXPORT { get; private set; }
+        public KeyTerm S_ALL { get; private set; }
+        public KeyTerm S_GDDL { get; private set; }
+        public KeyTerm S_GDML { get; private set; }
+        public KeyTerm S_GQL { get; private set; }
+        public KeyTerm S_CSV { get; private set; }
 
 
 
@@ -256,14 +256,14 @@ namespace sones.GraphQL
 
         #region LINK
 
-        public KeyTerm S_VIA                     { get; private set; }
-        public KeyTerm S_LINK                    { get; private set; }
+        public KeyTerm S_VIA { get; private set; }
+        public KeyTerm S_LINK { get; private set; }
 
         #endregion
 
         #region UNLINK
 
-        public KeyTerm S_UNLINK                  { get; private set; }
+        public KeyTerm S_UNLINK { get; private set; }
 
         #endregion
 
@@ -305,10 +305,10 @@ namespace sones.GraphQL
             #region Available value defs: Number, String, Name
 
             var number              = new NumberLiteral("number", NumberOptions.AllowSign | NumberOptions.DisableQuickParse);
-            number.DefaultIntTypes  = new TypeCode[] { TypeCode.UInt64, TypeCode.Int64, NumberLiteral.TypeCodeBigInt };
+            number.DefaultIntTypes = new TypeCode[] { TypeCode.UInt64, TypeCode.Int64, NumberLiteral.TypeCodeBigInt };
             var string_literal      = new StringLiteral("string", "'", StringOptions.AllowsDoubledQuote | StringOptions.AllowsLineBreak);
             var location_literal    = new StringLiteral("file", "'", StringOptions.AllowsDoubledQuote | StringOptions.AllowsLineBreak | StringOptions.NoEscapes);
-            
+
             var name                = new IdentifierTerminal("name", "ÄÖÜäöüß0123456789_", "ÄÖÜäöü0123456789$_");
 
 
@@ -318,142 +318,142 @@ namespace sones.GraphQL
 
             #region Symbols
 
-            S_CREATE                          = ToTerm("CREATE");
-            S_comma                           = ToTerm(",");
-            S_dot                             = ToTerm(".");
-            S_ASTERISK                        = ToTerm("*");
-            S_MINUS                           = ToTerm("-");
-            S_RHOMB                           = ToTerm("#");
-            S_AD                              = ToTerm("@");
-            S_EQUALS                          = ToTerm("=");
-            S_QUESTIONMARK_EQUALS             = ToTerm("?=");
-           
-            S_colon                           = ToTerm(":");
-            S_BRACKET_LEFT                    = ToTerm(TERMINAL_BRACKET_LEFT);
-            S_BRACKET_RIGHT                   = ToTerm(TERMINAL_BRACKET_RIGHT);
-            S_TUPLE_BRACKET_LEFT              = ToTerm("[");
-            S_TUPLE_BRACKET_RIGHT             = ToTerm("]");
-            S_edgeInformationDelimiterSymbol  = ToTerm(SonesGQLConstants.EdgeInformationDelimiterSymbol);
-            S_edgeTraversalDelimiter          = ToTerm(SonesGQLConstants.EdgeTraversalDelimiterSymbol);
-            S_NULL                            = ToTerm("NULL");
-            S_NOT                             = ToTerm("NOT");
-            S_UNIQUE                          = ToTerm("UNIQUE");
-            S_WITH                            = ToTerm("WITH");
-            S_TABLE                           = ToTerm("TABLE");
-            S_ALTER                           = ToTerm("ALTER");
-            S_ADD                             = ToTerm("ADD");
-            S_TO                              = ToTerm("TO");
-            S_COLUMN                          = ToTerm("COLUMN");
-            S_DROP                            = ToTerm("DROP");
-            S_RENAME                          = ToTerm("RENAME");
-            S_CONSTRAINT                      = ToTerm("CONSTRAINT");
-            S_INDEX                           = ToTerm("INDEX");
-            S_INDICES                         = ToTerm("INDICES");
-            S_ON                              = ToTerm("ON");
-            S_KEY                             = ToTerm("KEY");
-            S_PRIMARY                         = ToTerm("PRIMARY");
-            S_INSERT                          = ToTerm("INSERT");
-            S_INTO                            = ToTerm("INTO");
-            S_UPDATE                          = ToTerm("UPDATE");
-            S_INSERTORUPDATE                  = ToTerm("INSERTORUPDATE");
-            S_INSERTORREPLACE                 = ToTerm("INSERTORREPLACE");
-            S_REPLACE                         = ToTerm("REPLACE");
-            S_SET                             = ToTerm(TERMINAL_SET);
-            S_REMOVE                          = ToTerm("REMOVE");
-            S_VALUES                          = ToTerm("VALUES");
-            S_DELETE                          = ToTerm("DELETE");
-            S_SELECT                          = ToTerm("SELECT");
-            S_FROM                            = ToTerm("FROM");
-            S_AS                              = ToTerm("AS");
-            S_COUNT                           = ToTerm("COUNT");
-            S_JOIN                            = ToTerm("JOIN");
-            S_BY                              = ToTerm("BY");
-            S_WHERE                           = ToTerm("WHERE");
-            S_TYPE                            = ToTerm("TYPE");
-            S_TYPES                           = ToTerm("TYPES");
-            S_VERTEX                          = ToTerm("VERTEX");
-            S_VERTICES                        = ToTerm("VERTICES");
-            S_EDITION                         = ToTerm("EDITION");
-            S_INDEXTYPE                       = ToTerm("INDEXTYPE");
-            S_LIST                            = ToTerm(TERMINAL_LIST);
-            S_ListTypePrefix                  = ToTerm(TERMINAL_LT);
-            S_ListTypePostfix                 = ToTerm(TERMINAL_GT);
-            S_EXTENDS                         = ToTerm("EXTENDS");
-            S_ATTRIBUTES                      = ToTerm("ATTRIBUTES");
-            S_MATCHES                         = ToTerm("MATCHES");
-            S_LIMIT                           = ToTerm("LIMIT");
-            S_DEPTH                           = ToTerm("DEPTH");
-            S_REFERENCE                       = ToTerm("REFERENCE");
-            S_REF                             = ToTerm("REF");
-            S_REFUUID                         = ToTerm("REFUUID");
-            S_REFERENCEUUID                   = ToTerm("REFERENCEUUID");
-            S_LISTOF                          = ToTerm(SonesGQLConstants.LISTOF);
-            S_SETOF                           = ToTerm(SonesGQLConstants.SETOF);
-            S_SETOFUUIDS                      = ToTerm(SonesGQLConstants.SETOFUUIDS);
-            S_UUID                            = ToTerm("UUID");
-            S_OFFSET                          = ToTerm("OFFSET");
-            S_TRUNCATE                        = ToTerm("TRUNCATE");
-            S_TRUE                            = ToTerm(TERMINAL_TRUE);
-            S_FALSE                           = ToTerm(TERMINAL_FALSE);
-            S_SORTED                          = ToTerm(TERMINAL_SORTED);
-            S_ASC                             = ToTerm(TERMINAL_ASC);
-            S_DESC                            = ToTerm(TERMINAL_DESC);
-            S_QUEUESIZE                       = ToTerm(TERMINAL_QUEUESIZE);
-            S_WEIGHTED                        = ToTerm(TERMINAL_WEIGHTED);
-            S_GET                             = ToTerm("GET");
-            S_DB                              = ToTerm("DB");
-            S_SESSION                         = ToTerm("SESSION");
-            S_ATTRIBUTE                       = ToTerm("ATTRIBUTE");
-            S_DEFAULT                         = ToTerm("DEFAULT");
-            S_BACKWARDEDGE                    = ToTerm("BACKWARDEDGE");
-            S_BACKWARDEDGES                   = ToTerm("BACKWARDEDGES");
-            S_DESCRIBE                        = ToTerm("DESCRIBE");
-            S_FUNCTION                        = ToTerm("FUNCTION");
-            S_FUNCTIONS                       = ToTerm("FUNCTIONS");
-            S_AGGREGATE                       = ToTerm("AGGREGATE");
-            S_AGGREGATES                      = ToTerm("AGGREGATES");
-            S_SETTING                         = ToTerm("SETTING");
-            S_SETTINGS                        = ToTerm("SETTINGS");
-            S_INDICES                         = ToTerm("INDICES");
-            S_EDGE                            = ToTerm("EDGE");
-            S_EDGES                           = ToTerm("EDGES");
-            S_MANDATORY                       = ToTerm("MANDATORY");
-            S_ABSTRACT                        = ToTerm("ABSTRACT");
-            S_BEGIN                           = ToTerm("BEGIN");
-            S_TRANSACTION                     = ToTerm("TRANSACTION");
-            S_TRANSACTDISTRIBUTED             = ToTerm(SonesGQLConstants.TRANSACTION_DISTRIBUTED);
-            S_TRANSACTLONGRUNNING             = ToTerm(SonesGQLConstants.TRANSACTION_LONGRUNNING);
-            S_TRANSACTISOLATION               = ToTerm(SonesGQLConstants.TRANSACTION_ISOLATION);
-            S_TRANSACTNAME                    = ToTerm(SonesGQLConstants.TRANSACTION_NAME);
-            S_TRANSACTTIMESTAMP               = ToTerm(SonesGQLConstants.TRANSACTION_TIMESTAMP);
-            S_TRANSACTROLLBACK                = ToTerm(SonesGQLConstants.TRANSACTION_ROLLBACK);
-            S_TRANSACTCOMMIT                  = ToTerm(SonesGQLConstants.TRANSACTION_COMMIT);
-            S_TRANSACTCOMROLLASYNC            = ToTerm(SonesGQLConstants.TRANSACTION_COMROLLASYNC);
-            S_ADDTOLIST                       = ToTerm("+=");
-            S_REMOVEFROMLIST                  = ToTerm("-=");
-            S_DUMP                            = ToTerm("DUMP");
-            S_EXPORT                          = ToTerm("EXPORT");
-            S_ALL                             = ToTerm("ALL");
-            S_GDDL                            = ToTerm("GDDL");
-            S_GDML                            = ToTerm("GDML");
-            S_GQL                             = ToTerm("GQL");
-            S_CSV                             = ToTerm("CSV");
-            S_COMMENT                         = ToTerm("COMMENT");
-            S_REBUILD                         = ToTerm("REBUILD");
-            S_DEFINE                          = ToTerm("DEFINE");
-            S_UNDEFINE                        = ToTerm("UNDEFINE");
-            S_VIA                             = ToTerm("VIA");
-            S_LINK                            = ToTerm("LINK");
-            S_UNLINK                          = ToTerm("UNLINK");
-            S_SHARDS                          = ToTerm("SHARDS");
+            S_CREATE = ToTerm("CREATE");
+            S_comma = ToTerm(",");
+            S_dot = ToTerm(".");
+            S_ASTERISK = ToTerm("*");
+            S_MINUS = ToTerm("-");
+            S_RHOMB = ToTerm("#");
+            S_AD = ToTerm("@");
+            S_EQUALS = ToTerm("=");
+            S_QUESTIONMARK_EQUALS = ToTerm("?=");
+
+            S_colon = ToTerm(":");
+            S_BRACKET_LEFT = ToTerm(TERMINAL_BRACKET_LEFT);
+            S_BRACKET_RIGHT = ToTerm(TERMINAL_BRACKET_RIGHT);
+            S_TUPLE_BRACKET_LEFT = ToTerm("[");
+            S_TUPLE_BRACKET_RIGHT = ToTerm("]");
+            S_edgeInformationDelimiterSymbol = ToTerm(SonesGQLConstants.EdgeInformationDelimiterSymbol);
+            S_edgeTraversalDelimiter = ToTerm(SonesGQLConstants.EdgeTraversalDelimiterSymbol);
+            S_NULL = ToTerm("NULL");
+            S_NOT = ToTerm("NOT");
+            S_UNIQUE = ToTerm("UNIQUE");
+            S_WITH = ToTerm("WITH");
+            S_TABLE = ToTerm("TABLE");
+            S_ALTER = ToTerm("ALTER");
+            S_ADD = ToTerm("ADD");
+            S_TO = ToTerm("TO");
+            S_COLUMN = ToTerm("COLUMN");
+            S_DROP = ToTerm("DROP");
+            S_RENAME = ToTerm("RENAME");
+            S_CONSTRAINT = ToTerm("CONSTRAINT");
+            S_INDEX = ToTerm("INDEX");
+            S_INDICES = ToTerm("INDICES");
+            S_ON = ToTerm("ON");
+            S_KEY = ToTerm("KEY");
+            S_PRIMARY = ToTerm("PRIMARY");
+            S_INSERT = ToTerm("INSERT");
+            S_INTO = ToTerm("INTO");
+            S_UPDATE = ToTerm("UPDATE");
+            S_INSERTORUPDATE = ToTerm("INSERTORUPDATE");
+            S_INSERTORREPLACE = ToTerm("INSERTORREPLACE");
+            S_REPLACE = ToTerm("REPLACE");
+            S_SET = ToTerm(TERMINAL_SET);
+            S_REMOVE = ToTerm("REMOVE");
+            S_VALUES = ToTerm("VALUES");
+            S_DELETE = ToTerm("DELETE");
+            S_SELECT = ToTerm("SELECT");
+            S_FROM = ToTerm("FROM");
+            S_AS = ToTerm("AS");
+            S_COUNT = ToTerm("COUNT");
+            S_JOIN = ToTerm("JOIN");
+            S_BY = ToTerm("BY");
+            S_WHERE = ToTerm("WHERE");
+            S_TYPE = ToTerm("TYPE");
+            S_TYPES = ToTerm("TYPES");
+            S_VERTEX = ToTerm("VERTEX");
+            S_VERTICES = ToTerm("VERTICES");
+            S_EDITION = ToTerm("EDITION");
+            S_INDEXTYPE = ToTerm("INDEXTYPE");
+            S_LIST = ToTerm(TERMINAL_LIST);
+            S_ListTypePrefix = ToTerm(TERMINAL_LT);
+            S_ListTypePostfix = ToTerm(TERMINAL_GT);
+            S_EXTENDS = ToTerm("EXTENDS");
+            S_ATTRIBUTES = ToTerm("ATTRIBUTES");
+            S_MATCHES = ToTerm("MATCHES");
+            S_LIMIT = ToTerm("LIMIT");
+            S_DEPTH = ToTerm("DEPTH");
+            S_REFERENCE = ToTerm("REFERENCE");
+            S_REF = ToTerm("REF");
+            S_REFUUID = ToTerm("REFUUID");
+            S_REFERENCEUUID = ToTerm("REFERENCEUUID");
+            S_LISTOF = ToTerm(SonesGQLConstants.LISTOF);
+            S_SETOF = ToTerm(SonesGQLConstants.SETOF);
+            S_SETOFUUIDS = ToTerm(SonesGQLConstants.SETOFUUIDS);
+            S_UUID = ToTerm("UUID");
+            S_OFFSET = ToTerm("OFFSET");
+            S_TRUNCATE = ToTerm("TRUNCATE");
+            S_TRUE = ToTerm(TERMINAL_TRUE);
+            S_FALSE = ToTerm(TERMINAL_FALSE);
+            S_SORTED = ToTerm(TERMINAL_SORTED);
+            S_ASC = ToTerm(TERMINAL_ASC);
+            S_DESC = ToTerm(TERMINAL_DESC);
+            S_QUEUESIZE = ToTerm(TERMINAL_QUEUESIZE);
+            S_WEIGHTED = ToTerm(TERMINAL_WEIGHTED);
+            S_GET = ToTerm("GET");
+            S_DB = ToTerm("DB");
+            S_SESSION = ToTerm("SESSION");
+            S_ATTRIBUTE = ToTerm("ATTRIBUTE");
+            S_DEFAULT = ToTerm("DEFAULT");
+            S_BACKWARDEDGE = ToTerm("BACKWARDEDGE");
+            S_BACKWARDEDGES = ToTerm("BACKWARDEDGES");
+            S_DESCRIBE = ToTerm("DESCRIBE");
+            S_FUNCTION = ToTerm("FUNCTION");
+            S_FUNCTIONS = ToTerm("FUNCTIONS");
+            S_AGGREGATE = ToTerm("AGGREGATE");
+            S_AGGREGATES = ToTerm("AGGREGATES");
+            S_SETTING = ToTerm("SETTING");
+            S_SETTINGS = ToTerm("SETTINGS");
+            S_INDICES = ToTerm("INDICES");
+            S_EDGE = ToTerm("EDGE");
+            S_EDGES = ToTerm("EDGES");
+            S_MANDATORY = ToTerm("MANDATORY");
+            S_ABSTRACT = ToTerm("ABSTRACT");
+            S_BEGIN = ToTerm("BEGIN");
+            S_TRANSACTION = ToTerm("TRANSACTION");
+            S_TRANSACTDISTRIBUTED = ToTerm(SonesGQLConstants.TRANSACTION_DISTRIBUTED);
+            S_TRANSACTLONGRUNNING = ToTerm(SonesGQLConstants.TRANSACTION_LONGRUNNING);
+            S_TRANSACTISOLATION = ToTerm(SonesGQLConstants.TRANSACTION_ISOLATION);
+            S_TRANSACTNAME = ToTerm(SonesGQLConstants.TRANSACTION_NAME);
+            S_TRANSACTTIMESTAMP = ToTerm(SonesGQLConstants.TRANSACTION_TIMESTAMP);
+            S_TRANSACTROLLBACK = ToTerm(SonesGQLConstants.TRANSACTION_ROLLBACK);
+            S_TRANSACTCOMMIT = ToTerm(SonesGQLConstants.TRANSACTION_COMMIT);
+            S_TRANSACTCOMROLLASYNC = ToTerm(SonesGQLConstants.TRANSACTION_COMROLLASYNC);
+            S_ADDTOLIST = ToTerm("+=");
+            S_REMOVEFROMLIST = ToTerm("-=");
+            S_DUMP = ToTerm("DUMP");
+            S_EXPORT = ToTerm("EXPORT");
+            S_ALL = ToTerm("ALL");
+            S_GDDL = ToTerm("GDDL");
+            S_GDML = ToTerm("GDML");
+            S_GQL = ToTerm("GQL");
+            S_CSV = ToTerm("CSV");
+            S_COMMENT = ToTerm("COMMENT");
+            S_REBUILD = ToTerm("REBUILD");
+            S_DEFINE = ToTerm("DEFINE");
+            S_UNDEFINE = ToTerm("UNDEFINE");
+            S_VIA = ToTerm("VIA");
+            S_LINK = ToTerm("LINK");
+            S_UNLINK = ToTerm("UNLINK");
+            S_SHARDS = ToTerm("SHARDS");
 
             #region IMPORT
 
-            S_IMPORT                          = ToTerm("IMPORT");
-            S_COMMENTS                        = ToTerm("COMMENTS");
-            S_PARALLELTASKS                   = ToTerm("PARALLELTASKS");
-            S_VERBOSITY                       = ToTerm("VERBOSITY");
-            S_FORMAT                          = ToTerm("FORMAT");
+            S_IMPORT = ToTerm("IMPORT");
+            S_COMMENTS = ToTerm("COMMENTS");
+            S_PARALLELTASKS = ToTerm("PARALLELTASKS");
+            S_VERBOSITY = ToTerm("VERBOSITY");
+            S_FORMAT = ToTerm("FORMAT");
 
             #endregion
 
@@ -479,13 +479,13 @@ namespace sones.GraphQL
             var EdgeInformation                 = new NonTerminal("EdgeInformation", CreateEdgeInformation);
             var EdgeTraversalWithFunctions      = new NonTerminal("EdgeTraversalWithFunctions", CreateEdgeTraversal);
             var EdgeTraversalWithOutFunctions   = new NonTerminal("EdgeTraversalWithOutFunctions", CreateEdgeTraversal);
-            
+
             #endregion
 
             #region AStatements
 
             var singlestmt                  = new NonTerminal("singlestmt");
-//            var stmt = new NonTerminal("stmt", typeof(StatementNode)); 
+            //            var stmt = new NonTerminal("stmt", typeof(StatementNode)); 
             var createTableStmt             = new NonTerminal("createTableStmt");
             var createIndexStmt             = new NonTerminal("createIndexStmt", CreateCreateIndexStatementNode);
             var alterStmt                   = new NonTerminal("alterStmt", CreateAlterStmNode);
@@ -504,36 +504,36 @@ namespace sones.GraphQL
             var commitRollBackTransactStmt  = new NonTerminal("commitRollBackTransactStmt", CreateCommitRollbackTransActionNode);
             var linkStmt                    = new NonTerminal("linkStmt", CreateLinkStmtNode);
             var unlinkStmt                  = new NonTerminal("unlinkStmt", CreateUnlinkStmt);
-            
+
             #endregion
 
             var deleteStmtMember            = new NonTerminal("deleteStmtMember");
-            var uniqueOpt                   = new NonTerminal("uniqueOpt",              typeof(UniqueOptNode));
-            var IndexAttributeList          = new NonTerminal("IndexAttributeList",     typeof(IndexAttributeListNode));
-            var IndexAttributeMember        = new NonTerminal("IndexAttributeMember",   typeof(IndexAttributeNode));
+            var uniqueOpt                   = new NonTerminal("uniqueOpt", typeof(UniqueOptNode));
+            var IndexAttributeList          = new NonTerminal("IndexAttributeList", typeof(IndexAttributeListNode));
+            var IndexAttributeMember        = new NonTerminal("IndexAttributeMember", typeof(IndexAttributeNode));
             var IndexAttributeType          = new NonTerminal("IndexAttributeType");
             var orderByAttributeList        = new NonTerminal("orderByAttributeList");
             var orderByAttributeListMember  = new NonTerminal("orderByAttributeListMember");
             var AttributeOrderDirectionOpt  = new NonTerminal("AttributeOrderDirectionOpt");
-            BNF_IndexTypeOpt                = new NonTerminal("indexTypeOpt",           typeof(IndexTypeOptNode));
-            var indexNameOpt                = new NonTerminal("indextNameOpt",          typeof(IndexNameOptNode));
-            var editionOpt                  = new NonTerminal("editionOpt",             typeof(EditionOptNode));
-            var alterCmd                    = new NonTerminal("alterCmd",               typeof(AlterCommandNode));
+            BNF_IndexTypeOpt = new NonTerminal("indexTypeOpt", typeof(IndexTypeOptNode));
+            var indexNameOpt                = new NonTerminal("indextNameOpt", typeof(IndexNameOptNode));
+            var editionOpt                  = new NonTerminal("editionOpt", typeof(EditionOptNode));
+            var alterCmd                    = new NonTerminal("alterCmd", typeof(AlterCommandNode));
             var alterCmdList                = new NonTerminal("alterCmdList");
             var insertData                  = new NonTerminal("insertData");
             var intoOpt                     = new NonTerminal("intoOpt");
             var assignList                  = new NonTerminal("assignList");
-            var whereClauseOpt              = new NonTerminal("whereClauseOpt",         CreateWhereExpressionNode);
+            var whereClauseOpt              = new NonTerminal("whereClauseOpt", CreateWhereExpressionNode);
             var extendsOpt                  = new NonTerminal("extendsOpt");
             var abstractOpt                 = new NonTerminal("abstractOpt");
             var commentOpt                  = new NonTerminal("CommentOpt");
             var bulkTypeList                = new NonTerminal("bulkTypeList");
             var attributesOpt               = new NonTerminal("attributesOpt");
             var insertValuesOpt             = new NonTerminal("insertValuesOpt");
-            var optionalShards              = new NonTerminal("optionalShards",         typeof(ShardsNode));
+            var optionalShards              = new NonTerminal("optionalShards", typeof(ShardsNode));
 
             #region Expression
-             
+
             var BNF_Expression              = new NonTerminal("expression", typeof(ExpressionNode));
             var expressionOfAList           = new NonTerminal("expressionOfAList", typeof(ExpressionOfAListNode));
             var BNF_ExprList                = new NonTerminal("exprList");
@@ -543,7 +543,7 @@ namespace sones.GraphQL
             var binExpr                     = new NonTerminal("binExpr", CreateBinaryExpressionNode);
             var binOp                       = new NonTerminal("binOp");
             var inExpr                      = new NonTerminal("inExpr");
-            
+
             #endregion
 
             #region Select
@@ -555,7 +555,7 @@ namespace sones.GraphQL
             var orderClauseOpt              = new NonTerminal("orderClauseOpt", typeof(OrderByNode));
             var selectionList               = new NonTerminal("selectionList");
             var selectionListElement        = new NonTerminal("selectionListElement", typeof(SelectionListElementNode));
-            selectionSource                 = new NonTerminal("selectionSource");
+            selectionSource = new NonTerminal("selectionSource");
             var selByType                   = new NonTerminal("selByType", CreateSelByTypeNode);
             var aliasOpt                    = new NonTerminal("aliasOpt");
             var aliasOptName                = new NonTerminal("aliasOptName");
@@ -565,12 +565,12 @@ namespace sones.GraphQL
 
             #region Aggregates & Functions
 
-            BNF_Aggregate                   = new NonTerminal("aggregate", CreateAggregateNode);
-            BNF_AggregateArg                = new NonTerminal("aggregateArg");
+            BNF_Aggregate = new NonTerminal("aggregate", CreateAggregateNode);
+            BNF_AggregateArg = new NonTerminal("aggregateArg");
             var function                    = new NonTerminal("function", CreateFunctionCallNode);
             var functionName                = new NonTerminal("functionName");
-            BNF_FunArgs                     = new NonTerminal("funArgs");
-            BNF_FuncCall                    = new NonTerminal("funCall", CreateFunctionCallNode);
+            BNF_FunArgs = new NonTerminal("funArgs");
+            BNF_FuncCall = new NonTerminal("funCall", CreateFunctionCallNode);
 
             #endregion
 
@@ -579,7 +579,7 @@ namespace sones.GraphQL
             var tuple                       = new NonTerminal("tuple", typeof(TupleNode));
             var bracketLeft                 = new NonTerminal(SonesGQLConstants.BracketLeft);
             var bracketRight                = new NonTerminal(SonesGQLConstants.BracketRight);
-            
+
 
             #endregion
 
@@ -587,19 +587,19 @@ namespace sones.GraphQL
             var notOpt                      = new NonTerminal("notOpt");
 
             var typeOrVertex                = new NonTerminal("typeOrVertex");
-            BNF_TypesOrVertices             = new NonTerminal("typesOrVertices");
+            BNF_TypesOrVertices = new NonTerminal("typesOrVertices");
 
             var GraphDBType                 = new NonTerminal(SonesGQLConstants.GraphDBType, CreateGraphDBTypeNode);
             var AttributeList               = new NonTerminal("AttributeList");
-            var AttrDefinition              = new NonTerminal("AttrDefinition",     CreateAttributeDefinitionNode);
+            var AttrDefinition              = new NonTerminal("AttrDefinition", CreateAttributeDefinitionNode);
             var ResultObject                = new NonTerminal("ResultObject");
             var ResultList                  = new NonTerminal("ResultList");
             var MatchingClause              = new NonTerminal("MatchingClause");
             var Matching                    = new NonTerminal("MatchingClause");
             var PrefixOperation             = new NonTerminal("PrefixOperation");
             var ParameterList               = new NonTerminal("ParameterList");
-            var TypeList                    = new NonTerminal("TypeList",           CreateTypeListNode);
-            var AType                       = new NonTerminal("AType",              CreateATypeNode);
+            var TypeList                    = new NonTerminal("TypeList", CreateTypeListNode);
+            var AType                       = new NonTerminal("AType", CreateATypeNode);
             var TypeWrapper                 = new NonTerminal("TypeWrapper");
 
             #region Attribute changes
@@ -620,20 +620,20 @@ namespace sones.GraphQL
             var CollectionOfDBObjects           = new NonTerminal("ListOfDBObjects", typeof(CollectionOfDBObjectsNode));
             var CollectionTuple                 = new NonTerminal("CollectionTuple", typeof(TupleNode));
             var ExtendedExpressionList          = new NonTerminal("ExtendedExpressionList");
-            var ExtendedExpression              = new NonTerminal("ExtendedExpression", typeof(ExpressionOfAListNode));            
+            var ExtendedExpression              = new NonTerminal("ExtendedExpression", typeof(ExpressionOfAListNode));
 
             #endregion
 
-            var Reference                   = new NonTerminal(S_REFERENCE.Symbol.Text,   typeof(SetRefNode));
-            var offsetOpt                   = new NonTerminal("offsetOpt",          typeof(OffsetNode));
+            var Reference                   = new NonTerminal(S_REFERENCE.Symbol.Text, typeof(SetRefNode));
+            var offsetOpt                   = new NonTerminal("offsetOpt", typeof(OffsetNode));
             var resolutionDepthOpt          = new NonTerminal("resolutionDepthOpt");
-            var limitOpt                    = new NonTerminal("limitOpt",           typeof(LimitNode));
+            var limitOpt                    = new NonTerminal("limitOpt", typeof(LimitNode));
             var SimpleIdList                = new NonTerminal("SimpleIdList");
             var bulkTypeListMember          = new NonTerminal("bulkTypeListMember", CreateBulkTypeListMemberNode);
-            var bulkType                    = new NonTerminal("bulkType",           CreateBulkTypeNode);
-            var truncateStmt                = new NonTerminal("truncateStmt",       CreateTruncateStmNode);
-            var uniquenessOpt               = new NonTerminal("UniquenessOpt",      typeof(UniqueAttributesOptNode));
-            var mandatoryOpt                = new NonTerminal("MandatoryOpt",       typeof(MandatoryOptNode));
+            var bulkType                    = new NonTerminal("bulkType", CreateBulkTypeNode);
+            var truncateStmt                = new NonTerminal("truncateStmt", CreateTruncateStmNode);
+            var uniquenessOpt               = new NonTerminal("UniquenessOpt", typeof(UniqueAttributesOptNode));
+            var mandatoryOpt                = new NonTerminal("MandatoryOpt", typeof(MandatoryOptNode));
 
             #region Transactions
 
@@ -649,7 +649,7 @@ namespace sones.GraphQL
 
             var Value                       = new NonTerminal("Value");
             var ValueList                   = new NonTerminal("ValueList");
-            var BooleanVal                  = new NonTerminal("BooleanVal");            
+            var BooleanVal                  = new NonTerminal("BooleanVal");
 
             var ListType                    = new NonTerminal("ListType");
             var ListParametersForExpression = new NonTerminal("ListParametersForExpression", typeof(ParametersNode));
@@ -713,7 +713,7 @@ namespace sones.GraphQL
             #region Dump/Export
 
             var dumpStmt                        = new NonTerminal("Dump", CreateDumpNode);
-            var dumpType                        = new NonTerminal("dumpType",   CreateDumpTypeNode);
+            var dumpType                        = new NonTerminal("dumpType", CreateDumpTypeNode);
             var dumpFormat                      = new NonTerminal("dumpFormat", CreateDumpFormatNode);
             var typeOptionalList                = new NonTerminal("typeOptionalList");
             var dumpDestination                 = new NonTerminal("dumpDestination");
@@ -722,23 +722,23 @@ namespace sones.GraphQL
 
             #region Describe
 
-            var DescrInfoStmt               = new NonTerminal("DescrInfoStmt",      CreateDescribeNode);
+            var DescrInfoStmt               = new NonTerminal("DescrInfoStmt", CreateDescribeNode);
             var DescrArgument               = new NonTerminal("DescrArgument");
-            var DescrFuncStmt               = new NonTerminal("DescrFuncStmt",      CreateDescrFunc);
+            var DescrFuncStmt               = new NonTerminal("DescrFuncStmt", CreateDescrFunc);
             var DescrFunctionsStmt          = new NonTerminal("DescrFunctionsStmt", CreateDescrFunctions);
-            var DescrAggrStmt               = new NonTerminal("DescrAggrStmt",      CreateDescrAggr);
-            var DescrAggrsStmt              = new NonTerminal("DescrAggrsStmt",     CreateDescrAggrs);
-            var DescrSettStmt               = new NonTerminal("DescrSettStmt",      CreateDescrSett);
-            var DescrSettItem               = new NonTerminal("DescrSettItem",      CreateDescrSettItem);
-            var DescrSettingsItems          = new NonTerminal("DescrSettingsItems", CreateDescrSettingsItems); 
-            var DescrSettingsStmt           = new NonTerminal("DescrSettingsStmt",  CreateDescrSettings);
-            var DescrTypeStmt               = new NonTerminal("DescrTypeStmt",      CreateDescrType);
-            var DescrTypesStmt              = new NonTerminal("DescrTypesStmt",     CreateDescrTypes);
-            var DescrIdxStmt                = new NonTerminal("DescrIdxStmt",       CreateDescrIdx);
-            var DescrIdxsStmt               = new NonTerminal("DescrIdxsStmt",      CreateDescrIdxs);
+            var DescrAggrStmt               = new NonTerminal("DescrAggrStmt", CreateDescrAggr);
+            var DescrAggrsStmt              = new NonTerminal("DescrAggrsStmt", CreateDescrAggrs);
+            var DescrSettStmt               = new NonTerminal("DescrSettStmt", CreateDescrSett);
+            var DescrSettItem               = new NonTerminal("DescrSettItem", CreateDescrSettItem);
+            var DescrSettingsItems          = new NonTerminal("DescrSettingsItems", CreateDescrSettingsItems);
+            var DescrSettingsStmt           = new NonTerminal("DescrSettingsStmt", CreateDescrSettings);
+            var DescrTypeStmt               = new NonTerminal("DescrTypeStmt", CreateDescrType);
+            var DescrTypesStmt              = new NonTerminal("DescrTypesStmt", CreateDescrTypes);
+            var DescrIdxStmt                = new NonTerminal("DescrIdxStmt", CreateDescrIdx);
+            var DescrIdxsStmt               = new NonTerminal("DescrIdxsStmt", CreateDescrIdxs);
             var DescrIdxEdtStmt             = new NonTerminal("DescrIdxEdtStmt");
-            var DescrEdgeStmt               = new NonTerminal("DescrEdgeStmt",      CreateDescrEdge);
-            var DescrEdgesStmt              = new NonTerminal("DescrEdgesStmt",     CreateDescrEdges);
+            var DescrEdgeStmt               = new NonTerminal("DescrEdgeStmt", CreateDescrEdge);
+            var DescrEdgesStmt              = new NonTerminal("DescrEdgesStmt", CreateDescrEdges);
 
             #endregion
 
@@ -751,14 +751,14 @@ namespace sones.GraphQL
 
             #region Import
 
-            BNF_ImportFormat        = new NonTerminal("importFormat");
-            BNF_ImportStmt          = new NonTerminal("import", CreateImportNode);
+            BNF_ImportFormat = new NonTerminal("importFormat");
+            BNF_ImportStmt = new NonTerminal("import", CreateImportNode);
             var paramParallelTasks  = new NonTerminal("parallelTasks", CreateParallelTaskNode);
             var paramComments       = new NonTerminal("comments", CreateCommentsNode);
             var verbosity           = new NonTerminal("verbosity", CreateVerbosityNode);
             var verbosityTypes      = new NonTerminal("verbosityTypes");
 
-            #endregion           
+            #endregion
 
             #endregion
 
@@ -791,7 +791,7 @@ namespace sones.GraphQL
                             | BNF_ImportStmt
                             | linkStmt
                             | unlinkStmt;
-                            
+
 
             #endregion
 
@@ -806,8 +806,8 @@ namespace sones.GraphQL
             EdgeTraversalWithOutFunctions.Rule = dotWrapper + Id_simple;
 
             Id.SetFlag(TermFlags.IsList);
-            Id.Rule =       Id_simple
-                        |   Id + EdgeTraversalWithOutFunctions;
+            Id.Rule = Id_simple
+                        | Id + EdgeTraversalWithOutFunctions;
             //old
             //Id.Rule = MakePlusRule(Id, dotWrapper, Id_simple);
 
@@ -820,8 +820,8 @@ namespace sones.GraphQL
 
             #region ID_or_Func
 
-            IdOrFunc.Rule =     name 
-                            |   BNF_FuncCall;
+            IdOrFunc.Rule = name
+                            | BNF_FuncCall;
 
             dotWrapper.Rule = S_edgeTraversalDelimiter;
 
@@ -835,9 +835,9 @@ namespace sones.GraphQL
             EdgeInformation.Rule = edgeAccessorWrapper + Id_simple;
 
             IdOrFuncList.SetFlag(TermFlags.IsList);
-            IdOrFuncList.Rule =         IdOrFunc
-                                    |   IdOrFuncList + EdgeInformation
-                                    |   IdOrFuncList + EdgeTraversalWithFunctions;
+            IdOrFuncList.Rule = IdOrFunc
+                                    | IdOrFuncList + EdgeInformation
+                                    | IdOrFuncList + EdgeTraversalWithFunctions;
 
             //old
             //IdOrFuncList.Rule = MakePlusRule(IdOrFuncList, IDOrFuncDelimiter, IdOrFunc);
@@ -922,7 +922,7 @@ namespace sones.GraphQL
             DefaultValueDef.Rule = S_DEFAULT + "=" + Value;
 
             GraphDBType.Rule = Id_simple
-                                   // LIST<[idsimple]>
+                // LIST<[idsimple]>
                                    | S_LIST + S_ListTypePrefix + Id_simple + S_ListTypePostfix
                                    | S_SET + S_ListTypePrefix + Id_simple + S_ListTypePostfix
                                    | EdgeTypeDef
@@ -943,7 +943,7 @@ namespace sones.GraphQL
             BackwardEdgesList.Rule = MakePlusRule(BackwardEdgesList, S_comma, BackwardEdgesSingleDef);
 
             BackwardEdgesSingleDef.Rule = Id_simple + S_dot + Id_simple + Id_simple;
-                                            //| Id_simple + S_dot + Id_simple + S_ListTypePrefix + Id_simple + S_BRACKET_LEFT + EdgeTypeParams + S_BRACKET_RIGHT + S_ListTypePostfix + Id_simple;
+            //| Id_simple + S_dot + Id_simple + S_ListTypePrefix + Id_simple + S_BRACKET_LEFT + EdgeTypeParams + S_BRACKET_RIGHT + S_ListTypePostfix + Id_simple;
 
             #endregion
 
@@ -960,20 +960,20 @@ namespace sones.GraphQL
 
             exprListOfAList.Rule = MakePlusRule(exprListOfAList, S_comma, expressionOfAList);
 
-            BNF_Expression.Rule =       term
-                                |   unExpr
-                                |   binExpr;
+            BNF_Expression.Rule = term
+                                | unExpr
+                                | binExpr;
 
             expressionOfAList.Rule = BNF_Expression + ListParametersForExpression;
 
 
-            term.Rule =         IdOrFuncList                  //d.Name 
-                            |   string_literal      //'lala'
-                            |   number              //10
-                            //|   funcCall            //EXISTS ( SelectStatement )
-                            |   BNF_Aggregate           //COUNT ( SelectStatement )
-                            |   tuple               //(d.Name, 'Henning', (SelectStatement))
-                            |   parSelectStmt      //(FROM User u Select u.Name)
+            term.Rule = IdOrFuncList                  //d.Name 
+                            | string_literal      //'lala'
+                            | number              //10
+                //|   funcCall            //EXISTS ( SelectStatement )
+                            | BNF_Aggregate           //COUNT ( SelectStatement )
+                            | tuple               //(d.Name, 'Henning', (SelectStatement))
+                            | parSelectStmt      //(FROM User u Select u.Name)
                             | S_TRUE
                             | S_FALSE;
 
@@ -990,40 +990,40 @@ namespace sones.GraphQL
 
             unExpr.Rule = unOp + term;
 
-            unOp.Rule =         S_NOT 
-                            |   "+" 
-                            |   "-" 
-                            |   "~";
+            unOp.Rule = S_NOT
+                            | "+"
+                            | "-"
+                            | "~";
 
             binExpr.Rule = BNF_Expression + binOp + BNF_Expression;
 
-            binOp.Rule =        ToTerm("+") 
-                            |   "-" 
-                            |   "*" 
-                            |   "/" 
-                            |   "%" //arithmetic
-                            |   "&" 
-                            |   "|" 
-                            |   "^"                     //bit
-                            |   "=" 
-                            |   ">" 
-                            |   "<" 
-                            |   ">=" 
-                            |   "<=" 
-                            |   "<>" 
-                            |   "!=" 
-                            |   "!<" 
-                            |   "!>"
-                            |   "AND" 
-                            |   "OR" 
-                            |   "LIKE"
-                            |   S_NOT + "LIKE" 
-                            |   "IN" 
-                            |   "NOTIN" | "NOT_IN" | "NIN" | "!IN"
-                            |   "INRANGE";
+            binOp.Rule = ToTerm("+")
+                            | "-"
+                            | "*"
+                            | "/"
+                            | "%" //arithmetic
+                            | "&"
+                            | "|"
+                            | "^"                     //bit
+                            | "="
+                            | ">"
+                            | "<"
+                            | ">="
+                            | "<="
+                            | "<>"
+                            | "!="
+                            | "!<"
+                            | "!>"
+                            | "AND"
+                            | "OR"
+                            | "LIKE"
+                            | S_NOT + "LIKE"
+                            | "IN"
+                            | "NOTIN" | "NOT_IN" | "NIN" | "!IN"
+                            | "INRANGE";
 
-            notOpt.Rule =       Empty
-                            |   S_NOT;
+            notOpt.Rule = Empty
+                            | S_NOT;
 
             #endregion
 
@@ -1037,8 +1037,8 @@ namespace sones.GraphQL
             //BNF_FuncCall.Rule = Empty;
 
 
-            BNF_FunArgs.Rule =      SelectStmtGraph 
-                            |   BNF_ExprList;
+            BNF_FunArgs.Rule = SelectStmtGraph
+                            | BNF_ExprList;
 
             #endregion
 
@@ -1065,10 +1065,10 @@ namespace sones.GraphQL
 
             #region prefixOperation
 
-            PrefixOperation.Rule =      Id_simple + S_BRACKET_LEFT + ParameterList + S_BRACKET_RIGHT;
+            PrefixOperation.Rule = Id_simple + S_BRACKET_LEFT + ParameterList + S_BRACKET_RIGHT;
 
-            ParameterList.Rule =        ParameterList + S_comma + BNF_Expression
-                                    |   BNF_Expression;
+            ParameterList.Rule = ParameterList + S_comma + BNF_Expression
+                                    | BNF_Expression;
 
             #endregion
 
@@ -1081,14 +1081,14 @@ namespace sones.GraphQL
 
             uniqueOpt.Rule = Empty | S_UNIQUE;
 
-            editionOpt.Rule =       Empty
+            editionOpt.Rule = Empty
                                 | S_EDITION + Id_simple;
 
-            BNF_IndexTypeOpt.Rule =     Empty
+            BNF_IndexTypeOpt.Rule = Empty
                                 | S_INDEXTYPE + Id_simple;
 
             indexNameOpt.Rule = Empty
-                                |   Id_simple;
+                                | Id_simple;
 
             #endregion
 
@@ -1102,31 +1102,31 @@ namespace sones.GraphQL
 
             #region CREATE TYPE(S)
 
-            createTypesStmt.Rule    = S_CREATE + BNF_TypesOrVertices + bulkTypeList
+            createTypesStmt.Rule = S_CREATE + BNF_TypesOrVertices + bulkTypeList
                                     | S_CREATE + abstractOpt + typeOrVertex + bulkType;
 
-            typeOrVertex.Rule       = S_TYPE | S_VERTEX;
-            BNF_TypesOrVertices.Rule    = S_TYPES | S_VERTICES;
+            typeOrVertex.Rule = S_TYPE | S_VERTEX;
+            BNF_TypesOrVertices.Rule = S_TYPES | S_VERTICES;
 
-            bulkTypeList.Rule       = MakePlusRule(bulkTypeList, S_comma, bulkTypeListMember);
+            bulkTypeList.Rule = MakePlusRule(bulkTypeList, S_comma, bulkTypeListMember);
 
             bulkTypeListMember.Rule = abstractOpt + bulkType;
 
-            bulkType.Rule           = Id_simple + extendsOpt + attributesOpt + backwardEdgesOpt + uniquenessOpt + mandatoryOpt + indexOptOnCreateType + commentOpt;
+            bulkType.Rule = Id_simple + extendsOpt + attributesOpt + backwardEdgesOpt + uniquenessOpt + mandatoryOpt + indexOptOnCreateType + commentOpt;
 
-            commentOpt.Rule         =   Empty
-                                    |   S_COMMENT + "=" + string_literal; 
+            commentOpt.Rule = Empty
+                                    | S_COMMENT + "=" + string_literal;
 
-            abstractOpt.Rule        = Empty
-                                    | S_ABSTRACT; 
+            abstractOpt.Rule = Empty
+                                    | S_ABSTRACT;
 
-            extendsOpt.Rule         = Empty
+            extendsOpt.Rule = Empty
                                     | S_EXTENDS + Id_simple;
 
-            attributesOpt.Rule      = Empty
+            attributesOpt.Rule = Empty
                                     | S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT;
 
-            backwardEdgesOpt.Rule   = Empty
+            backwardEdgesOpt.Rule = Empty
                                     | S_BACKWARDEDGES + S_BRACKET_LEFT + BackwardEdgesList + S_BRACKET_RIGHT;
 
             uniquenessOpt.Rule = Empty
@@ -1143,7 +1143,7 @@ namespace sones.GraphQL
 
             IndexOptOnCreateTypeMemberList.Rule = MakePlusRule(IndexOptOnCreateTypeMemberList, S_comma, IndexOptOnCreateTypeMember);
 
-            optionalShards.Rule     = S_SHARDS + number | Empty;
+            optionalShards.Rule = S_SHARDS + number | Empty;
 
             IndexOptOnCreateTypeMember.Rule = S_BRACKET_LEFT + indexNameOpt + editionOpt + BNF_IndexTypeOpt + S_ON + S_ATTRIBUTES + IndexAttributeList + S_BRACKET_RIGHT
                                             | S_BRACKET_LEFT + indexNameOpt + editionOpt + BNF_IndexTypeOpt + S_ON + IndexAttributeList + S_BRACKET_RIGHT // due to compatibility the  + S_ATTRIBUTES is optional
@@ -1152,7 +1152,7 @@ namespace sones.GraphQL
             AttrDefaultOpValue.Rule = Empty
                                     | "=" + Value
                                     | "=" + S_LISTOF + S_BRACKET_LEFT + ValueList + S_BRACKET_RIGHT
-                                    | "=" + S_SETOF  + S_BRACKET_LEFT + ValueList + S_BRACKET_RIGHT;
+                                    | "=" + S_SETOF + S_BRACKET_LEFT + ValueList + S_BRACKET_RIGHT;
 
             #endregion
 
@@ -1161,20 +1161,20 @@ namespace sones.GraphQL
             alterStmt.Rule = S_ALTER + typeOrVertex + Id_simple + alterCmdList + uniquenessOpt + mandatoryOpt;
 
             alterCmd.Rule = Empty
-                            | S_ADD         + S_ATTRIBUTES    + S_BRACKET_LEFT + AttributeList     + S_BRACKET_RIGHT
-                            | S_DROP        + S_ATTRIBUTES    + S_BRACKET_LEFT + SimpleIdList      + S_BRACKET_RIGHT
-                            | S_ADD         + S_BACKWARDEDGES + S_BRACKET_LEFT + BackwardEdgesList + S_BRACKET_RIGHT
-                            | S_DROP        + S_BACKWARDEDGES + S_BRACKET_LEFT + SimpleIdList      + S_BRACKET_RIGHT
-                            | S_ADD         + indexOnCreateType
-                            | S_DROP        + IndexDropOnAlterType
-                            | S_RENAME      + S_ATTRIBUTE     + Id_simple + S_TO + Id_simple
-                            | S_RENAME      + S_BACKWARDEDGE  + Id_simple + S_TO + Id_simple
-                            | S_RENAME      + S_TO + Id_simple
-                            | S_DEFINE      + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
-                            | S_UNDEFINE    + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT 
-                            | S_DROP        + S_UNIQUE
-                            | S_DROP        + S_MANDATORY
-                            | S_COMMENT     + "=" + string_literal;
+                            | S_ADD + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
+                            | S_DROP + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
+                            | S_ADD + S_BACKWARDEDGES + S_BRACKET_LEFT + BackwardEdgesList + S_BRACKET_RIGHT
+                            | S_DROP + S_BACKWARDEDGES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
+                            | S_ADD + indexOnCreateType
+                            | S_DROP + IndexDropOnAlterType
+                            | S_RENAME + S_ATTRIBUTE + Id_simple + S_TO + Id_simple
+                            | S_RENAME + S_BACKWARDEDGE + Id_simple + S_TO + Id_simple
+                            | S_RENAME + S_TO + Id_simple
+                            | S_DEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
+                            | S_UNDEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
+                            | S_DROP + S_UNIQUE
+                            | S_DROP + S_MANDATORY
+                            | S_COMMENT + "=" + string_literal;
 
             alterCmdList.Rule = MakePlusRule(alterCmdList, S_comma, alterCmd);
 
@@ -1191,56 +1191,56 @@ namespace sones.GraphQL
 
             SelectStmtGraph.Rule = S_FROM + TypeList + S_SELECT + selList + whereClauseOpt + groupClauseOpt + havingClauseOpt + orderClauseOpt + MatchingClause + offsetOpt + limitOpt + resolutionDepthOpt + selectOutputOpt;
 
-            MatchingClause.Rule =       Empty
-                                    |   MatchingClause + Matching;
+            MatchingClause.Rule = Empty
+                                    | MatchingClause + Matching;
 
-            Matching.Rule =             S_MATCHES + S_BRACKET_LEFT + number + S_BRACKET_RIGHT + PrefixOperation;
+            Matching.Rule = S_MATCHES + S_BRACKET_LEFT + number + S_BRACKET_RIGHT + PrefixOperation;
 
-            resolutionDepthOpt.Rule =       Empty
-                                        |   S_DEPTH + number;
+            resolutionDepthOpt.Rule = Empty
+                                        | S_DEPTH + number;
 
-            selectOutputOpt.Rule    =       Empty
-                                        |   "OUTPUT" + name;
+            selectOutputOpt.Rule = Empty
+                                        | "OUTPUT" + name;
 
-            offsetOpt.Rule =       Empty
-                            |   S_OFFSET + number;
+            offsetOpt.Rule = Empty
+                            | S_OFFSET + number;
 
-            limitOpt.Rule =     Empty
-                            |   S_LIMIT + number;
+            limitOpt.Rule = Empty
+                            | S_LIMIT + number;
 
-            selList.Rule =      selectionList;
+            selList.Rule = selectionList;
 
-            selectionList.Rule = MakePlusRule(selectionList, S_comma, selectionListElement);            
+            selectionList.Rule = MakePlusRule(selectionList, S_comma, selectionListElement);
 
-            selectionListElement.Rule =     S_ASTERISK 
-                                        |   S_RHOMB 
-                                        |   S_MINUS
-                                        |   TERMINAL_LT 
-                                        |   TERMINAL_GT
-                                        |   selByType
-                                        |   selectionSource;
+            selectionListElement.Rule = S_ASTERISK
+                                        | S_RHOMB
+                                        | S_MINUS
+                                        | TERMINAL_LT
+                                        | TERMINAL_GT
+                                        | selByType
+                                        | selectionSource;
 
             selByType.Rule = Empty
                             | S_AD + Id_simple;
 
             aliasOptName.Rule = Id_simple | string_literal;
 
-            aliasOpt.Rule =     Empty
-                            |   S_AS + aliasOptName;
+            aliasOpt.Rule = Empty
+                            | S_AS + aliasOptName;
 
             var staticSelect = new NonTerminal("staticSelect", CreateSelectValueAssignmentNode);
             staticSelect.Rule = Empty | S_EQUALS + Value | "?=" + Value;
 
             selectionSource.Rule = BNF_Aggregate + aliasOpt | IdOrFuncList + staticSelect + aliasOpt;
-                //|   funcCall
-                //|   Id;
-                                
+            //|   funcCall
+            //|   Id;
+
 
             #region Aggregate
 
             //BNF_Aggregate.Rule = BNF_AggregateName + S_BRACKET_LEFT + name + S_BRACKET_RIGHT;
 
-            BNF_AggregateArg.Rule =   Id
+            BNF_AggregateArg.Rule = Id
                                     | S_ASTERISK;
             /*
             aggregateName.Rule =        S_COUNT 
@@ -1263,23 +1263,23 @@ namespace sones.GraphQL
 
             #endregion
 
-            whereClauseOpt.Rule =       Empty 
-                                    |   S_WHERE + BNF_Expression;
+            whereClauseOpt.Rule = Empty
+                                    | S_WHERE + BNF_Expression;
 
-            groupClauseOpt.Rule =       Empty 
-                                    |   "GROUP" + S_BY + idlist;
+            groupClauseOpt.Rule = Empty
+                                    | "GROUP" + S_BY + idlist;
 
-            havingClauseOpt.Rule =      Empty 
-                                    |   "HAVING" + BNF_Expression;
+            havingClauseOpt.Rule = Empty
+                                    | "HAVING" + BNF_Expression;
 
 
-            orderByAttributeListMember.Rule =       Id
-                                                |   string_literal;
+            orderByAttributeListMember.Rule = Id
+                                                | string_literal;
 
             orderByAttributeList.Rule = MakePlusRule(orderByAttributeList, S_comma, orderByAttributeListMember);
 
-            orderClauseOpt.Rule =       Empty 
-                                    |   "ORDER" + S_BY + orderByAttributeList + AttributeOrderDirectionOpt;
+            orderClauseOpt.Rule = Empty
+                                    | "ORDER" + S_BY + orderByAttributeList + AttributeOrderDirectionOpt;
 
             #endregion
 
@@ -1287,14 +1287,14 @@ namespace sones.GraphQL
 
             InsertStmt.Rule = S_INSERT + S_INTO + TypeWrapper + insertValuesOpt;
 
-            insertValuesOpt.Rule =      Empty
-                                    |   S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT;
+            insertValuesOpt.Rule = Empty
+                                    | S_VALUES + S_BRACKET_LEFT + AttrAssignList + S_BRACKET_RIGHT;
 
             AttrAssignList.Rule = MakePlusRule(AttrAssignList, S_comma, AttrAssign);
 
-            AttrAssign.Rule =       Id + "=" + BNF_Expression
-                                |   Id + "=" + Reference
-                                |   Id + "=" + CollectionOfDBObjects;
+            AttrAssign.Rule = Id + "=" + BNF_Expression
+                                | Id + "=" + Reference
+                                | Id + "=" + CollectionOfDBObjects;
 
             CollectionOfDBObjects.Rule = S_SETOF + CollectionTuple
                                             | S_LISTOF + CollectionTuple
@@ -1313,7 +1313,7 @@ namespace sones.GraphQL
                            | S_REFUUID + tuple + ListParametersForExpression
                            | S_REFERENCEUUID + tuple + ListParametersForExpression;
 
-                //| S_SETREF + tupleRangeSet + ListParametersForExpression;
+            //| S_SETREF + tupleRangeSet + ListParametersForExpression;
 
             #endregion
 
@@ -1323,23 +1323,23 @@ namespace sones.GraphQL
 
             AttrUpdateList.Rule = MakePlusRule(AttrUpdateList, S_comma, AttrUpdateOrAssign);
 
-            AttrUpdateOrAssign.Rule =       AttrAssign
-                                        |   AttrRemove
-                                        |   ListAttrUpdate;
+            AttrUpdateOrAssign.Rule = AttrAssign
+                                        | AttrRemove
+                                        | ListAttrUpdate;
 
             AttrRemove.Rule = S_REMOVE + S_ATTRIBUTES + S_BRACKET_LEFT + id_simpleList + S_BRACKET_RIGHT;
 
-            ListAttrUpdate.Rule =       AddToListAttrUpdate
-                                    |   RemoveFromListAttrUpdate;
+            ListAttrUpdate.Rule = AddToListAttrUpdate
+                                    | RemoveFromListAttrUpdate;
 
-            AddToListAttrUpdate.Rule =      AddToListAttrUpdateAddTo
-                                        |   AddToListAttrUpdateOperator;
+            AddToListAttrUpdate.Rule = AddToListAttrUpdateAddTo
+                                        | AddToListAttrUpdateOperator;
 
             AddToListAttrUpdateAddTo.Rule = S_ADD + S_TO + Id + CollectionOfDBObjects;
             AddToListAttrUpdateOperator.Rule = Id + S_ADDTOLIST + CollectionOfDBObjects;
 
-            RemoveFromListAttrUpdate.Rule =         RemoveFromListAttrUpdateAddToRemoveFrom
-                                            |       RemoveFromListAttrUpdateAddToOperator;
+            RemoveFromListAttrUpdate.Rule = RemoveFromListAttrUpdateAddToRemoveFrom
+                                            | RemoveFromListAttrUpdateAddToOperator;
 
             RemoveFromListAttrUpdateAddToRemoveFrom.Rule = S_REMOVE + S_FROM + Id + tuple;
             RemoveFromListAttrUpdateAddToOperator.Rule = Id + RemoveFromListAttrUpdateScope;
@@ -1395,9 +1395,9 @@ namespace sones.GraphQL
 
             SettingItemSetLst.Rule = MakePlusRule(SettingItemSetLst, S_comma, SettingItemsSet);
 
-            SettingItemSetVal.Rule =        number 
-                                        |   S_DEFAULT
-                                        |   string_literal;
+            SettingItemSetVal.Rule = number
+                                        | S_DEFAULT
+                                        | string_literal;
 
             SettingOpGet.Rule = S_GET + S_BRACKET_LEFT + SettingItems + S_BRACKET_RIGHT;
 
@@ -1442,7 +1442,7 @@ namespace sones.GraphQL
             DescrIdxEdtStmt.Rule = Empty | Id_simple;
 
             DescrIdxsStmt.Rule = S_INDICES;
-            
+
             #endregion
 
             #region INSERTORUPDATE
@@ -1477,7 +1477,7 @@ namespace sones.GraphQL
 
             TransactAttributes.Rule = Empty |
                                 TransactIsolation |
-                                TransactName | 
+                                TransactName |
                                 TransactTimestamp |
                                 TransactIsolation + TransactName |
                                 TransactIsolation + TransactTimestamp |
@@ -1492,40 +1492,40 @@ namespace sones.GraphQL
 
             #endregion
 
-            #region CommitRollbackTransAction            
-            
+            #region CommitRollbackTransAction
+
             commitRollBackTransactStmt.Rule = TransactCommitRollbackType + S_TRANSACTION + TransactCommitRollbackOpt;
 
             TransactCommitRollbackType.Rule = S_TRANSACTCOMMIT | S_TRANSACTROLLBACK;
-            
+
             TransactCommitRollbackOpt.Rule = Empty |
                                         TransactName |
                                         S_TRANSACTCOMROLLASYNC |
                                         TransactName + S_TRANSACTCOMROLLASYNC;
 
-            #endregion            
+            #endregion
 
             #endregion
 
             #region EXPORT/DUMP
 
-            dumpType.Rule           = Empty | S_ALL | S_GDDL | S_GDML;      // If empty => create both
-            dumpFormat.Rule         = Empty | S_AS + S_GQL;                 // If empty => create GQL
-            typeOptionalList.Rule   = Empty | BNF_TypesOrVertices + TypeList;
+            dumpType.Rule = Empty | S_ALL | S_GDDL | S_GDML;      // If empty => create both
+            dumpFormat.Rule = Empty | S_AS + S_GQL;                 // If empty => create GQL
+            typeOptionalList.Rule = Empty | BNF_TypesOrVertices + TypeList;
 
-            dumpDestination.Rule    = Empty | S_INTO + location_literal | S_TO + location_literal;
+            dumpDestination.Rule = Empty | S_INTO + location_literal | S_TO + location_literal;
 
-            dumpStmt.Rule           = S_DUMP   + typeOptionalList + dumpType + dumpFormat + dumpDestination
+            dumpStmt.Rule = S_DUMP + typeOptionalList + dumpType + dumpFormat + dumpDestination
                                     | S_EXPORT + typeOptionalList + dumpType + dumpFormat + dumpDestination;
 
             #endregion
 
             #region IMPORT
 
-            paramComments.Rule      = S_COMMENTS + tuple | Empty;
+            paramComments.Rule = S_COMMENTS + tuple | Empty;
             paramParallelTasks.Rule = S_PARALLELTASKS + "(" + number + ")" | Empty;
-            verbosityTypes.Rule     = ToTerm(VerbosityTypes.Silent.ToString()) | ToTerm(VerbosityTypes.Errors.ToString()) | ToTerm(VerbosityTypes.Full.ToString());
-            verbosity.Rule          = S_VERBOSITY + verbosityTypes | Empty;
+            verbosityTypes.Rule = ToTerm(VerbosityTypes.Silent.ToString()) | ToTerm(VerbosityTypes.Errors.ToString()) | ToTerm(VerbosityTypes.Full.ToString());
+            verbosity.Rule = S_VERBOSITY + verbosityTypes | Empty;
 
             //BNF_ImportFormat.Rule = Empty;
 
@@ -1534,7 +1534,7 @@ namespace sones.GraphQL
             #endregion
 
             #region LINK
-            
+
             // Semantic Web Yoda-Style and human language style
             linkStmt.Rule = S_LINK + TypeWrapper + CollectionTuple + S_VIA + Id + S_TO + LinkCondition |
                             S_LINK + TypeWrapper + CollectionTuple + S_TO + LinkCondition + S_VIA + Id;
@@ -1581,7 +1581,7 @@ namespace sones.GraphQL
                 typeOrVertex, BNF_TypesOrVertices);
 
             #endregion
-        
+
         }
 
         #endregion
@@ -1650,7 +1650,7 @@ namespace sones.GraphQL
 
             parseNode.AstNode = aGraphTypeNode;
         }
- 
+
         private void CreateBulkTypeListMemberNode(ParsingContext context, ParseTreeNode parseNode)
         {
             BulkTypeListMemberNode aBulkTypeListMemberNode = new BulkTypeListMemberNode();
@@ -1694,8 +1694,8 @@ namespace sones.GraphQL
             aInsertOrUpdateNode.Init(context, parseNode);
 
             parseNode.AstNode = aInsertOrUpdateNode;
-        }        
-        
+        }
+
         private void CreateCreateTypesStatementNode(ParsingContext context, ParseTreeNode parseNode)
         {
 
@@ -1909,7 +1909,7 @@ namespace sones.GraphQL
 
             parseNode.AstNode = functionCallNode;
         }
-        
+
         #endregion
 
         private void CreateDropTypeStmNode(ParsingContext context, ParseTreeNode parseNode)
@@ -2098,7 +2098,7 @@ namespace sones.GraphQL
 
             removeFromListAttrUpdateScopeNode.Init(context, parseNode);
 
-            parseNode.AstNode = removeFromListAttrUpdateScopeNode;        
+            parseNode.AstNode = removeFromListAttrUpdateScopeNode;
         }
 
         #region RebuildIndices
@@ -2162,7 +2162,7 @@ namespace sones.GraphQL
 
             funcInfoNode.Init(context, parseNode);
 
-            parseNode.AstNode = funcInfoNode;    
+            parseNode.AstNode = funcInfoNode;
         }
 
         private void CreateDescrAggr(ParsingContext context, ParseTreeNode parseNode)
@@ -2207,7 +2207,7 @@ namespace sones.GraphQL
 
             typeInfoNode.Init(context, parseNode);
 
-            parseNode.AstNode = typeInfoNode;        
+            parseNode.AstNode = typeInfoNode;
         }
 
         private void CreateDescrIdx(ParsingContext context, ParseTreeNode parseNode)
@@ -2229,7 +2229,7 @@ namespace sones.GraphQL
         }
 
         private void CreateDescrEdge(ParsingContext context, ParseTreeNode parseNode)
-        { 
+        {
             DescribeEdgeNode edgeInfoNode = new DescribeEdgeNode();
 
             edgeInfoNode.Init(context, parseNode);
@@ -2261,7 +2261,7 @@ namespace sones.GraphQL
 
             setItemInfoNode.Init(context, parseNode);
 
-            parseNode.AstNode = setItemInfoNode;    
+            parseNode.AstNode = setItemInfoNode;
         }
 
         private void CreateDescrSettings(ParsingContext context, ParseTreeNode parseNode)
@@ -2270,7 +2270,7 @@ namespace sones.GraphQL
 
             setItemInfoNode.Init(context, parseNode);
 
-            parseNode.AstNode = setItemInfoNode;    
+            parseNode.AstNode = setItemInfoNode;
         }
         #endregion
 
@@ -2342,93 +2342,157 @@ namespace sones.GraphQL
 
         #endregion
 
-        //#region IDumpable Members
+        #region IDumpable Members
 
-        //#region Export GraphDDL
+        #region Export GraphDDL
 
-        //public List<String> ExportGraphDDL(IEnumerable<IVertexType> myTypesToDump)
-        //{
+        public List<String> ExportGraphDDL(IEnumerable<IVertexType> myTypesToDump)
+        {
 
-        //    var stringBuilder = new StringBuilder(String.Concat(S_CREATE.ToUpperString(), " ", S_TYPES.ToUpperString(), " "));
-        //    var delimiter = ", ";
+            var stringBuilder = new StringBuilder(String.Concat(S_CREATE.ToUpperString(), " ", S_TYPES.ToUpperString(), " "));
+            var delimiter = ", ";
 
-        //    foreach (var vertexType in myTypesToDump)
-        //    {
-        //        stringBuilder.Append(String.Concat(CreateGraphDDL(vertexType), delimiter));
-        //    }
+            foreach (var vertexType in myTypesToDump)
+            {
+                stringBuilder.Append(String.Concat(CreateGraphDDL(vertexType), delimiter));
+            }
 
-        //    var retString = stringBuilder.ToString();
+            var retString = stringBuilder.ToString();
 
-        //    if (retString.EndsWith(delimiter))
-        //    {
-        //        retString = retString.Substring(0, retString.Length - delimiter.Length);
-        //    }
+            if (retString.EndsWith(delimiter))
+            {
+                retString = retString.Substring(0, retString.Length - delimiter.Length);
+            }
 
-        //    return new List<String> { retString };
+            return new List<String> { retString };
 
-        //}
+        }
 
-        //private String CreateGraphDDL(IVertexType myVertexType)
-        //{
+        private String CreateGraphDDL(IVertexType myVertexType)
+        {
 
-        //    var stringBuilder = new StringBuilder();
-        //    stringBuilder.AppendFormat("{0} ", myVertexType.Name);
+            var stringBuilder = new StringBuilder();
+            stringBuilder.AppendFormat("{0} ", myVertexType.Name);
 
-        //    if (myVertexType.HasParentVertexType())
-        //    {
+            #region parent type
 
-        //        stringBuilder.AppendFormat("{0} {1} ", S_EXTENDS.ToUpperString(), myVertexType.GetParentVertexType().Name);//builder.AppendLine();
+            if (myVertexType.HasParentVertexType())
+            {
 
-        //        #region Not backwardEdge attributes
+                stringBuilder.AppendFormat("{0} {1} ", S_EXTENDS.ToUpperString(), myVertexType.GetParentVertexType().Name);//builder.AppendLine();
 
-        //        if (myVertexType.HasOutgoingEdges())
-        //        {
-        //            stringBuilder.Append(S_ATTRIBUTES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfAttributes(myVertexType.GetOutgoingEdges()) + S_BRACKET_RIGHT.ToUpperString() + " ");
-        //        }
+            }
 
-        //        #endregion
+            #endregion
 
-        //        #region BackwardEdge attributes
+            #region attributes
 
-        //        if (myVertexType.HasVisibleIncomingEdges())
-        //        {
-        //            stringBuilder.Append(S_BACKWARDEDGES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfBackwardEdges(myVertexType.GetAllVisibleIncomingEdges()) + S_BRACKET_RIGHT.ToUpperString() + " ");
-        //        }
+            if (myVertexType.GetAllAttributeDefinitions().Count() > 0)
+            {
+                #region !incomingEdges
 
-        //        #endregion
+                if (myVertexType.GetAllAttributeDefinitions().Any(aAttribute => aAttribute.Kind != AttributeType.IncomingEdge))
+                {
+                    //so, there are attributes that are no incoming edges
 
-        //        #region Uniques
+                    stringBuilder.Append(S_ATTRIBUTES.ToUpperString() + S_BRACKET_LEFT.ToUpperString());
 
-        //        if (myVertexType.GetUniqueAttributes().CountIsGreater(0))
-        //        {
-        //            stringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myVertexType.GetUniqueAttributes(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
-        //        }
+                    #region properties
 
-        //        #endregion
+                    if (myVertexType.GetAllAttributeDefinitions().Any(aAttribute => aAttribute.Kind == AttributeType.Property))
+                    {
+                        stringBuilder.Append(CreateGraphDDLOfProperties(myVertexType.GetAllProperties()) + " ");
+                    }
 
-        //        #region Mandatory attributes
+                    #endregion
 
-        //        if (myVertexType.GetMandatoryAttributes().CountIsGreater(0))
-        //        {
-        //            stringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfAttributeUUIDs(myVertexType.GetMandatoryAttributes(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
-        //        }
+                    #region outgoing edges
 
-        //        #endregion
+                    if (myVertexType.GetAllAttributeDefinitions().Any(aAttribute => aAttribute.Kind == AttributeType.OutgoingEdge))
+                    {
+                        stringBuilder.Append(CreateGraphDDLOfOutgoingEdges(myVertexType.GetOutgoingEdges()) + " ");
+                    }
 
-        //        #region Indices
+                    #endregion
 
-        //        if (myVertexType.GetAllAttributeIndices().CountIsGreater(0))
-        //        {
-        //            stringBuilder.Append(S_INDICES.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myVertexType.GetAllAttributeIndices(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
-        //        }
+                    stringBuilder.Append(S_BRACKET_RIGHT.ToUpperString() + " ");
 
-        //        #endregion
+                }
 
-        //    }
+                #endregion
 
-        //    return stringBuilder.ToString();
+                #region incomingEdges
 
-        //}
+                if (myVertexType.GetAllAttributeDefinitions().Any(aAttribute => aAttribute.Kind == AttributeType.IncomingEdge))
+                {
+                    stringBuilder.Append(S_BACKWARDEDGES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfIncomingEdges(myVertexType.GetAllIncomingEdges()) + S_BRACKET_RIGHT.ToUpperString() + " ");
+                }
+
+                #endregion
+            }
+
+            #endregion
+
+            #region Uniques
+
+            if (myVertexType.GetAllUniqueDefinitions().Count() > 0)
+            {
+                stringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfUniqueAttributes(myVertexType.GetAllUniqueDefinitions(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
+            }
+
+            #endregion
+
+            #region Mandatory attributes
+
+            if (myVertexType.GetAllProperties().Any(aProperty => aProperty.IsMandatory))
+            {
+                stringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfMandatoryAttributes(myVertexType.GetAllProperties().Where(aProperty => aProperty.IsMandatory), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
+            }
+
+            #endregion
+
+            #region Indices
+
+            if (myVertexType.GetAllIndexDefinitions().Count() > 0)
+            {
+                stringBuilder.Append(S_INDICES.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfIndices(myVertexType.GetAllIndexDefinitions(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
+            }
+
+            #endregion
+
+            return stringBuilder.ToString();
+
+        }
+
+        private string CreateGraphDDLOfIndices(IEnumerable<IIndexDefinition> iEnumerable, IVertexType myVertexType)
+        {
+            throw new NotImplementedException();
+        }
+
+        private string CreateGraphDDLOfMandatoryAttributes(IEnumerable<IPropertyDefinition> iEnumerable, IVertexType myVertexType)
+        {
+            throw new NotImplementedException();
+        }
+
+        private string CreateGraphDDLOfUniqueAttributes(IEnumerable<IUniqueDefinition> iEnumerable, IVertexType myVertexType)
+        {
+            throw new NotImplementedException();
+        }
+
+        private string CreateGraphDDLOfIncomingEdges(IEnumerable<IEdgeDefinition> iEnumerable)
+        {
+            throw new NotImplementedException();
+        }
+
+        private string CreateGraphDDLOfOutgoingEdges(IEnumerable<IEdgeDefinition> iEnumerable)
+        {
+            throw new NotImplementedException();
+        }
+
+        private string CreateGraphDDLOfProperties(IEnumerable<IPropertyDefinition> iEnumerable)
+        {
+            throw new NotImplementedException();
+        }
 
         //private String CreateGraphDDLOfAttributes(IEnumerable<TypeAttribute> myTypeAttributes)
         //{
@@ -3099,6 +3163,7 @@ namespace sones.GraphQL
 
         //}
 
-        //#endregion
+        #endregion
+        #endregion
     }
 }
