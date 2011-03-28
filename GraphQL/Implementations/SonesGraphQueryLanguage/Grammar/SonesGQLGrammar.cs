@@ -2368,6 +2368,8 @@ namespace sones.GraphQL
 
         }
 
+        #region private helper
+
         private String CreateGraphDDL(IVertexType myVertexType)
         {
 
@@ -2378,9 +2380,7 @@ namespace sones.GraphQL
 
             if (myVertexType.HasParentVertexType())
             {
-
                 stringBuilder.AppendFormat("{0} {1} ", S_EXTENDS.ToUpperString(), myVertexType.GetParentVertexType().Name);//builder.AppendLine();
-
             }
 
             #endregion
@@ -2464,12 +2464,44 @@ namespace sones.GraphQL
 
         }
 
-        private string CreateGraphDDLOfIndices(IEnumerable<IIndexDefinition> iEnumerable, IVertexType myVertexType)
+        private string CreateGraphDDLOfIndices(IEnumerable<IIndexDefinition> myIndexDefinitions, IVertexType myVertexType)
+        {
+            var _StringBuilder = new StringBuilder();
+            var _Delimiter     = ", ";
+
+            foreach (var _AttributeIndex in myIndexDefinitions)
+            {
+
+                if (_AttributeIndex.IsUserdefined)
+                    continue;
+
+                _StringBuilder.Append(String.Concat(S_BRACKET_LEFT, _AttributeIndex.Name));
+
+                _StringBuilder.Append(String.Concat(" ", S_EDITION.ToUpperString(), " ", _AttributeIndex.Edition));
+
+                _StringBuilder.Append(String.Concat(" ", S_INDEXTYPE.ToUpperString(), " ", _AttributeIndex.IndexTypeName));
+                _StringBuilder.Append(String.Concat(" ", S_ON.ToUpperString(), " " + S_ATTRIBUTES.ToUpperString(), " ", GetIndexedPropertyNames(_AttributeIndex.IndexedProperties)));
+
+                _StringBuilder.Append(S_BRACKET_RIGHT);
+
+                _StringBuilder.Append(_Delimiter);
+
+            }
+
+            if (_StringBuilder.Length > _Delimiter.Length)
+            {
+                _StringBuilder.Remove(_StringBuilder.Length - _Delimiter.Length, 2);
+            }
+
+            return _StringBuilder.ToString();
+        }
+
+        private string GetIndexedPropertyNames(IEnumerable<IAttributeDefinition> myIndexedProperties)
         {
             throw new NotImplementedException();
         }
 
-        private string CreateGraphDDLOfMandatoryAttributes(IEnumerable<IPropertyDefinition> iEnumerable, IVertexType myVertexType)
+        private string CreateGraphDDLOfMandatoryAttributes(IEnumerable<IPropertyDefinition> myMandatoryAttributeDefinitions, IVertexType myVertexType)
         {
             throw new NotImplementedException();
         }
@@ -2479,157 +2511,26 @@ namespace sones.GraphQL
             throw new NotImplementedException();
         }
 
-        private string CreateGraphDDLOfIncomingEdges(IEnumerable<IEdgeDefinition> iEnumerable)
+        private string CreateGraphDDLOfIncomingEdges(IEnumerable<IEdgeDefinition> myIncomingEdgeDefinitions)
         {
             throw new NotImplementedException();
         }
 
-        private string CreateGraphDDLOfOutgoingEdges(IEnumerable<IEdgeDefinition> iEnumerable)
+        private string CreateGraphDDLOfOutgoingEdges(IEnumerable<IEdgeDefinition> myOutgoingEdgeDefinitions)
         {
             throw new NotImplementedException();
         }
 
-        private string CreateGraphDDLOfProperties(IEnumerable<IPropertyDefinition> iEnumerable)
+        private string CreateGraphDDLOfProperties(IEnumerable<IPropertyDefinition> myPropertyDefinitions)
         {
             throw new NotImplementedException();
         }
 
-        //private String CreateGraphDDLOfAttributes(IEnumerable<TypeAttribute> myTypeAttributes)
-        //{
+        #endregion
 
-        //    var stringBuilder = new StringBuilder();
-        //    var delimiter = ", ";
+        #endregion
 
-        //    foreach (var _Attribute in myTypeAttributes)
-        //    {
-        //        stringBuilder.Append(CreateGraphDDLOfAttributeDefinition(_Attribute));
-        //        stringBuilder.Append(delimiter);
-        //    }
-
-        //    if (stringBuilder.Length > delimiter.Length)
-        //    {
-        //        stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
-        //    }
-
-        //    return stringBuilder.ToString();
-
-        //}
-
-        //private String CreateGraphDDLOfAttributeDefinition(TypeAttribute myTypeAttribute)
-        //{
-
-        //    if (myTypeAttribute.EdgeType != null)
-        //    {
-        //        return String.Concat(myTypeAttribute.EdgeType.GetGDDL(myTypeAttribute.GetDBType(myDBContext.DBTypeManager)), " ", myTypeAttribute.Name);
-        //    }
-        //    else
-        //    {
-        //        return String.Concat(myTypeAttribute.GetDBType(myDBContext.DBTypeManager).Name, " ", myTypeAttribute.Name);
-        //    }
-
-        //}
-
-        //private String CreateGraphDDLOfBackwardEdges(IEnumerable<TypeAttribute> myTypeAttributes)
-        //{
-
-        //    var stringBuilder = new StringBuilder();
-        //    var delimiter = ", ";
-
-        //    foreach (var _Attribute in myTypeAttributes)
-        //    {
-        //        var typeAttrInfos = _Attribute.BackwardEdgeDefinition.GetTypeAndAttributeInformation(myDBContext.DBTypeManager);
-        //        stringBuilder.Append(String.Concat(typeAttrInfos.Item1.Name, ".", typeAttrInfos.Item2.Name, " ", _Attribute.Name));
-        //        stringBuilder.Append(delimiter);
-        //    }
-
-        //    if (stringBuilder.Length > delimiter.Length)
-        //    {
-        //        stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
-        //    }
-
-        //    return stringBuilder.ToString();
-
-        //}
-
-        ///// <summary>
-        ///// Add just the Attribute names
-        ///// </summary>
-        ///// <param name="myDumpFormat"></param>
-        ///// <param name="typeAttribute"></param>
-        ///// <param name="indent"></param>
-        ///// <param name="indentWidth"></param>
-        ///// <returns></returns>
-        //private String CreateGraphDDLOfAttributeUUIDs(IEnumerable<AttributeUUID> myAttributes)
-        //{
-
-        //    var stringBuilder = new StringBuilder();
-        //    var delimiter = ", ";
-
-        //    foreach (var _Attribute in myAttributes)
-        //    {
-        //        stringBuilder.Append(myGraphDBType.GetTypeAttributeByUUID(_Attribute).Name);
-        //        stringBuilder.Append(delimiter);
-        //    }
-
-        //    if (stringBuilder.Length > delimiter.Length)
-        //    {
-        //        stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
-        //    }
-
-        //    return stringBuilder.ToString();
-
-        //}
-
-        ///// <summary>
-        ///// Create the DDL for attributeIndices
-        ///// </summary>
-        ///// <param name="myDumpFormat"></param>
-        ///// <param name="myAttributeIndices"></param>
-        ///// <param name="indent"></param>
-        ///// <param name="indentWidth"></param>
-        ///// <returns></returns>
-        //private String CreateGraphDDLOfIndices(IEnumerable<AAttributeIndex> myAttributeIndices)
-        //{
-
-        //    var _StringBuilder = new StringBuilder();
-        //    var _Delimiter     = ", ";
-
-        //    foreach (var _AttributeIndex in myAttributeIndices)
-        //    {
-
-        //        if (_AttributeIndex.IsUUIDIndex || _AttributeIndex.IndexEdition == DBConstants.UNIQUEATTRIBUTESINDEX)
-        //            continue;
-
-        //        _StringBuilder.Append(String.Concat(S_BRACKET_LEFT, _AttributeIndex.IndexName));
-
-        //        if (_AttributeIndex.IsUniqueIndex)
-        //        {
-        //            _StringBuilder.Append(String.Concat(" ", S_UNIQUE.ToUpperString()));
-        //        }
-
-        //        _StringBuilder.Append(String.Concat(" ", S_EDITION.ToUpperString(), " ", _AttributeIndex.IndexEdition));
-
-        //        _StringBuilder.Append(String.Concat(" ", S_INDEXTYPE.ToUpperString(), " ", _AttributeIndex.IndexType.ToString()));
-        //        _StringBuilder.Append(String.Concat(" ", S_ON.ToUpperString(), " " + S_ATTRIBUTES.ToUpperString(), " ", CreateGraphDDLOfAttributeUUIDs(_AttributeIndex.IndexKeyDefinition.IndexKeyAttributeUUIDs, myGraphDBType)));
-
-        //        _StringBuilder.Append(S_BRACKET_RIGHT);
-
-        //        _StringBuilder.Append(_Delimiter);
-
-        //    }
-
-        //    if (_StringBuilder.Length > _Delimiter.Length)
-        //    {
-        //        _StringBuilder.Remove(_StringBuilder.Length - _Delimiter.Length, 2);
-        //    }
-
-        //    return _StringBuilder.ToString();
-
-        //}
-
-        //#endregion
-
-        //#region Export GraphDML
+        #region Export GraphDML
 
         ///// <summary>
         ///// Create the GraphDML of all DBObjects in the database.
@@ -2990,11 +2891,11 @@ namespace sones.GraphQL
 
         //}
 
-        //#endregion
+        #endregion
 
-        //#endregion
+        #endregion
 
-        //#region IExtendableGrammar Members
+        #region IExtendableGrammar Members
 
         //public void SetAggregates(IEnumerable<ABaseAggregate> aggregates)
         //{
@@ -3163,7 +3064,6 @@ namespace sones.GraphQL
 
         //}
 
-        #endregion
         #endregion
     }
 }

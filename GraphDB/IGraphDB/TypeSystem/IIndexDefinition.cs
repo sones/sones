@@ -20,6 +20,16 @@ namespace sones.GraphDB.TypeSystem
         String IndexTypeName { get; }
 
         /// <summary>
+        /// The edition name of the index
+        /// </summary>
+        String Edition { get; }
+
+        /// <summary>
+        /// Determines if this index has been created by a user
+        /// </summary>
+        Boolean IsUserdefined { get; }
+
+        /// <summary>
         /// The attributes that are indexed. Never <c>NULL</c>. 
         /// </summary>
         IEnumerable<IAttributeDefinition> IndexedProperties { get; }
