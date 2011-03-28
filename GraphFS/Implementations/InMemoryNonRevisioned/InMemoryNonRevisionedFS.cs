@@ -38,6 +38,11 @@ namespace sones.GraphFS
 
         #region IGraphFS Members
 
+        public bool IsTransactional
+        {
+            get { return false; }
+        }
+
         public bool IsPersistent
         {
             get { return false; }
@@ -293,7 +298,7 @@ namespace sones.GraphFS
             return false;
         }
 
-        public void AddVertex(VertexAddDefinition myVertexDefinition,
+        public IVertex AddVertex(VertexAddDefinition myVertexDefinition,
                               VertexRevisionID myVertexRevisionID = null,
                               Boolean myCreateIncomingEdges = true)
         {
@@ -440,7 +445,7 @@ namespace sones.GraphFS
 
             _vertexStore[myVertexDefinition.VertexTypeID].
                 AddOrUpdate(toBeAddedVertex.VertexID,
-                            _ => toBeAddedVertex,
+                            toBeAddedVertex,
                             (id, oldVertex) =>
                             {
                                 if (!oldVertex.IsBulkVertex)
@@ -454,9 +459,11 @@ namespace sones.GraphFS
                             });
 
             #endregion
+
+            return toBeAddedVertex;
         }
 
-        public void UpdateVertex(long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID,
+        public IVertex UpdateVertex(long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID,
                                  VertexUpdateDefinition myVertexUpdate, string myToBeUpdatedEditions = null,
                                  VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
         {
@@ -469,6 +476,8 @@ namespace sones.GraphFS
             
             _vertexStore[myCorrespondingVertexTypeID][myToBeUpdatedVertexID] =
                 UpdateVertex_private(toBeUpdatedVertex, myVertexUpdate);
+
+            return null;
         }
 
         #endregion

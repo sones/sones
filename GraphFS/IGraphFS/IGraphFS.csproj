@@ -60,6 +60,7 @@
     <Compile Include="ErrorHandling\UnknownFSException.cs" />
     <Compile Include="ErrorHandling\VertexDoesNotExistException.cs" />
     <Compile Include="IGraphFS.cs" />
+    <Compile Include="IVertexHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

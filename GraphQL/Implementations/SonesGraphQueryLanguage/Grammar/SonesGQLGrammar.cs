@@ -18,6 +18,7 @@ using sones.GraphQL.StatementNodes.Transactions;
 using sones.GraphDB;
 using sones.GraphDB.TypeSystem;
 using System.Globalization;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphQL
 {
@@ -2410,7 +2411,7 @@ namespace sones.GraphQL
 
                     if (myVertexType.GetAttributeDefinitions().Any(aAttribute => aAttribute.Kind == AttributeType.OutgoingEdge))
                     {
-                        stringBuilder.Append(CreateGraphDDLOfOutgoingEdges(myVertexType.GetOutgoingEdgeDefinitions()) + " ");
+                        stringBuilder.Append(CreateGraphDDLOfOutgoingEdges(myVertexType.GetOutgoingEdgeDefinitions(), myVertexType) + " ");
                     }
 
                     #endregion
@@ -2464,7 +2465,7 @@ namespace sones.GraphQL
 
         }
 
-        private string CreateGraphDDLOfIndices(IEnumerable<IIndexDefinition> myIndexDefinitions, IVertexType myVertexType)
+        private String CreateGraphDDLOfIndices(IEnumerable<IIndexDefinition> myIndexDefinitions, IVertexType myVertexType)
         {
             var _StringBuilder = new StringBuilder();
             var _Delimiter     = ", ";
@@ -2496,7 +2497,7 @@ namespace sones.GraphQL
             return _StringBuilder.ToString();
         }
 
-        private string GetIndexedPropertyNames(IEnumerable<IAttributeDefinition> myIndexedProperties)
+        private String GetIndexedPropertyNames(IEnumerable<IAttributeDefinition> myIndexedProperties)
         {
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
@@ -2515,7 +2516,7 @@ namespace sones.GraphQL
             return stringBuilder.ToString();
         }
 
-        private string CreateGraphDDLOfMandatoryAttributes(IEnumerable<IPropertyDefinition> myMandatoryAttributeDefinitions)
+        private String CreateGraphDDLOfMandatoryAttributes(IEnumerable<IPropertyDefinition> myMandatoryAttributeDefinitions)
         {
             //TODO: Add default values
 
@@ -2536,7 +2537,7 @@ namespace sones.GraphQL
             return stringBuilder.ToString();
         }
 
-        private string CreateGraphDDLOfUniqueAttributes(IEnumerable<IUniqueDefinition> myUniqueAttributeDefinitions)
+        private String CreateGraphDDLOfUniqueAttributes(IEnumerable<IUniqueDefinition> myUniqueAttributeDefinitions)
         {
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
@@ -2557,33 +2558,68 @@ namespace sones.GraphQL
             return stringBuilder.ToString();
         }
 
-        private string CreateGraphDDLOfIncomingEdges(IEnumerable<IIncomingEdgeDefinition> myIncomingEdgeDefinitions)
+        private String CreateGraphDDLOfIncomingEdges(IEnumerable<IIncomingEdgeDefinition> myIncomingEdgeDefinitions)
         {
             var stringBuilder = new StringBuilder();
             var delimiter = ", ";
 
-            //foreach (var _Attribute in myIncomingEdgeDefinitions)
-            //{
-            //    stringBuilder.Append(String.Concat(_Attribute.SourceVertexType.Name, ".", _Attribute.Name, " ", _Attribute.Name));
-            //    stringBuilder.Append(delimiter);
-            //}
+            foreach (var _Attribute in myIncomingEdgeDefinitions)
+            {
+                stringBuilder.Append(String.Concat(_Attribute.RelatedEdgeDefinition.SourceVertexType.Name, ".", _Attribute.RelatedEdgeDefinition.Name, " ", _Attribute.Name));
+                stringBuilder.Append(delimiter);
+            }
 
-            //if (stringBuilder.Length > delimiter.Length)
-            //{
-            //    stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
-            //}
+            if (stringBuilder.Length > delimiter.Length)
+            {
+                stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
+            }
 
             return stringBuilder.ToString();
         }
 
-        private string CreateGraphDDLOfOutgoingEdges(IEnumerable<IOutgoingEdgeDefinition> myOutgoingEdgeDefinitions)
+        private String CreateGraphDDLOfOutgoingEdges(IEnumerable<IOutgoingEdgeDefinition> myOutgoingEdgeDefinitions, IVertexType myIVertexType)
+        {
+            var stringBuilder = new StringBuilder();
+            var delimiter = ", ";
+
+            foreach (var aOutgoingEdgeDefinition in myOutgoingEdgeDefinitions)
+            {
+                stringBuilder.Append(String.Concat(GetGraphDDL(aOutgoingEdgeDefinition.EdgeType, myIVertexType), " ", aOutgoingEdgeDefinition.Name));
+
+                stringBuilder.Append(delimiter);
+            }
+
+            if (stringBuilder.Length > delimiter.Length)
+            {
+                stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        private string GetGraphDDL(IEdgeType iEdgeType, IVertexType myIVertexType)
         {
             throw new NotImplementedException();
         }
 
-        private string CreateGraphDDLOfProperties(IEnumerable<IPropertyDefinition> myPropertyDefinitions)
+        private String CreateGraphDDLOfProperties(IEnumerable<IPropertyDefinition> myPropertyDefinitions)
         {
-            throw new NotImplementedException();
+            var stringBuilder = new StringBuilder();
+            var delimiter = ", ";
+
+            foreach (var _Attribute in myPropertyDefinitions)
+            {
+                stringBuilder.Append(String.Concat(_Attribute.BaseType.Name.ToUpper() , " ", _Attribute.Name));
+
+                stringBuilder.Append(delimiter);
+            }
+
+            if (stringBuilder.Length > delimiter.Length)
+            {
+                stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
+            }
+
+            return stringBuilder.ToString();
         }
 
         #endregion
@@ -2592,67 +2628,41 @@ namespace sones.GraphQL
 
         #region Export GraphDML
 
-        ///// <summary>
-        ///// Create the GraphDML of all DBObjects in the database.
-        ///// </summary>
-        ///// <param name="myDumpFormat"></param>
-        ///// <param name="dbContext"></param>
-        ///// <param name="objectManager"></param>
-        ///// <returns></returns>
-        //public List<String> ExportGraphDML(IEnumerable<IVertexType> myTypesToDump)
-        //{
+        /// <summary>
+        /// Create the GraphDML of all DBObjects in the database.
+        /// </summary>
+        /// <param name="myDumpFormat"></param>
+        /// <param name="dbContext"></param>
+        /// <param name="objectManager"></param>
+        /// <returns></returns>
+        public List<String> ExportGraphDML(IEnumerable<IVertexType> myTypesToDump)
+        {
+            var queries = new List<String>();
 
-        //    //var _StringBuilder  = new StringBuilder();
-        //    var queries           = new List<String>();
-        //    var exceptional       = new Exceptional<List<String>>();
+            #region Go through each type
 
-        //    #region Go through each type
+            foreach (var aVertexType in myTypesToDump)
+            {
+                foreach (var aVertex in GetAllVertices(aVertexType))
+                {
+                    queries.Add(CreateGraphDMLforIVertex(aVertexType, aVertex));
+                }
+            }
 
-        //    foreach (var graphDBType in myTypesToDump)
-        //    {
+            #endregion
 
-        //        var UUIDIdx = graphDBType.GetUUIDIndex(dbContext);
+            return queries;
+        }
 
-        //        #region Take UUID index
-        //        foreach (var ids in UUIDIdx.GetAllValues(graphDBType, dbContext))
-        //        {
-        //            foreach (var aDBO in dbContext.DBObjectCache.LoadListOfDBObjectStreams(graphDBType, ids))
-        //            {
+        private string CreateGraphDMLforIVertex(IVertexType graphDBType, IVertex aVertex)
+        {
+            throw new NotImplementedException();
+        }
 
-        //                if (!aDBO.Success())
-        //                {
-        //                    exceptional.PushIExceptional(aDBO);
-        //                }
-        //                else
-        //                {
-
-        //                    var gdmlExceptional = CreateGraphDMLforDBObject(myDumpFormat, dbContext, graphDBType, aDBO.Value);
-
-        //                    if (!gdmlExceptional.Success())
-        //                    {
-        //                        exceptional.PushIExceptional(aDBO);
-        //                    }
-        //                    else
-        //                    {
-        //                        queries.Add(gdmlExceptional.Value);
-        //                    }
-
-        //                }
-        //            }
-        //        }
-
-        //        #endregion
-
-        //    }
-
-        //    #endregion
-
-        //    //_Exceptional.Value = _StringBuilder.ToString();
-        //    exceptional.Value = queries;
-
-        //    return exceptional;
-
-        //}
+        private IEnumerable<IVertex> GetAllVertices(IVertexType graphDBType)
+        {
+            throw new NotImplementedException();
+        }
 
         //private String CreateGraphDMLforDBObject(IVertexType myGraphDBType, IVertexType myDBObjectStream)
         //{
