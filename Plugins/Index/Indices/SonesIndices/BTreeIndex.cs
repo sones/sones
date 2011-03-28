@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using sones.Plugins.Index.Helper;
 using sones.Plugins.Index.Interfaces;
 
-namespace sones.Plugin.Index
+namespace sones.Plugins.Index
 {
     public class BTreeIndex<TKey, TValue> : ISingleValueIndex<TKey, TValue>
         where TKey : IComparable

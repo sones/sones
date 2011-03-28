@@ -222,7 +222,13 @@ namespace sones.Library.ErrorHandling
 
         #endregion
 
-        
+        #region Indices
+
+        public static UInt16 UniqueIndexConstraintException = 740;
+
+        #endregion
+
+
 
         #endregion
 

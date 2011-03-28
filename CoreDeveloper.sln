@@ -125,8 +125,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestGraphQL", "TestGraphQL"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSonesGQL", "Tests\TestGraphQL\TestSonesGQL\TestSonesGQL.csproj", "{6628A55D-BEEF-4499-B07B-26606289B6F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MultipleValueIndex", "Plugins\Index\Indices\MultipleValueIndex\MultipleValueIndex.csproj", "{177B6418-B898-49BF-AA00-561F53C57719}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestIndices", "Tests\TestIndices\TestIndices.csproj", "{3DFEC979-07F3-4D36-9CE1-0BA0191320AD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PagedFSNonRevisioned", "GraphFS\Implementations\PagedFSNonRevisioned\PagedFSNonRevisioned.csproj", "{4B7457CB-A618-4A23-AABC-0C2A7031AC26}"
@@ -135,7 +133,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPagedFSNonRevisioned", 
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 36
+		SccNumberOfProjects = 35
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -263,22 +261,18 @@ Global
 		SccProjectTopLevelParentUniqueName31 = CoreDeveloper.sln
 		SccProjectName31 = Tests/TestGraphQL/TestSonesGQL
 		SccLocalPath31 = Tests\\TestGraphQL\\TestSonesGQL
-		SccProjectUniqueName32 = Plugins\\Index\\Indices\\MultipleValueIndex\\MultipleValueIndex.csproj
+		SccProjectUniqueName32 = Tests\\TestIndices\\TestIndices.csproj
 		SccProjectTopLevelParentUniqueName32 = CoreDeveloper.sln
-		SccProjectName32 = Plugins/Index/Indices/MultipleValueIndex
-		SccLocalPath32 = Plugins\\Index\\Indices\\MultipleValueIndex
-		SccProjectUniqueName33 = Tests\\TestIndices\\TestIndices.csproj
+		SccProjectName32 = Tests/TestIndices
+		SccLocalPath32 = Tests\\TestIndices
+		SccProjectUniqueName33 = GraphFS\\Implementations\\PagedFSNonRevisioned\\PagedFSNonRevisioned.csproj
 		SccProjectTopLevelParentUniqueName33 = CoreDeveloper.sln
-		SccProjectName33 = Tests/TestIndices
-		SccLocalPath33 = Tests\\TestIndices
-		SccProjectUniqueName34 = GraphFS\\Implementations\\PagedFSNonRevisioned\\PagedFSNonRevisioned.csproj
+		SccProjectName33 = GraphFS/Implementations/PagedFSNonRevisioned
+		SccLocalPath33 = GraphFS\\Implementations\\PagedFSNonRevisioned
+		SccProjectUniqueName34 = Tests\\TestPagedFSNonRevisioned\\TestPagedFSNonRevisioned.csproj
 		SccProjectTopLevelParentUniqueName34 = CoreDeveloper.sln
-		SccProjectName34 = GraphFS/Implementations/PagedFSNonRevisioned
-		SccLocalPath34 = GraphFS\\Implementations\\PagedFSNonRevisioned
-		SccProjectUniqueName35 = Tests\\TestPagedFSNonRevisioned\\TestPagedFSNonRevisioned.csproj
-		SccProjectTopLevelParentUniqueName35 = CoreDeveloper.sln
-		SccProjectName35 = Tests/TestPagedFSNonRevisioned
-		SccLocalPath35 = Tests\\TestPagedFSNonRevisioned
+		SccProjectName34 = Tests/TestPagedFSNonRevisioned
+		SccLocalPath34 = Tests\\TestPagedFSNonRevisioned
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -301,13 +295,13 @@ Global
 		{FFFB6BE4-9514-41CF-AB68-5FB7B8E3D2E4}.Release|x86.ActiveCfg = Release|Any CPU
 		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Debug|Any CPU.Build.0 = Debug|x86
-		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Debug|x86.ActiveCfg = Debug|x86
 		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Debug|x86.Build.0 = Debug|x86
 		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Release|Any CPU.ActiveCfg = Release|x86
-		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Release|Mixed Platforms.Build.0 = Release|x86
+		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Release|x86.ActiveCfg = Release|x86
 		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Release|x86.Build.0 = Release|x86
 		{AB7C27CC-534F-472E-BA56-A1287973B7E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -600,16 +594,6 @@ Global
 		{6628A55D-BEEF-4499-B07B-26606289B6F4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{6628A55D-BEEF-4499-B07B-26606289B6F4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{6628A55D-BEEF-4499-B07B-26606289B6F4}.Release|x86.ActiveCfg = Release|Any CPU
-		{177B6418-B898-49BF-AA00-561F53C57719}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{177B6418-B898-49BF-AA00-561F53C57719}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{177B6418-B898-49BF-AA00-561F53C57719}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{177B6418-B898-49BF-AA00-561F53C57719}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{177B6418-B898-49BF-AA00-561F53C57719}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{177B6418-B898-49BF-AA00-561F53C57719}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{177B6418-B898-49BF-AA00-561F53C57719}.Release|Any CPU.Build.0 = Release|Any CPU
-		{177B6418-B898-49BF-AA00-561F53C57719}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{177B6418-B898-49BF-AA00-561F53C57719}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{177B6418-B898-49BF-AA00-561F53C57719}.Release|x86.ActiveCfg = Release|Any CPU
 		{3DFEC979-07F3-4D36-9CE1-0BA0191320AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3DFEC979-07F3-4D36-9CE1-0BA0191320AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3DFEC979-07F3-4D36-9CE1-0BA0191320AD}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -675,7 +659,6 @@ Global
 		{FACE26D6-DCE4-49EC-AEFD-96B580BB022B} = {48ACC5ED-F25B-458A-94E7-9128C17445B5}
 		{823E8AF4-CF92-4E74-8ABD-38693279EB1E} = {48ACC5ED-F25B-458A-94E7-9128C17445B5}
 		{FCF3C622-5CF6-4C2A-B024-4046D6E4941C} = {FACE26D6-DCE4-49EC-AEFD-96B580BB022B}
-		{177B6418-B898-49BF-AA00-561F53C57719} = {FACE26D6-DCE4-49EC-AEFD-96B580BB022B}
 		{22437279-5F02-40BE-847C-D7A425D468BE} = {52780B9F-52B2-4659-A41C-0F1526DCAA49}
 		{F751657F-0E6C-46C5-A59C-02D7A924A051} = {52780B9F-52B2-4659-A41C-0F1526DCAA49}
 		{26BFEE62-82B9-4EFA-9F91-08FD947551A8} = {22437279-5F02-40BE-847C-D7A425D468BE}

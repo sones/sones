@@ -46,11 +46,16 @@
   <ItemGroup>
     <Compile Include="BPlusTreeIndex.cs" />
     <Compile Include="DictionaryIndex.cs" />
+    <Compile Include="MultipleValueIndex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BTreeIndex.cs" />
     <Compile Include="VersionedBPlusTreeIndex.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
+      <Name>ErrorHandling</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ISonesIndex\ISonesIndex.csproj">
       <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>
       <Name>ISonesIndex</Name>

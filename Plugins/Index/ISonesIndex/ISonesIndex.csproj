@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\ASonesIndexException.cs" />
+    <Compile Include="Exceptions\UniqueIndexConstraintException.cs" />
     <Compile Include="Helper\IndexAddStrategy.cs" />
     <Compile Include="Interfaces\IIndex.cs" />
     <Compile Include="Interfaces\IMultipleValueIndex.cs" />
@@ -59,7 +61,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Exceptions\" />
+    <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
+      <Name>ErrorHandling</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Interfaces\IndexInterfaces.cd" />
