@@ -2437,7 +2437,7 @@ namespace sones.GraphQL
 
             if (myVertexType.GetUniqueDefinitions().Count() > 0)
             {
-                stringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfUniqueAttributes(myVertexType.GetUniqueDefinitions(), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
+                stringBuilder.Append(S_UNIQUE.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfUniqueAttributes(myVertexType.GetUniqueDefinitions()) + S_BRACKET_RIGHT.Symbol + " ");
             }
 
             #endregion
@@ -2446,7 +2446,7 @@ namespace sones.GraphQL
 
             if (myVertexType.GetPropertyDefinitions().Any(aProperty => aProperty.IsMandatory))
             {
-                stringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfMandatoryAttributes(myVertexType.GetPropertyDefinitions().Where(aProperty => aProperty.IsMandatory), myVertexType) + S_BRACKET_RIGHT.Symbol + " ");
+                stringBuilder.Append(S_MANDATORY.ToUpperString() + S_BRACKET_LEFT.Symbol + CreateGraphDDLOfMandatoryAttributes(myVertexType.GetPropertyDefinitions().Where(aProperty => aProperty.IsMandatory)) + S_BRACKET_RIGHT.Symbol + " ");
             }
 
             #endregion
@@ -2498,22 +2498,82 @@ namespace sones.GraphQL
 
         private string GetIndexedPropertyNames(IEnumerable<IAttributeDefinition> myIndexedProperties)
         {
-            throw new NotImplementedException();
+            var stringBuilder = new StringBuilder();
+            var delimiter = ", ";
+
+            foreach (var aIndexedProperty in myIndexedProperties)
+            {
+                stringBuilder.Append(aIndexedProperty.Name);
+                stringBuilder.Append(delimiter);
+            }
+
+            if (stringBuilder.Length > delimiter.Length)
+            {
+                stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
+            }
+
+            return stringBuilder.ToString();
         }
 
-        private string CreateGraphDDLOfMandatoryAttributes(IEnumerable<IPropertyDefinition> myMandatoryAttributeDefinitions, IVertexType myVertexType)
+        private string CreateGraphDDLOfMandatoryAttributes(IEnumerable<IPropertyDefinition> myMandatoryAttributeDefinitions)
         {
-            throw new NotImplementedException();
+            //TODO: Add default values
+
+            var stringBuilder = new StringBuilder();
+            var delimiter = ", ";
+
+            foreach (var aMandatoryAttribute in myMandatoryAttributeDefinitions)
+            {
+                stringBuilder.Append(aMandatoryAttribute.Name);
+                stringBuilder.Append(delimiter);
+            }
+
+            if (stringBuilder.Length > delimiter.Length)
+            {
+                stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
+            }
+
+            return stringBuilder.ToString();
         }
 
-        private string CreateGraphDDLOfUniqueAttributes(IEnumerable<IUniqueDefinition> iEnumerable, IVertexType myVertexType)
+        private string CreateGraphDDLOfUniqueAttributes(IEnumerable<IUniqueDefinition> myUniqueAttributeDefinitions)
         {
-            throw new NotImplementedException();
+            var stringBuilder = new StringBuilder();
+            var delimiter = ", ";
+
+            foreach (var aUniquenessDefinition in myUniqueAttributeDefinitions)
+            {
+                //TODO: handle uniqueness on multiple attributes
+
+                stringBuilder.Append(aUniquenessDefinition.GetUniqueAttributeDefinitions().First().Name);
+                stringBuilder.Append(delimiter);
+            }
+
+            if (stringBuilder.Length > delimiter.Length)
+            {
+                stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
+            }
+
+            return stringBuilder.ToString();
         }
 
         private string CreateGraphDDLOfIncomingEdges(IEnumerable<IEdgeDefinition> myIncomingEdgeDefinitions)
         {
-            throw new NotImplementedException();
+            var stringBuilder = new StringBuilder();
+            var delimiter = ", ";
+
+            //foreach (var _Attribute in myIncomingEdgeDefinitions)
+            //{
+            //    stringBuilder.Append(String.Concat(_Attribute.SourceVertexType.Name, ".", _Attribute.Name, " ", _Attribute.Name));
+            //    stringBuilder.Append(delimiter);
+            //}
+
+            //if (stringBuilder.Length > delimiter.Length)
+            //{
+            //    stringBuilder.Remove(stringBuilder.Length - delimiter.Length, 2);
+            //}
+
+            return stringBuilder.ToString();
         }
 
         private string CreateGraphDDLOfOutgoingEdges(IEnumerable<IEdgeDefinition> myOutgoingEdgeDefinitions)
