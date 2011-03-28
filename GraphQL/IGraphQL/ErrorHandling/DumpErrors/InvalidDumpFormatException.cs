@@ -6,7 +6,7 @@ namespace sones.GraphQL.ErrorHandling
     /// <summary>
     /// The dump format is invalid
     /// </summary>
-    public sealed class InvalidDumpFormatException : AGraphQLException
+    public sealed class InvalidDumpFormatException : AGraphQLDumpException
     {
         public String DumpFormat { get; private set; }
 

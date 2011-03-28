@@ -21,7 +21,7 @@ namespace sones.GraphFS.ErrorHandling
         #region constructor
 
         /// <summary>
-        /// Creates a new UnknownFS excepetion
+        /// Creates a new UnknownFS exception
         /// </summary>
         /// <param name="e"></param>
         public UnknownFSException(Exception e)

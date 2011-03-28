@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorHandling\AGraphQLException.cs" />
+    <Compile Include="ErrorHandling\AttributeAssignmentErrors\AGraphQLAttributeAssignmentException.cs" />
     <Compile Include="ErrorHandling\AttributeAssignmentErrors\InvalidAssignOfSetException.cs" />
     <Compile Include="ErrorHandling\AttributeAssignmentErrors\InvalidAttrDefaultValueAssignmentException.cs" />
     <Compile Include="ErrorHandling\AttributeAssignmentErrors\InvalidReferenceAssignmentOfUndefAttrException.cs" />
@@ -52,9 +53,15 @@
     <Compile Include="ErrorHandling\AttributeAssignmentErrors\ReferenceAssignmentException.cs" />
     <Compile Include="ErrorHandling\AttributeAssignmentErrors\ReferenceAssignmentExpectedException.cs" />
     <Compile Include="ErrorHandling\AttributeAssignmentErrors\ReferenceAssignmentEmptyValueException.cs" />
+    <Compile Include="ErrorHandling\DumpErrors\AGraphQLDumpException.cs" />
     <Compile Include="ErrorHandling\DumpErrors\InvalidDumpFormatException.cs" />
     <Compile Include="ErrorHandling\DumpErrors\InvalidDumpTypeException.cs" />
     <Compile Include="ErrorHandling\DumpErrors\NotADumpableGrammarException.cs" />
+    <Compile Include="ErrorHandling\FunctionErrors\AGraphQLFunctionException.cs" />
+    <Compile Include="ErrorHandling\FunctionErrors\FunctionDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\FunctionErrors\FunctionParameterInvalidReferenceException.cs" />
+    <Compile Include="ErrorHandling\FunctionErrors\InvalidFunctionBaseException.cs" />
+    <Compile Include="ErrorHandling\FunctionErrors\InvalidFunctionReturnTypeException.cs" />
     <Compile Include="ErrorHandling\UnknownQLException.cs" />
     <Compile Include="IDumpable.cs" />
     <Compile Include="IExtendableGrammar.cs" />

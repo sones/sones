@@ -6,7 +6,7 @@ namespace sones.GraphQL.ErrorHandling
     /// <summary>
     /// An reference assignment for undefined attributes is not allowed
     /// </summary>
-    public sealed class InvalidReferenceAssignmentOfUndefAttrException : AGraphQLException
+    public sealed class InvalidReferenceAssignmentOfUndefAttrException : AGraphQLAttributeAssignmentException
     {
         /// <summary>
         /// Creates a new InvalidReferenceAssignmentOfUndefAttrException exception

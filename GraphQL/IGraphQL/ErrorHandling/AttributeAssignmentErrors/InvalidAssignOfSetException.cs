@@ -6,7 +6,7 @@ namespace sones.GraphQL.ErrorHandling
     /// <summary>
     /// An assignment of a certain reference type with a list is not allowed
     /// </summary>
-    public sealed class InvalidAssignOfSetException : AGraphQLException
+    public sealed class InvalidAssignOfSetException : AGraphQLAttributeAssignmentException
     {
         public String AttributeName { get; private set; }
 

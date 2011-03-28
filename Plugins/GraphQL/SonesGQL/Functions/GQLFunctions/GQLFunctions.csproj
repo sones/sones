@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B70DCE72-B636-442A-8825-F3BE78D86D34}</ProjectGuid>
+    <ProjectGuid>{7E58D30B-4108-4941-BF85-A5C309F87536}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ISonesGQLAggregate</RootNamespace>
-    <AssemblyName>ISonesGQLAggregate</AssemblyName>
+    <RootNamespace>GQLFunctions</RootNamespace>
+    <AssemblyName>GQLFunctions</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -44,32 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ErrorHandling\AggregateDoesNotMatchGroupLevelException.cs" />
-    <Compile Include="ErrorHandling\AggregateIsNotValidOnThisAttributeException.cs" />
-    <Compile Include="ErrorHandling\AggregateOnMultiAttributesNotAllowedException.cs" />
-    <Compile Include="ErrorHandling\AggregateParameterCountMismatchException.cs" />
-    <Compile Include="ErrorHandling\ASonesQLAggregateException.cs" />
-    <Compile Include="ErrorHandling\AggregateNotAllowedException.cs" />
-    <Compile Include="ErrorHandling\NotImplementedAggregateTargetException.cs" />
-    <Compile Include="ErrorHandling\UnknownAggregateException.cs" />
-    <Compile Include="IGQLAggregate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
-      <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
-      <Name>IGraphDB</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
-      <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
-      <Name>IGraphQL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
-      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
-      <Name>ErrorHandling</Name>
+    <ProjectReference Include="..\..\ISonesGQLFunction\ISonesGQLFunction.csproj">
+      <Project>{CDAE254B-77D9-4E59-9C07-C18F0085F570}</Project>
+      <Name>ISonesGQLFunction</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

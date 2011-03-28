@@ -4,29 +4,29 @@ using sones.Library.ErrorHandling;
 namespace sones.GraphQL.ErrorHandling
 {
     /// <summary>
-    /// The grammar is not dumpable
+    /// An invalid reference for a function parameter
     /// </summary>
-    public sealed class NotADumpableGrammarException : AGraphQLDumpException
+    public sealed class FunctionParameterInvalidReferenceException : AGraphQLFunctionException
     {
         public String Info { get; private set; }
 
         /// <summary>
-        /// Create a new NotADumpableGrammarException exception
+        /// Creates a new FunctionParameterInvalidReferenceException exception
         /// </summary>
         /// <param name="myInfo"></param>
-        public NotADumpableGrammarException(String myInfo)
+        public FunctionParameterInvalidReferenceException(String myInfo)
         {
             Info = myInfo;
         }
 
         public override string ToString()
         {
-            return Info;
+            return String.Format("An invalid reference for a function parameter: {0}! ", Info);
         }
 
         public override ushort ErrorCode
         {
-            get { return ErrorCodes.NotADumpableGrammar; }
+            get { return ErrorCodes.FunctionParameterInvalidReference; }
         } 
     }
 }

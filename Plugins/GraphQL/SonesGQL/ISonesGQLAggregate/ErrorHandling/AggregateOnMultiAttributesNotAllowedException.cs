@@ -1,7 +1,7 @@
 ﻿using System;
 using sones.Library.ErrorHandling;
 
-namespace sones.Plugins.SonesGQL.Aggregates.ErrorHandling
+namespace sones.Plugins.SonesGQL.Aggregate.ErrorHandling
 {
     /// <summary>
     /// An aggregate is on multi attributes not allowed

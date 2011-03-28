@@ -6,7 +6,7 @@ namespace sones.GraphQL.ErrorHandling
     /// <summary>
     /// The desire dump type is not supported
     /// </summary>
-    public sealed class InvalidDumpTypeException : AGraphQLException
+    public sealed class InvalidDumpTypeException : AGraphQLDumpException
     {
         public String DumpType { get; private set; }
 

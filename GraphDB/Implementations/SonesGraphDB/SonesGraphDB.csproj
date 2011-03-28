@@ -46,7 +46,6 @@
   <ItemGroup>
     <Compile Include="Manager\MetaManager.cs" />
     <Compile Include="Manager\Request\RequestManager.cs" />
-    <Compile Include="Manager\Typemanagement\TypeManager.cs" />
     <Compile Include="Request\Clear\PipelineableClearRequest.cs" />
     <Compile Include="Request\APipelinableRequest.cs" />
     <Compile Include="Request\CreateVertexType\PipelineableCreateVertexTypeRequest.cs" />
@@ -82,10 +81,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ErrorHandling\" />
-    <Folder Include="Typemanagement\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="SonesGraphDB.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -3,11 +3,11 @@
 namespace sones.Plugins.SonesGQL
 {
 
-    #region IGraphDBAggregateVersionCompatibility
+    #region IQLAggregateVersionCompatibility
 
     /// <summary>
-    /// A static implementation of the compatible IGraphDBAggregate plugin versions. 
-    /// Defines the min and max version for all IGraphDBAggregate implementations which will be activated used this IGraphDBAggregate.
+    /// A static implementation of the compatible IQLAggregate plugin versions. 
+    /// Defines the min and max version for all IQLAggregate implementations which will be activated used this IQLAggregate.
     /// </summary>
     public static class IGQLAggregateVersionCompatibility
     {

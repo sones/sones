@@ -6,7 +6,7 @@ namespace sones.GraphQL.ErrorHandling
     /// <summary>
     /// 
     /// </summary>
-    public sealed class ReferenceAssignmentException : AGraphQLException
+    public sealed class ReferenceAssignmentException : AGraphQLAttributeAssignmentException
     {
         public String Info { get; private set; }
 

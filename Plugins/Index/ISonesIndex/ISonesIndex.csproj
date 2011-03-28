@@ -44,8 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Exceptions\ASonesIndexException.cs" />
-    <Compile Include="Exceptions\UniqueIndexConstraintException.cs" />
+    <Compile Include="ErrorHandling\ASonesIndexException.cs" />
+    <Compile Include="ErrorHandling\UniqueIndexConstraintException.cs" />
+    <Compile Include="ErrorHandling\UnknownIndexException.cs" />
     <Compile Include="Helper\IndexAddStrategy.cs" />
     <Compile Include="Interfaces\IIndex.cs" />
     <Compile Include="Interfaces\IMultipleValueIndex.cs" />

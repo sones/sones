@@ -6,7 +6,7 @@ namespace sones.GraphQL.ErrorHandling
     /// <summary>
     /// A attribute expects a Reference assignment
     /// </summary>
-    public sealed class ReferenceAssignmentExpectedException : AGraphQLException
+    public sealed class ReferenceAssignmentExpectedException : AGraphQLAttributeAssignmentException
     {
         public String TypeAttribute { get; private set; }
         public String Info { get; private set; }

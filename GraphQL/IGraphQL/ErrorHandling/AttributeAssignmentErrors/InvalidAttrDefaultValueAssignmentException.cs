@@ -6,7 +6,7 @@ namespace sones.GraphQL.ErrorHandling
     /// <summary>
     /// An assignment for an attribute from a certain type with a value of a second type is not valid
     /// </summary>
-    public sealed class InvalidAttrDefaultValueAssignmentException : AGraphQLException
+    public sealed class InvalidAttrDefaultValueAssignmentException : AGraphQLAttributeAssignmentException
     {
         #region data
 

@@ -1,12 +1,12 @@
 ﻿using System;
 using sones.Library.ErrorHandling;
 
-namespace sones.Plugins.SonesGQL.Aggregate.ErrorHandling
-{    
+namespace sones.Plugins.SonesGQL.Function.ErrorHandling
+{
     /// <summary>
-    /// This class represents an unknown aggregate exception
+    /// This class represents an unknown function exception
     /// </summary>
-    public sealed class UnknownAggregateException : ASonesQLAggregateException
+    public sealed class UnknownFunctionException : ASonesQLFunctionException
     {
         /// <summary>
         /// The exception that has been thrown
@@ -15,16 +15,16 @@ namespace sones.Plugins.SonesGQL.Aggregate.ErrorHandling
 
         public override ushort ErrorCode
         {
-            get { return ErrorCodes.UnknownAggregateError; }
+            get { return ErrorCodes.UnknownFunctionError; }
         }
 
         #region constructor
 
         /// <summary>
-        /// Creates a new UnknownAggregateException exception
+        /// Creates a new UnknownFunctionException exception
         /// </summary>
         /// <param name="e"></param>
-        public UnknownAggregateException(Exception e)
+        public UnknownFunctionException(Exception e)
         {
             ThrownException = e;
         }

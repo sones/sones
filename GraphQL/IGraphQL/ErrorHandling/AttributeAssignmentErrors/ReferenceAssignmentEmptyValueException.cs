@@ -6,7 +6,7 @@ namespace sones.GraphQL.ErrorHandling
     /// <summary>
     /// A single reference attribute does not contain any value
     /// </summary>
-    public sealed class ReferenceAssignmentEmptyValueException : AGraphQLException
+    public sealed class ReferenceAssignmentEmptyValueException : AGraphQLAttributeAssignmentException
     {
         public String AttributeName { get; private set; }
 
