@@ -29,7 +29,7 @@ namespace sones.Plugins.Index
         /// <summary>
         /// The internal index data structure.
         /// </summary>
-        private ConcurrentDictionary<TKey, ConcurrentBag<TValue>> _Indexer;
+        private ConcurrentDictionary<TKey, HashSet<TValue>> _Indexer;
 
         #endregion
 
@@ -40,7 +40,7 @@ namespace sones.Plugins.Index
         /// </summary>
         public MultipleValueIndex()
         {
-            _Indexer = new ConcurrentDictionary<TKey, ConcurrentBag<TValue>>();
+            _Indexer = new ConcurrentDictionary<TKey, HashSet<TValue>>();
         }
 
         #endregion
@@ -61,14 +61,14 @@ namespace sones.Plugins.Index
 
                     if (!Contains(myKey, myValues))
                     {
-                        _Indexer.TryAdd(myKey, new ConcurrentBag<TValue>(myValues));
+                        _Indexer.TryAdd(myKey, new HashSet<TValue>(myValues));
                     }
                     else
                     {
-                        Parallel.ForEach(myValues, (item) =>
+                        foreach (var aValue in myValues)
                         {
-                            _Indexer[myKey].Add(item);
-                        });
+                            _Indexer[myKey].Add(aValue);
+                        }
                     }
 
                     break;
@@ -81,14 +81,14 @@ namespace sones.Plugins.Index
                     }
                     else
                     {
-                        _Indexer.TryAdd(myKey, new ConcurrentBag<TValue>(myValues));
+                        _Indexer.TryAdd(myKey, new HashSet<TValue>(myValues));
                     }
 
                     break;
 
                 case IndexAddStrategy.REPLACE:
 
-                    _Indexer.TryAdd(myKey, new ConcurrentBag<TValue>(myValues));
+                    _Indexer.TryAdd(myKey, new HashSet<TValue>(myValues));
 
                     break;
             }
@@ -106,7 +106,7 @@ namespace sones.Plugins.Index
             }
             set
             {
-                _Indexer[myKey] = new ConcurrentBag<TValue>(value);
+                _Indexer[myKey] = new HashSet<TValue>(value);
             }
         }
 
@@ -122,32 +122,31 @@ namespace sones.Plugins.Index
 
         public void Add(IDictionary<TKey, IEnumerable<TValue>> myDictionary, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
-            Parallel.ForEach(myDictionary, (item) =>
+            foreach (var aItem in myDictionary)
             {
-                AddValues(item.Key, item.Value, myIndexAddStrategy);
-            });            
+                AddValues(aItem.Key, aItem.Value, myIndexAddStrategy);
+            }
         }
 
         public bool Contains(TKey myKey, IEnumerable<TValue> myValues)
         {
-            ConcurrentBag<TValue> val = null;
+            HashSet<TValue> val = null;
             
             if (!_Indexer.TryGetValue(myKey, out val))
             {
                 return false;
             }
 
-            var pOptions = new ParallelOptions();
-            
-            Parallel.ForEach(val, pOptions, (item) =>
-            {   
-                if(!myValues.Contains(item))
+            foreach (var aValue in val)
+            {
+                if (!myValues.Contains(aValue))
                 {
-                    pOptions.CancellationToken = new CancellationToken(true);
+                    return false;
                 }
-            });
+            }
 
-            return pOptions.CancellationToken.IsCancellationRequested ? false : true;
+            return true;
+
         }
 
         public IEnumerable<IEnumerable<TValue>> Values()
@@ -187,24 +186,24 @@ namespace sones.Plugins.Index
 
         public bool ContainsValue(TValue myValue)
         {
-            return _Indexer.AsParallel().Any((item) => item.Value.Any((val => val.Equals(myValue))));            
+            return _Indexer.Any((item) => item.Value.Any((val => val.Equals(myValue))));            
         }
 
         public bool Contains(TKey myKey, TValue myValue)
         {
-            ConcurrentBag<TValue> val = null;
+            HashSet<TValue> val = null;
 
             if (_Indexer.TryGetValue(myKey, out val))
             {
-                return val.AsParallel().Any(item => item.Equals(myValue));
+                return val.Any(item => item.Equals(myValue));
             }
 
             return false;
         }
 
         public bool Remove(TKey myKey)
-        {            
-            ConcurrentBag<TValue> val = null;
+        {
+            HashSet<TValue> val = null;
 
             return _Indexer.TryRemove(myKey, out val);
         }
