@@ -44,7 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Grammar\IronyExtensions.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Grammar\SonesGQLGrammar.cs" />
     <Compile Include="SonesGQLConstants.cs" />
     <Compile Include="SonesQueryLanguage.cs" />
@@ -184,6 +184,10 @@
     <ProjectReference Include="..\..\..\Library\External\Irony\Irony.csproj">
       <Project>{D81F5C91-D7DB-46E5-BC99-49488FB6814C}</Project>
       <Name>Irony</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
+      <Name>ErrorHandling</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>

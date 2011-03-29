@@ -6,9 +6,9 @@ namespace sones.GraphQL
 {
 
     /// <summary>
-    /// A static class that contains extensions for IRONY
+    /// A static class that contains some extensions
     /// </summary>
-    public static class IronyExtensions
+    public static class Extensions
     {
         #region Irony: ParseTreeNode, KeyTerm
 
@@ -49,6 +49,32 @@ namespace sones.GraphQL
 
         #endregion
 
+        #region StringBuilder
+
+        public static void Indent(this StringBuilder myStringBuilder, int myWidth, char myCharacter = ' ')
+        {
+            myStringBuilder.Append("".PadLeft(myWidth, myCharacter));
+        }
+
+        /// <summary>
+        /// Removes the last characters of the length of <paramref name="mySuffix"/> without checking them.
+        /// </summary>
+        /// <param name="myStringBuilder"></param>
+        /// <param name="mySuffix"></param>
+        public static void RemoveSuffix(this StringBuilder myStringBuilder, String mySuffix)
+        {
+            if (myStringBuilder.Length > mySuffix.Length)
+                myStringBuilder.Remove(myStringBuilder.Length - mySuffix.Length, mySuffix.Length);
+        }
+
+        public static void RemoveEnding(this StringBuilder myStringBuilder, Int32 myLength)
+        {
+            if (myStringBuilder.Length > myLength)
+                myStringBuilder.Remove(myStringBuilder.Length - myLength, myLength);
+        }
+
+
+        #endregion
     }
 
 }

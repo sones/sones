@@ -44,13 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConstantsFS.cs" />
-    <Compile Include="Definitions\StreamAddDefinition.cs" />
-    <Compile Include="Definitions\HyperEdgeAddDefinition.cs" />
-    <Compile Include="Definitions\SingleEdgeAddDefinition.cs" />
-    <Compile Include="Definitions\VertexInformation.cs" />
-    <Compile Include="Definitions\VertexUpdateDefinition.cs" />
-    <Compile Include="Definitions\VertexAddDefinition.cs" />
     <Compile Include="ErrorHandling\AGraphFSException.cs" />
     <Compile Include="ErrorHandling\VertexAlreadyExistException.cs" />
     <Compile Include="ErrorHandling\CouldNotFindUnStructuredEdgePropertyException.cs" />
@@ -60,7 +53,6 @@
     <Compile Include="ErrorHandling\UnknownFSException.cs" />
     <Compile Include="ErrorHandling\VertexDoesNotExistException.cs" />
     <Compile Include="IGraphFS.cs" />
-    <Compile Include="IVertexHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -71,6 +63,10 @@
     <ProjectReference Include="..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
       <Name>PropertyHyperGraph</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\VertexStore\VertexStore.csproj">
+      <Project>{E350EBAC-98DD-4261-8CE8-FA95FC96C9EA}</Project>
+      <Name>VertexStore</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

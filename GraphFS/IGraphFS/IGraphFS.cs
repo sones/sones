@@ -34,11 +34,11 @@ namespace sones.GraphFS
     /// <summary>
     /// The interface for all kinds of GraphFS
     /// </summary>
-    public interface IGraphFS : IVertexHandler
+    public interface IGraphFS : IVertexStore
     {
         #region Information Methods
 
-        #region IsPersistent
+        #region IsTransactionsal
 
         /// <summary>
         /// Determines whether this fs supports handling of transactions. if this isn't the case, the transactionmanager of the IGraphDB is used

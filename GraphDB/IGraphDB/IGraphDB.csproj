@@ -81,6 +81,7 @@
     <Compile Include="TypeSystem\IPropertyDefinition.cs" />
     <Compile Include="TypeSystem\IUniqueDefinition.cs" />
     <Compile Include="TypeSystem\IVertexType.cs" />
+    <Compile Include="TypeSystem\TypesOfMultiplicity.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">

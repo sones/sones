@@ -72,16 +72,18 @@ namespace sones.GraphDB.TypeSystem
         /// <summary>
         /// Gets all attributes defined on this vertex type.
         /// </summary>
+        /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
         /// <returns>An enumerable of attribute definitions</returns>
-        IEnumerable<IAttributeDefinition> GetAttributeDefinitions();
+        IEnumerable<IAttributeDefinition> GetAttributeDefinitions(Boolean myIncludeParents = false);
 
         #region Properties
 
         /// <summary>
         /// Gets all properties defined on this vertex type.
         /// </summary>
+        /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
         /// <returns>An enumerable of property definitions</returns>
-        IEnumerable<IPropertyDefinition> GetPropertyDefinitions();
+        IEnumerable<IPropertyDefinition> GetPropertyDefinitions(Boolean myIncludeParents = false);
         
         #endregion
 
@@ -100,8 +102,9 @@ namespace sones.GraphDB.TypeSystem
         /// <summary>
         /// Get all incoming edges
         /// </summary>
+        /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
         /// <returns>An enumerable of incoming edge attributes</returns>
-        IEnumerable<IIncomingEdgeDefinition> GetIncomingEdgeDefinitions();
+        IEnumerable<IIncomingEdgeDefinition> GetIncomingEdgeDefinitions(Boolean myIncludeParents = false);
 
         #endregion
 
@@ -118,8 +121,9 @@ namespace sones.GraphDB.TypeSystem
         /// <summary>
         /// Get all outgoing edges
         /// </summary>
+        /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
         /// <returns>An enumerable of outgoing edge attributes</returns>
-        IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions();
+        IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions(Boolean myIncludeParents = false);
 
         #endregion
 

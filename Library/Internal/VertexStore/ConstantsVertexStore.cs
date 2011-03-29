@@ -3,9 +3,9 @@
 namespace sones.GraphFS
 {
     /// <summary>
-    /// Constants concerning the GraphFS
+    /// Constants concerning the vertex store
     /// </summary>
-    public static class ConstantsFS
+    public static class ConstantsVertexStore
     {
         /// <summary>
         /// The default vertex edition

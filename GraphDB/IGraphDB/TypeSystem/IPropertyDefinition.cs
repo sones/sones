@@ -16,5 +16,10 @@ namespace sones.GraphDB.TypeSystem
         /// Gets the type of the property. This is always a c# value type or a user defined.
         /// </summary>
         Type BaseType { get; }
+
+        /// <summary>
+        /// The multiplicity of this property
+        /// </summary>
+        TypesOfMultiplicity Multiplicity { get; }
     }
 }

@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{AB7C27CC-534F-472E-BA56-A1287973B7E2}</ProjectGuid>
+    <ProjectGuid>{E350EBAC-98DD-4261-8CE8-FA95FC96C9EA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sones.GraphFS</RootNamespace>
-    <AssemblyName>InMemoryNonRevisioned</AssemblyName>
+    <RootNamespace>VertexStore</RootNamespace>
+    <AssemblyName>VertexStore</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -44,38 +44,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Element\AGraphElement.cs" />
-    <Compile Include="Element\Edge\SingleEdgeCollection.cs" />
-    <Compile Include="Element\Vertex\InMemoryVertex.cs" />
-    <Compile Include="InMemoryNonRevisionedFS.cs" />
-    <Compile Include="Element\Edge\HyperEdge.cs" />
-    <Compile Include="Element\Edge\SingleEdge.cs" />
+    <Compile Include="ConstantsVertexStore.cs" />
+    <Compile Include="IVertexStore.cs" />
+    <Compile Include="Definitions\HyperEdgeAddDefinition.cs" />
+    <Compile Include="Definitions\SingleEdgeAddDefinition.cs" />
+    <Compile Include="Definitions\StreamAddDefinition.cs" />
+    <Compile Include="Definitions\VertexAddDefinition.cs" />
+    <Compile Include="Definitions\VertexInformation.cs" />
+    <Compile Include="Definitions\VertexUpdateDefinition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
-      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
-      <Name>ErrorHandling</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
+    <ProjectReference Include="..\PropertyHyperGraph\PropertyHyperGraph.csproj">
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
       <Name>PropertyHyperGraph</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\Transaction\Transaction.csproj">
-      <Project>{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}</Project>
-      <Name>Transaction</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\VertexStore\VertexStore.csproj">
-      <Project>{E350EBAC-98DD-4261-8CE8-FA95FC96C9EA}</Project>
-      <Name>VertexStore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\IGraphFS\IGraphFS.csproj">
-      <Project>{FFFB6BE4-9514-41CF-AB68-5FB7B8E3D2E4}</Project>
-      <Name>IGraphFS</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ErrorHandling\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

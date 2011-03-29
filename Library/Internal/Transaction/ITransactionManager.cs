@@ -7,7 +7,7 @@ namespace sones.Library.Transaction
     /// ITransactionable : Begin/Commit/... transaction
     /// IVertexHandler   : Handle vertex interaction
     /// </summary>
-    public interface ITransactionManager : ITransactionable, IVertexHandler
+    public interface ITransactionManager : ITransactionable, IVertexStore
     {
         //hab keine ahnung was hier rein muss
     }

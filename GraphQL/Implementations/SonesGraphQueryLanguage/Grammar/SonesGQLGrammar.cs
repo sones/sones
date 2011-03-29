@@ -19,6 +19,8 @@ using sones.GraphDB;
 using sones.GraphDB.TypeSystem;
 using System.Globalization;
 using sones.Library.PropertyHyperGraph;
+using System.Collections;
+using sones.Library.ErrorHandling;
 
 namespace sones.GraphQL
 {
@@ -2643,9 +2645,12 @@ namespace sones.GraphQL
 
             foreach (var aVertexType in myTypesToDump)
             {
+                var propertyDefinitions = aVertexType.GetPropertyDefinitions(true).ToDictionary(key => key.AttributeID, value => value);
+
+
                 foreach (var aVertex in GetAllVertices(aVertexType))
                 {
-                    queries.Add(CreateGraphDMLforIVertex(aVertexType, aVertex));
+                    queries.Add(CreateGraphDMLforIVertex(aVertexType, aVertex, propertyDefinitions));
                 }
             }
 
@@ -2654,312 +2659,179 @@ namespace sones.GraphQL
             return queries;
         }
 
-        private string CreateGraphDMLforIVertex(IVertexType graphDBType, IVertex aVertex)
+        private string CreateGraphDMLforIVertex(IVertexType myVertexType, IVertex myVertex,
+             Dictionary<long, IPropertyDefinition> myPropertyDefinitions)
+        {
+            var stringBuilder = new StringBuilder();
+            var delimiter = ", ";
+
+            stringBuilder.Append(String.Concat(S_INSERT.ToUpperString(), " ", S_INTO.ToUpperString(), " ", myVertexType.Name, " ", S_VALUES.ToUpperString(), " ", S_BRACKET_LEFT));
+            stringBuilder.Append(String.Concat(S_UUID.ToUpperString(), " = '", myVertex.VertexID.ToString(), "'", delimiter));
+
+            #region standard attributes (creationDate, ...)
+
+            string standardProperties = CreateGraphDMLforVertexStandardProperties(myVertex);
+
+            stringBuilder.Append(standardProperties);
+
+            #endregion
+
+            #region properties (age, list<String>, ...)
+
+            string defAttrsDML = CreateGraphDMLforVertexDefinedProperties(myVertex.GetAllProperties(), myPropertyDefinitions);
+
+            stringBuilder.Append(defAttrsDML);
+
+            #endregion
+
+            #region unstructured data
+            #endregion
+
+            #region outgoing edges
+
+            #endregion
+
+
+
+            //#region CreateGDMLforDBOUnDefinedAttributes
+
+            //var undefAttrs = myDBObjectStream.GetUndefinedAttributePayload(myDBContext.DBObjectManager);
+
+            //if (!undefAttrs.Success())
+            //{
+            //    return new Exceptional<String>(undefAttrs);
+            //}
+
+            //if (undefAttrs.Value.Count > 0)
+            //{
+
+            //    Exceptional<String> undefAttrsDML = CreateGraphDMLforDBObjectUndefinedAttributes(myDumpFormat, undefAttrs.Value, myGraphDBType, myDBObjectStream);
+
+            //    if (!undefAttrsDML.Success())
+            //    {
+            //        return undefAttrsDML;
+            //    }
+
+            //    stringBuilder.Append(undefAttrsDML.Value);
+
+            //}
+
+            //#endregion
+
+            //stringBuilder.RemoveSuffix(delimiter);
+            //stringBuilder.Append(S_BRACKET_RIGHT);
+
+            //return new Exceptional<String>(stringBuilder.ToString());
+
+            return stringBuilder.ToString();
+        }
+
+        private string CreateGraphDMLforVertexStandardProperties(IVertex myVertex)
+        {
+            var stringBuilder = new StringBuilder();
+            var delimiter = ", ";
+
+            #region Comment
+
+            #endregion
+
+            #region Creation date
+
+            #endregion
+
+            #region Modification date
+
+            #endregion
+
+            #region RevisionID
+
+            #endregion
+
+            #region Edition
+
+            #endregion
+
+            return stringBuilder.ToString();
+        }
+
+        private string CreateGraphDMLforVertexDefinedProperties(
+            IEnumerable<Tuple<long, object>> myStructuredProperties,
+            Dictionary<long, IPropertyDefinition> myPropertyDefinitions)
+        {
+            var stringBuilder = new StringBuilder();
+            var delimiter = ", ";
+
+            foreach (var attribute in myStructuredProperties)
+            {
+                if (attribute.Item2 == null)
+                {
+                    continue;
+                }
+
+                var typeAttribute = myPropertyDefinitions[attribute.Item1];
+
+                switch (typeAttribute.Multiplicity)
+                {
+                    case TypesOfMultiplicity.Single:
+
+                        #region Single
+
+                        stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", CreateGraphDMLforSingleAttribute(attribute.Item2)));
+
+                        #endregion
+
+                        break;
+
+                    case TypesOfMultiplicity.List:
+
+                        #region List
+
+                        stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_LISTOF.ToUpperString(), " ", S_BRACKET_LEFT));
+                        foreach (var val in (attribute.Item2 as ICollection))
+                        {
+                            stringBuilder.Append(CreateGraphDMLforSingleAttribute(val) + delimiter);
+                        }
+                        stringBuilder.RemoveSuffix(delimiter);
+                        stringBuilder.Append(S_BRACKET_RIGHT);
+
+                        #endregion
+
+                        break;
+                    case TypesOfMultiplicity.Set:
+
+                        #region Set
+
+                        stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_SETOF.ToUpperString(), " ", S_BRACKET_LEFT));
+                        foreach (var val in (attribute.Item2 as ICollection))
+                        {
+                            stringBuilder.Append(CreateGraphDMLforSingleAttribute(val) + delimiter);
+                        }
+                        stringBuilder.RemoveSuffix(delimiter);
+                        stringBuilder.Append(S_BRACKET_RIGHT);
+
+                        #endregion
+
+                        break;
+                    default:
+
+                        throw new UnknownException(new NotImplementedException("This should never happen"));
+                }
+
+                stringBuilder.Append(delimiter);
+            }
+           
+            return stringBuilder.ToString();
+        }
+
+        private string CreateGraphDMLforSingleAttribute(object mySingleAttribute)
         {
             throw new NotImplementedException();
         }
 
-        private IEnumerable<IVertex> GetAllVertices(IVertexType graphDBType)
+        private IEnumerable<IVertex> GetAllVertices(IVertexType myVertexType)
         {
             throw new NotImplementedException();
         }
-
-        //private String CreateGraphDMLforDBObject(IVertexType myGraphDBType, IVertexType myDBObjectStream)
-        //{
-
-        //    var stringBuilder = new StringBuilder();
-        //    var delimiter = ", ";
-
-        //    stringBuilder.Append(String.Concat(S_INSERT.ToUpperString(), " ", S_INTO.ToUpperString(), " ", myGraphDBType.Name, " ", S_VALUES.ToUpperString(), " ", S_BRACKET_LEFT));
-        //    stringBuilder.Append(String.Concat(S_UUID.ToUpperString(), " = '", myDBObjectStream.ObjectUUID.ToString(), "'", delimiter));
-
-        //    #region CreateGraphDMLforDBODefinedAttributes
-
-        //    var defAttrsDML = CreateGraphDMLforDBObjectDefinedAttributes(myDBObjectStream.GetAttributes(), myGraphDBType, myDBObjectStream);
-
-        //    if (!defAttrsDML.Success())
-        //    {
-        //        return defAttrsDML;
-        //    }
-
-        //    stringBuilder.Append(defAttrsDML.Value);
-
-        //    #endregion
-
-        //    #region CreateGDMLforDBOUnDefinedAttributes
-
-        //    var undefAttrs = myDBObjectStream.GetUndefinedAttributePayload(myDBContext.DBObjectManager);
-
-        //    if (!undefAttrs.Success())
-        //    {
-        //        return new Exceptional<String>(undefAttrs);
-        //    }
-
-        //    if (undefAttrs.Value.Count > 0)
-        //    {
-
-        //        Exceptional<String> undefAttrsDML = CreateGraphDMLforDBObjectUndefinedAttributes(myDumpFormat, undefAttrs.Value, myGraphDBType, myDBObjectStream);
-
-        //        if (!undefAttrsDML.Success())
-        //        {
-        //            return undefAttrsDML;
-        //        }
-
-        //        stringBuilder.Append(undefAttrsDML.Value);
-
-        //    }
-
-        //    #endregion
-
-        //    stringBuilder.RemoveSuffix(delimiter);
-        //    stringBuilder.Append(S_BRACKET_RIGHT);
-
-        //    return stringBuilder.ToString();
-
-        //}
-
-        //private String CreateGraphDMLforDBObjectDefinedAttributes(IDictionary<AttributeUUID, IObject> myAttributes, IVertexType myGraphDBType, IVertexType myDBObjectStream)
-        //{
-
-        //    var stringBuilder = new StringBuilder();
-        //    var delimiter = ", ";
-
-        //    foreach (var attribute in myAttributes)
-        //    {
-
-        //        if (attribute.Value == null)
-        //        {
-        //            continue;
-        //        }
-
-        //        var typeAttribute = myGraphDBType.GetTypeAttributeByUUID(attribute.Key);
-
-        //        #region Reference attributes
-
-        //        if (typeAttribute.GetDBType(myDBContext.DBTypeManager).IsUserDefined)
-        //        {
-
-        //            #region IReferenceEdge
-
-        //            if (attribute.Value is ASetOfReferencesEdgeType)
-        //            {
-
-        //                #region Create edge GDML
-
-        //                stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_SETOFUUIDS.ToUpperString(), " ", S_BRACKET_LEFT));
-
-        //                //myEdgeBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_SETOF.ToUpperString(), " ", S_BRACKET_LEFT));
-
-        //                #region Create an assignment content - if edge does not contain any elements create an empty one
-
-        //                if ((attribute.Value as ASetOfReferencesEdgeType).GetAllReferenceIDs().CountIsGreater(0))
-        //                {
-
-        //                    if (attribute.Value is ASetOfReferencesWithInfoEdgeType)
-        //                    {
-
-        //                        #region Create attribute assignments
-
-        //                        foreach (var val in (attribute.Value as ASetOfReferencesWithInfoEdgeType).GetAllReferenceIDsWeighted())
-        //                        {
-        //                            stringBuilder.Append(String.Concat("'", val.Item1.ToString(), "'"));
-        //                            if (val.Item2 != null)
-        //                            {
-        //                                stringBuilder.Append(String.Concat(S_colon, S_BRACKET_LEFT, CreateGraphDMLforADBBaseObject(myDumpFormat, val.Item2), S_BRACKET_RIGHT));
-        //                            }
-        //                            stringBuilder.Append(delimiter);
-        //                        }
-        //                        stringBuilder.RemoveSuffix(delimiter);
-
-        //                        #endregion
-
-        //                    }
-        //                    else
-        //                    {
-
-        //                        #region Create an assignment content - if edge does not contain any elements create an empty one
-
-        //                        if ((attribute.Value as ASetOfReferencesEdgeType).GetAllReferenceIDs().CountIsGreater(0))
-        //                        {
-
-        //                            #region Create attribute assignments
-
-        //                            foreach (var val in (attribute.Value as ASetOfReferencesEdgeType).GetAllReferenceIDs())
-        //                            {
-        //                                stringBuilder.Append(String.Concat("'", val.ToString(), "'"));
-        //                                stringBuilder.Append(delimiter);
-        //                            }
-        //                            stringBuilder.RemoveSuffix(delimiter);
-
-        //                            #endregion
-
-        //                        }
-
-        //                        #endregion
-
-        //                    }
-
-        //                }
-
-        //                #endregion
-
-        //                stringBuilder.Append(S_BRACKET_RIGHT);
-
-        //                #endregion
-
-        //            }
-
-        //            #endregion
-
-        //            #region SingleReference
-
-        //            else if (typeAttribute.KindOfType == KindsOfType.SingleReference)
-        //            {
-        //                stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_REFUUID.ToUpperString(), " ", S_BRACKET_LEFT));
-        //                stringBuilder.Append(String.Concat("'", (attribute.Value as ASingleReferenceEdgeType).GetUUID().ToString(), "'"));
-        //                stringBuilder.Append(S_BRACKET_RIGHT);
-        //            }
-
-        //            #endregion
-
-        //            else
-        //            {
-        //                return new Exceptional<String>(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-        //            }
-
-        //            stringBuilder.Append(delimiter);
-
-        //        }
-
-        //        #endregion
-
-        //        #region NonReference attributes
-
-        //        else
-        //        {
-
-        //            #region ListOfNoneReferences
-
-        //            if (typeAttribute.KindOfType == KindsOfType.ListOfNoneReferences)
-        //            {
-        //                stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_LISTOF.ToUpperString(), " ", S_BRACKET_LEFT));
-        //                foreach (var val in (attribute.Value as IBaseEdge))
-        //                {
-        //                    stringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
-        //                }
-        //                stringBuilder.RemoveSuffix(delimiter);
-        //                stringBuilder.Append(S_BRACKET_RIGHT);
-        //            }
-
-        //            #endregion
-
-        //            #region SetOfNoneReferences
-
-        //            else if (typeAttribute.KindOfType == KindsOfType.SetOfNoneReferences)
-        //            {
-        //                stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", S_SETOF.ToUpperString(), " ", S_BRACKET_LEFT));
-        //                foreach (var val in (attribute.Value as IBaseEdge))
-        //                {
-        //                    stringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
-        //                }
-        //                stringBuilder.RemoveSuffix(delimiter);
-        //                stringBuilder.Append(S_BRACKET_RIGHT);
-
-        //            }
-
-        //            #endregion
-
-        //            #region SpecialAttribute
-
-        //            else if (typeAttribute.KindOfType == KindsOfType.SpecialAttribute)
-        //            {
-        //                throw new GraphDBException(new Error_NotImplemented(new System.Diagnostics.StackTrace(true)));
-        //            }
-
-        //            #endregion
-
-        //            #region Single value
-
-        //            else
-        //            {
-        //                stringBuilder.Append(String.Concat(typeAttribute.Name, " = ", CreateGraphDMLforADBBaseObject(myDumpFormat, attribute.Value as ADBBaseObject)));
-        //            }
-
-        //            #endregion
-
-        //            stringBuilder.Append(delimiter);
-
-        //        }
-
-        //        #endregion
-
-        //    }
-
-        //    return stringBuilder.ToString();
-
-        //}
-
-        //private String CreateGraphDMLforDBObjectUndefinedAttributes(IDictionary<String, IObject> myAttributes, GraphDBType myGraphDBType, DBObjectStream myDBObjectStream)
-        //{
-
-        //    var stringBuilder = new StringBuilder();
-        //    var delimiter = ", ";
-
-        //    foreach (var attribute in myAttributes)
-        //    {
-
-        //        #region A single value...
-
-        //        if (attribute.Value is ADBBaseObject)
-        //        {
-        //            stringBuilder.Append(String.Concat(attribute.Key, " = ", CreateGraphDMLforADBBaseObject(myDumpFormat, attribute.Value as ADBBaseObject)));
-        //        }
-
-        //        #endregion
-
-        //        #region ..or, it is a List or Set, since the Set constraint was already verified we can use a list
-
-        //        else if (attribute.Value is IBaseEdge)
-        //        {
-
-        //            stringBuilder.Append(String.Concat(attribute.Key, " = ", S_LISTOF.ToUpperString(), " ", S_BRACKET_LEFT));
-
-        //            foreach (var val in (attribute.Value as IBaseEdge))
-        //            {
-        //                stringBuilder.Append(CreateGraphDMLforADBBaseObject(myDumpFormat, val as ADBBaseObject) + delimiter);
-        //            }
-
-        //            stringBuilder.RemoveSuffix(delimiter);
-        //            stringBuilder.Append(S_BRACKET_RIGHT);
-
-        //        }
-
-        //        #endregion
-
-        //        else
-        //        {
-        //            return new Exceptional<String>(new Error_NotImplemented(new StackTrace(true)));
-        //        }
-
-        //        stringBuilder.Append(delimiter);
-
-        //    }
-
-        //    return stringBuilder.ToString();
-
-        //}
-
-        //private String CreateGraphDMLforADBBaseObject(ADBBaseObject myADBBaseObject)
-        //{
-
-        //    var dbNumber = myADBBaseObject as DBNumber;
-
-        //    if (dbNumber != null)
-        //        return dbNumber.ToString(new CultureInfo("en-US"));//new CultureInfo("en-US"));
-
-        //    return String.Concat("'", myADBBaseObject.ToString().Replace("'", "''"), "'");
-
-        //}
 
         #endregion
 

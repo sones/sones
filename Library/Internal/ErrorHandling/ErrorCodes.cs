@@ -13,7 +13,7 @@ namespace sones.Library.ErrorHandling
         /// A totally unknown error
         /// </summary>
         public static UInt16 UnknownError = 100;
-
+        
         #endregion
 
         #region GraphFS (prefix: 2)

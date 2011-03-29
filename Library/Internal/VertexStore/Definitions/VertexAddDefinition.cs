@@ -96,7 +96,7 @@ namespace sones.GraphFS.Definitions
             Dictionary<Int64, Object> myStructuredProperties,
             Dictionary<String, Object> myUnstructuredProperties)
         {
-            Edition = !string.IsNullOrEmpty(myEdition) ? myEdition : ConstantsFS.DefaultVertexEdition;
+            Edition = !string.IsNullOrEmpty(myEdition) ? myEdition : ConstantsVertexStore.DefaultVertexEdition;
 
             VertexID = myVertexID;
 

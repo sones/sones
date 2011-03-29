@@ -10,7 +10,7 @@ namespace sones.GraphFS
     /// <summary>
     /// The interface for all actions that are related to vertices
     /// </summary>
-    public interface IVertexHandler
+    public interface IVertexStore
     {
         /// <summary>
         /// Checks if a vertex exists
