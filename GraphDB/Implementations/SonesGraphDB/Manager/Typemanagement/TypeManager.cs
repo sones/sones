@@ -1,25 +1,141 @@
-﻿using sones.GraphDB.TypeSystem;
+﻿using System.Collections.Generic;
+using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Request;
 using sones.Library.Transaction;
 using sones.Library.LanguageExtensions;
-using System.Collections.Generic;
 using sones.Library.VertexStore;
-
-
 
 namespace sones.GraphDB.Manager.Typemanagement
 {
-    public sealed class TypeManager
+    public sealed partial class TypeManager
     {
-        public readonly VertexTypeManager VertexManager;
 
-        public readonly EdgeTypeManager EdgeManager;
+        #region c'tor
 
-
-        public TypeManager(IVertexStore myVertexStore)
+        //TODO: here we get a slim version of IGraphDB. So we can ask for types by name and are sure, that the index is used.
+        public TypeManager()
         {
-            VertexManager = new VertexTypeManager();
-            EdgeManager = new EdgeTypeManager();
         }
+
+        #endregion
+
+        #region public methods regarding type manager itself
+
+        /// <summary>
+        /// Checks whether the underlying vertex store contains the basic vertex type definitions.
+        /// </summary>
+        public void Check()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// Creates the basic vertex type definitions.
+        /// </summary>
+        //TODO: here we get a VertexStore(no security, no transaction) and an IndexManager, so we can create the five base vertex types, that are used to store the type manager knowlegde.
+        public void Create()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        #endregion
+
+        #region public methods regarding edge type
+
+        #region update edge types
+
+        /// <summary>
+        /// Adds a given edge type.
+        /// </summary>
+        /// <param name="myEdgeTypeDefinition">Defines the edge type to be added.</param>
+        /// <returns>An instance of IEdgeType, that represents the just now added edge type.</returns>
+        public IEdgeType Add(EdgeTypeDefinition myEdgeTypeDefinition)
+        {
+            //we delegate the work to the edge manager 
+            return _EdgeManager.Add(myEdgeTypeDefinition);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region public methods regarding vertex type
+
+        #region get vertex types
+
+        /// <summary>
+        /// Gets a vertex type by name.
+        /// </summary>
+        /// <param name="myTypeName">
+        /// The name of the vertex type.
+        /// </param>
+        /// <returns>An instance of IVertexType, that represents the vertex type.</returns>
+        public IVertexType Get(string myTypeName)
+        {
+            return _VertexManager.Get(myTypeName);
+        }
+
+        #endregion
+
+        #region update vertex types
+
+        /// <summary>
+        /// Adds a new vertex type to the type manager.
+        /// </summary>
+        /// <param name="myVertexTypeDefinition">The definition of the new type.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        public void Add(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction)
+        {
+            _VertexManager.Add(myVertexTypeDefinition, myTransaction);
+        }
+
+        /// <summary>
+        /// Adds a bunch of new vertex types to the type manager.
+        /// </summary>
+        /// <param name="myVertexTypeDefinitions">The definition of the new vertex types.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        public void Add(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction)
+        {
+            _VertexManager.Add(myVertexTypeDefinitions, myTransaction);
+        }
+
+        /// <summary>
+        /// Removes a vertex type from the type manager.
+        /// </summary>
+        /// <param name="myVertexType">The vertex type that will be removed.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// The vertex type will be removed unless there are no edges that point to this type.
+        /// If there is such an edge, remove the edge by altering the type that holds it or remove both type simultaneously using <see cref="Add(IEnumerable<IVertexType>, TransactionToken)"/>.
+        public void Remove(IVertexType myVertexType, TransactionToken myTransaction)
+        {
+            _VertexManager.Remove(myVertexType, myTransaction);
+        }
+
+        /// <summary>
+        /// Removes a bunch of vertex types from the type manager.
+        /// </summary>
+        /// <param name="myVertexTypes">The vertex types that will be removed.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// All types will be removed unless there are no edges that point to at least one of the given types.
+        /// If there is such an edge, remove the edge by altering the type that holds it or remove this type too.
+        /// All types are removed simultaneously. This means that edges between the types are not need to be removed before.
+        public void Remove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction)
+        {
+            _VertexManager.Remove(myVertexTypes, myTransaction);
+        }
+
+        public void Update(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction)
+        {
+            _VertexManager.Update(myVertexTypeDefinition, myTransaction);
+        }
+
+        public void Update(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction)
+        {
+            _VertexManager.Update(myVertexTypeDefinitions, myTransaction);
+        }
+
+        #endregion
+
+        #endregion
     }
 }
