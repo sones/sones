@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram MajorVersion="1" MinorVersion="1">
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
   <Class Name="sones.GraphDB.Manager.MetaManager" Collapsed="true">
     <Position X="7.5" Y="0.5" Width="1.5" />
     <TypeIdentifier>
@@ -51,10 +51,24 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="sones.GraphDB.Manager.Typemanagement.TypeManager">
-    <Position X="8" Y="4.5" Width="1.5" />
+    <Position X="9" Y="3.75" Width="3" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAABAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAQAAAAA=</HashCode>
       <FileName>Manager\Typemanagement\TypeManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.Manager.Typemanagement.EdgeTypeManager">
+    <Position X="12.25" Y="6" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Manager\Typemanagement\EdgeTypeManager.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="sones.GraphDB.Manager.Typemanagement.VertexTypeManager">
+    <Position X="12.25" Y="3.75" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAIAABAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAIAAA=</HashCode>
+      <FileName>Manager\Typemanagement\VertexTypeManager.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

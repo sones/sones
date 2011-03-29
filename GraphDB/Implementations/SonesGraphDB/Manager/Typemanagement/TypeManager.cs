@@ -1,24 +1,24 @@
 ﻿using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Request;
+using sones.Library.Transaction;
+using sones.Library.LanguageExtensions;
+using System.Collections.Generic;
+
+
 
 namespace sones.GraphDB.Manager.Typemanagement
 {
-    public class TypeManager
+    public sealed class TypeManager
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="myVertexTypeDefinition">
-        /// 
-        /// </param>
-        public IVertexType AddVertexType(VertexTypeDefinition myVertexTypeDefinition)
-        {
-            throw new System.NotImplementedException();
-        }
+        public readonly VertexTypeManager VertexManager;
 
-        public IEdgeType AddEdgeType(EdgeTypeDefinition myEdgeTypeDefinition)
+        public readonly EdgeTypeManager EdgeManager;
+
+
+        public TypeManager()
         {
-            throw new System.NotImplementedException();
+            VertexManager = new VertexTypeManager();
+            EdgeManager = new EdgeTypeManager();
         }
     }
 }

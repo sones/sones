@@ -46,6 +46,9 @@
   <ItemGroup>
     <Compile Include="Manager\MetaManager.cs" />
     <Compile Include="Manager\Request\RequestManager.cs" />
+    <Compile Include="Manager\Typemanagement\EdgeTypeManager.cs" />
+    <Compile Include="Manager\Typemanagement\TypeManager.cs" />
+    <Compile Include="Manager\Typemanagement\VertexTypeManager.cs" />
     <Compile Include="Request\Clear\PipelineableClearRequest.cs" />
     <Compile Include="Request\APipelinableRequest.cs" />
     <Compile Include="Request\CreateVertexType\PipelineableCreateVertexTypeRequest.cs" />
@@ -57,6 +60,10 @@
     <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\LanguageExtensions\LanguageExtensions.csproj">
+      <Project>{21C726D5-DCCA-4C15-BA54-1000E80B1C6E}</Project>
+      <Name>LanguageExtensions</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
@@ -81,6 +88,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ErrorHandling\" />
+    <Folder Include="Typemanagement\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SonesGraphDB.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
