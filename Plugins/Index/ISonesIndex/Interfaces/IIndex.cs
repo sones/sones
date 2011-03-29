@@ -66,7 +66,7 @@ namespace sones.Plugins.Index.Interfaces
         /// <summary>
         /// Returns all keys of the index
         /// </summary>
-        IEnumerable<TKey> Keys();
+        ISet<TKey> Keys();
 
         #endregion
 

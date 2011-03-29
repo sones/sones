@@ -21,7 +21,7 @@ namespace sones.Plugins.Index.Interfaces
         /// </summary>
         /// <param name="myVersion">the version</param>
         /// <returns>all keys of the given version</returns>
-        IEnumerable<TKey> Keys(TVersion myVersion);
+        ISet<TKey> Keys(TVersion myVersion);
 
         #endregion
 

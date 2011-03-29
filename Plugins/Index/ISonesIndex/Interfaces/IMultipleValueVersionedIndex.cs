@@ -25,7 +25,7 @@ namespace sones.Plugins.Index.Interfaces
         /// <param name="myKey">the index key</param>
         /// <param name="myVersion">the version of the index</param>
         /// <returns>set returns the values (if it exists)</returns>
-        IEnumerable<TValue> this[TKey myKey, TVersion myVersion] { get; set; }
+        ISet<TValue> this[TKey myKey, TVersion myVersion] { get; set; }
 
         /// <summary>
         /// Adds a key and an associated value-set to the index
@@ -34,7 +34,7 @@ namespace sones.Plugins.Index.Interfaces
         /// <param name="myValue">the associated values</param>
         /// <param name="myVersion">the version of the index</param>
         /// <param name="myIndexAddStrategy">defines what to do if the key already exists</param>
-        void Add(TKey myKey, IEnumerable<TValue> myValue, TVersion myVersion,
+        void Add(TKey myKey, ISet<TValue> myValue, TVersion myVersion,
                  IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE);
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace sones.Plugins.Index.Interfaces
         /// <param name="myKeyValuePair">KeyValuePair</param>
         /// <param name="myVersion">the version of the index</param>
         /// <param name="myIndexAddStrategy">defines what to do if the key already exists</param>
-        void Add(KeyValuePair<TKey, IEnumerable<TValue>> myKeyValuePair, TVersion myVersion,
+        void Add(KeyValuePair<TKey, ISet<TValue>> myKeyValuePair, TVersion myVersion,
                  IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE);
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace sones.Plugins.Index.Interfaces
         /// <param name="myDictionary">a dictionary containing keys and the associated values</param>
         /// <param name="myVersion">the version of the index</param>
         /// <param name="myIndexAddStrategy">defines what to do if the key already exists</param>
-        void Add(Dictionary<TKey, IEnumerable<TValue>> myDictionary, TVersion myVersion,
+        void Add(Dictionary<TKey, ISet<TValue>> myDictionary, TVersion myVersion,
                  IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE);
 
         #endregion
@@ -64,7 +64,7 @@ namespace sones.Plugins.Index.Interfaces
         /// </summary>
         /// <param name="myVersion">the version</param>
         /// <returns>all values of the given version</returns>
-        IEnumerable<IEnumerable<TValue>> Values(TVersion myVersion);
+        IEnumerable<ISet<TValue>> Values(TVersion myVersion);
 
         #endregion
     }

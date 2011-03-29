@@ -52,7 +52,7 @@ namespace sones.Plugins.Index.Interfaces
         /// <param name="myDictionary">a dictionary containing keys and the associated value</param>
         /// <param name="myVersion">the version of the index</param>
         /// <param name="myIndexAddStrategy">defines what to do if the key already exists</param>
-        void Add(Dictionary<TKey, TValue> myDictionary, TVersion myVersion,
+        void Add(IDictionary<TKey, TValue> myDictionary, TVersion myVersion,
                  IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE);
 
         #endregion
@@ -64,7 +64,7 @@ namespace sones.Plugins.Index.Interfaces
         /// </summary>
         /// <param name="myVersion">the version</param>
         /// <returns>all values of the given version</returns>
-        IEnumerable<TValue> Values(TVersion myVersion);
+        ISet<TValue> Values(TVersion myVersion);
 
         #endregion
     }

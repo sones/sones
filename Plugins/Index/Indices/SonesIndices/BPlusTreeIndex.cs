@@ -11,52 +11,52 @@ namespace sones.Plugins.Index
     {
         #region IMultipleValueRangeIndex<TKey,TValue> Members
 
-        public IEnumerable<IEnumerable<TValue>> GreaterThan(TKey myKey, bool myOrEqual = true)
+        public IEnumerable<ISet<TValue>> GreaterThan(TKey myKey, bool myOrEqual = true)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IEnumerable<TValue>> LowerThan(TKey myKey, bool myOrEqual = true)
+        public IEnumerable<ISet<TValue>> LowerThan(TKey myKey, bool myOrEqual = true)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IEnumerable<TValue>> InRange(TKey myFromKey, TKey myToKey, bool myOrEqualFromKey = true,
+        public IEnumerable<ISet<TValue>> InRange(TKey myFromKey, TKey myToKey, bool myOrEqualFromKey = true,
                                                         bool myOrEqualToKey = true)
         {
             throw new NotImplementedException();
         }
 
-        public void Add(TKey myKey, IEnumerable<TValue> myValues,
+        public void Add(TKey myKey, ISet<TValue> myValues,
                         IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             throw new NotImplementedException();
         }
 
-        public void Add(KeyValuePair<TKey, IEnumerable<TValue>> myKeyValuesPair,
+        public void Add(KeyValuePair<TKey, ISet<TValue>> myKeyValuesPair,
                         IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             throw new NotImplementedException();
         }
 
-        public void Add(IDictionary<TKey, IEnumerable<TValue>> myDictionary,
+        public void Add(IDictionary<TKey, ISet<TValue>> myDictionary,
                         IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<TValue> this[TKey myKey]
+        public ISet<TValue> this[TKey myKey]
         {
             get { throw new NotImplementedException(); }
             set { throw new NotImplementedException(); }
         }
 
-        public bool Contains(TKey myKey, IEnumerable<TValue> myValues)
+        public bool Contains(TKey myKey, ISet<TValue> myValues)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IEnumerable<TValue>> Values()
+        public IEnumerable<ISet<TValue>> Values()
         {
             throw new NotImplementedException();
         }
@@ -81,7 +81,7 @@ namespace sones.Plugins.Index
             throw new NotImplementedException();
         }
 
-        public IEnumerable<TKey> Keys()
+        public ISet<TKey> Keys()
         {
             throw new NotImplementedException();
         }
@@ -106,7 +106,7 @@ namespace sones.Plugins.Index
             throw new NotImplementedException();
         }
 
-        public IEnumerator<KeyValuePair<TKey, IEnumerable<TValue>>> GetEnumerator()
+        public IEnumerator<KeyValuePair<TKey, ISet<TValue>>> GetEnumerator()
         {
             throw new NotImplementedException();
         }

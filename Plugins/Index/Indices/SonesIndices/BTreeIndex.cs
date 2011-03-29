@@ -22,7 +22,7 @@ namespace sones.Plugins.Index
             throw new NotImplementedException();
         }
 
-        public void Add(Dictionary<TKey, TValue> myDictionary,
+        public void Add(IDictionary<TKey, TValue> myDictionary,
                         IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
         {
             throw new NotImplementedException();
@@ -34,7 +34,7 @@ namespace sones.Plugins.Index
             set { throw new NotImplementedException(); }
         }
 
-        public IEnumerable<TValue> Values()
+        public ISet<TValue> Values()
         {
             throw new NotImplementedException();
         }
@@ -59,7 +59,7 @@ namespace sones.Plugins.Index
             throw new NotImplementedException();
         }
 
-        public IEnumerable<TKey> Keys()
+        public ISet<TKey> Keys()
         {
             throw new NotImplementedException();
         }

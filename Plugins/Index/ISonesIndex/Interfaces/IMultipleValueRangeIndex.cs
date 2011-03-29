@@ -22,7 +22,7 @@ namespace sones.Plugins.Index.Interfaces
         /// <param name="myKey">the lower bound of the range</param>
         /// <param name="myOrEqual">true if the key shall be included in the range</param>
         /// <returns>values from all keys greater than given key</returns>
-        IEnumerable<IEnumerable<TValue>> GreaterThan(TKey myKey, bool myOrEqual = true);
+        IEnumerable<ISet<TValue>> GreaterThan(TKey myKey, bool myOrEqual = true);
 
         /// <summary>
         /// Returns all value-sets from keys which are lower than the given key
@@ -30,7 +30,7 @@ namespace sones.Plugins.Index.Interfaces
         /// <param name="myKey">the upper bound of the range</param>
         /// <param name="myOrEqual">true if the key shall be included in the range</param>
         /// <returns>values from all keys lower than given key</returns>
-        IEnumerable<IEnumerable<TValue>> LowerThan(TKey myKey, bool myOrEqual = true);
+        IEnumerable<ISet<TValue>> LowerThan(TKey myKey, bool myOrEqual = true);
 
         /// <summary>
         /// Returns all value-sets from keys in a given range
@@ -40,7 +40,7 @@ namespace sones.Plugins.Index.Interfaces
         /// <param name="myOrEqualFromKey">true if the lower bound shall be included in the range</param>
         /// <param name="myOrEqualToKey">true if the upper bound shall be included in the range</param>
         /// <returns>values from all keys in the given range</returns>
-        IEnumerable<IEnumerable<TValue>> InRange(TKey myFromKey, TKey myToKey, bool myOrEqualFromKey = true,
+        IEnumerable<ISet<TValue>> InRange(TKey myFromKey, TKey myToKey, bool myOrEqualFromKey = true,
                                                  bool myOrEqualToKey = true);
 
         #endregion

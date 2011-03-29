@@ -53,31 +53,31 @@ namespace sones.Plugins.Index
         /// <param name="myKey">The index key.</param>
         /// <param name="myValues">The index values.</param>
         /// <param name="myIndexAddStrategy">The add strategy.</param>
-        private void AddValues(TKey myKey, IEnumerable<TValue> myValues, IndexAddStrategy myIndexAddStrategy)
+        private void AddValues(TKey myKey, ISet<TValue> myValues, IndexAddStrategy myIndexAddStrategy)
         {
             switch (myIndexAddStrategy)
             {
                 case IndexAddStrategy.MERGE:
-
-                    if (!Contains(myKey, myValues))
-                    {
-                        _Indexer.TryAdd(myKey, new HashSet<TValue>(myValues));
-                    }
-                    else
-                    {
-                        foreach (var aValue in myValues)
+                    
+                    _Indexer.AddOrUpdate(myKey,
+                        new HashSet<TValue>(myValues),
+                        (key, oldValue) =>
                         {
-                            _Indexer[myKey].Add(aValue);
-                        }
-                    }
+                            lock (oldValue)
+                            {
+                                oldValue.UnionWith(myValues);
+
+                                return oldValue;
+                            }
+                        });
 
                     break;
 
                 case IndexAddStrategy.UNIQUE:
 
-                    if (Contains(myKey, myValues))
+                    if (_Indexer.ContainsKey(myKey))
                     {
-                        throw new UniqueIndexConstraintException("Index values already exist.");
+                        throw new UniqueIndexConstraintException(String.Format("Index key {0} already exist.", myKey.ToString()));
                     }
                     else
                     {
@@ -98,29 +98,32 @@ namespace sones.Plugins.Index
 
         #region IMultipleValueIndex
 
-        public IEnumerable<TValue> this[TKey myKey]
+        public ISet<TValue> this[TKey myKey]
         {
             get
             {
-                return _Indexer[myKey].AsEnumerable();
+                return (ISet<TValue>)_Indexer[myKey].AsEnumerable();
             }
             set
             {
-                _Indexer[myKey] = new HashSet<TValue>(value);
+                lock (_Indexer)
+                {
+                    _Indexer[myKey] = new HashSet<TValue>(value);
+                }
             }
         }
 
-        public void Add(TKey myKey, IEnumerable<TValue> myValues, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
+        public void Add(TKey myKey, ISet<TValue> myValues, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             AddValues(myKey, myValues, myIndexAddStrategy);
         }
 
-        public void Add(KeyValuePair<TKey, IEnumerable<TValue>> myKeyValuesPair, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
+        public void Add(KeyValuePair<TKey, ISet<TValue>> myKeyValuesPair, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             AddValues(myKeyValuesPair.Key, myKeyValuesPair.Value, myIndexAddStrategy);
         }
 
-        public void Add(IDictionary<TKey, IEnumerable<TValue>> myDictionary, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
+        public void Add(IDictionary<TKey, ISet<TValue>> myDictionary, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.MERGE)
         {
             foreach (var aItem in myDictionary)
             {
@@ -128,7 +131,7 @@ namespace sones.Plugins.Index
             }
         }
 
-        public bool Contains(TKey myKey, IEnumerable<TValue> myValues)
+        public bool Contains(TKey myKey, ISet<TValue> myValues)
         {
             HashSet<TValue> val = null;
             
@@ -137,11 +140,17 @@ namespace sones.Plugins.Index
                 return false;
             }
 
-            foreach (var aValue in val)
+            if (val != null)
             {
-                if (!myValues.Contains(aValue))
+                lock (val)
                 {
-                    return false;
+                    foreach (var aValue in val)
+                    {
+                        if (!myValues.Contains(aValue))
+                        {
+                            return false;
+                        }
+                    }
                 }
             }
 
@@ -149,7 +158,7 @@ namespace sones.Plugins.Index
 
         }
 
-        public IEnumerable<IEnumerable<TValue>> Values()
+        public IEnumerable<ISet<TValue>> Values()
         {
             return _Indexer.Values.AsEnumerable();
         }
@@ -174,9 +183,9 @@ namespace sones.Plugins.Index
             return _Indexer.Values.Count;
         }
 
-        public IEnumerable<TKey> Keys()
-        {
-            return _Indexer.Keys.AsEnumerable();
+        public ISet<TKey> Keys()
+        {            
+            return new HashSet<TKey>(_Indexer.Keys);
         }       
 
         public bool ContainsKey(TKey myKey)
@@ -186,7 +195,18 @@ namespace sones.Plugins.Index
 
         public bool ContainsValue(TValue myValue)
         {
-            return _Indexer.Any((item) => item.Value.Any((val => val.Equals(myValue))));            
+            foreach (var item in _Indexer)
+            {
+                lock (item.Value)
+                {
+                    if (item.Value.Any(val => val.Equals(myValue)))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         public bool Contains(TKey myKey, TValue myValue)
@@ -195,7 +215,10 @@ namespace sones.Plugins.Index
 
             if (_Indexer.TryGetValue(myKey, out val))
             {
-                return val.Any(item => item.Equals(myValue));
+                lock (val)
+                {
+                    return val.Any(item => item.Equals(myValue));
+                }
             }
 
             return false;
@@ -208,9 +231,19 @@ namespace sones.Plugins.Index
             return _Indexer.TryRemove(myKey, out val);
         }
 
-        public IEnumerator<KeyValuePair<TKey, IEnumerable<TValue>>> GetEnumerator()
-        {            
-            return _Indexer.Select(item => new KeyValuePair<TKey, IEnumerable<TValue>>(item.Key, item.Value)).GetEnumerator();
+        public IEnumerator<KeyValuePair<TKey, ISet<TValue>>> GetEnumerator()
+        {
+            var retValue = new List<KeyValuePair<TKey, ISet<TValue>>>();
+            
+            foreach (var item in _Indexer)
+            {
+                lock (item.Value)
+                {
+                    retValue.Add(new KeyValuePair<TKey, ISet<TValue>>(item.Key, item.Value));
+                }
+            }
+
+            return retValue.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
