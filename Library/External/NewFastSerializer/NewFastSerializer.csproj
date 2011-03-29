@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{21C726D5-DCCA-4C15-BA54-1000E80B1C6E}</ProjectGuid>
+    <ProjectGuid>{942F25CF-46A7-4413-B062-E3395C8D1C9A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LanguageExtensions</RootNamespace>
-    <AssemblyName>LanguageExtensions</AssemblyName>
+    <RootNamespace>NewFastSerializer</RootNamespace>
+    <AssemblyName>NewFastSerializer</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -44,8 +44,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AnyClassExtensions.cs" />
+    <Compile Include="FastReflectionSerializer.cs" />
+    <Compile Include="FastReflectionSerializerExceptions.cs" />
+    <Compile Include="FillFastSerialTypeSurrogateList.cs" />
+    <Compile Include="IFastSerializationTypeSurrogate.cs" />
+    <Compile Include="IFastSerializeExtensions.cs" />
+    <Compile Include="IFastSerializer.cs" />
+    <Compile Include="IOwnedDataSerializable.cs" />
+    <Compile Include="IOwnedDataSerializableAndRecreatable.cs" />
+    <Compile Include="OptimizationException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SerializationReader.cs" />
+    <Compile Include="SerializationWriter.cs" />
+    <Compile Include="SerializedType.cs" />
+    <Compile Include="UniqueStringList.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Internal\LanguageExtensions\LanguageExtensions.csproj">
+      <Project>{21C726D5-DCCA-4C15-BA54-1000E80B1C6E}</Project>
+      <Name>LanguageExtensions</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
