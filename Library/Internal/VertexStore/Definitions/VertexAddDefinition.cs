@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace sones.GraphFS.Definitions
+namespace sones.Library.VertexStore.Definitions
 {
     /// <summary>
     /// This struct represents the filesystem definition for a vertex

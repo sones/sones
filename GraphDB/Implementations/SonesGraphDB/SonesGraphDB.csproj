@@ -77,6 +77,10 @@
       <Project>{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}</Project>
       <Name>Transaction</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\VertexStore\VertexStore.csproj">
+      <Project>{E350EBAC-98DD-4261-8CE8-FA95FC96C9EA}</Project>
+      <Name>VertexStore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Plugins\GraphDB\Manager\IGraphDBManager\IGraphDBManager.csproj">
       <Project>{F8A5DBE6-F3F2-446D-9395-6904DCD04C78}</Project>
       <Name>IGraphDBManager</Name>

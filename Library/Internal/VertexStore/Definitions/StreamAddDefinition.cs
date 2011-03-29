@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
-namespace sones.GraphFS.Definitions
+
+namespace sones.Library.VertexStore.Definitions
 {
     /// <summary>
     /// This struct represents the filesystem definition for a stream

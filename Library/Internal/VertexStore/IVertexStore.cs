@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.Library.PropertyHyperGraph;
-using sones.GraphFS.Definitions;
+using sones.Library.VertexStore.Definitions;
 
-namespace sones.GraphFS
+namespace sones.Library.VertexStore
 {
     /// <summary>
     /// The interface for all actions that are related to vertices

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace sones.GraphFS
+namespace sones.Library.VertexStore
 {
     /// <summary>
     /// Constants concerning the vertex store

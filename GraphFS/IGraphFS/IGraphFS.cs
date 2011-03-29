@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using sones.GraphFS.Definitions;
 using sones.Library.PropertyHyperGraph;
+using sones.Library.VertexStore;
 
 namespace sones.GraphFS
 {

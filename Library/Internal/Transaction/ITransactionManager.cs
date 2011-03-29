@@ -1,4 +1,6 @@
 ﻿using sones.GraphFS;
+using sones.Library.VertexStore;
+
 namespace sones.Library.Transaction
 {
     /// <summary>

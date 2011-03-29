@@ -1,4 +1,4 @@
-﻿namespace sones.GraphFS.Definitions
+﻿namespace sones.Library.VertexStore.Definitions
 {
     /// <summary>
     /// This class represents the filesystem update definition for a vertex

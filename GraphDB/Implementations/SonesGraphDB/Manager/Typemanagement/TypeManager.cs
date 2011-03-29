@@ -3,6 +3,7 @@ using sones.GraphDB.Request;
 using sones.Library.Transaction;
 using sones.Library.LanguageExtensions;
 using System.Collections.Generic;
+using sones.Library.VertexStore;
 
 
 
@@ -15,7 +16,7 @@ namespace sones.GraphDB.Manager.Typemanagement
         public readonly EdgeTypeManager EdgeManager;
 
 
-        public TypeManager()
+        public TypeManager(IVertexStore myVertexStore)
         {
             VertexManager = new VertexTypeManager();
             EdgeManager = new EdgeTypeManager();

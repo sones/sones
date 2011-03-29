@@ -1,7 +1,7 @@
 ﻿using System;
 using sones.Library.PropertyHyperGraph;
 
-namespace sones.GraphFS.Definitions
+namespace sones.Library.VertexStore.Definitions
 {
     /// <summary>
     /// The information / loaction definition of a vertex
