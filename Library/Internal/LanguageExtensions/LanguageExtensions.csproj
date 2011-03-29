@@ -45,7 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AnyClassExtensions.cs" />
+    <Compile Include="ByteArrayExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StreamExtension.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
