@@ -47,6 +47,8 @@
     <Compile Include="ErrorHandling\AggregateOrFunctionDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\AGraphDBException.cs" />
     <Compile Include="ErrorHandling\DuplicateAggregateOrFunctionException.cs" />
+    <Compile Include="ErrorHandling\EdgeTypeDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\IndexDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\UnknownDBException.cs" />
     <Compile Include="Request\Clear\RequestClear.cs" />
     <Compile Include="Request\CreateEdgeType\EdgeTypeDefinition.cs" />

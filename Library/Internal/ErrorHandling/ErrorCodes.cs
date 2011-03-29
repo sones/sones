@@ -72,6 +72,16 @@ namespace sones.Library.ErrorHandling
         /// </summary>
         public static UInt16 DuplicateAggregateOrFunction = 3002;
 
+        /// <summary>
+        /// An edge type does not exist
+        /// </summary>
+        public static UInt16 EdgeTypeDoesNotExist = 3003;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public static UInt16 IndexDoesNotExist = 3004;
+
         #endregion
 
         #region GraphDS (prefix: 4)
@@ -93,32 +103,32 @@ namespace sones.Library.ErrorHandling
         /// <summary>
         /// An assignment of a certain reference type with a list is not allowed
         /// </summary>
-        public static UInt16 InvalidAssignOfSet = 5100;
+        public static UInt16 InvalidAssignOfSet = 5101;
 
         /// <summary>
         /// An assignment for an attribute from a certain type with a value of a second type is not valid
         /// </summary>
-        public static UInt16 InvalidAttrDefaultValueAssignment = 5101;
+        public static UInt16 InvalidAttrDefaultValueAssignment = 5102;
 
         /// <summary>
         /// An reference assignment for undefined attributes is not allowed
         /// </summary>
-        public static UInt16 InvalidReferenceAssignmentOfUndefAttr = 5102;
+        public static UInt16 InvalidReferenceAssignmentOfUndefAttr = 5103;
 
         /// <summary>
         /// Could not assign the value of the undefined attribute to an defined attribute of a certain type 
         /// </summary>
-        public static UInt16 InvalidUndefAttrType = 5103;
+        public static UInt16 InvalidUndefAttrType = 5104;
 
         /// <summary>
         /// A single reference attribute does not contain any value
         /// </summary>
-        public static UInt16 ReferenceAssignmentEmptyValue = 5104;
+        public static UInt16 ReferenceAssignmentEmptyValue = 5105;
 
         /// <summary>
         /// 
         /// </summary>
-        public static UInt16 ReferenceAssignment = 5105;
+        public static UInt16 ReferenceAssignment = 5106;
 
         /// <summary>
         /// A attribute expects a Reference assignment
@@ -132,42 +142,61 @@ namespace sones.Library.ErrorHandling
         /// <summary>
         /// The dump format is invalid
         /// </summary>
-        public static UInt16 InvalidDumpFormat = 5200;        
+        public static UInt16 InvalidDumpFormat = 5201;        
 
         /// <summary>
         /// The desire dump type is not supported
         /// </summary>
-        public static UInt16 InvalidDumpType = 5201;
+        public static UInt16 InvalidDumpType = 5202;
 
         /// <summary>
         /// The grammar is not dumpable
         /// </summary>
-        public static UInt16 NotADumpableGrammar = 5202;
+        public static UInt16 NotADumpableGrammar = 5203;
 
         #endregion
 
 
-        #region FunctionErrors (prefix: 53)
+        #region EdgeErrors (prefix: 53)
+
+        /// <summary>
+        /// The number of parameters of an edge does not match
+        /// </summary>
+        public static UInt16 EdgeParameterCountMismatch = 5301;
+
+        /// <summary>
+        /// The type of the edge parameter does not match
+        /// </summary>
+        public static UInt16 EdgeParameterTypeMismatch = 5302;
+
+        /// <summary>
+        /// Too many elements for a type of an edge 
+        /// </summary>
+        public static UInt16 TooManyElementsForEdge = 5303;
+
+        #endregion
+
+        #region FunctionErrors (prefix: 54)
 
         /// <summary>
         /// A function does not exists
         /// </summary>
-        public static UInt16 FunctionDoesNotExist = 5300;
+        public static UInt16 FunctionDoesNotExist = 5401;
 
         /// <summary>
         /// An invalid reference for a function parameter
         /// </summary>
-        public static UInt16 FunctionParameterInvalidReference = 5301;
+        public static UInt16 FunctionParameterInvalidReference = 5402;
 
         /// <summary>
         /// The function has a invalid working base
         /// </summary>
-        public static UInt16 InvalidFunctionBase = 5302;
+        public static UInt16 InvalidFunctionBase = 5403;
 
         /// <summary>
         /// The return type of the function is invalid
         /// </summary>
-        public static UInt16 InvalidFunctionReturnType = 5303;
+        public static UInt16 InvalidFunctionReturnType = 5404;
 
         #endregion
 

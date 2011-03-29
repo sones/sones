@@ -57,6 +57,10 @@
     <Compile Include="ErrorHandling\DumpErrors\InvalidDumpFormatException.cs" />
     <Compile Include="ErrorHandling\DumpErrors\InvalidDumpTypeException.cs" />
     <Compile Include="ErrorHandling\DumpErrors\NotADumpableGrammarException.cs" />
+    <Compile Include="ErrorHandling\EdgeErrors\EdgeParameterCountMismatchException.cs" />
+    <Compile Include="ErrorHandling\EdgeErrors\EdgeParameterTypeMismatchException.cs" />
+    <Compile Include="ErrorHandling\EdgeErrors\TooManyElementsForEdgeException.cs" />
+    <Compile Include="ErrorHandling\EdgeErrors\AGraphQLEdgeException.cs" />
     <Compile Include="ErrorHandling\FunctionErrors\AGraphQLFunctionException.cs" />
     <Compile Include="ErrorHandling\FunctionErrors\FunctionDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\FunctionErrors\FunctionParameterInvalidReferenceException.cs" />
