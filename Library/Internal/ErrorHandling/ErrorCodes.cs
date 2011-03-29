@@ -13,7 +13,7 @@ namespace sones.Library.ErrorHandling
         /// A totally unknown error
         /// </summary>
         public static UInt16 UnknownError = 100;
-        
+
         #endregion
 
         #region GraphFS (prefix: 2)
@@ -75,18 +75,109 @@ namespace sones.Library.ErrorHandling
         /// <summary>
         /// An edge type does not exist
         /// </summary>
-        public static UInt16 EdgeTypeDoesNotExist = 3003;
+        public static UInt16 EdgeTypeDoesNotExist = 3003;        
+
+       
+        #region IndexErrors (prefix: 31)
 
         /// <summary>
-        /// 
+        /// The index already exists
         /// </summary>
-        public static UInt16 IndexDoesNotExist = 3004;
+        public static UInt16 IndexAlreadyExist = 3101;        
+
+        /// <summary>
+        /// The index does not exists
+        /// </summary>
+        public static UInt16 IndexDoesNotExist = 3102;
+
+        /// <summary>
+        /// The index type does not exists
+        /// </summary>
+        public static UInt16 IndexTypeDoesNotExist = 3103;
+
+        #endregion
+
+
+        #region SelectErrors (prefix: 32
+
+        /// <summary>
+        /// A duplicate attribute selection is not allowed
+        /// </summary>
+        public static UInt16 DuplicateAttributeSelection = 3201;
+
+        /// <summary>
+        /// A to group attribute is not selected
+        /// </summary>
+        public static UInt16 GroupedAttributeIsNotSelected = 3202;
+
+        /// <summary>
+        /// An invalid group level when adding a group element to a selection
+        /// </summary>
+        public static UInt16 InvalidGroupByLevel = 3203;
+
+        /// <summary>
+        /// The assignment of the select value is invalid
+        /// </summary>
+        public static UInt16 InvalidSelectValueAssignment = 3204;
+
+        /// <summary>
+        /// Missing grouped argument in a selection with aggregates 
+        /// </summary>
+        public static UInt16 NoGroupingArgument = 3205;
+
+        /// <summary>
+        /// The data type of the SelectValueAssignment does not match the type
+        /// </summary>
+        public static UInt16 SelectValueAssignmentDataTypeDoesNotMatch = 3206;
+
+        #endregion
+
+
+        #region TypeErrors (prefix: 33)
+
+        /// <summary>
+        /// A base type is not a user defined type 
+        /// </summary>
+        public static UInt16 InvalidBaseType = 3301;
+
+        /// <summary>
+        /// The type is invalid
+        /// </summary>
+        public static UInt16 InvalidType = 3302;
+
+        /// <summary>
+        /// The user defined type should not be used with LIST attributes
+        /// </summary>
+        public static UInt16 ListAttributeNotAllowed = 3303;
+
+        /// <summary>
+        /// The parent type of a type does not exist
+        /// </summary>
+        public static UInt16 ParentTypeDoesNotExist = 3304;
+                
+        /// <summary>
+        /// The type already exists
+        /// </summary>
+        public static UInt16 TypeAlreadyExist = 3205;
+
+        /// <summary>
+        /// The type does not exists
+        /// </summary>
+        public static UInt16 TypeDoesNotExist = 3206;
+
+        /// <summary>
+        /// A Type does not match the expected Type
+        /// </summary>
+        public static UInt16 TypeDoesNotMatch = 3207;
+
+        #endregion
+
 
         #endregion
 
         #region GraphDS (prefix: 4)
 
-        
+
 
         #endregion
 
@@ -200,6 +291,21 @@ namespace sones.Library.ErrorHandling
 
         #endregion
 
+
+        #region IndexErrors (prefix: 55)
+
+        /// <summary>
+        /// Could not alter the index on a type
+        /// </summary>
+        public static UInt16 CouldNotAlterIndexOnType = 5501;
+
+        /// <summary>
+        /// The index operation is invalid
+        /// </summary>
+        public static UInt16 InvalidIndexOperation = 5502;
+
+
+        #endregion
 
         #endregion
 

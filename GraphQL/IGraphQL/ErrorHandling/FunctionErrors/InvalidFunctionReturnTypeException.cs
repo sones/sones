@@ -16,9 +16,9 @@ namespace sones.GraphQL.ErrorHandling
         /// <summary>
         /// Creates a new InvalidFunctionReturnTypeException exception
         /// </summary>
-        /// <param name="myFunctionName"></param>
-        /// <param name="myTypeOfFunctionReturn"></param>
-        /// <param name="myValidTypes"></param>
+        /// <param name="myFunctionName">The name of the function</param>
+        /// <param name="myTypeOfFunctionReturn">The type of the return value of the function</param>
+        /// <param name="myValidTypes">A List of valid types</param>
         public InvalidFunctionReturnTypeException(String myFunctionName, Type myTypeOfFunctionReturn, params Type[] myValidTypes)
         {
             FunctionName = myFunctionName;

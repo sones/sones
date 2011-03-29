@@ -66,6 +66,9 @@
     <Compile Include="ErrorHandling\FunctionErrors\FunctionParameterInvalidReferenceException.cs" />
     <Compile Include="ErrorHandling\FunctionErrors\InvalidFunctionBaseException.cs" />
     <Compile Include="ErrorHandling\FunctionErrors\InvalidFunctionReturnTypeException.cs" />
+    <Compile Include="ErrorHandling\IndexErrors\CouldNotAlterIndexOnTypeException.cs" />
+    <Compile Include="ErrorHandling\IndexErrors\InvalidIndexOperationException.cs" />
+    <Compile Include="ErrorHandling\IndexErrors\AGraphQLIndexException.cs" />
     <Compile Include="ErrorHandling\UnknownQLException.cs" />
     <Compile Include="IDumpable.cs" />
     <Compile Include="IExtendableGrammar.cs" />

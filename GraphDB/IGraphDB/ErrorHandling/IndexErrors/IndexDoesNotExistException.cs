@@ -6,7 +6,7 @@ namespace sones.GraphDB.ErrorHandling
     /// <summary>
     /// The index does not exists
     /// </summary>
-    public sealed class IndexDoesNotExistException : AGraphDBException
+    public sealed class IndexDoesNotExistException : AGraphDBIndexException
     {
         #region data        
 
