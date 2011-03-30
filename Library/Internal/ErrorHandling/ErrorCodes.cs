@@ -159,21 +159,26 @@ namespace sones.Library.ErrorHandling
         /// The parent vertex type of a vertex type does not exist
         /// </summary>
         public static UInt16 ParentVertexTypeDoesNotExist = 3304;
+
+        /// <summary>
+        /// Truncate on an inherited vertex type is not allowed
+        /// </summary>
+        public static UInt16 TruncateNotAllowedOnInheritedType = 3305;
                 
         /// <summary>
         /// The vertex type already exists
         /// </summary>
-        public static UInt16 VertexTypeAlreadyExist = 3305;
+        public static UInt16 VertexTypeAlreadyExist = 3306;
 
         /// <summary>
         /// The vertex type does not exists
         /// </summary>
-        public static UInt16 VertexTypeDoesNotExist = 3306;
+        public static UInt16 VertexTypeDoesNotExist = 3307;
 
         /// <summary>
         /// A vertex type does not match the expected type
         /// </summary>
-        public static UInt16 VertexTypeDoesNotMatch = 3307;
+        public static UInt16 VertexTypeDoesNotMatch = 3308;
 
         #endregion
 
@@ -200,9 +205,14 @@ namespace sones.Library.ErrorHandling
         public static UInt16 InvalidVertexAttributeSelection = 3404;
 
         /// <summary>
+        /// Undefined attributes can not inserted nor updated without setting SETUNDEFBEHAVE 
+        /// </summary>
+        public static UInt16 UndefinedAttributes = 3405;
+
+        /// <summary>
         /// The vertex attribute already exists in supertype
         /// </summary>
-        public static UInt16 VertexAttributeExistsInSuperVertexType = 3405;
+        public static UInt16 VertexAttributeExistsInSuperVertexType = 3406;
 
         #endregion
 

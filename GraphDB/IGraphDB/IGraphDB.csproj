@@ -60,12 +60,14 @@
     <Compile Include="ErrorHandling\SelectErrors\InvalidSelectValueAssignmentException.cs" />
     <Compile Include="ErrorHandling\SelectErrors\NoGroupingArgumentException.cs" />
     <Compile Include="ErrorHandling\SelectErrors\AGraphDBSelectException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\UndefinedAttributesException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeExistsInSuperVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\DropOfVertexAttributeNotAllowedException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\DropOfDerivedVertexAttributeIsNotAllowedException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidVertexAttributeNameException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidVertexAttributeSelectionException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\AGraphDBVertexAttributeException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeErrors\TruncateNotAllowedOnInheritedTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\InvalidBaseVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\InvalidVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\ListAttributeNotAllowedException.cs" />
