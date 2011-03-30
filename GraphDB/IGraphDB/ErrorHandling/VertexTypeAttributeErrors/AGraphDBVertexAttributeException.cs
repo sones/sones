@@ -3,7 +3,7 @@ using sones.Library.ErrorHandling;
 
 namespace sones.GraphDB.ErrorHandling
 {
-    public abstract class AGraphDBTypeException : AGraphDBException
+    public class AGraphDBVertexAttributeException : AGraphDBException
     {
         public override ushort ErrorCode
         {

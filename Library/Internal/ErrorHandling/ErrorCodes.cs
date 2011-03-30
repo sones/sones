@@ -130,48 +130,81 @@ namespace sones.Library.ErrorHandling
         /// </summary>
         public static UInt16 SelectValueAssignmentDataTypeDoesNotMatch = 3206;
 
+        /// <summary>
+        /// The timeout of a query has been reached
+        /// </summary>
+        public static UInt16 SelectTimeOut = 3207;
+
         #endregion
 
 
-        #region TypeErrors (prefix: 33)
+        #region VertexTypeErrors (prefix: 33)
 
         /// <summary>
-        /// A base type is not a user defined type 
+        /// A base vertex type is not a user defined type 
         /// </summary>
-        public static UInt16 InvalidBaseType = 3301;
+        public static UInt16 InvalidBaseVertexType = 3301;
 
         /// <summary>
-        /// The type is invalid
+        /// The vertex type is invalid
         /// </summary>
-        public static UInt16 InvalidType = 3302;
+        public static UInt16 InvalidVertexType = 3302;
 
         /// <summary>
-        /// The user defined type should not be used with LIST attributes
+        /// The user defined vertex type should not be used with LIST attributes
         /// </summary>
         public static UInt16 ListAttributeNotAllowed = 3303;
 
         /// <summary>
-        /// The parent type of a type does not exist
+        /// The parent vertex type of a vertex type does not exist
         /// </summary>
-        public static UInt16 ParentTypeDoesNotExist = 3304;
+        public static UInt16 ParentVertexTypeDoesNotExist = 3304;
                 
         /// <summary>
-        /// The type already exists
+        /// The vertex type already exists
         /// </summary>
-        public static UInt16 TypeAlreadyExist = 3205;
+        public static UInt16 VertexTypeAlreadyExist = 3305;
 
         /// <summary>
-        /// The type does not exists
+        /// The vertex type does not exists
         /// </summary>
-        public static UInt16 TypeDoesNotExist = 3206;
+        public static UInt16 VertexTypeDoesNotExist = 3306;
 
         /// <summary>
-        /// A Type does not match the expected Type
+        /// A vertex type does not match the expected type
         /// </summary>
-        public static UInt16 TypeDoesNotMatch = 3207;
+        public static UInt16 VertexTypeDoesNotMatch = 3307;
 
         #endregion
 
+        #region VertexTypeAttributeErrors (prefix: 34)
+
+        /// <summary>
+        /// Droping of derived vertex attribute on the child vertex type is not allowed
+        /// </summary>
+        public static UInt16 DropOfDerivedVertexAttributeIsNotAllowed = 3401;
+
+        /// <summary>
+        /// Droping a vertex attribute is not allowed, because of remaining references from other attributes
+        /// </summary>
+        public static UInt16 DropOfVertexAttributeNotAllowed = 3402;        
+
+        /// <summary>
+        /// The name of the attribute is not valid
+        /// </summary>
+        public static UInt16 InvalidVertexAttributeName = 3403;
+
+        /// <summary>
+        /// The selected vertex attribute is not valid
+        /// </summary>
+        public static UInt16 InvalidVertexAttributeSelection = 3404;
+
+        /// <summary>
+        /// The vertex attribute already exists in supertype
+        /// </summary>
+        public static UInt16 VertexAttributeExistsInSuperVertexType = 3405;
+
+        #endregion
 
         #endregion
 
@@ -187,6 +220,31 @@ namespace sones.Library.ErrorHandling
         /// An unknown GraphQL error
         /// </summary>
         public static UInt16 UnknownQLError = 5000;
+
+        /// <summary>
+        /// The datatype does not match the type
+        /// </summary>
+        public static UInt16 DataTypeDoesNotMatch = 5001;
+
+        /// <summary>
+        /// The type is already referenced
+        /// </summary>
+        public static UInt16 DuplicateReferenceOccurrence = 5002;
+
+        /// <summary>
+        /// The IDNode is not valid
+        /// </summary>
+        public static UInt16 InvalidIDNode = 5003;
+
+        /// <summary>
+        /// The tuple is not valid
+        /// </summary>
+        public static UInt16 InvalidTuple = 5004;
+
+        /// <summary>
+        /// Currently the type has not been implemented for expressions
+        /// </summary>
+        public static UInt16 NotImpementedExpressionNode = 5005;
 
 
         #region AttributeAssignmentErrors (prefix: 51)
@@ -247,7 +305,6 @@ namespace sones.Library.ErrorHandling
 
         #endregion
 
-
         #region EdgeErrors (prefix: 53)
 
         /// <summary>
@@ -291,7 +348,6 @@ namespace sones.Library.ErrorHandling
 
         #endregion
 
-
         #region IndexErrors (prefix: 55)
 
         /// <summary>
@@ -304,10 +360,75 @@ namespace sones.Library.ErrorHandling
         /// </summary>
         public static UInt16 InvalidIndexOperation = 5502;
 
+        #endregion
+
+        #region VertexTypeAttributeErrors (prefix: 56)
+
+        /// <summary>
+        /// The vertex attribute is ambiguous  
+        /// </summary>
+        public static UInt16 AmbiguousVertexAttribute = 5601;
+
+        /// <summary>
+        /// The undefined vertex attribute has a invalid name
+        /// </summary>
+        public static UInt16 InvalidUndefinedVertexAttributeName = 5602;
+
+        /// <summary>
+        /// The vertex does not contain an undefined attribute with this name
+        /// </summary>
+        public static UInt16 InvalidUndefinedVertexAttributes = 5603;
+
+        /// <summary>
+        /// The vertex attribute is not valid 
+        /// </summary>
+        public static UInt16 InvalidVertexAttribute = 5604;
+
+        /// <summary>
+        /// The given kind of attribute does not match
+        /// </summary>
+        public static UInt16 InvalidVertexAttributeKind = 5605;
+
+        /// <summary>
+        /// The attribute has an invalid value
+        /// </summary>
+        public static UInt16 InvalidVertexAttributeValue = 5606;
+
+        /// <summary>
+        /// The attribute from a type could not be removed
+        /// </summary>
+        public static UInt16 RemoveVertexTypeAttribute = 5607;
+
+        /// <summary>
+        /// Could not find any objects while updating elements to the list attribute
+        /// </summary>
+        public static UInt16 UpdateListVertexAttributeNoElements = 5608;
+
+        /// <summary>
+        /// Could not update a value for a vertex attribute
+        /// </summary>
+        public static UInt16 UpdateVertexAttributeValue = 5609;
+
+        /// <summary>
+        /// The vertex attribute already exists in the type
+        /// </summary>
+        public static UInt16 VertexAttributeAlreadyExists = 5610;
+
+        /// <summary>
+        /// The vertex attribute already exists in subtype
+        /// </summary>
+        public static UInt16 VertexAttributeExistsInSubtype = 5611;
+
+        /// <summary>
+        /// The attribute is not defined on this type
+        /// </summary>
+        public static UInt16 VertexAttributeIsNotDefined = 5612;
 
         #endregion
 
+
         #endregion
+
 
         #region Library (prefix: 6)
 
@@ -324,7 +445,6 @@ namespace sones.Library.ErrorHandling
         public static UInt16 IncompatiblePluginVersion = 6102;
 
         #endregion
-
 
         #region PropertyHyperGraph (prefix: 62)
 
@@ -384,7 +504,6 @@ namespace sones.Library.ErrorHandling
         public static UInt16 NotImplementedAggregateTarget = 7106;                      
 
         #endregion
-
 
         #region SonesQGLFunction (prefix: 72)
                 

@@ -61,6 +61,11 @@
     <Compile Include="ErrorHandling\EdgeErrors\EdgeParameterTypeMismatchException.cs" />
     <Compile Include="ErrorHandling\EdgeErrors\TooManyElementsForEdgeException.cs" />
     <Compile Include="ErrorHandling\EdgeErrors\AGraphQLEdgeException.cs" />
+    <Compile Include="ErrorHandling\DataTypeDoesNotMatchException.cs" />
+    <Compile Include="ErrorHandling\DuplicateReferenceOccurrenceException.cs" />
+    <Compile Include="ErrorHandling\InvalidIDNodeException.cs" />
+    <Compile Include="ErrorHandling\InvalidTupleException.cs" />
+    <Compile Include="ErrorHandling\NotImpementedExpressionNodeException.cs" />
     <Compile Include="ErrorHandling\FunctionErrors\AGraphQLFunctionException.cs" />
     <Compile Include="ErrorHandling\FunctionErrors\FunctionDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\FunctionErrors\FunctionParameterInvalidReferenceException.cs" />
@@ -69,6 +74,19 @@
     <Compile Include="ErrorHandling\IndexErrors\CouldNotAlterIndexOnTypeException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\InvalidIndexOperationException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\AGraphQLIndexException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\AmbiguousVertexAttributeException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidUndefinedVertexAttributeNameException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\RemoveVertexTypeAttributeException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\UpdateVertexAttributeValueException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidVertexAttributeException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeAlreadyExistsException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeExistsInSubtypeException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeIsNotDefinedException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidVertexAttributeKindException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidVertexAttributeValueException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidUndefinedVertexAttributesException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\UpdateListVertexAttributeNoElementsException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\AGraphQLVertexAttributeException.cs" />
     <Compile Include="ErrorHandling\UnknownQLException.cs" />
     <Compile Include="IDumpable.cs" />
     <Compile Include="IExtendableGrammar.cs" />
@@ -85,6 +103,10 @@
     <ProjectReference Include="..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\LanguageExtensions\LanguageExtensions.csproj">
+      <Project>{21C726D5-DCCA-4C15-BA54-1000E80B1C6E}</Project>
+      <Name>LanguageExtensions</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Library\Internal\Security\Security.csproj">
       <Project>{3C13E344-937B-4010-B0EF-A164232E4454}</Project>
