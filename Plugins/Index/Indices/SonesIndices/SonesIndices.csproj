@@ -49,6 +49,7 @@
     <Compile Include="MultipleValueIndex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BTreeIndex.cs" />
+    <Compile Include="SingleValueIndex.cs" />
     <Compile Include="VersionedBPlusTreeIndex.cs" />
   </ItemGroup>
   <ItemGroup>

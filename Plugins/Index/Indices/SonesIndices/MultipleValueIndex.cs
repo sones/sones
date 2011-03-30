@@ -19,8 +19,8 @@ namespace sones.Plugins.Index
     /// <summary>
     /// This class realize an multivalue index.
     /// </summary>
-    /// <typeparam name="TKey"></typeparam>
-    /// <typeparam name="TValue"></typeparam>
+    /// <typeparam name="TKey">The type of the index key.</typeparam>
+    /// <typeparam name="TValue">The type of the index values.</typeparam>
     public class MultipleValueIndex<TKey, TValue> : IMultipleValueIndex<TKey, TValue> where TKey : IComparable
     {
 
@@ -102,14 +102,18 @@ namespace sones.Plugins.Index
         {
             get
             {
-                return (ISet<TValue>)_Indexer[myKey].AsEnumerable();
+                if (ContainsKey(myKey))
+                {
+                    return (ISet<TValue>)_Indexer[myKey].AsEnumerable();
+                }
+                else
+                {
+                    return null;
+                }
             }
             set
             {
-                lock (_Indexer)
-                {
-                    _Indexer[myKey] = new HashSet<TValue>(value);
-                }
+                AddValues(myKey, value, IndexAddStrategy.REPLACE);
             }
         }
 
@@ -170,7 +174,7 @@ namespace sones.Plugins.Index
 
         public string Name
         {
-            get { return "MultiValueIndex"; }
+            get { return "MultipleValueIndex"; }
         }
 
         public long KeyCount()
