@@ -47,13 +47,11 @@
     <Compile Include="Manager\Index\IndexManager.cs" />
     <Compile Include="Manager\MetaManager.cs" />
     <Compile Include="Manager\Request\RequestManager.cs" />
-    <Compile Include="Manager\Typemanagement\ATypeManagerCommand.cs" />
     <Compile Include="Request\GetVertices\PipelineableGetVerticesRequest.cs" />
-    <Compile Include="Typemanagement\Command\AddVertexTypeCommand.cs" />
-    <Compile Include="Typemanagement\EdgeTypeManager.cs" />
+    <Compile Include="Manager\Typemanagement\EdgeTypeManager.cs" />
     <Compile Include="Manager\Typemanagement\TypeManager.cs" />
     <Compile Include="Typemanagement\Exceptions\NotValidatedException.cs" />
-    <Compile Include="Typemanagement\VertexTypeManager.cs" />
+    <Compile Include="Manager\Typemanagement\VertexTypeManager.cs" />
     <Compile Include="Request\Clear\PipelineableClearRequest.cs" />
     <Compile Include="Request\APipelinableRequest.cs" />
     <Compile Include="Request\CreateVertexType\PipelineableCreateVertexTypeRequest.cs" />
