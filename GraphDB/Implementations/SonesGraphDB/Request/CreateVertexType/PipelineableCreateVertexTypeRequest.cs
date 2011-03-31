@@ -2,6 +2,7 @@
 using sones.GraphDB.Manager;
 using sones.Library.Security;
 using sones.Library.Transaction;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Request
 {
@@ -16,6 +17,11 @@ namespace sones.GraphDB.Request
         /// The request that contains the todo
         /// </summary>
         private readonly RequestCreateVertexType _request;
+
+        /// <summary>
+        /// The vertex type that has been created during execution
+        /// </summary>
+        private IVertexType _createdVertexType;
 
         #endregion
 
@@ -49,6 +55,17 @@ namespace sones.GraphDB.Request
         public override IRequest GetRequest()
         {
             return _request;
+        }
+
+        /// <summary>
+        /// Generates the result of a create vertex type request
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myOutputconverter">The output converter that is used to create the TResult</param>
+        /// <returns>A TResult</returns>
+        internal TResult GenerateRequestResult<TResult>(Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
+        {
+            return myOutputconverter(Statistics, _createdVertexType);
         }
     }
 }

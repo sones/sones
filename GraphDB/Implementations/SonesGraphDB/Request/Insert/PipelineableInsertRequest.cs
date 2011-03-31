@@ -2,6 +2,7 @@
 using sones.GraphDB.Manager;
 using sones.Library.Security;
 using sones.Library.Transaction;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDB.Request
 {
@@ -16,6 +17,12 @@ namespace sones.GraphDB.Request
         /// The request that contains the todo
         /// </summary>
         private readonly RequestInsertVertex _request;
+
+        /// <summary>
+        /// The vertex that has been created... 
+        /// it is used for generating the output
+        /// </summary>
+        private IVertex _createdVertex;
 
         #endregion
 
@@ -50,5 +57,20 @@ namespace sones.GraphDB.Request
         {
             return _request;
         }
+
+        #region internal methods
+
+        /// <summary>
+        /// Creates the output for an insert statement
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myOutputconverter">The delegate that is executed uppon output-generation</param>
+        /// <returns>A TResult</returns>
+        internal TResult GenerateRequestResult<TResult>(Converter.InsertResultConverter<TResult> myOutputconverter)
+        {
+            return myOutputconverter(Statistics, _createdVertex);
+        }
+
+        #endregion
     }
 }

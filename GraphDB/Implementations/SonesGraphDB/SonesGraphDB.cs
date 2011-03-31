@@ -18,35 +18,35 @@ namespace sones.GraphDB
 
         public TResult CreateVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
                                                  RequestCreateVertexType myRequestCreateVertexType,
-                                                 Func<IRequestStatistics, TResult> myOutputconverter)
+                                                 Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
         {
             var id =
                 _requestManager.RegisterRequest(new PipelineableCreateVertexTypeRequest(myRequestCreateVertexType,
                                                                                         mySecurityToken,
                                                                                         myTransactionToken));
 
-            return _requestManager.GetResult(id).GenerateRequestStatistics(myOutputconverter);
+            return ((PipelineableCreateVertexTypeRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
         }
 
         public TResult Clear<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
-                                      RequestClear myRequestClear, Func<IRequestStatistics, TResult> myOutputconverter)
+                                      RequestClear myRequestClear, Converter.ClearResultConverter<TResult> myOutputconverter)
         {
             var id =
                 _requestManager.RegisterRequest(new PipelineableClearRequest(myRequestClear, mySecurityToken,
                                                                              myTransactionToken));
 
-            return _requestManager.GetResult(id).GenerateRequestStatistics(myOutputconverter);
+            return ((PipelineableClearRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
         }
 
         public TResult Insert<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
                                        RequestInsertVertex myRequestInsert,
-                                       Func<IRequestStatistics, TResult> myOutputconverter)
+                                       Converter.InsertResultConverter<TResult> myOutputconverter)
         {
             var id =
                 _requestManager.RegisterRequest(new PipelineableInsertRequest(myRequestInsert, mySecurityToken,
                                                                               myTransactionToken));
 
-            return _requestManager.GetResult(id).GenerateRequestStatistics(myOutputconverter);
+            return ((PipelineableInsertRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
         }
 
         public TransactionToken Begin(SecurityToken mySecurityToken, bool myLongrunning = false,

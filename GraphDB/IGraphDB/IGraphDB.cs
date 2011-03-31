@@ -48,7 +48,7 @@ namespace sones.GraphDB
         TResult CreateVertexType<TResult>(SecurityToken mySecurityToken,
                                           TransactionToken myTransactionToken,
                                           RequestCreateVertexType myRequestCreateVertexType,
-                                          Func<IRequestStatistics, TResult> myOutputconverter);
+                                          Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter);
 
         /// <summary>
         /// Clears the graphdb entirely
@@ -62,7 +62,7 @@ namespace sones.GraphDB
         TResult Clear<TResult>(SecurityToken mySecurityToken,
                                TransactionToken myTransactionToken,
                                RequestClear myRequestClear,
-                               Func<IRequestStatistics, TResult> myOutputconverter);
+                               Converter.ClearResultConverter<TResult> myOutputconverter);
 
         /// <summary>
         /// Inserts a new vertex
@@ -76,6 +76,6 @@ namespace sones.GraphDB
         TResult Insert<TResult>(SecurityToken mySecurityToken,
                                 TransactionToken myTransactionToken,
                                 RequestInsertVertex myRequestInsert,
-                                Func<IRequestStatistics, TResult> myOutputconverter);
+                                Converter.InsertResultConverter<TResult> myOutputconverter);
     }
 }

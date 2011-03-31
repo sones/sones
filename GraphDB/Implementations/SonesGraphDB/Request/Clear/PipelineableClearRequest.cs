@@ -47,5 +47,16 @@ namespace sones.GraphDB.Request
         {
             return _request;
         }
+
+        /// <summary>
+        /// Generates the result of a clear request
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myOutputconverter">The output converter that is used to create the TResult</param>
+        /// <returns>A TResult</returns>
+        internal TResult GenerateRequestResult<TResult>(Converter.ClearResultConverter<TResult> myOutputconverter)
+        {
+            return myOutputconverter(Statistics);
+        }
     }
 }

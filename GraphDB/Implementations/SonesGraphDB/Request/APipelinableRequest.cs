@@ -57,10 +57,5 @@ namespace sones.GraphDB.Request
         public abstract void Execute(MetaManager myMetaManager);
 
         public abstract IRequest GetRequest();
-
-        public TResult GenerateRequestStatistics<TResult>(Func<IRequestStatistics, TResult> myOutputconverter)
-        {
-            return myOutputconverter(Statistics);
-        }
     }
 }
