@@ -6,9 +6,9 @@ using System.Text;
 namespace sones.GraphDB.Request.Helper.Operator
 {
     /// <summary>
-    /// The interface for all operators
+    /// The interface for all unary operators
     /// </summary>
-    public interface IOperator
+    public interface IUnaryOperator
     {
     }
 }

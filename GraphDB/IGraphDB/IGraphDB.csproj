@@ -88,7 +88,9 @@
     <Compile Include="Request\Helper\Expression\IExpression.cs" />
     <Compile Include="Request\Helper\Expression\UnaryExpression.cs" />
     <Compile Include="Request\Helper\Operator\Comparative\IComparativeOperator.cs" />
+    <Compile Include="Request\Helper\Operator\IBinaryOperator.cs" />
     <Compile Include="Request\Helper\Operator\IOperator.cs" />
+    <Compile Include="Request\Helper\Operator\IUnaryOperator.cs" />
     <Compile Include="Request\Helper\Operator\Logic\ILogicOperator.cs" />
     <Compile Include="Request\Insert\EdgeDefinition.cs" />
     <Compile Include="Request\Insert\RequestInsertVertex.cs" />
