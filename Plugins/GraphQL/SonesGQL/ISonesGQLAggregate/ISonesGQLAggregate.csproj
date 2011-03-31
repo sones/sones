@@ -44,14 +44,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ErrorHandling\AggregateDoesNotMatchGroupLevelException.cs" />
-    <Compile Include="ErrorHandling\AggregateIsNotValidOnThisAttributeException.cs" />
-    <Compile Include="ErrorHandling\AggregateOnMultiAttributesNotAllowedException.cs" />
-    <Compile Include="ErrorHandling\AggregateParameterCountMismatchException.cs" />
-    <Compile Include="ErrorHandling\ASonesQLAggregateException.cs" />
-    <Compile Include="ErrorHandling\AggregateNotAllowedException.cs" />
-    <Compile Include="ErrorHandling\NotImplementedAggregateTargetException.cs" />
-    <Compile Include="ErrorHandling\UnknownAggregateException.cs" />
     <Compile Include="IGQLAggregate.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -69,7 +61,9 @@
       <Name>ErrorHandling</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="ErrorHandling\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

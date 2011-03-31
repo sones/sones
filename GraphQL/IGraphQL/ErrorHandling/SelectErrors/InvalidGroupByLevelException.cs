@@ -1,12 +1,12 @@
 ﻿using System;
 using sones.Library.ErrorHandling;
 
-namespace sones.GraphDB.ErrorHandling
+namespace sones.GraphQL.ErrorHandling
 {
     /// <summary>
     /// An invalid group level when adding a group element to a selection
     /// </summary>
-    public sealed class InvalidGroupByLevelException : AGraphDBSelectException
+    public sealed class InvalidGroupByLevelException : AGraphQLSelectException
     {
         public String IDChainDefinitionEdgesCount { get; private set; }
         public String IDChainDefinitionContentString { get; private set; }

@@ -1,6 +1,6 @@
 ﻿using sones.Library.ErrorHandling;
 
-namespace sones.Plugins.SonesGQL.Aggregate.ErrorHandling
+namespace sones.GraphQL.ErrorHandling
 {
     public class ASonesQLAggregateException : ASonesException
     {

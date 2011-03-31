@@ -1,12 +1,12 @@
 ﻿using System;
 using sones.Library.ErrorHandling;
 
-namespace sones.GraphDB.ErrorHandling
+namespace sones.GraphQL.ErrorHandling
 {
     /// <summary>
     /// The timeout of a query has been reached
     /// </summary>
-    public sealed class SelectTimeOutException : AGraphDBSelectException
+    public sealed class SelectTimeOutException : AGraphQLSelectException
     {
         public Int64 TimeOut { get; private set; }
 

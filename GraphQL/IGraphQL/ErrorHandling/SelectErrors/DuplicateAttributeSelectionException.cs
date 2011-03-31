@@ -1,12 +1,12 @@
 ﻿using System;
 using sones.Library.ErrorHandling;
 
-namespace sones.GraphDB.ErrorHandling
+namespace sones.GraphQL.ErrorHandling
 {
     /// <summary>
     /// A duplicate attribute selection is not allowed
     /// </summary>
-    public sealed class DuplicateAttributeSelectionException : AGraphDBSelectException
+    public sealed class DuplicateAttributeSelectionException : AGraphQLSelectException
     {
         public String SelectionAlias { get; private set; }
 

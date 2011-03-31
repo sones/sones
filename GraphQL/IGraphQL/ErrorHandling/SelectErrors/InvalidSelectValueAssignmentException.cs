@@ -1,12 +1,12 @@
 ﻿using System;
 using sones.Library.ErrorHandling;
 
-namespace sones.GraphDB.ErrorHandling
+namespace sones.GraphQL.ErrorHandling
 {
     /// <summary>
     /// The assignment of the select value is invalid
     /// </summary>
-    public sealed class InvalidSelectValueAssignmentException : AGraphDBSelectException
+    public sealed class InvalidSelectValueAssignmentException : AGraphQLSelectException
     {
         public String Info { get; private set; }
 

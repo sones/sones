@@ -30,6 +30,6 @@ namespace sones.GraphQL.ErrorHandling
         public override ushort ErrorCode
         {
             get { return ErrorCodes.DataTypeDoesNotMatch; }
-        }
+        }        
     }
 }

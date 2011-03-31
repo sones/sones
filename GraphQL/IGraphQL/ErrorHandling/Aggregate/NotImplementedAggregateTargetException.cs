@@ -1,7 +1,7 @@
 ﻿using System;
 using sones.Library.ErrorHandling;
 
-namespace sones.Plugins.SonesGQL.Aggregate.ErrorHandling
+namespace sones.GraphQL.ErrorHandling
 {
     /// <summary>
     /// A type is not implemented for aggregates

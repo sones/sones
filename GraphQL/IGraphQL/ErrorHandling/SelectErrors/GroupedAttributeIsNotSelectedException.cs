@@ -1,12 +1,12 @@
 ﻿using System;
 using sones.Library.ErrorHandling;
 
-namespace sones.GraphDB.ErrorHandling
+namespace sones.GraphQL.ErrorHandling
 {
     /// <summary>
     /// A to group attribute is not selected
     /// </summary>
-    public sealed class GroupedAttributeIsNotSelectedException : AGraphDBSelectException
+    public sealed class GroupedAttributeIsNotSelectedException : AGraphQLSelectException
     {
         public String TypeAttribute { get; private set; }
 

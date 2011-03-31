@@ -44,6 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorHandling\Aggregate\AggregateDoesNotMatchGroupLevelException.cs" />
+    <Compile Include="ErrorHandling\Aggregate\AggregateIsNotValidOnThisAttributeException.cs" />
+    <Compile Include="ErrorHandling\Aggregate\AggregateNotAllowedException.cs" />
+    <Compile Include="ErrorHandling\Aggregate\AggregateOnMultiAttributesNotAllowedException.cs" />
+    <Compile Include="ErrorHandling\Aggregate\AggregateParameterCountMismatchException.cs" />
+    <Compile Include="ErrorHandling\Aggregate\ASonesQLAggregateException.cs" />
+    <Compile Include="ErrorHandling\Aggregate\NotImplementedAggregateTargetException.cs" />
+    <Compile Include="ErrorHandling\Aggregate\UnknownAggregateException.cs" />
     <Compile Include="ErrorHandling\AGraphQLException.cs" />
     <Compile Include="ErrorHandling\AttributeAssignmentErrors\AGraphQLAttributeAssignmentException.cs" />
     <Compile Include="ErrorHandling\AttributeAssignmentErrors\InvalidAssignOfSetException.cs" />
@@ -74,6 +82,14 @@
     <Compile Include="ErrorHandling\IndexErrors\CouldNotAlterIndexOnTypeException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\InvalidIndexOperationException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\AGraphQLIndexException.cs" />
+    <Compile Include="ErrorHandling\SelectErrors\AGraphQLSelectException.cs" />
+    <Compile Include="ErrorHandling\SelectErrors\DuplicateAttributeSelectionException.cs" />
+    <Compile Include="ErrorHandling\SelectErrors\GroupedAttributeIsNotSelectedException.cs" />
+    <Compile Include="ErrorHandling\SelectErrors\InvalidGroupByLevelException.cs" />
+    <Compile Include="ErrorHandling\SelectErrors\InvalidSelectValueAssignmentException.cs" />
+    <Compile Include="ErrorHandling\SelectErrors\NoGroupingArgumentException.cs" />
+    <Compile Include="ErrorHandling\SelectErrors\SelectTimeOutException.cs" />
+    <Compile Include="ErrorHandling\SelectErrors\SelectValueAssignmentDataTypeDoesNotMatchException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\AmbiguousVertexAttributeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidUndefinedVertexAttributeNameException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\RemoveVertexTypeAttributeException.cs" />

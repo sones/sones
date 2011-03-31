@@ -91,7 +91,6 @@ namespace sones.Library.ErrorHandling
 
         #endregion
 
-
         #region IndexErrors (prefix: 32)
 
         /// <summary>
@@ -110,123 +109,82 @@ namespace sones.Library.ErrorHandling
         public static UInt16 IndexTypeDoesNotExist = 3203;
 
         #endregion
-
-
-        #region SelectErrors (prefix: 33)
-
-        /// <summary>
-        /// A duplicate attribute selection is not allowed
-        /// </summary>
-        public static UInt16 DuplicateAttributeSelection = 3301;
-
-        /// <summary>
-        /// A to group attribute is not selected
-        /// </summary>
-        public static UInt16 GroupedAttributeIsNotSelected = 3302;
-
-        /// <summary>
-        /// An invalid group level when adding a group element to a selection
-        /// </summary>
-        public static UInt16 InvalidGroupByLevel = 3303;
-
-        /// <summary>
-        /// The assignment of the select value is invalid
-        /// </summary>
-        public static UInt16 InvalidSelectValueAssignment = 3304;
-
-        /// <summary>
-        /// Missing grouped argument in a selection with aggregates 
-        /// </summary>
-        public static UInt16 NoGroupingArgument = 3305;
-
-        /// <summary>
-        /// The data type of the SelectValueAssignment does not match the type
-        /// </summary>
-        public static UInt16 SelectValueAssignmentDataTypeDoesNotMatch = 3306;
-
-        /// <summary>
-        /// The timeout of a query has been reached
-        /// </summary>
-        public static UInt16 SelectTimeOut = 3307;
-
-        #endregion
-
-
-        #region VertexTypeErrors (prefix: 34)
+        
+        #region VertexTypeErrors (prefix: 33)
 
         /// <summary>
         /// A base vertex type is not a user defined type 
         /// </summary>
-        public static UInt16 InvalidBaseVertexType = 3401;
+        public static UInt16 InvalidBaseVertexType = 3301;
 
         /// <summary>
         /// The vertex type is invalid
         /// </summary>
-        public static UInt16 InvalidVertexType = 3402;
+        public static UInt16 InvalidVertexType = 3302;
 
         /// <summary>
         /// The user defined vertex type should not be used with LIST attributes
         /// </summary>
-        public static UInt16 ListAttributeNotAllowed = 3403;
+        public static UInt16 ListAttributeNotAllowed = 3303;
 
         /// <summary>
         /// The parent vertex type of a vertex type does not exist
         /// </summary>
-        public static UInt16 ParentVertexTypeDoesNotExist = 3404;
+        public static UInt16 ParentVertexTypeDoesNotExist = 3304;
 
         /// <summary>
         /// Truncate on an inherited vertex type is not allowed
         /// </summary>
-        public static UInt16 TruncateNotAllowedOnInheritedType = 3405;
+        public static UInt16 TruncateNotAllowedOnInheritedType = 3305;
                 
         /// <summary>
         /// The vertex type already exists
         /// </summary>
-        public static UInt16 VertexTypeAlreadyExist = 3406;
+        public static UInt16 VertexTypeAlreadyExist = 3306;
 
         /// <summary>
         /// The vertex type does not exists
         /// </summary>
-        public static UInt16 VertexTypeDoesNotExist = 3407;
+        public static UInt16 VertexTypeDoesNotExist = 3307;
 
         /// <summary>
         /// A vertex type does not match the expected type
         /// </summary>
-        public static UInt16 VertexTypeDoesNotMatch = 3408;
+        public static UInt16 VertexTypeDoesNotMatch = 3308;
 
         #endregion
 
-        #region VertexTypeAttributeErrors (prefix: 35)
+        #region VertexTypeAttributeErrors (prefix: 34)
 
         /// <summary>
         /// Droping of derived vertex attribute on the child vertex type is not allowed
         /// </summary>
-        public static UInt16 DropOfDerivedVertexAttributeIsNotAllowed = 3501;
+        public static UInt16 DropOfDerivedVertexAttributeIsNotAllowed = 3401;
 
         /// <summary>
         /// Droping a vertex attribute is not allowed, because of remaining references from other attributes
         /// </summary>
-        public static UInt16 DropOfVertexAttributeNotAllowed = 3502;        
+        public static UInt16 DropOfVertexAttributeNotAllowed = 3402;        
 
         /// <summary>
         /// The name of the attribute is not valid
         /// </summary>
-        public static UInt16 InvalidVertexAttributeName = 3503;
+        public static UInt16 InvalidVertexAttributeName = 3403;
 
         /// <summary>
         /// The selected vertex attribute is not valid
         /// </summary>
-        public static UInt16 InvalidVertexAttributeSelection = 3504;
+        public static UInt16 InvalidVertexAttributeSelection = 3404;
 
         /// <summary>
         /// Undefined attributes can not inserted nor updated without setting SETUNDEFBEHAVE 
         /// </summary>
-        public static UInt16 UndefinedAttributes = 3505;
+        public static UInt16 UndefinedAttributes = 3405;
 
         /// <summary>
         /// The vertex attribute already exists in supertype
         /// </summary>
-        public static UInt16 VertexAttributeExistsInSuperVertexType = 3506;
+        public static UInt16 VertexAttributeExistsInSuperVertexType = 3406;
 
         #endregion
 
@@ -270,183 +228,260 @@ namespace sones.Library.ErrorHandling
         /// </summary>
         public static UInt16 NotImpementedExpressionNode = 5005;
 
+        #region Aggregate (prefix: 51)
 
-        #region AttributeAssignmentErrors (prefix: 51)
+        /// <summary>
+        /// An unknown QGLAggregate error
+        /// </summary>
+        public static UInt16 UnknownAggregateError = 5100;
+
+        /// <summary>
+        /// The aggregate does not match the group level
+        /// </summary>
+        public static UInt16 AggregateDoesNotMatchGroupLevel = 5101;
+
+        /// <summary>
+        /// An aggregate is not valid on an attribute
+        /// </summary>
+        public static UInt16 AggregateIsNotValidOnThisAttribute = 5102;
+
+        /// <summary>
+        /// An aggregate is not allowed in a context
+        /// </summary>
+        public static UInt16 AggregateNotAllowed = 5103;
+
+        /// <summary>
+        /// An aggregate is on multi attributes not allowed
+        /// </summary>
+        public static UInt16 AggregateOnMultiAttributesNotAllowed = 5104;
+
+        /// <summary>
+        /// The number of parameters of the function does not match the definition
+        /// </summary>
+        public static UInt16 AggregateParameterCountMismatch = 5105;
+
+        /// <summary>
+        /// A type is not implemented for aggregates
+        /// </summary>
+        public static UInt16 NotImplementedAggregateTarget = 5106;
+
+        #endregion
+
+        #region AttributeAssignmentErrors (prefix: 52)
                 
         /// <summary>
         /// An assignment of a certain reference type with a list is not allowed
         /// </summary>
-        public static UInt16 InvalidAssignOfSet = 5101;
+        public static UInt16 InvalidAssignOfSet = 5201;
 
         /// <summary>
         /// An assignment for an attribute from a certain type with a value of a second type is not valid
         /// </summary>
-        public static UInt16 InvalidAttrDefaultValueAssignment = 5102;
+        public static UInt16 InvalidAttrDefaultValueAssignment = 5202;
 
         /// <summary>
         /// An reference assignment for undefined attributes is not allowed
         /// </summary>
-        public static UInt16 InvalidReferenceAssignmentOfUndefAttr = 5103;
+        public static UInt16 InvalidReferenceAssignmentOfUndefAttr = 5203;
 
         /// <summary>
         /// Could not assign the value of the undefined attribute to an defined attribute of a certain type 
         /// </summary>
-        public static UInt16 InvalidUndefAttrType = 5104;
+        public static UInt16 InvalidUndefAttrType = 5204;
 
         /// <summary>
         /// A single reference attribute does not contain any value
         /// </summary>
-        public static UInt16 ReferenceAssignmentEmptyValue = 5105;
+        public static UInt16 ReferenceAssignmentEmptyValue = 5205;
 
         /// <summary>
         /// 
         /// </summary>
-        public static UInt16 ReferenceAssignment = 5106;
+        public static UInt16 ReferenceAssignment = 5206;
 
         /// <summary>
         /// A attribute expects a Reference assignment
         /// </summary>
-        public static UInt16 ReferenceAssignmentExpected = 5007;
+        public static UInt16 ReferenceAssignmentExpected = 5207;
 
         #endregion        
         
-        #region DumpErrors (prefix: 52)
+        #region DumpErrors (prefix: 53)
 
         /// <summary>
         /// The dump format is invalid
         /// </summary>
-        public static UInt16 InvalidDumpFormat = 5201;        
+        public static UInt16 InvalidDumpFormat = 5301;        
 
         /// <summary>
         /// The desire dump type is not supported
         /// </summary>
-        public static UInt16 InvalidDumpType = 5202;
+        public static UInt16 InvalidDumpType = 5302;
 
         /// <summary>
         /// The grammar is not dumpable
         /// </summary>
-        public static UInt16 NotADumpableGrammar = 5203;
+        public static UInt16 NotADumpableGrammar = 5303;
 
         #endregion
 
-        #region EdgeErrors (prefix: 53)
+        #region EdgeErrors (prefix: 54)
 
         /// <summary>
         /// The number of parameters of an edge does not match
         /// </summary>
-        public static UInt16 EdgeParameterCountMismatch = 5301;
+        public static UInt16 EdgeParameterCountMismatch = 5401;
 
         /// <summary>
         /// The type of the edge parameter does not match
         /// </summary>
-        public static UInt16 EdgeParameterTypeMismatch = 5302;
+        public static UInt16 EdgeParameterTypeMismatch = 5402;
 
         /// <summary>
         /// Too many elements for a type of an edge 
         /// </summary>
-        public static UInt16 TooManyElementsForEdge = 5303;
+        public static UInt16 TooManyElementsForEdge = 5403;
 
         #endregion
 
-        #region FunctionErrors (prefix: 54)
+        #region FunctionErrors (prefix: 55)
 
         /// <summary>
         /// A function does not exists
         /// </summary>
-        public static UInt16 FunctionDoesNotExist = 5401;
+        public static UInt16 FunctionDoesNotExist = 5501;
 
         /// <summary>
         /// An invalid reference for a function parameter
         /// </summary>
-        public static UInt16 FunctionParameterInvalidReference = 5402;
+        public static UInt16 FunctionParameterInvalidReference = 5502;
 
         /// <summary>
         /// The function has a invalid working base
         /// </summary>
-        public static UInt16 InvalidFunctionBase = 5403;
+        public static UInt16 InvalidFunctionBase = 5503;
 
         /// <summary>
         /// The return type of the function is invalid
         /// </summary>
-        public static UInt16 InvalidFunctionReturnType = 5404;
+        public static UInt16 InvalidFunctionReturnType = 5504;
 
         #endregion
 
-        #region IndexErrors (prefix: 55)
+        #region IndexErrors (prefix: 56)
 
         /// <summary>
         /// Could not alter the index on a type
         /// </summary>
-        public static UInt16 CouldNotAlterIndexOnType = 5501;
+        public static UInt16 CouldNotAlterIndexOnType = 5601;
 
         /// <summary>
         /// The index operation is invalid
         /// </summary>
-        public static UInt16 InvalidIndexOperation = 5502;
+        public static UInt16 InvalidIndexOperation = 5602;
 
         #endregion
 
-        #region VertexTypeAttributeErrors (prefix: 56)
+        #region SelectErrors (prefix: 57)
+
+        /// <summary>
+        /// A duplicate attribute selection is not allowed
+        /// </summary>
+        public static UInt16 DuplicateAttributeSelection = 5701;
+
+        /// <summary>
+        /// A to group attribute is not selected
+        /// </summary>
+        public static UInt16 GroupedAttributeIsNotSelected = 5702;
+
+        /// <summary>
+        /// An invalid group level when adding a group element to a selection
+        /// </summary>
+        public static UInt16 InvalidGroupByLevel = 5703;
+
+        /// <summary>
+        /// The assignment of the select value is invalid
+        /// </summary>
+        public static UInt16 InvalidSelectValueAssignment = 5704;
+
+        /// <summary>
+        /// Missing grouped argument in a selection with aggregates 
+        /// </summary>
+        public static UInt16 NoGroupingArgument = 5705;
+
+        /// <summary>
+        /// The data type of the SelectValueAssignment does not match the type
+        /// </summary>
+        public static UInt16 SelectValueAssignmentDataTypeDoesNotMatch = 5706;
+
+        /// <summary>
+        /// The timeout of a query has been reached
+        /// </summary>
+        public static UInt16 SelectTimeOut = 5707;
+
+        #endregion
+
+        #region VertexTypeAttributeErrors (prefix: 58)
 
         /// <summary>
         /// The vertex attribute is ambiguous  
         /// </summary>
-        public static UInt16 AmbiguousVertexAttribute = 5601;
+        public static UInt16 AmbiguousVertexAttribute = 5801;
 
         /// <summary>
         /// The undefined vertex attribute has a invalid name
         /// </summary>
-        public static UInt16 InvalidUndefinedVertexAttributeName = 5602;
+        public static UInt16 InvalidUndefinedVertexAttributeName = 5802;
 
         /// <summary>
         /// The vertex does not contain an undefined attribute with this name
         /// </summary>
-        public static UInt16 InvalidUndefinedVertexAttributes = 5603;
+        public static UInt16 InvalidUndefinedVertexAttributes = 5803;
 
         /// <summary>
         /// The vertex attribute is not valid 
         /// </summary>
-        public static UInt16 InvalidVertexAttribute = 5604;
+        public static UInt16 InvalidVertexAttribute = 5804;
 
         /// <summary>
         /// The given kind of attribute does not match
         /// </summary>
-        public static UInt16 InvalidVertexAttributeKind = 5605;
+        public static UInt16 InvalidVertexAttributeKind = 5805;
 
         /// <summary>
         /// The attribute has an invalid value
         /// </summary>
-        public static UInt16 InvalidVertexAttributeValue = 5606;
+        public static UInt16 InvalidVertexAttributeValue = 5806;
 
         /// <summary>
         /// The attribute from a type could not be removed
         /// </summary>
-        public static UInt16 RemoveVertexTypeAttribute = 5607;
+        public static UInt16 RemoveVertexTypeAttribute = 5807;
 
         /// <summary>
         /// Could not find any objects while updating elements to the list attribute
         /// </summary>
-        public static UInt16 UpdateListVertexAttributeNoElements = 5608;
+        public static UInt16 UpdateListVertexAttributeNoElements = 5808;
 
         /// <summary>
         /// Could not update a value for a vertex attribute
         /// </summary>
-        public static UInt16 UpdateVertexAttributeValue = 5609;
+        public static UInt16 UpdateVertexAttributeValue = 5809;
 
         /// <summary>
         /// The vertex attribute already exists in the type
         /// </summary>
-        public static UInt16 VertexAttributeAlreadyExists = 5610;
+        public static UInt16 VertexAttributeAlreadyExists = 5810;
 
         /// <summary>
         /// The vertex attribute already exists in subtype
         /// </summary>
-        public static UInt16 VertexAttributeExistsInSubtype = 5611;
+        public static UInt16 VertexAttributeExistsInSubtype = 5811;
 
         /// <summary>
         /// The attribute is not defined on this type
         /// </summary>
-        public static UInt16 VertexAttributeIsNotDefined = 5612;
+        public static UInt16 VertexAttributeIsNotDefined = 5812;
 
         #endregion
 
@@ -488,46 +523,7 @@ namespace sones.Library.ErrorHandling
         #endregion
 
 
-        #region Plugins (prefix: 7)
-
-        #region SonesQGLAggregate (prefix: 71)
-
-        /// <summary>
-        /// An unknown QGLAggregate error
-        /// </summary>
-        public static UInt16 UnknownAggregateError = 7100;
-        
-        /// <summary>
-        /// The aggregate does not match the group level
-        /// </summary>
-        public static UInt16 AggregateDoesNotMatchGroupLevel = 7101;
-                
-        /// <summary>
-        /// An aggregate is not valid on an attribute
-        /// </summary>
-        public static UInt16 AggregateIsNotValidOnThisAttribute = 7102;
-
-        /// <summary>
-        /// An aggregate is not allowed in a context
-        /// </summary>
-        public static UInt16 AggregateNotAllowed = 7103;
-
-        /// <summary>
-        /// An aggregate is on multi attributes not allowed
-        /// </summary>
-        public static UInt16 AggregateOnMultiAttributesNotAllowed = 7104;            
-
-        /// <summary>
-        /// The number of parameters of the function does not match the definition
-        /// </summary>
-        public static UInt16 AggregateParameterCountMismatch = 7105;
-
-        /// <summary>
-        /// A type is not implemented for aggregates
-        /// </summary>
-        public static UInt16 NotImplementedAggregateTarget = 7106;                      
-
-        #endregion
+        #region Plugins (prefix: 7)               
 
         #region SonesQGLFunction (prefix: 72)
                 

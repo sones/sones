@@ -1,9 +1,9 @@
 ﻿using System;
 using sones.Library.ErrorHandling;
 
-namespace sones.GraphDB.ErrorHandling
+namespace sones.GraphQL.ErrorHandling
 {
-    public abstract class AGraphDBSelectException : AGraphDBException
+    public abstract class AGraphQLSelectException : AGraphQLException
     {
         public override ushort ErrorCode
         {

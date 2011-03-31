@@ -1,12 +1,12 @@
 ﻿using System;
 using sones.Library.ErrorHandling;
 
-namespace sones.GraphDB.ErrorHandling
+namespace sones.GraphQL.ErrorHandling
 {
     /// <summary>
     /// The data type of the SelectValueAssignment does not match the type
     /// </summary>
-    public class SelectValueAssignmentDataTypeDoesNotMatchException : AGraphDBSelectException
+    public class SelectValueAssignmentDataTypeDoesNotMatchException : AGraphQLSelectException
     {
         public String ExpectedDataType { get; private set; }
         public String DataType { get; private set; }
