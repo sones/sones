@@ -143,9 +143,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VertexStore", "Library\Inte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewFastSerializer", "Library\External\NewFastSerializer\NewFastSerializer.csproj", "{942F25CF-46A7-4413-B062-E3395C8D1C9A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BplusDotNet", "Library\External\BplusDotNet\BplusDotNet\BplusDotNet.csproj", "{45F6BE30-989A-4749-B6A0-69099C8661F4}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 40
+		SccNumberOfProjects = 41
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -305,6 +307,10 @@ Global
 		SccProjectTopLevelParentUniqueName39 = CoreDeveloper.sln
 		SccProjectName39 = Library/External/NewFastSerializer
 		SccLocalPath39 = Library\\External\\NewFastSerializer
+		SccProjectUniqueName40 = Library\\External\\BplusDotNet\\BplusDotNet\\BplusDotNet.csproj
+		SccProjectTopLevelParentUniqueName40 = CoreDeveloper.sln
+		SccProjectName40 = Library/External/BplusDotNet/BplusDotNet
+		SccLocalPath40 = Library\\External\\BplusDotNet\\BplusDotNet
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -706,6 +712,16 @@ Global
 		{942F25CF-46A7-4413-B062-E3395C8D1C9A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{942F25CF-46A7-4413-B062-E3395C8D1C9A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{942F25CF-46A7-4413-B062-E3395C8D1C9A}.Release|x86.ActiveCfg = Release|Any CPU
+		{45F6BE30-989A-4749-B6A0-69099C8661F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45F6BE30-989A-4749-B6A0-69099C8661F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45F6BE30-989A-4749-B6A0-69099C8661F4}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{45F6BE30-989A-4749-B6A0-69099C8661F4}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{45F6BE30-989A-4749-B6A0-69099C8661F4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{45F6BE30-989A-4749-B6A0-69099C8661F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45F6BE30-989A-4749-B6A0-69099C8661F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45F6BE30-989A-4749-B6A0-69099C8661F4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{45F6BE30-989A-4749-B6A0-69099C8661F4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{45F6BE30-989A-4749-B6A0-69099C8661F4}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -734,6 +750,7 @@ Global
 		{E350EBAC-98DD-4261-8CE8-FA95FC96C9EA} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{D81F5C91-D7DB-46E5-BC99-49488FB6814C} = {A950D82D-E727-4CF5-B4D4-7B872D733E3C}
 		{942F25CF-46A7-4413-B062-E3395C8D1C9A} = {A950D82D-E727-4CF5-B4D4-7B872D733E3C}
+		{45F6BE30-989A-4749-B6A0-69099C8661F4} = {A950D82D-E727-4CF5-B4D4-7B872D733E3C}
 		{601ADD59-4F38-422A-851A-8B0312872F8F} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
 		{48ACC5ED-F25B-458A-94E7-9128C17445B5} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
 		{5AAE6106-287F-4C6E-B2A7-0B0695BBD521} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
