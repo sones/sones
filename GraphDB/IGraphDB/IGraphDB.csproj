@@ -48,6 +48,9 @@
     <Compile Include="ErrorHandling\AGraphDBException.cs" />
     <Compile Include="ErrorHandling\DuplicateAggregateOrFunctionException.cs" />
     <Compile Include="ErrorHandling\EdgeTypeDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\IncomingEdge\IncomingEdgeDestinationIsInvalidException.cs" />
+    <Compile Include="ErrorHandling\IncomingEdge\IncomingEdgeForNotReferenceAttributeTypesException.cs" />
+    <Compile Include="ErrorHandling\IncomingEdge\AGraphDBIncomingEdgeException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\IndexDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\IndexAlreadyExistException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\IndexTypeDoesNotExistException.cs" />

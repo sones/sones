@@ -75,144 +75,158 @@ namespace sones.Library.ErrorHandling
         /// <summary>
         /// An edge type does not exist
         /// </summary>
-        public static UInt16 EdgeTypeDoesNotExist = 3003;        
+        public static UInt16 EdgeTypeDoesNotExist = 3003;
 
-       
-        #region IndexErrors (prefix: 31)
+        #region IncomingEdge (prefix: 31)
+
+        /// <summary>
+        /// The incoming edge destination is invalid
+        /// </summary>
+        public static UInt16 IncomingEdgeDestinationIsInvalid = 3101;
+
+        /// <summary>
+        /// Defining of incoming edge for not referenced attribute is not allowed
+        /// </summary>
+        public static UInt16 IncomingEdgeForNotReferenceAttributeTypes = 3102;
+
+        #endregion
+
+
+        #region IndexErrors (prefix: 32)
 
         /// <summary>
         /// The index already exists
         /// </summary>
-        public static UInt16 IndexAlreadyExist = 3101;        
+        public static UInt16 IndexAlreadyExist = 3201;        
 
         /// <summary>
         /// The index does not exists
         /// </summary>
-        public static UInt16 IndexDoesNotExist = 3102;
+        public static UInt16 IndexDoesNotExist = 3202;
 
         /// <summary>
         /// The index type does not exists
         /// </summary>
-        public static UInt16 IndexTypeDoesNotExist = 3103;
+        public static UInt16 IndexTypeDoesNotExist = 3203;
 
         #endregion
 
 
-        #region SelectErrors (prefix: 32
+        #region SelectErrors (prefix: 33)
 
         /// <summary>
         /// A duplicate attribute selection is not allowed
         /// </summary>
-        public static UInt16 DuplicateAttributeSelection = 3201;
+        public static UInt16 DuplicateAttributeSelection = 3301;
 
         /// <summary>
         /// A to group attribute is not selected
         /// </summary>
-        public static UInt16 GroupedAttributeIsNotSelected = 3202;
+        public static UInt16 GroupedAttributeIsNotSelected = 3302;
 
         /// <summary>
         /// An invalid group level when adding a group element to a selection
         /// </summary>
-        public static UInt16 InvalidGroupByLevel = 3203;
+        public static UInt16 InvalidGroupByLevel = 3303;
 
         /// <summary>
         /// The assignment of the select value is invalid
         /// </summary>
-        public static UInt16 InvalidSelectValueAssignment = 3204;
+        public static UInt16 InvalidSelectValueAssignment = 3304;
 
         /// <summary>
         /// Missing grouped argument in a selection with aggregates 
         /// </summary>
-        public static UInt16 NoGroupingArgument = 3205;
+        public static UInt16 NoGroupingArgument = 3305;
 
         /// <summary>
         /// The data type of the SelectValueAssignment does not match the type
         /// </summary>
-        public static UInt16 SelectValueAssignmentDataTypeDoesNotMatch = 3206;
+        public static UInt16 SelectValueAssignmentDataTypeDoesNotMatch = 3306;
 
         /// <summary>
         /// The timeout of a query has been reached
         /// </summary>
-        public static UInt16 SelectTimeOut = 3207;
+        public static UInt16 SelectTimeOut = 3307;
 
         #endregion
 
 
-        #region VertexTypeErrors (prefix: 33)
+        #region VertexTypeErrors (prefix: 34)
 
         /// <summary>
         /// A base vertex type is not a user defined type 
         /// </summary>
-        public static UInt16 InvalidBaseVertexType = 3301;
+        public static UInt16 InvalidBaseVertexType = 3401;
 
         /// <summary>
         /// The vertex type is invalid
         /// </summary>
-        public static UInt16 InvalidVertexType = 3302;
+        public static UInt16 InvalidVertexType = 3402;
 
         /// <summary>
         /// The user defined vertex type should not be used with LIST attributes
         /// </summary>
-        public static UInt16 ListAttributeNotAllowed = 3303;
+        public static UInt16 ListAttributeNotAllowed = 3403;
 
         /// <summary>
         /// The parent vertex type of a vertex type does not exist
         /// </summary>
-        public static UInt16 ParentVertexTypeDoesNotExist = 3304;
+        public static UInt16 ParentVertexTypeDoesNotExist = 3404;
 
         /// <summary>
         /// Truncate on an inherited vertex type is not allowed
         /// </summary>
-        public static UInt16 TruncateNotAllowedOnInheritedType = 3305;
+        public static UInt16 TruncateNotAllowedOnInheritedType = 3405;
                 
         /// <summary>
         /// The vertex type already exists
         /// </summary>
-        public static UInt16 VertexTypeAlreadyExist = 3306;
+        public static UInt16 VertexTypeAlreadyExist = 3406;
 
         /// <summary>
         /// The vertex type does not exists
         /// </summary>
-        public static UInt16 VertexTypeDoesNotExist = 3307;
+        public static UInt16 VertexTypeDoesNotExist = 3407;
 
         /// <summary>
         /// A vertex type does not match the expected type
         /// </summary>
-        public static UInt16 VertexTypeDoesNotMatch = 3308;
+        public static UInt16 VertexTypeDoesNotMatch = 3408;
 
         #endregion
 
-        #region VertexTypeAttributeErrors (prefix: 34)
+        #region VertexTypeAttributeErrors (prefix: 35)
 
         /// <summary>
         /// Droping of derived vertex attribute on the child vertex type is not allowed
         /// </summary>
-        public static UInt16 DropOfDerivedVertexAttributeIsNotAllowed = 3401;
+        public static UInt16 DropOfDerivedVertexAttributeIsNotAllowed = 3501;
 
         /// <summary>
         /// Droping a vertex attribute is not allowed, because of remaining references from other attributes
         /// </summary>
-        public static UInt16 DropOfVertexAttributeNotAllowed = 3402;        
+        public static UInt16 DropOfVertexAttributeNotAllowed = 3502;        
 
         /// <summary>
         /// The name of the attribute is not valid
         /// </summary>
-        public static UInt16 InvalidVertexAttributeName = 3403;
+        public static UInt16 InvalidVertexAttributeName = 3503;
 
         /// <summary>
         /// The selected vertex attribute is not valid
         /// </summary>
-        public static UInt16 InvalidVertexAttributeSelection = 3404;
+        public static UInt16 InvalidVertexAttributeSelection = 3504;
 
         /// <summary>
         /// Undefined attributes can not inserted nor updated without setting SETUNDEFBEHAVE 
         /// </summary>
-        public static UInt16 UndefinedAttributes = 3405;
+        public static UInt16 UndefinedAttributes = 3505;
 
         /// <summary>
         /// The vertex attribute already exists in supertype
         /// </summary>
-        public static UInt16 VertexAttributeExistsInSuperVertexType = 3406;
+        public static UInt16 VertexAttributeExistsInSuperVertexType = 3506;
 
         #endregion
 
