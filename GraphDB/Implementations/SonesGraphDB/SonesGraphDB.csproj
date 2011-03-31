@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Manager\MetaManager.cs" />
     <Compile Include="Manager\Request\RequestManager.cs" />
+    <Compile Include="Request\GetVertices\PipelineableGetVerticesRequest.cs" />
     <Compile Include="Typemanagement\EdgeTypeManager.cs" />
     <Compile Include="Manager\Typemanagement\TypeManager.cs" />
     <Compile Include="Typemanagement\VertexTypeManager.cs" />

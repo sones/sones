@@ -11,6 +11,8 @@ namespace sones.GraphDB.Request
     /// </summary>
     public abstract class APipelinableRequest
     {
+        #region data
+
         /// <summary>
         /// The id of the pipelineable request
         /// </summary>
@@ -36,6 +38,8 @@ namespace sones.GraphDB.Request
         /// </summary>
         public ASonesException Exception { get; set; }
 
+        #endregion
+
         #region Constructor
 
         /// <summary>
@@ -52,10 +56,26 @@ namespace sones.GraphDB.Request
 
         #endregion
 
+        #region abstract methods
+
+        /// <summary>
+        /// Validation of the request
+        /// </summary>
+        /// <param name="myMetaManager">A manager that contains every other manager</param>
         public abstract void Validate(MetaManager myMetaManager);
 
+        /// <summary>
+        /// Execute the request
+        /// </summary>
+        /// <param name="myMetaManager">A manager that contains every other manager</param>
         public abstract void Execute(MetaManager myMetaManager);
 
+        /// <summary>
+        /// Get the request that has been executed
+        /// </summary>
+        /// <returns>An IRequest</returns>
         public abstract IRequest GetRequest();
+
+        #endregion
     }
 }

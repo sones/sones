@@ -77,5 +77,19 @@ namespace sones.GraphDB
                                 TransactionToken myTransactionToken,
                                 RequestInsertVertex myRequestInsert,
                                 Converter.InsertResultConverter<TResult> myOutputconverter);
+
+        /// <summary>
+        /// Gets vertices from the graphdb
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestGetVertices">The get vertices request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult GetVertices<TResult>(SecurityToken mySecurityToken,
+                                     TransactionToken myTransactionToken,
+                                     RequestGetVertices myRequestGetVertices,
+                                     Converter.GetVerticesResultConverter<TResult> myOutputconverter);
     }
 }

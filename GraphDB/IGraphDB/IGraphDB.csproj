@@ -88,6 +88,7 @@
     <Compile Include="Request\CreateVertexType\Property\PropertyDefinition.cs" />
     <Compile Include="Request\CreateVertexType\RequestCreateVertexType.cs" />
     <Compile Include="Request\CreateVertexType\VertexTypeDefinition.cs" />
+    <Compile Include="Request\GetVertices\RequestGetVertices.cs" />
     <Compile Include="Request\GraphDBAccessMode.cs" />
     <Compile Include="Request\Insert\EdgeDefinition.cs" />
     <Compile Include="Request\Insert\RequestInsertVertex.cs" />

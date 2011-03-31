@@ -42,6 +42,8 @@ namespace sones.GraphDB.Request
 
         #endregion
 
+        #region APipelinableRequest Members
+
         public override void Validate(MetaManager myMetaManager)
         {
             throw new NotImplementedException();
@@ -57,6 +59,10 @@ namespace sones.GraphDB.Request
             return _request;
         }
 
+        #endregion
+
+        #region internal methods
+
         /// <summary>
         /// Generates the result of a create vertex type request
         /// </summary>
@@ -67,5 +73,7 @@ namespace sones.GraphDB.Request
         {
             return myOutputconverter(Statistics, _createdVertexType);
         }
+
+        #endregion
     }
 }

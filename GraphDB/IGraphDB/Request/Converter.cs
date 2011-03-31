@@ -37,5 +37,14 @@ namespace sones.GraphDB.Request
         /// <param name="myCreatedVertexType">The vertex type that has been created</param>
         /// <returns>A TResult</returns>
         public delegate TResult CreateVertexTypeResultConverter<TResult>(IRequestStatistics myRequestStatistics, IVertexType myCreatedVertexType);
+
+        /// <summary>
+        /// A converter delegate that produces a generic result
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myRequestStatistics">The statistics of the request</param>
+        /// <param name="myVertices">The vertices that have been fetched from the GraphDB</param>
+        /// <returns>A TResult</returns>
+        public delegate TResult GetVerticesResultConverter<TResult>(IRequestStatistics myRequestStatistics, IEnumerable<IVertex> myVertices);
     }
 }

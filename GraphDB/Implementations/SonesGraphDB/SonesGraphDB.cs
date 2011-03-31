@@ -16,9 +16,13 @@ namespace sones.GraphDB
 
         #region IGraphDB Members
 
-        public TResult CreateVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
-                                                 RequestCreateVertexType myRequestCreateVertexType,
-                                                 Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
+        #region create VertexType
+
+        public TResult CreateVertexType<TResult>(
+            SecurityToken mySecurityToken, 
+            TransactionToken myTransactionToken,
+            RequestCreateVertexType myRequestCreateVertexType,
+            Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
         {
             var id =
                 _requestManager.RegisterRequest(new PipelineableCreateVertexTypeRequest(myRequestCreateVertexType,
@@ -28,8 +32,15 @@ namespace sones.GraphDB
             return ((PipelineableCreateVertexTypeRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
         }
 
-        public TResult Clear<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
-                                      RequestClear myRequestClear, Converter.ClearResultConverter<TResult> myOutputconverter)
+        #endregion
+
+        #region clear
+
+        public TResult Clear<TResult>(
+            SecurityToken mySecurityToken, 
+            TransactionToken myTransactionToken,                  
+            RequestClear myRequestClear, 
+            Converter.ClearResultConverter<TResult> myOutputconverter)
         {
             var id =
                 _requestManager.RegisterRequest(new PipelineableClearRequest(myRequestClear, mySecurityToken,
@@ -38,9 +49,15 @@ namespace sones.GraphDB
             return ((PipelineableClearRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
         }
 
-        public TResult Insert<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
-                                       RequestInsertVertex myRequestInsert,
-                                       Converter.InsertResultConverter<TResult> myOutputconverter)
+        #endregion
+
+        #region Insert
+
+        public TResult Insert<TResult>(
+            SecurityToken mySecurityToken, 
+            TransactionToken myTransactionToken,
+            RequestInsertVertex myRequestInsert,
+            Converter.InsertResultConverter<TResult> myOutputconverter)
         {
             var id =
                 _requestManager.RegisterRequest(new PipelineableInsertRequest(myRequestInsert, mySecurityToken,
@@ -49,8 +66,29 @@ namespace sones.GraphDB
             return ((PipelineableInsertRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
         }
 
-        public TransactionToken Begin(SecurityToken mySecurityToken, bool myLongrunning = false,
-                                      IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
+        #endregion
+
+        #region GetVertices
+
+        public TResult GetVertices<TResult>(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
+            RequestGetVertices myRequestGetVertices,
+            Converter.GetVerticesResultConverter<TResult> myOutputconverter)
+        {
+            var id =
+                _requestManager.RegisterRequest(new PipelineableGetVerticesRequest(myRequestGetVertices, mySecurityToken, myTransactionToken));
+
+            return ((PipelineableGetVerticesRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Transaction
+
+        public TransactionToken Begin(SecurityToken mySecurityToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
         {
             throw new NotImplementedException();
         }
