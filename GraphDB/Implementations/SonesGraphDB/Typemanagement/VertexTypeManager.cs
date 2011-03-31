@@ -4,7 +4,7 @@ using sones.GraphDB.TypeSystem;
 using sones.Library.LanguageExtensions;
 using sones.Library.Transaction;
 
-namespace sones.GraphDB.Manager.Typemanagement
+namespace sones.GraphDB.Manager.TypeManagement
 {
     public sealed partial class TypeManager
     {

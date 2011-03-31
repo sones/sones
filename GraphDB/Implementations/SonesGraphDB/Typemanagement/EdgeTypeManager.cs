@@ -2,7 +2,7 @@
 using sones.GraphDB.Request;
 using sones.Library.VertexStore;
 
-namespace sones.GraphDB.Manager.Typemanagement
+namespace sones.GraphDB.Manager.TypeManagement
 {
     public sealed partial class TypeManager
     {

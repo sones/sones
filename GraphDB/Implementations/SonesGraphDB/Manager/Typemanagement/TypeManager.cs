@@ -4,17 +4,51 @@ using sones.GraphDB.Request;
 using sones.Library.Transaction;
 using sones.Library.LanguageExtensions;
 using sones.Library.VertexStore;
+using System.Threading;
+using System;
+using sones.GraphDB.Manager.TypeManagement.Exceptions;
 
-namespace sones.GraphDB.Manager.Typemanagement
+/*
+ * edge cases:
+ *   - if someone changes the super type of an vertex or edge type 
+ *     - Henning, Timo 
+ *       * that this isn't a required feature for version 2.0
+ *     
+ *   - undoability of the typemanager 
+ *     - Henning, Timo 
+ *       * the type manager is only responsible for converting type changing request into filesystem requests
+ *       * the ability to undo an request should be implemented in the corresponding piplineable request
+ *   
+ *   - load 
+ *     - Timo
+ *       * will proove if the five main vertex types are available
+ *       * will load the five main vetex types
+ *       * looks for the maximum vertex type id
+ *       
+ *   - create
+ *     - Timo
+ *       * will add the five main vertex types 
+ *   
+ *   
+ */
+
+namespace sones.GraphDB.Manager.TypeManagement
 {
     public sealed partial class TypeManager
     {
+        #region Data
+
+        private long _TypeID = Int64.MinValue;
+
+        #endregion
+
 
         #region c'tor
 
         //TODO: here we get a slim version of IGraphDB. So we can ask for types by name and are sure, that the index is used.
         public TypeManager()
         {
+            
         }
 
         #endregion
@@ -22,9 +56,9 @@ namespace sones.GraphDB.Manager.Typemanagement
         #region public methods regarding type manager itself
 
         /// <summary>
-        /// Checks whether the underlying vertex store contains the basic vertex type definitions.
+        /// Loads data from the underlying vertex store
         /// </summary>
-        public void Check()
+        public void Load()
         {
             throw new System.NotImplementedException();
         }
@@ -79,6 +113,45 @@ namespace sones.GraphDB.Manager.Typemanagement
 
         #region update vertex types
 
+
+        /// <summary>
+        /// Validates a command.
+        /// </summary>
+        /// <param name="myCommand">The command to be validated by the type manager</param>
+        /// <returns>True, if the command is executable, otherwise false.</returns>
+        /// This method must be called on every command, before it can be executed.
+        /// Here we could also proceed work regarding the transaction manager, for example to lock resources within a two phases locking protocol.
+        public bool Validate(ATypeManagerCommand myCommand)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// Executes a type manager changing command.
+        /// </summary>
+        /// <param name="myCommand">A type manager changing command. Must be validated before.</param>
+        public void Execute(ATypeManagerCommand myCommand)
+        {
+            if (!myCommand.IsValidated)
+                throw new NotValidatedException();
+
+            throw new System.NotImplementedException();
+        }
+
+        /// <summary>
+        /// Undos a type manager changing command.
+        /// </summary>
+        /// <param name="myCommand">A type manager changing command. Must be executed before.</param>
+        public void Undo(ATypeManagerCommand myCommand)
+        {
+            if (!myCommand.IsExecuted)
+                throw new NotValidatedException();
+
+            throw new System.NotImplementedException();
+        }
+
+        /* will be removed, if the DO and UNDO pattern is feasible
+         * 
         /// <summary>
         /// Adds a new vertex type to the type manager.
         /// </summary>
@@ -124,6 +197,12 @@ namespace sones.GraphDB.Manager.Typemanagement
             _VertexManager.Remove(myVertexTypes, myTransaction);
         }
 
+        /// <summary>
+        /// Updates an existing vertex type.
+        /// </summary>
+        /// <param name="myVertexTypeDefinition">The definition of the vertex. The VertexTypeDefinition.VertexTypeName identifies the vertex type to change.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// 
         public void Update(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction)
         {
             _VertexManager.Update(myVertexTypeDefinition, myTransaction);
@@ -134,6 +213,7 @@ namespace sones.GraphDB.Manager.Typemanagement
             _VertexManager.Update(myVertexTypeDefinitions, myTransaction);
         }
 
+        */
         #endregion
 
         #endregion
