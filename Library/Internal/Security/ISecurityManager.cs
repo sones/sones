@@ -1,4 +1,5 @@
 ﻿using System;
+using sones.Library.VertexStore;
 
 namespace sones.Library.Security
 {
@@ -27,7 +28,9 @@ namespace sones.Library.Security
     /// The interface for all security managers
     /// Authentication & integrity & encryption
     /// </summary>
-    public interface ISecurityManager : IAuthentication, IIntegrity, IEncryption
+    public interface ISecurityManager : IAuthentication, IIntegrity, IEncryption, IVertexStore
     {
+        bool AllowedToCreateVertexType(SecurityToken mySecuritytoken);
+
     }
 }

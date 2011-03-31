@@ -7,6 +7,9 @@ namespace sones.GraphDB.Request
 {
     public sealed class RequestGetVertices : IRequest
     {
+
+
+
         #region IRequest Members
 
         public GraphDBAccessMode AccessMode
