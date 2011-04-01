@@ -18,7 +18,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Get
 
-        public IVertexType DoGetVertex(string myTypeName)
+        private IVertexType DoGetVertexType(string myTypeName)
         {
             throw new System.NotImplementedException();
         }

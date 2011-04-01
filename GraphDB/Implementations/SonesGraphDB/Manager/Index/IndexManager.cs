@@ -11,7 +11,7 @@ namespace sones.GraphDB.Manager.Index
     /// </summary>
     /// The responsibilities of the index manager are creating, removing und retrieving of indices.
     /// Each database has one type manager.
-    public class IndexManager
+    public class IndexManager : sones.GraphDB.Manager.Index.IIndexManager
     {
         public void CreateIndex(IIndexDefinition myIndexDefinition) 
         {
