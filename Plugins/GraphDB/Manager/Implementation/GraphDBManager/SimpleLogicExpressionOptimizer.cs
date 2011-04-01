@@ -9,7 +9,7 @@ namespace sones.GraphDB.Manager
     {
         #region ILogicExpressionOptimizer Members
 
-        public IExpression ExecuteRequestInParallel(IExpression myExpression)
+        public IExpression OptimizeExpression(IExpression myExpression)
         {
             //return the expression itself and do not optimize anything
             return myExpression;

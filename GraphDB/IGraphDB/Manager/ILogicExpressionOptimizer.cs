@@ -7,6 +7,11 @@ namespace sones.GraphDB.Manager
     /// </summary>
     public interface ILogicExpressionOptimizer
     {
-        IExpression ExecuteRequestInParallel(IExpression myExpression);
+        /// <summary>
+        /// Optimizes a expression
+        /// </summary>
+        /// <param name="myExpression">The expression that is going to be optimized</param>
+        /// <returns>The optimized expression</returns>
+        IExpression OptimizeExpression(IExpression myExpression);
     }
 }
