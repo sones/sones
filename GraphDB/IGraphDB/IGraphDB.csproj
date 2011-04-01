@@ -143,7 +143,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Request\Helper\" />
     <Folder Include="Request\Update\" />
   </ItemGroup>
   <ItemGroup>
