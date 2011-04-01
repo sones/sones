@@ -6,6 +6,11 @@ using sones.Library.Transaction;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
+    /// <summary>
+    /// An interface that represents an type manager.
+    /// </summary>
+    /// The responsibilities of the type manager are creating, removing und retrieving of types.
+    /// Each database has one type manager.
     public interface ITypeManager
     {
         /// <summary>
@@ -36,14 +41,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         IVertexType GetVertexType(string myTypeName);
 
         /// <summary>
-        /// Checks if the execution of <see cref="TypeManager.AddVertex(sones.GraphDB.Request.VertexTypeDefinition,sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> will succeed, if no unexpected error occurs.
+        /// Checks if the execution of <see cref="AddVertex(sones.GraphDB.Request.VertexTypeDefinition,sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> will succeed, if no unexpected error occurs.
         /// </summary>
         /// <param name="myVertexTypeDefinition">The definition of the new type.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurityToken">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
         /// <returns>
-        /// True, if the call of <see cref="TypeManager.AddVertex(sones.GraphDB.Request.VertexTypeDefinition,sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> with the given 
+        /// True, if the call of <see cref="AddVertex(sones.GraphDB.Request.VertexTypeDefinition,sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> with the given 
         /// <paramref name="myVertexTypeDefinition"/>, <paramref name="myTransaction"/> and <paramref name="mySecurityToken"/> 
         /// will succeed bar the occurrence of unexpected errors, otherwise false.
         /// </returns>
@@ -59,14 +64,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         void AddVertex(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager);
 
         /// <summary>
-        /// Checks if the execution of <see cref="AddVertex(IEnumerable<VertexTypeDefinition>, TransactionToken, SecurityToken, MetaManager)">AddVertex</see> will succeed, if no unexpected error occurs.
+        /// Checks if the execution of <see cref="AddVertex(System.Collections.Generic.IEnumerable{sones.GraphDB.Request.VertexTypeDefinition},sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)" /> will succeed, if no unexpected error occurs.
         /// </summary>
         /// <param name="myVertexTypeDefinitions">The definition of the new vertex types.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurityToken">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
         /// <returns>
-        /// True, if the call of <see cref="AddVertex(IEnumerable<VertexTypeDefinition>, TransactionToken, SecurityToken, MetaManager)">AddVertex</see> with the given 
+        /// True, if the call of <see cref="AddVertex(System.Collections.Generic.IEnumerable{sones.GraphDB.Request.VertexTypeDefinition},sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> with the given 
         /// <paramref name="myVertexTypeDefinitions"/>, <paramref name="myTransaction"/> and <paramref name="mySecurityToken"/> 
         /// will succeed bar the occurrence of unexpected errors, otherwise false.
         /// </returns>
@@ -82,14 +87,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         void AddVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager);
 
         /// <summary>
-        /// Checks if the execution of <see cref="TypeManager.RemoveVertex(sones.GraphDB.TypeSystem.IVertexType,sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> will succeed, if no unexpected error occurs.
+        /// Checks if the execution of <see cref="RemoveVertex(sones.GraphDB.TypeSystem.IVertexType,sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> will succeed, if no unexpected error occurs.
         /// </summary>
         /// <param name="myVertexType">The vertex type to be removed.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurityToken">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
         /// <returns>
-        /// True, if the call of <see cref="TypeManager.RemoveVertex(sones.GraphDB.TypeSystem.IVertexType,sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> with the given 
+        /// True, if the call of <see cref="RemoveVertex(sones.GraphDB.TypeSystem.IVertexType,sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> with the given 
         /// <paramref name="myVertexType"/>, <paramref name="myTransaction"/> and <paramref name="mySecurityToken"/> 
         /// will succeed bar the occurrence of unexpected errors, otherwise false.
         /// </returns>
@@ -107,14 +112,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         void RemoveVertex(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager);
 
         /// <summary>
-        /// Checks if the execution of <see cref="RemoveVertex(IEnumerable<IVertexType>, TransactionToken, SecurityToken, MetaManager)">RemoveVertex</see> will succeed, if no unexpected error occurs.
+        /// Checks if the execution of <see cref="RemoveVertex(System.Collections.Generic.IEnumerable{sones.GraphDB.TypeSystem.IVertexType},sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> will succeed, if no unexpected error occurs.
         /// </summary>
         /// <param name="myVertexTypes">The vertex types to be removed.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurityToken">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
         /// <returns>
-        /// True, if the call of <see cref="RemoveVertex(IEnumerable<IVertexType>, TransactionToken, SecurityToken, MetaManager)">RemoveVertex</see> with the given 
+        /// True, if the call of <see cref="RemoveVertex(System.Collections.Generic.IEnumerable{sones.GraphDB.TypeSystem.IVertexType},sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> with the given 
         /// <paramref name="myVertexTypes"/>, <paramref name="myTransaction"/> and <paramref name="mySecurityToken"/> 
         /// will succeed bar the occurrence of unexpected errors, otherwise false.
         /// </returns>
@@ -133,14 +138,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         void RemoveVertex(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager);
 
         /// <summary>
-        /// Checks if the execution of <see cref="TypeManager.UpdateVertex(sones.GraphDB.Request.VertexTypeDefinition,sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> will succeed, if no unexpected error occurs.
+        /// Checks if the execution of <see cref="UpdateVertex(sones.GraphDB.Request.VertexTypeDefinition,sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> will succeed, if no unexpected error occurs.
         /// </summary>
         /// <param name="myVertexTypeDefinition">TODO: for update use VertexTypeUpdateDefinition</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurityToken">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
         /// <returns>
-        /// True, if the call of <see cref="TypeManager.UpdateVertex(sones.GraphDB.Request.VertexTypeDefinition,sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> with the given 
+        /// True, if the call of <see cref="UpdateVertex(sones.GraphDB.Request.VertexTypeDefinition,sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> with the given 
         /// <paramref name="myVertexTypeDefinition"/>, <paramref name="myTransaction"/> and <paramref name="mySecurityToken"/> 
         /// will succeed bar the occurrence of unexpected errors, otherwise false.
         /// </returns>
@@ -156,14 +161,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         void UpdateVertex(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager);
 
         /// <summary>
-        /// Checks if the execution of <see cref="UpdateVertex(IEnumerable<VertexTypeDefinition>, TransactionToken, SecurityToken, MetaManager)"/> will succeed, if no unexpected error occurs.
+        /// Checks if the execution of <see cref="UpdateVertex(System.Collections.Generic.IEnumerable{sones.GraphDB.Request.VertexTypeDefinition},sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> will succeed, if no unexpected error occurs.
         /// </summary>
         /// <param name="myVertexTypeDefinitions">TODO: for update use VertexTypeUpdateDefinition</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurityToken">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
         /// <returns>
-        /// True, if the call of <see cref="UpdateVertex(IEnumerable<VertexTypeDefinition>, TransactionToken, SecurityToken, MetaManager)"/> with the given 
+        /// True, if the call of <see cref="UpdateVertex(System.Collections.Generic.IEnumerable{sones.GraphDB.Request.VertexTypeDefinition},sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> with the given 
         /// <paramref name="myVertexTypeDefinitions"/>, <paramref name="myTransaction"/> and <paramref name="mySecurityToken"/> 
         /// will succeed bar the occurrence of unexpected errors, otherwise false.
         /// </returns>
@@ -172,7 +177,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// Updates existing vertex types.
         /// </summary>
-        /// <param name="myVertexTypeDefinition">TODO: for update use VertexTypeUpdateDefinition</param>
+        /// <param name="myVertexTypeDefinitions">TODO: for update use VertexTypeUpdateDefinition</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurityToken">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>

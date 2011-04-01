@@ -1,9 +1,9 @@
-﻿using System;
+﻿using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Manager.Index
 {
-    interface IIndexManager
+    public interface IIndexManager
     {
-        void CreateIndex(sones.GraphDB.TypeSystem.IIndexDefinition myIndexDefinition);
+        void CreateIndex(IIndexDefinition myIndexDefinition);
     }
 }

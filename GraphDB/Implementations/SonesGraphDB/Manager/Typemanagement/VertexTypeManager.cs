@@ -12,7 +12,7 @@ namespace sones.GraphDB.Manager.TypeManagement
      * - EdgeTypeManager.cs declares the private methods for edge types
      * - VertexTypeManager.cs declares the private methods for vertex types
      */
-    public sealed partial class TypeManager
+    public sealed partial class TypeManager : ITypeManager
     {
         #region VertexTypeManager
 
