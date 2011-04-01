@@ -84,10 +84,6 @@
       <Project>{E350EBAC-98DD-4261-8CE8-FA95FC96C9EA}</Project>
       <Name>VertexStore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Plugins\GraphDB\Manager\IGraphDBManager\IGraphDBManager.csproj">
-      <Project>{F8A5DBE6-F3F2-446D-9395-6904DCD04C78}</Project>
-      <Name>IGraphDBManager</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>

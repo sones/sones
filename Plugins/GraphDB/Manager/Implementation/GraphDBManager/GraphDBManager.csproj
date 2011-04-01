@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SimpleLogicExpressionOptimizer.cs" />
     <Compile Include="SimpleRequestScheduler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -51,10 +52,6 @@
     <ProjectReference Include="..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\IGraphDBManager\IGraphDBManager.csproj">
-      <Project>{F8A5DBE6-F3F2-446D-9395-6904DCD04C78}</Project>
-      <Name>IGraphDBManager</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

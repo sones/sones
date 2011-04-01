@@ -5,7 +5,6 @@ using System.Text;
 
 namespace sones.GraphDB.Request.Helper.Expression
 {
-
     /// <summary>
     /// This class represents an attribute expression
     /// </summary>

@@ -72,6 +72,8 @@
     <Compile Include="ErrorHandling\VertexTypeErrors\VertexTypeDoesNotMatchException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\AGraphDBVertexTypeException.cs" />
     <Compile Include="ErrorHandling\UnknownDBException.cs" />
+    <Compile Include="Manager\ILogicExpressionOptimizer.cs" />
+    <Compile Include="Manager\IRequestScheduler.cs" />
     <Compile Include="Request\Clear\RequestClear.cs" />
     <Compile Include="Request\Converter.cs" />
     <Compile Include="Request\CreateEdgeType\EdgeTypeDefinition.cs" />
