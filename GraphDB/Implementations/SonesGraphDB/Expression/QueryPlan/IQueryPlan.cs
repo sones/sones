@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace sones.GraphDB.Request.Helper.Operator
+namespace sones.GraphDB.Expression.QueryPlan
 {
     /// <summary>
-    /// The interface for all unary operators
+    /// The interface for all query plans
     /// </summary>
-    public interface IUnaryOperator
+    public interface IQueryPlan
     {
     }
 }

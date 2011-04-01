@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.Request.Helper.Operator;
 
-namespace sones.GraphDB.Request.Helper.Expression
+namespace sones.GraphDB.Expression
 {
     /// <summary>
     /// A binary expression consists of two Expressions and a binary operator

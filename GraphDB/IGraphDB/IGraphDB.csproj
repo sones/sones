@@ -85,16 +85,16 @@
     <Compile Include="Request\GetVertices\RequestGetVertices.cs" />
     <Compile Include="Request\GetVertices\GetVerticesDefinition.cs" />
     <Compile Include="Request\GraphDBAccessMode.cs" />
-    <Compile Include="Request\Helper\Expression\AttributeExpression.cs" />
-    <Compile Include="Request\Helper\Expression\BinaryExpression.cs" />
-    <Compile Include="Request\Helper\Expression\ConstantExpression.cs" />
-    <Compile Include="Request\Helper\Expression\IExpression.cs" />
-    <Compile Include="Request\Helper\Expression\UnaryExpression.cs" />
-    <Compile Include="Request\Helper\Operator\Comparative\IComparativeOperator.cs" />
-    <Compile Include="Request\Helper\Operator\IBinaryOperator.cs" />
-    <Compile Include="Request\Helper\Operator\IOperator.cs" />
-    <Compile Include="Request\Helper\Operator\IUnaryOperator.cs" />
-    <Compile Include="Request\Helper\Operator\Logic\ILogicOperator.cs" />
+    <Compile Include="Expression\Tree\AttributeExpression.cs" />
+    <Compile Include="Expression\Tree\BinaryExpression.cs" />
+    <Compile Include="Expression\Tree\ConstantExpression.cs" />
+    <Compile Include="Expression\Tree\IExpression.cs" />
+    <Compile Include="Expression\Tree\UnaryExpression.cs" />
+    <Compile Include="Expression\Operator\Comparative\IComparativeOperator.cs" />
+    <Compile Include="Expression\Operator\IBinaryOperator.cs" />
+    <Compile Include="Expression\Operator\IOperator.cs" />
+    <Compile Include="Expression\Operator\IUnaryOperator.cs" />
+    <Compile Include="Expression\Operator\Logic\ILogicOperator.cs" />
     <Compile Include="Request\Insert\EdgeDefinition.cs" />
     <Compile Include="Request\Insert\RequestInsertVertex.cs" />
     <Compile Include="Request\Insert\VertexInsert.cs" />
@@ -143,6 +143,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Request\Helper\" />
     <Folder Include="Request\Update\" />
   </ItemGroup>
   <ItemGroup>

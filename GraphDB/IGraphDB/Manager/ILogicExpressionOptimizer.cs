@@ -1,4 +1,4 @@
-﻿using sones.GraphDB.Request.Helper.Expression;
+﻿using sones.GraphDB.Expression;
 
 namespace sones.GraphDB.Manager
 {

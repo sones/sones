@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace sones.GraphDB.Request.Helper.Expression
+namespace sones.GraphDB.Expression
 {
     /// <summary>
-    /// The interface for all expressions
+    /// The interface for all binary operators
     /// </summary>
-    public interface IExpression
+    public interface IBinaryOperator
     {
     }
 }

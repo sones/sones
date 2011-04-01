@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.Request.Helper.Operator.Logic;
-using sones.GraphDB.Request.Helper.Operator;
 
-namespace sones.GraphDB.Request.Helper.Expression
+namespace sones.GraphDB.Expression
 {
     /// <summary>
     /// An unary expression has a unary operator and a single expression
