@@ -143,9 +143,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewFastSerializer", "Librar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BplusDotNet", "Library\External\BplusDotNet\BplusDotNet\BplusDotNet.csproj", "{45F6BE30-989A-4749-B6A0-69099C8661F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonesPersistentIndices", "Plugins\Index\Indices\SonesPersistentIndices\SonesPersistentIndices.csproj", "{982A8FC0-D760-4B81-B537-06EDBEA80A6C}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 40
+		SccNumberOfProjects = 41
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -305,6 +307,10 @@ Global
 		SccProjectTopLevelParentUniqueName39 = CoreDeveloper.sln
 		SccProjectName39 = Library/External/BplusDotNet/BplusDotNet
 		SccLocalPath39 = Library\\External\\BplusDotNet\\BplusDotNet
+		SccProjectUniqueName40 = Plugins\\Index\\Indices\\SonesPersistentIndices\\SonesPersistentIndices.csproj
+		SccProjectTopLevelParentUniqueName40 = CoreDeveloper.sln
+		SccProjectName40 = Plugins/Index/Indices/SonesPersistentIndices
+		SccLocalPath40 = Plugins\\Index\\Indices\\SonesPersistentIndices
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -327,13 +333,13 @@ Global
 		{FFFB6BE4-9514-41CF-AB68-5FB7B8E3D2E4}.Release|x86.ActiveCfg = Release|Any CPU
 		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Debug|Any CPU.Build.0 = Debug|x86
-		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
 		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Debug|x86.ActiveCfg = Debug|x86
 		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Debug|x86.Build.0 = Debug|x86
 		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Release|Any CPU.ActiveCfg = Release|x86
-		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Release|Mixed Platforms.Build.0 = Release|x86
+		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Release|x86.ActiveCfg = Release|x86
 		{A9124727-FB28-4629-B269-FF79EE3EDA54}.Release|x86.Build.0 = Release|x86
 		{AB7C27CC-534F-472E-BA56-A1287973B7E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -706,6 +712,16 @@ Global
 		{45F6BE30-989A-4749-B6A0-69099C8661F4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{45F6BE30-989A-4749-B6A0-69099C8661F4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{45F6BE30-989A-4749-B6A0-69099C8661F4}.Release|x86.ActiveCfg = Release|Any CPU
+		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -745,6 +761,7 @@ Global
 		{FACE26D6-DCE4-49EC-AEFD-96B580BB022B} = {48ACC5ED-F25B-458A-94E7-9128C17445B5}
 		{823E8AF4-CF92-4E74-8ABD-38693279EB1E} = {48ACC5ED-F25B-458A-94E7-9128C17445B5}
 		{FCF3C622-5CF6-4C2A-B024-4046D6E4941C} = {FACE26D6-DCE4-49EC-AEFD-96B580BB022B}
+		{982A8FC0-D760-4B81-B537-06EDBEA80A6C} = {FACE26D6-DCE4-49EC-AEFD-96B580BB022B}
 		{22437279-5F02-40BE-847C-D7A425D468BE} = {52780B9F-52B2-4659-A41C-0F1526DCAA49}
 		{F751657F-0E6C-46C5-A59C-02D7A924A051} = {52780B9F-52B2-4659-A41C-0F1526DCAA49}
 		{26BFEE62-82B9-4EFA-9F91-08FD947551A8} = {22437279-5F02-40BE-847C-D7A425D468BE}

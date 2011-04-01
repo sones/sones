@@ -218,6 +218,16 @@ namespace sones.Library.NewFastSerializer
 
         #endregion Constructors
 
+        #region ClearBuffer
+
+        public void ResetBuffer()
+        {            
+            this.BaseStream.Seek(0, SeekOrigin.Begin);
+            this.BaseStream.SetLength(0);
+        }
+
+        #endregion
+
         #region IsFastSerializeable(value)
 
         /// <summary>
@@ -1235,7 +1245,6 @@ namespace sones.Library.NewFastSerializer
         }
 
         #endregion
-
 
         #region BitVector32
         /// <summary>
