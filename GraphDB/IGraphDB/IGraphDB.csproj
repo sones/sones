@@ -83,6 +83,7 @@
     <Compile Include="Request\CreateVertexType\RequestCreateVertexType.cs" />
     <Compile Include="Request\CreateVertexType\VertexTypeDefinition.cs" />
     <Compile Include="Request\GetVertices\RequestGetVertices.cs" />
+    <Compile Include="Request\GetVertices\GetVerticesDefinition.cs" />
     <Compile Include="Request\GraphDBAccessMode.cs" />
     <Compile Include="Request\Helper\Expression\AttributeExpression.cs" />
     <Compile Include="Request\Helper\Expression\BinaryExpression.cs" />
