@@ -145,9 +145,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BplusDotNet", "Library\Exte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonesPersistentIndices", "Plugins\Index\Indices\SonesPersistentIndices\SonesPersistentIndices.csproj", "{982A8FC0-D760-4B81-B537-06EDBEA80A6C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GraphGenerator", "GraphGenerator", "{1C52F39F-F995-45E2-BDEF-C3E2E1BD52BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISonesGraphGenerator", "Plugins\GraphGenerator\ISonesGraphGenerator\ISonesGraphGenerator.csproj", "{8D291BAE-496E-4339-A480-B301ED1A23FF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GraphGenerators", "GraphGenerators", "{FE5EFE17-4195-45C4-A671-BCE0787DE029}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonesGraphGenerators", "Plugins\GraphGenerator\GraphGenerators\SonesGraphGenerators\SonesGraphGenerators.csproj", "{30B5A2C1-DD4A-4F04-A8E2-CE6E332A91FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication2", "Applications\TestApplication2\TestApplication2.csproj", "{C55633BD-8F9D-4F7A-828B-5AB044CD45E5}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 41
+		SccNumberOfProjects = 43
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -307,10 +317,18 @@ Global
 		SccProjectTopLevelParentUniqueName39 = CoreDeveloper.sln
 		SccProjectName39 = Library/External/BplusDotNet/BplusDotNet
 		SccLocalPath39 = Library\\External\\BplusDotNet\\BplusDotNet
-		SccProjectUniqueName40 = Plugins\\Index\\Indices\\SonesPersistentIndices\\SonesPersistentIndices.csproj
+		SccProjectUniqueName40 = Plugins\\GraphGenerator\\ISonesGraphGenerator\\ISonesGraphGenerator.csproj
 		SccProjectTopLevelParentUniqueName40 = CoreDeveloper.sln
-		SccProjectName40 = Plugins/Index/Indices/SonesPersistentIndices
-		SccLocalPath40 = Plugins\\Index\\Indices\\SonesPersistentIndices
+		SccProjectName40 = Plugins/GraphGenerator/ISonesGraphGenerator
+		SccLocalPath40 = Plugins\\GraphGenerator\\ISonesGraphGenerator
+		SccProjectUniqueName41 = Plugins\\GraphGenerator\\GraphGenerators\\SonesGraphGenerators\\SonesGraphGenerators.csproj
+		SccProjectTopLevelParentUniqueName41 = CoreDeveloper.sln
+		SccProjectName41 = Plugins/GraphGenerator/GraphGenerators/SonesGraphGenerators
+		SccLocalPath41 = Plugins\\GraphGenerator\\GraphGenerators\\SonesGraphGenerators
+		SccProjectUniqueName42 = Applications\\TestApplication2\\TestApplication2.csproj
+		SccProjectTopLevelParentUniqueName42 = CoreDeveloper.sln
+		SccProjectName42 = Applications/TestApplication2
+		SccLocalPath42 = Applications\\TestApplication2
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -712,16 +730,36 @@ Global
 		{45F6BE30-989A-4749-B6A0-69099C8661F4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{45F6BE30-989A-4749-B6A0-69099C8661F4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{45F6BE30-989A-4749-B6A0-69099C8661F4}.Release|x86.ActiveCfg = Release|Any CPU
-		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Release|x86.ActiveCfg = Release|Any CPU
+		{8D291BAE-496E-4339-A480-B301ED1A23FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D291BAE-496E-4339-A480-B301ED1A23FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D291BAE-496E-4339-A480-B301ED1A23FF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{8D291BAE-496E-4339-A480-B301ED1A23FF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{8D291BAE-496E-4339-A480-B301ED1A23FF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8D291BAE-496E-4339-A480-B301ED1A23FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D291BAE-496E-4339-A480-B301ED1A23FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D291BAE-496E-4339-A480-B301ED1A23FF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{8D291BAE-496E-4339-A480-B301ED1A23FF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{8D291BAE-496E-4339-A480-B301ED1A23FF}.Release|x86.ActiveCfg = Release|Any CPU
+		{30B5A2C1-DD4A-4F04-A8E2-CE6E332A91FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30B5A2C1-DD4A-4F04-A8E2-CE6E332A91FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30B5A2C1-DD4A-4F04-A8E2-CE6E332A91FB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{30B5A2C1-DD4A-4F04-A8E2-CE6E332A91FB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{30B5A2C1-DD4A-4F04-A8E2-CE6E332A91FB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{30B5A2C1-DD4A-4F04-A8E2-CE6E332A91FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30B5A2C1-DD4A-4F04-A8E2-CE6E332A91FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30B5A2C1-DD4A-4F04-A8E2-CE6E332A91FB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{30B5A2C1-DD4A-4F04-A8E2-CE6E332A91FB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{30B5A2C1-DD4A-4F04-A8E2-CE6E332A91FB}.Release|x86.ActiveCfg = Release|Any CPU
+		{C55633BD-8F9D-4F7A-828B-5AB044CD45E5}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{C55633BD-8F9D-4F7A-828B-5AB044CD45E5}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{C55633BD-8F9D-4F7A-828B-5AB044CD45E5}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{C55633BD-8F9D-4F7A-828B-5AB044CD45E5}.Debug|x86.ActiveCfg = Debug|x86
+		{C55633BD-8F9D-4F7A-828B-5AB044CD45E5}.Debug|x86.Build.0 = Debug|x86
+		{C55633BD-8F9D-4F7A-828B-5AB044CD45E5}.Release|Any CPU.ActiveCfg = Release|x86
+		{C55633BD-8F9D-4F7A-828B-5AB044CD45E5}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{C55633BD-8F9D-4F7A-828B-5AB044CD45E5}.Release|Mixed Platforms.Build.0 = Release|x86
+		{C55633BD-8F9D-4F7A-828B-5AB044CD45E5}.Release|x86.ActiveCfg = Release|x86
+		{C55633BD-8F9D-4F7A-828B-5AB044CD45E5}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -741,6 +779,7 @@ Global
 		{D92AF9AE-48D1-4B1B-9B70-250F1CEEFABE} = {EA38B67C-F886-43E3-9438-549E28000220}
 		{15589123-5145-44D4-9514-214729FD9EF3} = {EA38B67C-F886-43E3-9438-549E28000220}
 		{A9124727-FB28-4629-B269-FF79EE3EDA54} = {F9FAFD9F-BC60-4EDD-8BA5-8961B7A3BAFF}
+		{C55633BD-8F9D-4F7A-828B-5AB044CD45E5} = {F9FAFD9F-BC60-4EDD-8BA5-8961B7A3BAFF}
 		{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{3C13E344-937B-4010-B0EF-A164232E4454} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
@@ -755,6 +794,7 @@ Global
 		{48ACC5ED-F25B-458A-94E7-9128C17445B5} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
 		{5AAE6106-287F-4C6E-B2A7-0B0695BBD521} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
 		{A7B90BF6-6D23-4857-AA2B-5F0B88F9A59D} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
+		{1C52F39F-F995-45E2-BDEF-C3E2E1BD52BD} = {3854684E-AC84-4B62-B435-2CF95A40AAD7}
 		{2B34D970-2910-435E-AD67-69E29DB16492} = {601ADD59-4F38-422A-851A-8B0312872F8F}
 		{FC621147-A299-4DE4-A2CC-DA71FD57044A} = {2B34D970-2910-435E-AD67-69E29DB16492}
 		{500C1B9C-E9CD-4008-9EE4-5229A6CE93DC} = {2B34D970-2910-435E-AD67-69E29DB16492}
@@ -790,5 +830,8 @@ Global
 		{6628A55D-BEEF-4499-B07B-26606289B6F4} = {8D65A058-04E7-4C4A-A533-678F43914D68}
 		{7E58D30B-4108-4941-BF85-A5C309F87536} = {500C1B9C-E9CD-4008-9EE4-5229A6CE93DC}
 		{CDAE254B-77D9-4E59-9C07-C18F0085F570} = {500C1B9C-E9CD-4008-9EE4-5229A6CE93DC}
+		{8D291BAE-496E-4339-A480-B301ED1A23FF} = {1C52F39F-F995-45E2-BDEF-C3E2E1BD52BD}
+		{FE5EFE17-4195-45C4-A671-BCE0787DE029} = {1C52F39F-F995-45E2-BDEF-C3E2E1BD52BD}
+		{30B5A2C1-DD4A-4F04-A8E2-CE6E332A91FB} = {FE5EFE17-4195-45C4-A671-BCE0787DE029}
 	EndGlobalSection
 EndGlobal
