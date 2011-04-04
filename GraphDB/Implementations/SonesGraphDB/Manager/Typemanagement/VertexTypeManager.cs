@@ -27,12 +27,12 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Add
 
-        private bool DoCanAddVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        private bool DoCanAddVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
 
-        private void DoAddVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        private void DoAddVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
@@ -41,12 +41,12 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Remove
 
-        private bool DoCanRemoveVertex(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        private bool DoCanRemoveVertex(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
 
-        private void DoRemoveVertex(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        private void DoRemoveVertex(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
@@ -55,12 +55,12 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Update
 
-        private bool DoCanUpdateVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        private bool DoCanUpdateVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
 
-        private void DoUpdateVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        private void DoUpdateVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }

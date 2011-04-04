@@ -33,13 +33,13 @@ namespace sones.GraphDB.Request
         /// Creates a new pipelineable get vertices request
         /// </summary>
         /// <param name="myGetVerticesRequest">The get vertices type request</param>
-        /// <param name="mySecurityToken">The security token of the request initiator</param>
+        /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The current transaction token</param>
         public PipelineableGetVerticesRequest(
                                                 RequestGetVertices myGetVerticesRequest, 
-                                                SecurityToken mySecurityToken,
+                                                SecurityToken mySecurity,
                                                 TransactionToken myTransactionToken)
-            : base(mySecurityToken, myTransactionToken)
+            : base(mySecurity, myTransactionToken)
         {
             _request = myGetVerticesRequest;
         }

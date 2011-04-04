@@ -22,11 +22,11 @@ namespace sones.GraphDB.Request
         /// Creates a new pipelineable clear request
         /// </summary>
         /// <param name="myClearRequest">The clear request</param>
-        /// <param name="mySecurityToken">The security token of the request initiator</param>
+        /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The current transaction token</param>
-        public PipelineableClearRequest(RequestClear myClearRequest, SecurityToken mySecurityToken,
+        public PipelineableClearRequest(RequestClear myClearRequest, SecurityToken mySecurity,
                                         TransactionToken myTransactionToken)
-            : base(mySecurityToken, myTransactionToken)
+            : base(mySecurity, myTransactionToken)
         {
             _request = myClearRequest;
         }

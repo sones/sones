@@ -5,6 +5,8 @@ using sones.Library.Transaction;
 using sones.Library.LanguageExtensions;
 using System;
 using sones.Library.Security;
+using sones.GraphDB.Manager.Index;
+using sones.Library.VertexStore;
 
 /*
  * edge cases:
@@ -67,7 +69,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// Loads data from the underlying vertex store
         /// </summary>
-        public void Load()
+        public void Load(MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
@@ -76,7 +78,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Creates the basic vertex type definitions.
         /// </summary>
         //TODO: here we get a VertexStore(no security, no transaction) and an IndexManager, so we can create the five base vertex types, that are used to store the type manager knowlegde.
-        public void Create()
+        public void Create(IIndexManager myIndexMgr, IVertexStore myVertexStore)
         {
             throw new System.NotImplementedException();
         }
@@ -128,16 +130,16 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinition">The definition of the new type.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
         /// <returns>
         /// True, if the call of <see cref="AddVertex(VertexTypeDefinition, TransactionToken, SecurityToken, MetaManager)"/> with the given 
-        /// <paramref name="myVertexTypeDefinition"/>, <paramref name="myTransaction"/> and <paramref name="mySecurityToken"/> 
+        /// <paramref name="myVertexTypeDefinition"/>, <paramref name="myTransaction"/> and <paramref name="mySecurity"/> 
         /// will succeed bar the occurrence of unexpected errors, otherwise false.
         /// </returns>
-        public bool CanAddVertex(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        public bool CanAddVertex(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return DoCanAddVertex(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurityToken, myMetaManager);
+            return DoCanAddVertex(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
         }
 
         /// <summary>
@@ -145,11 +147,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinition">The definition of the new type.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
-        public void AddVertex(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        public void AddVertex(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            DoAddVertex(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurityToken, myMetaManager);
+            DoAddVertex(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
         }
 
         /// <summary>
@@ -157,16 +159,16 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinitions">The definition of the new vertex types.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
         /// <returns>
         /// True, if the call of <see cref="AddVertex(IEnumerable{VertexTypeDefinition}, TransactionToken, SecurityToken, MetaManager)"/> with the given 
-        /// <paramref name="myVertexTypeDefinitions"/>, <paramref name="myTransaction"/> and <paramref name="mySecurityToken"/> 
+        /// <paramref name="myVertexTypeDefinitions"/>, <paramref name="myTransaction"/> and <paramref name="mySecurity"/> 
         /// will succeed bar the occurrence of unexpected errors, otherwise false.
         /// </returns>
-        public bool CanAddVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        public bool CanAddVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return DoCanAddVertex(myVertexTypeDefinitions, myTransaction, mySecurityToken, myMetaManager);
+            return DoCanAddVertex(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
         }
 
         /// <summary>
@@ -174,11 +176,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinitions">The definition of the new vertex types.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
-        public void AddVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        public void AddVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            DoAddVertex(myVertexTypeDefinitions, myTransaction, mySecurityToken, myMetaManager);
+            DoAddVertex(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
         }
 
         #endregion
@@ -190,16 +192,16 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexType">The vertex type to be removed.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
         /// <returns>
         /// True, if the call of <see cref="RemoveVertex(IVertexType, TransactionToken, SecurityToken, MetaManager)"/> with the given 
-        /// <paramref name="myVertexType"/>, <paramref name="myTransaction"/> and <paramref name="mySecurityToken"/> 
+        /// <paramref name="myVertexType"/>, <paramref name="myTransaction"/> and <paramref name="mySecurity"/> 
         /// will succeed bar the occurrence of unexpected errors, otherwise false.
         /// </returns>
-        public bool CanRemoveVertex(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        public bool CanRemoveVertex(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return DoCanRemoveVertex(myVertexType.SingleEnumerable(), myTransaction, mySecurityToken, myMetaManager);
+            return DoCanRemoveVertex(myVertexType.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
         }
 
         /// <summary>
@@ -207,13 +209,13 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexType">The vertex type that will be removed.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
         /// The vertex type will be removed unless there are no edges that point to this type.
         /// If there is such an edge, remove the edge by altering the type that holds it or remove both type simultaneously using <see cref="Add(IEnumerable<IVertexType>, TransactionToken)"/>.
-        public void RemoveVertex(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        public void RemoveVertex(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            DoRemoveVertex(myVertexType.SingleEnumerable(), myTransaction, mySecurityToken, myMetaManager);
+            DoRemoveVertex(myVertexType.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
         }
 
         /// <summary>
@@ -221,16 +223,16 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypes">The vertex types to be removed.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
         /// <returns>
         /// True, if the call of <see cref="RemoveVertex(IEnumerable{IVertexType}, TransactionToken, SecurityToken, MetaManager)"/> with the given 
-        /// <paramref name="myVertexTypes"/>, <paramref name="myTransaction"/> and <paramref name="mySecurityToken"/> 
+        /// <paramref name="myVertexTypes"/>, <paramref name="myTransaction"/> and <paramref name="mySecurity"/> 
         /// will succeed bar the occurrence of unexpected errors, otherwise false.
         /// </returns>
-        public bool CanRemoveVertex(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        public bool CanRemoveVertex(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return DoCanRemoveVertex(myVertexTypes, myTransaction, mySecurityToken, myMetaManager);
+            return DoCanRemoveVertex(myVertexTypes, myTransaction, mySecurity, myMetaManager);
         }
 
         /// <summary>
@@ -238,14 +240,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypes">The vertex types that will be removed.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
         /// All types will be removed unless there are no edges that point to at least one of the given types.
         /// If there is such an edge, remove the edge by altering the type that holds it or remove this type too.
         /// All types are removed simultaneously. This means that edges between the types are not need to be removed before.
-        public void RemoveVertex(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        public void RemoveVertex(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            DoRemoveVertex(myVertexTypes, myTransaction, mySecurityToken, myMetaManager);
+            DoRemoveVertex(myVertexTypes, myTransaction, mySecurity, myMetaManager);
         }
 
         #endregion
@@ -257,16 +259,16 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinition">TODO: for update use VertexTypeUpdateDefinition</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
         /// <returns>
         /// True, if the call of <see cref="UpdateVertex(VertexTypeDefinition, TransactionToken, SecurityToken, MetaManager)"/> with the given 
-        /// <paramref name="myVertexTypeDefinition"/>, <paramref name="myTransaction"/> and <paramref name="mySecurityToken"/> 
+        /// <paramref name="myVertexTypeDefinition"/>, <paramref name="myTransaction"/> and <paramref name="mySecurity"/> 
         /// will succeed bar the occurrence of unexpected errors, otherwise false.
         /// </returns>
-        public bool CanUpdateVertex(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        public bool CanUpdateVertex(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return DoCanUpdateVertex(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurityToken, myMetaManager);
+            return DoCanUpdateVertex(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
         }
 
         /// <summary>
@@ -274,11 +276,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinition">TODO: for update use VertexTypeUpdateDefinition</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
-        public void UpdateVertex(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        public void UpdateVertex(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            DoUpdateVertex(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurityToken, myMetaManager);
+            DoUpdateVertex(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
         }
 
         /// <summary>
@@ -286,16 +288,16 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinitions">TODO: for update use VertexTypeUpdateDefinition</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
         /// <returns>
         /// True, if the call of <see cref="UpdateVertex(IEnumerable{VertexTypeDefinition}, TransactionToken, SecurityToken, MetaManager)"/> with the given 
-        /// <paramref name="myVertexTypeDefinitions"/>, <paramref name="myTransaction"/> and <paramref name="mySecurityToken"/> 
+        /// <paramref name="myVertexTypeDefinitions"/>, <paramref name="myTransaction"/> and <paramref name="mySecurity"/> 
         /// will succeed bar the occurrence of unexpected errors, otherwise false.
         /// </returns>
-        public bool CanUpdateVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        public bool CanUpdateVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return DoCanUpdateVertex(myVertexTypeDefinitions, myTransaction, mySecurityToken, myMetaManager);
+            return DoCanUpdateVertex(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
         }
 
         /// <summary>
@@ -303,11 +305,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinitions">TODO: for update use VertexTypeUpdateDefinition</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
-        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
-        public void UpdateVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurityToken, MetaManager myMetaManager)
+        public void UpdateVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            DoUpdateVertex(myVertexTypeDefinitions, myTransaction, mySecurityToken, myMetaManager);
+            DoUpdateVertex(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
         }
 
         #endregion

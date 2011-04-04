@@ -32,11 +32,11 @@ namespace sones.GraphDB.Request
         /// Creates a new pipelineable insert request
         /// </summary>
         /// <param name="myInsertVertexRequest">The insert vertex type request</param>
-        /// <param name="mySecurityToken">The security token of the request initiator</param>
+        /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The current transaction token</param>
-        public PipelineableInsertRequest(RequestInsertVertex myInsertVertexRequest, SecurityToken mySecurityToken,
+        public PipelineableInsertRequest(RequestInsertVertex myInsertVertexRequest, SecurityToken mySecurity,
                                          TransactionToken myTransactionToken)
-            : base(mySecurityToken, myTransactionToken)
+            : base(mySecurity, myTransactionToken)
         {
             _request = myInsertVertexRequest;
         }

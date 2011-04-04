@@ -51,6 +51,7 @@
     <Compile Include="Manager\QueryPlan\IQueryPlanManager.cs" />
     <Compile Include="Manager\Request\RequestManager.cs" />
     <Compile Include="Manager\TypeManagement\ITypeManager.cs" />
+    <Compile Include="Manager\Vertex\IVertexManager.cs" />
     <Compile Include="Request\GetVertices\PipelineableGetVerticesRequest.cs" />
     <Compile Include="Manager\TypeManagement\EdgeTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\TypeManager.cs" />

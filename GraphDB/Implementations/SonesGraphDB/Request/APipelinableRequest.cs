@@ -45,12 +45,12 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Creates a new pipelineable request
         /// </summary>
-        /// <param name="mySecurityToken">The security token</param>
+        /// <param name="mySecurity">The security token</param>
         /// <param name="myTransactionToken">The transaction token</param>
-        protected APipelinableRequest(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        protected APipelinableRequest(SecurityToken mySecurity, TransactionToken myTransactionToken)
         {
             ID = Guid.NewGuid();
-            SecurityToken = mySecurityToken;
+            SecurityToken = mySecurity;
             TransactionToken = myTransactionToken;
         }
 

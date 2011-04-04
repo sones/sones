@@ -19,14 +19,14 @@ namespace sones.GraphDB
         #region create VertexType
 
         public TResult CreateVertexType<TResult>(
-            SecurityToken mySecurityToken, 
+            SecurityToken mySecurity, 
             TransactionToken myTransactionToken,
             RequestCreateVertexType myRequestCreateVertexType,
             Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
         {
             var id =
                 _requestManager.RegisterRequest(new PipelineableCreateVertexTypeRequest(myRequestCreateVertexType,
-                                                                                        mySecurityToken,
+                                                                                        mySecurity,
                                                                                         myTransactionToken));
 
             return ((PipelineableCreateVertexTypeRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
@@ -37,13 +37,13 @@ namespace sones.GraphDB
         #region clear
 
         public TResult Clear<TResult>(
-            SecurityToken mySecurityToken, 
+            SecurityToken mySecurity, 
             TransactionToken myTransactionToken,                  
             RequestClear myRequestClear, 
             Converter.ClearResultConverter<TResult> myOutputconverter)
         {
             var id =
-                _requestManager.RegisterRequest(new PipelineableClearRequest(myRequestClear, mySecurityToken,
+                _requestManager.RegisterRequest(new PipelineableClearRequest(myRequestClear, mySecurity,
                                                                              myTransactionToken));
 
             return ((PipelineableClearRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
@@ -54,13 +54,13 @@ namespace sones.GraphDB
         #region Insert
 
         public TResult Insert<TResult>(
-            SecurityToken mySecurityToken, 
+            SecurityToken mySecurity, 
             TransactionToken myTransactionToken,
             RequestInsertVertex myRequestInsert,
             Converter.InsertResultConverter<TResult> myOutputconverter)
         {
             var id =
-                _requestManager.RegisterRequest(new PipelineableInsertRequest(myRequestInsert, mySecurityToken,
+                _requestManager.RegisterRequest(new PipelineableInsertRequest(myRequestInsert, mySecurity,
                                                                               myTransactionToken));
 
             return ((PipelineableInsertRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
@@ -71,13 +71,13 @@ namespace sones.GraphDB
         #region GetVertices
 
         public TResult GetVertices<TResult>(
-            SecurityToken mySecurityToken,
+            SecurityToken mySecurity,
             TransactionToken myTransactionToken,
             RequestGetVertices myRequestGetVertices,
             Converter.GetVerticesResultConverter<TResult> myOutputconverter)
         {
             var id =
-                _requestManager.RegisterRequest(new PipelineableGetVerticesRequest(myRequestGetVertices, mySecurityToken, myTransactionToken));
+                _requestManager.RegisterRequest(new PipelineableGetVerticesRequest(myRequestGetVertices, mySecurity, myTransactionToken));
 
             return ((PipelineableGetVerticesRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
         }
@@ -88,17 +88,17 @@ namespace sones.GraphDB
 
         #region Transaction
 
-        public TransactionToken Begin(SecurityToken mySecurityToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
+        public TransactionToken Begin(SecurityToken mySecurity, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
         {
             throw new NotImplementedException();
         }
 
-        public void Commit(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public void Commit(SecurityToken mySecurity, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
 
-        public void Rollback(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public void Rollback(SecurityToken mySecurity, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
