@@ -243,23 +243,15 @@ namespace sones.Plugins.Index
         public void Add(TKey myKey, TValue myValue, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
         {
             Register(new AddOperation<TKey, TValue>(_Indexer, _Writer, myKey, myValue, myIndexAddStrategy));
-
-            //AddValues(myKey, myValue, myIndexAddStrategy);
         }
 
         public void Add(KeyValuePair<TKey, TValue> myKeyValuePair, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
         {
             Register(new AddOperation<TKey, TValue>(_Indexer, _Writer, myKeyValuePair, myIndexAddStrategy));
-            //AddValues(myKeyValuePair.Key, myKeyValuePair.Value, myIndexAddStrategy);
         }
 
         public void Add(IDictionary<TKey, TValue> myDictionary, IndexAddStrategy myIndexAddStrategy = IndexAddStrategy.UNIQUE)
         {
-            /*foreach (var item in myDictionary)
-            {
-                AddValues(item.Key, item.Value, myIndexAddStrategy);
-            }*/
-
             Register(new AddOperation<TKey, TValue>(_Indexer, _Writer, myDictionary, myIndexAddStrategy));
         }
 

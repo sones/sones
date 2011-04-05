@@ -109,7 +109,7 @@ namespace sones.Plugins.Index
             }
         }
 
-        public override object GetRequest(Guid myInterestingResult)
+        public override APipelinableRequest GetRequest(Guid myInterestingResult)
         {
             return null;
         }
