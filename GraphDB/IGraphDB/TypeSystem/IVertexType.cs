@@ -59,7 +59,7 @@ namespace sones.GraphDB.TypeSystem
         /// Gets the parent vertex type
         /// </summary>
         /// <returns>The parent vertex type</returns>
-        IVertexType GetParentVertexType();
+        IVertexType GetParentVertexType { get; }
 
         /// <summary>
         /// Has this vertex type child vertex types?
@@ -71,7 +71,7 @@ namespace sones.GraphDB.TypeSystem
         /// Get all child vertex types
         /// </summary>
         /// <returns>An enumerable of child vertex types, never <c>NULL</c>.</returns>
-        IEnumerable<IVertexType> GetChildVertexTypes();
+        IEnumerable<IVertexType> GetChildVertexTypes { get; }
 
         #endregion
 
@@ -82,7 +82,7 @@ namespace sones.GraphDB.TypeSystem
         /// </summary>
         /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
         /// <returns>An enumerable of attribute definitions</returns>
-        IEnumerable<IAttributeDefinition> GetAttributeDefinitions(Boolean myIncludeParents = false);
+        IEnumerable<IAttributeDefinition> GetAttributeDefinitions(bool myIncludeAncestorDefinitions);
 
         #region Properties
 
@@ -91,7 +91,7 @@ namespace sones.GraphDB.TypeSystem
         /// </summary>
         /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
         /// <returns>An enumerable of property definitions</returns>
-        IEnumerable<IPropertyDefinition> GetPropertyDefinitions(Boolean myIncludeParents = false);
+        IEnumerable<IPropertyDefinition> GetPropertyDefinitions(bool myIncludeAncestorDefinitions);
         
         #endregion
 
@@ -105,14 +105,14 @@ namespace sones.GraphDB.TypeSystem
         /// Has this vertex type any visible incoming edges?
         /// </summary>
         /// <returns>True or false</returns>
-        bool HasVisibleIncomingEdges { get; }
+        bool HasVisibleIncomingEdges(bool myIncludeAncestorDefinitions);
 
         /// <summary>
         /// Get all incoming edges
         /// </summary>
         /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
         /// <returns>An enumerable of incoming edge attributes</returns>
-        IEnumerable<IIncomingEdgeDefinition> GetIncomingEdgeDefinitions(Boolean myIncludeParents = false);
+        IEnumerable<IIncomingEdgeDefinition> GetIncomingEdgeDefinitions(bool myIncludeAncestorDefinitions);
 
         #endregion
 
@@ -124,14 +124,14 @@ namespace sones.GraphDB.TypeSystem
         /// Has this vertex type any outgoing edges?
         /// </summary>
         /// <returns>True or false</returns>
-        bool HasOutgoingEdges { get; }
+        bool HasOutgoingEdges(bool myIncludeAncestorDefinitions);
 
         /// <summary>
         /// Get all outgoing edges
         /// </summary>
         /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
         /// <returns>An enumerable of outgoing edge attributes</returns>
-        IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions(Boolean myIncludeParents = false);
+        IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions(bool myIncludeAncestorDefinitions);
 
         #endregion
 
@@ -145,7 +145,7 @@ namespace sones.GraphDB.TypeSystem
         /// A set of uniqueness definitions.
         /// </summary>
         /// <returns>An enumerable of uniqueness definitions. Never <c>NULL</c>.</returns>
-        IEnumerable<IUniqueDefinition> GetUniqueDefinitions();
+        IEnumerable<IUniqueDefinition> GetUniqueDefinitions(bool myIncludeAncestorDefinitions);
 
         #endregion
 
@@ -155,7 +155,7 @@ namespace sones.GraphDB.TypeSystem
         /// A set of index definitions.
         /// </summary>
         /// <returns>An enumerable of index definitions. Never <c>NULL</c>.</returns>
-        IEnumerable<IIndexDefinition> GetIndexDefinitions();
+        IEnumerable<IIndexDefinition> GetIndexDefinitions(bool myIncludeAncestorDefinitions);
 
         #endregion
     }

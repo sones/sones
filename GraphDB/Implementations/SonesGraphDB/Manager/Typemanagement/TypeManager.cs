@@ -37,7 +37,7 @@ using sones.Library.VertexStore;
  *     - if one of the base vertex types is requested, return a predefined result.
  * 
  *   - insert vertex
- *     - no type can derive from the five base types
+ *     - no type can derive from the base types
  */
 
 namespace sones.GraphDB.Manager.TypeManagement

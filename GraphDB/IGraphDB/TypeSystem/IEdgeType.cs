@@ -52,25 +52,25 @@ namespace sones.GraphDB.TypeSystem
         /// Has this edge type a parent edge type?
         /// </summary>
         /// <returns>True, if this edge type has a parent edge type, otherwise false.</returns>
-        bool HasParentEdgeType();
+        bool HasParentEdgeType { get; }
 
         /// <summary>
         /// Gets the parent vertex type
         /// </summary>
         /// <returns>The parent vertex type</returns>
-        IEdgeType GetParentEdgeType();
+        IEdgeType GetParentEdgeType { get; }
 
         /// <summary>
         /// Has this edge type child edge types?
         /// </summary>
         /// <returns>False, if this edge type has no child edge type, otherwise true.</returns>
-        bool HasChildEdgeTypes();
+        bool HasChildEdgeTypes { get; }
 
         /// <summary>
         /// Get all child edge types
         /// </summary>
         /// <returns>An enumerable of child edge types, never <c>NULL</c>.</returns>
-        IEnumerable<IEdgeType> GetChildEdgeTypes();
+        IEnumerable<IEdgeType> GetChildEdgeTypes { get; }
 
         #endregion
 
@@ -80,7 +80,7 @@ namespace sones.GraphDB.TypeSystem
         /// Get all visible incoming edges
         /// </summary>
         /// <returns>An enumerable of incoming edge attributes</returns>
-        IEnumerable<IPropertyDefinition> GetProperties();
+        IEnumerable<IPropertyDefinition> GetProperties { get; }
 
         #endregion
     }
