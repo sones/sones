@@ -4,6 +4,7 @@ using sones.GraphDB.TypeSystem;
 using sones.Library.LanguageExtensions;
 using sones.Library.Transaction;
 using sones.Library.Security;
+using System;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -14,6 +15,10 @@ namespace sones.GraphDB.Manager.TypeManagement
      */
     public sealed partial class TypeManager : ITypeManager
     {
+        public static UInt64 VertexTypeID = UInt64.MinValue;
+        public static UInt64 EdgeTypeID   = UInt64.MinValue + 1;
+
+
         #region VertexTypeManager
 
         #region Get
@@ -29,7 +34,12 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private bool DoCanAddVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            throw new System.NotImplementedException();
+            var vstore = myMetaManager.VertexStore;
+            var vmgr = myMetaManager.VertexManager;
+            var idxmgr = myMetaManager.IndexManager;
+            //vmgr.GetVertex();
+
+            throw new NotImplementedException();
         }
 
         private void DoAddVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)

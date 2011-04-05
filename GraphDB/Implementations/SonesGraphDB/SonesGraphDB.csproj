@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Expression\QueryPlan\IQueryPlan.cs" />
+    <Compile Include="Index\IndexDefinition.cs" />
     <Compile Include="Manager\Index\IIndexManager.cs" />
     <Compile Include="Manager\Index\IndexManager.cs" />
     <Compile Include="Manager\MetaManager.cs" />
@@ -63,6 +64,9 @@
     <Compile Include="Request\Insert\PipelineableInsertRequest.cs" />
     <Compile Include="SonesGraphDB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TypeManagement\IncomingEdgeDefinition.cs" />
+    <Compile Include="TypeManagement\OutgoingEdgeDefinition.cs" />
+    <Compile Include="TypeManagement\PropertyDefinition.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">

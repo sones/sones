@@ -38,6 +38,14 @@ namespace sones.GraphDB.TypeSystem
         /// </value>
         Boolean IsAbstract { get; }
 
+        /// <summary>
+        /// Defines whether this type can be used as parent type.
+        /// </summary>
+        /// <value>
+        /// If true, this edge type must not be used as a parent edge type.
+        /// </value>
+        Boolean IsSealed { get; }
+
         #region Inheritance
 
         /// <summary>

@@ -13,25 +13,32 @@ using sones.Library.VertexStore;
  *   - if someone changes the super type of an vertex or edge type 
  *     - Henning, Timo 
  *       - that this isn't a required feature for version 2.0
- *     
+ * 
  *   - undoability of the typemanager 
  *     - Henning, Timo 
  *       - the type manager is only responsible for converting type changing request into filesystem requests
  *       - the ability to undo an request should be implemented in the corresponding piplineable request
- *   
+ * 
+ *   - unique attributes
+ *     - Henning, Timo
+ *       - the type manager creates unique indices on attributes on the type that declares the uniqness attribute and all deriving types
+ * 
  *   - load 
  *     - Timo
  *       - will proove if the five main vertex types are available
  *       - will load the five main vetex types
  *       - looks for the maximum vertex type id
- *       
+ * 
  *   - create
  *     - Timo
  *       - will add the five main vertex types 
+ *       
+ *   - get vertex
+ *     - if one of the base vertex types is requested, return a predefined result.
  * 
+ *   - insert vertex
+ *     - no type can derive from the five base types
  */
-
-
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -80,7 +87,6 @@ namespace sones.GraphDB.Manager.TypeManagement
         //TODO: here we get a VertexStore(no security, no transaction) and an IndexManager, so we can create the five base vertex types, that are used to store the type manager knowlegde.
         public void Create(IIndexManager myIndexMgr, IVertexStore myVertexStore)
         {
-            throw new System.NotImplementedException();
         }
 
         #endregion

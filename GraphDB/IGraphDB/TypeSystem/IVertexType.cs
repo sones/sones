@@ -39,13 +39,21 @@ namespace sones.GraphDB.TypeSystem
         /// </value>
         Boolean IsAbstract { get; }
 
+        /// <summary>
+        /// Defines whether this type can be used as parent type.
+        /// </summary>
+        /// <value>
+        /// If true, this vertex type must not be used as a parent vertex type.
+        /// </value>
+        Boolean IsSealed { get; }
+
         #region Inheritance
 
         /// <summary>
         /// Has this vertex type a parent vertex type?
         /// </summary>
         /// <returns>True, if this vertex type has a parent vertex type, otherwise false.</returns>
-        bool HasParentVertexType();
+        bool HasParentVertexType { get; }
 
         /// <summary>
         /// Gets the parent vertex type
@@ -57,7 +65,7 @@ namespace sones.GraphDB.TypeSystem
         /// Has this vertex type child vertex types?
         /// </summary>
         /// <returns>False, if this vertex type has no child vertex type, otherwise true.</returns>
-        bool HasChildVertexTypes();
+        bool HasChildVertexTypes { get; }
 
         /// <summary>
         /// Get all child vertex types
@@ -97,7 +105,7 @@ namespace sones.GraphDB.TypeSystem
         /// Has this vertex type any visible incoming edges?
         /// </summary>
         /// <returns>True or false</returns>
-        bool HasVisibleIncomingEdges();
+        bool HasVisibleIncomingEdges { get; }
 
         /// <summary>
         /// Get all incoming edges
@@ -116,7 +124,7 @@ namespace sones.GraphDB.TypeSystem
         /// Has this vertex type any outgoing edges?
         /// </summary>
         /// <returns>True or false</returns>
-        bool HasOutgoingEdges();
+        bool HasOutgoingEdges { get; }
 
         /// <summary>
         /// Get all outgoing edges
