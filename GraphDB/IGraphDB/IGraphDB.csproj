@@ -72,6 +72,8 @@
     <Compile Include="ErrorHandling\VertexTypeErrors\VertexTypeDoesNotMatchException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\AGraphDBVertexTypeException.cs" />
     <Compile Include="ErrorHandling\UnknownDBException.cs" />
+    <Compile Include="Expression\Operator\BinaryOperator.cs" />
+    <Compile Include="Expression\Operator\UnaryOperator.cs" />
     <Compile Include="Manager\ILogicExpressionOptimizer.cs" />
     <Compile Include="Manager\IRequestScheduler.cs" />
     <Compile Include="Request\Clear\RequestClear.cs" />
@@ -90,11 +92,6 @@
     <Compile Include="Expression\Tree\ConstantExpression.cs" />
     <Compile Include="Expression\Tree\IExpression.cs" />
     <Compile Include="Expression\Tree\UnaryExpression.cs" />
-    <Compile Include="Expression\Operator\Comparative\IComparativeOperator.cs" />
-    <Compile Include="Expression\Operator\IBinaryOperator.cs" />
-    <Compile Include="Expression\Operator\IOperator.cs" />
-    <Compile Include="Expression\Operator\IUnaryOperator.cs" />
-    <Compile Include="Expression\Operator\Logic\ILogicOperator.cs" />
     <Compile Include="Request\Insert\EdgeDefinition.cs" />
     <Compile Include="Request\Insert\RequestInsertVertex.cs" />
     <Compile Include="Request\Insert\VertexInsert.cs" />

@@ -15,7 +15,7 @@ namespace sones.GraphDB.Expression
         /// <summary>
         /// The unary operator
         /// </summary>
-        public readonly IUnaryOperator Operator;
+        public readonly UnaryLogicOperator Operator;
 
         /// <summary>
         /// The single expression
@@ -31,7 +31,7 @@ namespace sones.GraphDB.Expression
         /// </summary>
         /// <param name="myUnaryOperator">The unary operator</param>
         /// <param name="myUnaryExpression">The expression</param>
-        public UnaryExpression(IUnaryOperator myUnaryOperator, IExpression myUnaryExpression)
+        public UnaryExpression(UnaryLogicOperator myUnaryOperator, IExpression myUnaryExpression)
         {
             Operator = myUnaryOperator;
             Expression = myUnaryExpression;

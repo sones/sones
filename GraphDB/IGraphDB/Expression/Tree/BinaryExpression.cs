@@ -20,7 +20,7 @@ namespace sones.GraphDB.Expression
         /// <summary>
         /// The binary operator
         /// </summary>
-        public readonly IBinaryOperator Operator;
+        public readonly BinaryOperator Operator;
 
         /// <summary>
         /// The right side of the BinaryExpression
@@ -37,7 +37,7 @@ namespace sones.GraphDB.Expression
         /// <param name="myLeftExpression">The left side of the BinaryExpression</param>
         /// <param name="myBinaryOperator">The binary operator</param>
         /// <param name="myRightExpression">The right side of the BinaryExpression</param>
-        public BinaryExpression (IExpression myLeftExpression, IBinaryOperator myBinaryOperator, IExpression myRightExpression)
+        public BinaryExpression (IExpression myLeftExpression, BinaryOperator myBinaryOperator, IExpression myRightExpression)
         {
             Left = myLeftExpression;
             Right = myRightExpression;
