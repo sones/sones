@@ -17,7 +17,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #endregion
 
-        internal static readonly VertexTypeVertexType Instance = new VertexTypeVertexType();
+        internal static readonly IVertexType Instance = new VertexTypeVertexType();
 
         private VertexTypeVertexType() : base(_Attributes) { }
 

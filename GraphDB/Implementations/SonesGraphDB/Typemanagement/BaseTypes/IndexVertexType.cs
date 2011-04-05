@@ -19,7 +19,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #endregion
 
-        internal static readonly IndexVertexType Instance = new IndexVertexType();
+        internal static readonly IVertexType Instance = new IndexVertexType();
 
         private IndexVertexType() : base(_Attributes) { }
 
@@ -78,12 +78,12 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         IEnumerable<IAttributeDefinition> IVertexType.GetAttributeDefinitions(bool myIncludeParents)
         {
-            return base.GetAttributeDefinitions();
+            return base.GetAttributeDefinitions(myIncludeParents);
         }
 
         IEnumerable<IPropertyDefinition> IVertexType.GetPropertyDefinitions(bool myIncludeParents)
         {
-            return base.GetPropertyDefinitions();
+            return base.GetPropertyDefinitions(myIncludeParents);
         }
 
         IIncomingEdgeDefinition IVertexType.GetIncomingEdgeDefinition(string myEdgeName)
@@ -98,7 +98,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeParents)
         {
-            return base.GetIncomingEdgeDefinitions();
+            return base.GetIncomingEdgeDefinitions(myIncludeParents);
         }
 
         IOutgoingEdgeDefinition IVertexType.GetOutgoingEdgeDefinition(string myEdgeName)
@@ -113,7 +113,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         IEnumerable<IOutgoingEdgeDefinition> IVertexType.GetOutgoingEdgeDefinitions(bool myIncludeParents)
         {
-            return base.GetOutgoingEdgeDefinitions();
+            return base.GetOutgoingEdgeDefinitions(myIncludeParents);
         }
 
         IEnumerable<IUniqueDefinition> IVertexType.GetUniqueDefinitions(bool myIncludeAncestorDefinitions)

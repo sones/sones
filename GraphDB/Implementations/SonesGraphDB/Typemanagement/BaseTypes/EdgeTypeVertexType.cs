@@ -13,9 +13,9 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #endregion
 
-        internal static readonly EdgeTypeVertexType Instance = new EdgeTypeVertexType();
+        internal static readonly IVertexType Instance = new EdgeTypeVertexType();
 
-        private EdgeTypeVertexType(): base(_Attributes) {}
+        private EdgeTypeVertexType(): base(_Attributes, BaseTypeVertexType.Instance.GetAttributeDefinitions(true)) {}
 
         #region IVertexType
 
@@ -72,12 +72,12 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         IEnumerable<IAttributeDefinition> IVertexType.GetAttributeDefinitions(bool myIncludeParents)
         {
-            return base.GetAttributeDefinitions();
+            return base.GetAttributeDefinitions(myIncludeParents);
         }
 
         IEnumerable<IPropertyDefinition> IVertexType.GetPropertyDefinitions(bool myIncludeParents)
         {
-            return base.GetPropertyDefinitions();
+            return base.GetPropertyDefinitions(myIncludeParents);
         }
 
         IIncomingEdgeDefinition IVertexType.GetIncomingEdgeDefinition(string myEdgeName)

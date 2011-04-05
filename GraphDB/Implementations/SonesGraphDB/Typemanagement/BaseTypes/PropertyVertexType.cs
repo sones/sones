@@ -16,9 +16,9 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #endregion
 
-        internal static readonly PropertyVertexType Instance = new PropertyVertexType();
+        internal static readonly IVertexType Instance = new PropertyVertexType();
 
-        private PropertyVertexType() : base(_Attributes) {}
+        private PropertyVertexType() : base(_Attributes, AttributeVertexType.Instance.GetAttributeDefinitions(true)) {}
 
         #region IVertexType Members
 

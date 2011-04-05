@@ -17,9 +17,9 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #endregion
 
-        internal static readonly EdgeVertexType Instance = new EdgeVertexType();
+        internal static readonly IVertexType Instance = new EdgeVertexType();
 
-        private EdgeVertexType() : base(_Attributes) { }
+        private EdgeVertexType() : base(_Attributes, AttributeVertexType.Instance.GetAttributeDefinitions(true)) { }
 
         #region IVertexType Members
 

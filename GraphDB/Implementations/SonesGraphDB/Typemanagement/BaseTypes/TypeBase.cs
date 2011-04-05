@@ -12,47 +12,64 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
     {
         #region Data
 
-        private readonly IEnumerable<IAttributeDefinition> _attributes;
         private readonly Dictionary<String, IPropertyDefinition> _properties;
         private readonly Dictionary<String, IOutgoingEdgeDefinition> _outgoing;
         private readonly Dictionary<String, IIncomingEdgeDefinition> _incoming;
+        private readonly IEnumerable<IAttributeDefinition> _ownAttributes;
+        private readonly IEnumerable<IPropertyDefinition> _ownProperties;
+        private readonly IEnumerable<IOutgoingEdgeDefinition> _ownOutgoing;
+        private readonly IEnumerable<IIncomingEdgeDefinition> _ownIncoming;
+        private readonly IEnumerable<IAttributeDefinition> _allAttributes;
+        private readonly IEnumerable<IPropertyDefinition> _allProperties;
+        private readonly IEnumerable<IOutgoingEdgeDefinition> _allOutgoing;
+        private readonly IEnumerable<IIncomingEdgeDefinition> _allIncoming;
 
         #endregion
 
         #region c'tor
 
-        protected TypeBase(IEnumerable<IAttributeDefinition> myAttributes)
+        protected TypeBase(IEnumerable<IAttributeDefinition> myAttributes) : this(myAttributes, Enumerable.Empty<IAttributeDefinition>()) { }
+
+        protected TypeBase(IEnumerable<IAttributeDefinition> myAttributes, IEnumerable<IAttributeDefinition> myAncestorAttributes)
         {
-            _attributes = myAttributes;
-            _properties   = _attributes.OfType<IPropertyDefinition>().ToDictionary(prop => prop.Name);
-            _outgoing = _attributes.OfType<IOutgoingEdgeDefinition>().ToDictionary(edge => edge.Name);
-            _incoming = _attributes.OfType<IIncomingEdgeDefinition>().ToDictionary(edge => edge.Name);
+            _ownAttributes = myAttributes;
+            _allAttributes = Enumerable.Union(myAttributes, myAncestorAttributes);
+
+            _ownProperties = _ownAttributes.OfType<IPropertyDefinition>().ToArray();
+            _ownOutgoing   = _ownAttributes.OfType<IOutgoingEdgeDefinition>().ToArray();
+            _ownIncoming   = _ownAttributes.OfType<IIncomingEdgeDefinition>().ToArray();
+
+            _allProperties = _allAttributes.OfType<IPropertyDefinition>().ToArray();
+            _allOutgoing   = _allAttributes.OfType<IOutgoingEdgeDefinition>().ToArray();
+            _allIncoming   = _allAttributes.OfType<IIncomingEdgeDefinition>().ToArray();
+
+            _properties = _allProperties.ToDictionary(prop => prop.Name);
+            _outgoing   = _allOutgoing.OfType<IOutgoingEdgeDefinition>().ToDictionary(edge => edge.Name);
+            _incoming   = _allIncoming.OfType<IIncomingEdgeDefinition>().ToDictionary(edge => edge.Name);
         }
 
         #endregion
 
         #region protected methods
 
-        protected IEnumerable<IAttributeDefinition> GetAttributeDefinitions()
+        protected IEnumerable<IAttributeDefinition> GetAttributeDefinitions(bool myIncludeAncestor)
         {
-            return _attributes;
+            return (myIncludeAncestor)? _allAttributes : _ownAttributes;
         }
 
-        protected IEnumerable<IPropertyDefinition> GetPropertyDefinitions()
+        protected IEnumerable<IPropertyDefinition> GetPropertyDefinitions(bool myIncludeAncestor)
         {
-            return _properties.Values;
+            return (myIncludeAncestor) ? _allProperties : _ownProperties;
         }
 
-        protected IIncomingEdgeDefinition GetIncomingEdgeDefinition(string myEdgeName)
+        protected IEnumerable<IIncomingEdgeDefinition> GetIncomingEdgeDefinitions(bool myIncludeAncestor)
         {
-            IIncomingEdgeDefinition result;
-            _incoming.TryGetValue(myEdgeName, out result);
-            return result;
+            return (myIncludeAncestor) ? _allIncoming : _ownIncoming;
         }
 
-        protected IEnumerable<IIncomingEdgeDefinition> GetIncomingEdgeDefinitions()
+        protected IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions(bool myIncludeAncestor)
         {
-            return _incoming.Values;
+            return (myIncludeAncestor) ? _allOutgoing : _ownOutgoing;
         }
 
         protected IOutgoingEdgeDefinition GetOutgoingEdgeDefinition(string myEdgeName)
@@ -62,9 +79,11 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             return result;
         }
 
-        protected IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions()
+        protected IIncomingEdgeDefinition GetIncomingEdgeDefinition(string myEdgeName)
         {
-            return _outgoing.Values;
+            IIncomingEdgeDefinition result;
+            _incoming.TryGetValue(myEdgeName, out result);
+            return result;
         }
 
         #endregion
