@@ -10,6 +10,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
     {        
         #region Data
 
+        private static readonly IEnumerable<IVertexType> _Childs = new IVertexType[0];
+
         private static readonly IAttributeDefinition[] _Attributes = new IAttributeDefinition[]
         {
             //TODO
@@ -21,16 +23,17 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         private VertexTypeVertexType() : base(_Attributes) { }
 
+
         #region IVertexType Members
 
         string IVertexType.Name
         {
-            get { throw new NotImplementedException(); }
+            get { return "VertexType"; }
         }
 
         IBehaviour IVertexType.Behaviour
         {
-            get { throw new NotImplementedException(); }
+            get { return null; }
         }
 
         string IVertexType.Comment
@@ -40,83 +43,77 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         bool IVertexType.IsAbstract
         {
-            get { throw new NotImplementedException(); }
+            get { return false; }
         }
 
         bool IVertexType.IsSealed
         {
-            get { throw new NotImplementedException(); }
+            get { return true; }
         }
 
         bool IVertexType.HasParentVertexType
         {
-            get { throw new NotImplementedException(); }
+            get { return true; }
         }
 
         IVertexType IVertexType.GetParentVertexType
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { return BaseTypeVertexType.Instance; }
         }
 
         bool IVertexType.HasChildVertexTypes
         {
-            get { throw new NotImplementedException(); }
+            get { return false; }
         }
 
         IEnumerable<IVertexType> IVertexType.GetChildVertexTypes
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            get { return _Childs; }
         }
 
-        IEnumerable<IAttributeDefinition> IVertexType.GetAttributeDefinitions(bool myIncludeParents)
+        IEnumerable<IAttributeDefinition> IVertexType.GetAttributeDefinitions(bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            return base.GetAttributeDefinitions(myIncludeAncestorDefinitions);
         }
 
-        IEnumerable<IPropertyDefinition> IVertexType.GetPropertyDefinitions(bool myIncludeParents)
+        IEnumerable<IPropertyDefinition> IVertexType.GetPropertyDefinitions(bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            return base.GetPropertyDefinitions(myIncludeAncestorDefinitions);
         }
 
         IIncomingEdgeDefinition IVertexType.GetIncomingEdgeDefinition(string myEdgeName)
         {
-            throw new NotImplementedException();
+            return base.GetIncomingEdgeDefinition(myEdgeName);
         }
 
-        bool IVertexType.HasVisibleIncomingEdges(bool myIncludeParents)
+        bool IVertexType.HasVisibleIncomingEdges(bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            return base.HasIncomingDefinitions(myIncludeAncestorDefinitions);
         }
 
-        IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeParents)
+        IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            return base.GetIncomingEdgeDefinitions(myIncludeAncestorDefinitions);
         }
 
         IOutgoingEdgeDefinition IVertexType.GetOutgoingEdgeDefinition(string myEdgeName)
         {
-            throw new NotImplementedException();
+            return base.GetOutgoingEdgeDefinition(myEdgeName);
         }
 
-        bool IVertexType.HasOutgoingEdges(bool myIncludeParents)
+        bool IVertexType.HasOutgoingEdges(bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            return base.HasOutgoingDefinitions(myIncludeAncestorDefinitions);
         }
 
-        IEnumerable<IOutgoingEdgeDefinition> IVertexType.GetOutgoingEdgeDefinitions(bool myIncludeParents)
+        IEnumerable<IOutgoingEdgeDefinition> IVertexType.GetOutgoingEdgeDefinitions(bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            return base.GetOutgoingEdgeDefinitions(myIncludeAncestorDefinitions);
         }
 
         IEnumerable<IUniqueDefinition> IVertexType.GetUniqueDefinitions(bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException;
         }
 
         IEnumerable<IIndexDefinition> IVertexType.GetIndexDefinitions(bool myIncludeAncestorDefinitions)

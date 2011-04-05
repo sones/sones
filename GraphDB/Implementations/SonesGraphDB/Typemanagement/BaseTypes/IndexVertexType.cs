@@ -13,6 +13,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
     {
         #region Data
 
+        private static readonly IEnumerable<IVertexType> _Childs = new IVertexType[0];
+
         private static readonly IAttributeDefinition[] _Attributes = new IAttributeDefinition[]
         {
         };
@@ -23,16 +25,16 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         private IndexVertexType() : base(_Attributes) { }
 
-        #region IVertexType
+        #region IVertexType Members
 
         string IVertexType.Name
         {
-            get { return "Name"; }
+            get { return "Index"; }
         }
 
         IBehaviour IVertexType.Behaviour
         {
-            get { throw new NotImplementedException(); }
+            get { return null; }
         }
 
         string IVertexType.Comment
@@ -57,10 +59,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         IVertexType IVertexType.GetParentVertexType
         {
-            get
-            {
-                return VertexVertexType.Instance;
-            }
+            get { return VertexVertexType.Instance; }
         }
 
         bool IVertexType.HasChildVertexTypes
@@ -70,20 +69,17 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         IEnumerable<IVertexType> IVertexType.GetChildVertexTypes
         {
-            get
-            {
-                return Enumerable.Empty<IVertexType>();
-            }
+            get { return _Childs; }
         }
 
-        IEnumerable<IAttributeDefinition> IVertexType.GetAttributeDefinitions(bool myIncludeParents)
+        IEnumerable<IAttributeDefinition> IVertexType.GetAttributeDefinitions(bool myIncludeAncestorDefinitions)
         {
-            return base.GetAttributeDefinitions(myIncludeParents);
+            return base.GetAttributeDefinitions();
         }
 
-        IEnumerable<IPropertyDefinition> IVertexType.GetPropertyDefinitions(bool myIncludeParents)
+        IEnumerable<IPropertyDefinition> IVertexType.GetPropertyDefinitions(bool myIncludeAncestorDefinitions)
         {
-            return base.GetPropertyDefinitions(myIncludeParents);
+            return base.GetPropertyDefinitions();
         }
 
         IIncomingEdgeDefinition IVertexType.GetIncomingEdgeDefinition(string myEdgeName)
@@ -91,14 +87,14 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             return base.GetIncomingEdgeDefinition(myEdgeName);
         }
 
-        bool IVertexType.HasVisibleIncomingEdges(bool myIncludeParents)
+        bool IVertexType.HasVisibleIncomingEdges(bool myIncludeAncestorDefinitions)
         {
-            return false;
+            return base.HasIncomingDefinitions();
         }
 
-        IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeParents)
+        IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeAncestorDefinitions)
         {
-            return base.GetIncomingEdgeDefinitions(myIncludeParents);
+            return base.GetIncomingEdgeDefinitions();
         }
 
         IOutgoingEdgeDefinition IVertexType.GetOutgoingEdgeDefinition(string myEdgeName)
@@ -106,14 +102,14 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             return base.GetOutgoingEdgeDefinition(myEdgeName);
         }
 
-        bool IVertexType.HasOutgoingEdges(bool myIncludeParents)
+        bool IVertexType.HasOutgoingEdges(bool myIncludeAncestorDefinitions)
         {
-            return true;
+            return base.HasOutgoingDefinitions();
         }
 
-        IEnumerable<IOutgoingEdgeDefinition> IVertexType.GetOutgoingEdgeDefinitions(bool myIncludeParents)
+        IEnumerable<IOutgoingEdgeDefinition> IVertexType.GetOutgoingEdgeDefinitions(bool myIncludeAncestorDefinitions)
         {
-            return base.GetOutgoingEdgeDefinitions(myIncludeParents);
+            return base.GetOutgoingEdgeDefinitions();
         }
 
         IEnumerable<IUniqueDefinition> IVertexType.GetUniqueDefinitions(bool myIncludeAncestorDefinitions)
@@ -127,6 +123,5 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         }
 
         #endregion
-
     }
 }

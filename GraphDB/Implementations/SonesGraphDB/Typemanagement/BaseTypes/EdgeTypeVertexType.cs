@@ -7,6 +7,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
     {
         #region Data
 
+        private static readonly IEnumerable<IVertexType> _Childs = new IVertexType[0];
+
         private static readonly IAttributeDefinition[] _Attributes = new IAttributeDefinition[]
         {
         };
@@ -64,10 +66,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         IEnumerable<IVertexType> IVertexType.GetChildVertexTypes
         {
-            get
-            {
-                return Enumerable.Empty<IVertexType>();
-            }
+            get { return _Childs; }
         }
 
         IEnumerable<IAttributeDefinition> IVertexType.GetAttributeDefinitions(bool myIncludeParents)
@@ -80,34 +79,34 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             return base.GetPropertyDefinitions(myIncludeParents);
         }
 
+        IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeParents)
+        {
+            return base.GetIncomingEdgeDefinitions(myIncludeParents);
+        }
+
+        IEnumerable<IOutgoingEdgeDefinition> IVertexType.GetOutgoingEdgeDefinitions(bool myIncludeParents)
+        {
+            return base.GetOutgoingEdgeDefinitions(myIncludeParents);
+        }
+
         IIncomingEdgeDefinition IVertexType.GetIncomingEdgeDefinition(string myEdgeName)
         {
             return base.GetIncomingEdgeDefinition(myEdgeName);
         }
 
-        bool IVertexType.HasVisibleIncomingEdges(bool myIncludeParents)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeParents)
-        {
-            throw new System.NotImplementedException();
-        }
-
         IOutgoingEdgeDefinition IVertexType.GetOutgoingEdgeDefinition(string myEdgeName)
         {
-            throw new System.NotImplementedException();
+            return base.GetOutgoingEdgeDefinition(myEdgeName);
+        }
+
+        bool IVertexType.HasVisibleIncomingEdges(bool myIncludeParents)
+        {
+            return base.HasIncomingDefinitions(myIncludeParents);
         }
 
         bool IVertexType.HasOutgoingEdges(bool myIncludeParents)
         {
-            throw new System.NotImplementedException();
-        }
-
-        IEnumerable<IOutgoingEdgeDefinition> IVertexType.GetOutgoingEdgeDefinitions(bool myIncludeParents)
-        {
-            throw new System.NotImplementedException();
+            return base.HasOutgoingDefinitions(myIncludeParents);
         }
 
         IEnumerable<IUniqueDefinition> IVertexType.GetUniqueDefinitions(bool myIncludeAncestorDefinitions)

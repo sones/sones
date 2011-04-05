@@ -23,6 +23,16 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         private readonly IEnumerable<IPropertyDefinition> _allProperties;
         private readonly IEnumerable<IOutgoingEdgeDefinition> _allOutgoing;
         private readonly IEnumerable<IIncomingEdgeDefinition> _allIncoming;
+        private readonly bool _ownHasAttributes;
+        private readonly bool _ownHasProperties;
+        private readonly bool _ownHasOutgoing;
+        private readonly bool _ownHasIncoming;
+        private readonly bool _allHasAttributes;
+        private readonly bool _allHasProperties;
+        private readonly bool _allHasOutgoing;
+        private readonly bool _allHasIncoming;
+
+
 
         #endregion
 
@@ -46,6 +56,16 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             _properties = _allProperties.ToDictionary(prop => prop.Name);
             _outgoing   = _allOutgoing.OfType<IOutgoingEdgeDefinition>().ToDictionary(edge => edge.Name);
             _incoming   = _allIncoming.OfType<IIncomingEdgeDefinition>().ToDictionary(edge => edge.Name);
+
+            _ownHasAttributes = _ownAttributes.Count() > 0;
+            _ownHasProperties = _ownProperties.Count() > 0;
+            _ownHasOutgoing   = _ownOutgoing.Count() > 0;
+            _ownHasIncoming   = _ownIncoming.Count() > 0;
+            _allHasAttributes = _allAttributes.Count() > 0;
+            _allHasProperties = _allProperties.Count() > 0;
+            _allHasOutgoing   = _allOutgoing.Count() > 0;
+            _allHasIncoming   = _allIncoming.Count() > 0;
+
         }
 
         #endregion
@@ -71,6 +91,68 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         {
             return (myIncludeAncestor) ? _allOutgoing : _ownOutgoing;
         }
+
+        protected IEnumerable<IAttributeDefinition> GetAttributeDefinitions()
+        {
+            return _ownAttributes;
+        }
+
+        protected IEnumerable<IPropertyDefinition> GetPropertyDefinitions()
+        {
+            return _ownProperties;
+        }
+
+        protected IEnumerable<IIncomingEdgeDefinition> GetIncomingEdgeDefinitions()
+        {
+            return _ownIncoming;
+        }
+
+        protected IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions()
+        {
+            return _ownOutgoing;
+        }
+
+
+        protected bool HasAttributeDefinitions(bool myIncludeAncestor)
+        {
+            return (myIncludeAncestor) ? _allHasAttributes : _ownHasAttributes;
+        }
+
+        protected bool HasPropertyDefinitions(bool myIncludeAncestor)
+        {
+            return (myIncludeAncestor) ? _allHasProperties : _ownHasProperties;
+        }
+
+        protected bool HasIncomingDefinitions(bool myIncludeAncestor)
+        {
+            return (myIncludeAncestor) ? _allHasIncoming : _ownHasIncoming;
+        }
+
+        protected bool HasOutgoingDefinitions(bool myIncludeAncestor)
+        {
+            return (myIncludeAncestor) ? _allHasOutgoing : _ownHasOutgoing;
+        }
+
+        protected bool HasAttributeDefinitions()
+        {
+            return _ownHasAttributes;
+        }
+
+        protected bool HasPropertyDefinitions()
+        {
+            return _ownHasProperties;
+        }
+
+        protected bool HasIncomingDefinitions()
+        {
+            return _ownHasIncoming;
+        }
+
+        protected bool HasOutgoingDefinitions()
+        {
+            return _ownHasOutgoing;
+        }
+
 
         protected IOutgoingEdgeDefinition GetOutgoingEdgeDefinition(string myEdgeName)
         {

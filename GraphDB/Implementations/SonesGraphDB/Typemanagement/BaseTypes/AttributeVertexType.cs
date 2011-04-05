@@ -10,7 +10,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
     {
         #region Data
 
-        private static readonly IVertexType[] _Childs = new IVertexType[] 
+        private static readonly IEnumerable<IVertexType> _Childs = new IVertexType[] 
         { 
             EdgeVertexType.Instance,
             PropertyVertexType.Instance
@@ -83,44 +83,45 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             }
         }
 
+
         IEnumerable<IAttributeDefinition> IVertexType.GetAttributeDefinitions(bool myIncludeParents)
         {
-            return base.GetAttributeDefinitions(myIncludeParents);
+            return base.GetAttributeDefinitions();
         }
 
         IEnumerable<IPropertyDefinition> IVertexType.GetPropertyDefinitions(bool myIncludeParents)
         {
-            return base.GetPropertyDefinitions(myIncludeParents);
+            return base.GetPropertyDefinitions();
+        }
+
+        IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeParents)
+        {
+            return base.GetIncomingEdgeDefinitions();
+        }
+
+        IEnumerable<IOutgoingEdgeDefinition> IVertexType.GetOutgoingEdgeDefinitions(bool myIncludeParents)
+        {
+            return base.GetOutgoingEdgeDefinitions();
+        }
+
+        bool IVertexType.HasVisibleIncomingEdges(bool myIncludeParents)
+        {
+            return base.HasIncomingDefinitions();
+        }
+
+        bool IVertexType.HasOutgoingEdges(bool myIncludeParents)
+        {
+            return base.HasOutgoingDefinitions();
+        }
+
+        IOutgoingEdgeDefinition IVertexType.GetOutgoingEdgeDefinition(string myEdgeName)
+        {
+            return base.GetOutgoingEdgeDefinition(myEdgeName);
         }
 
         IIncomingEdgeDefinition IVertexType.GetIncomingEdgeDefinition(string myEdgeName)
         {
             return base.GetIncomingEdgeDefinition(myEdgeName);
-        }
-
-        bool IVertexType.HasVisibleIncomingEdges(bool myIncludeParents)
-        {
-            return false;
-        }
-
-        IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeParents)
-        {
-            return base.GetIncomingEdgeDefinitions(myIncludeParents);
-        }
-
-        IOutgoingEdgeDefinition IVertexType.GetOutgoingEdgeDefinition(string myEdgeName)
-        {
-            return GetOutgoingEdgeDefinition(myEdgeName);
-        }
-
-        bool IVertexType.HasOutgoingEdges(bool myIncludeParents)
-        {
-            return true;
-        }
-
-        IEnumerable<IOutgoingEdgeDefinition> IVertexType.GetOutgoingEdgeDefinitions(bool myIncludeParents)
-        {
-            return GetOutgoingEdgeDefinitions(myIncludeParents);
         }
 
         IEnumerable<IUniqueDefinition> IVertexType.GetUniqueDefinitions(bool myIncludeAncestorDefinitions)
