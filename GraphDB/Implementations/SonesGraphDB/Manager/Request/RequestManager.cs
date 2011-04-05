@@ -262,11 +262,29 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// gracefully shutdown of the requestmanager
         /// </summary>
-        public void Shutdown()
+        /// <param name="myIsGracefulshutdown">If true, the RequestManager does not accept any more Requests and processes the remaining ones. Otherwise the remaining requests are canceled asap.</param>
+        public void Shutdown(Boolean myIsGracefulshutdown = true)
         {
-            _cts.Cancel();
-            Complete(_incomingRequests);
-            Complete(_executableRequests);
+            if (myIsGracefulshutdown)
+            {
+                Complete(_incomingRequests);
+
+                while (true)
+                {
+                    if (_incomingRequests.IsCompleted)
+                    {
+                        break;
+                    }
+                }
+                Complete(_executableRequests);
+                _cts.Cancel();
+            }
+            else
+            {
+                _cts.Cancel();
+                Complete(_incomingRequests);
+                Complete(_executableRequests);
+            }
 
             Task.WaitAll(_tasks);
 
