@@ -75,9 +75,9 @@
     <Compile Include="Request\Insert\PipelineableInsertRequest.cs" />
     <Compile Include="SonesGraphDB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TypeManagement\IncomingEdgeDefinition.cs" />
-    <Compile Include="TypeManagement\OutgoingEdgeDefinition.cs" />
-    <Compile Include="TypeManagement\PropertyDefinition.cs" />
+    <Compile Include="TypeManagement\BaseTypes\IncomingEdgeDefinition.cs" />
+    <Compile Include="TypeManagement\BaseTypes\OutgoingEdgeDefinition.cs" />
+    <Compile Include="TypeManagement\BaseTypes\PropertyDefinition.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">

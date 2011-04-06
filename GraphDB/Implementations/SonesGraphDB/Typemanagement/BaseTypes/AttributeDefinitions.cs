@@ -17,7 +17,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         #region Vertex
 
         /// <summary>
-        /// Stores how many attributes are at least in vertex type Vertex
+        /// Stores the offset for attribute ids for types that inherits from Vertex
         /// </summary>
         private const Int64 VertexOffset = 5;
 
@@ -71,7 +71,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         #region all types
 
         /// <summary>
-        /// Stores how many attributes are atleast in all types
+        /// Stores the offset for attribute ids for types that are base types (BaseType, Attribute, Index)
         /// </summary>
         private const Int64 AllTypesOffset = VertexOffset + 4;
 
@@ -115,6 +115,9 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #region BaseType
 
+        /// <summary>
+        /// Stores the offset for attribute ids for types that inherits from BaseType
+        /// </summary>
         private const Int64 BaseTypeOffset = AllTypesOffset + 4;
 
         internal static readonly IPropertyDefinition IsAbstractOnBaseType = new PropertyDefinition()
@@ -155,8 +158,6 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #region VertexType
 
-        private const Int64 VertexTypeOffset = BaseTypeOffset + 4;
-
         internal static readonly IOutgoingEdgeDefinition ParentOnVertexType = new OutgoingEdgeDefinition()
         {
             AttributeID = Int64.MinValue + BaseTypeOffset,
@@ -193,8 +194,6 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #region EdgeType
 
-        private const Int64 EdgeTypeOffset = BaseTypeOffset + 2;
-
         internal static readonly IOutgoingEdgeDefinition ParentOnEdgeType = new OutgoingEdgeDefinition()
         {
             AttributeID = Int64.MinValue + BaseTypeOffset,
@@ -215,6 +214,9 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #region Attribute
 
+        /// <summary>
+        /// Stores the offset for attribute ids for types that inherits from Attribute
+        /// </summary>
         private const Int64 AttributeOffset = AllTypesOffset + 2;
 
         internal static readonly IOutgoingEdgeDefinition TypeOnAttribute = new OutgoingEdgeDefinition()
@@ -239,8 +241,6 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #region Edge
 
-        private const Int64 EdgeOffset = AttributeOffset + 1;
-
         internal static readonly IOutgoingEdgeDefinition EdgeTypeOnEdge = new OutgoingEdgeDefinition()
         {
             AttributeID = Int64.MinValue + AttributeOffset,
@@ -253,8 +253,6 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         #endregion
 
         #region Property
-
-        private const Int64 PropertyOffset = AttributeOffset + 2;
 
         internal static readonly IPropertyDefinition IsMandatoryOnProperty = new PropertyDefinition()
         {
@@ -275,8 +273,6 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         #endregion
 
         #region Index
-
-        private const Int64 IndexOffset = AllTypesOffset + 6;
 
         internal static readonly IOutgoingEdgeDefinition IndexedPropertiesOnIndex = new OutgoingEdgeDefinition()
         {
