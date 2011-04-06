@@ -38,8 +38,6 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #region c'tor
 
-        protected TypeBase(IEnumerable<IAttributeDefinition> myAttributes) : this(myAttributes, Enumerable.Empty<IAttributeDefinition>()) { }
-
         protected TypeBase(IEnumerable<IAttributeDefinition> myAttributes, IEnumerable<IAttributeDefinition> myAncestorAttributes)
         {
             _ownAttributes = myAttributes;

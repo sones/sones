@@ -56,15 +56,16 @@
     <Compile Include="Request\GetVertices\PipelineableGetVerticesRequest.cs" />
     <Compile Include="Manager\TypeManagement\EdgeTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\TypeManager.cs" />
+    <Compile Include="TypeManagement\BaseTypes\BaseVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\NormalEdgeType.cs" />
     <Compile Include="TypeManagement\BaseTypes\AttributeVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\BaseTypeVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\EdgeTypeVertexType.cs" />
-    <Compile Include="TypeManagement\BaseTypes\EdgeVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\IndexVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\AttributeDefinitions.cs" />
     <Compile Include="TypeManagement\BaseTypes\PropertyVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\TypeBase.cs" />
+    <Compile Include="TypeManagement\BaseTypes\BaseVertexTypeFactory.cs" />
     <Compile Include="TypeManagement\BaseTypes\VertexTypeVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\VertexVertexType.cs" />
     <Compile Include="TypeManagement\Exceptions\NotValidatedException.cs" />

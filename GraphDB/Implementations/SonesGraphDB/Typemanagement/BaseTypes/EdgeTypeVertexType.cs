@@ -15,11 +15,15 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             AttributeDefinitions.ChildrenOnEdgeType
         };
 
+        private static readonly IVertexType _Parent = BaseVertexTypeFactory.GetInstance(BaseVertexType.BaseType);
+
         #endregion
 
-        internal static readonly IVertexType Instance = new EdgeTypeVertexType();
+        #region c'tor
 
-        private EdgeTypeVertexType(): base(_Attributes, BaseTypeVertexType.Instance.GetAttributeDefinitions(true)) {}
+        internal EdgeTypeVertexType(): base(_Attributes, _Parent.GetAttributeDefinitions(true)) {}
+        
+        #endregion
 
         #region IVertexType
 
@@ -55,10 +59,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         IVertexType IVertexType.GetParentVertexType
         {
-            get
-            {
-                return BaseTypeVertexType.Instance;
-            }
+            get { return _Parent; }
         }
 
         bool IVertexType.HasChildVertexTypes

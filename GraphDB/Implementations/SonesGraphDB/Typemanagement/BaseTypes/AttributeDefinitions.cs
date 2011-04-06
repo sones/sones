@@ -163,8 +163,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             AttributeID = Int64.MinValue + BaseTypeOffset,
             EdgeType = NormalEdgeType.Instance,
             Name = "Parent",
-            SourceVertexType = VertexTypeVertexType.Instance,
-            TargetVertexType = VertexTypeVertexType.Instance
+            SourceVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.VertexType),
+            TargetVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.VertexType)
         };
 
         internal static readonly IIncomingEdgeDefinition ChildrenOnVertexType = new IncomingEdgeDefinition()
@@ -179,8 +179,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             AttributeID = Int64.MinValue + BaseTypeOffset + 2,
             EdgeType = NormalEdgeType.Instance,
             Name = "UniquenessDefinitions",
-            SourceVertexType = VertexTypeVertexType.Instance,
-            TargetVertexType = IndexVertexType.Instance
+            SourceVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.VertexType),
+            TargetVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.Index)
         };
 
         internal static readonly IIncomingEdgeDefinition IndicesOnVertexType = new IncomingEdgeDefinition()
@@ -199,8 +199,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             AttributeID = Int64.MinValue + BaseTypeOffset,
             EdgeType = NormalEdgeType.Instance,
             Name = "Parent",
-            SourceVertexType = EdgeVertexType.Instance,
-            TargetVertexType = EdgeVertexType.Instance
+            SourceVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.EdgeType),
+            TargetVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.EdgeType)
         };
 
         internal static readonly IIncomingEdgeDefinition ChildrenOnEdgeType = new IncomingEdgeDefinition()
@@ -224,8 +224,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             AttributeID = Int64.MinValue + AllTypesOffset ,
             EdgeType = NormalEdgeType.Instance,
             Name = "Type",
-            SourceVertexType = AttributeVertexType.Instance,
-            TargetVertexType = BaseTypeVertexType.Instance
+            SourceVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.Attribute),
+            TargetVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.BaseType)
         };
 
         internal static readonly IOutgoingEdgeDefinition DefiningTypeOnAttribute = new OutgoingEdgeDefinition()
@@ -233,8 +233,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             AttributeID = Int64.MinValue + AllTypesOffset + 1,
             EdgeType = NormalEdgeType.Instance,
             Name = "DefiningType",
-            SourceVertexType = AttributeVertexType.Instance,
-            TargetVertexType = BaseTypeVertexType.Instance
+            SourceVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.Attribute),
+            TargetVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.BaseType)
         };
 
         #endregion
@@ -246,8 +246,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             AttributeID = Int64.MinValue + AttributeOffset,
             EdgeType = NormalEdgeType.Instance,
             Name = "EdgeType",
-            SourceVertexType = EdgeVertexType.Instance,
-            TargetVertexType = EdgeTypeVertexType.Instance
+            SourceVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.Edge),
+            TargetVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.EdgeType)
         };
 
         #endregion
@@ -279,8 +279,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             AttributeID = Int64.MinValue + AllTypesOffset,
             EdgeType = NormalEdgeType.Instance,
             Name = "IndexedProperties",
-            SourceVertexType = IndexVertexType.Instance,
-            TargetVertexType = PropertyVertexType.Instance
+            SourceVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.Index),
+            TargetVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.Property)
         };
 
         internal static readonly IOutgoingEdgeDefinition DefiningVertexTypeOnIndex = new OutgoingEdgeDefinition()
@@ -288,8 +288,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             AttributeID = Int64.MinValue + AllTypesOffset + 1,
             EdgeType = NormalEdgeType.Instance,
             Name = "DefiningVertexType",
-            SourceVertexType = IndexVertexType.Instance,
-            TargetVertexType = VertexTypeVertexType.Instance
+            SourceVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.Index),
+            TargetVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.VertexType)
         };
 
         internal static readonly IPropertyDefinition TypeOnIndex = new PropertyDefinition()

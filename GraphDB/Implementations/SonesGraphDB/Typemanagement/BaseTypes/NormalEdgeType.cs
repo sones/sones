@@ -19,7 +19,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         internal static readonly IEdgeType Instance = new NormalEdgeType();
 
-        private NormalEdgeType() : base(_Attributes) { }
+        private NormalEdgeType() : base(_Attributes, null) { }
 
         #region IEdgeType Members
 

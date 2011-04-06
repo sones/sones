@@ -9,8 +9,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         private static readonly IEnumerable<IVertexType> _Childs = new IVertexType[] 
         { 
-            VertexTypeVertexType.Instance, 
-            EdgeTypeVertexType.Instance 
+            BaseVertexTypeFactory.GetInstance(BaseVertexType.VertexType),
+            BaseVertexTypeFactory.GetInstance(BaseVertexType.EdgeType)
         };
 
         private static readonly IAttributeDefinition[] _Attributes = new IAttributeDefinition[]
@@ -23,11 +23,15 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             AttributeDefinitions.AttributesOnBaseType
         };
 
+        private static readonly IVertexType _Parent = BaseVertexTypeFactory.GetInstance(BaseVertexType.Vertex);
+
         #endregion
 
-        internal static readonly IVertexType Instance = new BaseTypeVertexType();
+        #region c'tor
 
-        private BaseTypeVertexType() : base(_Attributes) {}
+        internal BaseTypeVertexType() : base(_Attributes, _Parent.GetAttributeDefinitions(true)) {}
+        
+        #endregion
 
         #region IVertexType Members
 
@@ -78,18 +82,12 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         IVertexType IVertexType.GetParentVertexType
         {
-            get
-            {
-                return VertexVertexType.Instance;
-            }
+            get { return _Parent; }
         }
 
         IEnumerable<IVertexType> IVertexType.GetChildVertexTypes
         {
-            get
-            {
-                return _Childs;
-            }
+            get { return _Childs; }
         }
 
 

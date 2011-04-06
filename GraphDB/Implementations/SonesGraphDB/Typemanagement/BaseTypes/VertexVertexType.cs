@@ -19,11 +19,11 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             AttributeDefinitions.EditionOnVertex
         };
 
+        private static readonly IVertexType _Parent = null;
+
         #endregion
 
-        internal static readonly IVertexType Instance = new VertexVertexType();
-
-        private VertexVertexType() : base(_Attributes, BaseTypeVertexType.Instance.GetAttributeDefinitions(true)) { }
+        private VertexVertexType() : base(_Attributes, new IAttributeDefinition[0]) { }
 
         #region VertexVertexType Members
 

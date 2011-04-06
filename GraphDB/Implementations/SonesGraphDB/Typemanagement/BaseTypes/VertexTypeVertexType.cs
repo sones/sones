@@ -20,12 +20,15 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             AttributeDefinitions.IndicesOnVertexType
         };
 
+        private static readonly IVertexType _Parent = BaseVertexTypeFactory.GetInstance(BaseVertexType.BaseType);
+
         #endregion
 
-        internal static readonly IVertexType Instance = new VertexTypeVertexType();
+        #region c'tor
 
-        private VertexTypeVertexType() : base(_Attributes) { }
+        internal VertexTypeVertexType() : base(_Attributes, _Parent.GetAttributeDefinitions(true)) { }
 
+        #endregion
 
         #region IVertexType Members
 
@@ -61,7 +64,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         IVertexType IVertexType.GetParentVertexType
         {
-            get { return BaseTypeVertexType.Instance; }
+            get { return _Parent; }
         }
 
         bool IVertexType.HasChildVertexTypes
