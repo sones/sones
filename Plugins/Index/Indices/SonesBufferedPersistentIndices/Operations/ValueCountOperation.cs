@@ -6,34 +6,34 @@ using BplusDotNet;
 
 namespace sones.Plugins.Index
 {
-    public sealed class KeyCountOperation : APipelinableRequest
+    public sealed class ValueCountOperation : APipelinableRequest
     {
         #region Data
         
         private xBplusTreeBytes _Indexer;
-        private Int64           _Cnt;
+        private Int64 _Cnt;
 
         #endregion
 
         #region Constructors
         
-        public KeyCountOperation(xBplusTreeBytes myIndexer)
+
+        public ValueCountOperation(xBplusTreeBytes myIndexer)
         {
             TypeOfRequest = RequestType.read;
-            _Indexer = myIndexer;
+            _Indexer = myIndexer;            
         }
 
         #endregion
 
         #region APipelinableRequest
         
-
         public override void Execute()
         {
             String nextKey = String.Empty;
+            _Cnt = 0;
             
             nextKey = _Indexer.tree.FirstKey();
-            _Cnt = 0;
 
             while (!String.IsNullOrEmpty(nextKey))
             {
@@ -42,7 +42,7 @@ namespace sones.Plugins.Index
             }            
         }
 
-        public override Object GetRequest()
+        public override object GetRequest()
         {
             return (Object)_Cnt;
         }

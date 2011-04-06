@@ -46,7 +46,7 @@ namespace sones.Plugins.Index
         /// <summary>
         /// Get the request that has been executed
         /// </summary>
-        public abstract APipelinableRequest GetRequest(Guid myInterestingResult);
+        public abstract Object GetRequest();
 
         #endregion
     }

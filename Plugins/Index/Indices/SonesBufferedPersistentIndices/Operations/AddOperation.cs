@@ -10,20 +10,57 @@ using sones.Plugins.Index.ErrorHandling;
 
 namespace sones.Plugins.Index
 {
-    public class AddOperation<TKey, TValue> : APipelinableRequest
+    /// <summary>
+    /// This class realize an add operation on the buffered persistent index.
+    /// </summary>
+    /// <typeparam name="TKey">The key.</typeparam>
+    /// <typeparam name="TValue">The value.</typeparam>
+    public sealed class AddOperation<TKey, TValue> : APipelinableRequest
     {
+        #region Data
+        
+        /// <summary>
+        /// The internal index structure.
+        /// </summary>
         private xBplusTreeBytes             _Indexer;
+
+        /// <summary>
+        /// The internal serialization writer.
+        /// </summary>
         private SerializationWriter         _Writer;
+
+        /// <summary>
+        /// The key and values, which are to insert.
+        /// </summary>
         private Dictionary<TKey, TValue>    _Inserts;
+
+        /// <summary>
+        /// The index add strategy.
+        /// </summary>
         private IndexAddStrategy            _AddStrategy;
 
+        #endregion
 
-        public AddOperation(IndexAddStrategy myAddStrategy)
+        #region Constructors
+        
+        /// <summary>
+        /// The default constructor.
+        /// </summary>
+        /// <param name="myAddStrategy"></param>
+        private AddOperation(IndexAddStrategy myAddStrategy)
         {
             TypeOfRequest = RequestType.write;
             _AddStrategy = myAddStrategy;
         }
         
+        /// <summary>
+        /// The constructor for an key and value pair insert operation.
+        /// </summary>
+        /// <param name="myIndexer">The internal index structure.</param>
+        /// <param name="myWriter">The internal serialization writer.</param>
+        /// <param name="myKey">The key to insert.</param>
+        /// <param name="myValue">The value to insert.</param>
+        /// <param name="myAddStrategy">The index insert strategy.</param>
         public AddOperation(xBplusTreeBytes myIndexer, SerializationWriter myWriter, TKey myKey, TValue myValue, IndexAddStrategy myAddStrategy) 
             : this(myAddStrategy)
         {            
@@ -33,6 +70,14 @@ namespace sones.Plugins.Index
             _Inserts.Add(myKey, myValue);
         }
 
+        /// <summary>
+        /// The constructor for an key value pair insert operation.
+        /// </summary>
+        /// <param name="myIndexer">The internal index structure.</param>
+        /// <param name="myWriter">The internal serialization writer.</param>
+        /// <param name="myKey">The key to insert.</param>
+        /// <param name="myValue">The value to insert.</param>
+        /// <param name="myAddStrategy">The index insert strategy.</param>
         public AddOperation(xBplusTreeBytes myIndexer, SerializationWriter myWriter, KeyValuePair<TKey, TValue> myValues, IndexAddStrategy myAddStrategy)
             : this(myAddStrategy)
         {
@@ -43,6 +88,14 @@ namespace sones.Plugins.Index
             _Inserts.Add(myValues.Key, myValues.Value);
         }
 
+        /// <summary>
+        ///  The constructor for an dictionary insert operation.
+        /// </summary>
+        /// <param name="myIndexer">The internal index structure.</param>
+        /// <param name="myWriter">The internal serialization writer.</param>
+        /// <param name="myKey">The key to insert.</param>
+        /// <param name="myValue">The value to insert.</param>
+        /// <param name="myAddStrategy">The index insert strategy.</param>
         public AddOperation(xBplusTreeBytes myIndexer, SerializationWriter myWriter, IDictionary<TKey, TValue> myValues, IndexAddStrategy myAddStrategy)
             : this(myAddStrategy)
         {
@@ -51,6 +104,11 @@ namespace sones.Plugins.Index
             _Inserts = new Dictionary<TKey, TValue>(myValues);
         }
 
+        #endregion
+        
+
+        #region Private Helpers
+
         /// <summary>
         /// Serialize an key and a value.
         /// </summary>
@@ -58,7 +116,7 @@ namespace sones.Plugins.Index
         /// <param name="myValue">The value.</param>
         /// <returns>The serialized keys and values.</returns>
         private byte[] SerializeObject(TKey myKey, TValue myValue)
-        {            
+        {
             _Writer.ResetBuffer();
             _Writer.WriteObject(myKey);
             _Writer.WriteObject(myValue);
@@ -89,7 +147,7 @@ namespace sones.Plugins.Index
                     
                     if (_Indexer.tree.ContainsKey(myKey.ToString()))
                     {
-                        throw new UniqueIndexConstraintException(String.Format("Index key {0} already exist.", myKey.ToString()));
+                        Exception = new UniqueIndexConstraintException(String.Format("Index key {0} already exist.", myKey.ToString()));
                     }
                     else
                     {                        
@@ -99,7 +157,11 @@ namespace sones.Plugins.Index
 
                     break;
             }
-        }        
+        }
+
+        #endregion
+
+        #region APipelinableRequest
 
         public override void Execute()
         {
@@ -109,9 +171,11 @@ namespace sones.Plugins.Index
             }
         }
 
-        public override APipelinableRequest GetRequest(Guid myInterestingResult)
+        public override Object GetRequest()
         {
             return null;
         }
+
+        #endregion
     }
 }

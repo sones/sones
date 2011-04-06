@@ -46,8 +46,19 @@
   <ItemGroup>
     <Compile Include="Operations\AddOperation.cs" />
     <Compile Include="APipelinableRequest.cs" />
-    <Compile Include="BplusDotNetIndex.cs" />
+    <Compile Include="BufferedBplusDotNetIndex.cs" />
+    <Compile Include="Operations\ClearIndexOperation.cs" />
+    <Compile Include="Operations\ContainsKeyOperation.cs" />
+    <Compile Include="Operations\ContainsOperation.cs" />
+    <Compile Include="Operations\ContainsValueOperation.cs" />
+    <Compile Include="Operations\GetEnumeratorOperation.cs" />
+    <Compile Include="Operations\GetOperation.cs" />
     <Compile Include="Operations\KeyCountOperation.cs" />
+    <Compile Include="Operations\KeysOperation.cs" />
+    <Compile Include="Operations\RemoveOperation.cs" />
+    <Compile Include="Operations\SetOperation.cs" />
+    <Compile Include="Operations\ValueCountOperation.cs" />
+    <Compile Include="Operations\ValuesOperation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Enum\RequestType.cs" />
   </ItemGroup>

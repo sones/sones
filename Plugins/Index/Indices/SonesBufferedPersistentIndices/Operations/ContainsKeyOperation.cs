@@ -6,45 +6,42 @@ using BplusDotNet;
 
 namespace sones.Plugins.Index
 {
-    public sealed class KeyCountOperation : APipelinableRequest
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    public sealed class ContainsKeyOperation<TKey> : APipelinableRequest
     {
         #region Data
         
         private xBplusTreeBytes _Indexer;
-        private Int64           _Cnt;
+        private Boolean         _Result;
+        private TKey            _Key;
 
         #endregion
 
         #region Constructors
         
-        public KeyCountOperation(xBplusTreeBytes myIndexer)
+        public ContainsKeyOperation(xBplusTreeBytes myIndexer, TKey myKey)
         {
             TypeOfRequest = RequestType.read;
             _Indexer = myIndexer;
+            _Key = myKey;            
         }
 
         #endregion
 
         #region APipelinableRequest
         
-
         public override void Execute()
         {
-            String nextKey = String.Empty;
-            
-            nextKey = _Indexer.tree.FirstKey();
-            _Cnt = 0;
-
-            while (!String.IsNullOrEmpty(nextKey))
-            {
-                nextKey = _Indexer.tree.NextKey(nextKey);
-                _Cnt++;
-            }            
+            _Result = false;
+            _Result = _Indexer.tree.ContainsKey(_Key.ToString());
         }
 
-        public override Object GetRequest()
+        public override object GetRequest()
         {
-            return (Object)_Cnt;
+            return _Result;
         }
 
         #endregion
