@@ -11,7 +11,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         VertexType,
         EdgeType,
         Attribute,
-        Edge,
+        IncomingEdge,
+        OutgoingEdge,
         Property,
         Index,
         Vertex

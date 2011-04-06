@@ -12,7 +12,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         {
             {BaseVertexType.Attribute, new AttributeVertexType()},
             {BaseVertexType.BaseType, new BaseTypeVertexType()},
-            {BaseVertexType.Edge, new EdgeTypeVertexType()},
+            {BaseVertexType.IncomingEdge, new IncomingEdgeVertexType()},
+            {BaseVertexType.OutgoingEdge, new OutgoingEdgeVertexType()},
             {BaseVertexType.EdgeType, new EdgeTypeVertexType()},
             {BaseVertexType.Index, new IndexVertexType()},
             {BaseVertexType.Property, new PropertyVertexType()},

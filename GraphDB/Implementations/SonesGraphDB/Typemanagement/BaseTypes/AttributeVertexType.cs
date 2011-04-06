@@ -12,7 +12,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         private static readonly IEnumerable<IVertexType> _Childs = new IVertexType[] 
         { 
-            BaseVertexTypeFactory.GetInstance(BaseVertexType.Edge),
+            BaseVertexTypeFactory.GetInstance(BaseVertexType.IncomingEdge),
+            BaseVertexTypeFactory.GetInstance(BaseVertexType.OutgoingEdge),
             BaseVertexTypeFactory.GetInstance(BaseVertexType.Property)
         };
 
@@ -80,41 +81,38 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         IEnumerable<IVertexType> IVertexType.GetChildVertexTypes
         {
-            get
-            {
-                return _Childs;
-            }
+            get { return _Childs; }
         }
 
 
         IEnumerable<IAttributeDefinition> IVertexType.GetAttributeDefinitions(bool myIncludeParents)
         {
-            return base.GetAttributeDefinitions();
+            return base.GetAttributeDefinitions(myIncludeParents);
         }
 
         IEnumerable<IPropertyDefinition> IVertexType.GetPropertyDefinitions(bool myIncludeParents)
         {
-            return base.GetPropertyDefinitions();
+            return base.GetPropertyDefinitions(myIncludeParents);
         }
 
         IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeParents)
         {
-            return base.GetIncomingEdgeDefinitions();
+            return base.GetIncomingEdgeDefinitions(myIncludeParents);
         }
 
         IEnumerable<IOutgoingEdgeDefinition> IVertexType.GetOutgoingEdgeDefinitions(bool myIncludeParents)
         {
-            return base.GetOutgoingEdgeDefinitions();
+            return base.GetOutgoingEdgeDefinitions(myIncludeParents);
         }
 
         bool IVertexType.HasVisibleIncomingEdges(bool myIncludeParents)
         {
-            return base.HasIncomingDefinitions();
+            return base.HasIncomingDefinitions(myIncludeParents);
         }
 
         bool IVertexType.HasOutgoingEdges(bool myIncludeParents)
         {
-            return base.HasOutgoingDefinitions();
+            return base.HasOutgoingDefinitions(myIncludeParents);
         }
 
         IOutgoingEdgeDefinition IVertexType.GetOutgoingEdgeDefinition(string myEdgeName)

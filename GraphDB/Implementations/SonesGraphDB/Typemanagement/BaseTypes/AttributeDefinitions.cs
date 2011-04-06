@@ -239,15 +239,54 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #endregion
 
-        #region Edge
+        #region OutgoingEdge
 
-        internal static readonly IOutgoingEdgeDefinition EdgeTypeOnEdge = new OutgoingEdgeDefinition()
+        internal static readonly IOutgoingEdgeDefinition EdgeTypeOnOutgoingEdge = new OutgoingEdgeDefinition()
         {
             AttributeID = Int64.MinValue + AttributeOffset,
             EdgeType = NormalEdgeType.Instance,
             Name = "EdgeType",
-            SourceVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.Edge),
+            SourceVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.OutgoingEdge),
             TargetVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.EdgeType)
+        };
+
+        internal static readonly IOutgoingEdgeDefinition SourceOnOutgoingEdge = new OutgoingEdgeDefinition()
+        {
+            AttributeID = Int64.MinValue + AttributeOffset + 1,
+            EdgeType = NormalEdgeType.Instance,
+            Name = "Source",
+            SourceVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.OutgoingEdge),
+            TargetVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.VertexType)
+        };
+
+        internal static readonly IOutgoingEdgeDefinition TargetOnOutgoingEdge = new OutgoingEdgeDefinition()
+        {
+            AttributeID = Int64.MinValue + AttributeOffset + 2,
+            EdgeType = NormalEdgeType.Instance,
+            Name = "Target",
+            SourceVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.OutgoingEdge),
+            TargetVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.VertexType)
+        };
+
+        internal static readonly IIncomingEdgeDefinition RelatedIncomingEdgesOnOutgoingEdge = new IncomingEdgeDefinition()
+        {
+            AttributeID = Int64.MinValue + AttributeOffset + 3,
+            Name = "RelatedIncomingEdges",
+            RelatedEdgeDefinition = RelatedEdgeOnIncomingEdge
+        };
+
+        #endregion 
+     
+        #region IncomingEdge
+
+        internal static readonly IOutgoingEdgeDefinition RelatedEdgeOnIncomingEdge = new OutgoingEdgeDefinition()
+        {
+            AttributeID = Int64.MinValue + AttributeOffset,
+            EdgeType = NormalEdgeType.Instance, 
+            Name = "RelatedEgde",
+            SourceVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.IncomingEdge),
+            TargetVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.OutgoingEdge),
+        
         };
 
         #endregion

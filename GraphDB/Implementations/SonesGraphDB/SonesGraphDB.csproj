@@ -57,12 +57,14 @@
     <Compile Include="Manager\TypeManagement\EdgeTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\TypeManager.cs" />
     <Compile Include="TypeManagement\BaseTypes\BaseVertexType.cs" />
+    <Compile Include="TypeManagement\BaseTypes\IncomingEdgeVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\NormalEdgeType.cs" />
     <Compile Include="TypeManagement\BaseTypes\AttributeVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\BaseTypeVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\EdgeTypeVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\IndexVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\AttributeDefinitions.cs" />
+    <Compile Include="TypeManagement\BaseTypes\OutgoingEdgeVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\PropertyVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\TypeBase.cs" />
     <Compile Include="TypeManagement\BaseTypes\BaseVertexTypeFactory.cs" />

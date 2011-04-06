@@ -72,12 +72,12 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         bool IVertexType.HasVisibleIncomingEdges(bool myIncludeParents)
         {
-            return base.HasIncomingDefinitions();
+            return base.HasIncomingDefinitions(myIncludeParents);
         }
 
         bool IVertexType.HasOutgoingEdges(bool myIncludeParents)
         {
-            return base.HasOutgoingDefinitions();
+            return base.HasOutgoingDefinitions(myIncludeParents);
         }
 
         IVertexType IVertexType.GetParentVertexType
@@ -93,22 +93,22 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         IEnumerable<IAttributeDefinition> IVertexType.GetAttributeDefinitions(bool myIncludeParents)
         {
-            return base.GetAttributeDefinitions();
+            return base.GetAttributeDefinitions(myIncludeParents);
         }
 
         IEnumerable<IPropertyDefinition> IVertexType.GetPropertyDefinitions(bool myIncludeParents)
         {
-            return base.GetPropertyDefinitions();
+            return base.GetPropertyDefinitions(myIncludeParents);
         }
 
         IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeParents)
         {
-            return base.GetIncomingEdgeDefinitions();
+            return base.GetIncomingEdgeDefinitions(myIncludeParents);
         }
 
         IEnumerable<IOutgoingEdgeDefinition> IVertexType.GetOutgoingEdgeDefinitions(bool myIncludeParents)
         {
-            return base.GetOutgoingEdgeDefinitions();
+            return base.GetOutgoingEdgeDefinitions(myIncludeParents);
         }
 
         IOutgoingEdgeDefinition IVertexType.GetOutgoingEdgeDefinition(string myEdgeName)

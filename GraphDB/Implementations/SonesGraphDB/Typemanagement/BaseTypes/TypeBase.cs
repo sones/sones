@@ -90,27 +90,6 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             return (myIncludeAncestor) ? _allOutgoing : _ownOutgoing;
         }
 
-        protected IEnumerable<IAttributeDefinition> GetAttributeDefinitions()
-        {
-            return _ownAttributes;
-        }
-
-        protected IEnumerable<IPropertyDefinition> GetPropertyDefinitions()
-        {
-            return _ownProperties;
-        }
-
-        protected IEnumerable<IIncomingEdgeDefinition> GetIncomingEdgeDefinitions()
-        {
-            return _ownIncoming;
-        }
-
-        protected IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions()
-        {
-            return _ownOutgoing;
-        }
-
-
         protected bool HasAttributeDefinitions(bool myIncludeAncestor)
         {
             return (myIncludeAncestor) ? _allHasAttributes : _ownHasAttributes;
@@ -130,27 +109,6 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         {
             return (myIncludeAncestor) ? _allHasOutgoing : _ownHasOutgoing;
         }
-
-        protected bool HasAttributeDefinitions()
-        {
-            return _ownHasAttributes;
-        }
-
-        protected bool HasPropertyDefinitions()
-        {
-            return _ownHasProperties;
-        }
-
-        protected bool HasIncomingDefinitions()
-        {
-            return _ownHasIncoming;
-        }
-
-        protected bool HasOutgoingDefinitions()
-        {
-            return _ownHasOutgoing;
-        }
-
 
         protected IOutgoingEdgeDefinition GetOutgoingEdgeDefinition(string myEdgeName)
         {
