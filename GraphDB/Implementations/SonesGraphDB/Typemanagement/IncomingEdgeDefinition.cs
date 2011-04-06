@@ -14,6 +14,6 @@ namespace sones.GraphDB.TypeManagement
 
         public long AttributeID { get; internal set; }
 
-        public AttributeType Kind { get; internal set; }
+        public AttributeType Kind { get { return AttributeType.IncomingEdge; } }
     }
 }

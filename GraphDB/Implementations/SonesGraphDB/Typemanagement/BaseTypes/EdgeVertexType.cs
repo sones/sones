@@ -14,7 +14,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         private static readonly IAttributeDefinition[] _Attributes = new IAttributeDefinition[]
         {
-            //TODO
+            AttributeDefinitions.EdgeTypeOnEdge
         };
 
         #endregion
@@ -43,7 +43,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         bool IVertexType.IsAbstract
         {
-            get { return "false"; }
+            get { return false; }
         }
 
         bool IVertexType.IsSealed

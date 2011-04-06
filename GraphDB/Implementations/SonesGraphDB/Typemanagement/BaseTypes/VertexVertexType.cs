@@ -12,7 +12,11 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         private static readonly IAttributeDefinition[] _Attributes = new IAttributeDefinition[]
         {
-            //TODO
+            AttributeDefinitions.IDOnVertex,
+            AttributeDefinitions.CreationOnVertex,
+            AttributeDefinitions.ModifificationOnVertex,
+            AttributeDefinitions.RevisionOnVertex,
+            AttributeDefinitions.EditionOnVertex
         };
 
         #endregion

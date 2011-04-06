@@ -14,7 +14,10 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         private static readonly IAttributeDefinition[] _Attributes = new IAttributeDefinition[]
         {
-            //TODO
+            AttributeDefinitions.ParentOnVertexType,
+            AttributeDefinitions.ChildrenOnVertexType,
+            AttributeDefinitions.UniquenessOnVertexType,
+            AttributeDefinitions.IndicesOnVertexType
         };
 
         #endregion
@@ -113,7 +116,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         IEnumerable<IUniqueDefinition> IVertexType.GetUniqueDefinitions(bool myIncludeAncestorDefinitions)
         {
-            throw new NotImplementedException;
+            throw new NotImplementedException();
         }
 
         IEnumerable<IIndexDefinition> IVertexType.GetIndexDefinitions(bool myIncludeAncestorDefinitions)

@@ -14,6 +14,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         private static readonly IAttributeDefinition[] _Attributes = new IAttributeDefinition[]
         {
+            AttributeDefinitions.IsMandatoryOnProperty,
+            AttributeDefinitions.InIndicesOnProperty
         };
 
         #endregion

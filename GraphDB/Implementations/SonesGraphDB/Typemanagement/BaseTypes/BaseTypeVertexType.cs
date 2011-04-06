@@ -15,12 +15,12 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         private static readonly IAttributeDefinition[] _Attributes = new IAttributeDefinition[]
         {
-            AttributeDefinitions.Name,
             AttributeDefinitions.ID, 
+            AttributeDefinitions.Name,
             AttributeDefinitions.Comment, 
-            AttributeDefinitions.IsAbstract, 
-            AttributeDefinitions.IsSealed, 
-            AttributeDefinitions.Attributes 
+            AttributeDefinitions.IsAbstractOnBaseType, 
+            AttributeDefinitions.IsSealedOnBaseType, 
+            AttributeDefinitions.AttributesOnBaseType
         };
 
         #endregion

@@ -17,6 +17,16 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         private static readonly IAttributeDefinition[] _Attributes = new IAttributeDefinition[]
         {
+            AttributeDefinitions.Name,
+            AttributeDefinitions.ID,
+            AttributeDefinitions.IsUserDefined,
+            AttributeDefinitions.Comment,
+            AttributeDefinitions.IndexedPropertiesOnIndex,
+            AttributeDefinitions.DefiningVertexTypeOnIndex,
+            AttributeDefinitions.TypeOnIndex,
+            AttributeDefinitions.IsSingleOnIndex,
+            AttributeDefinitions.IsRangeOnIndex,
+            AttributeDefinitions.IsVersionedOnIndex
         };
 
         #endregion
