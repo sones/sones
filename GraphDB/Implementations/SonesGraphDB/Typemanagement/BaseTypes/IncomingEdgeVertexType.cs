@@ -29,6 +29,11 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #region IVertexType Members
 
+        long IVertexType.ID
+        {
+            get { return (long)BaseVertexType.IncomingEdge; }
+        }
+
         string IVertexType.Name
         {
             get { return "IncomingEdge"; }
@@ -122,6 +127,16 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         IEnumerable<IIndexDefinition> IVertexType.GetIndexDefinitions(bool myIncludeAncestorDefinitions)
         {
             throw new NotImplementedException();
+        }
+
+        IAttributeDefinition IVertexType.GetAttributeDefinition(string myAttributeName)
+        {
+            return base.GetAttributeDefinition(myAttributeName);
+        }
+
+        IPropertyDefinition IVertexType.GetPropertyDefinition(string myPropertyName)
+        {
+            return base.GetPropertyDefinition(myPropertyName);
         }
 
         #endregion

@@ -19,7 +19,7 @@ namespace sones.GraphDB.Request
         private readonly RequestInsertVertex _request;
 
         /// <summary>
-        /// The vertex that has been created... 
+        /// The parentVertex that has been created... 
         /// it is used for generating the output
         /// </summary>
         private IVertex _createdVertex;
@@ -31,7 +31,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Creates a new pipelineable insert request
         /// </summary>
-        /// <param name="myInsertVertexRequest">The insert vertex type request</param>
+        /// <param name="myInsertVertexRequest">The insert parentVertex type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The current transaction token</param>
         public PipelineableInsertRequest(RequestInsertVertex myInsertVertexRequest, SecurityToken mySecurity,

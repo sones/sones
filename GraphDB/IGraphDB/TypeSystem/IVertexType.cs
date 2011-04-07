@@ -10,10 +10,15 @@ namespace sones.GraphDB.TypeSystem
     public interface IVertexType
     {
         /// <summary>
+        /// The ID of the vertex type.
+        /// </summary>
+        Int64 ID { get; }
+
+        /// <summary>
         /// The name of the vertex type.
         /// </summary>
         /// <remarks>
-        /// The name must be unique for alle vertex types in one database
+        /// The name must be unique for all vertex types in one database.
         /// </remarks>
         String Name { get; }
 
@@ -84,6 +89,13 @@ namespace sones.GraphDB.TypeSystem
         /// <returns>An enumerable of attribute definitions</returns>
         IEnumerable<IAttributeDefinition> GetAttributeDefinitions(bool myIncludeAncestorDefinitions);
 
+        /// <summary>
+        /// Gets a certain attribute definition
+        /// </summary>
+        /// <param name="myAttributeName">The name of the interesting attribute</param>
+        /// <returns>A attribute definition</returns>
+        IAttributeDefinition GetAttributeDefinition(String myAttributeName);
+
         #region Properties
 
         /// <summary>
@@ -92,7 +104,14 @@ namespace sones.GraphDB.TypeSystem
         /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
         /// <returns>An enumerable of property definitions</returns>
         IEnumerable<IPropertyDefinition> GetPropertyDefinitions(bool myIncludeAncestorDefinitions);
-        
+
+        /// <summary>
+        /// Gets a certain attribute definition
+        /// </summary>
+        /// <param name="myPropertyName">The name of the property</param>
+        /// <returns>A property definition</returns>
+        IPropertyDefinition GetPropertyDefinition(String myPropertyName);
+
         #endregion
 
         #region Edges
@@ -158,5 +177,6 @@ namespace sones.GraphDB.TypeSystem
         IEnumerable<IIndexDefinition> GetIndexDefinitions(bool myIncludeAncestorDefinitions);
 
         #endregion
+
     }
 }

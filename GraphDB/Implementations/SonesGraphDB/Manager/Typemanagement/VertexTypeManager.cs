@@ -9,9 +9,9 @@ using System;
 namespace sones.GraphDB.Manager.TypeManagement
 {
     /* This class is splitted in three partial classes:
-     * - TypeManager.csd eclares the public methods for vertex and edge types
+     * - TypeManager.csd eclares the public methods for parentVertex and edge types
      * - EdgeTypeManager.cs declares the private methods for edge types
-     * - VertexTypeManager.cs declares the private methods for vertex types
+     * - VertexTypeManager.cs declares the private methods for parentVertex types
      */
     public sealed partial class TypeManager : ITypeManager
     {
@@ -25,6 +25,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private IVertexType DoGetVertexType(string myTypeName)
         {
+            
             throw new System.NotImplementedException();
         }
 

@@ -7,7 +7,7 @@ using sones.GraphDB.TypeSystem;
 namespace sones.GraphDB.TypeManagement.BaseTypes
 {
     /// <summary>
-    /// This class contains a singleton representation of the system defined vertex type Index
+    /// This class contains a singleton representation of the system defined parentVertex type Index
     /// </summary>
     internal sealed class IndexVertexType: TypeBase, IVertexType
     {
@@ -40,6 +40,11 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         #endregion
 
         #region IVertexType Members
+
+        long IVertexType.ID
+        {
+            get { return (long)BaseVertexType.Index; }
+        }
 
         string IVertexType.Name
         {
@@ -134,6 +139,16 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         IEnumerable<IIndexDefinition> IVertexType.GetIndexDefinitions(bool myIncludeAncestorDefinitions)
         {
             throw new NotImplementedException();
+        }
+
+        IAttributeDefinition IVertexType.GetAttributeDefinition(string myAttributeName)
+        {
+            return base.GetAttributeDefinition(myAttributeName);
+        }
+
+        IPropertyDefinition IVertexType.GetPropertyDefinition(string myPropertyName)
+        {
+            return base.GetPropertyDefinition(myPropertyName);
         }
 
         #endregion

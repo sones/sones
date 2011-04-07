@@ -81,6 +81,7 @@
     <Compile Include="TypeManagement\BaseTypes\IncomingEdgeDefinition.cs" />
     <Compile Include="TypeManagement\BaseTypes\OutgoingEdgeDefinition.cs" />
     <Compile Include="TypeManagement\BaseTypes\PropertyDefinition.cs" />
+    <Compile Include="TypeManagement\VertexType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">

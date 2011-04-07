@@ -6,15 +6,13 @@ using sones.GraphDB.TypeSystem;
 namespace sones.GraphDB.TypeManagement.BaseTypes
 {
     /// <summary>
-    /// This class is base class for all predefined vertex and edge types.
+    /// This class is base class for all predefined parentVertex and edge types.
     /// </summary>
     internal abstract class TypeBase
     {
         #region Data
 
-        private readonly Dictionary<String, IPropertyDefinition> _properties;
-        private readonly Dictionary<String, IOutgoingEdgeDefinition> _outgoing;
-        private readonly Dictionary<String, IIncomingEdgeDefinition> _incoming;
+        private readonly Dictionary<String, IAttributeDefinition> _attributes;
         private readonly IEnumerable<IAttributeDefinition> _ownAttributes;
         private readonly IEnumerable<IPropertyDefinition> _ownProperties;
         private readonly IEnumerable<IOutgoingEdgeDefinition> _ownOutgoing;
@@ -43,6 +41,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             _ownAttributes = myAttributes;
             _allAttributes = Enumerable.Union(myAttributes, myAncestorAttributes);
 
+            _attributes = _allAttributes.ToDictionary(att => att.Name);
+
             _ownProperties = _ownAttributes.OfType<IPropertyDefinition>().ToArray();
             _ownOutgoing   = _ownAttributes.OfType<IOutgoingEdgeDefinition>().ToArray();
             _ownIncoming   = _ownAttributes.OfType<IIncomingEdgeDefinition>().ToArray();
@@ -51,9 +51,6 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             _allOutgoing   = _allAttributes.OfType<IOutgoingEdgeDefinition>().ToArray();
             _allIncoming   = _allAttributes.OfType<IIncomingEdgeDefinition>().ToArray();
 
-            _properties = _allProperties.ToDictionary(prop => prop.Name);
-            _outgoing   = _allOutgoing.OfType<IOutgoingEdgeDefinition>().ToDictionary(edge => edge.Name);
-            _incoming   = _allIncoming.OfType<IIncomingEdgeDefinition>().ToDictionary(edge => edge.Name);
 
             _ownHasAttributes = _ownAttributes.Count() > 0;
             _ownHasProperties = _ownProperties.Count() > 0;
@@ -112,18 +109,27 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         protected IOutgoingEdgeDefinition GetOutgoingEdgeDefinition(string myEdgeName)
         {
-            IOutgoingEdgeDefinition result;
-            _outgoing.TryGetValue(myEdgeName, out result);
-            return result;
+            return GetAttributeDefinition(myEdgeName) as IOutgoingEdgeDefinition;
         }
 
         protected IIncomingEdgeDefinition GetIncomingEdgeDefinition(string myEdgeName)
         {
-            IIncomingEdgeDefinition result;
-            _incoming.TryGetValue(myEdgeName, out result);
+            return GetAttributeDefinition(myEdgeName) as IIncomingEdgeDefinition;
+        }
+
+        protected IPropertyDefinition GetPropertyDefinition(string myPropertyName)
+        {
+            return GetAttributeDefinition(myPropertyName) as IPropertyDefinition;
+        }
+
+        protected IAttributeDefinition GetAttributeDefinition(string myAttributeName)
+        {
+            IAttributeDefinition result;
+            _attributes.TryGetValue(myAttributeName, out result);
             return result;
         }
 
         #endregion
+
     }
 }

@@ -9,7 +9,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
     /// <summary>
     /// This static class contains all attribute definitions.
     /// </summary>
-    /// We use a summary file, that contains attribute definitions, because some attributes are used in multiple vertex types
+    /// We use a summary file, that contains attribute definitions, because some attributes are used in multiple parentVertex types
     /// and we want to be sure, that the AttributeIDs are similar for VertexTypes
     /// 
     internal static class AttributeDefinitions

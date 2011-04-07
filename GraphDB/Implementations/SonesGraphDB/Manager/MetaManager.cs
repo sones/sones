@@ -22,12 +22,12 @@ namespace sones.GraphDB.Manager
         public ITypeManager TypeManager { get; set; }
 
         /// <summary>
-        /// Gets or sets the current instance of the vertex manager.
+        /// Gets or sets the current instance of the parentVertex manager.
         /// </summary>
         public IVertexManager VertexManager { get; set; }
 
         /// <summary>
-        /// Gets or sets the current instance of vertex store.
+        /// Gets or sets the current instance of parentVertex store.
         /// </summary>
         public IVertexStore VertexStore { get; set; }
 

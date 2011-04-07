@@ -27,6 +27,11 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #region VertexVertexType Members
 
+        long IVertexType.ID
+        {
+            get { return (long)BaseVertexType.Vertex; }
+        }
+
         string IVertexType.Name
         {
             get { throw new NotImplementedException(); }
@@ -128,7 +133,16 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             throw new NotImplementedException();
         }
 
-        #endregion
+        IAttributeDefinition IVertexType.GetAttributeDefinition(string myAttributeName)
+        {
+            return base.GetAttributeDefinition(myAttributeName);
+        }
 
+        IPropertyDefinition IVertexType.GetPropertyDefinition(string myPropertyName)
+        {
+            return base.GetPropertyDefinition(myPropertyName);
+        }
+
+        #endregion
     }
 }

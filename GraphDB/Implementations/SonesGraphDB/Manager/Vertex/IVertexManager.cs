@@ -7,9 +7,9 @@ using sones.GraphDB.Expression;
 namespace sones.GraphDB.Manager.Vertex
 {
     /// <summary>
-    /// This interface represents a vertex manager.
+    /// This interface represents a parentVertex manager.
     /// </summary>
-    /// The responibilities of the vertex manager is an optimized access to the underlying vertex store (FS).
+    /// The responibilities of the parentVertex manager is an optimized access to the underlying parentVertex store (FS).
     public interface IVertexManager
     {
         /// <summary>
@@ -21,8 +21,10 @@ namespace sones.GraphDB.Manager.Vertex
         /// <param name="myMetaManager">The current meta manager.</param>
         /// <returns>
         /// A possible emtpy list of vertices that matches the expression. The result is never <c>NULL</c>.
-        /// Any implementation should try to optimize the way the underlying vertex store and indices are used to get the result.
+        /// Any implementation should try to optimize the way the underlying parentVertex store and indices are used to get the result.
         /// </returns>
         IEnumerable<IVertex> GetVertex(IExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
+
+        IVertex GetSingleVertex(BinaryExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
     }
 }

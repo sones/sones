@@ -7,7 +7,7 @@ using sones.GraphDB.TypeSystem;
 namespace sones.GraphDB.Request
 {
     /// <summary>
-    /// This class is responsible for realizing a create vertex type on the database
+    /// This class is responsible for realizing a create parentVertex type on the database
     /// </summary>
     public sealed class PipelineableCreateVertexTypeRequest : APipelinableRequest
     {
@@ -19,7 +19,7 @@ namespace sones.GraphDB.Request
         private readonly RequestCreateVertexType _request;
 
         /// <summary>
-        /// The vertex type that has been created during execution
+        /// The parentVertex type that has been created during execution
         /// </summary>
         private IVertexType _createdVertexType;
 
@@ -28,9 +28,9 @@ namespace sones.GraphDB.Request
         #region Constructor
 
         /// <summary>
-        /// Creates a new pipelineable create vertex type request
+        /// Creates a new pipelineable create parentVertex type request
         /// </summary>
-        /// <param name="myCreateVertexTypeRequest">The create vertex type request</param>
+        /// <param name="myCreateVertexTypeRequest">The create parentVertex type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The current transaction token</param>
         public PipelineableCreateVertexTypeRequest(RequestCreateVertexType myCreateVertexTypeRequest,
@@ -64,7 +64,7 @@ namespace sones.GraphDB.Request
         #region internal methods
 
         /// <summary>
-        /// Generates the result of a create vertex type request
+        /// Generates the result of a create parentVertex type request
         /// </summary>
         /// <typeparam name="TResult">The type of the result</typeparam>
         /// <param name="myOutputconverter">The output converter that is used to create the TResult</param>

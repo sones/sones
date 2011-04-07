@@ -16,14 +16,14 @@ namespace sones.GraphDB.Manager.TypeManagement
     public interface ITypeManager
     {
         /// <summary>
-        /// Loads data from the underlying vertex store
+        /// Loads data from the underlying parentVertex store
         /// </summary>
         void Load(MetaManager myMetaManager);
 
         /// <summary>
-        /// Creates the basic vertex type definitions.
+        /// Creates the basic parentVertex type definitions.
         /// </summary>
-        //TODO: here we get a VertexStore(no security, no transaction) and an IndexManager, so we can create the five base vertex types, that are used to store the type manager knowlegde.
+        //TODO: here we get a VertexStore(no security, no transaction) and an IndexManager, so we can create the five base parentVertex types, that are used to store the type manager knowlegde.
         void Create(IIndexManager myIndexMgr, IVertexStore myVertexStore);
 
         /// <summary>
@@ -34,12 +34,12 @@ namespace sones.GraphDB.Manager.TypeManagement
         IEdgeType AddEdge(EdgeTypeDefinition myEdgeTypeDefinition);
 
         /// <summary>
-        /// Gets a vertex type by name.
+        /// Gets a parentVertex type by name.
         /// </summary>
         /// <param name="myTypeName">
-        /// The name of the vertex type.
+        /// The name of the parentVertex type.
         /// </param>
-        /// <returns>An instance of IVertexType, that represents the vertex type.</returns>
+        /// <returns>An instance of IVertexType, that represents the parentVertex type.</returns>
         IVertexType GetVertexType(string myTypeName);
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         bool CanAddVertex(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
 
         /// <summary>
-        /// Adds a new vertex type to the type manager.
+        /// Adds a new parentVertex type to the type manager.
         /// </summary>
         /// <param name="myVertexTypeDefinition">The definition of the new type.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
@@ -68,7 +68,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// Checks if the execution of <see cref="AddVertex(System.Collections.Generic.IEnumerable{sones.GraphDB.Request.VertexTypeDefinition},sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)" /> will succeed, if no unexpected error occurs.
         /// </summary>
-        /// <param name="myVertexTypeDefinitions">The definition of the new vertex types.</param>
+        /// <param name="myVertexTypeDefinitions">The definition of the new parentVertex types.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
@@ -80,9 +80,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         bool CanAddVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
 
         /// <summary>
-        /// Adds a bunch of new vertex types to the type manager.
+        /// Adds a bunch of new parentVertex types to the type manager.
         /// </summary>
-        /// <param name="myVertexTypeDefinitions">The definition of the new vertex types.</param>
+        /// <param name="myVertexTypeDefinitions">The definition of the new parentVertex types.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
@@ -91,7 +91,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// Checks if the execution of <see cref="RemoveVertex(sones.GraphDB.TypeSystem.IVertexType,sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> will succeed, if no unexpected error occurs.
         /// </summary>
-        /// <param name="myVertexType">The vertex type to be removed.</param>
+        /// <param name="myVertexType">The parentVertex type to be removed.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
@@ -103,20 +103,20 @@ namespace sones.GraphDB.Manager.TypeManagement
         bool CanRemoveVertex(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
 
         /// <summary>
-        /// Removes a vertex type from the type manager.
+        /// Removes a parentVertex type from the type manager.
         /// </summary>
-        /// <param name="myVertexType">The vertex type that will be removed.</param>
+        /// <param name="myVertexType">The parentVertex type that will be removed.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
-        /// The vertex type will be removed unless there are no edges that point to this type.
+        /// The parentVertex type will be removed unless there are no edges that point to this type.
         /// If there is such an edge, remove the edge by altering the type that holds it or remove both type simultaneously using <see cref="Add(IEnumerable<IVertexType>, TransactionToken)"/>.
         void RemoveVertex(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
 
         /// <summary>
         /// Checks if the execution of <see cref="RemoveVertex(System.Collections.Generic.IEnumerable{sones.GraphDB.TypeSystem.IVertexType},sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> will succeed, if no unexpected error occurs.
         /// </summary>
-        /// <param name="myVertexTypes">The vertex types to be removed.</param>
+        /// <param name="myVertexTypes">The parentVertex types to be removed.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
@@ -128,9 +128,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         bool CanRemoveVertex(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
 
         /// <summary>
-        /// Removes a bunch of vertex types from the type manager.
+        /// Removes a bunch of parentVertex types from the type manager.
         /// </summary>
-        /// <param name="myVertexTypes">The vertex types that will be removed.</param>
+        /// <param name="myVertexTypes">The parentVertex types that will be removed.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The current meta manager.</param>
@@ -154,7 +154,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         bool CanUpdateVertex(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
 
         /// <summary>
-        /// Updates an existing vertex type.
+        /// Updates an existing parentVertex type.
         /// </summary>
         /// <param name="myVertexTypeDefinition">TODO: for update use VertexTypeUpdateDefinition</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
@@ -177,7 +177,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         bool CanUpdateVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
 
         /// <summary>
-        /// Updates existing vertex types.
+        /// Updates existing parentVertex types.
         /// </summary>
         /// <param name="myVertexTypeDefinitions">TODO: for update use VertexTypeUpdateDefinition</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
