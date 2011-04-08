@@ -22,11 +22,6 @@ namespace sones.GraphDB.ErrorHandling
         public override string ToString()
         {
             return String.Format("The base vertex type [{0}] must be a user defined type.", BaseVertexTypeName);
-        }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidBaseVertexType; }
-        }
+        }        
     }
 }

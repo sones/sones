@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using sones.Library.ErrorHandling;
+using sones.Library.LanguageExtensions;
 
 namespace sones.GraphQL.ErrorHandling
 {
@@ -26,21 +27,18 @@ namespace sones.GraphQL.ErrorHandling
             ValidTypes = myValidTypes;
         }
 
-        //public override string ToString()
-        //{
-        //    if (ValidTypes.IsNullOrEmpty())
-        //    {
-        //        return String.Format("The return type [{0}] of function [{1}] is not valid.", TypeOfFunctionReturn, FunctionName);
-        //    }
-        //    else
-        //    {
-        //        return String.Format("The return type [{0}] of function [{1}] is not valid. Please choose one of: {2}", TypeOfFunctionReturn, FunctionName, ValidTypes.ToAggregatedString(t => t.Name));
-        //    }
-        //}
-
-        public override ushort ErrorCode
+        public override string ToString()
         {
-            get { return ErrorCodes.InvalidFunctionReturnType; }
-        } 
+            if (ValidTypes.IsNullOrEmpty())
+            {
+                return String.Format("The return type [{0}] of function [{1}] is not valid.", TypeOfFunctionReturn, FunctionName);
+            }
+            else
+            {
+                return String.Format("The return type [{0}] of function [{1}] is not valid. Please choose one of: {2}", TypeOfFunctionReturn, FunctionName, ValidTypes.ToAggregatedString(t => t.Name));
+            }
+        }
+
+        
     }
 }

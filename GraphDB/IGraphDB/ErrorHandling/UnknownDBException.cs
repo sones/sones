@@ -12,12 +12,7 @@ namespace sones.GraphDB.ErrorHandling
         /// The exception that has been thrown
         /// </summary>
         public Exception ThrownException { get; private set; }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.UnknownDBError; }
-        }
-
+                
         #region constructor
 
         public UnknownDBException(Exception e)

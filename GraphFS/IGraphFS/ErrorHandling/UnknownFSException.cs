@@ -12,12 +12,7 @@ namespace sones.GraphFS.ErrorHandling
         /// The exception that has been thrown
         /// </summary>
         public Exception ThrownException { get; private set; }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.UnknownFSError; }
-        }
-
+        
         #region constructor
 
         /// <summary>

@@ -33,12 +33,5 @@ namespace sones.Plugins.Index.ErrorHandling
             return Info;
         }
 
-        public override ushort ErrorCode
-        {
-            get
-            {
-                return ErrorCodes.UniqueIndexConstraintException;
-            }
-        }
     }
 }

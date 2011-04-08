@@ -24,9 +24,5 @@ namespace sones.GraphQL.ErrorHandling
             return String.Format("The single reference attribute {0} does not contain any value.", AttributeName);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.ReferenceAssignmentEmptyValue; }
-        }  
     }
 }

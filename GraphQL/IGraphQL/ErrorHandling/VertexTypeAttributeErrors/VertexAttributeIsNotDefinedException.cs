@@ -40,9 +40,5 @@ namespace sones.GraphQL.ErrorHandling
                 return String.Format("The attribute \"{0}\" is not defined!", AttributeName);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.VertexAttributeIsNotDefined; }
-        } 
     }
 }

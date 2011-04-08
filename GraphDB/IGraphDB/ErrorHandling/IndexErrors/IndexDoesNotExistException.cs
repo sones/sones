@@ -38,11 +38,6 @@ namespace sones.GraphDB.ErrorHandling
                 return String.Format("The index \"{0}\" does not exist!", IndexName);
             else
                 return String.Format("The indexedition \"{0}\" does not exist!", IndexEdition);
-        }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.IndexDoesNotExist; }
-        }
+        }        
     }
 }

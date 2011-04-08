@@ -27,9 +27,5 @@ namespace sones.GraphQL.ErrorHandling
             return String.Format("Could not assign the value of the undefined attribute \" {0} \" to an defined attribute \" {1} \" with type \" {2} \".", Attribute, Attribute, AttributeType);
         } 
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidUndefAttrType; }
-        } 
     }
 }

@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="UnknownException.cs" />
-    <Compile Include="ErrorCodes.cs" />
     <Compile Include="ASonesException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

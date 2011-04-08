@@ -27,9 +27,5 @@ namespace sones.GraphQL.ErrorHandling
             return String.Format("The edge [{0}] does not take {1} elements.", EdgeTypeName, CurrentElements);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.TooManyElementsForEdge; }
-        } 
     }
 }

@@ -23,10 +23,6 @@ namespace sones.GraphQL.ErrorHandling
         {
             return DumpType;
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidDumpType; }
-        }
+        
     }
 }

@@ -23,10 +23,6 @@ namespace sones.GraphQL.ErrorHandling
         {
             return String.Format("There is already a reference for type \"{0}\"!", TypeName);
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.DuplicateReferenceOccurrence; }
-        }
+        
     }
 }

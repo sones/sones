@@ -22,11 +22,6 @@ namespace sones.GraphDB.ErrorHandling
         public override string ToString()
         {
             return String.Format("The index \"{0}\" already exists!", Index);
-        }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.IndexAlreadyExist; }
-        }
+        }        
     }
 }

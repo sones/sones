@@ -24,9 +24,5 @@ namespace sones.GraphDB.ErrorHandling
             return String.Format("Truncate on the inherited vertex type '{0}' is not allowed!", VertexTypeName);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.TruncateNotAllowedOnInheritedType; }
-        }
     }
 }

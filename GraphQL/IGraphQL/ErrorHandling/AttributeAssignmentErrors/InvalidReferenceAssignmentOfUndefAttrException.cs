@@ -18,10 +18,6 @@ namespace sones.GraphQL.ErrorHandling
         {
             return "An reference assignment for undefined attributes is not allowed.";   
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidReferenceAssignmentOfUndefAttr; }
-        } 
+ 
     }
 }

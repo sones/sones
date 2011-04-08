@@ -27,9 +27,5 @@ namespace sones.GraphQL.ErrorHandling
             return String.Format("The attribute " + VertexAttributeName + " from vertex type " + VertexTypeName + " could not be removed.");
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.RemoveVertexTypeAttribute; }
-        }
     }
 }

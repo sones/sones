@@ -26,10 +26,6 @@ namespace sones.GraphDB.ErrorHandling
         {
             return String.Format("The incoming edge destination \"{0}\".\"{1}\" is invalid!", VertexTypeName, VertexAttributeName);
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.IncomingEdgeDestinationIsInvalid; }
-        }
+        
     }
 }

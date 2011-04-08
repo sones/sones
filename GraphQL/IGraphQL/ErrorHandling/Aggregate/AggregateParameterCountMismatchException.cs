@@ -49,10 +49,6 @@ namespace sones.GraphQL.ErrorHandling
                 return String.Format("The number of parameters [{0}] of the function does not match the definition [{1}]", CurrentParameterCount, ExpectedParameterCount);
             }
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.AggregateParameterCountMismatch; }
-        }   
+          
     }
 }

@@ -23,10 +23,6 @@ namespace sones.GraphDB.ErrorHandling
         {
             return String.Format("You can not define incoming edges for non reference attribute \"{0}\"!", VertexAttributeName);
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.IncomingEdgeForNotReferenceAttributeTypes; }
-        }
+        
     }
 }

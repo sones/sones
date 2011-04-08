@@ -27,9 +27,5 @@ namespace sones.GraphQL.ErrorHandling
             return String.Format("The attribute \"{0}\" has an invalid value: \"{1}\"", AttributeName, AttributeValue);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidVertexAttributeValue; }
-        } 
     }
 }

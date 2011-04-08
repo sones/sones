@@ -37,12 +37,7 @@ namespace sones.Plugins.SonesGQL.Function.ErrorHandling
         {
             return String.Format("Invalid parameter value for \"{0}\"! Expected [{1}] \nCurrent [{2}]", FunctionParameterName, Expected, FunctionParameterValue);
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidFunctionParameter; }
-        } 
-
+        
     }
 }
 

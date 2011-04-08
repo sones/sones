@@ -23,10 +23,6 @@ namespace sones.GraphQL.ErrorHandling
         {
             return String.Format("The attribute '{0}' is not selected and can not be grouped.", TypeAttribute);
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.GroupedAttributeIsNotSelected; }
-        }
+        
     }
 }

@@ -11,12 +11,7 @@ namespace sones.Library.ErrorHandling
         /// The exception that has been thrown
         /// </summary>
         public Exception ThrownException { get; private set; }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.UnknownError; }
-        }
-
+                
         #region constructor
 
         /// <summary>

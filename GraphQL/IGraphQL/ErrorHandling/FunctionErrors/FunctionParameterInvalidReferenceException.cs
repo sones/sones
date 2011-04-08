@@ -23,10 +23,6 @@ namespace sones.GraphQL.ErrorHandling
         {
             return String.Format("An invalid reference for a function parameter: {0}! ", Info);
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.FunctionParameterInvalidReference; }
-        } 
+         
     }
 }

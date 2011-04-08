@@ -23,10 +23,5 @@ namespace sones.GraphDB.ErrorHandling
         {
             return String.Format("The vertex type {0} already exists", VertexTypeName);
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.VertexTypeAlreadyExist; }
-        }
     }
 }

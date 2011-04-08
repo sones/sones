@@ -23,10 +23,6 @@ namespace sones.GraphQL.ErrorHandling
         {
             return String.Format("The function \"{0}\" does not exist!", FunctionName);
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.FunctionDoesNotExist; }
-        } 
+        
     }
 }

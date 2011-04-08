@@ -49,10 +49,6 @@ namespace sones.GraphDB.ErrorHandling
             return String.Format("It is not possible to drop {0} of vertex type {1} because there are remaining references from the following attributes: {2}" + Environment.NewLine + "Please remove them in previous.", VertexAttributeName, VertexTypeName, sb.ToString());
 
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.DropOfVertexAttributeNotAllowed; }
-        }
+        
     }
 }

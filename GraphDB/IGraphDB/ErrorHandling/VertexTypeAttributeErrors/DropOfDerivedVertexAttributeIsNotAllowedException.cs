@@ -27,10 +27,6 @@ namespace sones.GraphDB.ErrorHandling
 
             return String.Format("Due to the vertex attribute \"{0}\" is derived from vertex type \"{1}\" you can not drop it!", VertexAttributeName, VertexTypeName);
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.DropOfDerivedVertexAttributeIsNotAllowed; }
-        }
+        
     }
 }

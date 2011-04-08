@@ -24,9 +24,5 @@ namespace sones.GraphQL.ErrorHandling
             return String.Format("Could not find any objects while adding or removing elements to the list attribute {0}.", AttributeName);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.UpdateListVertexAttributeNoElements; }
-        }
     }
 }

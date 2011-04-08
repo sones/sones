@@ -25,9 +25,5 @@ namespace sones.GraphQL.ErrorHandling
             return "A selection with aggregates must be grouped. Missing for selection " + Selection;
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.NoGroupingArgument; }
-        }
     }
 }

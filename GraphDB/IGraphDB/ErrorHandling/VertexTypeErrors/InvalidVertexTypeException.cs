@@ -27,9 +27,5 @@ namespace sones.GraphDB.ErrorHandling
             return String.Format("The type {0} is not valid. {1}.", InvalidVertexType, Info);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidVertexType; }
-        }
     }
 }

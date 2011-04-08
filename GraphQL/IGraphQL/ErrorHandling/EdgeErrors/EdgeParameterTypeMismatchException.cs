@@ -26,10 +26,6 @@ namespace sones.GraphQL.ErrorHandling
         {
             return String.Format("The type [{0}] is not valid. Please use one of [{1}].", CurrentType, ExpectedTypes);
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.EdgeParameterTypeMismatch; }
-        } 
+        
     }
 }

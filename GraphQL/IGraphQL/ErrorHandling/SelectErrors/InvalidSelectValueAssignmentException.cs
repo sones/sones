@@ -24,9 +24,5 @@ namespace sones.GraphQL.ErrorHandling
             return "You can not assign a value to [" + Info + "]";
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidSelectValueAssignment; }
-        }
     }
 }

@@ -27,9 +27,5 @@ namespace sones.GraphQL.ErrorHandling
             return String.Format("The data type of the SelectValueAssignment \"{0}\" does not match the type \"{1}\"!", DataType, ExpectedDataType);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.SelectValueAssignmentDataTypeDoesNotMatch; }
-        }
     }
 }

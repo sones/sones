@@ -8,10 +8,6 @@ using sones.Library.ErrorHandling;
 namespace sones.Plugins.Index.ErrorHandling
 {
     public class ASonesIndexException : ASonesException
-    {
-        public override ushort ErrorCode
-        {
-            get { throw new NotImplementedException(); }
-        }
+    {        
     }
 }

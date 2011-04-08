@@ -22,11 +22,6 @@ namespace sones.GraphQL.ErrorHandling
         public override string ToString()
         {
             return DumpFormat;
-        }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidDumpFormat; }
-        } 
+        }        
     }
 }

@@ -60,10 +60,6 @@ namespace sones.GraphQL.ErrorHandling
 
             return retVal;
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidAttrDefaultValueAssignment; }
-        }  
+          
     }
 }

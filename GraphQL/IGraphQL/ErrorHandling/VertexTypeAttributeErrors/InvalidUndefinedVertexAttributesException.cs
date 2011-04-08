@@ -43,11 +43,6 @@ namespace sones.GraphQL.ErrorHandling
                 return String.Format("The object does not contains the undefined attributes \" {0} \".", retVal);
             }
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidUndefinedVertexAttributes; }
-        }
     
     }
 }

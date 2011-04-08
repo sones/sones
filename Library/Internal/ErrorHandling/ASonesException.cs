@@ -10,17 +10,7 @@ namespace sones.Library.ErrorHandling
         /// <summary>
         /// The message which is associated to this Exception
         /// </summary>
-        protected String _msg;
-
-        /// <summary>
-        /// The error code which is associated to this Exception
-        /// </summary>
-        protected UInt16 _errorCode;
-
-        /// <summary>
-        /// The corresponding error code
-        /// </summary>
-        public abstract UInt16 ErrorCode { get; }              
+        protected String _msg;                         
 
         /// <summary>
         /// The message property
@@ -31,7 +21,7 @@ namespace sones.Library.ErrorHandling
         }
 
         /// <summary>
-        /// The String of the error code
+        /// The error message
         /// </summary>
         /// <returns>The error message</returns>
         public override string ToString()

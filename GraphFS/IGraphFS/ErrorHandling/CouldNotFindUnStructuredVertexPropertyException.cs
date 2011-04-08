@@ -43,10 +43,6 @@ namespace sones.GraphFS.ErrorHandling
         }
 
         #endregion
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.CouldNotFindUnStructuredVertexProperty; }
-        }
+                
     }
 }

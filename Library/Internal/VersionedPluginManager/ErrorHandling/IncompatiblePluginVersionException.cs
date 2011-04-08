@@ -63,12 +63,7 @@ namespace sones.Library.VersionedPluginManager
             CurrentVersion = myCurrentVersion;
             MinVersion = myMinVersion;
             MaxVersion = myMaxVersion;
-        }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.IncompatiblePluginVersion; }
-        }
+        }        
 
         #endregion
     }

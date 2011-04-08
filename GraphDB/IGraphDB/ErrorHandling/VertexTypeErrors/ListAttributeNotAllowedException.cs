@@ -24,9 +24,5 @@ namespace sones.GraphDB.ErrorHandling
             return String.Format("The user defined vertex type \\{0}\\ should not be used with LIST<> attributes, please use SET<> instead.", VertexTypeName);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.ListAttributeNotAllowed; }
-        }
     }
 }

@@ -25,26 +25,21 @@ namespace sones.GraphDB.ErrorHandling
         public DuplicateAggregateOrFunctionException(String myFunctionName, Boolean myIsFunction = true)
         {
             FunctionName = myFunctionName;
-            IsFunction   = myIsFunction;
-
-            _errorCode = ErrorCodes.DuplicateAggregateOrFunction;
+            IsFunction   = myIsFunction;            
 
             if (IsFunction)
             {
-                _msg = String.Format("{0} : The function name \"{1}\" is duplicate! The name has to be unique!", _errorCode, FunctionName);
+                _msg = String.Format("{0} : The function name \"{1}\" is duplicate! The name has to be unique!", FunctionName);
             }
 
             else
             {
-                _msg = String.Format("{0} : The aggregate name \"{1}\" is duplicate! The name has to be unique!", _errorCode, FunctionName);
+                _msg = String.Format("{0} : The aggregate name \"{1}\" is duplicate! The name has to be unique!", FunctionName);
             }
         }
 
         #endregion
                 
-        public override ushort ErrorCode
-        {
-            get { return _errorCode; }
-        }        
+                
     }
 }

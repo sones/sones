@@ -24,9 +24,5 @@ namespace sones.GraphQL.ErrorHandling
             return String.Format("Currently the type {0} is not implemented for aggregates.", AggregateTarget.Name);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.NotImplementedAggregateTarget; }
-        }
     }
 }

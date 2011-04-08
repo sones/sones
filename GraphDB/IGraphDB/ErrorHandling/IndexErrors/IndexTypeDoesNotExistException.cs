@@ -22,11 +22,6 @@ namespace sones.GraphDB.ErrorHandling
         public override string ToString()
         {
             return String.Format("The index type \"{0}\" does not exist!", IndexTypeName);
-        }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.IndexTypeDoesNotExist; }
-        }
+        }        
     }
 }

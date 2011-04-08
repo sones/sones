@@ -24,9 +24,5 @@ namespace sones.GraphQL.ErrorHandling
             return String.Format("Aborting query because the timeout of {0}ms has been reached.", TimeOut);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.SelectTimeOut; }
-        }
     }
 }

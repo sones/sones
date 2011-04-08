@@ -24,9 +24,5 @@ namespace sones.GraphQL.ErrorHandling
             return String.Format("Could not update value for vertex attribute \"{0}\".", VertexAttributeName);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.UpdateVertexAttributeValue; }
-        }
     }
 }

@@ -24,9 +24,5 @@ namespace sones.GraphQL.ErrorHandling
             return String.Format("Currently the type {0} has not been implemented for expressions.", NodeType.Name);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.NotImpementedExpressionNode; }
-        }
     }
 }

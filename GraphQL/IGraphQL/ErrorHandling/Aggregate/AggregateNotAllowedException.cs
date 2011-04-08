@@ -23,10 +23,6 @@ namespace sones.GraphQL.ErrorHandling
         {
             return String.Format("The aggregate \"{0}\" is not allowed in this context!", Aggregate);
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.AggregateNotAllowed; }
-        } 
+         
     }
 }

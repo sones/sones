@@ -12,12 +12,7 @@ namespace sones.GraphQL.ErrorHandling
         /// The exception that has been thrown
         /// </summary>
         public Exception ThrownException { get; private set; }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.UnknownAggregateError; }
-        }
-
+       
         #region constructor
 
         /// <summary>

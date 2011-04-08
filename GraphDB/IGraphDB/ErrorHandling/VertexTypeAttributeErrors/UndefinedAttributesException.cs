@@ -20,9 +20,5 @@ namespace sones.GraphDB.ErrorHandling
             return "Undefined attributes can not inserted nor updated. Use the setting SETUNDEFBEHAVE to change this behaviour.";
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.UndefinedAttributes; }
-        }
     }
 }

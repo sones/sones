@@ -20,9 +20,5 @@ namespace sones.GraphQL.ErrorHandling
             return "An undefined attribute with an \".\" is not allowed.";
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidUndefinedVertexAttributeName; }
-        }
     }
 }

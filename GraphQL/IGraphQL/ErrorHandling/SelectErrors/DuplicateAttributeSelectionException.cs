@@ -23,10 +23,6 @@ namespace sones.GraphQL.ErrorHandling
         {
             return String.Format("You cannot select \"{0}\" more than one time. Try to use an alias.", SelectionAlias);
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.DuplicateAttributeSelection; }
-        }
+        
     }
 }

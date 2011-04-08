@@ -27,9 +27,5 @@ namespace sones.GraphQL.ErrorHandling
             return String.Format("The level ({0}) greater than 1 is not allowed: '{1}'", IDChainDefinitionEdgesCount, IDChainDefinitionContentString);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidGroupByLevel; }
-        }
     }
 }

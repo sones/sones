@@ -22,12 +22,7 @@ namespace sones.GraphQL.ErrorHandling
         public override string ToString()
         {
             return String.Format("Could not alter index on type \"{0}\".", IndexType);
-        }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.CouldNotAlterIndexOnType; }
-        } 
+        }         
 
     }
 

@@ -24,10 +24,6 @@ namespace sones.GraphQL.ErrorHandling
         {
             return String.Format("The attribute [{0}] expects a Reference assignment!", TypeAttribute);
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.ReferenceAssignmentExpected; }
-        }  
+  
     }
 }

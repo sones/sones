@@ -23,10 +23,5 @@ namespace sones.GraphDB.ErrorHandling
         {
             return String.Format("The selected vertex attribute \"{0}\" is not valid!", SelectedVertexAttribute);
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidVertexAttributeSelection; }
-        }
     }
 }

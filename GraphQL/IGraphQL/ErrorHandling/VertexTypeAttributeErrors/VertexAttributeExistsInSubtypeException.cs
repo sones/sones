@@ -36,9 +36,5 @@ namespace sones.GraphQL.ErrorHandling
             return String.Format("The attribute \"{0}\" already exists in subtype \"{1}\"!", AttributeName, SubtypeName);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.VertexAttributeExistsInSubtype; }
-        } 
     }
 }

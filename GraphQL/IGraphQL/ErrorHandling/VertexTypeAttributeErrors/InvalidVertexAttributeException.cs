@@ -24,9 +24,5 @@ namespace sones.GraphQL.ErrorHandling
             return String.Format("The vertex attribute is not valid: {0}", Info);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidVertexAttribute; }
-        }
     }
 }

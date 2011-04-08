@@ -47,10 +47,5 @@ namespace sones.GraphQL.ErrorHandling
                 ExpectedKindsOfType.Aggregate<String, StringBuilder>(new StringBuilder(), (result, elem) => { result.AppendFormat("{0},", elem); return result; }));
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidVertexAttributeKind; }
-        } 
-
     }
 }

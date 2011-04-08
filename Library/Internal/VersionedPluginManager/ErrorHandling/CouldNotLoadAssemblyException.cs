@@ -29,10 +29,6 @@ namespace sones.Library.VersionedPluginManager
         }
 
         #endregion
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.CouldNotLoadAssembly; }
-        }        
+                        
     }
 }

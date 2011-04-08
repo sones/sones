@@ -23,10 +23,6 @@ namespace sones.GraphQL.ErrorHandling
         {
             return String.Format("Assignment of the reference type {0} with a list is not allowed. Use SETOF or REF (REFERENCE) instead.", AttributeName);
         }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.InvalidAssignOfSet; }
-        }  
+         
     }
 }

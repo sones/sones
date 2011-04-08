@@ -27,9 +27,5 @@ namespace sones.GraphDB.ErrorHandling
             return String.Format("The Vertex Type {0} does not match the expected Vertex Type {1}.", CurrentVertexType, ExpectedVertexType);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.VertexTypeDoesNotMatch; }
-        }
     }
 }

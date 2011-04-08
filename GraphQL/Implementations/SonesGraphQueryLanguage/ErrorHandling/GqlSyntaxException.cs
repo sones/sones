@@ -81,12 +81,7 @@ namespace sones.GraphQL.ErrorHandling
                 return Info;
             }
 
-        }
-
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.GqlSyntax; }
-        } 
+        }        
 
     }
 

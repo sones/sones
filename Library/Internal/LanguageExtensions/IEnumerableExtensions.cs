@@ -71,5 +71,65 @@ namespace sones.Library.LanguageExtensions
 
         #endregion
 
+
+        /// <summary>
+        /// Generated from the values ​​of an enumerable a string with a separator character.
+        /// </summary>
+        /// <typeparam name="T">The type of the enumerable</typeparam>
+        /// <param name="myEnumerable">The given enumerable</param>
+        /// <param name="mySeperator">The separator character</param>
+        /// <returns></returns>
+        public static String ToAggregatedString<T>(this IEnumerable<T> myEnumerable, Char mySeperator = ' ')
+        {
+
+            if (myEnumerable == null || myEnumerable.Count() == 0)
+                return String.Empty;
+
+            var _StringBuilder = new StringBuilder();
+
+            foreach (var _Item in myEnumerable)
+            {
+                _StringBuilder.Append(_Item);
+                _StringBuilder.Append(mySeperator);
+            }
+            _StringBuilder.Length = _StringBuilder.Length - 1;
+
+            return _StringBuilder.ToString();
+
+        }
+
+        /// <summary>
+        /// Generated from the values ​​of an enumerable a string with a separator character.
+        /// </summary>
+        /// <typeparam name="T">The type of the enumerable</typeparam>
+        /// <param name="myEnumerable">The given enumerable</param>
+        /// <param name="myStringRepresentation"></param>
+        /// <param name="mySeperator">The separator character</param>
+        /// <returns></returns>
+        public static String ToAggregatedString<T>(this IEnumerable<T> myEnumerable, Func<T, String> myStringRepresentation = null, String mySeperator = ", ")
+        {
+
+            if (myEnumerable == null || myEnumerable.Count() == 0)
+                return String.Empty;
+
+            var _StringBuilder = new StringBuilder();
+
+            foreach (var _Item in myEnumerable)
+            {
+                if (myStringRepresentation != null)
+                {
+                    _StringBuilder.Append(myStringRepresentation(_Item) + mySeperator);
+                }
+                else
+                {
+                    _StringBuilder.Append(_Item + mySeperator);
+                }
+            }
+            _StringBuilder.Length = _StringBuilder.Length - mySeperator.Length;
+
+            return _StringBuilder.ToString();
+
+        }
+
     }
 }

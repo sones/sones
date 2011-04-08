@@ -44,9 +44,5 @@ namespace sones.GraphDB.ErrorHandling
             return String.Format("The vertex attribute \"{0}\" already exists in supertype \"{1}\"!", VertexAttributeName, VertexSupertypeName);
         }
 
-        public override ushort ErrorCode
-        {
-            get { return ErrorCodes.VertexAttributeExistsInSuperVertexType; }
-        }
     }
 }
