@@ -31,6 +31,16 @@ namespace Irony.Parsing {
       ParserState = parserState;
     }
 
+    /* Added by sones developers */
+    // Ctor and Property added to take a 'Exeption'
+    public ParserMessage(ParserErrorLevel level, SourceLocation location, string message, ParserState parserState, Exception exception)
+        : this(level, location, message, parserState)
+    {
+        Exception = exception;
+    }
+    public Exception Exception;
+    /* Added by sones developers */
+
     public readonly ParserErrorLevel Level;
     public readonly ParserState ParserState;
     public readonly SourceLocation Location;

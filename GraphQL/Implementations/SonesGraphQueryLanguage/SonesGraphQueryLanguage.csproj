@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorHandling\ErrorCodes.cs" />
+    <Compile Include="ErrorHandling\GqlSyntaxException.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Grammar\SonesGQLGrammar.cs" />
     <Compile Include="SonesGQLConstants.cs" />

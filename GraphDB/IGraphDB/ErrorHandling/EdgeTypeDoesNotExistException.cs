@@ -17,16 +17,14 @@ namespace sones.GraphDB.ErrorHandling
         public EdgeTypeDoesNotExistException(String myEdgeType)
         {
             EdgeType = myEdgeType;
-        }
 
-        public override string ToString()
-        {
-            return String.Format("The edgetype \"{0}\" does not exist!", EdgeType);
-        }
+            _errorCode = ErrorCodes.EdgeTypeDoesNotExist;
+            _msg = String.Format("{0} : The edgetype \"{1}\" does not exist!", _errorCode, EdgeType);
+        }        
 
         public override ushort ErrorCode
         {
-            get { return ErrorCodes.EdgeTypeDoesNotExist; }
+            get { return _errorCode; }
         }
     }
 }

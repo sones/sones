@@ -16,7 +16,8 @@ namespace sones.Library.ErrorHandling
 
         #endregion
 
-        #region GraphFS (prefix: 2)
+
+        #region IGraphFS (prefix: 2)
 
         /// <summary>
         /// An unknown GraphFS error
@@ -55,7 +56,8 @@ namespace sones.Library.ErrorHandling
         
         #endregion
 
-        #region GraphDB (prefix: 3)
+
+        #region IGraphDB (prefix: 3)
 
         /// <summary>
         /// An unknown GraphDB error
@@ -190,13 +192,15 @@ namespace sones.Library.ErrorHandling
 
         #endregion
 
-        #region GraphDS (prefix: 4)
+
+        #region IGraphDS (prefix: 4)
 
 
 
         #endregion
 
-        #region GraphQL (prefix: 5)
+
+        #region IGraphQL (prefix: 5)
 
         /// <summary>
         /// An unknown GraphQL error
@@ -523,9 +527,9 @@ namespace sones.Library.ErrorHandling
         #endregion
 
 
-        #region Plugins (prefix: 7)               
+        #region Plugins (prefix: 7)
 
-        #region SonesQGLFunction (prefix: 72)
+        #region ISonesQGLFunction (prefix: 72)
                 
         /// <summary>
         /// An unknown QGLFunction error
@@ -544,7 +548,7 @@ namespace sones.Library.ErrorHandling
         
         #endregion
 
-        #region SonesIndex (prefix: 73)
+        #region ISonesIndex (prefix: 73)
 
         /// <summary>
         /// An unknown Index error

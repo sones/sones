@@ -17,16 +17,14 @@ namespace sones.GraphDB.ErrorHandling
         public AggregateOrFunctionDoesNotExistException(String myAggregateOrFunctionName)
         {
             AggregateOrFunctionName = myAggregateOrFunctionName;
-        }
 
-        public override string ToString()
-        {
-            return String.Format("The aggregate or function \"{0}\" does not exist!", AggregateOrFunctionName);
-        }
+            _errorCode = ErrorCodes.AggregateOrFunctionDoesNotExist;
+            _msg = String.Format("{0} : The aggregate or function \"{1}\" does not exist!", _errorCode, AggregateOrFunctionName);            
+        }        
 
         public override ushort ErrorCode
         {
-            get { return ErrorCodes.AggregateOrFunctionDoesNotExist; }
-        }   
+            get { return _errorCode; }
+        }                 
     }
 }

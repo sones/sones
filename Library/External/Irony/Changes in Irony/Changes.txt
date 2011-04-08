@@ -1,1 +1,6 @@
-﻿
+﻿Irony.Parsing.ParserMessage
+Library\External\Irony\Parsing\Diagnostics\ParserMessage.cs
+Line 34
+    /* Added by sones developers */
+    // Ctor and Property added to take a 'Exeption'
+    /* Added by sones developers */
