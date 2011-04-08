@@ -44,11 +44,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Expression\QueryPlan\QueryPlanEqualsWithoutIndexComplex.cs" />
+    <Compile Include="Expression\QueryPlan\QueryPlanEqualsWithoutIndex.cs" />
+    <Compile Include="Expression\QueryPlan\QueryPlanConstant.cs" />
     <Compile Include="Expression\QueryPlan\IQueryPlan.cs" />
+    <Compile Include="Expression\QueryPlan\QueryPlanProperty.cs" />
     <Compile Include="Index\IndexDefinition.cs" />
     <Compile Include="Manager\Index\IIndexManager.cs" />
     <Compile Include="Manager\Index\IndexManager.cs" />
     <Compile Include="Manager\MetaManager.cs" />
+    <Compile Include="Manager\QueryPlan\QueryPlanManager.cs" />
     <Compile Include="Manager\QueryPlan\IQueryPlanManager.cs" />
     <Compile Include="Manager\Request\RequestManager.cs" />
     <Compile Include="Manager\TypeManagement\ITypeManager.cs" />

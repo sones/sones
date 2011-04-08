@@ -4,6 +4,7 @@ using sones.Library.Security;
 using sones.Library.Transaction;
 using sones.Library.PropertyHyperGraph;
 using System.Collections.Generic;
+using sones.GraphDB.Expression;
 
 namespace sones.GraphDB.Request
 {
@@ -50,12 +51,15 @@ namespace sones.GraphDB.Request
 
         public override void Validate(MetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            if (!IsValidExpression(_request.GetVerticesDefinition.Expression))
+            {
+                throw new sones.GraphDB.ErrorHandling.Expression.InvalidExpressionException(_request.GetVerticesDefinition.Expression);
+            }
         }
 
         public override void Execute(MetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            _fetchedIVertices = myMetaManager.VertexManager.GetVertices(_request.GetVerticesDefinition.Expression, _request.GetVerticesDefinition.IsLongrunning, TransactionToken, SecurityToken, myMetaManager);
         }
 
         public override IRequest GetRequest()
@@ -77,6 +81,104 @@ namespace sones.GraphDB.Request
         {
             return myOutputconverter(Statistics, _fetchedIVertices);
         }
+
+        #endregion
+
+        #region private helper
+
+        #region IsValidExpression
+
+        /// <summary>
+        /// Is the expression valid
+        /// </summary>
+        /// <param name="myExpression">The to be validated expression</param>
+        /// <returns>True or false</returns>
+        private bool IsValidExpression(IExpression myExpression)
+        {
+            switch (myExpression.TypeOfExpression)
+            {
+                case TypeOfExpression.Binary:
+
+                    return IsValidBinaryExpression((BinaryExpression)myExpression);
+
+                case TypeOfExpression.Unary:
+
+                    return IsValidUnaryExpression((UnaryExpression)myExpression);
+
+                case TypeOfExpression.Constant:
+                case TypeOfExpression.Property:
+                default:
+                    return false;
+            }
+        }
+
+        #endregion
+
+        #region IsValidUnaryExpression
+
+        /// <summary>
+        /// Is the unary expression valid
+        /// </summary>
+        /// <param name="unaryExpression">The to be validated expression</param>
+        /// <returns>True or false</returns>
+        private bool IsValidUnaryExpression(UnaryExpression unaryExpression)
+        {
+            return IsValidExpression(unaryExpression.Expression);
+        }
+
+        #endregion
+
+        #region IsValidBinaryExpression
+
+        /// <summary>
+        /// Is this binary expression valid
+        /// </summary>
+        /// <param name="binaryExpression">The to be validated binary expression</param>
+        /// <returns>True or false</returns>
+        private bool IsValidBinaryExpression(BinaryExpression binaryExpression)
+        {
+            switch (binaryExpression.Operator)
+            {
+                #region comparative
+
+                case BinaryOperator.Equals:
+                case BinaryOperator.GreaterOrEqualsThan:
+                case BinaryOperator.GreaterThan:
+                case BinaryOperator.In:
+                case BinaryOperator.InRange:
+                case BinaryOperator.LessOrEqualsThan:
+                case BinaryOperator.LessThan:
+                case BinaryOperator.NotEquals:
+                case BinaryOperator.NotIn:
+
+                    if (binaryExpression.Left is PropertyExpression)
+                    {
+                        return (binaryExpression.Right is PropertyExpression) || (binaryExpression.Right is ConstantExpression);
+                    }
+                    else
+                    {
+                        return binaryExpression.Left is ConstantExpression && binaryExpression.Right is PropertyExpression;    
+                    }
+
+                #endregion
+
+                #region logic
+
+                case BinaryOperator.AND:
+                case BinaryOperator.OR:
+
+                    return IsValidExpression(binaryExpression.Left) && IsValidExpression(binaryExpression.Right);
+
+                #endregion
+
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
+        #endregion
 
         #endregion
     }

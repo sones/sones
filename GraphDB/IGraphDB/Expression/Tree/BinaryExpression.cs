@@ -45,5 +45,14 @@ namespace sones.GraphDB.Expression
         }
 
         #endregion
+
+        #region IExpression Members
+
+        public TypeOfExpression TypeOfExpression
+        {
+            get { return TypeOfExpression.Binary; }
+        }
+
+        #endregion
     }
 }

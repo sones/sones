@@ -158,15 +158,19 @@ namespace sones.GraphFS.Element.Vertex
         {
             var incomingEdges = GetIncomingEdges(myVertexTypeID, myEdgePropertyID);
 
+            List<IVertex> result = null;
+
             if (incomingEdges != null)
             {
+                result = new List<IVertex>();
+
                 foreach (var aIncomingEdge in incomingEdges)
                 {
-                    yield return aIncomingEdge.GetSourceVertex();
+                    result.Add(aIncomingEdge.GetSourceVertex());
                 }
             }
 
-            yield break;
+            return result;
         }
 
         public bool HasOutgoingEdge(long myEdgePropertyID)

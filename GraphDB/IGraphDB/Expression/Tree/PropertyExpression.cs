@@ -6,9 +6,9 @@ using System.Text;
 namespace sones.GraphDB.Expression
 {
     /// <summary>
-    /// This class represents an attribute expression
+    /// This class represents an property expression
     /// </summary>
-    public sealed class AttributeExpression : IExpression
+    public sealed class PropertyExpression : IExpression
     {
         #region Data
 
@@ -20,21 +20,30 @@ namespace sones.GraphDB.Expression
         /// <summary>
         /// The name of the attribute
         /// </summary>
-        public readonly String NameOfAttribute;
+        public readonly String NameOfProperty;
 
         #endregion
 
         #region Constructor
 
         /// <summary>
-        /// Creates a new Attribute expression
+        /// Creates a new property expression
         /// </summary>
         /// <param name="myNameOfVertexType">The name of the vertex type</param>
-        /// <param name="myNameOfAttribute">The name of the attribute</param>
-        public AttributeExpression(String myNameOfVertexType, String myNameOfAttribute)
+        /// <param name="myNameOfProperty">The name of the attribute</param>
+        public PropertyExpression(String myNameOfVertexType, String myNameOfProperty)
         {
             NameOfVertexType = myNameOfVertexType;
-            NameOfAttribute = myNameOfAttribute;
+            NameOfProperty = myNameOfProperty;
+        }
+
+        #endregion
+
+        #region IExpression Members
+
+        public TypeOfExpression TypeOfExpression
+        {
+            get { return TypeOfExpression.Property; }
         }
 
         #endregion

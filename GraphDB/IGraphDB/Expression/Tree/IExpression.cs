@@ -10,5 +10,9 @@ namespace sones.GraphDB.Expression
     /// </summary>
     public interface IExpression
     {
+        /// <summary>
+        /// The type of the expression (binary/unary/...)
+        /// </summary>
+        TypeOfExpression TypeOfExpression { get; }
     }
 }
