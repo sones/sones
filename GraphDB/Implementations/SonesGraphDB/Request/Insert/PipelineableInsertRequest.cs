@@ -33,7 +33,7 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myInsertVertexRequest">The insert parentVertex type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
-        /// <param name="myTransactionToken">The current transaction token</param>
+        /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
         public PipelineableInsertRequest(RequestInsertVertex myInsertVertexRequest, SecurityToken mySecurity,
                                          TransactionToken myTransactionToken)
             : base(mySecurity, myTransactionToken)
@@ -67,7 +67,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Creates the output for an insert statement
         /// </summary>
-        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <typeparam name="TResult">The type of the myResult</typeparam>
         /// <param name="myOutputconverter">The delegate that is executed uppon output-generation</param>
         /// <returns>A TResult</returns>
         internal TResult GenerateRequestResult<TResult>(Converter.InsertResultConverter<TResult> myOutputconverter)

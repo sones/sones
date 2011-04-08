@@ -12,22 +12,22 @@ namespace sones.GraphDB.Manager
     public sealed class MetaManager
     {
         /// <summary>
-        /// Gets or sets the current instance of the index manager.
+        /// Gets or sets the myOutgoingEdgeVertex instance of the index manager.
         /// </summary>
         public IIndexManager IndexManager { get; set; }
 
         /// <summary>
-        /// Gets or sets the current instance of the type manager.
+        /// Gets or sets the myOutgoingEdgeVertex instance of the type manager.
         /// </summary>
         public ITypeManager TypeManager { get; set; }
 
         /// <summary>
-        /// Gets or sets the current instance of the parentVertex manager.
+        /// Gets or sets the myOutgoingEdgeVertex instance of the parentVertex manager.
         /// </summary>
         public IVertexManager VertexManager { get; set; }
 
         /// <summary>
-        /// Gets or sets the current instance of parentVertex store.
+        /// Gets or sets the myOutgoingEdgeVertex instance of parentVertex store.
         /// </summary>
         public IVertexStore VertexStore { get; set; }
 

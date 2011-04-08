@@ -39,6 +39,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #region IVertexType Members
 
+        #region Vertex type properties
+
         long IVertexType.ID
         {
             get { return (long)BaseVertexType.Attribute; }
@@ -69,6 +71,10 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             get { return false; }
         }
 
+        #endregion
+
+        #region Inheritance
+
         bool IVertexType.HasParentVertexType
         {
             get { return true; }
@@ -89,53 +95,11 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             get { return _Childs; }
         }
 
+        #endregion
 
-        IEnumerable<IAttributeDefinition> IVertexType.GetAttributeDefinitions(bool myIncludeParents)
-        {
-            return base.GetAttributeDefinitions(myIncludeParents);
-        }
+        #region Attributes
 
-        IEnumerable<IPropertyDefinition> IVertexType.GetPropertyDefinitions(bool myIncludeParents)
-        {
-            return base.GetPropertyDefinitions(myIncludeParents);
-        }
-
-        IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeParents)
-        {
-            return base.GetIncomingEdgeDefinitions(myIncludeParents);
-        }
-
-        IEnumerable<IOutgoingEdgeDefinition> IVertexType.GetOutgoingEdgeDefinitions(bool myIncludeParents)
-        {
-            return base.GetOutgoingEdgeDefinitions(myIncludeParents);
-        }
-
-        bool IVertexType.HasVisibleIncomingEdges(bool myIncludeParents)
-        {
-            return base.HasIncomingDefinitions(myIncludeParents);
-        }
-
-        bool IVertexType.HasOutgoingEdges(bool myIncludeParents)
-        {
-            return base.HasOutgoingDefinitions(myIncludeParents);
-        }
-
-        IOutgoingEdgeDefinition IVertexType.GetOutgoingEdgeDefinition(string myEdgeName)
-        {
-            return base.GetOutgoingEdgeDefinition(myEdgeName);
-        }
-
-        IIncomingEdgeDefinition IVertexType.GetIncomingEdgeDefinition(string myEdgeName)
-        {
-            return base.GetIncomingEdgeDefinition(myEdgeName);
-        }
-
-        IEnumerable<IUniqueDefinition> IVertexType.GetUniqueDefinitions(bool myIncludeAncestorDefinitions)
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerable<IIndexDefinition> IVertexType.GetIndexDefinitions(bool myIncludeAncestorDefinitions)
+        bool IVertexType.HasAttribute(string myAttributeName)
         {
             throw new NotImplementedException();
         }
@@ -145,10 +109,107 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             return base.GetAttributeDefinition(myAttributeName);
         }
 
+        bool IVertexType.HasAttributes(bool myIncludeAncestorDefinitions)
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerable<IAttributeDefinition> IVertexType.GetAttributeDefinitions(bool myIncludeParents)
+        {
+            return base.GetAttributeDefinitions(myIncludeParents);
+        }
+
+        #endregion
+
+        #region Properties
+
+        bool IVertexType.HasProperty(string myAttributeName)
+        {
+            throw new NotImplementedException();
+        }
+
         IPropertyDefinition IVertexType.GetPropertyDefinition(string myPropertyName)
         {
             return base.GetPropertyDefinition(myPropertyName);
         }
+
+        bool IVertexType.HasProperties(bool myIncludeAncestorDefinitions)
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerable<IPropertyDefinition> IVertexType.GetPropertyDefinitions(bool myIncludeParents)
+        {
+            return base.GetPropertyDefinitions(myIncludeParents);
+        }
+
+        #endregion
+
+        #region Incoming Edges
+
+        bool IVertexType.HasIncomingEdges(bool myIncludeParents)
+        {
+            return base.HasIncomingDefinitions(myIncludeParents);
+        }
+
+        IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeParents)
+        {
+            return base.GetIncomingEdgeDefinitions(myIncludeParents);
+        }
+
+        bool IVertexType.HasIncomingEdge(string myEdgeName)
+        {
+            throw new NotImplementedException();
+        }
+
+        IIncomingEdgeDefinition IVertexType.GetIncomingEdgeDefinition(string myEdgeName)
+        {
+            return base.GetIncomingEdgeDefinition(myEdgeName);
+        }
+
+        #endregion
+
+        #region Outgoing Edges
+
+        bool IVertexType.HasOutgoingEdges(bool myIncludeParents)
+        {
+            return base.HasOutgoingDefinitions(myIncludeParents);
+        }
+
+        IEnumerable<IOutgoingEdgeDefinition> IVertexType.GetOutgoingEdgeDefinitions(bool myIncludeParents)
+        {
+            return base.GetOutgoingEdgeDefinitions(myIncludeParents);
+        }
+
+        bool IVertexType.HasOutgoingEdge(string myEdgeName)
+        {
+            throw new NotImplementedException();
+        }
+
+        IOutgoingEdgeDefinition IVertexType.GetOutgoingEdgeDefinition(string myEdgeName)
+        {
+            return base.GetOutgoingEdgeDefinition(myEdgeName);
+        }
+
+        #endregion
+
+        #region Unique
+
+        IEnumerable<IUniqueDefinition> IVertexType.GetUniqueDefinitions(bool myIncludeAncestorDefinitions)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Indices
+
+        IEnumerable<IIndexDefinition> IVertexType.GetIndexDefinitions(bool myIncludeAncestorDefinitions)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
 
         #endregion
     }

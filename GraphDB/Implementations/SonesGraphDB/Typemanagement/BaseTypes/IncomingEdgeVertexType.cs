@@ -29,6 +29,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #region IVertexType Members
 
+        #region Vertex type properties
+
         long IVertexType.ID
         {
             get { return (long)BaseVertexType.IncomingEdge; }
@@ -59,6 +61,10 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             get { return true; }
         }
 
+        #endregion
+
+        #region Inheritance
+
         bool IVertexType.HasParentVertexType
         {
             get { return true; }
@@ -79,9 +85,47 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             get { return _Childs; }
         }
 
+        #endregion
+
+        #region Attributes
+
+        bool IVertexType.HasAttribute(string myAttributeName)
+        {
+            throw new NotImplementedException();
+        }
+
+        IAttributeDefinition IVertexType.GetAttributeDefinition(string myAttributeName)
+        {
+            return base.GetAttributeDefinition(myAttributeName);
+        }
+
+        bool IVertexType.HasAttributes(bool myIncludeAncestorDefinitions)
+        {
+            throw new NotImplementedException();
+        }
+
         IEnumerable<IAttributeDefinition> IVertexType.GetAttributeDefinitions(bool myIncludeAncestorDefinitions)
         {
             return base.GetAttributeDefinitions(myIncludeAncestorDefinitions);
+        }
+
+        #endregion
+
+        #region Properties
+
+        bool IVertexType.HasProperty(string myAttributeName)
+        {
+            throw new NotImplementedException();
+        }
+
+        IPropertyDefinition IVertexType.GetPropertyDefinition(string myPropertyName)
+        {
+            return base.GetPropertyDefinition(myPropertyName);
+        }
+
+        bool IVertexType.HasProperties(bool myIncludeAncestorDefinitions)
+        {
+            throw new NotImplementedException();
         }
 
         IEnumerable<IPropertyDefinition> IVertexType.GetPropertyDefinitions(bool myIncludeAncestorDefinitions)
@@ -89,12 +133,21 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             return base.GetPropertyDefinitions(myIncludeAncestorDefinitions);
         }
 
+        #endregion
+
+        #region Incoming Edges
+
+        bool IVertexType.HasIncomingEdge(string myEdgeName)
+        {
+            throw new NotImplementedException();
+        }
+
         IIncomingEdgeDefinition IVertexType.GetIncomingEdgeDefinition(string myEdgeName)
         {
             return base.GetIncomingEdgeDefinition(myEdgeName);
         }
 
-        bool IVertexType.HasVisibleIncomingEdges(bool myIncludeAncestorDefinitions)
+        bool IVertexType.HasIncomingEdges(bool myIncludeAncestorDefinitions)
         {
             return base.HasIncomingDefinitions(myIncludeAncestorDefinitions);
         }
@@ -102,6 +155,15 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeAncestorDefinitions)
         {
             return base.GetIncomingEdgeDefinitions(myIncludeAncestorDefinitions);
+        }
+
+        #endregion
+
+        #region Outgoing Edges
+
+        bool IVertexType.HasOutgoingEdge(string myEdgeName)
+        {
+            throw new NotImplementedException();
         }
 
         IOutgoingEdgeDefinition IVertexType.GetOutgoingEdgeDefinition(string myEdgeName)
@@ -119,25 +181,25 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             return base.GetOutgoingEdgeDefinitions(myIncludeAncestorDefinitions);
         }
 
+        #endregion
+
+        #region Unique
+
         IEnumerable<IUniqueDefinition> IVertexType.GetUniqueDefinitions(bool myIncludeAncestorDefinitions)
         {
             throw new NotImplementedException();
         }
+
+        #endregion
+
+        #region Indices
 
         IEnumerable<IIndexDefinition> IVertexType.GetIndexDefinitions(bool myIncludeAncestorDefinitions)
         {
             throw new NotImplementedException();
         }
 
-        IAttributeDefinition IVertexType.GetAttributeDefinition(string myAttributeName)
-        {
-            return base.GetAttributeDefinition(myAttributeName);
-        }
-
-        IPropertyDefinition IVertexType.GetPropertyDefinition(string myPropertyName)
-        {
-            return base.GetPropertyDefinition(myPropertyName);
-        }
+        #endregion
 
         #endregion
     }

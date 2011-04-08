@@ -70,6 +70,7 @@
     <Compile Include="TypeManagement\BaseTypes\BaseVertexTypeFactory.cs" />
     <Compile Include="TypeManagement\BaseTypes\VertexTypeVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\VertexVertexType.cs" />
+    <Compile Include="TypeManagement\EdgeType.cs" />
     <Compile Include="TypeManagement\Exceptions\NotValidatedException.cs" />
     <Compile Include="Manager\TypeManagement\VertexTypeManager.cs" />
     <Compile Include="Request\Clear\PipelineableClearRequest.cs" />

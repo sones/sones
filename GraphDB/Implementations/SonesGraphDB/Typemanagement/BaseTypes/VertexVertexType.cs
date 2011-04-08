@@ -27,6 +27,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
 
         #region VertexVertexType Members
 
+        #region Vertex type properties
+
         long IVertexType.ID
         {
             get { return (long)BaseVertexType.Vertex; }
@@ -57,6 +59,10 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             get { throw new NotImplementedException(); }
         }
 
+        #endregion
+
+        #region Inheritance 
+
         bool IVertexType.HasParentVertexType
         {
             get { throw new NotImplementedException(); }
@@ -83,7 +89,45 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             }
         }
 
+        #endregion
+
+        #region Attributes
+
+        bool IVertexType.HasAttribute(string myAttributeName)
+        {
+            return base.GetAttributeDefinition(myAttributeName) != null;
+        }
+
+        IAttributeDefinition IVertexType.GetAttributeDefinition(string myAttributeName)
+        {
+            return base.GetAttributeDefinition(myAttributeName);
+        }
+
+        bool IVertexType.HasAttributes(bool myIncludeAncestorDefinitions)
+        {
+            throw new NotImplementedException();
+        }
+
         IEnumerable<IAttributeDefinition> IVertexType.GetAttributeDefinitions(bool myIncludeParents)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Properties
+
+        bool IVertexType.HasProperty(string myAttributeName)
+        {
+            throw new NotImplementedException();
+        }
+
+        IPropertyDefinition IVertexType.GetPropertyDefinition(string myPropertyName)
+        {
+            return base.GetPropertyDefinition(myPropertyName);
+        }
+
+        bool IVertexType.HasProperties(bool myIncludeAncestorDefinitions)
         {
             throw new NotImplementedException();
         }
@@ -93,17 +137,35 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             throw new NotImplementedException();
         }
 
+        #endregion
+
+        #region Incoming Edges
+
+        bool IVertexType.HasIncomingEdge(string myEdgeName)
+        {
+            throw new NotImplementedException();
+        }
+
         IIncomingEdgeDefinition IVertexType.GetIncomingEdgeDefinition(string myEdgeName)
         {
             throw new NotImplementedException();
         }
 
-        bool IVertexType.HasVisibleIncomingEdges(bool myIncludeParents)
+        bool IVertexType.HasIncomingEdges(bool myIncludeParents)
         {
             throw new NotImplementedException();
         }
 
         IEnumerable<IIncomingEdgeDefinition> IVertexType.GetIncomingEdgeDefinitions(bool myIncludeParents)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Outgoing Edges
+
+        bool IVertexType.HasOutgoingEdge(string myEdgeName)
         {
             throw new NotImplementedException();
         }
@@ -123,6 +185,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             throw new NotImplementedException();
         }
 
+        #endregion
+
         IEnumerable<IUniqueDefinition> IVertexType.GetUniqueDefinitions(bool myIncludeAncestorDefinitions)
         {
             throw new NotImplementedException();
@@ -133,16 +197,7 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             throw new NotImplementedException();
         }
 
-        IAttributeDefinition IVertexType.GetAttributeDefinition(string myAttributeName)
-        {
-            return base.GetAttributeDefinition(myAttributeName);
-        }
-
-        IPropertyDefinition IVertexType.GetPropertyDefinition(string myPropertyName)
-        {
-            return base.GetPropertyDefinition(myPropertyName);
-        }
-
         #endregion
+
     }
 }

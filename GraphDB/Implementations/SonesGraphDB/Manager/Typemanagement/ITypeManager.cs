@@ -48,7 +48,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myVertexTypeDefinition">The definition of the new type.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        /// <param name="myMetaManager">The current meta manager.</param>
+        /// <param name="myMetaManager">The myOutgoingEdgeVertex meta manager.</param>
         /// <returns>
         /// True, if the call of <see cref="AddVertex(sones.GraphDB.Request.VertexTypeDefinition,sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> with the given 
         /// <paramref name="myVertexTypeDefinition"/>, <paramref name="myTransaction"/> and <paramref name="mySecurity"/> 
@@ -62,7 +62,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myVertexTypeDefinition">The definition of the new type.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        /// <param name="myMetaManager">The current meta manager.</param>
+        /// <param name="myMetaManager">The myOutgoingEdgeVertex meta manager.</param>
         void AddVertex(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myVertexTypeDefinitions">The definition of the new parentVertex types.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        /// <param name="myMetaManager">The current meta manager.</param>
+        /// <param name="myMetaManager">The myOutgoingEdgeVertex meta manager.</param>
         /// <returns>
         /// True, if the call of <see cref="AddVertex(System.Collections.Generic.IEnumerable{sones.GraphDB.Request.VertexTypeDefinition},sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> with the given 
         /// <paramref name="myVertexTypeDefinitions"/>, <paramref name="myTransaction"/> and <paramref name="mySecurity"/> 
@@ -85,7 +85,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myVertexTypeDefinitions">The definition of the new parentVertex types.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        /// <param name="myMetaManager">The current meta manager.</param>
+        /// <param name="myMetaManager">The myOutgoingEdgeVertex meta manager.</param>
         void AddVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myVertexType">The parentVertex type to be removed.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        /// <param name="myMetaManager">The current meta manager.</param>
+        /// <param name="myMetaManager">The myOutgoingEdgeVertex meta manager.</param>
         /// <returns>
         /// True, if the call of <see cref="RemoveVertex(sones.GraphDB.TypeSystem.IVertexType,sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> with the given 
         /// <paramref name="myVertexType"/>, <paramref name="myTransaction"/> and <paramref name="mySecurity"/> 
@@ -108,7 +108,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myVertexType">The parentVertex type that will be removed.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        /// <param name="myMetaManager">The current meta manager.</param>
+        /// <param name="myMetaManager">The myOutgoingEdgeVertex meta manager.</param>
         /// The parentVertex type will be removed unless there are no edges that point to this type.
         /// If there is such an edge, remove the edge by altering the type that holds it or remove both type simultaneously using <see cref="Add(IEnumerable<IVertexType>, TransactionToken)"/>.
         void RemoveVertex(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
@@ -119,7 +119,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myVertexTypes">The parentVertex types to be removed.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        /// <param name="myMetaManager">The current meta manager.</param>
+        /// <param name="myMetaManager">The myOutgoingEdgeVertex meta manager.</param>
         /// <returns>
         /// True, if the call of <see cref="RemoveVertex(System.Collections.Generic.IEnumerable{sones.GraphDB.TypeSystem.IVertexType},sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> with the given 
         /// <paramref name="myVertexTypes"/>, <paramref name="myTransaction"/> and <paramref name="mySecurity"/> 
@@ -133,7 +133,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myVertexTypes">The parentVertex types that will be removed.</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        /// <param name="myMetaManager">The current meta manager.</param>
+        /// <param name="myMetaManager">The myOutgoingEdgeVertex meta manager.</param>
         /// All types will be removed unless there are no edges that point to at least one of the given types.
         /// If there is such an edge, remove the edge by altering the type that holds it or remove this type too.
         /// All types are removed simultaneously. This means that edges between the types are not need to be removed before.
@@ -145,7 +145,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myVertexTypeDefinition">TODO: for update use VertexTypeUpdateDefinition</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        /// <param name="myMetaManager">The current meta manager.</param>
+        /// <param name="myMetaManager">The myOutgoingEdgeVertex meta manager.</param>
         /// <returns>
         /// True, if the call of <see cref="UpdateVertex(sones.GraphDB.Request.VertexTypeDefinition,sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> with the given 
         /// <paramref name="myVertexTypeDefinition"/>, <paramref name="myTransaction"/> and <paramref name="mySecurity"/> 
@@ -159,7 +159,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myVertexTypeDefinition">TODO: for update use VertexTypeUpdateDefinition</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        /// <param name="myMetaManager">The current meta manager.</param>
+        /// <param name="myMetaManager">The myOutgoingEdgeVertex meta manager.</param>
         void UpdateVertex(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myVertexTypeDefinitions">TODO: for update use VertexTypeUpdateDefinition</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        /// <param name="myMetaManager">The current meta manager.</param>
+        /// <param name="myMetaManager">The myOutgoingEdgeVertex meta manager.</param>
         /// <returns>
         /// True, if the call of <see cref="UpdateVertex(System.Collections.Generic.IEnumerable{sones.GraphDB.Request.VertexTypeDefinition},sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)"/> with the given 
         /// <paramref name="myVertexTypeDefinitions"/>, <paramref name="myTransaction"/> and <paramref name="mySecurity"/> 
@@ -182,7 +182,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myVertexTypeDefinitions">TODO: for update use VertexTypeUpdateDefinition</param>
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
-        /// <param name="myMetaManager">The current meta manager.</param>
+        /// <param name="myMetaManager">The myOutgoingEdgeVertex meta manager.</param>
         void UpdateVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
     }
 }

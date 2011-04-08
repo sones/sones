@@ -83,11 +83,10 @@ namespace sones.GraphDB.TypeSystem
         #region Attributes
 
         /// <summary>
-        /// Gets all attributes defined on this vertex type.
+        /// Has this vertex type a certain attribute?
         /// </summary>
-        /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
-        /// <returns>An enumerable of attribute definitions</returns>
-        IEnumerable<IAttributeDefinition> GetAttributeDefinitions(bool myIncludeAncestorDefinitions);
+        /// <returns>True or false</returns>
+        bool HasAttribute(String myAttributeName);
 
         /// <summary>
         /// Gets a certain attribute definition
@@ -96,14 +95,26 @@ namespace sones.GraphDB.TypeSystem
         /// <returns>A attribute definition</returns>
         IAttributeDefinition GetAttributeDefinition(String myAttributeName);
 
+        /// <summary>
+        /// Has this vertex type any attributes?
+        /// </summary>
+        /// <returns>True or false</returns>
+        bool HasAttributes(bool myIncludeAncestorDefinitions);
+
+        /// <summary>
+        /// Gets all attributes defined on this vertex type.
+        /// </summary>
+        /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
+        /// <returns>An enumerable of attribute definitions</returns>
+        IEnumerable<IAttributeDefinition> GetAttributeDefinitions(bool myIncludeAncestorDefinitions);
+
         #region Properties
 
         /// <summary>
-        /// Gets all properties defined on this vertex type.
+        /// Has this vertex type a certain property?
         /// </summary>
-        /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
-        /// <returns>An enumerable of property definitions</returns>
-        IEnumerable<IPropertyDefinition> GetPropertyDefinitions(bool myIncludeAncestorDefinitions);
+        /// <returns>True or false</returns>
+        bool HasProperty(String myAttributeName);
 
         /// <summary>
         /// Gets a certain attribute definition
@@ -112,19 +123,43 @@ namespace sones.GraphDB.TypeSystem
         /// <returns>A property definition</returns>
         IPropertyDefinition GetPropertyDefinition(String myPropertyName);
 
+        /// <summary>
+        /// Has this vertex type any properties?
+        /// </summary>
+        /// <returns>True or false</returns>
+        bool HasProperties(bool myIncludeAncestorDefinitions);
+
+        /// <summary>
+        /// Gets all properties defined on this vertex type.
+        /// </summary>
+        /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
+        /// <returns>An enumerable of property definitions</returns>
+        IEnumerable<IPropertyDefinition> GetPropertyDefinitions(bool myIncludeAncestorDefinitions);
+
         #endregion
 
         #region Edges
 
         #region Incoming
 
+        /// <summary>
+        /// Has this vertex type a certain incoming edge?
+        /// </summary>
+        /// <returns>True or false</returns>
+        bool HasIncomingEdge(String myEdgeName);
+
+        /// <summary>
+        /// Gets a certain incoming edge definition
+        /// </summary>
+        /// <param name="myAttributeName">The name of the interesting incoming edge</param>
+        /// <returns>An incoming edge definition</returns>
         IIncomingEdgeDefinition GetIncomingEdgeDefinition(String myEdgeName);
 
         /// <summary>
         /// Has this vertex type any visible incoming edges?
         /// </summary>
         /// <returns>True or false</returns>
-        bool HasVisibleIncomingEdges(bool myIncludeAncestorDefinitions);
+        bool HasIncomingEdges(bool myIncludeAncestorDefinitions);
 
         /// <summary>
         /// Get all incoming edges
@@ -133,10 +168,22 @@ namespace sones.GraphDB.TypeSystem
         /// <returns>An enumerable of incoming edge attributes</returns>
         IEnumerable<IIncomingEdgeDefinition> GetIncomingEdgeDefinitions(bool myIncludeAncestorDefinitions);
 
+
         #endregion
 
         #region Outgoing
 
+        /// <summary>
+        /// Has this vertex type a certain outgoing edge?
+        /// </summary>
+        /// <returns>True or false</returns>
+        bool HasOutgoingEdge(String myEdgeName);
+
+        /// <summary>
+        /// Gets a certain outgoing edge definition
+        /// </summary>
+        /// <param name="myAttributeName">The name of the interesting outgoing edge</param>
+        /// <returns>An outgoing edge definition</returns>
         IOutgoingEdgeDefinition GetOutgoingEdgeDefinition(String myEdgeName);
 
         /// <summary>

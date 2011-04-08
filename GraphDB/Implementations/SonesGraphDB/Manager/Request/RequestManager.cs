@@ -164,12 +164,12 @@ namespace sones.GraphDB.Manager
         #region GetResult
 
         /// <summary>
-        /// Gets the result
+        /// Gets the myResult
         /// 
         /// If there was an error during validation or execution, the corresponding exception is thrown
         /// </summary>
         /// <param name="myInterestingResult">The id of the pipelineable request</param>
-        /// <returns>The result of the request</returns>
+        /// <returns>The myResult of the request</returns>
         public APipelinableRequest GetResult(Guid myInterestingResult)
         {
             APipelinableRequest interestingRequest;
@@ -329,7 +329,7 @@ namespace sones.GraphDB.Manager
                 //execute this request
                 myPipelineRequest.Execute(_metaManager);
 
-                //add the request to the result
+                //add the request to the myResult
                 _results.TryAdd(myPipelineRequest.ID, myPipelineRequest);
 
                 #endregion

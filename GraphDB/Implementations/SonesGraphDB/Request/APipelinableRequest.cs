@@ -24,7 +24,7 @@ namespace sones.GraphDB.Request
         protected SecurityToken SecurityToken { get; private set; }
 
         /// <summary>
-        /// The current transaction token
+        /// The myOutgoingEdgeVertex transaction token
         /// </summary>
         protected TransactionToken TransactionToken { get; private set; }
 

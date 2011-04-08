@@ -32,7 +32,7 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myCreateVertexTypeRequest">The create parentVertex type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
-        /// <param name="myTransactionToken">The current transaction token</param>
+        /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
         public PipelineableCreateVertexTypeRequest(RequestCreateVertexType myCreateVertexTypeRequest,
                                                    SecurityToken mySecurity, TransactionToken myTransactionToken)
             : base(mySecurity, myTransactionToken)
@@ -64,9 +64,9 @@ namespace sones.GraphDB.Request
         #region internal methods
 
         /// <summary>
-        /// Generates the result of a create parentVertex type request
+        /// Generates the myResult of a create parentVertex type request
         /// </summary>
-        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <typeparam name="TResult">The type of the myResult</typeparam>
         /// <param name="myOutputconverter">The output converter that is used to create the TResult</param>
         /// <returns>A TResult</returns>
         internal TResult GenerateRequestResult<TResult>(Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
