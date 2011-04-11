@@ -1,6 +1,8 @@
 ﻿using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Request;
 using sones.Library.VertexStore;
+using sones.Library.Transaction;
+using sones.Library.Security;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
@@ -8,7 +10,7 @@ namespace sones.GraphDB.Manager.TypeManagement
     {
         #region IEdgeTypeManager Members
 
-        public IEdgeType GetEdgeType(string myTypeName)
+        public IEdgeType GetEdgeType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
@@ -82,7 +84,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             throw new System.NotImplementedException();
         }
 
-        public void Create(Index.IIndexManager myIndexMgr, IVertexStore myVertexStore)
+        public void Create(MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }

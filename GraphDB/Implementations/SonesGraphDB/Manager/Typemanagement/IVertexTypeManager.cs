@@ -14,8 +14,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTypeName">
         /// The name of the vertex type.
         /// </param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <param name="myMetaManager">The meta manager.</param>
         /// <returns>An instance of IVertexType, that represents the vertex type.</returns>
-        IVertexType GetVertexType(string myTypeName);
+        IVertexType GetVertexType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
 
         /// <summary>
         /// Checks if the execution of <see cref="AddVertexType(VertexTypeDefinition, TransactionToken, SecurityToken, MetaManager)"/> will succeed, if no unexpected error occurs.

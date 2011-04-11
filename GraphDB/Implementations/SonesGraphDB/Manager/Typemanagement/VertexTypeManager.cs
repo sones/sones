@@ -54,9 +54,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Retrieving
 
-        public IVertexType GetVertexType(string myTypeName)
+        public IVertexType GetVertexType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return DoGetVertexType(myTypeName);
+            return Get(myTypeName, myTransaction, mySecurity, myMetaManager);
         }
 
         #endregion
@@ -67,22 +67,22 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public bool CanAddVertexType(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return DoCanAddVertex(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
+            return CanAdd(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
         }
 
         public IVertexType AddVertexType(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return DoAddVertex(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
+            return Add(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
         }
 
         public bool CanAddVertexType(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return DoCanAddVertex(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
+            return CanAdd(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
         }
 
         public IVertexType AddVertexType(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return DoAddVertex(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
+            return Add(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
         }
 
         #endregion
@@ -91,22 +91,22 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public bool CanRemoveVertexType(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return DoCanRemoveVertex(myVertexType.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
+            return CanRemove(myVertexType.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
         }
 
         public void RemoveVertexType(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            DoRemoveVertex(myVertexType.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
+            Remove(myVertexType.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
         }
 
         public bool CanRemoveVertexType(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return DoCanRemoveVertex(myVertexTypes, myTransaction, mySecurity, myMetaManager);
+            return CanRemove(myVertexTypes, myTransaction, mySecurity, myMetaManager);
         }
 
         public void RemoveVertexType(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            DoRemoveVertex(myVertexTypes, myTransaction, mySecurity, myMetaManager);
+            Remove(myVertexTypes, myTransaction, mySecurity, myMetaManager);
         }
 
         #endregion
@@ -115,22 +115,22 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public bool CanUpdateVertexType(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return DoCanUpdateVertex(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
+            return CanUpdate(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
         }
 
         public void UpdateVertexType(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            DoUpdateVertex(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
+            Update(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
         }
 
         public bool CanUpdateVertexType(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return DoCanUpdateVertex(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
+            return CanUpdate(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
         }
 
         public void UpdateVertexType(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            DoUpdateVertex(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
+            Update(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
         }
 
         #endregion
@@ -146,7 +146,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             throw new NotImplementedException();
         }
 
-        public void Create(Index.IIndexManager myIndexMgr, Library.VertexStore.IVertexStore myVertexStore)
+        public void Create(MetaManager myMetaManager)
         {
             throw new NotImplementedException();
         }
@@ -157,57 +157,51 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Get
 
-        private IVertexType DoGetVertexType(string myTypeName)
+        private IVertexType Get(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         #endregion
 
         #region Add
 
-        private bool DoCanAddVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private bool CanAdd(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            var vstore = myMetaManager.VertexStore;
-            var vmgr = myMetaManager.VertexManager;
-            var idxmgr = myMetaManager.IndexManager;
-            //vmgr.GetVertex();
-
             throw new NotImplementedException();
         }
 
-        private IVertexType DoAddVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private IVertexType Add(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         #endregion
 
         #region Remove
 
-        private bool DoCanRemoveVertex(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private bool CanRemove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
-        private void DoRemoveVertex(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private void Remove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         #endregion
 
         #region Update
 
-        private bool DoCanUpdateVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private bool CanUpdate(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
-        private void DoUpdateVertex(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private void Update(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
 
         #endregion

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using sones.GraphDB.Expression;
 using sones.GraphDB.Expression.QueryPlan;
+using sones.Library.Transaction;
+using sones.Library.Security;
 
 namespace sones.GraphDB.Manager.QueryPlan
 {
@@ -18,6 +20,6 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// </summary>
         /// <param name="myExpression">The expression that is going to be transfered into a queryplan</param>
         /// <returns>A queryplan</returns>
-        IQueryPlan CreateQueryPlan(IExpression myExpression);
+        IQueryPlan CreateQueryPlan(IExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
     }
 }

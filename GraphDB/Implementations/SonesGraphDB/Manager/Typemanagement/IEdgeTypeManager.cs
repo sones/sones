@@ -14,8 +14,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTypeName">
         /// The name of the e type.
         /// </param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <param name="myMetaManager">The meta manager.</param>
         /// <returns>An instance of IEdgeType, that represents the e type.</returns>
-        IEdgeType GetEdgeType(string myTypeName);
+        IEdgeType GetEdgeType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
 
         /// <summary>
         /// Checks if the execution of <see cref="AddEdgeType(EdgeTypeDefinition, TransactionToken, SecurityToken, MetaManager)"/> will succeed, if no unexpected error occurs.
