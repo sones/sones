@@ -21,7 +21,7 @@ namespace sones.GraphDB
         public TResult CreateVertexType<TResult>(
             SecurityToken mySecurity, 
             TransactionToken myTransactionToken,
-            RequestCreateVertexType myRequestCreateVertexType,
+            RequestCreateVertexTypes myRequestCreateVertexType,
             Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
         {
             var id =

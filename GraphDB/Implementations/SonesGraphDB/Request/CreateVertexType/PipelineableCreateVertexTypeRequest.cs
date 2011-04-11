@@ -16,7 +16,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The request that contains the todo
         /// </summary>
-        private readonly RequestCreateVertexType _request;
+        private readonly RequestCreateVertexTypes _request;
 
         /// <summary>
         /// The parentVertex type that has been created during execution
@@ -33,7 +33,7 @@ namespace sones.GraphDB.Request
         /// <param name="myCreateVertexTypeRequest">The create parentVertex type request</param>
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
-        public PipelineableCreateVertexTypeRequest(RequestCreateVertexType myCreateVertexTypeRequest,
+        public PipelineableCreateVertexTypeRequest(RequestCreateVertexTypes myCreateVertexTypeRequest,
                                                    SecurityToken mySecurity, TransactionToken myTransactionToken)
             : base(mySecurity, myTransactionToken)
         {
@@ -44,14 +44,14 @@ namespace sones.GraphDB.Request
 
         #region APipelinableRequest Members
 
-        public override void Validate(MetaManager myMetaManager)
+        public override bool Validate(MetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            return myMetaManager.TypeManager.CanAddVertex(_request.VertexTypeDefinitions, TransactionToken, SecurityToken, myMetaManager);
         }
 
         public override void Execute(MetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            _createdVertexType = myMetaManager.TypeManager.AddVertex(_request.VertexTypeDefinitions, TransactionToken, SecurityToken, myMetaManager);
         }
 
         public override IRequest GetRequest()

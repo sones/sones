@@ -49,12 +49,9 @@ namespace sones.GraphDB.Request
 
         #region APipelinableRequest Members
 
-        public override void Validate(MetaManager myMetaManager)
+        public override bool Validate(MetaManager myMetaManager)
         {
-            if (!IsValidExpression(_request.GetVerticesDefinition.Expression))
-            {
-                throw new sones.GraphDB.ErrorHandling.Expression.InvalidExpressionException(_request.GetVerticesDefinition.Expression);
-            }
+            return IsValidExpression(_request.GetVerticesDefinition.Expression);
         }
 
         public override void Execute(MetaManager myMetaManager)

@@ -45,7 +45,7 @@ namespace sones.GraphDB.Request
 
         #region APipelinableRequest Members
 
-        public override void Validate(MetaManager myMetaManager)
+        public override bool Validate(MetaManager myMetaManager)
         {
             throw new NotImplementedException();
         }

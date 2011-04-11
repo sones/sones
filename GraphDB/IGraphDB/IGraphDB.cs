@@ -47,7 +47,7 @@ namespace sones.GraphDB
         /// <returns>A generic result</returns>
         TResult CreateVertexType<TResult>(SecurityToken mySecurityToken,
                                           TransactionToken myTransactionToken,
-                                          RequestCreateVertexType myRequestCreateVertexType,
+                                          RequestCreateVertexTypes myRequestCreateVertexType,
                                           Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter);
 
         /// <summary>
