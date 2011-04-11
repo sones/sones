@@ -26,5 +26,6 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
             _Instances.TryGetValue(myBaseVertexType, out result);
             return result;
         }
+
     }
 }

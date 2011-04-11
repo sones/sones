@@ -48,7 +48,7 @@ namespace sones.GraphDB.TypeManagement
 
         #region c'tor
 
-        private VertexType(IVertex myVertex)
+        internal VertexType(IVertex myVertex)
         {
             //_Expr = new BinaryExpression(new ConstantExpression(_ID), BinaryOperator.Equals, new AttributeExpression("VertexType", "ID"));
             _vertex = myVertex;

@@ -81,11 +81,11 @@
     <Compile Include="Request\Clear\RequestClear.cs" />
     <Compile Include="Request\Converter.cs" />
     <Compile Include="Request\CreateEdgeType\EdgeTypeDefinition.cs" />
-    <Compile Include="Request\CreateVertexTypes\EdgeSpecies.cs" />
-    <Compile Include="Request\CreateVertexTypes\OutgoingEdgeDefinition.cs" />
+    <Compile Include="Request\CreateVertexTypes\IncomingEdgePredefinition.cs" />
+    <Compile Include="Request\CreateVertexTypes\OutgoingEdgePredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\Property\PropertyDefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\RequestCreateVertexTypes.cs" />
-    <Compile Include="Request\CreateVertexTypes\VertexTypeDefinition.cs" />
+    <Compile Include="Request\CreateVertexTypes\VertexTypePredefinition.cs" />
     <Compile Include="Request\GetVertices\RequestGetVertices.cs" />
     <Compile Include="Request\GetVertices\GetVerticesDefinition.cs" />
     <Compile Include="Request\GraphDBAccessMode.cs" />

@@ -5,6 +5,9 @@ using sones.Library.LanguageExtensions;
 using sones.Library.Transaction;
 using sones.Library.Security;
 using System;
+using sones.GraphDB.Expression;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.TypeManagement.BaseTypes;
 
 
 /*
@@ -48,6 +51,8 @@ namespace sones.GraphDB.Manager.TypeManagement
         public const UInt64 VertexTypeID = UInt64.MinValue;
         public const UInt64 EdgeTypeID = UInt64.MinValue + 1;
 
+        private static readonly IExpression VertexTypeNameExpression = new PropertyExpression("VertexType", "Name");
+
         #endregion
 
         #region IVertexTypeManager Members
@@ -65,22 +70,22 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Add
 
-        public bool CanAddVertexType(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public bool CanAddVertexType(VertexTypePredefinition myVertexTypePredefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return CanAdd(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
+            return CanAdd(myVertexTypePredefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
         }
 
-        public IVertexType AddVertexType(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public IVertexType AddVertexType(VertexTypePredefinition myVertexTypePredefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return Add(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
+            return Add(myVertexTypePredefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
         }
 
-        public bool CanAddVertexType(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public bool CanAddVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             return CanAdd(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
         }
 
-        public IVertexType AddVertexType(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public IVertexType AddVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             return Add(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
         }
@@ -113,22 +118,22 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Update
 
-        public bool CanUpdateVertexType(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public bool CanUpdateVertexType(VertexTypePredefinition myVertexTypePredefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return CanUpdate(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
+            return CanUpdate(myVertexTypePredefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
         }
 
-        public void UpdateVertexType(VertexTypeDefinition myVertexTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public void UpdateVertexType(VertexTypePredefinition myVertexTypePredefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            Update(myVertexTypeDefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
+            Update(myVertexTypePredefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
         }
 
-        public bool CanUpdateVertexType(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public bool CanUpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             return CanUpdate(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
         }
 
-        public void UpdateVertexType(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public void UpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             Update(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
         }
@@ -157,21 +162,40 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Get
 
-        private IVertexType Get(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+
+        private static IVertexType Get(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            #region check if it is a base type
+
+            BaseVertexType baseType;
+            if (Enum.TryParse(myTypeName, out baseType))
+            {
+                return BaseVertexTypeFactory.GetInstance(baseType);
+            }
+
+            #endregion
+
+            #region get the type from fs
+
+            var vertex = myMetaManager.VertexManager.GetSingleVertex(new BinaryExpression(VertexTypeNameExpression, BinaryOperator.Equals, new ConstantExpression(myTypeName)), myTransaction, mySecurity, myMetaManager);
+            if (vertex == null)
+                throw new KeyNotFoundException(string.Format("A vertex type with name {0} was not found.", myTypeName));
+
+            return new VertexType(vertex);
+
+            #endregion
         }
 
         #endregion
 
         #region Add
 
-        private bool CanAdd(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private bool CanAdd(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new NotImplementedException();
         }
 
-        private IVertexType Add(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private IVertexType Add(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new NotImplementedException();
         }
@@ -194,12 +218,12 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Update
 
-        private bool CanUpdate(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private bool CanUpdate(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new NotImplementedException();
         }
 
-        private void Update(IEnumerable<VertexTypeDefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private void Update(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new NotImplementedException();
         }

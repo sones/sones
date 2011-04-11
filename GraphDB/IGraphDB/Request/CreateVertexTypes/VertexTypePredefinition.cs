@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using sones.GraphDB.TypeSystem;
+using sones.GraphDB.Request.CreateVertexTypes;
 
 namespace sones.GraphDB.Request
 {
     /// <summary>
     /// The definition for vertex types
     /// </summary>
-    public sealed class VertexTypeDefinition
+    public sealed class VertexTypePredefinition
     {
         #region Data
 
@@ -14,6 +16,9 @@ namespace sones.GraphDB.Request
         /// The name of the vertex type that is going to be created
         /// </summary>
         public readonly string VertexTypeName;
+        private readonly List<PropertyDefinition> _properties;
+        private readonly List<OutgoingEdgePredefinition> _outgoingEdges;
+        private readonly List<IncomingEdgePredefinition> _incomingEdges;
 
         /// <summary>
         /// The name of the vertex type this vertex types inherites from
@@ -23,12 +28,26 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The properties of the vertex type
         /// </summary>
-        public List<PropertyDefinition> Properties { get; private set; }
+        public IEnumerable<PropertyDefinition> Properties
+        {
+            get { return _properties.AsReadOnly(); }
+        }
 
         /// <summary>
         /// The outgoing edges of this vertex type
         /// </summary>
-        public List<OutgoingEdgeDefinition> OutgoingEdges { get; private set; }
+        public IEnumerable<OutgoingEdgePredefinition> OutgoingEdges
+        {
+            get { return _outgoingEdges.AsReadOnly(); }
+        }
+
+        /// <summary>
+        /// The outgoing edges of this vertex type
+        /// </summary>
+        public IEnumerable<IncomingEdgePredefinition> IncomingEdges
+        {
+            get { return _incomingEdges.AsReadOnly(); }
+        }
 
         #endregion
 
@@ -38,7 +57,7 @@ namespace sones.GraphDB.Request
         /// Creates a new vertex type definition
         /// </summary>
         /// <param name="myVertexTypeName">The name of the vertex type</param>
-        public VertexTypeDefinition(String myVertexTypeName)
+        public VertexTypePredefinition(String myVertexTypeName)
         {
             if (string.IsNullOrEmpty(myVertexTypeName))
             {
@@ -47,9 +66,10 @@ namespace sones.GraphDB.Request
 
             VertexTypeName = myVertexTypeName;
 
-            Properties = new List<PropertyDefinition>();
-            OutgoingEdges = new List<OutgoingEdgeDefinition>();
-            SuperVertexTypeName = null;
+            _properties = new List<PropertyDefinition>();
+            _outgoingEdges = new List<OutgoingEdgePredefinition>();
+            _incomingEdges = new List<IncomingEdgePredefinition>();
+            
         }
 
         #endregion
@@ -61,7 +81,7 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="mySuperVertexTypeName">The name of the super vertex type</param>
         /// <returns>A vertex type definition</returns>
-        private VertexTypeDefinition SetSuperVertexTypeName(String mySuperVertexTypeName)
+        private VertexTypePredefinition SetSuperVertexTypeName(String mySuperVertexTypeName)
         {
             if (!string.IsNullOrEmpty(mySuperVertexTypeName))
             {
@@ -76,11 +96,11 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myPropertyDefinition">The property definition that is going to be added</param>
         /// <returns>A vertex type definition</returns>
-        private VertexTypeDefinition AddProperty(PropertyDefinition myPropertyDefinition)
+        private VertexTypePredefinition AddProperty(PropertyDefinition myPropertyDefinition)
         {
             if (myPropertyDefinition != null)
             {
-                Properties.Add(myPropertyDefinition);
+                _properties.Add(myPropertyDefinition);
             }
 
             return this;
@@ -89,13 +109,13 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Adds an outgoing edge
         /// </summary>
-        /// <param name="myOutgoingEdgeDefinition">The definition of the outgoing edge</param>
+        /// <param name="myOutgoingEdgePredefinition">The definition of the outgoing edge</param>
         /// <returns>A vertex type definition</returns>
-        private VertexTypeDefinition AddOutgoingEdge(OutgoingEdgeDefinition myOutgoingEdgeDefinition)
+        private VertexTypePredefinition AddOutgoingEdge(OutgoingEdgePredefinition myOutgoingEdgePredefinition)
         {
-            if (myOutgoingEdgeDefinition != null)
+            if (myOutgoingEdgePredefinition != null)
             {
-                OutgoingEdges.Add(myOutgoingEdgeDefinition);
+                _outgoingEdges.Add(myOutgoingEdgePredefinition);
             }
 
             return this;

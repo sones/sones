@@ -12,7 +12,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The definition of the vertex that is going to be created
         /// </summary>
-        public readonly IEnumerable<VertexTypeDefinition> VertexTypeDefinitions;
+        public readonly IEnumerable<VertexTypePredefinition> VertexTypeDefinitions;
 
         #endregion
 
@@ -22,7 +22,7 @@ namespace sones.GraphDB.Request
         /// Creates a new request that clears the Graphdb
         /// </summary>
         /// <param name="myVertexTypeDefinition">Describes the vertex that is going to be created</param>
-        public RequestCreateVertexTypes(IEnumerable<VertexTypeDefinition> myVertexTypeDefinition)
+        public RequestCreateVertexTypes(IEnumerable<VertexTypePredefinition> myVertexTypeDefinition)
         {
             VertexTypeDefinitions = myVertexTypeDefinition;
         }
