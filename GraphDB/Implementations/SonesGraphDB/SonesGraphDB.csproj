@@ -55,6 +55,7 @@
     <Compile Include="Manager\MetaManager.cs" />
     <Compile Include="Manager\QueryPlan\QueryPlanManager.cs" />
     <Compile Include="Manager\QueryPlan\IQueryPlanManager.cs" />
+    <Compile Include="Manager\Request\IRequestManager.cs" />
     <Compile Include="Manager\Request\RequestManager.cs" />
     <Compile Include="Manager\TypeManagement\ITypeManager.cs" />
     <Compile Include="Manager\Vertex\IVertexManager.cs" />
@@ -90,6 +91,10 @@
     <Compile Include="TypeManagement\VertexType.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\GraphFS\IGraphFS\IGraphFS.csproj">
+      <Project>{FFFB6BE4-9514-41CF-AB68-5FB7B8E3D2E4}</Project>
+      <Name>IGraphFS</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
@@ -109,6 +114,10 @@
     <ProjectReference Include="..\..\..\Library\Internal\Transaction\Transaction.csproj">
       <Project>{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}</Project>
       <Name>Transaction</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
+      <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
+      <Name>PluginManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\VertexStore\VertexStore.csproj">
       <Project>{E350EBAC-98DD-4261-8CE8-FA95FC96C9EA}</Project>

@@ -36,6 +36,8 @@ namespace sones.GraphDB
     /// </summary>
     public interface IGraphDB : ITransactionable
     {
+        #region requests
+
         /// <summary>
         /// Creates a new type of vertex
         /// </summary>
@@ -91,5 +93,16 @@ namespace sones.GraphDB
                                      TransactionToken myTransactionToken,
                                      RequestGetVertices myRequestGetVertices,
                                      Converter.GetVerticesResultConverter<TResult> myOutputconverter);
+
+        #endregion
+
+        #region misc
+
+        /// <summary>
+        /// The id of the graph database
+        /// </summary>
+        Guid ID { get; }
+
+        #endregion
     }
 }

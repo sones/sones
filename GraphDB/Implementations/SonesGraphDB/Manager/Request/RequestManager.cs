@@ -4,13 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using sones.GraphDB.Request;
 using sones.Library.ErrorHandling;
+using sones.GraphDB.Manager.Request;
 
 namespace sones.GraphDB.Manager
 {
     /// <summary>
     /// A manager that handles requests in a pipeline
     /// </summary>
-    public sealed class RequestManager
+    public sealed class RequestManager : IRequestManager
     {
         #region data
 

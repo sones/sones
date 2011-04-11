@@ -3,6 +3,8 @@ using sones.GraphDB.Manager;
 using sones.GraphDB.Request;
 using sones.Library.Security;
 using sones.Library.Transaction;
+using sones.GraphFS;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.GraphDB
 {
@@ -11,10 +13,43 @@ namespace sones.GraphDB
     /// </summary>
     public sealed class SonesGraphDB : IGraphDB
     {
+        /// <summary>
+        /// The summary of all database relevant manager
+        /// </summary>
         private readonly MetaManager _metaManager;
+        
         private readonly RequestManager _requestManager;
 
+        private readonly PluginManager _pluginManager;
+
+        private readonly IGraphFS _iGraphFS;
+
+        private readonly Guid _id;
+
+        #region constructor
+
+        public SonesGraphDB(IGraphFS myIGraphFS)
+        {
+            _iGraphFS = myIGraphFS;
+            _id = Guid.NewGuid();
+
+            //manager
+            
+            //+pluginManager
+            //
+            //+requestmanager
+            //
+            //+metamanager
+            //++TypeManager
+            //++EdgeTypeManager
+            //++IndexManager
+        }
+
+        #endregion
+
         #region IGraphDB Members
+
+        #region requests
 
         #region create VertexType
 
@@ -86,6 +121,17 @@ namespace sones.GraphDB
 
         #endregion
 
+        #region misc
+
+        public Guid ID
+        {
+            get { return _id; }
+        }
+
+        #endregion
+
+        #endregion
+
         #region Transaction
 
         public TransactionToken Begin(SecurityToken mySecurity, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
@@ -104,5 +150,6 @@ namespace sones.GraphDB
         }
 
         #endregion
+
     }
 }
