@@ -4,23 +4,88 @@ using sones.Library.VertexStore;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    /* This class is splitted in three partial classes:
-     * - TypeManager.cs declares the public methods for parentVertex and edge types
-     * - EdgeTypeManager.cs declares the private methods for edge types
-     * - VertexTypeManager.cs declares the private methods for parentVertex types
-     */
-    public sealed partial class TypeManager : ITypeManager
+    public sealed class EdgeTypeManager : IEdgeTypeManager
     {
-        #region VertexTypeManager
+        #region IEdgeTypeManager Members
 
-        #region Add
+        public IEdgeType GetEdgeType(string myTypeName)
+        {
+            throw new System.NotImplementedException();
+        }
 
-        private IEdgeType DoAddEdge(EdgeTypeDefinition myEdgeTypeDefinition)
+        public bool CanAddEdge(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEdgeType AddEdge(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool CanAddEdge(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEdgeType AddEdge(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool CanRemoveEdge(IEdgeType myEdgeType, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void RemoveEdge(IEdgeType myEdgeType, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool CanRemoveEdge(System.Collections.Generic.IEnumerable<IEdgeType> myEdgeTypes, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void RemoveEdge(System.Collections.Generic.IEnumerable<IEdgeType> myEdgeTypes, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool CanUpdateEdge(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void UpdateEdge(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public bool CanUpdateEdge(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void UpdateEdge(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
 
         #endregion
+
+        #region IStorageUsingManager Members
+
+        public void Load(MetaManager myMetaManager)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Create(Index.IIndexManager myIndexMgr, IVertexStore myVertexStore)
+        {
+            throw new System.NotImplementedException();
+        }
 
         #endregion
     }

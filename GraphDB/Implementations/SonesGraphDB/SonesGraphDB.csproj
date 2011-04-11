@@ -57,11 +57,12 @@
     <Compile Include="Manager\QueryPlan\IQueryPlanManager.cs" />
     <Compile Include="Manager\Request\IRequestManager.cs" />
     <Compile Include="Manager\Request\RequestManager.cs" />
-    <Compile Include="Manager\TypeManagement\ITypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\IVertexTypeManager.cs" />
+    <Compile Include="Manager\IStorageUsingManager.cs" />
+    <Compile Include="Manager\TypeManagement\IEdgeTypeManager.cs" />
     <Compile Include="Manager\Vertex\IVertexManager.cs" />
     <Compile Include="Request\GetVertices\PipelineableGetVerticesRequest.cs" />
     <Compile Include="Manager\TypeManagement\EdgeTypeManager.cs" />
-    <Compile Include="Manager\TypeManagement\TypeManager.cs" />
     <Compile Include="TypeManagement\BaseTypes\BaseVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\IncomingEdgeVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\NormalEdgeType.cs" />

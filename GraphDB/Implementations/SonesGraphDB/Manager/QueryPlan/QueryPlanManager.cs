@@ -18,7 +18,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <summary>
         /// A type manager is needed to create certain query-plan structures
         /// </summary>
-        private readonly ITypeManager _typeManager;
+        private readonly IVertexTypeManager _vertexTypeManager;
 
         #endregion
 
@@ -28,9 +28,9 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// Creates a new query plan manager
         /// </summary>
         /// <param name="myTypeManager"></param>
-        public QueryPlanManager(ITypeManager myTypeManager)
+        public QueryPlanManager(IVertexTypeManager myTypeManager)
         {
-            _typeManager = myTypeManager;
+            _vertexTypeManager = myTypeManager;
         }
 
         #endregion
@@ -85,7 +85,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <returns>A property query plan</returns>
         private IQueryPlan GenerateFromPropertyExpression(PropertyExpression myPropertyExpression)
         {
-            var type = _typeManager.GetVertexType(myPropertyExpression.NameOfVertexType);
+            var type = _vertexTypeManager.GetVertexType(myPropertyExpression.NameOfVertexType);
 
             return new QueryPlanProperty(type, type.GetPropertyDefinition(myPropertyExpression.NameOfProperty));
         }
@@ -210,7 +210,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <returns>A Property query plan</returns>
         private QueryPlanProperty GenerateQueryPlanProperty(PropertyExpression propertyExpression)
         {
-            var vertexType = _typeManager.GetVertexType(propertyExpression.NameOfVertexType);
+            var vertexType = _vertexTypeManager.GetVertexType(propertyExpression.NameOfVertexType);
             var property = vertexType.GetPropertyDefinition(propertyExpression.NameOfProperty);
 
             return new QueryPlanProperty(vertexType, property);

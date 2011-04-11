@@ -19,7 +19,7 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// Gets or sets the myOutgoingEdgeVertex instance of the type manager.
         /// </summary>
-        public ITypeManager TypeManager { get; set; }
+        public IVertexTypeManager TypeManager { get; set; }
 
         /// <summary>
         /// Gets or sets the myOutgoingEdgeVertex instance of the parentVertex manager.
