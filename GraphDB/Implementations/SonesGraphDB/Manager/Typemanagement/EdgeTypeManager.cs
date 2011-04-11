@@ -13,62 +13,62 @@ namespace sones.GraphDB.Manager.TypeManagement
             throw new System.NotImplementedException();
         }
 
-        public bool CanAddEdge(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public bool CanAddEdgeType(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
 
-        public IEdgeType AddEdge(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public IEdgeType AddEdgeType(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool CanAddEdge(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public bool CanAddEdgeType(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
 
-        public IEdgeType AddEdge(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public IEdgeType AddEdgeType(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool CanRemoveEdge(IEdgeType myEdgeType, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public bool CanRemoveEdgeType(IEdgeType myEdgeType, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
 
-        public void RemoveEdge(IEdgeType myEdgeType, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public void RemoveEdgeType(IEdgeType myEdgeType, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool CanRemoveEdge(System.Collections.Generic.IEnumerable<IEdgeType> myEdgeTypes, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public bool CanRemoveEdgeType(System.Collections.Generic.IEnumerable<IEdgeType> myEdgeTypes, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
 
-        public void RemoveEdge(System.Collections.Generic.IEnumerable<IEdgeType> myEdgeTypes, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public void RemoveEdgeType(System.Collections.Generic.IEnumerable<IEdgeType> myEdgeTypes, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool CanUpdateEdge(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public bool CanUpdateEdgeType(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
 
-        public void UpdateEdge(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public void UpdateEdgeType(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool CanUpdateEdge(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public bool CanUpdateEdgeType(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
 
-        public void UpdateEdge(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public void UpdateEdgeType(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }

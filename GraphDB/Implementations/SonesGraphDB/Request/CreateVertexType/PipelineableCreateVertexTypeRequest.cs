@@ -46,12 +46,12 @@ namespace sones.GraphDB.Request
 
         public override bool Validate(MetaManager myMetaManager)
         {
-            return myMetaManager.TypeManager.CanAddVertex(_request.VertexTypeDefinitions, TransactionToken, SecurityToken, myMetaManager);
+            return myMetaManager.TypeManager.CanAddVertexType(_request.VertexTypeDefinitions, TransactionToken, SecurityToken, myMetaManager);
         }
 
         public override void Execute(MetaManager myMetaManager)
         {
-            _createdVertexType = myMetaManager.TypeManager.AddVertex(_request.VertexTypeDefinitions, TransactionToken, SecurityToken, myMetaManager);
+            _createdVertexType = myMetaManager.TypeManager.AddVertexType(_request.VertexTypeDefinitions, TransactionToken, SecurityToken, myMetaManager);
         }
 
         public override IRequest GetRequest()
