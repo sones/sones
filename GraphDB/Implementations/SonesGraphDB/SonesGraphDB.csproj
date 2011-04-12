@@ -68,6 +68,9 @@
     <Compile Include="Manager\Vertex\IVertexManager.cs" />
     <Compile Include="Request\GetVertices\PipelineableGetVerticesRequest.cs" />
     <Compile Include="Manager\TypeManagement\EdgeTypeManager.cs" />
+    <Compile Include="Settings\DefaultSecurityManagerImplementation.cs" />
+    <Compile Include="Settings\DefaultTransactionManagerImplementation.cs" />
+    <Compile Include="Settings\DefaultGraphFSImplementation.cs" />
     <Compile Include="TypeManagement\BaseTypes\BaseVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\IncomingEdgeVertexType.cs" />
     <Compile Include="TypeManagement\BaseTypes\NormalEdgeType.cs" />
@@ -140,7 +143,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ErrorHandling\" />
-    <Folder Include="Settings\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SonesGraphDB.cd" />

@@ -7,7 +7,7 @@ namespace sones.Library.VersionedPluginManager.ErrorHandling
     /// <summary>
     /// There's a duplicate plugin
     /// </summary>
-    public sealed class DuplicatePlugin : APluginManagerException
+    public sealed class DuplicatePluginException : APluginManagerException
     {
         #region data
 
@@ -36,16 +36,15 @@ namespace sones.Library.VersionedPluginManager.ErrorHandling
         /// <param name="myDuplicatePluginName">The name of the duplicate plugin</param>
         /// <param name="myPluginType">The type of the duplicate plugin</param>
         /// <param name="myComplainingComponent">The name of the component that complains about a duplicate plugin</param>
-        public DuplicatePlugin(String myDuplicatePluginName, Type myPluginType, String myComplainingComponent)
+        public DuplicatePluginException(String myDuplicatePluginName, Type myPluginType, String myComplainingComponent)
         {
             PluginName = myDuplicatePluginName;
             ComplainingComponent = myComplainingComponent;
+            PluginType = myPluginType;
             
             _msg = String.Format("{0} : The {1} plugin name is duplicate within the {2} component! The name has to be unique!", PluginName, PluginType.Name, ComplainingComponent);
         }
 
-        #endregion
-                
-                
+        #endregion     
     }
 }

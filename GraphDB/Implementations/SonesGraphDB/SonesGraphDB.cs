@@ -9,6 +9,8 @@ using sones.GraphDB.Manager.Transaction;
 using sones.GraphDB.Manager.Security;
 using sones.Library.Settings;
 using sones.GraphDB.Manager.Plugin;
+using sones.GraphDB.Settings;
+using System.Collections.Generic;
 
 namespace sones.GraphDB
 {
@@ -70,7 +72,7 @@ namespace sones.GraphDB
         /// <param name="myRequestManagerPlugin">The definition of the request manager plugin</param>
         public SonesGraphDB(
             GraphApplicationSettings mySettings,
-            PluginDefinition myIGraphFSDefinition,
+            PluginDefinition myIGraphFSDefinition               = null,
             PluginDefinition myTransactionManagerPlugin         = null,
             PluginDefinition mySecurityManagerPlugin            = null,
             PluginDefinition myRequestSchedulerPlugin           = null,
@@ -78,6 +80,12 @@ namespace sones.GraphDB
             PluginDefinition myRequestManagerPlugin             = null)
         {
             _id = Guid.NewGuid();
+
+            #region settings
+
+            _applicationSettings = mySettings;
+
+            #endregion
 
             #region plugin manager
 
@@ -87,25 +95,25 @@ namespace sones.GraphDB
 
             #region IGraphFS
 
-            LoadGraphFsPlugin(myIGraphFSDefinition);
+            _iGraphFS = LoadGraphFsPlugin(myIGraphFSDefinition);
 
             #endregion
 
             #region transaction
 
-            LoadTransactionManagerPlugin(myTransactionManagerPlugin);
+            _transactionManager = LoadTransactionManagerPlugin(myTransactionManagerPlugin);
 
             #endregion
 
             #region security
 
-            LoadSecurityManager(mySecurityManagerPlugin);
+            _securityManager = LoadSecurityManager(mySecurityManagerPlugin);
 
             #endregion
 
             #region requests
 
-            LoadRequestManager(myRequestManagerPlugin, myRequestSchedulerPlugin);
+            _requestManager = LoadRequestManager(myRequestManagerPlugin, myRequestSchedulerPlugin);
 
             #endregion
 
@@ -252,7 +260,7 @@ namespace sones.GraphDB
         /// </summary>
         /// <param name="myRequestManagerPlugin">The actual request manager plugin definition</param>
         /// <param name="myRequestSchedulerPlugin">The request scheduler plugin that is needed for the request manager</param>
-        private void LoadRequestManager(PluginDefinition myRequestManagerPlugin, PluginDefinition myRequestSchedulerPlugin)
+        private IRequestManager LoadRequestManager(PluginDefinition myRequestManagerPlugin, PluginDefinition myRequestSchedulerPlugin)
         {
             MetaManager metaManager = CreateMetamanager();
 
@@ -288,36 +296,54 @@ namespace sones.GraphDB
         /// Loads the security manager
         /// </summary>
         /// <param name="mySecurityManagerPlugin">The security manager plugin definition</param>
-        private void LoadSecurityManager(PluginDefinition mySecurityManagerPlugin)
+        private ISecurityManager LoadSecurityManager(PluginDefinition mySecurityManagerPlugin)
         {
-            _securityManager = new BasicSecurityManager(_transactionManager);
+            if (mySecurityManagerPlugin != null)
+            {
+                return _graphDBPluginManager.GetAndInitializePlugin<ISecurityManager>(mySecurityManagerPlugin.NameOfPlugin, mySecurityManagerPlugin.PluginParameter, _applicationSettings);
+            }
+
+            //so lets take the default one
+            var defaultSecurityManagerName = _applicationSettings.Get<DefaultSecurityManagerImplementation>();
+            return _graphDBPluginManager.GetAndInitializePlugin<ISecurityManager>(defaultSecurityManagerName, new Dictionary<string, object> { { "vertexStore", _transactionManager } }, _applicationSettings);
         }
 
         /// <summary>
         /// Load the transaction manager
         /// </summary>
         /// <param name="myTransactionManagerPlugin">The transaction manager plugin definition</param>
-        private void LoadTransactionManagerPlugin(PluginDefinition myTransactionManagerPlugin)
+        private ITransactionManager LoadTransactionManagerPlugin(PluginDefinition myTransactionManagerPlugin)
         {
+            if (myTransactionManagerPlugin != null)
+            {
+                return _graphDBPluginManager.GetAndInitializePlugin<ITransactionManager>(myTransactionManagerPlugin.NameOfPlugin, myTransactionManagerPlugin.PluginParameter, _applicationSettings);
+            }
+            
+            //so there is no given plugin... lets try the IGraphFS
             if (_iGraphFS.IsTransactional)
             {
-                _transactionManager = (ITransactionManager)_iGraphFS;
+                return (ITransactionManager)_iGraphFS;
             }
-            else
-            {
-                _transactionManager = new BasicTransactionManager(_iGraphFS);
-            }
-
-            throw new NotImplementedException();
+            
+            //so lets take the default one
+            var defaultTransactionManagerName = _applicationSettings.Get<DefaultTransactionManagerImplementation>();
+            return _graphDBPluginManager.GetAndInitializePlugin<ITransactionManager>(defaultTransactionManagerName, new Dictionary<string, object> { { "vertexStore", _iGraphFS } }, _applicationSettings);
         }
 
         /// <summary>
         /// Loads the IGraphFS
         /// </summary>
         /// <param name="myIGraphFSDefinition">The IGraphFS plugin definition</param>
-        private void LoadGraphFsPlugin(PluginDefinition myIGraphFSDefinition)
+        private IGraphFS LoadGraphFsPlugin(PluginDefinition myIGraphFSDefinition)
         {
-            throw new NotImplementedException();
+            if (myIGraphFSDefinition != null)
+            {
+                return _graphDBPluginManager.GetAndInitializePlugin<IGraphFS>(myIGraphFSDefinition.NameOfPlugin, myIGraphFSDefinition.PluginParameter, _applicationSettings);
+            }
+
+            //return the default fs
+            var defaultFSName = _applicationSettings.Get<DefaultGraphFSImplementation>();
+            return _graphDBPluginManager.GetAndInitializePlugin<IGraphFS>(defaultFSName, null, _applicationSettings);
         }
 
         #endregion

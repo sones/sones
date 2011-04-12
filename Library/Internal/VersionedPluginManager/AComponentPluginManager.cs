@@ -42,6 +42,32 @@ namespace sones.Library.VersionedPluginManager
 
         #region public methods
 
+        public bool HasPlugin<T>(String myPluginName)
+        {
+            var type = typeof(T);
+            Dictionary<string, IPluginable> interestingLookup;
+
+            lock (_plugins)
+            {
+                if (!_plugins.ContainsKey(type))
+                {
+                    return false;
+                }
+
+                interestingLookup = _plugins[type];
+            }
+
+            lock (interestingLookup)
+            {
+                if (!interestingLookup.ContainsKey(myPluginName.ToUpper()))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
         /// <summary>
         /// Get and initalize a certain plugin and...
         /// During initialization a new instance of the plugin is created
@@ -60,7 +86,7 @@ namespace sones.Library.VersionedPluginManager
             {
                 if (!_plugins.ContainsKey(type))
                 {
-                    return default(T);
+                    throw new UnknownPluginException(myPluginName, type);
                 }
 
                 interestingLookup = _plugins[type];
@@ -70,7 +96,7 @@ namespace sones.Library.VersionedPluginManager
             {
                 if (!interestingLookup.ContainsKey(myPluginName.ToUpper()))
                 {
-                    return default(T);
+                    throw new UnknownPluginException(myPluginName, type);
                 }
 
                 return (T)interestingLookup[myPluginName.ToUpper()].InitializePlugin(myParameter, myApplicationSetting);
@@ -109,7 +135,7 @@ namespace sones.Library.VersionedPluginManager
                     //verify that there are no duplicates
                     if (interestingLookup.ContainsKey(pluginName))
                     {
-                        throw new DuplicatePlugin(pluginName, typeof(T1), myRequestingComponent);
+                        throw new DuplicatePluginException(pluginName, typeof(T1), myRequestingComponent);
                     }
 
                     #region Add function if the name does not exist

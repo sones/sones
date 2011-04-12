@@ -50,8 +50,9 @@
     <Compile Include="AComponentPluginManager.cs" />
     <Compile Include="AssemblyVersionCompatibilityAttribute.cs" />
     <Compile Include="ErrorHandling\APluginManagerException.cs" />
+    <Compile Include="ErrorHandling\UnknownPluginException.cs" />
     <Compile Include="ErrorHandling\CouldNotLoadAssemblyException.cs" />
-    <Compile Include="ErrorHandling\DuplicatePlugin.cs" />
+    <Compile Include="ErrorHandling\DuplicatePluginException.cs" />
     <Compile Include="ErrorHandling\IncompatiblePluginVersionException.cs" />
     <Compile Include="Events\PluginFoundEvent.cs" />
     <Compile Include="Events\PluginIncompatibleVersionEvent.cs" />
