@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphQL.Structure.Nodes;
-using Irony.Parsing;
 using sones.GraphQL.Result;
+using sones.GraphQL.Structure.Nodes;
 
 namespace sones.GraphQL.StatementNodes
 {

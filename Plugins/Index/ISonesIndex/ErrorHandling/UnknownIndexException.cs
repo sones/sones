@@ -1,5 +1,4 @@
 ﻿using System;
-using sones.Library.ErrorHandling;
 
 namespace sones.Plugins.Index.ErrorHandling
 {

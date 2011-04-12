@@ -1,17 +1,15 @@
 ﻿using System;
-using sones.GraphDB.Manager;
-using sones.GraphDB.Request;
-using sones.Library.Security;
-using sones.Library.Transaction;
-using sones.GraphFS;
-using sones.Library.VersionedPluginManager;
-using sones.GraphDB.Manager.Transaction;
-using sones.GraphDB.Manager.Security;
-using sones.Library.Settings;
-using sones.GraphDB.Manager.Plugin;
-using sones.GraphDB.Settings;
 using System.Collections.Generic;
 using System.Threading;
+using sones.GraphDB.Manager;
+using sones.GraphDB.Manager.Plugin;
+using sones.GraphDB.Request;
+using sones.GraphDB.Settings;
+using sones.GraphFS;
+using sones.Library.Security;
+using sones.Library.Settings;
+using sones.Library.Transaction;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.GraphDB
 {
@@ -25,27 +23,27 @@ namespace sones.GraphDB
         /// <summary>
         /// A manager for handling incoming requests
         /// </summary>
-        private IRequestManager _requestManager;
+        private readonly IRequestManager _requestManager;
 
         /// <summary>
         /// A manager to dynamically load versioned plugins
         /// </summary>
-        private GraphDBPluginManager _graphDBPluginManager;
+        private readonly GraphDBPluginManager _graphDBPluginManager;
 
         /// <summary>
         /// A manager that is responsible for transactions
         /// </summary>
-        private ITransactionManager _transactionManager;
+        private readonly ITransactionManager _transactionManager;
 
         /// <summary>
         /// A manager that is responsible for security
         /// </summary>
-        private ISecurityManager _securityManager;
+        private readonly ISecurityManager _securityManager;
 
         /// <summary>
         /// The persistence layer
         /// </summary>
-        private IGraphFS _iGraphFS;
+        private readonly IGraphFS _iGraphFS;
 
         /// <summary>
         /// A globally unique identifier for this graphdb instance

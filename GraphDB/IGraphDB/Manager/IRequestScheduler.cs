@@ -1,5 +1,5 @@
-﻿using sones.GraphDB.Request;
-using System;
+﻿using System;
+using sones.GraphDB.Request;
 using sones.Library.VersionedPluginManager;
 
 namespace sones.GraphDB.Manager

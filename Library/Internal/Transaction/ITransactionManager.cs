@@ -1,7 +1,6 @@
-﻿using sones.GraphFS;
-using sones.Library.VertexStore;
-using System;
+﻿using System;
 using sones.Library.VersionedPluginManager;
+using sones.Library.VertexStore;
 
 namespace sones.Library.Transaction
 {

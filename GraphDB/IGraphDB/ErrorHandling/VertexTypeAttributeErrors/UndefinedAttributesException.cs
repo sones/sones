@@ -1,7 +1,4 @@
-﻿using System;
-using sones.Library.ErrorHandling;
-
-namespace sones.GraphDB.ErrorHandling
+﻿namespace sones.GraphDB.ErrorHandling
 {
     /// <summary>
     /// Undefined attributes can not inserted nor updated without setting SETUNDEFBEHAVE 

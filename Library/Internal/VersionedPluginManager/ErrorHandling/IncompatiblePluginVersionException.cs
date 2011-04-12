@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using sones.Library.ErrorHandling;
 
 namespace sones.Library.VersionedPluginManager.ErrorHandling
 {

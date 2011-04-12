@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using sones.GraphDB.Expression;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.Security;
 using sones.Library.Transaction;
-using sones.GraphDB.Expression;
-using System;
 
 namespace sones.GraphDB.Manager.Vertex
 {

@@ -1,5 +1,5 @@
-﻿using sones.GraphDB.TypeSystem;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.TypeManagement.BaseTypes
 {

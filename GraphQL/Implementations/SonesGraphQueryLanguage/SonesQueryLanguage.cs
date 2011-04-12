@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using sones.GraphDB;
 using sones.GraphQL.Result;
 using sones.Library.Security;
-using sones.Library.Transaction;
 using sones.Library.Settings;
+using sones.Library.Transaction;
 
 namespace sones.GraphQL
 {

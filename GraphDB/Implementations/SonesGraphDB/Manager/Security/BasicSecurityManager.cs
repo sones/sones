@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.Library.Security;
 using sones.Library.PropertyHyperGraph;
-using sones.Library.VertexStore.Definitions;
-using sones.Library.VertexStore;
+using sones.Library.Security;
 using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
+using sones.Library.VertexStore;
+using sones.Library.VertexStore.Definitions;
 
 namespace sones.GraphDB.Manager.Security
 {

@@ -1,5 +1,4 @@
-﻿using System;
-using sones.Library.ErrorHandling;
+﻿using sones.Library.ErrorHandling;
 
 namespace sones.Plugins.SonesGQL.Function.ErrorHandling
 {

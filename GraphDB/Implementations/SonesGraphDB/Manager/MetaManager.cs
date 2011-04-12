@@ -1,9 +1,9 @@
-﻿using sones.GraphDB.Manager.Index;
+﻿using System;
+using sones.GraphDB.Manager.Index;
+using sones.GraphDB.Manager.Plugin;
 using sones.GraphDB.Manager.TypeManagement;
 using sones.GraphDB.Manager.Vertex;
 using sones.Library.VertexStore;
-using System;
-using sones.GraphDB.Manager.Plugin;
 
 namespace sones.GraphDB.Manager
 {

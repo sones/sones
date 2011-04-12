@@ -1,21 +1,16 @@
 ﻿#region Usings
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Collections;
-using System.IO;
-using System.Threading.Tasks;
-using System.Threading;
 using System.Collections.Concurrent;
-using sones.Plugins.Index.Interfaces;
-using sones.Plugins.Index.Helper;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using BplusDotNet;
-using sones.Library.Serializer;
 using sones.Library.NewFastSerializer;
-using sones.Plugins.Index.ErrorHandling;
-using sones.Library.ErrorHandling;
+using sones.Plugins.Index.Helper;
+using sones.Plugins.Index.Interfaces;
 
 #endregion
 
@@ -40,47 +35,47 @@ namespace sones.Plugins.Index
         /// <summary>
         /// An serialization writer to serialize the keys and values.
         /// </summary>
-        private SerializationWriter                             _Writer;
+        private readonly SerializationWriter                             _Writer;
 
         /// <summary>
         /// The tree file name. 
         /// </summary>
-        private String                                          _TreeFileName;
+        private readonly String                                          _TreeFileName;
 
         /// <summary>
         /// The block file name.
         /// </summary>
-        private String                                          _BlockFileName;
+        private readonly String                                          _BlockFileName;
 
         /// <summary>
         /// The prefix length for the tree.
         /// </summary>
-        private Int32                                           _PrefixLen;        
+        private readonly Int32                                           _PrefixLen;        
 
         /// <summary>
         /// 
         /// </summary>
-        private BlockingCollection<APipelinableRequest>         _Requests;
+        private readonly BlockingCollection<APipelinableRequest>         _Requests;
 
         /// <summary>
         /// The execution task.
         /// </summary>
-        private Task                                            _ExecTask;
+        private readonly Task                                            _ExecTask;
 
         /// <summary>
         /// The cancellation token, that stops the execution.
         /// </summary>
-        private CancellationTokenSource                         _CancelToken;
+        private readonly CancellationTokenSource                         _CancelToken;
 
         /// <summary>
         /// The blocking collection, contains the requests, which are waiting for execution.
         /// </summary>
-        private ConcurrentDictionary<Guid, APipelinableRequest> _Results;
+        private readonly ConcurrentDictionary<Guid, APipelinableRequest> _Results;
 
         /// <summary>
         /// The executed write tasks.
         /// </summary>
-        private ConcurrentDictionary<Guid, APipelinableRequest> _ExecutedWriteTasks;
+        private readonly ConcurrentDictionary<Guid, APipelinableRequest> _ExecutedWriteTasks;
 
         #endregion
 

@@ -1,6 +1,6 @@
 using System;
-using Irony.Parsing;
 using System.Text;
+using Irony.Parsing;
 
 namespace sones.GraphQL
 {

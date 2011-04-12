@@ -1,5 +1,5 @@
-﻿using sones.GraphDB.Expression;
-using System;
+﻿using System;
+using sones.GraphDB.Expression;
 using sones.Library.VersionedPluginManager;
 
 namespace sones.GraphDB.Manager

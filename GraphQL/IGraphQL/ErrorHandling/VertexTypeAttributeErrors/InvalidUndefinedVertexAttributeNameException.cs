@@ -1,7 +1,4 @@
-﻿using System;
-using sones.Library.ErrorHandling;
-
-namespace sones.GraphQL.ErrorHandling
+﻿namespace sones.GraphQL.ErrorHandling
 {
     /// <summary>
     /// The undefined vertex attribute has a invalid name

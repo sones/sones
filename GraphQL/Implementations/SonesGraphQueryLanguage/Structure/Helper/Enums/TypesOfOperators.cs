@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace sones.GraphQL.Structure.Helper.Enums
+﻿namespace sones.GraphQL.Structure.Helper.Enums
 {
     /// <summary>
     /// This enum describes the impact of operators on ExpressionGraph integration

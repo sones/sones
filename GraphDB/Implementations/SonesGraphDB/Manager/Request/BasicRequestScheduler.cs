@@ -1,6 +1,6 @@
-﻿using sones.GraphDB.Request;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using sones.GraphDB.Request;
 using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
 

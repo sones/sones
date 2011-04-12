@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using sones.Library.PropertyHyperGraph;
-using sones.Library.VertexStore;
 using sones.Library.VersionedPluginManager;
+using sones.Library.VertexStore;
 
 namespace sones.GraphFS
 {

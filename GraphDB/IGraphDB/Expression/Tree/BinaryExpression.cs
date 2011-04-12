@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace sones.GraphDB.Expression
+﻿namespace sones.GraphDB.Expression
 {
     /// <summary>
     /// A binary expression consists of two Expressions and a binary operator

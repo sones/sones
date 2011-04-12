@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Irony.Ast;
-using sones.GraphQL.Result;
 using Irony.Parsing;
+using sones.GraphQL.Result;
 
 namespace sones.GraphQL.StatementNodes.Transactions
 {

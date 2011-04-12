@@ -1,6 +1,6 @@
 ﻿using System;
-using sones.Library.VertexStore;
 using sones.Library.VersionedPluginManager;
+using sones.Library.VertexStore;
 
 namespace sones.Library.Security
 {

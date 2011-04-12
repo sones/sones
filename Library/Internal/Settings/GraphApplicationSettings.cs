@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.Library.Settings.ErrorHandling;
 using System.Xml.Linq;
+using sones.Library.Settings.ErrorHandling;
 
 namespace sones.Library.Settings
 {
@@ -28,7 +26,7 @@ namespace sones.Library.Settings
 
 		#region Data
 
-		Dictionary<String,CurrentSetting> _Settings;
+        readonly Dictionary<String,CurrentSetting> _Settings;
 
 		#endregion
 

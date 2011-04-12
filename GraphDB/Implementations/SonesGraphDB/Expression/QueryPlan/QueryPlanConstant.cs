@@ -1,5 +1,3 @@
-using sones.GraphDB.TypeSystem;
-
 namespace sones.GraphDB.Expression.QueryPlan
 {
     /// <summary>

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.Library.PropertyHyperGraph;
 using System.IO;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDB.Result
 {

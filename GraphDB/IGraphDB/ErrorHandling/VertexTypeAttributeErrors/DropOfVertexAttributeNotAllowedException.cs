@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
-using sones.Library.ErrorHandling;
+using System.Text;
 
 namespace sones.GraphDB.ErrorHandling
 {

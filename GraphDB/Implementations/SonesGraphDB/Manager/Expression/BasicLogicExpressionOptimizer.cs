@@ -1,6 +1,6 @@
-﻿using sones.GraphDB.Expression;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using sones.GraphDB.Expression;
 using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
 

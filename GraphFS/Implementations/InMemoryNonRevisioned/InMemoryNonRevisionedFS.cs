@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using sones.GraphFS.Element.Edge;
 using sones.GraphFS.Element.Vertex;
 using sones.GraphFS.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
-using System.IO;
-using sones.Library.VertexStore.Definitions;
 using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
+using sones.Library.VertexStore.Definitions;
 
 namespace sones.GraphFS
 {

@@ -1,16 +1,13 @@
 ﻿#region Usings
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Collections;
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
-using sones.Plugins.Index.Interfaces;
-using sones.Plugins.Index.Helper;
-using System.Threading;
+using System.Collections.Generic;
+using System.Linq;
 using sones.Plugins.Index.ErrorHandling;
+using sones.Plugins.Index.Helper;
+using sones.Plugins.Index.Interfaces;
 
 #endregion
 
@@ -29,7 +26,7 @@ namespace sones.Plugins.Index
         /// <summary>
         /// The internal index data structure.
         /// </summary>
-        private ConcurrentDictionary<TKey, HashSet<TValue>> _Indexer;
+        private readonly ConcurrentDictionary<TKey, HashSet<TValue>> _Indexer;
 
         #endregion
 

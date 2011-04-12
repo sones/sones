@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using BplusDotNet;
 using sones.Library.NewFastSerializer;
 
@@ -11,9 +9,9 @@ namespace sones.Plugins.Index
     {
         #region Data
         
-        private xBplusTreeBytes  _Indexer;
+        private readonly xBplusTreeBytes  _Indexer;
         private Boolean          _Result;
-        private TValue           _Value;
+        private readonly TValue           _Value;
 
         #endregion
 

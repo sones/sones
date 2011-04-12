@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using sones.Library.ErrorHandling;
 using sones.Library.LanguageExtensions;
 
 namespace sones.GraphQL.ErrorHandling

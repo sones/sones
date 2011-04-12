@@ -1,26 +1,24 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Irony.Parsing;
-using sones.GraphDB.Interfaces;
 using Irony.Ast;
-using sones.GraphQL.Structure.Nodes.DDL;
-using sones.GraphQL.Structure.Nodes.Expressions;
-using sones.GraphQL.Structure.Nodes.DML;
-using sones.GraphQL.Structure.Nodes.Settings;
-using sones.GraphQL.Structure.Helper.Enums;
-using sones.GraphQL.Structure.Nodes.Misc;
-using sones.GraphQL.StatementNodes.DML;
-using sones.GraphQL.StatementNodes.DDL;
-using sones.GraphQL.StatementNodes.Settings;
-using sones.GraphQL.StatementNodes.Transactions;
+using Irony.Parsing;
 using sones.GraphDB;
 using sones.GraphDB.TypeSystem;
-using System.Globalization;
-using sones.Library.PropertyHyperGraph;
-using System.Collections;
+using sones.GraphQL.StatementNodes.DDL;
+using sones.GraphQL.StatementNodes.DML;
+using sones.GraphQL.StatementNodes.Settings;
+using sones.GraphQL.StatementNodes.Transactions;
+using sones.GraphQL.Structure.Helper.Enums;
+using sones.GraphQL.Structure.Nodes.DDL;
+using sones.GraphQL.Structure.Nodes.DML;
+using sones.GraphQL.Structure.Nodes.Expressions;
+using sones.GraphQL.Structure.Nodes.Misc;
+using sones.GraphQL.Structure.Nodes.Settings;
 using sones.Library.ErrorHandling;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphQL
 {
@@ -64,18 +62,18 @@ namespace sones.GraphQL
 
         #region class scope NonTerminal - need for IExtendableGrammar
 
-        private NonTerminal BNF_ImportStmt;     //If no import format is found from plugin the statement must be removed
-        private NonTerminal BNF_ImportFormat;
+        private readonly NonTerminal BNF_ImportStmt;     //If no import format is found from plugin the statement must be removed
+        private readonly NonTerminal BNF_ImportFormat;
 
-        private NonTerminal BNF_FuncCall;
-        private NonTerminal BNF_FunArgs;
+        private readonly NonTerminal BNF_FuncCall;
+        private readonly NonTerminal BNF_FunArgs;
 
-        private NonTerminal BNF_Aggregate;
-        private NonTerminal BNF_AggregateArg;
+        private readonly NonTerminal BNF_Aggregate;
+        private readonly NonTerminal BNF_AggregateArg;
 
-        private NonTerminal selectionSource;    // If no aggregates where found we must remove them from selectionSource;
+        private readonly NonTerminal selectionSource;    // If no aggregates where found we must remove them from selectionSource;
 
-        private NonTerminal BNF_IndexTypeOpt;
+        private readonly NonTerminal BNF_IndexTypeOpt;
 
         #endregion
 

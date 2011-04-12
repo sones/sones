@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using BplusDotNet;
-using sones.Plugins.Index;
-using sones.Plugins.Index.Helper;
 using sones.Library.NewFastSerializer;
 using sones.Plugins.Index.ErrorHandling;
+using sones.Plugins.Index.Helper;
 
 namespace sones.Plugins.Index
 {
@@ -22,22 +19,22 @@ namespace sones.Plugins.Index
         /// <summary>
         /// The internal index structure.
         /// </summary>
-        private xBplusTreeBytes             _Indexer;
+        private readonly xBplusTreeBytes             _Indexer;
 
         /// <summary>
         /// The internal serialization writer.
         /// </summary>
-        private SerializationWriter         _Writer;
+        private readonly SerializationWriter         _Writer;
 
         /// <summary>
         /// The key and values, which are to insert.
         /// </summary>
-        private Dictionary<TKey, TValue>    _Inserts;
+        private readonly Dictionary<TKey, TValue>    _Inserts;
 
         /// <summary>
         /// The index add strategy.
         /// </summary>
-        private IndexAddStrategy            _AddStrategy;
+        private readonly IndexAddStrategy            _AddStrategy;
 
         #endregion
 

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.Library.ErrorHandling;
+﻿using sones.Library.ErrorHandling;
 
 namespace sones.Library.VersionedPluginManager.ErrorHandling
 {

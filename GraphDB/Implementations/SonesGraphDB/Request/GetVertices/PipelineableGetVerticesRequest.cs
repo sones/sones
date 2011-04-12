@@ -1,11 +1,10 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using sones.GraphDB.ErrorHandling.Expression;
+using sones.GraphDB.Expression;
 using sones.GraphDB.Manager;
+using sones.Library.PropertyHyperGraph;
 using sones.Library.Security;
 using sones.Library.Transaction;
-using sones.Library.PropertyHyperGraph;
-using System.Collections.Generic;
-using sones.GraphDB.Expression;
-using sones.GraphDB.ErrorHandling.Expression;
 
 namespace sones.GraphDB.Request
 {

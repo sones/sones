@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sones.GraphDB.Expression;
 using sones.GraphDB.Expression.QueryPlan;
 using sones.GraphDB.Manager.TypeManagement;
-using sones.Library.Transaction;
 using sones.Library.Security;
+using sones.Library.Transaction;
 
 namespace sones.GraphDB.Manager.QueryPlan
 {

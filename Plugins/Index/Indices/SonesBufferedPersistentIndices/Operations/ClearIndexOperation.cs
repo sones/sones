@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using BplusDotNet;
 using System.IO;
+using BplusDotNet;
 
 namespace sones.Plugins.Index
 {
@@ -23,17 +20,17 @@ namespace sones.Plugins.Index
         /// <summary>
         /// The block file name, that is used on the bplus tree.
         /// </summary>
-        private String          _BlockFileName;
+        private readonly String          _BlockFileName;
 
         /// <summary>
         /// The tree file name, that is used on the bplus tree.
         /// </summary>
-        private String          _TreeFileName;
+        private readonly String          _TreeFileName;
 
         /// <summary>
         /// The prefix length, that is used on the bplus tree.
         /// </summary>
-        private Int32           _PrefixLen;
+        private readonly Int32           _PrefixLen;
 
         #endregion
 

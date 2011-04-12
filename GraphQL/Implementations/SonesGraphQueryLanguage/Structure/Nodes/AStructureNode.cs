@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace sones.GraphQL.Structure.Nodes
+﻿namespace sones.GraphQL.Structure.Nodes
 {
     public abstract class AStructureNode
     {

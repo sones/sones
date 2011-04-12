@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using sones.GraphDB.TypeManagement.BaseTypes;
 using sones.GraphDB.TypeSystem;
 using sones.Library.PropertyHyperGraph;
-using sones.GraphDB.TypeManagement.BaseTypes;
-using System.Collections;
 
 namespace sones.GraphDB.TypeManagement
 {

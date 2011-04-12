@@ -1,8 +1,8 @@
 ﻿using System;
 using sones.GraphDB.Manager;
+using sones.Library.PropertyHyperGraph;
 using sones.Library.Security;
 using sones.Library.Transaction;
-using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDB.Request
 {

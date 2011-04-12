@@ -1,6 +1,5 @@
 ﻿#region Usings
 
-using System;
 using sones.Library.ErrorHandling;
 
 #endregion

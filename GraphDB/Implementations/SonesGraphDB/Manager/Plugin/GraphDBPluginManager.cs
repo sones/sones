@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.Library.VersionedPluginManager;
-using sones.GraphFS;
-using sones.Library.Transaction;
+﻿using sones.GraphFS;
 using sones.Library.Security;
-using sones.GraphDB.ErrorHandling;
-using sones.Library.Settings;
+using sones.Library.Transaction;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.GraphDB.Manager.Plugin
 {

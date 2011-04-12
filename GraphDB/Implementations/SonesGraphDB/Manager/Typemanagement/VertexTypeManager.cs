@@ -1,16 +1,14 @@
-﻿using System.Collections.Generic;
-using sones.GraphDB.Request;
-using sones.GraphDB.TypeSystem;
-using sones.Library.LanguageExtensions;
-using sones.Library.Transaction;
-using sones.Library.Security;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.Expression;
+using sones.GraphDB.Request;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BaseTypes;
-using sones.GraphDB.ErrorHandling;
-
+using sones.GraphDB.TypeSystem;
+using sones.Library.Security;
+using sones.Library.Transaction;
 
 /*
  * edge cases:

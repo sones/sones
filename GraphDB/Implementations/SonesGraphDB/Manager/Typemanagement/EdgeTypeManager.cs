@@ -1,8 +1,7 @@
-﻿using sones.GraphDB.TypeSystem;
-using sones.GraphDB.Request;
-using sones.Library.VertexStore;
-using sones.Library.Transaction;
+﻿using sones.GraphDB.Request;
+using sones.GraphDB.TypeSystem;
 using sones.Library.Security;
+using sones.Library.Transaction;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {

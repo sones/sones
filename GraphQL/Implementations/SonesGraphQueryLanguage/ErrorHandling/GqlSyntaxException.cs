@@ -1,6 +1,6 @@
 ﻿using System;
-using sones.Library.ErrorHandling;
 using Irony.Parsing;
+using sones.Library.ErrorHandling;
 
 namespace sones.GraphQL.ErrorHandling
 {

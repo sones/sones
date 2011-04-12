@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.Library.PropertyHyperGraph;
+﻿using System.Collections.Generic;
 using sones.GraphDB.TypeSystem;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDB.Request
 {

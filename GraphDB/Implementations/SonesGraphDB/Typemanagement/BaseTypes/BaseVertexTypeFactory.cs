@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.TypeManagement.BaseTypes
 {
     internal static class BaseVertexTypeFactory
     {
-        private static Dictionary<BaseVertexType, IVertexType> _Instances = new Dictionary<BaseVertexType, IVertexType>()
+        private static readonly Dictionary<BaseVertexType, IVertexType> _Instances = new Dictionary<BaseVertexType, IVertexType>()
         {
             {BaseVertexType.Attribute, new AttributeVertexType()},
             {BaseVertexType.BaseType, new BaseTypeVertexType()},
