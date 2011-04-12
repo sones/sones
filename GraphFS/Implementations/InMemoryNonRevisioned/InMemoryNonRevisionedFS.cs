@@ -10,6 +10,7 @@ using sones.Library.PropertyHyperGraph;
 using System.IO;
 using sones.Library.VertexStore.Definitions;
 using sones.Library.Settings;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.GraphFS
 {
@@ -499,9 +500,9 @@ namespace sones.GraphFS
             get { return new Dictionary<string, Type>(); }
         }
 
-        public void InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
+        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
         {
-            Init();
+            return new InMemoryNonRevisionedFS();
         }
 
         #endregion

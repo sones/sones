@@ -7,6 +7,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.Library.VertexStore.Definitions;
 using sones.Library.VertexStore;
 using sones.Library.Settings;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.GraphDB.Manager.Security
 {
@@ -166,9 +167,9 @@ namespace sones.GraphDB.Manager.Security
             get { return new Dictionary<string, Type> { { "vertexStore", typeof(IVertexStore) } }; }
         }
 
-        public void InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
+        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
         {
-            Init((IVertexStore)myParameters["vertexStore"]);
+            return new BasicSecurityManager((IVertexStore)myParameters["vertexStore"]);
         }
 
         #endregion

@@ -9,6 +9,7 @@ using sones.Library.VertexStore.Definitions;
 using sones.Library.VertexStore;
 using System.Threading;
 using sones.Library.Settings;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.GraphDB.Manager.Transaction
 {
@@ -162,9 +163,9 @@ namespace sones.GraphDB.Manager.Transaction
             get { return new Dictionary<string, Type> { { "vertexStore", typeof(IVertexStore) } }; }
         }
 
-        public void InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
+        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
         {
-            Init((IVertexStore)myParameters["vertexStore"]);
+            return new BasicTransactionManager((IVertexStore)myParameters["vertexStore"]);
         }
 
         #endregion

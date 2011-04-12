@@ -2,12 +2,12 @@
 using System.Reflection;
 using sones.Library.ErrorHandling;
 
-namespace sones.Library.VersionedPluginManager
+namespace sones.Library.VersionedPluginManager.ErrorHandling
 {
     /// <summary>
     /// This exception occurs if a version of a plugin does not match the expected version.
     /// </summary>
-    public sealed class IncompatiblePluginVersionException : ASonesException
+    public sealed class IncompatiblePluginVersionException : APluginManagerException
     {
         #region data
 

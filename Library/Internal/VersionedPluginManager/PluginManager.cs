@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using sones.Library.ErrorHandling;
+using sones.Library.VersionedPluginManager.ErrorHandling;
 
 namespace sones.Library.VersionedPluginManager
 {

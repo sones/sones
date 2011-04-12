@@ -8,6 +8,7 @@ using sones.Library.VersionedPluginManager;
 using sones.GraphDB.Manager.Transaction;
 using sones.GraphDB.Manager.Security;
 using sones.Library.Settings;
+using sones.GraphDB.Manager.Plugin;
 
 namespace sones.GraphDB
 {
@@ -26,7 +27,7 @@ namespace sones.GraphDB
         /// <summary>
         /// A manager to dynamically load versioned plugins
         /// </summary>
-        private PluginManager _pluginManager;
+        private GraphDBPluginManager _graphDBPluginManager;
 
         /// <summary>
         /// A manager that is responsible for transactions
@@ -80,7 +81,7 @@ namespace sones.GraphDB
 
             #region plugin manager
 
-            InitializePluginManager();
+            _graphDBPluginManager = new GraphDBPluginManager();
             
             #endregion
 
@@ -290,27 +291,6 @@ namespace sones.GraphDB
         private void LoadSecurityManager(PluginDefinition mySecurityManagerPlugin)
         {
             _securityManager = new BasicSecurityManager(_transactionManager);
-        }
-
-        /// <summary>
-        /// Initialize the plugin manager for the sones GraphDB
-        /// </summary>
-        private void InitializePluginManager()
-        {
-            _pluginManager = new PluginManager();
-
-            // Change the version if there are ANY changes which will prevent loading the plugin.
-            // As long as there are still some plugins which does not have their own assembly you need to change the compatibility of ALL plugins of the GraphDB and GraphFSInterface assembly.
-            // So, if any plugin in the GraphDB changes you need to change the AssemblyVersion of the GraphDB AND modify the compatibility version of the other plugins.
-            _pluginManager = new PluginManager()
-                .Register<IGraphFS>(IGraphFSVersionCompatibility.MinVersion, IGraphFSVersionCompatibility.MaxVersion)
-                .Register<ITransactionManager>(ITransactionManagerVersionCompatibility.MinVersion, ITransactionManagerVersionCompatibility.MaxVersion)
-                .Register<ISecurityManager>(ISecurityManagerVersionCompatibility.MinVersion, ISecurityManagerVersionCompatibility.MaxVersion)
-                .Register<IRequestScheduler>(IRequestSchedulerVersionCompatibility.MinVersion, IRequestSchedulerVersionCompatibility.MaxVersion)
-                .Register<IRequestManager>(IRequestManagerVersionCompatibility.MinVersion, IRequestManagerVersionCompatibility.MaxVersion)
-                .Register<ILogicExpressionOptimizer>(ILogicExpressionOptimizerVersionCompatibility.MinVersion, ILogicExpressionOptimizerVersionCompatibility.MaxVersion);
-
-            _pluginManager.Discover();
         }
 
         /// <summary>

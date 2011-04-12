@@ -46,7 +46,6 @@
   <ItemGroup>
     <Compile Include="ErrorHandling\AggregateOrFunctionDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\AGraphDBException.cs" />
-    <Compile Include="ErrorHandling\DuplicateAggregateOrFunctionException.cs" />
     <Compile Include="ErrorHandling\EdgeTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\Expression\InvalidExpressionException.cs" />
     <Compile Include="ErrorHandling\IncomingEdge\IncomingEdgeDestinationIsInvalidException.cs" />

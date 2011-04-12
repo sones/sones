@@ -1,12 +1,13 @@
 ﻿using System;
 using sones.Library.ErrorHandling;
+using sones.Library.VersionedPluginManager.ErrorHandling;
 
-namespace sones.Library.VersionedPluginManager
+namespace sones.Library.VersionedPluginManager.ErrorHandling
 {
     /// <summary>
     /// This exception occurs if a assembly could not be loaded due to a incompatible platform etc.
     /// </summary>
-    public sealed class CouldNotLoadAssemblyException : ASonesException
+    public sealed class CouldNotLoadAssemblyException : APluginManagerException
     {
         #region data
 

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using sones.Library.Settings;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.GraphDB.Manager
 {
@@ -48,9 +49,9 @@ namespace sones.GraphDB.Manager
             }
         }
 
-        public void InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
+        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
         {
-            
+            return new BasicRequestScheduler();
         }
 
         #endregion

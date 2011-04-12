@@ -6,6 +6,7 @@ using sones.GraphDB.Request;
 using sones.Library.ErrorHandling;
 using System.Collections.Generic;
 using sones.Library.Settings;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.GraphDB.Manager
 {
@@ -435,13 +436,9 @@ namespace sones.GraphDB.Manager
             }
         }
 
-        public void InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
+        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
         {
-            Init_private(
-                (int)myParameters["queueLengthForIncomingRequests"],
-                (int)myParameters["executionQueueLength"],
-                (MetaManager)myParameters["metaManager"],
-                (IRequestScheduler)myParameters["requestScheduler"]);
+            return new RequestManager((int)myParameters["queueLengthForIncomingRequests"], (int)myParameters["executionQueueLength"], (MetaManager)myParameters["metaManager"], (IRequestScheduler)myParameters["requestScheduler"]);
         }
 
         #endregion

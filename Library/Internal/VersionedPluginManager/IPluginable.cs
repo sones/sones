@@ -26,6 +26,7 @@ namespace sones.Library.VersionedPluginManager
         /// </summary>
         /// <param name="myParameters">The parameters for the plugin</param>
         /// <param name="myApplicationSetting">The application settings</param>
-        void InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings myApplicationSetting);
+        /// <returns>A new instance of the plugin</returns>
+        IPluginable InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings myApplicationSetting);
     }
 }

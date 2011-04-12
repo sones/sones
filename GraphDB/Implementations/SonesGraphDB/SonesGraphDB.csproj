@@ -54,6 +54,7 @@
     <Compile Include="Manager\Index\IIndexManager.cs" />
     <Compile Include="Manager\Index\IndexManager.cs" />
     <Compile Include="Manager\MetaManager.cs" />
+    <Compile Include="Manager\Plugin\GraphDBPluginManager.cs" />
     <Compile Include="Manager\QueryPlan\QueryPlanManager.cs" />
     <Compile Include="Manager\QueryPlan\IQueryPlanManager.cs" />
     <Compile Include="Manager\Request\IRequestManager.cs" />
