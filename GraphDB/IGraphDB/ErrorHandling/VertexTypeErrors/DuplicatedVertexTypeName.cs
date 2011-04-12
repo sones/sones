@@ -19,7 +19,7 @@ namespace sones.GraphDB.ErrorHandling
         public DuplicatedVertexTypeNameException(String myVertexTypeName)
         {
             DuplicatedName = myVertexTypeName;
-            _msg = string.Format("The vertex type {0} was declared multiple times.");
+            _msg = string.Format("The vertex type {0} was declared multiple times.", DuplicatedName);
         }
 
     }

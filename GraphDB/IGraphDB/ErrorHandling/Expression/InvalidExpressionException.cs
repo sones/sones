@@ -32,7 +32,7 @@ namespace sones.GraphDB.ErrorHandling.Expression
 
         public override string ToString()
         {
-            return String.Format("The expression {0} is invalid.", InvalidExpression.ToString());
+            return String.Format("The expression {0} is invalid.", InvalidExpression);
         }
     }
 }

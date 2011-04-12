@@ -16,7 +16,7 @@ namespace sones.GraphDB.ErrorHandling
         public EdgeTypeDoesNotExistException(String myEdgeType)
         {
             EdgeType = myEdgeType;            
-            _msg = String.Format("{0} : The edgetype \"{1}\" does not exist!", EdgeType);
+            _msg = String.Format("The edgetype \"{0}\" does not exist!", EdgeType);
         }       
  
     }

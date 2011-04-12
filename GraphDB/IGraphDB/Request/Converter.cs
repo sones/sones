@@ -16,7 +16,7 @@ namespace sones.GraphDB.Request
         /// <param name="myRequestStatistics">The statistics of the request</param>
         /// <param name="myCreatedVertex">The vertex that has been created</param>
         /// <returns>A TResult</returns>
-        public delegate TResult InsertResultConverter<TResult>(IRequestStatistics myRequestStatistics, IVertex myCreatedVertex);
+        public delegate TResult InsertResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IVertex myCreatedVertex);
 
         /// <summary>
         /// A converter delegate that produces a generic result
@@ -24,7 +24,7 @@ namespace sones.GraphDB.Request
         /// <typeparam name="TResult">The type of the result</typeparam>
         /// <param name="myRequestStatistics">The statistics of the request</param>
         /// <returns>A TResult</returns>
-        public delegate TResult ClearResultConverter<TResult>(IRequestStatistics myRequestStatistics);
+        public delegate TResult ClearResultConverter<out TResult>(IRequestStatistics myRequestStatistics);
         
         /// <summary>
         /// A converter delegate that produces a generic result
@@ -33,7 +33,7 @@ namespace sones.GraphDB.Request
         /// <param name="myRequestStatistics">The statistics of the request</param>
         /// <param name="myCreatedVertexType">The vertex type that has been created</param>
         /// <returns>A TResult</returns>
-        public delegate TResult CreateVertexTypeResultConverter<TResult>(IRequestStatistics myRequestStatistics, IEnumerable<IVertexType> myCreatedVertexType);
+        public delegate TResult CreateVertexTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEnumerable<IVertexType> myCreatedVertexType);
 
         /// <summary>
         /// A converter delegate that produces a generic result
@@ -42,6 +42,6 @@ namespace sones.GraphDB.Request
         /// <param name="myRequestStatistics">The statistics of the request</param>
         /// <param name="myVertices">The vertices that have been fetched from the GraphDB</param>
         /// <returns>A TResult</returns>
-        public delegate TResult GetVerticesResultConverter<TResult>(IRequestStatistics myRequestStatistics, IEnumerable<IVertex> myVertices);
+        public delegate TResult GetVerticesResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEnumerable<IVertex> myVertices);
     }
 }

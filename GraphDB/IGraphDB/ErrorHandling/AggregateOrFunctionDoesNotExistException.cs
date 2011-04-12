@@ -16,7 +16,7 @@ namespace sones.GraphDB.ErrorHandling
         public AggregateOrFunctionDoesNotExistException(String myAggregateOrFunctionName)
         {
             AggregateOrFunctionName = myAggregateOrFunctionName;            
-            _msg = String.Format("{0} : The aggregate or function \"{1}\" does not exist!", AggregateOrFunctionName);            
+            _msg = String.Format("The aggregate or function \"{0}\" does not exist!", AggregateOrFunctionName);            
         }       
     }
 }

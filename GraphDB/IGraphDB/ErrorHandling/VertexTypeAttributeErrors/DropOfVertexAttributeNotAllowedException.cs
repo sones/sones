@@ -45,7 +45,7 @@ namespace sones.GraphDB.ErrorHandling
 
             sb.Remove(sb.Length - 1, 1);
 
-            return String.Format("It is not possible to drop {0} of vertex type {1} because there are remaining references from the following attributes: {2}" + Environment.NewLine + "Please remove them in previous.", VertexAttributeName, VertexTypeName, sb.ToString());
+            return String.Format("It is not possible to drop {0} of vertex type {1} because there are remaining references from the following attributes: {2}" + Environment.NewLine + "Please remove them in previous.", VertexAttributeName, VertexTypeName, sb);
 
         }
         
