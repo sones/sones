@@ -33,7 +33,7 @@ namespace sones.GraphDB.Request
 
         #endregion
 
-        public override bool Validate(MetaManager myMetaManager)
+        public override void Validate(MetaManager myMetaManager)
         {
             throw new NotImplementedException();
         }

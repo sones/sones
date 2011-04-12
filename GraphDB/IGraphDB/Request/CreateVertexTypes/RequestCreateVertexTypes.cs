@@ -12,7 +12,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The definition of the vertex that is going to be created
         /// </summary>
-        public readonly IEnumerable<VertexTypePredefinition> VertexTypeDefinitions;
+        public IEnumerable<VertexTypePredefinition> VertexTypeDefinitions;
 
         #endregion
 

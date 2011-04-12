@@ -62,6 +62,8 @@
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidVertexAttributeNameException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidVertexAttributeSelectionException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\AGraphDBVertexAttributeException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeErrors\CircularTypeHierarchyException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeErrors\DuplicatedVertexTypeName.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\TruncateNotAllowedOnInheritedTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\InvalidBaseVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\InvalidVertexTypeException.cs" />

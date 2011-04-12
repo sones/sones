@@ -5,6 +5,7 @@ using sones.Library.Transaction;
 using sones.Library.PropertyHyperGraph;
 using System.Collections.Generic;
 using sones.GraphDB.Expression;
+using sones.GraphDB.ErrorHandling.Expression;
 
 namespace sones.GraphDB.Request
 {
@@ -49,9 +50,10 @@ namespace sones.GraphDB.Request
 
         #region APipelinableRequest Members
 
-        public override bool Validate(MetaManager myMetaManager)
+        public override void Validate(MetaManager myMetaManager)
         {
-            return IsValidExpression(_request.GetVerticesDefinition.Expression);
+            if (!IsValidExpression(_request.GetVerticesDefinition.Expression))
+                throw new InvalidExpressionException(_request.GetVerticesDefinition.Expression);
         }
 
         public override void Execute(MetaManager myMetaManager)

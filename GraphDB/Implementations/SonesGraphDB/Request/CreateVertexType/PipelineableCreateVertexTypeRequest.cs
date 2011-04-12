@@ -3,6 +3,7 @@ using sones.GraphDB.Manager;
 using sones.Library.Security;
 using sones.Library.Transaction;
 using sones.GraphDB.TypeSystem;
+using System.Collections.Generic;
 
 namespace sones.GraphDB.Request
 {
@@ -21,7 +22,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The parentVertex type that has been created during execution
         /// </summary>
-        private IVertexType _createdVertexType;
+        private IEnumerable<IVertexType> _createdVertexType;
 
         #endregion
 
@@ -44,9 +45,9 @@ namespace sones.GraphDB.Request
 
         #region APipelinableRequest Members
 
-        public override bool Validate(MetaManager myMetaManager)
+        public override void Validate(MetaManager myMetaManager)
         {
-            return myMetaManager.TypeManager.CanAddVertexType(_request.VertexTypeDefinitions, TransactionToken, SecurityToken, myMetaManager);
+            myMetaManager.TypeManager.CanAddVertexType(ref _request.VertexTypeDefinitions, TransactionToken, SecurityToken, myMetaManager);
         }
 
         public override void Execute(MetaManager myMetaManager)

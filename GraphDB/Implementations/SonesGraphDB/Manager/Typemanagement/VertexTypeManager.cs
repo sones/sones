@@ -5,9 +5,11 @@ using sones.Library.LanguageExtensions;
 using sones.Library.Transaction;
 using sones.Library.Security;
 using System;
+using System.Linq;
 using sones.GraphDB.Expression;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.BaseTypes;
+using sones.GraphDB.ErrorHandling;
 
 
 /*
@@ -46,12 +48,34 @@ namespace sones.GraphDB.Manager.TypeManagement
 {
     public sealed class VertexTypeManager : IVertexTypeManager
     {
+        #region nested class
+
+        #region VertexTypePredefinitionComparer
+
+        private class VertexTypePredefinitionComparer: IComparer<VertexTypePredefinition>
+        {
+            #region IComparer<VertexTypePredefinition> Members
+
+            int IComparer<VertexTypePredefinition>.Compare(VertexTypePredefinition x, VertexTypePredefinition y)
+            {
+                return String.Compare(x.VertexTypeName, y.VertexTypeName);
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #endregion
+
         #region Constants
 
         public const UInt64 VertexTypeID = UInt64.MinValue;
         public const UInt64 EdgeTypeID = UInt64.MinValue + 1;
 
         private static readonly IExpression VertexTypeNameExpression = new PropertyExpression("VertexType", "Name");
+
+        private static readonly IComparer<VertexTypePredefinition> VertexTypePredefinitionComparerInstance = new VertexTypePredefinitionComparer();
 
         #endregion
 
@@ -70,22 +94,12 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Add
 
-        public bool CanAddVertexType(VertexTypePredefinition myVertexTypePredefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public void CanAddVertexType(ref IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return CanAdd(myVertexTypePredefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
+            CanAdd(ref myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
         }
 
-        public IVertexType AddVertexType(VertexTypePredefinition myVertexTypePredefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
-        {
-            return Add(myVertexTypePredefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
-        }
-
-        public bool CanAddVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
-        {
-            return CanAdd(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
-        }
-
-        public IVertexType AddVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public IEnumerable<IVertexType> AddVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             return Add(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
         }
@@ -94,19 +108,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Remove
 
-        public bool CanRemoveVertexType(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public void CanRemoveVertexType(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return CanRemove(myVertexType.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
-        }
-
-        public void RemoveVertexType(IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
-        {
-            Remove(myVertexType.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
-        }
-
-        public bool CanRemoveVertexType(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
-        {
-            return CanRemove(myVertexTypes, myTransaction, mySecurity, myMetaManager);
+            CanRemove(myVertexTypes, myTransaction, mySecurity, myMetaManager);
         }
 
         public void RemoveVertexType(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
@@ -118,19 +122,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Update
 
-        public bool CanUpdateVertexType(VertexTypePredefinition myVertexTypePredefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public void CanUpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return CanUpdate(myVertexTypePredefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
-        }
-
-        public void UpdateVertexType(VertexTypePredefinition myVertexTypePredefinition, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
-        {
-            Update(myVertexTypePredefinition.SingleEnumerable(), myTransaction, mySecurity, myMetaManager);
-        }
-
-        public bool CanUpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
-        {
-            return CanUpdate(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
+            CanUpdate(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
         }
 
         public void UpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
@@ -190,13 +184,93 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Add
 
-        private bool CanAdd(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private void CanAdd(ref IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
+            // basically first check the pre-definitions itself without asking the IVertexManager. If these checks are okay, proof everything concerning the types stored in the fs using the IVertexManager
+            // These are the necessary checks:
+            // - no predefinition is null
+            // - vertex type names are unique
+            // - attribute names are unique for each type pre-definition
+            // - parent types are none of the base types
+            // - check that no vertex type has the flags sealed and abstract at the same time
+            // - check that unique constraints and indices definition contains existing attributes
+            // ---- now with IVertexManager ---- (This means we can assume, that the vertex types are created, so we have a list of all vertex types containing the 'to-be-added-types'.)
+            // - check if the type names are unique
+            // - check if the derviation is circle free
+            // - check if the attribute names are unique regarding the derivation
+            // - check if all parent types exists and are not sealed
+            // - check if all outgoing edges have existing targets
+            // - check if all incoming edges have existing outgoing edges
+
+
+            SortedSet<VertexTypePredefinition> sortedDefs = SortByName(myVertexTypeDefinitions);
+
+            myVertexTypeDefinitions = SortTopolocically(sortedDefs);
+
+
             throw new NotImplementedException();
         }
 
-        private IVertexType Add(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        /// <summary>
+        /// Sorts a list of vertex type predefinitions according to the vertex type name.
+        /// </summary>
+        /// <param name="myVertexTypeDefinitions">A list of vertex type predefinitions.</param>
+        /// <returns>A sorted set</returns>
+        private static SortedSet<VertexTypePredefinition> SortByName(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions)
         {
+            SortedSet<VertexTypePredefinition> sortedDefs = new SortedSet<VertexTypePredefinition>(VertexTypePredefinitionComparerInstance);
+            foreach (var predef in myVertexTypeDefinitions)
+            {
+                if (!sortedDefs.Add(predef))
+                {
+                    throw new DuplicatedVertexTypeNameException(predef.VertexTypeName);
+                }
+            }
+            return sortedDefs;
+        }
+
+        /// <summary>
+        /// Sorts a list of vertex type predefinitions topologically regarding their parent type name.
+        /// </summary>
+        /// <param name="myVertexTypeDefinitions">A set of vertex type predefinitions sorted by their names.</param>
+        /// <returns> if the vertex type predefinition can be sorted topologically regarding their parent type, otherwise false.</returns>
+        private static IEnumerable<VertexTypePredefinition> SortTopolocically(SortedSet<VertexTypePredefinition> myVertexTypeDefinitions)
+        {
+            //vertex type predefinitions goes from toBeChecked into result.
+            var toBeChecked = myVertexTypeDefinitions;
+            var result = new List<VertexTypePredefinition>(myVertexTypeDefinitions.Count());
+            
+            //group predefinitions by their name and convert it into a Dictionary<String, List<VertexTypePredefinition>>
+            var grouped = myVertexTypeDefinitions.GroupBy(predef => predef.SuperVertexTypeName).ToDictionary(group => group.Key);
+            
+            String nextRoot = String.Empty;
+
+            while (toBeChecked.Count > 0 && nextRoot != null) 
+            {
+                //here we assume, parent types that are not on the list of definitions are correct parents
+                //so nextroot contains the name of a correct parent type
+                nextRoot = grouped.Keys.FirstOrDefault(parentType => !toBeChecked.Any(def => parentType.Equals(def.VertexTypeName)));
+                
+                if (nextRoot == null)
+                {
+                    //we did not find a correct parent, so the types in toBeChecked contains a circle
+                    throw new CircularTypeHierarchyException(toBeChecked);
+                }
+
+                toBeChecked.ExceptWith(grouped[nextRoot]);
+
+            }
+
+            return result;
+        }
+
+        private IEnumerable<IVertexType> Add(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        {
+            // there are two ways to add the vertex types
+            // 1. We add a vertex per definition without setting the parent type. After that we update these vertices to set the edge to the parent type.
+            // 2. We built up a derivation forest (list of trees) and insert the types in order with setting the base type
+            // we assume, that 1. must visit the vertices more often in FS and 2. also generates a spanning tree, so we know that we do not have an inheritance problem
+
             throw new NotImplementedException();
         }
 
