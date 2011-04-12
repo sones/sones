@@ -153,9 +153,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonesBufferedPersistentInde
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Settings", "Library\Internal\Settings\Settings.csproj", "{A233FDB4-70A9-4284-827A-1704950E0EF3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestIndexApplication", "Applications\TestIndexApplication\TestIndexApplication\TestIndexApplication.csproj", "{0ACE6FFF-E240-448D-A675-665912149AB5}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 45
+		SccNumberOfProjects = 46
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -335,6 +337,10 @@ Global
 		SccProjectTopLevelParentUniqueName44 = CoreDeveloper.sln
 		SccProjectName44 = Library/Internal/Settings
 		SccLocalPath44 = Library\\Internal\\Settings
+		SccProjectUniqueName45 = Applications\\TestIndexApplication\\TestIndexApplication\\TestIndexApplication.csproj
+		SccProjectTopLevelParentUniqueName45 = CoreDeveloper.sln
+		SccProjectName45 = Applications/TestIndexApplication/TestIndexApplication
+		SccLocalPath45 = Applications\\TestIndexApplication\\TestIndexApplication
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -732,6 +738,7 @@ Global
 		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{982A8FC0-D760-4B81-B537-06EDBEA80A6C}.Release|x86.ActiveCfg = Release|Any CPU
 		{8D291BAE-496E-4339-A480-B301ED1A23FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8D291BAE-496E-4339-A480-B301ED1A23FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
@@ -783,6 +790,16 @@ Global
 		{A233FDB4-70A9-4284-827A-1704950E0EF3}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{A233FDB4-70A9-4284-827A-1704950E0EF3}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{A233FDB4-70A9-4284-827A-1704950E0EF3}.Release|x86.ActiveCfg = Release|Any CPU
+		{0ACE6FFF-E240-448D-A675-665912149AB5}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{0ACE6FFF-E240-448D-A675-665912149AB5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0ACE6FFF-E240-448D-A675-665912149AB5}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0ACE6FFF-E240-448D-A675-665912149AB5}.Debug|x86.ActiveCfg = Debug|x86
+		{0ACE6FFF-E240-448D-A675-665912149AB5}.Debug|x86.Build.0 = Debug|x86
+		{0ACE6FFF-E240-448D-A675-665912149AB5}.Release|Any CPU.ActiveCfg = Release|x86
+		{0ACE6FFF-E240-448D-A675-665912149AB5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0ACE6FFF-E240-448D-A675-665912149AB5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0ACE6FFF-E240-448D-A675-665912149AB5}.Release|x86.ActiveCfg = Release|x86
+		{0ACE6FFF-E240-448D-A675-665912149AB5}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -803,6 +820,7 @@ Global
 		{15589123-5145-44D4-9514-214729FD9EF3} = {EA38B67C-F886-43E3-9438-549E28000220}
 		{A9124727-FB28-4629-B269-FF79EE3EDA54} = {F9FAFD9F-BC60-4EDD-8BA5-8961B7A3BAFF}
 		{C55633BD-8F9D-4F7A-828B-5AB044CD45E5} = {F9FAFD9F-BC60-4EDD-8BA5-8961B7A3BAFF}
+		{0ACE6FFF-E240-448D-A675-665912149AB5} = {F9FAFD9F-BC60-4EDD-8BA5-8961B7A3BAFF}
 		{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{3C13E344-937B-4010-B0EF-A164232E4454} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
