@@ -50,6 +50,7 @@
     <Compile Include="Expression\QueryPlan\IQueryPlan.cs" />
     <Compile Include="Expression\QueryPlan\QueryPlanProperty.cs" />
     <Compile Include="Index\IndexDefinition.cs" />
+    <Compile Include="Manager\Expression\BasicLogicExpressionOptimizer.cs" />
     <Compile Include="Manager\Index\IIndexManager.cs" />
     <Compile Include="Manager\Index\IndexManager.cs" />
     <Compile Include="Manager\MetaManager.cs" />
@@ -57,6 +58,9 @@
     <Compile Include="Manager\QueryPlan\IQueryPlanManager.cs" />
     <Compile Include="Manager\Request\IRequestManager.cs" />
     <Compile Include="Manager\Request\RequestManager.cs" />
+    <Compile Include="Manager\Request\BasicRequestScheduler.cs" />
+    <Compile Include="Manager\Security\BasicSecurityManager.cs" />
+    <Compile Include="Manager\Transaction\BasicTransactionManager.cs" />
     <Compile Include="Manager\TypeManagement\IVertexTypeManager.cs" />
     <Compile Include="Manager\IStorageUsingManager.cs" />
     <Compile Include="Manager\TypeManagement\IEdgeTypeManager.cs" />
@@ -112,6 +116,10 @@
       <Project>{3C13E344-937B-4010-B0EF-A164232E4454}</Project>
       <Name>Security</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Settings\Settings.csproj">
+      <Project>{A233FDB4-70A9-4284-827A-1704950E0EF3}</Project>
+      <Name>Settings</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\Transaction\Transaction.csproj">
       <Project>{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}</Project>
       <Name>Transaction</Name>
@@ -131,6 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="ErrorHandling\" />
+    <Folder Include="Settings\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SonesGraphDB.cd" />

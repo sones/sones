@@ -286,6 +286,17 @@ namespace sones.Library.VersionedPluginManager
 
                 #endregion
 
+                //The plugin has to implement IPluginable so that we are able to initialize/distinguish them
+                if (!typeof(IPluginable).IsInterfaceOf(type))
+                {
+                    continue;
+                }
+
+                //The plugin has to have an empty constructor
+                if (type.GetConstructor(Type.EmptyTypes) == null)
+                {
+                    continue;
+                }
                 #endregion
 
                 FindAndActivateTypes(myThrowExceptionOnIncompatibleVersion, loadedPluginAssembly, type);                

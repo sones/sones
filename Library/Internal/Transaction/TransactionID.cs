@@ -6,7 +6,7 @@ namespace sones.Library.Transaction
     {
         #region Data
 
-        public readonly UInt64 ID;
+        public readonly Int64 ID;
 
         #endregion
 
@@ -15,7 +15,7 @@ namespace sones.Library.Transaction
         /// <summary>
         /// Creates a TransactionID
         /// </summary>
-        public TransactionID(UInt64 myID)
+        public TransactionID(Int64 myID)
         {
             ID = myID;
         }

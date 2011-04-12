@@ -61,6 +61,10 @@
       <Project>{3C13E344-937B-4010-B0EF-A164232E4454}</Project>
       <Name>Security</Name>
     </ProjectReference>
+    <ProjectReference Include="..\VersionedPluginManager\PluginManager.csproj">
+      <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
+      <Name>PluginManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\VertexStore\VertexStore.csproj">
       <Project>{E350EBAC-98DD-4261-8CE8-FA95FC96C9EA}</Project>
       <Name>VertexStore</Name>

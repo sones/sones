@@ -34,7 +34,7 @@ namespace sones.GraphDB
     /// <summary>
     /// The interface for all graphdb implementations
     /// </summary>
-    public interface IGraphDB : ITransactionable
+    public interface IGraphDB : ITransactionable, IUserAuthentication
     {
         #region requests
 

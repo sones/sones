@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.VertexStore;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.GraphFS
 {
@@ -11,7 +12,7 @@ namespace sones.GraphFS
     /// A static implementation of the compatible IGraphFS plugin versions. 
     /// Defines the min and max version for all IGraphFS implementations which will be activated used this IGraphFS.
     /// </summary>
-    internal static class IGraphFSVersionCompatibility
+    public static class IGraphFSVersionCompatibility
     {
         public static Version MinVersion
         {
@@ -34,14 +35,15 @@ namespace sones.GraphFS
     /// <summary>
     /// The interface for all kinds of GraphFS
     /// </summary>
-    public interface IGraphFS : IVertexStore
+    public interface IGraphFS : IVertexStore, IPluginable
     {
         #region Information Methods
 
         #region IsTransactionsal
 
         /// <summary>
-        /// Determines whether this fs supports handling of transactions. if this isn't the case, the transactionmanager of the IGraphDB is used
+        /// Determines whether this fs supports handling of transactions (The Fs has to implement ITransactionManager). 
+        /// if this isn't the case, the transactionmanager of the IGraphDB is used.
         /// </summary>
         Boolean IsTransactional { get; }
 

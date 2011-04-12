@@ -9,6 +9,7 @@ using sones.GraphFS.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
 using System.IO;
 using sones.Library.VertexStore.Definitions;
+using sones.Library.Settings;
 
 namespace sones.GraphFS
 {
@@ -17,12 +18,16 @@ namespace sones.GraphFS
     /// </summary>
     public sealed class InMemoryNonRevisionedFS : IGraphFS
     {
+        #region data
+
         /// <summary>
         /// The concurrent datastructure where all the vertices are stored
         /// 
         /// TypeID ( VertexID, IVertex)
         /// </summary>
         private ConcurrentDictionary<Int64, ConcurrentDictionary<Int64, InMemoryVertex>> _vertexStore;
+
+        #endregion
 
         #region Constructor
 
@@ -478,6 +483,25 @@ namespace sones.GraphFS
                 UpdateVertex_private(toBeUpdatedVertex, myVertexUpdate);
 
             return null;
+        }
+
+        #endregion
+
+        #region IPluginable Members
+
+        public String PluginName
+        {
+            get { return "InMemoryNonRevisionedFS"; }
+        }
+
+        public Dictionary<String, Type> SetableParameters
+        {
+            get { return new Dictionary<string, Type>(); }
+        }
+
+        public void InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
+        {
+            Init();
         }
 
         #endregion

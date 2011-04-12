@@ -4,6 +4,7 @@ using sones.GraphDB;
 using sones.GraphQL.Result;
 using sones.Library.Security;
 using sones.Library.Transaction;
+using sones.Library.Settings;
 
 namespace sones.GraphQL
 {
@@ -19,6 +20,11 @@ namespace sones.GraphQL
         /// </summary>
         private readonly IGraphDB _IGraphDBInstance;
 
+        /// <summary>
+        /// The settings of the application
+        /// </summary>
+        private readonly GraphApplicationSettings _settings;
+
         #endregion
 
         #region Constructor
@@ -26,10 +32,12 @@ namespace sones.GraphQL
         /// <summary>
         /// Creates a new sones GQL instance
         /// </summary>
-        /// <param name="myIGraphDBInstace"></param>
-        public SonesQueryLanguage(IGraphDB myIGraphDBInstace)
+        /// <param name="myApplicationSettings">The settings of the application</param>
+        /// <param name="myIGraphDBInstace">The graph database instance on which the gql statements are executed</param>
+        public SonesQueryLanguage(GraphApplicationSettings myApplicationSettings, IGraphDB myIGraphDBInstace)
         {
             _IGraphDBInstance = myIGraphDBInstace;
+            _settings = myApplicationSettings;
         }
 
         #endregion
@@ -38,7 +46,7 @@ namespace sones.GraphQL
 
         public string Name
         {
-            get { throw new NotImplementedException(); }
+            get { return "GQL"; }
         }
 
         public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken,

@@ -198,6 +198,10 @@
       <Project>{3C13E344-937B-4010-B0EF-A164232E4454}</Project>
       <Name>Security</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Settings\Settings.csproj">
+      <Project>{A233FDB4-70A9-4284-827A-1704950E0EF3}</Project>
+      <Name>Settings</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\Transaction\Transaction.csproj">
       <Project>{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}</Project>
       <Name>Transaction</Name>

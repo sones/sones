@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{AB7C27CC-534F-472E-BA56-A1287973B7E2}</ProjectGuid>
+    <ProjectGuid>{A233FDB4-70A9-4284-827A-1704950E0EF3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sones.GraphFS</RootNamespace>
-    <AssemblyName>InMemoryNonRevisioned</AssemblyName>
+    <RootNamespace>sones.Library.Settings</RootNamespace>
+    <AssemblyName>Settings</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -44,46 +44,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Element\AGraphElement.cs" />
-    <Compile Include="Element\Edge\SingleEdgeCollection.cs" />
-    <Compile Include="Element\Vertex\InMemoryVertex.cs" />
-    <Compile Include="InMemoryNonRevisionedFS.cs" />
-    <Compile Include="Element\Edge\HyperEdge.cs" />
-    <Compile Include="Element\Edge\SingleEdge.cs" />
+    <Compile Include="GraphApplicationSettings.cs" />
+    <Compile Include="ErrorHandling\ASettingsException.cs" />
+    <Compile Include="ErrorHandling\CouldNotLoadSettingFileException.cs" />
+    <Compile Include="ErrorHandling\InvalidXMLFormatException.cs" />
+    <Compile Include="ErrorHandling\DataTypeMismatchException.cs" />
+    <Compile Include="IGraphSetting.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SettingChangingEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+    <ProjectReference Include="..\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
-      <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
-      <Name>PropertyHyperGraph</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\Settings\Settings.csproj">
-      <Project>{A233FDB4-70A9-4284-827A-1704950E0EF3}</Project>
-      <Name>Settings</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\Transaction\Transaction.csproj">
-      <Project>{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}</Project>
-      <Name>Transaction</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
-      <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\VertexStore\VertexStore.csproj">
-      <Project>{E350EBAC-98DD-4261-8CE8-FA95FC96C9EA}</Project>
-      <Name>VertexStore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\IGraphFS\IGraphFS.csproj">
-      <Project>{FFFB6BE4-9514-41CF-AB68-5FB7B8E3D2E4}</Project>
-      <Name>IGraphFS</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ErrorHandling\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

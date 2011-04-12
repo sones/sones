@@ -4,12 +4,33 @@ using sones.GraphDB;
 using sones.GraphQL.Result;
 using sones.Library.Security;
 using sones.Library.Transaction;
+using System.Collections.Generic;
+using sones.GraphQL;
+using sones.GraphDB.Request;
 
 namespace sones.GraphDSServer
 {
     public sealed class GraphDSServer : IGraphDSServer
     {
-        #region IGraphDSServer Members
+        #region Data
+
+        /// <summary>
+        /// The internal iGraphDB instance
+        /// </summary>
+        private readonly IGraphDB _iGraphDB;
+
+        #endregion
+
+        #region Constructor
+
+        public GraphDSServer(IGraphDB myGraphDB)
+        {
+            _iGraphDB = myGraphDB;
+        }
+
+        #endregion
+
+        #region IGraphDSREST Members
 
         public void StartRESTService(string myServiceID, ushort myPort, IPAddress myIPAddress)
         {
@@ -21,21 +42,71 @@ namespace sones.GraphDSServer
             throw new NotImplementedException();
         }
 
-        public IGraphDB GraphDB
-        {
-            get { throw new NotImplementedException(); }
-        }
+        #endregion
+
+        #region IGraphDS Members
 
         public void Shutdown(SecurityToken mySecurityToken)
         {
             throw new NotImplementedException();
         }
 
-        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
-                                 string myQueryString, string myQueryLanguageName)
+        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString, string myQueryLanguageName)
         {
             throw new NotImplementedException();
         }
+
+        #endregion
+
+        #region IGraphDB Members
+
+        public TResult CreateVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateVertexTypes myRequestCreateVertexType, Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult Clear<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestClear myRequestClear, Converter.ClearResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult Insert<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestInsertVertex myRequestInsert, Converter.InsertResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult GetVertices<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertices myRequestGetVertices, Converter.GetVerticesResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Guid ID
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        #endregion
+
+        #region ITransactionable Members
+
+        public TransactionToken BeginTransaction(SecurityToken mySecurityToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CommitTransaction(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RollbackTransaction(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region IUserAuthentication Members
 
         public SecurityToken LogOn(IUserCredentials toBeAuthenticatedCredentials)
         {

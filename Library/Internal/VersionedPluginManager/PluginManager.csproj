@@ -53,6 +53,8 @@
     <Compile Include="Events\PluginFoundEvent.cs" />
     <Compile Include="Events\PluginIncompatibleVersionEvent.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="IPluginable.cs" />
+    <Compile Include="PluginDefinition.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -60,6 +62,10 @@
     <ProjectReference Include="..\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Settings\Settings.csproj">
+      <Project>{A233FDB4-70A9-4284-827A-1704950E0EF3}</Project>
+      <Name>Settings</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

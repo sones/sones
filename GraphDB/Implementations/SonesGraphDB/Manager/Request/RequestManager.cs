@@ -4,7 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using sones.GraphDB.Request;
 using sones.Library.ErrorHandling;
-using sones.GraphDB.Manager.Request;
+using System.Collections.Generic;
+using sones.Library.Settings;
 
 namespace sones.GraphDB.Manager
 {
@@ -18,27 +19,27 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// This structure contains requests that had been validated successfully
         /// </summary>
-        private readonly BlockingCollection<APipelinableRequest> _executableRequests;
+        private BlockingCollection<APipelinableRequest> _executableRequests;
 
         /// <summary>
         /// The incoming requests... every incoming request is stored within this structure
         /// </summary>
-        private readonly BlockingCollection<APipelinableRequest> _incomingRequests;
+        private BlockingCollection<APipelinableRequest> _incomingRequests;
 
         /// <summary>
         /// The meta manager that contains all relevant manager
         /// </summary>
-        private readonly MetaManager _metaManager;
+        private MetaManager _metaManager;
 
         /// <summary>
         /// The scheduler which decides whether some requests are executed in parallel
         /// </summary>
-        private readonly IRequestScheduler _requestScheduler;
+        private IRequestScheduler _requestScheduler;
 
         /// <summary>
         /// The structure where the results are stored
         /// </summary>
-        private readonly ConcurrentDictionary<Guid, APipelinableRequest> _results;
+        private ConcurrentDictionary<Guid, APipelinableRequest> _results;
 
         /// <summary>
         /// The cancellation token source
@@ -55,6 +56,16 @@ namespace sones.GraphDB.Manager
         #region Constructor
 
         /// <summary>
+        /// Creates a new request manager 
+        /// BEWARE!!! This constructor is necessary for plugin-functionality.
+        /// DO NOT USE THIS ONE IF YOU DIRECTLY INITIALIZE THIS COMPONENT
+        /// </summary>
+        public RequestManager()
+        {
+
+        }
+
+        /// <summary>
         /// Creates a new Request Manager
         /// </summary>
         /// <param name="queueLengthForIncomingRequests">This number represents the count of parallel incoming requests that are supported</param>
@@ -66,6 +77,11 @@ namespace sones.GraphDB.Manager
             int executionQueueLength,
             MetaManager myMetaManager,
             IRequestScheduler myRequestScheduler)
+        {
+            Init_private(queueLengthForIncomingRequests, executionQueueLength, myMetaManager, myRequestScheduler);
+        }
+
+        private void Init_private(int queueLengthForIncomingRequests, int executionQueueLength, MetaManager myMetaManager, IRequestScheduler myRequestScheduler)
         {
             #region init
 
@@ -397,6 +413,36 @@ namespace sones.GraphDB.Manager
         }
 
         #endregion
+
+        #endregion
+
+        #region IPluginable Members
+
+        public String PluginName
+        {
+            get { return "RequestManager"; }
+        }
+
+        public Dictionary<String, Type> SetableParameters
+        {
+            get
+            {
+                return new Dictionary<string, Type> { 
+                { "queueLengthForIncomingRequests", typeof(int) }, 
+                { "executionQueueLength", typeof(int) },
+                { "metaManager", typeof(MetaManager) },
+                { "requestScheduler", typeof(IRequestScheduler) }};
+            }
+        }
+
+        public void InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
+        {
+            Init_private(
+                (int)myParameters["queueLengthForIncomingRequests"],
+                (int)myParameters["executionQueueLength"],
+                (MetaManager)myParameters["metaManager"],
+                (IRequestScheduler)myParameters["requestScheduler"]);
+        }
 
         #endregion
     }
