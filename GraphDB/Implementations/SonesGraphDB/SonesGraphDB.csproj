@@ -145,7 +145,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ErrorHandling\" />
+    <Folder Include="ErrorHandling\VertexTypeManager\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SonesGraphDB.cd" />

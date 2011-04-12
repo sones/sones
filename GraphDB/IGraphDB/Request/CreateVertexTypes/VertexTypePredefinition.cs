@@ -121,5 +121,9 @@ namespace sones.GraphDB.Request
         }
 
         #endregion
+
+        public bool IsSealed { get; private set; }
+
+        public bool IsAbstract { get; private set; }
     }
 }

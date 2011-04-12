@@ -69,6 +69,7 @@
     <Compile Include="ErrorHandling\VertexTypeErrors\InvalidVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\ListAttributeNotAllowedException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\ParentVertexTypeDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeErrors\UselessVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\VertexTypeAlreadyExistException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\VertexTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\VertexTypeDoesNotMatchException.cs" />

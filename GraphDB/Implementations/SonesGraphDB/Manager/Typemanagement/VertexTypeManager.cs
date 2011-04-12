@@ -9,6 +9,7 @@ using sones.GraphDB.TypeManagement.BaseTypes;
 using sones.GraphDB.TypeSystem;
 using sones.Library.Security;
 using sones.Library.Transaction;
+using sones.Library.LanguageExtensions;
 
 /*
  * edge cases:
@@ -94,6 +95,13 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public void CanAddVertexType(ref IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
+            #region check arguments
+
+            myMetaManager.CheckNull("MyMetaManager");
+            myVertexTypeDefinitions.CheckNull("myVertexTypeDefinitions");
+            
+            #endregion
+
             CanAdd(ref myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
         }
 
@@ -186,7 +194,6 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             // basically first check the pre-definitions itself without asking the IVertexManager. If these checks are okay, proof everything concerning the types stored in the fs using the IVertexManager
             // These are the necessary checks:
-            // - no predefinition is null
             // - vertex type names are unique
             // - attribute names are unique for each type pre-definition
             // - parent types are none of the base types
@@ -200,13 +207,52 @@ namespace sones.GraphDB.Manager.TypeManagement
             // - check if all outgoing edges have existing targets
             // - check if all incoming edges have existing outgoing edges
 
+            CheckBasics(myVertexTypeDefinitions);
 
+            //checks if vertex type names are duplicated.
             SortedSet<VertexTypePredefinition> sortedDefs = SortByName(myVertexTypeDefinitions);
+
 
             myVertexTypeDefinitions = SortTopolocically(sortedDefs);
 
 
             throw new NotImplementedException();
+        }
+
+        private static void CheckBasics(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions)
+        {
+            foreach (var predef in myVertexTypeDefinitions)
+            {
+                predef.CheckNull("Element in myVertexTypeDefinitions");
+                CheckParentTypeAreNoBaseTypes(predef);
+                CheckSealedAndAbstract(predef);
+            }
+        }
+
+        private static void CheckSealedAndAbstract(VertexTypePredefinition predef)
+        {
+            if (predef.IsSealed && predef.IsAbstract)
+            {
+                throw new UselessVertexTypeException(predef);
+            }
+        }
+
+
+        private static void CheckParentTypeAreNoBaseTypes(VertexTypePredefinition myVertexTypeDefinition)
+        {
+            if (IsBaseType(myVertexTypeDefinition.SuperVertexTypeName))
+            {
+                throw new InvalidBaseVertexTypeException(myVertexTypeDefinition.VertexTypeName);
+            }
+        }
+
+        private static bool IsBaseType(string myTypeName)
+        {
+            BaseVertexType type;
+            if (!Enum.TryParse(myTypeName, out type))
+                return true;
+
+            return type != BaseVertexType.Vertex;
         }
 
         /// <summary>
