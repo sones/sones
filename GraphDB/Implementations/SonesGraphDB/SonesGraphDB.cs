@@ -11,6 +11,7 @@ using sones.Library.Settings;
 using sones.GraphDB.Manager.Plugin;
 using sones.GraphDB.Settings;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace sones.GraphDB
 {
@@ -56,6 +57,11 @@ namespace sones.GraphDB
         /// </summary>
         private readonly GraphApplicationSettings _applicationSettings;
 
+        /// <summary>
+        /// The cancellation token of the sones graphdb
+        /// </summary>
+        private readonly CancellationTokenSource _cts;
+
         #endregion
 
         #region constructor
@@ -64,22 +70,19 @@ namespace sones.GraphDB
         /// Creates a new sones graphdb instance
         /// </summary>
         /// <param name="mySettings">The application settings</param>
-        /// <param name="myIGraphFSDefinition">The definition of the IGraphFS plugin</param>
-        /// <param name="myTransactionManagerPlugin">The definition of the transaction manager plugin</param>
-        /// <param name="mySecurityManagerPlugin">The definition of the transaction manager plugin</param>
-        /// <param name="myRequestSchedulerPlugin">The definition of the request scheduler plugin</param>
-        /// <param name="myLogicExpressionOptimizerPlugin">The definition of the logic expression optimizer plugin</param>
-        /// <param name="myRequestManagerPlugin">The definition of the request manager plugin</param>
+        /// <param name="myPlugins">The plugins that are valid for the sones GraphDB component</param>
         public SonesGraphDB(
             GraphApplicationSettings mySettings,
-            PluginDefinition myIGraphFSDefinition               = null,
-            PluginDefinition myTransactionManagerPlugin         = null,
-            PluginDefinition mySecurityManagerPlugin            = null,
-            PluginDefinition myRequestSchedulerPlugin           = null,
-            PluginDefinition myLogicExpressionOptimizerPlugin   = null,
-            PluginDefinition myRequestManagerPlugin             = null)
+            GraphDBPlugins myPlugins = null)
         {
             _id = Guid.NewGuid();
+
+            _cts = new CancellationTokenSource();
+
+            if (myPlugins == null)
+            {
+                myPlugins = new GraphDBPlugins();
+            }
 
             #region settings
 
@@ -95,31 +98,25 @@ namespace sones.GraphDB
 
             #region IGraphFS
 
-            _iGraphFS = LoadGraphFsPlugin(myIGraphFSDefinition);
+            _iGraphFS = LoadGraphFsPlugin(myPlugins.IGraphFSDefinition);
 
             #endregion
 
             #region transaction
 
-            _transactionManager = LoadTransactionManagerPlugin(myTransactionManagerPlugin);
+            _transactionManager = LoadTransactionManagerPlugin(myPlugins.TransactionManagerPlugin);
 
             #endregion
 
             #region security
 
-            _securityManager = LoadSecurityManager(mySecurityManagerPlugin);
+            _securityManager = LoadSecurityManager(myPlugins.SecurityManagerPlugin);
 
             #endregion
 
             #region requests
 
-            _requestManager = LoadRequestManager(myRequestManagerPlugin, myRequestSchedulerPlugin);
-
-            #endregion
-
-            #region expression optimizer
-
-            LoadLogicExpressionOptimizer(myLogicExpressionOptimizerPlugin);
+            _requestManager = LoadRequestManager(myPlugins.RequestManagerPlugin, myPlugins.RequestSchedulerPlugin, CreateMetamanager(myPlugins));
 
             #endregion
         }
@@ -247,30 +244,58 @@ namespace sones.GraphDB
         #region private helper
 
         /// <summary>
-        /// Load an logic expression optimizer
-        /// </summary>
-        /// <param name="myLogicExpressionOptimizerPlugin">A plugin definition</param>
-        private void LoadLogicExpressionOptimizer(PluginDefinition myLogicExpressionOptimizerPlugin)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Load a request manager
         /// </summary>
         /// <param name="myRequestManagerPlugin">The actual request manager plugin definition</param>
         /// <param name="myRequestSchedulerPlugin">The request scheduler plugin that is needed for the request manager</param>
-        private IRequestManager LoadRequestManager(PluginDefinition myRequestManagerPlugin, PluginDefinition myRequestSchedulerPlugin)
+        /// <param name="myMetaManager">The meta manager of the graphdb</param>
+        private IRequestManager LoadRequestManager(PluginDefinition myRequestManagerPlugin, PluginDefinition myRequestSchedulerPlugin, MetaManager myMetaManager)
         {
-            MetaManager metaManager = CreateMetamanager();
+            #region user defined
 
-            IRequestScheduler requestScheduler = LoadRequestScheduler(myRequestSchedulerPlugin);
+            var requestScheduler = LoadRequestScheduler(myRequestSchedulerPlugin);
 
-            //load values via settings
-            //_requestManager = new RequestManager()
+            if (myRequestManagerPlugin != null)
+            {
+                return _graphDBPluginManager.GetAndInitializePlugin<IRequestManager>(myRequestManagerPlugin.NameOfPlugin, myRequestManagerPlugin.PluginParameter, _applicationSettings);
+            }
 
-            throw new NotImplementedException();
+            #endregion
 
+            #region default
+
+            //so lets take the default one
+            var defaultRequestManagerName = _applicationSettings.Get<DefaultRequestManagerImplementation>();
+
+            #region set some parameters
+
+            int queueLengthForIncomingRequests = 10000;
+            int executionQueueLength = 10000;
+
+            //the CPU*1,5
+            //decreased by one, because of one validation task
+            var numberOfOptimalTasks = ((Environment.ProcessorCount * 3) / 2) - 1;
+
+            //use at least 2 tasks
+            numberOfOptimalTasks = numberOfOptimalTasks > 1 ? numberOfOptimalTasks : 2;
+
+            #endregion
+
+            return _graphDBPluginManager.
+                GetAndInitializePlugin<IRequestManager>(
+                    defaultRequestManagerName,
+                    new Dictionary<String, Object>
+                    {
+                        {"queueLengthForIncomingRequests", queueLengthForIncomingRequests},
+                        {"executionQueueLength", executionQueueLength},
+                        {"executionTaskCount", numberOfOptimalTasks},
+                        {"metaManager", myMetaManager},
+                        {"requestScheduler", requestScheduler},
+                        {"cts", _cts},
+                    },
+                    _applicationSettings);
+            
+            #endregion
         }
 
         /// <summary>
@@ -280,16 +305,24 @@ namespace sones.GraphDB
         /// <returns>A request scheduler</returns>
         private IRequestScheduler LoadRequestScheduler(PluginDefinition myRequestSchedulerPlugin)
         {
-            throw new NotImplementedException();
+            if (myRequestSchedulerPlugin != null)
+            {
+                return _graphDBPluginManager.GetAndInitializePlugin<IRequestScheduler>(myRequestSchedulerPlugin.NameOfPlugin, myRequestSchedulerPlugin.PluginParameter, _applicationSettings);
+            }
+
+            //so lets take the default one
+            var defaultRequestSchedulerName = _applicationSettings.Get<DefaultRequestSchedulerImplementation>();
+            return _graphDBPluginManager.GetAndInitializePlugin<IRequestScheduler>(defaultRequestSchedulerName, null, _applicationSettings);
         }
 
         /// <summary>
         /// Create a meta manager
         /// </summary>
+        /// <param name="myPlugins">The plugin definitions</param>
         /// <returns>A meta manager</returns>
-        private MetaManager CreateMetamanager()
+        private MetaManager CreateMetamanager(GraphDBPlugins myPlugins)
         {
-            throw new NotImplementedException();
+            return new MetaManager(_securityManager, myPlugins, _graphDBPluginManager);
         }
         
         /// <summary>

@@ -431,6 +431,8 @@ namespace sones.GraphDB.Manager
                 return new Dictionary<string, Type> { 
                 { "queueLengthForIncomingRequests", typeof(int) }, 
                 { "executionQueueLength", typeof(int) },
+                { "executionTaskCount", typeof(int) },
+                { "cts", typeof(CancellationTokenSource) },
                 { "metaManager", typeof(MetaManager) },
                 { "requestScheduler", typeof(IRequestScheduler) }};
             }
@@ -438,7 +440,11 @@ namespace sones.GraphDB.Manager
 
         public IPluginable InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
         {
-            return new RequestManager((int)myParameters["queueLengthForIncomingRequests"], (int)myParameters["executionQueueLength"], (MetaManager)myParameters["metaManager"], (IRequestScheduler)myParameters["requestScheduler"]);
+            var result =  new RequestManager((int)myParameters["queueLengthForIncomingRequests"], (int)myParameters["executionQueueLength"], (MetaManager)myParameters["metaManager"], (IRequestScheduler)myParameters["requestScheduler"]);
+
+            result.Init((int)myParameters["executionTaskCount"], (CancellationTokenSource)myParameters["cts"]);
+
+            return result;
         }
 
         #endregion

@@ -54,6 +54,7 @@
     <Compile Include="Manager\Index\IIndexManager.cs" />
     <Compile Include="Manager\Index\IndexManager.cs" />
     <Compile Include="Manager\MetaManager.cs" />
+    <Compile Include="Manager\Plugin\GraphDBPlugins.cs" />
     <Compile Include="Manager\Plugin\GraphDBPluginManager.cs" />
     <Compile Include="Manager\QueryPlan\QueryPlanManager.cs" />
     <Compile Include="Manager\QueryPlan\IQueryPlanManager.cs" />
@@ -68,6 +69,8 @@
     <Compile Include="Manager\Vertex\IVertexManager.cs" />
     <Compile Include="Request\GetVertices\PipelineableGetVerticesRequest.cs" />
     <Compile Include="Manager\TypeManagement\EdgeTypeManager.cs" />
+    <Compile Include="Settings\DefaultRequestManagerImplementation.cs" />
+    <Compile Include="Settings\DefaultRequestSchedulerImplementation.cs" />
     <Compile Include="Settings\DefaultSecurityManagerImplementation.cs" />
     <Compile Include="Settings\DefaultTransactionManagerImplementation.cs" />
     <Compile Include="Settings\DefaultGraphFSImplementation.cs" />
