@@ -10,6 +10,7 @@ using sones.GraphDB.TypeSystem;
 using sones.Library.Security;
 using sones.Library.Transaction;
 using sones.Library.LanguageExtensions;
+using sones.GraphDB.ErrorHandling.VertexTypeErrors;
 
 /*
  * edge cases:
@@ -224,8 +225,19 @@ namespace sones.GraphDB.Manager.TypeManagement
             foreach (var predef in myVertexTypeDefinitions)
             {
                 predef.CheckNull("Element in myVertexTypeDefinitions");
+
+                CheckVertexTypeName(predef);
+
                 CheckParentTypeAreNoBaseTypes(predef);
                 CheckSealedAndAbstract(predef);
+            }
+        }
+
+        private static void CheckVertexTypeName(VertexTypePredefinition myVertexTypeDefinition)
+        {
+            if (string.IsNullOrWhiteSpace(myVertexTypeDefinition.VertexTypeName))
+            {
+                throw new EmptyVertexTypeNameException(myVertexTypeDefinition);
             }
         }
 
@@ -280,30 +292,42 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <returns> if the vertex type predefinition can be sorted topologically regarding their parent type, otherwise false.</returns>
         private static IEnumerable<VertexTypePredefinition> SortTopolocically(SortedSet<VertexTypePredefinition> myVertexTypeDefinitions)
         {
-            //vertex type predefinitions goes from toBeChecked into result.
+            //Vertex type predefinitions goes from toBeChecked into result.
             var toBeChecked = myVertexTypeDefinitions;
-            var result = new List<VertexTypePredefinition>(myVertexTypeDefinitions.Count());
-            
-            //group predefinitions by their name and convert it into a Dictionary<String, List<VertexTypePredefinition>>
-            var grouped = myVertexTypeDefinitions.GroupBy(predef => predef.SuperVertexTypeName).ToDictionary(group => group.Key);
-            
-            String nextRoot = String.Empty;
 
-            while (toBeChecked.Count > 0 && nextRoot != null) 
+            //Group predefinitions by their name and convert it into a dictionary.
+            var grouped = myVertexTypeDefinitions.GroupBy(predef => predef.SuperVertexTypeName).ToDictionary(group => group.Key, x => x.AsEnumerable());
+
+            //The list of topolocically sorted vertex types
+            //In this step, we assume that parent types, that are not in the list of predefinitons are correct.
+            //Correct means: either they are in fs or they are not in fs but then they are not defined. (this will be detected later)
+
+            var correctRoots = grouped.Where(parent => !toBeChecked.Any(def => def.VertexTypeName.Equals(parent.Key))).SelectMany(x => x.Value);
+            var result = new LinkedList<VertexTypePredefinition>(correctRoots);
+
+
+            //Here we step throught the list of topolocically sorted predefinitions.
+            //Each predefinition that is in this list, is a valid parent type for other predefinitions.
+            //Thus we can add all predefinitions, that has parent predefinition in the list to the end of the list.
+            var current = result.First;
+            while (current != null) 
             {
-                //here we assume, parent types that are not on the list of definitions are correct parents
-                //so nextroot contains the name of a correct parent type
-                nextRoot = grouped.Keys.FirstOrDefault(parentType => !toBeChecked.Any(def => parentType.Equals(def.VertexTypeName)));
-                
-                if (nextRoot == null)
+                //All predefinitions, that has the current predefintion as parent vertex type.
+                var corrects = grouped[current.Value.VertexTypeName];
+
+                //They go from toBeChecked into result.
+                foreach (var correct in corrects)
                 {
-                    //we did not find a correct parent, so the types in toBeChecked contains a circle
-                    throw new CircularTypeHierarchyException(toBeChecked);
+                    toBeChecked.Remove(correct);
+                    result.AddLast(correct);
                 }
 
-                toBeChecked.ExceptWith(grouped[nextRoot]);
-
+                current = current.Next;
             }
+
+            //If the to be checked list contains
+            if (toBeChecked.Count > 0)
+                throw new CircularTypeHierarchyException(toBeChecked);
 
             return result;
         }
