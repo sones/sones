@@ -11,6 +11,8 @@ using sones.Library.Security;
 using sones.Library.Transaction;
 using sones.Library.LanguageExtensions;
 using sones.GraphDB.ErrorHandling.VertexTypeErrors;
+using sones.GraphDB.Request.CreateVertexTypes;
+using System.Collections;
 
 /*
  * edge cases:
@@ -70,8 +72,52 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Constants
 
-        public const UInt64 VertexTypeID = UInt64.MinValue;
-        public const UInt64 EdgeTypeID = UInt64.MinValue + 1;
+        private const UInt64 VertexTypeID = UInt64.MinValue;
+        private const UInt64 EdgeTypeID = UInt64.MinValue + 1;
+        private const int ExpectedVertexTypes = 100;
+
+        #region base c# types
+
+        private static readonly String[] baseTypes = 
+        {
+            // ordered by assumed usage, to speed up contains
+            TypeInt32,
+            TypeString,
+            TypeBoolean,
+            TypeInt64,
+            TypeChar,
+            TypeByte,
+            TypeSingle,
+            TypeSByte,
+            TypeInt16,
+            TypeUInt32,
+            TypeUInt64,
+            TypeUInt16,
+        };
+
+        #region value types
+
+        public const string TypeBoolean = "System.Boolean";
+        public const string TypeByte    = "System.Byte";
+        public const string TypeChar    = "System.Char";
+        public const string TypeSingle  = "System.Single";
+        public const string TypeInt32   = "System.Int32";
+        public const string TypeInt64   = "System.Int64";
+        public const string TypeSByte   = "System.SByte";
+        public const string TypeInt16   = "System.Int16";
+        public const string TypeUInt32  = "System.UInt32";
+        public const string TypeUInt64  = "System.UInt64";
+        public const string TypeUInt16  = "System.UInt16";
+
+        #endregion
+
+        #region reference types
+
+        public const string TypeString = "System.String";
+
+        #endregion
+
+        #endregion
 
         private static readonly IExpression VertexTypeNameExpression = new PropertyExpression("VertexType", "Name");
 
@@ -193,13 +239,15 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private void CanAdd(ref IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            // basically first check the pre-definitions itself without asking the IVertexManager. If these checks are okay, proof everything concerning the types stored in the fs using the IVertexManager
+            // Basically first check the pre-definitions itself without asking the IVertexManager. 
+            // If these checks are okay, proof everything concerning the types stored in the fs using the IVertexManager.
+
             // These are the necessary checks:
             // - vertex type names are unique
             // - attribute names are unique for each type pre-definition
-            // - parent types are none of the base types
+            // - parent types are none of the base vertex types
             // - check that no vertex type has the flags sealed and abstract at the same time
-            // - check that unique constraints and indices definition contains existing attributes
+            // TODO: - check that unique constraints and indices definition contains existing attributes
             // ---- now with IVertexManager ---- (This means we can assume, that the vertex types are created, so we have a list of all vertex types containing the 'to-be-added-types'.)
             // - check if the type names are unique
             // - check if the derviation is circle free
@@ -208,28 +256,119 @@ namespace sones.GraphDB.Manager.TypeManagement
             // - check if all outgoing edges have existing targets
             // - check if all incoming edges have existing outgoing edges
 
+
+            #region Checks without IVertexManager
+            
             CheckBasics(myVertexTypeDefinitions);
 
-            //checks if vertex type names are duplicated.
-            SortedSet<VertexTypePredefinition> sortedDefs = SortByName(myVertexTypeDefinitions);
+            //Checks if vertex type names are duplicated.
+            Dictionary<String, VertexTypePredefinition> uniqueDefs = CheckDuplicates(myVertexTypeDefinitions);
+
+            //Perf: We assign the topologically sorted list to the caller (request manager) to avoid a second sort in Add.
+            myVertexTypeDefinitions = SortTopolocically(uniqueDefs);
+            
+            #endregion
+
+            #region Checks with IVertexManager 
+            //Here we know the the VertexTypePredefinitions are syntactical correct.
 
 
-            myVertexTypeDefinitions = SortTopolocically(sortedDefs);
+
+            
+            #endregion
 
 
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Checks for errors in a list of VertexTypePredefinitions without using the FS
+        /// </summary>
+        /// <param name="myVertexTypeDefinitions">The list of VertexTypePredefinitions to be checked.</param>
         private static void CheckBasics(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions)
         {
-            foreach (var predef in myVertexTypeDefinitions)
+            foreach (var vertexTypeDefinition in myVertexTypeDefinitions)
             {
-                predef.CheckNull("Element in myVertexTypeDefinitions");
+                vertexTypeDefinition.CheckNull("Element in myVertexTypeDefinitions");
 
-                CheckVertexTypeName(predef);
+                CheckSealedAndAbstract(vertexTypeDefinition);
+                
+                CheckVertexTypeName(vertexTypeDefinition);
+                
+                CheckParentTypeAreNoBaseTypes(vertexTypeDefinition);
 
-                CheckParentTypeAreNoBaseTypes(predef);
-                CheckSealedAndAbstract(predef);
+                CheckAttributes(vertexTypeDefinition);
+            }
+        }
+
+        private static void CheckAttributes(VertexTypePredefinition vertexTypeDefinition)
+        {
+            SortedSet<String> uniqueNameSet = new SortedSet<string>();
+            CheckIncomingEdges(vertexTypeDefinition, uniqueNameSet);
+            CheckOutgoingEdges(vertexTypeDefinition, uniqueNameSet);
+            CheckProperties(vertexTypeDefinition, uniqueNameSet);
+        }
+
+        private static void CheckProperties(VertexTypePredefinition vertexTypeDefinition, SortedSet<string> myUniqueNameSet)
+        {
+            foreach (var prop in vertexTypeDefinition.Properties)
+            {
+                prop.CheckNull("Property in vertex type predefinition " + vertexTypeDefinition.VertexTypeName);
+                if (myUniqueNameSet.Add(prop.PropertyName))
+                    throw new DuplicatedAttributeNameException(vertexTypeDefinition, prop.PropertyName);
+
+                CheckPropertyType(vertexTypeDefinition, prop);
+            }
+        }
+
+        private static void CheckPropertyType(VertexTypePredefinition vertexTypeDefinition, PropertyPredefinition prop)
+        {
+            if (String.IsNullOrWhiteSpace(prop.TypeName))
+            {
+                throw new EmptyPropertyTypeException(vertexTypeDefinition, prop.PropertyName);
+            }
+
+            if (!IsBaseType(prop))
+            {
+                //it is not one of the base types
+                //TODO: check if it is a user defined data type
+                throw new UnknownPropertyTypeException(vertexTypeDefinition, prop.TypeName);
+            }
+        }
+
+        private static bool IsBaseType(PropertyPredefinition prop)
+        {
+            return baseTypes.Contains(prop.TypeName);
+        }
+
+        private static void CheckOutgoingEdges(VertexTypePredefinition vertexTypeDefinition, SortedSet<string> myUniqueNameSet)
+        {
+            foreach (var edge in vertexTypeDefinition.OutgoingEdges)
+            {
+                edge.CheckNull("Outgoing edge in vertex type predefinition " + vertexTypeDefinition.VertexTypeName);
+                if (myUniqueNameSet.Add(edge.EdgeName))
+                    throw new DuplicatedAttributeNameException(vertexTypeDefinition, edge.EdgeName);
+
+                CheckEdgeType(vertexTypeDefinition, edge);
+            }
+        }
+
+        private static void CheckEdgeType(VertexTypePredefinition vertexTypeDefinition, OutgoingEdgePredefinition edge)
+        {
+            if (string.IsNullOrWhiteSpace(edge.EdgeType))
+            {
+                throw new EmptyEdgeTypeException(vertexTypeDefinition, edge.EdgeName);
+            }
+        }
+
+
+        private static void CheckIncomingEdges(VertexTypePredefinition vertexTypeDefinition, SortedSet<String> myUniqueNameSet)
+        {
+            foreach (var edge in vertexTypeDefinition.IncomingEdges)
+            {
+                edge.CheckNull("Incoming edge in vertex type predefinition " + vertexTypeDefinition.VertexTypeName);
+                if (myUniqueNameSet.Add(edge.EdgeName))
+                    throw new DuplicatedAttributeNameException(vertexTypeDefinition, edge.EdgeName);
             }
         }
 
@@ -252,13 +391,13 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private static void CheckParentTypeAreNoBaseTypes(VertexTypePredefinition myVertexTypeDefinition)
         {
-            if (IsBaseType(myVertexTypeDefinition.SuperVertexTypeName))
+            if (IsBaseVertexType(myVertexTypeDefinition.SuperVertexTypeName))
             {
                 throw new InvalidBaseVertexTypeException(myVertexTypeDefinition.VertexTypeName);
             }
         }
 
-        private static bool IsBaseType(string myTypeName)
+        private static bool IsBaseVertexType(string myTypeName)
         {
             BaseVertexType type;
             if (!Enum.TryParse(myTypeName, out type))
@@ -268,21 +407,24 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         /// <summary>
-        /// Sorts a list of vertex type predefinitions according to the vertex type name.
+        /// Checks a list of VertexTypePredefinitions for duplicate vertex names.
         /// </summary>
         /// <param name="myVertexTypeDefinitions">A list of vertex type predefinitions.</param>
-        /// <returns>A sorted set</returns>
-        private static SortedSet<VertexTypePredefinition> SortByName(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions)
+        /// <returns>A dictionary of vertex name to VertexTypePredefinition.</returns>
+        private static Dictionary<String, VertexTypePredefinition> CheckDuplicates(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions)
         {
-            SortedSet<VertexTypePredefinition> sortedDefs = new SortedSet<VertexTypePredefinition>(VertexTypePredefinitionComparerInstance);
+            Dictionary<String, VertexTypePredefinition> result = (myVertexTypeDefinitions is ICollection)
+                ? new Dictionary<String, VertexTypePredefinition>((myVertexTypeDefinitions as ICollection).Count)
+                : new Dictionary<String, VertexTypePredefinition>(ExpectedVertexTypes);
+
             foreach (var predef in myVertexTypeDefinitions)
             {
-                if (!sortedDefs.Add(predef))
-                {
+                if (result.ContainsKey(predef.VertexTypeName))
                     throw new DuplicatedVertexTypeNameException(predef.VertexTypeName);
-                }
+
+                result.Add(predef.VertexTypeName, predef);
             }
-            return sortedDefs;
+            return result;
         }
 
         /// <summary>
@@ -290,21 +432,20 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinitions">A set of vertex type predefinitions sorted by their names.</param>
         /// <returns> if the vertex type predefinition can be sorted topologically regarding their parent type, otherwise false.</returns>
-        private static IEnumerable<VertexTypePredefinition> SortTopolocically(SortedSet<VertexTypePredefinition> myVertexTypeDefinitions)
+        private static IEnumerable<VertexTypePredefinition> SortTopolocically(Dictionary<String, VertexTypePredefinition> myVertexTypeDefinitions)
         {
             //Vertex type predefinitions goes from toBeChecked into result.
             var toBeChecked = myVertexTypeDefinitions;
 
-            //Group predefinitions by their name and convert it into a dictionary.
-            var grouped = myVertexTypeDefinitions.GroupBy(predef => predef.SuperVertexTypeName).ToDictionary(group => group.Key, x => x.AsEnumerable());
+            //Group predefinitions by their parent type names and convert it into a dictionary.
+            var grouped = myVertexTypeDefinitions.Values.GroupBy(predef => predef.SuperVertexTypeName).ToDictionary(group => group.Key, x => x.AsEnumerable());
 
             //The list of topolocically sorted vertex types
             //In this step, we assume that parent types, that are not in the list of predefinitons are correct.
             //Correct means: either they are in fs or they are not in fs but then they are not defined. (this will be detected later)
-
-            var correctRoots = grouped.Where(parent => !toBeChecked.Any(def => def.VertexTypeName.Equals(parent.Key))).SelectMany(x => x.Value);
+            var correctRoots = grouped.Where(parent => !toBeChecked.ContainsKey(parent.Key)).SelectMany(x => x.Value);
             var result = new LinkedList<VertexTypePredefinition>(correctRoots);
-
+            
 
             //Here we step throught the list of topolocically sorted predefinitions.
             //Each predefinition that is in this list, is a valid parent type for other predefinitions.
@@ -318,16 +459,16 @@ namespace sones.GraphDB.Manager.TypeManagement
                 //They go from toBeChecked into result.
                 foreach (var correct in corrects)
                 {
-                    toBeChecked.Remove(correct);
                     result.AddLast(correct);
                 }
 
                 current = current.Next;
             }
 
-            //If the to be checked list contains
-            if (toBeChecked.Count > 0)
-                throw new CircularTypeHierarchyException(toBeChecked);
+            
+            if (toBeChecked.Count > result.Count)
+                //There are some defintions that are not in the result...sothey must contain a circle.
+                throw new CircularTypeHierarchyException(toBeChecked.Values.Except(result));
 
             return result;
         }

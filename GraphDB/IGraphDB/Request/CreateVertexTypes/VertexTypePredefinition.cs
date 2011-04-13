@@ -15,7 +15,7 @@ namespace sones.GraphDB.Request
         /// The name of the vertex type that is going to be created
         /// </summary>
         public readonly string VertexTypeName;
-        private readonly List<PropertyDefinition> _properties;
+        private readonly List<PropertyPredefinition> _properties;
         private readonly List<OutgoingEdgePredefinition> _outgoingEdges;
         private readonly List<IncomingEdgePredefinition> _incomingEdges;
 
@@ -27,7 +27,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The properties of the vertex type
         /// </summary>
-        public IEnumerable<PropertyDefinition> Properties
+        public IEnumerable<PropertyPredefinition> Properties
         {
             get { return _properties.AsReadOnly(); }
         }
@@ -39,6 +39,16 @@ namespace sones.GraphDB.Request
         {
             get { return _outgoingEdges.AsReadOnly(); }
         }
+
+        /// <summary>
+        /// Gets if the vertex type will be sealed.
+        /// </summary>
+        public bool IsSealed { get; private set; }
+
+        /// <summary>
+        /// Gets if the vertex type will be abstract.
+        /// </summary>
+        public bool IsAbstract { get; private set; }
 
         /// <summary>
         /// The outgoing edges of this vertex type
@@ -64,8 +74,11 @@ namespace sones.GraphDB.Request
             }
 
             VertexTypeName = myVertexTypeName;
+            SuperVertexTypeName = "Vertex";
+            IsSealed = false;
+            IsAbstract = false;
 
-            _properties = new List<PropertyDefinition>();
+            _properties = new List<PropertyPredefinition>();
             _outgoingEdges = new List<OutgoingEdgePredefinition>();
             _incomingEdges = new List<IncomingEdgePredefinition>();
             
@@ -79,8 +92,8 @@ namespace sones.GraphDB.Request
         /// Sets the name of the vertex type this one inherits from
         /// </summary>
         /// <param name="mySuperVertexTypeName">The name of the super vertex type</param>
-        /// <returns>A vertex type definition</returns>
-        private VertexTypePredefinition SetSuperVertexTypeName(String mySuperVertexTypeName)
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public VertexTypePredefinition SetSuperVertexTypeName(String mySuperVertexTypeName)
         {
             if (!string.IsNullOrEmpty(mySuperVertexTypeName))
             {
@@ -94,8 +107,8 @@ namespace sones.GraphDB.Request
         /// Adds a property to the vertex type definition
         /// </summary>
         /// <param name="myPropertyDefinition">The property definition that is going to be added</param>
-        /// <returns>A vertex type definition</returns>
-        private VertexTypePredefinition AddProperty(PropertyDefinition myPropertyDefinition)
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public VertexTypePredefinition AddProperty(PropertyPredefinition myPropertyDefinition)
         {
             if (myPropertyDefinition != null)
             {
@@ -109,8 +122,8 @@ namespace sones.GraphDB.Request
         /// Adds an outgoing edge
         /// </summary>
         /// <param name="myOutgoingEdgePredefinition">The definition of the outgoing edge</param>
-        /// <returns>A vertex type definition</returns>
-        private VertexTypePredefinition AddOutgoingEdge(OutgoingEdgePredefinition myOutgoingEdgePredefinition)
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public VertexTypePredefinition AddOutgoingEdge(OutgoingEdgePredefinition myOutgoingEdgePredefinition)
         {
             if (myOutgoingEdgePredefinition != null)
             {
@@ -120,10 +133,26 @@ namespace sones.GraphDB.Request
             return this;
         }
 
+        /// <summary>
+        /// Marks the vertex type as sealed.
+        /// </summary>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public VertexTypePredefinition MarkAsSealed()
+        {
+            IsSealed = true;
+            return this;
+        }
+
+        /// <summary>
+        /// Marks the vertex type as abstract.
+        /// </summary>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public VertexTypePredefinition MarkAsAbstract()
+        {
+            IsAbstract = true;
+            return this;
+        }
+
         #endregion
-
-        public bool IsSealed { get; private set; }
-
-        public bool IsAbstract { get; private set; }
     }
 }

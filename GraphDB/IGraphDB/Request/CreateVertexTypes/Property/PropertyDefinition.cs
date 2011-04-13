@@ -5,7 +5,7 @@ namespace sones.GraphDB.Request
     /// <summary>
     /// The definition for vertex properties
     /// </summary>
-    public sealed class PropertyDefinition
+    public sealed class PropertyPredefinition
     {
         #region Data
 
@@ -39,14 +39,14 @@ namespace sones.GraphDB.Request
         #region Constructor
 
         /// <summary>
-        /// Creates a new PropertyDefinition
+        /// Creates a new PropertyPredefinition
         /// </summary>
         /// <param name="myPropertyName">The name of the property</param>
         /// <param name="myPropertyType">The type of the property</param>
         /// <param name="myIsIndexed">Should there be an index on the property?</param>
         /// <param name="myIsUnique">Should this property be unique?</param>
         /// <param name="myIsMandatory">Should this property be mandatory?</param>
-        public PropertyDefinition(String myPropertyName, Type myPropertyType, Boolean myIsIndexed = false,
+        public PropertyPredefinition(String myPropertyName, Type myPropertyType, Boolean myIsIndexed = false,
                                   Boolean myIsUnique = false, Boolean myIsMandatory = false)
         {
             TypeName = myPropertyType.AssemblyQualifiedName;

@@ -61,7 +61,11 @@
     <Compile Include="ErrorHandling\TypeErrors\TypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\TypeErrors\TypeDoesNotMatchException.cs" />
     <Compile Include="ErrorHandling\TypeErrors\AGraphDBTypeException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\EmptyPropertyTypeException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\DuplicatedAttributeNameException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\EmptyEdgeTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\UndefinedAttributesException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\UnknownPropertyTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeExistsInSuperVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\DropOfVertexAttributeNotAllowedException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\DropOfDerivedVertexAttributeIsNotAllowedException.cs" />
