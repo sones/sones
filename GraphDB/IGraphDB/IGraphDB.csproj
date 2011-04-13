@@ -77,6 +77,7 @@
     <Compile Include="ErrorHandling\UnknownDBException.cs" />
     <Compile Include="Expression\Operator\BinaryOperator.cs" />
     <Compile Include="Expression\Operator\UnaryOperator.cs" />
+    <Compile Include="Expression\Tree\TimeSpanDefinition.cs" />
     <Compile Include="Expression\Tree\TypeOfExpression.cs" />
     <Compile Include="Manager\ILogicExpressionOptimizer.cs" />
     <Compile Include="Manager\IRequestScheduler.cs" />
