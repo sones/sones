@@ -55,6 +55,12 @@
     <Compile Include="ErrorHandling\IndexErrors\IndexAlreadyExistException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\IndexTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\AGraphDBIndexException.cs" />
+    <Compile Include="ErrorHandling\TypeErrors\InvalidTypeException.cs" />
+    <Compile Include="ErrorHandling\TypeErrors\ParentTypeDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\TypeErrors\TypeAlreadyExistException.cs" />
+    <Compile Include="ErrorHandling\TypeErrors\TypeDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\TypeErrors\TypeDoesNotMatchException.cs" />
+    <Compile Include="ErrorHandling\TypeErrors\AGraphDBTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\UndefinedAttributesException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeExistsInSuperVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\DropOfVertexAttributeNotAllowedException.cs" />

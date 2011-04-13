@@ -30,12 +30,8 @@ namespace sones.GraphDB.ErrorHandling
             ConflictingAttributes = myConflictingAttributes;
             VertexTypeName = myVertexTypeName;
             VertexAttributeName = myVertexAttributeName;
-        }
 
-        #endregion
-
-        public override string ToString()
-        {
+            
             StringBuilder sb = new StringBuilder();
 
             foreach (var aConflictingAttribute in ConflictingAttributes)
@@ -45,9 +41,11 @@ namespace sones.GraphDB.ErrorHandling
 
             sb.Remove(sb.Length - 1, 1);
 
-            return String.Format("It is not possible to drop {0} of vertex type {1} because there are remaining references from the following attributes: {2}" + Environment.NewLine + "Please remove them in previous.", VertexAttributeName, VertexTypeName, sb);
-
+            _msg = String.Format("It is not possible to drop {0} of vertex type {1} because there are remaining references from the following attributes: {2}" + Environment.NewLine + "Please remove them in previous.", VertexAttributeName, VertexTypeName, sb.ToString());
+           
         }
-        
+
+        #endregion
+
     }
 }

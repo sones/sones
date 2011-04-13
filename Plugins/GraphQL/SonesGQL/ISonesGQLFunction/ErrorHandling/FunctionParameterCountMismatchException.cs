@@ -28,6 +28,8 @@ namespace sones.Plugins.SonesGQL.Function.ErrorHandling
             ExpectedParameterCount = myExpectedParameterCount;
             CurrentParameterCount = myCurrentParameterCount;
             Function = myFunction;
+
+            _msg = String.Format("The number of parameters [{0}] of the function [{1}]does not match the definition [{2}]", CurrentParameterCount, Function, ExpectedParameterCount);
         }
 
         /// <summary>
@@ -39,22 +41,11 @@ namespace sones.Plugins.SonesGQL.Function.ErrorHandling
         {
             ExpectedParameterCount = myExpectedParameterCount;
             CurrentParameterCount = myCurrentParameterCount;
-            Function = null;
+            _msg = String.Format("The number of parameters [{0}] of the function does not match the definition [{1}]", CurrentParameterCount, ExpectedParameterCount);
+
         }
 
         #endregion
-
-        public override string ToString()
-        {
-            if (Function != null)
-            {
-                return String.Format("The number of parameters [{0}] of the function [{1}]does not match the definition [{2}]", CurrentParameterCount, Function, ExpectedParameterCount);
-            }
-            else
-            {
-                return String.Format("The number of parameters [{0}] of the function does not match the definition [{1}]", CurrentParameterCount, ExpectedParameterCount);
-            }
-        }
-        
+       
     }
 }

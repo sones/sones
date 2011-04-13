@@ -16,11 +16,7 @@ namespace sones.GraphQL.ErrorHandling
         public UpdateVertexAttributeValueException(String myVertexAttributeName)
         {
             VertexAttributeName = myVertexAttributeName;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("Could not update value for vertex attribute \"{0}\".", VertexAttributeName);
+            _msg = String.Format("Could not update value for vertex attribute \"{0}\".", VertexAttributeName);
         }
 
     }

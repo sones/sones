@@ -1,4 +1,5 @@
 ﻿using System;
+using sones.Library.ErrorHandling;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -19,12 +20,8 @@ namespace sones.GraphDB.ErrorHandling
         {
             VertexAttributeName = myVertexAttributeName;
             VertexTypeName = myVertexTypeName;
+            _msg = String.Format("The incoming edge destination \"{0}\".\"{1}\" is invalid!", VertexTypeName, VertexAttributeName);
         }
 
-        public override string ToString()
-        {
-            return String.Format("The incoming edge destination \"{0}\".\"{1}\" is invalid!", VertexTypeName, VertexAttributeName);
-        }
-        
     }
 }

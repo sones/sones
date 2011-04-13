@@ -16,13 +16,9 @@ namespace sones.GraphQL.ErrorHandling
         /// <param name="myTypeAttribute">The type of the attribute</param>
         public ReferenceAssignmentExpectedException(String myTypeAttribute)
         {
-            TypeAttribute = myTypeAttribute;            
+            TypeAttribute = myTypeAttribute;
+            _msg = String.Format("The attribute [{0}] expects a Reference assignment!", TypeAttribute);
         }
-
-        public override string ToString()
-        {
-            return String.Format("The attribute [{0}] expects a Reference assignment!", TypeAttribute);
-        }
-  
+          
     }
 }

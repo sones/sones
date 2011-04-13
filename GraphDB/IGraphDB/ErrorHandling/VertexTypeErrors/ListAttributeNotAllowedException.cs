@@ -16,11 +16,7 @@ namespace sones.GraphDB.ErrorHandling
         public ListAttributeNotAllowedException(String myVertexTypeName)
         {
             VertexTypeName = myVertexTypeName;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("The user defined vertex type \\{0}\\ should not be used with LIST<> attributes, please use SET<> instead.", VertexTypeName);
+            _msg = String.Format("The user defined vertex type \\{0}\\ should not be used with LIST<> attributes, please use SET<> instead.", VertexTypeName);
         }
 
     }

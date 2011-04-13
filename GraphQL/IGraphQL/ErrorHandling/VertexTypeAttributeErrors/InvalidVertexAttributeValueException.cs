@@ -19,12 +19,8 @@ namespace sones.GraphQL.ErrorHandling
         {
             AttributeName = myAttributeName;
             AttributeValue = myAttributeValue;
+            _msg = String.Format("The attribute \"{0}\" has an invalid value: \"{1}\"", AttributeName, AttributeValue);
         }
-
-        public override string ToString()
-        {
-            return String.Format("The attribute \"{0}\" has an invalid value: \"{1}\"", AttributeName, AttributeValue);
-        }
-
+ 
     }
 }

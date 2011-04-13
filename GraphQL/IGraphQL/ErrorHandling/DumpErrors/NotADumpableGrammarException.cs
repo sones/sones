@@ -16,12 +16,8 @@ namespace sones.GraphQL.ErrorHandling
         public NotADumpableGrammarException(String myInfo)
         {
             Info = myInfo;
+            _msg = Info;
         }
-
-        public override string ToString()
-        {
-            return Info;
-        }
-
+        
     }
 }

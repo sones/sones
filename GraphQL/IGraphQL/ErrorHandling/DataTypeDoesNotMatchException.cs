@@ -19,11 +19,7 @@ namespace sones.GraphQL.ErrorHandling
         {
             ExpectedDataType = myExpectedDataType;
             DataType = myDataType;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("The datatype \"{0}\" does not match the type \"{1}\"!", DataType, ExpectedDataType);
+            _msg = String.Format("The datatype \"{0}\" does not match the type \"{1}\"!", DataType, ExpectedDataType);
         }
                
     }

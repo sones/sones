@@ -36,6 +36,14 @@ namespace sones.GraphQL.ErrorHandling
         {
             SyntaxError = mySyntaxError; 
             Info = myQuery;
+
+            if (SyntaxError != null)
+            {
+                if (SyntaxError.Exception != null)
+                    _msg = String.Format("Syntax error in query: [{0}]\n\n gql: [{1}]\n\nAt position: {2}\n\nException:{3}", Info, SyntaxError.Message, SyntaxError.Location.ToString(), SyntaxError.Exception.ToString());
+                else
+                    _msg = String.Format("Syntax error in query: [{0}]\n\n gql: [{1}]\n\nAt position: {2}", Info, SyntaxError.Message, SyntaxError.Location.ToString());
+            }
         }
 
         /// <summary>
@@ -45,6 +53,7 @@ namespace sones.GraphQL.ErrorHandling
         public GqlSyntaxException(String myInfo)
         {
             Info = myInfo;
+            _msg = Info;
         }
 
         /// <summary>
@@ -56,32 +65,12 @@ namespace sones.GraphQL.ErrorHandling
         {
             Info = myInfo;
             Exception = myException;
+
+            if (myException != null)
+                _msg = Info + Environment.NewLine + Exception.Message;
         }
 
         #endregion
-
-        public override string ToString()
-        {
-
-            if (SyntaxError != null)
-            {
-                if (SyntaxError.Exception != null)
-                    return String.Format("Syntax error in query: [{0}]\n\n gql: [{1}]\n\nAt position: {2}\n\nException:{3}", Info, SyntaxError.Message, SyntaxError.Location.ToString(), SyntaxError.Exception.ToString());
-                else
-                    return String.Format("Syntax error in query: [{0}]\n\n gql: [{1}]\n\nAt position: {2}", Info, SyntaxError.Message, SyntaxError.Location.ToString());
-            }
-
-            else if (Exception != null)
-            {
-                return Info + Environment.NewLine + Exception.Message;
-            }
-
-            else
-            {
-                return Info;
-            }
-
-        }        
 
     }
 

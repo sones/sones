@@ -15,6 +15,7 @@ namespace sones.GraphQL.ErrorHandling
         public InvalidUndefinedVertexAttributesException(String myAttrName)
         {
             AttrName = myAttrName;
+            _msg = String.Format("The vertex does not contain an undefined attribute with name \" {0} \".", AttrName);
         }
 
         /// <summary>
@@ -24,24 +25,13 @@ namespace sones.GraphQL.ErrorHandling
         public InvalidUndefinedVertexAttributesException(List<String> myListOfAttrNames)
         {
             ListOfAttrNames = myListOfAttrNames;
+            String retVal = ListOfAttrNames[0];
+
+            for (int i = 1; i < ListOfAttrNames.Count; i++)
+                retVal += "," + ListOfAttrNames[i];
+
+            _msg = String.Format("The object does not contains the undefined attributes \" {0} \".", retVal);
         }
 
-        public override string ToString()
-        {
-            if (ListOfAttrNames.IsNullOrEmpty())
-            {
-                return String.Format("The vertex does not contain an undefined attribute with name \" {0} \".", AttrName);
-            }
-            else
-            {
-                String retVal = ListOfAttrNames[0];
-
-                for (int i = 1; i < ListOfAttrNames.Count; i++)
-                    retVal += "," + ListOfAttrNames[i];
-
-                return String.Format("The object does not contains the undefined attributes \" {0} \".", retVal);
-            }
-        }
-    
     }
 }

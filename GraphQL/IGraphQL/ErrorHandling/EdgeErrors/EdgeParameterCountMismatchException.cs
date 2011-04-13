@@ -22,12 +22,9 @@ namespace sones.GraphQL.ErrorHandling
             Edge = edge;
             CurrentNumOfParams = currentNumOfParams;
             ExpectedNumOfParams = expectedNumOfParams;
+            _msg = String.Format("The edge [{0}] expects [{1}] params but found [{2}].", Edge, ExpectedNumOfParams, CurrentNumOfParams);
         }
-
-        public override string ToString()
-        {
-            return String.Format("The edge [{0}] expects [{1}] params but found [{2}].", Edge, ExpectedNumOfParams, CurrentNumOfParams);
-        }         
+        
     }
     
 }

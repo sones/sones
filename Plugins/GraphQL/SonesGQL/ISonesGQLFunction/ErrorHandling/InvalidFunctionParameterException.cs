@@ -28,15 +28,11 @@ namespace sones.Plugins.SonesGQL.Function.ErrorHandling
             FunctionParameterName = myFunctionParameterName;
             FunctionParameterValue = myFunctionParameterValue;
             Expected = myExpected;
+            _msg = String.Format("Invalid parameter value for \"{0}\"! Expected [{1}] \nCurrent [{2}]", FunctionParameterName, Expected, FunctionParameterValue);
         }
 
         #endregion
 
-        public override string ToString()
-        {
-            return String.Format("Invalid parameter value for \"{0}\"! Expected [{1}] \nCurrent [{2}]", FunctionParameterName, Expected, FunctionParameterValue);
-        }
-        
     }
 }
 

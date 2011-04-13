@@ -1,4 +1,5 @@
 ﻿using System;
+using sones.Library.ErrorHandling;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -25,20 +26,16 @@ namespace sones.GraphDB.ErrorHandling
         {
             IndexName = myIndexName;
             IndexEdition = myIndexEdition;
+
+            if (!String.IsNullOrEmpty(IndexName) && !String.IsNullOrEmpty(IndexEdition))
+                _msg = String.Format("The index \"{0}\" with edition \"{1}\" does not exist!", IndexName, IndexEdition);
+            if (!String.IsNullOrEmpty(IndexName))
+                _msg = String.Format("The index \"{0}\" does not exist!", IndexName);
+            else
+                _msg = String.Format("The indexedition \"{0}\" does not exist!", IndexEdition);
         }
 
         #endregion
-
-        public override string ToString()
-        {
-            if (!String.IsNullOrEmpty(IndexName) && !String.IsNullOrEmpty(IndexEdition))
-                return String.Format("The index \"{0}\" with edition \"{1}\" does not exist!", IndexName, IndexEdition);
-            if (!String.IsNullOrEmpty(IndexName))
-            {
-                return String.Format("The index \"{0}\" does not exist!", IndexName);
-            }
-
-            return String.Format("The indexedition \"{0}\" does not exist!", IndexEdition);
-        }        
+       
     }
 }

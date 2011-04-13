@@ -16,12 +16,8 @@ namespace sones.GraphQL.ErrorHandling
         public InvalidSelectValueAssignmentException(String myInfo)
         {
             Info = myInfo;
+            _msg = "You can not assign a value to [" + Info + "]";
         }
-
-        public override string ToString()
-        {
-            return "You can not assign a value to [" + Info + "]";
-        }
-
+ 
     }
 }

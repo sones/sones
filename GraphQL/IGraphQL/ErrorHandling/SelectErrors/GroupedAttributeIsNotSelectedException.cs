@@ -16,11 +16,7 @@ namespace sones.GraphQL.ErrorHandling
         public GroupedAttributeIsNotSelectedException(String myTypeAttribute)
         {
             TypeAttribute = myTypeAttribute;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("The attribute '{0}' is not selected and can not be grouped.", TypeAttribute);
+            _msg = String.Format("The attribute '{0}' is not selected and can not be grouped.", TypeAttribute);
         }
         
     }

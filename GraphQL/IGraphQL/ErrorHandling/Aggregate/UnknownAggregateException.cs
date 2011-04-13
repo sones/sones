@@ -21,6 +21,7 @@ namespace sones.GraphQL.ErrorHandling
         public UnknownAggregateException(Exception e)
         {
             ThrownException = e;
+            _msg = "An unknown aggregate error has occurred.";
         }
 
         #endregion

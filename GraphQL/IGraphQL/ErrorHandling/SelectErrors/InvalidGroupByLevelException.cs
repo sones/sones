@@ -19,11 +19,8 @@ namespace sones.GraphQL.ErrorHandling
         {
             IDChainDefinitionEdgesCount = myIDChainDefinitionEdgesCount;
             IDChainDefinitionContentString = myIDChainDefinitionContentString;
-        }
+            _msg = String.Format("The level ({0}) greater than 1 is not allowed: '{1}'", IDChainDefinitionEdgesCount, IDChainDefinitionContentString);
 
-        public override string ToString()
-        {
-            return String.Format("The level ({0}) greater than 1 is not allowed: '{1}'", IDChainDefinitionEdgesCount, IDChainDefinitionContentString);
         }
 
     }

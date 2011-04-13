@@ -1,4 +1,5 @@
 ﻿using System;
+using sones.Library.ErrorHandling;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -19,13 +20,8 @@ namespace sones.GraphDB.ErrorHandling
         {
             VertexTypeName = myVertexTypeName;
             VertexAttributeName = myVertexAttributeName;
+            _msg = String.Format("Due to the vertex attribute \"{0}\" is derived from vertex type \"{1}\" you can not drop it!", VertexAttributeName, VertexTypeName);
         }
 
-        public override string ToString()
-        {
-
-            return String.Format("Due to the vertex attribute \"{0}\" is derived from vertex type \"{1}\" you can not drop it!", VertexAttributeName, VertexTypeName);
-        }
-        
     }
 }

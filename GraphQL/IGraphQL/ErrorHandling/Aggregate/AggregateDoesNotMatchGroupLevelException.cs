@@ -22,14 +22,10 @@ namespace sones.GraphQL.ErrorHandling
         public AggregateDoesNotMatchGroupLevelException(String myInfo)
         {
             Info = myInfo;
+            _msg = Info;
         }
 
         #endregion
-        
-        public override string ToString()
-        {
-            return Info;
-        }
           
     }
 }

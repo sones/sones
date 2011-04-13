@@ -16,11 +16,7 @@ namespace sones.GraphDB.ErrorHandling
         public TruncateNotAllowedOnInheritedTypeException(String myVertexTypeName)
         {
             VertexTypeName = myVertexTypeName;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("Truncate on the inherited vertex type '{0}' is not allowed!", VertexTypeName);
+            _msg = String.Format("Truncate on the inherited vertex type '{0}' is not allowed!", VertexTypeName);
         }
 
     }

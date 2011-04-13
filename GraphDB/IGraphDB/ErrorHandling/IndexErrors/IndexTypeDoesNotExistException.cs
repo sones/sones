@@ -1,4 +1,5 @@
 ﻿using System;
+using sones.Library.ErrorHandling;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -16,11 +17,8 @@ namespace sones.GraphDB.ErrorHandling
         public IndexTypeDoesNotExistException(String myIndexTypeName)
         {
             IndexTypeName = myIndexTypeName;
+            _msg = String.Format("The index type \"{0}\" does not exist!", IndexTypeName);
         }
-
-        public override string ToString()
-        {
-            return String.Format("The index type \"{0}\" does not exist!", IndexTypeName);
-        }        
+      
     }
 }

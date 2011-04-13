@@ -21,6 +21,7 @@ namespace sones.Plugins.SonesGQL.Function.ErrorHandling
         public UnknownFunctionException(Exception e)
         {
             ThrownException = e;
+            _msg = "An unknown function error has occurred.";
         }
 
         #endregion

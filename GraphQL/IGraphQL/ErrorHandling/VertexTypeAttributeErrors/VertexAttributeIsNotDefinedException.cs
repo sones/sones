@@ -17,7 +17,7 @@ namespace sones.GraphQL.ErrorHandling
         public VertexAttributeIsNotDefinedException(String myAttributeName)
         {
             AttributeName = myAttributeName;
-
+            _msg = String.Format("The attribute \"{0}\" is not defined!", AttributeName);
         }
 
         /// <summary>
@@ -29,15 +29,7 @@ namespace sones.GraphQL.ErrorHandling
         {
             TypeName = myTypeName;
             AttributeName = myAttributeName;
+            _msg = String.Format("The attribute \"{0}\" is not defined on type \"{1}\"!", AttributeName, TypeName);
         }
-
-        public override string ToString()
-        {
-            if (TypeName != null)
-                return String.Format("The attribute \"{0}\" is not defined on type \"{1}\"!", AttributeName, TypeName);
-            else
-                return String.Format("The attribute \"{0}\" is not defined!", AttributeName);
-        }
-
     }
 }

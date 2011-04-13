@@ -17,6 +17,7 @@ namespace sones.GraphDB.ErrorHandling
         public UnknownDBException(Exception e)
         {
             ThrownException = e;
+            _msg = "An unknown error has occurred.";
         }
 
         #endregion

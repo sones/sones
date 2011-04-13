@@ -17,6 +17,7 @@ namespace sones.GraphQL.ErrorHandling
         public VertexAttributeExistsInSubtypeException(String myAttributeName)
         {
             AttributeName = myAttributeName;
+            _msg = String.Format("The attribute \"{0}\" already exists in subtype !", AttributeName);
         }
 
         /// <summary>
@@ -28,11 +29,7 @@ namespace sones.GraphQL.ErrorHandling
         {
             AttributeName = myAttributeName;
             SubtypeName = mySubtypeName;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("The attribute \"{0}\" already exists in subtype \"{1}\"!", AttributeName, SubtypeName);
+            _msg = String.Format("The attribute \"{0}\" already exists in subtype \"{1}\"!", AttributeName, SubtypeName);
         }
 
     }

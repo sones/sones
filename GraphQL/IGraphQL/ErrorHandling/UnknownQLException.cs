@@ -21,6 +21,7 @@ namespace sones.GraphQL.ErrorHandling
         public UnknownQLException(Exception e)
         {
             ThrownException = e;
+            _msg = "An unknown error has occurred.";
         }
 
         #endregion

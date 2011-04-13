@@ -16,11 +16,7 @@ namespace sones.GraphQL.ErrorHandling
         public NotImplementedAggregateTargetException(Type myAggregateTarget)
         {
             AggregateTarget = myAggregateTarget;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("Currently the type {0} is not implemented for aggregates.", AggregateTarget.Name);
+            _msg = String.Format("Currently the type {0} is not implemented for aggregates.", AggregateTarget.Name);
         }
 
     }

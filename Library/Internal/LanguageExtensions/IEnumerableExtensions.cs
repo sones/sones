@@ -32,6 +32,16 @@ namespace sones.Library.LanguageExtensions
         #endregion
 
 
+        #region Exists        
+
+        public static Boolean Exists<T>(this IEnumerable<T> myIEnumerable, Func<T, Boolean> match)
+        {
+            return myIEnumerable.Any(match);
+        }
+
+        #endregion
+
+
         #region  IsNullOrEmpty
 
         /// <summary>

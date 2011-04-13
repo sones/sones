@@ -3,7 +3,7 @@
 namespace sones.Library.VersionedPluginManager.ErrorHandling
 {
     /// <summary>
-    /// This exception occurs if a assembly could not be loaded due to a incompatible platform etc.
+    /// This exception occurs if an assembly could not be loaded due to an incompatible platform etc.
     /// </summary>
     public sealed class CouldNotLoadAssemblyException : APluginManagerException
     {
@@ -25,6 +25,7 @@ namespace sones.Library.VersionedPluginManager.ErrorHandling
         public CouldNotLoadAssemblyException(String myAssemblyFile)
         {
             AssemblyFile = myAssemblyFile;
+            _msg = "An assembly could not be loaded due to an incompatible platform ";
         }
 
         #endregion

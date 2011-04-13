@@ -24,6 +24,7 @@ namespace sones.GraphQL.ErrorHandling
         public InvalidVertexAttributeKindException()
         {
             ExpectedKindsOfType = new String[0];
+            _msg = "The given kind does not match the expected";
         }
 
         /// <summary>
@@ -36,15 +37,12 @@ namespace sones.GraphQL.ErrorHandling
         {
             ExpectedKindsOfType = myExpectedKindsOfType;
             CurrentKindsOfType = myCurrentKindsOfType;
+
+            _msg = String.Format("The given kind \"{0}\" does not match the expected \"{0}\"", CurrentKindsOfType,
+                ExpectedKindsOfType.Aggregate<String, StringBuilder>(new StringBuilder(), (result, elem) => { result.AppendFormat("{0},", elem); return result; }));
         }
 
         #endregion
-
-        public override string ToString()
-        {
-            return String.Format("The given kind \"{0}\" does not match the expected \"{0}\"", CurrentKindsOfType,
-                ExpectedKindsOfType.Aggregate<String, StringBuilder>(new StringBuilder(), (result, elem) => { result.AppendFormat("{0},", elem); return result; }));
-        }
 
     }
 }

@@ -16,12 +16,8 @@ namespace sones.GraphQL.ErrorHandling
         public AggregateNotAllowedException(String myAggregateNode)
         {
             Aggregate = myAggregateNode;
+            _msg = String.Format("The aggregate \"{0}\" is not allowed in this context!", Aggregate);
         }
-
-        public override string ToString()
-        {
-            return String.Format("The aggregate \"{0}\" is not allowed in this context!", Aggregate);
-        }
-         
+ 
     }
 }

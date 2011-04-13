@@ -10,11 +10,7 @@
         /// </summary>
         public UndefinedAttributesException()
         {
-        }
-
-        public override string ToString()
-        {
-            return "Undefined attributes can not inserted nor updated. Use the setting SETUNDEFBEHAVE to change this behaviour.";
+            _msg = "Undefined attributes can not inserted nor updated. Use the setting SETUNDEFBEHAVE to change this behaviour.";
         }
 
     }

@@ -27,7 +27,8 @@ namespace sones.GraphQL.ErrorHandling
         {
             AttributeName = myAttributeName;
             AttributeType = myAttrType;
-            ExpectedType = myExpectedType;
+            ExpectedType = myExpectedType;                       
+            _msg = String.Format("An assignment for the attribute \"{0}\" from type \"{1}\" with an value of the type \"{2}\" is not valid.", AttributeName, AttributeType, ExpectedType);            
         }
 
         /// <summary>
@@ -36,29 +37,13 @@ namespace sones.GraphQL.ErrorHandling
         /// <param name="myAttrType">The type of the attribute</param>
         /// <param name="myExpectedType">The expected type of the attribute</param>
         public InvalidAttrDefaultValueAssignmentException(String myAttrType, String myExpectedType)
-        {
-            AttributeName = String.Empty;
+        {            
             AttributeType = myAttrType;
             ExpectedType = myExpectedType;
+            _msg = String.Format("Invalid type assignment for default value. Current type is \"{0}\". The type \"{1}\" is expected.", AttributeType, ExpectedType);
         }
 
         #endregion
-
-        public override string ToString()
-        {
-            String retVal = String.Empty;
-
-            if (AttributeName.Length > 0)
-            {
-                retVal = String.Format("An assignment for the attribute \"{0}\" from type \"{1}\" with an value of the type \"{2}\" is not valid.", AttributeName, AttributeType, ExpectedType);
-            }
-            else
-            {
-                retVal = String.Format("Invalid type assignment for default value. Current type is \"{0}\". The type \"{1}\" is expected.", AttributeType, ExpectedType);
-            }
-
-            return retVal;
-        }
           
     }
 }

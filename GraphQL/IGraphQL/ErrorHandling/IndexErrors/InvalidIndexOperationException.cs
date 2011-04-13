@@ -26,9 +26,9 @@ namespace sones.GraphQL.ErrorHandling
         public InvalidIndexOperationException(String myIndexName, String myOperationName)
         {
             IndexName = myIndexName;
-            OperationName = myOperationName;
-            IndexKey = null;
-            Operand = null;
+            OperationName = myOperationName;            
+            _msg =  String.Format("A invalid index operation ({0}) on \"{1}\" occurred.", OperationName, IndexName);
+
         }
 
         /// <summary>
@@ -38,9 +38,7 @@ namespace sones.GraphQL.ErrorHandling
         public InvalidIndexOperationException(String myIndexName)
         {
             IndexName = myIndexName;
-            OperationName = null;
-            IndexKey = null;
-            Operand = null;
+            _msg =  String.Format("A invalid index operation on \"{0}\" occurred.", IndexName);
         }
 
         /// <summary>
@@ -52,31 +50,12 @@ namespace sones.GraphQL.ErrorHandling
         public InvalidIndexOperationException(String myIndexName, Object myIndexKey, Object myOperand)
         {
             IndexName = myIndexName;
-            IndexKey = myIndexKey;
-            OperationName = null;
+            IndexKey = myIndexKey;            
             Operand = myOperand;
+            _msg = String.Format("A invalid index operation on \"{0}\" occurred (IndexKey: \"{1}\", Operand: \"{2}\").", IndexName, IndexKey, Operand);
         }
 
         #endregion
-
-        public override string ToString()
-        {
-            if (IndexKey == null)
-            {
-                if (OperationName == null)
-                {
-                    return String.Format("A invalid index operation on \"{0}\" occurred.", IndexName);
-                }
-                else
-                {
-                    return String.Format("A invalid index operation ({0}) on \"{1}\" occurred.", OperationName, IndexName);
-                }
-            }
-            else
-            {
-                return String.Format("A invalid index operation on \"{0}\" occurred (IndexKey: \"{1}\", Operand: \"{2}\").", IndexName, IndexKey, Operand);
-            }
-        }
-
+       
     }
 }

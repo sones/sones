@@ -67,10 +67,12 @@
     <Compile Include="ErrorHandling\DumpErrors\NotADumpableGrammarException.cs" />
     <Compile Include="ErrorHandling\EdgeErrors\EdgeParameterCountMismatchException.cs" />
     <Compile Include="ErrorHandling\EdgeErrors\EdgeParameterTypeMismatchException.cs" />
+    <Compile Include="ErrorHandling\EdgeErrors\InvalidEdgeTypeException.cs" />
     <Compile Include="ErrorHandling\EdgeErrors\TooManyElementsForEdgeException.cs" />
     <Compile Include="ErrorHandling\EdgeErrors\AGraphQLEdgeException.cs" />
     <Compile Include="ErrorHandling\DataTypeDoesNotMatchException.cs" />
     <Compile Include="ErrorHandling\DuplicateReferenceOccurrenceException.cs" />
+    <Compile Include="ErrorHandling\NotImplementedQLException.cs" />
     <Compile Include="ErrorHandling\InvalidIDNodeException.cs" />
     <Compile Include="ErrorHandling\InvalidTupleException.cs" />
     <Compile Include="ErrorHandling\NotImpementedExpressionNodeException.cs" />

@@ -16,12 +16,8 @@ namespace sones.GraphDB.ErrorHandling
         public VertexTypeDoesNotExistException(String myVertexTypeName)
         {
             VertexTypeName = myVertexTypeName;
+            _msg = String.Format("The vertex type {0} does not exists.", VertexTypeName);
         }
 
-        public override string ToString()
-        {
-            return String.Format("The vertex type {0} does not exists.", VertexTypeName);
-        }
-        
     }
 }

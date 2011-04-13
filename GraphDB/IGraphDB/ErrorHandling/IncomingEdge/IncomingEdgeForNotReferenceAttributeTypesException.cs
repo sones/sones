@@ -1,4 +1,5 @@
 ﻿using System;
+using sones.Library.ErrorHandling;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -16,12 +17,7 @@ namespace sones.GraphDB.ErrorHandling
         public IncomingEdgeForNotReferenceAttributeTypesException(String myVertexAttributeName)
         {
             VertexAttributeName = myVertexAttributeName;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("You can not define incoming edges for non reference attribute \"{0}\"!", VertexAttributeName);
-        }
-        
+            _msg = String.Format("You can not define incoming edges for non reference attribute \"{0}\"!", VertexAttributeName);
+        } 
     }
 }

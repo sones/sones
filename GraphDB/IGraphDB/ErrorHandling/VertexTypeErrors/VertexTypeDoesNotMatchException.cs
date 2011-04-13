@@ -19,12 +19,8 @@ namespace sones.GraphDB.ErrorHandling
         {
             ExpectedVertexType = myExpectedVertexType;
             CurrentVertexType = myCurrentVertexType;
+            _msg = String.Format("The Vertex Type {0} does not match the expected Vertex Type {1}.", CurrentVertexType, ExpectedVertexType);
         }
-
-        public override string ToString()
-        {
-            return String.Format("The Vertex Type {0} does not match the expected Vertex Type {1}.", CurrentVertexType, ExpectedVertexType);
-        }
-
+        
     }
 }

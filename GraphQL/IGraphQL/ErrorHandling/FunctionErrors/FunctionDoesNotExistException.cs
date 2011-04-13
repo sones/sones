@@ -16,11 +16,7 @@ namespace sones.GraphQL.ErrorHandling
         public FunctionDoesNotExistException(String myFunctionName)
         {
             FunctionName = myFunctionName;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("The function \"{0}\" does not exist!", FunctionName);
+            _msg = String.Format("The function \"{0}\" does not exist!", FunctionName);
         }
         
     }

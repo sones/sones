@@ -16,11 +16,8 @@ namespace sones.GraphDB.ErrorHandling
         public InvalidVertexAttributeSelectionException(String mySelectedVertexAttribute)
         {
             SelectedVertexAttribute = mySelectedVertexAttribute;
+            _msg = String.Format("The selected vertex attribute \"{0}\" is not valid!", SelectedVertexAttribute);
         }
 
-        public override string ToString()
-        {
-            return String.Format("The selected vertex attribute \"{0}\" is not valid!", SelectedVertexAttribute);
-        }
     }
 }

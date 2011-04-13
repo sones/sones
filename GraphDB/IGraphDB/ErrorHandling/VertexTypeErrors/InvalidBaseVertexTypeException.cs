@@ -16,11 +16,8 @@ namespace sones.GraphDB.ErrorHandling
         public InvalidBaseVertexTypeException(String myBaseVertexTypeName)
         {
             BaseVertexTypeName = myBaseVertexTypeName;
+            _msg = String.Format("The base vertex type [{0}] must be a user defined type.", BaseVertexTypeName);
         }
-
-        public override string ToString()
-        {
-            return String.Format("The base vertex type [{0}] must be a user defined type.", BaseVertexTypeName);
-        }        
+          
     }
 }

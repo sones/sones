@@ -16,11 +16,7 @@ namespace sones.GraphQL.ErrorHandling
         public DuplicateAttributeSelectionException(String mySelectionAlias)
         {
             SelectionAlias = mySelectionAlias;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("You cannot select \"{0}\" more than one time. Try to use an alias.", SelectionAlias);
+            _msg = String.Format("You cannot select \"{0}\" more than one time. Try to use an alias.", SelectionAlias);
         }
         
     }

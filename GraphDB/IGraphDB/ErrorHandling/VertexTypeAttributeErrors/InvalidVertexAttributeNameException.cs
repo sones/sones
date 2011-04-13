@@ -16,11 +16,9 @@ namespace sones.GraphDB.ErrorHandling
         public InvalidVertexAttributeNameException(String myInfo)
         {
             Info = myInfo;
+            _msg = String.Format("The vertex attribute name is not valid: {0}", Info);
+
         }
 
-        public override string ToString()
-        {
-            return String.Format("The vertex attribute name is not valid: {0}", Info);
-        }
     }
 }

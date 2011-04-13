@@ -17,6 +17,7 @@ namespace sones.GraphQL.ErrorHandling
         public VertexAttributeAlreadyExistsException(String myAttributeName)
         {
             AttributeName = myAttributeName;
+            _msg = String.Format("The attribute \"{0}\" already exist!", AttributeName);
         }
 
         /// <summary>
@@ -28,14 +29,7 @@ namespace sones.GraphQL.ErrorHandling
         {
             TypeName = myTypeName;
             AttributeName = myAttributeName;
-        }
-
-        public override string ToString()
-        {
-            if (TypeName != null)
-                return String.Format("The attribute \"{0}\" already exist in type \"{1}\"!", AttributeName, TypeName);
-            else
-                return String.Format("The attribute \"{0}\" already exist!", AttributeName);
+            _msg = String.Format("The attribute \"{0}\" already exist in type \"{1}\"!", AttributeName, TypeName);
         }
 
     }

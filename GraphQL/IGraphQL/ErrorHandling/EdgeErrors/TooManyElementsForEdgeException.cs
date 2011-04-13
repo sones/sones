@@ -19,11 +19,7 @@ namespace sones.GraphQL.ErrorHandling
         {
             CurrentElements = currentElements;
             EdgeTypeName = edgeTypeName;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("The edge [{0}] does not take {1} elements.", EdgeTypeName, CurrentElements);
+            _msg = String.Format("The edge [{0}] does not take {1} elements.", EdgeTypeName, CurrentElements);
         }
 
     }

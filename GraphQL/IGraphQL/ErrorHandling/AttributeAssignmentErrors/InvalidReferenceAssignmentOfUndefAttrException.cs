@@ -9,12 +9,9 @@
         /// Creates a new InvalidReferenceAssignmentOfUndefAttrException exception
         /// </summary>
         public InvalidReferenceAssignmentOfUndefAttrException()
-        { }
-
-        public override string ToString()
         {
-            return "An reference assignment for undefined attributes is not allowed.";   
+            _msg = "An reference assignment for undefined attributes is not allowed.";
         }
- 
+
     }
 }

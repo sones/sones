@@ -16,11 +16,7 @@ namespace sones.GraphQL.ErrorHandling
         public DuplicateReferenceOccurrenceException(String myTypeName)
         {
             TypeName = myTypeName;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("There is already a reference for type \"{0}\"!", TypeName);
+            _msg = String.Format("There is already a reference for type \"{0}\"!", TypeName);
         }
         
     }

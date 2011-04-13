@@ -15,15 +15,11 @@ namespace sones.GraphDB.ErrorHandling
         /// </summary>
         /// <param name="myInvalidVertexType">The name of the invalid vertex type</param>
         /// <param name="myInfo"></param>
-        public InvalidVertexTypeException(String myInvalidVertexType, String myInfo)
+        public InvalidVertexTypeException(String myInvalidVertexType, String myInfo) : base()
         {
             Info = myInfo;
             InvalidVertexType = myInvalidVertexType;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("The type {0} is not valid. {1}.", InvalidVertexType, Info);
+            _msg = String.Format("The type {0} is not valid. {1}.", InvalidVertexType, Info);
         }
 
     }

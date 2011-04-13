@@ -17,11 +17,7 @@ namespace sones.GraphQL.ErrorHandling
         public NoGroupingArgumentException(String mySelection)
         {
             Selection = mySelection;
-        }
-
-        public override string ToString()
-        {
-            return "A selection with aggregates must be grouped. Missing for selection " + Selection;
+            _msg = "A selection with aggregates must be grouped. Missing for selection " + Selection;
         }
 
     }

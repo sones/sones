@@ -16,11 +16,7 @@ namespace sones.GraphQL.ErrorHandling
         public NotImpementedExpressionNodeException(Type myNodeType)
         {
             NodeType = myNodeType;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("Currently the type {0} has not been implemented for expressions.", NodeType.Name);
+            _msg = String.Format("Currently the type {0} has not been implemented for expressions.", NodeType.Name);
         }
 
     }

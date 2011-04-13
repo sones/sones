@@ -16,11 +16,7 @@ namespace sones.GraphQL.ErrorHandling
         public SelectTimeOutException(Int64 myTimeout)
         {
             TimeOut = myTimeout;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("Aborting query because the timeout of {0}ms has been reached.", TimeOut);
+            _msg = String.Format("Aborting query because the timeout of {0}ms has been reached.", TimeOut);
         }
 
     }

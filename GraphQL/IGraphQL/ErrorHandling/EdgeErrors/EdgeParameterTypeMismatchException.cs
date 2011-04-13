@@ -19,11 +19,7 @@ namespace sones.GraphQL.ErrorHandling
         {
             CurrentType = currentType;
             ExpectedTypes = expectedTypes;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("The type [{0}] is not valid. Please use one of [{1}].", CurrentType, ExpectedTypes);
+            _msg = String.Format("The type [{0}] is not valid. Please use one of [{1}].", CurrentType, ExpectedTypes);
         }
         
     }

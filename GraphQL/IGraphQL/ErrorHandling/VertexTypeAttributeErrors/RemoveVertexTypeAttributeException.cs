@@ -19,11 +19,7 @@ namespace sones.GraphQL.ErrorHandling
         {
             VertexTypeName = myVertexTypeName;
             VertexAttributeName = myVertexAttributeName;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("The attribute " + VertexAttributeName + " from vertex type " + VertexTypeName + " could not be removed.");
+            _msg = String.Format("The attribute " + VertexAttributeName + " from vertex type " + VertexTypeName + " could not be removed.");
         }
 
     }

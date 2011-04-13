@@ -19,11 +19,8 @@ namespace sones.GraphDB.ErrorHandling
         {
             ParentType = myParentVertexType;
             Type = myVertexType;
+            _msg = String.Format("The parent vertex type {0} of the vertex type {1} does not exist.", ParentType, Type);
         }
-
-        public override string ToString()
-        {
-            return String.Format("The parent vertex type {0} of the vertex type {1} does not exist.", ParentType, Type);
-        }
+ 
     }
 }

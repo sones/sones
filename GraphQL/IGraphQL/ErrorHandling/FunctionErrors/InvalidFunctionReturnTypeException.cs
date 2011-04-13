@@ -23,20 +23,16 @@ namespace sones.GraphQL.ErrorHandling
             FunctionName = myFunctionName;
             TypeOfFunctionReturn = myTypeOfFunctionReturn;
             ValidTypes = myValidTypes;
-        }
 
-        public override string ToString()
-        {
             if (ValidTypes.IsNullOrEmpty())
             {
-                return String.Format("The return type [{0}] of function [{1}] is not valid.", TypeOfFunctionReturn, FunctionName);
+                _msg = String.Format("The return type [{0}] of function [{1}] is not valid.", TypeOfFunctionReturn, FunctionName);
             }
             else
             {
-                return String.Format("The return type [{0}] of function [{1}] is not valid. Please choose one of: {2}", TypeOfFunctionReturn, FunctionName, ValidTypes.ToAggregatedString(t => t.Name));
+                _msg = String.Format("The return type [{0}] of function [{1}] is not valid. Please choose one of: {2}", TypeOfFunctionReturn, FunctionName, ValidTypes.ToAggregatedString(t => t.Name));
             }
         }
-
         
     }
 }

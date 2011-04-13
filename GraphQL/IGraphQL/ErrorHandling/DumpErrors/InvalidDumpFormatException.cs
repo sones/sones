@@ -16,11 +16,7 @@ namespace sones.GraphQL.ErrorHandling
         public InvalidDumpFormatException(String dumpFormat)
         {
             DumpFormat = dumpFormat;
-        }
-
-        public override string ToString()
-        {
-            return DumpFormat;
-        }        
+            _msg = DumpFormat;
+        }      
     }
 }

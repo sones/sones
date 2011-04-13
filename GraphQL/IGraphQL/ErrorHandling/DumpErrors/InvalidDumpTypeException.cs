@@ -16,12 +16,8 @@ namespace sones.GraphQL.ErrorHandling
         public InvalidDumpTypeException(String dumpType)
         {
             DumpType = dumpType;
+            _msg = DumpType;
         }
-
-        public override string ToString()
-        {
-            return DumpType;
-        }
-        
+                
     }
 }

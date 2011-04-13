@@ -16,11 +16,7 @@ namespace sones.GraphQL.ErrorHandling
         public AggregateIsNotValidOnThisAttributeException(String myInfo)
         {
             Info = myInfo;
-        }
-
-        public override string ToString()
-        {
-            return Info;
+            _msg = Info;
         }
           
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using sones.Library.ErrorHandling;
 
 namespace sones.GraphDB.ErrorHandling
 {
@@ -16,11 +17,7 @@ namespace sones.GraphDB.ErrorHandling
         public IndexAlreadyExistException(String myIndex)
         {
             Index = myIndex;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("The index \"{0}\" already exists!", Index);
-        }        
+            _msg = String.Format("The index \"{0}\" already exists!", Index);
+        }               
     }
 }

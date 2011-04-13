@@ -16,12 +16,8 @@ namespace sones.GraphQL.ErrorHandling
         public CouldNotAlterIndexOnTypeException(String myIndexType)
         {
             IndexType = myIndexType;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("Could not alter index on type \"{0}\".", IndexType);
-        }         
+            _msg = String.Format("Could not alter index on type \"{0}\".", IndexType);
+        }      
 
     }
 

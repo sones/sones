@@ -23,6 +23,11 @@ namespace sones.GraphQL.ErrorHandling
             ExpectedParameterCount = myExpectedParameterCount;
             CurrentParameterCount = myCurrentParameterCount;
             Aggregate = myAggregate;
+
+            if (Aggregate != null)
+            {
+                _msg = String.Format("The number of parameters [{0}] of the function [{1}]does not match the definition [{2}]", CurrentParameterCount, Aggregate, ExpectedParameterCount);
+            }
         }
 
         /// <summary>
@@ -35,18 +40,8 @@ namespace sones.GraphQL.ErrorHandling
             ExpectedParameterCount = myExpectedParameterCount;
             CurrentParameterCount = myCurrentParameterCount;
             Aggregate = null;
-        }
-        
-        public override string ToString()
-        {
-            if (Aggregate != null)
-            {
-                return String.Format("The number of parameters [{0}] of the function [{1}]does not match the definition [{2}]", CurrentParameterCount, Aggregate, ExpectedParameterCount);
-            }
-            else
-            {
-                return String.Format("The number of parameters [{0}] of the function does not match the definition [{1}]", CurrentParameterCount, ExpectedParameterCount);
-            }
+
+            _msg = String.Format("The number of parameters [{0}] of the function does not match the definition [{1}]", CurrentParameterCount, ExpectedParameterCount);
         }
           
     }

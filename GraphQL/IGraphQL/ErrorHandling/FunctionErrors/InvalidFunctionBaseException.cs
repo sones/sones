@@ -19,19 +19,16 @@ namespace sones.GraphQL.ErrorHandling
         {
             TypeAttribute = myTypeAttribute;
             FunctionName = myFunctionName;
-        }
 
-        public override string ToString()
-        {
             if (TypeAttribute != null)
             {
-                return String.Format("The function {0} is invalid on attribute {1}.", FunctionName, TypeAttribute);
+                _msg = String.Format("The function {0} is invalid on attribute {1}.", FunctionName, TypeAttribute);
             }
             else
             {
-                return String.Format("The function {0} has a invalid working base.", FunctionName);
+                _msg = String.Format("The function {0} has a invalid working base.", FunctionName);
             }
         }
-
+        
     }
 }

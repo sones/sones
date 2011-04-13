@@ -19,12 +19,8 @@ namespace sones.GraphQL.ErrorHandling
         {            
             Attribute = myUndefAttribute;
             AttributeType = myAttributeType;
+            _msg = String.Format("Could not assign the value of the undefined attribute \" {0} \" to an defined attribute \" {1} \" with type \" {2} \".", Attribute, Attribute, AttributeType);
         }
-
-        public override string ToString()
-        {
-            return String.Format("Could not assign the value of the undefined attribute \" {0} \" to an defined attribute \" {1} \" with type \" {2} \".", Attribute, Attribute, AttributeType);
-        } 
-
+       
     }
 }

@@ -16,11 +16,7 @@ namespace sones.GraphQL.ErrorHandling
         public InvalidTupleException(String myInfo)
         {
             Info = myInfo;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("The tuple is not valid: {0}", Info);
+            _msg = String.Format("The tuple is not valid: {0}", Info);
         }
 
     }

@@ -16,11 +16,8 @@ namespace sones.GraphDB.ErrorHandling
         public VertexTypeAlreadyExistException(String myVertexTypeName)
         {
             VertexTypeName = myVertexTypeName;
+            _msg = String.Format("The vertex type {0} already exists", VertexTypeName);
         }
-
-        public override string ToString()
-        {
-            return String.Format("The vertex type {0} already exists", VertexTypeName);
-        }
+ 
     }
 }

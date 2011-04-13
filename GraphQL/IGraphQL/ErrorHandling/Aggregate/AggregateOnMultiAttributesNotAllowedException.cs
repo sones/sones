@@ -12,11 +12,7 @@ namespace sones.GraphQL.ErrorHandling
         public AggregateOnMultiAttributesNotAllowedException(String myInfo)
         {
             Info = myInfo;
-        }
-
-        public override string ToString()
-        {
-            return Info;
+            _msg = Info;
         }
          
     }

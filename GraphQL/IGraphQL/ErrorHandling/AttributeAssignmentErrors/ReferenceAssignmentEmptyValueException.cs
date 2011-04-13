@@ -16,12 +16,8 @@ namespace sones.GraphQL.ErrorHandling
         public ReferenceAssignmentEmptyValueException(String myAttributeName)
         {
             AttributeName = myAttributeName;
+            _msg = String.Format("The single reference attribute {0} does not contain any value.", AttributeName);
         }
-
-        public override string ToString()
-        {
-            return String.Format("The single reference attribute {0} does not contain any value.", AttributeName);
-        }
-
+        
     }
 }

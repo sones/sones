@@ -16,11 +16,7 @@ namespace sones.GraphQL.ErrorHandling
         public UpdateListVertexAttributeNoElementsException(String myAttributeName)
         {
             AttributeName = myAttributeName;
-        }
-
-        public override string ToString()
-        {
-            return String.Format("Could not find any objects while adding or removing elements to the list attribute {0}.", AttributeName);
+            _msg = String.Format("Could not find any objects while adding or removing elements to the list attribute {0}.", AttributeName);
         }
 
     }

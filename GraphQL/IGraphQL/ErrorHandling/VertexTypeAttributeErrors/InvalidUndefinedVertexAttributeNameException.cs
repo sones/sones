@@ -10,12 +10,8 @@
         /// </summary>
         public InvalidUndefinedVertexAttributeNameException()
         {
+            _msg = "An undefined attribute with an \".\" is not allowed.";
         }
-
-        public override string ToString()
-        {
-            return "An undefined attribute with an \".\" is not allowed.";
-        }
-
+ 
     }
 }

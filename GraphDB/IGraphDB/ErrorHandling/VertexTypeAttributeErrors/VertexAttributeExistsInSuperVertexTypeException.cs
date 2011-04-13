@@ -34,14 +34,11 @@ namespace sones.GraphDB.ErrorHandling
         {
             VertexAttributeName = myVertexAttributeName;
             VertexSupertypeName = myVertexSupertypeName;
+
+            _msg = String.Format("The vertex attribute \"{0}\" already exists in supertype \"{1}\"!", VertexAttributeName, VertexSupertypeName);
         }
 
         #endregion
-
-        public override string ToString()
-        {
-            return String.Format("The vertex attribute \"{0}\" already exists in supertype \"{1}\"!", VertexAttributeName, VertexSupertypeName);
-        }
 
     }
 }
