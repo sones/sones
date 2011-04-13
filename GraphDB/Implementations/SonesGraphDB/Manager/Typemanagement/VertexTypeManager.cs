@@ -178,7 +178,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #region get the type from fs
 
-            var vertex = myMetaManager.VertexManager.GetSingleVertex(new BinaryExpression(VertexTypeNameExpression, BinaryOperator.Equals, new ConstantExpression(myTypeName)), myTransaction, mySecurity, myMetaManager);
+            var vertex = myMetaManager.VertexManager.GetSingleVertex(new BinaryExpression(VertexTypeNameExpression, BinaryOperator.Equals, new ConstantExpression(myTypeName)), myTransaction, mySecurity);
             if (vertex == null)
                 throw new KeyNotFoundException(string.Format("A vertex type with name {0} was not found.", myTypeName));
 

@@ -8,6 +8,8 @@ using System.Linq;
 using sones.Plugins.Index.ErrorHandling;
 using sones.Plugins.Index.Helper;
 using sones.Plugins.Index.Interfaces;
+using sones.Library.VersionedPluginManager;
+using sones.Library.Settings;
 
 #endregion
 
@@ -210,6 +212,33 @@ namespace sones.Plugins.Index
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _Indexer.GetEnumerator();
+        }
+
+        #endregion
+
+        #region IPluginable Members
+
+        public String PluginName
+        {
+            get { return "SingleValueIndex"; }
+        }
+
+        public Dictionary<String, Type> SetableParameters
+        {
+            get
+            {
+                return new Dictionary<string, Type> 
+                { 
+                };
+            }
+        }
+
+        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
+        {
+
+            object result = typeof(SingleValueIndex<TKey, TValue>).GetConstructor(Type.EmptyTypes).Invoke(new object[0]);
+
+            return (IPluginable)result;
         }
 
         #endregion

@@ -306,6 +306,26 @@ namespace sones.Library.VersionedPluginManager
             #endregion
         }
 
+        private static Type DeGenerification(Type mySearchType, Type myGenericType)
+        {
+            if (mySearchType.GetGenericArguments().Length > 0)
+            {
+                if (myGenericType.ContainsGenericParameters)
+                {
+                    try
+                    {
+                        var generics = mySearchType.GetGenericArguments();
+                        return myGenericType.MakeGenericType(generics);
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+            return myGenericType;
+
+        }
+
         /// <summary>
         /// Will seach all registered type whether it is an plugin definition of <paramref name="myCurrentPluginType"/>.
         /// </summary>
@@ -315,8 +335,14 @@ namespace sones.Library.VersionedPluginManager
         private void FindAndActivateTypes(bool myThrowExceptionOnIncompatibleVersion, Assembly myLoadedPluginAssembly,
                                           Type myCurrentPluginType)
         {
+            
             IEnumerable<KeyValuePair<Type, Tuple<ActivatorInfo, List<object>>>> validBaseTypes =
-                _inheritTypeAndInstance.Where(kv => kv.Key.IsBaseType(myCurrentPluginType) || kv.Key.IsInterfaceOf(myCurrentPluginType));
+                _inheritTypeAndInstance.Where(kv => 
+                {
+                    Type realType = DeGenerification(kv.Key, myCurrentPluginType);
+                    return kv.Key.IsBaseType(realType) || kv.Key.IsInterfaceOf(realType);
+                }
+            );
 
             #region Take each baseType which is valid (either base or interface) and verify version and add
 
@@ -351,13 +377,14 @@ namespace sones.Library.VersionedPluginManager
                     try
                     {
                         Object instance;
+                        Type realType = DeGenerification(baseType.Key, myCurrentPluginType);
                         if (activatorInfo.ActivateDelegate != null)
                         {
-                            instance = activatorInfo.ActivateDelegate(myCurrentPluginType);
+                            instance = activatorInfo.ActivateDelegate(realType);
                         }
                         else
                         {
-                            instance = Activator.CreateInstance(myCurrentPluginType, activatorInfo.CtorArgs);
+                            instance = Activator.CreateInstance(realType, activatorInfo.CtorArgs);
                         }
 
                         if (instance != null)

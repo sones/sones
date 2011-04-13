@@ -4,6 +4,7 @@ using sones.GraphDB.Manager.Plugin;
 using sones.GraphDB.Manager.TypeManagement;
 using sones.GraphDB.Manager.Vertex;
 using sones.Library.VertexStore;
+using sones.Library.Settings;
 
 namespace sones.GraphDB.Manager
 {
@@ -30,9 +31,16 @@ namespace sones.GraphDB.Manager
         /// <param name="myVertexStore">The vertex store on which all other manager rely on</param>
         /// <param name="myPlugins">The plugin definitions</param>
         /// <param name="myPluginManager">Used to load pluginable manager</param>
-        public MetaManager(IVertexStore myVertexStore, GraphDBPlugins myPlugins, GraphDBPluginManager myPluginManager)
+        /// <param name="myApplicationSettings">The current application settings</param>
+        public MetaManager(IVertexStore myVertexStore, GraphDBPlugins myPlugins, GraphDBPluginManager myPluginManager, GraphApplicationSettings myApplicationSettings)
         {
             _vertexStore = myVertexStore;
+
+            #region IndexManager
+
+            IndexManager = new IndexManager(myApplicationSettings, myPluginManager, myPlugins.IndexPlugins);
+
+            #endregion
 
             //todo: initialize all the other manager (using myPluginManager)
             //ILogicExpressionOptimizer
@@ -64,7 +72,6 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// Gets or sets the myOutgoingEdgeVertex instance of parentVertex store.
         /// </summary>
-        [Obsolete]
         public IVertexStore VertexStore { get; set; }
 
     }

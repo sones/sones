@@ -67,6 +67,7 @@
     <Compile Include="Manager\IStorageUsingManager.cs" />
     <Compile Include="Manager\TypeManagement\IEdgeTypeManager.cs" />
     <Compile Include="Manager\Vertex\IVertexManager.cs" />
+    <Compile Include="Manager\Vertex\VertexManager.cs" />
     <Compile Include="Request\GetVertices\PipelineableGetVerticesRequest.cs" />
     <Compile Include="Manager\TypeManagement\EdgeTypeManager.cs" />
     <Compile Include="Settings\DefaultRequestManagerImplementation.cs" />
@@ -138,6 +139,10 @@
     <ProjectReference Include="..\..\..\Library\Internal\VertexStore\VertexStore.csproj">
       <Project>{E350EBAC-98DD-4261-8CE8-FA95FC96C9EA}</Project>
       <Name>VertexStore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Plugins\Index\ISonesIndex\ISonesIndex.csproj">
+      <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>
+      <Name>ISonesIndex</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>

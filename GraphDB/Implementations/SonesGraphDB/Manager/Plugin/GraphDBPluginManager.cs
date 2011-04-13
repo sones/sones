@@ -2,6 +2,10 @@
 using sones.Library.Security;
 using sones.Library.Transaction;
 using sones.Library.VersionedPluginManager;
+using sones.Plugins.Index;
+using System;
+using sones.Plugins.Index.Interfaces;
+using System.Collections.Generic;
 
 namespace sones.GraphDB.Manager.Plugin
 {
@@ -28,7 +32,10 @@ namespace sones.GraphDB.Manager.Plugin
                 .Register<ISecurityManager>(ISecurityManagerVersionCompatibility.MinVersion, ISecurityManagerVersionCompatibility.MaxVersion)
                 .Register<IRequestScheduler>(IRequestSchedulerVersionCompatibility.MinVersion, IRequestSchedulerVersionCompatibility.MaxVersion)
                 .Register<IRequestManager>(IRequestManagerVersionCompatibility.MinVersion, IRequestManagerVersionCompatibility.MaxVersion)
-                .Register<ILogicExpressionOptimizer>(ILogicExpressionOptimizerVersionCompatibility.MinVersion, ILogicExpressionOptimizerVersionCompatibility.MaxVersion);
+                .Register<ILogicExpressionOptimizer>(ILogicExpressionOptimizerVersionCompatibility.MinVersion, ILogicExpressionOptimizerVersionCompatibility.MaxVersion)
+                .Register<ISingleValueIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
+                .Register<IVersionedIndex<IComparable, Int64, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion)
+                .Register<IMultipleValueIndex<IComparable, Int64>>(ISonesIndexVersionCompatibility.MinVersion, ISonesIndexVersionCompatibility.MaxVersion);
 
             _pluginManager.Discover();
 
@@ -44,10 +51,27 @@ namespace sones.GraphDB.Manager.Plugin
             FillLookup<IRequestScheduler>(componentName);
             FillLookup<IRequestManager>(componentName);
             FillLookup<ILogicExpressionOptimizer>(componentName);
+            FillLookup<ISingleValueIndex<IComparable, Int64>>(componentName);
+            FillLookup<IVersionedIndex<IComparable, Int64, Int64>>(componentName);
+            FillLookup<IMultipleValueIndex<IComparable, Int64>>(componentName);
 
             #endregion   
         }
 
         #endregion
+
+        private Object GenerateIndices(Type myType)
+        {
+          
+
+            switch (myType.Name)
+            {
+                
+                default:
+                    break;
+            }
+
+            return null;
+        }
     }
 }

@@ -320,7 +320,7 @@ namespace sones.GraphDB
         /// <returns>A meta manager</returns>
         private MetaManager CreateMetamanager(GraphDBPlugins myPlugins)
         {
-            return new MetaManager(_securityManager, myPlugins, _graphDBPluginManager);
+            return new MetaManager(_securityManager, myPlugins, _graphDBPluginManager, _applicationSettings);
         }
         
         /// <summary>

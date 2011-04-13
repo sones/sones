@@ -1,4 +1,5 @@
 ﻿using sones.Library.VersionedPluginManager;
+using System.Collections.Generic;
 
 namespace sones.GraphDB.Manager.Plugin
 {
@@ -9,12 +10,13 @@ namespace sones.GraphDB.Manager.Plugin
     {
         #region data
 
-        public PluginDefinition IGraphFSDefinition { get; private set; }
-        public PluginDefinition TransactionManagerPlugin { get; private set; }
-        public PluginDefinition SecurityManagerPlugin { get; private set; }
-        public PluginDefinition RequestSchedulerPlugin { get; private set; }
-        public PluginDefinition LogicExpressionOptimizerPlugin { get; private set; }
-        public PluginDefinition RequestManagerPlugin { get; private set; }
+        public readonly PluginDefinition IGraphFSDefinition;
+        public readonly PluginDefinition TransactionManagerPlugin;
+        public readonly PluginDefinition SecurityManagerPlugin;
+        public readonly PluginDefinition RequestSchedulerPlugin;
+        public readonly PluginDefinition LogicExpressionOptimizerPlugin;
+        public readonly PluginDefinition RequestManagerPlugin;
+        public readonly HashSet<PluginDefinition> IndexPlugins;
 
         #endregion
 
@@ -35,7 +37,8 @@ namespace sones.GraphDB.Manager.Plugin
             PluginDefinition mySecurityManagerPlugin = null,
             PluginDefinition myRequestSchedulerPlugin = null,
             PluginDefinition myLogicExpressionOptimizerPlugin = null,
-            PluginDefinition myRequestManagerPlugin = null)
+            PluginDefinition myRequestManagerPlugin = null,
+            HashSet<PluginDefinition> myIndexPlugins = null)
         {
             IGraphFSDefinition = myIGraphFSDefinition;
             TransactionManagerPlugin = myTransactionManagerPlugin;
@@ -43,6 +46,7 @@ namespace sones.GraphDB.Manager.Plugin
             RequestSchedulerPlugin = myRequestSchedulerPlugin;
             LogicExpressionOptimizerPlugin = myLogicExpressionOptimizerPlugin;
             RequestManagerPlugin = myRequestManagerPlugin;
+            IndexPlugins = myIndexPlugins;
         }
 
         #endregion

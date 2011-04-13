@@ -8,6 +8,8 @@ using System.Linq;
 using sones.Plugins.Index.ErrorHandling;
 using sones.Plugins.Index.Helper;
 using sones.Plugins.Index.Interfaces;
+using sones.Library.VersionedPluginManager;
+using sones.Library.Settings;
 
 #endregion
 
@@ -258,5 +260,32 @@ namespace sones.Plugins.Index
         }
 
         #endregion        
+
+        #region IPluginable Members
+
+        public String PluginName
+        {
+            get { return "MultipleValueIndex"; }
+        }
+
+        public Dictionary<String, Type> SetableParameters
+        {
+            get
+            {
+                return new Dictionary<string, Type> 
+                { 
+                };
+            }
+        }
+
+        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
+        {
+
+            object result = typeof(MultipleValueIndex<TKey, TValue>).GetConstructor(Type.EmptyTypes).Invoke(new object[0]);
+
+            return (IPluginable)result;
+        }
+
+        #endregion
     }
 }
