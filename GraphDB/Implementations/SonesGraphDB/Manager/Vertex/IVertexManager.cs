@@ -4,6 +4,7 @@ using sones.GraphDB.Expression;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.Security;
 using sones.Library.Transaction;
+using sones.Library.VertexStore.Definitions;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -29,5 +30,7 @@ namespace sones.GraphDB.Manager.Vertex
         IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
 
         void CanGetVertices(IExpression myExpression, bool myIsLongrunning, TransactionToken TransactionToken, SecurityToken SecurityToken);
+
+        IVertex AddVertex(VertexAddDefinition myVertexDefinition, TransactionToken TransactionToken, SecurityToken SecurityToken);
     }
 }

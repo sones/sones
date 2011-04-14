@@ -72,6 +72,11 @@ namespace sones.GraphDB.Manager.Vertex
                 throw new InvalidExpressionException(iExpression);
         }
 
+        public IVertex AddVertex(Library.VertexStore.Definitions.VertexAddDefinition myVertexDefinition, TransactionToken TransactionToken, SecurityToken SecurityToken)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region private helper

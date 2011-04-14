@@ -1,27 +1,28 @@
 ﻿using System.Collections.Generic;
 using sones.GraphDB.TypeSystem;
+using sones.Library.VertexStore.Definitions;
+using System;
 
 namespace sones.GraphDB.TypeManagement.BaseTypes
 {
     internal static class BaseVertexTypeFactory
     {
-        private static readonly Dictionary<BaseVertexType, IVertexType> _Instances = new Dictionary<BaseVertexType, IVertexType>()
+        public static VertexAddDefinition GetInstance(BaseVertexType myBaseVertexType)
         {
-            {BaseVertexType.Attribute, new AttributeVertexType()},
-            {BaseVertexType.BaseType, new BaseTypeVertexType()},
-            {BaseVertexType.IncomingEdge, new IncomingEdgeVertexType()},
-            {BaseVertexType.OutgoingEdge, new OutgoingEdgeVertexType()},
-            {BaseVertexType.EdgeType, new EdgeTypeVertexType()},
-            {BaseVertexType.Index, new IndexVertexType()},
-            {BaseVertexType.Property, new PropertyVertexType()},
-            {BaseVertexType.VertexType, new VertexTypeVertexType()}
-        };
-        
-        public static IVertexType GetInstance(BaseVertexType myBaseVertexType)
-        {
-            IVertexType result;
-            _Instances.TryGetValue(myBaseVertexType, out result);
-            return result;
+            //var result = new VertexAddDefinition();
+            //result.CreationDate = DateTime.UtcNow.Ticks;
+            //result.ModificationDate = result.CreationDate;
+            //result.VertexID = (long)myBaseVertexType;
+            //result.VertexTypeID = (long)BaseVertexType.VertexType;
+            
+            //result.StructuredProperties = new Dictionary<long, object>();
+            //result.StructuredProperties.Add(AttributeDefinitions.CreationOnVertex.AttributeID, )
+
+
+
+            //result.OutgoingSingleEdges = new List<SingleEdgeAddDefinition>();
+
+            throw new NotImplementedException();
         }
 
     }
