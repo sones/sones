@@ -18,7 +18,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
         /// <returns>An instance of IVertexType, that represents the vertex type.</returns>
-        public IVertexType GetVertexType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity);
+        IVertexType GetVertexType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Gets a vertex type by name.
