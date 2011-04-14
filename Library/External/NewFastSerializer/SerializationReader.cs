@@ -73,6 +73,38 @@ namespace sones.Library.NewFastSerializer
         {
         }
 
+        #region A new empty constructor
+
+        /// <summary>
+        /// Creates a SerializationReader by using an empty inner memory stream, this allows to set the data at a later time
+        /// </summary>
+        public SerializationReader() : this(new MemoryStream())
+        {        
+        }
+
+        /// <summary>
+        /// The data which is associated to the inner memory stream
+        /// </summary>
+        public byte[] Data
+        {            
+            set {
+                ResetBuffer();    
+                BaseStream.Write(value,0,value.Length); 
+            }
+        }
+
+        /// <summary>
+        /// A method to reset the underlying stream
+        /// </summary>
+        private void ResetBuffer()
+        {
+            this.BaseStream.Seek(0, SeekOrigin.Begin);
+            this.BaseStream.SetLength(0);
+        }
+
+        #endregion A new empty constructor
+
+
         /// <summary>
         /// Creates a SerializationReader based on the passed Stream.
         /// </summary>
