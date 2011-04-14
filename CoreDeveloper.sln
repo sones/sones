@@ -155,9 +155,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestIndexApplication", "App
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IO", "IO", "{337E92A1-8475-4A6C-8114-64B6629FB7E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IOInterface", "Plugins\GraphDS\IO\Interface\IOInterface.csproj", "{991132D2-15E0-4BB7-8328-3A51646D4F01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XML_IO", "Plugins\GraphDS\IO\XML_IO\XML_IO.csproj", "{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 45
+		SccNumberOfProjects = 47
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -337,6 +341,14 @@ Global
 		SccProjectTopLevelParentUniqueName44 = CoreDeveloper.sln
 		SccProjectName44 = Applications/TestIndexApplication/TestIndexApplication
 		SccLocalPath44 = Applications\\TestIndexApplication\\TestIndexApplication
+		SccProjectUniqueName45 = Plugins\\GraphDS\\IO\\Interface\\IOInterface.csproj
+		SccProjectTopLevelParentUniqueName45 = CoreDeveloper.sln
+		SccProjectName45 = Plugins/GraphDS/IO/Interface
+		SccLocalPath45 = Plugins\\GraphDS\\IO\\Interface
+		SccProjectUniqueName46 = Plugins\\GraphDS\\IO\\XML_IO\\XML_IO.csproj
+		SccProjectTopLevelParentUniqueName46 = CoreDeveloper.sln
+		SccProjectName46 = Plugins/GraphDS/IO/XML_IO
+		SccLocalPath46 = Plugins\\GraphDS\\IO\\XML_IO
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -788,6 +800,26 @@ Global
 		{0ACE6FFF-E240-448D-A675-665912149AB5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{0ACE6FFF-E240-448D-A675-665912149AB5}.Release|x86.ActiveCfg = Release|x86
 		{0ACE6FFF-E240-448D-A675-665912149AB5}.Release|x86.Build.0 = Release|x86
+		{991132D2-15E0-4BB7-8328-3A51646D4F01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{991132D2-15E0-4BB7-8328-3A51646D4F01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{991132D2-15E0-4BB7-8328-3A51646D4F01}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{991132D2-15E0-4BB7-8328-3A51646D4F01}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{991132D2-15E0-4BB7-8328-3A51646D4F01}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{991132D2-15E0-4BB7-8328-3A51646D4F01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{991132D2-15E0-4BB7-8328-3A51646D4F01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{991132D2-15E0-4BB7-8328-3A51646D4F01}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{991132D2-15E0-4BB7-8328-3A51646D4F01}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{991132D2-15E0-4BB7-8328-3A51646D4F01}.Release|x86.ActiveCfg = Release|Any CPU
+		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -861,5 +893,7 @@ Global
 		{8D291BAE-496E-4339-A480-B301ED1A23FF} = {1C52F39F-F995-45E2-BDEF-C3E2E1BD52BD}
 		{FE5EFE17-4195-45C4-A671-BCE0787DE029} = {1C52F39F-F995-45E2-BDEF-C3E2E1BD52BD}
 		{30B5A2C1-DD4A-4F04-A8E2-CE6E332A91FB} = {FE5EFE17-4195-45C4-A671-BCE0787DE029}
+		{991132D2-15E0-4BB7-8328-3A51646D4F01} = {337E92A1-8475-4A6C-8114-64B6629FB7E8}
+		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0} = {337E92A1-8475-4A6C-8114-64B6629FB7E8}
 	EndGlobalSection
 EndGlobal
