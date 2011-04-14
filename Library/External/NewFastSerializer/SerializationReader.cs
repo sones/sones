@@ -88,18 +88,13 @@ namespace sones.Library.NewFastSerializer
         public byte[] Data
         {            
             set {
-                ResetBuffer();    
-                BaseStream.Write(value,0,value.Length); 
-            }
-        }
 
-        /// <summary>
-        /// A method to reset the underlying stream
-        /// </summary>
-        private void ResetBuffer()
-        {
-            this.BaseStream.Seek(0, SeekOrigin.Begin);
-            this.BaseStream.SetLength(0);
+                this.BaseStream.Seek(0, SeekOrigin.Begin);
+                this.BaseStream.SetLength(value.Length);
+                endPosition = (ulong)BaseStream.ULength();
+                this.BaseStream.Write(value,0,value.Length);
+                this.BaseStream.Seek(0, SeekOrigin.Begin);
+            }
         }
 
         #endregion A new empty constructor
