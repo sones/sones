@@ -16,6 +16,6 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// </summary>
         /// <param name="myExpression">The expression that is going to be transfered into a queryplan</param>
         /// <returns>A queryplan</returns>
-        IQueryPlan CreateQueryPlan(IExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
+        IQueryPlan CreateQueryPlan(IExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity);
     }
 }

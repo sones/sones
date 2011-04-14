@@ -36,7 +36,7 @@ namespace sones.GraphDB.Manager.QueryPlan
 
         #region IQueryPlanManager Members
 
-        public IQueryPlan CreateQueryPlan(IExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public IQueryPlan CreateQueryPlan(IExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             IQueryPlan result;
 
@@ -44,13 +44,13 @@ namespace sones.GraphDB.Manager.QueryPlan
             {
                 case TypeOfExpression.Binary:
 
-                    result = GenerateFromBinaryExpression((BinaryExpression) myExpression, myTransaction, mySecurity, myMetaManager);
+                    result = GenerateFromBinaryExpression((BinaryExpression) myExpression, myTransaction, mySecurity);
 
                     break;
                 
                 case TypeOfExpression.Unary:
                     
-                    result = GenerateFromUnaryExpression((UnaryExpression)myExpression, myTransaction, mySecurity, myMetaManager);    
+                    result = GenerateFromUnaryExpression((UnaryExpression)myExpression, myTransaction, mySecurity);    
 
                     break;
                
@@ -62,7 +62,7 @@ namespace sones.GraphDB.Manager.QueryPlan
                 
                 case TypeOfExpression.Property:
 
-                    result = GenerateFromPropertyExpression((PropertyExpression)myExpression, myTransaction, mySecurity, myMetaManager);
+                    result = GenerateFromPropertyExpression((PropertyExpression)myExpression, myTransaction, mySecurity);
 
                     break;
                 
@@ -82,9 +82,9 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// </summary>
         /// <param name="myPropertyExpression">The property expression that is going to be transfered</param>
         /// <returns>A property query plan</returns>
-        private IQueryPlan GenerateFromPropertyExpression(PropertyExpression myPropertyExpression, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private IQueryPlan GenerateFromPropertyExpression(PropertyExpression myPropertyExpression, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var type = _vertexTypeManager.GetVertexType(myPropertyExpression.NameOfVertexType, myTransaction, mySecurity, myMetaManager);
+            var type = _vertexTypeManager.GetVertexType(myPropertyExpression.NameOfVertexType, myTransaction, mySecurity);
 
             return new QueryPlanProperty(type, type.GetPropertyDefinition(myPropertyExpression.NameOfProperty));
         }
@@ -104,7 +104,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// </summary>
         /// <param name="unaryExpression">The unary expression</param>
         /// <returns>A query plan</returns>
-        private IQueryPlan GenerateFromUnaryExpression(UnaryExpression unaryExpression, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private IQueryPlan GenerateFromUnaryExpression(UnaryExpression unaryExpression, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             throw new NotImplementedException();
         }
@@ -114,14 +114,14 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// </summary>
         /// <param name="binaryExpression">The binary expression</param>
         /// <returns>A query plan</returns>
-        private IQueryPlan GenerateFromBinaryExpression(BinaryExpression binaryExpression, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private IQueryPlan GenerateFromBinaryExpression(BinaryExpression binaryExpression, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             switch (binaryExpression.Operator)
             {
                 #region Comparative
 
                 case BinaryOperator.Equals:
-                    return GenerateEqualsPlan(binaryExpression, myTransaction, mySecurity, myMetaManager);
+                    return GenerateEqualsPlan(binaryExpression, myTransaction, mySecurity);
 
                 case BinaryOperator.GreaterOrEqualsThan:
                     break;
@@ -163,7 +163,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// </summary>
         /// <param name="binaryExpression">The binary expression that has to be transfered into an equals query plan</param>
         /// <returns>An equals query plan</returns>
-        private IQueryPlan GenerateEqualsPlan(BinaryExpression binaryExpression, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private IQueryPlan GenerateEqualsPlan(BinaryExpression binaryExpression, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             if (binaryExpression.Left is PropertyExpression && binaryExpression.Right is PropertyExpression)
             {
@@ -172,8 +172,8 @@ namespace sones.GraphDB.Manager.QueryPlan
                 //complex sth like User/Age = Car/PS
 
                 return new QueryPlanEqualsWithoutIndexComplex(
-                    GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Left, myTransaction, mySecurity, myMetaManager), 
-                    GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Right, myTransaction, mySecurity, myMetaManager));
+                    GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Left, myTransaction, mySecurity), 
+                    GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Right, myTransaction, mySecurity));
 
                 #endregion
             }
@@ -187,13 +187,13 @@ namespace sones.GraphDB.Manager.QueryPlan
 
                 if (binaryExpression.Left is PropertyExpression)
                 {
-                    property = GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Left, myTransaction, mySecurity, myMetaManager);
+                    property = GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Left, myTransaction, mySecurity);
 
                     constant = new QueryPlanConstant(((ConstantExpression)binaryExpression.Right).Constant);
                 }
                 else
                 {
-                    property = GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Right, myTransaction, mySecurity, myMetaManager);
+                    property = GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Right, myTransaction, mySecurity);
 
                     constant = new QueryPlanConstant(((ConstantExpression)binaryExpression.Left).Constant);
                 }
@@ -209,9 +209,9 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// </summary>
         /// <param name="propertyExpression">The property expression that is going to be transfered</param>
         /// <returns>A Property query plan</returns>
-        private QueryPlanProperty GenerateQueryPlanProperty(PropertyExpression propertyExpression, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private QueryPlanProperty GenerateQueryPlanProperty(PropertyExpression propertyExpression, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var vertexType = _vertexTypeManager.GetVertexType(propertyExpression.NameOfVertexType, myTransaction, mySecurity, myMetaManager);
+            var vertexType = _vertexTypeManager.GetVertexType(propertyExpression.NameOfVertexType, myTransaction, mySecurity);
             var property = vertexType.GetPropertyDefinition(propertyExpression.NameOfProperty);
 
             return new QueryPlanProperty(vertexType, property);

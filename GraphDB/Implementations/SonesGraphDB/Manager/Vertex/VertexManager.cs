@@ -23,39 +23,32 @@ namespace sones.GraphDB.Manager.Vertex
         /// <summary>
         /// Needed for getting vertices from the persistence layer
         /// </summary>
-        private readonly IVertexStore _vertexStore;
+        private IVertexStore _vertexStore;
 
         /// <summary>
         /// Needed for index interaction
         /// </summary>
-        private readonly IIndexManager _indexManager;
+        private IIndexManager _indexManager;
 
         /// <summary>
         /// Needed for VertexType interaction
         /// </summary>
-        private readonly IVertexTypeManager _vertexTypeManager;
+        private IVertexTypeManager _vertexTypeManager;
 
         /// <summary>
         /// Needed for transforming an expression into a query plan
         /// </summary>
-        private readonly IQueryPlanManager _queryPlanManager;
+        private IQueryPlanManager _queryPlanManager;
 
         #endregion
 
         #region constructor
 
         /// <summary>
-        /// Creates a new vertex manaager
+        /// Creates a new vertex manager
         /// </summary>
-        /// <param name="myVertexStore">Interface to the persistence layer</param>
-        /// <param name="myVertexTypeManager">Interface to vertex types</param>
-        /// <param name="myIndexManager">Interface to indices</param>
-        public VertexManager(IVertexStore myVertexStore, IVertexTypeManager myVertexTypeManager, IIndexManager myIndexManager)
+        public VertexManager()
         {
-            _vertexStore = myVertexStore;
-            _indexManager = myIndexManager;
-            _vertexTypeManager = myVertexTypeManager;
-
             _queryPlanManager = new QueryPlanManager(_vertexTypeManager);
         }
 
@@ -176,6 +169,37 @@ namespace sones.GraphDB.Manager.Vertex
         }
 
         #endregion
+
+        #endregion
+
+        #region public methods
+
+        /// <summary>
+        /// Sets the vertex store
+        /// </summary>
+        /// <param name="myVertexStore">The vertex store that should be used within the vertex type manager</param>
+        public void SetVertexStore(IVertexStore myVertexStore)
+        {
+            _vertexStore = myVertexStore;
+        }
+
+        /// <summary>
+        /// Sets the vertex type manager
+        /// </summary>
+        /// <param name="myVertexTypeManager">The vertex type manager that should be used within the vertex type manager</param>
+        public void SetVertexTypeManager(IVertexTypeManager myVertexTypeManager)
+        {
+            _vertexTypeManager = myVertexTypeManager;
+        }
+
+        /// <summary>
+        /// Sets the index manager
+        /// </summary>
+        /// <param name="myVertexTypeManager">The index manager that should be used within the vertex type manager</param>
+        public void SetIndexManager(IIndexManager myIndexManager)
+        {
+            _indexManager = myIndexManager;
+        }
 
         #endregion
     }

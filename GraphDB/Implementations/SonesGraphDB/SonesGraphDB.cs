@@ -245,7 +245,7 @@ namespace sones.GraphDB
         /// <param name="myRequestManagerPlugin">The actual request manager plugin definition</param>
         /// <param name="myRequestSchedulerPlugin">The request scheduler plugin that is needed for the request manager</param>
         /// <param name="myMetaManager">The meta manager of the graphdb</param>
-        private IRequestManager LoadRequestManager(PluginDefinition myRequestManagerPlugin, PluginDefinition myRequestSchedulerPlugin, MetaManager myMetaManager)
+        private IRequestManager LoadRequestManager(PluginDefinition myRequestManagerPlugin, PluginDefinition myRequestSchedulerPlugin, IMetaManager myMetaManager)
         {
             #region user defined
 
@@ -253,7 +253,7 @@ namespace sones.GraphDB
 
             if (myRequestManagerPlugin != null)
             {
-                return _graphDBPluginManager.GetAndInitializePlugin<IRequestManager>(myRequestManagerPlugin.NameOfPlugin, myRequestManagerPlugin.PluginParameter, _applicationSettings);
+                return _graphDBPluginManager.GetAndInitializePlugin<IRequestManager>(myRequestManagerPlugin.NameOfPlugin, myRequestManagerPlugin.PluginParameter);
             }
 
             #endregion
@@ -288,8 +288,7 @@ namespace sones.GraphDB
                         {"metaManager", myMetaManager},
                         {"requestScheduler", requestScheduler},
                         {"cts", _cts},
-                    },
-                    _applicationSettings);
+                    });
             
             #endregion
         }
@@ -303,12 +302,12 @@ namespace sones.GraphDB
         {
             if (myRequestSchedulerPlugin != null)
             {
-                return _graphDBPluginManager.GetAndInitializePlugin<IRequestScheduler>(myRequestSchedulerPlugin.NameOfPlugin, myRequestSchedulerPlugin.PluginParameter, _applicationSettings);
+                return _graphDBPluginManager.GetAndInitializePlugin<IRequestScheduler>(myRequestSchedulerPlugin.NameOfPlugin, myRequestSchedulerPlugin.PluginParameter);
             }
 
             //so lets take the default one
             var defaultRequestSchedulerName = _applicationSettings.Get<DefaultRequestSchedulerImplementation>();
-            return _graphDBPluginManager.GetAndInitializePlugin<IRequestScheduler>(defaultRequestSchedulerName, null, _applicationSettings);
+            return _graphDBPluginManager.GetAndInitializePlugin<IRequestScheduler>(defaultRequestSchedulerName);
         }
 
         /// <summary>
@@ -316,7 +315,7 @@ namespace sones.GraphDB
         /// </summary>
         /// <param name="myPlugins">The plugin definitions</param>
         /// <returns>A meta manager</returns>
-        private MetaManager CreateMetamanager(GraphDBPlugins myPlugins)
+        private IMetaManager CreateMetamanager(GraphDBPlugins myPlugins)
         {
             return new MetaManager(_securityManager, myPlugins, _graphDBPluginManager, _applicationSettings);
         }
@@ -329,12 +328,12 @@ namespace sones.GraphDB
         {
             if (mySecurityManagerPlugin != null)
             {
-                return _graphDBPluginManager.GetAndInitializePlugin<ISecurityManager>(mySecurityManagerPlugin.NameOfPlugin, mySecurityManagerPlugin.PluginParameter, _applicationSettings);
+                return _graphDBPluginManager.GetAndInitializePlugin<ISecurityManager>(mySecurityManagerPlugin.NameOfPlugin, mySecurityManagerPlugin.PluginParameter);
             }
 
             //so lets take the default one
             var defaultSecurityManagerName = _applicationSettings.Get<DefaultSecurityManagerImplementation>();
-            return _graphDBPluginManager.GetAndInitializePlugin<ISecurityManager>(defaultSecurityManagerName, new Dictionary<string, object> { { "vertexStore", _transactionManager } }, _applicationSettings);
+            return _graphDBPluginManager.GetAndInitializePlugin<ISecurityManager>(defaultSecurityManagerName, new Dictionary<string, object> { { "vertexStore", _transactionManager } });
         }
 
         /// <summary>
@@ -345,7 +344,7 @@ namespace sones.GraphDB
         {
             if (myTransactionManagerPlugin != null)
             {
-                return _graphDBPluginManager.GetAndInitializePlugin<ITransactionManager>(myTransactionManagerPlugin.NameOfPlugin, myTransactionManagerPlugin.PluginParameter, _applicationSettings);
+                return _graphDBPluginManager.GetAndInitializePlugin<ITransactionManager>(myTransactionManagerPlugin.NameOfPlugin, myTransactionManagerPlugin.PluginParameter);
             }
             
             //so there is no given plugin... lets try the IGraphFS
@@ -356,7 +355,7 @@ namespace sones.GraphDB
             
             //so lets take the default one
             var defaultTransactionManagerName = _applicationSettings.Get<DefaultTransactionManagerImplementation>();
-            return _graphDBPluginManager.GetAndInitializePlugin<ITransactionManager>(defaultTransactionManagerName, new Dictionary<string, object> { { "vertexStore", _iGraphFS } }, _applicationSettings);
+            return _graphDBPluginManager.GetAndInitializePlugin<ITransactionManager>(defaultTransactionManagerName, new Dictionary<string, object> { { "vertexStore", _iGraphFS } });
         }
 
         /// <summary>
@@ -367,12 +366,12 @@ namespace sones.GraphDB
         {
             if (myIGraphFSDefinition != null)
             {
-                return _graphDBPluginManager.GetAndInitializePlugin<IGraphFS>(myIGraphFSDefinition.NameOfPlugin, myIGraphFSDefinition.PluginParameter, _applicationSettings);
+                return _graphDBPluginManager.GetAndInitializePlugin<IGraphFS>(myIGraphFSDefinition.NameOfPlugin, myIGraphFSDefinition.PluginParameter);
             }
 
             //return the default fs
             var defaultFSName = _applicationSettings.Get<DefaultGraphFSImplementation>();
-            return _graphDBPluginManager.GetAndInitializePlugin<IGraphFS>(defaultFSName, null, _applicationSettings);
+            return _graphDBPluginManager.GetAndInitializePlugin<IGraphFS>(defaultFSName);
         }
 
         #endregion

@@ -52,6 +52,7 @@
     <Compile Include="Expression\QueryPlan\QueryPlanProperty.cs" />
     <Compile Include="Index\IndexDefinition.cs" />
     <Compile Include="Manager\Expression\BasicLogicExpressionOptimizer.cs" />
+    <Compile Include="Manager\IMetaManager.cs" />
     <Compile Include="Manager\Index\IIndexManager.cs" />
     <Compile Include="Manager\Index\IndexManager.cs" />
     <Compile Include="Manager\MetaManager.cs" />

@@ -59,19 +59,5 @@ namespace sones.GraphDB.Manager.Plugin
         }
 
         #endregion
-
-        private Object GenerateIndices(Type myType)
-        {
-          
-
-            switch (myType.Name)
-            {
-                
-                default:
-                    break;
-            }
-
-            return null;
-        }
     }
 }

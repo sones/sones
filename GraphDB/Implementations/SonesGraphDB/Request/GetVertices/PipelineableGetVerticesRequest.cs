@@ -49,12 +49,12 @@ namespace sones.GraphDB.Request
 
         #region APipelinableRequest Members
 
-        public override void Validate(MetaManager myMetaManager)
+        public override void Validate(IMetaManager myMetaManager)
         {
             myMetaManager.VertexManager.CanGetVertices(_request.GetVerticesDefinition.Expression, _request.GetVerticesDefinition.IsLongrunning, TransactionToken, SecurityToken);
         }
 
-        public override void Execute(MetaManager myMetaManager)
+        public override void Execute(IMetaManager myMetaManager)
         {
             _fetchedIVertices = myMetaManager.VertexManager.GetVertices(_request.GetVerticesDefinition.Expression, _request.GetVerticesDefinition.IsLongrunning, TransactionToken, SecurityToken);
         }

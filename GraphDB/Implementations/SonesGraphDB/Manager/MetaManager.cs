@@ -12,12 +12,27 @@ namespace sones.GraphDB.Manager
     /// A manager that contains all the other managers
     /// to support smaller method signatures
     /// </summary>
-    public sealed class MetaManager
+    public sealed class MetaManager : IMetaManager
     {
         #region Data
 
         /// <summary>
-        /// The vertex store on which all other manager rely on
+        /// Gets or sets the myOutgoingEdgeVertex instance of the index manager.
+        /// </summary>
+        private readonly IIndexManager _indexManager;
+
+        /// <summary>
+        /// Gets or sets the myOutgoingEdgeVertex instance of the type manager.
+        /// </summary>
+        private readonly IVertexTypeManager _vertexTypeManager;
+
+        /// <summary>
+        /// Gets or sets the myOutgoingEdgeVertex instance of the parentVertex manager.
+        /// </summary>
+        private readonly IVertexManager _vertexManager;
+
+        /// <summary>
+        /// Gets or sets the myOutgoingEdgeVertex instance of parentVertex store.
         /// </summary>
         private readonly IVertexStore _vertexStore;
 
@@ -38,41 +53,53 @@ namespace sones.GraphDB.Manager
 
             #region IndexManager
 
-            IndexManager = new IndexManager(myApplicationSettings, myPluginManager, myPlugins.IndexPlugins);
+            var indexManager = new IndexManager(myPluginManager, myPlugins.IndexPlugins);
 
             #endregion
 
-            //todo: initialize all the other manager (using myPluginManager)
-            //ILogicExpressionOptimizer
-        }
+            #region vertex(Type)Manager
 
-        [Obsolete]
-        public MetaManager()
-        {
-            // TODO: Complete member initialization
+            var vertexTypeManager = new VertexTypeManager();
+            var vertexManager = new VertexManager();
+
+            vertexTypeManager.SetIndexManager(indexManager);
+            vertexTypeManager.SetVertexManager(vertexManager);
+
+            vertexManager.SetVertexStore(myVertexStore);
+            vertexManager.SetIndexManager(indexManager);
+            vertexManager.SetVertexTypeManager(vertexTypeManager);
+
+            _vertexTypeManager = vertexTypeManager;
+            _vertexManager = vertexManager;
+
+            #endregion
+
         }
 
         #endregion
 
-        /// <summary>
-        /// Gets or sets the myOutgoingEdgeVertex instance of the index manager.
-        /// </summary>
-        public IIndexManager IndexManager { get; set; }
+        #region IMetaManager Members
 
-        /// <summary>
-        /// Gets or sets the myOutgoingEdgeVertex instance of the type manager.
-        /// </summary>
-        public IVertexTypeManager TypeManager { get; set; }
+        public IIndexManager IndexManager
+        {
+            get { return _indexManager; }
+        }
 
-        /// <summary>
-        /// Gets or sets the myOutgoingEdgeVertex instance of the parentVertex manager.
-        /// </summary>
-        public IVertexManager VertexManager { get; set; }
+        public IVertexTypeManager VertexTypeManager
+        {
+            get { return _vertexTypeManager; }
+        }
 
-        /// <summary>
-        /// Gets or sets the myOutgoingEdgeVertex instance of parentVertex store.
-        /// </summary>
-        public IVertexStore VertexStore { get; set; }
+        public IVertexManager VertexManager
+        {
+            get { return _vertexManager; }
+        }
 
+        public IVertexStore VertexStore
+        {
+            get { return _vertexStore; }
+        }
+
+        #endregion
     }
 }

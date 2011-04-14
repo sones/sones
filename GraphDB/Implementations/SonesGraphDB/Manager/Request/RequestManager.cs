@@ -30,7 +30,7 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// The meta manager that contains all relevant manager
         /// </summary>
-        private MetaManager _metaManager;
+        private IMetaManager _metaManager;
 
         /// <summary>
         /// The scheduler which decides whether some requests are executed in parallel
@@ -76,13 +76,13 @@ namespace sones.GraphDB.Manager
         public RequestManager(
             int queueLengthForIncomingRequests,
             int executionQueueLength,
-            MetaManager myMetaManager,
+            IMetaManager myMetaManager,
             IRequestScheduler myRequestScheduler)
         {
             Init_private(queueLengthForIncomingRequests, executionQueueLength, myMetaManager, myRequestScheduler);
         }
 
-        private void Init_private(int queueLengthForIncomingRequests, int executionQueueLength, MetaManager myMetaManager, IRequestScheduler myRequestScheduler)
+        private void Init_private(int queueLengthForIncomingRequests, int executionQueueLength, IMetaManager myMetaManager, IRequestScheduler myRequestScheduler)
         {
             #region init
 
@@ -433,14 +433,14 @@ namespace sones.GraphDB.Manager
                 { "executionQueueLength", typeof(int) },
                 { "executionTaskCount", typeof(int) },
                 { "cts", typeof(CancellationTokenSource) },
-                { "metaManager", typeof(MetaManager) },
+                { "metaManager", typeof(IMetaManager) },
                 { "requestScheduler", typeof(IRequestScheduler) }};
             }
         }
 
         public IPluginable InitializePlugin(Dictionary<String, Object> myParameters)
         {
-            var result =  new RequestManager((int)myParameters["queueLengthForIncomingRequests"], (int)myParameters["executionQueueLength"], (MetaManager)myParameters["metaManager"], (IRequestScheduler)myParameters["requestScheduler"]);
+            var result =  new RequestManager((int)myParameters["queueLengthForIncomingRequests"], (int)myParameters["executionQueueLength"], (IMetaManager)myParameters["metaManager"], (IRequestScheduler)myParameters["requestScheduler"]);
 
             result.Init((int)myParameters["executionTaskCount"], (CancellationTokenSource)myParameters["cts"]);
 

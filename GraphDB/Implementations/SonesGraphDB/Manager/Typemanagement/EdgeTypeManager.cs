@@ -9,67 +9,67 @@ namespace sones.GraphDB.Manager.TypeManagement
     {
         #region IEdgeTypeManager Members
 
-        public IEdgeType GetEdgeType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public IEdgeType GetEdgeType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool CanAddEdgeType(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public bool CanAddEdgeType(EdgeTypeDefinition myEdgeTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             throw new System.NotImplementedException();
         }
 
-        public IEdgeType AddEdgeType(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public IEdgeType AddEdgeType(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool CanAddEdgeType(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public bool CanAddEdgeType(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             throw new System.NotImplementedException();
         }
 
-        public IEdgeType AddEdgeType(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public IEdgeType AddEdgeType(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool CanRemoveEdgeType(IEdgeType myEdgeType, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public bool CanRemoveEdgeType(IEdgeType myEdgeType, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity)
         {
             throw new System.NotImplementedException();
         }
 
-        public void RemoveEdgeType(IEdgeType myEdgeType, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public void RemoveEdgeType(IEdgeType myEdgeType, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool CanRemoveEdgeType(System.Collections.Generic.IEnumerable<IEdgeType> myEdgeTypes, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public bool CanRemoveEdgeType(System.Collections.Generic.IEnumerable<IEdgeType> myEdgeTypes, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity)
         {
             throw new System.NotImplementedException();
         }
 
-        public void RemoveEdgeType(System.Collections.Generic.IEnumerable<IEdgeType> myEdgeTypes, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public void RemoveEdgeType(System.Collections.Generic.IEnumerable<IEdgeType> myEdgeTypes, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool CanUpdateEdgeType(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public bool CanUpdateEdgeType(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity)
         {
             throw new System.NotImplementedException();
         }
 
-        public void UpdateEdgeType(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public void UpdateEdgeType(EdgeTypeDefinition myEdgeTypeDefinition, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity)
         {
             throw new System.NotImplementedException();
         }
 
-        public bool CanUpdateEdgeType(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public bool CanUpdateEdgeType(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity)
         {
             throw new System.NotImplementedException();
         }
 
-        public void UpdateEdgeType(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity, MetaManager myMetaManager)
+        public void UpdateEdgeType(System.Collections.Generic.IEnumerable<EdgeTypeDefinition> myEdgeTypeDefinitions, Library.Transaction.TransactionToken myTransaction, Library.Security.SecurityToken mySecurity)
         {
             throw new System.NotImplementedException();
         }
@@ -78,12 +78,12 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region IStorageUsingManager Members
 
-        public void Load(MetaManager myMetaManager)
+        public void Load(IMetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }
 
-        public void Create(MetaManager myMetaManager)
+        public void Create(IMetaManager myMetaManager)
         {
             throw new System.NotImplementedException();
         }

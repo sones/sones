@@ -62,13 +62,13 @@ namespace sones.GraphDB.Request
         /// Validation of the request
         /// </summary>
         /// <param name="myMetaManager">A manager that contains every other manager</param>
-        public abstract void Validate(MetaManager myMetaManager);
+        public abstract void Validate(IMetaManager myMetaManager);
 
         /// <summary>
         /// Execute the request
         /// </summary>
         /// <param name="myMetaManager">A manager that contains every other manager</param>
-        public abstract void Execute(MetaManager myMetaManager);
+        public abstract void Execute(IMetaManager myMetaManager);
 
         /// <summary>
         /// Get the request that has been executed

@@ -44,14 +44,14 @@ namespace sones.GraphDB.Request
 
         #region APipelinableRequest Members
 
-        public override void Validate(MetaManager myMetaManager)
+        public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.TypeManager.CanAddVertexType(ref _request.VertexTypeDefinitions, TransactionToken, SecurityToken, myMetaManager);
+            myMetaManager.VertexTypeManager.CanAddVertexType(ref _request.VertexTypeDefinitions, TransactionToken, SecurityToken);
         }
 
-        public override void Execute(MetaManager myMetaManager)
+        public override void Execute(IMetaManager myMetaManager)
         {
-            _createdVertexType = myMetaManager.TypeManager.AddVertexType(_request.VertexTypeDefinitions, TransactionToken, SecurityToken, myMetaManager);
+            _createdVertexType = myMetaManager.VertexTypeManager.AddVertexType(_request.VertexTypeDefinitions, TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()

@@ -13,6 +13,8 @@ using sones.Library.LanguageExtensions;
 using sones.GraphDB.ErrorHandling.VertexTypeErrors;
 using System.Collections;
 using sones.GraphDB.Manager.Vertex;
+using sones.GraphDB.Manager.Index;
+using sones.GraphDB.Manager.Vertex;
 using sones.Library.PropertyHyperGraph;
 
 /*
@@ -51,6 +53,31 @@ namespace sones.GraphDB.Manager.TypeManagement
 {
     public sealed class VertexTypeManager : IVertexTypeManager
     {
+        #region data
+
+        /// <summary>
+        /// used to communicate with the persistence layer
+        /// </summary>
+        private IVertexManager _vertexManager;
+
+        /// <summary>
+        /// used to get index instances
+        /// </summary>
+        private IIndexManager _indexManager;
+
+        #endregion
+
+        #region constructor
+
+        /// <summary>
+        /// Create a new VertexTypeManager
+        /// </summary>
+        public VertexTypeManager()
+        {
+        }
+
+        #endregion
+
         #region nested class
 
         #region VertexTypePredefinitionComparer
@@ -130,7 +157,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Retrieving
 
-        public IVertexType GetVertexType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public IVertexType GetVertexType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             #region check if it is a base type
 
@@ -142,7 +169,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #endregion
 
-            var vertex = Get(myTypeName, myTransaction, mySecurity, myMetaManager);
+            var vertex = Get(myTypeName, myTransaction, mySecurity);
 
             if (vertex == null)
                 throw new KeyNotFoundException(string.Format("A vertex type with name {0} was not found.", myTypeName));
@@ -157,49 +184,48 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Add
 
-        public void CanAddVertexType(ref IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public void CanAddVertexType(ref IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             #region check arguments
 
-            myMetaManager.CheckNull("MyMetaManager");
             myVertexTypeDefinitions.CheckNull("myVertexTypeDefinitions");
             
             #endregion
 
-            CanAdd(ref myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
+            CanAdd(ref myVertexTypeDefinitions, myTransaction, mySecurity);
         }
 
-        public IEnumerable<IVertexType> AddVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public IEnumerable<IVertexType> AddVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            return Add(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
+            return Add(myVertexTypeDefinitions, myTransaction, mySecurity);
         }
 
         #endregion
 
         #region Remove
 
-        public void CanRemoveVertexType(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public void CanRemoveVertexType(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            CanRemove(myVertexTypes, myTransaction, mySecurity, myMetaManager);
+            CanRemove(myVertexTypes, myTransaction, mySecurity);
         }
 
-        public void RemoveVertexType(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public void RemoveVertexType(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            Remove(myVertexTypes, myTransaction, mySecurity, myMetaManager);
+            Remove(myVertexTypes, myTransaction, mySecurity);
         }
 
         #endregion
 
         #region Update
 
-        public void CanUpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public void CanUpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            CanUpdate(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
+            CanUpdate(myVertexTypeDefinitions, myTransaction, mySecurity);
         }
 
-        public void UpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        public void UpdateVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            Update(myVertexTypeDefinitions, myTransaction, mySecurity, myMetaManager);
+            Update(myVertexTypeDefinitions, myTransaction, mySecurity);
         }
 
         #endregion
@@ -210,12 +236,12 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region IStorageUsingManager Members
 
-        public void Load(MetaManager myMetaManager)
+        public void Load(IMetaManager myMetaManager)
         {
             throw new NotImplementedException();
         }
 
-        public void Create(MetaManager myMetaManager)
+        public void Create(IMetaManager myMetaManager)
         {
             throw new NotImplementedException();
         }
@@ -227,11 +253,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         #region Get
 
 
-        private static IVertex Get(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private IVertex Get(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             #region get the type from fs
 
-            return myMetaManager.VertexManager.GetSingleVertex(new BinaryExpression(VertexTypeNameExpression, BinaryOperator.Equals, new ConstantExpression(myTypeName)), myTransaction, mySecurity);
+            return _vertexManager.GetSingleVertex(new BinaryExpression(VertexTypeNameExpression, BinaryOperator.Equals, new ConstantExpression(myTypeName)), myTransaction, mySecurity);
 
             #endregion
         }
@@ -240,7 +266,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Add
 
-        private void CanAdd(ref IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private void CanAdd(ref IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             // Basically first check the pre-definitions itself without asking the IVertexManager. 
             // If these checks are okay, proof everything concerning the types stored in the fs using the IVertexManager.
@@ -278,7 +304,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             #region Checks with IVertexManager 
             //Here we know that the VertexTypePredefinitions are syntactical correct.
 
-            CanAddCheckWithFS(defsTopologically, defsByVertexName, myTransaction, mySecurity, myMetaManager);
+            CanAddCheckWithFS(defsTopologically, defsByVertexName, myTransaction, mySecurity);
 
             #endregion
 
@@ -295,10 +321,10 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity"></param>
         /// <param name="myMetaManager"></param>
         /// The predefinitions are checked one by one in topologically order. 
-        private static void CanAddCheckWithFS(
+        private void CanAddCheckWithFS(
             LinkedList<VertexTypePredefinition> myDefsTopologically, 
             Dictionary<String, VertexTypePredefinition> myDefsByName,
-            TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+            TransactionToken myTransaction, SecurityToken mySecurity)
         {
 
             //Contains the vertex type name to the attribute names of the vertex type.
@@ -306,22 +332,22 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             for (var current = myDefsTopologically.First; current != null; current = current.Next)
             {
-                 CanAddCheckVertexNameWithFS(current.Value, myTransaction, mySecurity, myMetaManager);
-                 CanAddCheckAttributeNameUniquenessWithFS(current, myTransaction, mySecurity, myMetaManager, attributes);
-                 CanAddCheckOutgoingEdgeTargets(current.Value, myDefsByName, myTransaction, mySecurity, myMetaManager);
-                 CanAddCheckIncomingEdgeSources(current.Value, myDefsByName, myTransaction, mySecurity, myMetaManager);
+                 CanAddCheckVertexNameWithFS(current.Value, myTransaction, mySecurity);
+                 CanAddCheckAttributeNameUniquenessWithFS(current, myTransaction, mySecurity, attributes);
+                 CanAddCheckOutgoingEdgeTargets(current.Value, myDefsByName, myTransaction, mySecurity);
+                 CanAddCheckIncomingEdgeSources(current.Value, myDefsByName, myTransaction, mySecurity);
                  current = current.Next;
              }
         }
 
-        private static void CanAddCheckIncomingEdgeSources(VertexTypePredefinition myVertexTypePredefinition, Dictionary<string, VertexTypePredefinition> myDefsByName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private void CanAddCheckIncomingEdgeSources(VertexTypePredefinition myVertexTypePredefinition, Dictionary<string, VertexTypePredefinition> myDefsByName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             var grouped = myVertexTypePredefinition.IncomingEdges.GroupBy(x => x.SourceTypeName);
             foreach (var group in grouped)
             {
                 if (!myDefsByName.ContainsKey(group.Key))
                 {
-                    var vertex = Get(group.Key, myTransaction, mySecurity, myMetaManager);
+                    var vertex = Get(group.Key, myTransaction, mySecurity);
                     if (vertex == null)
                         throw new TargetVertexTypeNotFoundException(myVertexTypePredefinition, group.Key, group.Select(x=>x.EdgeName));
 
@@ -346,14 +372,14 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
         }
 
-        private static void CanAddCheckOutgoingEdgeTargets(VertexTypePredefinition myVertexTypePredefinition, Dictionary<string, VertexTypePredefinition> myDefsByName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private void CanAddCheckOutgoingEdgeTargets(VertexTypePredefinition myVertexTypePredefinition, Dictionary<string, VertexTypePredefinition> myDefsByName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             var grouped = myVertexTypePredefinition.OutgoingEdges.GroupBy(x => x.TargetVertexType);
             foreach (var group in grouped)
             {
                 if (!myDefsByName.ContainsKey(group.Key))
                 {
-                    var vertex = Get(group.Key, myTransaction, mySecurity, myMetaManager);
+                    var vertex = Get(group.Key, myTransaction, mySecurity);
                     if (vertex == null)
                         throw new TargetVertexTypeNotFoundException(myVertexTypePredefinition, group.Key, group.Select(x => x.EdgeName));
 
@@ -361,20 +387,20 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
         }
 
-        private static void CanAddCheckVertexNameWithFS(VertexTypePredefinition current, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private void CanAddCheckVertexNameWithFS(VertexTypePredefinition current, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            if (Get(current.VertexTypeName, myTransaction, mySecurity, myMetaManager) != null)
+            if (Get(current.VertexTypeName, myTransaction, mySecurity) != null)
                 throw new DuplicatedVertexTypeNameException(current.VertexTypeName);
         }
 
-        private static void CanAddCheckAttributeNameUniquenessWithFS(LinkedListNode<VertexTypePredefinition> current, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager, Dictionary<string, HashSet<string>> attributes)
+        private void CanAddCheckAttributeNameUniquenessWithFS(LinkedListNode<VertexTypePredefinition> current, TransactionToken myTransaction, SecurityToken mySecurity, Dictionary<string, HashSet<string>> attributes)
         {
             var parentPredef = GetParentPredefinitionOnTopologicallySortedList(current, current.Previous);
 
             if (parentPredef == null)
             {
                 //Get the parent type from FS.
-                var parent = Get(current.Value.SuperVertexTypeName, myTransaction, mySecurity, myMetaManager);
+                var parent = Get(current.Value.SuperVertexTypeName, myTransaction, mySecurity);
 
                 if (parent == null)
                     //No parent type was found.
@@ -600,7 +626,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             return result;
         }
 
-        private IEnumerable<IVertexType> Add(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private IEnumerable<IVertexType> Add(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             // there are two ways to add the vertex types
             // 1. We add a vertex per definition without setting the parentPredef type. After that we update these vertices to set the IncomingEdge to the parentPredef type.
@@ -614,12 +640,12 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Remove
 
-        private bool CanRemove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private bool CanRemove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             throw new NotImplementedException();
         }
 
-        private void Remove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private void Remove(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             throw new NotImplementedException();
         }
@@ -628,17 +654,39 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Update
 
-        private bool CanUpdate(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private bool CanUpdate(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             throw new NotImplementedException();
         }
 
-        private void Update(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private void Update(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             throw new NotImplementedException();
         }
 
         #endregion
+
+        #endregion
+
+        #region public methods
+
+        /// <summary>
+        /// Sets the index manager
+        /// </summary>
+        /// <param name="myIndexManager">The index manager that should be used within the vertex type manager</param>
+        public void SetIndexManager(IIndexManager myIndexManager)
+        {
+            _indexManager = myIndexManager;
+        }
+
+        /// <summary>
+        /// Sets the vertex manager
+        /// </summary>
+        /// <param name="myVertexManager">The vertex manager that should be used within the vertex type manager</param>
+        public void SetVertexManager(IVertexManager myVertexManager)
+        {
+            _vertexManager = myVertexManager;
+        }
 
         #endregion
 

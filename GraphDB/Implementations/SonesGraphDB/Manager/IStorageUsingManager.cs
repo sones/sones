@@ -10,11 +10,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// Loads data from the underlying parentVertex store
         /// </summary>
-        void Load(MetaManager myMetaManager);
+        void Load(IMetaManager myMetaManager);
 
         /// <summary>
         /// Creates the basic parentVertex type definitions.
         /// </summary>
-        void Create(MetaManager myMetaManager);
+        void Create(IMetaManager myMetaManager);
     }
 }

@@ -40,6 +40,12 @@ namespace sones.Library.VersionedPluginManager
 
         #region public methods
 
+        /// <summary>
+        /// Is there a certain plugin?
+        /// </summary>
+        /// <typeparam name="T">The type of the plugin</typeparam>
+        /// <param name="myPluginName">The name of the plugin</param>
+        /// <returns>True or false</returns>
         public bool HasPlugin<T>(String myPluginName)
         {
             var type = typeof(T);
@@ -75,7 +81,7 @@ namespace sones.Library.VersionedPluginManager
         /// <param name="myParameter">The parameters that are necessary to initialize an IPluginable</param>
         /// <param name="myApplicationSetting">The application settings that are necessary to initialize an IPluginable</param>
         /// <returns>A T</returns>
-        public T GetAndInitializePlugin<T>(String myPluginName, Dictionary<String, Object> myParameter, GraphApplicationSettings myApplicationSetting)
+        public T GetAndInitializePlugin<T>(String myPluginName, Dictionary<String, Object> myParameter = null)
         {
             var type = typeof(T);
             Dictionary<string, IPluginable> interestingLookup;
