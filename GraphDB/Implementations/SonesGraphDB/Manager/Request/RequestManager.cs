@@ -438,7 +438,7 @@ namespace sones.GraphDB.Manager
             }
         }
 
-        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
+        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters)
         {
             var result =  new RequestManager((int)myParameters["queueLengthForIncomingRequests"], (int)myParameters["executionQueueLength"], (MetaManager)myParameters["metaManager"], (IRequestScheduler)myParameters["requestScheduler"]);
 

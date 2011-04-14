@@ -97,7 +97,7 @@ namespace sones.Library.VersionedPluginManager
                     throw new UnknownPluginException(myPluginName, type);
                 }
 
-                return (T)interestingLookup[myPluginName.ToUpper()].InitializePlugin(myParameter, myApplicationSetting);
+                return (T)interestingLookup[myPluginName.ToUpper()].InitializePlugin(myParameter);
             }
         }
 

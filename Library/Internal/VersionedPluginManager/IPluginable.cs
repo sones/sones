@@ -23,8 +23,7 @@ namespace sones.Library.VersionedPluginManager
         /// A method to initialize a plugin
         /// </summary>
         /// <param name="myParameters">The parameters for the plugin</param>
-        /// <param name="myApplicationSetting">The application settings</param>
         /// <returns>A new instance of the plugin</returns>
-        IPluginable InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings myApplicationSetting);
+        IPluginable InitializePlugin(Dictionary<String, Object> myParameters = null);
     }
 }

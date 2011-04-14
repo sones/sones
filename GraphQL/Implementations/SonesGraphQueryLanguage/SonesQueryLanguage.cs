@@ -32,12 +32,11 @@ namespace sones.GraphQL
         /// <summary>
         /// Creates a new sones GQL instance
         /// </summary>
-        /// <param name="myApplicationSettings">The settings of the application</param>
         /// <param name="myIGraphDBInstace">The graph database instance on which the gql statements are executed</param>
-        public SonesQueryLanguage(GraphApplicationSettings myApplicationSettings, IGraphDB myIGraphDBInstace)
+        public SonesQueryLanguage(IGraphDB myIGraphDBInstace)
         {
             _IGraphDBInstance = myIGraphDBInstace;
-            _settings = myApplicationSettings;
+            _settings = new GraphApplicationSettings(SonesGQLConstants.ApplicationSettingsLocation);
         }
 
         #endregion

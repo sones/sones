@@ -500,7 +500,7 @@ namespace sones.GraphFS
             get { return new Dictionary<string, Type>(); }
         }
 
-        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
+        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters)
         {
             return new InMemoryNonRevisionedFS();
         }

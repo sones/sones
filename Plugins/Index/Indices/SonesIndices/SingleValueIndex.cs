@@ -233,7 +233,7 @@ namespace sones.Plugins.Index
             }
         }
 
-        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
+        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters)
         {
 
             object result = typeof(SingleValueIndex<TKey, TValue>).GetConstructor(Type.EmptyTypes).Invoke(new object[0]);

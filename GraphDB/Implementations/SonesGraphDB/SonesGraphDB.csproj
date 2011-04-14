@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConstantsSonesGraphDB.cs" />
     <Compile Include="Expression\QueryPlan\QueryPlanEqualsWithoutIndexComplex.cs" />
     <Compile Include="Expression\QueryPlan\QueryPlanEqualsWithoutIndex.cs" />
     <Compile Include="Expression\QueryPlan\QueryPlanConstant.cs" />

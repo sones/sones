@@ -49,7 +49,7 @@ namespace sones.GraphDB.Manager
             }
         }
 
-        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
+        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters)
         {
             return new BasicLogicExpressionOptimizer();
         }

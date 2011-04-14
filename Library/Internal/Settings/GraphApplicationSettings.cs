@@ -38,13 +38,11 @@ namespace sones.Library.Settings
         /// <param name="mySettingXmlLocation">The location of the settings xml file</param>
         public GraphApplicationSettings(String mySettingXmlLocation = null)
 		{
+            _Settings = new Dictionary<string, CurrentSetting>();   
+
             if (mySettingXmlLocation != null)
             {
                 LoadXML(mySettingXmlLocation);
-            }
-            else
-            {
-                _Settings = new Dictionary<string, CurrentSetting>();                
             }
 		}
 

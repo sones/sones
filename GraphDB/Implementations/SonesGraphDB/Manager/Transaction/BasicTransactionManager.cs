@@ -161,7 +161,7 @@ namespace sones.GraphDB.Manager.Transaction
             get { return new Dictionary<string, Type> { { "vertexStore", typeof(IVertexStore) } }; }
         }
 
-        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
+        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters)
         {
             return new BasicTransactionManager((IVertexStore)myParameters["vertexStore"]);
         }

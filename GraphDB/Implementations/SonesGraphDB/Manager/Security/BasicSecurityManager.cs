@@ -165,7 +165,7 @@ namespace sones.GraphDB.Manager.Security
             get { return new Dictionary<string, Type> { { "vertexStore", typeof(IVertexStore) } }; }
         }
 
-        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters, GraphApplicationSettings mySettings)
+        public IPluginable InitializePlugin(Dictionary<String, Object> myParameters)
         {
             return new BasicSecurityManager((IVertexStore)myParameters["vertexStore"]);
         }

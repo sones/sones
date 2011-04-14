@@ -67,10 +67,8 @@ namespace sones.GraphDB
         /// <summary>
         /// Creates a new sones graphdb instance
         /// </summary>
-        /// <param name="mySettings">The application settings</param>
         /// <param name="myPlugins">The plugins that are valid for the sones GraphDB component</param>
         public SonesGraphDB(
-            GraphApplicationSettings mySettings,
             GraphDBPlugins myPlugins = null)
         {
             _id = Guid.NewGuid();
@@ -84,7 +82,7 @@ namespace sones.GraphDB
 
             #region settings
 
-            _applicationSettings = mySettings;
+            _applicationSettings = new GraphApplicationSettings(ConstantsSonesGraphDB.ApplicationSettingsLocation);
 
             #endregion
 

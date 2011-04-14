@@ -4,6 +4,17 @@ namespace sones.GraphQL
 {
     public static class SonesGQLConstants
     {
+        #region misc
+
+        /// <summary>
+        /// The application settings location
+        /// </summary>
+        public static String ApplicationSettingsLocation = "sonesGQLSettings.xml";
+
+        #endregion
+
+        #region grammar
+
         public const String EdgeInformationDelimiterSymbol      = "~>";
         public const String EdgeTraversalDelimiterSymbol        = ".";
         public const String SETOF                               = "SETOF";
@@ -22,5 +33,7 @@ namespace sones.GraphQL
         public const String BracketLeft                         = "bracketLeft";
         public const String BracketRight                        = "bracketRight";
         public const String GraphDBType                         = "GraphDBType";
+
+        #endregion
     }
 }
