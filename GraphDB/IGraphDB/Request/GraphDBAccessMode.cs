@@ -6,7 +6,7 @@
     public enum GraphDBAccessMode
     {
         /// <summary>
-        /// vertex or edge type changes like alter, create
+        /// vertex or IncomingEdge type changes like alter, create
         /// </summary>
         TypeChange,
 

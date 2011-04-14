@@ -64,6 +64,8 @@
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\EmptyPropertyTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\DuplicatedAttributeNameException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\EmptyEdgeTypeException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\OutgoingEdgeNotFoundException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\TargetVertexTypeNotFoundException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\UndefinedAttributesException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\UnknownPropertyTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeExistsInSuperVertexTypeException.cs" />
@@ -75,6 +77,7 @@
     <Compile Include="ErrorHandling\VertexTypeErrors\CircularTypeHierarchyException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\DuplicatedVertexTypeName.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\EmptyVertexTypeNameException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeErrors\SealedBaseVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\TruncateNotAllowedOnInheritedTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\InvalidBaseVertexTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\InvalidVertexTypeException.cs" />
@@ -96,9 +99,11 @@
     <Compile Include="Request\Converter.cs" />
     <Compile Include="Request\CreateEdgeType\EdgeTypeDefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\IncomingEdgePredefinition.cs" />
+    <Compile Include="Request\CreateVertexTypes\IndexPredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\OutgoingEdgePredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\Property\PropertyDefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\RequestCreateVertexTypes.cs" />
+    <Compile Include="Request\CreateVertexTypes\UniquePredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\VertexTypePredefinition.cs" />
     <Compile Include="Request\GetVertices\RequestGetVertices.cs" />
     <Compile Include="Request\GetVertices\GetVerticesDefinition.cs" />

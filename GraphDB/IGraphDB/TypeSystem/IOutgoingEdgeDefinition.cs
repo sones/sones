@@ -1,12 +1,12 @@
 ﻿namespace sones.GraphDB.TypeSystem
 {
     /// <summary>
-    /// An interface that represents an edge definition on a vertex type definition.
+    /// An interface that represents an IncomingEdge definition on a vertex type definition.
     /// </summary>
     public interface IOutgoingEdgeDefinition : IAttributeDefinition
     {
         /// <summary>
-        /// The type of the edge. Never <c>NULL</c>.
+        /// The type of the IncomingEdge. Never <c>NULL</c>.
         /// </summary>
         IEdgeType EdgeType { get; }
 
@@ -14,7 +14,7 @@
         /// The source vertex type. Never <c>NULL</c>.
         /// </summary>
         /// <remarks>
-        /// On this vertex type this edge is defined as outgoing edge.
+        /// On this vertex type this IncomingEdge is defined as outgoing IncomingEdge.
         /// </remarks>
         IVertexType SourceVertexType { get; }
 
@@ -22,7 +22,7 @@
         /// The target vertex type. Never <c>NULL</c>.
         /// </summary>
         /// <remarks>
-        /// On this vertex type this edge is defined as incoming edge.
+        /// On this vertex type this IncomingEdge is defined as incoming IncomingEdge.
         /// </remarks>
         IVertexType TargetVertexType { get; }
     }

@@ -3,7 +3,7 @@
 namespace sones.GraphQL.ErrorHandling
 {
     /// <summary>
-    /// The number of parameters of an edge does not match
+    /// The number of parameters of an IncomingEdge does not match
     /// </summary>
     public sealed class EdgeParameterCountMismatchException : AGraphQLEdgeException
     {
@@ -14,7 +14,7 @@ namespace sones.GraphQL.ErrorHandling
         /// <summary>
         /// Creates a new EdgeParameterCountMismatchException exception
         /// </summary>
-        /// <param name="edge">The edge</param>
+        /// <param name="IncomingEdge">The IncomingEdge</param>
         /// <param name="currentNumOfParams">The current count of parameters</param>
         /// <param name="expectedNumOfParams">The expected count of parameters</param>
         public EdgeParameterCountMismatchException(String edge, UInt32 currentNumOfParams, UInt32 expectedNumOfParams)

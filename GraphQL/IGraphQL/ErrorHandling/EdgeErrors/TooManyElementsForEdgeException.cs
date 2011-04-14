@@ -3,7 +3,7 @@
 namespace sones.GraphQL.ErrorHandling
 {
     /// <summary>
-    /// Too many elements for a type of an edge 
+    /// Too many elements for a type of an IncomingEdge 
     /// </summary>
     public sealed class TooManyElementsForEdgeException : AGraphQLEdgeException
     {
@@ -13,7 +13,7 @@ namespace sones.GraphQL.ErrorHandling
         /// <summary>
         /// Creates a new TooManyElementsForEdgeException exception
         /// </summary>
-        /// <param name="edgeTypeName">The name of the edge type</param>
+        /// <param name="edgeTypeName">The name of the IncomingEdge type</param>
         /// <param name="currentElements">The current count of elements</param>
         public TooManyElementsForEdgeException(String edgeTypeName, UInt64 currentElements)
         {

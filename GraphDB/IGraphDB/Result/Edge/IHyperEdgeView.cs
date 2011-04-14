@@ -3,7 +3,7 @@
 namespace sones.GraphDB.Result
 {
     /// <summary>
-    /// The interface for all hyper edge views
+    /// The interface for all hyper IncomingEdge views
     /// </summary>
     public interface IHyperEdgeView : IEdgeView
     {

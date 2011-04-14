@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sones.Library.VertexStore;
 using sones.GraphDB.Manager.Index;
 using sones.GraphDB.Manager.TypeManagement;

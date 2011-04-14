@@ -7,7 +7,7 @@ using sones.GraphDB.Request;
 namespace sones.GraphDB.ErrorHandling
 {
     /// <summary>
-    /// The exception that is thrown if a vertex type with an outgoing edge with an empty edge type should be added.
+    /// The exception that is thrown if a vertex type with an outgoing IncomingEdge with an empty IncomingEdge type should be added.
     /// </summary>
     public sealed class EmptyEdgeTypeException: AGraphDBVertexAttributeException
     {
@@ -28,7 +28,7 @@ namespace sones.GraphDB.ErrorHandling
         public VertexTypePredefinition Predefinition { get; private set; }
 
         /// <summary>
-        /// The outgoing edge that causes the exception.
+        /// The outgoing IncomingEdge that causes the exception.
         /// </summary>
         public string PropertyName { get; private set; }
     }

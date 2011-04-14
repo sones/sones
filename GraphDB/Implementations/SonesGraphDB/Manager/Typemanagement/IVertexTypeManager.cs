@@ -65,7 +65,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The meta manager.</param>
         /// All types will be removed unless there are no edges that point to at least one of the given types.
-        /// If there is such an edge, remove the edge by altering the type that holds it or remove this type too.
+        /// If there is such an IncomingEdge, remove the IncomingEdge by altering the type that holds it or remove this type too.
         /// All types are removed simultaneously. This means that edges between the types are not need to be removed before.
         void RemoveVertexType(IEnumerable<IVertexType> myVertexTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
 

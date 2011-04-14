@@ -1,13 +1,13 @@
 ﻿namespace sones.GraphDB.TypeSystem
 {
     /// <summary>
-    /// An interface that represents a definition of an incoming edge.
-    /// An incoming edge is definied by the outgoing edge that shares the same edge.
+    /// An interface that represents a definition of an incoming IncomingEdge.
+    /// An incoming IncomingEdge is definied by the outgoing IncomingEdge that shares the same IncomingEdge.
     /// </summary>
     public interface IIncomingEdgeDefinition : IAttributeDefinition
     {
         /// <summary>
-        /// The related outgoing edge. Never <c>NULL</c>.
+        /// The related outgoing IncomingEdge. Never <c>NULL</c>.
         /// </summary>
         IOutgoingEdgeDefinition RelatedEdgeDefinition { get; }
     }

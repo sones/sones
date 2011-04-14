@@ -12,7 +12,7 @@ namespace sones.GraphDB.ErrorHandling
         /// <summary>
         /// Creates a new VertexTypeAlreadyExistException exception
         /// </summary>
-        /// <param name="myVertexTypeName">The name of the vertex type</param>
+        /// <param name="VertexTypeName">The name of the vertex type</param>
         public VertexTypeAlreadyExistException(String myVertexTypeName)
         {
             VertexTypeName = myVertexTypeName;

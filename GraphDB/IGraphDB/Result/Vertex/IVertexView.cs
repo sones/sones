@@ -37,10 +37,10 @@ namespace sones.GraphDB.Result
         #region Edges
 
         /// <summary>
-        /// Is there a specified edge?
+        /// Is there a specified IncomingEdge?
         /// </summary>
-        /// <param name="myEdgePropertyName">The property name of the interesting edge</param>
-        /// <returns>True if there is a specified edge, otherwise false</returns>
+        /// <param name="myEdgePropertyName">The property name of the interesting IncomingEdge</param>
+        /// <returns>True if there is a specified IncomingEdge, otherwise false</returns>
         Boolean HasEdge(String myEdgePropertyName);
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace sones.GraphDB.Result
         /// <summary>
         /// Returns all hyper edges
         /// </summary>
-        /// <returns>An IEnumerable of propertyName/hyper edge KVP</returns>
+        /// <returns>An IEnumerable of propertyName/hyper IncomingEdge KVP</returns>
         IEnumerable<Tuple<String, IHyperEdgeView>> GetAllHyperEdges();
 
         /// <summary>
@@ -62,24 +62,24 @@ namespace sones.GraphDB.Result
         IEnumerable<Tuple<String, ISingleEdgeView>> GetAllSingleEdges();
 
         /// <summary>
-        /// Returns a specified edge
+        /// Returns a specified IncomingEdge
         /// </summary>
-        /// <param name="myEdgePropertyName">The property name of the specified edge</param>
+        /// <param name="myEdgePropertyName">The property name of the specified IncomingEdge</param>
         /// <returns>An IEdgeView</returns>
         IEdgeView GetOutgoingEdge(String myEdgePropertyName);
 
         /// <summary>
-        /// Returns a specified hyper edge
+        /// Returns a specified hyper IncomingEdge
         /// </summary>
-        /// <param name="myEdgePropertyName">The property name of the specified edge</param>
-        /// <returns>A hyper edge view</returns>
+        /// <param name="myEdgePropertyName">The property name of the specified IncomingEdge</param>
+        /// <returns>A hyper IncomingEdge view</returns>
         IHyperEdgeView GetOutgoingHyperEdge(String myEdgePropertyName);
 
         /// <summary>
-        /// Get a specified single edge
+        /// Get a specified single IncomingEdge
         /// </summary>
-        /// <param name="myEdgePropertyName">The property name of the specified edge</param>
-        /// <returns>A single edge</returns>
+        /// <param name="myEdgePropertyName">The property name of the specified IncomingEdge</param>
+        /// <returns>A single IncomingEdge</returns>
         ISingleEdgeView GetOutgoingSingleEdge(String myEdgePropertyName);
 
         #endregion

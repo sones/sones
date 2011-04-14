@@ -22,7 +22,7 @@ namespace sones.GraphDB.ErrorHandling
         /// <summary>
         /// Creates a new DropOfVertexAttributeNotAllowedException exception
         /// </summary>
-        /// <param name="myVertexTypeName">The name of the vertex type</param>
+        /// <param name="VertexTypeName">The name of the vertex type</param>
         /// <param name="myVertexAttributeName">The name of the vertex attribute </param>
         /// <param name="myConflictingAttributes">A dictionary of the conflicting attributes (TypeAttributeName, GraphDBType)   </param>
         public DropOfVertexAttributeNotAllowedException(String myVertexTypeName, String myVertexAttributeName, Dictionary<String, String> myConflictingAttributes)

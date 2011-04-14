@@ -4,14 +4,14 @@ using System.Collections.Generic;
 namespace sones.GraphDB.Result
 {
     /// <summary>
-    /// The interface for all edge views
+    /// The interface for all IncomingEdge views
     /// </summary>
     public interface IEdgeView : IGraphElementView
     {
         #region EdgeTypeID
 
         /// <summary>
-        /// The name of the edge type
+        /// The name of the IncomingEdge type
         /// </summary>
         String EdgeTypeName { get; }
 
@@ -20,7 +20,7 @@ namespace sones.GraphDB.Result
         #region Source
 
         /// <summary>
-        /// Get the source vertex view of the edge
+        /// Get the source vertex view of the IncomingEdge
         /// </summary>
         /// <returns>The source vertex</returns>
         IVertexView GetSourceVertex();

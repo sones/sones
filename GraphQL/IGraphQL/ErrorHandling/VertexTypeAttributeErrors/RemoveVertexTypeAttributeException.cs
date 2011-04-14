@@ -13,7 +13,7 @@ namespace sones.GraphQL.ErrorHandling
         /// <summary>
         /// Creates a new RemoveVertexTypeAttributeException exception
         /// </summary>
-        /// <param name="myVertexTypeName">The name of the vertex type</param>
+        /// <param name="VertexTypeName">The name of the vertex type</param>
         /// <param name="myVertexAttributeName">The name of the vertex attribute</param>
         public RemoveVertexTypeAttributeException(String myVertexTypeName, String myVertexAttributeName)
         {

@@ -39,7 +39,7 @@ namespace sones.GraphDB.Interfaces
         //void SetSettings(IEnumerable<ADBSettingsBase> settings);
 
         ///// <summary>
-        ///// Add edge plugins to the grammar
+        ///// Add IncomingEdge plugins to the grammar
         ///// </summary>
         ///// <param name="edges">Enumerable of edges</param>
         //void SetEdges(IEnumerable<IEdgeType> edges);

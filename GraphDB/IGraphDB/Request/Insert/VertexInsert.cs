@@ -45,7 +45,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Creates a new vertex-insert-definition
         /// </summary>
-        /// <param name="myVertexTypeName">The name of the vertex type</param>
+        /// <param name="VertexTypeName">The name of the vertex type</param>
         public VertexInsert(String myVertexTypeName)
         {
             VertexTypeName = myVertexTypeName;
@@ -104,10 +104,10 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Adds a new edge to the vertex defintion
+        /// Adds a new IncomingEdge to the vertex defintion
         /// </summary>
-        /// <param name="myEdgeName">The name of the edge to be inserted</param>
-        /// <param name="myEdgeDefinition">The definition of the edge</param>
+        /// <param name="myEdgeName">The name of the IncomingEdge to be inserted</param>
+        /// <param name="myEdgeDefinition">The definition of the IncomingEdge</param>
         /// <returns>The updated vertex insert</returns>
         public VertexInsert AddEdge(String myEdgeName, EdgeDefinition myEdgeDefinition)
         {

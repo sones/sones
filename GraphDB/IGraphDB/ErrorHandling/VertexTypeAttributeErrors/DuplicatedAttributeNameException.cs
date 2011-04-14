@@ -21,7 +21,7 @@ namespace sones.GraphDB.ErrorHandling
         /// <summary>
         /// Creates a new instance of DuplicatedVertexTypeNameException.
         /// </summary>
-        /// <param name="myVertexTypeName">The name of the vertex type, that is tried to be added multiple times.</param>
+        /// <param name="VertexTypeName">The name of the vertex type, that is tried to be added multiple times.</param>
         public DuplicatedAttributeNameException(VertexTypePredefinition myVertexTypePredefinition, String myVertexTypeName)
         {
             Predefinition = myVertexTypePredefinition;

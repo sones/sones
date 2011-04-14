@@ -88,7 +88,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The meta manager.</param>
         /// The e type will be removed unless there are no edges that point to this type.
-        /// If there is such an edge, remove the edge by altering the type that holds it or remove boths type simultaneously using 
+        /// If there is such an IncomingEdge, remove the IncomingEdge by altering the type that holds it or remove boths type simultaneously using 
         /// <see cref="RemoveEdgeType(System.Collections.Generic.IEnumerable{sones.GraphDB.TypeSystem.IEdgeType},sones.Library.Transaction.TransactionToken,sones.Library.Security.SecurityToken,sones.GraphDB.Manager.MetaManager)" />.
         void RemoveEdgeType(IEdgeType myEdgeType, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
 
@@ -114,7 +114,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         /// <param name="myMetaManager">The meta manager.</param>
         /// All types will be removed unless there are no edges that point to at least one of the given types.
-        /// If there is such an edge, remove the edge by altering the type that holds it or remove this type too.
+        /// If there is such an IncomingEdge, remove the IncomingEdge by altering the type that holds it or remove this type too.
         /// All types are removed simultaneously. This means that edges between the types are not need to be removed before.
         void RemoveEdgeType(IEnumerable<IEdgeType> myEdgeTypes, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager);
 

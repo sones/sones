@@ -3,7 +3,7 @@
 namespace sones.GraphDB.Request
 {
     /// <summary>
-    /// The definition for an outgoing edge.
+    /// The definition for an outgoing IncomingEdge.
     /// </summary>
     public sealed class OutgoingEdgePredefinition
     {
@@ -11,17 +11,17 @@ namespace sones.GraphDB.Request
         #region Constant
 
         /// <summary>
-        /// The name of the predefined edge type that represents a single edge with no attributes.
+        /// The name of the predefined IncomingEdge type that represents a single IncomingEdge with no attributes.
         /// </summary>
         public const string SingleEdge = "Edge";
 
         /// <summary>
-        /// The name of the predefined edge type that represents multiple edges with no attributes.
+        /// The name of the predefined IncomingEdge type that represents multiple edges with no attributes.
         /// </summary>
         public const string HyperEdge = "Set";
 
         /// <summary>
-        /// The name of the predefined edge type that represents a multiple edges with an attribute Weight of type double.
+        /// The name of the predefined IncomingEdge type that represents a multiple edges with an attribute Weight of type double.
         /// </summary>
         public const string WeightedEdge = "Weighted";
         
@@ -30,17 +30,17 @@ namespace sones.GraphDB.Request
         #region Data
 
         /// <summary>
-        /// The name of the edge
+        /// The name of the IncomingEdge
         /// </summary>
         public String EdgeName { get; private set; }
 
         /// <summary>
-        /// The edge type of this edge definition
+        /// The IncomingEdge type of this IncomingEdge definition
         /// </summary>
         public String EdgeType { get; private set; }
 
         /// <summary>
-        /// The vertex type the edge will direct to
+        /// The vertex type the IncomingEdge will direct to
         /// </summary>
         public String TargetVertexType { get; private set; }
 
@@ -49,9 +49,9 @@ namespace sones.GraphDB.Request
         #region Constructor
 
         /// <summary>
-        /// Creates a definition for an outgoing edge
+        /// Creates a definition for an outgoing IncomingEdge
         /// </summary>
-        /// <param name="myEdgeName">The name of the edge</param>
+        /// <param name="myEdgeName">The name of the IncomingEdge</param>
         public OutgoingEdgePredefinition(String myEdgeName)
         {
             EdgeName = myEdgeName;
@@ -59,10 +59,10 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Sets the edge type of this edge definition.
+        /// Sets the IncomingEdge type of this IncomingEdge definition.
         /// </summary>
         /// <param name="myEdgeType">
-        /// The name of the edge type. 
+        /// The name of the IncomingEdge type. 
         /// </param>
         /// <seealso cref="SetAsSingleEdge"/>
         /// <seealso cref="SetAsHyperEdge"/>
@@ -75,7 +75,7 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Sets the edge type of this edge definition to 'Edge'.
+        /// Sets the IncomingEdge type of this IncomingEdge definition to 'Edge'.
         /// </summary>
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public OutgoingEdgePredefinition SetAsSingleEdge()
@@ -85,7 +85,7 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Sets the edge type of this edge definition to 'Set'.
+        /// Sets the IncomingEdge type of this IncomingEdge definition to 'Set'.
         /// </summary>
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public OutgoingEdgePredefinition SetAsHyperEdge()
@@ -95,7 +95,7 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Sets the edge type of this edge definition to 'Weighted'.
+        /// Sets the IncomingEdge type of this IncomingEdge definition to 'Weighted'.
         /// </summary>
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public OutgoingEdgePredefinition SetAsWeightedEdge()
@@ -107,7 +107,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Sets the target vertex type.
         /// </summary>
-        /// <param name="myTargetVertexTypeName">The name of the vertex type, this edge type will point to.</param>
+        /// <param name="myTargetVertexTypeName">The name of the vertex type, this IncomingEdge type will point to.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public OutgoingEdgePredefinition SetTargetVertexType(String myTargetVertexTypeName)
         {

@@ -3,7 +3,7 @@
 namespace sones.GraphDB.ErrorHandling
 {
     /// <summary>
-    /// An edge type does not exist
+    /// An IncomingEdge type does not exist
     /// </summary>
     public sealed class EdgeTypeDoesNotExistException : AGraphDBException
     {

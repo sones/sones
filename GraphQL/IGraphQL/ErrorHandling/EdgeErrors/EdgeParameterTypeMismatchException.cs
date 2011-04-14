@@ -3,7 +3,7 @@
 namespace sones.GraphQL.ErrorHandling
 {
     /// <summary>
-    /// The type of the edge parameter does not match
+    /// The type of the IncomingEdge parameter does not match
     /// </summary>
     public sealed class EdgeParameterTypeMismatchException : AGraphQLEdgeException
     {
@@ -13,7 +13,7 @@ namespace sones.GraphQL.ErrorHandling
         /// <summary>
         /// Creates a new EdgeParameterTypeMismatchException exception
         /// </summary>
-        /// <param name="currentType"> The current edge parameter type</param>
+        /// <param name="currentType"> The current IncomingEdge parameter type</param>
         /// <param name="expectedTypes">A list of expected types</param>
         public EdgeParameterTypeMismatchException(String currentType, params String[] expectedTypes)
         {

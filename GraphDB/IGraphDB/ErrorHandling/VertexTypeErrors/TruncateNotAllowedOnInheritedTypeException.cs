@@ -12,7 +12,7 @@ namespace sones.GraphDB.ErrorHandling
         /// <summary>
         /// Creates a new TruncateNotAllowedOnInheritedTypeException exception
         /// </summary>
-        /// <param name="myVertexTypeName"></param>
+        /// <param name="VertexTypeName"></param>
         public TruncateNotAllowedOnInheritedTypeException(String myVertexTypeName)
         {
             VertexTypeName = myVertexTypeName;

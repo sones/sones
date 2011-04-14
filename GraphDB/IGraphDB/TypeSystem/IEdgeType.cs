@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace sones.GraphDB.TypeSystem
 {
     /// <summary>
-    /// An interface that represents an edge type.
+    /// An interface that represents an IncomingEdge type.
     /// </summary>
     public interface IEdgeType
     {
@@ -12,12 +12,12 @@ namespace sones.GraphDB.TypeSystem
         /// The name of the EdgeType.
         /// </summary>
         /// <remarks>
-        /// The name must be unique for alle edge types in one database
+        /// The name must be unique for alle IncomingEdge types in one database
         /// </remarks>
         String Name { get; }
 
         /// <summary>
-        /// The behaviour for this edge type.
+        /// The behaviour for this IncomingEdge type.
         /// </summary>
         /// <remarks>
         /// If no behaviour is defined, this property is <c>NULL</c>.
@@ -25,16 +25,16 @@ namespace sones.GraphDB.TypeSystem
         IBehaviour Behaviour { get; }
 
         /// <summary>
-        /// The comment for this edge type.
+        /// The comment for this IncomingEdge type.
         /// </summary>
         /// <value>A user defined string, never <c>NULL</c>.</value>
         String Comment { get; }
 
         /// <summary>
-        /// Defines whether this edge type is abstract. 
+        /// Defines whether this IncomingEdge type is abstract. 
         /// </summary>
         /// <value>
-        /// If true, this edge type can not be used directly on vertex definitions.
+        /// If true, this IncomingEdge type can not be used directly on vertex definitions.
         /// </value>
         Boolean IsAbstract { get; }
 
@@ -42,16 +42,16 @@ namespace sones.GraphDB.TypeSystem
         /// Defines whether this type can be used as parent type.
         /// </summary>
         /// <value>
-        /// If true, this edge type must not be used as a parent edge type.
+        /// If true, this IncomingEdge type must not be used as a parent IncomingEdge type.
         /// </value>
         Boolean IsSealed { get; }
 
         #region Inheritance
 
         /// <summary>
-        /// Has this edge type a parent edge type?
+        /// Has this IncomingEdge type a parent IncomingEdge type?
         /// </summary>
-        /// <returns>True, if this edge type has a parent edge type, otherwise false.</returns>
+        /// <returns>True, if this IncomingEdge type has a parent IncomingEdge type, otherwise false.</returns>
         bool HasParentEdgeType { get; }
 
         /// <summary>
@@ -61,15 +61,15 @@ namespace sones.GraphDB.TypeSystem
         IEdgeType GetParentEdgeType { get; }
 
         /// <summary>
-        /// Has this edge type child edge types?
+        /// Has this IncomingEdge type child IncomingEdge types?
         /// </summary>
-        /// <returns>False, if this edge type has no child edge type, otherwise true.</returns>
+        /// <returns>False, if this IncomingEdge type has no child IncomingEdge type, otherwise true.</returns>
         bool HasChildEdgeTypes { get; }
 
         /// <summary>
-        /// Get all child edge types
+        /// Get all child IncomingEdge types
         /// </summary>
-        /// <returns>An enumerable of child edge types, never <c>NULL</c>.</returns>
+        /// <returns>An enumerable of child IncomingEdge types, never <c>NULL</c>.</returns>
         IEnumerable<IEdgeType> GetChildEdgeTypes { get; }
 
         #endregion
@@ -79,7 +79,7 @@ namespace sones.GraphDB.TypeSystem
         /// <summary>
         /// Get all visible incoming edges
         /// </summary>
-        /// <returns>An enumerable of incoming edge attributes</returns>
+        /// <returns>An enumerable of incoming IncomingEdge attributes</returns>
         IEnumerable<IPropertyDefinition> GetProperties { get; }
 
         #endregion

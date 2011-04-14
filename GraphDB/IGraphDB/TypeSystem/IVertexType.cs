@@ -143,16 +143,16 @@ namespace sones.GraphDB.TypeSystem
         #region Incoming
 
         /// <summary>
-        /// Has this vertex type a certain incoming edge?
+        /// Has this vertex type a certain incoming IncomingEdge?
         /// </summary>
         /// <returns>True or false</returns>
         bool HasIncomingEdge(String myEdgeName);
 
         /// <summary>
-        /// Gets a certain incoming edge definition
+        /// Gets a certain incoming IncomingEdge definition
         /// </summary>
-        /// <param name="myAttributeName">The name of the interesting incoming edge</param>
-        /// <returns>An incoming edge definition</returns>
+        /// <param name="myAttributeName">The name of the interesting incoming IncomingEdge</param>
+        /// <returns>An incoming IncomingEdge definition</returns>
         IIncomingEdgeDefinition GetIncomingEdgeDefinition(String myEdgeName);
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace sones.GraphDB.TypeSystem
         /// Get all incoming edges
         /// </summary>
         /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
-        /// <returns>An enumerable of incoming edge attributes</returns>
+        /// <returns>An enumerable of incoming IncomingEdge attributes</returns>
         IEnumerable<IIncomingEdgeDefinition> GetIncomingEdgeDefinitions(bool myIncludeAncestorDefinitions);
 
 
@@ -174,16 +174,16 @@ namespace sones.GraphDB.TypeSystem
         #region Outgoing
 
         /// <summary>
-        /// Has this vertex type a certain outgoing edge?
+        /// Has this vertex type a certain outgoing IncomingEdge?
         /// </summary>
         /// <returns>True or false</returns>
         bool HasOutgoingEdge(String myEdgeName);
 
         /// <summary>
-        /// Gets a certain outgoing edge definition
+        /// Gets a certain outgoing IncomingEdge definition
         /// </summary>
-        /// <param name="myAttributeName">The name of the interesting outgoing edge</param>
-        /// <returns>An outgoing edge definition</returns>
+        /// <param name="myAttributeName">The name of the interesting outgoing IncomingEdge</param>
+        /// <returns>An outgoing IncomingEdge definition</returns>
         IOutgoingEdgeDefinition GetOutgoingEdgeDefinition(String myEdgeName);
 
         /// <summary>
@@ -196,7 +196,7 @@ namespace sones.GraphDB.TypeSystem
         /// Get all outgoing edges
         /// </summary>
         /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
-        /// <returns>An enumerable of outgoing edge attributes</returns>
+        /// <returns>An enumerable of outgoing IncomingEdge attributes</returns>
         IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions(bool myIncludeAncestorDefinitions);
 
         #endregion

@@ -1,7 +1,7 @@
 ﻿namespace sones.GraphDB.Result
 {
     /// <summary>
-    /// The interface for all single edge views
+    /// The interface for all single IncomingEdge views
     /// </summary>
     public interface ISingleEdgeView : IEdgeView
     {

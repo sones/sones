@@ -6,7 +6,7 @@ using sones.GraphDB.TypeSystem;
 namespace sones.GraphDB.TypeManagement.BaseTypes
 {
     /// <summary>
-    /// This class is base class for all predefined parentVertex and edge types.
+    /// This class is base class for all predefined parentVertex and IncomingEdge types.
     /// </summary>
     internal abstract class TypeBase
     {

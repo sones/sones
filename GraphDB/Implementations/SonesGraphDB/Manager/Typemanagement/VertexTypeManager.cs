@@ -11,12 +11,13 @@ using sones.Library.Security;
 using sones.Library.Transaction;
 using sones.Library.LanguageExtensions;
 using sones.GraphDB.ErrorHandling.VertexTypeErrors;
-using sones.GraphDB.Request.CreateVertexTypes;
 using System.Collections;
+using sones.GraphDB.Manager.Vertex;
+using sones.Library.PropertyHyperGraph;
 
 /*
- * edge cases:
- *   - if someone changes the super type of an vertex or edge type 
+ * IncomingEdge cases:
+ *   - if someone changes the super type of an vertex or IncomingEdge type 
  *     - Henning, Timo 
  *       - that this isn't a required feature for version 2.0
  * 
@@ -40,7 +41,7 @@ using System.Collections;
  *       - will add the main vertex types 
  *       
  *   - get vertex type
- *     - if one of the base vertex types is requested, return a predefined result.
+ *     - if one of the base vertex types is requested, return a predefined vertex.
  * 
  *   - insert vertex type
  *     - no type can derive from the base types
@@ -131,7 +132,23 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public IVertexType GetVertexType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            return Get(myTypeName, myTransaction, mySecurity, myMetaManager);
+            #region check if it is a base type
+
+            BaseVertexType baseType;
+            if (Enum.TryParse(myTypeName, out baseType))
+            {
+                return BaseVertexTypeFactory.GetInstance(baseType);
+            }
+
+            #endregion
+
+            var vertex = Get(myTypeName, myTransaction, mySecurity, myMetaManager);
+
+            if (vertex == null)
+                throw new KeyNotFoundException(string.Format("A vertex type with name {0} was not found.", myTypeName));
+
+            return new VertexType(vertex);
+
         }
 
         #endregion
@@ -210,25 +227,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         #region Get
 
 
-        private static IVertexType Get(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        private static IVertex Get(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
-            #region check if it is a base type
-
-            BaseVertexType baseType;
-            if (Enum.TryParse(myTypeName, out baseType))
-            {
-                return BaseVertexTypeFactory.GetInstance(baseType);
-            }
-
-            #endregion
-
             #region get the type from fs
 
-            var vertex = myMetaManager.VertexManager.GetSingleVertex(new BinaryExpression(VertexTypeNameExpression, BinaryOperator.Equals, new ConstantExpression(myTypeName)), myTransaction, mySecurity);
-            if (vertex == null)
-                throw new KeyNotFoundException(string.Format("A vertex type with name {0} was not found.", myTypeName));
-
-            return new VertexType(vertex);
+            return myMetaManager.VertexManager.GetSingleVertex(new BinaryExpression(VertexTypeNameExpression, BinaryOperator.Equals, new ConstantExpression(myTypeName)), myTransaction, mySecurity);
 
             #endregion
         }
@@ -243,73 +246,200 @@ namespace sones.GraphDB.Manager.TypeManagement
             // If these checks are okay, proof everything concerning the types stored in the fs using the IVertexManager.
 
             // These are the necessary checks:
-            // - vertex type names are unique
-            // - attribute names are unique for each type pre-definition
-            // - parent types are none of the base vertex types
-            // - check that no vertex type has the flags sealed and abstract at the same time
-            // TODO: - check that unique constraints and indices definition contains existing attributes
+            //   OK - vertex type names are unique
+            //   OK - attribute names are unique for each type pre-definition
+            //   OK - parentPredef types are none of the base vertex types
+            //   OK - check that no vertex type has the flags sealed and abstract at the same time
+            //   OK - check if the derviation is circle free
             // ---- now with IVertexManager ---- (This means we can assume, that the vertex types are created, so we have a list of all vertex types containing the 'to-be-added-types'.)
-            // - check if the type names are unique
-            // - check if the derviation is circle free
-            // - check if the attribute names are unique regarding the derivation
-            // - check if all parent types exists and are not sealed
-            // - check if all outgoing edges have existing targets
-            // - check if all incoming edges have existing outgoing edges
+            //   OK - check if the type names are unique
+            //   OK - check if the attribute names are unique regarding the derivation
+            //   OK - check if all parentPredef types exists and are not sealed
+            //   OK - check if all outgoing edges have existing targets
+            //   OK - check if all incoming edges have existing outgoing edges
+            // TODO - check that unique constraints and indices definition contains existing attributes
 
 
             #region Checks without IVertexManager
             
-            CheckBasics(myVertexTypeDefinitions);
+            CanAddCheckBasics(myVertexTypeDefinitions);
 
-            //Checks if vertex type names are duplicated.
-            Dictionary<String, VertexTypePredefinition> uniqueDefs = CheckDuplicates(myVertexTypeDefinitions);
+            //Contains dictionary of vertex name to vertex predefinition.
+            var defsByVertexName = CanAddCheckDuplicates(myVertexTypeDefinitions);
+            
+            //Contains dictionary of parentPredef vertex name to list of vertex predefinitions.
+            var defsByParentVertexName = myVertexTypeDefinitions.GroupBy(def=>def.SuperVertexTypeName).ToDictionary(group => group.Key, group=>group.AsEnumerable());
 
-            //Perf: We assign the topologically sorted list to the caller (request manager) to avoid a second sort in Add.
-            myVertexTypeDefinitions = SortTopolocically(uniqueDefs);
+            //Contains list of vertex predefinitions sorted topologically.
+            var defsTopologically = CanAddSortTopolocically(defsByVertexName, defsByParentVertexName);
             
             #endregion
 
             #region Checks with IVertexManager 
-            //Here we know the the VertexTypePredefinitions are syntactical correct.
+            //Here we know that the VertexTypePredefinitions are syntactical correct.
 
+            CanAddCheckWithFS(defsTopologically, defsByVertexName, myTransaction, mySecurity, myMetaManager);
 
-
-            
             #endregion
 
+            //Perf: We assign the topologically sorted list to the caller (request manager) to avoid a second sort in Add.
+            myVertexTypeDefinitions = defsTopologically;
+        }
 
-            throw new NotImplementedException();
+        /// <summary>
+        /// Does the necessary checks for can add with the use of the FS.
+        /// </summary>
+        /// <param name="myDefsTopologically"></param>
+        /// <param name="myDefsByName"></param>
+        /// <param name="myTransaction"></param>
+        /// <param name="mySecurity"></param>
+        /// <param name="myMetaManager"></param>
+        /// The predefinitions are checked one by one in topologically order. 
+        private static void CanAddCheckWithFS(
+            LinkedList<VertexTypePredefinition> myDefsTopologically, 
+            Dictionary<String, VertexTypePredefinition> myDefsByName,
+            TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        {
+
+            //Contains the vertex type name to the attribute names of the vertex type.
+            var attributes = new Dictionary<String, HashSet<String>>(myDefsTopologically.Count);
+
+            for (var current = myDefsTopologically.First; current != null; current = current.Next)
+            {
+                 CanAddCheckVertexNameWithFS(current.Value, myTransaction, mySecurity, myMetaManager);
+                 CanAddCheckAttributeNameUniquenessWithFS(current, myTransaction, mySecurity, myMetaManager, attributes);
+                 CanAddCheckOutgoingEdgeTargets(current.Value, myDefsByName, myTransaction, mySecurity, myMetaManager);
+                 CanAddCheckIncomingEdgeSources(current.Value, myDefsByName, myTransaction, mySecurity, myMetaManager);
+                 current = current.Next;
+             }
+        }
+
+        private static void CanAddCheckIncomingEdgeSources(VertexTypePredefinition myVertexTypePredefinition, Dictionary<string, VertexTypePredefinition> myDefsByName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        {
+            var grouped = myVertexTypePredefinition.IncomingEdges.GroupBy(x => x.SourceTypeName);
+            foreach (var group in grouped)
+            {
+                if (!myDefsByName.ContainsKey(group.Key))
+                {
+                    var vertex = Get(group.Key, myTransaction, mySecurity, myMetaManager);
+                    if (vertex == null)
+                        throw new TargetVertexTypeNotFoundException(myVertexTypePredefinition, group.Key, group.Select(x=>x.EdgeName));
+
+                    var attributes = vertex.GetIncomingVertices((long)BaseVertexType.OutgoingEdge, AttributeDefinitions.DefiningTypeOnAttribute.AttributeID);
+                    foreach (var edge in group)
+                    {
+                        if (!attributes.Any(outgoing => edge.SourceEdgeName.Equals(outgoing.GetPropertyAsString(AttributeDefinitions.Name.AttributeID))))
+                            throw new OutgoingEdgeNotFoundException(myVertexTypePredefinition, edge);
+                    }
+                }
+                else
+                {
+                    var target = myDefsByName[group.Key];
+
+                    foreach (var edge in group)
+                    {
+                        if (!target.OutgoingEdges.Any(outgoing => edge.SourceEdgeName.Equals(outgoing.EdgeName)))
+                            throw new OutgoingEdgeNotFoundException(myVertexTypePredefinition, edge);
+                    }
+                    
+                }
+            }
+        }
+
+        private static void CanAddCheckOutgoingEdgeTargets(VertexTypePredefinition myVertexTypePredefinition, Dictionary<string, VertexTypePredefinition> myDefsByName, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        {
+            var grouped = myVertexTypePredefinition.OutgoingEdges.GroupBy(x => x.TargetVertexType);
+            foreach (var group in grouped)
+            {
+                if (!myDefsByName.ContainsKey(group.Key))
+                {
+                    var vertex = Get(group.Key, myTransaction, mySecurity, myMetaManager);
+                    if (vertex == null)
+                        throw new TargetVertexTypeNotFoundException(myVertexTypePredefinition, group.Key, group.Select(x => x.EdgeName));
+
+                }
+            }
+        }
+
+        private static void CanAddCheckVertexNameWithFS(VertexTypePredefinition current, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
+        {
+            if (Get(current.VertexTypeName, myTransaction, mySecurity, myMetaManager) != null)
+                throw new DuplicatedVertexTypeNameException(current.VertexTypeName);
+        }
+
+        private static void CanAddCheckAttributeNameUniquenessWithFS(LinkedListNode<VertexTypePredefinition> current, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager, Dictionary<string, HashSet<string>> attributes)
+        {
+            var parentPredef = GetParentPredefinitionOnTopologicallySortedList(current, current.Previous);
+
+            if (parentPredef == null)
+            {
+                //Get the parent type from FS.
+                var parent = Get(current.Value.SuperVertexTypeName, myTransaction, mySecurity, myMetaManager);
+
+                if (parent == null)
+                    //No parent type was found.
+                    throw new InvalidBaseVertexTypeException(current.Value.SuperVertexTypeName);
+
+                if (parent.GetProperty<bool>(AttributeDefinitions.IsSealedOnBaseType.AttributeID))
+                    //The parent type is sealed.
+                    throw new SealedBaseVertexTypeException(current.Value.VertexTypeName, parent.GetPropertyAsString(AttributeDefinitions.Name.AttributeID));
+
+                var attributeNames = parent.GetIncomingVertices(
+                    (long)BaseVertexType.Attribute,
+                    AttributeDefinitions.DefiningTypeOnAttribute.AttributeID).Select(vertex => vertex.GetPropertyAsString(AttributeDefinitions.Name.AttributeID));
+
+                attributes[current.Value.VertexTypeName] = new HashSet<string>(attributeNames);
+            }
+            else 
+            {
+                attributes[current.Value.VertexTypeName] = new HashSet<string>(attributes[parentPredef.Value.VertexTypeName]);
+            }
+
+            var attributeNamesSet = attributes[current.Value.VertexTypeName];
+
+            CheckIncomingEdgesUniqueName(current.Value, attributeNamesSet);
+            CheckOutgoingEdgesUniqueName(current.Value, attributeNamesSet);
+            CheckPropertiesUniqueName(current.Value, attributeNamesSet);
+        }
+
+        private static LinkedListNode<VertexTypePredefinition> GetParentPredefinitionOnTopologicallySortedList(LinkedListNode<VertexTypePredefinition> current, LinkedListNode<VertexTypePredefinition> parent)
+        {
+            while (parent != null)
+            {
+                if (parent.Value.VertexTypeName.Equals(current.Value.SuperVertexTypeName))
+                    break;
+                parent = parent.Previous;
+            }
+            return parent;
         }
 
         /// <summary>
         /// Checks for errors in a list of VertexTypePredefinitions without using the FS
         /// </summary>
         /// <param name="myVertexTypeDefinitions">The list of VertexTypePredefinitions to be checked.</param>
-        private static void CheckBasics(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions)
+        private static void CanAddCheckBasics(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions)
         {
             foreach (var vertexTypeDefinition in myVertexTypeDefinitions)
             {
                 vertexTypeDefinition.CheckNull("Element in myVertexTypeDefinitions");
 
                 CheckSealedAndAbstract(vertexTypeDefinition);
-                
                 CheckVertexTypeName(vertexTypeDefinition);
-                
                 CheckParentTypeAreNoBaseTypes(vertexTypeDefinition);
-
                 CheckAttributes(vertexTypeDefinition);
             }
         }
 
         private static void CheckAttributes(VertexTypePredefinition vertexTypeDefinition)
         {
-            SortedSet<String> uniqueNameSet = new SortedSet<string>();
-            CheckIncomingEdges(vertexTypeDefinition, uniqueNameSet);
-            CheckOutgoingEdges(vertexTypeDefinition, uniqueNameSet);
-            CheckProperties(vertexTypeDefinition, uniqueNameSet);
+            HashSet<String> uniqueNameSet = new HashSet<string>();
+
+            CheckIncomingEdgesUniqueName(vertexTypeDefinition, uniqueNameSet);
+            CheckOutgoingEdgesUniqueName(vertexTypeDefinition, uniqueNameSet);
+            CheckPropertiesUniqueName(vertexTypeDefinition, uniqueNameSet);
         }
 
-        private static void CheckProperties(VertexTypePredefinition vertexTypeDefinition, SortedSet<string> myUniqueNameSet)
+        private static void CheckPropertiesUniqueName(VertexTypePredefinition vertexTypeDefinition, ISet<string> myUniqueNameSet)
         {
             foreach (var prop in vertexTypeDefinition.Properties)
             {
@@ -341,7 +471,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             return baseTypes.Contains(prop.TypeName);
         }
 
-        private static void CheckOutgoingEdges(VertexTypePredefinition vertexTypeDefinition, SortedSet<string> myUniqueNameSet)
+        private static void CheckOutgoingEdgesUniqueName(VertexTypePredefinition vertexTypeDefinition, ISet<string> myUniqueNameSet)
         {
             foreach (var edge in vertexTypeDefinition.OutgoingEdges)
             {
@@ -362,7 +492,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
 
-        private static void CheckIncomingEdges(VertexTypePredefinition vertexTypeDefinition, SortedSet<String> myUniqueNameSet)
+        private static void CheckIncomingEdgesUniqueName(VertexTypePredefinition vertexTypeDefinition, ISet<String> myUniqueNameSet)
         {
             foreach (var edge in vertexTypeDefinition.IncomingEdges)
             {
@@ -411,7 +541,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myVertexTypeDefinitions">A list of vertex type predefinitions.</param>
         /// <returns>A dictionary of vertex name to VertexTypePredefinition.</returns>
-        private static Dictionary<String, VertexTypePredefinition> CheckDuplicates(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions)
+        private static Dictionary<String, VertexTypePredefinition> CanAddCheckDuplicates(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions)
         {
             Dictionary<String, VertexTypePredefinition> result = (myVertexTypeDefinitions is ICollection)
                 ? new Dictionary<String, VertexTypePredefinition>((myVertexTypeDefinitions as ICollection).Count)
@@ -428,35 +558,32 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         /// <summary>
-        /// Sorts a list of vertex type predefinitions topologically regarding their parent type name.
+        /// Sorts a list of vertex type predefinitions topologically regarding their parentPredef type name.
         /// </summary>
         /// <param name="myVertexTypeDefinitions">A set of vertex type predefinitions sorted by their names.</param>
-        /// <returns> if the vertex type predefinition can be sorted topologically regarding their parent type, otherwise false.</returns>
-        private static IEnumerable<VertexTypePredefinition> SortTopolocically(Dictionary<String, VertexTypePredefinition> myVertexTypeDefinitions)
+        /// <returns> if the vertex type predefinition can be sorted topologically regarding their parentPredef type, otherwise false.</returns>
+        private static LinkedList<VertexTypePredefinition> CanAddSortTopolocically(
+            Dictionary<String, VertexTypePredefinition> myDefsByVertexName,
+            Dictionary<String, IEnumerable<VertexTypePredefinition>> myDefsByParentVertexName)
         {
-            //Vertex type predefinitions goes from toBeChecked into result.
-            var toBeChecked = myVertexTypeDefinitions;
-
-            //Group predefinitions by their parent type names and convert it into a dictionary.
-            var grouped = myVertexTypeDefinitions.Values.GroupBy(predef => predef.SuperVertexTypeName).ToDictionary(group => group.Key, x => x.AsEnumerable());
-
+            
             //The list of topolocically sorted vertex types
-            //In this step, we assume that parent types, that are not in the list of predefinitons are correct.
+            //In this step, we assume that parentPredef types, that are not in the list of predefinitons are correct.
             //Correct means: either they are in fs or they are not in fs but then they are not defined. (this will be detected later)
-            var correctRoots = grouped.Where(parent => !toBeChecked.ContainsKey(parent.Key)).SelectMany(x => x.Value);
+            var correctRoots = myDefsByParentVertexName.Where(parent => !myDefsByVertexName.ContainsKey(parent.Key)).SelectMany(x => x.Value);
             var result = new LinkedList<VertexTypePredefinition>(correctRoots);
             
 
             //Here we step throught the list of topolocically sorted predefinitions.
-            //Each predefinition that is in this list, is a valid parent type for other predefinitions.
-            //Thus we can add all predefinitions, that has parent predefinition in the list to the end of the list.
+            //Each predefinition that is in this list, is a valid parentPredef type for other predefinitions.
+            //Thus we can add all predefinitions, that has parentPredef predefinition in the list to the end of the list.
             var current = result.First;
             while (current != null) 
             {
-                //All predefinitions, that has the current predefintion as parent vertex type.
-                var corrects = grouped[current.Value.VertexTypeName];
+                //All predefinitions, that has the current predefintion as parentPredef vertex type.
+                var corrects = myDefsByParentVertexName[current.Value.VertexTypeName];
 
-                //They go from toBeChecked into result.
+                //They go from toBeChecked into vertex.
                 foreach (var correct in corrects)
                 {
                     result.AddLast(correct);
@@ -465,10 +592,10 @@ namespace sones.GraphDB.Manager.TypeManagement
                 current = current.Next;
             }
 
-            
-            if (toBeChecked.Count > result.Count)
-                //There are some defintions that are not in the result...sothey must contain a circle.
-                throw new CircularTypeHierarchyException(toBeChecked.Values.Except(result));
+
+            if (myDefsByVertexName.Count > result.Count)
+                //There are some defintions that are not in the vertex...so they must contain a circle.
+                throw new CircularTypeHierarchyException(myDefsByVertexName.Values.Except(result));
 
             return result;
         }
@@ -476,7 +603,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         private IEnumerable<IVertexType> Add(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity, MetaManager myMetaManager)
         {
             // there are two ways to add the vertex types
-            // 1. We add a vertex per definition without setting the parent type. After that we update these vertices to set the edge to the parent type.
+            // 1. We add a vertex per definition without setting the parentPredef type. After that we update these vertices to set the IncomingEdge to the parentPredef type.
             // 2. We built up a derivation forest (list of trees) and insert the types in order with setting the base type
             // we assume, that 1. must visit the vertices more often in FS and 2. also generates a spanning tree, so we know that we do not have an inheritance problem
 

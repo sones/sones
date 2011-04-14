@@ -4,7 +4,7 @@ using sones.Library.ErrorHandling;
 namespace sones.GraphDB.ErrorHandling
 {
     /// <summary>
-    /// Defining of incoming edge for not referenced attribute is not allowed
+    /// Defining of incoming IncomingEdge for not referenced attribute is not allowed
     /// </summary>
     public sealed class IncomingEdgeForNotReferenceAttributeTypesException : AGraphDBIncomingEdgeException
     {

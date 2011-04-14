@@ -4,7 +4,7 @@ using sones.Library.ErrorHandling;
 namespace sones.GraphDB.ErrorHandling
 {
     /// <summary>
-    /// The incoming edge destination is invalid
+    /// The incoming IncomingEdge destination is invalid
     /// </summary>
     public sealed class IncomingEdgeDestinationIsInvalidException : AGraphDBIncomingEdgeException
     {
@@ -14,7 +14,7 @@ namespace sones.GraphDB.ErrorHandling
         /// <summary>
         /// Creates a new IncomingEdgeDestinationIsInvalidException exception
         /// </summary>
-        /// <param name="myVertexTypeName">The name of the vertex type</param>
+        /// <param name="VertexTypeName">The name of the vertex type</param>
         /// <param name="myVertexAttributeName">The name of the vertex attribute </param>
         public IncomingEdgeDestinationIsInvalidException(String myVertexTypeName, String myVertexAttributeName)
         {
