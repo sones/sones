@@ -14,7 +14,6 @@ using sones.GraphDB.ErrorHandling.VertexTypeErrors;
 using System.Collections;
 using sones.GraphDB.Manager.Vertex;
 using sones.GraphDB.Manager.Index;
-using sones.GraphDB.Manager.Vertex;
 using sones.Library.PropertyHyperGraph;
 
 /*
@@ -70,43 +69,24 @@ namespace sones.GraphDB.Manager.TypeManagement
         #region constructor
 
         /// <summary>
-        /// Create a new VertexTypeManager
+        /// Create a new VertexTypeManager.
         /// </summary>
         public VertexTypeManager()
         {
+            _vertexTypeVertexType = BaseVertexTypeFactory.GetInstance(BaseVertexType.VertexType);
+            _vertexTypeNameExpression = new PropertyExpression(_vertexTypeVertexType.Name, AttributeDefinitions.Name.Name);
+            _vertexTypeIDExpression = new PropertyExpression(_vertexTypeVertexType.Name, AttributeDefinitions.ID.Name);
         }
 
         #endregion
-
-        #region nested class
-
-        #region VertexTypePredefinitionComparer
-
-        private class VertexTypePredefinitionComparer: IComparer<VertexTypePredefinition>
-        {
-            #region IComparer<VertexTypePredefinition> Members
-
-            int IComparer<VertexTypePredefinition>.Compare(VertexTypePredefinition x, VertexTypePredefinition y)
-            {
-                return String.Compare(x.VertexTypeName, y.VertexTypeName);
-            }
-
-            #endregion
-        }
-
-        #endregion
-
-        #endregion
-
+        
         #region Constants
 
-        private const UInt64 VertexTypeID = UInt64.MinValue;
-        private const UInt64 EdgeTypeID = UInt64.MinValue + 1;
         private const int ExpectedVertexTypes = 100;
 
         #region base c# types
 
-        private static readonly String[] baseTypes = 
+        private static readonly String[] BaseTypes = 
         {
             // ordered by assumed usage, to speed up contains
             TypeInt32,
@@ -147,15 +127,35 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #endregion
 
-        private static readonly IExpression VertexTypeNameExpression = new PropertyExpression("VertexType", "Name");
-
-        private static readonly IComparer<VertexTypePredefinition> VertexTypePredefinitionComparerInstance = new VertexTypePredefinitionComparer();
+        private readonly IVertexType _vertexTypeVertexType;
+        private readonly IExpression _vertexTypeNameExpression;
+        private readonly IExpression _vertexTypeIDExpression;
 
         #endregion
 
         #region IVertexTypeManager Members
 
         #region Retrieving
+
+        public IVertexType GetVertexType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            #region check if it is a base type
+
+            if (Enum.IsDefined(typeof(BaseVertexType), myTypeId))
+            {
+                return BaseVertexTypeFactory.GetInstance((BaseVertexType) myTypeId);
+            }
+
+            #endregion
+
+            
+            var vertex = Get(myTypeId, myTransaction, mySecurity);
+
+            if (vertex == null)
+                throw new KeyNotFoundException(string.Format("A vertex type with name {0} was not found.", myTypeId));
+
+            return new VertexType(vertex);
+}
 
         public IVertexType GetVertexType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
@@ -257,10 +257,20 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             #region get the type from fs
 
-            return _vertexManager.GetSingleVertex(new BinaryExpression(VertexTypeNameExpression, BinaryOperator.Equals, new ConstantExpression(myTypeName)), myTransaction, mySecurity);
+            return _vertexManager.GetSingleVertex(new BinaryExpression(_vertexTypeNameExpression, BinaryOperator.Equals, new ConstantExpression(myTypeName)), myTransaction, mySecurity);
 
             #endregion
         }
+
+        private IVertex Get(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            #region get the type from fs
+
+            return _vertexManager.GetSingleVertex(new BinaryExpression(_vertexTypeIDExpression, BinaryOperator.Equals, new ConstantExpression(myTypeId)), myTransaction, mySecurity);
+
+            #endregion
+        }
+
 
         #endregion
 
@@ -319,7 +329,6 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myDefsByName"></param>
         /// <param name="myTransaction"></param>
         /// <param name="mySecurity"></param>
-        /// <param name="myMetaManager"></param>
         /// The predefinitions are checked one by one in topologically order. 
         private void CanAddCheckWithFS(
             LinkedList<VertexTypePredefinition> myDefsTopologically, 
@@ -340,7 +349,7 @@ namespace sones.GraphDB.Manager.TypeManagement
              }
         }
 
-        private void CanAddCheckIncomingEdgeSources(VertexTypePredefinition myVertexTypePredefinition, Dictionary<string, VertexTypePredefinition> myDefsByName, TransactionToken myTransaction, SecurityToken mySecurity)
+        private void CanAddCheckIncomingEdgeSources(VertexTypePredefinition myVertexTypePredefinition, IDictionary<string, VertexTypePredefinition> myDefsByName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             var grouped = myVertexTypePredefinition.IncomingEdges.GroupBy(x => x.SourceTypeName);
             foreach (var group in grouped)
@@ -372,7 +381,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
         }
 
-        private void CanAddCheckOutgoingEdgeTargets(VertexTypePredefinition myVertexTypePredefinition, Dictionary<string, VertexTypePredefinition> myDefsByName, TransactionToken myTransaction, SecurityToken mySecurity)
+        private void CanAddCheckOutgoingEdgeTargets(VertexTypePredefinition myVertexTypePredefinition, IDictionary<string, VertexTypePredefinition> myDefsByName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             var grouped = myVertexTypePredefinition.OutgoingEdges.GroupBy(x => x.TargetVertexType);
             foreach (var group in grouped)
@@ -393,7 +402,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 throw new DuplicatedVertexTypeNameException(current.VertexTypeName);
         }
 
-        private void CanAddCheckAttributeNameUniquenessWithFS(LinkedListNode<VertexTypePredefinition> current, TransactionToken myTransaction, SecurityToken mySecurity, Dictionary<string, HashSet<string>> attributes)
+        private void CanAddCheckAttributeNameUniquenessWithFS(LinkedListNode<VertexTypePredefinition> current, TransactionToken myTransaction, SecurityToken mySecurity, IDictionary<string, HashSet<string>> attributes)
         {
             var parentPredef = GetParentPredefinitionOnTopologicallySortedList(current, current.Previous);
 
@@ -458,7 +467,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private static void CheckAttributes(VertexTypePredefinition vertexTypeDefinition)
         {
-            HashSet<String> uniqueNameSet = new HashSet<string>();
+            var uniqueNameSet = new HashSet<string>();
 
             CheckIncomingEdgesUniqueName(vertexTypeDefinition, uniqueNameSet);
             CheckOutgoingEdgesUniqueName(vertexTypeDefinition, uniqueNameSet);
@@ -494,7 +503,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private static bool IsBaseType(PropertyPredefinition prop)
         {
-            return baseTypes.Contains(prop.TypeName);
+            return BaseTypes.Contains(prop.TypeName);
         }
 
         private static void CheckOutgoingEdgesUniqueName(VertexTypePredefinition vertexTypeDefinition, ISet<string> myUniqueNameSet)
@@ -569,7 +578,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <returns>A dictionary of vertex name to VertexTypePredefinition.</returns>
         private static Dictionary<String, VertexTypePredefinition> CanAddCheckDuplicates(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions)
         {
-            Dictionary<String, VertexTypePredefinition> result = (myVertexTypeDefinitions is ICollection)
+            var result = (myVertexTypeDefinitions is ICollection)
                 ? new Dictionary<String, VertexTypePredefinition>((myVertexTypeDefinitions as ICollection).Count)
                 : new Dictionary<String, VertexTypePredefinition>(ExpectedVertexTypes);
 
@@ -586,7 +595,8 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// Sorts a list of vertex type predefinitions topologically regarding their parentPredef type name.
         /// </summary>
-        /// <param name="myVertexTypeDefinitions">A set of vertex type predefinitions sorted by their names.</param>
+        /// <param name="myDefsByVertexName"></param>
+        /// <param name="myDefsByParentVertexName"></param>
         /// <returns> if the vertex type predefinition can be sorted topologically regarding their parentPredef type, otherwise false.</returns>
         private static LinkedList<VertexTypePredefinition> CanAddSortTopolocically(
             Dictionary<String, VertexTypePredefinition> myDefsByVertexName,

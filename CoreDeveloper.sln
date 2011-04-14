@@ -149,9 +149,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonesGraphGenerators", "Plu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApplication2", "Applications\TestApplication2\TestApplication2.csproj", "{C55633BD-8F9D-4F7A-828B-5AB044CD45E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Settings", "Library\Internal\Settings\Settings.csproj", "{A233FDB4-70A9-4284-827A-1704950E0EF3}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IO", "IO", "{EBF719EF-F68F-4F05-85E5-44D659F44F92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Settings", "Library\Internal\Settings\Settings.csproj", "{A233FDB4-70A9-4284-827A-1704950E0EF3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IOInterface", "Plugins\GraphDS\IO\Interface\IOInterface.csproj", "{991132D2-15E0-4BB7-8328-3A51646D4F01}"
 EndProject
@@ -335,14 +335,14 @@ Global
 		SccProjectTopLevelParentUniqueName43 = CoreDeveloper.sln
 		SccProjectName43 = Library/Internal/Settings
 		SccLocalPath43 = Library\\Internal\\Settings
-		SccProjectUniqueName44 = Plugins\\GraphDS\\IO\\XML_IO\\XML_IO.csproj
+		SccProjectUniqueName44 = Plugins\\GraphDS\\IO\\Interface\\IOInterface.csproj
 		SccProjectTopLevelParentUniqueName44 = CoreDeveloper.sln
-		SccProjectName44 = Plugins/GraphDS/IO/XML_IO
-		SccLocalPath44 = Plugins\\GraphDS\\IO\\XML_IO
-		SccProjectUniqueName45 = Plugins\\GraphDS\\IO\\Interface\\IOInterface.csproj
+		SccProjectName44 = Plugins/GraphDS/IO/Interface
+		SccLocalPath44 = Plugins\\GraphDS\\IO\\Interface
+		SccProjectUniqueName45 = Plugins\\GraphDS\\IO\\XML_IO\\XML_IO.csproj
 		SccProjectTopLevelParentUniqueName45 = CoreDeveloper.sln
-		SccProjectName45 = Plugins/GraphDS/IO/Interface
-		SccLocalPath45 = Plugins\\GraphDS\\IO\\Interface
+		SccProjectName45 = Plugins/GraphDS/IO/XML_IO
+		SccLocalPath45 = Plugins\\GraphDS\\IO\\XML_IO
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
