@@ -44,14 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ErrorHandling\Aggregate\AggregateDoesNotMatchGroupLevelException.cs" />
-    <Compile Include="ErrorHandling\Aggregate\AggregateIsNotValidOnThisAttributeException.cs" />
-    <Compile Include="ErrorHandling\Aggregate\AggregateNotAllowedException.cs" />
-    <Compile Include="ErrorHandling\Aggregate\AggregateOnMultiAttributesNotAllowedException.cs" />
-    <Compile Include="ErrorHandling\Aggregate\AggregateParameterCountMismatchException.cs" />
-    <Compile Include="ErrorHandling\Aggregate\ASonesQLAggregateException.cs" />
-    <Compile Include="ErrorHandling\Aggregate\NotImplementedAggregateTargetException.cs" />
-    <Compile Include="ErrorHandling\Aggregate\UnknownAggregateException.cs" />
+    <Compile Include="ErrorHandling\AggregateErrors\AggregateDoesNotMatchGroupLevelException.cs" />
+    <Compile Include="ErrorHandling\AggregateErrors\AggregateIsNotValidOnThisAttributeException.cs" />
+    <Compile Include="ErrorHandling\AggregateErrors\AggregateNotAllowedException.cs" />
+    <Compile Include="ErrorHandling\AggregateErrors\AggregateOnMultiAttributesNotAllowedException.cs" />
+    <Compile Include="ErrorHandling\AggregateErrors\AggregateParameterCountMismatchException.cs" />
+    <Compile Include="ErrorHandling\AggregateErrors\ASonesQLAggregateException.cs" />
+    <Compile Include="ErrorHandling\AggregateErrors\NotImplementedAggregateTargetException.cs" />
+    <Compile Include="ErrorHandling\AggregateErrors\UnknownAggregateException.cs" />
     <Compile Include="ErrorHandling\AGraphQLException.cs" />
     <Compile Include="ErrorHandling\AttributeAssignmentErrors\AGraphQLAttributeAssignmentException.cs" />
     <Compile Include="ErrorHandling\AttributeAssignmentErrors\InvalidAssignOfSetException.cs" />
@@ -84,6 +84,10 @@
     <Compile Include="ErrorHandling\IndexErrors\CouldNotAlterIndexOnTypeException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\InvalidIndexOperationException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\AGraphQLIndexException.cs" />
+    <Compile Include="ErrorHandling\OperatorErrors\InvalidInRangeIntervalException.cs" />
+    <Compile Include="ErrorHandling\OperatorErrors\InvalidInRangeOperationException.cs" />
+    <Compile Include="ErrorHandling\OperatorErrors\OperatorDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\OperatorErrors\AGraphQLOperatorException.cs" />
     <Compile Include="ErrorHandling\SelectErrors\AGraphQLSelectException.cs" />
     <Compile Include="ErrorHandling\SelectErrors\DuplicateAttributeSelectionException.cs" />
     <Compile Include="ErrorHandling\SelectErrors\GroupedAttributeIsNotSelectedException.cs" />

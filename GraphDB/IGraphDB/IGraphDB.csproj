@@ -47,6 +47,7 @@
     <Compile Include="ErrorHandling\AggregateOrFunctionDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\AGraphDBException.cs" />
     <Compile Include="ErrorHandling\EdgeTypeDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\IndexErrors\IndexUniqueConstrainViolationException.cs" />
     <Compile Include="ErrorHandling\Expression\InvalidExpressionException.cs" />
     <Compile Include="ErrorHandling\IncomingEdge\IncomingEdgeDestinationIsInvalidException.cs" />
     <Compile Include="ErrorHandling\IncomingEdge\IncomingEdgeForNotReferenceAttributeTypesException.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidVertexAttributeNameException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidVertexAttributeSelectionException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\AGraphDBVertexAttributeException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\VertexAttributeUniqueConstraintViolation.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\CircularTypeHierarchyException.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\DuplicatedVertexTypeName.cs" />
     <Compile Include="ErrorHandling\VertexTypeErrors\EmptyVertexTypeNameException.cs" />

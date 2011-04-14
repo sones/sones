@@ -32,7 +32,29 @@ namespace sones.Library.LanguageExtensions
         #endregion
 
 
-        #region Exists        
+        #region ULongCount
+        
+        public static UInt64 ULongCount<T>(this IEnumerable<T> myIEnumerable)
+        {
+            if (myIEnumerable == null) return 0;
+
+            var _ReturnValue = myIEnumerable.LongCount();
+
+            return (_ReturnValue >= 0) ? (UInt64)_ReturnValue : 0;
+
+        }
+
+        public static UInt64 ULongCount<T>(this IEnumerable<T> myIEnumerable, Func<T, Boolean> myFunc)
+        {
+            var _ReturnValue = myIEnumerable.LongCount(myFunc);
+
+            return (_ReturnValue >= 0) ? (UInt64)_ReturnValue : 0;
+        }
+
+        #endregion
+
+
+        #region Exists
 
         public static Boolean Exists<T>(this IEnumerable<T> myIEnumerable, Func<T, Boolean> match)
         {
