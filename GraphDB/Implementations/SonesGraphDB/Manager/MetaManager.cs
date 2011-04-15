@@ -36,6 +36,11 @@ namespace sones.GraphDB.Manager
         /// </summary>
         private readonly IVertexStore _vertexStore;
 
+        /// <summary>
+        /// The edge type manager
+        /// </summary>
+        private readonly IEdgeTypeManager _edgeTypeManager;
+
         #endregion
 
         #region Constructor
@@ -98,6 +103,11 @@ namespace sones.GraphDB.Manager
         public IVertexStore VertexStore
         {
             get { return _vertexStore; }
+        }
+
+        public IEdgeTypeManager EdgeTypeManager
+        {
+            get { return _edgeTypeManager; }
         }
 
         #endregion

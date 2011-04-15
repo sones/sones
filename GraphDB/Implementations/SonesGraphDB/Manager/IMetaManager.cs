@@ -30,5 +30,10 @@ namespace sones.GraphDB.Manager
         /// The raw interface to the interfaces
         /// </summary>
         IVertexStore VertexStore { get; }
+
+        /// <summary>
+        /// The interface to the edge types
+        /// </summary>
+        IEdgeTypeManager EdgeTypeManager { get; }
     }
 }

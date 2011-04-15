@@ -14,6 +14,11 @@ namespace sones.GraphDB.Manager.TypeManagement
             throw new System.NotImplementedException();
         }
 
+        public IEdgeType GetEdgeType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public bool CanAddEdgeType(EdgeTypeDefinition myEdgeTypeDefinition, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             throw new System.NotImplementedException();
