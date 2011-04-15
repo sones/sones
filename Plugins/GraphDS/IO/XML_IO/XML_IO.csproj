@@ -80,6 +80,8 @@
   <ItemGroup>
     <None Include="QueryResultSchema.xsd">
       <SubType>Designer</SubType>
+      <Generator>SchemaToClassesGenerator</Generator>
+      <CustomToolNamespace>SchemaToClassesGenerator</CustomToolNamespace>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
