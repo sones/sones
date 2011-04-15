@@ -3,14 +3,21 @@ using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.TypeManagement.BaseTypes
 {
+
     /// <summary>
     /// This static class contains all attribute definitions.
     /// </summary>
-    /// We use a summary file, that contains attribute definitions, because some attributes are used in multiple parentVertex types
+    /// We use a summary file, that contains attribute definitions, because some attributes are used in multiple vertex types
     /// and we want to be sure, that the AttributeIDs are similar for VertexTypes
     /// 
     internal static class AttributeDefinitions
     {
+        public struct Info
+        {
+            public long ID;
+            public String Name;
+        }
+
         #region Vertex
 
         /// <summary>
@@ -18,11 +25,11 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         /// </summary>
         private const Int64 VertexOffset = 5;
 
-        internal static readonly Tuple<long, String> IDOnVertex             = Tuple.Create(Int64.MinValue    , "UUID");
-        internal static readonly Tuple<long, String> CreationOnVertex       = Tuple.Create(Int64.MinValue + 1, "CreationDate");
-        internal static readonly Tuple<long, String> ModifificationOnVertex = Tuple.Create(Int64.MinValue + 2, "ModificationDate");
-        internal static readonly Tuple<long, String> RevisionOnVertex       = Tuple.Create(Int64.MinValue + 3, "Revision");
-        internal static readonly Tuple<long, String> EditionOnVertex        = Tuple.Create(Int64.MinValue + 4, "Edition");
+        public static readonly Info IDOnVertex             = new Info { ID = Int64.MinValue    , Name = "UUID" };
+        public static readonly Info CreationOnVertex       = new Info { ID = Int64.MinValue + 1, Name = "CreationDate" };
+        public static readonly Info ModifificationOnVertex = new Info { ID = Int64.MinValue + 2, Name = "ModificationDate" };
+        public static readonly Info RevisionOnVertex       = new Info { ID = Int64.MinValue + 3, Name = "Revision" };
+        public static readonly Info EditionOnVertex        = new Info { ID = Int64.MinValue + 4, Name = "Edition" };
 
         #endregion
 
@@ -33,10 +40,10 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         /// </summary>
         private const Int64 AllTypesOffset = VertexOffset + 4;
 
-        internal static readonly Tuple<long, String> ID            = Tuple.Create(Int64.MinValue + VertexOffset    , "ID");
-        internal static readonly Tuple<long, String> Name          = Tuple.Create(Int64.MinValue + VertexOffset + 1, "Name");
-        internal static readonly Tuple<long, String> IsUserDefined = Tuple.Create(Int64.MinValue + VertexOffset + 2, "IsUserDefined");
-        internal static readonly Tuple<long, String> Comment       = Tuple.Create(Int64.MinValue + VertexOffset + 3, "Comment");
+        public static readonly Info ID            = new Info { ID = Int64.MinValue + VertexOffset    , Name = "ID"};
+        public static readonly Info Name          = new Info { ID = Int64.MinValue + VertexOffset + 1, Name = "Name"};
+        public static readonly Info IsUserDefined = new Info { ID = Int64.MinValue + VertexOffset + 2, Name = "IsUserDefined"};
+        public static readonly Info Comment       = new Info { ID = Int64.MinValue + VertexOffset + 3, Name = "Comment"};
 
         #endregion
 
@@ -47,26 +54,26 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         /// </summary>
         private const Int64 BaseTypeOffset = AllTypesOffset + 4;
 
-        internal static readonly Tuple<long, String> IsAbstractOnBaseType = Tuple.Create(Int64.MinValue + AllTypesOffset, "IsAbstract");
-        internal static readonly Tuple<long, String> IsSealedOnBaseType   = Tuple.Create(Int64.MinValue + AllTypesOffset + 1, "IsSealed");
-        internal static readonly Tuple<long, String> AttributesOnBaseType = Tuple.Create(Int64.MinValue + AllTypesOffset + 2, "Attributes");
-        internal static readonly Tuple<long, String> BehaviourOnBaseType  = Tuple.Create(Int64.MinValue + AllTypesOffset + 3, "Behaviour");
+        public static readonly Info IsAbstractOnBaseType = new Info { ID = Int64.MinValue + AllTypesOffset    , Name = "IsAbstract"};
+        public static readonly Info IsSealedOnBaseType   = new Info { ID = Int64.MinValue + AllTypesOffset + 1, Name = "IsSealed"};
+        public static readonly Info AttributesOnBaseType = new Info { ID = Int64.MinValue + AllTypesOffset + 2, Name = "Attributes"};
+        public static readonly Info BehaviourOnBaseType  = new Info { ID = Int64.MinValue + AllTypesOffset + 3, Name = "Behaviour"};
 
         #endregion
 
         #region VertexType
 
-        internal static readonly Tuple<long, String> ParentOnVertexType     = Tuple.Create(Int64.MinValue + BaseTypeOffset, "Parent");
-        internal static readonly Tuple<long, String> ChildrenOnVertexType   = Tuple.Create(Int64.MinValue + BaseTypeOffset + 1, "Children");
-        internal static readonly Tuple<long, String> UniquenessOnVertexType = Tuple.Create(Int64.MinValue + BaseTypeOffset + 2, "UniquenessDefinitions");
-        internal static readonly Tuple<long, String> IndicesOnVertexType    = Tuple.Create(Int64.MinValue + BaseTypeOffset + 3, "Indices");
+        public static readonly Info ParentOnVertexType     = new Info { ID = Int64.MinValue + BaseTypeOffset    , Name = "Parent"};
+        public static readonly Info ChildrenOnVertexType   = new Info { ID = Int64.MinValue + BaseTypeOffset + 1, Name = "Children"};
+        public static readonly Info UniquenessOnVertexType = new Info { ID = Int64.MinValue + BaseTypeOffset + 2, Name = "UniquenessDefinitions"};
+        public static readonly Info IndicesOnVertexType    = new Info { ID = Int64.MinValue + BaseTypeOffset + 3, Name = "Indices"};
 
         #endregion
 
         #region EdgeType
 
-        internal static readonly Tuple<long, String> ParentOnEdgeType   = Tuple.Create(Int64.MinValue + BaseTypeOffset, "Parent");
-        internal static readonly Tuple<long, String> ChildrenOnEdgeType = Tuple.Create(Int64.MinValue + BaseTypeOffset + 1, "Children");
+        public static readonly Info ParentOnEdgeType   = new Info { ID = Int64.MinValue + BaseTypeOffset    , Name = "Parent"};
+        public static readonly Info ChildrenOnEdgeType = new Info { ID = Int64.MinValue + BaseTypeOffset + 1, Name = "Children"};
 
         #endregion
 
@@ -77,41 +84,41 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         /// </summary>
         private const Int64 AttributeOffset = AllTypesOffset + 2;
 
-        internal static readonly Tuple<long, String> TypeOnAttribute         = Tuple.Create(Int64.MinValue + AllTypesOffset, "Type");
-        internal static readonly Tuple<long, String> DefiningTypeOnAttribute = Tuple.Create(Int64.MinValue + AllTypesOffset + 1, "DefiningType");
+        public static readonly Info TypeOnAttribute         = new Info { ID = Int64.MinValue + AllTypesOffset    , Name = "Type"};
+        public static readonly Info DefiningTypeOnAttribute = new Info { ID = Int64.MinValue + AllTypesOffset + 1, Name = "DefiningType"};
 
         #endregion
 
         #region OutgoingEdge
 
-        internal static readonly Tuple<long, String> EdgeTypeOnOutgoingEdge             = Tuple.Create(Int64.MinValue + AttributeOffset, "EdgeType");
-        internal static readonly Tuple<long, String> SourceOnOutgoingEdge               = Tuple.Create(Int64.MinValue + AttributeOffset + 1, "Source");
-        internal static readonly Tuple<long, String> TargetOnOutgoingEdge               = Tuple.Create(Int64.MinValue + AttributeOffset + 2, "Target");
-        internal static readonly Tuple<long, String> RelatedIncomingEdgesOnOutgoingEdge = Tuple.Create(Int64.MinValue + AttributeOffset + 3, "RelatedIncomingEdges");
+        public static readonly Info EdgeTypeOnOutgoingEdge             = new Info { ID = Int64.MinValue + AttributeOffset    , Name = "EdgeType"};
+        public static readonly Info SourceOnOutgoingEdge               = new Info { ID = Int64.MinValue + AttributeOffset + 1, Name = "Source"};
+        public static readonly Info TargetOnOutgoingEdge               = new Info { ID = Int64.MinValue + AttributeOffset + 2, Name = "Target"};
+        public static readonly Info RelatedIncomingEdgesOnOutgoingEdge = new Info { ID = Int64.MinValue + AttributeOffset + 3, Name = "RelatedIncomingEdges"};
 
         #endregion 
      
         #region IncomingEdge
 
-        internal static readonly Tuple<long, String> RelatedEdgeOnIncomingEdge = Tuple.Create(Int64.MinValue + AttributeOffset, "RelatedEgde");
+        public static readonly Info RelatedEdgeOnIncomingEdge = new Info { ID = Int64.MinValue + AttributeOffset, Name = "RelatedEgde"};
 
         #endregion
 
         #region Property
 
-        internal static readonly Tuple<long, String> IsMandatoryOnProperty = Tuple.Create(Int64.MinValue + AttributeOffset, "IsMandatory");
-        internal static readonly Tuple<long, String> InIndicesOnProperty   = Tuple.Create(Int64.MinValue + AttributeOffset + 1, "InIndices");
+        public static readonly Info IsMandatoryOnProperty = new Info { ID = Int64.MinValue + AttributeOffset    , Name = "IsMandatory"};
+        public static readonly Info InIndicesOnProperty   = new Info { ID = Int64.MinValue + AttributeOffset + 1, Name = "InIndices"};
 
         #endregion
 
         #region Index
 
-        internal static readonly Tuple<long, String> IndexedPropertiesOnIndex      = Tuple.Create(Int64.MinValue + AllTypesOffset, "IndexedProperties");
-        internal static readonly Tuple<long, String> DefiningVertexTypeOnIndex     = Tuple.Create(Int64.MinValue + AllTypesOffset + 1, "DefiningVertexType");
-        internal static readonly Tuple<long, String> TypeOnIndex                   = Tuple.Create(Int64.MinValue + AllTypesOffset + 2, "Type");
-        internal static readonly Tuple<long, String> IsSingleOnIndex               = Tuple.Create(Int64.MinValue + AllTypesOffset + 3, "IsSingleValueIndex");
-        internal static readonly Tuple<long, String> IsRangeOnIndex                = Tuple.Create(Int64.MinValue + AllTypesOffset + 4, "IsRangeIndex");
-        internal static readonly Tuple<long, String> IsVersionedOnIndex            = Tuple.Create(Int64.MinValue + AllTypesOffset + 5, "IsVersionedIndex");
+        public static readonly Info IndexedPropertiesOnIndex      = new Info { ID = Int64.MinValue + AllTypesOffset    , Name = "IndexedProperties"};
+        public static readonly Info DefiningVertexTypeOnIndex     = new Info { ID = Int64.MinValue + AllTypesOffset + 1, Name = "DefiningVertexType"};
+        public static readonly Info TypeOnIndex                   = new Info { ID = Int64.MinValue + AllTypesOffset + 2, Name = "Type"};
+        public static readonly Info IsSingleOnIndex               = new Info { ID = Int64.MinValue + AllTypesOffset + 3, Name = "IsSingleValueIndex"};
+        public static readonly Info IsRangeOnIndex                = new Info { ID = Int64.MinValue + AllTypesOffset + 4, Name = "IsRangeIndex"};
+        public static readonly Info IsVersionedOnIndex            = new Info { ID = Int64.MinValue + AllTypesOffset + 5, Name = "IsVersionedIndex"};
 
         #endregion
 

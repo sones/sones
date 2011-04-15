@@ -81,8 +81,8 @@ namespace sones.GraphDB.Manager.TypeManagement
         public VertexTypeManager()
         {
             
-            _vertexTypeNameExpression = new PropertyExpression(BaseVertexType.VertexType.ToString(), AttributeDefinitions.Name.Item2);
-            _vertexTypeIDExpression = new PropertyExpression(BaseVertexType.VertexType.ToString(), AttributeDefinitions.ID.Item2);
+            _vertexTypeNameExpression = new PropertyExpression(BaseVertexType.VertexType.ToString(), AttributeDefinitions.Name.Name);
+            _vertexTypeIDExpression = new PropertyExpression(BaseVertexType.VertexType.ToString(), AttributeDefinitions.ID.Name);
         }
 
         #endregion
@@ -390,10 +390,10 @@ namespace sones.GraphDB.Manager.TypeManagement
                     if (vertex == null)
                         throw new TargetVertexTypeNotFoundException(myVertexTypePredefinition, group.Key, group.Select(x=>x.EdgeName));
 
-                    var attributes = vertex.GetIncomingVertices((long)BaseVertexType.OutgoingEdge, AttributeDefinitions.DefiningTypeOnAttribute.Item1);
+                    var attributes = vertex.GetIncomingVertices((long)BaseVertexType.OutgoingEdge, AttributeDefinitions.DefiningTypeOnAttribute.ID);
                     foreach (var edge in group)
                     {
-                        if (!attributes.Any(outgoing => edge.SourceEdgeName.Equals(outgoing.GetPropertyAsString(AttributeDefinitions.Name.Item1))))
+                        if (!attributes.Any(outgoing => edge.SourceEdgeName.Equals(outgoing.GetPropertyAsString(AttributeDefinitions.Name.ID))))
                             throw new OutgoingEdgeNotFoundException(myVertexTypePredefinition, edge);
                     }
                 }
@@ -445,13 +445,13 @@ namespace sones.GraphDB.Manager.TypeManagement
                     //No parent type was found.
                     throw new InvalidBaseVertexTypeException(current.Value.SuperVertexTypeName);
 
-                if (parent.GetProperty<bool>(AttributeDefinitions.IsSealedOnBaseType.Item1))
+                if (parent.GetProperty<bool>(AttributeDefinitions.IsSealedOnBaseType.ID))
                     //The parent type is sealed.
-                    throw new SealedBaseVertexTypeException(current.Value.VertexTypeName, parent.GetPropertyAsString(AttributeDefinitions.Name.Item1));
+                    throw new SealedBaseVertexTypeException(current.Value.VertexTypeName, parent.GetPropertyAsString(AttributeDefinitions.Name.ID));
 
                 var attributeNames = parent.GetIncomingVertices(
                     (long)BaseVertexType.Attribute,
-                    AttributeDefinitions.DefiningTypeOnAttribute.Item1).Select(vertex => vertex.GetPropertyAsString(AttributeDefinitions.Name.Item1));
+                    AttributeDefinitions.DefiningTypeOnAttribute.ID).Select(vertex => vertex.GetPropertyAsString(AttributeDefinitions.Name.ID));
 
                 attributes[current.Value.VertexTypeName] = new HashSet<string>(attributeNames);
             }
