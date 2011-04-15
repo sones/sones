@@ -70,6 +70,9 @@
     <Compile Include="Manager\TypeManagement\IEdgeTypeManager.cs" />
     <Compile Include="Manager\Vertex\IVertexManager.cs" />
     <Compile Include="Manager\Vertex\VertexManager.cs" />
+    <Compile Include="Request\GetEdgeType\PipelineableGetEdgeTypeRequest.cs" />
+    <Compile Include="Request\GetVertexType\PipelineableGetVertexTypeRequest.cs" />
+    <Compile Include="Request\GetVertex\PipelineableGetVertexRequest.cs" />
     <Compile Include="Request\GetVertices\PipelineableGetVerticesRequest.cs" />
     <Compile Include="Manager\TypeManagement\EdgeTypeManager.cs" />
     <Compile Include="Settings\DefaultRequestManagerImplementation.cs" />

@@ -43,5 +43,32 @@ namespace sones.GraphDB.Request
         /// <param name="myVertices">The vertices that have been fetched from the GraphDB</param>
         /// <returns>A TResult</returns>
         public delegate TResult GetVerticesResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEnumerable<IVertex> myVertices);
+
+        /// <summary>
+        /// A converter delegate that produces a generic result
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myRequestStatistics">The statistics of the request</param>
+        /// <param name="myVertexType">The VertexType that has been fetched from the GraphDB</param>
+        /// <returns>A TResult</returns>
+        public delegate TResult GetVertexTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IVertexType myVertexType);
+
+        /// <summary>
+        /// A converter delegate that produces a generic result
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myRequestStatistics">The statistics of the request</param>
+        /// <param name="myEdgeType">The EdgeType that has been fetched from the GraphDB</param>
+        /// <returns>A TResult</returns>
+        public delegate TResult GetEdgeTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEdgeType myEdgeType);
+
+        /// <summary>
+        /// A converter delegate that produces a generic result
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myRequestStatistics">The statistics of the request</param>
+        /// <param name="myVertex">The vertex that has been fetched from the GraphDB</param>
+        /// <returns>A TResult</returns>
+        public delegate TResult GetVertexResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IVertex myVertex);
     }
 }

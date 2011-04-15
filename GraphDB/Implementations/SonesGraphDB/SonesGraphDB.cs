@@ -191,6 +191,42 @@ namespace sones.GraphDB
 
         #endregion
 
+        #region GetVertexType
+
+        public TResult GetVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertexType myRequestGetVertexType, Converter.GetVertexTypeResultConverter<TResult> myOutputconverter)
+        {
+            var id =
+                _requestManager.RegisterRequest(new PipelineableGetVertexTypeRequest(myRequestGetVertexType, mySecurityToken, myTransactionToken));
+
+            return ((PipelineableGetVertexTypeRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
+        #region GetEdgeType
+
+        public TResult GetEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetEdgeType myRequestGetEdgeType, Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter)
+        {
+            var id =
+                _requestManager.RegisterRequest(new PipelineableGetEdgeTypeRequest(myRequestGetEdgeType, mySecurityToken, myTransactionToken));
+
+            return ((PipelineableGetEdgeTypeRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
+        #region GetVertex
+
+        public TResult GetVertex<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertex myRequestGetVertex, Converter.GetVertexResultConverter<TResult> myOutputconverter)
+        {
+            var id =
+                _requestManager.RegisterRequest(new PipelineableGetVertexRequest(myRequestGetVertex, mySecurityToken, myTransactionToken));
+
+            return ((PipelineableGetVertexRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
         #endregion
 
         #region misc

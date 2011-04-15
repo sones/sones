@@ -107,6 +107,12 @@
     <Compile Include="Request\CreateVertexTypes\RequestCreateVertexTypes.cs" />
     <Compile Include="Request\CreateVertexTypes\UniquePredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\VertexTypePredefinition.cs" />
+    <Compile Include="Request\GetEdgeType\GetEdgeTypeDefinition.cs" />
+    <Compile Include="Request\GetEdgeType\RequestGetEdgeType.cs" />
+    <Compile Include="Request\GetVertexType\GetVertexTypeDefinition.cs" />
+    <Compile Include="Request\GetVertexType\RequestGetVertexType.cs" />
+    <Compile Include="Request\GetVertex\GetVertexDefinition.cs" />
+    <Compile Include="Request\GetVertex\RequestGetVertex.cs" />
     <Compile Include="Request\GetVertices\RequestGetVertices.cs" />
     <Compile Include="Request\GetVertices\GetVerticesDefinition.cs" />
     <Compile Include="Request\GraphDBAccessMode.cs" />

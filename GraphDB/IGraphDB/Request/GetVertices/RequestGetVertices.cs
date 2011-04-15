@@ -8,7 +8,7 @@
         #region data
 
         /// <summary>
-        /// The definition of the vertices that should be requests from the graphdb
+        /// The definition of the vertices that should be requested from the graphdb
         /// </summary>
         public readonly GetVerticesDefinition GetVerticesDefinition;
 
@@ -17,9 +17,9 @@
         #region Constructor
 
         /// <summary>
-        /// Creates a new request that clears the Graphdb
+        /// Creates a new request that gets vertices from the Graphdb
         /// </summary>
-        /// <param name="myGetVerticesDefinition">The definition of the vertices that should be requests from the graphdb</param>
+        /// <param name="myGetVerticesDefinition">The definition of the vertices that should be requested from the graphdb</param>
         public RequestGetVertices(GetVerticesDefinition myGetVerticesDefinition)
         {
             GetVerticesDefinition = myGetVerticesDefinition;
