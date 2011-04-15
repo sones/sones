@@ -2,7 +2,7 @@
 using System.Net;
 using sones.GraphDS;
 
-namespace ISonesRESTService
+namespace sones.Plugins.GraphDS.RESTService
 {
     #region ISonesRESTServiceCompatibility
 
