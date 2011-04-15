@@ -129,6 +129,9 @@
     <Compile Include="IGraphDB.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Request\IRequest.cs" />
+    <Compile Include="Request\TraverseVertex\RequestTraverseVertex.cs" />
+    <Compile Include="Request\TraverseVertex\TraversalState.cs" />
+    <Compile Include="Request\TraverseVertex\TraverseVertexDefinition.cs" />
     <Compile Include="Result\Edge\IHyperEdgeView.cs" />
     <Compile Include="Result\Edge\IEdgeView.cs" />
     <Compile Include="Result\IGraphElementView.cs" />

@@ -75,6 +75,7 @@
     <Compile Include="Request\GetVertex\PipelineableGetVertexRequest.cs" />
     <Compile Include="Request\GetVertices\PipelineableGetVerticesRequest.cs" />
     <Compile Include="Manager\TypeManagement\EdgeTypeManager.cs" />
+    <Compile Include="Request\TraverseVertex\PipelineableTraverseVertexRequest.cs" />
     <Compile Include="Settings\DefaultRequestManagerImplementation.cs" />
     <Compile Include="Settings\DefaultRequestSchedulerImplementation.cs" />
     <Compile Include="Settings\DefaultSecurityManagerImplementation.cs" />

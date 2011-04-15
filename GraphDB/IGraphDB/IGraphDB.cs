@@ -95,6 +95,20 @@ namespace sones.GraphDB
                                      Converter.GetVerticesResultConverter<TResult> myOutputconverter);
 
         /// <summary>
+        /// Traverses the graphdb an searches for verticies, wich fulfil the matching conditions
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestGetVertices">The traverse vertex request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult TraverseVertex<TResult>(SecurityToken mySecurity,
+                                        TransactionToken myTransactionToken,
+                                        RequestTraverseVertex myRequestTraverseVertex,
+                                        Converter.TraverseVertexResultConverter<TResult> myOutputconverter);
+        
+        /// <summary>
         /// Get a vertex type from the graphdb
         /// </summary>
         /// <typeparam name="TResult">The type of the result of this request</typeparam>

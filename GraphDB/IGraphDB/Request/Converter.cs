@@ -49,6 +49,15 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <typeparam name="TResult">The type of the result</typeparam>
         /// <param name="myRequestStatistics">The statistics of the request</param>
+        /// <param name="myVertices">The vertices that have been collected from the GraphDB</param>
+        /// <returns>A TResult</returns>
+        public delegate TResult TraverseVertexResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEnumerable<IVertex> myVertices);
+
+        /// <summary>
+        /// A converter delegate that produces a generic result
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myRequestStatistics">The statistics of the request</param>
         /// <param name="myVertexType">The VertexType that has been fetched from the GraphDB</param>
         /// <returns>A TResult</returns>
         public delegate TResult GetVertexTypeResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IVertexType myVertexType);

@@ -191,6 +191,22 @@ namespace sones.GraphDB
 
         #endregion
 
+        #region TraverseVertex
+
+        public TResult TraverseVertex<TResult>(
+            SecurityToken mySecurity,
+            TransactionToken myTransactionToken,
+            RequestTraverseVertex myRequestTraverseVertex,
+            Converter.TraverseVertexResultConverter<TResult> myOutputconverter)
+        {
+            var id =
+                _requestManager.RegisterRequest(new PipelineableTraverseVertexRequest(myRequestTraverseVertex, mySecurity, myTransactionToken));
+
+            return ((PipelineableTraverseVertexRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
         #region GetVertexType
 
         public TResult GetVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertexType myRequestGetVertexType, Converter.GetVertexTypeResultConverter<TResult> myOutputconverter)
