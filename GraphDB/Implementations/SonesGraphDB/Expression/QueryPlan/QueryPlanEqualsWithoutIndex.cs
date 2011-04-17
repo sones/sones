@@ -56,27 +56,65 @@ namespace sones.GraphDB.Expression.QueryPlan
 
         public IEnumerable<IVertex> Execute()
         {
-            var result = new List<IVertex>();
+            #region current type
 
-            foreach (var aVertex in _vertexStore.GetVerticesByTypeID(_property.VertexType.ID, _property.Edition, VertexRevisionFilter))
+            foreach (var aVertex in GetMatchingVertices(_property.VertexType.ID))
+            {
+                yield return aVertex;
+            }
+
+            #endregion
+
+            #region child types
+
+            foreach (var aChildVertexType in _property.VertexType.GetChildVertexTypes)
+            {
+                foreach (var aVertex in GetMatchingVertices(aChildVertexType.ID))
+                {
+                    yield return aVertex;
+                }
+            }
+
+            #endregion
+
+            yield break;
+        }
+
+        #endregion
+
+        #region private helper
+
+        /// <summary>
+        /// Checks the revision of a vertex
+        /// </summary>
+        /// <param name="myToBeCheckedID">The revision that needs to be checked</param>
+        /// <returns>True or false</returns>
+        private bool VertexRevisionFilter(VertexRevisionID myToBeCheckedID)
+        {
+            return _property.Timespan.IsWithinTimeStamp(myToBeCheckedID);
+        }
+
+        /// <summary>
+        /// Get the matching vertices correspondig to this plan
+        /// </summary>
+        /// <param name="myVertexTypeID">The interesting vertex type id</param>
+        /// <returns>An enumerable of vertices</returns>
+        private IEnumerable<IVertex> GetMatchingVertices(long myVertexTypeID)
+        {
+            foreach (var aVertex in _vertexStore.GetVerticesByTypeID(myVertexTypeID, _property.Edition, VertexRevisionFilter))
             {
                 if (aVertex.HasProperty(_property.Property.AttributeID))
                 {
                     if (aVertex.GetProperty<IComparable>(_property.Property.AttributeID).CompareTo(_constant.Constant) == 0)
                     {
-                        result.Add(aVertex);                        
+                        yield return aVertex;
                     }
                 }
             }
 
-            return result;
+            yield break;
         }
 
         #endregion
-
-        private bool VertexRevisionFilter(VertexRevisionID myToBeCheckedID)
-        {
-            return _property.Timespan.IsWithinTimeStamp(myToBeCheckedID);
-        }
     }
 }
