@@ -24,7 +24,7 @@ namespace sones.Library.PropertyHyperGraph
         /// </summary>
         /// <param name="myFilter">A function to filter vertices</param>
         /// <returns>A IEnumerable of vertices</returns>
-        IEnumerable<IVertex> GetTargetVertices(Filter.TargetVertexFilter myFilter = null);
+        IEnumerable<IVertex> GetTargetVertices(PropertyHyperGraphFilter.TargetVertexFilter myFilter = null);
 
         #endregion
     }

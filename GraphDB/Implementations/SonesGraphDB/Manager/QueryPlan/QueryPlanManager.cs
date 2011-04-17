@@ -4,6 +4,7 @@ using sones.GraphDB.Expression.QueryPlan;
 using sones.GraphDB.Manager.TypeManagement;
 using sones.Library.Security;
 using sones.Library.Transaction;
+using sones.Library.VertexStore;
 
 namespace sones.GraphDB.Manager.QueryPlan
 {
@@ -15,9 +16,14 @@ namespace sones.GraphDB.Manager.QueryPlan
         #region data
 
         /// <summary>
-        /// A type manager is needed to create certain query-plan structures
+        /// A vertex type manager is needed to create certain query-plan structures
         /// </summary>
         private readonly IVertexTypeManager _vertexTypeManager;
+
+        /// <summary>
+        /// A vertex store
+        /// </summary>
+        private readonly IVertexStore _vertexStore;
 
         #endregion
 
@@ -26,17 +32,19 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <summary>
         /// Creates a new query plan manager
         /// </summary>
-        /// <param name="myTypeManager"></param>
-        public QueryPlanManager(IVertexTypeManager myTypeManager)
+        /// <param name="myVertexTypeManager">A vertex type manager is needed to create certain query-plan structures</param>
+        /// <param name="myVertexStore">A vertex store</param>
+        public QueryPlanManager(IVertexTypeManager myVertexTypeManager, IVertexStore myVertexStore)
         {
-            _vertexTypeManager = myTypeManager;
+            _vertexTypeManager = myVertexTypeManager;
+            _vertexStore = myVertexStore;
         }
 
         #endregion
 
         #region IQueryPlanManager Members
 
-        public IQueryPlan CreateQueryPlan(IExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity)
+        public IQueryPlan CreateQueryPlan(IExpression myExpression, Boolean myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             IQueryPlan result;
 
@@ -44,7 +52,7 @@ namespace sones.GraphDB.Manager.QueryPlan
             {
                 case TypeOfExpression.Binary:
 
-                    result = GenerateFromBinaryExpression((BinaryExpression) myExpression, myTransaction, mySecurity);
+                    result = GenerateFromBinaryExpression((BinaryExpression) myExpression, myIsLongRunning, myTransaction, mySecurity);
 
                     break;
                 
@@ -86,7 +94,8 @@ namespace sones.GraphDB.Manager.QueryPlan
         {
             var type = _vertexTypeManager.GetVertexType(myPropertyExpression.NameOfVertexType, myTransaction, mySecurity);
 
-            return new QueryPlanProperty(type, type.GetPropertyDefinition(myPropertyExpression.NameOfProperty));
+            return new QueryPlanProperty(type, type.GetPropertyDefinition(myPropertyExpression.NameOfProperty),
+                                         myPropertyExpression.Edition, myPropertyExpression.Timespan);
         }
 
         /// <summary>
@@ -114,14 +123,14 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// </summary>
         /// <param name="binaryExpression">The binary expression</param>
         /// <returns>A query plan</returns>
-        private IQueryPlan GenerateFromBinaryExpression(BinaryExpression binaryExpression, TransactionToken myTransaction, SecurityToken mySecurity)
+        private IQueryPlan GenerateFromBinaryExpression(BinaryExpression binaryExpression, Boolean myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             switch (binaryExpression.Operator)
             {
                 #region Comparative
 
                 case BinaryOperator.Equals:
-                    return GenerateEqualsPlan(binaryExpression, myTransaction, mySecurity);
+                    return GenerateEqualsPlan(binaryExpression, myIsLongRunning, myTransaction, mySecurity);
 
                 case BinaryOperator.GreaterOrEqualsThan:
                     break;
@@ -163,7 +172,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// </summary>
         /// <param name="binaryExpression">The binary expression that has to be transfered into an equals query plan</param>
         /// <returns>An equals query plan</returns>
-        private IQueryPlan GenerateEqualsPlan(BinaryExpression binaryExpression, TransactionToken myTransaction, SecurityToken mySecurity)
+        private IQueryPlan GenerateEqualsPlan(BinaryExpression binaryExpression, Boolean myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             if (binaryExpression.Left is PropertyExpression && binaryExpression.Right is PropertyExpression)
             {
@@ -198,7 +207,7 @@ namespace sones.GraphDB.Manager.QueryPlan
                     constant = new QueryPlanConstant(((ConstantExpression)binaryExpression.Left).Constant);
                 }
 
-                return new QueryPlanEqualsWithoutIndex(property, constant);
+                return new QueryPlanEqualsWithoutIndex(property, constant, _vertexStore, myIsLongRunning);
 
                 #endregion
             }
@@ -214,7 +223,7 @@ namespace sones.GraphDB.Manager.QueryPlan
             var vertexType = _vertexTypeManager.GetVertexType(propertyExpression.NameOfVertexType, myTransaction, mySecurity);
             var property = vertexType.GetPropertyDefinition(propertyExpression.NameOfProperty);
 
-            return new QueryPlanProperty(vertexType, property);
+            return new QueryPlanProperty(vertexType, property, propertyExpression.Edition, propertyExpression.Timespan);
         }
 
         #endregion

@@ -75,7 +75,7 @@ namespace sones.GraphFS.Element.Edge
             return _sourceVertex;
         }
 
-        public IEnumerable<IVertex> GetTargetVertices(Filter.TargetVertexFilter myFilter = null)
+        public IEnumerable<IVertex> GetTargetVertices(PropertyHyperGraphFilter.TargetVertexFilter myFilter = null)
         {
             var targetVertex = GetTargetVertex();
 
@@ -115,7 +115,7 @@ namespace sones.GraphFS.Element.Edge
             return _structuredProperties.Count;
         }
 
-        public IEnumerable<Tuple<long, object>> GetAllProperties(Filter.GraphElementStructuredPropertyFilter myFilter = null)
+        public IEnumerable<Tuple<long, object>> GetAllProperties(PropertyHyperGraphFilter.GraphElementStructuredPropertyFilter myFilter = null)
         {
             return GetAllPropertiesProtected(myFilter);
         }
@@ -153,7 +153,7 @@ namespace sones.GraphFS.Element.Edge
         }
 
         public IEnumerable<Tuple<string, object>> GetAllUnstructuredProperties(
-            Filter.GraphElementUnStructuredPropertyFilter myFilter = null)
+            PropertyHyperGraphFilter.GraphElementUnStructuredPropertyFilter myFilter = null)
         {
             return GetAllUnstructuredPropertiesProtected(myFilter);
         }

@@ -51,7 +51,6 @@ namespace sones.GraphDB.Manager.Vertex
         /// </summary>
         public VertexManager()
         {
-            _queryPlanManager = new QueryPlanManager(_vertexTypeManager);
         }
 
         #endregion
@@ -62,7 +61,7 @@ namespace sones.GraphDB.Manager.Vertex
 
         public IEnumerable<IVertex> GetVertices(IExpression myExpression, bool myIsLongrunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            var queryPlan = _queryPlanManager.CreateQueryPlan(myExpression, myTransactionToken, mySecurityToken);
+            var queryPlan = _queryPlanManager.CreateQueryPlan(myExpression, myIsLongrunning, myTransactionToken, mySecurityToken);
 
             return queryPlan.Execute();
         }
@@ -204,7 +203,7 @@ namespace sones.GraphDB.Manager.Vertex
         /// <summary>
         /// Sets the vertex store
         /// </summary>
-        /// <param name="myVertexStore">The vertex store that should be used within the vertex type manager</param>
+        /// <param name="myVertexStore">The vertex store that should be used within the vertex manager</param>
         public void SetVertexStore(IVertexStore myVertexStore)
         {
             _vertexStore = myVertexStore;
@@ -213,7 +212,7 @@ namespace sones.GraphDB.Manager.Vertex
         /// <summary>
         /// Sets the vertex type manager
         /// </summary>
-        /// <param name="myVertexTypeManager">The vertex type manager that should be used within the vertex type manager</param>
+        /// <param name="myVertexTypeManager">The vertex type manager that should be used within the vertex manager</param>
         public void SetVertexTypeManager(IVertexTypeManager myVertexTypeManager)
         {
             _vertexTypeManager = myVertexTypeManager;
@@ -222,10 +221,19 @@ namespace sones.GraphDB.Manager.Vertex
         /// <summary>
         /// Sets the index manager
         /// </summary>
-        /// <param name="myVertexTypeManager">The index manager that should be used within the vertex type manager</param>
+        /// <param name="myIndexManager">The index manager that should be used within the vertex manager</param>
         public void SetIndexManager(IIndexManager myIndexManager)
         {
             _indexManager = myIndexManager;
+        }
+        
+        /// <summary>
+        /// Sets the query plan manager
+        /// </summary>
+        /// <param name="myQueryplanManager">The query plan manager that should be used within the vertex manager</param>
+        public void SetQueryPlanManager(IQueryPlanManager myQueryplanManager)
+        {
+            _queryPlanManager = myQueryplanManager;
         }
 
         #endregion

@@ -80,75 +80,82 @@ namespace sones.GraphDB.Manager.Security
         #endregion
 
         #region IVertexStore Members
+        //redirect everything to the underlying vertex store
 
         public bool VertexExists(long myVertexID, long myVertexTypeID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
-            throw new NotImplementedException();
+            return _vertexStore.VertexExists(myVertexID, myVertexTypeID, myEdition, myVertexRevisionID);
         }
 
         public IVertex GetVertex(long myVertexID, long myVertexTypeID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
         {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null, Func<string, bool> myEditionsFilterFunc = null, Func<VertexRevisionID, bool> myInterestingRevisionIDFilterFunc = null)
-        {
-            throw new NotImplementedException();
+            return _vertexStore.GetVertex(myVertexID, myVertexTypeID, myEdition, myVertexRevisionID);
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
         {
-            throw new NotImplementedException();
+            return _vertexStore.GetVerticesByTypeID(myTypeID, myInterestingVertexIDs, myInterestingEditionNames, myInterestingRevisionIDs);
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs)
         {
-            throw new NotImplementedException();
+            return _vertexStore.GetVerticesByTypeID(myTypeID, myInterestingVertexIDs);
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID)
         {
-            throw new NotImplementedException();
+            return _vertexStore.GetVerticesByTypeID(myTypeID);
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<VertexRevisionID> myInterestingRevisions)
         {
-            throw new NotImplementedException();
+            return _vertexStore.GetVerticesByTypeID(myTypeID, myInterestingRevisions);
         }
 
         public IEnumerable<string> GetVertexEditions(long myVertexID, long myVertexTypeID)
         {
-            throw new NotImplementedException();
+            return _vertexStore.GetVertexEditions(myVertexID, myVertexTypeID);
         }
 
         public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(long myVertexID, long myVertexTypeID, IEnumerable<string> myInterestingEditions = null)
         {
-            throw new NotImplementedException();
+            return _vertexStore.GetVertexRevisionIDs(myVertexID, myVertexTypeID, myInterestingEditions);
         }
 
         public bool RemoveVertexRevision(long myVertexID, long myVertexTypeID, string myInterestingEdition, VertexRevisionID myToBeRemovedRevisionID)
         {
-            throw new NotImplementedException();
+            return _vertexStore.RemoveVertexRevision(myVertexID, myVertexTypeID, myInterestingEdition, myToBeRemovedRevisionID);
         }
 
         public bool RemoveVertexEdition(long myVertexID, long myVertexTypeID, string myToBeRemovedEdition)
         {
-            throw new NotImplementedException();
+            return _vertexStore.RemoveVertexEdition(myVertexID, myVertexTypeID, myToBeRemovedEdition);
         }
 
         public bool RemoveVertex(long myVertexID, long myVertexTypeID)
         {
-            throw new NotImplementedException();
+            return _vertexStore.RemoveVertex(myVertexID, myVertexTypeID);
         }
 
         public IVertex AddVertex(VertexAddDefinition myVertexDefinition, VertexRevisionID myVertexRevisionID = null, bool myCreateIncomingEdges = true)
         {
-            throw new NotImplementedException();
+            return _vertexStore.AddVertex(myVertexDefinition, myVertexRevisionID, myCreateIncomingEdges);
         }
 
         public IVertex UpdateVertex(long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID, VertexUpdateDefinition myVertexUpdate, string myToBeUpdatedEditions = null, VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
         {
-            throw new NotImplementedException();
+            return _vertexStore.UpdateVertex(myToBeUpdatedVertexID, myCorrespondingVertexTypeID, myVertexUpdate, myToBeUpdatedEditions, myToBeUpdatedRevisionIDs, myCreateNewRevision);
+        }
+
+        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null, VertexStoreFilter.EditionFilter myEditionsFilterFunc = null, VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null)
+        {
+            return _vertexStore.GetVerticesByTypeID(myTypeID, myInterestingVertexIDs, myEditionsFilterFunc,
+                                             myInterestingRevisionIDFilterFunc);
+        }
+
+        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, string myEdition = null, VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null)
+        {
+            return _vertexStore.GetVerticesByTypeID(myTypeID, myEdition, myInterestingRevisionIDFilterFunc);
         }
 
         #endregion

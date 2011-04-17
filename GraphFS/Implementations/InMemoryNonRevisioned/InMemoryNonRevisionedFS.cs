@@ -11,6 +11,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
 using sones.Library.VertexStore.Definitions;
+using sones.Library.VertexStore;
 
 namespace sones.GraphFS
 {
@@ -150,16 +151,6 @@ namespace sones.GraphFS
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null,
-                                                        Func<string, bool> myEditionsFilterFunc = null,
-                                                        Func<VertexRevisionID, bool> myInterestingRevisionIDFilterFunc =
-                                                            null)
-        {
-            return myInterestingVertexIDs != null
-                       ? GetVerticesByTypeID(myTypeID, myInterestingVertexIDs)
-                       : GetVerticesByTypeID(myTypeID);
-        }
-
-        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null,
                                                         IEnumerable<string> myInterestingEditionNames = null,
                                                         IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
         {
@@ -173,6 +164,25 @@ namespace sones.GraphFS
             var interestingVertices = new HashSet<long>(myInterestingVertexIDs);
 
             return GetVerticesByTypeID(myTypeID).Where(aVertex => interestingVertices.Contains(aVertex.VertexID));
+        }
+
+        public IEnumerable<IVertex> GetVerticesByTypeID(
+            long myTypeID, 
+            IEnumerable<long> myInterestingVertexIDs = null, 
+            VertexStoreFilter.EditionFilter myEditionsFilterFunc = null, 
+            VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null)
+        {
+            return myInterestingVertexIDs != null
+                       ? GetVerticesByTypeID(myTypeID, myInterestingVertexIDs)
+                       : GetVerticesByTypeID(myTypeID);
+        }
+
+        public IEnumerable<IVertex> GetVerticesByTypeID(
+            long myTypeID, 
+            string myEdition = null, 
+            VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null)
+        {
+            return GetVerticesByTypeID(myTypeID);
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(long myVertexTypeID)

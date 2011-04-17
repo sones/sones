@@ -77,7 +77,7 @@ namespace sones.GraphFS.Element
         /// </summary>
         /// <param name="myFilter">An optional filter function</param>
         /// <returns>An enumerable of propertyID/propertyValue</returns>
-        protected IEnumerable<Tuple<long, object>> GetAllPropertiesProtected(Filter.GraphElementStructuredPropertyFilter myFilter = null)
+        protected IEnumerable<Tuple<long, object>> GetAllPropertiesProtected(PropertyHyperGraphFilter.GraphElementStructuredPropertyFilter myFilter = null)
         {
             if (_structuredProperties != null)
             {
@@ -109,7 +109,7 @@ namespace sones.GraphFS.Element
         /// <param name="myFilter">An optional filter function</param>
         /// <returns>An enumerable of propertyName/PropertyValue</returns>
         protected IEnumerable<Tuple<string, object>> GetAllUnstructuredPropertiesProtected(
-            Filter.GraphElementUnStructuredPropertyFilter myFilter = null)
+            PropertyHyperGraphFilter.GraphElementUnStructuredPropertyFilter myFilter = null)
         {
             if (_unstructuredProperties != null)
             {

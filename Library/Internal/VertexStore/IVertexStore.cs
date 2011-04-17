@@ -55,8 +55,20 @@ namespace sones.Library.VertexStore
         IEnumerable<IVertex> GetVerticesByTypeID(
             Int64 myTypeID,
             IEnumerable<Int64> myInterestingVertexIDs = null,
-            Func<String, bool> myEditionsFilterFunc = null,
-            Func<VertexRevisionID, bool> myInterestingRevisionIDFilterFunc = null);
+            VertexStoreFilter.EditionFilter myEditionsFilterFunc = null,
+            VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null);
+
+        /// <summary>
+        /// Returns all vertex by a given typeID. It's possible to filter interesting vertices.
+        /// </summary>
+        /// <param name="myTypeID">The interesting vertex type id</param>
+        /// <param name="myEdition">The edition of the vertex (if left out, the default edition is returned)</param>
+        /// <param name="myInterestingRevisionIDFilterFunc">A delegate to filter revisions</param>
+        /// <returns>Vertices</returns>
+        IEnumerable<IVertex> GetVerticesByTypeID(
+            Int64 myTypeID,
+            String myEdition = null,
+            VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null);
 
         /// <summary>
         /// Returns all vertex by a given typeID. It's possible to filter interesting vertices.

@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConstantsVertexStore.cs" />
+    <Compile Include="VertexStoreFilter.cs" />
     <Compile Include="IVertexStore.cs" />
     <Compile Include="Definitions\HyperEdgeAddDefinition.cs" />
     <Compile Include="Definitions\SingleEdgeAddDefinition.cs" />

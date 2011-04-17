@@ -27,7 +27,7 @@ namespace sones.Library.PropertyHyperGraph
         /// <param name="myFilter">A function to filter those incoming edges (VertexTypeID, EdgeID, ISingleEdges, Bool)</param>
         /// <returns>An IEnumerable of incoming edges</returns>
         IEnumerable<Tuple<Int64, Int64, IEnumerable<ISingleEdge>>> GetAllIncomingEdges(
-            Filter.IncomingEdgeFilter myFilter = null);
+            PropertyHyperGraphFilter.IncomingEdgeFilter myFilter = null);
 
         /// <summary>
         /// Returns a specified incoming edge
@@ -62,7 +62,7 @@ namespace sones.Library.PropertyHyperGraph
         /// <param name="myFilter">A function to filter those edges (EdgeID, IEdge, Bool)</param>
         /// <returns>An IEnumerable of all outgoing edges</returns>
         IEnumerable<Tuple<Int64, IEdge>> GetAllOutgoingEdges(
-            Filter.OutgoingEdgeFilter myFilter = null);
+            PropertyHyperGraphFilter.OutgoingEdgeFilter myFilter = null);
 
         /// <summary>
         /// Returns all outgoing hyper edges
@@ -70,7 +70,7 @@ namespace sones.Library.PropertyHyperGraph
         /// <param name="myFilter">A function to filter those edges (EdgeID, IHyperEdge, Bool)</param>
         /// <returns>An IEnumerable of propertyID/hyper edge KVP</returns>
         IEnumerable<Tuple<Int64, IHyperEdge>> GetAllOutgoingHyperEdges(
-            Filter.OutgoingHyperEdgeFilter myFilter = null);
+            PropertyHyperGraphFilter.OutgoingHyperEdgeFilter myFilter = null);
 
         /// <summary>
         /// Returns all outgoing single edges
@@ -78,7 +78,7 @@ namespace sones.Library.PropertyHyperGraph
         /// <param name="myFilter">A function to filter those edges (EdgeID, ISingleEdge, Bool)</param>
         /// <returns>An IEnumerable of all single edges</returns>
         IEnumerable<Tuple<Int64, ISingleEdge>> GetAllOutgoingSingleEdges(
-            Filter.OutgoingSingleEdgeFilter myFilter = null);
+            PropertyHyperGraphFilter.OutgoingSingleEdgeFilter myFilter = null);
 
         /// <summary>
         /// Returns a specified edge
@@ -119,7 +119,7 @@ namespace sones.Library.PropertyHyperGraph
         /// </summary>
         /// <param name="myFilter">A function to filter the binary properties</param> 
         /// <returns>An IEnumerable of PropertyID/stream KVP</returns>
-        IEnumerable<Tuple<Int64, Stream>> GetAllBinaryProperties(Filter.BinaryPropertyFilter myFilter = null);
+        IEnumerable<Tuple<Int64, Stream>> GetAllBinaryProperties(PropertyHyperGraphFilter.BinaryPropertyFilter myFilter = null);
 
         #endregion
     }

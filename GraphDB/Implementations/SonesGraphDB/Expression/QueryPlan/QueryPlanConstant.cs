@@ -15,7 +15,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// A constant valie
         /// </summary>
-        public readonly object Constant;
+        public readonly IComparable Constant;
 
         #endregion
 
@@ -25,7 +25,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// Create a new constant value
         /// </summary>
         /// <param name="myValue">The constant value</param>
-        public QueryPlanConstant(object myValue)
+        public QueryPlanConstant(IComparable myValue)
         {
             Constant = myValue;
         }

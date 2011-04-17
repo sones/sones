@@ -7,7 +7,7 @@ namespace sones.Library.PropertyHyperGraph
     /// <summary>
     /// Static filter class
     /// </summary>
-    public static class Filter
+    public static class PropertyHyperGraphFilter
     {
         #region IVertex
 

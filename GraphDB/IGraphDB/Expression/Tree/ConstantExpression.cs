@@ -12,7 +12,7 @@ namespace sones.GraphDB.Expression
         /// <summary>
         /// A constant expression... sth like 13 or "Alice"
         /// </summary>
-        public readonly Object Constant;
+        public readonly IComparable Constant;
 
         #endregion
 
@@ -22,7 +22,7 @@ namespace sones.GraphDB.Expression
         /// Creates a new constant expression
         /// </summary>
         /// <param name="myConstant">The constant expression</param>
-        public ConstantExpression(Object myConstant)
+        public ConstantExpression(IComparable myConstant)
         {
             Constant = myConstant;
         }

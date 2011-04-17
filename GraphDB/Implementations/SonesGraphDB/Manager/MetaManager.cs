@@ -1,6 +1,7 @@
 ﻿using System;
 using sones.GraphDB.Manager.Index;
 using sones.GraphDB.Manager.Plugin;
+using sones.GraphDB.Manager.QueryPlan;
 using sones.GraphDB.Manager.TypeManagement;
 using sones.GraphDB.Manager.Vertex;
 using sones.Library.VertexStore;
@@ -73,12 +74,12 @@ namespace sones.GraphDB.Manager
             vertexManager.SetVertexStore(myVertexStore);
             vertexManager.SetIndexManager(indexManager);
             vertexManager.SetVertexTypeManager(vertexTypeManager);
+            vertexManager.SetQueryPlanManager(new QueryPlanManager(vertexTypeManager, _vertexStore));
 
             _vertexTypeManager = vertexTypeManager;
             _vertexManager = vertexManager;
 
             #endregion
-
         }
 
         #endregion

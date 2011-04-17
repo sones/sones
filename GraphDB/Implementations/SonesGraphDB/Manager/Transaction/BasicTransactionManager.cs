@@ -87,11 +87,6 @@ namespace sones.GraphDB.Manager.Transaction
             return _vertexStore.GetVertex(myVertexID, myVertexTypeID, myEdition, myVertexRevisionID);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null, Func<string, bool> myEditionsFilterFunc = null, Func<VertexRevisionID, bool> myInterestingRevisionIDFilterFunc = null)
-        {
-            return _vertexStore.GetVerticesByTypeID(myTypeID, myInterestingVertexIDs, myEditionsFilterFunc, myInterestingRevisionIDFilterFunc);
-        }
-
         public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
         {
             return _vertexStore.GetVerticesByTypeID(myTypeID, myInterestingVertexIDs, myInterestingEditionNames, myInterestingRevisionIDs);
@@ -145,6 +140,17 @@ namespace sones.GraphDB.Manager.Transaction
         public IVertex UpdateVertex(long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID, VertexUpdateDefinition myVertexUpdate, string myToBeUpdatedEditions = null, VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
         {
             return _vertexStore.UpdateVertex(myToBeUpdatedVertexID, myCorrespondingVertexTypeID, myVertexUpdate, myToBeUpdatedEditions, myToBeUpdatedRevisionIDs, myCreateNewRevision);
+        }
+
+        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null, VertexStoreFilter.EditionFilter myEditionsFilterFunc = null, VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null)
+        {
+            return _vertexStore.GetVerticesByTypeID(myTypeID, myInterestingVertexIDs, myEditionsFilterFunc,
+                                             myInterestingRevisionIDFilterFunc);
+        }
+
+        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, string myEdition = null, VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null)
+        {
+            return _vertexStore.GetVerticesByTypeID(myTypeID, myEdition, myInterestingRevisionIDFilterFunc);
         }
 
         #endregion

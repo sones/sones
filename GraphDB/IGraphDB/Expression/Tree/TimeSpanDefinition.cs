@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDB.Expression.Tree
 {
@@ -18,11 +19,23 @@ namespace sones.GraphDB.Expression.Tree
         public readonly DateTime From;
 
         /// <summary>
+        /// The converted from value
+        /// </summary>
+        private readonly long _fromConverted;
+
+        /// <summary>
         /// The point in time where the timespan ends
         /// </summary>
         public readonly DateTime To;
 
+        /// <summary>
+        /// The converted to value
+        /// </summary>
+        private readonly long _toConverted;
+
         #endregion
+
+        #region constructor
 
         /// <summary>
         /// Creates a new timespan definition
@@ -32,7 +45,26 @@ namespace sones.GraphDB.Expression.Tree
         public TimeSpanDefinition(DateTime myFrom, DateTime myTo)
         {
             From = myFrom;
+            _fromConverted = From.ToBinary();
+
             To = myTo;
+            _toConverted = To.ToBinary();
         }
+
+        #endregion
+
+        #region public methods
+        
+        /// <summary>
+        /// Checks wheter a given vertex revision id is valid for this timespan
+        /// </summary>
+        /// <param name="myToBeCheckedID">The to be checked id</param>
+        /// <returns>True or false</returns>
+        public bool IsWithinTimeStamp(VertexRevisionID myToBeCheckedID)
+        {
+            return myToBeCheckedID.Timestamp >= _fromConverted && myToBeCheckedID.Timestamp <= _toConverted;
+        }
+
+        #endregion
     }
 }
