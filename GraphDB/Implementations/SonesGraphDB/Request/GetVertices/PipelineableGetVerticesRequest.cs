@@ -5,6 +5,7 @@ using sones.GraphDB.Manager;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.Security;
 using sones.Library.Transaction;
+using sones.GraphDB.Expression.QueryPlan;
 
 namespace sones.GraphDB.Request
 {

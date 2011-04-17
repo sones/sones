@@ -1,3 +1,7 @@
+using System.Collections.Generic;
+using sones.Library.PropertyHyperGraph;
+using System;
+
 namespace sones.GraphDB.Expression.QueryPlan
 {
     /// <summary>
@@ -10,12 +14,12 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// The interesting property
         /// </summary>
-        public readonly QueryPlanProperty Left;
+        private readonly QueryPlanProperty _left;
 
         /// <summary>
         /// The other interesting property
         /// </summary>
-        public readonly QueryPlanProperty Right;
+        private readonly QueryPlanProperty _right;
 
         #endregion
 
@@ -28,8 +32,17 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myRight">The right interesting property</param>
         public QueryPlanEqualsWithoutIndexComplex(QueryPlanProperty myLeft, QueryPlanProperty myRight)
         {
-            Left = myLeft;
-            Right = myRight;
+            _left = myLeft;
+            _right = myRight;
+        }
+
+        #endregion
+
+        #region IQueryPlan Members
+
+        public IEnumerable<IVertex> Execute()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

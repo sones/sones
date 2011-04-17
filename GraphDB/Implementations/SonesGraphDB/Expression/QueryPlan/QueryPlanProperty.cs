@@ -1,4 +1,7 @@
 using sones.GraphDB.TypeSystem;
+using System.Collections.Generic;
+using sones.Library.PropertyHyperGraph;
+using System;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -12,12 +15,12 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// The vertex type
         /// </summary>
-        public readonly IVertexType VertexType;
+        private readonly IVertexType VertexType;
 
         /// <summary>
         /// The interesting property
         /// </summary>
-        public readonly IPropertyDefinition Property;
+        private readonly IPropertyDefinition Property;
 
         #endregion
 
@@ -32,6 +35,15 @@ namespace sones.GraphDB.Expression.QueryPlan
         {
             VertexType = myVertexType;
             Property = myProperty;
+        }
+
+        #endregion
+
+        #region IQueryPlan Members
+
+        public IEnumerable<IVertex> Execute()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

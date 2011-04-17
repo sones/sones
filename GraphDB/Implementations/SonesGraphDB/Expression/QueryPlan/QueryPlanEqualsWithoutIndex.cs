@@ -1,3 +1,7 @@
+using System.Collections.Generic;
+using sones.Library.PropertyHyperGraph;
+using System;
+
 namespace sones.GraphDB.Expression.QueryPlan
 {
     /// <summary>
@@ -10,12 +14,12 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// The interesting property
         /// </summary>
-        public readonly QueryPlanProperty Property;
+        private readonly QueryPlanProperty _property;
 
         /// <summary>
         /// The constant value
         /// </summary>
-        public readonly QueryPlanConstant Constant;
+        private readonly QueryPlanConstant _constant;
 
         #endregion
 
@@ -28,8 +32,17 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myConstant">The constant value</param>
         public QueryPlanEqualsWithoutIndex(QueryPlanProperty myProperty, QueryPlanConstant myConstant)
         {
-            Property = myProperty;
-            Constant = myConstant;
+            _property = myProperty;
+            _constant = myConstant;
+        }
+
+        #endregion
+
+        #region IQueryPlan Members
+
+        public IEnumerable<IVertex> Execute()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

@@ -9,6 +9,8 @@ using sones.Library.Transaction;
 using sones.Library.Security;
 using sones.GraphDB.ErrorHandling.Expression;
 using sones.GraphDB.Manager.QueryPlan;
+using sones.GraphDB.Expression.Tree;
+using sones.Library.VertexStore.Definitions;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -56,23 +58,43 @@ namespace sones.GraphDB.Manager.Vertex
 
         #region IVertexManager Members
 
-        public IEnumerable<IVertex> GetVertices(IExpression myExpression, bool myIsLongrunning, TransactionToken myTransaction, SecurityToken mySecurity)
+        #region GetVertices
+
+        public IEnumerable<IVertex> GetVertices(IExpression myExpression, bool myIsLongrunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            throw new NotImplementedException();
+            var queryPlan = _queryPlanManager.CreateQueryPlan(myExpression, myTransactionToken, mySecurityToken);
+
+            return queryPlan.Execute();
         }
 
-        public IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransaction, SecurityToken mySecurity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void CanGetVertices(IExpression iExpression, bool p, TransactionToken TransactionToken, SecurityToken SecurityToken)
+        public void CanGetVertices(IExpression iExpression, bool p, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
             if (!IsValidExpression(iExpression))
                 throw new InvalidExpressionException(iExpression);
         }
 
-        public IVertex AddVertex(Library.VertexStore.Definitions.VertexAddDefinition myVertexDefinition, TransactionToken TransactionToken, SecurityToken SecurityToken)
+        #endregion
+
+        #region GetVertex
+
+        public void CanGetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        public IVertex AddVertex(VertexAddDefinition myVertexDefinition, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
             throw new NotImplementedException();
         }

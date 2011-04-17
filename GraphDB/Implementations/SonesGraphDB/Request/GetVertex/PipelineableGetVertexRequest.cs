@@ -52,11 +52,22 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
+            myMetaManager.VertexManager.CanGetVertex(
+                _request.GetVertexDefinition.VertexTypeName,
+                _request.GetVertexDefinition.VertexID,
+                _request.GetVertexDefinition.Edition,
+                _request.GetVertexDefinition.Timespan,
+                TransactionToken, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            _fetchedVertex = myMetaManager.VertexManager.GetVertex(
+                _request.GetVertexDefinition.VertexTypeName, 
+                _request.GetVertexDefinition.VertexID, 
+                _request.GetVertexDefinition.Edition, 
+                _request.GetVertexDefinition.Timespan, 
+                TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()

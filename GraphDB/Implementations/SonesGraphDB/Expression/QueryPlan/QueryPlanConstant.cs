@@ -1,3 +1,8 @@
+using sones.Library.PropertyHyperGraph;
+using System.Collections.Generic;
+using System;
+using sones.GraphDB.ErrorHandling.QueryPlan;
+
 namespace sones.GraphDB.Expression.QueryPlan
 {
     /// <summary>
@@ -23,6 +28,15 @@ namespace sones.GraphDB.Expression.QueryPlan
         public QueryPlanConstant(object myValue)
         {
             Constant = myValue;
+        }
+
+        #endregion
+
+        #region IQueryPlan Members
+
+        public IEnumerable<IVertex> Execute()
+        {
+            throw new InvalidQueryPlanExecutionException("It is not possible to execute a query plan constant.");
         }
 
         #endregion
