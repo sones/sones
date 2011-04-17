@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using sones.Library.PropertyHyperGraph;
 using System;
 using sones.Library.VertexStore;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -56,28 +57,7 @@ namespace sones.GraphDB.Expression.QueryPlan
 
         public IEnumerable<IVertex> Execute()
         {
-            #region current type
-
-            foreach (var aVertex in GetMatchingVertices(_property.VertexType.ID))
-            {
-                yield return aVertex;
-            }
-
-            #endregion
-
-            #region child types
-
-            foreach (var aChildVertexType in _property.VertexType.GetChildVertexTypes)
-            {
-                foreach (var aVertex in GetMatchingVertices(aChildVertexType.ID))
-                {
-                    yield return aVertex;
-                }
-            }
-
-            #endregion
-
-            yield break;
+            return Execute_private(_property.VertexType);
         }
 
         #endregion
@@ -105,12 +85,43 @@ namespace sones.GraphDB.Expression.QueryPlan
             {
                 if (aVertex.HasProperty(_property.Property.AttributeID))
                 {
-                    if (aVertex.GetProperty<IComparable>(_property.Property.AttributeID).CompareTo(_constant.Constant) == 0)
+                    if (_property.Property.ExtractValue(aVertex).CompareTo(_constant.Constant) == 0)
                     {
                         yield return aVertex;
                     }
                 }
             }
+
+            yield break;
+        }
+
+        /// <summary>
+        /// Recursive walk through the vertex type hierarchy
+        /// </summary>
+        /// <param name="myVertexType">The starting vertex type</param>
+        /// <returns>An enumerable of matching vertices</returns>
+        private IEnumerable<IVertex> Execute_private(IVertexType myVertexType)
+        {
+            #region current type
+
+            foreach (var aVertex in GetMatchingVertices(myVertexType.ID))
+            {
+                yield return aVertex;
+            }
+
+            #endregion
+
+            #region child types
+
+            foreach (var aChildVertexType in _property.VertexType.GetChildVertexTypes)
+            {
+                foreach (var aVertex in Execute_private(aChildVertexType))
+                {
+                    yield return aVertex;
+                }
+            }
+
+            #endregion
 
             yield break;
         }

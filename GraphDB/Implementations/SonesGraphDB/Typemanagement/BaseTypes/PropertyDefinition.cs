@@ -1,5 +1,6 @@
 ﻿using System;
 using sones.GraphDB.TypeSystem;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDB.TypeManagement
 {
@@ -19,5 +20,15 @@ namespace sones.GraphDB.TypeManagement
         public long AttributeID { get; internal set; }
 
         public AttributeType Kind { get { return AttributeType.Property; } }
+
+        #region IPropertyDefinition Members
+
+        public IComparable ExtractValue(IVertex aVertex)
+        {
+            //A usual property like Age or Name...
+            return aVertex.GetProperty(AttributeID);
+        }
+
+        #endregion
     }
 }

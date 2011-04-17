@@ -80,7 +80,7 @@ namespace sones.GraphFS.Element.Vertex
             String myComment,
             long myCreationDate,
             long myModificationDate,
-            Dictionary<Int64, Object> myStructuredProperties,
+            Dictionary<Int64, IComparable> myStructuredProperties,
             Dictionary<String, Object> myUnstructuredProperties)
             :base(myComment, myCreationDate, myModificationDate, myStructuredProperties, myUnstructuredProperties)
         {
@@ -316,6 +316,17 @@ namespace sones.GraphFS.Element.Vertex
                                                                     _vertexID, myPropertyID);
         }
 
+        public IComparable GetProperty(long myPropertyID)
+        {
+            if (HasProperty(myPropertyID))
+            {
+                return _structuredProperties[myPropertyID];
+            }
+
+            throw new CouldNotFindStructuredVertexPropertyException(_vertexTypeID,
+                                                                    _vertexID, myPropertyID);
+        }
+
         public bool HasProperty(long myPropertyID)
         {
             return _structuredProperties != null &&
@@ -327,7 +338,7 @@ namespace sones.GraphFS.Element.Vertex
             return _structuredProperties == null ? 0 : _structuredProperties.Count;
         }
 
-        public IEnumerable<Tuple<long, object>> GetAllProperties(PropertyHyperGraphFilter.GraphElementStructuredPropertyFilter myFilter = null)
+        public IEnumerable<Tuple<long, IComparable>> GetAllProperties(PropertyHyperGraphFilter.GraphElementStructuredPropertyFilter myFilter = null)
         {
             return GetAllPropertiesProtected(myFilter);
         }

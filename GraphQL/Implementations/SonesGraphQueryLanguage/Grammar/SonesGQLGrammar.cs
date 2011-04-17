@@ -2753,7 +2753,7 @@ namespace sones.GraphQL
         }
 
         private string CreateGraphDMLforVertexDefinedProperties(
-            IEnumerable<Tuple<long, object>> myStructuredProperties,
+            IEnumerable<Tuple<long, IComparable>> myStructuredProperties,
             Dictionary<long, IPropertyDefinition> myPropertyDefinitions)
         {
             var stringBuilder = new StringBuilder();

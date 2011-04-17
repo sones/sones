@@ -29,7 +29,7 @@ namespace sones.GraphFS.Element
         /// <summary>
         /// The structured properties
         /// </summary>
-        protected readonly Dictionary<Int64, Object> _structuredProperties;
+        protected readonly Dictionary<Int64, IComparable> _structuredProperties;
 
         /// <summary>
         /// The unstructured properties
@@ -52,7 +52,7 @@ namespace sones.GraphFS.Element
             String myComment,
             long myCreationDate,
             long myModificationDate,
-            Dictionary<Int64, Object> myStructuredProperties,
+            Dictionary<Int64, IComparable> myStructuredProperties,
             Dictionary<String, Object> myUnstructuredProperties)
         {
             _comment = myComment;
@@ -77,7 +77,7 @@ namespace sones.GraphFS.Element
         /// </summary>
         /// <param name="myFilter">An optional filter function</param>
         /// <returns>An enumerable of propertyID/propertyValue</returns>
-        protected IEnumerable<Tuple<long, object>> GetAllPropertiesProtected(PropertyHyperGraphFilter.GraphElementStructuredPropertyFilter myFilter = null)
+        protected IEnumerable<Tuple<long, IComparable>> GetAllPropertiesProtected(PropertyHyperGraphFilter.GraphElementStructuredPropertyFilter myFilter = null)
         {
             if (_structuredProperties != null)
             {
@@ -87,12 +87,12 @@ namespace sones.GraphFS.Element
                     {
                         if (myFilter(aProperty.Key, aProperty.Value))
                         {
-                            yield return new Tuple<long, object>(aProperty.Key, aProperty.Value);
+                            yield return new Tuple<long, IComparable>(aProperty.Key, aProperty.Value);
                         }
                     }
                     else
                     {
-                        yield return new Tuple<long, object>(aProperty.Key, aProperty.Value);
+                        yield return new Tuple<long, IComparable>(aProperty.Key, aProperty.Value);
                     }
                 }
             }

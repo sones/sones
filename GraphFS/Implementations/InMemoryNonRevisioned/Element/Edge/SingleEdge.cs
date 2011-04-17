@@ -50,7 +50,7 @@ namespace sones.GraphFS.Element.Edge
             String myComment,
             long myCreationDate,
             long myModificationDate,
-            Dictionary<Int64, Object> myStructuredProperties,
+            Dictionary<Int64, IComparable> myStructuredProperties,
             Dictionary<String, Object> myUnstructuredProperties)
             : base(myComment, myCreationDate, myModificationDate, myStructuredProperties, myUnstructuredProperties)
         {
@@ -105,6 +105,17 @@ namespace sones.GraphFS.Element.Edge
                                                                   myPropertyID);
         }
 
+        public IComparable GetProperty(long myPropertyID)
+        {
+            if (HasProperty(myPropertyID))
+            {
+                return _structuredProperties[myPropertyID];
+            }
+
+            throw new CouldNotFindStructuredEdgePropertyException(_edgeTypeID,
+                                                                  myPropertyID);
+        }
+
         public bool HasProperty(long myPropertyID)
         {
             return _structuredProperties.ContainsKey(myPropertyID);
@@ -115,7 +126,7 @@ namespace sones.GraphFS.Element.Edge
             return _structuredProperties.Count;
         }
 
-        public IEnumerable<Tuple<long, object>> GetAllProperties(PropertyHyperGraphFilter.GraphElementStructuredPropertyFilter myFilter = null)
+        public IEnumerable<Tuple<long, IComparable>> GetAllProperties(PropertyHyperGraphFilter.GraphElementStructuredPropertyFilter myFilter = null)
         {
             return GetAllPropertiesProtected(myFilter);
         }

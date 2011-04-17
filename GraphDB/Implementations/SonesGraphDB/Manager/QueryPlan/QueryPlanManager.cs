@@ -44,6 +44,14 @@ namespace sones.GraphDB.Manager.QueryPlan
 
         #region IQueryPlanManager Members
 
+        /// <summary>
+        /// Creates a query plan using a logic expression
+        /// </summary>
+        /// <param name="myExpression">The logic expression</param>
+        /// <param name="myIsLongRunning">Determines whether it is anticipated that the request could take longer</param>
+        /// <param name="myTransaction">The current transaction token</param>
+        /// <param name="mySecurity">The current security token</param>
+        /// <returns>A query plan</returns>
         public IQueryPlan CreateQueryPlan(IExpression myExpression, Boolean myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             IQueryPlan result;
@@ -89,6 +97,8 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// Generates a property query plan
         /// </summary>
         /// <param name="myPropertyExpression">The property expression that is going to be transfered</param>
+        /// <param name="myTransaction">The current transaction token</param>
+        /// <param name="mySecurity">The current security token</param>
         /// <returns>A property query plan</returns>
         private IQueryPlan GenerateFromPropertyExpression(PropertyExpression myPropertyExpression, TransactionToken myTransaction, SecurityToken mySecurity)
         {
@@ -103,7 +113,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// </summary>
         /// <param name="constantExpression">The constant expression that is going to be transfered</param>
         /// <returns></returns>
-        private IQueryPlan GenerateFromConstantExpression(ConstantExpression constantExpression)
+        private static IQueryPlan GenerateFromConstantExpression(ConstantExpression constantExpression)
         {
             return new QueryPlanConstant(constantExpression.Constant);
         }
@@ -112,8 +122,10 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// Generates a query plan from an unary expression
         /// </summary>
         /// <param name="unaryExpression">The unary expression</param>
+        /// <param name="myTransaction">The current transaction token</param>
+        /// <param name="mySecurity">The current security token</param>
         /// <returns>A query plan</returns>
-        private IQueryPlan GenerateFromUnaryExpression(UnaryExpression unaryExpression, TransactionToken myTransaction, SecurityToken mySecurity)
+        private static IQueryPlan GenerateFromUnaryExpression(UnaryExpression unaryExpression, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             throw new NotImplementedException();
         }
@@ -122,6 +134,9 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// Generates a query plan from a binary expression
         /// </summary>
         /// <param name="binaryExpression">The binary expression</param>
+        /// <param name="myIsLongRunning">Determines whether it is anticipated that the request could take longer</param>
+        /// <param name="myTransaction">The current transaction token</param>
+        /// <param name="mySecurity">The current security token</param>
         /// <returns>A query plan</returns>
         private IQueryPlan GenerateFromBinaryExpression(BinaryExpression binaryExpression, Boolean myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity)
         {
@@ -171,6 +186,9 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// Generats an equals query plan
         /// </summary>
         /// <param name="binaryExpression">The binary expression that has to be transfered into an equals query plan</param>
+        /// <param name="myIsLongRunning">The binary expression that has to be transfered into an equals query plan</param>
+        /// <param name="myTransaction">The binary expression that has to be transfered into an equals query plan</param>
+        /// <param name="mySecurity">The binary expression that has to be transfered into an equals query plan</param>
         /// <returns>An equals query plan</returns>
         private IQueryPlan GenerateEqualsPlan(BinaryExpression binaryExpression, Boolean myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity)
         {

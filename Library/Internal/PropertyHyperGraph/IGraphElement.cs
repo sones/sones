@@ -19,6 +19,13 @@ namespace sones.Library.PropertyHyperGraph
         T GetProperty<T>(Int64 myPropertyID);
 
         /// <summary>
+        /// Returns the property of a graph element.
+        /// </summary>
+        /// <param name="myPropertyID">The ID of the interesing property</param>
+        /// <returns>A Property</returns>
+        IComparable GetProperty(Int64 myPropertyID);
+
+        /// <summary>
         /// Checks whether the graph element is in possession of a certain property
         /// </summary>
         /// <param name="myPropertyID">The ID of the property</param>
@@ -36,7 +43,7 @@ namespace sones.Library.PropertyHyperGraph
         /// </summary>
         /// <param name="myFilter">A function to filter properties</param>
         /// <returns>An IEnumerable of Property/Value</returns>
-        IEnumerable<Tuple<Int64, Object>> GetAllProperties(PropertyHyperGraphFilter.GraphElementStructuredPropertyFilter myFilter = null);
+        IEnumerable<Tuple<Int64, IComparable>> GetAllProperties(PropertyHyperGraphFilter.GraphElementStructuredPropertyFilter myFilter = null);
 
         /// <summary>
         /// Returns a property as string

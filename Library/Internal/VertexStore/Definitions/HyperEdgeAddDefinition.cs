@@ -28,7 +28,7 @@ namespace sones.Library.VertexStore.Definitions
         /// <summary>
         /// The structured properties
         /// </summary>
-        public readonly Dictionary<Int64, Object> StructuredProperties;
+        public readonly Dictionary<Int64, IComparable> StructuredProperties;
 
         /// <summary>
         /// The unstructured properties
@@ -79,7 +79,7 @@ namespace sones.Library.VertexStore.Definitions
             String myComment,
             long myCreationDate,
             long myModificationDate,
-            Dictionary<Int64, Object> myStructuredProperties,
+            Dictionary<Int64, IComparable> myStructuredProperties,
             Dictionary<String, Object> myUnstructuredProperties)
         {
             PropertyID = myPropertyID;

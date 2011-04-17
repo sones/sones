@@ -62,7 +62,7 @@ namespace sones.Library.PropertyHyperGraph
         /// <param name="myStructuredPropertyID">The id of the property</param>
         /// <param name="myProperty">The property</param>
         /// <returns>False means: I do not want that thing, otherwise true</returns>
-        public delegate bool GraphElementStructuredPropertyFilter(Int64 myStructuredPropertyID, Object myProperty);
+        public delegate bool GraphElementStructuredPropertyFilter(Int64 myStructuredPropertyID, IComparable myProperty);
 
         /// <summary>
         /// Filters an unstructured graph element property
