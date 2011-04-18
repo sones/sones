@@ -1,4 +1,4 @@
-﻿namespace sones.GraphDB.Result
+﻿namespace sones.GraphQL.Result
 {
     /// <summary>
     /// The interface for all single IncomingEdge views

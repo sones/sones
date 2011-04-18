@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace sones.GraphDB.Result
+namespace sones.GraphQL.Result
 {
     /// <summary>
     /// The interface for all hyper IncomingEdge views

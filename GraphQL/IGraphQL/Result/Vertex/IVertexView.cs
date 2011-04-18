@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using sones.Library.PropertyHyperGraph;
 
-namespace sones.GraphDB.Result
+namespace sones.GraphQL.Result
 {
     /// <summary>
     /// The vertex view interface

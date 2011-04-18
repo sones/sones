@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using sones.GraphDB.Result;
 using sones.Library.ErrorHandling;
 
 namespace sones.GraphQL.Result
