@@ -8,7 +8,7 @@ namespace sones.GraphDB.TypeManagement.Base
 {
     internal static class BaseVertexTypeFactory
     {
-        private const String Comment = ".Comment";
+        private const String Comment = "Comment";
         private static readonly ResourceManager ResMgr = new ResourceManager("SonesGraphDB", System.Reflection.Assembly.GetExecutingAssembly());
 
         public static VertexAddDefinition GetInstance(BaseTypes myBaseVertexType)
