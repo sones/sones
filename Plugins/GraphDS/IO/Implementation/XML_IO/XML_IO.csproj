@@ -44,35 +44,40 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="QueryResultSchema.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>QueryResultSchema.xsd</DependentUpon>
+    </Compile>
     <Compile Include="XML_IO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
+    <ProjectReference Include="..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
+    <ProjectReference Include="..\..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
       <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
       <Name>IGraphQL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
       <Name>PropertyHyperGraph</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Library\Internal\Settings\Settings.csproj">
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\Settings\Settings.csproj">
       <Project>{A233FDB4-70A9-4284-827A-1704950E0EF3}</Project>
       <Name>Settings</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
       <Name>PluginManager</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Interface\IOInterface.csproj">
+    <ProjectReference Include="..\..\Interface\IOInterface.csproj">
       <Project>{991132D2-15E0-4BB7-8328-3A51646D4F01}</Project>
       <Name>IOInterface</Name>
     </ProjectReference>
@@ -82,6 +87,7 @@
       <SubType>Designer</SubType>
       <Generator>SchemaToClassesGenerator</Generator>
       <CustomToolNamespace>SchemaToClassesGenerator</CustomToolNamespace>
+      <LastGenOutput>QueryResultSchema.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

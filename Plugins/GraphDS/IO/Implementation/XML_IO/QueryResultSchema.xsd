@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="QueryResultSchema"
+    targetNamespace="http://tempuri.org/QueryResultSchema.xsd"
+    elementFormDefault="qualified"
+    xmlns="http://tempuri.org/QueryResultSchema.xsd"
+    xmlns:mstns="http://tempuri.org/QueryResultSchema.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  
+  <xs:element name="Query">
+    <xs:complexType>
+      <xs:attribute name ="Language" type ="xs:string"/>
+      <xs:attribute name ="Value" type ="xs:string" />
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="VertexRevisionID">
+    <xs:sequence>
+      <xs:element name = "Timestamp"  type ="xs:long"/>
+      <xs:element name = "ID"         type ="xs:unsignedLong"/>
+    </xs:sequence>
+  </xs:complexType>
+
+
+  <xs:complexType name ="GraphElementView" abstract="true">
+    <xs:sequence>
+      <xs:element name ="CountOfProperties" type="xs:int"/>
+      <xs:element name ="Comment"           type ="xs:string" />
+      <xs:element name ="CreationDate"      type ="xs:dateTime"/>
+      <xs:element name ="ModificationDate"  type ="xs:dateTime" />
+      <xs:element name ="Properties"        type ="PropertyList"/>
+    </xs:sequence>
+  </xs:complexType>  
+    
+  <xs:complexType name ="EdgeView">
+    <xs:complexContent>
+      <xs:extension base="GraphElementView">
+        <xs:sequence>
+          <xs:element name ="EdgeTypeName"    type ="xs:string" />
+          <xs:element name ="SourceVertex"    type ="VertexView" />
+          <xs:element name ="TargetVertices"  type ="VertexViewList"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="EdgeTuple">
+    <xs:sequence>
+      <xs:element name ="Name" type ="xs:string"/>        
+      <xs:element name ="Edge" type ="EdgeView"/>
+    </xs:sequence>
+  </xs:complexType>  
+  
+  <xs:complexType name="EdgeTupleList">
+    <xs:sequence>
+      <xs:element name="ETupleList" type="EdgeTuple" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="VertexViewList">
+    <xs:sequence>
+      <xs:element name ="VertexView" type ="VertexView" maxOccurs ="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Properties">
+    <xs:sequence>
+      <xs:element name ="Name" type="xs:string"/>
+      <xs:element name ="Type" type ="xs:string"/>
+      <xs:element name ="Value" type ="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name ="PropertyList">
+    <xs:sequence>
+      <xs:element name ="Properties" type="Properties" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="VertexView">        
+      <xs:sequence>
+        <xs:element name ="VertexTypeName"    type ="xs:string"/>
+        <xs:element name ="VertexID"          type ="xs:long"/>
+        <xs:element name ="EditionName"       type ="xs:string"/>
+        <xs:element name ="VertexRevisionID"  type ="VertexRevisionID"/>
+        <xs:element name ="Edges"             type ="EdgeTupleList"/>
+        <xs:element name ="BinaryPropertys"   type ="BinaryDataList" />
+      </xs:sequence>    
+  </xs:complexType>
+
+  <xs:complexType name="BinaryData">
+    <xs:sequence>
+      <xs:element name="Name" type="xs:string"/>
+      <xs:element name="Content" type ="xs:hexBinary"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="BinaryDataList" >
+    <xs:sequence>
+      <xs:element name ="BinaryData" type ="BinaryData" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>  
+
+  <xs:complexType name="Result">
+    <xs:sequence>
+      <xs:element ref="Query" />
+      <xs:element name="Error" type="xs:string" nillable="true"/>
+      <xs:element name="Number" type="xs:unsignedLong"/>
+      <xs:element name="Duration" type="xs:unsignedLong"/>
+      <xs:element name ="Vertices" type ="VertexViewList"/>      
+    </xs:sequence>
+  </xs:complexType>
+  
+</xs:schema>
