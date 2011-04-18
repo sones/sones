@@ -142,82 +142,142 @@ namespace sones.GraphDB.Request
 
             #endregion
 
-            #region vertex is not already visited
+            #region currentVertex match?
+            //does the current node match the requirements?
 
-            if (!_traversalState.AlreadyVisitedVertex(myCurrentVertex))
+            var match = false;
+
+            #region match evaluation
+
+            if (myMatchEvaluator != null)
             {
-                _traversalState.AddVisitedVertex(myCurrentVertex);
+                //there is a match evaluator... use it
 
-                #region currentVertex match?
-                //does the current node match the requirements?
-
-                var match = false;
-
-                #region match evaluation
-
-                if (myMatchEvaluator != null)
+                if (myMatchEvaluator(myCurrentVertex, myMetaManager.VertexTypeManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken)))
                 {
-                    //there is a match evaluator... use it
-
-                    if (myMatchEvaluator(myCurrentVertex, myMetaManager.VertexTypeManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken)))
-                    {
-                        match = true;
-                    }
-                }
-                else
-                {
-                    //there is no special function that evaluates if the current vertex matches... so EVERY Vertex matches
-
                     match = true;
                 }
+            }
+            else
+            {
+                //there is no special function that evaluates if the current vertex matches... so EVERY Vertex matches
+
+                match = true;
+            }
+
+            #endregion
+
+            if (match)
+            {
+                #region match action
+                //do the specified match action
+
+                if (myMatchAction != null)
+                {
+                    myMatchAction.Invoke(myCurrentVertex);
+                }
 
                 #endregion
 
-                if (match)
-                {
-                    #region match action
-                    //do the specified match action
+                #region update traversal state and increase count of found elements
+                //update number of found elements
 
-                    if (myMatchAction != null)
+                _traversalState.IncreaseNumberOfFoundElements();
+
+                #endregion
+            }
+
+            #endregion
+
+            #region update statistics on traversal state
+
+            _traversalState.AddVisitedVertexViaVertex(myCurrentVertex, myViaVertex);
+
+            #endregion
+
+            #region return and traverse
+            //get all edges and try to traverse them
+            //return results
+
+            if (match)
+            {
+                //return the current vertex if it matched
+                yield return myCurrentVertex;
+            }
+
+            #region traverse by using outgoing edges
+            //first do recursive search by using the outgoing edges
+
+            foreach (var _OutEdge in myCurrentVertex.GetAllOutgoingEdges())
+            {
+                var outEdge = _OutEdge.Item2;
+
+                #region check edge
+                //check if the edge should be followed... if not, continue!
+
+                if (myFollowThisEdge != null)
+                {
+                    if (!myFollowThisEdge(myCurrentVertex,
+                                            myMetaManager.VertexTypeManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken),
+                                            outEdge,
+                                            myMetaManager.EdgeTypeManager.GetEdgeType(outEdge.EdgeTypeID, TransactionToken, SecurityToken)))
                     {
-                        myMatchAction.Invoke(myCurrentVertex);
+                        continue;
+                    }
+                }
+
+                #endregion
+
+                var nextVerticies = outEdge.GetTargetVertices();
+
+                #region take every vertex and do recursion
+
+                foreach (var nextVertex in nextVerticies)
+                {
+                    //check for circle avoidance
+                    if (myAvoidCircles)
+                    {
+                        #region check traversal state
+                        //check the traversal state for circles... if there is one, break!
+
+                        if (_traversalState.AlreadyVisitedVertexViaVertex(nextVertex, myCurrentVertex))
+                        {
+                            continue;
+                        }
+
+                        #endregion
                     }
 
-                    #endregion
+                    //move recursive in depth
 
-                    #region update traversal state and increase count of found elements
-                    //update number of found elements
+                    foreach (var vertex in TraverseVertex_private(nextVertex,
+                                                                    myCurrentVertex,
+                                                                    myMetaManager,
+                                                                    myAvoidCircles,
+                                                                    myFollowThisEdge,
+                                                                    myMatchEvaluator,
+                                                                    myMatchAction,
+                                                                    myStopEvaluator))
+                    {
+                        yield return vertex;
+                    }
 
-                    _traversalState.IncreaseNumberOfFoundElements();
-
-                    #endregion
                 }
 
                 #endregion
+            }
 
-                #region update statistics on traversal state
+            #endregion
 
-                _traversalState.AddVisitedVertexViaVertex(myCurrentVertex, myViaVertex);
+            #region traverse by using incoming edges
+            //first do recursive search by using the outgoing edges
 
-                #endregion
+            foreach (var _InEdges in myCurrentVertex.GetAllIncomingEdges())
+            {
+                var inEdges = _InEdges.Item3;
 
-                #region return and traverse
-                //get all edges and try to traverse them
-                //return results
-
-                if (match)
+                foreach (var inEdge in inEdges)
                 {
-                    //return the current vertex if it matched
-                    yield return myCurrentVertex;
-                }
-
-                #region traverse by using outgoing edges
-                //first do recursive search by using the outgoing edges
-
-                foreach (var _OutEdge in myCurrentVertex.GetAllOutgoingEdges())
-                {
-                    var outEdge = _OutEdge.Item2;
-
                     #region check edge
                     //check if the edge should be followed... if not, continue!
 
@@ -225,8 +285,8 @@ namespace sones.GraphDB.Request
                     {
                         if (!myFollowThisEdge(myCurrentVertex,
                                                 myMetaManager.VertexTypeManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken),
-                                                outEdge,
-                                                myMetaManager.EdgeTypeManager.GetEdgeType(outEdge.EdgeTypeID, TransactionToken, SecurityToken)))
+                                                inEdge,
+                                                myMetaManager.EdgeTypeManager.GetEdgeType(inEdge.EdgeTypeID, TransactionToken, SecurityToken)))
                         {
                             continue;
                         }
@@ -234,112 +294,43 @@ namespace sones.GraphDB.Request
 
                     #endregion
 
-                    var nextVerticies = outEdge.GetTargetVertices();
+                    var nextVertex = inEdge.GetSourceVertex();
 
-                    #region take every vertex and do recursion
+                    #region do recursion
 
-                    foreach (var nextVertex in nextVerticies)
+                    //check for circle avoidance
+                    if (myAvoidCircles)
                     {
-                        //check for circle avoidance
-                        if (myAvoidCircles)
+                        #region check traversal state
+                        //check the traversal state for circles... if there is one, break!
+
+                        if (_traversalState.AlreadyVisitedVertexViaVertex(nextVertex, myCurrentVertex))
                         {
-                            #region check traversal state
-                            //check the traversal state for circles... if there is one, break!
-
-                            if (_traversalState.AlreadyVisitedVertexViaVertex(nextVertex, myCurrentVertex))
-                            {
-                                continue;
-                            }
-
-                            #endregion
+                            continue;
                         }
 
-                        //move recursive in depth
+                        #endregion
+                    }
 
-                        foreach (var vertex in TraverseVertex_private(nextVertex,
-                                                                        myCurrentVertex,
-                                                                        myMetaManager,
-                                                                        myAvoidCircles,
-                                                                        myFollowThisEdge,
-                                                                        myMatchEvaluator,
-                                                                        myMatchAction,
-                                                                        myStopEvaluator))
-                        {
-                            yield return vertex;
-                        }
+                    //move recursive in depth
 
+                    foreach (var vertex in TraverseVertex_private(nextVertex,
+                                                                    myCurrentVertex,
+                                                                    myMetaManager,
+                                                                    myAvoidCircles,
+                                                                    myFollowThisEdge,
+                                                                    myMatchEvaluator,
+                                                                    myMatchAction,
+                                                                    myStopEvaluator))
+                    {
+                        yield return vertex;
                     }
 
                     #endregion
                 }
-
-                #endregion
-
-                #region traverse by using incoming edges
-                //first do recursive search by using the outgoing edges
-
-                foreach (var _InEdges in myCurrentVertex.GetAllIncomingEdges())
-                {
-                    var inEdges = _InEdges.Item3;
-
-                    foreach (var inEdge in inEdges)
-                    {
-                        #region check edge
-                        //check if the edge should be followed... if not, continue!
-
-                        if (myFollowThisEdge != null)
-                        {
-                            if (!myFollowThisEdge(myCurrentVertex,
-                                                    myMetaManager.VertexTypeManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken),
-                                                    inEdge,
-                                                    myMetaManager.EdgeTypeManager.GetEdgeType(inEdge.EdgeTypeID, TransactionToken, SecurityToken)))
-                            {
-                                continue;
-                            }
-                        }
-
-                        #endregion
-
-                        var nextVertex = inEdge.GetSourceVertex();
-
-                        #region do recursion
-
-                        //check for circle avoidance
-                        if (myAvoidCircles)
-                        {
-                            #region check traversal state
-                            //check the traversal state for circles... if there is one, break!
-
-                            if (_traversalState.AlreadyVisitedVertexViaVertex(nextVertex, myCurrentVertex))
-                            {
-                                continue;
-                            }
-
-                            #endregion
-                        }
-
-                        //move recursive in depth
-
-                        foreach (var vertex in TraverseVertex_private(nextVertex,
-                                                                        myCurrentVertex,
-                                                                        myMetaManager,
-                                                                        myAvoidCircles,
-                                                                        myFollowThisEdge,
-                                                                        myMatchEvaluator,
-                                                                        myMatchAction,
-                                                                        myStopEvaluator))
-                        {
-                            yield return vertex;
-                        }
-
-                        #endregion
-                    }
-                }
-
-                #endregion
-
-                #endregion
             }
+
+            #endregion
 
             #endregion
         }

@@ -3,7 +3,7 @@
 namespace sones.Library.Transaction
 {
     /// <summary>
-    /// A class that containts informations concerning the current Transaction
+    /// A class that contains informations concerning the current Transaction
     /// </summary>
     public sealed class TransactionToken
     {
