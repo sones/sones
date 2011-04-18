@@ -325,7 +325,7 @@ namespace sones.GraphDB.TypeManagement
 
         private Dictionary<String, IAttributeDefinition> GetAttributes(IVertex myVertex)
         {
-            var vertices = myVertex.GetIncomingVertices((long)BaseTypes.Attribute, AttributeDefinitions.DefiningTypeOnAttribute.ID);
+            var vertices = myVertex.GetIncomingVertices((long)BaseTypes.Attribute, (long)AttributeDefinitions.DefiningType);
 
             Dictionary<String, IAttributeDefinition> result = (vertices is ICollection)
                 ? new Dictionary<string, IAttributeDefinition>((vertices as ICollection).Count)
@@ -342,7 +342,7 @@ namespace sones.GraphDB.TypeManagement
 
         private static bool GetHasAttributes(IVertex myVertex)
         {
-            return myVertex.HasIncomingVertices((long)BaseTypes.Attribute, AttributeDefinitions.DefiningTypeOnAttribute.ID);
+            return myVertex.HasIncomingVertices((long)BaseTypes.Attribute, (long)AttributeDefinitions.DefiningType);
         }
 
         #endregion
@@ -362,7 +362,7 @@ namespace sones.GraphDB.TypeManagement
 
         private static bool GetHasProperties(IVertex myVertex)
         {
-            return myVertex.HasIncomingVertices((long)BaseTypes.Property, AttributeDefinitions.DefiningTypeOnAttribute.ID);
+            return myVertex.HasIncomingVertices((long)BaseTypes.Property, (long)AttributeDefinitions.DefiningType);
         }
 
         private static IPropertyDefinition CreatePropertyDefinition(IVertex myVertex)
@@ -412,12 +412,12 @@ namespace sones.GraphDB.TypeManagement
 
         private static bool GetHasIncomingEdges(IVertex myVertex)
         {
-            return myVertex.HasIncomingVertices((long)BaseTypes.IncomingEdge, AttributeDefinitions.DefiningTypeOnAttribute.ID);
+            return myVertex.HasIncomingVertices((long)BaseTypes.IncomingEdge, (long)AttributeDefinitions.DefiningType);
         }
 
         private IOutgoingEdgeDefinition GetRelatetOutgoingEdgeDefinition(IVertex myVertex)
         {
-            return CreateOutgoingEdgeDefinition(myVertex.GetOutgoingSingleEdge(AttributeDefinitions.RelatedEdgeOnIncomingEdge.ID).GetTargetVertex());
+            return CreateOutgoingEdgeDefinition(myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.RelatedEgde).GetTargetVertex());
         }
 
         #endregion
@@ -452,13 +452,13 @@ namespace sones.GraphDB.TypeManagement
 
         private static IEdgeType GetEdgeType(IVertex myVertex)
         {
-            var vertex = myVertex.GetOutgoingSingleEdge(AttributeDefinitions.EdgeTypeOnOutgoingEdge.ID).GetTargetVertex();
+            var vertex = myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.EdgeType).GetTargetVertex();
             return new EdgeType(vertex);
         }
 
         private IVertexType GetTargetVertexType(IVertex myOutgoingEdgeVertex)
         {
-            var vertex = myOutgoingEdgeVertex.GetOutgoingSingleEdge(AttributeDefinitions.TargetOnOutgoingEdge.ID).GetTargetVertex();
+            var vertex = myOutgoingEdgeVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.Target).GetTargetVertex();
             if (vertex.VertexID == _id)
                 return this;
 
@@ -467,7 +467,7 @@ namespace sones.GraphDB.TypeManagement
 
         private static bool GetHasOutgoingEdges(IVertex myVertex)
         {
-            return myVertex.HasIncomingVertices((long)BaseTypes.OutgoingEdge, AttributeDefinitions.DefiningTypeOnAttribute.ID);
+            return myVertex.HasIncomingVertices((long)BaseTypes.OutgoingEdge, (long)AttributeDefinitions.DefiningType);
         }
 
         #endregion
@@ -483,7 +483,7 @@ namespace sones.GraphDB.TypeManagement
 
         private static bool GetHasChilds(IVertex myVertex)
         {
-            return myVertex.HasIncomingVertices((long)BaseTypes.VertexType, AttributeDefinitions.ParentOnVertexType.ID);
+            return myVertex.HasIncomingVertices((long)BaseTypes.VertexType, (long)AttributeDefinitions.Parent);
         }
 
         private static IVertexType GetParentType(IVertex myVertex)
@@ -493,12 +493,12 @@ namespace sones.GraphDB.TypeManagement
 
         private static IVertex GetParent(IVertex myVertex)
         {
-            return myVertex.GetOutgoingSingleEdge(AttributeDefinitions.ParentOnVertexType.ID).GetTargetVertex();
+            return myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.Parent).GetTargetVertex();
         }
 
         private static List<IVertexType> GetChildTypes(IVertex myVertex)
         {
-            var vertices = myVertex.GetIncomingVertices((long)BaseTypes.VertexType, AttributeDefinitions.ParentOnVertexType.ID);
+            var vertices = myVertex.GetIncomingVertices((long)BaseTypes.VertexType, (long)AttributeDefinitions.Parent);
 
             //Perf: initialize the myResult list with a size
             List<IVertexType> result = (vertices is ICollection)
@@ -542,7 +542,7 @@ namespace sones.GraphDB.TypeManagement
 
         private static bool GetIsMandatory(IVertex myVertex)
         {
-            return myVertex.GetProperty<bool>(AttributeDefinitions.IsMandatoryOnProperty.ID);
+            return myVertex.GetProperty<bool>((long)AttributeDefinitions.IsMandatory);
         }
 
         private static Type GetBaseType(IVertex myVertex)
@@ -552,32 +552,32 @@ namespace sones.GraphDB.TypeManagement
 
         private static long GetAttributeID(IVertex myVertex)
         {
-            return myVertex.GetProperty<long>(AttributeDefinitions.ID.ID);
+            return myVertex.GetProperty<long>((long)AttributeDefinitions.ID);
         }
 
         private static long GetID(IVertex myVertex)
         {
-            return myVertex.GetProperty<long>(AttributeDefinitions.ID.ID);
+            return myVertex.GetProperty<long>((long)AttributeDefinitions.ID);
         }
 
         private static String GetName(IVertex myVertex)
         {
-            return myVertex.GetPropertyAsString(AttributeDefinitions.Name.ID);
+            return myVertex.GetPropertyAsString((long)AttributeDefinitions.Name);
         }
 
         private static String GetComment(IVertex myVertex)
         {
-            return myVertex.GetPropertyAsString(AttributeDefinitions.Comment.ID);
+            return myVertex.GetPropertyAsString((long)AttributeDefinitions.Comment);
         }
 
         private static bool GetIsSealed(IVertex myVertex)
         {
-            return myVertex.GetProperty<bool>(AttributeDefinitions.IsSealedOnBaseType.ID);
+            return myVertex.GetProperty<bool>((long)AttributeDefinitions.IsSealed);
         }
 
         private static bool GetIsAbstract(IVertex myVertex)
         {
-            return myVertex.GetProperty<bool>(AttributeDefinitions.IsAbstractOnBaseType.ID);
+            return myVertex.GetProperty<bool>((long)AttributeDefinitions.IsAbstract);
         }
 
         #endregion

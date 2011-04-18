@@ -96,6 +96,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             TypeInt32,
             TypeString,
             TypeDateTime,
+            TypeDouble,
             TypeBoolean,
             TypeInt64,
             TypeChar,
@@ -114,6 +115,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         public const string TypeBoolean = "System.Boolean";
         public const string TypeByte    = "System.Byte";
         public const string TypeChar    = "System.Char";
+        public const string TypeDouble  = "System.Double";
         public const string TypeSingle  = "System.Single";
         public const string TypeInt32   = "System.Int32";
         public const string TypeInt64   = "System.Int64";
@@ -138,12 +140,12 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// A property expression on VertexType.Name
         /// </summary>
-        private readonly IExpression _vertexTypeNameExpression = new PropertyExpression(BaseTypes.VertexType.ToString(), AttributeDefinitions.Name.Name);
+        private readonly IExpression _vertexTypeNameExpression = new PropertyExpression(BaseTypes.VertexType.ToString(), AttributeDefinitions.Name.ToString());
 
         /// <summary>
         /// A property expression on VertexType.ID
         /// </summary>
-        private readonly IExpression _vertexTypeIDExpression = new PropertyExpression(BaseTypes.VertexType.ToString(), AttributeDefinitions.ID.Name);
+        private readonly IExpression _vertexTypeIDExpression = new PropertyExpression(BaseTypes.VertexType.ToString(), AttributeDefinitions.ID.ToString());
 
         #endregion
 
@@ -425,10 +427,10 @@ namespace sones.GraphDB.Manager.TypeManagement
                     if (vertex == null)
                         throw new TargetVertexTypeNotFoundException(myVertexTypePredefinition, group.Key, group.Select(x=>x.EdgeName));
 
-                    var attributes = vertex.GetIncomingVertices((long)BaseTypes.OutgoingEdge, AttributeDefinitions.DefiningTypeOnAttribute.ID);
+                    var attributes = vertex.GetIncomingVertices((long)BaseTypes.OutgoingEdge, (long)AttributeDefinitions.DefiningType);
                     foreach (var edge in group)
                     {
-                        if (!attributes.Any(outgoing => edge.SourceEdgeName.Equals(outgoing.GetPropertyAsString(AttributeDefinitions.Name.ID))))
+                        if (!attributes.Any(outgoing => edge.SourceEdgeName.Equals(outgoing.GetPropertyAsString((long)AttributeDefinitions.Name))))
                             throw new OutgoingEdgeNotFoundException(myVertexTypePredefinition, edge);
                     }
                 }
@@ -500,13 +502,13 @@ namespace sones.GraphDB.Manager.TypeManagement
                     //No parent type was found.
                     throw new InvalidBaseVertexTypeException(myTopologicallySortedPointer.Value.SuperVertexTypeName);
 
-                if (parent.GetProperty<bool>(AttributeDefinitions.IsSealedOnBaseType.ID))
+                if (parent.GetProperty<bool>((long)AttributeDefinitions.IsSealed))
                     //The parent type is sealed.
-                    throw new SealedBaseVertexTypeException(myTopologicallySortedPointer.Value.VertexTypeName, parent.GetPropertyAsString(AttributeDefinitions.Name.ID));
+                    throw new SealedBaseVertexTypeException(myTopologicallySortedPointer.Value.VertexTypeName, parent.GetPropertyAsString((long)AttributeDefinitions.Name));
 
                 var attributeNames = parent.GetIncomingVertices(
                     (long)BaseTypes.Attribute,
-                    AttributeDefinitions.DefiningTypeOnAttribute.ID).Select(vertex => vertex.GetPropertyAsString(AttributeDefinitions.Name.ID));
+                    (long)AttributeDefinitions.DefiningType).Select(vertex => vertex.GetPropertyAsString((long)AttributeDefinitions.Name));
 
                 myAttributes[myTopologicallySortedPointer.Value.VertexTypeName] = new HashSet<string>(attributeNames);
             }

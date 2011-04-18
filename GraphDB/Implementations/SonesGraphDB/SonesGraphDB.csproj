@@ -52,6 +52,7 @@
     <Compile Include="Expression\QueryPlan\IQueryPlan.cs" />
     <Compile Include="Expression\QueryPlan\QueryPlanProperty.cs" />
     <Compile Include="Index\IndexDefinition.cs" />
+    <Compile Include="Manager\DBCreationManager.cs" />
     <Compile Include="Manager\Expression\BasicLogicExpressionOptimizer.cs" />
     <Compile Include="Manager\IMetaManager.cs" />
     <Compile Include="Manager\Index\IIndexManager.cs" />
@@ -89,7 +90,7 @@
     <Compile Include="Settings\DefaultGraphFSImplementation.cs" />
     <Compile Include="TypeManagement\Base\BaseTypes.cs" />
     <Compile Include="TypeManagement\Base\AttributeDefinitions.cs" />
-    <Compile Include="TypeManagement\Base\BaseVertexTypeFactory.cs" />
+    <Compile Include="TypeManagement\Base\BasicTypes.cs" />
     <Compile Include="TypeManagement\EdgeType.cs" />
     <Compile Include="TypeManagement\Exceptions\NotValidatedException.cs" />
     <Compile Include="Manager\TypeManagement\VertexTypeManager.cs" />
