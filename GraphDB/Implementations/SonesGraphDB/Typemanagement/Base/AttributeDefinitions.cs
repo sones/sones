@@ -1,15 +1,14 @@
 ﻿using System;
 using sones.GraphDB.TypeSystem;
 
-namespace sones.GraphDB.TypeManagement.BaseTypes
+namespace sones.GraphDB.TypeManagement.Base
 {
 
     /// <summary>
     /// This static class contains all attribute definitions.
     /// </summary>
     /// We use a summary file, that contains attribute definitions, because some attributes are used in multiple vertex types
-    /// and we want to be sure, that the AttributeIDs are similar for VertexTypes
-    /// 
+    /// and we want to be sure, that the AttributeIDs are similar for VertexTypes.
     internal static class AttributeDefinitions
     {
         public struct Info
@@ -23,13 +22,14 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         /// <summary>
         /// Stores the offset for attribute ids for types that inherits from Vertex
         /// </summary>
-        private const Int64 VertexOffset = 5;
+        private const Int64 VertexOffset = 6;
 
         public static readonly Info IDOnVertex             = new Info { ID = Int64.MinValue    , Name = "UUID" };
         public static readonly Info CreationOnVertex       = new Info { ID = Int64.MinValue + 1, Name = "CreationDate" };
         public static readonly Info ModifificationOnVertex = new Info { ID = Int64.MinValue + 2, Name = "ModificationDate" };
         public static readonly Info RevisionOnVertex       = new Info { ID = Int64.MinValue + 3, Name = "Revision" };
         public static readonly Info EditionOnVertex        = new Info { ID = Int64.MinValue + 4, Name = "Edition" };
+        public static readonly Info Comment = new Info { ID = Int64.MinValue + VertexOffset + 3, Name = "Comment" };
 
         #endregion
 
@@ -38,12 +38,11 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         /// <summary>
         /// Stores the offset for attribute ids for types that are base types (BaseType, Attribute, Index)
         /// </summary>
-        private const Int64 AllTypesOffset = VertexOffset + 4;
+        private const Int64 AllTypesOffset = VertexOffset + 3;
 
         public static readonly Info ID            = new Info { ID = Int64.MinValue + VertexOffset    , Name = "ID"};
         public static readonly Info Name          = new Info { ID = Int64.MinValue + VertexOffset + 1, Name = "Name"};
         public static readonly Info IsUserDefined = new Info { ID = Int64.MinValue + VertexOffset + 2, Name = "IsUserDefined"};
-        public static readonly Info Comment       = new Info { ID = Int64.MinValue + VertexOffset + 3, Name = "Comment"};
 
         #endregion
 

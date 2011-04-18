@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace sones.GraphDB.TypeManagement.BaseTypes
+namespace sones.GraphDB.TypeManagement.Base
 {
-    internal enum BaseVertexType: long
+    internal enum BaseTypes: long
     {
         BaseType     = Int64.MinValue,
         VertexType   = Int64.MinValue + 1,
@@ -12,6 +12,8 @@ namespace sones.GraphDB.TypeManagement.BaseTypes
         OutgoingEdge = Int64.MinValue + 5,
         Property     = Int64.MinValue + 6,
         Index        = Int64.MinValue + 7,
-        Vertex       = Int64.MinValue + 8
+        Vertex       = Int64.MinValue + 8,
+        Edge         = Int64.MinValue + 9,
+        WeightedEdge = Int64.MinValue + 10
     }
 }

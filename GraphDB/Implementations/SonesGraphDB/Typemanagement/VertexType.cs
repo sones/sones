@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using sones.GraphDB.TypeManagement.BaseTypes;
+using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.TypeSystem;
 using sones.Library.PropertyHyperGraph;
 
@@ -309,13 +309,13 @@ namespace sones.GraphDB.TypeManagement
 
         private IAttributeDefinition CreateAttributeDefinition(IVertex vertex)
         {
-            switch ((BaseVertexType)vertex.VertexTypeID)
+            switch ((BaseTypes)vertex.VertexTypeID)
             {
-                case BaseVertexType.IncomingEdge:
+                case BaseTypes.IncomingEdge:
                     return CreateIncomingEdgeDefinition(vertex);
-                case BaseVertexType.OutgoingEdge:
+                case BaseTypes.OutgoingEdge:
                     return CreateOutgoingEdgeDefinition(vertex);
-                case BaseVertexType.Property:
+                case BaseTypes.Property:
                     return CreatePropertyDefinition(vertex);
                 default:
                     //TODO: better exception needed here
@@ -325,7 +325,7 @@ namespace sones.GraphDB.TypeManagement
 
         private Dictionary<String, IAttributeDefinition> GetAttributes(IVertex myVertex)
         {
-            var vertices = myVertex.GetIncomingVertices((long)BaseVertexType.Attribute, AttributeDefinitions.DefiningTypeOnAttribute.ID);
+            var vertices = myVertex.GetIncomingVertices((long)BaseTypes.Attribute, AttributeDefinitions.DefiningTypeOnAttribute.ID);
 
             Dictionary<String, IAttributeDefinition> result = (vertices is ICollection)
                 ? new Dictionary<string, IAttributeDefinition>((vertices as ICollection).Count)
@@ -342,7 +342,7 @@ namespace sones.GraphDB.TypeManagement
 
         private static bool GetHasAttributes(IVertex myVertex)
         {
-            return myVertex.HasIncomingEdge((long)BaseVertexType.Attribute, AttributeDefinitions.DefiningTypeOnAttribute.ID);
+            return myVertex.HasIncomingEdge((long)BaseTypes.Attribute, AttributeDefinitions.DefiningTypeOnAttribute.ID);
         }
 
         #endregion
@@ -362,7 +362,7 @@ namespace sones.GraphDB.TypeManagement
 
         private static bool GetHasProperties(IVertex myVertex)
         {
-            return myVertex.HasIncomingEdge((long)BaseVertexType.Property, AttributeDefinitions.DefiningTypeOnAttribute.ID);
+            return myVertex.HasIncomingEdge((long)BaseTypes.Property, AttributeDefinitions.DefiningTypeOnAttribute.ID);
         }
 
         private static IPropertyDefinition CreatePropertyDefinition(IVertex myVertex)
@@ -412,7 +412,7 @@ namespace sones.GraphDB.TypeManagement
 
         private static bool GetHasIncomingEdges(IVertex myVertex)
         {
-            return myVertex.HasIncomingEdge((long)BaseVertexType.IncomingEdge, AttributeDefinitions.DefiningTypeOnAttribute.ID);
+            return myVertex.HasIncomingEdge((long)BaseTypes.IncomingEdge, AttributeDefinitions.DefiningTypeOnAttribute.ID);
         }
 
         private IOutgoingEdgeDefinition GetRelatetOutgoingEdgeDefinition(IVertex myVertex)
@@ -467,7 +467,7 @@ namespace sones.GraphDB.TypeManagement
 
         private static bool GetHasOutgoingEdges(IVertex myVertex)
         {
-            return myVertex.HasIncomingEdge((long)BaseVertexType.OutgoingEdge, AttributeDefinitions.DefiningTypeOnAttribute.ID);
+            return myVertex.HasIncomingEdge((long)BaseTypes.OutgoingEdge, AttributeDefinitions.DefiningTypeOnAttribute.ID);
         }
 
         #endregion
@@ -483,7 +483,7 @@ namespace sones.GraphDB.TypeManagement
 
         private static bool GetHasChilds(IVertex myVertex)
         {
-            return myVertex.HasIncomingEdge((long)BaseVertexType.VertexType, AttributeDefinitions.ParentOnVertexType.ID);
+            return myVertex.HasIncomingEdge((long)BaseTypes.VertexType, AttributeDefinitions.ParentOnVertexType.ID);
         }
 
         private static IVertexType GetParentType(IVertex myVertex)
@@ -498,7 +498,7 @@ namespace sones.GraphDB.TypeManagement
 
         private static List<IVertexType> GetChildTypes(IVertex myVertex)
         {
-            var vertices = myVertex.GetIncomingVertices((long)BaseVertexType.VertexType, AttributeDefinitions.ParentOnVertexType.ID);
+            var vertices = myVertex.GetIncomingVertices((long)BaseTypes.VertexType, AttributeDefinitions.ParentOnVertexType.ID);
 
             //Perf: initialize the myResult list with a size
             List<IVertexType> result = (vertices is ICollection)

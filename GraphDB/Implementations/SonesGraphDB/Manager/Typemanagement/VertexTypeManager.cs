@@ -5,7 +5,7 @@ using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.Expression;
 using sones.GraphDB.Request;
 using sones.GraphDB.TypeManagement;
-using sones.GraphDB.TypeManagement.BaseTypes;
+using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.TypeSystem;
 using sones.Library.Security;
 using sones.Library.Transaction;
@@ -19,7 +19,7 @@ using sones.Library.VertexStore.Definitions;
 
 /*
  * IncomingEdge cases:
- *   - if someone changes the super type of an vertex or IncomingEdge type 
+ *   - if someone changes the super type of an vertex or edge type 
  *     - Henning, Timo 
  *       - that this isn't a required feature for version 2.0
  * 
@@ -28,9 +28,9 @@ using sones.Library.VertexStore.Definitions;
  *       - the type manager is only responsible for converting type changing request into filesystem requests
  *       - the ability to undo an request should be implemented in the corresponding piplineable request
  * 
- *   - unique attributes
+ *   - unique myAttributes
  *     - Henning, Timo
- *       - the type manager creates unique indices on attributes on the type that declares the uniqness attribute and all deriving types
+ *       - the type manager creates unique indices on attributes on the type that declares the uniqueness attribute and all deriving types
  * 
  *   - load 
  *     - Timo
@@ -40,7 +40,7 @@ using sones.Library.VertexStore.Definitions;
  * 
  *   - create
  *     - Timo
- *       - will add the main vertex types 
+ *       - not part of the vertex type manager
  *       
  *   - get vertex type
  *     - if one of the base vertex types is requested, return a predefined vertex.
@@ -72,32 +72,30 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// Create a new VertexTypeManager.
         /// </summary>
-        /// <param name="myIndexManager">
-        /// An instance of IIndexManager.
-        /// </param>
-        /// <param name="myVertexManager">
-        /// An instance of IVertexManager.
-        /// </param>
         public VertexTypeManager()
         {
-            
-            _vertexTypeNameExpression = new PropertyExpression(BaseVertexType.VertexType.ToString(), AttributeDefinitions.Name.Name);
-            _vertexTypeIDExpression = new PropertyExpression(BaseVertexType.VertexType.ToString(), AttributeDefinitions.ID.Name);
         }
 
         #endregion
         
         #region Constants
 
+        /// <summary>
+        /// The expected count of vertex types to add.
+        /// </summary>
         private const int ExpectedVertexTypes = 100;
 
         #region base c# types
 
-        private static readonly String[] BaseTypes = 
+        /// <summary>
+        /// The list of standard c# types, that can be used.
+        /// </summary>
+        private static readonly String[] _baseTypes = 
         {
             // ordered by assumed usage, to speed up contains
             TypeInt32,
             TypeString,
+            TypeDateTime,
             TypeBoolean,
             TypeInt64,
             TypeChar,
@@ -108,6 +106,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             TypeUInt32,
             TypeUInt64,
             TypeUInt16,
+            TypeTimeSpan
         };
 
         #region value types
@@ -128,15 +127,23 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region reference types
 
-        public const string TypeString = "System.String";
+        public const string TypeString   = "System.String";
+        public const string TypeDateTime = "System.DateTime";
+        public const string TypeTimeSpan = "System.TimeSpan";
 
         #endregion
 
         #endregion
 
-        private readonly IVertexType _vertexTypeVertexType;
-        private readonly IExpression _vertexTypeNameExpression;
-        private readonly IExpression _vertexTypeIDExpression;
+        /// <summary>
+        /// A property expression on VertexType.Name
+        /// </summary>
+        private readonly IExpression _vertexTypeNameExpression = new PropertyExpression(BaseTypes.VertexType.ToString(), AttributeDefinitions.Name.Name);
+
+        /// <summary>
+        /// A property expression on VertexType.ID
+        /// </summary>
+        private readonly IExpression _vertexTypeIDExpression = new PropertyExpression(BaseTypes.VertexType.ToString(), AttributeDefinitions.ID.Name);
 
         #endregion
 
@@ -148,9 +155,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
 /*            #region check if it is a base type
 
-            if (Enum.IsDefined(typeof(BaseVertexType), myTypeId))
+            if (Enum.IsDefined(typeof(Base), myTypeId))
             {
-                return BaseVertexTypeFactory.GetInstance((BaseVertexType) myTypeId);
+                return BaseVertexTypeFactory.GetInstance((Base) myTypeId);
             }
 
             #endregion
@@ -172,7 +179,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             /*
             #region check if it is a base type
 
-            BaseVertexType baseType;
+            Base baseType;
             if (Enum.TryParse(myTypeName, out baseType))
             {
                 return BaseVertexTypeFactory.GetInstance(baseType);
@@ -281,7 +288,13 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Get
 
-
+        /// <summary>
+        /// Gets an IVertex representing the vertex type given by <paramref name="myTypeName"/>.
+        /// </summary>
+        /// <param name="myTypeName">The vertex type name.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <returns>An IVertex instance, that represents the vertex type with the given name or <c>NULL</c>, if not present.</returns>
         private IVertex Get(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             #region get the type from fs
@@ -291,6 +304,13 @@ namespace sones.GraphDB.Manager.TypeManagement
             #endregion
         }
 
+        /// <summary>
+        /// Gets an IVertex representing the vertex type given by <paramref name="myTypeID"/>.
+        /// </summary>
+        /// <param name="myTypeName">The vertex type ID.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <returns>An IVertex instance, that represents the vertex type with the given ID or <c>NULL</c>, if not present.</returns>
         private IVertex Get(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             #region get the type from fs
@@ -305,10 +325,17 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Add
 
+        /// <summary>
+        /// Checks if the given vertex type predefinitions will succeed.
+        /// </summary>
+        /// <param name="myVertexTypeDefinitions">The list of vertex type predefinitions.<remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         private void CheckAdd(
             ref IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, 
             TransactionToken myTransaction, SecurityToken mySecurity)
         {
+            #region prolog
             // Basically first check the pre-definitions itself without asking the IVertexManager. 
             // If these checks are okay, proof everything concerning the types stored in the fs using the IVertexManager.
 
@@ -324,11 +351,11 @@ namespace sones.GraphDB.Manager.TypeManagement
             //   OK - check if all parentPredef types exists and are not sealed
             //   OK - check if all outgoing edges have existing targets
             //   OK - check if all incoming edges have existing outgoing edges
-            // TODO - check that unique constraints and indices definition contains existing attributes
-
+            // TODO - check that unique constraints and indices definition contains existing myAttributes
+            #endregion
 
             #region Checks without IVertexManager
-            
+
             CanAddCheckBasics(myVertexTypeDefinitions);
 
             //Contains dictionary of vertex name to vertex predefinition.
@@ -356,10 +383,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <summary>
         /// Does the necessary checks for can add with the use of the FS.
         /// </summary>
-        /// <param name="myDefsTopologically"></param>
-        /// <param name="myDefsByName"></param>
-        /// <param name="myTransaction"></param>
-        /// <param name="mySecurity"></param>
+        /// <param name="myDefsTopologically">A topologically sorted list of vertex type predefinitions. <remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
+        /// <param name="myDefsByName">The same vertex type predefinitions as in <paramref name="myDefsTpologically"/>, but indexed by their name. <remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        /// <remarks><paramref name="myDefsTopologically"/> and <paramref name="myDefsByName"/> must contain the same vertex type predefinitions. This is never checked.</remarks>
         /// The predefinitions are checked one by one in topologically order. 
         private void CanAddCheckWithFS(
             LinkedList<VertexTypePredefinition> myDefsTopologically, 
@@ -373,12 +401,19 @@ namespace sones.GraphDB.Manager.TypeManagement
             for (var current = myDefsTopologically.First; current != null; current = current.Next)
             {
                  CanAddCheckVertexNameUniqueWithFS(current.Value, myTransaction, mySecurity);
-                 CanAddCheckAttributeNameUniquenessWithFS(current, myTransaction, mySecurity, attributes);
+                 CanAddCheckAttributeNameUniquenessWithFS(current, attributes, myTransaction, mySecurity);
                  CanAddCheckOutgoingEdgeTargets(current.Value, myDefsByName, myTransaction, mySecurity);
                  CanAddCheckIncomingEdgeSources(current.Value, myDefsByName, myTransaction, mySecurity);
              }
         }
 
+        /// <summary>
+        /// Checks if an incoming myEdge has a coresponding outgoing myEdge.
+        /// </summary>
+        /// <param name="myVertexTypePredefinition">The vertex type definition of that the incoming edges will be checked,</param>
+        /// <param name="myDefsByName">The vertex type predefinitions indexed by their name that are alse defined in this CanAdd operation.<remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         private void CanAddCheckIncomingEdgeSources(VertexTypePredefinition myVertexTypePredefinition, IDictionary<string, VertexTypePredefinition> myDefsByName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             var grouped = myVertexTypePredefinition.IncomingEdges.GroupBy(x => x.SourceTypeName);
@@ -390,7 +425,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                     if (vertex == null)
                         throw new TargetVertexTypeNotFoundException(myVertexTypePredefinition, group.Key, group.Select(x=>x.EdgeName));
 
-                    var attributes = vertex.GetIncomingVertices((long)BaseVertexType.OutgoingEdge, AttributeDefinitions.DefiningTypeOnAttribute.ID);
+                    var attributes = vertex.GetIncomingVertices((long)BaseTypes.OutgoingEdge, AttributeDefinitions.DefiningTypeOnAttribute.ID);
                     foreach (var edge in group)
                     {
                         if (!attributes.Any(outgoing => edge.SourceEdgeName.Equals(outgoing.GetPropertyAsString(AttributeDefinitions.Name.ID))))
@@ -411,6 +446,13 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
         }
 
+        /// <summary>
+        /// Checks if outgoing edges have a valid target.
+        /// </summary>
+        /// <param name="myVertexTypePredefinition">The vertex type definition of that the outgoing edges will be checked,</param>
+        /// <param name="myDefsByName">The vertex type predefinitions indexed by their name that are alse defined in this CanAdd operation.<remarks><c>NULL</c> is not allowed, but not checked.</remarks></param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
         private void CanAddCheckOutgoingEdgeTargets(VertexTypePredefinition myVertexTypePredefinition, IDictionary<string, VertexTypePredefinition> myDefsByName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             var grouped = myVertexTypePredefinition.OutgoingEdges.GroupBy(x => x.TargetVertexType);
@@ -426,52 +468,72 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
         }
 
-        private void CanAddCheckVertexNameUniqueWithFS(VertexTypePredefinition current, TransactionToken myTransaction, SecurityToken mySecurity)
+        /// <summary>
+        /// Checks if the name of the given vertex type predefinition is not used in FS before.
+        /// </summary>
+        /// <param name="myVertexTypePredefinition">The name of this vertex type definition will be checked.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        private void CanAddCheckVertexNameUniqueWithFS(VertexTypePredefinition myVertexTypePredefinition, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            if (Get(current.VertexTypeName, myTransaction, mySecurity) != null)
-                throw new DuplicatedVertexTypeNameException(current.VertexTypeName);
+            if (Get(myVertexTypePredefinition.VertexTypeName, myTransaction, mySecurity) != null)
+                throw new DuplicatedVertexTypeNameException(myVertexTypePredefinition.VertexTypeName);
         }
 
-        private void CanAddCheckAttributeNameUniquenessWithFS(LinkedListNode<VertexTypePredefinition> current, TransactionToken myTransaction, SecurityToken mySecurity, IDictionary<string, HashSet<string>> attributes)
+        /// <summary>
+        /// Checks if the attribute names on vertex type definitions are unique, containing parent myAttributes.
+        /// </summary>
+        /// <param name="myTopologicallySortedPointer">A pointer to a vertex type predefinitions in a topologically sorted linked list.</param>
+        /// <param name="myAttributes">A dictionary vertex type name to attribute names, that is build up during the process of CanAddCheckWithFS.</param>
+        /// <param name="myTransaction">A transaction token for this operation.</param>
+        /// <param name="mySecurity">A security token for this operation.</param>
+        private void CanAddCheckAttributeNameUniquenessWithFS(LinkedListNode<VertexTypePredefinition> myTopologicallySortedPointer, IDictionary<string, HashSet<string>> myAttributes, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var parentPredef = GetParentPredefinitionOnTopologicallySortedList(current, current.Previous);
+            var parentPredef = GetParentPredefinitionOnTopologicallySortedList(myTopologicallySortedPointer);
 
             if (parentPredef == null)
             {
                 //Get the parent type from FS.
-                var parent = Get(current.Value.SuperVertexTypeName, myTransaction, mySecurity);
+                var parent = Get(myTopologicallySortedPointer.Value.SuperVertexTypeName, myTransaction, mySecurity);
 
                 if (parent == null)
                     //No parent type was found.
-                    throw new InvalidBaseVertexTypeException(current.Value.SuperVertexTypeName);
+                    throw new InvalidBaseVertexTypeException(myTopologicallySortedPointer.Value.SuperVertexTypeName);
 
                 if (parent.GetProperty<bool>(AttributeDefinitions.IsSealedOnBaseType.ID))
                     //The parent type is sealed.
-                    throw new SealedBaseVertexTypeException(current.Value.VertexTypeName, parent.GetPropertyAsString(AttributeDefinitions.Name.ID));
+                    throw new SealedBaseVertexTypeException(myTopologicallySortedPointer.Value.VertexTypeName, parent.GetPropertyAsString(AttributeDefinitions.Name.ID));
 
                 var attributeNames = parent.GetIncomingVertices(
-                    (long)BaseVertexType.Attribute,
+                    (long)BaseTypes.Attribute,
                     AttributeDefinitions.DefiningTypeOnAttribute.ID).Select(vertex => vertex.GetPropertyAsString(AttributeDefinitions.Name.ID));
 
-                attributes[current.Value.VertexTypeName] = new HashSet<string>(attributeNames);
+                myAttributes[myTopologicallySortedPointer.Value.VertexTypeName] = new HashSet<string>(attributeNames);
             }
             else 
             {
-                attributes[current.Value.VertexTypeName] = new HashSet<string>(attributes[parentPredef.Value.VertexTypeName]);
+                myAttributes[myTopologicallySortedPointer.Value.VertexTypeName] = new HashSet<string>(myAttributes[parentPredef.Value.VertexTypeName]);
             }
 
-            var attributeNamesSet = attributes[current.Value.VertexTypeName];
+            var attributeNamesSet = myAttributes[myTopologicallySortedPointer.Value.VertexTypeName];
 
-            CheckIncomingEdgesUniqueName(current.Value, attributeNamesSet);
-            CheckOutgoingEdgesUniqueName(current.Value, attributeNamesSet);
-            CheckPropertiesUniqueName(current.Value, attributeNamesSet);
+            CheckIncomingEdgesUniqueName(myTopologicallySortedPointer.Value, attributeNamesSet);
+            CheckOutgoingEdgesUniqueName(myTopologicallySortedPointer.Value, attributeNamesSet);
+            CheckPropertiesUniqueName(myTopologicallySortedPointer.Value, attributeNamesSet);
         }
 
-        private static LinkedListNode<VertexTypePredefinition> GetParentPredefinitionOnTopologicallySortedList(LinkedListNode<VertexTypePredefinition> current, LinkedListNode<VertexTypePredefinition> parent)
+        /// <summary>
+        /// Gets the parent predefinition of the given predefinition.
+        /// </summary>
+        /// <param name="myCurrent">The predefinition of that the parent vertex predefinition is searched.</param>
+        /// <returns>The link to the parent predefinition of the <paramref name="myCurrent"/> predefinition, otherwise <c>NULL</c>.</returns>
+        private static LinkedListNode<VertexTypePredefinition> GetParentPredefinitionOnTopologicallySortedList(LinkedListNode<VertexTypePredefinition> myCurrent)
         {
+            var parent = myCurrent.Previous;
+
             while (parent != null)
             {
-                if (parent.Value.VertexTypeName.Equals(current.Value.SuperVertexTypeName))
+                if (parent.Value.VertexTypeName.Equals(myCurrent.Value.SuperVertexTypeName))
                     break;
                 parent = parent.Previous;
             }
@@ -479,9 +541,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         }
 
         /// <summary>
-        /// Checks for errors in a list of VertexTypePredefinitions without using the FS
+        /// Checks for errors in a list of vertex type predefinitions without using the FS.
         /// </summary>
-        /// <param name="myVertexTypeDefinitions">The list of VertexTypePredefinitions to be checked.</param>
+        /// <param name="myVertexTypeDefinitions">The list of vertex type predefinitions to be checked.</param>
         private static void CanAddCheckBasics(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions)
         {
             foreach (var vertexTypeDefinition in myVertexTypeDefinitions)
@@ -495,6 +557,10 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
         }
 
+        /// <summary>
+        /// Checks the uniqueness of attribute names on a vertex type predefinition without asking the FS.
+        /// </summary>
+        /// <param name="myVertexTypeDefinition">The vertex type predefinition to be checked.</param>
         private static void CheckAttributes(VertexTypePredefinition vertexTypeDefinition)
         {
             var uniqueNameSet = new HashSet<string>();
@@ -504,6 +570,11 @@ namespace sones.GraphDB.Manager.TypeManagement
             CheckPropertiesUniqueName(vertexTypeDefinition, uniqueNameSet);
         }
 
+        /// <summary>
+        /// Checks the uniqueness of property names on a vertex type predefinition without asking the FS.
+        /// </summary>
+        /// <param name="myVertexTypeDefinition">The vertex type predefinition to be checked.</param>
+        /// <param name="myUniqueNameSet">A set of attribute names defined on this vertex type predefinition.</param>
         private static void CheckPropertiesUniqueName(VertexTypePredefinition vertexTypeDefinition, ISet<string> myUniqueNameSet)
         {
             foreach (var prop in vertexTypeDefinition.Properties)
@@ -516,31 +587,46 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
         }
 
-        private static void CheckPropertyType(VertexTypePredefinition vertexTypeDefinition, PropertyPredefinition prop)
+        /// <summary>
+        /// Checks if a given property definition has a valid type.
+        /// </summary>
+        /// <param name="myVertexTypeDefinition">The vertex type predefinition that defines the property.</param>
+        /// <param name="myProperty">The property to be checked.</param>
+        private static void CheckPropertyType(VertexTypePredefinition myVertexTypeDefinition, PropertyPredefinition myProperty)
         {
-            if (String.IsNullOrWhiteSpace(prop.TypeName))
+            if (String.IsNullOrWhiteSpace(myProperty.TypeName))
             {
-                throw new EmptyPropertyTypeException(vertexTypeDefinition, prop.PropertyName);
+                throw new EmptyPropertyTypeException(myVertexTypeDefinition, myProperty.PropertyName);
             }
 
-            if (!IsBaseType(prop))
+            if (!IsBaseType(myProperty))
             {
                 //it is not one of the base types
                 //TODO: check if it is a user defined data type
-                throw new UnknownPropertyTypeException(vertexTypeDefinition, prop.TypeName);
+                throw new UnknownPropertyTypeException(myVertexTypeDefinition, myProperty.TypeName);
             }
         }
 
-        private static bool IsBaseType(PropertyPredefinition prop)
+        /// <summary>
+        /// Gets whether a property predefinition has a basic c# type as type.
+        /// </summary>
+        /// <param name="myProperty">The property to be checked.</param>
+        /// <returns>True, if the property has a type that is in the list of supported c# types, otherwise false.</returns>
+        private static bool IsBaseType(PropertyPredefinition myProperty)
         {
-            return BaseTypes.Contains(prop.TypeName);
+            return _baseTypes.Contains(myProperty.TypeName);
         }
 
+        /// <summary>
+        /// Checks the uniqueness of property names on a vertex type predefinition without asking the FS.
+        /// </summary>
+        /// <param name="myVertexTypeDefinition">The vertex type predefinition to be checked.</param>
+        /// <param name="myUniqueNameSet">A set of attribute names defined on this vertex type predefinition.</param>
         private static void CheckOutgoingEdgesUniqueName(VertexTypePredefinition vertexTypeDefinition, ISet<string> myUniqueNameSet)
         {
             foreach (var edge in vertexTypeDefinition.OutgoingEdges)
             {
-                edge.CheckNull("Outgoing edge in vertex type predefinition " + vertexTypeDefinition.VertexTypeName);
+                edge.CheckNull("Outgoing myEdge in vertex type predefinition " + vertexTypeDefinition.VertexTypeName);
                 if (myUniqueNameSet.Add(edge.EdgeName))
                     throw new DuplicatedAttributeNameException(vertexTypeDefinition, edge.EdgeName);
 
@@ -548,25 +634,38 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
         }
 
-        private static void CheckEdgeType(VertexTypePredefinition vertexTypeDefinition, OutgoingEdgePredefinition edge)
+        /// <summary>
+        /// Checks whether the edge type property on an outgoing edge definition contains anything.
+        /// </summary>
+        /// <param name="myVertexTypeDefinition">The vertex type predefinition that defines the outgoing edge.</param>
+        /// <param name="myEdge">The outgoing edge to be checked.</param>
+        private static void CheckEdgeType(VertexTypePredefinition myVertexTypeDefinition, OutgoingEdgePredefinition myEdge)
         {
-            if (string.IsNullOrWhiteSpace(edge.EdgeType))
+            if (string.IsNullOrWhiteSpace(myEdge.EdgeType))
             {
-                throw new EmptyEdgeTypeException(vertexTypeDefinition, edge.EdgeName);
+                throw new EmptyEdgeTypeException(myVertexTypeDefinition, myEdge.EdgeName);
             }
         }
 
-
+        /// <summary>
+        /// Checks the uniqueness of incoming edge names on a vertex type predefinition without asking the FS.
+        /// </summary>
+        /// <param name="myVertexTypeDefinition">The vertex type predefinition to be checked.</param>
+        /// <param name="myUniqueNameSet">A set of attribute names defined on this vertex type predefinition.</param>
         private static void CheckIncomingEdgesUniqueName(VertexTypePredefinition vertexTypeDefinition, ISet<String> myUniqueNameSet)
         {
             foreach (var edge in vertexTypeDefinition.IncomingEdges)
             {
-                edge.CheckNull("Incoming edge in vertex type predefinition " + vertexTypeDefinition.VertexTypeName);
+                edge.CheckNull("Incoming myEdge in vertex type predefinition " + vertexTypeDefinition.VertexTypeName);
                 if (myUniqueNameSet.Add(edge.EdgeName))
                     throw new DuplicatedAttributeNameException(vertexTypeDefinition, edge.EdgeName);
             }
         }
 
+        /// <summary>
+        /// Checks whether the vertex type property on an vertex type definition contains anything.
+        /// </summary>
+        /// <param name="myVertexTypeDefinition">The vertex type predefinition to be checked.</param>
         private static void CheckVertexTypeName(VertexTypePredefinition myVertexTypeDefinition)
         {
             if (string.IsNullOrWhiteSpace(myVertexTypeDefinition.VertexTypeName))
@@ -575,30 +674,42 @@ namespace sones.GraphDB.Manager.TypeManagement
             }
         }
 
-        private static void CheckSealedAndAbstract(VertexTypePredefinition predef)
+        /// <summary>
+        /// Checks whether a vertex type predefinition is not sealed and abstract.
+        /// </summary>
+        /// <param name="myVertexTypePredefinition">The vertex type predefinition to be checked.</param>
+        private static void CheckSealedAndAbstract(VertexTypePredefinition myVertexTypePredefinition)
         {
-            if (predef.IsSealed && predef.IsAbstract)
+            if (myVertexTypePredefinition.IsSealed && myVertexTypePredefinition.IsAbstract)
             {
-                throw new UselessVertexTypeException(predef);
+                throw new UselessVertexTypeException(myVertexTypePredefinition);
             }
         }
 
-
+        /// <summary>
+        /// Checks whether a vertex type predefinition is not derived from a base vertex type.
+        /// </summary>
+        /// <param name="myVertexTypeDefinition"></param>
         private static void CheckParentTypeAreNoBaseTypes(VertexTypePredefinition myVertexTypeDefinition)
         {
-            if (IsBaseVertexType(myVertexTypeDefinition.SuperVertexTypeName))
+            if (!CanBeParentType(myVertexTypeDefinition.SuperVertexTypeName))
             {
                 throw new InvalidBaseVertexTypeException(myVertexTypeDefinition.VertexTypeName);
             }
         }
 
-        private static bool IsBaseVertexType(string myTypeName)
+        /// <summary>
+        /// Checks whether a given type name is not a basix vertex type.
+        /// </summary>
+        /// <param name="myTypeName">The type name to be checked.</param>
+        /// <returns>True, if the type name is the name of a base vertex type (but Vertex), otherwise false.</returns>
+        private static bool CanBeParentType(string myTypeName)
         {
-            BaseVertexType type;
+            BaseTypes type;
             if (!Enum.TryParse(myTypeName, out type))
-                return true;
+                return false;
 
-            return type != BaseVertexType.Vertex;
+            return type == BaseTypes.Vertex;
         }
 
         /// <summary>
@@ -646,7 +757,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             var current = result.First;
             while (current != null) 
             {
-                //All predefinitions, that has the current predefintion as parentPredef vertex type.
+                //All predefinitions, that has the myVertexTypePredefinition predefintion as parentPredef vertex type.
                 var corrects = myDefsByParentVertexName[current.Value.VertexTypeName];
 
                 //They go from toBeChecked into vertex.

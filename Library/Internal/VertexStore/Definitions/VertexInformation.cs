@@ -44,8 +44,8 @@ namespace sones.Library.VertexStore.Definitions
         public VertexInformation(
             Int64 myVertexTypeID,
             Int64 myVertexID,
-            VertexRevisionID myVertexRevisionID,
-            String myVertexEditionName)
+            VertexRevisionID myVertexRevisionID = null,
+            String myVertexEditionName = null)
         {
             VertexTypeID = myVertexTypeID;
             VertexID = myVertexID;
