@@ -6,7 +6,7 @@ using sones.GraphDB.TypeSystem;
 namespace sones.GraphDB.Request
 {
     /// <summary>
-    /// The definition / start node wich should be requested from the graphdb
+    /// The definition (start node and properties) wich should be requested from the graphdb
     /// </summary>
     public sealed class TraverseVertexDefinition
     {

@@ -163,9 +163,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Implementation", "Implement
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XML_IO", "Plugins\GraphDS\IO\Implementation\XML_IO\XML_IO.csproj", "{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Traverser", "Traverser", "{DB4A2B8D-3E66-47A9-B12C-C030AA7F8AE1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Vertex", "Vertex", "{C414410B-9F2F-4305-8ECD-2D1B91CD4CCA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Path", "Path", "{253F947A-05A1-4112-9F75-DE4FE5392A97}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISonesVertexTraverser", "Plugins\GraphDB\Traverser\Vertex\ISonesVertexTraverser\ISonesVertexTraverser.csproj", "{4F163953-226E-4974-B35F-C4607CC7CA20}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Implementations", "Implementations", "{FA853DE3-8494-4529-A4CD-832C7B47A8D7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonesVertexTraverser", "Plugins\GraphDB\Traverser\Vertex\Implementations\SonesVertexTraverser\SonesVertexTraverser.csproj", "{2E4A9BEA-C112-4F1C-9D55-35F65657999C}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 48
+		SccNumberOfProjects = 50
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -357,6 +369,14 @@ Global
 		SccProjectTopLevelParentUniqueName47 = CoreDeveloper.sln
 		SccProjectName47 = Plugins/GraphDS/IO/Implementation/XML_IO
 		SccLocalPath47 = Plugins\\GraphDS\\IO\\Implementation\\XML_IO
+		SccProjectUniqueName48 = Plugins\\GraphDB\\Traverser\\Vertex\\ISonesVertexTraverser\\ISonesVertexTraverser.csproj
+		SccProjectTopLevelParentUniqueName48 = CoreDeveloper.sln
+		SccProjectName48 = Plugins/GraphDB/Traverser/Vertex/ISonesVertexTraverser
+		SccLocalPath48 = Plugins\\GraphDB\\Traverser\\Vertex\\ISonesVertexTraverser
+		SccProjectUniqueName49 = Plugins\\GraphDB\\Traverser\\Vertex\\Implementations\\SonesVertexTraverser\\SonesVertexTraverser.csproj
+		SccProjectTopLevelParentUniqueName49 = CoreDeveloper.sln
+		SccProjectName49 = Plugins/GraphDB/Traverser/Vertex/Implementations/SonesVertexTraverser
+		SccLocalPath49 = Plugins\\GraphDB\\Traverser\\Vertex\\Implementations\\SonesVertexTraverser
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -843,6 +863,26 @@ Global
 		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}.Release|x86.ActiveCfg = Release|Any CPU
+		{4F163953-226E-4974-B35F-C4607CC7CA20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F163953-226E-4974-B35F-C4607CC7CA20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F163953-226E-4974-B35F-C4607CC7CA20}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4F163953-226E-4974-B35F-C4607CC7CA20}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4F163953-226E-4974-B35F-C4607CC7CA20}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4F163953-226E-4974-B35F-C4607CC7CA20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F163953-226E-4974-B35F-C4607CC7CA20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F163953-226E-4974-B35F-C4607CC7CA20}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4F163953-226E-4974-B35F-C4607CC7CA20}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4F163953-226E-4974-B35F-C4607CC7CA20}.Release|x86.ActiveCfg = Release|Any CPU
+		{2E4A9BEA-C112-4F1C-9D55-35F65657999C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E4A9BEA-C112-4F1C-9D55-35F65657999C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E4A9BEA-C112-4F1C-9D55-35F65657999C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2E4A9BEA-C112-4F1C-9D55-35F65657999C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2E4A9BEA-C112-4F1C-9D55-35F65657999C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2E4A9BEA-C112-4F1C-9D55-35F65657999C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E4A9BEA-C112-4F1C-9D55-35F65657999C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E4A9BEA-C112-4F1C-9D55-35F65657999C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2E4A9BEA-C112-4F1C-9D55-35F65657999C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2E4A9BEA-C112-4F1C-9D55-35F65657999C}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -904,6 +944,7 @@ Global
 		{20D600AA-CD60-423D-A8EE-BCD93F861879} = {49AD5B01-49DE-4330-BDDC-876ABA4C04A2}
 		{B70DCE72-B636-442A-8825-F3BE78D86D34} = {FC621147-A299-4DE4-A2CC-DA71FD57044A}
 		{817E142F-ECD9-4B18-A9AE-D399C7C49007} = {FC621147-A299-4DE4-A2CC-DA71FD57044A}
+		{DB4A2B8D-3E66-47A9-B12C-C030AA7F8AE1} = {A7B90BF6-6D23-4857-AA2B-5F0B88F9A59D}
 		{79936D52-52EB-4238-8EF7-33C364C0FB98} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 		{B1395807-0386-4CDF-892C-6EF082920552} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 		{ADD65738-D314-4D47-89D7-D1C9FA96F085} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
@@ -920,5 +961,10 @@ Global
 		{991132D2-15E0-4BB7-8328-3A51646D4F01} = {337E92A1-8475-4A6C-8114-64B6629FB7E8}
 		{8E6C6894-AF41-4512-8393-760EEA190F1F} = {337E92A1-8475-4A6C-8114-64B6629FB7E8}
 		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0} = {8E6C6894-AF41-4512-8393-760EEA190F1F}
+		{C414410B-9F2F-4305-8ECD-2D1B91CD4CCA} = {DB4A2B8D-3E66-47A9-B12C-C030AA7F8AE1}
+		{253F947A-05A1-4112-9F75-DE4FE5392A97} = {DB4A2B8D-3E66-47A9-B12C-C030AA7F8AE1}
+		{4F163953-226E-4974-B35F-C4607CC7CA20} = {C414410B-9F2F-4305-8ECD-2D1B91CD4CCA}
+		{FA853DE3-8494-4529-A4CD-832C7B47A8D7} = {C414410B-9F2F-4305-8ECD-2D1B91CD4CCA}
+		{2E4A9BEA-C112-4F1C-9D55-35F65657999C} = {FA853DE3-8494-4529-A4CD-832C7B47A8D7}
 	EndGlobalSection
 EndGlobal

@@ -287,11 +287,13 @@ namespace sones.GraphDB.Request
         {
             switch (myExpression.TypeOfExpression)
             {
-                case TypeOfExpression.Property:
-                    return IsValidPropertyExpression((PropertyExpression)myExpression);
                 case TypeOfExpression.Binary:
-                case TypeOfExpression.Unary:
+                    return (IsValidExpression(((BinaryExpression)myExpression).Left) && IsValidExpression(((BinaryExpression)myExpression).Right));
+                case TypeOfExpression.Property:
+                    return (IsValidPropertyExpression((PropertyExpression)myExpression));
                 case TypeOfExpression.Constant:
+                    return (IsValidConstantExpression((ConstantExpression)myExpression));
+                case TypeOfExpression.Unary:
                 default:
                     return false;
             }
@@ -305,6 +307,16 @@ namespace sones.GraphDB.Request
         private bool IsValidPropertyExpression(PropertyExpression propertyExpression)
         {
             return (propertyExpression.NameOfProperty != null && propertyExpression.NameOfVertexType != null);
+        }
+
+        /// <summary>
+        /// Checks if the constant expression is valid
+        /// </summary>
+        /// <param name="constantExpression">The expression</param>
+        /// <returns>True or False</returns>
+        private bool IsValidConstantExpression(ConstantExpression constantExpression)
+        {
+            return (constantExpression != null);
         }
         
         #endregion
