@@ -22,7 +22,7 @@ namespace sones.Library.PropertyHyperGraph
         /// <summary>
         /// Returns the revision id of this vertex
         /// </summary>
-        VertexRevisionID VertexRevisionID { get; }
+        Int64 VertexRevisionID { get; }
 
         /// <summary>
         /// Returns the name of the edition of this vertex

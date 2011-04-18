@@ -51,7 +51,7 @@ namespace sones.GraphFS.Element.Vertex
         /// <summary>
         /// The revision id of the vertex
         /// </summary>
-        private readonly VertexRevisionID _vertexRevisionID;
+        private readonly Int64 _vertexRevisionID;
        
         #endregion
 
@@ -74,7 +74,7 @@ namespace sones.GraphFS.Element.Vertex
         public InMemoryVertex(
             Int64 myVertexID,
             Int64 myVertexTypeID,
-            VertexRevisionID myVertexRevisionID,
+            Int64 myVertexRevisionID,
             String myEdition,
             Dictionary<long, Stream> myBinaryProperties,
             Dictionary<long, IEdge> myOutgoingEdges,
@@ -400,7 +400,7 @@ namespace sones.GraphFS.Element.Vertex
             get { return _vertexID; }
         }
 
-        public VertexRevisionID VertexRevisionID
+        public Int64 VertexRevisionID
         {
             get { return _vertexRevisionID; }
         }

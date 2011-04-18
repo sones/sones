@@ -22,7 +22,7 @@ namespace sones.Library.VertexStore
             Int64 myVertexID,
             Int64 myVertexTypeID,
             String myEdition = null,
-            VertexRevisionID myVertexRevisionID = null);
+            Int64 myRevisionID = 0L);
 
         /// <summary>
         /// Gets a vertex 
@@ -37,7 +37,7 @@ namespace sones.Library.VertexStore
             Int64 myVertexID,
             Int64 myVertexTypeID,
             String myEdition = null,
-            VertexRevisionID myVertexRevisionID = null);
+            Int64 myVertexRevisionID = 0L);
 
         /// <summary>
         /// Returns all vertex by a given typeID. It's possible to filter interesting vertices.
@@ -83,7 +83,7 @@ namespace sones.Library.VertexStore
             Int64 myTypeID,
             IEnumerable<Int64> myInterestingVertexIDs = null,
             IEnumerable<String> myInterestingEditionNames = null,
-            IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null);
+            IEnumerable<Int64> myInterestingRevisionIDs = null);
 
         /// <summary>
         /// Returns all vertices considering a given vertex type.
@@ -115,9 +115,9 @@ namespace sones.Library.VertexStore
         /// <param name="myTypeID">the considered vertex type</param>
         /// <param name="myInterestingRevisions">a set of (vertex-)revisions which are of interest</param>
         /// <returns>all vertices of given type which are available at the given revisions</returns>
-        IEnumerable<IVertex> GetVerticesByTypeID(
+        IEnumerable<IVertex> GetVerticesByTypeIDAndRevisions(
             Int64 myTypeID,
-            IEnumerable<VertexRevisionID> myInterestingRevisions);
+            IEnumerable<Int64> myInterestingRevisions);
 
         /// <summary>
         /// Returns all editions corresponding to a certain vertex
@@ -136,7 +136,7 @@ namespace sones.Library.VertexStore
         /// <param name="myVertexTypeID">The id of the vertex type</param>
         /// <param name="myInterestingEditions">The interesting vertex editions</param>
         /// <returns>An IEnumerable of VertexRevisionIDs</returns>
-        IEnumerable<VertexRevisionID> GetVertexRevisionIDs(
+        IEnumerable<Int64> GetVertexRevisionIDs(
             Int64 myVertexID,
             Int64 myVertexTypeID,
             IEnumerable<String> myInterestingEditions = null);
@@ -153,7 +153,7 @@ namespace sones.Library.VertexStore
             Int64 myVertexID,
             Int64 myVertexTypeID,
             String myInterestingEdition,
-            VertexRevisionID myToBeRemovedRevisionID);
+            Int64 myToBeRemovedRevisionID);
 
         /// <summary>
         /// Removes a certain edition of a vertex
@@ -186,7 +186,7 @@ namespace sones.Library.VertexStore
         /// <returns>The added vertex</returns>
         IVertex AddVertex(
             VertexAddDefinition myVertexDefinition,
-            VertexRevisionID myVertexRevisionID = null,
+            Int64 myVertexRevisionID = 0L,
             Boolean myCreateIncomingEdges = true);
 
         /// <summary>
@@ -204,7 +204,7 @@ namespace sones.Library.VertexStore
             Int64 myCorrespondingVertexTypeID,
             VertexUpdateDefinition myVertexUpdate,
             String myToBeUpdatedEditions = null,
-            VertexRevisionID myToBeUpdatedRevisionIDs = null,
+            Int64 myToBeUpdatedRevisionIDs = 0L,
             Boolean myCreateNewRevision = false);
 
     }

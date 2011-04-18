@@ -42,8 +42,8 @@ namespace sones.Plugins.GraphDS.IOInterface
             }            
             
             currentResult.VertexID = currentLevel.VertexID;
-            currentResult.VertexRevisionID.ID = currentLevel.VertexRevisionID.ID;
-            currentResult.VertexRevisionID.Timestamp = currentLevel.VertexRevisionID.Timestamp;
+            //currentResult.VertexRevisionID.ID = currentLevel.VertexRevisionID;
+            //currentResult.VertexRevisionID.Timestamp = currentLevel.VertexRevisionID;
             currentResult.VertexTypeName = currentLevel.VertexTypeName;
             currentResult.EditionName = currentLevel.EditionName;
             currentResult.BinaryPropertys = new BinaryData[currentLevel.GetAllBinaryProperties().Count()];

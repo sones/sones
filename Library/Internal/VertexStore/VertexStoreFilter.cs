@@ -18,8 +18,8 @@ namespace sones.Library.VertexStore
         /// <summary>
         /// A delegate to filter revisions
         /// </summary>
-        /// <param name="myRevision">The to be filtered revisions</param>
+        /// <param name="myRevisionID">The to be filtered revisions</param>
         /// <returns>True or false</returns>
-        public delegate bool RevisionFilter(VertexRevisionID myRevision);
+        public delegate bool RevisionFilter(Int64 myRevisionID);
     }
 }

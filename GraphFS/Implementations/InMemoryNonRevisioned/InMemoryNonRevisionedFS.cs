@@ -97,12 +97,14 @@ namespace sones.GraphFS
 
         public IEnumerable<IVertex> CloneFileSystem(DateTime myTimeStamp)
         {
+            var timeStamp = myTimeStamp.ToBinary();
+
             return _vertexStore.Values.
                 Select
                 (aType => aType.Values.AsParallel().
                               Where
                               (aVertex
-                               => aVertex.VertexRevisionID.Timestamp > myTimeStamp.Ticks)).
+                               => aVertex.VertexRevisionID > timeStamp)).
                 Aggregate((enumerableA, enumerableB) => enumerableA.Union(enumerableB));
         }
 
@@ -125,7 +127,7 @@ namespace sones.GraphFS
         }
 
         public bool VertexExists(long myVertexID, long myVertexTypeID, string myEdition = null,
-                                 VertexRevisionID myVertexRevisionID = null)
+                                 Int64 myVertexRevisionID = 0L)
         {
             ConcurrentDictionary<Int64, InMemoryVertex> vertices;
 
@@ -138,7 +140,7 @@ namespace sones.GraphFS
         }
 
         public IVertex GetVertex(long myVertexID, long myVertexTypeID, string myEdition = null,
-                                 VertexRevisionID myVertexRevisionID = null)
+                                 Int64 myVertexRevisionID = 0L)
         {
             var vertex = GetVertexPrivate(myVertexID, myVertexTypeID);
 
@@ -152,7 +154,7 @@ namespace sones.GraphFS
 
         public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null,
                                                         IEnumerable<string> myInterestingEditionNames = null,
-                                                        IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
+                                                        IEnumerable<Int64> myInterestingRevisionIDs = null)
         {
             return myInterestingVertexIDs != null
                        ? GetVerticesByTypeID(myTypeID, myInterestingVertexIDs)
@@ -204,8 +206,8 @@ namespace sones.GraphFS
         }
 
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID,
-                                                        IEnumerable<VertexRevisionID> myInterestingRevisions)
+        public IEnumerable<IVertex> GetVerticesByTypeIDAndRevisions(long myTypeID,
+                                                        IEnumerable<Int64> myInterestingRevisions)
         {
             return GetVerticesByTypeID(myTypeID);
         }
@@ -224,7 +226,7 @@ namespace sones.GraphFS
             return result;
         }
 
-        public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(long myVertexID, long myVertexTypeID,
+        public IEnumerable<Int64> GetVertexRevisionIDs(long myVertexID, long myVertexTypeID,
                                                                   IEnumerable<string> myInterestingEditions = null)
         {
             var vertex = GetVertex(myVertexID, myVertexTypeID);
@@ -234,7 +236,7 @@ namespace sones.GraphFS
                 throw new VertexDoesNotExistException(myVertexTypeID, myVertexID);
             }
 
-            var result = new List<VertexRevisionID>();
+            var result = new List<Int64>();
 
             if (myInterestingEditions != null)
             {
@@ -253,7 +255,7 @@ namespace sones.GraphFS
         }
 
         public bool RemoveVertexRevision(long myVertexID, long myVertexTypeID, string myInterestingEdition,
-                                         VertexRevisionID myToBeRemovedRevisionID)
+                                         Int64 myToBeRemovedRevisionID)
         {
             var vertex = GetVertexPrivate(myVertexID, myVertexTypeID);
 
@@ -315,7 +317,7 @@ namespace sones.GraphFS
         }
 
         public IVertex AddVertex(VertexAddDefinition myVertexDefinition,
-                              VertexRevisionID myVertexRevisionID = null,
+                              Int64 myVertexRevisionID = 0L,
                               Boolean myCreateIncomingEdges = true)
         {
             #region create vertex type entry
@@ -331,7 +333,7 @@ namespace sones.GraphFS
 
             #region create new vertex
 
-            var vertexRevisionID = new VertexRevisionID(0L);
+            var vertexRevisionID = 0L;
 
             Dictionary<Int64, Stream> binaryProperties;
             if (myVertexDefinition.BinaryProperties == null)
@@ -481,7 +483,7 @@ namespace sones.GraphFS
 
         public IVertex UpdateVertex(long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID,
                                  VertexUpdateDefinition myVertexUpdate, string myToBeUpdatedEditions = null,
-                                 VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
+                                 Int64 myToBeUpdatedRevisionIDs = 0L, bool myCreateNewRevision = false)
         {
             var toBeUpdatedVertex = GetVertexPrivate(myToBeUpdatedVertexID, myCorrespondingVertexTypeID);
 

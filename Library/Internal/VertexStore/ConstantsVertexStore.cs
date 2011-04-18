@@ -11,5 +11,8 @@ namespace sones.Library.VertexStore
         /// The default vertex edition
         /// </summary>
         public static String DefaultVertexEdition = "Default";
+        
+        
+        public static Int64 DefaultVertexRevision = 0L;
     }
 }

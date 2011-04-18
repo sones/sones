@@ -23,7 +23,7 @@ namespace sones.Library.VertexStore.Definitions
         /// <summary>
         /// The vertex revision id
         /// </summary>
-        public readonly VertexRevisionID VertexRevisionID;
+        public readonly Int64 VertexRevisionID;
 
         /// <summary>
         /// The type id of this vertex
@@ -44,7 +44,7 @@ namespace sones.Library.VertexStore.Definitions
         public VertexInformation(
             Int64 myVertexTypeID,
             Int64 myVertexID,
-            VertexRevisionID myVertexRevisionID = null,
+            Int64 myVertexRevisionID = 0L,
             String myVertexEditionName = null)
         {
             VertexTypeID = myVertexTypeID;

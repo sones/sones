@@ -60,9 +60,9 @@ namespace sones.GraphDB.Expression.Tree
         /// </summary>
         /// <param name="myToBeCheckedID">The to be checked id</param>
         /// <returns>True or false</returns>
-        public bool IsWithinTimeStamp(VertexRevisionID myToBeCheckedID)
+        public bool IsWithinTimeStamp(Int64 myToBeCheckedID)
         {
-            return myToBeCheckedID.Timestamp >= _fromConverted && myToBeCheckedID.Timestamp <= _toConverted;
+            return myToBeCheckedID >= _fromConverted && myToBeCheckedID <= _toConverted;
         }
 
         #endregion

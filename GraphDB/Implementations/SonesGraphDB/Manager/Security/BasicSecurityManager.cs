@@ -82,24 +82,24 @@ namespace sones.GraphDB.Manager.Security
         #region IVertexStore Members
         //redirect everything to the underlying vertex store
 
-        public bool VertexExists(long myVertexID, long myVertexTypeID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public bool VertexExists(long myVertexID, long myVertexTypeID, string myEdition = null, Int64 myVertexRevisionID = 0L)
         {
             return _vertexStore.VertexExists(myVertexID, myVertexTypeID, myEdition, myVertexRevisionID);
         }
 
-        public IVertex GetVertex(long myVertexID, long myVertexTypeID, string myEdition = null, VertexRevisionID myVertexRevisionID = null)
+        public IVertex GetVertex(long myVertexID, long myVertexTypeID, string myEdition = null, Int64 myVertexRevisionID = 0L)
         {
             return _vertexStore.GetVertex(myVertexID, myVertexTypeID, myEdition, myVertexRevisionID);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<VertexRevisionID> myInterestingRevisionIDs = null)
+        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<Int64> myInterestingRevisionIDs = null)
         {
             return _vertexStore.GetVerticesByTypeID(myTypeID, myInterestingVertexIDs, myInterestingEditionNames, myInterestingRevisionIDs);
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs)
         {
-            return _vertexStore.GetVerticesByTypeID(myTypeID, myInterestingVertexIDs);
+            return _vertexStore.GetVerticesByTypeIDAndRevisions(myTypeID, myInterestingVertexIDs);
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID)
@@ -107,9 +107,9 @@ namespace sones.GraphDB.Manager.Security
             return _vertexStore.GetVerticesByTypeID(myTypeID);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<VertexRevisionID> myInterestingRevisions)
+        public IEnumerable<IVertex> GetVerticesByTypeIDAndRevisions(long myTypeID, IEnumerable<Int64> myInterestingRevisions)
         {
-            return _vertexStore.GetVerticesByTypeID(myTypeID, myInterestingRevisions);
+            return _vertexStore.GetVerticesByTypeIDAndRevisions(myTypeID, myInterestingRevisions);
         }
 
         public IEnumerable<string> GetVertexEditions(long myVertexID, long myVertexTypeID)
@@ -117,12 +117,12 @@ namespace sones.GraphDB.Manager.Security
             return _vertexStore.GetVertexEditions(myVertexID, myVertexTypeID);
         }
 
-        public IEnumerable<VertexRevisionID> GetVertexRevisionIDs(long myVertexID, long myVertexTypeID, IEnumerable<string> myInterestingEditions = null)
+        public IEnumerable<Int64> GetVertexRevisionIDs(long myVertexID, long myVertexTypeID, IEnumerable<string> myInterestingEditions = null)
         {
             return _vertexStore.GetVertexRevisionIDs(myVertexID, myVertexTypeID, myInterestingEditions);
         }
 
-        public bool RemoveVertexRevision(long myVertexID, long myVertexTypeID, string myInterestingEdition, VertexRevisionID myToBeRemovedRevisionID)
+        public bool RemoveVertexRevision(long myVertexID, long myVertexTypeID, string myInterestingEdition, Int64 myToBeRemovedRevisionID)
         {
             return _vertexStore.RemoveVertexRevision(myVertexID, myVertexTypeID, myInterestingEdition, myToBeRemovedRevisionID);
         }
@@ -137,12 +137,12 @@ namespace sones.GraphDB.Manager.Security
             return _vertexStore.RemoveVertex(myVertexID, myVertexTypeID);
         }
 
-        public IVertex AddVertex(VertexAddDefinition myVertexDefinition, VertexRevisionID myVertexRevisionID = null, bool myCreateIncomingEdges = true)
+        public IVertex AddVertex(VertexAddDefinition myVertexDefinition, Int64 myVertexRevisionID = 0L, bool myCreateIncomingEdges = true)
         {
             return _vertexStore.AddVertex(myVertexDefinition, myVertexRevisionID, myCreateIncomingEdges);
         }
 
-        public IVertex UpdateVertex(long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID, VertexUpdateDefinition myVertexUpdate, string myToBeUpdatedEditions = null, VertexRevisionID myToBeUpdatedRevisionIDs = null, bool myCreateNewRevision = false)
+        public IVertex UpdateVertex(long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID, VertexUpdateDefinition myVertexUpdate, string myToBeUpdatedEditions = null, Int64 myToBeUpdatedRevisionIDs = 0L, bool myCreateNewRevision = false)
         {
             return _vertexStore.UpdateVertex(myToBeUpdatedVertexID, myCorrespondingVertexTypeID, myVertexUpdate, myToBeUpdatedEditions, myToBeUpdatedRevisionIDs, myCreateNewRevision);
         }

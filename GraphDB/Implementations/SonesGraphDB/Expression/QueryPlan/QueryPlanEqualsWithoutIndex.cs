@@ -69,7 +69,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// </summary>
         /// <param name="myToBeCheckedID">The revision that needs to be checked</param>
         /// <returns>True or false</returns>
-        private bool VertexRevisionFilter(VertexRevisionID myToBeCheckedID)
+        private bool VertexRevisionFilter(Int64 myToBeCheckedID)
         {
             return _property.Timespan.IsWithinTimeStamp(myToBeCheckedID);
         }
