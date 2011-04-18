@@ -269,69 +269,6 @@ namespace sones.GraphDB.Request
 
             #endregion
 
-            #region traverse by using incoming edges
-            //first do recursive search by using the outgoing edges
-
-            foreach (var _InEdges in myCurrentVertex.GetAllIncomingEdges())
-            {
-                var inEdges = _InEdges.Item3;
-
-                foreach (var inEdge in inEdges)
-                {
-                    #region check edge
-                    //check if the edge should be followed... if not, continue!
-
-                    if (myFollowThisEdge != null)
-                    {
-                        if (!myFollowThisEdge(myCurrentVertex,
-                                                myMetaManager.VertexTypeManager.GetVertexType(myCurrentVertex.VertexTypeID, TransactionToken, SecurityToken),
-                                                inEdge,
-                                                myMetaManager.EdgeTypeManager.GetEdgeType(inEdge.EdgeTypeID, TransactionToken, SecurityToken)))
-                        {
-                            continue;
-                        }
-                    }
-
-                    #endregion
-
-                    var nextVertex = inEdge.GetSourceVertex();
-
-                    #region do recursion
-
-                    //check for circle avoidance
-                    if (myAvoidCircles)
-                    {
-                        #region check traversal state
-                        //check the traversal state for circles... if there is one, break!
-
-                        if (_traversalState.AlreadyVisitedVertexViaVertex(nextVertex, myCurrentVertex))
-                        {
-                            continue;
-                        }
-
-                        #endregion
-                    }
-
-                    //move recursive in depth
-
-                    foreach (var vertex in TraverseVertex_private(nextVertex,
-                                                                    myCurrentVertex,
-                                                                    myMetaManager,
-                                                                    myAvoidCircles,
-                                                                    myFollowThisEdge,
-                                                                    myMatchEvaluator,
-                                                                    myMatchAction,
-                                                                    myStopEvaluator))
-                    {
-                        yield return vertex;
-                    }
-
-                    #endregion
-                }
-            }
-
-            #endregion
-
             #endregion
         }
 

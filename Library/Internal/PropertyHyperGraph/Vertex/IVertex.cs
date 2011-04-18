@@ -14,28 +14,20 @@ namespace sones.Library.PropertyHyperGraph
         #region Incoming
 
         /// <summary>
-        /// Is there a specified incoming edge?
+        /// Are there incoming vertices on this vertex?
         /// </summary>
         /// <param name="myVertexTypeID">The id of the vertex type that defines the edge</param>
         /// <param name="myEdgePropertyID">The property id of the interesting edge</param>
-        /// <returns>True if there is a specified edge, otherwise false</returns>
-        Boolean HasIncomingEdge(Int64 myVertexTypeID, Int64 myEdgePropertyID);
+        /// <returns>True if there are incoming vertices, otherwise false</returns>
+        Boolean HasIncomingVertices(Int64 myVertexTypeID, Int64 myEdgePropertyID);
 
         /// <summary>
-        /// Returns all incoming edges
+        /// Returns all incoming vertices
         /// </summary>
         /// <param name="myFilter">A function to filter those incoming edges (VertexTypeID, EdgeID, ISingleEdges, Bool)</param>
         /// <returns>An IEnumerable of incoming edges</returns>
-        IEnumerable<Tuple<Int64, Int64, IEnumerable<ISingleEdge>>> GetAllIncomingEdges(
-            PropertyHyperGraphFilter.IncomingEdgeFilter myFilter = null);
-
-        /// <summary>
-        /// Returns a specified incoming edge
-        /// </summary>
-        /// <param name="myVertexTypeID">The id of the vertex type that defines the edge</param>
-        /// <param name="myEdgePropertyID">The property id of the interesting edge</param>
-        /// <returns>The specified incoming edges or null</returns>
-        IEnumerable<ISingleEdge> GetIncomingEdges(Int64 myVertexTypeID, Int64 myEdgePropertyID);
+        IEnumerable<Tuple<Int64, Int64, ISet<IVertex>>> GetAllIncomingVertices(
+            PropertyHyperGraphFilter.IncomingVerticesFilter myFilter = null);
 
         /// <summary>
         /// Return all incoming vertices
@@ -43,7 +35,7 @@ namespace sones.Library.PropertyHyperGraph
         /// <param name="myVertexTypeID">The vertex type that points to this IVertex</param>
         /// <param name="myEdgePropertyID">The edge property id that points to this vertex</param>
         /// <returns>All incoming vertices</returns>
-        IEnumerable<IVertex> GetIncomingVertices(Int64 myVertexTypeID, Int64 myEdgePropertyID);
+        ISet<IVertex> GetIncomingVertices(Int64 myVertexTypeID, Int64 myEdgePropertyID);
 
         #endregion
 

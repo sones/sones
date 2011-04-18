@@ -342,7 +342,7 @@ namespace sones.GraphDB.TypeManagement
 
         private static bool GetHasAttributes(IVertex myVertex)
         {
-            return myVertex.HasIncomingEdge((long)BaseTypes.Attribute, AttributeDefinitions.DefiningTypeOnAttribute.ID);
+            return myVertex.HasIncomingVertices((long)BaseTypes.Attribute, AttributeDefinitions.DefiningTypeOnAttribute.ID);
         }
 
         #endregion
@@ -362,7 +362,7 @@ namespace sones.GraphDB.TypeManagement
 
         private static bool GetHasProperties(IVertex myVertex)
         {
-            return myVertex.HasIncomingEdge((long)BaseTypes.Property, AttributeDefinitions.DefiningTypeOnAttribute.ID);
+            return myVertex.HasIncomingVertices((long)BaseTypes.Property, AttributeDefinitions.DefiningTypeOnAttribute.ID);
         }
 
         private static IPropertyDefinition CreatePropertyDefinition(IVertex myVertex)
@@ -412,7 +412,7 @@ namespace sones.GraphDB.TypeManagement
 
         private static bool GetHasIncomingEdges(IVertex myVertex)
         {
-            return myVertex.HasIncomingEdge((long)BaseTypes.IncomingEdge, AttributeDefinitions.DefiningTypeOnAttribute.ID);
+            return myVertex.HasIncomingVertices((long)BaseTypes.IncomingEdge, AttributeDefinitions.DefiningTypeOnAttribute.ID);
         }
 
         private IOutgoingEdgeDefinition GetRelatetOutgoingEdgeDefinition(IVertex myVertex)
@@ -467,7 +467,7 @@ namespace sones.GraphDB.TypeManagement
 
         private static bool GetHasOutgoingEdges(IVertex myVertex)
         {
-            return myVertex.HasIncomingEdge((long)BaseTypes.OutgoingEdge, AttributeDefinitions.DefiningTypeOnAttribute.ID);
+            return myVertex.HasIncomingVertices((long)BaseTypes.OutgoingEdge, AttributeDefinitions.DefiningTypeOnAttribute.ID);
         }
 
         #endregion
@@ -483,7 +483,7 @@ namespace sones.GraphDB.TypeManagement
 
         private static bool GetHasChilds(IVertex myVertex)
         {
-            return myVertex.HasIncomingEdge((long)BaseTypes.VertexType, AttributeDefinitions.ParentOnVertexType.ID);
+            return myVertex.HasIncomingVertices((long)BaseTypes.VertexType, AttributeDefinitions.ParentOnVertexType.ID);
         }
 
         private static IVertexType GetParentType(IVertex myVertex)

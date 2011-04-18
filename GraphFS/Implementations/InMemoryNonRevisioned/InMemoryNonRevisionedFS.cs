@@ -397,7 +397,7 @@ namespace sones.GraphFS
                             targetVertex,
                             myVertexDefinition.VertexTypeID,
                             aSingleEdgeDefinition.PropertyID,
-                            singleEdge);
+                            toBeAddedVertex);
 
                         edges.Add(aSingleEdgeDefinition.PropertyID, singleEdge);
                     }
@@ -430,7 +430,7 @@ namespace sones.GraphFS
                                 targetVertex,
                                 myVertexDefinition.VertexTypeID,
                                 aSingleEdgeDefinition.PropertyID,
-                                singleEdge);
+                                toBeAddedVertex);
 
                             containedSingleEdges.Add(singleEdge);
                         }
@@ -551,18 +551,18 @@ namespace sones.GraphFS
         /// <param name="myTargetVertex">The vertex that should be updated</param>
         /// <param name="myIncomingVertexTypeID">The id of the incoming vertex type</param>
         /// <param name="myIncomingEdgeID">The id of the incoming edge property</param>
-        /// <param name="mySingleEdge">The incoming single edge</param>
-        private void CreateOrUpdateIncomingEdgesOnVertex(InMemoryVertex myTargetVertex, Int64 myIncomingVertexTypeID, Int64 myIncomingEdgeID, SingleEdge mySingleEdge)
+        /// <param name="myIncomingVertex">The incoming single edge</param>
+        private void CreateOrUpdateIncomingEdgesOnVertex(InMemoryVertex myTargetVertex, Int64 myIncomingVertexTypeID, Int64 myIncomingEdgeID, InMemoryVertex myIncomingVertex)
         {
             lock (myTargetVertex)
             {
                 if (myTargetVertex.IncomingEdges == null)
                 {
-                    myTargetVertex.IncomingEdges = new Dictionary<long, Dictionary<long, SingleEdgeCollection>>();
+                    myTargetVertex.IncomingEdges = new Dictionary<long, Dictionary<long, IncomingEdgeCollection>>();
 
-                    var payload = new SingleEdgeCollection( mySingleEdge );
+                    var payload = new IncomingEdgeCollection( myIncomingVertex );
 
-                    var innerDict = new Dictionary<Int64, SingleEdgeCollection> { { myIncomingEdgeID, payload } };
+                    var innerDict = new Dictionary<Int64, IncomingEdgeCollection> { { myIncomingEdgeID, payload } };
 
                     myTargetVertex.IncomingEdges.Add(myIncomingVertexTypeID, innerDict);
                 }
@@ -572,18 +572,18 @@ namespace sones.GraphFS
                     {
                         if (myTargetVertex.IncomingEdges[myIncomingVertexTypeID].ContainsKey(myIncomingEdgeID))
                         {
-                            myTargetVertex.IncomingEdges[myIncomingVertexTypeID][myIncomingEdgeID].AddEdge(mySingleEdge);
+                            myTargetVertex.IncomingEdges[myIncomingVertexTypeID][myIncomingEdgeID].AddVertex(myIncomingVertex);
                         }
                         else
                         {
-                            myTargetVertex.IncomingEdges[myIncomingVertexTypeID][myIncomingEdgeID] = new SingleEdgeCollection( mySingleEdge );
+                            myTargetVertex.IncomingEdges[myIncomingVertexTypeID][myIncomingEdgeID] = new IncomingEdgeCollection( myIncomingVertex );
                         }
                     }
                     else
                     {
-                        var payload = new SingleEdgeCollection(mySingleEdge);
+                        var payload = new IncomingEdgeCollection(myIncomingVertex);
 
-                        var innerDict = new Dictionary<Int64, SingleEdgeCollection> { { myIncomingEdgeID, payload } };
+                        var innerDict = new Dictionary<Int64, IncomingEdgeCollection> { { myIncomingEdgeID, payload } };
 
                         myTargetVertex.IncomingEdges.Add(myIncomingVertexTypeID, innerDict);
                     }

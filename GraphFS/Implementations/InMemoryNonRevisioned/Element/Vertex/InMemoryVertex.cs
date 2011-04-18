@@ -4,6 +4,7 @@ using System.IO;
 using sones.GraphFS.Element.Edge;
 using sones.GraphFS.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
+using System.Collections;
 
 namespace sones.GraphFS.Element.Vertex
 {
@@ -28,9 +29,9 @@ namespace sones.GraphFS.Element.Vertex
 
         /// <summary>
         /// The incoming edges of the vertex
-        /// (VertexTypeID of the vertex type that points to this vertex, PropertyID of the edge that points to this vertex, SingleEdges)
+        /// (VertexTypeID of the vertex type that points to this vertex, PropertyID of the edge that points to this vertex, Incoming vertices)
         /// </summary>
-        public Dictionary<Int64, Dictionary<Int64, SingleEdgeCollection>> IncomingEdges;
+        public Dictionary<Int64, Dictionary<Int64, IncomingEdgeCollection>> IncomingEdges;
 
         /// <summary>
         /// The outgoing edges of the vertex
@@ -113,15 +114,15 @@ namespace sones.GraphFS.Element.Vertex
 
         #region IVertex Members
 
-        public bool HasIncomingEdge(long myVertexTypeID, long myEdgePropertyID)
+        public bool HasIncomingVertices(long myVertexTypeID, long myEdgePropertyID)
         {
             return IncomingEdges != null &&
                    IncomingEdges.ContainsKey(myVertexTypeID) &&
                    IncomingEdges[myVertexTypeID].ContainsKey(myEdgePropertyID);
         }
 
-        public IEnumerable<Tuple<long, long, IEnumerable<ISingleEdge>>> GetAllIncomingEdges(
-            PropertyHyperGraphFilter.IncomingEdgeFilter myFilter = null)
+        public IEnumerable<Tuple<long, long, ISet<IVertex>>> GetAllIncomingVertices(
+            PropertyHyperGraphFilter.IncomingVerticesFilter myFilter = null)
         {
             if (IncomingEdges != null)
             {
@@ -131,14 +132,14 @@ namespace sones.GraphFS.Element.Vertex
                     {
                         if (myFilter != null)
                         {
-                            if (myFilter(aType.Key, aEdge.Key, aEdge.Value.GetAllEdges()))
+                            if (myFilter(aType.Key, aEdge.Key, aEdge.Value))
                             {
-                                yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aType.Key, aEdge.Key, aEdge.Value.GetAllEdges());
+                                yield return new Tuple<long, long, ISet<IVertex>>(aType.Key, aEdge.Key, aEdge.Value);
                             }
                         }
                         else
                         {
-                            yield return new Tuple<long, long, IEnumerable<ISingleEdge>>(aType.Key, aEdge.Key, aEdge.Value.GetAllEdges());
+                            yield return new Tuple<long, long, ISet<IVertex>>(aType.Key, aEdge.Key, aEdge.Value);
                         }
                     }
                 }
@@ -147,30 +148,11 @@ namespace sones.GraphFS.Element.Vertex
             yield break;
         }
 
-        public IEnumerable<ISingleEdge> GetIncomingEdges(long myVertexTypeID, long myEdgePropertyID)
+        public ISet<IVertex> GetIncomingVertices(Int64 myVertexTypeID, Int64 myEdgePropertyID)
         {
-            return HasIncomingEdge(myVertexTypeID, myEdgePropertyID)
-                       ? IncomingEdges[myVertexTypeID][myEdgePropertyID].GetAllEdges()
-                       : new SingleEdge[0];
-        }
-
-        public IEnumerable<IVertex> GetIncomingVertices(Int64 myVertexTypeID, Int64 myEdgePropertyID)
-        {
-            var incomingEdges = GetIncomingEdges(myVertexTypeID, myEdgePropertyID);
-
-            List<IVertex> result = null;
-
-            if (incomingEdges != null)
-            {
-                result = new List<IVertex>();
-
-                foreach (var aIncomingEdge in incomingEdges)
-                {
-                    result.Add(aIncomingEdge.GetSourceVertex());
-                }
-            }
-
-            return result;
+            return HasIncomingVertices(myVertexTypeID, myEdgePropertyID)
+                       ? IncomingEdges[myVertexTypeID][myEdgePropertyID]
+                       : new IncomingEdgeCollection(1);
         }
 
         public bool HasOutgoingEdge(long myEdgePropertyID)

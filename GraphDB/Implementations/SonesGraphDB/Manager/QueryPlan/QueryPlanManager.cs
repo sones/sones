@@ -225,6 +225,12 @@ namespace sones.GraphDB.Manager.QueryPlan
                     constant = new QueryPlanConstant(((ConstantExpression)binaryExpression.Left).Constant);
                 }
 
+                ////is there an index on this property?
+                //if (property.Property.)
+                //{
+                    
+                //}
+
                 return new QueryPlanEqualsWithoutIndex(property, constant, _vertexStore, myIsLongRunning);
 
                 #endregion

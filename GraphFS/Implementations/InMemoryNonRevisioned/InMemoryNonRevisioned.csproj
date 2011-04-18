@@ -45,7 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Element\AGraphElement.cs" />
-    <Compile Include="Element\Edge\SingleEdgeCollection.cs" />
+    <Compile Include="Element\Edge\IncomingEdgeCollection.cs" />
     <Compile Include="Element\Vertex\InMemoryVertex.cs" />
     <Compile Include="InMemoryNonRevisionedFS.cs" />
     <Compile Include="Element\Edge\HyperEdge.cs" />
