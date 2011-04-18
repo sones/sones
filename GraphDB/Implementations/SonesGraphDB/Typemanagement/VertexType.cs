@@ -133,9 +133,22 @@ namespace sones.GraphDB.TypeManagement
             get { return _hasChilds; }
         }
 
-        IEnumerable<IVertexType> IVertexType.GetChildVertexTypes
+        IEnumerable<IVertexType> IVertexType.GetChildVertexTypes(bool myRecursive = true)
         {
-            get { return _childs.Value; }
+            foreach (var aChildVertexType in _childs.Value)
+            {
+                yield return aChildVertexType;
+
+                if (myRecursive)
+                {
+                    foreach (var aVertex in aChildVertexType.GetChildVertexTypes(myRecursive))
+                    {
+                        yield return aVertex;
+                    }
+                }
+            }
+
+            yield break;
         }
 
         #endregion
@@ -570,6 +583,5 @@ namespace sones.GraphDB.TypeManagement
         #endregion
 
         #endregion
-
     }
 }

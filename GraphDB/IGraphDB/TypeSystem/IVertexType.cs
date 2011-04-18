@@ -75,8 +75,9 @@ namespace sones.GraphDB.TypeSystem
         /// <summary>
         /// Get all child vertex types
         /// </summary>
+        /// <param name="myRecursive">get child vertex types recursive?</param>
         /// <returns>An enumerable of child vertex types, never <c>NULL</c>.</returns>
-        IEnumerable<IVertexType> GetChildVertexTypes { get; }
+        IEnumerable<IVertexType> GetChildVertexTypes(bool myRecursive = true);
 
         #endregion
 

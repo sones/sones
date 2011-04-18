@@ -59,7 +59,7 @@ namespace sones.GraphDB.Manager
 
             #region IndexManager
 
-            var indexManager = new IndexManager(myPluginManager, myPlugins.IndexPlugins);
+            _indexManager = new IndexManager(myPluginManager, myPlugins.IndexPlugins);
 
             #endregion
 
@@ -68,11 +68,11 @@ namespace sones.GraphDB.Manager
             var vertexTypeManager = new VertexTypeManager();
             var vertexManager = new VertexManager();
 
-            vertexTypeManager.SetIndexManager(indexManager);
+            vertexTypeManager.SetIndexManager(_indexManager);
             vertexTypeManager.SetVertexManager(vertexManager);
 
             vertexManager.SetVertexStore(myVertexStore);
-            vertexManager.SetIndexManager(indexManager);
+            vertexManager.SetIndexManager(_indexManager);
             vertexManager.SetVertexTypeManager(vertexTypeManager);
             vertexManager.SetQueryPlanManager(new QueryPlanManager(vertexTypeManager, _vertexStore));
 
