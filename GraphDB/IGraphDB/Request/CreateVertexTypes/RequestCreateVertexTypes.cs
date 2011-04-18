@@ -19,7 +19,7 @@ namespace sones.GraphDB.Request
         #region Constructor
 
         /// <summary>
-        /// Creates a new request that clears the Graphdb
+        /// Creates a new request that creates a new vertex type inside the Graphdb
         /// </summary>
         /// <param name="myVertexTypeDefinition">Describes the vertex that is going to be created</param>
         public RequestCreateVertexTypes(IEnumerable<VertexTypePredefinition> myVertexTypeDefinition)
