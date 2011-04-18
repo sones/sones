@@ -26,7 +26,7 @@ namespace sones.Library.PropertyHyperGraph
         /// </summary>
         /// <param name="myFilter">A function to filter those incoming edges (VertexTypeID, EdgeID, ISingleEdges, Bool)</param>
         /// <returns>An IEnumerable of incoming edges</returns>
-        IEnumerable<Tuple<Int64, Int64, ISet<IVertex>>> GetAllIncomingVertices(
+        IEnumerable<Tuple<Int64, Int64, IEnumerable<IVertex>>> GetAllIncomingVertices(
             PropertyHyperGraphFilter.IncomingVerticesFilter myFilter = null);
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace sones.Library.PropertyHyperGraph
         /// <param name="myVertexTypeID">The vertex type that points to this IVertex</param>
         /// <param name="myEdgePropertyID">The edge property id that points to this vertex</param>
         /// <returns>All incoming vertices</returns>
-        ISet<IVertex> GetIncomingVertices(Int64 myVertexTypeID, Int64 myEdgePropertyID);
+        IEnumerable<IVertex> GetIncomingVertices(Int64 myVertexTypeID, Int64 myEdgePropertyID);
 
         #endregion
 

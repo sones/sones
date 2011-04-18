@@ -121,7 +121,7 @@ namespace sones.GraphFS.Element.Vertex
                    IncomingEdges[myVertexTypeID].ContainsKey(myEdgePropertyID);
         }
 
-        public IEnumerable<Tuple<long, long, ISet<IVertex>>> GetAllIncomingVertices(
+        public IEnumerable<Tuple<long, long, IEnumerable<IVertex>>> GetAllIncomingVertices(
             PropertyHyperGraphFilter.IncomingVerticesFilter myFilter = null)
         {
             if (IncomingEdges != null)
@@ -134,12 +134,12 @@ namespace sones.GraphFS.Element.Vertex
                         {
                             if (myFilter(aType.Key, aEdge.Key, aEdge.Value))
                             {
-                                yield return new Tuple<long, long, ISet<IVertex>>(aType.Key, aEdge.Key, aEdge.Value);
+                                yield return new Tuple<long, long, IEnumerable<IVertex>>(aType.Key, aEdge.Key, aEdge.Value);
                             }
                         }
                         else
                         {
-                            yield return new Tuple<long, long, ISet<IVertex>>(aType.Key, aEdge.Key, aEdge.Value);
+                            yield return new Tuple<long, long, IEnumerable<IVertex>>(aType.Key, aEdge.Key, aEdge.Value);
                         }
                     }
                 }
@@ -148,7 +148,7 @@ namespace sones.GraphFS.Element.Vertex
             yield break;
         }
 
-        public ISet<IVertex> GetIncomingVertices(Int64 myVertexTypeID, Int64 myEdgePropertyID)
+        public IEnumerable<IVertex> GetIncomingVertices(Int64 myVertexTypeID, Int64 myEdgePropertyID)
         {
             return HasIncomingVertices(myVertexTypeID, myEdgePropertyID)
                        ? IncomingEdges[myVertexTypeID][myEdgePropertyID]

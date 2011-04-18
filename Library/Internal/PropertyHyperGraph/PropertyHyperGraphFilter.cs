@@ -18,7 +18,7 @@ namespace sones.Library.PropertyHyperGraph
         /// <param name="myIncomingEdgePropertyID">The id of the incoming edge property</param>
         /// <param name="myIncomingVertices">The incoming vertices</param>
         /// <returns>False means: I do not want that thing, otherwise true</returns>
-        public delegate bool IncomingVerticesFilter(Int64 myIncomingVertexType, Int64 myIncomingEdgePropertyID, ISet<IVertex> myIncomingVertices);
+        public delegate bool IncomingVerticesFilter(Int64 myIncomingVertexType, Int64 myIncomingEdgePropertyID, IEnumerable<IVertex> myIncomingVertices);
 
         /// <summary>
         /// Filters all outgoing edges of a vertex

@@ -10,7 +10,7 @@ namespace sones.GraphFS.Element.Edge
     /// <summary>
     /// This class stores a distict collection of single edges and is optimized for insert
     /// </summary>
-    public sealed class IncomingEdgeCollection : ISet<InMemoryVertex>, ISet<IVertex>
+    public sealed class IncomingEdgeCollection : IEnumerable<IVertex>
     {
         #region data
 
@@ -92,125 +92,21 @@ namespace sones.GraphFS.Element.Edge
         /// <returns>A distinct array of single edges</returns>
         public InMemoryVertex[] GetAllVertices()
         {
-            if (_isDirty)
-            {
-                //Todo: do sth faster here
-                HashSet<InMemoryVertex> helper = new HashSet<InMemoryVertex>(_containedVertices);
-
-                _containedVertices = helper.ToArray();
-
-                _isDirty = false;
-            }
+            //Todo: do sth faster here
+            Reorganize();
 
             return _containedVertices;
         }
 
         #endregion
 
-        #region ISet<InMemoryVertex> Members
+        #region IEnumerable<IVertex> Members
 
-        public bool Add(InMemoryVertex item)
+        public IEnumerator<IVertex> GetEnumerator()
         {
-            AddVertex(item);
-            return true;
-        }
+            Reorganize();
 
-        public void ExceptWith(IEnumerable<InMemoryVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void IntersectWith(IEnumerable<InMemoryVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsProperSubsetOf(IEnumerable<InMemoryVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsProperSupersetOf(IEnumerable<InMemoryVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsSubsetOf(IEnumerable<InMemoryVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsSupersetOf(IEnumerable<InMemoryVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Overlaps(IEnumerable<InMemoryVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool SetEquals(IEnumerable<InMemoryVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SymmetricExceptWith(IEnumerable<InMemoryVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UnionWith(IEnumerable<InMemoryVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region ICollection<InMemoryVertex> Members
-
-        void ICollection<InMemoryVertex>.Add(InMemoryVertex item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Clear()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Contains(InMemoryVertex item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void CopyTo(InMemoryVertex[] array, int arrayIndex)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int Count
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public bool IsReadOnly
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public bool Remove(InMemoryVertex item)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region IEnumerable<InMemoryVertex> Members
-
-        public IEnumerator<InMemoryVertex> GetEnumerator()
-        {
-            throw new NotImplementedException();
+            return _containedVertices.AsEnumerable<IVertex>().GetEnumerator();
         }
 
         #endregion
@@ -219,99 +115,30 @@ namespace sones.GraphFS.Element.Edge
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            Reorganize();
+
+            return _containedVertices.GetEnumerator();
         }
 
         #endregion
 
-        #region ISet<IVertex> Members
+        #region private helper
 
-        public bool Add(IVertex item)
+        /// <summary>
+        /// Reorganize this datastructure to contain unique values only
+        /// </summary>
+        private void Reorganize()
         {
-            throw new NotImplementedException();
-        }
+            //This is really slow :(
 
-        public void ExceptWith(IEnumerable<IVertex> other)
-        {
-            throw new NotImplementedException();
-        }
+            if (_isDirty)
+            {
+                HashSet<InMemoryVertex> helper = new HashSet<InMemoryVertex>(_containedVertices);
 
-        public void IntersectWith(IEnumerable<IVertex> other)
-        {
-            throw new NotImplementedException();
-        }
+                _containedVertices = helper.ToArray();
 
-        public bool IsProperSubsetOf(IEnumerable<IVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsProperSupersetOf(IEnumerable<IVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsSubsetOf(IEnumerable<IVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool IsSupersetOf(IEnumerable<IVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Overlaps(IEnumerable<IVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool SetEquals(IEnumerable<IVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SymmetricExceptWith(IEnumerable<IVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UnionWith(IEnumerable<IVertex> other)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region ICollection<IVertex> Members
-
-        void ICollection<IVertex>.Add(IVertex item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Contains(IVertex item)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void CopyTo(IVertex[] array, int arrayIndex)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Remove(IVertex item)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        #region IEnumerable<IVertex> Members
-
-        IEnumerator<IVertex> IEnumerable<IVertex>.GetEnumerator()
-        {
-            throw new NotImplementedException();
+                _isDirty = false;
+            }
         }
 
         #endregion
