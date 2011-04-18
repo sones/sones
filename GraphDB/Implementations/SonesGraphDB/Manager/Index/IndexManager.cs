@@ -5,6 +5,9 @@ using sones.Library.VersionedPluginManager;
 using sones.Library.Settings;
 using System.Linq;
 using System;
+using sones.Library.Security;
+using sones.Library.Transaction;
+using sones.Library.VertexStore;
 
 namespace sones.GraphDB.Manager.Index
 {
@@ -13,7 +16,7 @@ namespace sones.GraphDB.Manager.Index
     /// </summary>
     /// The responsibilities of the index manager are creating, removing und retrieving of indices.
     /// Each database has one index manager.
-    public class IndexManager : IIndexManager
+    public sealed class IndexManager : IIndexManager
     {
         #region data
 
@@ -27,6 +30,8 @@ namespace sones.GraphDB.Manager.Index
         /// </summary>
         private readonly Dictionary<string, PluginDefinition> _indexPluginParameter;
 
+        private readonly IVertexStore _vertexStore;
+
         #endregion
 
         #region constructor
@@ -34,20 +39,18 @@ namespace sones.GraphDB.Manager.Index
         /// <summary>
         /// Create a new index manager
         /// </summary>
+        /// <param name="myVertexStore">The vertex store of the graphDB</param>
         /// <param name="myPluginManager">The sones graphDB plugin manager</param>
         /// <param name="myPluginDefinitions">The parameters for plugin-indices</param>
-        public IndexManager(GraphDBPluginManager myPluginManager, HashSet<PluginDefinition> myPluginDefinitions = null)
+        public IndexManager(IVertexStore myVertexStore, GraphDBPluginManager myPluginManager, HashSet<PluginDefinition> myPluginDefinitions = null)
         {
+            _vertexStore = myVertexStore;
+
             _pluginManager = myPluginManager;
 
-            if (myPluginDefinitions != null)
-            {
-                _indexPluginParameter = myPluginDefinitions.ToDictionary(key => key.NameOfPlugin, value => value);
-            }
-            else
-            {
-                _indexPluginParameter = new Dictionary<string, PluginDefinition>();
-            }
+            _indexPluginParameter = myPluginDefinitions != null 
+                ? myPluginDefinitions.ToDictionary(key => key.NameOfPlugin, value => value) 
+                : new Dictionary<string, PluginDefinition>();
         }
 
         #endregion
@@ -55,7 +58,12 @@ namespace sones.GraphDB.Manager.Index
 
         #region IIndexManager Members
 
-        public void CreateIndex(IIndexDefinition myIndexDefinition)
+        public void CreateIndex(IIndexDefinition myIndexDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool HasIndex(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }

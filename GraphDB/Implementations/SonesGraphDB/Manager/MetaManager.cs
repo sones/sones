@@ -59,7 +59,7 @@ namespace sones.GraphDB.Manager
 
             #region IndexManager
 
-            _indexManager = new IndexManager(myPluginManager, myPlugins.IndexPlugins);
+            _indexManager = new IndexManager(_vertexStore, myPluginManager, myPlugins.IndexPlugins);
 
             #endregion
 
@@ -74,7 +74,7 @@ namespace sones.GraphDB.Manager
             vertexManager.SetVertexStore(myVertexStore);
             vertexManager.SetIndexManager(_indexManager);
             vertexManager.SetVertexTypeManager(vertexTypeManager);
-            vertexManager.SetQueryPlanManager(new QueryPlanManager(vertexTypeManager, _vertexStore));
+            vertexManager.SetQueryPlanManager(new QueryPlanManager(vertexTypeManager, _vertexStore, _indexManager));
 
             _vertexTypeManager = vertexTypeManager;
             _vertexManager = vertexManager;

@@ -31,7 +31,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// Determines whether it is anticipated that the request could take longer
         /// </summary>
-        private readonly Boolean _isLongrunning;
+        private readonly Boolean _myIsLongrunning;
 
         #endregion
 
@@ -43,12 +43,13 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myProperty">The interesting property</param>
         /// <param name="myConstant">The constant value</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
-        /// <param name="IsLongrunning">Determines whether it is anticipated that the request could take longer</param>
-        public QueryPlanEqualsWithoutIndex(QueryPlanProperty myProperty, QueryPlanConstant myConstant, IVertexStore myVertexStore, Boolean IsLongrunning)
+        /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer</param>
+        public QueryPlanEqualsWithoutIndex(QueryPlanProperty myProperty, QueryPlanConstant myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning)
         {
             _property = myProperty;
             _constant = myConstant;
             _vertexStore = myVertexStore;
+            _myIsLongrunning = myIsLongrunning;
         }
 
         #endregion

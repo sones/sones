@@ -5,6 +5,7 @@ using sones.GraphDB.Manager.TypeManagement;
 using sones.Library.Security;
 using sones.Library.Transaction;
 using sones.Library.VertexStore;
+using sones.GraphDB.Manager.Index;
 
 namespace sones.GraphDB.Manager.QueryPlan
 {
@@ -25,6 +26,11 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// </summary>
         private readonly IVertexStore _vertexStore;
 
+        /// <summary>
+        /// An index manager is needed to create certain query-plan structures
+        /// </summary>
+        private readonly IIndexManager _indexManager;
+
         #endregion
 
         #region constructor
@@ -34,10 +40,11 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// </summary>
         /// <param name="myVertexTypeManager">A vertex type manager is needed to create certain query-plan structures</param>
         /// <param name="myVertexStore">A vertex store</param>
-        public QueryPlanManager(IVertexTypeManager myVertexTypeManager, IVertexStore myVertexStore)
+        public QueryPlanManager(IVertexTypeManager myVertexTypeManager, IVertexStore myVertexStore, IIndexManager myIndexManager)
         {
             _vertexTypeManager = myVertexTypeManager;
             _vertexStore = myVertexStore;
+            _indexManager = myIndexManager;
         }
 
         #endregion
@@ -187,10 +194,10 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// </summary>
         /// <param name="binaryExpression">The binary expression that has to be transfered into an equals query plan</param>
         /// <param name="myIsLongRunning">The binary expression that has to be transfered into an equals query plan</param>
-        /// <param name="myTransaction">The binary expression that has to be transfered into an equals query plan</param>
-        /// <param name="mySecurity">The binary expression that has to be transfered into an equals query plan</param>
+        /// <param name="myTransactionToken">The binary expression that has to be transfered into an equals query plan</param>
+        /// <param name="mySecurityToken">The binary expression that has to be transfered into an equals query plan</param>
         /// <returns>An equals query plan</returns>
-        private IQueryPlan GenerateEqualsPlan(BinaryExpression binaryExpression, Boolean myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity)
+        private IQueryPlan GenerateEqualsPlan(BinaryExpression binaryExpression, Boolean myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
             if (binaryExpression.Left is PropertyExpression && binaryExpression.Right is PropertyExpression)
             {
@@ -199,8 +206,8 @@ namespace sones.GraphDB.Manager.QueryPlan
                 //complex sth like User/Age = Car/PS
 
                 return new QueryPlanEqualsWithoutIndexComplex(
-                    GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Left, myTransaction, mySecurity), 
-                    GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Right, myTransaction, mySecurity));
+                    GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Left, myTransactionToken, mySecurityToken), 
+                    GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Right, myTransactionToken, mySecurityToken));
 
                 #endregion
             }
@@ -214,24 +221,26 @@ namespace sones.GraphDB.Manager.QueryPlan
 
                 if (binaryExpression.Left is PropertyExpression)
                 {
-                    property = GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Left, myTransaction, mySecurity);
+                    property = GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Left, myTransactionToken, mySecurityToken);
 
                     constant = new QueryPlanConstant(((ConstantExpression)binaryExpression.Right).Constant);
                 }
                 else
                 {
-                    property = GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Right, myTransaction, mySecurity);
+                    property = GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Right, myTransactionToken, mySecurityToken);
 
                     constant = new QueryPlanConstant(((ConstantExpression)binaryExpression.Left).Constant);
                 }
 
-                ////is there an index on this property?
-                //if (property.Property.)
-                //{
-                    
-                //}
-
-                return new QueryPlanEqualsWithoutIndex(property, constant, _vertexStore, myIsLongRunning);
+                //is there an index on this property?
+                if (_indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
+                {
+                    return new QueryPlanEqualsWithIndex(property, constant, _vertexStore, myIsLongRunning, _indexManager);                                        
+                }
+                else
+                {
+                    return new QueryPlanEqualsWithoutIndex(property, constant, _vertexStore, myIsLongRunning);                    
+                }
 
                 #endregion
             }
