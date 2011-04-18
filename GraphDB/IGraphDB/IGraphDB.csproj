@@ -133,11 +133,6 @@
     <Compile Include="Request\TraverseVertex\RequestTraverseVertex.cs" />
     <Compile Include="Request\TraverseVertex\TraversalState.cs" />
     <Compile Include="Request\TraverseVertex\TraverseVertexDefinition.cs" />
-    <Compile Include="Result\Edge\IHyperEdgeView.cs" />
-    <Compile Include="Result\Edge\IEdgeView.cs" />
-    <Compile Include="Result\IGraphElementView.cs" />
-    <Compile Include="Result\Edge\ISingleEdgeView.cs" />
-    <Compile Include="Result\Vertex\IVertexView.cs" />
     <Compile Include="TypeSystem\AttributeType.cs" />
     <Compile Include="TypeSystem\IAttributeDefinition.cs" />
     <Compile Include="TypeSystem\IBehaviour.cs" />

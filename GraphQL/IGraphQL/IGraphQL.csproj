@@ -115,7 +115,12 @@
     <Compile Include="IGraphQL.cs" />
     <Compile Include="IQueryableLanguage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Result\Edge\IEdgeView.cs" />
+    <Compile Include="Result\Edge\IHyperEdgeView.cs" />
+    <Compile Include="Result\Edge\ISingleEdgeView.cs" />
+    <Compile Include="Result\IGraphElementView.cs" />
     <Compile Include="Result\QueryResult.cs" />
+    <Compile Include="Result\Vertex\IVertexView.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\GraphDB\IGraphDB\IGraphDB.csproj">
@@ -129,6 +134,10 @@
     <ProjectReference Include="..\..\Library\Internal\LanguageExtensions\LanguageExtensions.csproj">
       <Project>{21C726D5-DCCA-4C15-BA54-1000E80B1C6E}</Project>
       <Name>LanguageExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
+      <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
+      <Name>PropertyHyperGraph</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Library\Internal\Security\Security.csproj">
       <Project>{3C13E344-937B-4010-B0EF-A164232E4454}</Project>
