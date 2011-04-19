@@ -3,6 +3,8 @@ using sones.Library.PropertyHyperGraph;
 using System;
 using sones.Library.Commons.VertexStore;
 using sones.GraphDB.TypeSystem;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -31,7 +33,11 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// Determines whether it is anticipated that the request could take longer
         /// </summary>
-        private readonly Boolean _myIsLongrunning;
+        private readonly Boolean _isLongrunning;
+
+
+        private readonly SecurityToken _securityToken;
+        private readonly TransactionToken _transactionToken;
 
         #endregion
 
@@ -40,16 +46,20 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// Creates a new queryplan that processes an equals operation without any index
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myProperty">The interesting property</param>
         /// <param name="myConstant">The constant value</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
         /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer</param>
-        public QueryPlanEqualsWithoutIndex(QueryPlanProperty myProperty, QueryPlanConstant myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning)
+        public QueryPlanEqualsWithoutIndex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, QueryPlanProperty myProperty, QueryPlanConstant myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning)
         {
             _property = myProperty;
             _constant = myConstant;
             _vertexStore = myVertexStore;
-            _myIsLongrunning = myIsLongrunning;
+            _isLongrunning = myIsLongrunning;
+            _securityToken = mySecurityToken;
+            _transactionToken = myTransactionToken;
         }
 
         #endregion
@@ -82,7 +92,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <returns>An enumerable of vertices</returns>
         private IEnumerable<IVertex> GetMatchingVertices(long myVertexTypeID)
         {
-            foreach (var aVertex in _vertexStore.GetVerticesByTypeID(myVertexTypeID, _property.Edition, VertexRevisionFilter))
+            foreach (var aVertex in _vertexStore.GetVerticesByTypeID(_securityToken, _transactionToken, myVertexTypeID, _property.Edition, VertexRevisionFilter))
             {
                 if (aVertex.HasProperty(_property.Property.AttributeID))
                 {

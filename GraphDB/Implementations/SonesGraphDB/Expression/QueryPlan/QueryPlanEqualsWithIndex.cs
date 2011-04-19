@@ -4,6 +4,8 @@ using System;
 using sones.Library.Commons.VertexStore;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Manager.Index;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -39,6 +41,9 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// </summary>
         private readonly IIndexManager _indexManager;
 
+        private readonly SecurityToken _securityToken;
+        private readonly TransactionToken _transactionToken;
+
         #endregion
 
         #region constructor
@@ -46,17 +51,21 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// Creates a new queryplan that processes an equals operation using indices
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myProperty">The interesting property</param>
         /// <param name="myConstant">The constant value</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
         /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer</param>
-        public QueryPlanEqualsWithIndex(QueryPlanProperty myProperty, QueryPlanConstant myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning, IIndexManager myIndexManager)
+        public QueryPlanEqualsWithIndex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, QueryPlanProperty myProperty, QueryPlanConstant myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning, IIndexManager myIndexManager)
         {
             _property = myProperty;
             _constant = myConstant;
             _vertexStore = myVertexStore;
             _isLongrunning = myIsLongrunning;
             _indexManager = myIndexManager;
+            _securityToken = mySecurityToken;
+            _transactionToken = myTransactionToken;
         }
 
         #endregion

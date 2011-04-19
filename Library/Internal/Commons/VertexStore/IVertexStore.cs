@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.Commons.VertexStore.Definitions;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 
 namespace sones.Library.Commons.VertexStore
 {
@@ -13,12 +15,16 @@ namespace sones.Library.Commons.VertexStore
         /// <summary>
         /// Checks if a vertex exists
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <param name="myVertexTypeID">The id of the vertex type</param>
         /// <param name="myEdition">The edition of the vertex  (if left out, the default edition is assumed)</param>
         /// <param name="myVertexRevisionID">The revision id if the vertex (if left out, the latest revision is assumed)</param>
         /// <returns>True if the vertex exists, otherwise false</returns>
         Boolean VertexExists(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
             Int64 myVertexID,
             Int64 myVertexTypeID,
             String myEdition = null,
@@ -28,12 +34,16 @@ namespace sones.Library.Commons.VertexStore
         /// Gets a vertex 
         /// If there is no edition or revision given, the default edition and the latest revision is returned
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <param name="myVertexTypeID">The id of the vertex type</param>
         /// <param name="myEdition">The edition of the vertex (if left out, the default edition is returned)</param>
         /// <param name="myVertexRevisionID">The revision id if the vertex (if left out, the latest revision is returned)</param>
         /// <returns>A vertex object or null if there is no such vertex</returns>
         IVertex GetVertex(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
             Int64 myVertexID,
             Int64 myVertexTypeID,
             String myEdition = null,
@@ -47,12 +57,16 @@ namespace sones.Library.Commons.VertexStore
         /// If you know the exact definitions use the overloaded version of this method using
         /// IEnumerable instead.
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myTypeID">the considered vertex type</param>
         /// <param name="myInterestingVertexIDs">a set of vertexID which shall be loaded</param>
         /// <param name="myEditionsFilterFunc">func to filter editions</param>
         /// <param name="myInterestingRevisionIDFilterFunc">func to filter revisions</param>
         /// <returns>vertices</returns>
         IEnumerable<IVertex> GetVerticesByTypeID(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
             Int64 myTypeID,
             IEnumerable<Int64> myInterestingVertexIDs = null,
             VertexStoreFilter.EditionFilter myEditionsFilterFunc = null,
@@ -61,11 +75,15 @@ namespace sones.Library.Commons.VertexStore
         /// <summary>
         /// Returns all vertex by a given typeID. It's possible to filter interesting vertices.
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myTypeID">The interesting vertex type id</param>
         /// <param name="myEdition">The edition of the vertex (if left out, the default edition is returned)</param>
         /// <param name="myInterestingRevisionIDFilterFunc">A delegate to filter revisions</param>
         /// <returns>Vertices</returns>
         IEnumerable<IVertex> GetVerticesByTypeID(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
             Int64 myTypeID,
             String myEdition = null,
             VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null);
@@ -74,12 +92,16 @@ namespace sones.Library.Commons.VertexStore
         /// Returns all vertex by a given typeID. It's possible to filter interesting vertices.
         /// It's also possible to filter specified vertices by id, their editions and revisions.
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myTypeID">the considered vertex type</param>
         /// <param name="myInterestingVertexIDs">a set of vertexID which shall be loaded</param>
         /// <param name="myInterestingEditionNames">a set of interesting editions of a vertex</param>
         /// <param name="myInterestingRevisionIDs">a set of interesting revisions of a vertex</param>
         /// <returns>vertices</returns>
         IEnumerable<IVertex> GetVerticesByTypeID(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
             Int64 myTypeID,
             IEnumerable<Int64> myInterestingVertexIDs = null,
             IEnumerable<String> myInterestingEditionNames = null,
@@ -90,10 +112,14 @@ namespace sones.Library.Commons.VertexStore
         /// 
         /// The default edition and latest revision of an existing vertex will be returned.
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myTypeID">the considered vertex type</param>
         /// <param name="myInterestingVertexIDs">a set of vertexID which shall be loaded</param>
         /// <returns>all interesting vertices of given type with default edition and latest revision</returns>
         IEnumerable<IVertex> GetVerticesByTypeID(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
             Int64 myTypeID,
             IEnumerable<Int64> myInterestingVertexIDs);
 
@@ -102,9 +128,13 @@ namespace sones.Library.Commons.VertexStore
         /// 
         /// The default edition and latest revision of an existing vertex will be returned.
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myTypeID">the considered vertex type</param>
         /// <returns>all interesting vertices of given type with default edition and latest revision</returns>
         IEnumerable<IVertex> GetVerticesByTypeID(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
             Int64 myTypeID);
 
         /// <summary>
@@ -112,31 +142,43 @@ namespace sones.Library.Commons.VertexStore
         /// 
         /// The default edition of the vertex will be returned (if the defined revision exists)
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myTypeID">the considered vertex type</param>
         /// <param name="myInterestingRevisions">a set of (vertex-)revisions which are of interest</param>
         /// <returns>all vertices of given type which are available at the given revisions</returns>
         IEnumerable<IVertex> GetVerticesByTypeIDAndRevisions(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
             Int64 myTypeID,
             IEnumerable<Int64> myInterestingRevisions);
 
         /// <summary>
         /// Returns all editions corresponding to a certain vertex
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <param name="myVertexTypeID">The id of the vertex type</param>
         /// <returns>An IEnumerable of editions</returns>
         IEnumerable<String> GetVertexEditions(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
             Int64 myVertexID,
             Int64 myVertexTypeID);
 
         /// <summary>
         /// Returns all revision ids to a certain vertex and edition
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <param name="myVertexTypeID">The id of the vertex type</param>
         /// <param name="myInterestingEditions">The interesting vertex editions</param>
         /// <returns>An IEnumerable of VertexRevisionIDs</returns>
         IEnumerable<Int64> GetVertexRevisionIDs(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
             Int64 myVertexID,
             Int64 myVertexTypeID,
             IEnumerable<String> myInterestingEditions = null);
@@ -144,12 +186,16 @@ namespace sones.Library.Commons.VertexStore
         /// <summary>
         /// Removes a certain revision of a vertex
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <param name="myVertexTypeID">The id of the vertex type</param>
         /// <param name="myInterestingEdition">The interesting edition of the vertex</param>
         /// <param name="myToBeRemovedRevisionID">The revision that should be removed</param>
         /// <returns>True if the revision have been removed, false otherwise</returns>
         bool RemoveVertexRevision(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
             Int64 myVertexID,
             Int64 myVertexTypeID,
             String myInterestingEdition,
@@ -158,11 +204,15 @@ namespace sones.Library.Commons.VertexStore
         /// <summary>
         /// Removes a certain edition of a vertex
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <param name="myVertexTypeID">The id of the vertex type</param>
         /// <param name="myToBeRemovedEdition">The edition that should be removed</param>
         /// <returns>True if the revision have been removed, false otherwise</returns>
         bool RemoveVertexEdition(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
             Int64 myVertexID,
             Int64 myVertexTypeID,
             String myToBeRemovedEdition);
@@ -170,21 +220,29 @@ namespace sones.Library.Commons.VertexStore
         /// <summary>
         /// Removes a vertex entirely
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myVertexID">The id of the vertex</param>
         /// <param name="myVertexTypeID">The id of the vertex type</param>
         /// <returns>True if a vertex has been erased, false otherwise</returns>
         bool RemoveVertex(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
             Int64 myVertexID,
             Int64 myVertexTypeID);
 
         /// <summary>
         /// Adds a new vertex to the graph fs
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myVertexDefinition">The vertex definition that represents the new vertex</param>
         /// <param name="myVertexRevisionID">The revision id of the vertex</param>
         /// <param name="myCreateIncomingEdges">Create the incoming edges</param>
         /// <returns>The added vertex</returns>
         IVertex AddVertex(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
             VertexAddDefinition myVertexDefinition,
             Int64 myVertexRevisionID = 0L,
             Boolean myCreateIncomingEdges = true);
@@ -192,6 +250,8 @@ namespace sones.Library.Commons.VertexStore
         /// <summary>
         /// Updates a vertex
         /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myToBeUpdatedVertexID">The vertex id that is going to be updated</param>
         /// <param name="myCorrespondingVertexTypeID">The vertex type id that is going to be updated</param>
         /// <param name="myVertexUpdate">The update definition for the vertex</param>
@@ -200,6 +260,8 @@ namespace sones.Library.Commons.VertexStore
         /// <param name="myCreateNewRevision">Determines if it is necessary to create a new revision of the vertex</param>
         /// <returns>The updated vertex</returns>
         IVertex UpdateVertex(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
             Int64 myToBeUpdatedVertexID,
             Int64 myCorrespondingVertexTypeID,
             VertexUpdateDefinition myVertexUpdate,

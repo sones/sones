@@ -8,6 +8,8 @@ using sones.Library.Commons.VertexStore.Definitions;
 using sones.GraphDB.TypeManagement.Base;
 using System.Resources;
 using sones.Library.Commons.VertexStore.Definitions;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 
 namespace sones.GraphDB.Manager
 {
@@ -23,6 +25,9 @@ namespace sones.GraphDB.Manager
         #endregion
 
         private const Int64 _EdgeEdgeType = (long)BaseTypes.Edge;
+
+        private readonly SecurityToken _securityToken;
+        private readonly TransactionToken _transactionToken;
 
         #region Vertex information
 
@@ -157,12 +162,16 @@ namespace sones.GraphDB.Manager
         #endregion
 
         #region C'tor
-		
+
         /// <summary>
         /// Creates a new instance of DBCreationManager.
         /// </summary>
-        public DBCreationManager()
+        /// <param name="mySecurityToken">The root security token</param>
+        /// <param name="myTransactionToken">The root transaction token... can be left out</param>
+        public DBCreationManager(SecurityToken mySecurityToken, TransactionToken myTransactionToken = null)
         {
+            _securityToken = mySecurityToken;
+            _transactionToken = myTransactionToken;
         }
  
 	    #endregion
@@ -368,7 +377,7 @@ namespace sones.GraphDB.Manager
         /// <param name="myEdges"></param>
         /// <param name="myStructuredProperties"></param>
         /// <param name="myUnstructuredProperties"></param>
-        private static void Store(
+        private void Store(
             IVertexStore myStore,
             VertexInformation mySource,
             String myComment,
@@ -391,7 +400,7 @@ namespace sones.GraphDB.Manager
                 myStructuredProperties,
                 myUnstructuredProperties);
 
-            myStore.AddVertex(def);
+            myStore.AddVertex(_securityToken, _transactionToken, def);
         }
 
         private static IEnumerable<SingleEdgeAddDefinition> CreateSingleEdgeDefinitions(

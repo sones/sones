@@ -12,6 +12,8 @@ using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
 using sones.Library.Commons.VertexStore;
 using sones.Library.Commons.VertexStore.Definitions;
+using sones.Library.Commons.Transaction;
+using sones.Library.Commons.Security;
 
 namespace sones.GraphFS
 {
@@ -126,7 +128,8 @@ namespace sones.GraphFS
             _vertexStore = tempVertexStore;
         }
 
-        public bool VertexExists(long myVertexID, long myVertexTypeID, string myEdition = null,
+        public bool VertexExists(SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+                                 long myVertexID, long myVertexTypeID, string myEdition = null,
                                  Int64 myVertexRevisionID = 0L)
         {
             ConcurrentDictionary<Int64, InMemoryVertex> vertices;
@@ -139,7 +142,8 @@ namespace sones.GraphFS
             return false;
         }
 
-        public IVertex GetVertex(long myVertexID, long myVertexTypeID, string myEdition = null,
+        public IVertex GetVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+                                 long myVertexID, long myVertexTypeID, string myEdition = null,
                                  Int64 myVertexRevisionID = 0L)
         {
             var vertex = GetVertexPrivate(myVertexID, myVertexTypeID);
@@ -152,42 +156,47 @@ namespace sones.GraphFS
             return null;
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs = null,
+        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+                                                        long myTypeID, IEnumerable<long> myInterestingVertexIDs = null,
                                                         IEnumerable<string> myInterestingEditionNames = null,
                                                         IEnumerable<Int64> myInterestingRevisionIDs = null)
         {
             return myInterestingVertexIDs != null
-                       ? GetVerticesByTypeID(myTypeID, myInterestingVertexIDs)
-                       : GetVerticesByTypeID(myTypeID);
+                       ? GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID, myInterestingVertexIDs)
+                       : GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(long myTypeID, IEnumerable<long> myInterestingVertexIDs)
+        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+                                                        long myTypeID, IEnumerable<long> myInterestingVertexIDs)
         {
             var interestingVertices = new HashSet<long>(myInterestingVertexIDs);
 
-            return GetVerticesByTypeID(myTypeID).Where(aVertex => interestingVertices.Contains(aVertex.VertexID));
+            return GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID).Where(aVertex => interestingVertices.Contains(aVertex.VertexID));
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(
+            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
             long myTypeID, 
             IEnumerable<long> myInterestingVertexIDs = null, 
             VertexStoreFilter.EditionFilter myEditionsFilterFunc = null, 
             VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null)
         {
             return myInterestingVertexIDs != null
-                       ? GetVerticesByTypeID(myTypeID, myInterestingVertexIDs)
-                       : GetVerticesByTypeID(myTypeID);
+                       ? GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID, myInterestingVertexIDs)
+                       : GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID);
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(
+            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
             long myTypeID, 
             string myEdition = null, 
             VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null)
         {
-            return GetVerticesByTypeID(myTypeID);
+            return GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID);
         }
 
-        public IEnumerable<IVertex> GetVerticesByTypeID(long myVertexTypeID)
+        public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+                                                        long myVertexTypeID)
         {
             ConcurrentDictionary<Int64, InMemoryVertex> vertices;
 
@@ -206,15 +215,19 @@ namespace sones.GraphFS
         }
 
 
-        public IEnumerable<IVertex> GetVerticesByTypeIDAndRevisions(long myTypeID,
-                                                        IEnumerable<Int64> myInterestingRevisions)
+        public IEnumerable<IVertex> GetVerticesByTypeIDAndRevisions(
+            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            long myTypeID,
+            IEnumerable<Int64> myInterestingRevisions)
         {
-            return GetVerticesByTypeID(myTypeID);
+            return GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID);
         }
 
-        public IEnumerable<string> GetVertexEditions(long myVertexID, long myVertexTypeID)
+        public IEnumerable<string> GetVertexEditions(
+            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            long myVertexID, long myVertexTypeID)
         {
-            var vertex = GetVertex(myVertexID, myVertexTypeID);
+            var vertex = GetVertex(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID);
 
             if (vertex == null)
             {
@@ -226,10 +239,12 @@ namespace sones.GraphFS
             return result;
         }
 
-        public IEnumerable<Int64> GetVertexRevisionIDs(long myVertexID, long myVertexTypeID,
-                                                                  IEnumerable<string> myInterestingEditions = null)
+        public IEnumerable<Int64> GetVertexRevisionIDs(
+            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            long myVertexID, long myVertexTypeID,
+            IEnumerable<string> myInterestingEditions = null)
         {
-            var vertex = GetVertex(myVertexID, myVertexTypeID);
+            var vertex = GetVertex(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID);
 
             if (vertex == null)
             {
@@ -254,8 +269,10 @@ namespace sones.GraphFS
             return result;
         }
 
-        public bool RemoveVertexRevision(long myVertexID, long myVertexTypeID, string myInterestingEdition,
-                                         Int64 myToBeRemovedRevisionID)
+        public bool RemoveVertexRevision(
+            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            long myVertexID, long myVertexTypeID, string myInterestingEdition,
+            Int64 myToBeRemovedRevisionID)
         {
             var vertex = GetVertexPrivate(myVertexID, myVertexTypeID);
 
@@ -278,7 +295,9 @@ namespace sones.GraphFS
             return false;
         }
 
-        public bool RemoveVertexEdition(long myVertexID, long myVertexTypeID, string myToBeRemovedEdition)
+        public bool RemoveVertexEdition(
+            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            long myVertexID, long myVertexTypeID, string myToBeRemovedEdition)
         {
             var vertex = GetVertexPrivate(myVertexID, myVertexTypeID);
 
@@ -301,7 +320,9 @@ namespace sones.GraphFS
             return false;
         }
 
-        public bool RemoveVertex(long myVertexID, long myVertexTypeID)
+        public bool RemoveVertex(
+            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            long myVertexID, long myVertexTypeID)
         {
             //Todo: remove references on this vertex
 
@@ -316,9 +337,11 @@ namespace sones.GraphFS
             return false;
         }
 
-        public IVertex AddVertex(VertexAddDefinition myVertexDefinition,
-                              Int64 myVertexRevisionID = 0L,
-                              Boolean myCreateIncomingEdges = true)
+        public IVertex AddVertex(
+            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            VertexAddDefinition myVertexDefinition,
+            Int64 myVertexRevisionID = 0L,
+            Boolean myCreateIncomingEdges = true)
         {
             #region create vertex type entry
 
@@ -481,9 +504,11 @@ namespace sones.GraphFS
             return toBeAddedVertex;
         }
 
-        public IVertex UpdateVertex(long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID,
-                                 VertexUpdateDefinition myVertexUpdate, string myToBeUpdatedEditions = null,
-                                 Int64 myToBeUpdatedRevisionIDs = 0L, bool myCreateNewRevision = false)
+        public IVertex UpdateVertex(
+            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            long myToBeUpdatedVertexID, long myCorrespondingVertexTypeID,
+            VertexUpdateDefinition myVertexUpdate, string myToBeUpdatedEditions = null,
+            Int64 myToBeUpdatedRevisionIDs = 0L, bool myCreateNewRevision = false)
         {
             var toBeUpdatedVertex = GetVertexPrivate(myToBeUpdatedVertexID, myCorrespondingVertexTypeID);
 

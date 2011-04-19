@@ -235,11 +235,11 @@ namespace sones.GraphDB.Manager.QueryPlan
                 //is there an index on this property?
                 if (_indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
                 {
-                    return new QueryPlanEqualsWithIndex(property, constant, _vertexStore, myIsLongRunning, _indexManager);                                        
+                    return new QueryPlanEqualsWithIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning, _indexManager);                                        
                 }
                 else
                 {
-                    return new QueryPlanEqualsWithoutIndex(property, constant, _vertexStore, myIsLongRunning);                    
+                    return new QueryPlanEqualsWithoutIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning);                    
                 }
 
                 #endregion
