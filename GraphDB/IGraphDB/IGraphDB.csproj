@@ -99,6 +99,8 @@
     <Compile Include="Expression\Operator\UnaryOperator.cs" />
     <Compile Include="Expression\Tree\TimeSpanDefinition.cs" />
     <Compile Include="Expression\Tree\TypeOfExpression.cs" />
+    <Compile Include="IReadOnlyGraphDB.cs" />
+    <Compile Include="IReadWriteGraphDB.cs" />
     <Compile Include="Manager\ILogicExpressionOptimizer.cs" />
     <Compile Include="Manager\IRequestScheduler.cs" />
     <Compile Include="Request\Clear\RequestClear.cs" />
