@@ -29,7 +29,7 @@ namespace sones.GraphQL.Result
         /// Returns the count of properties
         /// </summary>
         /// <returns>The count of properties</returns>
-        int GetCountOfProperties();
+        int GetCountOfProperties();        
 
         /// <summary>
         /// Returns all properties of a graph element

@@ -38,7 +38,7 @@ namespace sones.GraphQL.ErrorHandling
             ExpectedKindsOfType = myExpectedKindsOfType;
             CurrentKindsOfType = myCurrentKindsOfType;
 
-            _msg = String.Format("The given kind \"{0}\" does not match the expected \"{0}\"", CurrentKindsOfType,
+            _msg = String.Format("The given kind \"{0}\" does not match the expected \"{1}\"", CurrentKindsOfType,
                 ExpectedKindsOfType.Aggregate<String, StringBuilder>(new StringBuilder(), (result, elem) => { result.AppendFormat("{0},", elem); return result; }));
         }
 

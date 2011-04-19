@@ -90,6 +90,7 @@
     <Compile Include="ErrorHandling\OperatorErrors\AGraphQLOperatorException.cs" />
     <Compile Include="ErrorHandling\SelectErrors\AGraphQLSelectException.cs" />
     <Compile Include="ErrorHandling\SelectErrors\DuplicateAttributeSelectionException.cs" />
+    <Compile Include="ErrorHandling\SelectErrors\MultipleResultsException.cs" />
     <Compile Include="ErrorHandling\SelectErrors\GroupedAttributeIsNotSelectedException.cs" />
     <Compile Include="ErrorHandling\SelectErrors\InvalidGroupByLevelException.cs" />
     <Compile Include="ErrorHandling\SelectErrors\InvalidSelectValueAssignmentException.cs" />
@@ -97,6 +98,7 @@
     <Compile Include="ErrorHandling\SelectErrors\SelectTimeOutException.cs" />
     <Compile Include="ErrorHandling\SelectErrors\SelectValueAssignmentDataTypeDoesNotMatchException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\AmbiguousVertexAttributeException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\MandatoryConstraintViolationException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidUndefinedVertexAttributeNameException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\RemoveVertexTypeAttributeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\UpdateVertexAttributeValueException.cs" />
