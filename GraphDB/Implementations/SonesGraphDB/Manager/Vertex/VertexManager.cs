@@ -169,7 +169,7 @@ namespace sones.GraphDB.Manager.Vertex
 
                     if (binaryExpression.Left is PropertyExpression)
                     {
-                        return (binaryExpression.Right is PropertyExpression) || (binaryExpression.Right is ConstantExpression);
+                        return binaryExpression.Right is ConstantExpression;
                     }
                     else
                     {

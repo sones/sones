@@ -155,7 +155,8 @@ namespace sones.GraphDB.Manager.QueryPlan
                     return GenerateEqualsPlan(binaryExpression, myIsLongRunning, myTransaction, mySecurity);
 
                 case BinaryOperator.GreaterOrEqualsThan:
-                    break;
+                    return GenerateGreaterOrEqualsThanPlan(binaryExpression, myIsLongRunning, myTransaction, mySecurity);                    
+
                 case BinaryOperator.GreaterThan:
                     break;
                 case BinaryOperator.In:
@@ -232,51 +233,64 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <returns>An equals query plan</returns>
         private IQueryPlan GenerateEqualsPlan(BinaryExpression binaryExpression, Boolean myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
-            if (binaryExpression.Left is PropertyExpression && binaryExpression.Right is PropertyExpression)
+            //it is not possible to have something complex (User.Age = Car.HorsePower) here --> filtered by validate of IExpression
+
+            #region simple
+
+            //sth like User/Age = 10
+            QueryPlanProperty property;
+            QueryPlanConstant constant;
+
+            FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
+
+            //is there an index on this property?
+            if (_indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
             {
-                #region complex
-
-                //complex sth like User/Age = Car/PS
-
-                return new QueryPlanEqualsWithoutIndexComplex(
-                    GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Left, myTransactionToken, mySecurityToken), 
-                    GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Right, myTransactionToken, mySecurityToken));
-
-                #endregion
+                return new QueryPlanEqualsWithIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning, _indexManager);
             }
             else
             {
-                #region simple
-
-                //sth like User/Age = 10
-                QueryPlanProperty property;
-                QueryPlanConstant constant;
-
-                if (binaryExpression.Left is PropertyExpression)
-                {
-                    property = GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Left, myTransactionToken, mySecurityToken);
-
-                    constant = new QueryPlanConstant(((ConstantExpression)binaryExpression.Right).Constant);
-                }
-                else
-                {
-                    property = GenerateQueryPlanProperty((PropertyExpression)binaryExpression.Right, myTransactionToken, mySecurityToken);
-
-                    constant = new QueryPlanConstant(((ConstantExpression)binaryExpression.Left).Constant);
-                }
-
-                //is there an index on this property?
-                if (_indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
-                {
-                    return new QueryPlanEqualsWithIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning, _indexManager);                                        
-                }
-                else
-                {
-                    return new QueryPlanEqualsWithoutIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning);                    
-                }
-
-                #endregion
+                return new QueryPlanEqualsWithoutIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning);
             }
+
+            #endregion
+
+        }
+
+        private void FindPropertyAndConstant(BinaryExpression myBinaryExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken, out QueryPlanProperty myProperty, out QueryPlanConstant myConstant)
+        {
+            if (myBinaryExpression.Left is PropertyExpression)
+            {
+                myProperty = GenerateQueryPlanProperty((PropertyExpression)myBinaryExpression.Left, myTransactionToken, mySecurityToken);
+
+                myConstant = new QueryPlanConstant(((ConstantExpression)myBinaryExpression.Right).Constant);
+            }
+            else
+            {
+                myProperty = GenerateQueryPlanProperty((PropertyExpression)myBinaryExpression.Right, myTransactionToken, mySecurityToken);
+
+                myConstant = new QueryPlanConstant(((ConstantExpression)myBinaryExpression.Left).Constant);
+            }
+        }
+
+        private IQueryPlan GenerateGreaterOrEqualsThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            //sth like User/Age = 10
+            QueryPlanProperty property;
+            QueryPlanConstant constant;
+
+            FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
+
+            //is there an index on this property?
+            if (_indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
+            {
+                return new QueryPlanGreaterOrEqualsWithIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning, _indexManager);
+            }
+            else
+            {
+                return new QueryPlanGreaterOrEqualsWithoutIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning);
+            }
+
         }
 
         /// <summary>

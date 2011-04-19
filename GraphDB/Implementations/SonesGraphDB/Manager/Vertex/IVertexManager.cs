@@ -41,10 +41,6 @@ namespace sones.GraphDB.Manager.Vertex
 
         #endregion
 
-        IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
-
-        IVertex AddVertex(VertexAddDefinition myVertexDefinition, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
-
         #region GetVertex
 
         /// <summary>
@@ -71,5 +67,9 @@ namespace sones.GraphDB.Manager.Vertex
         IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken);
 
         #endregion
+
+        IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+
+        IVertex AddVertex(VertexAddDefinition myVertexDefinition, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
     }
 }
