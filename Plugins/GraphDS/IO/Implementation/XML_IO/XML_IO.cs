@@ -41,11 +41,11 @@ namespace sones.Plugins.GraphDS.IOInterface
                 return;
             }            
             
-            currentResult.VertexID = currentLevel.VertexID;
-            //currentResult.VertexRevisionID.ID = currentLevel.VertexRevisionID;
-            //currentResult.VertexRevisionID.Timestamp = currentLevel.VertexRevisionID;
+           /* currentResult.VertexID = currentLevel.VertexID;
+            currentResult.VertexRevisionID.ID = currentLevel.VertexRevisionID.ID;
+            currentResult.VertexRevisionID.Timestamp = currentLevel.VertexRevisionID.Timestamp;
             currentResult.VertexTypeName = currentLevel.VertexTypeName;
-            currentResult.EditionName = currentLevel.EditionName;
+            currentResult.EditionName = currentLevel.EditionName;*/
             currentResult.BinaryPropertys = new BinaryData[currentLevel.GetAllBinaryProperties().Count()];
 
             for (Int32 cnt = 0; cnt < currentLevel.GetAllBinaryProperties().Count(); cnt++)
@@ -63,10 +63,10 @@ namespace sones.Plugins.GraphDS.IOInterface
 
             for (Int32 cnt = 0; cnt < edges.Count(); cnt++)
             {
-                currentResult.Edges[cnt].Edge.Comment = edges.ElementAt(cnt).Item2.Comment;
-                currentResult.Edges[cnt].Edge.CreationDate = edges.ElementAt(cnt).Item2.CreationDate;
-                currentResult.Edges[cnt].Edge.EdgeTypeName = edges.ElementAt(cnt).Item2.EdgeTypeName;
-                currentResult.Edges[cnt].Edge.ModificationDate = edges.ElementAt(cnt).Item2.ModificationDate;
+                /*currentResult.Edges[cnt].Edge.Comment = edges.ElementAt(cnt).Item2.Comment;
+                currentResult.Edges[cnt].Edge.CreationDate = edges.ElementAt(cnt).Item2.CreationDate;*/
+               // currentResult.Edges[cnt].Edge.EdgeTypeName = edges.ElementAt(cnt).Item2.EdgeTypeName;
+               // currentResult.Edges[cnt].Edge.ModificationDate = edges.ElementAt(cnt).Item2.ModificationDate;
                 currentResult.Edges[cnt].Edge.CountOfProperties = edges.ElementAt(cnt).Item2.GetCountOfProperties();
 
                 var countOfProperties = edges.ElementAt(cnt).Item2.GetCountOfProperties();
@@ -84,7 +84,7 @@ namespace sones.Plugins.GraphDS.IOInterface
                 }
 
                 currentResult.Edges[cnt].Name = edges.ElementAt(cnt).Item1;
-                currentResult.Edges[cnt].Edge.EdgeTypeName = edges.ElementAt(cnt).Item2.EdgeTypeName;
+                //currentResult.Edges[cnt].Edge.EdgeTypeName = edges.ElementAt(cnt).Item2.EdgeTypeName;
                     
                 myEdges.Add(edges.ElementAt(cnt).Item2.GetSourceVertex());
                 myResultVertices.Add(currentResult.Edges[cnt].Edge.SourceVertex);

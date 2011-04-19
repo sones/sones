@@ -8,14 +8,6 @@ namespace sones.GraphQL.Result
     /// </summary>
     public interface IEdgeView : IGraphElementView
     {
-        #region EdgeTypeID
-
-        /// <summary>
-        /// The name of the IncomingEdge type
-        /// </summary>
-        String EdgeTypeName { get; }
-
-        #endregion
 
         #region Source
 

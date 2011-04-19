@@ -10,30 +10,6 @@ namespace sones.GraphQL.Result
     /// </summary>
     public interface IVertexView : IGraphElementView
     {
-        #region ID / Edition / Revision
-
-        /// <summary>
-        /// The name of the vertex type
-        /// </summary>
-        String VertexTypeName { get; }
-
-        /// <summary>
-        /// The id of the vertex
-        /// </summary>
-        Int64 VertexID { get; }
-
-        /// <summary>
-        /// Returns the revision id of this vertex
-        /// </summary>
-        Int64 VertexRevisionID { get; }
-
-        /// <summary>
-        /// Returns the name of the edition of this vertex
-        /// </summary>
-        String EditionName { get; }
-
-        #endregion
-
         #region Edges
 
         /// <summary>
@@ -62,25 +38,33 @@ namespace sones.GraphQL.Result
         IEnumerable<Tuple<String, ISingleEdgeView>> GetAllSingleEdges();
 
         /// <summary>
-        /// Returns a specified IncomingEdge
+        /// Returns a specified edge
         /// </summary>
-        /// <param name="myEdgePropertyName">The property name of the specified IncomingEdge</param>
+        /// <param name="myEdgePropertyName">The property name of the specified edge</param>
         /// <returns>An IEdgeView</returns>
-        IEdgeView GetOutgoingEdge(String myEdgePropertyName);
+        IEdgeView GetEdge(String myEdgePropertyName);
 
         /// <summary>
-        /// Returns a specified hyper IncomingEdge
+        /// Returns a specified hyper edge
         /// </summary>
-        /// <param name="myEdgePropertyName">The property name of the specified IncomingEdge</param>
-        /// <returns>A hyper IncomingEdge view</returns>
-        IHyperEdgeView GetOutgoingHyperEdge(String myEdgePropertyName);
+        /// <param name="myEdgePropertyName">The property name of the specified edge</param>
+        /// <returns>A hyper edge view</returns>
+        IHyperEdgeView GetHyperEdge(String myEdgePropertyName);
 
         /// <summary>
-        /// Get a specified single IncomingEdge
+        /// Get a specified single edge
         /// </summary>
-        /// <param name="myEdgePropertyName">The property name of the specified IncomingEdge</param>
-        /// <returns>A single IncomingEdge</returns>
-        ISingleEdgeView GetOutgoingSingleEdge(String myEdgePropertyName);
+        /// <param name="myEdgePropertyName">The property name of the specified edge</param>
+        /// <returns>A single edge view</returns>
+        ISingleEdgeView GetSingleEdge(String myEdgePropertyName);
+
+        /// <summary>
+        /// Returns all target vertices of an edge.
+        /// </summary>
+        /// <param name="myEdgePropertyName">The name of the edge property.</param>
+        /// <returns>All target vertices.</returns>
+        IEnumerable<IVertexView> GetAllNeighbours(String myEdgePropertyName);
+        
 
         #endregion
 

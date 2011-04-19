@@ -45,32 +45,5 @@ namespace sones.GraphQL.Result
         String GetPropertyAsString(String myPropertyName);
 
         #endregion
-
-        #region Comment
-
-        /// <summary>
-        /// Gets the comment of this graph element
-        /// </summary>
-        String Comment { get; }
-
-        #endregion
-
-        #region Creation date
-
-        /// <summary>
-        /// The date the graph element has been created
-        /// </summary>
-        DateTime CreationDate { get; }
-
-        #endregion
-
-        #region Modification date
-
-        /// <summary>
-        /// The date the graph element has been modified the last time
-        /// </summary>
-        DateTime ModificationDate { get; }
-
-        #endregion
     }
 }
