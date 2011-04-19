@@ -3,7 +3,7 @@
     /// <summary>
     /// The multiplicity of properties
     /// </summary>
-    public enum TypesOfMultiplicity
+    public enum PropertyMultiplicity: byte
     {
         /// <summary>
         /// The property is a simple one like an integer or a string

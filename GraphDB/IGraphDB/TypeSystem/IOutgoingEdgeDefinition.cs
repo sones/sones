@@ -13,17 +13,17 @@
         /// <summary>
         /// The source vertex type. Never <c>NULL</c>.
         /// </summary>
-        /// <remarks>
-        /// On this vertex type this IncomingEdge is defined as outgoing IncomingEdge.
-        /// </remarks>
         IVertexType SourceVertexType { get; }
 
         /// <summary>
         /// The target vertex type. Never <c>NULL</c>.
         /// </summary>
-        /// <remarks>
-        /// On this vertex type this IncomingEdge is defined as incoming IncomingEdge.
-        /// </remarks>
+        
         IVertexType TargetVertexType { get; }
+
+        /// <summary>
+        /// The multiplicity of this outgoing edge definition.
+        /// </summary>
+        EdgeMultiplicity Multiplicity { get; }
     }
 }

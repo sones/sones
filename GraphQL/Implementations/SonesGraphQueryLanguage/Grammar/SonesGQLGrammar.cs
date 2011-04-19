@@ -2770,7 +2770,7 @@ namespace sones.GraphQL
 
                 switch (typeAttribute.Multiplicity)
                 {
-                    case TypesOfMultiplicity.Single:
+                    case PropertyMultiplicity.Single:
 
                         #region Single
 
@@ -2780,7 +2780,7 @@ namespace sones.GraphQL
 
                         break;
 
-                    case TypesOfMultiplicity.List:
+                    case PropertyMultiplicity.List:
 
                         #region List
 
@@ -2795,7 +2795,7 @@ namespace sones.GraphQL
                         #endregion
 
                         break;
-                    case TypesOfMultiplicity.Set:
+                    case PropertyMultiplicity.Set:
 
                         #region Set
 

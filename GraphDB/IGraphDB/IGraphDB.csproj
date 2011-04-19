@@ -134,6 +134,7 @@
     <Compile Include="Request\TraverseVertex\TraversalState.cs" />
     <Compile Include="Request\TraverseVertex\TraverseVertexDefinition.cs" />
     <Compile Include="TypeSystem\AttributeType.cs" />
+    <Compile Include="TypeSystem\EdgeMultiplicity.cs" />
     <Compile Include="TypeSystem\IAttributeDefinition.cs" />
     <Compile Include="TypeSystem\IBehaviour.cs" />
     <Compile Include="TypeSystem\IEdgeType.cs" />
@@ -143,7 +144,7 @@
     <Compile Include="TypeSystem\IPropertyDefinition.cs" />
     <Compile Include="TypeSystem\IUniqueDefinition.cs" />
     <Compile Include="TypeSystem\IVertexType.cs" />
-    <Compile Include="TypeSystem\TypesOfMultiplicity.cs" />
+    <Compile Include="TypeSystem\PropertyMultiplicity.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Library\Internal\Commons\Commons.csproj">

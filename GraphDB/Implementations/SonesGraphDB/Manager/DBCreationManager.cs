@@ -10,6 +10,7 @@ using System.Resources;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Manager
 {
@@ -25,6 +26,7 @@ namespace sones.GraphDB.Manager
         #endregion
 
         private const Int64 _EdgeEdgeType = (long)BaseTypes.Edge;
+        private readonly Dictionary<AttributeDefinitions, VertexInformation> _infos;
 
         private readonly SecurityToken _securityToken;
         private readonly TransactionToken _transactionToken;
@@ -97,15 +99,17 @@ namespace sones.GraphDB.Manager
         private readonly VertexInformation _OutgoingEdgeDotEdgeType             = new VertexInformation((long)BaseTypes.OutgoingEdge, (long)AttributeDefinitions.EdgeType);
         private readonly VertexInformation _OutgoingEdgeDotSource               = new VertexInformation((long)BaseTypes.OutgoingEdge, (long)AttributeDefinitions.Source);
         private readonly VertexInformation _OutgoingEdgeDotTarget               = new VertexInformation((long)BaseTypes.OutgoingEdge, (long)AttributeDefinitions.Target);
+        private readonly VertexInformation _OutgoingEdgeDotMultiplicity         = new VertexInformation((long)BaseTypes.Property    , (long)AttributeDefinitions.Multiplicity);
 
         #endregion
 
         #region Property
 
-        private readonly VertexInformation _Property               = new VertexInformation((long)BaseTypes.VertexType  , (long)BaseTypes.Property);
-        private readonly VertexInformation _PropertyDotType        = new VertexInformation((long)BaseTypes.OutgoingEdge, (long)AttributeDefinitions.Type);
-        private readonly VertexInformation _PropertyDotIsMandatory = new VertexInformation((long)BaseTypes.Property    , (long)AttributeDefinitions.IsMandatory);
-        private readonly VertexInformation _PropertyDotInIndices   = new VertexInformation((long)BaseTypes.IncomingEdge, (long)AttributeDefinitions.InIndices);
+        private readonly VertexInformation _Property                = new VertexInformation((long)BaseTypes.VertexType  , (long)BaseTypes.Property);
+        private readonly VertexInformation _PropertyDotType         = new VertexInformation((long)BaseTypes.OutgoingEdge, (long)AttributeDefinitions.Type);
+        private readonly VertexInformation _PropertyDotIsMandatory  = new VertexInformation((long)BaseTypes.Property    , (long)AttributeDefinitions.IsMandatory);
+        private readonly VertexInformation _PropertyDotInIndices    = new VertexInformation((long)BaseTypes.IncomingEdge, (long)AttributeDefinitions.InIndices);
+        private readonly VertexInformation _PropertyDotMultiplicity = new VertexInformation((long)BaseTypes.Property    , (long)AttributeDefinitions.Multiplicity );
 
         #endregion
 
@@ -119,6 +123,7 @@ namespace sones.GraphDB.Manager
         private readonly VertexInformation _VertexDotEdition          = new VertexInformation((long)BaseTypes.Property  , (long)AttributeDefinitions.Edition);
         private readonly VertexInformation _VertexDotComment          = new VertexInformation((long)BaseTypes.Property  , (long)AttributeDefinitions.Comment);
         private readonly VertexInformation _VertexDotTypeID           = new VertexInformation((long)BaseTypes.Property  , (long)AttributeDefinitions.TypeID);
+        private readonly VertexInformation _VertexDotTypeName         = new VertexInformation((long)BaseTypes.Property  , (long)AttributeDefinitions.TypeName);
 
         #endregion
 
@@ -161,6 +166,60 @@ namespace sones.GraphDB.Manager
 
         #endregion
 
+        #region Edge information
+
+        #region Attribute
+
+        private readonly Tuple<Int64, Int64> _EdgeAttributeDotDefiningType = Tuple.Create((long)AttributeDefinitions.DefiningType, _EdgeEdgeType);
+        
+        #endregion
+
+        #region EdgeType
+
+        private readonly Tuple<Int64, Int64> _EdgeEdgeTypeDotParent = Tuple.Create((long)AttributeDefinitions.Parent, _EdgeEdgeType);
+
+        #endregion
+
+        #region IncomingEdge
+
+        private readonly Tuple<Int64, Int64> _EdgeIncomingEdgeDotRelatedEdge = Tuple.Create((long)AttributeDefinitions.RelatedEgde, _EdgeEdgeType);
+
+        #endregion
+
+        #region Index
+
+        private readonly Tuple<Int64, Int64> _EdgeIndexDotIndexedProperties  = Tuple.Create((long)AttributeDefinitions.IndexedProperties, _EdgeEdgeType);
+        private readonly Tuple<Int64, Int64> _EdgeIndexDotDefiningVertexType = Tuple.Create((long)AttributeDefinitions.DefiningVertexType, _EdgeEdgeType);
+
+        #endregion
+
+        #region OutgoingEdge
+
+        private readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotEdgeType = Tuple.Create((long)AttributeDefinitions.EdgeType, _EdgeEdgeType);
+        private readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotSource   = Tuple.Create((long)AttributeDefinitions.Source, _EdgeEdgeType);
+        private readonly Tuple<Int64, Int64> _EdgeOutgoingEdgeDotTarget   = Tuple.Create((long)AttributeDefinitions.Target, _EdgeEdgeType);
+
+        #endregion
+
+        #region Property
+
+        private readonly Tuple<Int64, Int64> _EdgePropertyDotType = Tuple.Create((long)AttributeDefinitions.Type, _EdgeEdgeType);
+
+        #endregion
+
+        #region VertexType
+
+        private readonly Tuple<Int64, Int64> _EdgeVertexTypeDotParent            = Tuple.Create((long)AttributeDefinitions.Parent, _EdgeEdgeType);
+        private readonly Tuple<Int64, Int64> _EdgeVertexTypeDotUniqueDefinitions = Tuple.Create((long)AttributeDefinitions.UniquenessDefinitions, _EdgeEdgeType);
+
+        #endregion
+
+        #endregion
+
+        #region Indices
+
+
+        #endregion
         #region C'tor
 
         /// <summary>
@@ -188,7 +247,7 @@ namespace sones.GraphDB.Manager
             
             var creationDate = DateTime.UtcNow.ToBinary();
 
-            AddBaseTypes(myStore, creationDate);
+            AddBasicTypes(myStore, creationDate);
             AddVertexTypes(myStore, creationDate);
             AddEdgeTypes(myStore, creationDate);
             AddIndices(myStore, creationDate);
@@ -198,9 +257,23 @@ namespace sones.GraphDB.Manager
 
         #region Base types
 
-        private void AddBaseTypes(IVertexStore myStore, long creationDate)
+        private void AddBasicTypes(IVertexStore myStore, long myCreationDate)
         {
-            throw new NotImplementedException();
+            StoreBasicType(myStore, _BaseTypeBoolean, BasicTypes.Boolean, ResMgr.GetString("BaseTypeBooleanComment"), myCreationDate);
+            StoreBasicType(myStore, _BaseTypeByte, BasicTypes.Byte, ResMgr.GetString("BaseTypeByteComment"), myCreationDate);
+            StoreBasicType(myStore, _BaseTypeChar, BasicTypes.Char, ResMgr.GetString("BaseTypeCharComment"), myCreationDate);
+            StoreBasicType(myStore, _BaseTypeDateTime, BasicTypes.DateTime, ResMgr.GetString("BaseTypeDateTimeComment"), myCreationDate);
+            StoreBasicType(myStore, _BaseTypeDouble, BasicTypes.Double, ResMgr.GetString("BaseTypeDoubleComment"), myCreationDate);
+            StoreBasicType(myStore, _BaseTypeInt16, BasicTypes.Int16, ResMgr.GetString("BaseTypeInt16Comment"), myCreationDate);
+            StoreBasicType(myStore, _BaseTypeInt32, BasicTypes.Int32, ResMgr.GetString("BaseTypeInt32Comment"), myCreationDate);
+            StoreBasicType(myStore, _BaseTypeInt64, BasicTypes.Int64, ResMgr.GetString("BaseTypeInt64Comment"), myCreationDate);
+            StoreBasicType(myStore, _BaseTypeSByte, BasicTypes.SByte, ResMgr.GetString("BaseTypeSByteComment"), myCreationDate);
+            StoreBasicType(myStore, _BaseTypeSingle, BasicTypes.Single, ResMgr.GetString("BaseTypeSingleComment"), myCreationDate);
+            StoreBasicType(myStore, _BaseTypeString, BasicTypes.String, ResMgr.GetString("BaseTypeStringComment"), myCreationDate);
+            StoreBasicType(myStore, _BaseTypeTimeSpan, BasicTypes.TimeSpan, ResMgr.GetString("BaseTypeTimeSpanComment"), myCreationDate);
+            StoreBasicType(myStore, _BaseTypeUInt16, BasicTypes.UInt16, ResMgr.GetString("BaseTypeUInt16Comment"), myCreationDate);
+            StoreBasicType(myStore, _BaseTypeUInt32, BasicTypes.UInt32, ResMgr.GetString("BaseTypeUInt32Comment"), myCreationDate);
+            StoreBasicType(myStore, _BaseTypeUInt64, BasicTypes.UInt64, ResMgr.GetString("BaseTypeUInt64Comment"), myCreationDate);
         }
 
         #endregion
@@ -239,20 +312,34 @@ namespace sones.GraphDB.Manager
 
         #region EdgeTypeManager
 
-        private static void AddEdgeTypes(IVertexStore myStore, Int64 myCreationDate)
+        private void AddEdgeTypes(IVertexStore myStore, Int64 myCreationDate)
         {
             AddEdge(myStore, myCreationDate);
             AddWeightedEdge(myStore, myCreationDate);
         }
 
-        private static void AddWeightedEdge(IVertexStore myStore, Int64 myCreationDate)
+        private void AddWeightedEdge(IVertexStore myStore, Int64 myCreationDate)
         {
-            throw new NotImplementedException();
+            #region WeightedEdge vertex
+
+            StoreEdgeType(myStore, _WeightedEdge, BaseTypes.WeightedEdge, ResMgr.GetString("WeightedEdgeComment"), myCreationDate, false, true, _Edge);
+
+            #endregion
+
+            #region Property vertices
+
+            StoreProperty(myStore, _WeightedEdgeDotWeight, AttributeDefinitions.Weight, ResMgr.GetString("WeightedComment"), myCreationDate, true, PropertyMultiplicity.Single, _WeightedEdge, _BaseTypeDouble);
+
+            #endregion
         }
 
-        private static void AddEdge(IVertexStore myStore, Int64 myCreationDate)
+        private void AddEdge(IVertexStore myStore, Int64 myCreationDate)
         {
-            throw new NotImplementedException();
+            #region WeightedEdge vertex
+
+            StoreEdgeType(myStore, _Edge, BaseTypes.Edge, ResMgr.GetString("EdgeComment"), myCreationDate, false, true, null);
+
+            #endregion
         }
 
         #endregion
@@ -274,98 +361,531 @@ namespace sones.GraphDB.Manager
 
         private void AddVertex(IVertexStore myStore, Int64 myCreationDate)
         {
-            #region vertex type vertex
+            #region Vertex vertex
 
-            Store(
+            StoreVertexType(
                 myStore,
                 _Vertex,
+                BaseTypes.Vertex,
                 ResMgr.GetString("VertexComment"),
                 myCreationDate,
+                true,
+                false,
                 null,
-                null,
-                new Dictionary<long, IComparable>
-                {
-                    { (long)AttributeDefinitions.ID            , (long) BaseTypes.Vertex },
-                    { (long)AttributeDefinitions.TypeID        , (long) BaseTypes.VertexType },
-                    { (long)AttributeDefinitions.Name          , BaseTypes.Vertex.ToString() },
-                    { (long)AttributeDefinitions.IsUserDefined , false },
-                    { (long)AttributeDefinitions.IsSealed      , false },
-                },
-                null);
+                null); //TODO uniques
+                
 
             #endregion
 
-            #region property vertices
+            #region Property vertices
 
-            #region UUID property
+            StoreProperty(myStore, _VertexDotUUID, AttributeDefinitions.UUID, ResMgr.GetString("UUIDComment"), myCreationDate, true, PropertyMultiplicity.Single, _Vertex, _BaseTypeInt64);
+            StoreProperty(myStore, _VertexDotCreationDate, AttributeDefinitions.CreationDate, ResMgr.GetString("CreationDateComment"), myCreationDate, true, PropertyMultiplicity.Single, _Vertex, _BaseTypeDateTime);
+            StoreProperty(myStore, _VertexDotModificationDate, AttributeDefinitions.ModificationDate, ResMgr.GetString("ModificationDateComment"), myCreationDate, true, PropertyMultiplicity.Single, _Vertex, _BaseTypeDateTime);
+            StoreProperty(myStore, _VertexDotRevision, AttributeDefinitions.Revision, ResMgr.GetString("RevisionComment"), myCreationDate, true, PropertyMultiplicity.Single, _Vertex, _BaseTypeInt64);
+            StoreProperty(myStore, _VertexDotEdition, AttributeDefinitions.Edition, ResMgr.GetString("EditionComment"), myCreationDate, true, PropertyMultiplicity.Single, _Vertex, _BaseTypeString);
+            StoreProperty(myStore, _VertexDotTypeName, AttributeDefinitions.TypeName, ResMgr.GetString("TypeNameComment"), myCreationDate, true, PropertyMultiplicity.Single, _Vertex, _BaseTypeString);
+            StoreProperty(myStore, _VertexDotTypeID, AttributeDefinitions.TypeID, ResMgr.GetString("TypeIDComment"), myCreationDate, true, PropertyMultiplicity.Single, _Vertex, _BaseTypeInt64);
 
-            Store(
+            #endregion
+        }
+
+        private void AddIndex(IVertexStore myStore, Int64 myCreationDate)
+        {
+            #region Index vertex
+
+            StoreVertexType(
                 myStore,
-                _VertexDotUUID,
-                ResMgr.GetString("UUIDComment"),
+                _Index,
+                BaseTypes.Index,
+                ResMgr.GetString("IndexComment"),
                 myCreationDate,
-                new Dictionary<Tuple<long, long>, VertexInformation>
-                {
-                    { Tuple.Create((long)AttributeDefinitions.DefiningType, _EdgeEdgeType), _Vertex},
-                    { Tuple.Create((long)AttributeDefinitions.Type, _EdgeEdgeType), _BaseTypeUInt64}
-                },
-                null,
-                new Dictionary<long, IComparable>
-                {
+                false,
+                true,
+                _Vertex,
+                null); //TODO uniques
 
-                },
-                null);
 
             #endregion
 
+            #region Property vertices
+
+            StoreOutgoingEdge(myStore, _IndexDotIndexedProperties, AttributeDefinitions.IndexedProperties, ResMgr.GetString("IndexedPropertiesComment"), myCreationDate, EdgeMultiplicity.HyperEdge, _Index, _Edge, _Property);
+            StoreOutgoingEdge(myStore, _IndexDotDefiningVertexType, AttributeDefinitions.DefiningVertexType, ResMgr.GetString("DefiningVertexTypeComment"), myCreationDate, EdgeMultiplicity.SingleEdge, _Index, _Edge, _VertexType);
+            StoreProperty(myStore, _IndexDotID, AttributeDefinitions.ID, ResMgr.GetString("IDComment"), myCreationDate, true, PropertyMultiplicity.Single, _Index, _BaseTypeInt64);
+            StoreProperty(myStore, _IndexDotName, AttributeDefinitions.Name, ResMgr.GetString("NameComment"), myCreationDate, true, PropertyMultiplicity.Single, _Index, _BaseTypeString);
+            StoreProperty(myStore, _IndexDotIsUserDefined, AttributeDefinitions.IsUserDefined, ResMgr.GetString("IsUserDefinedComment"), myCreationDate, true, PropertyMultiplicity.Single, _Index, _BaseTypeBoolean);
+            StoreProperty(myStore, _IndexDotIndexClass, AttributeDefinitions.IndexClass, ResMgr.GetString("IndexClassComment"), myCreationDate, true, PropertyMultiplicity.Single, _Index, _BaseTypeString);
+            StoreProperty(myStore, _IndexDotIsSingleValue, AttributeDefinitions.IsSingleValue, ResMgr.GetString("IsSingleValueComment"), myCreationDate, true, PropertyMultiplicity.Single, _Index, _BaseTypeBoolean);
+            StoreProperty(myStore, _IndexDotIsRange, AttributeDefinitions.IsRange, ResMgr.GetString("IsRangeComment"), myCreationDate, true, PropertyMultiplicity.Single, _Index, _BaseTypeBoolean);
+            StoreProperty(myStore, _IndexDotIsVersioned, AttributeDefinitions.IsVersioned, ResMgr.GetString("IsVersionedComment"), myCreationDate, true, PropertyMultiplicity.Single, _Index, _BaseTypeBoolean);
+
+
+            #endregion
+        }
+
+        private void AddProperty(IVertexStore myStore, Int64 myCreationDate)
+        {
+            #region Property vertex
+
+            StoreVertexType(
+                myStore,
+                _Property,
+                BaseTypes.Property,
+                ResMgr.GetString("PropertyComment"),
+                myCreationDate,
+                false,
+                true,
+                _Attribute,
+                null); //TODO uniques
+
             #endregion
 
+            #region Property vertices
+
+            StoreProperty(myStore, _PropertyDotMultiplicity, AttributeDefinitions.Multiplicity, ResMgr.GetString("PropertyMultiplicityComment"), myCreationDate, true, PropertyMultiplicity.Single, _Property, _BaseTypeByte);
+            StoreProperty(myStore, _PropertyDotIsMandatory, AttributeDefinitions.IsMandatory, ResMgr.GetString("IsMandatoryComment"), myCreationDate, true, PropertyMultiplicity.Single, _Property, _BaseTypeBoolean);
+            StoreOutgoingEdge(myStore, _PropertyDotType, AttributeDefinitions.Type, ResMgr.GetString("TypeComment"), myCreationDate, EdgeMultiplicity.SingleEdge, _Property, _Edge, _BaseType);
+            StoreIncomingEdge(myStore, _PropertyDotInIndices, AttributeDefinitions.InIndices, ResMgr.GetString("inIndicesComment"), myCreationDate, _Property, _IndexDotIndexedProperties);
+
+            #endregion
         }
 
-        private static void AddIndex(IVertexStore myStore, Int64 myCreationDate)
+        private void AddIncomingEdge(IVertexStore myStore, Int64 myCreationDate)
         {
-            throw new NotImplementedException();
+            #region IncomingEdge vertex
+
+            StoreVertexType(
+                myStore,
+                _IncomingEdge,
+                BaseTypes.IncomingEdge,
+                ResMgr.GetString("IncomingEdgeComment"),
+                myCreationDate,
+                false,
+                true,
+                _Attribute,
+                null); //TODO uniques
+
+            #endregion
+
+            #region Property vertices
+
+            StoreOutgoingEdge(myStore, _IncomingEdgeDotRelatedEdge, AttributeDefinitions.RelatedEgde, ResMgr.GetString("RelatedEdgeComment"), myCreationDate, EdgeMultiplicity.SingleEdge, _IncomingEdge, _Edge, _OutgoingEdge);
+
+            #endregion
         }
 
-        private static void AddProperty(IVertexStore myStore, Int64 myCreationDate)
+        private void AddOutgoingEdge(IVertexStore myStore, Int64 myCreationDate)
         {
-            throw new NotImplementedException();
+            #region OutgoingEdge vertex
+
+            StoreVertexType(
+                myStore,
+                _OutgoingEdge,
+                BaseTypes.OutgoingEdge,
+                ResMgr.GetString("OutgoingEdgeComment"),
+                myCreationDate,
+                false,
+                true,
+                _Attribute,
+                null); //TODO uniques
+
+            #endregion
+
+            #region Property vertices
+
+            StoreIncomingEdge(myStore, _OutgoingEdgeDotRelatedIncomingEdges, AttributeDefinitions.RelatedIncomingEdges, ResMgr.GetString("RelatedIncomingEdgesComment"), myCreationDate, _OutgoingEdge, _IncomingEdgeDotRelatedEdge);
+            StoreProperty(myStore, _OutgoingEdgeDotMultiplicity, AttributeDefinitions.Multiplicity, ResMgr.GetString("EdgeMultiplicityComment"), myCreationDate, true, PropertyMultiplicity.Single, _OutgoingEdge, _BaseTypeByte);
+            StoreOutgoingEdge(myStore, _OutgoingEdgeDotEdgeType, AttributeDefinitions.EdgeType, ResMgr.GetString("EdgeTypeComment"), myCreationDate, EdgeMultiplicity.SingleEdge, _OutgoingEdge, _Edge, _EdgeType);
+            StoreOutgoingEdge(myStore, _OutgoingEdgeDotSource, AttributeDefinitions.Source, ResMgr.GetString("SourceComment"), myCreationDate, EdgeMultiplicity.SingleEdge, _OutgoingEdge, _Edge, _VertexType);
+            StoreOutgoingEdge(myStore, _OutgoingEdgeDotTarget, AttributeDefinitions.Target, ResMgr.GetString("TargetComment"), myCreationDate, EdgeMultiplicity.SingleEdge, _OutgoingEdge, _Edge, _VertexType);
+
+            #endregion
         }
 
-        private static void AddIncomingEdge(IVertexStore myStore, Int64 myCreationDate)
+        private void AddAttribute(IVertexStore myStore, Int64 myCreationDate)
         {
-            throw new NotImplementedException();
+            #region Attribute vertex
+
+            StoreVertexType(
+                myStore,
+                _Attribute,
+                BaseTypes.Attribute,
+                ResMgr.GetString("AttributeComment"),
+                myCreationDate,
+                true,
+                false,
+                _Vertex,
+                null); //TODO uniques
+
+            #endregion
+
+            #region Property vertices
+
+            StoreProperty(myStore, _AttributeDotIsUserDefined, AttributeDefinitions.IsUserDefined, ResMgr.GetString("IsUserDefinedComment"), myCreationDate, true, PropertyMultiplicity.Single, _Attribute, _BaseTypeBoolean);
+            StoreProperty(myStore, _AttributeDotName, AttributeDefinitions.Name, ResMgr.GetString("NameComment"), myCreationDate, true, PropertyMultiplicity.Single, _Attribute, _BaseTypeString);
+            StoreProperty(myStore, _AttributeDotID, AttributeDefinitions.ID, ResMgr.GetString("IDComment"), myCreationDate, true, PropertyMultiplicity.Single, _Attribute, _BaseTypeInt64);
+            StoreOutgoingEdge(myStore, _AttributeDotDefiningType, AttributeDefinitions.DefiningType, ResMgr.GetString("DefiningTypeComment"), myCreationDate, EdgeMultiplicity.SingleEdge, _Attribute, _Edge, _BaseType);
+
+            #endregion
         }
 
-        private static void AddOutgoingEdge(IVertexStore myStore, Int64 myCreationDate)
+        private void AddEdgeType(IVertexStore myStore, Int64 myCreationDate)
         {
-            throw new NotImplementedException();
+            #region EdgeType vertex
+
+            StoreVertexType(
+                myStore,
+                _EdgeType,
+                BaseTypes.EdgeType,
+                ResMgr.GetString("EdgeTypeComment"),
+                myCreationDate,
+                false,
+                true,
+                _BaseType,
+                null); //TODO uniques
+
+
+            #endregion
+
+            #region Property vertices
+
+            StoreOutgoingEdge(myStore, _EdgeTypeDotParent, AttributeDefinitions.Parent, ResMgr.GetString("ParentEdgeTypeComment"), myCreationDate, EdgeMultiplicity.SingleEdge, _EdgeType, _Edge, _EdgeType);
+            StoreIncomingEdge(myStore, _EdgeTypeDotChildren, AttributeDefinitions.Children, ResMgr.GetString("ChildrenEdgeTypeComment"), myCreationDate, _EdgeType, _EdgeTypeDotParent);
+
+            #endregion            
         }
 
-        private static void AddAttribute(IVertexStore myStore, Int64 myCreationDate)
+        private void AddVertexType(IVertexStore myStore, Int64 myCreationDate)
         {
-            throw new NotImplementedException();
+            #region VertexType vertex
+
+            StoreVertexType(
+                myStore,
+                _VertexType,
+                BaseTypes.VertexType,
+                ResMgr.GetString("VertexTypeComment"),
+                myCreationDate,
+                false,
+                true,
+                _BaseType,
+                null); //TODO uniques
+
+
+            #endregion
+
+            #region Property vertices
+
+            StoreOutgoingEdge(myStore, _VertexTypeDotParent, AttributeDefinitions.Parent, ResMgr.GetString("ParentVertexTypeComment"), myCreationDate, EdgeMultiplicity.SingleEdge, _VertexType, _Edge, _VertexType);
+            StoreOutgoingEdge(myStore, _VertexTypeDotUniqueDefinitions, AttributeDefinitions.UniquenessDefinitions, ResMgr.GetString("UniqueDefinitionsComment"), myCreationDate, EdgeMultiplicity.HyperEdge,_VertexType, _Edge, _Index);
+            StoreIncomingEdge(myStore, _VertexTypeDotChildren, AttributeDefinitions.Children, ResMgr.GetString("ChildrenVertexTypeComment"), myCreationDate, _VertexType, _VertexTypeDotParent);
+            StoreIncomingEdge(myStore, _VertexTypeDotIndices, AttributeDefinitions.Indices, ResMgr.GetString("IndicesComment"), myCreationDate, _VertexType, _IndexDotDefiningVertexType);
+
+            #endregion
         }
 
-        private static void AddEdgeType(IVertexStore myStore, Int64 myCreationDate)
+        private void AddBaseType(IVertexStore myStore, Int64 myCreationDate)
         {
-            throw new NotImplementedException();
-        }
+            #region BaseType vertex
 
-        private static void AddVertexType(IVertexStore myStore, Int64 myCreationDate)
-        {
-            throw new NotImplementedException();
-        }
+            StoreVertexType(
+                myStore,
+                _BaseType,
+                BaseTypes.BaseType,
+                ResMgr.GetString("BaseTypeComment"),
+                myCreationDate,
+                false,
+                false,
+                _Vertex,
+                null); //TODO uniques
 
-        private static void AddBaseType(IVertexStore myStore, Int64 myCreationDate)
-        {
-            throw new NotImplementedException();
+
+            #endregion
+
+            #region Property vertices
+
+            StoreProperty(myStore, _BaseTypeDotID, AttributeDefinitions.ID, ResMgr.GetString("IDComment"), myCreationDate, true, PropertyMultiplicity.Single, _BaseType, _BaseTypeInt64);
+            StoreProperty(myStore, _BaseTypeDotName, AttributeDefinitions.Name, ResMgr.GetString("NameComment"), myCreationDate, true, PropertyMultiplicity.Single, _BaseType, _BaseTypeString);
+            StoreProperty(myStore, _BaseTypeDotIsUserDefined, AttributeDefinitions.IsUserDefined, ResMgr.GetString("IsUserDefinedComment"), myCreationDate, true, PropertyMultiplicity.Single, _BaseType, _BaseTypeBoolean);
+            StoreProperty(myStore, _BaseTypeDotIsAbstract, AttributeDefinitions.IsAbstract, ResMgr.GetString("IsAbstractComment"), myCreationDate, true, PropertyMultiplicity.Single, _BaseType, _BaseTypeBoolean);
+            StoreProperty(myStore, _BaseTypeDotIsSealed, AttributeDefinitions.IsSealed, ResMgr.GetString("IsSealedComment"), myCreationDate, true, PropertyMultiplicity.Single, _BaseType, _BaseTypeBoolean);
+            StoreProperty(myStore, _BaseTypeDotBehaviour, AttributeDefinitions.Behaviour, ResMgr.GetString("BehaviourComment"), myCreationDate, false, PropertyMultiplicity.Single, _BaseType, _BaseTypeString);
+            StoreIncomingEdge(myStore, _BaseTypeDotAttributes, AttributeDefinitions.Attributes, ResMgr.GetString("AttributesComment"), myCreationDate, _BaseType, _AttributeDotDefiningType);
+
+            #endregion
         }
 
         #endregion
 
         #region Store
-		
+
+        #region Outgoing edge
+
+        private void StoreOutgoingEdge(
+            IVertexStore myStore,
+            VertexInformation myVertex,
+            AttributeDefinitions myAttribute,
+            String myComment,
+            Int64 myCreationDate,
+            EdgeMultiplicity myMultiplicity,
+            VertexInformation myDefiningType,
+            VertexInformation myEdgeType,
+            VertexInformation myTarget)
+        {
+            Store(
+                myStore,
+                myVertex,
+                myComment,
+                myCreationDate,
+                new Dictionary<Tuple<long, long>, VertexInformation>
+                {
+                    { _EdgeAttributeDotDefiningType, myDefiningType },
+                    { _EdgeOutgoingEdgeDotSource, myDefiningType },
+                    { _EdgeOutgoingEdgeDotEdgeType, myEdgeType },
+                    { _EdgeOutgoingEdgeDotTarget, myTarget }
+                },
+                null,
+                new Dictionary<long, IComparable>
+                {
+                    { (long) AttributeDefinitions.ID, (long) myAttribute },
+                    { (long) AttributeDefinitions.Name, myAttribute.ToString() },
+                    { (long) AttributeDefinitions.IsUserDefined, false },
+                    { (long) AttributeDefinitions.Multiplicity, (byte) myMultiplicity },
+                },
+                null
+            );
+        }
+
+        #endregion
+
+        #region Incoming edge
+
+        private void StoreIncomingEdge(
+            IVertexStore myStore,
+            VertexInformation myVertex,
+            AttributeDefinitions myAttribute,
+            String myComment,
+            Int64 myCreationDate,
+            VertexInformation myDefiningType,
+            VertexInformation myRelatedIncomingEdge)
+        {
+            Store(
+                myStore,
+                myVertex,
+                myComment,
+                myCreationDate,
+                new Dictionary<Tuple<long, long>, VertexInformation>
+                {
+                    { _EdgeAttributeDotDefiningType, myDefiningType },
+                    { _EdgeIncomingEdgeDotRelatedEdge, myRelatedIncomingEdge}
+                },
+                null,
+                new Dictionary<long, IComparable>
+                {
+                    { (long) AttributeDefinitions.ID, (long) myAttribute },
+                    { (long) AttributeDefinitions.Name, myAttribute.ToString() },
+                    { (long) AttributeDefinitions.IsUserDefined, false },
+                },
+                null);
+        }
+
+        #endregion
+
+        #region Property
+
+        private void StoreProperty(
+            IVertexStore myStore, 
+            VertexInformation myVertex, 
+            AttributeDefinitions myAttribute, 
+            String myComment, 
+            Int64 myCreationDate, 
+            bool myIsMandatory, 
+            PropertyMultiplicity myMultiplicity,
+            VertexInformation myDefiningType, 
+            VertexInformation myBasicType)
+        {
+            Store(
+                myStore,
+                myVertex,
+                myComment,
+                myCreationDate,
+                new Dictionary<Tuple<long, long>, VertexInformation>
+                {
+                    { _EdgeAttributeDotDefiningType, myDefiningType },
+                    { _EdgePropertyDotType, myBasicType },
+                },
+                null,
+                new Dictionary<long, IComparable>
+                {
+                    { (long) AttributeDefinitions.ID, (long) myAttribute },
+                    { (long) AttributeDefinitions.Name, myAttribute.ToString() },
+                    { (long) AttributeDefinitions.IsUserDefined, false },
+                    { (long) AttributeDefinitions.IsMandatory, myIsMandatory },
+                    { (long) AttributeDefinitions.Multiplicity, (byte) myMultiplicity },
+                },
+                null);
+
+        }
+
+        #endregion
+
+        #region Basic type
+
+        private void StoreBasicType(
+            IVertexStore myStore,
+            VertexInformation myVertex,
+            BasicTypes myType,
+            String myComment,
+            Int64 myCreationDate)
+        {
+            Store(
+                myStore,
+                myVertex,
+                myComment,
+                myCreationDate,
+                null,
+                null,
+                new Dictionary<long, IComparable>
+                {
+                    { (long) AttributeDefinitions.ID, (long) myType },
+                    { (long) AttributeDefinitions.Name, myType.ToString() },
+                    { (long) AttributeDefinitions.IsUserDefined, false },
+                    { (long) AttributeDefinitions.IsAbstract, false },
+                    { (long) AttributeDefinitions.IsSealed, true },
+                    //{ (long) AttributeDefinitions.Behaviour, null },
+                },
+                null);
+
+        }
+
+        #endregion
+
+        #region Vertex type
+
+        private void StoreVertexType(
+            IVertexStore myStore,
+            VertexInformation myVertex,
+            BaseTypes myType,
+            String myComment,
+            Int64 myCreationDate,
+            bool myIsAbstract,
+            bool myIsSealed,
+            VertexInformation? myParent,
+            IEnumerable<VertexInformation> myUniques)
+        {
+            Store(
+                myStore,
+                myVertex,
+                myComment,
+                myCreationDate,
+                (myParent == null) 
+                    ? null
+                    : new Dictionary<Tuple<long, long>, VertexInformation>
+                    {
+                        { _EdgeVertexTypeDotParent, myParent.Value },
+                    },
+                new Dictionary<Tuple<long,long>,IEnumerable<Library.Commons.VertexStore.Definitions.VertexInformation>>
+                {
+                    {_EdgeVertexTypeDotUniqueDefinitions, myUniques }
+                },
+                new Dictionary<long, IComparable>
+                {
+                    { (long) AttributeDefinitions.ID, (long) myType },
+                    { (long) AttributeDefinitions.Name, myType.ToString() },
+                    { (long) AttributeDefinitions.IsUserDefined, false },
+                    { (long) AttributeDefinitions.IsAbstract, myIsAbstract },
+                    { (long) AttributeDefinitions.IsSealed, myIsSealed },
+                    //{ (long) AttributeDefinitions.Behaviour, null },
+                },
+                null);
+
+        }
+
+        #endregion
+
+        #region Edge type
+
+        private void StoreEdgeType(
+            IVertexStore myStore,
+            VertexInformation myVertex,
+            BaseTypes myType,
+            String myComment,
+            Int64 myCreationDate,
+            bool myIsAbstract,
+            bool myIsSealed,
+            VertexInformation? myParent)
+        {
+            Store(
+                myStore,
+                myVertex,
+                myComment,
+                myCreationDate,
+                (myParent == null)
+                    ? null
+                    : new Dictionary<Tuple<long, long>, VertexInformation>
+                    {
+                        { _EdgeVertexTypeDotParent, myParent.Value },
+                    },
+                null,
+                new Dictionary<long, IComparable>
+                {
+                    { (long) AttributeDefinitions.ID, (long) myType },
+                    { (long) AttributeDefinitions.Name, myType.ToString() },
+                    { (long) AttributeDefinitions.IsUserDefined, false },
+                    { (long) AttributeDefinitions.IsAbstract, myIsAbstract },
+                    { (long) AttributeDefinitions.IsSealed, myIsSealed },
+                    //{ (long) AttributeDefinitions.Behaviour, null },
+                },
+                null);
+        }
+
+        #endregion
+
+        #region Index
+
+        private void StoreIndex(
+            IVertexStore myStore,
+            VertexInformation myVertex,
+            BaseTypes myType,
+            String myComment,
+            Int64 myCreationDate,
+            String myIndexClass,
+            bool myIsSingleValue,
+            bool myIsRange,
+            bool myIsVersioned,
+            VertexInformation myDefiningVertexType,
+            IEnumerable<VertexInformation> myIndexedProperties)
+        {
+            Store(
+                myStore,
+                myVertex,
+                myComment,
+                myCreationDate,
+                new Dictionary<Tuple<long, long>, Library.Commons.VertexStore.Definitions.VertexInformation>
+                {
+                    { _EdgeIndexDotDefiningVertexType, myDefiningVertexType }
+                },
+                new Dictionary<Tuple<long, long>, IEnumerable<Library.Commons.VertexStore.Definitions.VertexInformation>>
+                {
+                    { _EdgeIndexDotIndexedProperties, myIndexedProperties }
+                },
+                new Dictionary<long, IComparable>
+                {
+                    { (long) AttributeDefinitions.ID, (long) myType },
+                    { (long) AttributeDefinitions.Name, myType.ToString() },
+                    { (long) AttributeDefinitions.IsUserDefined, false },
+                    { (long) AttributeDefinitions.IndexClass, myIndexClass },
+                    { (long) AttributeDefinitions.IsSingleValue, myIsSingleValue},
+                    { (long) AttributeDefinitions.IsRange, myIsRange },
+                    { (long) AttributeDefinitions.IsUserDefined, myIsVersioned },
+                },
+                null);
+        }
+
+        #endregion
+
+        #region Store
+
         /// <summary>
         /// 
         /// </summary>
@@ -459,8 +979,10 @@ namespace sones.GraphDB.Manager
 
             return result;
         }
- 
-	    #endregion    
+
+        #endregion
+
+        #endregion
 
     }
 }

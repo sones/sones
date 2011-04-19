@@ -21,7 +21,7 @@ namespace sones.GraphDB.TypeSystem
         /// <summary>
         /// The multiplicity of this property
         /// </summary>
-        TypesOfMultiplicity Multiplicity { get; }
+        PropertyMultiplicity Multiplicity { get; }
 
         /// <summary>
         /// Extracts the this property from a given vertex...

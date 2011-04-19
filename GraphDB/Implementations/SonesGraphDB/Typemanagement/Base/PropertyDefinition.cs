@@ -13,7 +13,7 @@ namespace sones.GraphDB.TypeManagement
 
         public Type BaseType { get; internal set; }
 
-        public TypesOfMultiplicity Multiplicity { get; internal set; }
+        public PropertyMultiplicity Multiplicity { get; internal set; }
 
         public string Name { get; internal set; }
 

@@ -529,15 +529,15 @@ namespace sones.GraphDB.TypeManagement
 
         #region Vertex type
 
-        private static TypesOfMultiplicity GetMultiplicity(Type myBaseType)
+        private static PropertyMultiplicity GetMultiplicity(Type myBaseType)
         {
             if (myBaseType.GetInterface("ISet", true) != null)
-                return TypesOfMultiplicity.Set;
+                return PropertyMultiplicity.Set;
 
             if (myBaseType.GetInterface("IList", true) != null)
-                return TypesOfMultiplicity.List;
+                return PropertyMultiplicity.List;
 
-            return TypesOfMultiplicity.Single;
+            return PropertyMultiplicity.Single;
         }
 
         private static bool GetIsMandatory(IVertex myVertex)
