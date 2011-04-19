@@ -45,6 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConstantsSonesGraphDB.cs" />
+    <Compile Include="Expression\QueryPlan\QueryPlanORSequentiell.cs" />
+    <Compile Include="Expression\QueryPlan\QueryPlanANDSequentiell.cs" />
     <Compile Include="Expression\QueryPlan\QueryPlanEqualsWithIndex.cs" />
     <Compile Include="Expression\QueryPlan\QueryPlanEqualsWithoutIndexComplex.cs" />
     <Compile Include="Expression\QueryPlan\QueryPlanEqualsWithoutIndex.cs" />

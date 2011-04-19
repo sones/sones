@@ -176,9 +176,10 @@ namespace sones.GraphDB.Manager.QueryPlan
                 #region Logic
 
                 case BinaryOperator.AND:
-                    break;
+                    return GenerateANDPlan(binaryExpression, myIsLongRunning, myTransaction, mySecurity);
+
                 case BinaryOperator.OR:
-                    break;
+                    return GenerateORPlan(binaryExpression, myIsLongRunning, myTransaction, mySecurity);
 
                 #endregion
 
@@ -190,12 +191,44 @@ namespace sones.GraphDB.Manager.QueryPlan
         }
 
         /// <summary>
+        /// Generates a plan for an AND operation
+        /// </summary>
+        /// <param name="binaryExpression">The binary expression that has to be transfered into an AND query plan</param>
+        /// <param name="myIsLongRunning">Determines whether it is anticipated that the request could take longer</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <returns>An AND query plan</returns>
+        private IQueryPlan GenerateANDPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            var left = CreateQueryPlan(binaryExpression.Left, myIsLongRunning, myTransaction, mySecurity);
+            var right = CreateQueryPlan(binaryExpression.Right, myIsLongRunning, myTransaction, mySecurity);
+
+            return new QueryPlanANDSequentiell(left, right, myIsLongRunning);
+        }
+
+        /// <summary>
+        /// Generates a plan for an OR operation
+        /// </summary>
+        /// <param name="binaryExpression">The binary expression that has to be transfered into an OR query plan</param>
+        /// <param name="myIsLongRunning">Determines whether it is anticipated that the request could take longer</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <returns>An OR query plan</returns>
+        private IQueryPlan GenerateORPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            var left = CreateQueryPlan(binaryExpression.Left, myIsLongRunning, myTransaction, mySecurity);
+            var right = CreateQueryPlan(binaryExpression.Right, myIsLongRunning, myTransaction, mySecurity);
+
+            return new QueryPlanORSequentiell(left, right, myIsLongRunning);
+        }
+
+        /// <summary>
         /// Generats an equals query plan
         /// </summary>
         /// <param name="binaryExpression">The binary expression that has to be transfered into an equals query plan</param>
-        /// <param name="myIsLongRunning">The binary expression that has to be transfered into an equals query plan</param>
-        /// <param name="myTransactionToken">The binary expression that has to be transfered into an equals query plan</param>
-        /// <param name="mySecurityToken">The binary expression that has to be transfered into an equals query plan</param>
+        /// <param name="myIsLongRunning">Determines whether it is anticipated that the request could take longer</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <returns>An equals query plan</returns>
         private IQueryPlan GenerateEqualsPlan(BinaryExpression binaryExpression, Boolean myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
