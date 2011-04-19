@@ -7,20 +7,34 @@ using System.IO;
 
 namespace sones.GraphQL.Result
 {
+    /// <summary>
+    /// This class creates an vertex view.
+    /// </summary>
     public class VertexView : IVertexView
     {
         #region Data
 
+        /// <summary>
+        /// The list with the result properties.
+        /// </summary>
         private readonly IDictionary<String, Object>     _propertyList;
+
+        /// <summary>
+        /// The list with result edges.
+        /// </summary>
         private readonly IDictionary<String, IEdgeView>  _edgeList;
         
         #endregion
         
         #region Constructor
 
+        /// <summary>
+        /// The vertex view constructor.
+        /// </summary>
+        /// <param name="myPropertyList">The property list.</param>
+        /// <param name="myEdges">The edge list.</param>
         public VertexView(IDictionary<String, Object> myPropertyList, IDictionary<String, IEdgeView> myEdges)
         {
-
             _propertyList       = myPropertyList;
             _edgeList           = myEdges;
         }

@@ -47,6 +47,10 @@
     <Compile Include="ErrorHandling\GqlSyntaxException.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Grammar\SonesGQLGrammar.cs" />
+    <Compile Include="Result\EdgeView.cs" />
+    <Compile Include="Result\GraphElementView.cs" />
+    <Compile Include="Result\HyperEdgeView.cs" />
+    <Compile Include="Result\SingleEdgeView.cs" />
     <Compile Include="Result\VertexView.cs" />
     <Compile Include="SonesGQLConstants.cs" />
     <Compile Include="SonesQueryLanguage.cs" />
