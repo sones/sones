@@ -55,7 +55,7 @@ namespace sones.GraphDB.Request
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _fetchedEdgeType = myMetaManager.EdgeTypeManager.GetEdgeType(_request.GetEdgeTypeDefinition.EdgeTypeName, TransactionToken, SecurityToken);
+            _fetchedEdgeType = myMetaManager.EdgeTypeManager.GetEdgeType(_request.EdgeTypeName, TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()

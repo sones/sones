@@ -1,4 +1,7 @@
-﻿namespace sones.GraphDB.Request
+﻿using System;
+using sones.GraphDB.Expression.Tree;
+
+namespace sones.GraphDB.Request
 {
     /// <summary>
     /// The get vertex type request
@@ -8,9 +11,19 @@
         #region data
 
         /// <summary>
-        /// The definition of the vertex type that should be requested from the graphdb
+        /// The interesting vertex type name
         /// </summary>
-        public readonly GetVertexTypeDefinition GetVertexTypeDefinition;
+        public readonly String VertexTypeName;
+
+        /// <summary>
+        /// The edition that should be processed
+        /// </summary>
+        public readonly String Edition;
+
+        /// <summary>
+        /// The timespan that should be processed
+        /// </summary>
+        public readonly TimeSpanDefinition Timespan;
 
         #endregion
 
@@ -19,10 +32,14 @@
         /// <summary>
         /// Creates a new request gets a vertex type from the Graphdb
         /// </summary>
-        /// <param name="myGetEdgeTypeDefinition">The definition of the vertex type that should be requested from the graphdb</param>
-        public RequestGetVertexType(GetVertexTypeDefinition myGetVertexTypeDefinition)
+        /// <param name="myEdgeTypeName">The interesting vertex type name</param>
+        /// <param name="myEdition">The edition that should be processed</param>
+        /// <param name="myTimeSpanDefinition">The timespan that should be processed</param>
+        public RequestGetVertexType(String myVertexTypeName, String myEdition = null, TimeSpanDefinition myTimeSpanDefinition = null)
         {
-            GetVertexTypeDefinition = myGetVertexTypeDefinition;
+            VertexTypeName = myVertexTypeName;
+            Edition = myEdition;
+            Timespan = myTimeSpanDefinition;
         }
 
         #endregion

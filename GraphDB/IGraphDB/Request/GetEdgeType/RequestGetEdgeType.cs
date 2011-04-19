@@ -1,4 +1,7 @@
-﻿namespace sones.GraphDB.Request
+﻿using System;
+using sones.GraphDB.Expression.Tree;
+
+namespace sones.GraphDB.Request
 {
     /// <summary>
     /// The get edge type request
@@ -8,9 +11,19 @@
         #region data
 
         /// <summary>
-        /// The definition of the edge type that should be requested from the graphdb
+        /// The interesting edge type name
         /// </summary>
-        public readonly GetEdgeTypeDefinition GetEdgeTypeDefinition;
+        public readonly String EdgeTypeName;
+
+        /// <summary>
+        /// The edition that should be processed
+        /// </summary>
+        public readonly String Edition;
+
+        /// <summary>
+        /// The timespan that should be processed
+        /// </summary>
+        public readonly TimeSpanDefinition Timespan;
 
         #endregion
 
@@ -19,10 +32,14 @@
         /// <summary>
         /// Creates a new request gets a edge type from the Graphdb
         /// </summary>
-        /// <param name="myGetEdgeTypeDefinition">The definition of the edge type that should be requested from the graphdb</param>
-        public RequestGetEdgeType(GetEdgeTypeDefinition myGetEdgeTypeDefinition)
+        /// <param name="myEdgeTypeName">The interesting edge type name</param>
+        /// <param name="myEdition">The edition that should be processed</param>
+        /// <param name="myTimeSpanDefinition">The timespan that should be processed</param>
+        public RequestGetEdgeType(String myEdgeTypeName, String myEdition = null, TimeSpanDefinition myTimeSpanDefinition = null)
         {
-            GetEdgeTypeDefinition = myGetEdgeTypeDefinition;
+            EdgeTypeName = myEdgeTypeName;
+            Edition = myEdition;
+            Timespan = myTimeSpanDefinition;
         }
 
         #endregion

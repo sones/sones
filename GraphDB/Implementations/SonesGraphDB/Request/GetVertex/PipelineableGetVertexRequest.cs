@@ -53,20 +53,20 @@ namespace sones.GraphDB.Request
         public override void Validate(IMetaManager myMetaManager)
         {
             myMetaManager.VertexManager.CanGetVertex(
-                _request.GetVertexDefinition.VertexTypeName,
-                _request.GetVertexDefinition.VertexID,
-                _request.GetVertexDefinition.Edition,
-                _request.GetVertexDefinition.Timespan,
+                _request.VertexTypeName,
+                _request.VertexID,
+                _request.Edition,
+                _request.Timespan,
                 TransactionToken, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
             _fetchedVertex = myMetaManager.VertexManager.GetVertex(
-                _request.GetVertexDefinition.VertexTypeName, 
-                _request.GetVertexDefinition.VertexID, 
-                _request.GetVertexDefinition.Edition, 
-                _request.GetVertexDefinition.Timespan, 
+                _request.VertexTypeName, 
+                _request.VertexID, 
+                _request.Edition, 
+                _request.Timespan, 
                 TransactionToken, SecurityToken);
         }
 

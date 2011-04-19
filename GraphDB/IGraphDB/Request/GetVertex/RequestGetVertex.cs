@@ -1,4 +1,6 @@
-﻿namespace sones.GraphDB.Request
+﻿using System;
+using sones.GraphDB.Expression.Tree;
+namespace sones.GraphDB.Request
 {
     /// <summary>
     /// The get vertex request
@@ -8,9 +10,24 @@
         #region data
 
         /// <summary>
-        /// The definition of the vertex that should be requested from the graphdb
+        /// The vertex type name of the requested vertex
         /// </summary>
-        public readonly GetVertexDefinition GetVertexDefinition;
+        public readonly String VertexTypeName;
+
+        /// <summary>
+        /// The id of the requested vertex
+        /// </summary>
+        public readonly Int64 VertexID;
+
+        /// <summary>
+        /// The edition that should be processed
+        /// </summary>
+        public readonly String Edition;
+
+        /// <summary>
+        /// The timespan that should be processed
+        /// </summary>
+        public readonly TimeSpanDefinition Timespan;
 
         #endregion
 
@@ -19,10 +36,16 @@
         /// <summary>
         /// Creates a new request gets a vertex from the Graphdb
         /// </summary>
-        /// <param name="myGetVertexDefinition">The definition of the vertex that should be requested from the graphdb</param>
-        public RequestGetVertex(GetVertexDefinition myGetVertexDefinition)
+        /// <param name="myVertexTypeName">The vertex type name of the requested vertex</param>
+        /// <param name="myVertexID">The id of the requested vertex</param>
+        /// <param name="myEdition">The edition that should be processed</param>
+        /// <param name="myTimeSpanDefinition">The timespan that should be processed</param>
+        public RequestGetVertex(String myVertexTypeName, Int64 myVertexID, String myEdition = null, TimeSpanDefinition myTimeSpanDefinition = null)
         {
-            GetVertexDefinition = myGetVertexDefinition;
+            VertexTypeName = myVertexTypeName;
+            VertexID = myVertexID;
+            Edition = myEdition;
+            Timespan = myTimeSpanDefinition;
         }
 
         #endregion

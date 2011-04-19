@@ -1,4 +1,6 @@
-﻿namespace sones.GraphDB.Request
+﻿using sones.GraphDB.Expression;
+using System;
+namespace sones.GraphDB.Request
 {
     /// <summary>
     /// The get vertices request
@@ -8,9 +10,14 @@
         #region data
 
         /// <summary>
-        /// The definition of the vertices that should be requested from the graphdb
+        /// The expression which should be evaluated
         /// </summary>
-        public readonly GetVerticesDefinition GetVerticesDefinition;
+        public readonly IExpression Expression;
+
+        /// <summary>
+        /// Determines whether it is anticipated that the request could take longer
+        /// </summary>
+        public readonly Boolean IsLongrunning;
 
         #endregion
 
@@ -19,10 +26,12 @@
         /// <summary>
         /// Creates a new request that gets vertices from the Graphdb
         /// </summary>
-        /// <param name="myGetVerticesDefinition">The definition of the vertices that should be requested from the graphdb</param>
-        public RequestGetVertices(GetVerticesDefinition myGetVerticesDefinition)
+        /// <param name="myExpression">The expression which should be evaluated</param>
+        /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer</param>
+        public RequestGetVertices(IExpression myExpression, Boolean myIsLongrunning = false)
         {
-            GetVerticesDefinition = myGetVerticesDefinition;
+            Expression = myExpression;
+            IsLongrunning = myIsLongrunning;
         }
 
         #endregion

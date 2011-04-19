@@ -52,12 +52,12 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexManager.CanGetVertices(_request.GetVerticesDefinition.Expression, _request.GetVerticesDefinition.IsLongrunning, TransactionToken, SecurityToken);
+            myMetaManager.VertexManager.CanGetVertices(_request.Expression, _request.IsLongrunning, TransactionToken, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _fetchedIVertices = myMetaManager.VertexManager.GetVertices(_request.GetVerticesDefinition.Expression, _request.GetVerticesDefinition.IsLongrunning, TransactionToken, SecurityToken);
+            _fetchedIVertices = myMetaManager.VertexManager.GetVertices(_request.Expression, _request.IsLongrunning, TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()
