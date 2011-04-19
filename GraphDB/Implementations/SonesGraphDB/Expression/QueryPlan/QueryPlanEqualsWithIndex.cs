@@ -6,6 +6,8 @@ using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Manager.Index;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.Plugins.Index.Interfaces;
+using System.Linq;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -41,7 +43,14 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// </summary>
         private readonly IIndexManager _indexManager;
 
+        /// <summary>
+        /// The current security token
+        /// </summary>
         private readonly SecurityToken _securityToken;
+
+        /// <summary>
+        /// The current transaction token
+        /// </summary>
         private readonly TransactionToken _transactionToken;
 
         #endregion
@@ -71,22 +80,45 @@ namespace sones.GraphDB.Expression.QueryPlan
         #endregion
 
         #region IQueryPlan Members
-
+        
         public IEnumerable<IVertex> Execute()
         {
-            //IEnumerable<Int64> vertexIDs = _indexManager.GetVertexIDs(_property.VertexType, _property.Property, _constant.Constant);
-
-            //foreach (var aVertexType in _property.VertexType.GetChildVertexTypes())
-            //{
-
-            //}
-
-            throw new NotImplementedException();
+            return Execute_private(_property.VertexType);
         }
 
         #endregion
 
         #region private helper
+
+        /// <summary>
+        /// Gets the values from an index corresponding to a value
+        /// </summary>
+        /// <param name="myIndex">The interesting index</param>
+        /// <param name="myIComparable">The interesting key</param>
+        /// <returns></returns>
+        private IEnumerable<long> GetValues(IIndex<IComparable, long> myIndex, IComparable myIComparable)
+        {
+            if (myIndex is ISingleValueIndex<IComparable, Int64>)
+            {
+                yield return ((ISingleValueIndex<IComparable, Int64>)myIndex)[myIComparable];
+            }
+            else
+            {
+                if (myIndex is IMultipleValueIndex<IComparable, Int64>)
+                {
+                    foreach (var aVertexID in ((IMultipleValueIndex<IComparable, Int64>)myIndex)[myIComparable])
+                    {
+                        yield return aVertexID;
+                    }
+                }
+                else
+                {
+                    //there might be a little more interfaces... sth versioned
+                }
+            }
+
+            yield break;
+        }
 
         /// <summary>
         /// Checks the revision of a vertex
@@ -96,6 +128,63 @@ namespace sones.GraphDB.Expression.QueryPlan
         private bool VertexRevisionFilter(Int64 myToBeCheckedID)
         {
             return _property.Timespan.IsWithinTimeStamp(myToBeCheckedID);
+        }
+
+        /// <summary>
+        /// Checks the edition of a vertex
+        /// </summary>
+        /// <param name="myToBeCheckedEdition">The edition that needs to be checked</param>
+        /// <returns>True or false</returns>
+        private bool VertexEditionFilter(String myToBeCheckedEdition)
+        {
+            return _property.Edition == myToBeCheckedEdition;
+        }
+
+        /// <summary>
+        /// Executes the query plan recursivly
+        /// </summary>
+        /// <param name="myVertexType">The starting vertex type</param>
+        /// <returns>An enumeration of vertices</returns>
+        private IEnumerable<IVertex> Execute_private(IVertexType myVertexType)
+        {
+            #region current type
+
+            var idx = GetBestMatchingIdx(_indexManager.GetIndices(myVertexType, _property.Property, _securityToken, _transactionToken));
+
+            if (idx.ContainsKey(_constant.Constant))
+            {
+                foreach (var aVertex in GetValues(idx, _constant.Constant)
+                    .Select(aId => _vertexStore.GetVertex(_securityToken, _transactionToken, aId, myVertexType.ID, VertexEditionFilter, VertexRevisionFilter)))
+                {
+                    yield return aVertex;
+                }
+            }
+
+            #endregion
+
+            #region child types
+
+            foreach (var aChildVertexType in myVertexType.GetChildVertexTypes())
+            {
+                foreach (var aVertex in Execute_private(aChildVertexType))
+                {
+                    yield return aVertex;
+                }
+            }
+
+            #endregion
+
+            yield break;
+        }
+
+        /// <summary>
+        /// Get the best matching index out of a index collection
+        /// </summary>
+        /// <param name="myIndexCollection">The interesting collection of indices</param>
+        /// <returns></returns>
+        private IIndex<IComparable, long> GetBestMatchingIdx(IEnumerable<IIndex<IComparable, long>> myIndexCollection)
+        {
+            return myIndexCollection.First();
         }
 
         #endregion

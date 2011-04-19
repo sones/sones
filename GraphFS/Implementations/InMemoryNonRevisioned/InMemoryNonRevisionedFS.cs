@@ -146,14 +146,16 @@ namespace sones.GraphFS
                                  long myVertexID, long myVertexTypeID, string myEdition = null,
                                  Int64 myVertexRevisionID = 0L)
         {
-            var vertex = GetVertexPrivate(myVertexID, myVertexTypeID);
+            return GetVertex_private(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID);
+        }
 
-            if (vertex != null && !vertex.IsBulkVertex)
-            {
-                return vertex;
-            }
-
-            return null;
+        public IVertex GetVertex(
+            SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
+            long myVertexID, long myVertexTypeID, 
+            VertexStoreFilter.EditionFilter myEditionsFilterFunc = null, 
+            VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null)
+        {
+            return GetVertex_private(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID);
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
@@ -227,7 +229,7 @@ namespace sones.GraphFS
             SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
             long myVertexID, long myVertexTypeID)
         {
-            var vertex = GetVertex(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID);
+            var vertex = GetVertex_private(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID);
 
             if (vertex == null)
             {
@@ -244,7 +246,7 @@ namespace sones.GraphFS
             long myVertexID, long myVertexTypeID,
             IEnumerable<string> myInterestingEditions = null)
         {
-            var vertex = GetVertex(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID);
+            var vertex = GetVertex_private(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID);
 
             if (vertex == null)
             {
@@ -666,6 +668,18 @@ namespace sones.GraphFS
                 {
                     return vertex;
                 }
+            }
+
+            return null;
+        }
+
+        private IVertex GetVertex_private(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexID, long myVertexTypeID)
+        {
+            var vertex = GetVertexPrivate(myVertexID, myVertexTypeID);
+
+            if (vertex != null && !vertex.IsBulkVertex)
+            {
+                return vertex;
             }
 
             return null;

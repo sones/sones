@@ -95,6 +95,11 @@ namespace sones.GraphDB.Manager.Security
             return _vertexStore.GetVertex(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID, myEdition, myVertexRevisionID);
         }
 
+        public IVertex GetVertex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myVertexID, long myVertexTypeID, VertexStoreFilter.EditionFilter myEditionsFilterFunc = null, VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null)
+        {
+            return _vertexStore.GetVertex(mySecurityToken, myTransactionToken, myVertexID, myVertexTypeID, myEditionsFilterFunc, myInterestingRevisionIDFilterFunc);
+        }
+
         public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, long myTypeID, IEnumerable<long> myInterestingVertexIDs = null, IEnumerable<string> myInterestingEditionNames = null, IEnumerable<Int64> myInterestingRevisionIDs = null)
         {
             return _vertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID, myInterestingVertexIDs, myInterestingEditionNames, myInterestingRevisionIDs);

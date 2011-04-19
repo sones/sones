@@ -1,6 +1,10 @@
 ﻿using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using System.Collections;
+using System;
+using sones.Plugins.Index.Interfaces;
+using System.Collections.Generic;
 
 namespace sones.GraphDB.Manager.Index
 {
@@ -26,5 +30,15 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <returns>True or false</returns>
         bool HasIndex(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="myVertexType"></param>
+        /// <param name="myPropertyDefinition"></param>
+        /// <param name="mySecurityToken"></param>
+        /// <param name="myTransactionToken"></param>
+        /// <returns></returns>
+        IEnumerable<IIndex<IComparable, Int64>> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
     }
 }

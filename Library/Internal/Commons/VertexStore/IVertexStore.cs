@@ -50,6 +50,25 @@ namespace sones.Library.Commons.VertexStore
             Int64 myVertexRevisionID = 0L);
 
         /// <summary>
+        /// Gets a vertex 
+        /// If there is no edition or revision given, the default edition and the latest revision is returned
+        /// </summary>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        /// <param name="myVertexID">The id of the vertex</param>
+        /// <param name="myVertexTypeID">The id of the vertex type</param>
+        /// <param name="myEditionsFilterFunc">func to filter editions</param>
+        /// <param name="myInterestingRevisionIDFilterFunc">func to filter revisions</param>
+        /// <returns>A vertex object or null if there is no such vertex</returns>
+        IVertex GetVertex(
+            SecurityToken mySecurityToken,
+            TransactionToken myTransactionToken,
+            Int64 myVertexID,
+            Int64 myVertexTypeID,
+            VertexStoreFilter.EditionFilter myEditionsFilterFunc = null,
+            VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null);
+
+        /// <summary>
         /// Returns all vertex by a given typeID. It's possible to filter interesting vertices.
         /// Edition and Revision filtering works by using a filter func.
         /// 

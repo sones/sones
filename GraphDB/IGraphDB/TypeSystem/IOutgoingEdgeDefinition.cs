@@ -1,7 +1,7 @@
 ﻿namespace sones.GraphDB.TypeSystem
 {
     /// <summary>
-    /// An interface that represents an IncomingEdge definition on a vertex type definition.
+    /// An interface that represents an outgoing edge definition on a vertex type definition.
     /// </summary>
     public interface IOutgoingEdgeDefinition : IAttributeDefinition
     {

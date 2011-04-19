@@ -35,8 +35,14 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// </summary>
         private readonly Boolean _isLongrunning;
 
-
+        /// <summary>
+        /// The current security token
+        /// </summary>
         private readonly SecurityToken _securityToken;
+
+        /// <summary>
+        /// The current transaction token
+        /// </summary>
         private readonly TransactionToken _transactionToken;
 
         #endregion
@@ -124,7 +130,7 @@ namespace sones.GraphDB.Expression.QueryPlan
 
             #region child types
 
-            foreach (var aChildVertexType in _property.VertexType.GetChildVertexTypes())
+            foreach (var aChildVertexType in myVertexType.GetChildVertexTypes())
             {
                 foreach (var aVertex in Execute_private(aChildVertexType))
                 {

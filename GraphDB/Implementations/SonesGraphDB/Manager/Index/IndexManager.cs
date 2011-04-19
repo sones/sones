@@ -8,6 +8,7 @@ using System;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.Commons.VertexStore;
+using sones.Plugins.Index.Interfaces;
 
 namespace sones.GraphDB.Manager.Index
 {
@@ -55,7 +56,6 @@ namespace sones.GraphDB.Manager.Index
 
         #endregion
 
-
         #region IIndexManager Members
 
         public void CreateIndex(IIndexDefinition myIndexDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
@@ -64,6 +64,11 @@ namespace sones.GraphDB.Manager.Index
         }
 
         public bool HasIndex(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<IIndex<IComparable, long>> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }

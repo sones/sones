@@ -277,12 +277,12 @@ namespace sones.GraphDB
 
         public SecurityToken LogOn(IUserCredentials toBeAuthenticatedCredentials)
         {
-            throw new NotImplementedException();
+            return _securityManager.LogOn(toBeAuthenticatedCredentials);
         }
 
         public void LogOff(SecurityToken toBeLoggedOfToken)
         {
-            throw new NotImplementedException();
+            _securityManager.LogOff(toBeLoggedOfToken);
         }
 
         #endregion
