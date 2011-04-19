@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.VersionedPluginManager;
-using sones.Library.VertexStore;
+using sones.Library.Commons.VertexStore;
 
 namespace sones.GraphFS
 {

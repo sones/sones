@@ -3,8 +3,8 @@ using sones.GraphDB.ErrorHandling.Expression;
 using sones.GraphDB.Expression;
 using sones.GraphDB.Manager;
 using sones.Library.PropertyHyperGraph;
-using sones.Library.Security;
-using sones.Library.Transaction;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 using sones.GraphDB.Expression.QueryPlan;
 
 namespace sones.GraphDB.Request

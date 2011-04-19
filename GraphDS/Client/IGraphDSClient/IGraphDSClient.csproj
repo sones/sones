@@ -52,13 +52,9 @@
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\Security\Security.csproj">
-      <Project>{3C13E344-937B-4010-B0EF-A164232E4454}</Project>
-      <Name>Security</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\Transaction\Transaction.csproj">
-      <Project>{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}</Project>
-      <Name>Transaction</Name>
+    <ProjectReference Include="..\..\..\Library\Internal\Commons\Commons.csproj">
+      <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
+      <Name>Commons</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\IGraphDS\IGraphDS.csproj">
       <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>

@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Threading;
 using sones.Library.PropertyHyperGraph;
-using sones.Library.Security;
+using sones.Library.Commons.Security;
 using sones.Library.Settings;
-using sones.Library.Transaction;
+using sones.Library.Commons.Transaction;
 using sones.Library.VersionedPluginManager;
-using sones.Library.VertexStore;
-using sones.Library.VertexStore.Definitions;
+using sones.Library.Commons.VertexStore;
+using sones.Library.Commons.VertexStore.Definitions;
+using sones.Library.Commons.VertexStore;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphDB.Manager.Transaction
 {

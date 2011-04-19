@@ -53,10 +53,6 @@
     <Compile Include="TransactionToken.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\GraphFS\IGraphFS\IGraphFS.csproj">
-      <Project>{FFFB6BE4-9514-41CF-AB68-5FB7B8E3D2E4}</Project>
-      <Name>IGraphFS</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Security\Security.csproj">
       <Project>{3C13E344-937B-4010-B0EF-A164232E4454}</Project>
       <Name>Security</Name>

@@ -10,8 +10,8 @@ using sones.GraphFS.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
-using sones.Library.VertexStore.Definitions;
-using sones.Library.VertexStore;
+using sones.Library.Commons.VertexStore;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphFS
 {

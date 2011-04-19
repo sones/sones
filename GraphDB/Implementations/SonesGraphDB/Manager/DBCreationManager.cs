@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.Library.VertexStore;
+using sones.Library.Commons.VertexStore;
 using sones.Library.LanguageExtensions;
-using sones.Library.VertexStore.Definitions;
+using sones.Library.Commons.VertexStore.Definitions;
 using sones.GraphDB.TypeManagement.Base;
 using System.Resources;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphDB.Manager
 {

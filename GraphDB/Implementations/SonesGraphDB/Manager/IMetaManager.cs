@@ -5,7 +5,7 @@ using System.Text;
 using sones.GraphDB.Manager.Index;
 using sones.GraphDB.Manager.TypeManagement;
 using sones.GraphDB.Manager.Vertex;
-using sones.Library.VertexStore;
+using sones.Library.Commons.VertexStore;
 
 namespace sones.GraphDB.Manager
 {

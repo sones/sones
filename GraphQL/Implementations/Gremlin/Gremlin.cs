@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using sones.GraphQL;
 using sones.GraphQL.Result;
-using sones.Library.Security;
-using sones.Library.Transaction;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 
 namespace Gremlin
 {

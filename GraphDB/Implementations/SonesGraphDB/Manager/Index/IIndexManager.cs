@@ -1,9 +1,12 @@
 ﻿using sones.GraphDB.TypeSystem;
-using sones.Library.Security;
-using sones.Library.Transaction;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 
 namespace sones.GraphDB.Manager.Index
 {
+    /// <summary>
+    /// The interface for all index manager.
+    /// </summary>
     public interface IIndexManager
     {
         /// <summary>

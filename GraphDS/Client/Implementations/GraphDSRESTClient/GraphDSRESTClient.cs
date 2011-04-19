@@ -1,8 +1,8 @@
 ﻿using System;
 using sones.GraphDB.Request;
 using sones.GraphQL.Result;
-using sones.Library.Security;
-using sones.Library.Transaction;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 
 namespace sones.GraphDSClient
 {

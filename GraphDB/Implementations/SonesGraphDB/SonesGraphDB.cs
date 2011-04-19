@@ -6,9 +6,9 @@ using sones.GraphDB.Manager.Plugin;
 using sones.GraphDB.Request;
 using sones.GraphDB.Settings;
 using sones.GraphFS;
-using sones.Library.Security;
+using sones.Library.Commons.Security;
 using sones.Library.Settings;
-using sones.Library.Transaction;
+using sones.Library.Commons.Transaction;
 using sones.Library.VersionedPluginManager;
 
 namespace sones.GraphDB

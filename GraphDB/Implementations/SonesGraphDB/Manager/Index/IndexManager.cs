@@ -5,9 +5,9 @@ using sones.Library.VersionedPluginManager;
 using sones.Library.Settings;
 using System.Linq;
 using System;
-using sones.Library.Security;
-using sones.Library.Transaction;
-using sones.Library.VertexStore;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
+using sones.Library.Commons.VertexStore;
 
 namespace sones.GraphDB.Manager.Index
 {

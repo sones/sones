@@ -2,9 +2,9 @@
 using sones.GraphDB.Expression;
 using sones.GraphDB.Expression.QueryPlan;
 using sones.GraphDB.Manager.TypeManagement;
-using sones.Library.Security;
-using sones.Library.Transaction;
-using sones.Library.VertexStore;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
+using sones.Library.Commons.VertexStore;
 using sones.GraphDB.Manager.Index;
 
 namespace sones.GraphDB.Manager.QueryPlan

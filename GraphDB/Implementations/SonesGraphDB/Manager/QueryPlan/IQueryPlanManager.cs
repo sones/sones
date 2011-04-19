@@ -1,7 +1,7 @@
 ﻿using sones.GraphDB.Expression;
 using sones.GraphDB.Expression.QueryPlan;
-using sones.Library.Security;
-using sones.Library.Transaction;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 
 namespace sones.GraphDB.Manager.QueryPlan
 {

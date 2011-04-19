@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using sones.Library.PropertyHyperGraph;
 using System;
-using sones.Library.VertexStore;
+using sones.Library.Commons.VertexStore;
 using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Expression.QueryPlan

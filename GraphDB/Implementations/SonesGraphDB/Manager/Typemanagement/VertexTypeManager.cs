@@ -7,15 +7,15 @@ using sones.GraphDB.Request;
 using sones.GraphDB.TypeManagement;
 using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.TypeSystem;
-using sones.Library.Security;
-using sones.Library.Transaction;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 using sones.Library.LanguageExtensions;
 using sones.GraphDB.ErrorHandling.VertexTypeErrors;
 using System.Collections;
 using sones.GraphDB.Manager.Vertex;
 using sones.GraphDB.Manager.Index;
 using sones.Library.PropertyHyperGraph;
-using sones.Library.VertexStore.Definitions;
+using sones.Library.Commons.VertexStore.Definitions;
 
 /*
  * IncomingEdge cases:

@@ -110,6 +110,10 @@
       <Project>{FFFB6BE4-9514-41CF-AB68-5FB7B8E3D2E4}</Project>
       <Name>IGraphFS</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Commons\Commons.csproj">
+      <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
+      <Name>Commons</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
@@ -122,25 +126,13 @@
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
       <Name>PropertyHyperGraph</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\Security\Security.csproj">
-      <Project>{3C13E344-937B-4010-B0EF-A164232E4454}</Project>
-      <Name>Security</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\Settings\Settings.csproj">
       <Project>{A233FDB4-70A9-4284-827A-1704950E0EF3}</Project>
       <Name>Settings</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\Transaction\Transaction.csproj">
-      <Project>{903DE74B-4A55-4AA9-AE2F-ED8E66F58B21}</Project>
-      <Name>Transaction</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
       <Name>PluginManager</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Library\Internal\VertexStore\VertexStore.csproj">
-      <Project>{E350EBAC-98DD-4261-8CE8-FA95FC96C9EA}</Project>
-      <Name>VertexStore</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Plugins\Index\ISonesIndex\ISonesIndex.csproj">
       <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using sones.GraphDB.Expression;
 using sones.Library.PropertyHyperGraph;
-using sones.Library.Security;
-using sones.Library.Transaction;
-using sones.Library.VertexStore.Definitions;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 using sones.GraphDB.Expression.Tree;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphDB.Manager.Vertex
 {

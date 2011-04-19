@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using sones.Library.VertexStore;
+using sones.Library.Commons.VertexStore;
 using sones.GraphDB.Manager.Index;
 using sones.GraphDB.Manager.TypeManagement;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphDB.Expression;
-using sones.Library.Transaction;
-using sones.Library.Security;
+using sones.Library.Commons.Transaction;
+using sones.Library.Commons.Security;
 using sones.GraphDB.ErrorHandling.Expression;
 using sones.GraphDB.Manager.QueryPlan;
 using sones.GraphDB.Expression.Tree;
-using sones.Library.VertexStore.Definitions;
+using sones.Library.Commons.VertexStore.Definitions;
 
 namespace sones.GraphDB.Manager.Vertex
 {

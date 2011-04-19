@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using sones.Library.PropertyHyperGraph;
 using System;
-using sones.Library.VertexStore;
+using sones.Library.Commons.VertexStore;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Manager.Index;
 
@@ -65,6 +65,13 @@ namespace sones.GraphDB.Expression.QueryPlan
 
         public IEnumerable<IVertex> Execute()
         {
+            //IEnumerable<Int64> vertexIDs = _indexManager.GetVertexIDs(_property.VertexType, _property.Property, _constant.Constant);
+
+            //foreach (var aVertexType in _property.VertexType.GetChildVertexTypes())
+            //{
+
+            //}
+
             throw new NotImplementedException();
         }
 

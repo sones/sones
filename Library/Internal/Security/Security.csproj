@@ -65,10 +65,6 @@
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
       <Name>PluginManager</Name>
     </ProjectReference>
-    <ProjectReference Include="..\VertexStore\VertexStore.csproj">
-      <Project>{E350EBAC-98DD-4261-8CE8-FA95FC96C9EA}</Project>
-      <Name>VertexStore</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Documentation\ClassDiagram.cd" />

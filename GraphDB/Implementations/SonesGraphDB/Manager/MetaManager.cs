@@ -4,7 +4,7 @@ using sones.GraphDB.Manager.Plugin;
 using sones.GraphDB.Manager.QueryPlan;
 using sones.GraphDB.Manager.TypeManagement;
 using sones.GraphDB.Manager.Vertex;
-using sones.Library.VertexStore;
+using sones.Library.Commons.VertexStore;
 using sones.Library.Settings;
 
 namespace sones.GraphDB.Manager
