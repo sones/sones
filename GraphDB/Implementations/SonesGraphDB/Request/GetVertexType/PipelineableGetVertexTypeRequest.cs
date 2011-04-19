@@ -55,7 +55,14 @@ namespace sones.GraphDB.Request
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _fetchedVertexType = myMetaManager.VertexTypeManager.GetVertexType(_request.VertexTypeName, TransactionToken, SecurityToken);
+            if (_request.VertexTypeName == null)
+            {
+                _fetchedVertexType = myMetaManager.VertexTypeManager.GetVertexType(_request.VertexTypeID, TransactionToken, SecurityToken);   
+            }
+            else
+            {
+                _fetchedVertexType = myMetaManager.VertexTypeManager.GetVertexType(_request.VertexTypeName, TransactionToken, SecurityToken);   
+            }
         }
 
         public override IRequest GetRequest()

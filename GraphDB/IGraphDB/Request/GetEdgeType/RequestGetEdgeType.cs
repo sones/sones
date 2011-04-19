@@ -11,6 +11,11 @@ namespace sones.GraphDB.Request
         #region data
 
         /// <summary>
+        /// The interesting edge type id
+        /// </summary>
+        public readonly Int64 EdgeTypeID;
+
+        /// <summary>
         /// The interesting edge type name
         /// </summary>
         public readonly String EdgeTypeName;
@@ -40,6 +45,20 @@ namespace sones.GraphDB.Request
             EdgeTypeName = myEdgeTypeName;
             Edition = myEdition;
             Timespan = myTimeSpanDefinition;
+        }
+
+        /// <summary>
+        /// Creates a new request gets a edge type from the Graphdb
+        /// </summary>
+        /// <param name="myEdgeTypeID">The interesting edge type id</param>
+        /// <param name="myEdition">The edition that should be processed</param>
+        /// <param name="myTimeSpanDefinition">The timespan that should be processed</param>
+        public RequestGetEdgeType(Int64 myEdgeTypeID, String myEdition = null, TimeSpanDefinition myTimeSpanDefinition = null)
+        {
+            EdgeTypeName = null;
+            Edition = myEdition;
+            Timespan = myTimeSpanDefinition;
+            EdgeTypeID = myEdgeTypeID;
         }
 
         #endregion

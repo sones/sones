@@ -15,61 +15,7 @@ namespace sones.GraphDB
     {
         #region requests
 
-        /// <summary>
-        /// Gets vertices from the graphdb
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result of this request</typeparam>
-        /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
-        /// <param name="myRequestGetVertices">The get vertices request</param>
-        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
-        /// <returns>A generic result</returns>
-        TResult GetVertices<TResult>(   SecurityToken mySecurityToken,
-                                        TransactionToken myTransactionToken,
-                                        RequestGetVertices myRequestGetVertices,
-                                        Converter.GetVerticesResultConverter<TResult> myOutputconverter);
-
-        /// <summary>
-        /// Traverses the graphdb an searches for verticies, wich fulfil the matching conditions
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result of this request</typeparam>
-        /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
-        /// <param name="myRequestGetVertices">The traverse vertex request</param>
-        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
-        /// <returns>A generic result</returns>
-        TResult TraverseVertex<TResult>(SecurityToken mySecurity,
-                                        TransactionToken myTransactionToken,
-                                        RequestTraverseVertex myRequestTraverseVertex,
-                                        Converter.TraverseVertexResultConverter<TResult> myOutputconverter);
-
-        /// <summary>
-        /// Get a vertex type from the graphdb
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result of this request</typeparam>
-        /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
-        /// <param name="myRequestGetVertexType">The request to get a vertex type</param>
-        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
-        /// <returns>A generic result</returns>
-        TResult GetVertexType<TResult>( SecurityToken mySecurityToken,
-                                        TransactionToken myTransactionToken,
-                                        RequestGetVertexType myRequestGetVertexType,
-                                        Converter.GetVertexTypeResultConverter<TResult> myOutputconverter);
-
-        /// <summary>
-        /// Get a edge type from the graphdb
-        /// </summary>
-        /// <typeparam name="TResult">The type of the result of this request</typeparam>
-        /// <param name="mySecurityToken">The current security token</param>
-        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
-        /// <param name="myRequestGetEdgeType">The request to get an edge type</param>
-        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
-        /// <returns>A generic result</returns>
-        TResult GetEdgeType<TResult>(   SecurityToken mySecurityToken,
-                                        TransactionToken myTransactionToken,
-                                        RequestGetEdgeType myRequestGetEdgeType,
-                                        Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter);
+        #region GetVertex
 
         /// <summary>
         /// Get a vertex from the graphdb
@@ -85,6 +31,79 @@ namespace sones.GraphDB
                                         RequestGetVertex myRequestGetVertex,
                                         Converter.GetVertexResultConverter<TResult> myOutputconverter);
 
+        #endregion
+
+        #region GetVertices
+
+        /// <summary>
+        /// Gets vertices from the graphdb
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestGetVertices">The get vertices request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult GetVertices<TResult>(   SecurityToken mySecurityToken,
+                                        TransactionToken myTransactionToken,
+                                        RequestGetVertices myRequestGetVertices,
+                                        Converter.GetVerticesResultConverter<TResult> myOutputconverter);
+
+        #endregion
+
+        #region TraverseVertex
+
+        /// <summary>
+        /// Traverses the graphdb an searches for verticies, wich fulfil the matching conditions
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestGetVertices">The traverse vertex request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult TraverseVertex<TResult>(SecurityToken mySecurity,
+                                        TransactionToken myTransactionToken,
+                                        RequestTraverseVertex myRequestTraverseVertex,
+                                        Converter.TraverseVertexResultConverter<TResult> myOutputconverter);
+
+        #endregion
+
+        #region GetVertexType
+
+        /// <summary>
+        /// Get a vertex type from the graphdb
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestGetVertexType">The request to get a vertex type</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult GetVertexType<TResult>( SecurityToken mySecurityToken,
+                                        TransactionToken myTransactionToken,
+                                        RequestGetVertexType myRequestGetVertexType,
+                                        Converter.GetVertexTypeResultConverter<TResult> myOutputconverter);
+
+        #endregion
+
+        #region GetEdgeType
+
+        /// <summary>
+        /// Get a edge type from the graphdb
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestGetEdgeType">The request to get an edge type</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult GetEdgeType<TResult>(   SecurityToken mySecurityToken,
+                                        TransactionToken myTransactionToken,
+                                        RequestGetEdgeType myRequestGetEdgeType,
+                                        Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter);
+
+        #endregion
 
         #endregion
     }
