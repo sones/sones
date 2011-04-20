@@ -77,12 +77,6 @@ namespace sones.GraphDB.Manager.QueryPlan
 
                     break;
                
-                case TypeOfExpression.Constant:
-
-                    result = GenerateFromConstantExpression((ConstantExpression)myExpression);    
-
-                    break;
-                
                 case TypeOfExpression.Property:
 
                     result = GenerateFromPropertyExpression((PropertyExpression)myExpression, myTransaction, mySecurity);
@@ -209,16 +203,6 @@ namespace sones.GraphDB.Manager.QueryPlan
         }
 
         /// <summary>
-        /// Generates a constant
-        /// </summary>
-        /// <param name="constantExpression">The constant expression that is going to be transfered</param>
-        /// <returns></returns>
-        private static IQueryPlan GenerateFromConstantExpression(ConstantExpression constantExpression)
-        {
-            return new QueryPlanConstant(constantExpression.Constant);
-        }
-
-        /// <summary>
         /// Generates a query plan from an unary expression
         /// </summary>
         /// <param name="unaryExpression">The unary expression</param>
@@ -254,7 +238,8 @@ namespace sones.GraphDB.Manager.QueryPlan
                     return GenerateGreaterThanPlan(binaryExpression, myIsLongRunning, myTransactionToken, mySecurityToken);                    
 
                 case BinaryOperator.InRange:
-                    break;
+                    return GenerateInRangePlan(binaryExpression, myIsLongRunning, myTransactionToken, mySecurityToken);                    
+
                 case BinaryOperator.LessOrEqualsThan:
                     return GenerateLessOrEqualsThanPlan(binaryExpression, myIsLongRunning, myTransactionToken, mySecurityToken);                                        
 
@@ -331,7 +316,7 @@ namespace sones.GraphDB.Manager.QueryPlan
 
             //sth like User/Age = 10
             QueryPlanProperty property;
-            QueryPlanConstant constant;
+            ConstantExpression constant;
 
             FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
 
@@ -349,6 +334,35 @@ namespace sones.GraphDB.Manager.QueryPlan
 
         }
 
+        private IQueryPlan GenerateInRangePlan(BinaryExpression myBinaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            QueryPlanProperty property;
+            RangeConstantExpression constant;
+
+            if (myBinaryExpression.Left is PropertyExpression)
+            {
+                property = GenerateQueryPlanProperty((PropertyExpression)myBinaryExpression.Left, myTransactionToken, mySecurityToken);
+
+                constant = (RangeConstantExpression)myBinaryExpression.Right;
+            }
+            else
+            {
+                property = GenerateQueryPlanProperty((PropertyExpression)myBinaryExpression.Right, myTransactionToken, mySecurityToken);
+
+                constant = (RangeConstantExpression)myBinaryExpression.Left;
+            }
+
+            //is there an index on this property?
+            if (_indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
+            {
+                return new QueryPlanInRangeWithIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning, _indexManager);
+            }
+            else
+            {
+                return new QueryPlanInRangeWithoutIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning);
+            }
+        }
+
         /// <summary>
         /// Generats a not equals query plan
         /// </summary>
@@ -360,7 +374,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         private IQueryPlan GenerateNotEqualsPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
             QueryPlanProperty property;
-            QueryPlanConstant constant;
+            ConstantExpression constant;
 
             FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
 
@@ -386,7 +400,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         private IQueryPlan GenerateLessThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
             QueryPlanProperty property;
-            QueryPlanConstant constant;
+            ConstantExpression constant;
 
             FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
 
@@ -412,7 +426,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         private IQueryPlan GenerateLessOrEqualsThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
             QueryPlanProperty property;
-            QueryPlanConstant constant;
+            ConstantExpression constant;
 
             FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
 
@@ -438,7 +452,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         private IQueryPlan GenerateGreaterThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
             QueryPlanProperty property;
-            QueryPlanConstant constant;
+            ConstantExpression constant;
 
             FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
 
@@ -461,19 +475,19 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myProperty">The property out parameter</param>
         /// <param name="myConstant">The constant out parameter</param>
-        private void FindPropertyAndConstant(BinaryExpression myBinaryExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken, out QueryPlanProperty myProperty, out QueryPlanConstant myConstant)
+        private void FindPropertyAndConstant(BinaryExpression myBinaryExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken, out QueryPlanProperty myProperty, out ConstantExpression myConstant)
         {
             if (myBinaryExpression.Left is PropertyExpression)
             {
                 myProperty = GenerateQueryPlanProperty((PropertyExpression)myBinaryExpression.Left, myTransactionToken, mySecurityToken);
 
-                myConstant = new QueryPlanConstant(((ConstantExpression)myBinaryExpression.Right).Constant);
+                myConstant = (ConstantExpression)myBinaryExpression.Right;
             }
             else
             {
                 myProperty = GenerateQueryPlanProperty((PropertyExpression)myBinaryExpression.Right, myTransactionToken, mySecurityToken);
 
-                myConstant = new QueryPlanConstant(((ConstantExpression)myBinaryExpression.Left).Constant);
+                myConstant = (ConstantExpression)myBinaryExpression.Left;
             }
         }
 
@@ -489,7 +503,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         {
             //sth like User/Age = 10
             QueryPlanProperty property;
-            QueryPlanConstant constant;
+            ConstantExpression constant;
 
             FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
 

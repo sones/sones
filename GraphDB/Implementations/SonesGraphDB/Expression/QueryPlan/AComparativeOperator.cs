@@ -39,7 +39,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// The constant value
         /// </summary>
-        protected readonly QueryPlanConstant _constant;
+        protected readonly ConstantExpression _constant;
 
         /// <summary>
         /// Determines whether it is anticipated that the request could take longer
@@ -59,7 +59,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
-        protected AComparativeOperator(QueryPlanProperty myProperty, QueryPlanConstant myConstant, Boolean myIsLongrunning, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexStore myVertexStore)
+        protected AComparativeOperator(QueryPlanProperty myProperty, ConstantExpression myConstant, Boolean myIsLongrunning, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexStore myVertexStore)
         {
             _property = myProperty;
             _constant = myConstant;
