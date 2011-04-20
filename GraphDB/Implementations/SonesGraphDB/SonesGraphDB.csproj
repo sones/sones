@@ -46,15 +46,15 @@
   <ItemGroup>
     <Compile Include="ConstantsSonesGraphDB.cs" />
     <Compile Include="Expression\QueryPlan\AComparativeIndexOperator.cs" />
-    <Compile Include="Expression\QueryPlan\QueryPlanGreaterOrEqualsWithoutIndex.cs" />
-    <Compile Include="Expression\QueryPlan\QueryPlanGreaterOrEqualsWithIndex.cs" />
-    <Compile Include="Expression\QueryPlan\QueryPlanORSequentiell.cs" />
-    <Compile Include="Expression\QueryPlan\QueryPlanANDSequentiell.cs" />
-    <Compile Include="Expression\QueryPlan\QueryPlanEqualsWithIndex.cs" />
-    <Compile Include="Expression\QueryPlan\QueryPlanEqualsWithoutIndex.cs" />
-    <Compile Include="Expression\QueryPlan\QueryPlanConstant.cs" />
+    <Compile Include="Expression\QueryPlan\GreaterOrEquals\QueryPlanGreaterOrEqualsWithoutIndex.cs" />
+    <Compile Include="Expression\QueryPlan\GreaterOrEquals\QueryPlanGreaterOrEqualsWithIndex.cs" />
+    <Compile Include="Expression\QueryPlan\OR\QueryPlanORSequentiell.cs" />
+    <Compile Include="Expression\QueryPlan\AND\QueryPlanANDSequentiell.cs" />
+    <Compile Include="Expression\QueryPlan\Equals\QueryPlanEqualsWithIndex.cs" />
+    <Compile Include="Expression\QueryPlan\Equals\QueryPlanEqualsWithoutIndex.cs" />
+    <Compile Include="Expression\QueryPlan\Misc\QueryPlanConstant.cs" />
     <Compile Include="Expression\QueryPlan\IQueryPlan.cs" />
-    <Compile Include="Expression\QueryPlan\QueryPlanProperty.cs" />
+    <Compile Include="Expression\QueryPlan\Misc\QueryPlanProperty.cs" />
     <Compile Include="Index\IndexDefinition.cs" />
     <Compile Include="Manager\DBCreationManager.cs" />
     <Compile Include="Manager\Expression\BasicLogicExpressionOptimizer.cs" />
