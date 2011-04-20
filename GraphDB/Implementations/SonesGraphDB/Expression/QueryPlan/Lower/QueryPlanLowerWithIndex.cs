@@ -14,7 +14,7 @@ namespace sones.GraphDB.Expression.QueryPlan
     /// <summary>
     /// An Lower operation using indices
     /// </summary>
-    public sealed class QueryPlanLowerWithIndex : AComparativeIndexOperator, IQueryPlan
+    public sealed class QueryPlanLessThanWithIndex : AComparativeIndexOperator, IQueryPlan
     {
         #region constructor
 
@@ -27,7 +27,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myConstant">The constant value</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
         /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer</param>
-        public QueryPlanLowerWithIndex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, QueryPlanProperty myProperty, QueryPlanConstant myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning, IIndexManager myIndexManager)
+        public QueryPlanLessThanWithIndex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, QueryPlanProperty myProperty, QueryPlanConstant myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning, IIndexManager myIndexManager)
             : base(myProperty, myConstant, myIsLongrunning, mySecurityToken, myTransactionToken, myIndexManager, myVertexStore)        
         {
         }

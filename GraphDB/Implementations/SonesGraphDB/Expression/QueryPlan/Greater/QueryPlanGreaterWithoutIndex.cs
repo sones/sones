@@ -11,7 +11,7 @@ namespace sones.GraphDB.Expression.QueryPlan
     /// <summary>
     /// An Greater operation without any index
     /// </summary>
-    public sealed class QueryPlanGreaterWithoutIndex : AComparativeOperator, IQueryPlan
+    public sealed class QueryPlanGreaterThanWithoutIndex : AComparativeOperator, IQueryPlan
     {
         #region constructor
 
@@ -24,7 +24,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myConstant">The constant value</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
         /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer</param>
-        public QueryPlanGreaterWithoutIndex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, QueryPlanProperty myProperty, QueryPlanConstant myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning)
+        public QueryPlanGreaterThanWithoutIndex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, QueryPlanProperty myProperty, QueryPlanConstant myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning)
             : base(myProperty, myConstant, myIsLongrunning, mySecurityToken, myTransactionToken, myVertexStore)            
         {
         }
