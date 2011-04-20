@@ -142,36 +142,37 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// </summary>
         /// <param name="binaryExpression">The binary expression</param>
         /// <param name="myIsLongRunning">Determines whether it is anticipated that the request could take longer</param>
-        /// <param name="myTransaction">The current transaction token</param>
-        /// <param name="mySecurity">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        /// <param name="mySecurityToken">The current security token</param>
         /// <returns>A query plan</returns>
-        private IQueryPlan GenerateFromBinaryExpression(BinaryExpression binaryExpression, Boolean myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity)
+        private IQueryPlan GenerateFromBinaryExpression(BinaryExpression binaryExpression, Boolean myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
             switch (binaryExpression.Operator)
             {
                 #region Comparative
 
                 case BinaryOperator.Equals:
-                    return GenerateEqualsPlan(binaryExpression, myIsLongRunning, myTransaction, mySecurity);
+                    return GenerateEqualsPlan(binaryExpression, myIsLongRunning, myTransactionToken, mySecurityToken);
 
                 case BinaryOperator.GreaterOrEqualsThan:
-                    return GenerateGreaterOrEqualsThanPlan(binaryExpression, myIsLongRunning, myTransaction, mySecurity);                    
+                    return GenerateGreaterOrEqualsThanPlan(binaryExpression, myIsLongRunning, myTransactionToken, mySecurityToken);                    
 
                 case BinaryOperator.GreaterThan:
-                    return GenerateGreaterThanPlan(binaryExpression, myIsLongRunning, myTransaction, mySecurity);                    
+                    return GenerateGreaterThanPlan(binaryExpression, myIsLongRunning, myTransactionToken, mySecurityToken);                    
 
                 case BinaryOperator.In:
                     break;
                 case BinaryOperator.InRange:
                     break;
                 case BinaryOperator.LessOrEqualsThan:
-                    return GenerateLessOrEqualsThanPlan(binaryExpression, myIsLongRunning, myTransaction, mySecurity);                                        
+                    return GenerateLessOrEqualsThanPlan(binaryExpression, myIsLongRunning, myTransactionToken, mySecurityToken);                                        
 
                 case BinaryOperator.LessThan:
-                    return GenerateLessThanPlan(binaryExpression, myIsLongRunning, myTransaction, mySecurity);                    
+                    return GenerateLessThanPlan(binaryExpression, myIsLongRunning, myTransactionToken, mySecurityToken);                    
 
                 case BinaryOperator.NotEquals:
-                    break;
+                    return GenerateNotEqualsPlan(binaryExpression, myIsLongRunning, myTransactionToken, mySecurityToken);
+
                 case BinaryOperator.NotIn:
                     break;
 
@@ -180,10 +181,10 @@ namespace sones.GraphDB.Manager.QueryPlan
                 #region Logic
 
                 case BinaryOperator.AND:
-                    return GenerateANDPlan(binaryExpression, myIsLongRunning, myTransaction, mySecurity);
+                    return GenerateANDPlan(binaryExpression, myIsLongRunning, myTransactionToken, mySecurityToken);
 
                 case BinaryOperator.OR:
-                    return GenerateORPlan(binaryExpression, myIsLongRunning, myTransaction, mySecurity);
+                    return GenerateORPlan(binaryExpression, myIsLongRunning, myTransactionToken, mySecurityToken);
 
                 #endregion
 
@@ -258,6 +259,32 @@ namespace sones.GraphDB.Manager.QueryPlan
 
             #endregion
 
+        }
+
+        /// <summary>
+        /// Generats a not equals query plan
+        /// </summary>
+        /// <param name="binaryExpression">The binary expression that has to be transfered into a not equals query plan</param>
+        /// <param name="myIsLongRunning">Determines whether it is anticipated that the request could take longer</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <returns>A not equals query plan</returns>
+        private IQueryPlan GenerateNotEqualsPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            QueryPlanProperty property;
+            QueryPlanConstant constant;
+
+            FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
+
+            //is there an index on this property?
+            if (_indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
+            {
+                return new QueryPlanNotEqualsWithIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning, _indexManager);
+            }
+            else
+            {
+                return new QueryPlanNotEqualsWithoutIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning);
+            }
         }
 
         /// <summary>
