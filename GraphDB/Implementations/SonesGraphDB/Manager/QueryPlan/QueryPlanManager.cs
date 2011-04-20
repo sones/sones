@@ -165,7 +165,8 @@ namespace sones.GraphDB.Manager.QueryPlan
                 case BinaryOperator.InRange:
                     break;
                 case BinaryOperator.LessOrEqualsThan:
-                    break;
+                    return GenerateLessOrEqualsThanPlan(binaryExpression, myIsLongRunning, myTransaction, mySecurity);                                        
+
                 case BinaryOperator.LessThan:
                     return GenerateLessThanPlan(binaryExpression, myIsLongRunning, myTransaction, mySecurity);                    
 
@@ -267,7 +268,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <returns>A less than query plan</returns>
-        private IQueryPlan GenerateLessThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity)
+        private IQueryPlan GenerateLessThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
             QueryPlanProperty property;
             QueryPlanConstant constant;
@@ -286,6 +287,32 @@ namespace sones.GraphDB.Manager.QueryPlan
         }
 
         /// <summary>
+        /// Generates a less or equals than query plan
+        /// </summary>
+        /// <param name="binaryExpression">The binary expression that has to be transfered into a less or equal than query plan</param>
+        /// <param name="myIsLongRunning">Determines whether it is anticipated that the request could take longer</param>
+        /// <param name="myTransactionToken">The current transaction token</param>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <returns>A less or equal than query plan</returns>
+        private IQueryPlan GenerateLessOrEqualsThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            QueryPlanProperty property;
+            QueryPlanConstant constant;
+
+            FindPropertyAndConstant(binaryExpression, myTransactionToken, mySecurityToken, out property, out constant);
+
+            //is there an index on this property?
+            if (_indexManager.HasIndex(property.VertexType, property.Property, mySecurityToken, myTransactionToken))
+            {
+                return new QueryPlanLessOrEqualsThanWithIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning, _indexManager);
+            }
+            else
+            {
+                return new QueryPlanLessOrEqualsThanWithoutIndex(mySecurityToken, myTransactionToken, property, constant, _vertexStore, myIsLongRunning);
+            }
+        }
+
+        /// <summary>
         /// Generates an greater than query plan
         /// </summary>
         /// <param name="binaryExpression">The binary expression that has to be transfered into a greater than query plan</param>
@@ -293,7 +320,7 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <returns>A greater than query plan</returns>
-        private IQueryPlan GenerateGreaterThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity)
+        private IQueryPlan GenerateGreaterThanPlan(BinaryExpression binaryExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
             QueryPlanProperty property;
             QueryPlanConstant constant;
