@@ -49,6 +49,10 @@
     <Compile Include="Expression\QueryPlan\AComparativeOperator.cs" />
     <Compile Include="Expression\QueryPlan\GreaterOrEquals\QueryPlanGreaterOrEqualsWithoutIndex.cs" />
     <Compile Include="Expression\QueryPlan\GreaterOrEquals\QueryPlanGreaterOrEqualsWithIndex.cs" />
+    <Compile Include="Expression\QueryPlan\Greater\QueryPlanGreaterWithIndex.cs" />
+    <Compile Include="Expression\QueryPlan\Greater\QueryPlanGreaterWithoutIndex.cs" />
+    <Compile Include="Expression\QueryPlan\Lower\QueryPlanLowerWithIndex.cs" />
+    <Compile Include="Expression\QueryPlan\Lower\QueryPlanLowerWithoutIndex.cs" />
     <Compile Include="Expression\QueryPlan\OR\QueryPlanORSequentiell.cs" />
     <Compile Include="Expression\QueryPlan\AND\QueryPlanANDSequentiell.cs" />
     <Compile Include="Expression\QueryPlan\Equals\QueryPlanEqualsWithIndex.cs" />
