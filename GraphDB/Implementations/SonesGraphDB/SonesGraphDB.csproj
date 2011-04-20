@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="ConstantsSonesGraphDB.cs" />
     <Compile Include="Expression\QueryPlan\AComparativeIndexOperator.cs" />
+    <Compile Include="Expression\QueryPlan\AComparativeOperator.cs" />
     <Compile Include="Expression\QueryPlan\GreaterOrEquals\QueryPlanGreaterOrEqualsWithoutIndex.cs" />
     <Compile Include="Expression\QueryPlan\GreaterOrEquals\QueryPlanGreaterOrEqualsWithIndex.cs" />
     <Compile Include="Expression\QueryPlan\OR\QueryPlanORSequentiell.cs" />
