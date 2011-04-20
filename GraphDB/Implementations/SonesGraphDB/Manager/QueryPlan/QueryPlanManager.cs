@@ -96,9 +96,102 @@ namespace sones.GraphDB.Manager.QueryPlan
             return result;
         }
 
+        public bool IsValidExpression(IExpression myExpression)
+        {
+            switch (myExpression.TypeOfExpression)
+            {
+                case TypeOfExpression.Binary:
+
+                    return IsValidBinaryExpression((BinaryExpression)myExpression);
+
+                case TypeOfExpression.Unary:
+
+                    return IsValidUnaryExpression((UnaryExpression)myExpression);
+
+                case TypeOfExpression.Constant:
+                case TypeOfExpression.Property:
+                default:
+                    return false;
+            }
+        }
+
         #endregion
 
         #region private helper
+
+        #region IsValidUnaryExpression
+
+        /// <summary>
+        /// Is the unary expression valid
+        /// </summary>
+        /// <param name="unaryExpression">The to be validated expression</param>
+        /// <returns>True or false</returns>
+        private bool IsValidUnaryExpression(UnaryExpression unaryExpression)
+        {
+            return IsValidExpression(unaryExpression.Expression);
+        }
+
+        #endregion
+
+        #region IsValidBinaryExpression
+
+        /// <summary>
+        /// Is this binary expression valid
+        /// </summary>
+        /// <param name="binaryExpression">The to be validated binary expression</param>
+        /// <returns>True or false</returns>
+        private bool IsValidBinaryExpression(BinaryExpression binaryExpression)
+        {
+            switch (binaryExpression.Operator)
+            {
+                #region comparative
+
+                case BinaryOperator.Equals:
+                case BinaryOperator.GreaterOrEqualsThan:
+                case BinaryOperator.GreaterThan:
+                case BinaryOperator.LessOrEqualsThan:
+                case BinaryOperator.LessThan:
+                case BinaryOperator.NotEquals:
+
+                    if (binaryExpression.Left.TypeOfExpression == TypeOfExpression.Property)
+                    {
+                        return binaryExpression.Right.TypeOfExpression == TypeOfExpression.Constant;
+                    }
+                    else
+                    {
+                        return binaryExpression.Left.TypeOfExpression == TypeOfExpression.Constant && binaryExpression.Right.TypeOfExpression == TypeOfExpression.Property;
+                    }
+
+                case BinaryOperator.InRange:
+                    if (binaryExpression.Left.TypeOfExpression == TypeOfExpression.Property)
+                    {
+                        return binaryExpression.Right.TypeOfExpression == TypeOfExpression.Constant && binaryExpression.Right is RangeConstantExpression;
+                    }
+                    else
+                    {
+                        return (binaryExpression.Left.TypeOfExpression == TypeOfExpression.Constant && binaryExpression.Left is RangeConstantExpression) && binaryExpression.Right.TypeOfExpression == TypeOfExpression.Property;
+                    }
+
+                #endregion
+
+                #region logic
+
+                case BinaryOperator.AND:
+                case BinaryOperator.OR:
+
+                    return IsValidExpression(binaryExpression.Left) && IsValidExpression(binaryExpression.Right);
+
+                #endregion
+
+                default:
+                    break;
+            }
+
+            return false;
+        }
+
+        #endregion
+
 
         /// <summary>
         /// Generates a property query plan
@@ -160,8 +253,6 @@ namespace sones.GraphDB.Manager.QueryPlan
                 case BinaryOperator.GreaterThan:
                     return GenerateGreaterThanPlan(binaryExpression, myIsLongRunning, myTransactionToken, mySecurityToken);                    
 
-                case BinaryOperator.In:
-                    break;
                 case BinaryOperator.InRange:
                     break;
                 case BinaryOperator.LessOrEqualsThan:
@@ -172,9 +263,6 @@ namespace sones.GraphDB.Manager.QueryPlan
 
                 case BinaryOperator.NotEquals:
                     return GenerateNotEqualsPlan(binaryExpression, myIsLongRunning, myTransactionToken, mySecurityToken);
-
-                case BinaryOperator.NotIn:
-                    break;
 
                 #endregion
 

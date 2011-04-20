@@ -5,6 +5,8 @@ namespace sones.GraphDB.Expression
     /// </summary>
     public enum BinaryOperator
     {
+        //TODO: Implement In, NotIN
+
         #region Comparative
         /// <summary>
         /// Comparative operators compare the left and right side of a binary expression
@@ -13,12 +15,12 @@ namespace sones.GraphDB.Expression
         Equals,
         GreaterOrEqualsThan,
         GreaterThan,
-        In,
+        //In,
         InRange,
         LessOrEqualsThan,
         LessThan,
         NotEquals,
-        NotIn,
+        //NotIn,
 
         #endregion
 

@@ -18,6 +18,11 @@ namespace sones.GraphDB.Manager
         #region Data
 
         /// <summary>
+        /// The query plan manager
+        /// </summary>
+        private readonly IQueryPlanManager _queryPlanManager;
+
+        /// <summary>
         /// Gets or sets the myOutgoingEdgeVertex instance of the index manager.
         /// </summary>
         private readonly IIndexManager _indexManager;
@@ -80,6 +85,12 @@ namespace sones.GraphDB.Manager
             _vertexManager = vertexManager;
 
             #endregion
+
+            #region queryPlanManager
+
+            _queryPlanManager = new QueryPlanManager(_vertexTypeManager, _vertexStore, _indexManager);
+
+            #endregion
         }
 
         #endregion
@@ -109,6 +120,11 @@ namespace sones.GraphDB.Manager
         public IEdgeTypeManager EdgeTypeManager
         {
             get { return _edgeTypeManager; }
+        }
+
+        public IQueryPlanManager QueryPlanManager
+        {
+            get { return _queryPlanManager; }
         }
 
         #endregion

@@ -52,7 +52,10 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexManager.CanGetVertices(_request.Expression, _request.IsLongrunning, TransactionToken, SecurityToken);
+            if (myMetaManager.QueryPlanManager.IsValidExpression(_request.Expression))
+            {
+                throw new InvalidExpressionException(_request.Expression);
+            }
         }
 
         public override void Execute(IMetaManager myMetaManager)

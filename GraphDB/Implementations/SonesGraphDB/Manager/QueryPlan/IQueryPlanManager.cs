@@ -20,5 +20,12 @@ namespace sones.GraphDB.Manager.QueryPlan
         /// <param name="mySecurity">The current transaction token</param>
         /// <returns>A queryplan</returns>
         IQueryPlan CreateQueryPlan(IExpression myExpression, bool myIsLongRunning, TransactionToken myTransaction, SecurityToken mySecurity);
+
+        /// <summary>
+        /// Is the expression valid
+        /// </summary>
+        /// <param name="myExpression">The to be validated expression</param>
+        /// <returns>True or false</returns>
+        bool IsValidExpression(IExpression myExpression);
     }
 }

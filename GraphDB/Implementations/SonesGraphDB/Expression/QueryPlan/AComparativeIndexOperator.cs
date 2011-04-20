@@ -174,13 +174,10 @@ namespace sones.GraphDB.Expression.QueryPlan
 
             var idx = GetBestMatchingIdx(_indexManager.GetIndices(myVertexType, _property.Property, _securityToken, _transactionToken));
 
-            if (idx.ContainsKey(_constant.Constant))
+            foreach (var aVertex in GetValues(idx, _constant.Constant)
+                .Select(aId => _vertexStore.GetVertex(_securityToken, _transactionToken, aId, myVertexType.ID, VertexEditionFilter, VertexRevisionFilter)))
             {
-                foreach (var aVertex in GetValues(idx, _constant.Constant)
-                    .Select(aId => _vertexStore.GetVertex(_securityToken, _transactionToken, aId, myVertexType.ID, VertexEditionFilter, VertexRevisionFilter)))
-                {
-                    yield return aVertex;
-                }
+                yield return aVertex;
             }
 
             #endregion

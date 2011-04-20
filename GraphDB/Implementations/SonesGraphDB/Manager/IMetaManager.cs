@@ -6,11 +6,20 @@ using sones.GraphDB.Manager.Index;
 using sones.GraphDB.Manager.TypeManagement;
 using sones.GraphDB.Manager.Vertex;
 using sones.Library.Commons.VertexStore;
+using sones.GraphDB.Manager.QueryPlan;
 
 namespace sones.GraphDB.Manager
 {
+    /// <summary>
+    /// A meta manager that aggregates all GraphDB manager
+    /// </summary>
     public interface IMetaManager
     {
+        /// <summary>
+        /// The interface to the query plan manager
+        /// </summary>
+        IQueryPlanManager QueryPlanManager { get; }
+
         /// <summary>
         /// The interface to the indices
         /// </summary>

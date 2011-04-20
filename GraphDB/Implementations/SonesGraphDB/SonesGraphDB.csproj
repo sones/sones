@@ -51,6 +51,7 @@
     <Compile Include="Expression\QueryPlan\GreaterOrEquals\QueryPlanGreaterOrEqualsWithIndex.cs" />
     <Compile Include="Expression\QueryPlan\Greater\QueryPlanGreaterWithIndex.cs" />
     <Compile Include="Expression\QueryPlan\Greater\QueryPlanGreaterWithoutIndex.cs" />
+    <Compile Include="Expression\QueryPlan\InRange\QueryPlanInRangeWithIndex.cs" />
     <Compile Include="Expression\QueryPlan\LessOrEquals\QueryPlanLessOrEqualsThanWithIndex.cs" />
     <Compile Include="Expression\QueryPlan\LessOrEquals\QueryPlanLessOrEqualsThanWithoutIndex.cs" />
     <Compile Include="Expression\QueryPlan\Less\QueryPlanLessThanWithIndex.cs" />

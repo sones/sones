@@ -11,7 +11,6 @@ namespace sones.GraphDB.Manager
     /// </summary>
     public sealed class BasicRequestScheduler : IRequestScheduler
     {
-
         #region constructor
 
         /// <summary>
@@ -29,7 +28,10 @@ namespace sones.GraphDB.Manager
 
         public bool ExecuteRequestInParallel(IRequest myRequest)
         {
-            return myRequest.AccessMode != GraphDBAccessMode.TypeChange;
+            return true;
+
+            //Example:
+            //return myRequest.AccessMode != GraphDBAccessMode.TypeChange;
         }
 
         #endregion
