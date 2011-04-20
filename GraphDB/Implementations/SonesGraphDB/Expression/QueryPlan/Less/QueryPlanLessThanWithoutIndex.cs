@@ -9,14 +9,14 @@ using sones.Library.Commons.Transaction;
 namespace sones.GraphDB.Expression.QueryPlan
 {
     /// <summary>
-    /// An lower operation without any index
+    /// An less than operation without any index
     /// </summary>
     public sealed class QueryPlanLessThanWithoutIndex : AComparativeOperator, IQueryPlan
     {
         #region constructor
 
         /// <summary>
-        /// Creates a new queryplan that processes a lower operation without any index
+        /// Creates a new queryplan that processes a less than operation without any index
         /// </summary>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token</param>

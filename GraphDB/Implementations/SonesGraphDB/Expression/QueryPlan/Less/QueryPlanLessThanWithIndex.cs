@@ -12,14 +12,14 @@ using System.Linq;
 namespace sones.GraphDB.Expression.QueryPlan
 {
     /// <summary>
-    /// An Lower operation using indices
+    /// A less than operation using indices
     /// </summary>
     public sealed class QueryPlanLessThanWithIndex : AComparativeIndexOperator, IQueryPlan
     {
         #region constructor
 
         /// <summary>
-        /// Creates a new queryplan that processes a Lower operation using indices
+        /// Creates a new queryplan that processes a less than operation using indices
         /// </summary>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token</param>
