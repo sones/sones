@@ -57,6 +57,20 @@ namespace sones.GraphDB
                                 RequestInsertVertex myRequestInsert,
                                 Converter.InsertResultConverter<TResult> myOutputconverter);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result of this request</typeparam>
+        /// <param name="mySecurityToken">The current security token</param>
+        /// <param name="myTransactionToken">The current transaction token (null, if there is no transaction)</param>
+        /// <param name="myRequestInsert">The insert vertex request</param>
+        /// <param name="myOutputconverter">A function to convert the output into the desired type</param>
+        /// <returns>A generic result</returns>
+        TResult Truncate<TResult>(SecurityToken mySecurityToken,
+                                    TransactionToken myTransactionToken,
+                                    RequestTruncate myRequestTruncate,
+                                    Converter.TruncateResultConverter<TResult> myOutputconverter);
+
         #endregion
     }
 }

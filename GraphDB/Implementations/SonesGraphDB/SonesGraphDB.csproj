@@ -97,6 +97,7 @@
     <Compile Include="Request\GetVertices\PipelineableGetVerticesRequest.cs" />
     <Compile Include="Manager\TypeManagement\EdgeTypeManager.cs" />
     <Compile Include="Request\TraverseVertex\PipelineableTraverseVertexRequest.cs" />
+    <Compile Include="Request\Truncate\PipelineableTruncateRequest.cs" />
     <Compile Include="Settings\DefaultRequestManagerImplementation.cs" />
     <Compile Include="Settings\DefaultRequestSchedulerImplementation.cs" />
     <Compile Include="Settings\DefaultSecurityManagerImplementation.cs" />

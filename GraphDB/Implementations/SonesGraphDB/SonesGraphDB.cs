@@ -243,6 +243,18 @@ namespace sones.GraphDB
 
         #endregion
 
+        #region Truncate
+
+        public TResult Truncate<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestTruncate myRequestTruncate, Converter.TruncateResultConverter<TResult> myOutputconverter)
+        {
+            var id =
+                _requestManager.RegisterRequest(new PipelineableTruncateRequest(myRequestTruncate, mySecurityToken, myTransactionToken));
+
+            return ((PipelineableTruncateRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
         #endregion
 
         #region misc

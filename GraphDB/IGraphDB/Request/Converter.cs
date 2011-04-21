@@ -79,5 +79,14 @@ namespace sones.GraphDB.Request
         /// <param name="myVertex">The vertex that has been fetched from the GraphDB</param>
         /// <returns>A TResult</returns>
         public delegate TResult GetVertexResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IVertex myVertex);
+
+        /// <summary>
+        /// A converter delegate that produces a generic result
+        /// </summary>
+        /// <typeparam name="TResult">The type of the result</typeparam>
+        /// <param name="myRequestStatistics">The statistics of the request</param>
+        /// <param name="myVertex">The vertex that has been truncated</param>
+        /// <returns>A TResult</returns>
+        public delegate TResult TruncateResultConverter<out TResult>(IRequestStatistics myRequestStatistics);
     }
 }

@@ -3,6 +3,7 @@ using sones.GraphDB.Request;
 using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.GraphDB;
 
 namespace sones.GraphDSClient
 {
@@ -63,6 +64,11 @@ namespace sones.GraphDSClient
         }
 
         public TResult GetVertex<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertex myRequestGetVertex, Converter.GetVertexResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult Truncate<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestTruncate myRequestTruncate, Converter.TruncateResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }

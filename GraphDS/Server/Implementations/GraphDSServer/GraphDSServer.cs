@@ -98,6 +98,11 @@ namespace sones.GraphDSServer
             throw new NotImplementedException();
         }
 
+        public TResult Truncate<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestTruncate myRequestTruncate, Converter.TruncateResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
         public Guid ID
         {
             get { throw new NotImplementedException(); }
