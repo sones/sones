@@ -43,11 +43,6 @@ namespace sones.GraphQL
 
         #region IGraphQL Members
 
-        public string Name
-        {
-            get { return "GQL"; }
-        }
-
         public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
                                  string myQueryString)
         {
@@ -60,6 +55,25 @@ namespace sones.GraphQL
         }
 
         public IEnumerable<string> ExportGraphDML(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region IPluginable Members
+
+        public string PluginName
+        {
+            get { return "GQL"; }
+        }
+
+        public Dictionary<string, Type> SetableParameters
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public Library.VersionedPluginManager.IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
             throw new NotImplementedException();
         }

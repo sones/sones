@@ -130,16 +130,12 @@
     <Compile Include="Structure\Nodes\DML\CommentsNode.cs" />
     <Compile Include="Structure\Nodes\DML\VerbosityNode.cs" />
     <Compile Include="Structure\Nodes\DML\ParallelTasksNode.cs" />
-    <Compile Include="Structure\Nodes\DML\DescribeSettingsNode.cs" />
-    <Compile Include="Structure\Nodes\DML\DescribeSettingsItemsNode.cs" />
-    <Compile Include="Structure\Nodes\DML\DescribeSettItemNode.cs" />
     <Compile Include="Structure\Nodes\DML\DescribeEdgesNode.cs" />
     <Compile Include="Structure\Nodes\DML\DescribeEdgeNode.cs" />
     <Compile Include="Structure\Nodes\DML\DescribeIndicesNode.cs" />
     <Compile Include="Structure\Nodes\DML\DescribeIndexNode.cs" />
     <Compile Include="Structure\Nodes\DML\DescribeTypesNode.cs" />
     <Compile Include="Structure\Nodes\DML\DescribeTypeNode.cs" />
-    <Compile Include="Structure\Nodes\DML\DescribeSettingNode.cs" />
     <Compile Include="Structure\Nodes\DML\DescrAggrsNode.cs" />
     <Compile Include="Structure\Nodes\DML\DescrAggrNode.cs" />
     <Compile Include="Structure\Nodes\DML\DescrFunctionsNode.cs" />
@@ -177,10 +173,6 @@
     <Compile Include="Structure\Nodes\Misc\GraphDBTypeNode.cs" />
     <Compile Include="Structure\Nodes\Misc\IDNode.cs" />
     <Compile Include="Structure\Nodes\Misc\TypeListNode.cs" />
-    <Compile Include="Structure\Nodes\Settings\SettingAttrNode.cs" />
-    <Compile Include="Structure\Nodes\Settings\SettingTypeNode.cs" />
-    <Compile Include="Structure\Nodes\Settings\SettingOperationNode.cs" />
-    <Compile Include="Structure\Nodes\Settings\SettingScopeNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
@@ -206,6 +198,10 @@
     <ProjectReference Include="..\..\..\Library\Internal\Settings\Settings.csproj">
       <Project>{A233FDB4-70A9-4284-827A-1704950E0EF3}</Project>
       <Name>Settings</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
+      <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
+      <Name>PluginManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\IGraphQL\IGraphQL.csproj">
       <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>

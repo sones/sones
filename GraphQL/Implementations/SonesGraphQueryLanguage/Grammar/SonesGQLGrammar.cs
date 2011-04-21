@@ -16,7 +16,6 @@ using sones.GraphQL.Structure.Nodes.DDL;
 using sones.GraphQL.Structure.Nodes.DML;
 using sones.GraphQL.Structure.Nodes.Expressions;
 using sones.GraphQL.Structure.Nodes.Misc;
-using sones.GraphQL.Structure.Nodes.Settings;
 using sones.Library.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
 
@@ -192,10 +191,7 @@ namespace sones.GraphQL
         public KeyTerm S_DESCRIBE { get; private set; }
         public KeyTerm S_QUEUESIZE { get; private set; }
         public KeyTerm S_WEIGHTED { get; private set; }
-        public KeyTerm S_SETTING { get; private set; }
         public KeyTerm S_GET { get; private set; }
-        public KeyTerm S_DB { get; private set; }
-        public KeyTerm S_SESSION { get; private set; }
         public KeyTerm S_ATTRIBUTE { get; private set; }
         public KeyTerm S_DEFAULT { get; private set; }
 
@@ -204,7 +200,6 @@ namespace sones.GraphQL
         public KeyTerm S_FUNCTION { get; private set; }
         public KeyTerm S_AGGREGATE { get; private set; }
         public KeyTerm S_AGGREGATES { get; private set; }
-        public KeyTerm S_SETTINGS { get; private set; }
         public KeyTerm S_FUNCTIONS { get; private set; }
         public KeyTerm S_EDGE { get; private set; }
         public KeyTerm S_EDGES { get; private set; }
@@ -402,8 +397,6 @@ namespace sones.GraphQL
             S_QUEUESIZE = ToTerm(TERMINAL_QUEUESIZE);
             S_WEIGHTED = ToTerm(TERMINAL_WEIGHTED);
             S_GET = ToTerm("GET");
-            S_DB = ToTerm("DB");
-            S_SESSION = ToTerm("SESSION");
             S_ATTRIBUTE = ToTerm("ATTRIBUTE");
             S_DEFAULT = ToTerm("DEFAULT");
             S_BACKWARDEDGE = ToTerm("BACKWARDEDGE");
@@ -413,8 +406,6 @@ namespace sones.GraphQL
             S_FUNCTIONS = ToTerm("FUNCTIONS");
             S_AGGREGATE = ToTerm("AGGREGATE");
             S_AGGREGATES = ToTerm("AGGREGATES");
-            S_SETTING = ToTerm("SETTING");
-            S_SETTINGS = ToTerm("SETTINGS");
             S_INDICES = ToTerm("INDICES");
             S_EDGE = ToTerm("EDGE");
             S_EDGES = ToTerm("EDGES");
@@ -669,28 +660,6 @@ namespace sones.GraphQL
 
             #endregion
 
-            #region Settings
-
-            var SettingsStatement           = new NonTerminal("SettingStatement", CreateSettingStatementNode);
-            var SettingTypeNode             = new NonTerminal("SettingTypeNode", CreateSettingTypeNode);
-            var SettingAttrNode             = new NonTerminal("SettingAttrNode", CreateSettingAttrNode);
-            var SettingScope                = new NonTerminal("SettingScope", typeof(SettingScopeNode));
-            var SettingOpGet                = new NonTerminal("SettingOpGet");
-            var SettingOpSet                = new NonTerminal("SettingOpSet");
-            var SettingOpRemove             = new NonTerminal("SettingOpRemove");
-            var SettingOperation            = new NonTerminal("SettingOperation", typeof(SettingOperationNode));
-            var SettingOpSetLst             = new NonTerminal("SettingOpSetLst");
-            var SettingOpGetLst             = new NonTerminal("SettingOpGetLst");
-            var SettingOpRemLst             = new NonTerminal("SettingOpRemLst");
-            var SettingItems                = new NonTerminal("SettingItems");
-            var SettingItemsSet             = new NonTerminal("SettingItemsSet");
-            var SettingItemSetVal           = new NonTerminal("SettingItemSetVal");
-            var SettingItemSetLst           = new NonTerminal("SettingItemSetLst");
-            var SettingTypeStmLst           = new NonTerminal("SettingTypeStmLst");
-            var SettingAttrStmLst           = new NonTerminal("SettingAttrStmLst");
-
-            #endregion
-
             #region BackwardEdges
 
             var backwardEdgesOpt            = new NonTerminal("BackwardEdges", CreateBackwardEdgesNode);
@@ -729,10 +698,6 @@ namespace sones.GraphQL
             var DescrFunctionsStmt          = new NonTerminal("DescrFunctionsStmt", CreateDescrFunctions);
             var DescrAggrStmt               = new NonTerminal("DescrAggrStmt", CreateDescrAggr);
             var DescrAggrsStmt              = new NonTerminal("DescrAggrsStmt", CreateDescrAggrs);
-            var DescrSettStmt               = new NonTerminal("DescrSettStmt", CreateDescrSett);
-            var DescrSettItem               = new NonTerminal("DescrSettItem", CreateDescrSettItem);
-            var DescrSettingsItems          = new NonTerminal("DescrSettingsItems", CreateDescrSettingsItems);
-            var DescrSettingsStmt           = new NonTerminal("DescrSettingsStmt", CreateDescrSettings);
             var DescrTypeStmt               = new NonTerminal("DescrTypeStmt", CreateDescrType);
             var DescrTypesStmt              = new NonTerminal("DescrTypesStmt", CreateDescrTypes);
             var DescrIdxStmt                = new NonTerminal("DescrIdxStmt", CreateDescrIdx);
@@ -779,7 +744,6 @@ namespace sones.GraphQL
                             | createIndexStmt
                             | createTypesStmt
                             | deleteStmt
-                            | SettingsStatement
                             | truncateStmt
                             | DescrInfoStmt
                             | insertorupdateStmt
@@ -1374,45 +1338,11 @@ namespace sones.GraphQL
 
             #endregion
 
-            #region SETTING
-
-            SettingsStatement.Rule = S_SETTING + SettingScope + SettingOperation;
-
-            SettingScope.Rule = S_DB | S_SESSION | SettingTypeNode | SettingAttrNode;
-
-            SettingTypeNode.Rule = typeOrVertex + SettingTypeStmLst;
-
-            SettingTypeStmLst.Rule = MakePlusRule(SettingTypeStmLst, S_comma, TypeWrapper);
-
-            SettingAttrNode.Rule = S_ATTRIBUTE + SettingAttrStmLst;
-
-            SettingAttrStmLst.Rule = MakePlusRule(SettingAttrStmLst, S_comma, id_typeAndAttribute);
-
-            SettingOperation.Rule = SettingOpSet | SettingOpGet | SettingOpRemove;
-
-            SettingOpSet.Rule = S_SET + S_BRACKET_LEFT + SettingItemSetLst + S_BRACKET_RIGHT;
-
-            SettingItemsSet.Rule = string_literal + "=" + SettingItemSetVal;
-
-            SettingItemSetLst.Rule = MakePlusRule(SettingItemSetLst, S_comma, SettingItemsSet);
-
-            SettingItemSetVal.Rule = number
-                                        | S_DEFAULT
-                                        | string_literal;
-
-            SettingOpGet.Rule = S_GET + S_BRACKET_LEFT + SettingItems + S_BRACKET_RIGHT;
-
-            SettingOpRemove.Rule = S_REMOVE + S_BRACKET_LEFT + SettingItems + S_BRACKET_RIGHT;
-
-            SettingItems.Rule = MakePlusRule(SettingItems, S_comma, string_literal);
-
-            #endregion
-
             #region DESCRIBE
 
             DescrInfoStmt.Rule = S_DESCRIBE + DescrArgument;
 
-            DescrArgument.Rule = DescrAggrStmt | DescrAggrsStmt | DescrEdgeStmt | DescrEdgesStmt | DescrTypeStmt | DescrTypesStmt | DescrFuncStmt | DescrFunctionsStmt | DescrSettStmt | DescrSettingsStmt | DescrIdxStmt | DescrIdxsStmt;
+            DescrArgument.Rule = DescrAggrStmt | DescrAggrsStmt | DescrEdgeStmt | DescrEdgesStmt | DescrTypeStmt | DescrTypesStmt | DescrFuncStmt | DescrFunctionsStmt | DescrIdxStmt | DescrIdxsStmt;
 
             DescrAggrStmt.Rule = S_AGGREGATE + Id_simple;
 
@@ -1429,14 +1359,6 @@ namespace sones.GraphQL
             DescrFuncStmt.Rule = S_FUNCTION + Id_simple;
 
             DescrFunctionsStmt.Rule = S_FUNCTIONS;
-
-            DescrSettStmt.Rule = S_SETTING + DescrSettItem | S_SETTINGS + DescrSettingsItems;
-
-            DescrSettItem.Rule = Id_simple + Empty | Id_simple + S_ON + typeOrVertex + AType | Id_simple + S_ON + S_ATTRIBUTE + id_typeAndAttribute | Id_simple + S_ON + S_DB | Id_simple + S_ON + S_SESSION;
-
-            DescrSettingsItems.Rule = S_ON + typeOrVertex + TypeList | S_ON + S_ATTRIBUTE + id_typeAndAttribute | S_ON + S_DB | S_ON + S_SESSION;
-
-            DescrSettingsStmt.Rule = S_SETTINGS;
 
             DescrIdxStmt.Rule = S_INDEX + id_simpleDotList + DescrIdxEdtStmt;
 
@@ -1573,7 +1495,7 @@ namespace sones.GraphQL
                 , unOp, binOp, aliasOpt, aliasOptName, orderByAttributeListMember
                 , Value
                 //, EdgeTypeParam
-                , EdgeType_SortedMember, AttrUpdateOrAssign, ListAttrUpdate, SettingItemSetVal, DescrArgument,
+                , EdgeType_SortedMember, AttrUpdateOrAssign, ListAttrUpdate, DescrArgument,
                 TypeWrapper //is used as a wrapper for AType
                 , IdOrFunc //, IdOrFuncList
                 , BNF_ExprList, BNF_AggregateArg,
@@ -1960,24 +1882,6 @@ namespace sones.GraphQL
             parseNode.AstNode = settingNode;
         }
 
-        private void CreateSettingTypeNode(ParsingContext context, ParseTreeNode parseNode)
-        {
-            SettingTypeNode settingTypeNode = new SettingTypeNode();
-
-            settingTypeNode.Init(context, parseNode);
-
-            parseNode.AstNode = settingTypeNode;
-        }
-
-        private void CreateSettingAttrNode(ParsingContext context, ParseTreeNode parseNode)
-        {
-            SettingAttrNode settingAttrNode = new SettingAttrNode();
-
-            settingAttrNode.Init(context, parseNode);
-
-            parseNode.AstNode = settingAttrNode;
-        }
-
         #endregion
 
         private void CreateBackwardEdgesNode(ParsingContext context, ParseTreeNode parseNode)
@@ -2184,15 +2088,6 @@ namespace sones.GraphQL
             parseNode.AstNode = aggrInfoNode;
         }
 
-        private void CreateDescrSett(ParsingContext context, ParseTreeNode parseNode)
-        {
-            DescribeSettingNode settInfoNode = new DescribeSettingNode();
-
-            settInfoNode.Init(context, parseNode);
-
-            parseNode.AstNode = settInfoNode;
-        }
-
         private void CreateDescrType(ParsingContext context, ParseTreeNode parseNode)
         {
             DescribeTypeNode typeInfoNode = new DescribeTypeNode();
@@ -2247,32 +2142,6 @@ namespace sones.GraphQL
             parseNode.AstNode = edgeInfoNode;
         }
 
-        private void CreateDescrSettItem(ParsingContext context, ParseTreeNode parseNode)
-        {
-            DescribeSettItemNode setItemInfoNode = new DescribeSettItemNode();
-
-            setItemInfoNode.Init(context, parseNode);
-
-            parseNode.AstNode = setItemInfoNode;
-        }
-
-        private void CreateDescrSettingsItems(ParsingContext context, ParseTreeNode parseNode)
-        {
-            DescribeSettingsItemsNode setItemInfoNode = new DescribeSettingsItemsNode();
-
-            setItemInfoNode.Init(context, parseNode);
-
-            parseNode.AstNode = setItemInfoNode;
-        }
-
-        private void CreateDescrSettings(ParsingContext context, ParseTreeNode parseNode)
-        {
-            DescribeSettingsNode setItemInfoNode = new DescribeSettingsNode();
-
-            setItemInfoNode.Init(context, parseNode);
-
-            parseNode.AstNode = setItemInfoNode;
-        }
         #endregion
 
         #region Import

@@ -1,4 +1,5 @@
 ﻿using System;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.GraphQL
 {
@@ -31,11 +32,8 @@ namespace sones.GraphQL
     /// <summary>
     /// The interface for all graph query languages
     /// </summary>
-    public interface IGraphQL : IQueryableLanguage
+    public interface IGraphQL : IQueryableLanguage, IPluginable
     {
-        /// <summary>
-        /// The name of the graph query language (i.e. GQL, SPARQL, ...)
-        /// </summary>
-        String Name { get; }
+        
     }
 }
