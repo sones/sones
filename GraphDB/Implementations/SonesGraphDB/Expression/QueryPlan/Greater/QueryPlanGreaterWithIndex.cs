@@ -8,6 +8,8 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Plugins.Index.Interfaces;
 using System.Linq;
+using System.Linq.Expressions;
+using sones.GraphDB.Expression.Tree.Literals;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -27,7 +29,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myConstant">The constant value</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
         /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer</param>
-        public QueryPlanGreaterThanWithIndex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, QueryPlanProperty myProperty, ConstantExpression myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning, IIndexManager myIndexManager)
+        public QueryPlanGreaterThanWithIndex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, QueryPlanProperty myProperty, ILiteralExpression myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning, IIndexManager myIndexManager)
             : base(myProperty, myConstant, myIsLongrunning, mySecurityToken, myTransactionToken, myIndexManager, myVertexStore)        
         {
         }

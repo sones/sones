@@ -1,12 +1,13 @@
 ﻿using System;
 using sones.GraphDB.Expression.Tree;
+using sones.GraphDB.Expression.Tree.Literals;
 
 namespace sones.GraphDB.Expression
 {
     /// <summary>
     /// A constant expression
     /// </summary>
-    public sealed class ConstantExpression : IExpression
+    public sealed class SingleLiteralExpression : IExpression, ILiteralExpression
     {
         #region data
 
@@ -23,7 +24,7 @@ namespace sones.GraphDB.Expression
         /// Creates a new constant expression
         /// </summary>
         /// <param name="myConstant">The constant expression</param>
-        public ConstantExpression(IComparable myConstant)
+        public SingleLiteralExpression(IComparable myConstant)
         {
             Constant = myConstant;
         }
@@ -35,6 +36,15 @@ namespace sones.GraphDB.Expression
         public TypeOfExpression TypeOfExpression
         {
             get { return TypeOfExpression.Constant; }
+        }
+
+        #endregion
+
+        #region ILiteralExpression Members
+
+        public IComparable Value
+        {
+            get { return Constant; }
         }
 
         #endregion

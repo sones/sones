@@ -301,7 +301,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             #region get the type from fs
 
-            return _vertexManager.GetSingleVertex(new BinaryExpression(_vertexTypeNameExpression, BinaryOperator.Equals, new ConstantExpression(myTypeName)), myTransaction, mySecurity);
+            return _vertexManager.GetSingleVertex(new BinaryExpression(_vertexTypeNameExpression, BinaryOperator.Equals, new SingleLiteralExpression(myTypeName)), myTransaction, mySecurity);
 
             #endregion
         }
@@ -317,7 +317,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             #region get the type from fs
 
-            return _vertexManager.GetSingleVertex(new BinaryExpression(_vertexTypeIDExpression, BinaryOperator.Equals, new ConstantExpression(myTypeId)), myTransaction, mySecurity);
+            return _vertexManager.GetSingleVertex(new BinaryExpression(_vertexTypeIDExpression, BinaryOperator.Equals, new SingleLiteralExpression(myTypeId)), myTransaction, mySecurity);
 
             #endregion
         }

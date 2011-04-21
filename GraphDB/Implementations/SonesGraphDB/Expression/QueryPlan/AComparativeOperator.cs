@@ -9,6 +9,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphDB.TypeSystem;
+using sones.GraphDB.Expression.Tree.Literals;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -39,7 +40,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// The constant value
         /// </summary>
-        protected readonly ConstantExpression _constant;
+        protected readonly ILiteralExpression _constant;
 
         /// <summary>
         /// Determines whether it is anticipated that the request could take longer
@@ -59,7 +60,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
-        protected AComparativeOperator(QueryPlanProperty myProperty, ConstantExpression myConstant, Boolean myIsLongrunning, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexStore myVertexStore)
+        protected AComparativeOperator(QueryPlanProperty myProperty, ILiteralExpression myConstant, Boolean myIsLongrunning, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IVertexStore myVertexStore)
         {
             _property = myProperty;
             _constant = myConstant;

@@ -9,6 +9,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphDB.TypeSystem;
+using sones.GraphDB.Expression.Tree.Literals;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -44,7 +45,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// The constant value
         /// </summary>
-        protected readonly ConstantExpression _constant;
+        protected readonly ILiteralExpression _constant;
 
         /// <summary>
         /// Determines whether it is anticipated that the request could take longer
@@ -65,7 +66,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myTransactionToken">The current transaction token</param>
         /// <param name="myIndexManager">The index manager is needed to get the property related indices</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
-        protected AComparativeIndexOperator(QueryPlanProperty myProperty, ConstantExpression myConstant, Boolean myIsLongrunning, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IIndexManager myIndexManager, IVertexStore myVertexStore)
+        protected AComparativeIndexOperator(QueryPlanProperty myProperty, ILiteralExpression myConstant, Boolean myIsLongrunning, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IIndexManager myIndexManager, IVertexStore myVertexStore)
         {
             _property = myProperty;
             _constant = myConstant;
@@ -174,7 +175,7 @@ namespace sones.GraphDB.Expression.QueryPlan
 
             var idx = GetBestMatchingIdx(_indexManager.GetIndices(myVertexType, _property.Property, _securityToken, _transactionToken));
 
-            foreach (var aVertex in GetValues(idx, _constant.Constant)
+            foreach (var aVertex in GetValues(idx, _constant.Value)
                 .Select(aId => _vertexStore.GetVertex(_securityToken, _transactionToken, aId, myVertexType.ID, VertexEditionFilter, VertexRevisionFilter)))
             {
                 yield return aVertex;

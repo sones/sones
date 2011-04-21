@@ -46,7 +46,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// The constant value
         /// </summary>
-        private readonly RangeConstantExpression _constant;        
+        private readonly RangeLiteralExpression _constant;        
 
         /// <summary>
         /// Determines whether it is anticipated that the request could take longer
@@ -66,7 +66,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myConstant">The constant value</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
         /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer</param>
-        public QueryPlanInRangeWithIndex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, QueryPlanProperty myProperty, RangeConstantExpression myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning, IIndexManager myIndexManager)
+        public QueryPlanInRangeWithIndex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, QueryPlanProperty myProperty, RangeLiteralExpression myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning, IIndexManager myIndexManager)
         {
             _securityToken = mySecurityToken;
             _transactionToken = myTransactionToken;
@@ -149,7 +149,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myIndex">The interesting index</param>
         /// <param name="myConstant">The inderesting range</param>
         /// <returns>An enumerable of vertexIDs</returns>
-        private IEnumerable<Int64> GetValues(IIndex<IComparable, long> myIndex, RangeConstantExpression myConstant)
+        private IEnumerable<Int64> GetValues(IIndex<IComparable, long> myIndex, RangeLiteralExpression myConstant)
         {
             if (myIndex is ISingleValueIndex<IComparable, Int64>)
             {
@@ -192,7 +192,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="mySingleValueIndex">The interesting index</param>
         /// <param name="myConstant">The interesting range</param>
         /// <returns>An enumerable of vertexIDs</returns>
-        private IEnumerable<long> GetSingleIndexValues(ISingleValueIndex<IComparable, long> mySingleValueIndex, RangeConstantExpression myConstant)
+        private IEnumerable<long> GetSingleIndexValues(ISingleValueIndex<IComparable, long> mySingleValueIndex, RangeLiteralExpression myConstant)
         {
             if (mySingleValueIndex is IRangeIndex<IComparable, long>)
             {
@@ -241,7 +241,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="mySingleValueIndex">The interesting index</param>
         /// <param name="myConstant">The interesting range</param>
         /// <returns>An enumerable of vertexIDs</returns>
-        private IEnumerable<long> GetMultipleIndexValues(IMultipleValueIndex<IComparable, long> myMultipleValueIndex, RangeConstantExpression myConstant)
+        private IEnumerable<long> GetMultipleIndexValues(IMultipleValueIndex<IComparable, long> myMultipleValueIndex, RangeLiteralExpression myConstant)
         {
             if (myMultipleValueIndex is IRangeIndex<IComparable, long>)
             {

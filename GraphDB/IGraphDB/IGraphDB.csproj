@@ -49,6 +49,7 @@
     <Compile Include="ErrorHandling\DBObjectErrors\DBObjectCollisionException.cs" />
     <Compile Include="ErrorHandling\DBObjectErrors\AGraphDBObjectException.cs" />
     <Compile Include="ErrorHandling\EdgeTypeDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\Expression\InvalidCollectionComparismException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\IndexAttributeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\IndexUniqueConstrainViolationException.cs" />
     <Compile Include="ErrorHandling\Expression\InvalidExpressionException.cs" />
@@ -97,7 +98,13 @@
     <Compile Include="ErrorHandling\UnknownDBException.cs" />
     <Compile Include="Expression\Operator\BinaryOperator.cs" />
     <Compile Include="Expression\Operator\UnaryOperator.cs" />
-    <Compile Include="Expression\Tree\RangeConstantExpression.cs" />
+    <Compile Include="Expression\Tree\Literals\CollectionLiteralExpression.cs" />
+    <Compile Include="Expression\Tree\Literals\ILiteralExpression.cs" />
+    <Compile Include="Expression\Tree\Literals\Wrapper\ListCollectionWrapper.cs" />
+    <Compile Include="Expression\Tree\Literals\Wrapper\SetCollectionWrapper.cs" />
+    <Compile Include="Expression\Tree\Literals\Wrapper\ICollectionWrapper.cs" />
+    <Compile Include="Expression\Tree\Literals\Wrapper\IComparableWrapper.cs" />
+    <Compile Include="Expression\Tree\Literals\RangeLiteralExpression.cs" />
     <Compile Include="Expression\Tree\TimeSpanDefinition.cs" />
     <Compile Include="Expression\Tree\TypeOfExpression.cs" />
     <Compile Include="IReadOnlyGraphDB.cs" />
@@ -121,7 +128,7 @@
     <Compile Include="Request\GraphDBAccessMode.cs" />
     <Compile Include="Expression\Tree\PropertyExpression.cs" />
     <Compile Include="Expression\Tree\BinaryExpression.cs" />
-    <Compile Include="Expression\Tree\ConstantExpression.cs" />
+    <Compile Include="Expression\Tree\Literals\SingleLiteralExpression.cs" />
     <Compile Include="Expression\Tree\IExpression.cs" />
     <Compile Include="Expression\Tree\UnaryExpression.cs" />
     <Compile Include="Request\Insert\EdgeDefinition.cs" />

@@ -1,12 +1,13 @@
 ﻿using System;
 using sones.GraphDB.Expression.Tree;
+using sones.GraphDB.Expression.Tree.Literals;
 
 namespace sones.GraphDB.Expression
 {
     /// <summary>
     /// A constant expression for range-definition
     /// </summary>
-    public sealed class RangeConstantExpression : IExpression
+    public sealed class RangeLiteralExpression : IExpression
     {
         #region data
 
@@ -37,7 +38,7 @@ namespace sones.GraphDB.Expression
         /// <param name="myLower">The lower limit for the range</param>
         /// <param name="myUpper">The upper limit for the range</param>
         /// <param name="myIncludeBorder">Include the upper and lower boarder?</param>
-        public RangeConstantExpression(IComparable myLower, IComparable myUpper, Boolean myIncludeBorder = true)
+        public RangeLiteralExpression(IComparable myLower, IComparable myUpper, Boolean myIncludeBorder = true)
         {
             Lower = myLower;
             Upper = myUpper;

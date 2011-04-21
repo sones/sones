@@ -5,6 +5,7 @@ using sones.Library.Commons.VertexStore;
 using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.GraphDB.Expression.Tree.Literals;
 
 namespace sones.GraphDB.Expression.QueryPlan
 {
@@ -24,7 +25,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myConstant">The constant value</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
         /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer</param>
-        public QueryPlanGreaterThanWithoutIndex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, QueryPlanProperty myProperty, ConstantExpression myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning)
+        public QueryPlanGreaterThanWithoutIndex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, QueryPlanProperty myProperty, ILiteralExpression myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning)
             : base(myProperty, myConstant, myIsLongrunning, mySecurityToken, myTransactionToken, myVertexStore)            
         {
         }
@@ -48,7 +49,7 @@ namespace sones.GraphDB.Expression.QueryPlan
             {
                 if (aVertex.HasProperty(_property.Property.AttributeID))
                 {
-                    if (_property.Property.ExtractValue(aVertex).CompareTo(_constant.Constant) > 0)
+                    if (_property.Property.ExtractValue(aVertex).CompareTo(_constant.Value) > 0)
                     {
                         yield return aVertex;
                     }

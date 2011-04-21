@@ -18,7 +18,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <summary>
         /// The constant range
         /// </summary>
-        private readonly RangeConstantExpression _constantRange;
+        private readonly RangeLiteralExpression _constantRange;
 
         #endregion
         
@@ -34,7 +34,7 @@ namespace sones.GraphDB.Expression.QueryPlan
         /// <param name="myConstant">The constant value</param>
         /// <param name="myVertexStore">The vertex store that is needed to load the vertices</param>
         /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer</param>
-        public QueryPlanInRangeWithoutIndex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, QueryPlanProperty myProperty, RangeConstantExpression myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning)
+        public QueryPlanInRangeWithoutIndex(SecurityToken mySecurityToken, TransactionToken myTransactionToken, QueryPlanProperty myProperty, RangeLiteralExpression myConstant, IVertexStore myVertexStore, Boolean myIsLongrunning)
             : base(myProperty, null, myIsLongrunning, mySecurityToken, myTransactionToken, myVertexStore)
         {
             _constantRange = myConstant;

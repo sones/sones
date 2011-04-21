@@ -7,6 +7,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.TypeSystem;
 using System;
+using sones.GraphDB.Expression.Tree.Literals;
 
 namespace sones.GraphDB.Request
 {
@@ -292,7 +293,7 @@ namespace sones.GraphDB.Request
                 case TypeOfExpression.Property:
                     return (IsValidPropertyExpression((PropertyExpression)myExpression));
                 case TypeOfExpression.Constant:
-                    return (IsValidConstantExpression((ConstantExpression)myExpression));
+                    return (IsValidConstantExpression((ILiteralExpression)myExpression));
                 case TypeOfExpression.Unary:
                 default:
                     return false;
@@ -314,7 +315,7 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="constantExpression">The expression</param>
         /// <returns>True or False</returns>
-        private bool IsValidConstantExpression(ConstantExpression constantExpression)
+        private bool IsValidConstantExpression(ILiteralExpression constantExpression)
         {
             return (constantExpression != null);
         }
