@@ -6,6 +6,7 @@ using sones.GraphDB;
 using sones.Library.ErrorHandling;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using System.Linq;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -21,8 +22,10 @@ namespace sones.GraphQL.StatementNodes.DML
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            throw new NotImplementedException();
-            
+            var grammar = (SonesGQLGrammar)context.Language.Grammar;
+
+            // get Name
+            _TypeName = parseNode.ChildNodes.Last().Token.ValueString;
         }
 
         #endregion
