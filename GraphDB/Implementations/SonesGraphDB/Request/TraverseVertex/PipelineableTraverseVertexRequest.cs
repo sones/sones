@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using sones.GraphDB.ErrorHandling.Expression;
 using sones.GraphDB.Expression;
+using sones.GraphDB.Expression.Tree.Literals;
 using sones.GraphDB.Manager;
-using sones.Library.PropertyHyperGraph;
+using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.GraphDB.TypeSystem;
-using System;
-using sones.GraphDB.Expression.Tree.Literals;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDB.Request
 {
@@ -23,6 +23,10 @@ namespace sones.GraphDB.Request
         /// </summary>
         private readonly RequestTraverseVertex _request;
 
+        private readonly SecurityToken _securityToken;
+
+        private readonly TransactionToken _transactionToken;
+
         /// <summary>
         /// The verticies which are fetched by the Traverser
         /// it is used for generating the output
@@ -30,7 +34,7 @@ namespace sones.GraphDB.Request
         private IEnumerable<IVertex> _fetchedIVertices;
 
         /// <summary>
-        /// Traversal state holds statistical informations about the traversion
+        /// Traversal state holds the actual state of the traversion
         /// </summary>
         private TraversalState _traversalState;
 
@@ -45,11 +49,15 @@ namespace sones.GraphDB.Request
         /// <param name="mySecurity">The security token of the request initiator</param>
         /// <param name="myTransactionToken">The myOutgoingEdgeVertex transaction token</param>
         public PipelineableTraverseVertexRequest( RequestTraverseVertex myTraverseVertexRequest, 
-                                                  SecurityToken mySecurity,
+                                                  SecurityToken mySecurityToken,
                                                   TransactionToken myTransactionToken)
-            : base(mySecurity, myTransactionToken)
+            : base(mySecurityToken, myTransactionToken)
         {
             _request = myTraverseVertexRequest;
+
+            _securityToken = mySecurityToken;
+
+            _transactionToken = myTransactionToken;
         }
 
         #endregion
@@ -62,8 +70,8 @@ namespace sones.GraphDB.Request
         /// <param name="myMetaManager">Provides all important manager</param>
         public override void Validate(IMetaManager myMetaManager)
         {
-            if ((_request == null) || (!IsValidExpression(_request.TraverseVertexDefinition.Expression)))
-                throw new InvalidExpressionException(_request.TraverseVertexDefinition.Expression);
+            if ((_request == null) || (!IsValidExpression(_request.Expression)))
+                throw new InvalidExpressionException(_request.Expression);
         }
 
         /// <summary>
@@ -72,18 +80,17 @@ namespace sones.GraphDB.Request
         /// <param name="myMetaManager">Provides all important manager</param>
         public override void Execute(IMetaManager myMetaManager)
         {
-            //get start node by expression and create traversalState
-            _traversalState = new TraversalState(myMetaManager.VertexManager.GetSingleVertex(_request.TraverseVertexDefinition.Expression, TransactionToken, SecurityToken));
+            //create traversal state an get start node
+            _traversalState = new TraversalState(myMetaManager.VertexManager.GetVertices(_request.Expression, true, _transactionToken, _securityToken));
 
             //do traversion
-            _fetchedIVertices = TraverseVertex_private( _traversalState.StartNode,
-                                                        null,
-                                                        myMetaManager,
-                                                        _request.TraverseVertexDefinition.AvoidCircles,
-                                                        _request.TraverseVertexDefinition.FollowThisEdge,
-                                                        _request.TraverseVertexDefinition.MatchEvaluator,
-                                                        _request.TraverseVertexDefinition.MatchAction,
-                                                        _request.TraverseVertexDefinition.StopEvaluator );
+            _fetchedIVertices = TraverseStartNodes(_traversalState.StartNodes,
+                                                    myMetaManager,
+                                                    _request.AvoidCircles,
+                                                    _request.FollowThisEdge,
+                                                    _request.MatchEvaluator,
+                                                    _request.MatchAction,
+                                                    _request.StopEvaluator);
         }
 
         public override IRequest GetRequest()
@@ -109,6 +116,42 @@ namespace sones.GraphDB.Request
         #endregion
 
         #region private
+
+        /// <summary>
+        /// Starts a traversion over every node in start nodes
+        /// </summary>
+        /// <param name="myStartNodes">Start vertices for the traversion</param>
+        /// <param name="myAvoidCircles">Avoid circles?</param>
+        /// <param name="myFollowThisEdge">Function to check if the edge should be followed</param>
+        /// <param name="myMatchEvaluator">Function to check match</param>
+        /// <param name="myMatchAction">A Action to perform on each match found</param>
+        /// <param name="myStopEvaluator">Evaluator to stop traversion</param>
+        /// <returns>Enumerable of verticies</returns>
+        private IEnumerable<IVertex> TraverseStartNodes(IEnumerable<IVertex>                                    myStartNodes,
+                                                        IMetaManager                                            myMetaManager,
+                                                        Boolean                                                 myAvoidCircles,
+                                                        Func<IVertex, IVertexType, IEdge, IEdgeType, Boolean>   myFollowThisEdge,
+                                                        Func<IVertex, IVertexType, Boolean>                     myMatchEvaluator,
+                                                        Action<IVertex>                                         myMatchAction,
+                                                        Func<TraversalState, Boolean>                           myStopEvaluator)
+        {
+            //start a traversion from each start node
+            foreach (var node in myStartNodes)
+            {
+                foreach (var vertex in TraverseVertex_private(node,
+                                                                null,
+                                                                myMetaManager,
+                                                                _request.AvoidCircles,
+                                                                _request.FollowThisEdge,
+                                                                _request.MatchEvaluator,
+                                                                _request.MatchAction,
+                                                                _request.StopEvaluator))
+                {
+                    yield return vertex;
+                }
+            }
+        }
+
 
         /// <summary>
         /// The private traverser method
@@ -250,7 +293,6 @@ namespace sones.GraphDB.Request
                     }
 
                     //move recursive in depth
-
                     foreach (var vertex in TraverseVertex_private(nextVertex,
                                                                     myCurrentVertex,
                                                                     myMetaManager,
@@ -272,7 +314,7 @@ namespace sones.GraphDB.Request
 
             #endregion
         }
-
+                
         #endregion
 
         #region private helper

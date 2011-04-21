@@ -15,7 +15,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The starting vertex of the traversal
         /// </summary>
-        public IVertex StartNode { get; private set; }
+        public IEnumerable<IVertex> StartNodes { get; private set; }
 
         /// <summary>
         /// The current distance from the StartNode
@@ -51,9 +51,9 @@ namespace sones.GraphDB.Request
 
         #region Constructor
 
-        public TraversalState(IVertex myStartNode)
+        public TraversalState(IEnumerable<IVertex> myStartNodes)
         {
-            StartNode = myStartNode;
+            StartNodes = myStartNodes;
             VisitedVertices = new Dictionary<long, HashSet<long>>();
             Visited = new HashSet<long>();
         }
