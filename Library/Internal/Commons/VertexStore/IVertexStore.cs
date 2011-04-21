@@ -87,9 +87,9 @@ namespace sones.Library.Commons.VertexStore
             SecurityToken mySecurityToken,
             TransactionToken myTransactionToken,
             Int64 myTypeID,
-            IEnumerable<Int64> myInterestingVertexIDs = null,
-            VertexStoreFilter.EditionFilter myEditionsFilterFunc = null,
-            VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null);
+            IEnumerable<Int64> myInterestingVertexIDs,
+            VertexStoreFilter.EditionFilter myEditionsFilterFunc,
+            VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc);
 
         /// <summary>
         /// Returns all vertex by a given typeID. It's possible to filter interesting vertices.
@@ -104,8 +104,8 @@ namespace sones.Library.Commons.VertexStore
             SecurityToken mySecurityToken,
             TransactionToken myTransactionToken,
             Int64 myTypeID,
-            String myEdition = null,
-            VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null);
+            String myEdition,
+            VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc);
 
         /// <summary>
         /// Returns all vertex by a given typeID. It's possible to filter interesting vertices.
@@ -122,9 +122,9 @@ namespace sones.Library.Commons.VertexStore
             SecurityToken mySecurityToken,
             TransactionToken myTransactionToken,
             Int64 myTypeID,
-            IEnumerable<Int64> myInterestingVertexIDs = null,
-            IEnumerable<String> myInterestingEditionNames = null,
-            IEnumerable<Int64> myInterestingRevisionIDs = null);
+            IEnumerable<Int64> myInterestingVertexIDs,
+            IEnumerable<String> myInterestingEditionNames,
+            IEnumerable<Int64> myInterestingRevisionIDs);
 
         /// <summary>
         /// Returns all vertices considering a given vertex type.

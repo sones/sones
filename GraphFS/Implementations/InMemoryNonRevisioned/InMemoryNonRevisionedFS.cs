@@ -159,9 +159,9 @@ namespace sones.GraphFS
         }
 
         public IEnumerable<IVertex> GetVerticesByTypeID(SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
-                                                        long myTypeID, IEnumerable<long> myInterestingVertexIDs = null,
-                                                        IEnumerable<string> myInterestingEditionNames = null,
-                                                        IEnumerable<Int64> myInterestingRevisionIDs = null)
+                                                        long myTypeID, IEnumerable<long> myInterestingVertexIDs,
+                                                        IEnumerable<string> myInterestingEditionNames,
+                                                        IEnumerable<Int64> myInterestingRevisionID)
         {
             return myInterestingVertexIDs != null
                        ? GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID, myInterestingVertexIDs)
@@ -179,9 +179,9 @@ namespace sones.GraphFS
         public IEnumerable<IVertex> GetVerticesByTypeID(
             SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
             long myTypeID, 
-            IEnumerable<long> myInterestingVertexIDs = null, 
-            VertexStoreFilter.EditionFilter myEditionsFilterFunc = null, 
-            VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null)
+            IEnumerable<long> myInterestingVertexIDs, 
+            VertexStoreFilter.EditionFilter myEditionsFilterFunc, 
+            VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc)
         {
             return myInterestingVertexIDs != null
                        ? GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID, myInterestingVertexIDs)
@@ -191,8 +191,8 @@ namespace sones.GraphFS
         public IEnumerable<IVertex> GetVerticesByTypeID(
             SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
             long myTypeID, 
-            string myEdition = null, 
-            VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc = null)
+            string myEdition, 
+            VertexStoreFilter.RevisionFilter myInterestingRevisionIDFilterFunc)
         {
             return GetVerticesByTypeID(mySecurityToken, myTransactionToken, myTypeID);
         }
