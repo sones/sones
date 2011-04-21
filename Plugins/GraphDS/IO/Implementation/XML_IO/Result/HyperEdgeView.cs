@@ -2,45 +2,56 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sones.GraphQL.Result;
 
-namespace sones.GraphQL.Result
+namespace sones.XML_IO.Result
 {
-    /// <summary>
-    /// This class creates an edge view.
-    /// </summary>
-    public class EdgeView : IEdgeView
+    public class HyperEdgeView : IHyperEdgeView
     {
         #region Data
 
         /// <summary>
         /// The list of properties of the edge.
         /// </summary>
-        private readonly IDictionary<String, Object>        _propertyList;
+        private readonly IDictionary<String, Object>    _propertyList;
 
         /// <summary>
-        /// The list of target vertices of the edge.
+        /// The list of target vertex of the edge.
         /// </summary>
-        private readonly IEnumerable<IVertexView>           _targetVertices;
+        private readonly IEnumerable<IVertexView>       _targetVertices;
+
+        /// <summary>
+        /// The vertices, which belongs to the hyperedge.
+        /// </summary>
+        private readonly IEnumerable<ISingleEdgeView>   _edges;
 
 
         #endregion
 
         #region Constructor
 
+
         /// <summary>
         /// The edge view constructor.
         /// </summary>
         /// <param name="myProperties">The properties of the edge.</param>
         /// <param name="myTargetVertices">The target vertices of the edge.</param>
-        public EdgeView(IDictionary<String, Object> myProperties, IEnumerable<IVertexView> myTargetVertices)
+        /// <param name="myEdges">The vertices, which belongs to the hyperedge.</param>
+        public HyperEdgeView(IDictionary<String, Object> myProperties, IEnumerable<IVertexView> myTargetVertices, IEnumerable<ISingleEdgeView> myEdges)
         {
-            _propertyList       = myProperties;
-            _targetVertices     = myTargetVertices;
+            _propertyList = myProperties;
+            _targetVertices = myTargetVertices;
+            _edges = myEdges;
         }
 
         #endregion
 
-        #region IEdgeView
+        #region IHyperEdgeView
+
+        public IEnumerable<ISingleEdgeView> GetEdges()
+        {
+            return _edges;
+        }
 
         public IEnumerable<IVertexView> GetTargetVertices()
         {
@@ -53,7 +64,7 @@ namespace sones.GraphQL.Result
 
             if (_propertyList.TryGetValue(myPropertyName, out outValue))
             {
-                return (T) outValue;
+                return (T)outValue;
             }
             else
             {

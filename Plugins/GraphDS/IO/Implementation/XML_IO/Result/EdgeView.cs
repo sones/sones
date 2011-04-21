@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sones.GraphQL.Result;
 
-namespace sones.GraphQL.Result
+namespace sones.XML_IO.Result
 {
     /// <summary>
     /// This class creates an edge view.

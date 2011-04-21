@@ -49,6 +49,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>QueryResultSchema.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Result\EdgeView.cs" />
+    <Compile Include="Result\GraphElementView.cs" />
+    <Compile Include="Result\HyperEdgeView.cs" />
+    <Compile Include="Result\SingleEdgeView.cs" />
+    <Compile Include="Result\VertexView.cs" />
     <Compile Include="XML_IO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -2,35 +2,37 @@ namespace SchemaToClassesGenerator {
     
     
     /// <remarks/>
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(SchemaEdgeView))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd", IsNullable=true)]
-    public partial class VertexRevisionID {
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
+    public abstract partial class GraphElementView {
         
-        private long timestampField;
+        private int countOfPropertiesField;
         
-        private ulong idField;
+        private Property[] propertiesField;
         
         /// <remarks/>
-        public long Timestamp {
+        public int CountOfProperties {
             get {
-                return this.timestampField;
+                return this.countOfPropertiesField;
             }
             set {
-                this.timestampField = value;
+                this.countOfPropertiesField = value;
             }
         }
         
         /// <remarks/>
-        public ulong ID {
+        [System.Xml.Serialization.XmlArrayItemAttribute("Properties", IsNullable=false)]
+        public Property[] Properties {
             get {
-                return this.idField;
+                return this.propertiesField;
             }
             set {
-                this.idField = value;
+                this.propertiesField = value;
             }
         }
     }
@@ -40,23 +42,23 @@ namespace SchemaToClassesGenerator {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd", IsNullable=true)]
-    public partial class Properties {
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
+    public partial class Property {
         
-        private string nameField;
+        private string idField;
         
         private string typeField;
         
         private string valueField;
         
         /// <remarks/>
-        public string Name {
+        public string ID {
             get {
-                return this.nameField;
+                return this.idField;
             }
             set {
-                this.nameField = value;
+                this.idField = value;
             }
         }
         
@@ -86,21 +88,21 @@ namespace SchemaToClassesGenerator {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd", IsNullable=true)]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
     public partial class BinaryData {
         
-        private string nameField;
+        private string idField;
         
         private byte[] contentField;
         
         /// <remarks/>
-        public string Name {
+        public string ID {
             get {
-                return this.nameField;
+                return this.idField;
             }
             set {
-                this.nameField = value;
+                this.idField = value;
             }
         }
         
@@ -117,115 +119,19 @@ namespace SchemaToClassesGenerator {
     }
     
     /// <remarks/>
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(EdgeView))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd", IsNullable=true)]
-    public abstract partial class GraphElementView {
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
+    public partial class SchemaEdgeView : GraphElementView {
         
-        private int countOfPropertiesField;
-        
-        private string commentField;
-        
-        private System.DateTime creationDateField;
-        
-        private System.DateTime modificationDateField;
-        
-        private Properties[] propertiesField;
+        private SchemaVertexView[] targetVerticesField;
         
         /// <remarks/>
-        public int CountOfProperties {
-            get {
-                return this.countOfPropertiesField;
-            }
-            set {
-                this.countOfPropertiesField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public string Comment {
-            get {
-                return this.commentField;
-            }
-            set {
-                this.commentField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public System.DateTime CreationDate {
-            get {
-                return this.creationDateField;
-            }
-            set {
-                this.creationDateField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public System.DateTime ModificationDate {
-            get {
-                return this.modificationDateField;
-            }
-            set {
-                this.modificationDateField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
-        public Properties[] Properties {
-            get {
-                return this.propertiesField;
-            }
-            set {
-                this.propertiesField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd", IsNullable=true)]
-    public partial class EdgeView : GraphElementView {
-        
-        private string edgeTypeNameField;
-        
-        private VertexView sourceVertexField;
-        
-        private VertexView[] targetVerticesField;
-        
-        /// <remarks/>
-        public string EdgeTypeName {
-            get {
-                return this.edgeTypeNameField;
-            }
-            set {
-                this.edgeTypeNameField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public VertexView SourceVertex {
-            get {
-                return this.sourceVertexField;
-            }
-            set {
-                this.sourceVertexField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
-        public VertexView[] TargetVertices {
+        [System.Xml.Serialization.XmlArrayItemAttribute("VertexView", IsNullable=false)]
+        public SchemaVertexView[] TargetVertices {
             get {
                 return this.targetVerticesField;
             }
@@ -240,59 +146,35 @@ namespace SchemaToClassesGenerator {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd", IsNullable=true)]
-    public partial class VertexView {
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
+    public partial class SchemaVertexView {
         
-        private string vertexTypeNameField;
+        private Property[] propertiesField;
         
-        private long vertexIDField;
-        
-        private string editionNameField;
-        
-        private VertexRevisionID vertexRevisionIDField;
+        private BinaryData[] binaryPropertiesField;
         
         private EdgeTuple[] edgesField;
         
-        private BinaryData[] binaryPropertysField;
-        
         /// <remarks/>
-        public string VertexTypeName {
+        [System.Xml.Serialization.XmlArrayItemAttribute("Properties", IsNullable=false)]
+        public Property[] Properties {
             get {
-                return this.vertexTypeNameField;
+                return this.propertiesField;
             }
             set {
-                this.vertexTypeNameField = value;
+                this.propertiesField = value;
             }
         }
         
         /// <remarks/>
-        public long VertexID {
+        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
+        public BinaryData[] BinaryProperties {
             get {
-                return this.vertexIDField;
+                return this.binaryPropertiesField;
             }
             set {
-                this.vertexIDField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public string EditionName {
-            get {
-                return this.editionNameField;
-            }
-            set {
-                this.editionNameField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public VertexRevisionID VertexRevisionID {
-            get {
-                return this.vertexRevisionIDField;
-            }
-            set {
-                this.vertexRevisionIDField = value;
+                this.binaryPropertiesField = value;
             }
         }
         
@@ -306,17 +188,6 @@ namespace SchemaToClassesGenerator {
                 this.edgesField = value;
             }
         }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
-        public BinaryData[] BinaryPropertys {
-            get {
-                return this.binaryPropertysField;
-            }
-            set {
-                this.binaryPropertysField = value;
-            }
-        }
     }
     
     /// <remarks/>
@@ -324,13 +195,13 @@ namespace SchemaToClassesGenerator {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd", IsNullable=true)]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
     public partial class EdgeTuple {
         
         private string nameField;
         
-        private EdgeView edgeField;
+        private SchemaEdgeView edgeField;
         
         /// <remarks/>
         public string Name {
@@ -343,7 +214,7 @@ namespace SchemaToClassesGenerator {
         }
         
         /// <remarks/>
-        public EdgeView Edge {
+        public SchemaEdgeView Edge {
             get {
                 return this.edgeField;
             }
@@ -358,8 +229,8 @@ namespace SchemaToClassesGenerator {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd", IsNullable=true)]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
     public partial class EdgeTupleList {
         
         private EdgeTuple[] eTupleListField;
@@ -381,15 +252,15 @@ namespace SchemaToClassesGenerator {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd", IsNullable=true)]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
     public partial class VertexViewList {
         
-        private VertexView[] vertexViewField;
+        private SchemaVertexView[] vertexViewField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("VertexView")]
-        public VertexView[] VertexView {
+        public SchemaVertexView[] VertexView {
             get {
                 return this.vertexViewField;
             }
@@ -404,15 +275,15 @@ namespace SchemaToClassesGenerator {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd", IsNullable=true)]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
     public partial class PropertyList {
         
-        private Properties[] propertiesField;
+        private Property[] propertiesField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("Properties")]
-        public Properties[] Properties {
+        public Property[] Properties {
             get {
                 return this.propertiesField;
             }
@@ -427,8 +298,8 @@ namespace SchemaToClassesGenerator {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd", IsNullable=true)]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
     public partial class BinaryDataList {
         
         private BinaryData[] binaryDataField;
@@ -450,8 +321,8 @@ namespace SchemaToClassesGenerator {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd", IsNullable=true)]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
     public partial class Result {
         
         private Query queryField;
@@ -462,7 +333,7 @@ namespace SchemaToClassesGenerator {
         
         private ulong durationField;
         
-        private VertexView[] verticesField;
+        private SchemaVertexView[] verticesField;
         
         /// <remarks/>
         public Query Query {
@@ -506,8 +377,9 @@ namespace SchemaToClassesGenerator {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
-        public VertexView[] Vertices {
+        [System.Xml.Serialization.XmlArrayAttribute(IsNullable=true)]
+        [System.Xml.Serialization.XmlArrayItemAttribute("VertexView", IsNullable=false)]
+        public SchemaVertexView[] Vertices {
             get {
                 return this.verticesField;
             }
@@ -522,8 +394,8 @@ namespace SchemaToClassesGenerator {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://tempuri.org/QueryResultSchema.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://tempuri.org/QueryResultSchema.xsd", IsNullable=false)]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=false)]
     public partial class Query {
         
         private string languageField;

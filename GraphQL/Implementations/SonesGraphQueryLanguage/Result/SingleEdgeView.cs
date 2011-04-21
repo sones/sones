@@ -22,11 +22,6 @@ namespace sones.GraphQL.Result
         /// </summary>
         private readonly IVertexView                        _targetVertex;
 
-        /// <summary>
-        /// The source vertex of the edge.
-        /// </summary>
-        private readonly IVertexView                        _sourceVertex;
-
         #endregion
 
         #region Constructor
@@ -36,12 +31,10 @@ namespace sones.GraphQL.Result
         /// </summary>
         /// <param name="myProperties">The properties of the edge.</param>
         /// <param name="myTargetVertex">The target vertex of the edge.</param>
-        /// <param name="mySourceVertex">The source vertex of the edge.</param>
-        public SingleEdgeView(IDictionary<String, Object> myProperties, IVertexView myTargetVertex, IVertexView mySourceVertex)
+        public SingleEdgeView(IDictionary<String, Object> myProperties, IVertexView myTargetVertex)
         {
             _propertyList       = myProperties;
             _targetVertex       = myTargetVertex;
-            _sourceVertex       = mySourceVertex;
         }
 
         #endregion
@@ -51,11 +44,6 @@ namespace sones.GraphQL.Result
         public IVertexView GetTargetVertex()
         {
             return _targetVertex;
-        }
-
-        public IVertexView GetSourceVertex()
-        {
-            return _sourceVertex;
         }
 
         public IEnumerable<IVertexView> GetTargetVertices()

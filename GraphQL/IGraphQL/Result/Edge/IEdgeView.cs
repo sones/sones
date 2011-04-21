@@ -8,17 +8,7 @@ namespace sones.GraphQL.Result
     /// </summary>
     public interface IEdgeView : IGraphElementView
     {
-
-        #region Source
-
-        /// <summary>
-        /// Get the source vertex view of the IncomingEdge
-        /// </summary>
-        /// <returns>The source vertex</returns>
-        IVertexView GetSourceVertex();
-
-        #endregion
-
+        
         #region Targets
 
         /// <summary>

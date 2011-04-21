@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sones.GraphQL.Result;
 
-namespace sones.GraphQL.Result
+namespace sones.XML_IO.Result
 {
     /// <summary>
-    /// This class creates an edge view.
+    /// This class creates an single edge view.
     /// </summary>
-    public class EdgeView : IEdgeView
+    public class SingleEdgeView : ISingleEdgeView
     {
-        #region Data
+         #region Data
 
         /// <summary>
         /// The list of properties of the edge.
@@ -18,33 +19,37 @@ namespace sones.GraphQL.Result
         private readonly IDictionary<String, Object>        _propertyList;
 
         /// <summary>
-        /// The list of target vertices of the edge.
+        /// The list of target vertex of the edge.
         /// </summary>
-        private readonly IEnumerable<IVertexView>           _targetVertices;
-
+        private readonly IVertexView                        _targetVertex;
 
         #endregion
 
         #region Constructor
 
         /// <summary>
-        /// The edge view constructor.
+        /// The single edge view constructor.
         /// </summary>
         /// <param name="myProperties">The properties of the edge.</param>
-        /// <param name="myTargetVertices">The target vertices of the edge.</param>
-        public EdgeView(IDictionary<String, Object> myProperties, IEnumerable<IVertexView> myTargetVertices)
+        /// <param name="myTargetVertex">The target vertex of the edge.</param>
+        public SingleEdgeView(IDictionary<String, Object> myProperties, IVertexView myTargetVertex)
         {
             _propertyList       = myProperties;
-            _targetVertices     = myTargetVertices;
+            _targetVertex       = myTargetVertex;
         }
 
         #endregion
 
-        #region IEdgeView
+        #region ISingleEdgeView
+        
+        public IVertexView GetTargetVertex()
+        {
+            return _targetVertex;
+        }
 
         public IEnumerable<IVertexView> GetTargetVertices()
         {
-            return _targetVertices;
+            throw new NotImplementedException();
         }
 
         public T GetProperty<T>(string myPropertyName)
@@ -53,7 +58,7 @@ namespace sones.GraphQL.Result
 
             if (_propertyList.TryGetValue(myPropertyName, out outValue))
             {
-                return (T) outValue;
+                return (T)outValue;
             }
             else
             {

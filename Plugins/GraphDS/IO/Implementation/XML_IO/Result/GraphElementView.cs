@@ -2,50 +2,36 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sones.GraphQL.Result;
 
-namespace sones.GraphQL.Result
+namespace sones.XML_IO.Result
 {
     /// <summary>
-    /// This class creates an edge view.
+    /// This creates an graph element view.
     /// </summary>
-    public class EdgeView : IEdgeView
+    public class GraphElementView : IGraphElementView
     {
         #region Data
 
         /// <summary>
-        /// The list of properties of the edge.
+        /// The list of graph element view.
         /// </summary>
-        private readonly IDictionary<String, Object>        _propertyList;
-
-        /// <summary>
-        /// The list of target vertices of the edge.
-        /// </summary>
-        private readonly IEnumerable<IVertexView>           _targetVertices;
-
+        private readonly IDictionary<String, Object> _propertyList;
 
         #endregion
 
         #region Constructor
 
         /// <summary>
-        /// The edge view constructor.
+        /// The class constructor.
         /// </summary>
-        /// <param name="myProperties">The properties of the edge.</param>
-        /// <param name="myTargetVertices">The target vertices of the edge.</param>
-        public EdgeView(IDictionary<String, Object> myProperties, IEnumerable<IVertexView> myTargetVertices)
+        /// <param name="myPropertyList">The list of properties.</param>
+        public GraphElementView(IDictionary<String, Object> myPropertyList)
         {
-            _propertyList       = myProperties;
-            _targetVertices     = myTargetVertices;
+            _propertyList = myPropertyList;
         }
 
         #endregion
-
-        #region IEdgeView
-
-        public IEnumerable<IVertexView> GetTargetVertices()
-        {
-            return _targetVertices;
-        }
 
         public T GetProperty<T>(string myPropertyName)
         {
@@ -89,7 +75,5 @@ namespace sones.GraphQL.Result
                 return String.Empty;
             }
         }
-
-        #endregion
     }
 }
