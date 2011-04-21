@@ -32,143 +32,6 @@ namespace sones.Plugins.GraphDS.IOInterface
 
         #endregion
 
-      /*  #region AppendVertices
-        
-        private static void AppendVertices(List<VertexViewEdges> myVertices, List<VertexView> myResultVertices)
-        {
-            Boolean appendNewResult = true;
-            
-            if (myVertices.Count == 0)
-            {
-                return;
-            }
-
-            var currentLevel = myVertices.LastOrDefault().Vertex;
-
-            var currentResult = myResultVertices.LastOrDefault();
-
-            if (currentResult.Edges != null)
-            {
-                if (currentResult.Edges.Count() > 0)
-                {
-                    var lastEdge = currentResult.Edges.Last(item => item != null);
-                    
-                    if (lastEdge == null)
-                    {
-                        currentResult.Edges[currentResult.Edges.Length - 1] = new EdgeTuple();
-                    }
-                    else
-                    {
-                        for (Int32 i = 0; i < lastEdge.Edge.TargetVertices.Length; i++)
-                        {
-                            if (lastEdge.Edge.TargetVertices[i] == null)
-                            {
-                                currentResult = lastEdge.Edge.TargetVertices[i] = new VertexView();
-                                appendNewResult = false;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (currentResult.Properties == null)
-            {
-                var vertexProperties = currentLevel.GetAllProperties();
-                currentResult.Properties = new Properties[vertexProperties.Count()];
-
-                for (Int32 cnt = 0; cnt < vertexProperties.Count(); cnt++)
-                {
-                    currentResult.Properties[cnt] = new Properties();
-                    currentResult.Properties[cnt].ID = vertexProperties.ElementAt(cnt).Item1;
-                    currentResult.Properties[cnt].Type = vertexProperties.ElementAt(cnt).Item2.GetType().ToString();
-                    currentResult.Properties[cnt].Value = vertexProperties.ElementAt(cnt).Item2.ToString();
-                }
-
-            }
-
-            if (currentResult.BinaryPropertys == null)
-            {
-                var binaryProps = currentLevel.GetAllBinaryProperties();
-
-                currentResult.BinaryPropertys = new BinaryData[binaryProps.Count()];
-
-                for (Int32 cnt = 0; cnt < binaryProps.Count(); cnt++)
-                {
-                    currentResult.BinaryPropertys[cnt] = new BinaryData();
-                    currentResult.BinaryPropertys[cnt].ID = binaryProps.ElementAt(cnt).Item1;
-                    var buffer = new byte[binaryProps.ElementAt(cnt).Item2.Length];
-                    binaryProps.ElementAt(cnt).Item2.Read(buffer, 0, buffer.Length);
-
-                    currentResult.BinaryPropertys[cnt].Content = buffer;
-
-                    Array.Clear(buffer, 0, buffer.Length);
-                }
-            }
-
-            var edges = currentLevel.GetAllEdges();
-
-            if (currentResult.Edges == null)
-            {
-                currentResult.Edges = new EdgeTuple[edges.Count()];
-            }
-
-            for (Int32 cnt = myVertices.LastOrDefault().EdgeIndex; cnt < edges.Count(); cnt++)
-            {
-                currentResult.Edges[cnt] = new EdgeTuple();
-                currentResult.Edges[cnt].Edge = new EdgeView();
-
-                currentResult.Edges[cnt].Edge.CountOfProperties = edges.ElementAt(cnt).Item2.GetCountOfProperties();
-
-                var countOfProperties = edges.ElementAt(cnt).Item2.GetCountOfProperties();
-                var properties = edges.ElementAt(cnt).Item2.GetAllProperties();
-                
-                currentResult.Edges[cnt].Edge.Properties = new Properties[countOfProperties];
-
-                for (Int32 propCnt = 0; propCnt < countOfProperties; propCnt++)
-                {
-                    currentResult.Edges[cnt].Edge.Properties[propCnt] = new Properties();
-
-                    currentResult.Edges[cnt].Edge.Properties[propCnt].ID = properties.ElementAt(propCnt).Item1;
-                    currentResult.Edges[cnt].Edge.Properties[propCnt].Type =
-                        properties.ElementAt(propCnt).Item2.GetType().ToString();
-                    currentResult.Edges[cnt].Edge.Properties[propCnt].Value =
-                        properties.ElementAt(propCnt).Item2.ToString();
-                }
-
-                if(myVertices.Count > 0)
-                {myVertices[myVertices.Count - 1].EdgeIndex++;}
-                currentResult.Edges[cnt].Name = edges.ElementAt(cnt).Item1;
-                currentResult.Edges[cnt].Edge.SourceVertex = new VertexView();
-
-                currentResult.Edges[cnt].Edge.SourceVertex.BinaryPropertys = currentResult.BinaryPropertys;
-                currentResult.Edges[cnt].Edge.SourceVertex.Edges = currentResult.Edges;
-                currentResult.Edges[cnt].Edge.SourceVertex.Properties = currentResult.Properties;
-
-                var targetVertices = edges.ElementAt(cnt).Item2.GetTargetVertices();
-
-                currentResult.Edges[cnt].Edge.TargetVertices = new VertexView[targetVertices.Count()];
-
-                for (Int32 i = 0; i < targetVertices.Count(); i++)
-                {
-                    myVertices.Add(new VertexViewEdges(targetVertices.ElementAt(i), 0));
-                }
-
-                AppendVertices(myVertices, myResultVertices);
-            }
-
-            myVertices.Remove(myVertices.LastOrDefault());
-
-            if (myVertices.Count > 0 && appendNewResult)
-            {
-                myResultVertices.Add(new VertexView());
-            }
-
-            AppendVertices(myVertices, myResultVertices);
-        }
-
-        #endregion*/
-
         #region IOInterface
 
         public string GenerateOutputResult(QueryResult myQueryResult)
@@ -306,41 +169,6 @@ namespace sones.Plugins.GraphDS.IOInterface
             return resultVertex;
         }
 
-       /* public string GenerateOutputResult(QueryResult myQueryResult)
-        {
-            var result = new Result();
-
-            result.Query = new Query() { Language = myQueryResult.NameOfQuerylanguage, Value = myQueryResult.Query };
-            result.Number = myQueryResult.NumberOfAffectedVertices;
-
-            if (myQueryResult.Error != null)
-            {
-                result.Error = myQueryResult.Error.Message;
-            }
-
-            result.Error = "";
-            result.Duration = myQueryResult.Duration;
-
-            var resultVertices = new List<VertexViewEdges>();
-            var results = new List<VertexView>(){new VertexView()};
-
-            foreach(var item in myQueryResult.Vertices)
-            {                
-                resultVertices.Add(new VertexViewEdges(item, 0));
-            }
-            
-            AppendVertices(resultVertices, results);
-
-            result.Vertices = results.ToArray();
-
-            var stream = new MemoryStream();
-
-            var writer = new System.Xml.Serialization.XmlSerializer(result.GetType());
-            writer.Serialize(stream, result);
-
-            return System.Text.Encoding.UTF8.GetString(stream.ToArray());
-        }*/
-
         public QueryResult GenerateQueryResult(string myResult)
         {
             /*var xmlSettings = new XmlReaderSettings();
@@ -363,7 +191,7 @@ namespace sones.Plugins.GraphDS.IOInterface
             String error = String.Empty;
             UInt64 duration = 0;
             Int64  nrOfVertices = 0;
-            List<VertexView> vertices;
+            List<VertexView> vertices = null;
 
             var nextNode = rootNode.FirstChild;
 
@@ -402,7 +230,7 @@ namespace sones.Plugins.GraphDS.IOInterface
                 nextNode = nextNode.NextSibling;
             }
 
-            return new QueryResult(query, language, duration);
+            return new QueryResult(query, language, duration, vertices);
         }
 
         public ContentType ContentType
@@ -430,51 +258,50 @@ namespace sones.Plugins.GraphDS.IOInterface
             {
                 String key = String.Empty;
                 Object value = null;
-                String type = String.Empty;
-                Int32 cnt = 0;
+                String type = String.Empty;                
 
                 var propElement = property.FirstChild;
 
                 while (propElement != null)
                 {
-                    switch (propElement.ChildNodes[cnt].Name)
+                    if (propElement.HasChildNodes)
                     {
-                            case "ID" :
-                                key = propElement.Value;
-                            break;
+                        switch (propElement.Name)
+                        {
+                            case "ID":
+                                key = propElement.InnerText;                                    
+                                break;
 
                             case "Type":
-                                type = propElement.Value;
-                            break;
+                                type = propElement.InnerText;
+                                break;
 
                             case "Value":
                                 switch (type)
                                 {
-                                    case "String" :
-                                        value = propElement.Value;
+                                    case "String":
+                                        value = propElement.InnerText;
                                         break;
-                                    case "Int32" :
-                                        value = System.Convert.ToInt32(propElement.Value);
+                                    case "Int32":
+                                        value = System.Convert.ToInt32(propElement.InnerText);
                                         break;
-                                    case "Int64" :
-                                        value = System.Convert.ToInt64(propElement.Value);
+                                    case "Int64":
+                                        value = System.Convert.ToInt64(propElement.InnerText);
                                         break;
                                     case "UInt32":
-                                        value = System.Convert.ToUInt32(propElement.Value);
+                                        value = System.Convert.ToUInt32(propElement.InnerText);
                                         break;
                                     case "UInt64":
-                                        value = System.Convert.ToUInt64(propElement.Value);
+                                        value = System.Convert.ToUInt64(propElement.InnerText);
                                         break;
                                 }
-                            break;
+                                break;
+                        }
                     }
-
-                    propElement = propElement.NextSibling;
-                    cnt++;
+                    propElement = propElement.NextSibling;                    
                 }
 
                 result.Add(key, value);
-                cnt =0;
                 property = property.NextSibling;
             }
 
@@ -484,8 +311,118 @@ namespace sones.Plugins.GraphDS.IOInterface
         private Dictionary<String, Stream> ParseBinaryVertex(XmlNode myVertexNode)
         {
             var result = new Dictionary<String, Stream>();
-            
-            //while()
+
+            var binProp = myVertexNode.FirstChild;
+
+            while (binProp != null)
+            {
+                if (binProp.HasChildNodes)
+                { 
+                    var binPropElement = binProp.FirstChild;
+
+                    String name = String.Empty;
+                    Stream contentStream = null;
+                    
+                    while (binPropElement != null)
+                    {
+                        if (binPropElement.HasChildNodes)
+                        {
+                            switch (binPropElement.Name)
+                            {
+                                case "ID":
+                                    name = binPropElement.InnerText;
+                                    break;
+
+                                case "Content":
+                                    contentStream = new MemoryStream();
+                                    var buf = System.Text.Encoding.UTF8.GetBytes(binPropElement.InnerText);
+
+                                    contentStream.Write(buf, 0, buf.Length);                                    
+                                    break;
+                            }                            
+                        }                        
+                        binPropElement = binPropElement.NextSibling;
+                    }
+                    result.Add(name, contentStream);
+                }
+                
+                binProp = binProp.NextSibling;
+            }
+
+            return result;
+        }
+
+        private void ParseEdgeProperties(XmlNode myEdgeProp, Dictionary<String, Object> myEdgeProperties, List<VertexView> myTargetVertices)
+        {            
+            Int32 cnt = 0;
+            var property = myEdgeProp.FirstChild;
+
+            while(property != null)
+            {
+                if (property.HasChildNodes)
+                {
+                    switch (property.Name)
+                    {
+                        case "CountOfProperties":
+                            cnt = System.Convert.ToInt32(property.InnerText);
+                            break;
+
+                        case "Properties":
+                            myEdgeProperties = ParseVertexProperties(property);
+                            break;
+
+                        case "TargetVertices" :
+                            myTargetVertices.AddRange(ParseVertices(property));
+                            break;
+                    }
+                }
+                property = property.NextSibling;
+            }            
+        }
+
+        private Dictionary<String, IEdgeView> ParseEdges(XmlNode myEdge)
+        {
+            var result = new Dictionary<String, IEdgeView>();
+            var edge = myEdge.FirstChild;
+
+            if (edge.HasChildNodes)
+            {
+                while (edge != null)
+                {
+                    if (edge.HasChildNodes)
+                    {
+                        var edgeItems = edge.FirstChild;
+
+                        var name = String.Empty;
+                        IEdgeView edgeView = null;
+
+                        while (edgeItems != null)
+                        {
+                            switch (edgeItems.Name)
+                            { 
+                                case "Name" :
+                                    name = edgeItems.InnerText;
+                                    break;
+                                
+                                case "Edge":
+                                    var edgeProps = new Dictionary<String, Object>();
+                                    var targetVertices = new List<VertexView>();
+
+                                    ParseEdgeProperties(edgeItems, edgeProps, targetVertices);
+
+                                    edgeView = new EdgeView(edgeProps, targetVertices);
+                                    break;
+                            }
+
+                            edgeItems = edgeItems.NextSibling;
+                        }
+                        
+                        result.Add(name, edgeView);
+                    }
+
+                    edge = edge.NextSibling;
+                }
+            }
 
             return result;
         }
@@ -494,31 +431,60 @@ namespace sones.Plugins.GraphDS.IOInterface
         {
             var result = new List<VertexView>();
 
-            var element = myVerticeList.FirstChild;
+            var vertex = myVerticeList.FirstChild;
             Dictionary<String, Object> propList = null;
-            Dictionary<String, Stream> binaryProperties = null;
-            Int32 cnt = 0;
+            Dictionary<String, IEdgeView> edges = null;
+            Dictionary<String, Stream> binaryProperties = null;            
 
-            while (element != null)
+            if(vertex.HasChildNodes)
             {
-                if (element.HasChildNodes)
+                while (vertex != null)
                 {
-                    switch (element.ChildNodes[cnt].Name)
+                    var items = vertex.FirstChild;
+
+                    while (items != null)
                     {
-                        case "Properties":
-                            propList = ParseVertexProperties(element);
-                            break;
+                        if (items.HasChildNodes)
+                        {
+                            switch (items.Name)
+                            {
+                                case "Properties":
+                                    propList = ParseVertexProperties(items);
+                                    break;
 
-                        case "BinaryProperties":
-                            binaryProperties = ParseBinaryVertex(element);
-                            break;
+                                case "BinaryProperties":
+                                    binaryProperties = ParseBinaryVertex(items);
+
+                                    if (propList != null)
+                                    {
+                                        foreach (var item in binaryProperties)
+                                        {
+                                            if (propList.ContainsKey(item.Key))
+                                            {
+                                                propList[item.Key] = item.Value;
+                                            }
+                                            else
+                                            {
+                                                propList.Add(item.Key, item.Value);
+                                            }
+                                        }
+                                    }
+
+                                    break;
+
+                                case "Edges" :
+                                    edges = ParseEdges(items);
+                                    break;
+                            }
+                        }
+
+                        items = items.NextSibling;
                     }
-                }
 
-                result.Add(new VertexView(propList, null));
-                cnt++;
-                element = element.NextSibling;
-            }
+                    result.Add(new VertexView(propList, edges));
+                    vertex = vertex.NextSibling;
+                }                
+            }            
 
             return result;
         }
@@ -537,12 +503,14 @@ namespace sones.Plugins.GraphDS.IOInterface
 
         public IPluginable InitializePlugin(Dictionary<string, object> myParameters, GraphApplicationSettings myApplicationSetting)
         {
-            return null;
+            return InitializePlugin();
         }
 
         public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
-            throw new NotImplementedException();
+            object result = Activator.CreateInstance(typeof(XML_IO));
+
+            return (IPluginable)result;
         }
 
         #endregion
