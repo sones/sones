@@ -7,7 +7,7 @@ namespace sones.GraphQL.ErrorHandling
     /// <summary>
     /// A GQL syntax error has occurred
     /// </summary>
-    public class GqlSyntaxException : ASonesException
+    public class GqlSyntaxException : AGraphQLException
     {
 
         #region data

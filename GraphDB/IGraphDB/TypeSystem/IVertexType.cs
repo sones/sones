@@ -97,6 +97,13 @@ namespace sones.GraphDB.TypeSystem
         IAttributeDefinition GetAttributeDefinition(String myAttributeName);
 
         /// <summary>
+        /// Gets a certain attribute definition
+        /// </summary>
+        /// <param name="myAttributeID">The id of the interesting attribute</param>
+        /// <returns>A attribute definition</returns>
+        IAttributeDefinition GetAttributeDefinition(Int64 myAttributeID);
+
+        /// <summary>
         /// Has this vertex type any attributes?
         /// </summary>
         /// <returns>True or false</returns>
@@ -123,6 +130,13 @@ namespace sones.GraphDB.TypeSystem
         /// <param name="myPropertyName">The name of the property</param>
         /// <returns>A property definition</returns>
         IPropertyDefinition GetPropertyDefinition(String myPropertyName);
+
+        /// <summary>
+        /// Gets a certain attribute definition
+        /// </summary>
+        /// <param name="myPropertyID">The id of the property</param>
+        /// <returns>A property definition</returns>
+        IPropertyDefinition GetPropertyDefinition(Int64 myPropertyID);
 
         /// <summary>
         /// Has this vertex type any properties?

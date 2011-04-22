@@ -8,7 +8,7 @@
     <ProjectGuid>{26BFEE62-82B9-4EFA-9F91-08FD947551A8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sones.GraphQL</RootNamespace>
+    <RootNamespace>sones.GraphQL.GQL</RootNamespace>
     <AssemblyName>SonesGraphQueryLanguage</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorHandling\GqlSyntaxException.cs" />
+    <Compile Include="ErrorHandling\InvalidLevelKeyOperationException.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Grammar\SonesGQLGrammar.cs" />
     <Compile Include="Result\EdgeView.cs" />
@@ -93,6 +94,15 @@
     <Compile Include="Structure\Helper\Enums\TypesOfStatements.cs" />
     <Compile Include="Structure\Helper\Enums\TypesOfUpdate.cs" />
     <Compile Include="Structure\Helper\Enums\TypesSettingScope.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\AExpressionGraph.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\GraphPerformanceCriteria.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\Helper\EdgeKey.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\IExpressionEdge.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\IExpressionGraph.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\IExpressionLevel.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\IExpressionLevelEntry.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\IExpressionNode.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\LevelKey.cs" />
     <Compile Include="Structure\Nodes\AStructureNode.cs" />
     <Compile Include="Structure\Nodes\DDL\BulkTypeListMemberNode.cs" />
     <Compile Include="Structure\Nodes\DDL\BulkTypeNode.cs" />

@@ -183,6 +183,11 @@ namespace sones.GraphDB.TypeManagement
                 : _attributes.Value.Values;
         }
 
+        public IAttributeDefinition GetAttributeDefinition(long myAttributeID)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         #region Property
@@ -210,6 +215,11 @@ namespace sones.GraphDB.TypeManagement
         IEnumerable<IPropertyDefinition> IVertexType.GetPropertyDefinitions(bool myIncludeAncestorDefinitions)
         {
             return _attributes.Value.OfType<IPropertyDefinition>();
+        }
+
+        public IPropertyDefinition GetPropertyDefinition(long myPropertyID)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
