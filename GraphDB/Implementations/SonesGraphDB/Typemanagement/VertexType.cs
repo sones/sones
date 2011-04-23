@@ -5,20 +5,30 @@ using System.Linq;
 using sones.GraphDB.TypeManagement.Base;
 using sones.GraphDB.TypeSystem;
 using sones.Library.PropertyHyperGraph;
+using sones.Library.LanguageExtensions;
+using sones.GraphDB.ErrorHandling;
 
 namespace sones.GraphDB.TypeManagement
 {
+    /// <summary>
+    /// This class transforms an IVertex (came from FS) into a vertex type.
+    /// </summary>
+    /// <remarks>
+    /// An object of this class caches the intermediate results for the live time of the object itself. 
+    /// This means equal queries to the FS are only done one time per object.
+    /// The object also does most of its queries lazy. This means the queries are executed only if the result is needed.
+    /// </remarks>
     internal class VertexType: IVertexType
     {
         #region Constants
 
         /// <summary>
-        /// This is the initialization count of the myResult list of a GetChildVertices method
+        /// This is the initialization count of the result list of a GetChildVertices method
         /// </summary>
         private const int ExpectedChildTypes = 50;
 
         /// <summary>
-        /// This is the initialization count of the myResult list of a GetChildVertices method
+        /// This is the initialization count of the result list of a GetAttributes method
         /// </summary>
         private const int ExpectedAttributes = 50;
 
@@ -26,51 +36,134 @@ namespace sones.GraphDB.TypeManagement
 
         #region Data
 
+        /// <summary>
+        /// Stores the FS vertex.
+        /// </summary>
         private readonly IVertex _vertex;
+
+        /// <summary>
+        /// Stores the list of attributes indexed by the attribute name.
+        /// </summary>
         private readonly Lazy<Dictionary<String, IAttributeDefinition>> _attributes;
+
+        /// <summary>
+        /// Stores the parent vertex type.
+        /// </summary>
         private readonly Lazy<IVertexType> _parent;
+
+        /// <summary>
+        /// Stores the list of child vertex types.
+        /// </summary>
         private readonly Lazy<List<IVertexType>> _childs;
+
+        /// <summary>
+        /// Stores the comment of the vertex type.
+        /// </summary>
         private readonly Lazy<string> _comment;
+
+        /// <summary>
+        /// Stores the unique definitions of this vertex type.
+        /// </summary>
         private readonly Lazy<IEnumerable<IUniqueDefinition>> _uniques;
+
+        /// <summary>
+        /// Stores the index definitions of this vertex type.
+        /// </summary>
         private readonly Lazy<IEnumerable<IIndexDefinition>> _indices;
 
+        /// <summary>
+        /// Stores the ID of this vertex type.
+        /// </summary>
         private readonly long _id;
+
+        /// <summary>
+        /// Stores the name of this vertex type.
+        /// </summary>
         private readonly string _name;
+
+        /// <summary>
+        /// Stores whether this vertex type can be a parent vertex type.
+        /// </summary>
         private readonly bool _isSealed;
+
+        /// <summary>
+        /// Stores whether this vertex type can have vertices.
+        /// </summary>
         private readonly bool _isAbstract;
+
+        /// <summary>
+        /// Stores whether this vertex type has child vertex types.
+        /// </summary>
         private readonly bool _hasChilds;
+
+        /// <summary>
+        /// Stores whether incoming edges were queried (<see cref="Nullable.HasValue"/> equals true) and if true, whether this vertex type has incoming edges.
+        /// </summary>
         private bool? _hasIncomingEdges;
+
+        /// <summary>
+        /// Stores whether outgoing edges were queried (<see cref="Nullable.HasValue"/> equals true) and if true, whether this vertex type has outgoing edges.
+        /// </summary>
         private bool? _hasOutgoingEdges;
+
+        /// <summary>
+        /// Stores whether properties were queried (<see cref="Nullable.HasValue"/> equals true) and if true, whether this vertex type has properties.
+        /// </summary>
         private bool? _hasProperties;
+
+        /// <summary>
+        /// Stores whether attributes were queried (<see cref="Nullable.HasValue"/> equals true) and if true, whether this vertex type has attributes.
+        /// </summary>
         private bool? _hasAttributes;
 
         #endregion
 
         #region c'tor
 
+        /// <summary>
+        /// Creates a new instance of VertexType.
+        /// </summary>
+        /// <param name="myVertex">An IVertex that represents the vertex type.</param>
         internal VertexType(IVertex myVertex)
         {
-            //_Expr = new BinaryExpression(new ConstantExpression(_ID), BinaryOperator.Equals, new AttributeExpression("VertexType", "ID"));
+            #region checks
+
+            myVertex.CheckNull("myVertex");
+
+            #endregion
+
+            #region set data
+
             _vertex = myVertex;
 
-            _parent = new Lazy<IVertexType>(() => GetParentType(myVertex));
+            #endregion
 
-            _childs = new Lazy<List<IVertexType>>(() => GetChildTypes(myVertex));
+            #region set lazy stuff
 
-            _attributes = new Lazy<Dictionary<String, IAttributeDefinition>>(() => GetAttributes(myVertex));
+            _parent = new Lazy<IVertexType>(GetParentType);
 
-            _comment = new Lazy<String>(() => GetComment(myVertex));
+            _childs = new Lazy<List<IVertexType>>(GetChildTypes);
 
-            _uniques = new Lazy<IEnumerable<IUniqueDefinition>>(()=> GetUniques(myVertex));
+            _attributes = new Lazy<Dictionary<String, IAttributeDefinition>>(GetAttributes);
 
-            _indices = new Lazy<IEnumerable<IIndexDefinition>>(() => GetIndices(myVertex));
+            _comment = new Lazy<String>(GetComment);
 
-            _id = GetID(myVertex);
-            _name = GetName(myVertex);
-            _isSealed = GetIsSealed(myVertex);
-            _isAbstract = GetIsAbstract(myVertex);
-            _hasChilds = GetHasChilds(myVertex);
-            
+            _uniques = new Lazy<IEnumerable<IUniqueDefinition>>(GetUniques);
+
+            _indices = new Lazy<IEnumerable<IIndexDefinition>>(GetIndices);
+
+            #endregion
+
+            #region set direct stuff
+
+            _id = GetID();
+            _name = GetName();
+            _isSealed = GetIsSealed();
+            _isAbstract = GetIsAbstract();
+            _hasChilds = GetHasChilds();
+
+            #endregion
+
         }
 
         #endregion
@@ -118,9 +211,8 @@ namespace sones.GraphDB.TypeManagement
 
         bool IVertexType.HasParentVertexType
         {
-            // All vertices are at least inherit from Vertex
-            // Vertex itself has its own implementation class
-            get { return true; }
+
+            get { return _id != (long)BaseTypes.Vertex; }
         }
 
         IVertexType IVertexType.GetParentVertexType
@@ -169,7 +261,7 @@ namespace sones.GraphDB.TypeManagement
         {
             if (!_hasAttributes.HasValue)
             {
-                _hasAttributes = GetHasAttributes(GetVertex());
+                _hasAttributes = GetHasAttributes();
             }
 
             //Perf: Use of "short-circuit" evaluation. Do not exchange operators!
@@ -185,7 +277,7 @@ namespace sones.GraphDB.TypeManagement
 
         public IAttributeDefinition GetAttributeDefinition(long myAttributeID)
         {
-            throw new NotImplementedException();
+            return _attributes.Value.Values.FirstOrDefault(x => x.AttributeID == myAttributeID);
         }
 
         #endregion
@@ -206,7 +298,7 @@ namespace sones.GraphDB.TypeManagement
         {
             if (!_hasProperties.HasValue)
             {
-                _hasProperties = GetHasProperties(GetVertex());
+                _hasProperties = GetHasProperties();
             }
 
             return _hasProperties.Value || (myIncludeAncestorDefinitions && _parent.Value.HasProperties(true));
@@ -219,7 +311,7 @@ namespace sones.GraphDB.TypeManagement
 
         public IPropertyDefinition GetPropertyDefinition(long myPropertyID)
         {
-            throw new NotImplementedException();
+            return GetAttributeDefinition(myPropertyID) as IPropertyDefinition;
         }
 
         #endregion
@@ -240,7 +332,7 @@ namespace sones.GraphDB.TypeManagement
         {
             if (!_hasIncomingEdges.HasValue)
             {
-                _hasIncomingEdges = GetHasIncomingEdges(GetVertex());
+                _hasIncomingEdges = GetHasIncomingEdges();
             }
 
             return _hasIncomingEdges.Value || (myIncludeAncestorDefinitions && _parent.Value.HasIncomingEdges(true));
@@ -269,7 +361,7 @@ namespace sones.GraphDB.TypeManagement
         {
             if (!_hasOutgoingEdges.HasValue)
             {
-                _hasOutgoingEdges = GetHasOutgoingEdges(GetVertex());
+                _hasOutgoingEdges = GetHasOutgoingEdges();
             }
 
             return _hasOutgoingEdges.Value || (myIncludeAncestorDefinitions && _parent.Value.HasOutgoingEdges(true));
@@ -306,6 +398,10 @@ namespace sones.GraphDB.TypeManagement
 
         #region GetVertex
 
+        /// <summary>
+        /// Gets the IVertex that represents this vertex type.
+        /// </summary>
+        /// <returns>An IVertex that represents this vertex type.</returns>
         private IVertex GetVertex()
         {
             return _vertex;
@@ -315,27 +411,33 @@ namespace sones.GraphDB.TypeManagement
 
         #region Attributes
 
-        #region static
-
-        private IAttributeDefinition CreateAttributeDefinition(IVertex vertex)
+        /// <summary>
+        /// Transforms an IVertex in an attribute definition.
+        /// </summary>
+        /// <param name="myVertex">A vertex that represents an attribute definition (Either property, incoming edge or outgoing edge).</param>
+        /// <returns>An attribute definition.</returns>
+        private IAttributeDefinition CreateAttributeDefinition(IVertex myVertex)
         {
-            switch ((BaseTypes)vertex.VertexTypeID)
+            switch ((BaseTypes)myVertex.VertexTypeID)
             {
                 case BaseTypes.IncomingEdge:
-                    return CreateIncomingEdgeDefinition(vertex);
+                    return CreateIncomingEdgeDefinition(myVertex);
                 case BaseTypes.OutgoingEdge:
-                    return CreateOutgoingEdgeDefinition(vertex);
+                    return CreateOutgoingEdgeDefinition(myVertex);
                 case BaseTypes.Property:
-                    return CreatePropertyDefinition(vertex);
+                    return CreatePropertyDefinition(myVertex);
                 default:
-                    //TODO: better exception needed here
-                    throw new Exception();
+                    throw new UnknownDBException("The vertex does not represents an attribute");
             }
         }
 
-        private Dictionary<String, IAttributeDefinition> GetAttributes(IVertex myVertex)
+        /// <summary>
+        /// Creates a list of attribute definitions of the vertex type indexed by the attribute name.
+        /// </summary>
+        /// <returns>A dictionary of attribute name to attribute definition.</returns>
+        private Dictionary<String, IAttributeDefinition> GetAttributes()
         {
-            var vertices = myVertex.GetIncomingVertices((long)BaseTypes.Attribute, (long)AttributeDefinitions.DefiningType);
+            var vertices = GetVertex().GetIncomingVertices((long)BaseTypes.Attribute, (long)AttributeDefinitions.DefiningType);
 
             Dictionary<String, IAttributeDefinition> result = (vertices is ICollection)
                 ? new Dictionary<string, IAttributeDefinition>((vertices as ICollection).Count)
@@ -343,6 +445,9 @@ namespace sones.GraphDB.TypeManagement
 
             foreach (var vertex in vertices)
             {
+                if (vertex == null)
+                    throw new UnknownDBException("An element in attributes list is NULL.");
+
                 IAttributeDefinition def = CreateAttributeDefinition(vertex);
                 result.Add(def.Name, def);
             }
@@ -350,13 +455,20 @@ namespace sones.GraphDB.TypeManagement
             return result;
         }
 
-        private static bool GetHasAttributes(IVertex myVertex)
+        /// <summary>
+        /// Gets whether this vertex type has attributes.
+        /// </summary>
+        /// <returns>True, if this vertex type has attribute otherwise false.</returns>
+        private bool GetHasAttributes()
         {
-            return myVertex.HasIncomingVertices((long)BaseTypes.Attribute, (long)AttributeDefinitions.DefiningType);
+            return GetVertex().HasIncomingVertices((long)BaseTypes.Attribute, (long)AttributeDefinitions.DefiningType);
         }
 
-        #endregion
-
+        /// <summary>
+        /// Gets the attribute with the given attribute name, if existing.
+        /// </summary>
+        /// <param name="myAttributeName">The attribute name of the attribute.</param>
+        /// <returns>An attribute definition of the attribute with the given attribute name, if existing otherwise <c>NULL</c>.</returns>
         private IAttributeDefinition GetAttribute(string myAttributeName)
         {
             IAttributeDefinition result;
@@ -368,13 +480,20 @@ namespace sones.GraphDB.TypeManagement
 
         #region Properties
 
-        #region static
-
-        private static bool GetHasProperties(IVertex myVertex)
+        /// <summary>
+        /// Gets whether this vertex type has properties.
+        /// </summary>
+        /// <returns>True, if this vertex type has properties otherwise false.</returns>
+        private bool GetHasProperties()
         {
-            return myVertex.HasIncomingVertices((long)BaseTypes.Property, (long)AttributeDefinitions.DefiningType);
+            return GetVertex().HasIncomingVertices((long)BaseTypes.Property, (long)AttributeDefinitions.DefiningType);
         }
 
+        /// <summary>
+        /// Transforms an IVertex in a property definition.
+        /// </summary>
+        /// <param name="myVertex">A vertex that represents a property definition.</param>
+        /// <returns>A property definition.</returns>
         private static IPropertyDefinition CreatePropertyDefinition(IVertex myVertex)
         {
             var attributeID = GetAttributeID(myVertex);
@@ -393,8 +512,11 @@ namespace sones.GraphDB.TypeManagement
             };
         }
 
-        #endregion
-
+        /// <summary>
+        /// Gets the property with the given attribute name, if existing.
+        /// </summary>
+        /// <param name="myPropertyName">The attribute name of the property.</param>
+        /// <returns>A property definition of the property with the given attribute name, if existing otherwise <c>NULL</c>.</returns>
         private IPropertyDefinition GetAttributeAsProperty(string myPropertyName)
         {
             return GetAttribute(myPropertyName) as IPropertyDefinition;
@@ -404,13 +526,16 @@ namespace sones.GraphDB.TypeManagement
 
         #region Incoming Edges
 
-        #region static 
-
+        /// <summary>
+        /// Transforms an IVertex in an incoming edge definition.
+        /// </summary>
+        /// <param name="myVertex">A vertex that represents an incoming edge definition.</param>
+        /// <returns>An incoming edge definition.</returns>
         private IIncomingEdgeDefinition CreateIncomingEdgeDefinition(IVertex myVertex)
         {
             var attributeID = GetAttributeID(myVertex);
             var name = GetName(myVertex);
-            var related = GetRelatetOutgoingEdgeDefinition(myVertex);
+            var related = GetRelatedOutgoingEdgeDefinition(myVertex);
 
             return new IncomingEdgeDefinition
             {
@@ -420,18 +545,35 @@ namespace sones.GraphDB.TypeManagement
             };
         }
 
-        private static bool GetHasIncomingEdges(IVertex myVertex)
+        /// <summary>
+        /// Gets whether this vertex type has incoming edges.
+        /// </summary>
+        /// <returns>True, if this vertex type has incoming edges otherwise false.</returns>
+        private bool GetHasIncomingEdges()
         {
-            return myVertex.HasIncomingVertices((long)BaseTypes.IncomingEdge, (long)AttributeDefinitions.DefiningType);
+            return GetVertex().HasIncomingVertices((long)BaseTypes.IncomingEdge, (long)AttributeDefinitions.DefiningType);
         }
 
-        private IOutgoingEdgeDefinition GetRelatetOutgoingEdgeDefinition(IVertex myVertex)
+        /// <summary>
+        /// Creates an outgoing edge definition from a vertex that represents an incoming edge definition.
+        /// </summary>
+        /// <param name="myVertex">A vertex that represents an incoming edge definition.</param>
+        /// <returns>An outgoing edge definition.</returns>
+        private IOutgoingEdgeDefinition GetRelatedOutgoingEdgeDefinition(IVertex myVertex)
         {
-            return CreateOutgoingEdgeDefinition(myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.RelatedEgde).GetTargetVertex());
+            var vertex = myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.RelatedEgde).GetTargetVertex();
+
+            if (vertex == null)
+                throw new UnknownDBException("Am incoming edge definition has no vertex that represents its related outgoing edge definition.");
+
+            return CreateOutgoingEdgeDefinition(vertex);
         }
 
-        #endregion
-
+        /// <summary>
+        /// Gets the incoming edge with the given attribute name, if existing.
+        /// </summary>
+        /// <param name="myPropertyName">The attribute name of the incoming edge.</param>
+        /// <returns>An incoming edge definition of the incoming edge with the given attribute name, if existing otherwise <c>NULL</c>.</returns>
         private IIncomingEdgeDefinition GetAttributeAsIncomingEdge(string myEdgeName)
         {
             return GetAttribute(myEdgeName) as IIncomingEdgeDefinition;
@@ -441,8 +583,11 @@ namespace sones.GraphDB.TypeManagement
 
         #region Outgoing Edges
 
-        #region static 
-
+        /// <summary>
+        /// Transforms an IVertex in an outgoing edge definition.
+        /// </summary>
+        /// <param name="myVertex">A vertex that represents an outgoing edge definition.</param>
+        /// <returns>An outgoing edge definition.</returns>
         private IOutgoingEdgeDefinition CreateOutgoingEdgeDefinition(IVertex myOutgoingEdgeVertex)
         {
             var attributeID = GetAttributeID(myOutgoingEdgeVertex);
@@ -460,28 +605,53 @@ namespace sones.GraphDB.TypeManagement
             };
         }
 
-        private static IEdgeType GetEdgeType(IVertex myVertex)
+        /// <summary>
+        /// Gets the edge type of an outgoing edge.
+        /// </summary>
+        /// <param name="myOutgoingEdge">A vertex that represents an outgoing edge.</param>
+        /// <returns>The edge type of the outgoing edge.</returns>
+        private IEdgeType GetEdgeType(IVertex myOutgoingEdge)
         {
-            var vertex = myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.EdgeType).GetTargetVertex();
+            var vertex = myOutgoingEdge.GetOutgoingSingleEdge((long)AttributeDefinitions.EdgeType).GetTargetVertex();
+
+            if (vertex == null)
+                throw new UnknownDBException("An outgoing edge has no vertex that represents its edge type.");
+
             return new EdgeType(vertex);
         }
 
-        private IVertexType GetTargetVertexType(IVertex myOutgoingEdgeVertex)
+        /// <summary>
+        /// Gets the target vertex of an outgoing edge.
+        /// </summary>
+        /// <param name="myOutgoingEdge">A vertex that represents an outgoing edge.</param>
+        /// <returns>The target vertex type of the outgoing edge.</returns>
+        private IVertexType GetTargetVertexType(IVertex myOutgoingEdge)
         {
-            var vertex = myOutgoingEdgeVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.Target).GetTargetVertex();
+            var vertex = myOutgoingEdge.GetOutgoingSingleEdge((long)AttributeDefinitions.Target).GetTargetVertex();
+
+            if (vertex == null)
+                throw new UnknownDBException("An outgoing edge has no vertex that represents its target vertex type.");
+
             if (vertex.VertexID == _id)
                 return this;
 
             return new VertexType(vertex);
         }
 
-        private static bool GetHasOutgoingEdges(IVertex myVertex)
+        /// <summary>
+        /// Gets whether this vertex type has outgoing edges.
+        /// </summary>
+        /// <returns>True, if this vertex type has outgoing edges otherwise false.</returns>
+        private bool GetHasOutgoingEdges()
         {
-            return myVertex.HasIncomingVertices((long)BaseTypes.OutgoingEdge, (long)AttributeDefinitions.DefiningType);
+            return GetVertex().HasIncomingVertices((long)BaseTypes.OutgoingEdge, (long)AttributeDefinitions.DefiningType);
         }
 
-        #endregion
-
+        /// <summary>
+        /// Gets the outgoing edge with the given attribute name, if existing.
+        /// </summary>
+        /// <param name="myEdgeName">The attribute name of the outgoing edge.</param>
+        /// <returns>An outgoing edge definition of the outgoing edge with the given attribute name, if existing otherwise <c>NULL</c>.</returns>
         private IOutgoingEdgeDefinition GetAttributeAsOutgoingEdge(string myEdgeName)
         {
             return GetAttribute(myEdgeName) as IOutgoingEdgeDefinition;
@@ -491,26 +661,43 @@ namespace sones.GraphDB.TypeManagement
 
         #region Inheritance
 
-        private static bool GetHasChilds(IVertex myVertex)
+        /// <summary>
+        /// Gets whether this vertex type has child vertex types.
+        /// </summary>
+        /// <returns>True if this vertex type has child vertex types.</returns>
+        private bool GetHasChilds()
         {
-            return myVertex.HasIncomingVertices((long)BaseTypes.VertexType, (long)AttributeDefinitions.Parent);
+            return GetVertex().HasIncomingVertices((long)BaseTypes.VertexType, (long)AttributeDefinitions.Parent);
         }
 
-        private static IVertexType GetParentType(IVertex myVertex)
+        /// <summary>
+        /// Creates the parent vertex type of this vertex type.
+        /// </summary>
+        /// <returns>A new instance of the parent vertex type of this vertex type.</returns>
+        private IVertexType GetParentType()
         {
-            return new VertexType(GetParent(myVertex));
+            var vertex = GetParent();
+            return (vertex == null) ? null : new VertexType(vertex);
         }
 
-        private static IVertex GetParent(IVertex myVertex)
+        /// <summary>
+        /// Gets the vertex that represents the parent vertex type.
+        /// </summary>
+        /// <returns>An IVertex that represents the parent vertex type, if existing otherwise <c>NULL</c>.</returns>
+        private IVertex GetParent()
         {
-            return myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.Parent).GetTargetVertex();
+            return GetVertex().GetOutgoingSingleEdge((long)AttributeDefinitions.Parent).GetTargetVertex();
         }
 
-        private static List<IVertexType> GetChildTypes(IVertex myVertex)
+        /// <summary>
+        /// Creates the list of child vertex types of this vertex type.
+        /// </summary>
+        /// <returns>A possible empty list of child vertex types.</returns>
+        private List<IVertexType> GetChildTypes()
         {
-            var vertices = myVertex.GetIncomingVertices((long)BaseTypes.VertexType, (long)AttributeDefinitions.Parent);
+            var vertices = GetVertex().GetIncomingVertices((long)BaseTypes.VertexType, (long)AttributeDefinitions.Parent);
 
-            //Perf: initialize the myResult list with a size
+            //Perf: initialize the result list with a size
             List<IVertexType> result = (vertices is ICollection)
                 ? new List<IVertexType>((vertices as ICollection).Count)
                 : new List<IVertexType>(ExpectedChildTypes);
@@ -524,12 +711,12 @@ namespace sones.GraphDB.TypeManagement
 
         #region Index
 
-        private static IEnumerable<IIndexDefinition> GetIndices(IVertex myVertex)
+        private static IEnumerable<IIndexDefinition> GetIndices()
         {
             throw new NotImplementedException();
         }
 
-        private static IEnumerable<IUniqueDefinition> GetUniques(IVertex myVertex)
+        private static IEnumerable<IUniqueDefinition> GetUniques()
         {
             throw new NotImplementedException();
         }
@@ -565,9 +752,14 @@ namespace sones.GraphDB.TypeManagement
             return myVertex.GetProperty<long>((long)AttributeDefinitions.ID);
         }
 
-        private static long GetID(IVertex myVertex)
+        private long GetID()
         {
-            return myVertex.GetProperty<long>((long)AttributeDefinitions.ID);
+            return GetVertex().GetProperty<long>((long)AttributeDefinitions.ID);
+        }
+
+        private string GetName()
+        {
+            return GetName(GetVertex());
         }
 
         private static String GetName(IVertex myVertex)
@@ -575,19 +767,19 @@ namespace sones.GraphDB.TypeManagement
             return myVertex.GetPropertyAsString((long)AttributeDefinitions.Name);
         }
 
-        private static String GetComment(IVertex myVertex)
+        private String GetComment()
         {
-            return myVertex.GetPropertyAsString((long)AttributeDefinitions.Comment);
+            return GetVertex().GetPropertyAsString((long)AttributeDefinitions.Comment);
         }
 
-        private static bool GetIsSealed(IVertex myVertex)
+        private bool GetIsSealed()
         {
-            return myVertex.GetProperty<bool>((long)AttributeDefinitions.IsSealed);
+            return GetVertex().GetProperty<bool>((long)AttributeDefinitions.IsSealed);
         }
 
-        private static bool GetIsAbstract(IVertex myVertex)
+        private bool GetIsAbstract()
         {
-            return myVertex.GetProperty<bool>((long)AttributeDefinitions.IsAbstract);
+            return GetVertex().GetProperty<bool>((long)AttributeDefinitions.IsAbstract);
         }
 
         #endregion

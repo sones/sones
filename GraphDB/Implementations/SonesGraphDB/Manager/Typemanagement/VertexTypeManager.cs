@@ -91,58 +91,6 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         private const int ExpectedVertexTypes = 100;
 
-        #region base c# types
-
-        /// <summary>
-        /// The list of standard c# types, that can be used.
-        /// </summary>
-        private static readonly String[] _baseTypes = 
-        {
-            // ordered by assumed usage, to speed up contains
-            TypeInt32,
-            TypeString,
-            TypeDateTime,
-            TypeDouble,
-            TypeBoolean,
-            TypeInt64,
-            TypeChar,
-            TypeByte,
-            TypeSingle,
-            TypeSByte,
-            TypeInt16,
-            TypeUInt32,
-            TypeUInt64,
-            TypeUInt16,
-            TypeTimeSpan
-        };
-
-        #region value types
-
-        public const string TypeBoolean = "System.Boolean";
-        public const string TypeByte    = "System.Byte";
-        public const string TypeChar    = "System.Char";
-        public const string TypeDouble  = "System.Double";
-        public const string TypeSingle  = "System.Single";
-        public const string TypeInt32   = "System.Int32";
-        public const string TypeInt64   = "System.Int64";
-        public const string TypeSByte   = "System.SByte";
-        public const string TypeInt16   = "System.Int16";
-        public const string TypeUInt32  = "System.UInt32";
-        public const string TypeUInt64  = "System.UInt64";
-        public const string TypeUInt16  = "System.UInt16";
-
-        #endregion
-
-        #region reference types
-
-        public const string TypeString   = "System.String";
-        public const string TypeDateTime = "System.DateTime";
-        public const string TypeTimeSpan = "System.TimeSpan";
-
-        #endregion
-
-        #endregion
-
         /// <summary>
         /// A property expression on VertexType.Name
         /// </summary>
@@ -336,8 +284,10 @@ namespace sones.GraphDB.Manager.TypeManagement
             //Contains dictionary of vertex name to vertex predefinition.
             var defsByVertexName = CanAddCheckDuplicates(myVertexTypeDefinitions);
             
-            //Contains dictionary of parentPredef vertex name to list of vertex predefinitions.
-            var defsByParentVertexName = myVertexTypeDefinitions.GroupBy(def=>def.SuperVertexTypeName).ToDictionary(group => group.Key, group=>group.AsEnumerable());
+            //Contains dictionary of parent vertex name to list of vertex predefinitions.
+            var defsByParentVertexName = myVertexTypeDefinitions
+                .GroupBy(def=>def.SuperVertexTypeName)
+                .ToDictionary(group => group.Key, group=>group.AsEnumerable());
 
             //Contains list of vertex predefinitions sorted topologically.
             var defsTopologically = CanAddSortTopolocically(defsByVertexName, defsByParentVertexName);
@@ -586,7 +536,8 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <returns>True, if the property has a type that is in the list of supported c# types, otherwise false.</returns>
         private static bool IsBaseType(PropertyPredefinition myProperty)
         {
-            return _baseTypes.Contains(myProperty.TypeName);
+            BasicTypes result;
+            return Enum.TryParse(myProperty.TypeName, false, out result);
         }
 
         /// <summary>
@@ -717,28 +668,26 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             
             //The list of topolocically sorted vertex types
-            //In this step, we assume that parentPredef types, that are not in the list of predefinitons are correct.
+            //In this step, we assume that parent types, that are not in the list of predefinitons are correct.
             //Correct means: either they are in fs or they are not in fs but then they are not defined. (this will be detected later)
-            var correctRoots = myDefsByParentVertexName.Where(parent => !myDefsByVertexName.ContainsKey(parent.Key)).SelectMany(x => x.Value);
+            var correctRoots = myDefsByParentVertexName
+                .Where(parent => !myDefsByVertexName.ContainsKey(parent.Key))
+                .SelectMany(x => x.Value);
             var result = new LinkedList<VertexTypePredefinition>(correctRoots);
             
 
             //Here we step throught the list of topolocically sorted predefinitions.
-            //Each predefinition that is in this list, is a valid parentPredef type for other predefinitions.
-            //Thus we can add all predefinitions, that has parentPredef predefinition in the list to the end of the list.
-            var current = result.First;
-            while (current != null) 
+            //Each predefinition that is in this list, is a valid parent type for other predefinitions.
+            //Thus we can add all predefinitions, that has parent predefinition in the list to the end of the list.
+            for (var current = result.First; current != null; current = current.Next)
             {
-                //All predefinitions, that has the myVertexTypePredefinition predefintion as parentPredef vertex type.
+                //All predefinitions, that has the current predefintion as parent vertex type.
                 var corrects = myDefsByParentVertexName[current.Value.VertexTypeName];
 
-                //They go from toBeChecked into vertex.
                 foreach (var correct in corrects)
                 {
                     result.AddLast(correct);
                 }
-
-                current = current.Next;
             }
 
 
