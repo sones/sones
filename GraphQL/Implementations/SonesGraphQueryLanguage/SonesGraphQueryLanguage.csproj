@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorHandling\ExpressionGraphInternalException.cs" />
     <Compile Include="ErrorHandling\GqlSyntaxException.cs" />
     <Compile Include="ErrorHandling\InvalidLevelKeyOperationException.cs" />
     <Compile Include="Extensions.cs" />
@@ -96,6 +97,8 @@
     <Compile Include="Structure\Helper\Enums\TypesSettingScope.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\AExpressionGraph.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\ExpressionEdge.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\ExpressionLevel.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\ExpressionLevelEntry.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\ExpressionNode.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\GraphPerformanceCriteria.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\Helper\EdgeKey.cs" />
