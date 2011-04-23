@@ -96,6 +96,7 @@
     <Compile Include="Structure\Helper\Enums\TypesSettingScope.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\AExpressionGraph.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\ExpressionEdge.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\ExpressionNode.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\GraphPerformanceCriteria.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\Helper\EdgeKey.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\IExpressionEdge.cs" />

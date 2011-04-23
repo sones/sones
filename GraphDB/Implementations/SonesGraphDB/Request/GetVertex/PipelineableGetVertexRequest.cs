@@ -52,22 +52,46 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexManager.CanGetVertex(
-                _request.VertexTypeName,
-                _request.VertexID,
-                _request.Edition,
-                _request.Timespan,
-                TransactionToken, SecurityToken);
+            if (_request.VertexTypeName == null)
+            {
+                myMetaManager.VertexManager.CanGetVertex(
+                    _request.VertexTypeID,
+                    _request.VertexID,
+                    _request.Edition,
+                    _request.Timespan,
+                    TransactionToken, SecurityToken);
+            }
+            else
+            {
+                myMetaManager.VertexManager.CanGetVertex(
+                    _request.VertexTypeName,
+                    _request.VertexID,
+                    _request.Edition,
+                    _request.Timespan,
+                    TransactionToken, SecurityToken);
+            }
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            _fetchedVertex = myMetaManager.VertexManager.GetVertex(
-                _request.VertexTypeName, 
-                _request.VertexID, 
-                _request.Edition, 
-                _request.Timespan, 
-                TransactionToken, SecurityToken);
+            if (_request.VertexTypeName == null)
+            {
+                _fetchedVertex = myMetaManager.VertexManager.GetVertex(
+                    _request.VertexTypeID,
+                    _request.VertexID,
+                    _request.Edition,
+                    _request.Timespan,
+                    TransactionToken, SecurityToken);
+            }
+            else
+            {
+                _fetchedVertex = myMetaManager.VertexManager.GetVertex(
+                    _request.VertexTypeName,
+                    _request.VertexID,
+                    _request.Edition,
+                    _request.Timespan,
+                    TransactionToken, SecurityToken);
+            }
         }
 
         public override IRequest GetRequest()

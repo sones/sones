@@ -66,6 +66,29 @@ namespace sones.GraphDB.Manager.Vertex
         /// <returns>The requested vertex</returns>
         IVertex GetVertex(string myVertexTypeName, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken);
 
+        /// <summary>
+        /// Checks whether the get vertex request is valid
+        /// </summary>
+        /// <param name="myVertexTypeID">The vertex type id of the requested vertex</param>
+        /// <param name="myVertexID">The id of the requested vertex</param>
+        /// <param name="myEdition">The edition that should be processed</param>
+        /// <param name="myTimespan">The timespan that should be processed</param>
+        /// <param name="TransactionToken">A transaction token for this operation.</param>
+        /// <param name="SecurityToken">A security token for this operation</param>
+        void CanGetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken);
+
+        /// <summary>
+        /// Execution of the request
+        /// </summary>
+        /// <param name="myVertexTypeID">The vertex type id of the requested vertex</param>
+        /// <param name="myVertexID">The id of the requested vertex</param>
+        /// <param name="myEdition">The edition that should be processed</param>
+        /// <param name="myTimespan">The timespan that should be processed</param>
+        /// <param name="TransactionToken">A transaction token for this operation.</param>
+        /// <param name="SecurityToken">A security token for this operation</param>
+        /// <returns>The requested vertex</returns>
+        IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken);
+
         #endregion
 
         IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken);

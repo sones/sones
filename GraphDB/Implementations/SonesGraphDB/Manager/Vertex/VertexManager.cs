@@ -85,6 +85,16 @@ namespace sones.GraphDB.Manager.Vertex
             throw new NotImplementedException();
         }
 
+        public void CanGetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IVertex GetVertex(long myVertexTypeID, long myVertexID, string myEdition, TimeSpanDefinition myTimespan, TransactionToken TransactionToken, SecurityToken SecurityToken)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
         public IVertex AddVertex(VertexAddDefinition myVertexDefinition, TransactionToken myTransactionToken, SecurityToken mySecurityToken)

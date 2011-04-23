@@ -5,6 +5,8 @@ using System.Text;
 using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph.Helper;
 using sones.Library.PropertyHyperGraph;
 using sones.GraphDB;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 
 namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 {
@@ -43,7 +45,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         /// <param name="myGraphDB">The DBObjectCache that is responsible for loading a DBObjectStream</param>
         /// <param name="myVertexTypeID">The TypeUUID of the DBObject that is going to be loaded</param>
         /// <returns>A DBObjectStream</returns>
-        IVertex GetDBObjectStream(IGraphDB myGraphDB, Int64 myVertexTypeID);
+        IVertex GetDBObjectStream(IGraphDB myGraphDB, Int64 myVertexTypeID, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
         #endregion
 
