@@ -16,9 +16,10 @@ using sones.GraphDB.Manager.Vertex;
 using sones.GraphDB.Manager.Index;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.Commons.VertexStore.Definitions;
+using System.Threading;
 
 /*
- * IncomingEdge cases:
+ * edge cases:
  *   - if someone changes the super type of an vertex or edge type 
  *     - Henning, Timo 
  *       - that this isn't a required feature for version 2.0
@@ -64,6 +65,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// Used to get or create index instances.
         /// </summary>
         private IIndexManager _indexManager;
+
+        /// <summary>
+        /// Stores the last vertex type id.
+        /// </summary>
+        private long lastID;
 
         #endregion
 
@@ -155,15 +161,6 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public IVertexType GetVertexType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-/*            #region check if it is a base type
-
-            if (Enum.IsDefined(typeof(Base), myTypeId))
-            {
-                return BaseVertexTypeFactory.GetInstance((Base) myTypeId);
-            }
-
-            #endregion
-            */
             #region get from fs
 
             var vertex = Get(myTypeId, myTransaction, mySecurity);
@@ -178,17 +175,9 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public IVertexType GetVertexType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            /*
-            #region check if it is a base type
+            if (String.IsNullOrWhiteSpace(myTypeName))
+                throw new ArgumentOutOfRangeException("myTypeName", "The type name must contain at least one character.");
 
-            Base baseType;
-            if (Enum.TryParse(myTypeName, out baseType))
-            {
-                return BaseVertexTypeFactory.GetInstance(baseType);
-            }
-
-            #endregion
-            */
             #region get from fs
 
             var vertex = Get(myTypeName, myTransaction, mySecurity);
@@ -207,7 +196,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region Add
 
-        public void CanAddVertexType(ref IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
+        public void CanAddVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             #region check arguments
 
@@ -215,7 +204,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             
             #endregion
 
-            CheckAdd(ref myVertexTypeDefinitions, myTransaction, mySecurity);
+            CheckAdd(myVertexTypeDefinitions, myTransaction, mySecurity);
         }
 
 
@@ -270,22 +259,6 @@ namespace sones.GraphDB.Manager.TypeManagement
         
         #endregion
 
-        #region IStorageUsingManager Members
-
-        public void Load(IMetaManager myMetaManager)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Create(IMetaManager myMetaManager)
-        {
-            
-            throw new NotImplementedException();
-            
-        }
-
-        #endregion
-
         #region private members
 
         #region Get
@@ -334,7 +307,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myTransaction">A transaction token for this operation.</param>
         /// <param name="mySecurity">A security token for this operation.</param>
         private void CheckAdd(
-            ref IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, 
+            IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, 
             TransactionToken myTransaction, SecurityToken mySecurity)
         {
             #region prolog
@@ -377,9 +350,6 @@ namespace sones.GraphDB.Manager.TypeManagement
             CanAddCheckWithFS(defsTopologically, defsByVertexName, myTransaction, mySecurity);
 
             #endregion
-
-            //Perf: We assign the topologically sorted list to the caller (request manager) to avoid a second sort in Add.
-            myVertexTypeDefinitions = defsTopologically;
         }
 
         /// <summary>
@@ -781,11 +751,19 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private IEnumerable<IVertexType> Add(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            // there are two ways to add the vertex types
-            // 1. We add a vertex per definition without setting the parentPredef type. After that we update these vertices to set the IncomingEdge to the parentPredef type.
-            // 2. We built up a derivation forest (list of trees) and insert the types in order with setting the base type
-            // we assume, that 1. must visit the vertices more often in FS and 2. also generates a spanning tree, so we know that we do not have an inheritance problem
+            //Perf: count is necessary, fast if it is an ICollection
+            var count = myVertexTypeDefinitions.Count();
 
+            //This operation reserves #count ids for this operation.
+            Interlocked.Add(ref lastID, count);
+
+            //we can add each type separately
+            throw new NotImplementedException();
+            
+        }
+
+        private IVertexType Add(VertexTypePredefinition vertexTypePredefinition, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
             throw new NotImplementedException();
         }
 

@@ -6,7 +6,7 @@ using sones.Library.Commons.Transaction;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    public interface IEdgeTypeManager: IStorageUsingManager
+    public interface IEdgeTypeManager
     {
         /// <summary>
         /// Gets a e type by name.

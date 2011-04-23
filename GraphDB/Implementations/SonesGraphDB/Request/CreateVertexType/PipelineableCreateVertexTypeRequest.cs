@@ -46,7 +46,7 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            myMetaManager.VertexTypeManager.CanAddVertexType(ref _request.VertexTypeDefinitions, TransactionToken, SecurityToken);
+            myMetaManager.VertexTypeManager.CanAddVertexType(_request.VertexTypeDefinitions, TransactionToken, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)

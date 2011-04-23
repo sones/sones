@@ -6,7 +6,7 @@ using sones.Library.Commons.Transaction;
 
 namespace sones.GraphDB.Manager.TypeManagement
 {
-    public interface IVertexTypeManager: IStorageUsingManager
+    public interface IVertexTypeManager
     {
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <paramref name="myVertexTypeDefinitions"/>, <paramref name="myTransaction"/> and <paramref name="mySecurity"/> 
         /// will succeed bar the occurrence of unexpected errors, otherwise false.
         /// </returns>
-        void CanAddVertexType(ref IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity);
+        void CanAddVertexType(IEnumerable<VertexTypePredefinition> myVertexTypeDefinitions, TransactionToken myTransaction, SecurityToken mySecurity);
 
         /// <summary>
         /// Adds a bunch of new vertex types to the type manager.

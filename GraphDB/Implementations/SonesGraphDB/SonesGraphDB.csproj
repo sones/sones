@@ -66,6 +66,7 @@
     <Compile Include="Expression\QueryPlan\IQueryPlan.cs" />
     <Compile Include="Expression\QueryPlan\Misc\QueryPlanProperty.cs" />
     <Compile Include="Index\IndexDefinition.cs" />
+    <Compile Include="Manager\BaseGraph\BaseGraphStorageManager.cs" />
     <Compile Include="Manager\DBCreationManager.cs" />
     <Compile Include="Manager\Expression\BasicLogicExpressionOptimizer.cs" />
     <Compile Include="Manager\IMetaManager.cs" />
@@ -82,7 +83,6 @@
     <Compile Include="Manager\Security\BasicSecurityManager.cs" />
     <Compile Include="Manager\Transaction\BasicTransactionManager.cs" />
     <Compile Include="Manager\TypeManagement\IVertexTypeManager.cs" />
-    <Compile Include="Manager\IStorageUsingManager.cs" />
     <Compile Include="Manager\TypeManagement\IEdgeTypeManager.cs" />
     <Compile Include="Manager\Vertex\IVertexManager.cs" />
     <Compile Include="Manager\Vertex\VertexManager.cs" />
