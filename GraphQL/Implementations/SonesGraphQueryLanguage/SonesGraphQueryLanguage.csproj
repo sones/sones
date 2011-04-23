@@ -95,6 +95,7 @@
     <Compile Include="Structure\Helper\Enums\TypesOfUpdate.cs" />
     <Compile Include="Structure\Helper\Enums\TypesSettingScope.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\AExpressionGraph.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\ExpressionEdge.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\GraphPerformanceCriteria.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\Helper\EdgeKey.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\IExpressionEdge.cs" />
@@ -102,7 +103,7 @@
     <Compile Include="Structure\Helper\ExpressionGraph\IExpressionLevel.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\IExpressionLevelEntry.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\IExpressionNode.cs" />
-    <Compile Include="Structure\Helper\ExpressionGraph\LevelKey.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\Helper\LevelKey.cs" />
     <Compile Include="Structure\Nodes\AStructureNode.cs" />
     <Compile Include="Structure\Nodes\DDL\BulkTypeListMemberNode.cs" />
     <Compile Include="Structure\Nodes\DDL\BulkTypeNode.cs" />
