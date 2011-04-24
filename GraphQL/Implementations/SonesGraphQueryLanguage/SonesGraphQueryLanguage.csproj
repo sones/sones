@@ -96,6 +96,7 @@
     <Compile Include="Structure\Helper\Enums\TypesOfUpdate.cs" />
     <Compile Include="Structure\Helper\Enums\TypesSettingScope.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\AExpressionGraph.cs" />
+    <Compile Include="Structure\Helper\ExpressionGraph\CommonUsageGraph.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\ExpressionEdge.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\ExpressionLevel.cs" />
     <Compile Include="Structure\Helper\ExpressionGraph\ExpressionLevelEntry.cs" />
