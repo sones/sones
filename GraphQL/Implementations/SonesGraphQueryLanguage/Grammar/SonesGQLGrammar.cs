@@ -57,7 +57,7 @@ namespace sones.GraphQL
 
         #region NonTerminals
 
-        public NonTerminal BNF_TypesOrVertices { get; private set; }
+        public NonTerminal BNF_VertexTypes { get; private set; }
 
         #region class scope NonTerminal - need for IExtendableGrammar
 
@@ -578,8 +578,8 @@ namespace sones.GraphQL
             var term                        = new NonTerminal("term");
             var notOpt                      = new NonTerminal("notOpt");
 
-            var typeOrVertex                = new NonTerminal("typeOrVertex");
-            BNF_TypesOrVertices = new NonTerminal("typesOrVertices");
+            var vertexType                  = new NonTerminal("vertexType");
+            BNF_VertexTypes             = new NonTerminal("vertexTypes");
 
             var GraphDBType                 = new NonTerminal(SonesGQLConstants.GraphDBType, CreateGraphDBTypeNode);
             var AttributeList               = new NonTerminal("AttributeList");
@@ -616,7 +616,7 @@ namespace sones.GraphQL
 
             #endregion
 
-            var Reference                   = new NonTerminal(S_REFERENCE.Symbol.Text, typeof(SetRefNode));
+            var Reference                   = new NonTerminal("REFERENCE", typeof(SetRefNode));
             var offsetOpt                   = new NonTerminal("offsetOpt", typeof(OffsetNode));
             var resolutionDepthOpt          = new NonTerminal("resolutionDepthOpt");
             var limitOpt                    = new NonTerminal("limitOpt", typeof(LimitNode));
@@ -1041,7 +1041,7 @@ namespace sones.GraphQL
 
             #region CREATE INDEX
 
-            createIndexStmt.Rule = S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + typeOrVertex + TypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt
+            createIndexStmt.Rule = S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + vertexType + TypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt
                 | S_CREATE + S_INDEX + indexNameOpt + editionOpt + S_ON + TypeWrapper + S_BRACKET_LEFT + IndexAttributeList + S_BRACKET_RIGHT + BNF_IndexTypeOpt; // due to compatibility the  + S_TYPE is optional
 
             uniqueOpt.Rule = Empty | S_UNIQUE;
@@ -1067,11 +1067,11 @@ namespace sones.GraphQL
 
             #region CREATE TYPE(S)
 
-            createTypesStmt.Rule = S_CREATE + BNF_TypesOrVertices + bulkTypeList
-                                    | S_CREATE + abstractOpt + typeOrVertex + bulkType;
+            createTypesStmt.Rule = S_CREATE + BNF_VertexTypes + bulkTypeList
+                                    | S_CREATE + abstractOpt + vertexType + bulkType;
 
-            typeOrVertex.Rule = S_TYPE | S_VERTEX;
-            BNF_TypesOrVertices.Rule = S_TYPES | S_VERTICES;
+            vertexType.Rule = S_VERTEX + S_TYPE;
+            BNF_VertexTypes.Rule = S_VERTEX + S_TYPES;
 
             bulkTypeList.Rule = MakePlusRule(bulkTypeList, S_comma, bulkTypeListMember);
 
@@ -1123,7 +1123,7 @@ namespace sones.GraphQL
 
             #region ALTER TYPE/VERTEX
 
-            alterStmt.Rule = S_ALTER + typeOrVertex + Id_simple + alterCmdList + uniquenessOpt + mandatoryOpt;
+            alterStmt.Rule = S_ALTER + vertexType + Id_simple + alterCmdList + uniquenessOpt + mandatoryOpt;
 
             alterCmd.Rule = Empty
                             | S_ADD + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
@@ -1314,7 +1314,7 @@ namespace sones.GraphQL
 
             #region DROP TYPE
 
-            dropTypeStmt.Rule = S_DROP + typeOrVertex + Id_simple;
+            dropTypeStmt.Rule = S_DROP + vertexType + Id_simple;
 
             #endregion
 
@@ -1326,7 +1326,7 @@ namespace sones.GraphQL
 
             #region TRUNCATE
 
-            truncateStmt.Rule = S_TRUNCATE + typeOrVertex + Id_simple
+            truncateStmt.Rule = S_TRUNCATE + vertexType + Id_simple
                               | S_TRUNCATE + Id_simple; // Due to compatibility the  + S_TYPE is optional
 
             #endregion
@@ -1352,7 +1352,7 @@ namespace sones.GraphQL
 
             DescrEdgesStmt.Rule = S_EDGES;
 
-            DescrTypeStmt.Rule = typeOrVertex + Id_simple;
+            DescrTypeStmt.Rule = vertexType + Id_simple;
 
             DescrTypesStmt.Rule = S_TYPES;
 
@@ -1434,7 +1434,7 @@ namespace sones.GraphQL
 
             dumpType.Rule = Empty | S_ALL | S_GDDL | S_GDML;      // If empty => create both
             dumpFormat.Rule = Empty | S_AS + S_GQL;                 // If empty => create GQL
-            typeOptionalList.Rule = Empty | BNF_TypesOrVertices + TypeList;
+            typeOptionalList.Rule = Empty | BNF_VertexTypes + TypeList;
 
             dumpDestination.Rule = Empty | S_INTO + location_literal | S_TO + location_literal;
 
@@ -1479,7 +1479,7 @@ namespace sones.GraphQL
 
             #region punctuation
 
-            MarkPunctuation(",", S_BRACKET_LEFT.Symbol.Text, S_BRACKET_RIGHT.Symbol.Text, "[", "]");
+            MarkPunctuation(",", S_BRACKET_LEFT.ToString(), S_BRACKET_RIGHT.ToString(), "[", "]");
             //RegisterPunctuation(",", S_BRACKET_LEFT.Symbol, S_BRACKET_RIGHT.Symbol, S_TUPLE_BRACKET_LEFT.Symbol, S_TUPLE_BRACKET_RIGHT.Symbol);
             //RegisterPunctuation(",");
             //RegisterBracePair(_S_BRACKET_LEFT.Symbol, S_BRACKET_RIGHT.Symbol);
@@ -1501,10 +1501,9 @@ namespace sones.GraphQL
                 , BNF_ExprList, BNF_AggregateArg,
                 ExtendedExpressionList,
                 BNF_ImportFormat, BNF_FuncCall, BNF_Aggregate, verbosityTypes,
-                typeOrVertex, BNF_TypesOrVertices);
+                vertexType, BNF_VertexTypes);
 
             #endregion
-
         }
 
         #endregion

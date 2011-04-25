@@ -49,18 +49,18 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         IExpressionGraph GetNewInstance(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
         /// <summary>
-        /// This method integrates a DBObjectStream in the expression graph.
+        /// This method integrates a IVertex in the expression graph.
         /// </summary>
-        /// <param name="myVertex">The DBObjectStream that is going to be integrated.</param>
-        /// <param name="myLevelKey">The location in the graph where the DBObjectStream should be integrated.</param>
+        /// <param name="myVertex">The Ivertex that is going to be integrated.</param>
+        /// <param name="myLevelKey">The location in the graph where the IVertex should be integrated.</param>
         /// <param name="backwardResolution">The number of levels that should be resolved backward.</param>
         void AddNode(IVertex myVertex, LevelKey myLevelKey, int backwardResolution);
 
         /// <summary>
-        /// This method integrates a DBObjectStream in the expression graph.
+        /// This method integrates a IVertex in the expression graph.
         /// </summary>
-        /// <param name="myVertex">The DBObjectStream that is going to be integrated.</param>
-        /// <param name="myLevelKey">The location in the graph where the DBObjectStream should be integrated.</param>
+        /// <param name="myVertex">The IVertex that is going to be integrated.</param>
+        /// <param name="myLevelKey">The location in the graph where the IVertex should be integrated.</param>
         void AddNode(IVertex myVertex, LevelKey myLevelKey);
 
         /// <summary>

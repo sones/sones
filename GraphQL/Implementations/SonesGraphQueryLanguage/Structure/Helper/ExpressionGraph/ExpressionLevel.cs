@@ -184,7 +184,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
             {
                 if (_Content.ContainsKey(levelKey))
                 {
-                    var tempInt64 = expressionNode.GetObjectUUID();
+                    var tempInt64 = expressionNode.GetVertexID();
 
                     if (_Content[levelKey].Nodes.ContainsKey(tempInt64))
                     {
@@ -207,7 +207,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                 else
                 {
                     _Content.Add(levelKey, new ExpressionLevelEntry(levelKey));
-                    _Content[levelKey].Nodes.Add(expressionNode.GetObjectUUID(), expressionNode);
+                    _Content[levelKey].Nodes.Add(expressionNode.GetVertexID(), expressionNode);
                 }
             }
         }

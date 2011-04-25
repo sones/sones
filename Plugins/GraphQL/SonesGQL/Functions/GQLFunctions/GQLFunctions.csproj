@@ -8,7 +8,7 @@
     <ProjectGuid>{7E58D30B-4108-4941-BF85-A5C309F87536}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GQLFunctions</RootNamespace>
+    <RootNamespace>sones.Plugins.SonesGQL.Functions</RootNamespace>
     <AssemblyName>GQLFunctions</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

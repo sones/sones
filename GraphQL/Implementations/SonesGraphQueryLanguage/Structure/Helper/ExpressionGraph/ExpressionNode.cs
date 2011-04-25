@@ -24,12 +24,12 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         private readonly Object _lockObj;
         
         /// <summary>
-        /// The ObjectUUID of the Node (equivalent to its DBObject)
+        /// The VertexID of the Node (equivalent to its DBObject)
         /// </summary>
-        private Int64 _ObjectUUID;
+        private Int64 _vertexID;
 
         /// <summary>
-        /// The DBObjectStream of the Node
+        /// The IVertex of the Node
         /// </summary>
         private IVertex _Object;
 
@@ -99,20 +99,20 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         public ExpressionNode(Int64 ObjectUUID, IComparable NodeWeight)
             : this(NodeWeight)
         {
-            _ObjectUUID = ObjectUUID;
+            _vertexID = ObjectUUID;
             _Object = null;
         }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="myObject">The DBObjectStream that is referenced by this node.</param>
+        /// <param name="myObject">The IVertex that is referenced by this node.</param>
         /// <param name="Weight">The Weight of this node.</param>
         public ExpressionNode(IVertex myObject, IComparable NodeWeight)
             : this(NodeWeight)
         {
             _Object = myObject;
-            _ObjectUUID = myObject.VertexID;
+            _vertexID = myObject.VertexID;
         }
 
         private ExpressionNode(IComparable NodeWeight)
@@ -126,24 +126,24 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         #region public methods
 
         /// <summary>
-        /// This method returns the ObjectUUID of the DBOBjectStream that is referenced by this node.
+        /// This method returns the VertexID of the IVertex that is referenced by this node.
         /// </summary>
-        /// <returns>A ObjectUUID</returns>
-        public Int64 GetObjectUUID()
+        /// <returns>A VertexID</returns>
+        public Int64 GetVertexID()
         {
             lock (_lockObj)
             {
-                return _ObjectUUID;
+                return _vertexID;
             }
         }
 
         /// <summary>
-        /// This method returns the DBObjectStream that is referenced by this node.
+        /// This method returns the IVertex that is referenced by this node.
         /// </summary>
         /// <param name="myDBObjectCache">The actual query cache.</param>
         /// <param name="myTypeUUID">The TypeUUID of the DBObject.</param>
-        /// <returns>A DBObjectStream</returns>
-        public IVertex GetDBObjectStream(IGraphDB myGraphDB, Int64 myVertexTypeID, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        /// <returns>A IVertex</returns>
+        public IVertex GetIVertex(IGraphDB myGraphDB, Int64 myVertexTypeID, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             lock (_lockObj)
             {
@@ -157,7 +157,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                     _Object = myGraphDB.GetVertex<IVertex>(
                         mySecurityToken,
                         myTransactionToken,
-                        new RequestGetVertex(myVertexTypeID, GetObjectUUID()), (stats, vertex) => vertex);
+                        new RequestGetVertex(myVertexTypeID, GetVertexID()), (stats, vertex) => vertex);
 
                     return _Object;
                 }
@@ -401,7 +401,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                 return false;
             }
 
-            return (this._ObjectUUID == p.GetObjectUUID());
+            return (this._vertexID == p.GetVertexID());
         }
 
         public static Boolean operator ==(ExpressionNode a, ExpressionNode b)
@@ -429,7 +429,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
         public override int GetHashCode()
         {
-            return _ObjectUUID.GetHashCode();
+            return _vertexID.GetHashCode();
         }
 
         #endregion

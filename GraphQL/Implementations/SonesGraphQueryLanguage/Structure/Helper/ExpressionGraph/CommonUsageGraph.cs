@@ -195,7 +195,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                         //return all Objects of this levelKey
                         foreach (var aNode in this._Levels[myLevelKey.Level].ExpressionLevels[myLevelKey].Nodes)
                         {
-                            yield return aNode.Value.GetDBObjectStream(_iGraphDB, myLevelKey.LastEdge.VertexTypeID, _securityToken, _transactionToken);
+                            yield return aNode.Value.GetIVertex(_iGraphDB, myLevelKey.LastEdge.VertexTypeID, _securityToken, _transactionToken);
                         }
                     }
                     else
@@ -214,7 +214,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                             //take the backwardEdges 
                             foreach (var aNode in this._Levels[myLevelKey.Level].ExpressionLevels[myLevelKey].Nodes.Where(item => item.Value.BackwardEdges[predecessorLevelKey.LastEdge].Where(aBackWardEdge => aBackWardEdge.Destination == mySourceDBObject.VertexID).Count() > 0))
                             {
-                                yield return aNode.Value.GetDBObjectStream(_iGraphDB, myLevelKey.LastEdge.VertexTypeID, _securityToken, _transactionToken);
+                                yield return aNode.Value.GetIVertex(_iGraphDB, myLevelKey.LastEdge.VertexTypeID, _securityToken, _transactionToken);
                             }
                         }
                         else
@@ -253,7 +253,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                         //there is no sourceObject given, so return the complete level
                         foreach (var aNode in this._Levels[myLevelKey.Level].ExpressionLevels[myLevelKey].Nodes)
                         {
-                            yield return aNode.Value.GetDBObjectStream(_iGraphDB, myLevelKey.LastEdge.VertexTypeID, _securityToken, _transactionToken);
+                            yield return aNode.Value.GetIVertex(_iGraphDB, myLevelKey.LastEdge.VertexTypeID, _securityToken, _transactionToken);
                         }
                     }
                 }
@@ -288,7 +288,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                         //return all Objects of this levelKey
                         foreach (var aNode in this._Levels[myLevelKey.Level].ExpressionLevels[myLevelKey].Nodes)
                         {
-                            yield return aNode.Value.GetObjectUUID();
+                            yield return aNode.Value.GetVertexID();
                         }
                     }
                     else
@@ -307,7 +307,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                             //take the backwardEdges 
                             foreach (var aNode in this._Levels[myLevelKey.Level].ExpressionLevels[myLevelKey].Nodes.Where(item => item.Value.BackwardEdges[predecessorLevelKey.LastEdge].Where(aBackWardEdge => aBackWardEdge.Destination == mySourceDBObject.VertexID).Count() > 0))
                             {
-                                yield return aNode.Value.GetObjectUUID();
+                                yield return aNode.Value.GetVertexID();
                             }
                         }
                         else
@@ -332,7 +332,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                         //there is no sourceObject given, so return the complete level
                         foreach (var aNode in this._Levels[myLevelKey.Level].ExpressionLevels[myLevelKey].Nodes)
                         {
-                            yield return aNode.Value.GetObjectUUID();
+                            yield return aNode.Value.GetVertexID();
                         }
                     }
                 }
@@ -820,12 +820,12 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
         private void MergeNodeIntoGraph(IExpressionGraph destinationGraph, LevelKey levelKey, IExpressionNode aNode, IExpressionGraph sourceGraph)
         {
-            if (destinationGraph.Levels[levelKey.Level].ExpressionLevels[levelKey].Nodes.ContainsKey(aNode.GetObjectUUID()))
+            if (destinationGraph.Levels[levelKey.Level].ExpressionLevels[levelKey].Nodes.ContainsKey(aNode.GetVertexID()))
             {
                 if (levelKey.Level != 0)
                 {
                     //check if the node has backward edes
-                    if ((aNode.BackwardEdges.Count != 0) || (destinationGraph.Levels[levelKey.Level].ExpressionLevels[levelKey].Nodes[aNode.GetObjectUUID()].BackwardEdges.Count != 0))
+                    if ((aNode.BackwardEdges.Count != 0) || (destinationGraph.Levels[levelKey.Level].ExpressionLevels[levelKey].Nodes[aNode.GetVertexID()].BackwardEdges.Count != 0))
                     {
                         //check if the node has backward edes
                         destinationGraph.Levels[levelKey.Level].AddNode(levelKey, aNode);
@@ -920,7 +920,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                 {
                     if (expressionLevelEntry.Nodes.ContainsKey(aReference))
                     {
-                        expressionLevelEntry.Nodes[aReference].RemoveComplexConnection(mylevelKey, myExpressionNode.GetObjectUUID());
+                        expressionLevelEntry.Nodes[aReference].RemoveComplexConnection(mylevelKey, myExpressionNode.GetVertexID());
                         RemoveNodeReferncesFromGraph(expressionLevelEntry.Nodes[aReference], aComplexConnection.Key, myGraph, integratedByAnOtherGraph);
                     }
 
@@ -972,7 +972,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                             {
                                 if (myGraph.Levels[backwardLevelKey.Level].ExpressionLevels[backwardLevelKey].Nodes.ContainsKey(aBackwardEdge.Destination))
                                 {
-                                    myGraph.Levels[backwardLevelKey.Level].ExpressionLevels[backwardLevelKey].Nodes[aBackwardEdge.Destination].RemoveForwardEdge(mylevelKey.LastEdge, myExpressionNode.GetObjectUUID());
+                                    myGraph.Levels[backwardLevelKey.Level].ExpressionLevels[backwardLevelKey].Nodes[aBackwardEdge.Destination].RemoveForwardEdge(mylevelKey.LastEdge, myExpressionNode.GetVertexID());
                                 }
                             }
                         }
@@ -1002,7 +1002,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                         {
                             if (myGraph.Levels[forwardLevelKey.Level].ExpressionLevels[forwardLevelKey].Nodes.ContainsKey(aForwardEdge.Destination))
                             {
-                                myGraph.Levels[forwardLevelKey.Level].ExpressionLevels[forwardLevelKey].Nodes[aForwardEdge.Destination].RemoveBackwardEdge(mylevelKey.LastEdge, myExpressionNode.GetObjectUUID());
+                                myGraph.Levels[forwardLevelKey.Level].ExpressionLevels[forwardLevelKey].Nodes[aForwardEdge.Destination].RemoveBackwardEdge(mylevelKey.LastEdge, myExpressionNode.GetVertexID());
 
                                 if (!(myGraph.Levels[forwardLevelKey.Level].ExpressionLevels[forwardLevelKey].Nodes[aForwardEdge.Destination].BackwardEdges
                                     .Where(item => item.Value.Count > 0).Count() > 0))
@@ -1230,7 +1230,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                         {
                             var incomingAttribite = (IIncomingEdgeDefinition)currentAttribute;
 
-                            var IVertex = myNode.GetDBObjectStream(_iGraphDB, incomingAttribite.RelatedEdgeDefinition.SourceVertexType.ID, _securityToken, _transactionToken);
+                            var IVertex = myNode.GetIVertex(_iGraphDB, incomingAttribite.RelatedEdgeDefinition.SourceVertexType.ID, _securityToken, _transactionToken);
 
                             if (IVertex.HasOutgoingEdge(incomingAttribite.RelatedEdgeDefinition.AttributeID))
                             {
@@ -1253,7 +1253,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                             }
                             else
                             {
-                                var aVertex = myNode.GetDBObjectStream(_iGraphDB, outgoingAttribute.SourceVertexType.ID, _securityToken, _transactionToken);
+                                var aVertex = myNode.GetIVertex(_iGraphDB, outgoingAttribute.SourceVertexType.ID, _securityToken, _transactionToken);
 
                                 if (aVertex.HasIncomingVertices(myCurrentBackwardEdgekey.VertexTypeID, myCurrentBackwardEdgekey.AttributeID))
                                 {
@@ -1280,7 +1280,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
                             foreach (var aVertex in referencedUUIDs)
                             {
-                                AddNodeRecursiveBackward(aVertex, myNode.GetObjectUUID(), myCurrentLevelKey, aLowerLevelKey, lowerLevelKeys, myGraph);
+                                AddNodeRecursiveBackward(aVertex, myNode.GetVertexID(), myCurrentLevelKey, aLowerLevelKey, lowerLevelKeys, myGraph);
                                 myNode.AddBackwardEdge(edgeKeyForBackwardEdge, aVertex.VertexID, null);
                             }
                         }
@@ -1445,7 +1445,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
                 //Extend graph
                 foreach (var aNode in aGraph.Levels[startLevelKey.Level].ExpressionLevels[startLevelKey].Nodes)
                 {
-                    currentDBObject = aNode.Value.GetDBObjectStream(_iGraphDB, currentType.ID, _securityToken, _transactionToken);
+                    currentDBObject = aNode.Value.GetIVertex(_iGraphDB, currentType.ID, _securityToken, _transactionToken);
 
                     if (currentDBObject != null)
                     {

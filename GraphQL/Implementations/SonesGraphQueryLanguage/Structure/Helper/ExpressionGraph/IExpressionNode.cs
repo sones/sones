@@ -31,21 +31,19 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
         #endregion
 
-        #region DBObjectStream
+        #region IVertex
 
         /// <summary>
         /// Return the ObjectUUID of the node
         /// </summary>
         /// <returns>An ObjectUUID</returns>
-        Int64 GetObjectUUID();
+        Int64 GetVertexID();
 
         /// <summary>
-        /// Returns the DBObjectStream of the node
+        /// Returns the IVertex of the node
         /// </summary>
-        /// <param name="myGraphDB">The DBObjectCache that is responsible for loading a DBObjectStream</param>
-        /// <param name="myVertexTypeID">The TypeUUID of the DBObject that is going to be loaded</param>
-        /// <returns>A DBObjectStream</returns>
-        IVertex GetDBObjectStream(IGraphDB myGraphDB, Int64 myVertexTypeID, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+        /// <returns>A IVertex</returns>
+        IVertex GetIVertex(IGraphDB myGraphDB, Int64 myVertexTypeID, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
         #endregion
 

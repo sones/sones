@@ -5,6 +5,8 @@ using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Settings;
 using sones.Library.Commons.Transaction;
+using sones.Library.VersionedPluginManager;
+using sones.GraphQL.GQL.Manager.Plugin;
 
 namespace sones.GraphQL
 {
@@ -25,6 +27,11 @@ namespace sones.GraphQL
         /// </summary>
         private readonly GraphApplicationSettings _settings;
 
+        /// <summary>
+        /// A manager to dynamically load versioned plugins
+        /// </summary>
+        private readonly GQLPluginManager _GQLPluginManager;
+
         #endregion
 
         #region Constructor
@@ -37,6 +44,12 @@ namespace sones.GraphQL
         {
             _IGraphDBInstance = myIGraphDBInstace;
             _settings = new GraphApplicationSettings(SonesGQLConstants.ApplicationSettingsLocation);
+
+            #region plugin manager
+
+            _GQLPluginManager = new GQLPluginManager();
+
+            #endregion
         }
 
         #endregion
@@ -73,7 +86,7 @@ namespace sones.GraphQL
             get { throw new NotImplementedException(); }
         }
 
-        public Library.VersionedPluginManager.IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
+        public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
             throw new NotImplementedException();
         }

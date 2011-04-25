@@ -1,6 +1,7 @@
 ﻿using System;
+using sones.Library.VersionedPluginManager;
 
-namespace sones.Plugins.SonesGQL
+namespace sones.Plugins.SonesGQL.Functions
 {
     #region IGraphQLFunctionVersionCompatibility
 
@@ -26,11 +27,8 @@ namespace sones.Plugins.SonesGQL
     /// <summary>
     /// The interface for all GQL functions
     /// </summary>
-    public interface IGQLFunction
+    public interface IGQLFunction : IPluginable
     {
-        /// <summary>
-        /// Returns the name of the function
-        /// </summary>
-        String Name { get; }
+        
     }
 }
