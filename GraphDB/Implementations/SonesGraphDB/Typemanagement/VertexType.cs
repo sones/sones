@@ -499,7 +499,7 @@ namespace sones.GraphDB.TypeManagement
             var attributeID = GetAttributeID(myVertex);
             var baseType = GetBaseType(myVertex);
             var isMandatory = GetIsMandatory(myVertex);
-            var multiplicity = GetMultiplicity(baseType);
+            var multiplicity = GetMultiplicity(myVertex);
             var name = GetName(myVertex);
 
             return new PropertyDefinition
@@ -726,15 +726,14 @@ namespace sones.GraphDB.TypeManagement
 
         #region Vertex type
 
-        private static PropertyMultiplicity GetMultiplicity(Type myBaseType)
+        private static PropertyMultiplicity GetMultiplicity(IVertex myVertex)
         {
-            if (myBaseType.GetInterface("ISet", true) != null)
-                return PropertyMultiplicity.Set;
+            var multID = myVertex.GetProperty<Byte>((long)AttributeDefinitions.Multiplicity);
 
-            if (myBaseType.GetInterface("IList", true) != null)
-                return PropertyMultiplicity.List;
+            if (!Enum.IsDefined(typeof(PropertyMultiplicity), multID))
+                throw new UnknownDBException("The value for the property multiplicity is incorrect.");
 
-            return PropertyMultiplicity.Single;
+            return (PropertyMultiplicity)multID;
         }
 
         private static bool GetIsMandatory(IVertex myVertex)
@@ -744,7 +743,31 @@ namespace sones.GraphDB.TypeManagement
 
         private static Type GetBaseType(IVertex myVertex)
         {
-            throw new NotImplementedException();
+            var typeID = myVertex.GetProperty<long>((long)AttributeDefinitions.Type);
+            if (!Enum.IsDefined(typeof(BasicTypes), typeID))
+                throw new NotImplementedException("User defined base types are not implemented yet");
+
+            BasicTypes type = (BasicTypes)typeID;
+
+            switch (type)
+            {
+                case BasicTypes.Boolean : return typeof(Boolean);
+                case BasicTypes.Byte    : return typeof(Byte);
+                case BasicTypes.Char    : return typeof(Char);
+                case BasicTypes.DateTime: return typeof(DateTime);
+                case BasicTypes.Double  : return typeof(Double);
+                case BasicTypes.Int16   : return typeof(Int16);
+                case BasicTypes.Int32   : return typeof(Int32);
+                case BasicTypes.Int64   : return typeof(Int64);
+                case BasicTypes.SByte   : return typeof(SByte);
+                case BasicTypes.Single  : return typeof(Single);
+                case BasicTypes.String  : return typeof(String);
+                case BasicTypes.TimeSpan: return typeof(TimeSpan);
+                case BasicTypes.UInt16  : return typeof(UInt16);
+                case BasicTypes.UInt32  : return typeof(UInt32);
+                case BasicTypes.UInt64  : return typeof(UInt64);
+                default: throw new UnknownDBException("BasicTypes enumeration was modified, but this function was not adapted.");
+            }
         }
 
         private static long GetAttributeID(IVertex myVertex)

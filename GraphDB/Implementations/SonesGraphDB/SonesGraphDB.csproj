@@ -107,7 +107,6 @@
     <Compile Include="TypeManagement\Base\AttributeDefinitions.cs" />
     <Compile Include="TypeManagement\Base\BasicTypes.cs" />
     <Compile Include="TypeManagement\EdgeType.cs" />
-    <Compile Include="TypeManagement\Exceptions\NotValidatedException.cs" />
     <Compile Include="Manager\TypeManagement\VertexTypeManager.cs" />
     <Compile Include="Request\Clear\PipelineableClearRequest.cs" />
     <Compile Include="Request\APipelinableRequest.cs" />
