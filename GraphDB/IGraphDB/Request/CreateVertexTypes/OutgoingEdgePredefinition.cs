@@ -41,7 +41,7 @@ namespace sones.GraphDB.Request
         public String EdgeType { get; private set; }
 
         /// <summary>
-        /// The vertex type the IncomingEdge will direct to
+        /// The vertex type the IncomingEdge will direct to.
         /// </summary>
         public String TargetVertexType { get; private set; }
 

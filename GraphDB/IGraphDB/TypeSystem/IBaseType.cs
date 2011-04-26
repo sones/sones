@@ -138,6 +138,13 @@ namespace sones.GraphDB.TypeSystem
         /// <returns>An enumerable of property definitions</returns>
         IEnumerable<IPropertyDefinition> GetPropertyDefinitions(bool myIncludeAncestorDefinitions);
 
+        /// <summary>
+        /// Gets the properties with the given name.
+        /// </summary>
+        /// <param name="myPropertyNames">A list of peroperty names.</param>
+        /// <returns>An enumerable of property definitions</returns>
+        IEnumerable<IPropertyDefinition> GetPropertyDefinitions(IEnumerable<string> myPropertyNames);
+
         #endregion
 
 

@@ -170,59 +170,11 @@ namespace sones.GraphDB.TypeManagement
 
         #region IVertexType Members
 
-        #region Vertex type properties
-
-        long IBaseType.ID
-        {
-            get { return _id; }
-        }
-
-        string IBaseType.Name
-        {
-            get { return _name; }
-        }
-
-        IBehaviour IBaseType.Behaviour
-        {
-            get 
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        string IBaseType.Comment
-        {
-            get { return _comment.Value; }
-        }
-
-        bool IBaseType.IsAbstract
-        {
-            get { return _isAbstract; }
-        }
-
-        bool IBaseType.IsSealed
-        {
-            get { return _isSealed; }
-        }
-
-        #endregion
-
         #region Inheritance
-
-        bool IBaseType.HasParentType
-        {
-
-            get { return _id != (long)BaseTypes.Vertex; }
-        }
 
         IVertexType IVertexType.GetParentVertexType
         {
             get { return _parent.Value; }
-        }
-
-        bool IBaseType.HasChildTypes
-        {
-            get { return _hasChilds; }
         }
 
         IEnumerable<IVertexType> IVertexType.GetChildVertexTypes(bool myRecursive = true)
@@ -241,77 +193,6 @@ namespace sones.GraphDB.TypeManagement
             }
 
             yield break;
-        }
-
-        #endregion
-
-        #region Attributes
-
-        bool IBaseType.HasAttribute(string myAttributeName)
-        {
-            return GetAttribute(myAttributeName) != null;
-        }
-
-        IAttributeDefinition IBaseType.GetAttributeDefinition(string myAttributeName)
-        {
-            return GetAttribute(myAttributeName);
-        }
-
-        bool IBaseType.HasAttributes(bool myIncludeAncestorDefinitions)
-        {
-            if (!_hasAttributes.HasValue)
-            {
-                _hasAttributes = GetHasAttributes();
-            }
-
-            //Perf: Use of "short-circuit" evaluation. Do not exchange operators!
-            return _hasAttributes.Value || (myIncludeAncestorDefinitions && _parent.Value.HasAttributes(true));
-        }
-
-        IEnumerable<IAttributeDefinition> IBaseType.GetAttributeDefinitions(bool myIncludeAncestorDefinitions)
-        {
-            return (myIncludeAncestorDefinitions)
-                ? _attributes.Value.Values.Union(_parent.Value.GetAttributeDefinitions(true))
-                : _attributes.Value.Values;
-        }
-
-        public IAttributeDefinition GetAttributeDefinition(long myAttributeID)
-        {
-            return _attributes.Value.Values.FirstOrDefault(x => x.AttributeID == myAttributeID);
-        }
-
-        #endregion
-
-        #region Property
-
-        bool IBaseType.HasProperty(string myPropertyName)
-        {
-            return GetAttributeAsProperty(myPropertyName) != null;
-        }
-
-        IPropertyDefinition IBaseType.GetPropertyDefinition(string myPropertyName)
-        {
-            return GetAttributeAsProperty(myPropertyName);
-        }
-
-        bool IBaseType.HasProperties(bool myIncludeAncestorDefinitions)
-        {
-            if (!_hasProperties.HasValue)
-            {
-                _hasProperties = GetHasProperties();
-            }
-
-            return _hasProperties.Value || (myIncludeAncestorDefinitions && _parent.Value.HasProperties(true));
-        }
-
-        IEnumerable<IPropertyDefinition> IBaseType.GetPropertyDefinitions(bool myIncludeAncestorDefinitions)
-        {
-            return _attributes.Value.OfType<IPropertyDefinition>();
-        }
-
-        public IPropertyDefinition GetPropertyDefinition(long myPropertyID)
-        {
-            return GetAttributeDefinition(myPropertyID) as IPropertyDefinition;
         }
 
         #endregion
@@ -388,6 +269,134 @@ namespace sones.GraphDB.TypeManagement
             return (myIncludeAncestorDefinitions)
                 ? _indices.Value.Union(_parent.Value.GetIndexDefinitions(true))
                 : _indices.Value;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region IBaseType Members
+
+        long IBaseType.ID
+        {
+            get { return _id; }
+        }
+
+        string IBaseType.Name
+        {
+            get { return _name; }
+        }
+
+        IBehaviour IBaseType.Behaviour
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        string IBaseType.Comment
+        {
+            get { return _comment.Value; }
+        }
+
+        bool IBaseType.IsAbstract
+        {
+            get { return _isAbstract; }
+        }
+
+        bool IBaseType.IsSealed
+        {
+            get { return _isSealed; }
+        }
+
+        #region Inheritance
+
+        bool IBaseType.HasParentType
+        {
+            get { return _id != (long)BaseTypes.Vertex; }
+        }
+
+        bool IBaseType.HasChildTypes
+        {
+            get { return _hasChilds; }
+        }
+
+
+        #endregion
+
+        #region Attributes
+
+        bool IBaseType.HasAttribute(string myAttributeName)
+        {
+            return GetAttribute(myAttributeName) != null;
+        }
+
+        bool IBaseType.HasAttributes(bool myIncludeAncestorDefinitions)
+        {
+            if (!_hasAttributes.HasValue)
+            {
+                _hasAttributes = GetHasAttributes();
+            }
+
+            //Perf: Use of "short-circuit" evaluation. Do not exchange operators!
+            return _hasAttributes.Value || (myIncludeAncestorDefinitions && _parent.Value.HasAttributes(true));
+        }
+
+        IAttributeDefinition IBaseType.GetAttributeDefinition(string myAttributeName)
+        {
+            return GetAttribute(myAttributeName);
+        }
+
+        IEnumerable<IAttributeDefinition> IBaseType.GetAttributeDefinitions(bool myIncludeAncestorDefinitions)
+        {
+            return (myIncludeAncestorDefinitions)
+                ? _attributes.Value.Values.Union(_parent.Value.GetAttributeDefinitions(true))
+                : _attributes.Value.Values;
+        }
+
+        IAttributeDefinition IBaseType.GetAttributeDefinition(long myAttributeID)
+        {
+            return GetAttribute(myAttributeID);
+        }
+
+        #endregion
+
+        #region Property
+
+        bool IBaseType.HasProperty(string myPropertyName)
+        {
+            return GetAttributeAsProperty(myPropertyName) != null;
+        }
+
+        IPropertyDefinition IBaseType.GetPropertyDefinition(string myPropertyName)
+        {
+            return GetAttributeAsProperty(myPropertyName);
+        }
+
+        bool IBaseType.HasProperties(bool myIncludeAncestorDefinitions)
+        {
+            if (!_hasProperties.HasValue)
+            {
+                _hasProperties = GetHasProperties();
+            }
+
+            return _hasProperties.Value || (myIncludeAncestorDefinitions && _parent.Value.HasProperties(true));
+        }
+
+        IEnumerable<IPropertyDefinition> IBaseType.GetPropertyDefinitions(bool myIncludeAncestorDefinitions)
+        {
+            return _attributes.Value.OfType<IPropertyDefinition>();
+        }
+
+        IPropertyDefinition IBaseType.GetPropertyDefinition(long myPropertyID)
+        {
+            return GetAttribute(myPropertyID) as IPropertyDefinition;
+        }
+
+        IEnumerable<IPropertyDefinition> IBaseType.GetPropertyDefinitions(IEnumerable<string> myPropertyNames)
+        {
+            return myPropertyNames.Select(x => GetAttributeAsProperty(x));
         }
 
         #endregion
@@ -474,6 +483,11 @@ namespace sones.GraphDB.TypeManagement
             IAttributeDefinition result;
             _attributes.Value.TryGetValue(myAttributeName, out result);
             return result;
+        }
+
+        private IAttributeDefinition GetAttribute(long myAttributeID)
+        {
+            return _attributes.Value.Values.FirstOrDefault(x => x.AttributeID == myAttributeID);
         }
 
         #endregion
@@ -808,5 +822,6 @@ namespace sones.GraphDB.TypeManagement
         #endregion
 
         #endregion
+
     }
 }

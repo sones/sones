@@ -40,5 +40,15 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="myTransactionToken"></param>
         /// <returns></returns>
         IEnumerable<IIndex<IComparable, Int64>> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+
+
+        /// <summary>
+        /// Returns the name of the index type, that matches the requirements.
+        /// </summary>
+        /// <param name="myIsSingleValue">If true, the index type must be a single value index otherwise a multi value index.</param>
+        /// <param name="myIsRange">If true, the index type must support range queries otherwise not.</param>
+        /// <param name="myIsVersioned">If true, the index type must support versioning otherwise not.</param>
+        /// <returns></returns>
+        String GetBestMatchingIndexName(bool myIsSingleValue, bool myIsRange, bool myIsVersioned);
     }
 }

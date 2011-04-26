@@ -2414,7 +2414,7 @@ namespace sones.GraphQL
             {
                 //TODO: handle uniqueness on multiple attributes
 
-                stringBuilder.Append(aUniquenessDefinition.GetUniqueAttributeDefinitions().First().Name);
+                stringBuilder.Append(aUniquenessDefinition.UniquePropertyDefinitions.First().Name);
                 stringBuilder.Append(delimiter);
             }
 

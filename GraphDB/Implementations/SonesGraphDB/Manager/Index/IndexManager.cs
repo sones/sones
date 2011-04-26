@@ -73,6 +73,11 @@ namespace sones.GraphDB.Manager.Index
             throw new NotImplementedException();
         }
 
+        public string GetBestMatchingIndexName(bool myIsSingleValue, bool myIsRange, bool myIsVersioned)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

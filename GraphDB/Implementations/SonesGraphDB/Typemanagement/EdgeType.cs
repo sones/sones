@@ -135,6 +135,11 @@ namespace sones.GraphDB.TypeManagement
             throw new NotImplementedException();
         }
 
+        IEnumerable<IPropertyDefinition> IBaseType.GetPropertyDefinitions(IEnumerable<string> myPropertyNames)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

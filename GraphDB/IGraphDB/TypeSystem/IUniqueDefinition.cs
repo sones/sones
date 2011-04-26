@@ -11,6 +11,6 @@ namespace sones.GraphDB.TypeSystem
         /// The attributes that are unique together.
         /// </summary>
         /// <returns>A set of attribute definitions that together must be unique. Never <c>NULL</c>.</returns>
-        IEnumerable<IAttributeDefinition> GetUniqueAttributeDefinitions();
+        IEnumerable<IPropertyDefinition> UniquePropertyDefinitions { get; }
     }
 }

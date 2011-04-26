@@ -78,6 +78,9 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         private long _LastTypeID;
 
+        /// <summary>
+        /// Stores the last attribute id.
+        /// </summary>
         private long _LastAttrID;
 
         #endregion
@@ -754,8 +757,11 @@ namespace sones.GraphDB.Manager.TypeManagement
                     mySecurity,
                     myTransaction));
             }
+
             #region Store Attributes
+
             //The order of adds is important. First property, then outgoing edges (that might point to properties) and finally incoming edges (that might point to outgoing edges)
+            //Do not try to merge it into one for block.
 
             #region Store properties
 
@@ -846,6 +852,68 @@ namespace sones.GraphDB.Manager.TypeManagement
 
 
             #endregion
+
+            var uniqueIdx = _indexManager.GetBestMatchingIndexName(true, false, false);
+            var indexIdx =  _indexManager.GetBestMatchingIndexName(false, false, false);
+
+            resultPos = 0;
+            for (var current = defsTopologically.First; current != null; current = current.Next, resultPos++)
+            {
+                #region Uniqueness
+
+                foreach (var unique in current.Value.Uniques)
+                {
+                    _indexManager.CreateIndex(
+                        new IndexDefinition
+                            {
+                                IndexedProperties = result[resultPos].GetPropertyDefinitions(unique.Properties),
+                                IndexTypeName = uniqueIdx,
+                                IsUserdefined = false,
+                            },
+                        mySecurity,
+                        myTransaction);
+                }
+
+                foreach (var unique in result[resultPos].GetParentVertexType.GetUniqueDefinitions(true))
+                {
+                    _indexManager.CreateIndex(
+                        new IndexDefinition
+                        {
+                            IndexedProperties = unique.UniquePropertyDefinitions,
+                            IndexTypeName = uniqueIdx,
+                            IsUserdefined = false,
+                        },
+                        mySecurity,
+                        myTransaction);
+
+                }
+
+                #endregion
+
+                #region Indices
+
+                foreach (var index in current.Value.Indices)
+                {
+                    
+                    _indexManager.CreateIndex(
+                        new IndexDefinition
+                        {
+                            Name = index.Name,
+                            IndexedProperties = result[resultPos].GetPropertyDefinitions(index.Properties),
+                            IndexTypeName = (string.IsNullOrWhiteSpace(index.TypeName))? indexIdx: index.TypeName,
+                            IsUserdefined = true,
+                        },
+                        mySecurity,
+                        myTransaction);
+                }
+
+                foreach (var index in result[resultPos].GetParentVertexType.GetIndexDefinitions(true))
+                {
+                    _indexManager.CreateIndex(index, mySecurity, myTransaction);
+                }
+
+                #endregion
+            }
 
             return result;
         }
