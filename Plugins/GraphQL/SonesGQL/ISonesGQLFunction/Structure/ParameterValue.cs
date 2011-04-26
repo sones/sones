@@ -13,33 +13,27 @@ namespace ISonesGQLFunction.Structure
     {
 
         public readonly String Name;
-        public readonly Type Type;
+        public readonly Object Value;
         public readonly Boolean VariableNumOfParams;
 
         /// <summary>
         /// A single parameter
         /// </summary>
-        /// <param name="myParameterName">The name of the parameter. Currently this is not used.</param>
-        /// <param name="myParameterDBType">The Type of the parameter</param>
-        public ParameterValue(String myParameterName, Type myParameterType)
-            : this()
+        public ParameterValue(String myParameterName, Object myParameterValue)
         {
             Name = myParameterName;
-            Type = myParameterType;
+            Value = myParameterValue;
             VariableNumOfParams = false;
         }
 
         /// <summary>
         /// A single parameter
         /// </summary>
-        /// <param name="myParameterName">The name of the parameter. Currently this is not used.</param>
-        /// <param name="myParameterDBType">The Type of the parameter</param>
         /// <param name="myVariableNumOfParams">True if this parameter occurs 1 or more time. This have to be the last parameter!</param>
-        public ParameterValue(String myParameterName, Type myParameterType, Boolean myVariableNumOfParams)
-            : this()
+        public ParameterValue(String myParameterName, Object myParameterValue, Boolean myVariableNumOfParams)
         {
             Name = myParameterName;
-            Type = myParameterType;
+            Value = myParameterValue;
             VariableNumOfParams = myVariableNumOfParams;
         }
 

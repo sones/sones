@@ -1,5 +1,11 @@
 ﻿using System;
 using sones.Library.VersionedPluginManager;
+using ISonesGQLFunction.Structure;
+using System.Collections.Generic;
+using sones.Library.Commons.Transaction;
+using sones.Library.Commons.Security;
+using sones.GraphDB;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
@@ -29,6 +35,14 @@ namespace sones.Plugins.SonesGQL.Functions
     /// </summary>
     public interface IGQLFunction : IPluginable
     {
-        
+        ParameterValue GetParameter(Int32 elementAt);
+
+        List<ParameterValue> GetParameters();
+
+        FuncParameter ExecFunc(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams);
+
+        bool ValidateWorkingBase(Type myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+
+        Type GetReturnType(IAttributeDefinition myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
     }
 }

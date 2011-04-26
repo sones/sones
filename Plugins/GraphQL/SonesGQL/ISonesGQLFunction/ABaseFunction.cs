@@ -52,7 +52,7 @@ namespace sones.Plugins.SonesGQL.Functions
         /// <param name="myWorkingBase"></param>
         /// <param name="myTypeManager"></param>
         /// <returns></returns>
-        public virtual Type GetReturnType(Type myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public virtual Type GetReturnType(IAttributeDefinition myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             return null;
         }
@@ -132,9 +132,9 @@ namespace sones.Plugins.SonesGQL.Functions
             Int32 definedParamCounter = 0;
             for (Int32 i = 0; i < myParams.Count(); i++)
             {
-                if (Parameters[definedParamCounter].Type.Name != ((FuncParameter)myParams[i]).Value.GetType().Name)
+                if (Parameters[definedParamCounter].Value.GetType() != ((FuncParameter)myParams[i]).Value.GetType())
                 {
-                    throw new FunctionParameterTypeMismatchException(Parameters[definedParamCounter].Type, myParams[i].GetType());
+                    throw new FunctionParameterTypeMismatchException(Parameters[definedParamCounter].Value.GetType(), myParams[i].GetType());
                 }
 
                 if (!Parameters[definedParamCounter].VariableNumOfParams) definedParamCounter++;
