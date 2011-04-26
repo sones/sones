@@ -7,26 +7,11 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Networking.HTTP;
 using System.IdentityModel.Selectors;
-using System.IdentityModel.Tokens;
-using System.ServiceModel;
 using sones.Plugins.GraphDS.RESTService;
+using System.ServiceModel;
 
 namespace sones.GraphDSServer
 {
-
-    public class PassValidator : UserNamePasswordValidator
-    {
-        public override void Validate(String myUserName, String myPassword)
-        {
-
-            if (!(myUserName == "test" && myPassword == "test") && !(myUserName == "test2" && myPassword == "test2"))
-            {
-                throw new SecurityTokenException("Unknown Username or Password");
-            }
-
-        }
-    }
-
     public sealed class GraphDSServer : IGraphDSServer
     {
         #region Data
@@ -36,6 +21,7 @@ namespace sones.GraphDSServer
         /// </summary>
         private readonly IGraphDB                  _iGraphDB;
         private HTTPServer<GraphDSREST_Service>    _httpServer;
+        private UserNamePasswordValidator          _httpCredentials;
 
         #endregion
 
@@ -57,7 +43,7 @@ namespace sones.GraphDSServer
                     var security = new HTTPSecurity()                     
                     {
                         CredentialType = HttpClientCredentialType.Basic,
-                        UserNamePasswordValidator = new PassValidator()
+                        UserNamePasswordValidator = _httpCredentials
                     };
                 
                     var restService = new GraphDSREST_Service();
@@ -195,7 +181,9 @@ namespace sones.GraphDSServer
 
         public sones.Library.Commons.Security.SecurityToken LogOn(IUserCredentials toBeAuthenticatedCredentials)
         {
-            throw new NotImplementedException();
+            _httpCredentials = toBeAuthenticatedCredentials.CreateHttpCredentials();
+            //var credentials = _iGraphDB.LogOn(toBeAuthenticatedCredentials);
+            return null;
         }
 
         public void LogOff(sones.Library.Commons.Security.SecurityToken toBeLoggedOfToken)

@@ -15,6 +15,8 @@ using sones.GraphDS;
 using sones.GraphQL.Result;
 using sones.Library.LanguageExtensions;
 using sones.Plugins.GraphDS.IOInterface.XML_IO;
+using sones.Library.DiscordianDate;
+
 
 #endregion
 
@@ -372,7 +374,7 @@ namespace sones.Plugins.GraphDS.RESTService
                 HTTPServer.HTTPContext.ResponseHeader.ContentType = new System.Net.Mime.ContentType("text/plain");
             }
 
-            return new MemoryStream(Encoding.UTF8.GetBytes("Test"));
+            return new MemoryStream(Encoding.UTF8.GetBytes(new DiscordianDate().ToString()));
         }
 
         #endregion

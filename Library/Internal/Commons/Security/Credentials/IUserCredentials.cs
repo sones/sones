@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IdentityModel.Selectors;
 
 namespace sones.Library.Commons.Security
 {
@@ -13,5 +14,7 @@ namespace sones.Library.Commons.Security
         /// Get the login
         /// </summary>
         String Login { get; }
+
+        UserNamePasswordValidator CreateHttpCredentials();
     }
 }

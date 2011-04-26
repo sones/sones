@@ -97,41 +97,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\InfoVis\base.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\InfoVis\col1.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\InfoVis\col2.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\InfoVis\excanvas.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\InfoVis\gradient.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\InfoVis\jit.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\InfoVis\RGraph.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="resources\soneslogo.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -166,6 +131,10 @@
     <ProjectReference Include="..\..\..\..\Library\Internal\Commons\Commons.csproj">
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Library\Internal\DiscordianDate\DiscordianDate.csproj">
+      <Project>{8E0390D0-A7BF-46FE-900C-C411F762EFF2}</Project>
+      <Name>DiscordianDate</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Library\Internal\LanguageExtensions\LanguageExtensions.csproj">
       <Project>{21C726D5-DCCA-4C15-BA54-1000E80B1C6E}</Project>
@@ -213,25 +182,7 @@
     <EmbeddedResource Include="resources\WebShell\gql.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="resources\FlashGraph\flashtest.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\VisualGraph\GEXF2protovis.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\FlashGraph\GexfExplorer1.0.swf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
     <EmbeddedResource Include="resources\libs\jQuery\jquery-1.4.2.min.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\libs\protovis-r3.2.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\VisualGraph\VisualGraph.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\FlashGraph\testScrollCorrection.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="resources\WebShell\goosh.js">
@@ -253,108 +204,19 @@
     <EmbeddedResource Include="resources\libs\jQuery\jquery.url.parser.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
-    <EmbeddedResource Include="resources\ClientAccessPolicy.xml" />
+    <EmbeddedResource Include="resources\ClientAccessPolicy.xml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <Content Include="resources\CrossDomain.xml" />
-    <Content Include="resources\JitExamples\AreaChart\example1.html" />
-    <Content Include="resources\JitExamples\AreaChart\example1.js" />
-    <Content Include="resources\JitExamples\BarChart\example1.html" />
-    <Content Include="resources\JitExamples\BarChart\example1.js" />
-    <Content Include="resources\JitExamples\BarChart\example2.html" />
-    <Content Include="resources\JitExamples\BarChart\example2.js" />
-    <Content Include="resources\JitExamples\css\AreaChart.css" />
-    <Content Include="resources\JitExamples\css\BarChart.css" />
-    <Content Include="resources\JitExamples\css\base.css" />
-    <Content Include="resources\JitExamples\css\col1.png" />
-    <Content Include="resources\JitExamples\css\col2.png" />
-    <Content Include="resources\JitExamples\css\ForceDirected.css" />
-    <Content Include="resources\JitExamples\css\gradient.png" />
-    <Content Include="resources\JitExamples\css\Hypertree.css" />
-    <Content Include="resources\JitExamples\css\Icicle.css" />
-    <Content Include="resources\JitExamples\css\Other.css" />
-    <Content Include="resources\JitExamples\css\PieChart.css" />
-    <Content Include="resources\JitExamples\css\RGraph.css" />
-    <Content Include="resources\JitExamples\css\Spacetree.css" />
-    <Content Include="resources\JitExamples\css\Sunburst.css" />
-    <Content Include="resources\JitExamples\css\Treemap.css" />
-    <Content Include="resources\JitExamples\ForceDirected\example1.html" />
-    <Content Include="resources\JitExamples\ForceDirected\example1.js" />
-    <Content Include="resources\JitExamples\ForceDirected\example2.html" />
-    <Content Include="resources\JitExamples\ForceDirected\example2.js" />
-    <Content Include="resources\JitExamples\Hypertree\example1.html" />
-    <Content Include="resources\JitExamples\Hypertree\example1.js" />
-    <Content Include="resources\JitExamples\Hypertree\example2.html" />
-    <Content Include="resources\JitExamples\Hypertree\example2.js" />
-    <Content Include="resources\JitExamples\Hypertree\example3.html" />
-    <Content Include="resources\JitExamples\Hypertree\example3.js" />
-    <Content Include="resources\JitExamples\Icicle\example1.html" />
-    <Content Include="resources\JitExamples\Icicle\example1.js" />
-    <Content Include="resources\JitExamples\Icicle\example2.html" />
-    <Content Include="resources\JitExamples\Icicle\example2.js" />
-    <Content Include="resources\JitExamples\Other\example1.html" />
-    <Content Include="resources\JitExamples\Other\example1.js" />
-    <Content Include="resources\JitExamples\Other\example2.html" />
-    <Content Include="resources\JitExamples\Other\example2.js" />
-    <Content Include="resources\JitExamples\Other\example3.html" />
-    <Content Include="resources\JitExamples\Other\example3.js" />
-    <Content Include="resources\JitExamples\PieChart\example1.html" />
-    <Content Include="resources\JitExamples\PieChart\example1.js" />
-    <Content Include="resources\JitExamples\RGraph\example1.html" />
-    <Content Include="resources\JitExamples\RGraph\example1.js" />
-    <Content Include="resources\JitExamples\RGraph\example2.html" />
-    <Content Include="resources\JitExamples\RGraph\example2.js" />
-    <Content Include="resources\JitExamples\RGraph\example3.html" />
-    <Content Include="resources\JitExamples\RGraph\example3.js" />
-    <Content Include="resources\JitExamples\RGraph\example4.html" />
-    <Content Include="resources\JitExamples\RGraph\example4.js" />
-    <Content Include="resources\JitExamples\Spacetree\example1.html" />
-    <Content Include="resources\JitExamples\Spacetree\example1.js" />
-    <Content Include="resources\JitExamples\Spacetree\example2.html" />
-    <Content Include="resources\JitExamples\Spacetree\example2.js" />
-    <Content Include="resources\JitExamples\Spacetree\example3.html" />
-    <Content Include="resources\JitExamples\Spacetree\example3.js" />
-    <Content Include="resources\JitExamples\Spacetree\example4.html" />
-    <Content Include="resources\JitExamples\Spacetree\example4.js" />
-    <Content Include="resources\JitExamples\Spacetree\example5.html" />
-    <Content Include="resources\JitExamples\Spacetree\example5.js" />
-    <Content Include="resources\JitExamples\Sunburst\example1.html" />
-    <Content Include="resources\JitExamples\Sunburst\example1.js" />
-    <Content Include="resources\JitExamples\Sunburst\example2.html" />
-    <Content Include="resources\JitExamples\Sunburst\example2.js" />
-    <Content Include="resources\JitExamples\Treemap\example1.html" />
-    <Content Include="resources\JitExamples\Treemap\example1.js" />
-    <Content Include="resources\JitExamples\Treemap\example2.html" />
-    <Content Include="resources\JitExamples\Treemap\example2.js" />
-    <Content Include="resources\JitExamples\Treemap\example3.html" />
-    <Content Include="resources\JitExamples\Treemap\example3.js" />
-    <Content Include="resources\libs\Jit\excanvas.js" />
-    <Content Include="resources\libs\Jit\jit-yc.js" />
-    <Content Include="resources\libs\Jit\jit.js" />
-    <Content Include="resources\libs\Jit\jit.license.txt" />
     <Content Include="resources\robots.txt" />
     <Content Include="resources\wadl.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="resources\VisualGraph\demo.gexf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-    <EmbeddedResource Include="resources\VisualGraph\flashtest.gexf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="resources\libs\jQuery\jquery.license.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="resources\libs\protovis.license.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="resources\VisualGraph\demo2.gexf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

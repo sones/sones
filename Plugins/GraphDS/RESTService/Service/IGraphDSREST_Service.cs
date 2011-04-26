@@ -24,15 +24,7 @@ namespace sones.Plugins.GraphDS.RESTService
         [OperationContract]
         [WebGet(UriTemplate = "/WebShell")]
         void GetWebShell();
-
-        /// <summary>
-        /// Invoke a VisualGraph
-        /// </summary>
-        /// <returns>Some HTML and JavaScript</returns>
-        [OperationContract]
-        [WebGet(UriTemplate = "/VisualGraph")]
-        void GetVisualGraph();
-
+               
         #endregion
 
         #region Queries

@@ -1,7 +1,33 @@
 ﻿using System;
+using System.IdentityModel.Selectors;
+using System.IdentityModel.Tokens;
 
 namespace sones.Library.Commons.Security
 {
+    
+    internal class UsernamePasswordValidator : UserNamePasswordValidator
+    {
+        private readonly String _username;
+        private readonly String _password;
+
+        public UsernamePasswordValidator(String myUsername, String myPassword)
+        {
+            _username = myUsername;
+            _password = myPassword;
+        }
+        
+        public override void Validate(string myUserName, string myPassword)
+        {
+
+            if (!(myUserName == _username && myPassword == _password))
+            {
+                throw new SecurityTokenException("Unknown Username or Password");
+            }
+        }
+    }
+    
+    
+    
     /// <summary>
     /// Used for authentication
     /// </summary>
@@ -18,6 +44,7 @@ namespace sones.Library.Commons.Security
         /// The login string
         /// </summary>
         private readonly String _login;
+        private readonly UsernamePasswordValidator _validator;
 
         #endregion
 
@@ -30,6 +57,7 @@ namespace sones.Library.Commons.Security
         /// <param name="myPassword">The password</param>
         public UserPasswordCredentials(String myLogin, String myPassword)
         {
+            _validator = new UsernamePasswordValidator(myLogin, myPassword);
             _login = myLogin;
             PasswordHash = myPassword.GetHashCode();
         }
@@ -53,5 +81,13 @@ namespace sones.Library.Commons.Security
         }
 
         #endregion
+
+
+        public System.IdentityModel.Selectors.UserNamePasswordValidator CreateHttpCredentials()
+        {
+            return _validator;
+        }
+
+        
     }
 }

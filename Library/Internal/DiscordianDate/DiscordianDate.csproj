@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2FB38C4B-C29D-4F34-B42C-7A82E79A0C14}</ProjectGuid>
+    <ProjectGuid>{8E0390D0-A7BF-46FE-900C-C411F762EFF2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sones.GraphDSServer</RootNamespace>
-    <AssemblyName>GraphDSServer</AssemblyName>
+    <RootNamespace>sones.Library.DiscordianDate</RootNamespace>
+    <AssemblyName>DiscordianDate</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -37,9 +37,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.IdentityModel" />
-    <Reference Include="System.IdentityModel.Selectors" />
-    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,42 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GraphDSServer.cs" />
+    <Compile Include="DiscordianDate.cs" />
+    <Compile Include="DiscordianDateStructure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
-      <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
-      <Name>IGraphDB</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
-      <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
-      <Name>IGraphQL</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Library\Internal\Commons\Commons.csproj">
-      <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
-      <Name>Commons</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Library\Internal\Networking\Networking.csproj">
-      <Project>{DDC48D4C-6885-462C-B57A-216658EB94AE}</Project>
-      <Name>Networking %28Library\Internal\Networking\Networking%29</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Plugins\GraphDS\RESTService\ISonesRESTService\ISonesRESTService.csproj">
-      <Project>{0D7A14D7-9851-4624-9260-858741603F98}</Project>
-      <Name>ISonesRESTService</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Plugins\GraphDS\RESTService\Service\GraphDSREST.csproj">
-      <Project>{1AE9C2A9-4916-488D-B825-7B8657C0BDE5}</Project>
-      <Name>GraphDSREST</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\IGraphDS\IGraphDS.csproj">
-      <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
-      <Name>IGraphDS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\IGraphDSServer\IGraphDSServer.csproj">
-      <Project>{1E30E203-20DE-4DA3-854A-18FEFADA6D7A}</Project>
-      <Name>IGraphDSServer</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

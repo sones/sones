@@ -69,18 +69,7 @@ namespace sones.Plugins.GraphDS.RESTService
 
         #endregion
 
-        #region GetVisualGraph()
-
-        /// <summary>
-        /// Send the VisualGraph HTML to the user!
-        /// </summary>
-        public void GetVisualGraph()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
+    
         #endregion
 
         #region Queries
