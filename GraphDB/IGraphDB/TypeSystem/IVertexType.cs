@@ -29,6 +29,39 @@ namespace sones.GraphDB.TypeSystem
 
         #endregion
 
+        #region Incoming
+
+        /// <summary>
+        /// Has this vertex type a certain binary property?
+        /// </summary>
+        /// <param name="myEdgeName">The name of the binary property.</param>
+        /// <returns>True, if a binary property with the given name exists, otherwise false.</returns>
+        bool HasBinaryProperty(String myEdgeName);
+
+        /// <summary>
+        /// Gets a certain binary property definition.
+        /// </summary>
+        /// <param name="myAttributeName">The name of the interesting binary property.</param>
+        /// <returns>A binary property definition, if existing otherwise <c>NULL</c>.</returns>
+        IBinaryPropertyDefinition GetBinaryPropertyDefinition(String myEdgeName);
+
+        /// <summary>
+        /// Has this vertex type any binary property.
+        /// </summary>
+        /// <param name="myIncludeAncestorDefinitions">If true, the ancestor vertex types are included, otherwise false.</param>
+        /// <returns>True if a binary property exists, otherwise false.</returns>
+        bool HasBinaryProperties(bool myIncludeAncestorDefinitions);
+
+        /// <summary>
+        /// Get all binary properties.
+        /// </summary>
+        /// <param name="myIncludeParents">Include the properties of the parent vertex type(s).</param>
+        /// <returns>An enumerable of binary property definitions.</returns>
+        IEnumerable<IBinaryPropertyDefinition> GetBinaryProperties(bool myIncludeAncestorDefinitions);
+
+        #endregion
+
+
         #region Edges
 
         #region Incoming

@@ -74,7 +74,7 @@ namespace sones.Plugins.SonesGQL.Functions
             }
             else
             {
-                throw new InvalidTypeException(CallingObject.GetType().ToString(), "Expected ISingleEdge or IHyperEdge!");
+                throw new UnknownDBException("Unexpected input for COUNT aggregate.");
             }
         }
 

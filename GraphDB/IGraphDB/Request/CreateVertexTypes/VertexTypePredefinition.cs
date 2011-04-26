@@ -21,6 +21,7 @@ namespace sones.GraphDB.Request
         private List<IncomingEdgePredefinition> _incomingEdges;
         private List<UniquePredefinition> _uniques;
         private List<IndexPredefinition> _indices;
+        private List<BinaryPropertyPredefinition> _binaries;
 
 
         public int PropertyCount
@@ -40,7 +41,12 @@ namespace sones.GraphDB.Request
 
         public int AttributeCount 
         {
-            get { return _properties.Count + _outgoingEdges.Count + _incomingEdges.Count; }
+            get { return _properties.Count + _binaries.Count + _outgoingEdges.Count + _incomingEdges.Count; }
+        }
+
+        public int BinaryPropertyCount 
+        {
+            get { return _binaries.Count; }
         }
 
 
@@ -100,6 +106,18 @@ namespace sones.GraphDB.Request
                     : _uniques.AsReadOnly();
             }
         }
+
+        public IEnumerable<BinaryPropertyPredefinition> BinaryProperties
+        {
+            get
+            {
+                return (_binaries == null)
+                    ? Enumerable.Empty<BinaryPropertyPredefinition>()
+                    : _binaries.AsReadOnly();
+            }
+        }
+
+
 
         /// <summary>
         /// The index definitions of this vertex type.
@@ -268,6 +286,5 @@ namespace sones.GraphDB.Request
         }
 
         #endregion
-
     }
 }

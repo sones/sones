@@ -245,6 +245,42 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         #endregion
 
+        #region Binary Property
+
+        public static void StoreBinaryProperty(
+            IVertexStore myStore,
+            VertexInformation myVertex,
+            long myID,
+            String myName,
+            String myComment,
+            Int64 myCreationDate,
+            VertexInformation myDefiningType,
+            SecurityToken mySecurity,
+            TransactionToken myTransaction)
+        {
+            Store(
+                myStore,
+                myVertex,
+                myComment,
+                myCreationDate,
+                new Dictionary<Tuple<long, long>, VertexInformation>
+                {
+                    { _EdgeAttributeDotDefiningType, myDefiningType },
+                },
+                null,
+                new Dictionary<long, IComparable>
+                {
+                    { (long) AttributeDefinitions.ID, myID},
+                    { (long) AttributeDefinitions.Name, myName },
+                    { (long) AttributeDefinitions.IsUserDefined, false },
+                },
+                null,
+                mySecurity,
+                myTransaction);
+        }
+
+        #endregion
+
         #region Basic type
 
         public static IVertex StoreBasicType(

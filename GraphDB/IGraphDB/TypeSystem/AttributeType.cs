@@ -7,6 +7,7 @@
     {
         Property,
         IncomingEdge,
-        OutgoingEdge
+        OutgoingEdge,
+        BinaryProperty
     }
 }

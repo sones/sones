@@ -315,7 +315,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             #region Checks with IVertexManager 
             //Here we know that the VertexTypePredefinitions are syntactical correct.
 
-            CanAddCheckWithFS(defsTopologically, defsByVertexName, myTransaction, mySecurity);
+            //CanAddCheckWithFS(defsTopologically, defsByVertexName, myTransaction, mySecurity);
 
             #endregion
         }
@@ -517,6 +517,17 @@ namespace sones.GraphDB.Manager.TypeManagement
             CheckIncomingEdgesUniqueName(vertexTypeDefinition, uniqueNameSet);
             CheckOutgoingEdgesUniqueName(vertexTypeDefinition, uniqueNameSet);
             CheckPropertiesUniqueName(vertexTypeDefinition, uniqueNameSet);
+            CheckBinaryPropertiesUniqueName(vertexTypeDefinition, uniqueNameSet);
+        }
+
+        private static void CheckBinaryPropertiesUniqueName(VertexTypePredefinition myVertexTypeDefinition, HashSet<string> myUniqueNameSet)
+        {
+            foreach (var prop in myVertexTypeDefinition.BinaryProperties)
+            {
+                prop.CheckNull("Binary Property in vertex type predefinition " + myVertexTypeDefinition.VertexTypeName);
+                if (myUniqueNameSet.Add(prop.PropertyName))
+                    throw new DuplicatedAttributeNameException(myVertexTypeDefinition, prop.PropertyName);
+            }
         }
 
         /// <summary>
@@ -804,13 +815,39 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #endregion
 
+            #region Store binary properties
+
+            for (var current = defsTopologically.First; current != null; current = current.Next)
+            {
+                var lastAttrID = Interlocked.Add(ref _LastAttrID, current.Value.BinaryPropertyCount);
+                var firstAttrID = lastAttrID - current.Value.BinaryPropertyCount;
+                var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.BinaryPropertyCount - 1;
+
+                foreach (var prop in current.Value.Properties)
+                {
+                    BaseGraphStorageManager.StoreBinaryProperty(
+                        _vertexManager.VertexStore,
+                        new VertexInformation((long)BaseTypes.BinaryProperty, firstAttrID++),
+                        currentExternID++,
+                        prop.PropertyName,
+                        prop.Comment,
+                        creationDate,
+                        typeInfos[current.Value.VertexTypeName].VertexInfo,
+                        mySecurity,
+                        myTransaction);
+                }
+
+            }
+
+            #endregion
+
             #region Store outgoing edges
 
             for (var current = defsTopologically.First; current != null; current = current.Next)
             {
                 var lastAttrID = Interlocked.Add(ref _LastAttrID, current.Value.OutgoingEdgeCount);
                 var firstAttrID = lastAttrID - current.Value.OutgoingEdgeCount;
-                var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.OutgoingEdgeCount - 1;
+                var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.OutgoingEdgeCount - current.Value.BinaryPropertyCount - 1;
 
                 foreach (var edge in current.Value.OutgoingEdges)
                 {
@@ -840,7 +877,7 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                 var lastAttrID = Interlocked.Add(ref _LastAttrID, current.Value.IncomingEdgeCount);
                 var firstAttrID = lastAttrID - current.Value.IncomingEdgeCount;
-                var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.OutgoingEdgeCount - current.Value.IncomingEdgeCount - 1;
+                var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.BinaryPropertyCount - current.Value.OutgoingEdgeCount - current.Value.IncomingEdgeCount - 1;
 
                 foreach (var edge in current.Value.IncomingEdges)
                 {

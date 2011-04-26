@@ -53,7 +53,7 @@ namespace sones.Plugins.SonesGQL.Functions
         {
             if (!(CallingObject.GetType() == typeof(String)))
             {
-                throw new InvalidTypeException(CallingObject.GetType().ToString(), "String");
+                throw new InvalidVertexTypeException(CallingObject.GetType().ToString(), "String");
             }
 
             var pos = (Int32)myParams[0].Value;

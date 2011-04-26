@@ -14,7 +14,7 @@ namespace sones.GraphDB.ErrorHandling
         private VertexTypePredefinition Predefinition;
         private string PropertyName;
 
-        public UnknownPropertyTypeException(Request.VertexTypePredefinition myVertexTypeDefinition, string myPropertyName)
+        public UnknownPropertyTypeException(VertexTypePredefinition myVertexTypeDefinition, string myPropertyName)
         {
             this.Predefinition = myVertexTypeDefinition;
             this.PropertyName = myPropertyName;

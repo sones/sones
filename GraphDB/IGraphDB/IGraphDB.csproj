@@ -64,6 +64,8 @@
     <Compile Include="ErrorHandling\Property\AttributeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\Property\PropertyHasWrongTypeException.cs" />
     <Compile Include="ErrorHandling\QueryPlan\InvalidExpressionException.cs" />
+    <Compile Include="ErrorHandling\Type\AGraphDBTypeException.cs" />
+    <Compile Include="ErrorHandling\Type\InvalidTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\EmptyPropertyTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\DuplicatedAttributeNameException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\EmptyEdgeTypeException.cs" />
@@ -111,6 +113,7 @@
     <Compile Include="Request\Clear\RequestClear.cs" />
     <Compile Include="Request\Converter.cs" />
     <Compile Include="Request\CreateEdgeType\EdgeTypeDefinition.cs" />
+    <Compile Include="Request\CreateVertexTypes\BinaryPropertyPredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\IncomingEdgePredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\IndexPredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\OutgoingEdgePredefinition.cs" />
@@ -145,6 +148,7 @@
     <Compile Include="TypeSystem\IAttributeDefinition.cs" />
     <Compile Include="TypeSystem\IBaseType.cs" />
     <Compile Include="TypeSystem\IBehaviour.cs" />
+    <Compile Include="TypeSystem\IBinaryPropertyDefinition.cs" />
     <Compile Include="TypeSystem\IEdgeType.cs" />
     <Compile Include="TypeSystem\IIncomingEdgeDefinition.cs" />
     <Compile Include="TypeSystem\IIndexDefinition.cs" />
@@ -177,7 +181,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Request\CreateVertexTypes\Property\" />
     <Folder Include="Request\Update\" />
   </ItemGroup>
   <ItemGroup>

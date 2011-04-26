@@ -112,6 +112,11 @@ namespace sones.GraphDB.TypeManagement
         private bool? _hasProperties;
 
         /// <summary>
+        /// Stores whether binary properties were queried (<see cref="Nullable.HasValue"/> equals true) and if true, whether this vertex type has binary properties.
+        /// </summary>
+        private bool? _hasBinaryProperties;
+
+        /// <summary>
         /// Stores whether attributes were queried (<see cref="Nullable.HasValue"/> equals true) and if true, whether this vertex type has attributes.
         /// </summary>
         private bool? _hasAttributes;
@@ -193,6 +198,35 @@ namespace sones.GraphDB.TypeManagement
             }
 
             yield break;
+        }
+
+        #endregion
+
+        #region Binary Properties
+
+        bool IVertexType.HasBinaryProperty(string myEdgeName)
+        {
+            return GetAttributeAsBinaryProperty(myEdgeName) != null;
+        }
+
+        IBinaryPropertyDefinition IVertexType.GetBinaryPropertyDefinition(string myEdgeName)
+        {
+            return GetAttributeAsBinaryProperty(myEdgeName);
+        }
+
+        bool IVertexType.HasBinaryProperties(bool myIncludeAncestorDefinitions)
+        {
+            if (!_hasBinaryProperties.HasValue)
+            {
+                _hasBinaryProperties = GetHasBinaryProperties();
+            }
+
+            return _hasBinaryProperties.Value || (myIncludeAncestorDefinitions && _parent.Value.HasBinaryProperties(true));
+        }
+
+        IEnumerable<IBinaryPropertyDefinition> IVertexType.GetBinaryProperties(bool myIncludeAncestorDefinitions)
+        {
+            return _attributes.Value.OfType<IBinaryPropertyDefinition>();
         }
 
         #endregion
@@ -508,12 +542,12 @@ namespace sones.GraphDB.TypeManagement
         /// </summary>
         /// <param name="myVertex">A vertex that represents a property definition.</param>
         /// <returns>A property definition.</returns>
-        private static IPropertyDefinition CreatePropertyDefinition(IVertex myVertex)
+        private IPropertyDefinition CreatePropertyDefinition(IVertex myVertex)
         {
             var attributeID = GetAttributeID(myVertex);
             var baseType = GetBaseType(myVertex);
             var isMandatory = GetIsMandatory(myVertex);
-            var multiplicity = GetMultiplicity(myVertex);
+            var multiplicity = GetPropertyMultiplicity(myVertex);
             var name = GetName(myVertex);
 
             return new PropertyDefinition
@@ -522,7 +556,8 @@ namespace sones.GraphDB.TypeManagement
                 BaseType = baseType,
                 IsMandatory = isMandatory,
                 Multiplicity = multiplicity,
-                Name = name
+                Name = name,
+                RelatedType = this
             };
         }
 
@@ -535,6 +570,48 @@ namespace sones.GraphDB.TypeManagement
         {
             return GetAttribute(myPropertyName) as IPropertyDefinition;
         }
+
+        #endregion
+
+        #region Binary Properties
+
+        /// <summary>
+        /// Gets whether this vertex type has binary properties.
+        /// </summary>
+        /// <returns>True, if this vertex type has binary properties otherwise false.</returns>
+        private bool GetHasBinaryProperties()
+        {
+            return GetVertex().HasIncomingVertices((long)BaseTypes.BinaryProperty, (long)AttributeDefinitions.DefiningType);
+        }
+
+        /// <summary>
+        /// Transforms an IVertex in a binary property definition.
+        /// </summary>
+        /// <param name="myVertex">A vertex that represents a property definition.</param>
+        /// <returns>A property definition.</returns>
+        private IBinaryPropertyDefinition CreateBinaryPropertyDefinition(IVertex myVertex)
+        {
+            var attributeID = GetAttributeID(myVertex);
+            var name = GetName(myVertex);
+
+            return new BinaryPropertyDefinition
+            {
+                AttributeID = attributeID,
+                Name = name,
+                RelatedType = this
+            };
+        }
+
+        /// <summary>
+        /// Gets the binary property with the given attribute name, if existing.
+        /// </summary>
+        /// <param name="myPropertyName">The attribute name of the binary property.</param>
+        /// <returns>A binary property definition of the property with the given attribute name, if existing otherwise <c>NULL</c>.</returns>
+        private IBinaryPropertyDefinition GetAttributeAsBinaryProperty(string myPropertyName)
+        {
+            return GetAttribute(myPropertyName) as IBinaryPropertyDefinition;
+        }
+
 
         #endregion
 
@@ -555,7 +632,8 @@ namespace sones.GraphDB.TypeManagement
             {
                 AttributeID = attributeID,
                 Name = name,
-                RelatedEdgeDefinition = related
+                RelatedEdgeDefinition = related,
+                RelatedType = this
             };
         }
 
@@ -608,15 +686,30 @@ namespace sones.GraphDB.TypeManagement
             var edgeType = GetEdgeType(myOutgoingEdgeVertex);
             var name = GetName(myOutgoingEdgeVertex);
             var target = GetTargetVertexType(myOutgoingEdgeVertex);
+            var multiplicity = GetEdgeMultiplicity(myOutgoingEdgeVertex);
 
             return new OutgoingEdgeDefinition
             {
                 AttributeID = attributeID,
                 EdgeType = edgeType,
+                Multiplicity = multiplicity,
                 Name = name,
                 SourceVertexType = this,
-                TargetVertexType = target
+                TargetVertexType = target,
+                RelatedType = this,
+                
             };
+        }
+
+        private EdgeMultiplicity GetEdgeMultiplicity(IVertex myOutgoingEdgeVertex)
+        {
+            var multID = myOutgoingEdgeVertex.GetProperty<Byte>((long)AttributeDefinitions.Multiplicity);
+
+            if (!Enum.IsDefined(typeof(EdgeMultiplicity), multID))
+                throw new UnknownDBException("The value for the edge multiplicity is incorrect.");
+
+            return (EdgeMultiplicity)multID;
+
         }
 
         /// <summary>
@@ -740,7 +833,7 @@ namespace sones.GraphDB.TypeManagement
 
         #region Vertex type
 
-        private static PropertyMultiplicity GetMultiplicity(IVertex myVertex)
+        private static PropertyMultiplicity GetPropertyMultiplicity(IVertex myVertex)
         {
             var multID = myVertex.GetProperty<Byte>((long)AttributeDefinitions.Multiplicity);
 
@@ -822,6 +915,6 @@ namespace sones.GraphDB.TypeManagement
         #endregion
 
         #endregion
-
+                
     }
 }

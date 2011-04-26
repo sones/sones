@@ -9,6 +9,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.LanguageExtensions;
 using sones.GraphDB.ErrorHandling;
+using sones.GraphDB.ErrorHandling.Type;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
@@ -52,7 +53,7 @@ namespace sones.Plugins.SonesGQL.Functions
                 }
                 else
                 {
-                    throw new InvalidTypeException(CallingObject.GetType().ToString(), "Expected Int64!");
+                    throw new InvalidTypeException(CallingObject.GetType().Name, "Int64");
                 }
             }
             else
