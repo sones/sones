@@ -7,11 +7,42 @@ using sones.Library.Commons.Transaction;
 using sones.GraphDB.Request;
 using sones.GraphDB;
 using sones.Library.Commons.Security;
+using sones.Library.VersionedPluginManager;
+using sones.Plugins.GraphDS.DrainPipeLog.Storage;
 
 namespace sones.Plugins.GraphDS.DrainPipeLog
 {
-    public class DrainPipeLog : IGraphDS
+    /// <summary>
+    /// this is a GraphDS plugin which can be used to create a GraphDS bypass if you like. This
+    /// plugin will be notified of each and every GQL and API query and can react uppon this
+    /// </summary>
+    public class DrainPipeLog : IGraphDS, IPluginable
     {
+        private AppendLog _AppendLog = null;
+
+        #region IPluginable
+        public string PluginName
+        {
+            get { return "DrainPipeLog"; }
+        }
+
+        public Dictionary<string, Type> SetableParameters
+        {
+            get
+            {
+                return new Dictionary<string, Type> 
+                { 
+                    { "AppendLogPathAndName", typeof(String) },
+                };
+            }
+        }
+
+        public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
+        {
+            return new DrainPipeLog();
+        }
+        #endregion
+        
         #region IGraphDS
         public void Shutdown(sones.Library.Commons.Security.SecurityToken mySecurityToken)
         {
@@ -110,5 +141,6 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
         }
 
         #endregion
+
     }
 }

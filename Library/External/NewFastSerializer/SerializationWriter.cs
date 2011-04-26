@@ -218,10 +218,12 @@ namespace sones.Library.NewFastSerializer
 
         #endregion Constructors
 
-        #region ClearBuffer
-
+        #region ResetBuffer
+        /// <summary>
+        /// This resets the stream buffer to start
+        /// </summary>
         public void ResetBuffer()
-        {            
+        {
             this.BaseStream.Seek(0, SeekOrigin.Begin);
             this.BaseStream.SetLength(0);
         }

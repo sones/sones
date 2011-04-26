@@ -82,6 +82,18 @@ namespace sones.Library.NewFastSerializer
         {        
         }
 
+        #region ResetBuffer
+        /// <summary>
+        /// This resets the stream buffer to start
+        /// </summary>
+        public void ResetBuffer()
+        {
+            this.BaseStream.Seek(0, SeekOrigin.Begin);
+            this.BaseStream.SetLength(0);
+        }
+        #endregion
+
+
         /// <summary>
         /// The data which is associated to the inner memory stream
         /// </summary>
