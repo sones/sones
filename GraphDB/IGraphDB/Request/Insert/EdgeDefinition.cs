@@ -28,6 +28,25 @@ namespace sones.GraphDB.Request
         public IEnumerable<long> VertexIDs { get { return _ids; } }
         private HashSet<long> _ids;
 
+
+        /// <summary>
+        /// The well defined properties of a vertex.
+        /// </summary>
+        public IEnumerable<KeyValuePair<String, IComparable>> StructuredProperties { get { return _structured; } }
+        private Dictionary<string, IComparable> _structured;
+
+        /// <summary>
+        /// The unstructured part of a vertex.
+        /// </summary>
+        public IEnumerable<KeyValuePair<String, Object>> UnstructuredProperties { get { return _unstructured; } }
+        private Dictionary<string, object> _unstructured;
+
+        /// <summary>
+        /// The binaries of a vertex.
+        /// </summary>
+        public IEnumerable<KeyValuePair<String, Stream>> BinaryProperties { get { return _binaries; } }
+        private Dictionary<string, Stream> _binaries;
+
         #endregion
 
         #region constructor
@@ -39,6 +58,52 @@ namespace sones.GraphDB.Request
         public EdgeDefinition(String myEdgeName)
         {
             EdgeName = myEdgeName;
+        }
+
+        #endregion
+
+        #region fluent
+
+        /// <summary>
+        /// Adds a new structured property
+        /// </summary>
+        /// <param name="myPropertyName">The name of the property</param>
+        /// <param name="myProperty">The value of the property</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public EdgeDefinition AddStructuredProperty(String myPropertyName, IComparable myProperty)
+        {
+            _structured = _structured ?? new Dictionary<String, IComparable>();
+            _structured.Add(myPropertyName, myProperty);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a new unstructured property
+        /// </summary>
+        /// <param name="myPropertyName">The name of the property</param>
+        /// <param name="myProperty">The value of the property</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public EdgeDefinition AddUnstructuredProperty(String myPropertyName, Object myProperty)
+        {
+            _unstructured = _unstructured ?? new Dictionary<String, Object>();
+            _unstructured.Add(myPropertyName, myProperty);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a new binary property
+        /// </summary>
+        /// <param name="myPropertyName">The name of the property</param>
+        /// <param name="myStream">The value of the property</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public EdgeDefinition AddBinaryProperty(String myPropertyName, Stream myStream)
+        {
+            _binaries = _binaries ?? new Dictionary<String, Stream>();
+            _binaries.Add(myPropertyName, myStream);
+
+            return this;
         }
 
         /// <summary>
@@ -92,6 +157,7 @@ namespace sones.GraphDB.Request
 
             return this;
         }
+
         #endregion
     }
     
