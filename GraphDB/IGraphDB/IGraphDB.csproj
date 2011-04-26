@@ -132,7 +132,6 @@
     <Compile Include="Expression\Tree\IExpression.cs" />
     <Compile Include="Expression\Tree\UnaryExpression.cs" />
     <Compile Include="Request\Insert\EdgeDefinition.cs" />
-    <Compile Include="Request\Insert\IEnumerable.cs" />
     <Compile Include="Request\Insert\RequestInsertVertex.cs" />
     <Compile Include="Request\Insert\VertexInsert.cs" />
     <Compile Include="Request\IRequestStatistics.cs" />

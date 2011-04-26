@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
-using sones.GraphDB.Request.Insert;
 
 namespace sones.GraphDB.Request
 {
