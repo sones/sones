@@ -48,7 +48,6 @@
     <Compile Include="CountAggregate.cs" />
     <Compile Include="MaxAggregate.cs" />
     <Compile Include="MinAggregate.cs" />
-    <Compile Include="myGraphDBType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SumAggregate.cs" />
   </ItemGroup>
