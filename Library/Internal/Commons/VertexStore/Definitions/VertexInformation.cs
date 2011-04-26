@@ -54,5 +54,72 @@ namespace sones.Library.Commons.VertexStore.Definitions
         }
 
         #endregion
+
+        #region Equals Overrides
+
+        public override Boolean Equals(System.Object obj)
+        {
+
+            // If parameter is null return false.
+            if (obj == null)
+            {
+                return false;
+            }
+
+            // If parameter cannot be cast to Point return false.
+            if (obj is VertexInformation)
+            {
+                return Equals((VertexInformation)obj);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public Boolean Equals(VertexInformation p)
+        {
+            // If parameter is null return false:
+            if ((object)p == null)
+            {
+                return false;
+            }
+
+            return
+                (this.VertexID == p.VertexID) &&
+                (this.VertexTypeID == p.VertexTypeID) &&
+                (this.VertexEditionName == p.VertexEditionName) &&
+                (this.VertexRevisionID == p.VertexRevisionID);
+        }
+
+        public static Boolean operator ==(VertexInformation a, VertexInformation b)
+        {
+            // If both are null, or both are same instance, return true.
+            if (System.Object.ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            // If one is null, but not both, return false.
+            if (((object)a == null) || ((object)b == null))
+            {
+                return false;
+            }
+
+            // Return true if the fields match:
+            return a.Equals(b);
+        }
+
+        public static Boolean operator !=(VertexInformation a, VertexInformation b)
+        {
+            return !(a == b);
+        }
+
+        public override int GetHashCode()
+        {
+            return VertexID.GetHashCode() ^ VertexTypeID.GetHashCode() ^ VertexEditionName.GetHashCode() ^ VertexRevisionID.GetHashCode();
+        }
+
+        #endregion
     }
 }

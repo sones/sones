@@ -67,6 +67,15 @@
     <Compile Include="VertexStore\Definitions\HyperEdgeAddDefinition.cs" />
     <Compile Include="VertexStore\Definitions\SingleEdgeAddDefinition.cs" />
     <Compile Include="VertexStore\Definitions\StreamAddDefinition.cs" />
+    <Compile Include="VertexStore\Definitions\Update\AGraphElementUpdateDefinition.cs" />
+    <Compile Include="VertexStore\Definitions\Update\BinaryPropertiesUpdate.cs" />
+    <Compile Include="VertexStore\Definitions\Update\HyperEdgeUpdate.cs" />
+    <Compile Include="VertexStore\Definitions\Update\HyperEdgeUpdateDefinition.cs" />
+    <Compile Include="VertexStore\Definitions\Update\SingelEdgeVector.cs" />
+    <Compile Include="VertexStore\Definitions\Update\SingleEdgeUpdate.cs" />
+    <Compile Include="VertexStore\Definitions\Update\SingleEdgeUpdateDefinition.cs" />
+    <Compile Include="VertexStore\Definitions\Update\StructuredPropertiesUpdate.cs" />
+    <Compile Include="VertexStore\Definitions\Update\UnstructuredPropertiesUpdate.cs" />
     <Compile Include="VertexStore\Definitions\VertexAddDefinition.cs" />
     <Compile Include="VertexStore\Definitions\VertexInformation.cs" />
     <Compile Include="VertexStore\Definitions\VertexUpdateDefinition.cs" />
