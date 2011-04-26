@@ -9,10 +9,10 @@ using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
 using SchemaToClassesGenerator;
 using System.Xml;
-using sones.XML_IO.Result;
+using sones.Plugins.GraphDS.IOInterface.XML_IO.Result;
 
 
-namespace sones.Plugins.GraphDS.IOInterface
+namespace sones.Plugins.GraphDS.IOInterface.XML_IO
 {
     public sealed class XML_IO : IOInterface
     {
@@ -36,7 +36,7 @@ namespace sones.Plugins.GraphDS.IOInterface
 
         public string GenerateOutputResult(QueryResult myQueryResult)
         {
-            var result = new Result();
+            var result = new SchemaToClassesGenerator.Result();
 
             result.Query = new Query() {Language = myQueryResult.NameOfQuerylanguage, Value = myQueryResult.Query};
             result.Number = myQueryResult.NumberOfAffectedVertices;

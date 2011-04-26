@@ -37,6 +37,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -59,6 +61,18 @@
     <ProjectReference Include="..\..\..\..\Library\Internal\Commons\Commons.csproj">
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Library\Internal\Networking\Networking.csproj">
+      <Project>{DDC48D4C-6885-462C-B57A-216658EB94AE}</Project>
+      <Name>Networking %28Library\Internal\Networking\Networking%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Plugins\GraphDS\RESTService\ISonesRESTService\ISonesRESTService.csproj">
+      <Project>{0D7A14D7-9851-4624-9260-858741603F98}</Project>
+      <Name>ISonesRESTService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Plugins\GraphDS\RESTService\Service\GraphDSREST.csproj">
+      <Project>{1AE9C2A9-4916-488D-B825-7B8657C0BDE5}</Project>
+      <Name>GraphDSREST</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\IGraphDS\IGraphDS.csproj">
       <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>

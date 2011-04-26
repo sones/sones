@@ -8,7 +8,7 @@
     <ProjectGuid>{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>XML_IO</RootNamespace>
+    <RootNamespace>sones.Plugins.GraphDS.IOInterface.XML_IO</RootNamespace>
     <AssemblyName>XML_IO</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

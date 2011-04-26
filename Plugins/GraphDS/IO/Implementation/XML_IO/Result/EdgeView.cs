@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using sones.GraphQL.Result;
 
-namespace sones.XML_IO.Result
+namespace sones.Plugins.GraphDS.IOInterface.XML_IO.Result
 {
     /// <summary>
     /// This class creates an edge view.

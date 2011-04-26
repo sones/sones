@@ -5,9 +5,28 @@ using sones.GraphDB.Request;
 using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.Networking.HTTP;
+using System.IdentityModel.Selectors;
+using System.IdentityModel.Tokens;
+using System.ServiceModel;
+using sones.Plugins.GraphDS.RESTService;
 
 namespace sones.GraphDSServer
 {
+
+    public class PassValidator : UserNamePasswordValidator
+    {
+        public override void Validate(String myUserName, String myPassword)
+        {
+
+            if (!(myUserName == "test" && myPassword == "test") && !(myUserName == "test2" && myPassword == "test2"))
+            {
+                throw new SecurityTokenException("Unknown Username or Password");
+            }
+
+        }
+    }
+
     public sealed class GraphDSServer : IGraphDSServer
     {
         #region Data
@@ -15,7 +34,8 @@ namespace sones.GraphDSServer
         /// <summary>
         /// The internal iGraphDB instance
         /// </summary>
-        private readonly IGraphDB _iGraphDB;
+        private readonly IGraphDB                  _iGraphDB;
+        private HTTPServer<GraphDSREST_Service>    _httpServer;
 
         #endregion
 
@@ -32,24 +52,66 @@ namespace sones.GraphDSServer
 
         public void StartRESTService(string myServiceID, ushort myPort, IPAddress myIPAddress)
         {
-            throw new NotImplementedException();
+            try
+            {
+                    var security = new HTTPSecurity()                     
+                    {
+                        CredentialType = HttpClientCredentialType.Basic,
+                        UserNamePasswordValidator = new PassValidator()
+                    };
+                
+                    var restService = new GraphDSREST_Service();
+                    restService.Initialize(this, myPort, myIPAddress);
+
+                    _httpServer = new HTTPServer<GraphDSREST_Service>(
+                                        myIPAddress,
+                                        myPort,
+                                        restService,
+                                        myAutoStart: true)
+                    {
+                        HTTPSecurity = security,
+                    };                   
+
+                // Register the REST service within the list of services
+                // to stop before shutting down the GraphDSSharp instance
+                /*myAGraphDSSharp.ShutdownEvent += new GraphDSSharp.ShutdownEventHandler((o, e) =>
+                {
+                    _HttpWebServer.StopAndWait();
+                });*/                
+
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         public bool StopRESTService(string myServiceID)
         {
-            throw new NotImplementedException();
+            try
+            {
+                _httpServer.StopAndWait();
+            }
+            catch
+            {
+                return false;
+            }
+            
+            return true;
         }
 
         #endregion
 
         #region IGraphDS Members
 
-        public void Shutdown(SecurityToken mySecurityToken)
+        public void Shutdown(sones.Library.Commons.Security.SecurityToken mySecurityToken)
         {
-            throw new NotImplementedException();
+        
+            _httpServer.StopAndWait();
+            _httpServer.Dispose(); 
         }
 
-        public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString, string myQueryLanguageName)
+        public QueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString, string myQueryLanguageName)
         {
             throw new NotImplementedException();
         }
@@ -58,47 +120,47 @@ namespace sones.GraphDSServer
 
         #region IGraphDB Members
 
-        public TResult CreateVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateVertexTypes myRequestCreateVertexType, Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
+        public TResult CreateVertexType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateVertexTypes myRequestCreateVertexType, Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }
 
-        public TResult Clear<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestClear myRequestClear, Converter.ClearResultConverter<TResult> myOutputconverter)
+        public TResult Clear<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestClear myRequestClear, Converter.ClearResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }
 
-        public TResult Insert<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestInsertVertex myRequestInsert, Converter.InsertResultConverter<TResult> myOutputconverter)
+        public TResult Insert<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestInsertVertex myRequestInsert, Converter.InsertResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }
 
-        public TResult GetVertices<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertices myRequestGetVertices, Converter.GetVerticesResultConverter<TResult> myOutputconverter)
+        public TResult GetVertices<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertices myRequestGetVertices, Converter.GetVerticesResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }
 
-        public TResult TraverseVertex<TResult>(SecurityToken mySecurity, TransactionToken myTransactionToken, RequestTraverseVertex myRequestTraverseVertex, Converter.TraverseVertexResultConverter<TResult> myOutputconverter)
+        public TResult TraverseVertex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurity, TransactionToken myTransactionToken, RequestTraverseVertex myRequestTraverseVertex, Converter.TraverseVertexResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }
 
-        public TResult GetVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertexType myRequestGetVertexType, Converter.GetVertexTypeResultConverter<TResult> myOutputconverter)
+        public TResult GetVertexType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertexType myRequestGetVertexType, Converter.GetVertexTypeResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }
 
-        public TResult GetEdgeType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetEdgeType myRequestGetEdgeType, Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter)
+        public TResult GetEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetEdgeType myRequestGetEdgeType, Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }
 
-        public TResult GetVertex<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertex myRequestGetVertex, Converter.GetVertexResultConverter<TResult> myOutputconverter)
+        public TResult GetVertex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertex myRequestGetVertex, Converter.GetVertexResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }
 
-        public TResult Truncate<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestTruncate myRequestTruncate, Converter.TruncateResultConverter<TResult> myOutputconverter)
+        public TResult Truncate<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestTruncate myRequestTruncate, Converter.TruncateResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }
@@ -112,17 +174,17 @@ namespace sones.GraphDSServer
 
         #region ITransactionable Members
 
-        public TransactionToken BeginTransaction(SecurityToken mySecurityToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
+        public TransactionToken BeginTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
         {
             throw new NotImplementedException();
         }
 
-        public void CommitTransaction(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public void CommitTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
 
-        public void RollbackTransaction(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public void RollbackTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
@@ -131,12 +193,12 @@ namespace sones.GraphDSServer
 
         #region IUserAuthentication Members
 
-        public SecurityToken LogOn(IUserCredentials toBeAuthenticatedCredentials)
+        public sones.Library.Commons.Security.SecurityToken LogOn(IUserCredentials toBeAuthenticatedCredentials)
         {
             throw new NotImplementedException();
         }
 
-        public void LogOff(SecurityToken toBeLoggedOfToken)
+        public void LogOff(sones.Library.Commons.Security.SecurityToken toBeLoggedOfToken)
         {
             throw new NotImplementedException();
         }

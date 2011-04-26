@@ -1,0 +1,140 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DDC48D4C-6885-462C-B57A-216658EB94AE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>sones.Networking</RootNamespace>
+    <AssemblyName>Networking</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>%24/Experimental/IGraphFSReDesign/Library/Internal/Networking</SccProjectName>
+    <SccLocalPath>.</SccLocalPath>
+    <SccAuxPath>http://tfs2010.sones:8080/tfs/sones</SccAuxPath>
+    <SccProvider>{4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.IdentityModel.Selectors" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ExceptionOccuredHandler.cs" />
+    <Compile Include="HttpWebServer\AcceptType.cs" />
+    <Compile Include="HttpWebServer\AuthenticationAttributes.cs" />
+    <Compile Include="HttpWebServer\ICustomErrorPageHandler.cs" />
+    <Compile Include="HttpWebServer\Data\ClientTypes.cs" />
+    <Compile Include="HttpWebServer\Data\HTTPAuthenticationTypes.cs" />
+    <Compile Include="HttpWebServer\Data\HTTPMethods.cs" />
+    <Compile Include="HttpWebServer\Data\HTTPStatusCodes.cs" />
+    <Compile Include="HttpWebServer\Extensions.cs" />
+    <Compile Include="HttpWebServer\HTTPContext.cs" />
+    <Compile Include="HttpWebServer\HTTPSecurity.cs" />
+    <Compile Include="HttpWebServer\HTTPServer.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\CallerThreadContext.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\EventWaitHandle.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\EventWaitHandleFactory.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\Exceptions.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\Interfaces.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\PriorityQueue.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\SmartThreadPool.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\STPPerformanceCounter.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\STPStartInfo.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\SynchronizedDictionary.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WIGStartInfo.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItem.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemFactory.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemInfo.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemResultTWrapper.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemsGroup.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemsGroupBase.cs" />
+    <Compile Include="Multithreading\SmartThreadPool\WorkItemsQueue.cs" />
+    <Compile Include="Multithreading\SpecialTimer.cs" />
+    <Compile Include="Multithreading\ThreadPool\ThreadPool.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="HttpWebServer\HTTPHandler.cs" />
+    <Compile Include="REST\REST_Authentication.cs" />
+    <Compile Include="HttpWebServer\URLParser.cs" />
+    <Compile Include="REST\WebHttpParameter.cs" />
+    <Compile Include="TCPSocket\ATCPSocketConnection.cs" />
+    <Compile Include="TCPSocket\TCPSocketListener.cs" />
+    <Compile Include="Telnet\ASCIIControlCodes.cs" />
+    <Compile Include="Telnet\ATelnetServer.cs" />
+    <Compile Include="Telnet\Events\TelnetCommandEventArgs.cs" />
+    <Compile Include="Telnet\Events\TelnetCommandEventHandler.cs" />
+    <Compile Include="Telnet\Events\TelnetDataEventArgs.cs" />
+    <Compile Include="Telnet\Events\TelnetDataEventHandler.cs" />
+    <Compile Include="Telnet\Events\TelnetKeyEventArgs.cs" />
+    <Compile Include="Telnet\Events\TelnetKeyEventHandler.cs" />
+    <Compile Include="Telnet\Events\TelnetOptionEventArgs.cs.cs" />
+    <Compile Include="Telnet\Events\TelnetOptionEventHandler.cs" />
+    <Compile Include="Telnet\Events\TelnetSubnegotiationEventArgs.cs" />
+    <Compile Include="Telnet\Events\TelnetSubnegotiationEventHandler.cs" />
+    <Compile Include="Telnet\TelnetCommands.cs" />
+    <Compile Include="Telnet\TelnetOptions.cs" />
+    <Compile Include="Telnet\TelnetParser.cs" />
+    <Compile Include="Telnet\TelnetServer.cs" />
+    <Compile Include="Telnet\TelnetSymbol.cs" />
+    <Compile Include="HttpWebServer\HTTPCredentials.cs" />
+    <Compile Include="UDPSocket\AUDPSocketConnection.cs" />
+    <Compile Include="UDPSocket\UDPSocketBufferOverflowException.cs" />
+    <Compile Include="UDPSocket\UDPSocketMulticast.cs" />
+    <Compile Include="WebDAV\WebDAVDepth.cs" />
+    <Compile Include="HttpWebServer\HTTPHeader.cs" />
+    <Compile Include="WebDAV\WebDAVExceptions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Tools\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Multithreading\SmartThreadPool\license.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataStructures\DataStructures.csproj">
+      <Project>{CBE38660-10C5-4082-A1B9-A5002D961EA1}</Project>
+      <Name>DataStructures</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LanguageExtensions\LanguageExtensions.csproj">
+      <Project>{21C726D5-DCCA-4C15-BA54-1000E80B1C6E}</Project>
+      <Name>LanguageExtensions</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
