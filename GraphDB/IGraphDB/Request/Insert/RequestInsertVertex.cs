@@ -1,28 +1,131 @@
-﻿namespace sones.GraphDB.Request
+﻿using System;
+using System.IO;
+using System.Collections.Generic;
+using sones.GraphDB.Request.Insert;
+
+namespace sones.GraphDB.Request
 {
     /// <summary>
-    /// A request for creating a new vertex
+    /// A request for insterting a new vertex.
     /// </summary>
     public sealed class RequestInsertVertex : IRequest
     {
         #region data
 
         /// <summary>
-        /// The definition of the vertex that is going to be inserted
+        /// The name of the vertex type that is going to be inserted.
         /// </summary>
-        public readonly VertexInsert VertexInsertDefinition;
+        public readonly String VertexTypeName;
+
+        /// <summary>
+        /// The well defined properties of a vertex.
+        /// </summary>
+        public IEnumerable<KeyValuePair<String, IComparable>> StructuredProperties { get { return _structured; } }
+        private Dictionary<string, IComparable> _structured;
+
+        /// <summary>
+        /// The unstructured part of a vertex.
+        /// </summary>
+        public IEnumerable<KeyValuePair<String, Object>> UnstructuredProperties { get { return _unstructured; } }
+        private Dictionary<string, object> _unstructured;
+
+        /// <summary>
+        /// The binaries of a vertex.
+        /// </summary>
+        public IEnumerable<KeyValuePair<String, Stream>> BinaryProperties { get { return _binaries; } }
+        private Dictionary<string, Stream> _binaries;
+
+        /// <summary>
+        /// The outgoing edges of a vertex.
+        /// </summary>
+        public IEnumerable<EdgeDefinition> OutgoingEdges { get { return _edges; } }
+        private HashSet<EdgeDefinition> _edges;
+
+        #endregion
+
+        #region Fluent interface
+
+        /// <summary>
+        /// Adds a new structured property
+        /// </summary>
+        /// <param name="myPropertyName">The name of the property</param>
+        /// <param name="myProperty">The value of the property</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestInsertVertex AddStructuredProperty(String myPropertyName, IComparable myProperty)
+        {
+            _structured = _structured ?? new Dictionary<String, IComparable>();
+            _structured.Add(myPropertyName, myProperty);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a new unstructured property
+        /// </summary>
+        /// <param name="myPropertyName">The name of the property</param>
+        /// <param name="myProperty">The value of the property</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestInsertVertex AddUnstructuredProperty(String myPropertyName, Object myProperty)
+        {
+            _unstructured = _unstructured ?? new Dictionary<String, Object>();
+            _unstructured.Add(myPropertyName, myProperty);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a new binary property
+        /// </summary>
+        /// <param name="myPropertyName">The name of the property</param>
+        /// <param name="myStream">The value of the property</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestInsertVertex AddBinaryProperty(String myPropertyName, Stream myStream)
+        {
+            _binaries = _binaries ?? new Dictionary<String, Stream>();
+            _binaries.Add(myPropertyName, myStream);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a new edge to the vertex defintion
+        /// </summary>
+        /// <param name="myEdgeName">The name of the edge to be inserted</param>
+        /// <param name="myEdgeDefinition">The definition of the edge</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestInsertVertex AddEdge(EdgeDefinition myEdgeDefinition)
+        {
+            _edges = _edges ?? new HashSet<EdgeDefinition>();
+            _edges.Add(myEdgeDefinition);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds new edges to the vertex defintion.
+        /// </summary>
+        /// <param name="myEdgeName">The name of the edge to be inserted.</param>
+        /// <param name="myEdgeDefinitions">The definitions of the edge.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestInsertVertex AddEdges(String myEdgeName, IEnumerable<EdgeDefinition> myEdgeDefinitions)
+        {
+            _edges = _edges ?? new HashSet<EdgeDefinition>();
+            _edges.UnionWith(myEdgeDefinitions);
+
+            return this;
+        }
 
         #endregion
 
         #region Constructor
 
         /// <summary>
-        /// Creates a new request that clears the Graphdb
+        /// Creates a new request that inserts a vertex
         /// </summary>
-        /// <param name="myVertexInsertDefinition">Describes the vertex that is going to be inserted</param>
-        public RequestInsertVertex(VertexInsert myVertexInsertDefinition)
+        /// <param name="VertexTypeName">The name of the vertex type.</param>
+        public RequestInsertVertex(String myVertexTypeName)
         {
-            VertexInsertDefinition = myVertexInsertDefinition;
+            VertexTypeName = myVertexTypeName;
         }
 
         #endregion
@@ -35,5 +138,6 @@
         }
 
         #endregion
+
     }
 }

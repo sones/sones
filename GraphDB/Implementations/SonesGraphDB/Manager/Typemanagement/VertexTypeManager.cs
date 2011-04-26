@@ -491,7 +491,19 @@ namespace sones.GraphDB.Manager.TypeManagement
                 CheckVertexTypeName(vertexTypeDefinition);
                 CheckParentTypeAreNoBaseTypes(vertexTypeDefinition);
                 CheckAttributes(vertexTypeDefinition);
+                CheckUniques(vertexTypeDefinition);
+                CheckIndices(vertexTypeDefinition);
             }
+        }
+
+        private static void CheckIndices(VertexTypePredefinition vertexTypeDefinition)
+        {
+            //TODO
+        }
+
+        private static void CheckUniques(VertexTypePredefinition vertexTypeDefinition)
+        {
+            //TODO
         }
 
         /// <summary>
