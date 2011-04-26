@@ -1,0 +1,1 @@
+﻿The bplusdotnet package is Copywrite Aaron Watters 2004. the package is licensed under the BSD open source license which means that you can do basically anything with it (except claim that you own it). 

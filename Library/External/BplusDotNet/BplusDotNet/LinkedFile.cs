@@ -1,3 +1,6 @@
+// The bplusdotnet package is Copywrite Aaron Watters 2004. 
+// the package is licensed under the BSD open source license
+
 using System;
 using System.Diagnostics;
 using System.Collections;
