@@ -10,6 +10,8 @@ using sones.Library.VersionedPluginManager;
 using SchemaToClassesGenerator;
 using System.Xml;
 using sones.Plugins.GraphDS.IOInterface.XML_IO.Result;
+using sones.Plugins.GraphDS.IOInterface.XML_IO.ErrorHandling;
+using System.Reflection;
 
 
 namespace sones.Plugins.GraphDS.IOInterface.XML_IO
@@ -38,20 +40,8 @@ namespace sones.Plugins.GraphDS.IOInterface.XML_IO
         {
             var result = new SchemaToClassesGenerator.Result();
 
-            result.Query = new Query() {Language = myQueryResult.NameOfQuerylanguage, Value = myQueryResult.Query};
-            result.Number = myQueryResult.NumberOfAffectedVertices;
-
-            if (myQueryResult.Error != null)
-            {
-                result.Error = myQueryResult.Error.Message;
-            }
-            else
-            {
-                result.Error = "";                    
-            }
-
-            result.Duration = myQueryResult.Duration;
-
+            result.Query = new Query() {Language = myQueryResult.NameOfQuerylanguage, Value = myQueryResult.Query, Duration = myQueryResult.Duration, VerticesCount = myQueryResult.Vertices.Count(), Error = myQueryResult.Error == null ? String.Empty : myQueryResult.Error.Message };
+          
             List<SchemaVertexView> vertices = new List<SchemaVertexView>();
 
             foreach (var aVertex in myQueryResult)
@@ -59,7 +49,7 @@ namespace sones.Plugins.GraphDS.IOInterface.XML_IO
                 vertices.Add(GenerateVertexView(aVertex));
             }
 
-            result.Vertices = vertices.ToArray();
+            result.VertexViewList = vertices.ToArray();
 
             var stream = new MemoryStream();
 
@@ -171,18 +161,14 @@ namespace sones.Plugins.GraphDS.IOInterface.XML_IO
 
         public QueryResult GenerateQueryResult(string myResult)
         {
-            /*var xmlSettings = new XmlReaderSettings();
-            xmlSettings.Schemas.Add("http://sones.com/QueryResultSchema.xsd", @"X:\Experimental\IGraphFSReDesign\Plugins\GraphDS\IO\Implementation\XML_IO\QueryResultSchema.xsd");
-            xmlSettings.ValidationType = ValidationType.Schema;
-
-            XmlReader xmlReader = XmlReader.Create(myResult, xmlSettings);*/
-
             var xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(myResult);
-
+            
             var evHandler = new ValidationEventHandler(ValidationEventHandler);
+            xmlDocument.Schemas.Add(XmlSchema.Read(typeof(XML_IO).Assembly.GetManifestResourceStream("sones.Plugins.GraphDS.IOInterface.XML_IO.QueryResultSchema.xsd"), evHandler));                      
 
-            //xmlDocument.Validate(evHandler);
+            xmlDocument.Validate(evHandler);
+           
             
             var rootNode = xmlDocument.FirstChild.NextSibling;
 
@@ -244,7 +230,7 @@ namespace sones.Plugins.GraphDS.IOInterface.XML_IO
         {
             if (eventArgs.Severity == XmlSeverityType.Error)
             {
-                throw new Exception("");
+                throw new XmlValidationException(String.Format("Could not validate xml reason: {0}", eventArgs.Message));
             }
         }
 

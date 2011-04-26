@@ -130,7 +130,7 @@ namespace SchemaToClassesGenerator {
         private SchemaVertexView[] targetVerticesField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("VertexView", IsNullable=false)]
+        [System.Xml.Serialization.XmlElementAttribute("TargetVertices")]
         public SchemaVertexView[] TargetVertices {
             get {
                 return this.targetVerticesField;
@@ -254,29 +254,6 @@ namespace SchemaToClassesGenerator {
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
-    public partial class VertexViewList {
-        
-        private SchemaVertexView[] vertexViewField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("VertexView")]
-        public SchemaVertexView[] VertexView {
-            get {
-                return this.vertexViewField;
-            }
-            set {
-                this.vertexViewField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
     public partial class PropertyList {
         
         private Property[] propertiesField;
@@ -321,79 +298,6 @@ namespace SchemaToClassesGenerator {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://sones.com/QueryResultSchema.xsd")]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
-    public partial class Result {
-        
-        private Query queryField;
-        
-        private string errorField;
-        
-        private ulong numberField;
-        
-        private ulong durationField;
-        
-        private SchemaVertexView[] verticesField;
-        
-        /// <remarks/>
-        public Query Query {
-            get {
-                return this.queryField;
-            }
-            set {
-                this.queryField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute(IsNullable=true)]
-        public string Error {
-            get {
-                return this.errorField;
-            }
-            set {
-                this.errorField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public ulong Number {
-            get {
-                return this.numberField;
-            }
-            set {
-                this.numberField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public ulong Duration {
-            get {
-                return this.durationField;
-            }
-            set {
-                this.durationField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlArrayAttribute(IsNullable=true)]
-        [System.Xml.Serialization.XmlArrayItemAttribute("VertexView", IsNullable=false)]
-        public SchemaVertexView[] Vertices {
-            get {
-                return this.verticesField;
-            }
-            set {
-                this.verticesField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://sones.com/QueryResultSchema.xsd")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=false)]
     public partial class Query {
@@ -401,6 +305,20 @@ namespace SchemaToClassesGenerator {
         private string languageField;
         
         private string valueField;
+        
+        private int verticesCountField;
+        
+        private bool verticesCountFieldSpecified;
+        
+        private string errorField;
+        
+        private ulong durationField;
+        
+        private bool durationFieldSpecified;
+        
+        public Query() {
+            this.errorField = "";
+        }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -421,6 +339,120 @@ namespace SchemaToClassesGenerator {
             }
             set {
                 this.valueField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int VerticesCount {
+            get {
+                return this.verticesCountField;
+            }
+            set {
+                this.verticesCountField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool VerticesCountSpecified {
+            get {
+                return this.verticesCountFieldSpecified;
+            }
+            set {
+                this.verticesCountFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute("")]
+        public string Error {
+            get {
+                return this.errorField;
+            }
+            set {
+                this.errorField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public ulong Duration {
+            get {
+                return this.durationField;
+            }
+            set {
+                this.durationField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool DurationSpecified {
+            get {
+                return this.durationFieldSpecified;
+            }
+            set {
+                this.durationFieldSpecified = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=false)]
+    public partial class VertexViewList {
+        
+        private SchemaVertexView[] vertexViewField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("VertexView")]
+        public SchemaVertexView[] VertexView {
+            get {
+                return this.vertexViewField;
+            }
+            set {
+                this.vertexViewField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Xml", "4.0.30319.1")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://sones.com/QueryResultSchema.xsd")]
+    [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=false)]
+    public partial class Result {
+        
+        private Query queryField;
+        
+        private SchemaVertexView[] vertexViewListField;
+        
+        /// <remarks/>
+        public Query Query {
+            get {
+                return this.queryField;
+            }
+            set {
+                this.queryField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute("VertexView", IsNullable=false)]
+        public SchemaVertexView[] VertexViewList {
+            get {
+                return this.vertexViewListField;
+            }
+            set {
+                this.vertexViewListField = value;
             }
         }
     }

@@ -9,23 +9,26 @@
   
   <xs:element name="Query">
     <xs:complexType>
-      <xs:attribute name ="Language" type ="xs:string"/>
-      <xs:attribute name ="Value" type ="xs:string" />
+      <xs:attribute name = "Language"      type ="xs:string"/>
+      <xs:attribute name = "Value"         type ="xs:string" />
+      <xs:attribute name = "VerticesCount" type ="xs:int" />
+      <xs:attribute name = "Error"         type="xs:string" default="" />
+      <xs:attribute name = "Duration"      type ="xs:unsignedLong" />
     </xs:complexType>
   </xs:element>
 
   <xs:complexType name ="GraphElementView" abstract="true">
     <xs:sequence>
       <xs:element name ="CountOfProperties" type="xs:int"/>
-      <xs:element name ="Properties"        type ="PropertyList"/>
+      <xs:element name ="Properties"        type ="mstns:PropertyList"/>
     </xs:sequence>
   </xs:complexType>  
     
   <xs:complexType name ="SchemaEdgeView">
     <xs:complexContent>
       <xs:extension base="GraphElementView">
-        <xs:sequence>          
-          <xs:element name ="TargetVertices"  type ="VertexViewList"/>
+        <xs:sequence>
+          <xs:element name="TargetVertices" type="mstns:SchemaVertexView" maxOccurs="unbounded" minOccurs="0"/>          
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -34,21 +37,23 @@
   <xs:complexType name="EdgeTuple">
     <xs:sequence>
       <xs:element name ="Name" type ="xs:string"/>        
-      <xs:element name ="Edge" type ="SchemaEdgeView"/>
+      <xs:element name ="Edge" type ="mstns:SchemaEdgeView"/>
     </xs:sequence>
   </xs:complexType>  
   
   <xs:complexType name="EdgeTupleList">
     <xs:sequence>
-      <xs:element name="ETupleList" type="EdgeTuple" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element name="ETupleList" type="mstns:EdgeTuple" maxOccurs="unbounded" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="VertexViewList">
+  <xs:element name="VertexViewList">
+    <xs:complexType>
     <xs:sequence>
-      <xs:element name ="VertexView" type ="SchemaVertexView" maxOccurs ="unbounded" minOccurs="0"/>
+      <xs:element name ="VertexView" type ="mstns:SchemaVertexView" maxOccurs ="unbounded" minOccurs="0"/>
     </xs:sequence>
-  </xs:complexType>
+    </xs:complexType>
+  </xs:element>  
 
   <xs:complexType name="Property">
     <xs:sequence>
@@ -60,39 +65,38 @@
 
   <xs:complexType name ="PropertyList">
     <xs:sequence>
-      <xs:element name ="Properties" type="Property" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element name ="Properties" type="mstns:Property" maxOccurs="unbounded" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
   
   <xs:complexType name="SchemaVertexView">        
       <xs:sequence>        
-        <xs:element name ="Properties"        type ="PropertyList"/>
-        <xs:element name ="BinaryProperties"  type ="BinaryDataList"/>
-        <xs:element name ="Edges"             type ="EdgeTupleList"/>        
+        <xs:element name ="Properties"        type ="mstns:PropertyList"/>
+        <xs:element name ="BinaryProperties"  type ="mstns:BinaryDataList"/>
+        <xs:element name ="Edges"             type ="mstns:EdgeTupleList"/>        
       </xs:sequence>    
   </xs:complexType>
 
   <xs:complexType name="BinaryData">
     <xs:sequence>
       <xs:element name="ID" type="xs:string"/>
-      <xs:element name="Content" type ="xs:hexBinary"/>
+      <xs:element name="Content" type="xs:hexBinary"/>
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="BinaryDataList" >
     <xs:sequence>
-      <xs:element name ="BinaryData" type ="BinaryData" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element name ="BinaryData" type ="mstns:BinaryData" maxOccurs="unbounded" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="Result">
-    <xs:sequence>
-      <xs:element ref ="Query" />
-      <xs:element name ="Error" type="xs:string" nillable="true"/>
-      <xs:element name ="Number" type="xs:unsignedLong"/>
-      <xs:element name ="Duration" type="xs:unsignedLong"/>      
-      <xs:element name ="Vertices" type ="VertexViewList" nillable="true"/>      
-    </xs:sequence>
-  </xs:complexType>
+  <xs:element name="Result">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref ="Query" />
+        <xs:element ref ="VertexViewList" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>  
   
 </xs:schema>

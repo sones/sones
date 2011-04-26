@@ -34,6 +34,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <Win32Resource>
+    </Win32Resource>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -44,10 +48,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorHandling\XmlValidationException.cs" />
     <Compile Include="QueryResultSchema.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>QueryResultSchema.xsd</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
     <Compile Include="Result\EdgeView.cs" />
     <Compile Include="Result\GraphElementView.cs" />
@@ -61,6 +67,10 @@
     <ProjectReference Include="..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\GraphDS\IGraphDS\IGraphDS.csproj">
+      <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
+      <Name>IGraphDS</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
       <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
@@ -88,12 +98,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="QueryResultSchema.xsd">
+    <EmbeddedResource Include="QueryResultSchema.xsd">
       <SubType>Designer</SubType>
       <Generator>SchemaToClassesGenerator</Generator>
       <CustomToolNamespace>SchemaToClassesGenerator</CustomToolNamespace>
       <LastGenOutput>QueryResultSchema.cs</LastGenOutput>
-    </None>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
