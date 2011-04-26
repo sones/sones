@@ -187,9 +187,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrainPipeLog", "Plugins\Gra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordianDate", "Library\Internal\DiscordianDate\DiscordianDate.csproj", "{8E0390D0-A7BF-46FE-900C-C411F762EFF2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arithmetics", "Library\Internal\Arithmetics\Arithmetics\Arithmetics.csproj", "{E33D0E75-43A1-4643-928D-DA9E5D99E041}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 53
+		SccNumberOfProjects = 54
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -401,6 +403,10 @@ Global
 		SccProjectTopLevelParentUniqueName52 = CoreDeveloper.sln
 		SccProjectName52 = Library/Internal/DiscordianDate
 		SccLocalPath52 = Library\\Internal\\DiscordianDate
+		SccProjectUniqueName53 = Library\\Internal\\Arithmetics\\Arithmetics\\Arithmetics.csproj
+		SccProjectTopLevelParentUniqueName53 = CoreDeveloper.sln
+		SccProjectName53 = Library/Internal/Arithmetics/Arithmetics
+		SccLocalPath53 = Library\\Internal\\Arithmetics\\Arithmetics
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1047,6 +1053,18 @@ Global
 		{8E0390D0-A7BF-46FE-900C-C411F762EFF2}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{8E0390D0-A7BF-46FE-900C-C411F762EFF2}.Release|x64.ActiveCfg = Release|Any CPU
 		{8E0390D0-A7BF-46FE-900C-C411F762EFF2}.Release|x86.ActiveCfg = Release|Any CPU
+		{E33D0E75-43A1-4643-928D-DA9E5D99E041}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E33D0E75-43A1-4643-928D-DA9E5D99E041}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E33D0E75-43A1-4643-928D-DA9E5D99E041}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{E33D0E75-43A1-4643-928D-DA9E5D99E041}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{E33D0E75-43A1-4643-928D-DA9E5D99E041}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E33D0E75-43A1-4643-928D-DA9E5D99E041}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E33D0E75-43A1-4643-928D-DA9E5D99E041}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E33D0E75-43A1-4643-928D-DA9E5D99E041}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E33D0E75-43A1-4643-928D-DA9E5D99E041}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{E33D0E75-43A1-4643-928D-DA9E5D99E041}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{E33D0E75-43A1-4643-928D-DA9E5D99E041}.Release|x64.ActiveCfg = Release|Any CPU
+		{E33D0E75-43A1-4643-928D-DA9E5D99E041}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1079,6 +1097,7 @@ Global
 		{BB6BDFAB-482E-42B7-B954-84F33CFFFFB6} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{CBE38660-10C5-4082-A1B9-A5002D961EA1} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{8E0390D0-A7BF-46FE-900C-C411F762EFF2} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
+		{E33D0E75-43A1-4643-928D-DA9E5D99E041} = {CD3B461E-EBA3-4B35-9003-7E6067145472}
 		{D81F5C91-D7DB-46E5-BC99-49488FB6814C} = {A950D82D-E727-4CF5-B4D4-7B872D733E3C}
 		{942F25CF-46A7-4413-B062-E3395C8D1C9A} = {A950D82D-E727-4CF5-B4D4-7B872D733E3C}
 		{45F6BE30-989A-4749-B6A0-69099C8661F4} = {A950D82D-E727-4CF5-B4D4-7B872D733E3C}

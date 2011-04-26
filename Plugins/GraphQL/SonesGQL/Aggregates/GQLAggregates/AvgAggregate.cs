@@ -1,30 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using ISonesGQLFunction.Structure;
-using sones.GraphDB;
+using sones.Plugins.Index.Interfaces;
 using sones.GraphDB.TypeSystem;
+using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
-using sones.Library.VersionedPluginManager;
-using sones.Plugins.Index.Interfaces;
+using sones.Library.Arithmetics;
 
 namespace sones.Plugins.SonesGQL.Aggregates
 {
     /// <summary>
-    /// The aggregate Max
+    /// The aggregate Avg
     /// </summary>
-    public sealed class MaxAggregate : IGQLAggregate
+    public sealed class AvgAggregate : IGQLAggregate
     {
         #region constructor
 
         /// <summary>
-        /// Creates a new max aggregate
+        /// creates a new avg aggregate
         /// </summary>
-        public MaxAggregate()
+        public AvgAggregate()
         {
-
+ 
         }
 
         #endregion
@@ -32,25 +33,31 @@ namespace sones.Plugins.SonesGQL.Aggregates
         #region IGQLAggregate Members
 
         /// <summary>
-        /// Calculates the maximum
+        /// Calculates the average
         /// </summary>
         public FuncParameter Aggregate(IEnumerable<IComparable> myValues, IPropertyDefinition myPropertyDefinition)
         {
-            IComparable max = null;
+            var divType = myPropertyDefinition.BaseType;
+            IComparable sum = null;
+            uint total = 0;
 
             foreach (var value in myValues)
             {
-                if (max == null)
+                if (sum == null)
                 {
-                    max = value;
+                    sum = ArithmeticOperations.Add(divType, 0, value);
                 }
-                else if (max.CompareTo(value) < 0)
+                else
                 {
-                    max = value;
+                    sum = ArithmeticOperations.Add(divType, sum, value);
                 }
+
+                total++;
             }
 
-            return new FuncParameter(max, myPropertyDefinition);
+            var aggregateResult = ArithmeticOperations.Div(divType, sum, total);
+
+            return new FuncParameter(aggregateResult, myPropertyDefinition);
         }
 
         #endregion
@@ -59,17 +66,17 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         public string PluginName
         {
-            get { return "MAX"; }
+            get { return "AVG"; }
         }
 
         public Dictionary<string, Type> SetableParameters
         {
-            get { return new Dictionary<string, Type>(); }
+            get { return new Dictionary<string,Type>(); }
         }
 
-        public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
+        public Library.VersionedPluginManager.IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
-            return new MaxAggregate();
+            return new AvgAggregate();
         }
 
         #endregion

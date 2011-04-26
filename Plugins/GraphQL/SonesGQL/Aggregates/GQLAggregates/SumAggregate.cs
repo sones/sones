@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ISonesGQLFunction.Structure;
 using sones.GraphDB;
 using sones.GraphDB.TypeSystem;
@@ -9,22 +8,23 @@ using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.VersionedPluginManager;
 using sones.Plugins.Index.Interfaces;
+using sones.Library.Arithmetics;
 
 namespace sones.Plugins.SonesGQL.Aggregates
 {
     /// <summary>
-    /// The aggregate Max
+    /// The aggregate Sum
     /// </summary>
-    public sealed class MaxAggregate : IGQLAggregate
+    public sealed class SumAggregate : IGQLAggregate
     {
         #region constructor
 
         /// <summary>
-        /// Creates a new max aggregate
+        /// Creates a new sum aggregate
         /// </summary>
-        public MaxAggregate()
+        public SumAggregate()
         {
-
+ 
         }
 
         #endregion
@@ -32,25 +32,26 @@ namespace sones.Plugins.SonesGQL.Aggregates
         #region IGQLAggregate Members
 
         /// <summary>
-        /// Calculates the maximum
+        /// Calculates the sum
         /// </summary>
         public FuncParameter Aggregate(IEnumerable<IComparable> myValues, IPropertyDefinition myPropertyDefinition)
         {
-            IComparable max = null;
-
+            var sumType = myPropertyDefinition.BaseType;
+            IComparable sum = null;
+                        
             foreach (var value in myValues)
             {
-                if (max == null)
+                if (sum == null)
                 {
-                    max = value;
+                    sum = ArithmeticOperations.Add(sumType, 0, value);
                 }
-                else if (max.CompareTo(value) < 0)
+                else
                 {
-                    max = value;
+                    sum = ArithmeticOperations.Add(sumType, sum, value);
                 }
             }
 
-            return new FuncParameter(max, myPropertyDefinition);
+            return new FuncParameter(sum, myPropertyDefinition);
         }
 
         #endregion
@@ -59,17 +60,17 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         public string PluginName
         {
-            get { return "MAX"; }
+            get { return "SUM"; }
         }
 
         public Dictionary<string, Type> SetableParameters
         {
-            get { return new Dictionary<string, Type>(); }
+            get { return new Dictionary<string,Type>(); }
         }
 
         public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
-            return new MaxAggregate();
+            return new SumAggregate();
         }
 
         #endregion

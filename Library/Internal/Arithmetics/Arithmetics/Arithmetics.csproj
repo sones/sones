@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{817E142F-ECD9-4B18-A9AE-D399C7C49007}</ProjectGuid>
+    <ProjectGuid>{E33D0E75-43A1-4643-928D-DA9E5D99E041}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>sones.Plugins.SonesGQL.Aggregates</RootNamespace>
-    <AssemblyName>GQLAggregates</AssemblyName>
+    <RootNamespace>Arithmetics</RootNamespace>
+    <AssemblyName>Arithmetics</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -44,50 +44,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AvgAggregate.cs" />
-    <Compile Include="CountAggregate.cs" />
-    <Compile Include="MaxAggregate.cs" />
-    <Compile Include="MinAggregate.cs" />
-    <Compile Include="myGraphDBType.cs" />
+    <Compile Include="ArithmeticOperations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SumAggregate.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
-      <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
-      <Name>IGraphDB</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Library\Internal\Arithmetics\Arithmetics\Arithmetics.csproj">
-      <Project>{E33D0E75-43A1-4643-928D-DA9E5D99E041}</Project>
-      <Name>Arithmetics</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Library\Internal\Commons\Commons.csproj">
-      <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
-      <Name>Commons</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
+    <ProjectReference Include="..\..\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
-      <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
-      <Name>PropertyHyperGraph</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
-      <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Index\ISonesIndex\ISonesIndex.csproj">
-      <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>
-      <Name>ISonesIndex</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ISonesGQLAggregate\ISonesGQLAggregate.csproj">
-      <Project>{B70DCE72-B636-442A-8825-F3BE78D86D34}</Project>
-      <Name>ISonesGQLAggregate</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\ISonesGQLFunction\ISonesGQLFunction.csproj">
-      <Project>{CDAE254B-77D9-4E59-9C07-C18F0085F570}</Project>
-      <Name>ISonesGQLFunction</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

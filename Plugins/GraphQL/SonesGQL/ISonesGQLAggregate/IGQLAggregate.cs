@@ -39,29 +39,10 @@ namespace sones.Plugins.SonesGQL.Aggregates
     public interface IGQLAggregate : IPluginable
     {
         /// <summary>
-        /// Abstract aggregate function for a attribute index
+        /// Abstract aggregate function
         /// </summary>
-        /// <param name="myAttributeIndex">Attribute index</param>
-        /// <param name="myGraphDBType">Underlying type of the index</param>
-        /// <param name="myDBContext">The db context</param>
         /// <returns>The result of the aggregation</returns>
-        FuncParameter Aggregate(
-            IIndex<IComparable, Int64> myAttributeIndex,
-            IVertexType myGraphDBType,
-            IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
-
-        /// <summary>
-        /// Abstract aggregate for a list of dbobjects
-        /// </summary>
-        /// <param name="myDBObjects">List of dbobjects</param>
-        /// <param name="myTypeAttribute">The attribute of the dbobject</param>
-        /// <param name="myDBContext">The dbcontext</param>
-        /// <param name="myParameters">Additional optional parameters for own designed aggregates</param>
-        /// <returns>The result of the aggregation</returns>
-        FuncParameter Aggregate(
-            IEnumerable<IVertex> myDBObjects, 
-            IAttributeDefinition myTypeAttribute, 
-            IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
-            params ParameterValue[] myParameters);
+        FuncParameter Aggregate(IEnumerable<IComparable> myValues,
+                                IPropertyDefinition myPropertyDefinition);
     }
 }

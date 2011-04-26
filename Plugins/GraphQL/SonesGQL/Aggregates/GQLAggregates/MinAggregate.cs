@@ -33,61 +33,25 @@ namespace sones.Plugins.SonesGQL.Aggregates
         #region IGQLAggregate Members
 
         /// <summary>
-        /// Calculates the minimum of index attributes
-        /// </summary>
-        public FuncParameter Aggregate(IIndex<IComparable, long> myAttributeIndex, IVertexType myGraphDBType, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
-        {
-            return new FuncParameter(myAttributeIndex.Keys().Min());
-        }
-
-        /// <summary>
         /// Calculates the minimum
-        /// <seealso cref="IGQLAggregate"/>
         /// </summary>
-        public FuncParameter Aggregate(IEnumerable<IVertex> myDBObjects, IAttributeDefinition myTypeAttribute, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params ParameterValue[] myParameters)
+        public FuncParameter Aggregate(IEnumerable<IComparable> myValues, IPropertyDefinition myPropertyDefinition)
         {
-            IComparable aggregateResult = null;
+            IComparable min = null;
 
-            var foundFirstMin = false;
-
-            #region is IPropertyDefinition
-            if (myTypeAttribute is IPropertyDefinition)
+            foreach (var value in myValues)
             {
-                foreach (var dbo in myDBObjects)
+                if (min == null)
                 {
-                    if (dbo.HasProperty(myTypeAttribute.AttributeID))
-                    {
-                        var attrResult = dbo.GetProperty(myTypeAttribute.AttributeID);
-
-                        if (foundFirstMin == false)
-                        {
-                            aggregateResult = attrResult;
-
-                            foundFirstMin = true;
-                        }
-                        else
-                        {
-                            #region Compare current with min value
-
-                            if (aggregateResult.CompareTo(attrResult) > 0)
-                            {
-                                aggregateResult = attrResult;
-                            }
-
-                            #endregion
-                        }
-                    }
+                    min = value;
+                }
+                else if (min.CompareTo(value) > 0)
+                {
+                    min = value;
                 }
             }
-            #endregion
-            #region else
-            else
-            {
-                return new FuncParameter(new AggregateException("Aggregate not valid on type " + myTypeAttribute.Name));
-            }
-            #endregion
-            
-            return new FuncParameter(aggregateResult);
+
+            return new FuncParameter(min, myPropertyDefinition);
         }
 
         #endregion
