@@ -183,17 +183,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PluginManager", "PluginMana
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DrainPipeLog", "DrainPipeLog", "{85E9BD73-E45E-4475-A59E-21692A7AEB85}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrainPipeLog", "Plugins\GraphDS\DrainPipeLog\DrainPipeLog.csproj", "{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordianDate", "Library\Internal\DiscordianDate\DiscordianDate.csproj", "{8E0390D0-A7BF-46FE-900C-C411F762EFF2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arithmetics", "Library\Internal\Arithmetics\Arithmetics\Arithmetics.csproj", "{E33D0E75-43A1-4643-928D-DA9E5D99E041}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphDSPluginManager", "GraphDS\PluginManager\GraphDSPluginManager\GraphDSPluginManager.csproj", "{6C8C30F7-1F75-4FA4-B5E9-6FB9AC8FA4FB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestDrainPipeLog", "Tests\TestDrainPipeLog\TestDrainPipeLog.csproj", "{D951A6BC-28B4-49B2-BE95-B5D774D96D31}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Implementation", "Implementation", "{E5B9D6B9-9F6F-41C4-90D3-6220086E65C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDrainPipe", "Plugins\GraphDS\DrainPipeLog\IDrainPipe\IDrainPipe.csproj", "{F51DA5BD-5808-409E-A907-4EF93B2C5E71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrainPipeLog", "Plugins\GraphDS\DrainPipeLog\Implementation\DrainPipeLog.csproj", "{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 55
+		SccNumberOfProjects = 57
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -397,22 +403,30 @@ Global
 		SccProjectTopLevelParentUniqueName50 = CoreDeveloper.sln
 		SccProjectName50 = Applications/TestWebShell
 		SccLocalPath50 = Applications\\TestWebShell
-		SccProjectUniqueName51 = Plugins\\GraphDS\\DrainPipeLog\\DrainPipeLog.csproj
+		SccProjectUniqueName51 = Library\\Internal\\DiscordianDate\\DiscordianDate.csproj
 		SccProjectTopLevelParentUniqueName51 = CoreDeveloper.sln
-		SccProjectName51 = Plugins/GraphDS/DrainPipeLog
-		SccLocalPath51 = Plugins\\GraphDS\\DrainPipeLog
-		SccProjectUniqueName52 = Library\\Internal\\DiscordianDate\\DiscordianDate.csproj
+		SccProjectName51 = Library/Internal/DiscordianDate
+		SccLocalPath51 = Library\\Internal\\DiscordianDate
+		SccProjectUniqueName52 = Library\\Internal\\Arithmetics\\Arithmetics\\Arithmetics.csproj
 		SccProjectTopLevelParentUniqueName52 = CoreDeveloper.sln
-		SccProjectName52 = Library/Internal/DiscordianDate
-		SccLocalPath52 = Library\\Internal\\DiscordianDate
-		SccProjectUniqueName53 = Library\\Internal\\Arithmetics\\Arithmetics\\Arithmetics.csproj
+		SccProjectName52 = Library/Internal/Arithmetics/Arithmetics
+		SccLocalPath52 = Library\\Internal\\Arithmetics\\Arithmetics
+		SccProjectUniqueName53 = GraphDS\\PluginManager\\GraphDSPluginManager\\GraphDSPluginManager.csproj
 		SccProjectTopLevelParentUniqueName53 = CoreDeveloper.sln
-		SccProjectName53 = Library/Internal/Arithmetics/Arithmetics
-		SccLocalPath53 = Library\\Internal\\Arithmetics\\Arithmetics
-		SccProjectUniqueName54 = GraphDS\\PluginManager\\GraphDSPluginManager\\GraphDSPluginManager.csproj
+		SccProjectName53 = GraphDS/PluginManager/GraphDSPluginManager
+		SccLocalPath53 = GraphDS\\PluginManager\\GraphDSPluginManager
+		SccProjectUniqueName54 = Tests\\TestDrainPipeLog\\TestDrainPipeLog.csproj
 		SccProjectTopLevelParentUniqueName54 = CoreDeveloper.sln
-		SccProjectName54 = GraphDS/PluginManager/GraphDSPluginManager
-		SccLocalPath54 = GraphDS\\PluginManager\\GraphDSPluginManager
+		SccProjectName54 = Tests/TestDrainPipeLog
+		SccLocalPath54 = Tests\\TestDrainPipeLog
+		SccProjectUniqueName55 = Plugins\\GraphDS\\DrainPipeLog\\IDrainPipe\\IDrainPipe.csproj
+		SccProjectTopLevelParentUniqueName55 = CoreDeveloper.sln
+		SccProjectName55 = Plugins/GraphDS/DrainPipeLog/IDrainPipe
+		SccLocalPath55 = Plugins\\GraphDS\\DrainPipeLog\\IDrainPipe
+		SccProjectUniqueName56 = Plugins\\GraphDS\\DrainPipeLog\\Implementation\\DrainPipeLog.csproj
+		SccProjectTopLevelParentUniqueName56 = CoreDeveloper.sln
+		SccProjectName56 = Plugins/GraphDS/DrainPipeLog/Implementation
+		SccLocalPath56 = Plugins\\GraphDS\\DrainPipeLog\\Implementation
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1035,18 +1049,6 @@ Global
 		{E006C3A0-CA9F-4ACB-AAB7-B23338327882}.Release|x64.ActiveCfg = Release|x86
 		{E006C3A0-CA9F-4ACB-AAB7-B23338327882}.Release|x86.ActiveCfg = Release|x86
 		{E006C3A0-CA9F-4ACB-AAB7-B23338327882}.Release|x86.Build.0 = Release|x86
-		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Release|x64.ActiveCfg = Release|Any CPU
-		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Release|x86.ActiveCfg = Release|Any CPU
 		{8E0390D0-A7BF-46FE-900C-C411F762EFF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8E0390D0-A7BF-46FE-900C-C411F762EFF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E0390D0-A7BF-46FE-900C-C411F762EFF2}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -1083,6 +1085,42 @@ Global
 		{6C8C30F7-1F75-4FA4-B5E9-6FB9AC8FA4FB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{6C8C30F7-1F75-4FA4-B5E9-6FB9AC8FA4FB}.Release|x64.ActiveCfg = Release|Any CPU
 		{6C8C30F7-1F75-4FA4-B5E9-6FB9AC8FA4FB}.Release|x86.ActiveCfg = Release|Any CPU
+		{D951A6BC-28B4-49B2-BE95-B5D774D96D31}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D951A6BC-28B4-49B2-BE95-B5D774D96D31}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D951A6BC-28B4-49B2-BE95-B5D774D96D31}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D951A6BC-28B4-49B2-BE95-B5D774D96D31}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D951A6BC-28B4-49B2-BE95-B5D774D96D31}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D951A6BC-28B4-49B2-BE95-B5D774D96D31}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D951A6BC-28B4-49B2-BE95-B5D774D96D31}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D951A6BC-28B4-49B2-BE95-B5D774D96D31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D951A6BC-28B4-49B2-BE95-B5D774D96D31}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D951A6BC-28B4-49B2-BE95-B5D774D96D31}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D951A6BC-28B4-49B2-BE95-B5D774D96D31}.Release|x64.ActiveCfg = Release|Any CPU
+		{D951A6BC-28B4-49B2-BE95-B5D774D96D31}.Release|x86.ActiveCfg = Release|Any CPU
+		{F51DA5BD-5808-409E-A907-4EF93B2C5E71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F51DA5BD-5808-409E-A907-4EF93B2C5E71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F51DA5BD-5808-409E-A907-4EF93B2C5E71}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F51DA5BD-5808-409E-A907-4EF93B2C5E71}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F51DA5BD-5808-409E-A907-4EF93B2C5E71}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F51DA5BD-5808-409E-A907-4EF93B2C5E71}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F51DA5BD-5808-409E-A907-4EF93B2C5E71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F51DA5BD-5808-409E-A907-4EF93B2C5E71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F51DA5BD-5808-409E-A907-4EF93B2C5E71}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F51DA5BD-5808-409E-A907-4EF93B2C5E71}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F51DA5BD-5808-409E-A907-4EF93B2C5E71}.Release|x64.ActiveCfg = Release|Any CPU
+		{F51DA5BD-5808-409E-A907-4EF93B2C5E71}.Release|x86.ActiveCfg = Release|Any CPU
+		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Release|x64.ActiveCfg = Release|Any CPU
+		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1157,6 +1195,7 @@ Global
 		{3DFEC979-07F3-4D36-9CE1-0BA0191320AD} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 		{528F13FB-BA06-4188-B344-666EF735EB47} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 		{10D884F3-79B1-476C-9146-36BFA0AFB5F0} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
+		{D951A6BC-28B4-49B2-BE95-B5D774D96D31} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 		{6628A55D-BEEF-4499-B07B-26606289B6F4} = {8D65A058-04E7-4C4A-A533-678F43914D68}
 		{7E58D30B-4108-4941-BF85-A5C309F87536} = {500C1B9C-E9CD-4008-9EE4-5229A6CE93DC}
 		{CDAE254B-77D9-4E59-9C07-C18F0085F570} = {500C1B9C-E9CD-4008-9EE4-5229A6CE93DC}
@@ -1173,6 +1212,8 @@ Global
 		{2E4A9BEA-C112-4F1C-9D55-35F65657999C} = {FA853DE3-8494-4529-A4CD-832C7B47A8D7}
 		{DDC48D4C-6885-462C-B57A-216658EB94AE} = {BB6BDFAB-482E-42B7-B954-84F33CFFFFB6}
 		{6C8C30F7-1F75-4FA4-B5E9-6FB9AC8FA4FB} = {CB4F2C9A-E740-4C52-817C-381F72BC17A1}
-		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0} = {85E9BD73-E45E-4475-A59E-21692A7AEB85}
+		{E5B9D6B9-9F6F-41C4-90D3-6220086E65C7} = {85E9BD73-E45E-4475-A59E-21692A7AEB85}
+		{F51DA5BD-5808-409E-A907-4EF93B2C5E71} = {85E9BD73-E45E-4475-A59E-21692A7AEB85}
+		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0} = {E5B9D6B9-9F6F-41C4-90D3-6220086E65C7}
 	EndGlobalSection
 EndGlobal

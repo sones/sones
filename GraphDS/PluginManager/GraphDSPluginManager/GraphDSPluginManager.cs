@@ -5,6 +5,7 @@ using System.Text;
 using sones.Library.VersionedPluginManager;
 using sones.GraphQL;
 using sones.Plugins.GraphDS.RESTService;
+using sones.Plugins.GraphDS;
 
 namespace sones.GraphDS.PluginManager.GraphDSPluginManager
 {
@@ -24,7 +25,8 @@ namespace sones.GraphDS.PluginManager.GraphDSPluginManager
             // So, if any plugin in the GraphDS changes you need to change the AssemblyVersion of the GraphDS AND modify the compatibility version of the other plugins.
             _pluginManager
                 .Register<IGraphQL>(IGraphQLVersionCompatibility.MinVersion, IGraphQLVersionCompatibility.MaxVersion)
-                .Register<ISonesRESTService>(ISonesRESTServiceCompatibility.MinVersion, ISonesRESTServiceCompatibility.MaxVersion);
+                .Register<ISonesRESTService>(ISonesRESTServiceCompatibility.MinVersion, ISonesRESTServiceCompatibility.MaxVersion)
+                .Register<IDrainPipe>(IDrainPipeCompatibility.MinVersion, IDrainPipeCompatibility.MaxVersion);
 
             _pluginManager.Discover();
 
