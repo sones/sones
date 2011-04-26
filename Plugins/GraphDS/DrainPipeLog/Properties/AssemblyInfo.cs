@@ -1,15 +1,16 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Settings")]
+[assembly: AssemblyTitle("DrainPipeLog")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("sones GmbH")]
-[assembly: AssemblyProduct("Settings")]
-[assembly: AssemblyCopyright("Copyright © sones GmbH 2007-2011")]
+[assembly: AssemblyProduct("DrainPipeLog")]
+[assembly: AssemblyCopyright("Copyright © sones GmbH 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -19,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("db21609c-4de6-4538-b454-9b3a74ba1743")]
+[assembly: Guid("f0e3fe0b-da21-4b21-9d9e-6bce7f2c5cbb")]
 
 // Version information for an assembly consists of the following four values:
 //
