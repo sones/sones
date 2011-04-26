@@ -1,6 +1,9 @@
 ﻿using System;
 using sones.GraphQL.Result;
 using sones.GraphQL.Structure.Nodes;
+using sones.GraphDB;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 
 namespace sones.GraphQL.StatementNodes
 {
@@ -21,7 +24,7 @@ namespace sones.GraphQL.StatementNodes
 
         #region abstract Execute
 
-        public abstract QueryResult Execute();
+        public abstract QueryResult Execute(IGraphDB myGraphDB, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
         #endregion
 

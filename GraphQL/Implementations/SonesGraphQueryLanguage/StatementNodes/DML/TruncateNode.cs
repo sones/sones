@@ -42,12 +42,7 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute()
-        {
-            throw new NotImplementedException();
-        }
-
-        public QueryResult Execute(IGraphDB myGraphDB, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             QueryResult qresult = null;
             

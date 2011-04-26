@@ -2,6 +2,9 @@
 using Irony.Ast;
 using Irony.Parsing;
 using sones.GraphQL.Result;
+using sones.Library.Commons.Transaction;
+using sones.Library.Commons.Security;
+using sones.GraphDB;
 
 namespace sones.GraphQL.StatementNodes.DDL
 {
@@ -28,7 +31,7 @@ namespace sones.GraphQL.StatementNodes.DDL
             get { throw new NotImplementedException(); }
         }
 
-        public override QueryResult Execute()
+        public override QueryResult Execute(IGraphDB myGraphDB, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
