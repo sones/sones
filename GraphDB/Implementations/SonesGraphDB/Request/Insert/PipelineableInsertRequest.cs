@@ -3,6 +3,8 @@ using sones.GraphDB.Manager;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.Library.Commons.VertexStore.Definitions;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Request
 {
@@ -16,10 +18,10 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The request that contains the todo
         /// </summary>
-        private readonly RequestInsertVertex _request;
+        internal readonly RequestInsertVertex _request;
 
         /// <summary>
-        /// The parentVertex that has been created... 
+        /// The vertex that has been created... 
         /// it is used for generating the output
         /// </summary>
         private IVertex _createdVertex;
@@ -47,12 +49,12 @@ namespace sones.GraphDB.Request
 
         public override void Validate(IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            myMetaManager.VertexManager.CanAddVertex(_request, TransactionToken, SecurityToken);
         }
 
         public override void Execute(IMetaManager myMetaManager)
         {
-            throw new NotImplementedException();
+            myMetaManager.VertexManager.AddVertex(_request, TransactionToken, SecurityToken);
         }
 
         public override IRequest GetRequest()

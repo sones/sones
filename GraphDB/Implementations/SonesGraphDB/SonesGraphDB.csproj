@@ -161,9 +161,7 @@
       <Name>IGraphDB</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ErrorHandling\VertexTypeManager\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="SonesGraphDB.cd" />
   </ItemGroup>

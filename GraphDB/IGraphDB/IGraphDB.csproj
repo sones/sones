@@ -60,13 +60,10 @@
     <Compile Include="ErrorHandling\IndexErrors\IndexAlreadyExistException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\IndexTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\AGraphDBIndexException.cs" />
+    <Compile Include="ErrorHandling\Property\AGraphDBAttributeException.cs" />
+    <Compile Include="ErrorHandling\Property\AttributeDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\Property\PropertyHasWrongTypeException.cs" />
     <Compile Include="ErrorHandling\QueryPlan\InvalidExpressionException.cs" />
-    <Compile Include="ErrorHandling\TypeErrors\InvalidTypeException.cs" />
-    <Compile Include="ErrorHandling\TypeErrors\ParentTypeDoesNotExistException.cs" />
-    <Compile Include="ErrorHandling\TypeErrors\TypeAlreadyExistException.cs" />
-    <Compile Include="ErrorHandling\TypeErrors\TypeDoesNotExistException.cs" />
-    <Compile Include="ErrorHandling\TypeErrors\TypeDoesNotMatchException.cs" />
-    <Compile Include="ErrorHandling\TypeErrors\AGraphDBTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\EmptyPropertyTypeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\DuplicatedAttributeNameException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\EmptyEdgeTypeException.cs" />
@@ -117,7 +114,7 @@
     <Compile Include="Request\CreateVertexTypes\IncomingEdgePredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\IndexPredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\OutgoingEdgePredefinition.cs" />
-    <Compile Include="Request\CreateVertexTypes\Property\PropertyDefinition.cs" />
+    <Compile Include="Request\CreateVertexTypes\PropertyPredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\RequestCreateVertexTypes.cs" />
     <Compile Include="Request\CreateVertexTypes\UniquePredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\VertexTypePredefinition.cs" />
@@ -180,6 +177,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Request\CreateVertexTypes\Property\" />
     <Folder Include="Request\Update\" />
   </ItemGroup>
   <ItemGroup>

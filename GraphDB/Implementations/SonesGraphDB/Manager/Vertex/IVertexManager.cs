@@ -7,6 +7,7 @@ using sones.Library.Commons.Transaction;
 using sones.GraphDB.Expression.Tree;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.Commons.VertexStore;
+using sones.GraphDB.Request;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -94,11 +95,27 @@ namespace sones.GraphDB.Manager.Vertex
 
         IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
 
-        IVertex AddVertex(VertexAddDefinition myVertexDefinition, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+        /// <summary>
+        /// Adds a vertex to the FS.
+        /// </summary>
+        /// <param name="myInsertDefinition">The insert request.</param>
+        /// <param name="TransactionToken">A transaction token for this operation.</param>
+        /// <param name="SecurityToken">A security token for this operation.</param>
+        /// <returns>The added vertex.</returns>
+        IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+
+        /// <summary>
+        /// Checks if the <see cref="AddVertex"/> operation will succeed.
+        /// </summary>
+        /// <param name="myVertexDefinition">The definition of the vertex.</param>
+        /// <param name="TransactionToken">A transaction token for this operation.</param>
+        /// <param name="SecurityToken">A security token for this operation.</param>
+        void CanAddVertex(RequestInsertVertex myInsertDefinition, TransactionToken TransactionToken, SecurityToken SecurityToken);
 
         /// <summary>
         /// Gets the vertex store this vertex manager is acting on.
         /// </summary>
         IVertexStore VertexStore { get;  }
+
     }
 }

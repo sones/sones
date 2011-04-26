@@ -28,7 +28,7 @@ namespace sones.GraphDB.TypeSystem
         AttributeType Kind { get; }
 
         /// <summary>
-        /// The type 
+        /// The type that defines the attribute.
         /// </summary>
         IBaseType RelatedType { get; }
     }

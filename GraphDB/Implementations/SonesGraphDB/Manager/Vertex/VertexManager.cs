@@ -11,6 +11,9 @@ using sones.GraphDB.ErrorHandling.Expression;
 using sones.GraphDB.Manager.QueryPlan;
 using sones.GraphDB.Expression.Tree;
 using sones.Library.Commons.VertexStore.Definitions;
+using sones.GraphDB.Request;
+using sones.GraphDB.ErrorHandling;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -66,7 +69,7 @@ namespace sones.GraphDB.Manager.Vertex
             return queryPlan.Execute();
         }
 
-        public void CanGetVertices(IExpression iExpression, bool p, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        public void CanGetVertices(IExpression iExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
             
         }
@@ -97,7 +100,34 @@ namespace sones.GraphDB.Manager.Vertex
 
         #endregion
 
-        public IVertex AddVertex(VertexAddDefinition myVertexDefinition, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        public void CanAddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            IVertexType vertexType;
+            try
+            {
+                //check if the vertex type exists.
+                vertexType = _vertexTypeManager.GetVertexType(myInsertDefinition.VertexTypeName, myTransaction, mySecurity);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw new VertexTypeDoesNotExistException(myInsertDefinition.VertexTypeName);
+            }
+            
+            foreach (var prop in myInsertDefinition.StructuredProperties)
+            {
+                var propertyDef = vertexType.GetPropertyDefinition(prop.Key);
+                if (propertyDef == null)
+                    throw new AttributeDoesNotExistException(prop.Key, myInsertDefinition.VertexTypeName);
+
+                //Assign safty should be suffice.
+                if (propertyDef.BaseType.IsAssignableFrom(prop.Value.GetType()))
+                    throw new PropertyHasWrongTypeException(myInsertDefinition.VertexTypeName, prop.Key, propertyDef.BaseType.Name, prop.Value.GetType().Name);
+
+            }
+
+        }
+
+        public IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
         {
             throw new NotImplementedException();
         }
