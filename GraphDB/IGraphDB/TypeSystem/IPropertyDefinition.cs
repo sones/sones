@@ -14,6 +14,11 @@ namespace sones.GraphDB.TypeSystem
         Boolean IsMandatory { get; }
 
         /// <summary>
+        /// Gets whether this property type is user defined.
+        /// </summary>
+        Boolean IsUserDefinedType { get; }
+
+        /// <summary>
         /// Gets the type of the property. This is always a c# value type.
         /// </summary>
         Type BaseType { get; }

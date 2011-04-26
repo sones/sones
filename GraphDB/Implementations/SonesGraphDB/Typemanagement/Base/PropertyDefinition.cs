@@ -20,6 +20,8 @@ namespace sones.GraphDB.TypeManagement
 
         public bool IsMandatory { get; internal set; }
 
+        public bool IsUserDefinedType { get; internal set; }
+
         public Type BaseType { get; internal set; }
 
         public PropertyMultiplicity Multiplicity { get; internal set; }

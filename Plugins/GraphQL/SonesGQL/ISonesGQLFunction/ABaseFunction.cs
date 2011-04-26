@@ -150,9 +150,9 @@ namespace sones.Plugins.SonesGQL.Functions
 
         #region IPluginable Members
 
-        public abstract string PluginName { get; protected set; }
+        public abstract string PluginName { get; }
 
-        public abstract Dictionary<string, Type> SetableParameters { get; protected set; }
+        public abstract Dictionary<string, Type> SetableParameters { get; }
 
         public abstract IPluginable InitializePlugin(Dictionary<string, object> myParameters = null);
 
