@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using sones.Library.Settings;
 using sones.Library.VersionedPluginManager.ErrorHandling;
 
@@ -39,6 +40,30 @@ namespace sones.Library.VersionedPluginManager
         #endregion
 
         #region public methods
+
+        /// <summary>
+        /// Returns the pluginnames for a special type.
+        /// </summary>
+        /// <typeparam name="T">The plugin type.</typeparam>
+        /// <returns>An ienumerable with the plugin names.</returns>
+        public IEnumerable<String> GetPluginsForType<T>()
+        {
+            var type = typeof(T);
+            var result = new List<String>();
+
+            lock (_plugins)
+            {
+                foreach (var item in _plugins)
+                {
+                    if (item.Key == type)
+                    {
+                        result.AddRange(item.Value.Keys.AsEnumerable());
+                    }
+                }
+
+                return result;
+            }
+        }
 
         /// <summary>
         /// Is there a certain plugin?

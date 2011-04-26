@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Net;
+using System.Collections.Generic;
+using System.ServiceModel;
+using System.IdentityModel.Selectors;
+using System.Linq;
 using sones.GraphDB;
 using sones.GraphDB.Request;
+using sones.GraphDSServer.ErrorHandling;
 using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Networking.HTTP;
-using System.IdentityModel.Selectors;
 using sones.Plugins.GraphDS.RESTService;
-using System.ServiceModel;
+using sones.GraphDS.PluginManager.GraphDSPluginManager;
+using sones.GraphQL;
 
 namespace sones.GraphDSServer
 {
@@ -19,17 +24,55 @@ namespace sones.GraphDSServer
         /// <summary>
         /// The internal iGraphDB instance
         /// </summary>
-        private readonly IGraphDB                  _iGraphDB;
-        private HTTPServer<GraphDSREST_Service>    _httpServer;
-        private UserNamePasswordValidator          _httpCredentials;
+        private readonly IGraphDB                       _iGraphDB;
+
+        /// <summary>
+        /// The web server, which starts the REST service.
+        /// </summary>
+        private HTTPServer<GraphDSREST_Service>         _httpServer;
+
+        /// <summary>
+        /// The service guid.
+        /// </summary>
+        private readonly Guid                           _ID;
+
+        /// <summary>
+        /// The graph ds plugin manager.
+        /// </summary>
+        private readonly GraphDSPluginManager           _pluginManager;
+
+        /// <summary>
+        /// The http credentials.
+        /// </summary>
+        private UserNamePasswordValidator               _httpCredentials;
+
+        /// <summary>
+        /// The list of supported graph ql types.
+        /// </summary>
+        private readonly Dictionary<String, IGraphQL>   _queryLanguages;
 
         #endregion
 
         #region Constructor
 
+        /// <summary>
+        /// The GraphDS server constructor.
+        /// </summary>
+        /// <param name="myGraphDB">The graph db instance.</param>
         public GraphDSServer(IGraphDB myGraphDB)
         {
             _iGraphDB = myGraphDB;
+            _pluginManager = new GraphDSPluginManager();
+            _ID = new Guid();
+            _queryLanguages = new Dictionary<string, IGraphQL>();
+
+            var qlPluginNames = _pluginManager.GetPluginsForType<IGraphQL>();
+
+            foreach (var item in qlPluginNames)
+            {
+                _queryLanguages.Add(item, _pluginManager.GetAndInitializePlugin<IGraphQL>(item));
+            }
+
         }
 
         #endregion
@@ -56,19 +99,11 @@ namespace sones.GraphDSServer
                                         myAutoStart: true)
                     {
                         HTTPSecurity = security,
-                    };                   
-
-                // Register the REST service within the list of services
-                // to stop before shutting down the GraphDSSharp instance
-                /*myAGraphDSSharp.ShutdownEvent += new GraphDSSharp.ShutdownEventHandler((o, e) =>
-                {
-                    _HttpWebServer.StopAndWait();
-                });*/                
-
+                    };
             }
             catch (Exception e)
             {
-                throw e;
+                throw new RESTServiceCouldNotStartetException(e.Message);
             }
         }
 
@@ -92,14 +127,22 @@ namespace sones.GraphDSServer
 
         public void Shutdown(sones.Library.Commons.Security.SecurityToken mySecurityToken)
         {
-        
             _httpServer.StopAndWait();
             _httpServer.Dispose(); 
         }
 
         public QueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString, string myQueryLanguageName)
         {
-            throw new NotImplementedException();
+            IGraphQL queryLanguage;
+
+            if (_queryLanguages.TryGetValue(myQueryLanguageName, out queryLanguage))
+            {
+                return queryLanguage.Query(mySecurityToken, myTransactionToken, myQueryString);
+            }
+            else
+            {
+                throw new QueryLanguageNotFoundException(String.Format("The GraphDS server does not support the query language {0}", myQueryLanguageName));
+            }
         }
 
         #endregion
@@ -108,52 +151,54 @@ namespace sones.GraphDSServer
 
         public TResult CreateVertexType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateVertexTypes myRequestCreateVertexType, Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            return _iGraphDB.CreateVertexType<TResult>(mySecurityToken, myTransactionToken, myRequestCreateVertexType, myOutputconverter);
         }
 
         public TResult Clear<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestClear myRequestClear, Converter.ClearResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            return _iGraphDB.Clear<TResult>(mySecurityToken, myTransactionToken, myRequestClear, myOutputconverter);
         }
 
         public TResult Insert<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestInsertVertex myRequestInsert, Converter.InsertResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            return _iGraphDB.Insert<TResult>(mySecurityToken, myTransactionToken, myRequestInsert, myOutputconverter);
         }
 
         public TResult GetVertices<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertices myRequestGetVertices, Converter.GetVerticesResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            return _iGraphDB.GetVertices<TResult>(mySecurityToken, myTransactionToken, myRequestGetVertices, myOutputconverter);
         }
 
         public TResult TraverseVertex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurity, TransactionToken myTransactionToken, RequestTraverseVertex myRequestTraverseVertex, Converter.TraverseVertexResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            return _iGraphDB.TraverseVertex<TResult>(mySecurity, myTransactionToken, myRequestTraverseVertex, myOutputconverter);
         }
 
         public TResult GetVertexType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertexType myRequestGetVertexType, Converter.GetVertexTypeResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            return _iGraphDB.GetVertexType<TResult>(mySecurityToken, myTransactionToken, myRequestGetVertexType, myOutputconverter);
         }
 
         public TResult GetEdgeType<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetEdgeType myRequestGetEdgeType, Converter.GetEdgeTypeResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            return _iGraphDB.GetEdgeType<TResult>(mySecurityToken, myTransactionToken, myRequestGetEdgeType,
+                                                  myOutputconverter);
         }
 
         public TResult GetVertex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestGetVertex myRequestGetVertex, Converter.GetVertexResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            return _iGraphDB.GetVertex<TResult>(mySecurityToken, myTransactionToken, myRequestGetVertex,
+                                                myOutputconverter);
         }
 
         public TResult Truncate<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestTruncate myRequestTruncate, Converter.TruncateResultConverter<TResult> myOutputconverter)
         {
-            throw new NotImplementedException();
+            return _iGraphDB.Truncate<TResult>(mySecurityToken, myTransactionToken, myRequestTruncate, myOutputconverter);
         }
 
         public Guid ID
         {
-            get { throw new NotImplementedException(); }
+            get { return _ID; }
         }
 
         #endregion
@@ -162,17 +207,17 @@ namespace sones.GraphDSServer
 
         public TransactionToken BeginTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
         {
-            throw new NotImplementedException();
+            return _iGraphDB.BeginTransaction(mySecurityToken, myLongrunning, myIsolationLevel);
         }
 
         public void CommitTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            throw new NotImplementedException();
+            _iGraphDB.CommitTransaction(mySecurityToken, myTransactionToken);
         }
 
         public void RollbackTransaction(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            throw new NotImplementedException();
+            _iGraphDB.RollbackTransaction(mySecurityToken, myTransactionToken);
         }
 
         #endregion
@@ -188,7 +233,7 @@ namespace sones.GraphDSServer
 
         public void LogOff(sones.Library.Commons.Security.SecurityToken toBeLoggedOfToken)
         {
-            throw new NotImplementedException();
+            _iGraphDB.LogOff(toBeLoggedOfToken);
         }
 
         #endregion

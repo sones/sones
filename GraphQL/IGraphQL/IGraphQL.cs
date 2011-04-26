@@ -9,7 +9,7 @@ namespace sones.GraphQL
     /// A static implementation of the compatible IGraphQL plugin versions. 
     /// Defines the min and max version for all IGraphQL implementations which will be activated used this IGraphQL.
     /// </summary>
-    internal static class IGraphQLVersionCompatibility
+    public static class IGraphQLVersionCompatibility
     {
         public static Version MinVersion
         {
