@@ -41,8 +41,9 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
                     {
                         data = Async_Buffer[0];
                         Async_Buffer.RemoveAt(0);
+                        BytesInAsyncBuffer = BytesInAsyncBuffer - data.Length;
                     }
-                    BytesInAsyncBuffer = BytesInAsyncBuffer - data.Length;
+                    
                 }
 
                 // finally write it...

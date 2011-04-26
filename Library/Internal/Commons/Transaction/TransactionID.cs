@@ -2,11 +2,17 @@
 
 namespace sones.Library.Commons.Transaction
 {
+    [Serializable]
     public sealed class TransactionID : IComparable, IComparable<TransactionID>, IEquatable<TransactionID>
     {
         #region Data
+        public Int64 _iID;
 
-        public readonly Int64 ID;
+        public Int64 ID
+        {
+            get { return _iID; }
+            set {}
+        }
 
         #endregion
 

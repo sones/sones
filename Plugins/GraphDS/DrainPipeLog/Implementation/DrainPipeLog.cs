@@ -113,6 +113,7 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
             if (AsynchronousMode)
             {                
                 Async_WriteThread = new Thread(new ThreadStart(WriteThreadInstance.Run));
+                Async_WriteThread.Start();
             }
             #endregion
 
@@ -129,9 +130,11 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
         {
             WriteThreadInstance.Shutdown();
 
-            while (!WriteThreadInstance.ShutdownComplete)
-                Thread.Sleep(1);
-
+            if (AsynchronousMode)
+            { 
+                while (!WriteThreadInstance.ShutdownComplete)
+                    Thread.Sleep(1);
+            }
             // flush and close up
             if (_AppendLog != null)
                 _AppendLog.Shutdown();
@@ -143,25 +146,28 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
         /// </summary>
         public sones.GraphQL.Result.QueryResult Query(sones.Library.Commons.Security.SecurityToken mySecurityToken, sones.Library.Commons.Transaction.TransactionToken myTransactionToken, string myQueryString, string myQueryLanguageName)
         {
-            byte[] Data = null;
             byte[] Part1,Part2,Part3,Part4 = null;
             System.IO.MemoryStream stream = new System.IO.MemoryStream();
 
+            System.Runtime.Serialization.Formatters.Binary.BinaryFormatter Formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+
             #region Generate byte represenation of query
-            new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter().Serialize(stream, mySecurityToken);
+            Formatter.Serialize(stream, mySecurityToken);
             Part1 = stream.ToArray();
-
-            new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter().Serialize(stream, myTransactionToken);
+            Formatter.Serialize(stream, myTransactionToken);
             Part2 = stream.ToArray();
-
-            new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter().Serialize(stream, myQueryString);
+            Formatter.Serialize(stream, myQueryString);
             Part3 = stream.ToArray();
-
-            new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter().Serialize(stream, myQueryLanguageName);
+            Formatter.Serialize(stream, myQueryLanguageName);
             Part4 = stream.ToArray();
-
             #endregion
-            
+
+            byte[] Data = new byte[Part1.Length + Part2.Length + Part3.Length + Part4.Length];
+            System.Buffer.BlockCopy(Part1, 0, Data, 0, Part1.Length);
+            System.Buffer.BlockCopy(Part2, 0, Data, Part1.Length, Part2.Length);
+            System.Buffer.BlockCopy(Part3, 0, Data, Part1.Length + Part2.Length, Part3.Length);
+            System.Buffer.BlockCopy(Part4, 0, Data, Part1.Length + Part2.Length + Part3.Length, Part4.Length);
+
             Write(Data);
             return null;
         }
