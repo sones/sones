@@ -1,0 +1,3346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gexf xmlns="http://www.gephi.org/gexf" xmlns:viz="http://www.gephi.org/gexf/viz">
+<graph type="static">
+<attributes class="node" type="static">
+<attribute id="importId" title="importId" type="string"/>
+<attribute id="label" title="label" type="string"/>
+<attribute id="etat" title="etat" type="string"/>
+<attribute id="nb_pages_visitees" title="nb_pages_visitees" type="integer"/>
+<attribute id="nb_pages_marquees" title="nb_pages_marquees" type="string"/>
+<attribute id="nodeType" title="nodeType" type="string"/>
+</attributes>
+<nodes>
+<node id="0" label="http://www.siteduzero.com">
+<viz:color b="181" g="122" r="244"/>
+<viz:position x="-16.834044" y="50.357338" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs1"/>
+<attvalue id="1" value="http://www.siteduzero.com"/>
+<attvalue id="2" value="visite"/>
+<attvalue id="3" value="2"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="1" label="http://bugs.siteduzero.com">
+<viz:color b="151" g="119" r="236"/>
+<viz:position x="-16.647474" y="46.11133" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs2"/>
+<attvalue id="1" value="http://bugs.siteduzero.com"/>
+<attvalue id="2" value="frontiere"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="2" label="http://www.simple-it.fr">
+<viz:color b="196" g="160" r="226"/>
+<viz:position x="-17.939127" y="51.135788" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs3"/>
+<attvalue id="1" value="http://www.simple-it.fr"/>
+<attvalue id="2" value="frontiere"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="3" label="http://www.mavenhosting.com">
+<viz:color b="108" g="124" r="156"/>
+<viz:position x="-13.633532" y="48.82844" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs4"/>
+<attvalue id="1" value="http://www.mavenhosting.com"/>
+<attvalue id="2" value="frontiere"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="4" label="http://www.zcorrecteurs.fr">
+<viz:color b="128" g="122" r="90"/>
+<viz:position x="-14.934243" y="53.817867" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs5"/>
+<attvalue id="1" value="http://www.zcorrecteurs.fr"/>
+<attvalue id="2" value="frontiere"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="5" label="http://www.e-monsite.com">
+<viz:color b="143" g="138" r="145"/>
+<viz:position x="-13.829656" y="49.797367" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs6"/>
+<attvalue id="1" value="http://www.e-monsite.com"/>
+<attvalue id="2" value="frontiere"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="6" label="http://www.newbiesparadise.com">
+<viz:color b="178" g="229" r="107"/>
+<viz:position x="-21.154406" y="41.02024" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs7"/>
+<attvalue id="1" value="http://www.newbiesparadise.com"/>
+<attvalue id="2" value="visite"/>
+<attvalue id="3" value="32"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="7" label="http://www.xiti.com">
+<viz:color b="213" g="114" r="177"/>
+<viz:position x="-17.780277" y="46.794285" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs8"/>
+<attvalue id="1" value="http://www.xiti.com"/>
+<attvalue id="2" value="frontiere"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="8" label="http://googleads.g.doubleclick.net">
+<viz:color b="134" g="122" r="199"/>
+<viz:position x="-22.707647" y="53.098038" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs9"/>
+<attvalue id="1" value="http://googleads.g.doubleclick.net"/>
+<attvalue id="2" value="frontiere"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="9" label="http://www.google.com">
+<viz:color b="175" g="132" r="118"/>
+<viz:position x="-20.574047" y="54.63659" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs10"/>
+<attvalue id="1" value="http://www.google.com"/>
+<attvalue id="2" value="frontiere"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="10" label="http://services.google.com">
+<viz:color b="212" g="124" r="98"/>
+<viz:position x="-24.512537" y="51.154102" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs11"/>
+<attvalue id="1" value="http://services.google.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="11" label="http://alexcss.imperialbb.net">
+<viz:color b="149" g="228" r="200"/>
+<viz:position x="-17.617601" y="42.390366" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs12"/>
+<attvalue id="1" value="http://alexcss.imperialbb.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="12" label="http://www.imperialbb.net">
+<viz:color b="96" g="128" r="173"/>
+<viz:position x="-23.956886" y="41.75889" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs13"/>
+<attvalue id="1" value="http://www.imperialbb.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="13" label="http://creativecommons.org">
+<viz:color b="79" g="81" r="186"/>
+<viz:position x="-28.531157" y="45.761005" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs14"/>
+<attvalue id="1" value="http://creativecommons.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="14" label="http://ishimaru-design.servhome.org">
+<viz:color b="102" g="203" r="216"/>
+<viz:position x="-17.06503" y="41.50491" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs15"/>
+<attvalue id="1" value="http://ishimaru-design.servhome.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="15" label="http://fr2.php.net">
+<viz:color b="207" g="223" r="165"/>
+<viz:position x="-23.114573" y="43.14748" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs16"/>
+<attvalue id="1" value="http://fr2.php.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="16" label="http://fr.php.net">
+<viz:color b="114" g="199" r="81"/>
+<viz:position x="-7.6492124" y="-19.229965" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs17"/>
+<attvalue id="1" value="http://fr.php.net"/>
+<attvalue id="2" value="visite"/>
+<attvalue id="3" value="2"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="17" label="http://www.yoyogames.com">
+<viz:color b="153" g="218" r="241"/>
+<viz:position x="-21.078587" y="38.341022" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs18"/>
+<attvalue id="1" value="http://www.yoyogames.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="18" label="http://www.cpedersen.webs.com">
+<viz:color b="196" g="150" r="108"/>
+<viz:position x="-18.587944" y="40.43634" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs19"/>
+<attvalue id="1" value="http://www.cpedersen.webs.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="19" label="http://www.getpaint.net">
+<viz:color b="76" g="103" r="233"/>
+<viz:position x="-34.40405" y="50.259323" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs20"/>
+<attvalue id="1" value="http://www.getpaint.net"/>
+<attvalue id="2" value="visite"/>
+<attvalue id="3" value="2"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="20" label="http://paintdotnet.forumer.com">
+<viz:color b="224" g="181" r="166"/>
+<viz:position x="-28.060919" y="46.712555" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs21"/>
+<attvalue id="1" value="http://paintdotnet.forumer.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="21" label="http://www.art-toon.fr">
+<viz:color b="211" g="165" r="225"/>
+<viz:position x="-23.432064" y="40.86425" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs22"/>
+<attvalue id="1" value="http://www.art-toon.fr"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="22" label="http://sunnypix.free.fr">
+<viz:color b="146" g="215" r="172"/>
+<viz:position x="-17.918503" y="39.42844" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs23"/>
+<attvalue id="1" value="http://sunnypix.free.fr"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="23" label="http://www.mozilla-europe.org">
+<viz:color b="101" g="251" r="120"/>
+<viz:position x="-22.988808" y="42.15976" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs24"/>
+<attvalue id="1" value="http://www.mozilla-europe.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="24" label="http://linuxinfosastuces.blog4ever.com">
+<viz:color b="137" g="200" r="236"/>
+<viz:position x="-15.44099" y="60.281113" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs25"/>
+<attvalue id="1" value="http://linuxinfosastuces.blog4ever.com"/>
+<attvalue id="2" value="visite"/>
+<attvalue id="3" value="2"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="25" label="http://www.icom7.com">
+<viz:color b="120" g="192" r="165"/>
+<viz:position x="-19.16548" y="39.52222" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs26"/>
+<attvalue id="1" value="http://www.icom7.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="26" label="http://www.icom7.biz">
+<viz:color b="215" g="100" r="244"/>
+<viz:position x="-22.00141" y="38.76906" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs27"/>
+<attvalue id="1" value="http://www.icom7.biz"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="27" label="http://forum.icom7.com">
+<viz:color b="79" g="213" r="218"/>
+<viz:position x="-20.20386" y="38.752773" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs28"/>
+<attvalue id="1" value="http://forum.icom7.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="28" label="http://dir.icom7.com">
+<viz:color b="106" g="165" r="180"/>
+<viz:position x="-22.81463" y="39.286156" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs29"/>
+<attvalue id="1" value="http://dir.icom7.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="29" label="http://www.camerpages.net">
+<viz:color b="219" g="101" r="111"/>
+<viz:position x="-18.82507" y="42.110607" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs30"/>
+<attvalue id="1" value="http://www.camerpages.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="30" label="http://secure.hostgator.com">
+<viz:color b="115" g="100" r="194"/>
+<viz:position x="-23.543287" y="39.944706" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs31"/>
+<attvalue id="1" value="http://secure.hostgator.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="31" label="http://mrkooky.skyrock.com">
+<viz:color b="166" g="174" r="241"/>
+<viz:position x="-18.452055" y="41.379795" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs32"/>
+<attvalue id="1" value="http://mrkooky.skyrock.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="32" label="http://nanormal.free.fr">
+<viz:color b="155" g="251" r="230"/>
+<viz:position x="-19.103004" y="38.530434" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs33"/>
+<attvalue id="1" value="http://nanormal.free.fr"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="33" label="http://www.ixamaxi.com">
+<viz:color b="215" g="150" r="137"/>
+<viz:position x="-17.28534" y="40.44089" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs34"/>
+<attvalue id="1" value="http://www.ixamaxi.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="34" label="http://wiki.php.net">
+<viz:color b="113" g="110" r="210"/>
+<viz:position x="-17.832033" y="-27.154318" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs35"/>
+<attvalue id="1" value="http://wiki.php.net"/>
+<attvalue id="2" value="visite"/>
+<attvalue id="3" value="2"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="35" label="http://bugs.php.net">
+<viz:color b="211" g="79" r="193"/>
+<viz:position x="-13.6124325" y="-24.846592" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs36"/>
+<attvalue id="1" value="http://bugs.php.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="36" label="http://www.easydns.com">
+<viz:color b="193" g="169" r="219"/>
+<viz:position x="-4.627452" y="-24.723145" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs37"/>
+<attvalue id="1" value="http://www.easydns.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="37" label="http://www.directi.com">
+<viz:color b="161" g="114" r="167"/>
+<viz:position x="-6.057787" y="-26.017015" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs38"/>
+<attvalue id="1" value="http://www.directi.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="38" label="http://promote.pair.com">
+<viz:color b="118" g="186" r="173"/>
+<viz:position x="-6.155317" y="-22.51193" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs39"/>
+<attvalue id="1" value="http://promote.pair.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="39" label="http://www.servercentral.net">
+<viz:color b="191" g="86" r="116"/>
+<viz:position x="-6.4056764" y="-21.316776" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs40"/>
+<attvalue id="1" value="http://www.servercentral.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="40" label="http://www.hostedsolutions.com">
+<viz:color b="128" g="210" r="96"/>
+<viz:position x="-6.026172" y="-24.869656" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs41"/>
+<attvalue id="1" value="http://www.hostedsolutions.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="41" label="http://www.spry.com">
+<viz:color b="184" g="203" r="176"/>
+<viz:position x="-5.420176" y="-21.455307" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs42"/>
+<attvalue id="1" value="http://www.spry.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="42" label="http://ez.no">
+<viz:color b="165" g="233" r="175"/>
+<viz:position x="-10.445403" y="-20.738918" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs43"/>
+<attvalue id="1" value="http://ez.no"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="43" label="http://www.hit.no">
+<viz:color b="170" g="248" r="241"/>
+<viz:position x="-7.591503" y="-24.3675" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs44"/>
+<attvalue id="1" value="http://www.hit.no"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="44" label="http://www.osuosl.org">
+<viz:color b="243" g="237" r="253"/>
+<viz:position x="-11.520577" y="-23.161356" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs45"/>
+<attvalue id="1" value="http://www.osuosl.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="45" label="http://www.yahoo.com">
+<viz:color b="183" g="228" r="125"/>
+<viz:position x="-4.395813" y="-23.57296" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs46"/>
+<attvalue id="1" value="http://www.yahoo.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="46" label="http://www.binarysec.com">
+<viz:color b="205" g="233" r="109"/>
+<viz:position x="-6.5683928" y="-23.863464" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs47"/>
+<attvalue id="1" value="http://www.binarysec.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="47" label="http://www.nexcess.net">
+<viz:color b="91" g="152" r="217"/>
+<viz:position x="-11.00995" y="-24.526491" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs48"/>
+<attvalue id="1" value="http://www.nexcess.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="48" label="http://www.rackspace.com">
+<viz:color b="210" g="148" r="143"/>
+<viz:position x="-4.824312" y="-22.426765" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs49"/>
+<attvalue id="1" value="http://www.rackspace.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="49" label="http://www.eukhost.com">
+<viz:color b="197" g="97" r="140"/>
+<viz:position x="-11.038903" y="-26.153772" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs50"/>
+<attvalue id="1" value="http://www.eukhost.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="50" label="http://www.apache.org">
+<viz:color b="143" g="90" r="99"/>
+<viz:position x="40.36444" y="-24.838694" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs51"/>
+<attvalue id="1" value="http://www.apache.org"/>
+<attvalue id="2" value="visite"/>
+<attvalue id="3" value="2"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="51" label="http://www.mysql.com">
+<viz:color b="146" g="170" r="224"/>
+<viz:position x="-40.62782" y="-49.188114" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs52"/>
+<attvalue id="1" value="http://www.mysql.com"/>
+<attvalue id="2" value="visite"/>
+<attvalue id="3" value="2"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="52" label="http://www.postgresql.org">
+<viz:color b="168" g="195" r="79"/>
+<viz:position x="-3.9213715" y="-40.22421" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs53"/>
+<attvalue id="1" value="http://www.postgresql.org"/>
+<attvalue id="2" value="visite"/>
+<attvalue id="3" value="2"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="53" label="http://www.zend.com">
+<viz:color b="135" g="209" r="89"/>
+<viz:position x="-5.060015" y="-25.80267" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs54"/>
+<attvalue id="1" value="http://www.zend.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="54" label="http://www.linuxfund.org">
+<viz:color b="122" g="234" r="238"/>
+<viz:position x="-13.633044" y="-13.150714" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs55"/>
+<attvalue id="1" value="http://www.linuxfund.org"/>
+<attvalue id="2" value="visite"/>
+<attvalue id="3" value="2"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="55" label="http://www.ostg.com">
+<viz:color b="117" g="150" r="128"/>
+<viz:position x="-11.432669" y="-21.77256" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs56"/>
+<attvalue id="1" value="http://www.ostg.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="56" label="http://www.nexen.net">
+<viz:color b="142" g="95" r="247"/>
+<viz:position x="-7.322287" y="-16.896488" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs57"/>
+<attvalue id="1" value="http://www.nexen.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="57" label="http://www.php.net">
+<viz:color b="136" g="129" r="188"/>
+<viz:position x="-13.105013" y="-26.414938" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs58"/>
+<attvalue id="1" value="http://www.php.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="58" label="http://php.net">
+<viz:color b="100" g="253" r="120"/>
+<viz:position x="-6.895955" y="-27.964357" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs59"/>
+<attvalue id="1" value="http://php.net"/>
+<attvalue id="2" value="visite"/>
+<attvalue id="3" value="2"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="59" label="http://qa.php.net">
+<viz:color b="109" g="154" r="165"/>
+<viz:position x="-10.426176" y="-23.801357" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs60"/>
+<attvalue id="1" value="http://qa.php.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="60" label="http://cvs.php.net">
+<viz:color b="167" g="245" r="206"/>
+<viz:position x="-5.4497175" y="-23.6436" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs61"/>
+<attvalue id="1" value="http://cvs.php.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="61" label="http://www.sun.com">
+<viz:color b="96" g="94" r="226"/>
+<viz:position x="-56.97623" y="-57.702644" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs62"/>
+<attvalue id="1" value="http://www.sun.com"/>
+<attvalue id="2" value="visite"/>
+<attvalue id="3" value="2"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="62" label="http://www.mysql.fr">
+<viz:color b="159" g="77" r="91"/>
+<viz:position x="-44.37563" y="-54.947933" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs63"/>
+<attvalue id="1" value="http://www.mysql.fr"/>
+<attvalue id="2" value="visite"/>
+<attvalue id="3" value="2"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="63" label="http://www.mysql.de">
+<viz:color b="96" g="137" r="78"/>
+<viz:position x="-47.00995" y="-50.99723" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs64"/>
+<attvalue id="1" value="http://www.mysql.de"/>
+<attvalue id="2" value="visite"/>
+<attvalue id="3" value="2"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="64" label="http://www.mysql.it">
+<viz:color b="201" g="223" r="141"/>
+<viz:position x="-41.971073" y="-52.918007" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs65"/>
+<attvalue id="1" value="http://www.mysql.it"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="65" label="http://www-jp.mysql.com">
+<viz:color b="244" g="201" r="213"/>
+<viz:position x="-41.791004" y="-51.572685" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs66"/>
+<attvalue id="1" value="http://www-jp.mysql.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="66" label="http://dev.mysql.com">
+<viz:color b="221" g="113" r="107"/>
+<viz:position x="-47.714108" y="-55.274193" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs67"/>
+<attvalue id="1" value="http://dev.mysql.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="67" label="http://solutions.mysql.com">
+<viz:color b="130" g="102" r="95"/>
+<viz:position x="-44.017807" y="-49.562283" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs68"/>
+<attvalue id="1" value="http://solutions.mysql.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="68" label="https://customer.mysql.com">
+<viz:color b="101" g="177" r="207"/>
+<viz:position x="-42.983086" y="-51.48008" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs69"/>
+<attvalue id="1" value="https://customer.mysql.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="69" label="http://shop.mysql.com">
+<viz:color b="176" g="192" r="177"/>
+<viz:position x="-42.895737" y="-50.245716" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs70"/>
+<attvalue id="1" value="http://shop.mysql.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="70" label="http://partneradvantage.sun.com">
+<viz:color b="141" g="95" r="215"/>
+<viz:position x="-48.504734" y="-53.950485" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs71"/>
+<attvalue id="1" value="http://partneradvantage.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="71" label="http://uk.sun.com">
+<viz:color b="238" g="206" r="203"/>
+<viz:position x="-37.54871" y="-46.675747" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs72"/>
+<attvalue id="1" value="http://uk.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="72" label="http://www.pgfoundry.org">
+<viz:color b="209" g="147" r="130"/>
+<viz:position x="-1.3077772" y="-41.43415" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs73"/>
+<attvalue id="1" value="http://www.pgfoundry.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="73" label="http://wiki.postgresql.org">
+<viz:color b="160" g="123" r="82"/>
+<viz:position x="-3.7703424" y="-43.115704" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs74"/>
+<attvalue id="1" value="http://wiki.postgresql.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="74" label="http://wwwmaster.postgresql.org">
+<viz:color b="127" g="109" r="76"/>
+<viz:position x="-2.7041492" y="-42.965534" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs75"/>
+<attvalue id="1" value="http://wwwmaster.postgresql.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="75" label="http://planet.postgresql.org">
+<viz:color b="85" g="234" r="188"/>
+<viz:position x="-1.68496" y="-40.48337" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs76"/>
+<attvalue id="1" value="http://planet.postgresql.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="76" label="http://petereisentraut.blogspot.com">
+<viz:color b="85" g="140" r="134"/>
+<viz:position x="-2.56462" y="-41.595978" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs77"/>
+<attvalue id="1" value="http://petereisentraut.blogspot.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="77" label="http://postgresql.blogg.se">
+<viz:color b="129" g="249" r="143"/>
+<viz:position x="-3.6627676" y="-41.95177" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs78"/>
+<attvalue id="1" value="http://postgresql.blogg.se"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="78" label="http://blog.endpoint.com">
+<viz:color b="130" g="116" r="157"/>
+<viz:position x="-4.7651186" y="-42.549824" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs79"/>
+<attvalue id="1" value="http://blog.endpoint.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="79" label="http://www.depesz.com">
+<viz:color b="184" g="203" r="103"/>
+<viz:position x="-5.0247226" y="-41.538216" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs80"/>
+<attvalue id="1" value="http://www.depesz.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="80" label="http://www.tinysofa.com">
+<viz:color b="119" g="196" r="245"/>
+<viz:position x="-1.7450064" y="-42.46488" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs81"/>
+<attvalue id="1" value="http://www.tinysofa.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="81" label="http://projects.apache.org">
+<viz:color b="245" g="222" r="225"/>
+<viz:position x="43.59021" y="-15.299142" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs82"/>
+<attvalue id="1" value="http://projects.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="82" label="http://people.apache.org">
+<viz:color b="207" g="148" r="185"/>
+<viz:position x="37.992744" y="-21.244967" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs83"/>
+<attvalue id="1" value="http://people.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="83" label="https://blogs.apache.org">
+<viz:color b="169" g="170" r="242"/>
+<viz:position x="43.392853" y="-26.498884" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs84"/>
+<attvalue id="1" value="https://blogs.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="84" label="http://blogs.apache.org">
+<viz:color b="209" g="194" r="106"/>
+<viz:position x="40.67837" y="-23.097742" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs85"/>
+<attvalue id="1" value="http://blogs.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="85" label="http://www.eu.apachecon.com">
+<viz:color b="97" g="126" r="92"/>
+<viz:position x="45.239025" y="-21.81825" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs86"/>
+<attvalue id="1" value="http://www.eu.apachecon.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="86" label="http://httpd.apache.org">
+<viz:color b="162" g="219" r="113"/>
+<viz:position x="41.617004" y="-22.675032" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs87"/>
+<attvalue id="1" value="http://httpd.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="87" label="http://abdera.apache.org">
+<viz:color b="151" g="161" r="180"/>
+<viz:position x="45.772892" y="-17.804657" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs88"/>
+<attvalue id="1" value="http://abdera.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="88" label="http://activemq.apache.org">
+<viz:color b="185" g="226" r="217"/>
+<viz:position x="46.51328" y="-22.050533" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs89"/>
+<attvalue id="1" value="http://activemq.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="89" label="http://ant.apache.org">
+<viz:color b="166" g="126" r="236"/>
+<viz:position x="44.643845" y="-21.49577" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs90"/>
+<attvalue id="1" value="http://ant.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="90" label="http://apr.apache.org">
+<viz:color b="133" g="193" r="127"/>
+<viz:position x="41.952213" y="-23.601784" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs91"/>
+<attvalue id="1" value="http://apr.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="91" label="http://archiva.apache.org">
+<viz:color b="125" g="237" r="142"/>
+<viz:position x="40.456436" y="-21.766785" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs92"/>
+<attvalue id="1" value="http://archiva.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="92" label="http://beehive.apache.org">
+<viz:color b="194" g="234" r="199"/>
+<viz:position x="44.02424" y="-24.373926" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs93"/>
+<attvalue id="1" value="http://beehive.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="93" label="http://buildr.apache.org">
+<viz:color b="84" g="170" r="186"/>
+<viz:position x="43.931366" y="-25.9209" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs94"/>
+<attvalue id="1" value="http://buildr.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="94" label="http://camel.apache.org">
+<viz:color b="157" g="167" r="100"/>
+<viz:position x="34.557236" y="-19.731844" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs95"/>
+<attvalue id="1" value="http://camel.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="95" label="http://cayenne.apache.org">
+<viz:color b="237" g="90" r="84"/>
+<viz:position x="35.705273" y="-16.869106" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs96"/>
+<attvalue id="1" value="http://cayenne.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="96" label="http://cocoon.apache.org">
+<viz:color b="229" g="163" r="170"/>
+<viz:position x="34.43782" y="-20.823538" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs97"/>
+<attvalue id="1" value="http://cocoon.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="97" label="http://commons.apache.org">
+<viz:color b="141" g="213" r="96"/>
+<viz:position x="40.77808" y="-14.746874" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs98"/>
+<attvalue id="1" value="http://commons.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="98" label="http://continuum.apache.org">
+<viz:color b="248" g="126" r="139"/>
+<viz:position x="34.227192" y="-21.703403" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs99"/>
+<attvalue id="1" value="http://continuum.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="99" label="http://couchdb.apache.org">
+<viz:color b="148" g="218" r="114"/>
+<viz:position x="44.74328" y="-25.55635" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs100"/>
+<attvalue id="1" value="http://couchdb.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="100" label="http://cxf.apache.org">
+<viz:color b="201" g="113" r="93"/>
+<viz:position x="39.339" y="-26.272892" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs101"/>
+<attvalue id="1" value="http://cxf.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="101" label="http://db.apache.org">
+<viz:color b="88" g="149" r="239"/>
+<viz:position x="38.25248" y="-20.69925" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs102"/>
+<attvalue id="1" value="http://db.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="102" label="http://directory.apache.org">
+<viz:color b="118" g="100" r="215"/>
+<viz:position x="43.136723" y="-24.823973" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs103"/>
+<attvalue id="1" value="http://directory.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="103" label="http://excalibur.apache.org">
+<viz:color b="219" g="135" r="119"/>
+<viz:position x="37.55906" y="-18.311567" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs104"/>
+<attvalue id="1" value="http://excalibur.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="104" label="http://felix.apache.org">
+<viz:color b="208" g="82" r="192"/>
+<viz:position x="44.507507" y="-20.047354" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs105"/>
+<attvalue id="1" value="http://felix.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="105" label="http://forrest.apache.org">
+<viz:color b="100" g="98" r="168"/>
+<viz:position x="37.61927" y="-27.39443" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs106"/>
+<attvalue id="1" value="http://forrest.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="106" label="http://geronimo.apache.org">
+<viz:color b="160" g="137" r="123"/>
+<viz:position x="39.3873" y="-15.956786" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs107"/>
+<attvalue id="1" value="http://geronimo.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="107" label="http://gump.apache.org">
+<viz:color b="180" g="211" r="139"/>
+<viz:position x="41.367496" y="-24.283585" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs108"/>
+<attvalue id="1" value="http://gump.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="108" label="http://hadoop.apache.org">
+<viz:color b="118" g="203" r="183"/>
+<viz:position x="38.3583" y="-15.046115" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs109"/>
+<attvalue id="1" value="http://hadoop.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="109" label="http://harmony.apache.org">
+<viz:color b="203" g="185" r="131"/>
+<viz:position x="41.378464" y="-22.01055" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs110"/>
+<attvalue id="1" value="http://harmony.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="110" label="http://hc.apache.org">
+<viz:color b="230" g="96" r="234"/>
+<viz:position x="45.3449" y="-24.732386" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs111"/>
+<attvalue id="1" value="http://hc.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="111" label="http://ibatis.apache.org">
+<viz:color b="109" g="202" r="141"/>
+<viz:position x="37.622227" y="-16.228437" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs112"/>
+<attvalue id="1" value="http://ibatis.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="112" label="http://incubator.apache.org">
+<viz:color b="248" g="160" r="223"/>
+<viz:position x="44.88324" y="-17.537506" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs113"/>
+<attvalue id="1" value="http://incubator.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="113" label="http://jackrabbit.apache.org">
+<viz:color b="109" g="190" r="214"/>
+<viz:position x="36.835022" y="-15.624159" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs114"/>
+<attvalue id="1" value="http://jackrabbit.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="114" label="http://jakarta.apache.org">
+<viz:color b="170" g="80" r="79"/>
+<viz:position x="36.915703" y="-16.868204" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs115"/>
+<attvalue id="1" value="http://jakarta.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="115" label="http://james.apache.org">
+<viz:color b="133" g="136" r="130"/>
+<viz:position x="37.106194" y="-20.626564" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs116"/>
+<attvalue id="1" value="http://james.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="116" label="http://labs.apache.org">
+<viz:color b="240" g="178" r="120"/>
+<viz:position x="42.1815" y="-14.948296" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs117"/>
+<attvalue id="1" value="http://labs.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="117" label="http://lenya.apache.org">
+<viz:color b="197" g="166" r="142"/>
+<viz:position x="38.41203" y="-16.153587" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs118"/>
+<attvalue id="1" value="http://lenya.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="118" label="http://logging.apache.org">
+<viz:color b="162" g="189" r="209"/>
+<viz:position x="40.551147" y="-26.546736" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs119"/>
+<attvalue id="1" value="http://logging.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="119" label="http://lucene.apache.org">
+<viz:color b="127" g="144" r="115"/>
+<viz:position x="46.012486" y="-22.983463" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs120"/>
+<attvalue id="1" value="http://lucene.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="120" label="http://maven.apache.org">
+<viz:color b="112" g="196" r="118"/>
+<viz:position x="39.106773" y="-22.083214" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs121"/>
+<attvalue id="1" value="http://maven.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="121" label="http://mina.apache.org">
+<viz:color b="250" g="240" r="254"/>
+<viz:position x="44.51752" y="-23.623732" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs122"/>
+<attvalue id="1" value="http://mina.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="122" label="http://myfaces.apache.org">
+<viz:color b="119" g="199" r="245"/>
+<viz:position x="37.1847" y="-26.777542" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs123"/>
+<attvalue id="1" value="http://myfaces.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="123" label="http://ode.apache.org">
+<viz:color b="167" g="169" r="144"/>
+<viz:position x="41.370758" y="-25.970364" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs124"/>
+<attvalue id="1" value="http://ode.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="124" label="http://ofbiz.apache.org">
+<viz:color b="217" g="88" r="136"/>
+<viz:position x="45.05685" y="-19.014847" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs125"/>
+<attvalue id="1" value="http://ofbiz.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="125" label="http://openejb.apache.org">
+<viz:color b="106" g="247" r="198"/>
+<viz:position x="42.857735" y="-21.925344" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs126"/>
+<attvalue id="1" value="http://openejb.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="126" label="http://openjpa.apache.org">
+<viz:color b="137" g="150" r="243"/>
+<viz:position x="35.112335" y="-24.329468" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs127"/>
+<attvalue id="1" value="http://openjpa.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="127" label="http://perl.apache.org">
+<viz:color b="104" g="225" r="142"/>
+<viz:position x="40.594547" y="-24.560036" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs128"/>
+<attvalue id="1" value="http://perl.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="128" label="http://poi.apache.org">
+<viz:color b="121" g="191" r="138"/>
+<viz:position x="39.58515" y="-22.72803" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs129"/>
+<attvalue id="1" value="http://poi.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="129" label="http://portals.apache.org">
+<viz:color b="179" g="98" r="241"/>
+<viz:position x="42.717552" y="-26.95088" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs130"/>
+<attvalue id="1" value="http://portals.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="130" label="http://qpid.apache.org">
+<viz:color b="118" g="162" r="95"/>
+<viz:position x="44.9644" y="-16.617413" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs131"/>
+<attvalue id="1" value="http://qpid.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="131" label="http://roller.apache.org">
+<viz:color b="226" g="161" r="177"/>
+<viz:position x="46.12131" y="-18.89434" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs132"/>
+<attvalue id="1" value="http://roller.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="132" label="http://santuario.apache.org">
+<viz:color b="164" g="171" r="170"/>
+<viz:position x="36.47592" y="-17.81437" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs133"/>
+<attvalue id="1" value="http://santuario.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="133" label="http://servicemix.apache.org">
+<viz:color b="208" g="100" r="109"/>
+<viz:position x="43.731045" y="-16.109339" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs134"/>
+<attvalue id="1" value="http://servicemix.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="134" label="http://spamassassin.apache.org">
+<viz:color b="129" g="175" r="129"/>
+<viz:position x="45.913162" y="-23.835423" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs135"/>
+<attvalue id="1" value="http://spamassassin.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="135" label="http://stdcxx.apache.org">
+<viz:color b="93" g="208" r="122"/>
+<viz:position x="35.30181" y="-19.492105" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs136"/>
+<attvalue id="1" value="http://stdcxx.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="136" label="http://struts.apache.org">
+<viz:color b="185" g="166" r="234"/>
+<viz:position x="35.407578" y="-25.367712" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs137"/>
+<attvalue id="1" value="http://struts.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="137" label="http://synapse.apache.org">
+<viz:color b="232" g="79" r="190"/>
+<viz:position x="40.0367" y="-27.62525" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs138"/>
+<attvalue id="1" value="http://synapse.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="138" label="http://tapestry.apache.org">
+<viz:color b="173" g="143" r="230"/>
+<viz:position x="46.554314" y="-19.9412" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs139"/>
+<attvalue id="1" value="http://tapestry.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="139" label="http://tcl.apache.org">
+<viz:color b="237" g="213" r="154"/>
+<viz:position x="34.54066" y="-23.785713" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs140"/>
+<attvalue id="1" value="http://tcl.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="140" label="http://tiles.apache.org">
+<viz:color b="203" g="171" r="237"/>
+<viz:position x="41.867054" y="-27.222383" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs141"/>
+<attvalue id="1" value="http://tiles.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="141" label="http://tomcat.apache.org">
+<viz:color b="201" g="126" r="248"/>
+<viz:position x="39.58265" y="-14.72776" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs142"/>
+<attvalue id="1" value="http://tomcat.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="142" label="http://turbine.apache.org">
+<viz:color b="203" g="99" r="133"/>
+<viz:position x="45.55443" y="-20.137121" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs143"/>
+<attvalue id="1" value="http://turbine.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="143" label="http://tuscany.apache.org">
+<viz:color b="133" g="247" r="168"/>
+<viz:position x="42.674484" y="-22.762463" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs144"/>
+<attvalue id="1" value="http://tuscany.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="144" label="http://velocity.apache.org">
+<viz:color b="123" g="81" r="245"/>
+<viz:position x="38.68947" y="-27.66415" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs145"/>
+<attvalue id="1" value="http://velocity.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="145" label="http://wicket.apache.org">
+<viz:color b="80" g="198" r="154"/>
+<viz:position x="46.583622" y="-21.015526" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs146"/>
+<attvalue id="1" value="http://wicket.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="146" label="http://ws.apache.org">
+<viz:color b="213" g="247" r="158"/>
+<viz:position x="44.352318" y="-20.899601" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs147"/>
+<attvalue id="1" value="http://ws.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="147" label="http://xalan.apache.org">
+<viz:color b="231" g="203" r="109"/>
+<viz:position x="35.771168" y="-18.1003" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs148"/>
+<attvalue id="1" value="http://xalan.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="148" label="http://xerces.apache.org">
+<viz:color b="249" g="239" r="200"/>
+<viz:position x="35.987877" y="-26.348228" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs149"/>
+<attvalue id="1" value="http://xerces.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="149" label="http://xml.apache.org">
+<viz:color b="158" g="83" r="184"/>
+<viz:position x="41.009666" y="-27.644512" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs150"/>
+<attvalue id="1" value="http://xml.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="150" label="http://xmlbeans.apache.org">
+<viz:color b="216" g="135" r="146"/>
+<viz:position x="42.31254" y="-25.777164" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs151"/>
+<attvalue id="1" value="http://xmlbeans.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="151" label="http://xmlgraphics.apache.org">
+<viz:color b="176" g="239" r="232"/>
+<viz:position x="35.27199" y="-18.560501" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs152"/>
+<attvalue id="1" value="http://xmlgraphics.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="152" label="http://attic.apache.org">
+<viz:color b="161" g="92" r="169"/>
+<viz:position x="45.065815" y="-22.583004" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs153"/>
+<attvalue id="1" value="http://attic.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="153" label="http://apachecon.com">
+<viz:color b="125" g="212" r="171"/>
+<viz:position x="34.278908" y="-22.7794" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs154"/>
+<attvalue id="1" value="http://apachecon.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="154" label="http://feathercast.org">
+<viz:color b="107" g="171" r="185"/>
+<viz:position x="39.64442" y="-26.769894" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs155"/>
+<attvalue id="1" value="http://feathercast.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="155" label="http://planet.apache.org">
+<viz:color b="98" g="182" r="185"/>
+<viz:position x="41.207283" y="-15.477453" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs156"/>
+<attvalue id="1" value="http://planet.apache.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="156" label="http://developer.yahoo.com">
+<viz:color b="165" g="156" r="161"/>
+<viz:position x="-7.358068" y="-30.611876" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs157"/>
+<attvalue id="1" value="http://developer.yahoo.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="157" label="http://test.blog4ever.com">
+<viz:color b="137" g="199" r="173"/>
+<viz:position x="-15.338357" y="62.348648" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs158"/>
+<attvalue id="1" value="http://test.blog4ever.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="158" label="http://www.fox-eye.fr">
+<viz:color b="205" g="148" r="175"/>
+<viz:position x="-16.7267" y="61.869755" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs159"/>
+<attvalue id="1" value="http://www.fox-eye.fr"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="159" label="http://www.fedora-fr.org">
+<viz:color b="135" g="201" r="144"/>
+<viz:position x="-12.552084" y="58.850037" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs160"/>
+<attvalue id="1" value="http://www.fedora-fr.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="160" label="http://fr.centos.org">
+<viz:color b="231" g="138" r="232"/>
+<viz:position x="-13.374727" y="61.069466" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs161"/>
+<attvalue id="1" value="http://fr.centos.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="161" label="http://www.ubuntu-fr.org">
+<viz:color b="120" g="158" r="198"/>
+<viz:position x="-13.234041" y="62.473537" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs162"/>
+<attvalue id="1" value="http://www.ubuntu-fr.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="162" label="http://www.debian.org">
+<viz:color b="225" g="112" r="144"/>
+<viz:position x="-12.414606" y="57.83898" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs163"/>
+<attvalue id="1" value="http://www.debian.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="163" label="http://www.gentoofr.org">
+<viz:color b="129" g="221" r="183"/>
+<viz:position x="-17.506136" y="61.002308" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs164"/>
+<attvalue id="1" value="http://www.gentoofr.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="164" label="http://fr.opensuse.org">
+<viz:color b="232" g="116" r="236"/>
+<viz:position x="-17.164072" y="62.800144" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs165"/>
+<attvalue id="1" value="http://fr.opensuse.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="165" label="http://club.mandriva.com">
+<viz:color b="191" g="136" r="248"/>
+<viz:position x="-16.014017" y="63.108242" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs166"/>
+<attvalue id="1" value="http://club.mandriva.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="166" label="http://archlinux.fr">
+<viz:color b="138" g="193" r="197"/>
+<viz:position x="-14.127515" y="61.92912" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs167"/>
+<attvalue id="1" value="http://archlinux.fr"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="167" label="http://bee.ineodev.org">
+<viz:color b="103" g="177" r="246"/>
+<viz:position x="-14.511435" y="63.05168" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs168"/>
+<attvalue id="1" value="http://bee.ineodev.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="168" label="http://tldp.org">
+<viz:color b="98" g="236" r="171"/>
+<viz:position x="-11.629056" y="59.232033" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs169"/>
+<attvalue id="1" value="http://tldp.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="169" label="http://abs.traduc.org">
+<viz:color b="97" g="234" r="238"/>
+<viz:position x="-11.751586" y="60.512913" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs170"/>
+<attvalue id="1" value="http://abs.traduc.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="170" label="http://marionpatrick.free.fr">
+<viz:color b="246" g="251" r="244"/>
+<viz:position x="-12.373881" y="61.60783" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs171"/>
+<attvalue id="1" value="http://marionpatrick.free.fr"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="171" label="http://forums.fedora-fr.org">
+<viz:color b="164" g="122" r="158"/>
+<viz:position x="-18.215868" y="60.411224" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs172"/>
+<attvalue id="1" value="http://forums.fedora-fr.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="172" label="http://infernus.fr.nf">
+<viz:color b="156" g="91" r="153"/>
+<viz:position x="-14.030764" y="58.688396" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs173"/>
+<attvalue id="1" value="http://infernus.fr.nf"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="173" label="http://mapage.noos.fr/emdel">
+<viz:color b="109" g="84" r="120"/>
+<viz:position x="-18.085146" y="61.902527" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs174"/>
+<attvalue id="1" value="http://mapage.noos.fr/emdel"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="174" label="http://bien-programmer.forum-actif.net">
+<viz:color b="77" g="121" r="112"/>
+<viz:position x="-12.7489195" y="60.21984" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs175"/>
+<attvalue id="1" value="http://bien-programmer.forum-actif.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="175" label="http://gcc.gnu.org">
+<viz:color b="80" g="218" r="134"/>
+<viz:position x="-13.445487" y="59.523647" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs176"/>
+<attvalue id="1" value="http://gcc.gnu.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="176" label="http://www.whylinuxisbetter.net">
+<viz:color b="81" g="230" r="227"/>
+<viz:position x="-22.971832" y="59.29873" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs177"/>
+<attvalue id="1" value="http://www.whylinuxisbetter.net"/>
+<attvalue id="2" value="visite"/>
+<attvalue id="3" value="2"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="177" label="http://www.blog4ever.com">
+<viz:color b="162" g="147" r="233"/>
+<viz:position x="-13.525727" y="57.731026" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs178"/>
+<attvalue id="1" value="http://www.blog4ever.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="178" label="http://www.businessweek.com">
+<viz:color b="221" g="118" r="248"/>
+<viz:position x="-24.78294" y="61.611267" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs179"/>
+<attvalue id="1" value="http://www.businessweek.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="179" label="http://www.manucornet.net">
+<viz:color b="195" g="151" r="104"/>
+<viz:position x="-24.07341" y="62.353786" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs180"/>
+<attvalue id="1" value="http://www.manucornet.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="180" label="http://fr.sun.com">
+<viz:color b="247" g="196" r="181"/>
+<viz:position x="-43.286922" y="-56.778343" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs181"/>
+<attvalue id="1" value="http://fr.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="181" label="http://bsdfund.org">
+<viz:color b="157" g="140" r="78"/>
+<viz:position x="-15.484075" y="-9.69283" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs182"/>
+<attvalue id="1" value="http://bsdfund.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="182" label="http://twitter.com/linuxfund">
+<viz:color b="222" g="195" r="250"/>
+<viz:position x="-14.01289" y="-10.206116" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs183"/>
+<attvalue id="1" value="http://twitter.com/linuxfund"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="183" label="https://en.oreilly.com">
+<viz:color b="222" g="84" r="245"/>
+<viz:position x="-14.298697" y="-9.194538" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs184"/>
+<attvalue id="1" value="https://en.oreilly.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="184" label="http://linuxtag.org">
+<viz:color b="205" g="101" r="147"/>
+<viz:position x="-16.04686" y="-10.964033" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs185"/>
+<attvalue id="1" value="http://linuxtag.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="185" label="http://opensourcebridge.org">
+<viz:color b="214" g="231" r="207"/>
+<viz:position x="-15.085267" y="-10.72422" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs186"/>
+<attvalue id="1" value="http://opensourcebridge.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="186" label="http://sourceforge.net">
+<viz:color b="120" g="238" r="205"/>
+<viz:position x="-13.029243" y="-9.675333" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs187"/>
+<attvalue id="1" value="http://sourceforge.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="187" label="http://marc.info">
+<viz:color b="166" g="92" r="129"/>
+<viz:position x="-20.536226" y="-26.246964" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs188"/>
+<attvalue id="1" value="http://marc.info"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="188" label="http://recaptcha.net">
+<viz:color b="214" g="242" r="177"/>
+<viz:position x="-19.387434" y="-28.015625" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs189"/>
+<attvalue id="1" value="http://recaptcha.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="189" label="http://master.php.net">
+<viz:color b="89" g="201" r="111"/>
+<viz:position x="-19.643915" y="-26.78316" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs190"/>
+<attvalue id="1" value="http://master.php.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="190" label="http://wiki.splitbrain.org">
+<viz:color b="210" g="232" r="195"/>
+<viz:position x="-19.803621" y="-28.928663" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs191"/>
+<attvalue id="1" value="http://wiki.splitbrain.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="191" label="http://www.wikimatrix.org">
+<viz:color b="167" g="188" r="168"/>
+<viz:position x="-19.623232" y="-25.512558" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs192"/>
+<attvalue id="1" value="http://www.wikimatrix.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="192" label="http://validator.w3.org">
+<viz:color b="150" g="194" r="191"/>
+<viz:position x="-18.665102" y="-29.227028" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs193"/>
+<attvalue id="1" value="http://validator.w3.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="193" label="http://jigsaw.w3.org">
+<viz:color b="163" g="120" r="130"/>
+<viz:position x="-20.504776" y="-27.635567" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs194"/>
+<attvalue id="1" value="http://jigsaw.w3.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="194" label="http://channelsun.sun.com">
+<viz:color b="147" g="134" r="103"/>
+<viz:position x="-61.249218" y="-60.599174" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs195"/>
+<attvalue id="1" value="http://channelsun.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="195" label="http://blogs.sun.com">
+<viz:color b="120" g="184" r="149"/>
+<viz:position x="-60.382465" y="-62.981976" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs196"/>
+<attvalue id="1" value="http://blogs.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="196" label="http://forums.sun.com">
+<viz:color b="184" g="97" r="144"/>
+<viz:position x="-57.41014" y="-56.24909" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs197"/>
+<attvalue id="1" value="http://forums.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="197" label="http://wikis.sun.com">
+<viz:color b="148" g="194" r="206"/>
+<viz:position x="-59.038258" y="-62.80773" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs198"/>
+<attvalue id="1" value="http://wikis.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="198" label="http://shop.sun.com">
+<viz:color b="251" g="212" r="232"/>
+<viz:position x="-59.660748" y="-62.33341" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs199"/>
+<attvalue id="1" value="http://shop.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="199" label="https://portal.sun.com">
+<viz:color b="121" g="136" r="83"/>
+<viz:position x="-59.213715" y="-56.229084" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs200"/>
+<attvalue id="1" value="https://portal.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="200" label="http://developers.sun.com">
+<viz:color b="229" g="251" r="188"/>
+<viz:position x="-57.9199" y="-62.908535" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs201"/>
+<attvalue id="1" value="http://developers.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="201" label="https://identity.sun.com">
+<viz:color b="183" g="219" r="81"/>
+<viz:position x="-55.713833" y="-57.82425" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs202"/>
+<attvalue id="1" value="https://identity.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="202" label="https://reg.sun.com">
+<viz:color b="108" g="178" r="154"/>
+<viz:position x="-61.53686" y="-59.472687" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs203"/>
+<attvalue id="1" value="https://reg.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="203" label="http://www.java.com">
+<viz:color b="117" g="88" r="236"/>
+<viz:position x="-56.07114" y="-63.995266" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs204"/>
+<attvalue id="1" value="http://www.java.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="204" label="http://www.java.net">
+<viz:color b="205" g="195" r="237"/>
+<viz:position x="-60.28085" y="-56.932125" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs205"/>
+<attvalue id="1" value="http://www.java.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="205" label="http://java.sun.com">
+<viz:color b="115" g="96" r="223"/>
+<viz:position x="-59.86653" y="-58.00843" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs206"/>
+<attvalue id="1" value="http://java.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="206" label="http://www.netbeans.org">
+<viz:color b="163" g="132" r="241"/>
+<viz:position x="-56.651913" y="-57.076084" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs207"/>
+<attvalue id="1" value="http://www.netbeans.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="207" label="https://glassfish.dev.java.net">
+<viz:color b="239" g="227" r="204"/>
+<viz:position x="-59.868607" y="-60.618114" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs208"/>
+<attvalue id="1" value="https://glassfish.dev.java.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="208" label="http://www.opensolaris.com">
+<viz:color b="142" g="87" r="202"/>
+<viz:position x="-60.38621" y="-59.76853" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs209"/>
+<attvalue id="1" value="http://www.opensolaris.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="209" label="http://www.opensolaris.org">
+<viz:color b="242" g="208" r="91"/>
+<viz:position x="-58.73431" y="-62.041084" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs210"/>
+<attvalue id="1" value="http://www.opensolaris.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="210" label="https://communications.sun.com">
+<viz:color b="220" g="207" r="248"/>
+<viz:position x="-60.08466" y="-61.641106" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs211"/>
+<attvalue id="1" value="https://communications.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="211" label="http://www.virtualbox.org">
+<viz:color b="109" g="233" r="187"/>
+<viz:position x="-54.852806" y="-63.130272" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs212"/>
+<attvalue id="1" value="http://www.virtualbox.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="212" label="http://download.openoffice.org">
+<viz:color b="249" g="159" r="125"/>
+<viz:position x="-61.35331" y="-58.058113" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs213"/>
+<attvalue id="1" value="http://download.openoffice.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="213" label="http://contributing.openoffice.org">
+<viz:color b="79" g="192" r="234"/>
+<viz:position x="-58.685127" y="-56.81033" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs214"/>
+<attvalue id="1" value="http://contributing.openoffice.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="214" label="http://www.javafx.com">
+<viz:color b="253" g="165" r="236"/>
+<viz:position x="-60.569954" y="-58.551765" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs215"/>
+<attvalue id="1" value="http://www.javafx.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="215" label="http://javafx.com">
+<viz:color b="156" g="207" r="248"/>
+<viz:position x="-57.472004" y="-64.15856" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs216"/>
+<attvalue id="1" value="http://javafx.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="216" label="http://ads.sun.com">
+<viz:color b="115" g="163" r="155"/>
+<viz:position x="-56.419846" y="-63.280792" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs217"/>
+<attvalue id="1" value="http://ads.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="217" label="http://research.sun.com">
+<viz:color b="154" g="135" r="154"/>
+<viz:position x="-58.82358" y="-64.00379" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs218"/>
+<attvalue id="1" value="http://research.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="218" label="http://sunwear.sun.com">
+<viz:color b="104" g="161" r="178"/>
+<viz:position x="-53.97058" y="-61.177994" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs219"/>
+<attvalue id="1" value="http://sunwear.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="219" label="https://ssl1.taggingserver.netmining.com">
+<viz:color b="168" g="187" r="100"/>
+<viz:position x="-61.109394" y="-61.645493" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs220"/>
+<attvalue id="1" value="https://ssl1.taggingserver.netmining.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="220" label="http://www.pcworld.com">
+<viz:color b="97" g="138" r="204"/>
+<viz:position x="-35.43148" y="52.303085" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs221"/>
+<attvalue id="1" value="http://www.pcworld.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="221" label="http://www.codinghorror.com">
+<viz:color b="123" g="231" r="162"/>
+<viz:position x="-36.434517" y="52.05669" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs222"/>
+<attvalue id="1" value="http://www.codinghorror.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="222" label="http://www.webuser.co.uk">
+<viz:color b="168" g="77" r="166"/>
+<viz:position x="-34.99186" y="48.148693" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs223"/>
+<attvalue id="1" value="http://www.webuser.co.uk"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="223" label="http://en.wikipedia.org">
+<viz:color b="112" g="183" r="149"/>
+<viz:position x="-37.39704" y="49.886734" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs224"/>
+<attvalue id="1" value="http://en.wikipedia.org"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="224" label="http://blog.getpaint.net">
+<viz:color b="193" g="174" r="128"/>
+<viz:position x="-35.858753" y="48.92367" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs225"/>
+<attvalue id="1" value="http://blog.getpaint.net"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="225" label="http://paintdotnet.12.forumer.com">
+<viz:color b="163" g="179" r="241"/>
+<viz:position x="-36.319275" y="49.886845" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs226"/>
+<attvalue id="1" value="http://paintdotnet.12.forumer.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="226" label="http://www.download.com">
+<viz:color b="251" g="206" r="165"/>
+<viz:position x="-37.128876" y="51.044205" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs227"/>
+<attvalue id="1" value="http://www.download.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="227" label="http://fileforum.betanews.com">
+<viz:color b="93" g="100" r="236"/>
+<viz:position x="-34.473965" y="52.250595" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs228"/>
+<attvalue id="1" value="http://fileforum.betanews.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="228" label="http://www.softpedia.com">
+<viz:color b="137" g="248" r="210"/>
+<viz:position x="-36.072357" y="47.82296" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs229"/>
+<attvalue id="1" value="http://www.softpedia.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="229" label="http://find.pcworld.com">
+<viz:color b="193" g="142" r="84"/>
+<viz:position x="-37.0213" y="48.702732" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs230"/>
+<attvalue id="1" value="http://find.pcworld.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="230" label="http://www.dotpdn.com">
+<viz:color b="118" g="102" r="205"/>
+<viz:position x="-35.965" y="51.02159" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs231"/>
+<attvalue id="1" value="http://www.dotpdn.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="231" label="http://de.sun.com">
+<viz:color b="106" g="246" r="212"/>
+<viz:position x="-48.566242" y="-49.650894" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs232"/>
+<attvalue id="1" value="http://de.sun.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+<node id="232" label="http://mediaproducts.gartner.com">
+<viz:color b="227" g="239" r="201"/>
+<viz:position x="-47.67955" y="-48.865387" z="0.0"/>
+<viz:size value="1.0"/>
+<attvalues>
+<attvalue id="0" value="ncs233"/>
+<attvalue id="1" value="http://mediaproducts.gartner.com"/>
+<attvalue id="2" value="voisin"/>
+<attvalue id="3" value="1"/>
+<attvalue id="4" value="0"/>
+<attvalue id="5" value="site"/>
+</attvalues>
+</node>
+</nodes>
+<edges>
+<edge id="0" source="0" target="1"/>
+<edge id="1" source="0" target="2"/>
+<edge id="2" source="0" target="3"/>
+<edge id="3" source="0" target="4"/>
+<edge id="4" source="0" target="5"/>
+<edge id="5" source="0" target="6"/>
+<edge id="6" source="0" target="7"/>
+<edge id="7" source="0" target="8"/>
+<edge id="8" source="6" target="1"/>
+<edge id="9" source="6" target="2"/>
+<edge id="10" source="6" target="0"/>
+<edge id="11" source="6" target="7"/>
+<edge id="12" source="6" target="8"/>
+<edge id="13" source="6" target="9"/>
+<edge id="14" source="6" target="10"/>
+<edge id="15" source="6" target="11"/>
+<edge id="16" source="6" target="12"/>
+<edge id="17" source="6" target="13"/>
+<edge id="18" source="6" target="14"/>
+<edge id="19" source="6" target="15"/>
+<edge id="20" source="6" target="16"/>
+<edge id="21" source="6" target="17"/>
+<edge id="22" source="6" target="18"/>
+<edge id="23" source="6" target="19"/>
+<edge id="24" source="6" target="20"/>
+<edge id="25" source="6" target="21"/>
+<edge id="26" source="6" target="22"/>
+<edge id="27" source="6" target="23"/>
+<edge id="28" source="6" target="24"/>
+<edge id="29" source="6" target="25"/>
+<edge id="30" source="6" target="26"/>
+<edge id="31" source="6" target="27"/>
+<edge id="32" source="6" target="28"/>
+<edge id="33" source="6" target="29"/>
+<edge id="34" source="6" target="30"/>
+<edge id="35" source="6" target="31"/>
+<edge id="36" source="6" target="32"/>
+<edge id="37" source="6" target="33"/>
+<edge id="38" source="16" target="34"/>
+<edge id="39" source="16" target="35"/>
+<edge id="40" source="16" target="36"/>
+<edge id="41" source="16" target="37"/>
+<edge id="42" source="16" target="38"/>
+<edge id="43" source="16" target="39"/>
+<edge id="44" source="16" target="40"/>
+<edge id="45" source="16" target="41"/>
+<edge id="46" source="16" target="42"/>
+<edge id="47" source="16" target="43"/>
+<edge id="48" source="16" target="44"/>
+<edge id="49" source="16" target="45"/>
+<edge id="50" source="16" target="46"/>
+<edge id="51" source="16" target="47"/>
+<edge id="52" source="16" target="48"/>
+<edge id="53" source="16" target="49"/>
+<edge id="54" source="16" target="50"/>
+<edge id="55" source="16" target="51"/>
+<edge id="56" source="16" target="52"/>
+<edge id="57" source="16" target="53"/>
+<edge id="58" source="16" target="54"/>
+<edge id="59" source="16" target="55"/>
+<edge id="60" source="16" target="56"/>
+<edge id="61" source="16" target="57"/>
+<edge id="62" source="16" target="58"/>
+<edge id="63" source="16" target="59"/>
+<edge id="64" source="16" target="60"/>
+<edge id="65" source="19" target="20"/>
+<edge id="66" source="19" target="220"/>
+<edge id="67" source="19" target="221"/>
+<edge id="68" source="19" target="222"/>
+<edge id="69" source="19" target="223"/>
+<edge id="70" source="19" target="224"/>
+<edge id="71" source="19" target="225"/>
+<edge id="72" source="19" target="226"/>
+<edge id="73" source="19" target="227"/>
+<edge id="74" source="19" target="228"/>
+<edge id="75" source="19" target="229"/>
+<edge id="76" source="19" target="230"/>
+<edge id="77" source="19" target="13"/>
+<edge id="78" source="19" target="8"/>
+<edge id="79" source="19" target="10"/>
+<edge id="80" source="24" target="157"/>
+<edge id="81" source="24" target="158"/>
+<edge id="82" source="24" target="159"/>
+<edge id="83" source="24" target="160"/>
+<edge id="84" source="24" target="161"/>
+<edge id="85" source="24" target="162"/>
+<edge id="86" source="24" target="163"/>
+<edge id="87" source="24" target="164"/>
+<edge id="88" source="24" target="165"/>
+<edge id="89" source="24" target="166"/>
+<edge id="90" source="24" target="167"/>
+<edge id="91" source="24" target="168"/>
+<edge id="92" source="24" target="169"/>
+<edge id="93" source="24" target="170"/>
+<edge id="94" source="24" target="171"/>
+<edge id="95" source="24" target="172"/>
+<edge id="96" source="24" target="173"/>
+<edge id="97" source="24" target="174"/>
+<edge id="98" source="24" target="175"/>
+<edge id="99" source="24" target="176"/>
+<edge id="100" source="24" target="0"/>
+<edge id="101" source="24" target="6"/>
+<edge id="102" source="24" target="4"/>
+<edge id="103" source="24" target="2"/>
+<edge id="104" source="24" target="177"/>
+<edge id="105" source="24" target="10"/>
+<edge id="106" source="24" target="8"/>
+<edge id="107" source="24" target="9"/>
+<edge id="108" source="34" target="58"/>
+<edge id="109" source="34" target="35"/>
+<edge id="110" source="34" target="187"/>
+<edge id="111" source="34" target="188"/>
+<edge id="112" source="34" target="189"/>
+<edge id="113" source="34" target="190"/>
+<edge id="114" source="34" target="191"/>
+<edge id="115" source="34" target="57"/>
+<edge id="116" source="34" target="192"/>
+<edge id="117" source="34" target="193"/>
+<edge id="118" source="50" target="81"/>
+<edge id="119" source="50" target="82"/>
+<edge id="120" source="50" target="83"/>
+<edge id="121" source="50" target="84"/>
+<edge id="122" source="50" target="85"/>
+<edge id="123" source="50" target="86"/>
+<edge id="124" source="50" target="87"/>
+<edge id="125" source="50" target="88"/>
+<edge id="126" source="50" target="89"/>
+<edge id="127" source="50" target="90"/>
+<edge id="128" source="50" target="91"/>
+<edge id="129" source="50" target="92"/>
+<edge id="130" source="50" target="93"/>
+<edge id="131" source="50" target="94"/>
+<edge id="132" source="50" target="95"/>
+<edge id="133" source="50" target="96"/>
+<edge id="134" source="50" target="97"/>
+<edge id="135" source="50" target="98"/>
+<edge id="136" source="50" target="99"/>
+<edge id="137" source="50" target="100"/>
+<edge id="138" source="50" target="101"/>
+<edge id="139" source="50" target="102"/>
+<edge id="140" source="50" target="103"/>
+<edge id="141" source="50" target="104"/>
+<edge id="142" source="50" target="105"/>
+<edge id="143" source="50" target="106"/>
+<edge id="144" source="50" target="107"/>
+<edge id="145" source="50" target="108"/>
+<edge id="146" source="50" target="109"/>
+<edge id="147" source="50" target="110"/>
+<edge id="148" source="50" target="111"/>
+<edge id="149" source="50" target="112"/>
+<edge id="150" source="50" target="113"/>
+<edge id="151" source="50" target="114"/>
+<edge id="152" source="50" target="115"/>
+<edge id="153" source="50" target="116"/>
+<edge id="154" source="50" target="117"/>
+<edge id="155" source="50" target="118"/>
+<edge id="156" source="50" target="119"/>
+<edge id="157" source="50" target="120"/>
+<edge id="158" source="50" target="121"/>
+<edge id="159" source="50" target="122"/>
+<edge id="160" source="50" target="123"/>
+<edge id="161" source="50" target="124"/>
+<edge id="162" source="50" target="125"/>
+<edge id="163" source="50" target="126"/>
+<edge id="164" source="50" target="127"/>
+<edge id="165" source="50" target="128"/>
+<edge id="166" source="50" target="129"/>
+<edge id="167" source="50" target="130"/>
+<edge id="168" source="50" target="131"/>
+<edge id="169" source="50" target="132"/>
+<edge id="170" source="50" target="133"/>
+<edge id="171" source="50" target="134"/>
+<edge id="172" source="50" target="135"/>
+<edge id="173" source="50" target="136"/>
+<edge id="174" source="50" target="137"/>
+<edge id="175" source="50" target="138"/>
+<edge id="176" source="50" target="139"/>
+<edge id="177" source="50" target="140"/>
+<edge id="178" source="50" target="141"/>
+<edge id="179" source="50" target="142"/>
+<edge id="180" source="50" target="143"/>
+<edge id="181" source="50" target="144"/>
+<edge id="182" source="50" target="145"/>
+<edge id="183" source="50" target="146"/>
+<edge id="184" source="50" target="147"/>
+<edge id="185" source="50" target="148"/>
+<edge id="186" source="50" target="149"/>
+<edge id="187" source="50" target="150"/>
+<edge id="188" source="50" target="151"/>
+<edge id="189" source="50" target="152"/>
+<edge id="190" source="50" target="153"/>
+<edge id="191" source="50" target="154"/>
+<edge id="192" source="50" target="155"/>
+<edge id="193" source="51" target="61"/>
+<edge id="194" source="51" target="62"/>
+<edge id="195" source="51" target="63"/>
+<edge id="196" source="51" target="64"/>
+<edge id="197" source="51" target="65"/>
+<edge id="198" source="51" target="66"/>
+<edge id="199" source="51" target="67"/>
+<edge id="200" source="51" target="68"/>
+<edge id="201" source="51" target="69"/>
+<edge id="202" source="51" target="70"/>
+<edge id="203" source="51" target="71"/>
+<edge id="204" source="52" target="72"/>
+<edge id="205" source="52" target="73"/>
+<edge id="206" source="52" target="74"/>
+<edge id="207" source="52" target="75"/>
+<edge id="208" source="52" target="76"/>
+<edge id="209" source="52" target="77"/>
+<edge id="210" source="52" target="78"/>
+<edge id="211" source="52" target="79"/>
+<edge id="212" source="52" target="80"/>
+<edge id="213" source="54" target="181"/>
+<edge id="214" source="54" target="182"/>
+<edge id="215" source="54" target="183"/>
+<edge id="216" source="54" target="184"/>
+<edge id="217" source="54" target="185"/>
+<edge id="218" source="54" target="186"/>
+<edge id="219" source="58" target="57"/>
+<edge id="220" source="58" target="34"/>
+<edge id="221" source="58" target="35"/>
+<edge id="222" source="58" target="36"/>
+<edge id="223" source="58" target="37"/>
+<edge id="224" source="58" target="38"/>
+<edge id="225" source="58" target="39"/>
+<edge id="226" source="58" target="40"/>
+<edge id="227" source="58" target="41"/>
+<edge id="228" source="58" target="42"/>
+<edge id="229" source="58" target="43"/>
+<edge id="230" source="58" target="44"/>
+<edge id="231" source="58" target="45"/>
+<edge id="232" source="58" target="46"/>
+<edge id="233" source="58" target="47"/>
+<edge id="234" source="58" target="48"/>
+<edge id="235" source="58" target="49"/>
+<edge id="236" source="58" target="50"/>
+<edge id="237" source="58" target="51"/>
+<edge id="238" source="58" target="52"/>
+<edge id="239" source="58" target="53"/>
+<edge id="240" source="58" target="54"/>
+<edge id="241" source="58" target="55"/>
+<edge id="242" source="58" target="59"/>
+<edge id="243" source="58" target="60"/>
+<edge id="244" source="58" target="156"/>
+<edge id="245" source="61" target="194"/>
+<edge id="246" source="61" target="195"/>
+<edge id="247" source="61" target="196"/>
+<edge id="248" source="61" target="197"/>
+<edge id="249" source="61" target="198"/>
+<edge id="250" source="61" target="70"/>
+<edge id="251" source="61" target="199"/>
+<edge id="252" source="61" target="200"/>
+<edge id="253" source="61" target="201"/>
+<edge id="254" source="61" target="202"/>
+<edge id="255" source="61" target="203"/>
+<edge id="256" source="61" target="204"/>
+<edge id="257" source="61" target="205"/>
+<edge id="258" source="61" target="206"/>
+<edge id="259" source="61" target="207"/>
+<edge id="260" source="61" target="66"/>
+<edge id="261" source="61" target="208"/>
+<edge id="262" source="61" target="209"/>
+<edge id="263" source="61" target="210"/>
+<edge id="264" source="61" target="211"/>
+<edge id="265" source="61" target="212"/>
+<edge id="266" source="61" target="213"/>
+<edge id="267" source="61" target="214"/>
+<edge id="268" source="61" target="215"/>
+<edge id="269" source="61" target="216"/>
+<edge id="270" source="61" target="217"/>
+<edge id="271" source="61" target="218"/>
+<edge id="272" source="61" target="219"/>
+<edge id="273" source="62" target="180"/>
+<edge id="274" source="62" target="61"/>
+<edge id="275" source="62" target="51"/>
+<edge id="276" source="62" target="63"/>
+<edge id="277" source="62" target="64"/>
+<edge id="278" source="62" target="65"/>
+<edge id="279" source="62" target="66"/>
+<edge id="280" source="62" target="67"/>
+<edge id="281" source="62" target="68"/>
+<edge id="282" source="62" target="69"/>
+<edge id="283" source="62" target="70"/>
+<edge id="284" source="63" target="231"/>
+<edge id="285" source="63" target="61"/>
+<edge id="286" source="63" target="51"/>
+<edge id="287" source="63" target="62"/>
+<edge id="288" source="63" target="64"/>
+<edge id="289" source="63" target="65"/>
+<edge id="290" source="63" target="66"/>
+<edge id="291" source="63" target="67"/>
+<edge id="292" source="63" target="68"/>
+<edge id="293" source="63" target="69"/>
+<edge id="294" source="63" target="70"/>
+<edge id="295" source="63" target="232"/>
+<edge id="296" source="176" target="178"/>
+<edge id="297" source="176" target="179"/>
+<edge id="298" source="176" target="8"/>
+<edge id="299" source="176" target="9"/>
+</edges>
+</graph>
+</gexf>

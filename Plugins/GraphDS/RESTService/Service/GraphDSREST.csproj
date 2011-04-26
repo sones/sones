@@ -1,0 +1,368 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1AE9C2A9-4916-488D-B825-7B8657C0BDE5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GraphDSREST</RootNamespace>
+    <AssemblyName>GraphDSREST</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.IdentityModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.ServiceModel.Web">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GraphDSREST_Constants.cs" />
+    <Compile Include="GraphDSREST_Errors.cs" />
+    <Compile Include="GraphDSREST_Output.cs" />
+    <Compile Include="GraphDSREST_Client.cs" />
+    <Compile Include="GraphDSREST_OutputFormat.cs" />
+    <Compile Include="GraphDSREST_Service.cs" />
+    <Compile Include="GraphDSREST_Settings.cs" />
+    <Compile Include="IGraphDSREST_Service.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\errorpages\Error404.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\InfoVis\base.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\InfoVis\col1.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\InfoVis\col2.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\InfoVis\excanvas.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\InfoVis\gradient.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\InfoVis\jit.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\InfoVis\RGraph.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\soneslogo.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\WebShell\WebShell.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\WebShell\WebShell.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
+      <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
+      <Name>IGraphDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\GraphDS\IGraphDS\IGraphDS.csproj">
+      <Project>{6A6D0690-78A4-4134-AA2B-4A7A39535612}</Project>
+      <Name>IGraphDS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
+      <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
+      <Name>IGraphQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Library\External\Irony\Irony.csproj">
+      <Project>{D81F5C91-D7DB-46E5-BC99-49488FB6814C}</Project>
+      <Name>Irony</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Library\Internal\Commons\Commons.csproj">
+      <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
+      <Name>Commons</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Library\Internal\LanguageExtensions\LanguageExtensions.csproj">
+      <Project>{21C726D5-DCCA-4C15-BA54-1000E80B1C6E}</Project>
+      <Name>LanguageExtensions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
+      <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
+      <Name>PluginManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\IO\Implementation\XML_IO\XML_IO.csproj">
+      <Project>{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}</Project>
+      <Name>XML_IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\IO\Interface\IOInterface.csproj">
+      <Project>{991132D2-15E0-4BB7-8328-3A51646D4F01}</Project>
+      <Name>IOInterface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Library\Internal\Networking\Networking.csproj">
+      <Project>{DDC48D4C-6885-462C-B57A-216658EB94AE}</Project>
+      <Name>Networking %28Library\Internal\Networking\Networking%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ISonesRESTService\ISonesRESTService.csproj">
+      <Project>{0D7A14D7-9851-4624-9260-858741603F98}</Project>
+      <Name>ISonesRESTService</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\WebShell\gql.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\FlashGraph\flashtest.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\VisualGraph\GEXF2protovis.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\FlashGraph\GexfExplorer1.0.swf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\libs\jQuery\jquery-1.4.2.min.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\libs\protovis-r3.2.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\VisualGraph\VisualGraph.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\FlashGraph\testScrollCorrection.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\WebShell\goosh.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\WebShell\WebShell.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\libs\jQuery\jquery.url.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\libs\jQuery\jquery.base64.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\libs\jQuery\jquery.urlencode.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\favicon.ico" />
+    <EmbeddedResource Include="resources\libs\jQuery\jquery.url.parser.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\ClientAccessPolicy.xml" />
+    <Content Include="resources\CrossDomain.xml" />
+    <Content Include="resources\JitExamples\AreaChart\example1.html" />
+    <Content Include="resources\JitExamples\AreaChart\example1.js" />
+    <Content Include="resources\JitExamples\BarChart\example1.html" />
+    <Content Include="resources\JitExamples\BarChart\example1.js" />
+    <Content Include="resources\JitExamples\BarChart\example2.html" />
+    <Content Include="resources\JitExamples\BarChart\example2.js" />
+    <Content Include="resources\JitExamples\css\AreaChart.css" />
+    <Content Include="resources\JitExamples\css\BarChart.css" />
+    <Content Include="resources\JitExamples\css\base.css" />
+    <Content Include="resources\JitExamples\css\col1.png" />
+    <Content Include="resources\JitExamples\css\col2.png" />
+    <Content Include="resources\JitExamples\css\ForceDirected.css" />
+    <Content Include="resources\JitExamples\css\gradient.png" />
+    <Content Include="resources\JitExamples\css\Hypertree.css" />
+    <Content Include="resources\JitExamples\css\Icicle.css" />
+    <Content Include="resources\JitExamples\css\Other.css" />
+    <Content Include="resources\JitExamples\css\PieChart.css" />
+    <Content Include="resources\JitExamples\css\RGraph.css" />
+    <Content Include="resources\JitExamples\css\Spacetree.css" />
+    <Content Include="resources\JitExamples\css\Sunburst.css" />
+    <Content Include="resources\JitExamples\css\Treemap.css" />
+    <Content Include="resources\JitExamples\ForceDirected\example1.html" />
+    <Content Include="resources\JitExamples\ForceDirected\example1.js" />
+    <Content Include="resources\JitExamples\ForceDirected\example2.html" />
+    <Content Include="resources\JitExamples\ForceDirected\example2.js" />
+    <Content Include="resources\JitExamples\Hypertree\example1.html" />
+    <Content Include="resources\JitExamples\Hypertree\example1.js" />
+    <Content Include="resources\JitExamples\Hypertree\example2.html" />
+    <Content Include="resources\JitExamples\Hypertree\example2.js" />
+    <Content Include="resources\JitExamples\Hypertree\example3.html" />
+    <Content Include="resources\JitExamples\Hypertree\example3.js" />
+    <Content Include="resources\JitExamples\Icicle\example1.html" />
+    <Content Include="resources\JitExamples\Icicle\example1.js" />
+    <Content Include="resources\JitExamples\Icicle\example2.html" />
+    <Content Include="resources\JitExamples\Icicle\example2.js" />
+    <Content Include="resources\JitExamples\Other\example1.html" />
+    <Content Include="resources\JitExamples\Other\example1.js" />
+    <Content Include="resources\JitExamples\Other\example2.html" />
+    <Content Include="resources\JitExamples\Other\example2.js" />
+    <Content Include="resources\JitExamples\Other\example3.html" />
+    <Content Include="resources\JitExamples\Other\example3.js" />
+    <Content Include="resources\JitExamples\PieChart\example1.html" />
+    <Content Include="resources\JitExamples\PieChart\example1.js" />
+    <Content Include="resources\JitExamples\RGraph\example1.html" />
+    <Content Include="resources\JitExamples\RGraph\example1.js" />
+    <Content Include="resources\JitExamples\RGraph\example2.html" />
+    <Content Include="resources\JitExamples\RGraph\example2.js" />
+    <Content Include="resources\JitExamples\RGraph\example3.html" />
+    <Content Include="resources\JitExamples\RGraph\example3.js" />
+    <Content Include="resources\JitExamples\RGraph\example4.html" />
+    <Content Include="resources\JitExamples\RGraph\example4.js" />
+    <Content Include="resources\JitExamples\Spacetree\example1.html" />
+    <Content Include="resources\JitExamples\Spacetree\example1.js" />
+    <Content Include="resources\JitExamples\Spacetree\example2.html" />
+    <Content Include="resources\JitExamples\Spacetree\example2.js" />
+    <Content Include="resources\JitExamples\Spacetree\example3.html" />
+    <Content Include="resources\JitExamples\Spacetree\example3.js" />
+    <Content Include="resources\JitExamples\Spacetree\example4.html" />
+    <Content Include="resources\JitExamples\Spacetree\example4.js" />
+    <Content Include="resources\JitExamples\Spacetree\example5.html" />
+    <Content Include="resources\JitExamples\Spacetree\example5.js" />
+    <Content Include="resources\JitExamples\Sunburst\example1.html" />
+    <Content Include="resources\JitExamples\Sunburst\example1.js" />
+    <Content Include="resources\JitExamples\Sunburst\example2.html" />
+    <Content Include="resources\JitExamples\Sunburst\example2.js" />
+    <Content Include="resources\JitExamples\Treemap\example1.html" />
+    <Content Include="resources\JitExamples\Treemap\example1.js" />
+    <Content Include="resources\JitExamples\Treemap\example2.html" />
+    <Content Include="resources\JitExamples\Treemap\example2.js" />
+    <Content Include="resources\JitExamples\Treemap\example3.html" />
+    <Content Include="resources\JitExamples\Treemap\example3.js" />
+    <Content Include="resources\libs\Jit\excanvas.js" />
+    <Content Include="resources\libs\Jit\jit-yc.js" />
+    <Content Include="resources\libs\Jit\jit.js" />
+    <Content Include="resources\libs\Jit\jit.license.txt" />
+    <Content Include="resources\robots.txt" />
+    <Content Include="resources\wadl.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\VisualGraph\demo.gexf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\VisualGraph\flashtest.gexf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="resources\libs\jQuery\jquery.license.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="resources\libs\protovis.license.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="resources\VisualGraph\demo2.gexf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
