@@ -32,6 +32,6 @@ namespace sones.GraphDB.TypeSystem
         /// <summary>
         /// The attributes that are indexed. Never <c>NULL</c>. 
         /// </summary>
-        IEnumerable<IAttributeDefinition> IndexedProperties { get; }
+        IEnumerable<IPropertyDefinition> IndexedProperties { get; }
     }
 }

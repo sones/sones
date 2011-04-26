@@ -7,58 +7,11 @@ namespace sones.GraphDB.TypeSystem
     /// <summary>
     /// The interface for all vertex types
     /// </summary>
-    public interface IVertexType
+    public interface IVertexType: IBaseType
     {
-        /// <summary>
-        /// The ID of the vertex type.
-        /// </summary>
-        Int64 ID { get; }
-
-        /// <summary>
-        /// The name of the vertex type.
-        /// </summary>
-        /// <remarks>
-        /// The name must be unique for all vertex types in one database.
-        /// </remarks>
-        String Name { get; }
-
-        /// <summary>
-        /// The behaviour for this vertex type.
-        /// </summary>
-        /// <remarks>
-        /// If no behaviour is defined, this property is <c>NULL</c>.
-        /// </remarks>
-        IBehaviour Behaviour { get; }
-
-        /// <summary>
-        /// The comment for this vertex type.
-        /// </summary>
-        /// <value>A user defined string, never <c>NULL</c>.</value>
-        String Comment { get; }
-
-        /// <summary>
-        /// Defines whether this vertex type is abstract. 
-        /// </summary>
-        /// <value>
-        /// If true, this vertex type can not have vertices.
-        /// </value>
-        Boolean IsAbstract { get; }
-
-        /// <summary>
-        /// Defines whether this type can be used as parent type.
-        /// </summary>
-        /// <value>
-        /// If true, this vertex type must not be used as a parent vertex type.
-        /// </value>
-        Boolean IsSealed { get; }
 
         #region Inheritance
 
-        /// <summary>
-        /// Has this vertex type a parent vertex type?
-        /// </summary>
-        /// <returns>True, if this vertex type has a parent vertex type, otherwise false.</returns>
-        bool HasParentVertexType { get; }
 
         /// <summary>
         /// Gets the parent vertex type
@@ -66,11 +19,6 @@ namespace sones.GraphDB.TypeSystem
         /// <returns>The parent vertex type</returns>
         IVertexType GetParentVertexType { get; }
 
-        /// <summary>
-        /// Has this vertex type child vertex types?
-        /// </summary>
-        /// <returns>False, if this vertex type has no child vertex type, otherwise true.</returns>
-        bool HasChildVertexTypes { get; }
 
         /// <summary>
         /// Get all child vertex types
@@ -78,78 +26,6 @@ namespace sones.GraphDB.TypeSystem
         /// <param name="myRecursive">get child vertex types recursive?</param>
         /// <returns>An enumerable of child vertex types, never <c>NULL</c>.</returns>
         IEnumerable<IVertexType> GetChildVertexTypes(bool myRecursive = true);
-
-        #endregion
-
-        #region Attributes
-
-        /// <summary>
-        /// Has this vertex type a certain attribute?
-        /// </summary>
-        /// <returns>True or false</returns>
-        bool HasAttribute(String myAttributeName);
-
-        /// <summary>
-        /// Gets a certain attribute definition
-        /// </summary>
-        /// <param name="myAttributeName">The name of the interesting attribute</param>
-        /// <returns>A attribute definition</returns>
-        IAttributeDefinition GetAttributeDefinition(String myAttributeName);
-
-        /// <summary>
-        /// Gets a certain attribute definition
-        /// </summary>
-        /// <param name="myAttributeID">The id of the interesting attribute</param>
-        /// <returns>A attribute definition</returns>
-        IAttributeDefinition GetAttributeDefinition(Int64 myAttributeID);
-
-        /// <summary>
-        /// Has this vertex type any attributes?
-        /// </summary>
-        /// <returns>True or false</returns>
-        bool HasAttributes(bool myIncludeAncestorDefinitions);
-
-        /// <summary>
-        /// Gets all attributes defined on this vertex type.
-        /// </summary>
-        /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
-        /// <returns>An enumerable of attribute definitions</returns>
-        IEnumerable<IAttributeDefinition> GetAttributeDefinitions(bool myIncludeAncestorDefinitions);
-
-        #region Properties
-
-        /// <summary>
-        /// Has this vertex type a certain property?
-        /// </summary>
-        /// <returns>True or false</returns>
-        bool HasProperty(String myAttributeName);
-
-        /// <summary>
-        /// Gets a certain attribute definition
-        /// </summary>
-        /// <param name="myPropertyName">The name of the property</param>
-        /// <returns>A property definition</returns>
-        IPropertyDefinition GetPropertyDefinition(String myPropertyName);
-
-        /// <summary>
-        /// Gets a certain attribute definition
-        /// </summary>
-        /// <param name="myPropertyID">The id of the property</param>
-        /// <returns>A property definition</returns>
-        IPropertyDefinition GetPropertyDefinition(Int64 myPropertyID);
-
-        /// <summary>
-        /// Has this vertex type any properties?
-        /// </summary>
-        /// <returns>True or false</returns>
-        bool HasProperties(bool myIncludeAncestorDefinitions);
-
-        /// <summary>
-        /// Gets all properties defined on this vertex type.
-        /// </summary>
-        /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
-        /// <returns>An enumerable of property definitions</returns>
-        IEnumerable<IPropertyDefinition> GetPropertyDefinitions(bool myIncludeAncestorDefinitions);
 
         #endregion
 
@@ -213,8 +89,6 @@ namespace sones.GraphDB.TypeSystem
         /// <param name="myIncludeParents">Include the properties of the parent vertex type(s)</param>
         /// <returns>An enumerable of outgoing IncomingEdge attributes</returns>
         IEnumerable<IOutgoingEdgeDefinition> GetOutgoingEdgeDefinitions(bool myIncludeAncestorDefinitions);
-
-        #endregion
 
         #endregion
 

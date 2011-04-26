@@ -2247,7 +2247,7 @@ namespace sones.GraphQL
 
             #region parent type
 
-            if (myVertexType.HasParentVertexType)
+            if (myVertexType.HasParentType)
             {
                 stringBuilder.AppendFormat("{0} {1} ", S_EXTENDS.ToUpperString(), myVertexType.GetParentVertexType.Name);//builder.AppendLine();
             }

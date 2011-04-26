@@ -6,6 +6,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.Expression.Tree;
 using sones.Library.Commons.VertexStore.Definitions;
+using sones.Library.Commons.VertexStore;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -94,5 +95,10 @@ namespace sones.GraphDB.Manager.Vertex
         IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
 
         IVertex AddVertex(VertexAddDefinition myVertexDefinition, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+
+        /// <summary>
+        /// Gets the vertex store this vertex manager is acting on.
+        /// </summary>
+        IVertexStore VertexStore { get;  }
     }
 }

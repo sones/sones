@@ -14,33 +14,7 @@ namespace sones.GraphDB.TypeManagement
             this.vertex = vertex;
         }
 
-
         #region IEdgeType Members
-
-        string IEdgeType.Name
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        IBehaviour IEdgeType.Behaviour
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        string IEdgeType.Comment
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        bool IEdgeType.IsAbstract
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        bool IEdgeType.IsSealed
-        {
-            get { throw new NotImplementedException(); }
-        }
 
         bool IEdgeType.HasParentEdgeType
         {
@@ -65,6 +39,100 @@ namespace sones.GraphDB.TypeManagement
         IEnumerable<IPropertyDefinition> IEdgeType.GetProperties
         {
             get { throw new NotImplementedException(); }
+        }
+
+        #endregion
+
+        #region IBaseType Members
+
+        long IBaseType.ID
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        string IBaseType.Name
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        IBehaviour IBaseType.Behaviour
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        string IBaseType.Comment
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        bool IBaseType.IsAbstract
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        bool IBaseType.IsSealed
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        bool IBaseType.HasParentType
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        bool IBaseType.HasChildTypes
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        bool IBaseType.HasAttribute(string myAttributeName)
+        {
+            throw new NotImplementedException();
+        }
+
+        IAttributeDefinition IBaseType.GetAttributeDefinition(string myAttributeName)
+        {
+            throw new NotImplementedException();
+        }
+
+        IAttributeDefinition IBaseType.GetAttributeDefinition(long myAttributeID)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool IBaseType.HasAttributes(bool myIncludeAncestorDefinitions)
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerable<IAttributeDefinition> IBaseType.GetAttributeDefinitions(bool myIncludeAncestorDefinitions)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool IBaseType.HasProperty(string myAttributeName)
+        {
+            throw new NotImplementedException();
+        }
+
+        IPropertyDefinition IBaseType.GetPropertyDefinition(string myPropertyName)
+        {
+            throw new NotImplementedException();
+        }
+
+        IPropertyDefinition IBaseType.GetPropertyDefinition(long myPropertyID)
+        {
+            throw new NotImplementedException();
+        }
+
+        bool IBaseType.HasProperties(bool myIncludeAncestorDefinitions)
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerable<IPropertyDefinition> IBaseType.GetPropertyDefinitions(bool myIncludeAncestorDefinitions)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

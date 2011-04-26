@@ -6,45 +6,8 @@ namespace sones.GraphDB.TypeSystem
     /// <summary>
     /// An interface that represents an IncomingEdge type.
     /// </summary>
-    public interface IEdgeType
+    public interface IEdgeType: IBaseType
     {
-        /// <summary>
-        /// The name of the EdgeType.
-        /// </summary>
-        /// <remarks>
-        /// The name must be unique for alle IncomingEdge types in one database
-        /// </remarks>
-        String Name { get; }
-
-        /// <summary>
-        /// The behaviour for this IncomingEdge type.
-        /// </summary>
-        /// <remarks>
-        /// If no behaviour is defined, this property is <c>NULL</c>.
-        /// </remarks>
-        IBehaviour Behaviour { get; }
-
-        /// <summary>
-        /// The comment for this IncomingEdge type.
-        /// </summary>
-        /// <value>A user defined string, never <c>NULL</c>.</value>
-        String Comment { get; }
-
-        /// <summary>
-        /// Defines whether this IncomingEdge type is abstract. 
-        /// </summary>
-        /// <value>
-        /// If true, this IncomingEdge type can not be used directly on vertex definitions.
-        /// </value>
-        Boolean IsAbstract { get; }
-
-        /// <summary>
-        /// Defines whether this type can be used as parent type.
-        /// </summary>
-        /// <value>
-        /// If true, this IncomingEdge type must not be used as a parent IncomingEdge type.
-        /// </value>
-        Boolean IsSealed { get; }
 
         #region Inheritance
 

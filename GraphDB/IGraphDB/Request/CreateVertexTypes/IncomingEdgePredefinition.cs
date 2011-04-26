@@ -7,6 +7,7 @@ namespace sones.GraphDB.Request
         public String SourceTypeName { get; private set; }
         public String SourceEdgeName { get; private set; }
         public String EdgeName { get; private set; }
+        public String Comment { get; private set; }
 
         /// <summary>
         /// Creates a definition for an incoming IncomingEdge
@@ -57,5 +58,6 @@ namespace sones.GraphDB.Request
             SourceEdgeName = myOutgoingEdgeName;
             return this;
         }
+
     }
 }

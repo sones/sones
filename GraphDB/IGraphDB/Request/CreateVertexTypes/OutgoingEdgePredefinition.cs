@@ -1,4 +1,5 @@
 ﻿using System;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Request
 {
@@ -43,6 +44,16 @@ namespace sones.GraphDB.Request
         /// The vertex type the IncomingEdge will direct to
         /// </summary>
         public String TargetVertexType { get; private set; }
+
+        /// <summary>
+        /// The multiplicity of the edge.
+        /// </summary>
+        public EdgeMultiplicity Multiplicity { get; private set; }
+
+        /// <summary>
+        /// The comment for the outgoing edge.
+        /// </summary>
+        public string Comment { get; private set; }
 
         #endregion
 
@@ -128,5 +139,7 @@ namespace sones.GraphDB.Request
 
 
         #endregion
+
+
     }
 }

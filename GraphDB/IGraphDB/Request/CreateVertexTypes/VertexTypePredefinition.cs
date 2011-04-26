@@ -22,6 +22,28 @@ namespace sones.GraphDB.Request
         private List<UniquePredefinition> _uniques;
         private List<IndexPredefinition> _indices;
 
+
+        public int PropertyCount
+        {
+            get { return _properties.Count; }
+        }
+
+        public int IncomingEdgeCount
+        {
+            get { return _incomingEdges.Count; }
+        }
+
+        public int OutgoingEdgeCount
+        {
+            get { return _outgoingEdges.Count; }
+        }
+
+        public int AttributeCount 
+        {
+            get { return _properties.Count + _outgoingEdges.Count + _incomingEdges.Count; }
+        }
+
+
         /// <summary>
         /// The name of the vertex type this vertex types inherites from.
         /// </summary>
@@ -102,6 +124,11 @@ namespace sones.GraphDB.Request
         /// </summary>
         public bool IsAbstract { get; private set; }
 
+        /// <summary>
+        /// Gets the comment for this vertex type.
+        /// </summary>
+        public string Comment { get; private set; }
+
         #endregion
 
         #region Constructor
@@ -132,7 +159,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// Sets the name of the vertex type this one inherits from
         /// </summary>
-        /// <param name="mySuperVertexTypeName">The name of the super vertex type</param>
+        /// <param name="myComment">The name of the super vertex type</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public VertexTypePredefinition SetSuperVertexTypeName(String mySuperVertexTypeName)
         {
@@ -228,6 +255,19 @@ namespace sones.GraphDB.Request
             return this;
         }
 
+        /// <summary>
+        /// Sets the comment of the vertex type.
+        /// </summary>
+        /// <param name="myComment">The comment.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public VertexTypePredefinition SetComment(String myComment)
+        {
+            Comment = myComment;
+
+            return this;
+        }
+
         #endregion
+
     }
 }

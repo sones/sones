@@ -26,5 +26,10 @@ namespace sones.GraphDB.TypeSystem
         /// If Kind is <c>OutgoingEdge</c> you can cast this IAttributeDefinition to IEdgeDefinition.
         /// </remarks>
         AttributeType Kind { get; }
+
+        /// <summary>
+        /// The type 
+        /// </summary>
+        IBaseType RelatedType { get; }
     }
 }

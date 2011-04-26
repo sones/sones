@@ -17,6 +17,8 @@ using sones.GraphDB.Manager.Index;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.Commons.VertexStore.Definitions;
 using System.Threading;
+using sones.GraphDB.Manager.BaseGraph;
+using sones.GraphDB.Index;
 
 /*
  * edge cases:
@@ -67,9 +69,16 @@ namespace sones.GraphDB.Manager.TypeManagement
         private IIndexManager _indexManager;
 
         /// <summary>
+        /// Used to check outgoing edge definitions.
+        /// </summary>
+        private IEdgeTypeManager _edgeManager;
+
+        /// <summary>
         /// Stores the last vertex type id.
         /// </summary>
-        private long lastID;
+        private long _LastTypeID;
+
+        private long _LastAttrID;
 
         #endregion
 
@@ -80,6 +89,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         public VertexTypeManager()
         {
+            //TODO read max typeID and attrID
         }
 
         #endregion
@@ -100,6 +110,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// A property expression on VertexType.ID
         /// </summary>
         private readonly IExpression _vertexTypeIDExpression = new PropertyExpression(BaseTypes.VertexType.ToString(), AttributeDefinitions.ID.ToString());
+
+        /// <summary>
+        /// A property expression on OutgoingEdge.Name
+        /// </summary>
+        private readonly IExpression _attributeNameExpression = new PropertyExpression(BaseTypes.OutgoingEdge.ToString(), AttributeDefinitions.Name.ToString());
 
         #endregion
 
@@ -451,15 +466,12 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <returns>The link to the parent predefinition of the <paramref name="myCurrent"/> predefinition, otherwise <c>NULL</c>.</returns>
         private static LinkedListNode<VertexTypePredefinition> GetParentPredefinitionOnTopologicallySortedList(LinkedListNode<VertexTypePredefinition> myCurrent)
         {
-            var parent = myCurrent.Previous;
-
-            while (parent != null)
+            for (var parent = myCurrent.Previous; parent != null; parent = parent.Previous)
             {
                 if (parent.Value.VertexTypeName.Equals(myCurrent.Value.SuperVertexTypeName))
-                    break;
-                parent = parent.Previous;
+                    return parent;
             }
-            return parent;
+            return null;
         }
 
         /// <summary>
@@ -704,16 +716,227 @@ namespace sones.GraphDB.Manager.TypeManagement
             var count = myVertexTypeDefinitions.Count();
 
             //This operation reserves #count ids for this operation.
-            Interlocked.Add(ref lastID, count);
+            var lastTypeID = Interlocked.Add(ref _LastTypeID, count);
+            var firstTypeID = lastTypeID - count;
+
+            //Contains dictionary of vertex name to vertex predefinition.
+            var defsByVertexName = CanAddCheckDuplicates(myVertexTypeDefinitions);
+
+            //Contains dictionary of parent vertex name to list of vertex predefinitions.
+            var defsByParentVertexName = myVertexTypeDefinitions
+                .GroupBy(def => def.SuperVertexTypeName)
+                .ToDictionary(group => group.Key, group => group.AsEnumerable());
+
+            //Contains list of vertex predefinitions sorted topologically.
+            var defsTopologically = CanAddSortTopolocically(defsByVertexName, defsByParentVertexName);
+
+            var typeInfos = GenerateTypeInfos(defsTopologically, defsByVertexName, firstTypeID, myTransaction, mySecurity);
 
             //we can add each type separately
-            throw new NotImplementedException();
-            
+            var creationDate = DateTime.UtcNow.ToBinary();
+            var resultPos = 0;
+
+            var result = new IVertexType[count];
+
+            //now we store each vertex type
+            for (var current = defsTopologically.First;current != null; current = current.Next)
+            {
+                result[resultPos] = new VertexType(BaseGraphStorageManager.StoreVertexType(
+                    _vertexManager.VertexStore, 
+                    typeInfos[current.Value.VertexTypeName].VertexInfo,
+                    current.Value.VertexTypeName,
+                    current.Value.Comment,
+                    creationDate,
+                    current.Value.IsAbstract,
+                    current.Value.IsSealed,
+                    typeInfos[current.Value.SuperVertexTypeName].VertexInfo,
+                    null, //TODO uniques
+                    mySecurity,
+                    myTransaction));
+            }
+            #region Store Attributes
+            //The order of adds is important. First property, then outgoing edges (that might point to properties) and finally incoming edges (that might point to outgoing edges)
+
+            #region Store properties
+
+            for (var current = defsTopologically.First; current != null; current = current.Next)
+            {
+                var lastAttrID = Interlocked.Add(ref _LastAttrID, current.Value.PropertyCount);
+                var firstAttrID = lastAttrID - current.Value.PropertyCount;
+                var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - 1;    
+
+                foreach (var prop in current.Value.Properties)
+                {
+                    BaseGraphStorageManager.StoreProperty(
+                        _vertexManager.VertexStore,
+                        new VertexInformation((long)BaseTypes.Property, firstAttrID++ ),
+                        currentExternID++,
+                        prop.PropertyName,
+                        prop.Comment,
+                        creationDate,
+                        prop.IsMandatory,
+                        prop.Multiplicity,
+                        typeInfos[current.Value.VertexTypeName].VertexInfo,
+                        ConvertBasicType(prop.TypeName),
+                        mySecurity,
+                        myTransaction);
+                }
+
+            }
+
+            #endregion
+
+            #region Store outgoing edges
+
+            for (var current = defsTopologically.First; current != null; current = current.Next)
+            {
+                var lastAttrID = Interlocked.Add(ref _LastAttrID, current.Value.OutgoingEdgeCount);
+                var firstAttrID = lastAttrID - current.Value.OutgoingEdgeCount;
+                var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.OutgoingEdgeCount - 1;
+
+                foreach (var edge in current.Value.OutgoingEdges)
+                {
+
+                    BaseGraphStorageManager.StoreOutgoingEdge(
+                        _vertexManager.VertexStore,
+                        new VertexInformation((long)BaseTypes.OutgoingEdge, firstAttrID++),
+                        currentExternID++,
+                        edge.EdgeName,
+                        edge.Comment,
+                        creationDate,
+                        edge.Multiplicity,
+                        typeInfos[current.Value.VertexTypeName].VertexInfo,
+                        new VertexInformation((long)BaseTypes.EdgeType, _edgeManager.GetEdgeType(edge.EdgeType, myTransaction, mySecurity).ID),
+                        typeInfos[edge.TargetVertexType].VertexInfo,
+                        mySecurity,
+                        myTransaction);
+                }
+
+            }
+
+            #endregion
+
+            #region Store incoming edges
+
+            for (var current = defsTopologically.First; current != null; current = current.Next)
+            {
+                var lastAttrID = Interlocked.Add(ref _LastAttrID, current.Value.IncomingEdgeCount);
+                var firstAttrID = lastAttrID - current.Value.IncomingEdgeCount;
+                var currentExternID = typeInfos[current.Value.VertexTypeName].AttributeCountWithParents - current.Value.PropertyCount - current.Value.OutgoingEdgeCount - current.Value.IncomingEdgeCount - 1;
+
+                foreach (var edge in current.Value.IncomingEdges)
+                {
+
+                    BaseGraphStorageManager.StoreIncomingEdge(
+                        _vertexManager.VertexStore,
+                        new VertexInformation((long)BaseTypes.IncomingEdge, firstAttrID++),
+                        currentExternID++,
+                        edge.EdgeName,
+                        edge.Comment,
+                        creationDate,
+                        typeInfos[current.Value.VertexTypeName].VertexInfo,
+                        GetOutgoingEdgeVertexInformation(edge.SourceTypeName, edge.SourceEdgeName, myTransaction, mySecurity),
+                        mySecurity,
+                        myTransaction);
+                }
+
+            }
+
+            #endregion
+
+
+            #endregion
+
+            return result;
         }
 
-        private IVertexType Add(VertexTypePredefinition vertexTypePredefinition, TransactionToken myTransaction, SecurityToken mySecurity)
+        private VertexInformation GetOutgoingEdgeVertexInformation(string myVertexType, string myEdgeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            throw new NotImplementedException();
+            var vertices = _vertexManager.GetVertices(new BinaryExpression(new SingleLiteralExpression(myEdgeName), BinaryOperator.Equals, _attributeNameExpression), false, myTransaction, mySecurity);
+            var vertex = vertices.First(x => IsAttributeOnVertexType(myVertexType, x));
+            return new VertexInformation(vertex.VertexTypeID, vertex.VertexID);
+        }
+
+        private static bool IsAttributeOnVertexType(String myVertexTypeName, IVertex myAttributeVertex)
+        {
+            var vertexTypeName = myAttributeVertex.GetOutgoingEdge((long)AttributeDefinitions.DefiningType).GetPropertyAsString((long)AttributeDefinitions.Name);
+            return myVertexTypeName.Equals(vertexTypeName);
+        }
+
+        private static  VertexInformation ConvertBasicType(string myBasicTypeName)
+        {
+            BasicTypes resultType;
+            if (!Enum.TryParse(myBasicTypeName, out resultType))
+                throw new NotImplementedException("User defined base types are not implemented yet.");
+
+            return DBCreationManager.BasicTypesVertices[resultType];
+        }
+
+        private struct TypeInfo
+        {
+            public VertexInformation VertexInfo;
+            public long AttributeCountWithParents;
+        }
+
+        private Dictionary<String, TypeInfo> GenerateTypeInfos(
+            LinkedList<VertexTypePredefinition> myDefsSortedTopologically,
+            Dictionary<String, VertexTypePredefinition> myDefsByName, 
+            long myFirstID,
+            TransactionToken myTransaction, 
+            SecurityToken mySecurity)
+        {
+            //At most all vertex types are needed.
+            HashSet<String> neededVertexTypes = new HashSet<string>();
+
+            foreach (var def in myDefsByName)
+            {
+                neededVertexTypes.Add(def.Value.SuperVertexTypeName);
+                foreach (var edge in def.Value.OutgoingEdges)
+                {
+                    neededVertexTypes.Add(edge.TargetVertexType);
+                }
+            }
+
+            var result = new Dictionary<String, TypeInfo>((int)(_LastTypeID - Int64.MinValue));
+            foreach (var vertexType in neededVertexTypes)
+            {
+                if (myDefsByName.ContainsKey(vertexType))
+                {
+                    result.Add(vertexType, new TypeInfo
+                        { 
+                            AttributeCountWithParents = myDefsByName[vertexType].AttributeCount, 
+                            VertexInfo = new VertexInformation((long)BaseTypes.VertexType, myFirstID++)
+                        });
+                }
+                else
+                {
+                    var vertex = _vertexManager.GetSingleVertex(new BinaryExpression(new Expression.SingleLiteralExpression(vertexType), BinaryOperator.Equals, _vertexTypeNameExpression), myTransaction, mySecurity);
+                    result.Add(vertexType, new TypeInfo
+                        {
+                            AttributeCountWithParents = vertex.GetIncomingVertices((long)BaseTypes.Attribute, (long)AttributeDefinitions.DefiningType).Max(x => GetID(x)),
+                            VertexInfo = new VertexInformation((long)BaseTypes.VertexType, GetID(vertex))
+                        });
+                }
+            }
+
+            //accumulate attribute counts
+            for(var current = myDefsSortedTopologically.First; current != null; current = current.Next)
+            {
+                if (myDefsByName.ContainsKey(current.Value.VertexTypeName))
+                {
+                    var info = result[current.Value.VertexTypeName];
+                    info.AttributeCountWithParents = info.AttributeCountWithParents + result[current.Value.SuperVertexTypeName].AttributeCountWithParents;
+                }
+            }
+
+
+
+            return result;
+        }
+
+        private static long GetID(IVertex myAttributeVertex)
+        {
+            return myAttributeVertex.GetProperty<long>((long)AttributeDefinitions.ID);
         }
 
         #endregion

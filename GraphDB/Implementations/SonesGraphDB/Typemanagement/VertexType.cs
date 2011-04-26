@@ -172,17 +172,17 @@ namespace sones.GraphDB.TypeManagement
 
         #region Vertex type properties
 
-        long IVertexType.ID
+        long IBaseType.ID
         {
             get { return _id; }
         }
 
-        string IVertexType.Name
+        string IBaseType.Name
         {
             get { return _name; }
         }
 
-        IBehaviour IVertexType.Behaviour
+        IBehaviour IBaseType.Behaviour
         {
             get 
             {
@@ -190,17 +190,17 @@ namespace sones.GraphDB.TypeManagement
             }
         }
 
-        string IVertexType.Comment
+        string IBaseType.Comment
         {
             get { return _comment.Value; }
         }
 
-        bool IVertexType.IsAbstract
+        bool IBaseType.IsAbstract
         {
             get { return _isAbstract; }
         }
 
-        bool IVertexType.IsSealed
+        bool IBaseType.IsSealed
         {
             get { return _isSealed; }
         }
@@ -209,7 +209,7 @@ namespace sones.GraphDB.TypeManagement
 
         #region Inheritance
 
-        bool IVertexType.HasParentVertexType
+        bool IBaseType.HasParentType
         {
 
             get { return _id != (long)BaseTypes.Vertex; }
@@ -220,7 +220,7 @@ namespace sones.GraphDB.TypeManagement
             get { return _parent.Value; }
         }
 
-        bool IVertexType.HasChildVertexTypes
+        bool IBaseType.HasChildTypes
         {
             get { return _hasChilds; }
         }
@@ -247,17 +247,17 @@ namespace sones.GraphDB.TypeManagement
 
         #region Attributes
 
-        bool IVertexType.HasAttribute(string myAttributeName)
+        bool IBaseType.HasAttribute(string myAttributeName)
         {
             return GetAttribute(myAttributeName) != null;
         }
 
-        IAttributeDefinition IVertexType.GetAttributeDefinition(string myAttributeName)
+        IAttributeDefinition IBaseType.GetAttributeDefinition(string myAttributeName)
         {
             return GetAttribute(myAttributeName);
         }
 
-        bool IVertexType.HasAttributes(bool myIncludeAncestorDefinitions)
+        bool IBaseType.HasAttributes(bool myIncludeAncestorDefinitions)
         {
             if (!_hasAttributes.HasValue)
             {
@@ -268,7 +268,7 @@ namespace sones.GraphDB.TypeManagement
             return _hasAttributes.Value || (myIncludeAncestorDefinitions && _parent.Value.HasAttributes(true));
         }
 
-        IEnumerable<IAttributeDefinition> IVertexType.GetAttributeDefinitions(bool myIncludeAncestorDefinitions)
+        IEnumerable<IAttributeDefinition> IBaseType.GetAttributeDefinitions(bool myIncludeAncestorDefinitions)
         {
             return (myIncludeAncestorDefinitions)
                 ? _attributes.Value.Values.Union(_parent.Value.GetAttributeDefinitions(true))
@@ -284,17 +284,17 @@ namespace sones.GraphDB.TypeManagement
 
         #region Property
 
-        bool IVertexType.HasProperty(string myPropertyName)
+        bool IBaseType.HasProperty(string myPropertyName)
         {
             return GetAttributeAsProperty(myPropertyName) != null;
         }
 
-        IPropertyDefinition IVertexType.GetPropertyDefinition(string myPropertyName)
+        IPropertyDefinition IBaseType.GetPropertyDefinition(string myPropertyName)
         {
             return GetAttributeAsProperty(myPropertyName);
         }
 
-        bool IVertexType.HasProperties(bool myIncludeAncestorDefinitions)
+        bool IBaseType.HasProperties(bool myIncludeAncestorDefinitions)
         {
             if (!_hasProperties.HasValue)
             {
@@ -304,7 +304,7 @@ namespace sones.GraphDB.TypeManagement
             return _hasProperties.Value || (myIncludeAncestorDefinitions && _parent.Value.HasProperties(true));
         }
 
-        IEnumerable<IPropertyDefinition> IVertexType.GetPropertyDefinitions(bool myIncludeAncestorDefinitions)
+        IEnumerable<IPropertyDefinition> IBaseType.GetPropertyDefinitions(bool myIncludeAncestorDefinitions)
         {
             return _attributes.Value.OfType<IPropertyDefinition>();
         }
@@ -564,7 +564,7 @@ namespace sones.GraphDB.TypeManagement
             var vertex = myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.RelatedEgde).GetTargetVertex();
 
             if (vertex == null)
-                throw new UnknownDBException("Am incoming edge definition has no vertex that represents its related outgoing edge definition.");
+                throw new UnknownDBException("An incoming edge definition has no vertex that represents its related outgoing edge definition.");
 
             return CreateOutgoingEdgeDefinition(vertex);
         }
@@ -745,7 +745,7 @@ namespace sones.GraphDB.TypeManagement
         {
             var typeID = myVertex.GetProperty<long>((long)AttributeDefinitions.Type);
             if (!Enum.IsDefined(typeof(BasicTypes), typeID))
-                throw new NotImplementedException("User defined base types are not implemented yet");
+                throw new NotImplementedException("User defined base types are not implemented yet.");
 
             BasicTypes type = (BasicTypes)typeID;
 

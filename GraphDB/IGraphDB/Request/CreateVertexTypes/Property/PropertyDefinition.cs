@@ -1,4 +1,5 @@
 ﻿using System;
+using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.Request
 {
@@ -34,6 +35,10 @@ namespace sones.GraphDB.Request
         /// </summary>
         public readonly String TypeName;
 
+        public string Comment { get; private set; }
+
+        public PropertyMultiplicity Multiplicity { get; private set; }
+
         #endregion
 
         #region Constructor
@@ -57,5 +62,7 @@ namespace sones.GraphDB.Request
         }
 
         #endregion
+
+
     }
 }

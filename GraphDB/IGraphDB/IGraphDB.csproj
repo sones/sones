@@ -146,6 +146,7 @@
     <Compile Include="TypeSystem\AttributeType.cs" />
     <Compile Include="TypeSystem\EdgeMultiplicity.cs" />
     <Compile Include="TypeSystem\IAttributeDefinition.cs" />
+    <Compile Include="TypeSystem\IBaseType.cs" />
     <Compile Include="TypeSystem\IBehaviour.cs" />
     <Compile Include="TypeSystem\IEdgeType.cs" />
     <Compile Include="TypeSystem\IIncomingEdgeDefinition.cs" />

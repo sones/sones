@@ -8,6 +8,7 @@ using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.Commons.VertexStore;
+using sones.Library.PropertyHyperGraph;
 
 namespace sones.GraphDB.Manager.BaseGraph
 {
@@ -74,10 +75,28 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         #region Outgoing edge
 
+        
         public static void StoreOutgoingEdge(
             IVertexStore myStore,
             VertexInformation myVertex,
             AttributeDefinitions myAttribute,
+            String myComment,
+            Int64 myCreationDate,
+            EdgeMultiplicity myMultiplicity,
+            VertexInformation myDefiningType,
+            VertexInformation myEdgeType,
+            VertexInformation myTarget,
+            SecurityToken mySecurity,
+            TransactionToken myTransaction)
+        {
+            StoreOutgoingEdge(myStore, myVertex, (long)myAttribute, myAttribute.ToString(), myComment, myCreationDate, myMultiplicity, myDefiningType, myEdgeType, myTarget, mySecurity, myTransaction);
+        }
+
+        public static void StoreOutgoingEdge(
+            IVertexStore myStore,
+            VertexInformation myVertex,
+            long myID,
+            String myName,
             String myComment,
             Int64 myCreationDate,
             EdgeMultiplicity myMultiplicity,
@@ -102,8 +121,8 @@ namespace sones.GraphDB.Manager.BaseGraph
                 null,
                 new Dictionary<long, IComparable>
                 {
-                    { (long) AttributeDefinitions.ID, (long) myAttribute },
-                    { (long) AttributeDefinitions.Name, myAttribute.ToString() },
+                    { (long) AttributeDefinitions.ID, myID },
+                    { (long) AttributeDefinitions.Name, myName },
                     { (long) AttributeDefinitions.IsUserDefined, false },
                     { (long) AttributeDefinitions.Multiplicity, (byte) myMultiplicity },
                 },
@@ -128,6 +147,21 @@ namespace sones.GraphDB.Manager.BaseGraph
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
+            StoreIncomingEdge(myStore, myVertex, (long)myAttribute, myAttribute.ToString(), myComment, myCreationDate, myDefiningType, myRelatedIncomingEdge, mySecurity, myTransaction);
+        }
+
+        public static void StoreIncomingEdge(
+            IVertexStore myStore,
+            VertexInformation myVertex,
+            long myID,
+            String myName,
+            String myComment,
+            Int64 myCreationDate,
+            VertexInformation myDefiningType,
+            VertexInformation myRelatedIncomingEdge,
+            SecurityToken mySecurity,
+            TransactionToken myTransaction)
+        {
             Store(
                 myStore,
                 myVertex,
@@ -141,8 +175,8 @@ namespace sones.GraphDB.Manager.BaseGraph
                 null,
                 new Dictionary<long, IComparable>
                 {
-                    { (long) AttributeDefinitions.ID, (long) myAttribute },
-                    { (long) AttributeDefinitions.Name, myAttribute.ToString() },
+                    { (long) AttributeDefinitions.ID, myID },
+                    { (long) AttributeDefinitions.Name, myName },
                     { (long) AttributeDefinitions.IsUserDefined, false },
                 },
                 null,
@@ -167,6 +201,23 @@ namespace sones.GraphDB.Manager.BaseGraph
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
+            StoreProperty(myStore, myVertex, (long)myAttribute, myAttribute.ToString(), myComment, myCreationDate, myIsMandatory, myMultiplicity, myDefiningType, myBasicType, mySecurity, myTransaction);
+        }
+
+        public static void StoreProperty(
+            IVertexStore myStore,
+            VertexInformation myVertex,
+            long myID,
+            String myName,
+            String myComment,
+            Int64 myCreationDate,
+            bool myIsMandatory,
+            PropertyMultiplicity myMultiplicity,
+            VertexInformation myDefiningType,
+            VertexInformation myBasicType,
+            SecurityToken mySecurity,
+            TransactionToken myTransaction)
+        {
             Store(
                 myStore,
                 myVertex,
@@ -180,8 +231,8 @@ namespace sones.GraphDB.Manager.BaseGraph
                 null,
                 new Dictionary<long, IComparable>
                 {
-                    { (long) AttributeDefinitions.ID, (long) myAttribute },
-                    { (long) AttributeDefinitions.Name, myAttribute.ToString() },
+                    { (long) AttributeDefinitions.ID, myID},
+                    { (long) AttributeDefinitions.Name, myName },
                     { (long) AttributeDefinitions.IsUserDefined, false },
                     { (long) AttributeDefinitions.IsMandatory, myIsMandatory },
                     { (long) AttributeDefinitions.Multiplicity, (byte) myMultiplicity },
@@ -196,7 +247,7 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         #region Basic type
 
-        public static void StoreBasicType(
+        public static IVertex StoreBasicType(
             IVertexStore myStore,
             VertexInformation myVertex,
             BasicTypes myType,
@@ -205,7 +256,7 @@ namespace sones.GraphDB.Manager.BaseGraph
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
-            Store(
+            return Store(
                 myStore,
                 myVertex,
                 myComment,
@@ -231,7 +282,7 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         #region Vertex type
 
-        public static void StoreVertexType(
+        public static IVertex StoreVertexType(
             IVertexStore myStore,
             VertexInformation myVertex,
             BaseTypes myType,
@@ -244,7 +295,23 @@ namespace sones.GraphDB.Manager.BaseGraph
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
-            Store(
+            return StoreVertexType(myStore, myVertex, myType.ToString(), myComment, myCreationDate, myIsAbstract, myIsSealed, myParent, myUniques, mySecurity, myTransaction);
+        }
+
+        public static IVertex StoreVertexType(
+            IVertexStore myStore,
+            VertexInformation myVertex,
+            String myName,
+            String myComment,
+            Int64 myCreationDate,
+            bool myIsAbstract,
+            bool myIsSealed,
+            VertexInformation? myParent,
+            IEnumerable<VertexInformation> myUniques,
+            SecurityToken mySecurity,
+            TransactionToken myTransaction)
+        {
+            return Store(
                 myStore,
                 myVertex,
                 myComment,
@@ -261,8 +328,8 @@ namespace sones.GraphDB.Manager.BaseGraph
                 },
                 new Dictionary<long, IComparable>
                 {
-                    { (long) AttributeDefinitions.ID, (long) myType },
-                    { (long) AttributeDefinitions.Name, myType.ToString() },
+                    { (long) AttributeDefinitions.ID, myVertex.VertexID },
+                    { (long) AttributeDefinitions.Name, myName },
                     { (long) AttributeDefinitions.IsUserDefined, false },
                     { (long) AttributeDefinitions.IsAbstract, myIsAbstract },
                     { (long) AttributeDefinitions.IsSealed, myIsSealed },
@@ -378,7 +445,7 @@ namespace sones.GraphDB.Manager.BaseGraph
         /// <param name="myEdges"></param>
         /// <param name="myStructuredProperties"></param>
         /// <param name="myUnstructuredProperties"></param>
-        private static void Store(
+        private static IVertex Store(
             IVertexStore myStore,
             VertexInformation mySource,
             String myComment,
@@ -403,7 +470,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                 myStructuredProperties,
                 myUnstructuredProperties);
 
-            myStore.AddVertex(mySecurity, myTransaction, def);
+            return myStore.AddVertex(mySecurity, myTransaction, def);
         }
 
         private static IEnumerable<SingleEdgeAddDefinition> CreateSingleEdgeDefinitions(

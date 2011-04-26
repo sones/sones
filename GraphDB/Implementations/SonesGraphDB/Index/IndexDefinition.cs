@@ -13,6 +13,6 @@ namespace sones.GraphDB.Index
 
         public bool IsUserdefined { get; internal set; }
 
-        public IEnumerable<IAttributeDefinition> IndexedProperties { get; internal set; }
+        public IEnumerable<IPropertyDefinition> IndexedProperties { get; internal set; }
     }
 }

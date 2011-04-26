@@ -107,6 +107,11 @@ namespace sones.GraphDB.Manager.Vertex
             throw new NotImplementedException();
         }
 
+        public IVertexStore VertexStore
+        {
+            get { return _vertexStore; }
+        }
+
         #endregion
 
         #region public methods
@@ -148,5 +153,6 @@ namespace sones.GraphDB.Manager.Vertex
         }
 
         #endregion
+
     }
 }
