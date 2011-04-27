@@ -48,8 +48,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
 
         #endregion
 
-        public LevelKey(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
-            :this(new List<EdgeKey>(), myGraphDB, mySecurityToken, myTransactionToken)
+        public LevelKey()
         {
 
         }
@@ -243,7 +242,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.ExpressionGraph
         public LevelKey AddLevelKey(LevelKey myLevelKey2, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             if ((this.Edges == null || this.Edges.Count == 0) && (myLevelKey2.Edges == null || myLevelKey2.Edges.Count == 0))
-                return new LevelKey(myGraphDB, mySecurityToken, myTransactionToken);
+                return new LevelKey();
             else if (this.Edges == null || this.Edges.Count == 0)
                 return new LevelKey(myLevelKey2.Edges, myGraphDB, mySecurityToken, myTransactionToken);
             else if (myLevelKey2.Edges == null || myLevelKey2.Edges.Count == 0)

@@ -10,6 +10,11 @@ namespace sones.GraphQL
         /// The application settings location
         /// </summary>
         public static String ApplicationSettingsLocation = "sonesGQLSettings.xml";
+        
+        /// <summary>
+        /// The name of the base vertex type name which carries attributes like creation date, modification date, UUID, comment...
+        /// </summary>
+        public static String BaseVertexTypeName = "Vertex";
 
         #endregion
 

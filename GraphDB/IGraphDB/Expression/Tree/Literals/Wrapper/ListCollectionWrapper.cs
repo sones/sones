@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sones.GraphDB.ErrorHandling.Expression;
+using System.Collections;
 
 namespace sones.GraphDB.Expression.Tree.Literals
 {
@@ -77,6 +78,24 @@ namespace sones.GraphDB.Expression.Tree.Literals
             }
 
             throw new InvalidCollectionComparismException(String.Format("It is not allowed to compare a {0} to a List", obj.GetType().Name));
+        }
+
+        #endregion
+
+        #region IEnumerable<IComparable> Members
+
+        public IEnumerator<IComparable> GetEnumerator()
+        {
+            return Value.GetEnumerator();
+        }
+
+        #endregion
+
+        #region IEnumerable Members
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable)Value).GetEnumerator();
         }
 
         #endregion

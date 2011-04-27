@@ -9,7 +9,8 @@ namespace sones.GraphDB.Expression.Tree.Literals
     /// A wrapper interface that wraps collections
     /// This data structure is needed, because generic collections do not implement IComparable
     /// </summary>
-    public interface ICollectionWrapper : IComparableWrapper
+    public interface ICollectionWrapper : IComparableWrapper, IEnumerable<IComparable>
     {
+
     }
 }

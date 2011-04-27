@@ -46,10 +46,12 @@
   <ItemGroup>
     <Compile Include="ErrorHandling\ExpressionGraphInternalException.cs" />
     <Compile Include="ErrorHandling\GqlSyntaxException.cs" />
+    <Compile Include="ErrorHandling\InvalidBinaryExpressionException.cs" />
     <Compile Include="ErrorHandling\InvalidLevelKeyOperationException.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Grammar\SonesGQLGrammar.cs" />
     <Compile Include="Manager\Plugin\GQLPluginManager.cs" />
+    <Compile Include="Manager\Select\SelectManager.cs" />
     <Compile Include="Result\EdgeView.cs" />
     <Compile Include="Result\GraphElementView.cs" />
     <Compile Include="Result\HyperEdgeView.cs" />
@@ -81,7 +83,8 @@
     <Compile Include="StatementNodes\Settings\SettingNode.cs" />
     <Compile Include="StatementNodes\Transactions\BeginTransactionNode.cs" />
     <Compile Include="StatementNodes\Transactions\CommitRollbackTransactionNode.cs" />
-    <Compile Include="Structure\Helper\Enums\BinaryOperator.cs" />
+    <Compile Include="Structure\Helper\Enums\KindOfTuple.cs" />
+    <Compile Include="Structure\Helper\Enums\SortDirection.cs" />
     <Compile Include="Structure\Helper\Enums\VerbosityTypes.cs" />
     <Compile Include="Structure\Helper\Enums\KindOfDelimiter.cs" />
     <Compile Include="Structure\Helper\Enums\TypesOfAlterCmd.cs" />
@@ -176,9 +179,25 @@
     <Compile Include="Structure\Nodes\DML\SelectionListElementNode.cs" />
     <Compile Include="Structure\Nodes\DML\OrderByNode.cs" />
     <Compile Include="Structure\Nodes\DML\HavingExpressionNode.cs" />
+    <Compile Include="Structure\Nodes\Expressions\ABinaryBaseOperator.cs" />
+    <Compile Include="Structure\Nodes\Expressions\ABinaryLogicalOperator.cs" />
+    <Compile Include="Structure\Nodes\Expressions\ABinaryOperator.cs" />
+    <Compile Include="Structure\Nodes\Expressions\AExpressionDefinition.cs" />
+    <Compile Include="Structure\Nodes\Expressions\AggregateDefinition.cs" />
     <Compile Include="Structure\Nodes\Expressions\AggregateNode.cs" />
+    <Compile Include="Structure\Nodes\Expressions\AOperationDefinition.cs" />
+    <Compile Include="Structure\Nodes\Expressions\ATermDefinition.cs" />
+    <Compile Include="Structure\Nodes\Expressions\BinaryExpressionDefinition.cs" />
     <Compile Include="Structure\Nodes\Expressions\BinaryExpressionNode.cs" />
     <Compile Include="Structure\Nodes\Expressions\FuncCallNode.cs" />
+    <Compile Include="Structure\Nodes\Expressions\OrderByDefinition.cs" />
+    <Compile Include="Structure\Nodes\Expressions\SelectDefinition.cs" />
+    <Compile Include="Structure\Nodes\Expressions\SelectValueAssignment.cs" />
+    <Compile Include="Structure\Nodes\Expressions\TupleDefinition.cs" />
+    <Compile Include="Structure\Nodes\Expressions\TupleElement.cs" />
+    <Compile Include="Structure\Nodes\Expressions\TypeReferenceDefinition.cs" />
+    <Compile Include="Structure\Nodes\Expressions\UnaryExpressionDefinition.cs" />
+    <Compile Include="Structure\Nodes\Expressions\ValueDefinition.cs" />
     <Compile Include="Structure\Nodes\Expressions\WhereExpressionNode.cs" />
     <Compile Include="Structure\Nodes\Expressions\SetRefNode.cs" />
     <Compile Include="Structure\Nodes\Expressions\ExpressionOfAListNode.cs" />
@@ -188,8 +207,10 @@
     <Compile Include="Structure\Nodes\Misc\AliasNode.cs" />
     <Compile Include="Structure\Nodes\Misc\ATypeNode.cs" />
     <Compile Include="Structure\Nodes\Misc\GraphDBTypeNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\IDChainDefinition.cs" />
     <Compile Include="Structure\Nodes\Misc\IDNode.cs" />
     <Compile Include="Structure\Nodes\Misc\TypeListNode.cs" />
+    <Compile Include="Structure\Nodes\Misc\UnstructuredProperty.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">
@@ -199,6 +220,10 @@
     <ProjectReference Include="..\..\..\Library\External\Irony\Irony.csproj">
       <Project>{D81F5C91-D7DB-46E5-BC99-49488FB6814C}</Project>
       <Name>Irony</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\Arithmetics\Arithmetics\Arithmetics.csproj">
+      <Project>{E33D0E75-43A1-4643-928D-DA9E5D99E041}</Project>
+      <Name>Arithmetics</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\Commons\Commons.csproj">
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
