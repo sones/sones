@@ -1,9 +1,9 @@
 ﻿using System;
+using System.IdentityModel.Tokens;
 using System.Net;
 using System.Collections.Generic;
 using System.ServiceModel;
 using System.IdentityModel.Selectors;
-using System.Linq;
 using sones.GraphDB;
 using sones.GraphDB.Request;
 using sones.GraphDSServer.ErrorHandling;
@@ -17,6 +17,17 @@ using sones.GraphQL;
 
 namespace sones.GraphDSServer
 {
+    internal class PasswordValidator : UserNamePasswordValidator
+    {
+        public override void Validate(string userName, string password)
+        {
+            if (!(userName == "test" && password == "test"))
+            {
+                throw new SecurityTokenException("Username or password incorrect.");
+            }
+        }
+    }
+    
     public sealed class GraphDSServer : IGraphDSServer
     {
         #region Data
@@ -42,11 +53,6 @@ namespace sones.GraphDSServer
         private readonly GraphDSPluginManager           _pluginManager;
 
         /// <summary>
-        /// The http credentials.
-        /// </summary>
-        private UserNamePasswordValidator               _httpCredentials;
-
-        /// <summary>
         /// The list of supported graph ql types.
         /// </summary>
         private readonly Dictionary<String, IGraphQL>   _queryLanguages;
@@ -67,12 +73,13 @@ namespace sones.GraphDSServer
             _queryLanguages = new Dictionary<string, IGraphQL>();
 
             var qlPluginNames = _pluginManager.GetPluginsForType<IGraphQL>();
+            var languageParameters = new Dictionary<String, Object>();
+            languageParameters.Add("GraphDB", myGraphDB);
 
             foreach (var item in qlPluginNames)
             {
-                _queryLanguages.Add(item, _pluginManager.GetAndInitializePlugin<IGraphQL>(item));
+                _queryLanguages.Add(item, _pluginManager.GetAndInitializePlugin<IGraphQL>(item, languageParameters));
             }
-
         }
 
         #endregion
@@ -86,7 +93,7 @@ namespace sones.GraphDSServer
                     var security = new HTTPSecurity()                     
                     {
                         CredentialType = HttpClientCredentialType.Basic,
-                        UserNamePasswordValidator = _httpCredentials
+                        UserNamePasswordValidator = Validator
                     };
                 
                     var restService = new GraphDSREST_Service();
@@ -119,6 +126,11 @@ namespace sones.GraphDSServer
             }
             
             return true;
+        }
+
+        public UserNamePasswordValidator Validator
+        {
+            get { return new PasswordValidator(); }
         }
 
         #endregion
@@ -226,9 +238,7 @@ namespace sones.GraphDSServer
 
         public sones.Library.Commons.Security.SecurityToken LogOn(IUserCredentials toBeAuthenticatedCredentials)
         {
-            _httpCredentials = toBeAuthenticatedCredentials.CreateHttpCredentials();
-            //var credentials = _iGraphDB.LogOn(toBeAuthenticatedCredentials);
-            return null;
+            return _iGraphDB.LogOn(toBeAuthenticatedCredentials);
         }
 
         public void LogOff(sones.Library.Commons.Security.SecurityToken toBeLoggedOfToken)
@@ -237,6 +247,5 @@ namespace sones.GraphDSServer
         }
 
         #endregion
-
     }
 }

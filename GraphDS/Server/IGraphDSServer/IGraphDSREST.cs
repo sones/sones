@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.IdentityModel.Selectors;
 
 namespace sones.GraphDSServer
 {
@@ -22,5 +23,8 @@ namespace sones.GraphDSServer
         /// <param name="myServiceID">The unique identifier of the REST service that is going to be stopped</param>
         /// <returns>True for successful stop, otherwise false</returns>
         bool StopRESTService(String myServiceID);
+
+
+        UserNamePasswordValidator Validator { get; }
     }
 }

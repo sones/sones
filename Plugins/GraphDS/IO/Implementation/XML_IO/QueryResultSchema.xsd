@@ -12,7 +12,7 @@
       <xs:attribute name = "Language"      type ="xs:string"/>
       <xs:attribute name = "Value"         type ="xs:string" />
       <xs:attribute name = "VerticesCount" type ="xs:int" />
-      <xs:attribute name = "Error"         type="xs:string" default="" />
+      <xs:attribute name = "Error"         type ="xs:string" default="" />
       <xs:attribute name = "Duration"      type ="xs:unsignedLong" />
     </xs:complexType>
   </xs:element>
@@ -28,7 +28,7 @@
     <xs:complexContent>
       <xs:extension base="GraphElementView">
         <xs:sequence>
-          <xs:element name="TargetVertices" type="mstns:SchemaVertexView" maxOccurs="unbounded" minOccurs="0"/>          
+          <xs:element ref="mstns:VertexViewList"/>
         </xs:sequence>
       </xs:extension>
     </xs:complexContent>
@@ -65,7 +65,7 @@
 
   <xs:complexType name ="PropertyList">
     <xs:sequence>
-      <xs:element name ="Properties" type="mstns:Property" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element name ="Property" type="mstns:Property" maxOccurs="unbounded" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
   

@@ -21,7 +21,7 @@ namespace sones.GraphDS.PluginManager.GraphDSPluginManager
             #region Register & Discover
 
             // Change the version if there are ANY changes which will prevent loading the plugin.
-            // As long as there are still some plugins which does not have their own assembly you need to change the compatibility of ALL plugins of the GraphDS and GraphFSInterface assembly.
+            // As long as there are still some plugins which does not have their own assembly you need to change the compatibility of ALL plugins of the GraphDS assembly.
             // So, if any plugin in the GraphDS changes you need to change the AssemblyVersion of the GraphDS AND modify the compatibility version of the other plugins.
             _pluginManager
                 .Register<IGraphQL>(IGraphQLVersionCompatibility.MinVersion, IGraphQLVersionCompatibility.MaxVersion)

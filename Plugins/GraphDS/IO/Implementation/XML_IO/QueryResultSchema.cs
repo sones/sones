@@ -26,7 +26,7 @@ namespace SchemaToClassesGenerator {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("Properties", IsNullable=false)]
+        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
         public Property[] Properties {
             get {
                 return this.propertiesField;
@@ -127,16 +127,16 @@ namespace SchemaToClassesGenerator {
     [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
     public partial class SchemaEdgeView : GraphElementView {
         
-        private SchemaVertexView[] targetVerticesField;
+        private SchemaVertexView[] vertexViewListField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("TargetVertices")]
-        public SchemaVertexView[] TargetVertices {
+        [System.Xml.Serialization.XmlArrayItemAttribute("VertexView", IsNullable=false)]
+        public SchemaVertexView[] VertexViewList {
             get {
-                return this.targetVerticesField;
+                return this.vertexViewListField;
             }
             set {
-                this.targetVerticesField = value;
+                this.vertexViewListField = value;
             }
         }
     }
@@ -157,7 +157,7 @@ namespace SchemaToClassesGenerator {
         private EdgeTuple[] edgesField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("Properties", IsNullable=false)]
+        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
         public Property[] Properties {
             get {
                 return this.propertiesField;
@@ -256,16 +256,16 @@ namespace SchemaToClassesGenerator {
     [System.Xml.Serialization.XmlRootAttribute(Namespace="http://sones.com/QueryResultSchema.xsd", IsNullable=true)]
     public partial class PropertyList {
         
-        private Property[] propertiesField;
+        private Property[] propertyField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Properties")]
-        public Property[] Properties {
+        [System.Xml.Serialization.XmlElementAttribute("Property")]
+        public Property[] Property {
             get {
-                return this.propertiesField;
+                return this.propertyField;
             }
             set {
-                this.propertiesField = value;
+                this.propertyField = value;
             }
         }
     }

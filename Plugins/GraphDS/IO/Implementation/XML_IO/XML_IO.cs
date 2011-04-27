@@ -125,7 +125,7 @@ namespace sones.Plugins.GraphDS.IOInterface.XML_IO
                 }
                 
                 et.Edge = new SchemaEdgeView();
-                et.Edge.TargetVertices = innerVertices.ToArray();
+                et.Edge.VertexViewList = innerVertices.ToArray();
 
                 #endregion
 
@@ -145,6 +145,7 @@ namespace sones.Plugins.GraphDS.IOInterface.XML_IO
                 }
 
                 et.Edge.Properties = edgeProps.ToArray();
+                et.Edge.CountOfProperties = edgeProps.Count;
 
                 #endregion
 
@@ -183,34 +184,33 @@ namespace sones.Plugins.GraphDS.IOInterface.XML_IO
 
             while (nextNode != null)
             {
-                if (nextNode.Attributes.Count > 0)
+                for(Int32 i = 0; i< nextNode.Attributes.Count; i++)
                 {
-                    query = nextNode.Attributes[0].Value;
-                    language = nextNode.Attributes[1].Value;
-                }
-                else
-                {
-                    if (nextNode.HasChildNodes)
+                    switch(nextNode.Attributes[i].Name)
                     {
-                        switch (nextNode.Name)
-                        {
-                            case "Duration":
-                                duration = System.Convert.ToUInt64(nextNode.FirstChild.Value);
-                                break;
-
-                            case "Number":
-                                nrOfVertices = System.Convert.ToInt64(nextNode.FirstChild.Value);
-                                break;
-
-                            case "Error":
-                                error = nextNode.FirstChild.Value;
-                                break;
-
-                            case "Vertices":
-                                vertices = ParseVertices(nextNode);
-                                break;
-                        }
+                        case "Value":
+                            query = nextNode.Attributes[i].Value;
+                            break;
+                        case "Language":
+                            language = nextNode.Attributes[i].Value;
+                            break;
+                        case "Duration":
+                            duration = System.Convert.ToUInt64(nextNode.Attributes[i].Value);
+                            break;
+                        case "VerticesCount":
+                            nrOfVertices = System.Convert.ToInt64(nextNode.Attributes[i].Value);
+                            break;
+                        case "Error":
+                            error = nextNode.Attributes[i].Value;
+                            break;
                     }
+                    
+                    
+                }
+
+                if (nextNode.Name == "VertexViewList")
+                {
+                    vertices = ParseVertices(nextNode);
                 }
 
                 nextNode = nextNode.NextSibling;
@@ -244,7 +244,7 @@ namespace sones.Plugins.GraphDS.IOInterface.XML_IO
             {
                 String key = String.Empty;
                 Object value = null;
-                String type = String.Empty;                
+                String type = String.Empty;
 
                 var propElement = property.FirstChild;
 
@@ -284,7 +284,7 @@ namespace sones.Plugins.GraphDS.IOInterface.XML_IO
                                 break;
                         }
                     }
-                    propElement = propElement.NextSibling;                    
+                    propElement = propElement.NextSibling; 
                 }
 
                 result.Add(key, value);
@@ -357,7 +357,7 @@ namespace sones.Plugins.GraphDS.IOInterface.XML_IO
                             myEdgeProperties = ParseVertexProperties(property);
                             break;
 
-                        case "TargetVertices" :
+                        case "VertexViewList" :
                             myTargetVertices.AddRange(ParseVertices(property));
                             break;
                     }

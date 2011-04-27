@@ -20,7 +20,7 @@ namespace sones.GraphQL
         /// <summary>
         /// The IGraphDB instance for accessing the graph database
         /// </summary>
-        private readonly IGraphDB _IGraphDBInstance;
+        private IGraphDB _IGraphDBInstance;
 
         /// <summary>
         /// The settings of the application
@@ -35,6 +35,13 @@ namespace sones.GraphQL
         #endregion
 
         #region Constructor
+
+        /// <summary>
+        /// The empty constructor, needed to load the query language as plugin.
+        /// </summary>
+        public SonesQueryLanguage()
+        {
+        }
 
         /// <summary>
         /// Creates a new sones GQL instance
@@ -83,12 +90,31 @@ namespace sones.GraphQL
 
         public Dictionary<string, Type> SetableParameters
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return new Dictionary<string, Type> 
+                { 
+                    { "GraphDB", typeof(IGraphDB) }
+                };
+            }
         }
 
         public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
-            throw new NotImplementedException();
+            IGraphDB dbInstance = null;
+
+            if (myParameters != null)
+            {
+                if (myParameters.ContainsKey("GraphDB"))
+                {
+                    dbInstance = (IGraphDB)myParameters["GraphDB"];
+                }
+            }
+
+            object result = typeof(SonesQueryLanguage).
+                GetConstructor(new Type[] { typeof(IGraphDB) }).Invoke(new object[] { dbInstance });
+
+            return (IPluginable)result;
         }
 
         #endregion
