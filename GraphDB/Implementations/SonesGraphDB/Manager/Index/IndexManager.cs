@@ -9,6 +9,7 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.Commons.VertexStore;
 using sones.Plugins.Index.Interfaces;
+using sones.GraphDB.Request.CreateVertexTypes;
 
 namespace sones.GraphDB.Manager.Index
 {
@@ -58,7 +59,7 @@ namespace sones.GraphDB.Manager.Index
 
         #region IIndexManager Members
 
-        public void CreateIndex(IIndexDefinition myIndexDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public IIndexDefinition CreateIndex(IndexPredefinition myIndexDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myIsUserDefined)
         {
             throw new NotImplementedException();
         }

@@ -18,7 +18,6 @@
         /// <summary>
         /// The target vertex type. Never <c>NULL</c>.
         /// </summary>
-        
         IVertexType TargetVertexType { get; }
 
         /// <summary>

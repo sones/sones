@@ -12,5 +12,10 @@ namespace sones.GraphDB.TypeSystem
         /// </summary>
         /// <returns>A set of attribute definitions that together must be unique. Never <c>NULL</c>.</returns>
         IEnumerable<IPropertyDefinition> UniquePropertyDefinitions { get; }
+
+        /// <summary>
+        /// The vertex type that defines the uniqueness.
+        /// </summary>
+        IVertexType DefiningVertexType { get; }
     }
 }

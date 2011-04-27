@@ -28,6 +28,10 @@ namespace sones.GraphDB.Request.CreateVertexTypes
         public ISet<String> Properties { get { return _properties; } }
 
         /// <summary>
+        /// The vertexTypeName that defines the index.
+        /// </summary>
+        public string VertexTypeName { get; set; }
+        /// <summary>
         /// Creates a new instance of IndexPredefinition.
         /// </summary>
         public IndexPredefinition() { }
@@ -46,7 +50,7 @@ namespace sones.GraphDB.Request.CreateVertexTypes
         /// </summary>
         /// <param name="myPropertyName">The name of the property.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public IndexPredefinition AddPropery(String myPropertyName)
+        public IndexPredefinition AddProperty(String myPropertyName)
         {
             _properties.Add(myPropertyName);
             return this;
@@ -57,10 +61,10 @@ namespace sones.GraphDB.Request.CreateVertexTypes
         /// </summary>
         /// <param name="myPropertyNames">The name of the properties.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public IndexPredefinition AddPropery(IEnumerable<String> myPropertyNames)
+        public IndexPredefinition AddProperty(IEnumerable<String> myPropertyNames)
         {
             foreach (var propertyName in myPropertyNames)
-                AddPropery(propertyName);
+                AddProperty(propertyName);
 
             return this;
         }
@@ -72,7 +76,16 @@ namespace sones.GraphDB.Request.CreateVertexTypes
         public IndexPredefinition SetIndexType(String myIndexTypeName)
         {
             TypeName = myIndexTypeName;
+            
             return this;
         }
+
+        public IndexPredefinition SetVertexType(String myVertexTypeName)
+        {
+            VertexTypeName = myVertexTypeName;
+
+            return this;
+        }
+
     }
 }

@@ -14,6 +14,11 @@ namespace sones.GraphDB.TypeSystem
         String Name { get; }
 
         /// <summary>
+        /// A identifier, that is unique for all indices.
+        /// </summary>
+        Int64 ID { get; }
+
+        /// <summary>
         /// The name of the index type. It can be used to get the index implementation from the index manager.
         /// Never <c>NULL</c>.
         /// </summary>
@@ -33,5 +38,10 @@ namespace sones.GraphDB.TypeSystem
         /// The attributes that are indexed. Never <c>NULL</c>. 
         /// </summary>
         IEnumerable<IPropertyDefinition> IndexedProperties { get; }
+
+        /// <summary>
+        /// The defining vertex type.
+        /// </summary>
+        IVertexType VertexType { get; }
     }
 }

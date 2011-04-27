@@ -15,12 +15,12 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// <summary>
         /// The single edges that should be deleted from the hyperedge
         /// </summary>
-        public readonly IEnumerable<SingelEdgeVector> ToBeDeletedSingleEdges;
+        public readonly IEnumerable<SingleEdgeDeleteDefinition> ToBeDeletedSingleEdges;
         
         /// <summary>
         /// The single edges that should be updated
         /// </summary>
-        public readonly Dictionary<SingelEdgeVector, SingleEdgeUpdateDefinition> ToBeUpdatedSingleEdges;
+        public readonly IEnumerable<SingleEdgeUpdateDefinition> ToBeUpdatedSingleEdges;
 
         #endregion
 
@@ -38,8 +38,8 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
             String myCommentUpdate = null,
             StructuredPropertiesUpdate myUpdatedStructuredProperties = null,
             UnstructuredPropertiesUpdate myUpdatedUnstructuredProperties = null,
-            IEnumerable<SingelEdgeVector> myToBeDeletedSingleEdges = null,
-            Dictionary<SingelEdgeVector, SingleEdgeUpdateDefinition> myToBeUpdatedSingleEdges = null)
+            IEnumerable<SingleEdgeDeleteDefinition> myToBeDeletedSingleEdges = null,
+            IEnumerable<SingleEdgeUpdateDefinition> myToBeUpdatedSingleEdges = null)
             : base(myCommentUpdate, myUpdatedStructuredProperties, myUpdatedUnstructuredProperties)
         {
             ToBeDeletedSingleEdges = myToBeDeletedSingleEdges;

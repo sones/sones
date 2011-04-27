@@ -18,6 +18,8 @@ using sones.Library.Commons.VertexStore.Definitions;
 using System.Threading;
 using sones.GraphDB.Manager.BaseGraph;
 using sones.GraphDB.Index;
+using sones.Library.Commons.VertexStore.Definitions.Update;
+using sones.GraphDB.Request.CreateVertexTypes;
 
 /*
  * edge cases:
@@ -911,32 +913,33 @@ namespace sones.GraphDB.Manager.TypeManagement
             {
                 #region Uniqueness
 
-                foreach (var unique in current.Value.Uniques)
+                #region own uniques 
+
+                if (current.Value.Uniques != null)
                 {
-                    _indexManager.CreateIndex(
-                        new IndexDefinition
-                            {
-                                IndexedProperties = result[resultPos].GetPropertyDefinitions(unique.Properties),
-                                IndexTypeName = uniqueIdx,
-                                IsUserdefined = false,
-                            },
-                        mySecurity,
-                        myTransaction);
+                    var indexPredefs = current.Value.Uniques.Select(unique =>
+                        new IndexPredefinition().AddProperty(unique.Properties).SetIndexType(uniqueIdx).SetVertexType(current.Value.VertexTypeName));
+
+                    var indexDefs = indexPredefs.Select(indexPredef=>_indexManager.CreateIndex(indexPredef, mySecurity, myTransaction, false)).ToArray();
+
+                    //only own unique indices are connected to the vertex type on the UniquenessDefinitions attribute
+                    ConnectVertexToUniqueIndex(typeInfos[current.Value.VertexTypeName], indexDefs, mySecurity, myTransaction);
                 }
+
+                #endregion
+
+                #region parent uniques
 
                 foreach (var unique in result[resultPos].GetParentVertexType.GetUniqueDefinitions(true))
                 {
                     _indexManager.CreateIndex(
-                        new IndexDefinition
-                        {
-                            IndexedProperties = unique.UniquePropertyDefinitions,
-                            IndexTypeName = uniqueIdx,
-                            IsUserdefined = false,
-                        },
-                        mySecurity,
-                        myTransaction);
-
+                        new IndexPredefinition().AddProperty(unique.UniquePropertyDefinitions.Select(x=>x.Name)).SetIndexType(uniqueIdx).SetVertexType(unique.DefiningVertexType.Name), 
+                        mySecurity, 
+                        myTransaction, 
+                        false);
                 }
+
+                #endregion
 
                 #endregion
 
@@ -944,28 +947,46 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                 foreach (var index in current.Value.Indices)
                 {
-                    
-                    _indexManager.CreateIndex(
-                        new IndexDefinition
-                        {
-                            Name = index.Name,
-                            IndexedProperties = result[resultPos].GetPropertyDefinitions(index.Properties),
-                            IndexTypeName = (string.IsNullOrWhiteSpace(index.TypeName))? indexIdx: index.TypeName,
-                            IsUserdefined = true,
-                        },
-                        mySecurity,
-                        myTransaction);
+                    _indexManager.CreateIndex(index, mySecurity, myTransaction);
                 }
 
                 foreach (var index in result[resultPos].GetParentVertexType.GetIndexDefinitions(true))
                 {
-                    _indexManager.CreateIndex(index, mySecurity, myTransaction);
+                    _indexManager.CreateIndex(
+                        new IndexPredefinition(index.Name).AddProperty(index.IndexedProperties.Select(x=>x.Name)).SetVertexType(current.Value.VertexTypeName).SetIndexType(index.IndexTypeName), 
+                        mySecurity, 
+                        myTransaction);
                 }
 
                 #endregion
+
             }
 
             return result;
+        }
+
+        private void ConnectVertexToUniqueIndex(TypeInfo myTypeInfo, IIndexDefinition[] myIndexDefinitions, SecurityToken mySecurity, TransactionToken myTransaction)
+        {
+            _vertexManager.VertexStore.UpdateVertex(
+                            mySecurity,
+                            myTransaction,
+                            myTypeInfo.VertexInfo.VertexID,
+                            myTypeInfo.VertexInfo.VertexTypeID,
+                            new VertexUpdateDefinition(
+                                myHyperEdgeUpdate: new HyperEdgeUpdate(
+                                    myUpdated: new Dictionary<long, HyperEdgeUpdateDefinition>
+                                {
+                                    {
+                                        (long)AttributeDefinitions.UniquenessDefinitions, 
+                                        new HyperEdgeUpdateDefinition(myToBeUpdatedSingleEdges: myIndexDefinitions.Select(x=>IndexDefinitionToSingleEdgeUpdate(myTypeInfo.VertexInfo, x)))
+                                    }
+                                }
+                            )));
+        }
+
+        private static SingleEdgeUpdateDefinition IndexDefinitionToSingleEdgeUpdate(VertexInformation mySourceVertex, IIndexDefinition myDefinition)
+        {
+            return new SingleEdgeUpdateDefinition(mySourceVertex, new VertexInformation((long)BaseTypes.Index, myDefinition.ID));
         }
 
         private VertexInformation GetOutgoingEdgeVertexInformation(string myVertexType, string myEdgeName, TransactionToken myTransaction, SecurityToken mySecurity)

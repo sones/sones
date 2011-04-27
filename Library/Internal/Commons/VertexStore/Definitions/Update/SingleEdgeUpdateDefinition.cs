@@ -11,11 +11,16 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
     public sealed class SingleEdgeUpdateDefinition : AGraphElementUpdateDefinition
     {
         #region data
-        
+
         /// <summary>
-        /// Defines the single edge that should be updated
+        /// The source for this single edge.
         /// </summary>
-        public readonly SingelEdgeVector UpdatedVector;
+        public VertexInformation SourceVertex { get; private set; }
+
+        /// <summary>
+        /// The target for this edge.
+        /// </summary>
+        public VertexInformation TargetVertex { get; private set; }
 
         #endregion
 
@@ -29,13 +34,15 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// <param name="myUpdatedUnstructuredProperties">The unstructured properties</param>
         /// <param name="myUpdatedVector">Defines the single edge that should be updated</param>
         public SingleEdgeUpdateDefinition(
+            VertexInformation mySourceVertex,
+            VertexInformation myTargetVertex,
             String myCommentUpdate = null,
             StructuredPropertiesUpdate myUpdatedStructuredProperties = null,
-            UnstructuredPropertiesUpdate myUpdatedUnstructuredProperties = null,
-            SingelEdgeVector myUpdatedVector = null)
+            UnstructuredPropertiesUpdate myUpdatedUnstructuredProperties = null)
             : base(myCommentUpdate, myUpdatedStructuredProperties, myUpdatedUnstructuredProperties)
         {
-            UpdatedVector = myUpdatedVector;
+            SourceVertex = mySourceVertex;
+            TargetVertex = myTargetVertex;
         }
 
         #endregion

@@ -5,6 +5,7 @@ using System.Collections;
 using System;
 using sones.Plugins.Index.Interfaces;
 using System.Collections.Generic;
+using sones.GraphDB.Request.CreateVertexTypes;
 
 namespace sones.GraphDB.Manager.Index
 {
@@ -19,7 +20,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="myIndexDefinition">The definition for the index</param>
         /// <param name="mySecurityToken">The current security token</param>
         /// <param name="myTransactionToken">The current transaction token</param>
-        void CreateIndex(IIndexDefinition myIndexDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+        IIndexDefinition CreateIndex(IndexPredefinition myIndexDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myIsUserDefined = true);
 
         /// <summary>
         /// Determines if there are one or more indices for a given property

@@ -69,7 +69,7 @@
     <Compile Include="VertexStore\Definitions\Update\BinaryPropertiesUpdate.cs" />
     <Compile Include="VertexStore\Definitions\Update\HyperEdgeUpdate.cs" />
     <Compile Include="VertexStore\Definitions\Update\HyperEdgeUpdateDefinition.cs" />
-    <Compile Include="VertexStore\Definitions\Update\SingelEdgeVector.cs" />
+    <Compile Include="VertexStore\Definitions\Update\SingleEdgeDeleteDefinition.cs" />
     <Compile Include="VertexStore\Definitions\Update\SingleEdgeUpdate.cs" />
     <Compile Include="VertexStore\Definitions\Update\SingleEdgeUpdateDefinition.cs" />
     <Compile Include="VertexStore\Definitions\Update\StructuredPropertiesUpdate.cs" />

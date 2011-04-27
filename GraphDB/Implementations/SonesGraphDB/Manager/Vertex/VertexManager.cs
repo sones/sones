@@ -105,7 +105,10 @@ namespace sones.GraphDB.Manager.Vertex
         {
             IVertexType vertexType = GetVertexType(myInsertDefinition.VertexTypeName, myTransaction, mySecurity);
 
-            var mandatoryProps = vertexType.GetPropertyDefinitions(true).Where(IsMandatoryProperty).ToArray();
+            if (vertexType.IsAbstract)
+                throw new AbstractConstraintViolationException(myInsertDefinition.VertexTypeName);
+
+            var mandatoryProps = vertexType.GetPropertyDefinitions(true).Where(IsMustSetProperty).ToArray();
 
 
             if (myInsertDefinition.StructuredProperties != null)
@@ -124,6 +127,8 @@ namespace sones.GraphDB.Manager.Vertex
             if (myInsertDefinition.BinaryProperties != null)
                 CheckAddBinaryProperties(myInsertDefinition, vertexType);
 
+            
+
         }
 
         private void CheckMandatoryConstraint(RequestInsertVertex myInsertDefinition, IEnumerable<IPropertyDefinition> myMandatoryProperties)
@@ -137,9 +142,20 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
+
+        private static bool IsMustSetProperty(IPropertyDefinition myPropertyDefinition)
+        {
+            return IsMandatoryProperty(myPropertyDefinition) && !HasDefaultValue(myPropertyDefinition);
+        }
+
         private static bool IsMandatoryProperty(IPropertyDefinition myPropertyDefinition)
         {
             return myPropertyDefinition.IsMandatory;
+        }
+
+        private static bool HasDefaultValue(IPropertyDefinition myPropertyDefinition)
+        {
+            return myPropertyDefinition.DefaultValue != null;
         }
 
         private static void CheckAddBinaryProperties(RequestInsertVertex myInsertDefinition, IVertexType vertexType)
