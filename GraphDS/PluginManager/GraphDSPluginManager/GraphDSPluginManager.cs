@@ -38,6 +38,7 @@ namespace sones.GraphDS.PluginManager.GraphDSPluginManager
 
             FillLookup<IGraphQL>(componentName);
             FillLookup<ISonesRESTService>(componentName);
+            FillLookup<IDrainPipe>(componentName);
 
             #endregion   
         
