@@ -150,7 +150,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
                     
                     #region handle BinExp
 
-                    var calculatedGraphResult = ((BinaryExpressionDefinition)Parameters[i]).Calculon(myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken));
+                    var calculatedGraphResult = ((BinaryExpressionDefinition)Parameters[i]).Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken));
 
                     var extractedDBOs = calculatedGraphResult.Select(new LevelKey(myTypeOfDBObject.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true);
 

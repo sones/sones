@@ -295,7 +295,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
                 if ((_Left is AOperationDefinition) && (_Right is AOperationDefinition))
                 {
-                    ResultValue = Operator.SimpleOperation(((AOperationDefinition)_Left), ((AOperationDefinition)_Right), TypeOfBinaryExpression);
+                    //ResultValue = Operator.SimpleOperation(((AOperationDefinition)_Left), ((AOperationDefinition)_Right), TypeOfBinaryExpression);
                 }
 
                 #endregion
@@ -456,13 +456,6 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
             return null;
         }
 
-        internal object SimpleExecution(IVertex aDBObject)
-        {
-            SubstituteAttributeNames(this, aDBObject);
-
-            return SimpleExecutionInternal().Value;
-        }
-
         private ValueDefinition GetAtomValue(IDChainDefinition iDNode, IVertex aDBObject)
         {
             return new ValueDefinition(aDBObject.GetProperty(iDNode.LastAttribute.AttributeID));
@@ -533,39 +526,6 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
             }
         }
 
-        private ValueDefinition SimpleExecutionInternal()
-        {
-            switch (TypeOfBinaryExpression)
-            {
-                case TypesOfBinaryExpression.Atom:
-
-                    return (Operator.SimpleOperation(((ValueDefinition)_Left), ((ValueDefinition)_Right), TypeOfBinaryExpression) as ValueDefinition);
-
-                case TypesOfBinaryExpression.LeftComplex:
-
-                    return Operator.SimpleOperation(
-                        ((BinaryExpressionDefinition)_Left).SimpleExecutionInternal(),
-                        ((ValueDefinition)_Right), TypeOfBinaryExpression)
-                        as ValueDefinition;
-
-                case TypesOfBinaryExpression.RightComplex:
-
-                    return Operator.SimpleOperation(
-                        ((ValueDefinition)_Left),
-                        ((BinaryExpressionDefinition)_Right).SimpleExecutionInternal(), TypeOfBinaryExpression)
-                        as ValueDefinition;
-
-                case TypesOfBinaryExpression.Complex:
-                case TypesOfBinaryExpression.Unknown:
-                default:
-                    return Operator.SimpleOperation(
-                       ((BinaryExpressionDefinition)_Left).SimpleExecutionInternal(),
-                       ((BinaryExpressionDefinition)_Right).SimpleExecutionInternal(), TypeOfBinaryExpression)
-                       as ValueDefinition;
-            }
-        }
-
-
         /// <summary>
         /// This method evaluates binary expressions.
         /// </summary>
@@ -575,7 +535,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
         /// <param name="queryCache">The current query cache.</param>
         /// <param name="resultGraph">A template of the result graph</param>
         /// <returns>A GraphResult container.</returns>
-        public IExpressionGraph Calculon(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IExpressionGraph resultGraph, bool aggregateAllowed = true)
+        public IExpressionGraph Calculon(GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, IExpressionGraph resultGraph, bool aggregateAllowed = true)
         {
             //a leaf expression is a expression without any recursive BinaryExpression
             if (IsLeafExpression())
@@ -584,7 +544,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
                 return this.Operator.TypeOperation(
                     this.Left, this.Right,
-                    myGraphDB, mySecurityToken, myTransactionToken,
+                    myPluginManager, myGraphDB, mySecurityToken, myTransactionToken,
                     this.TypeOfBinaryExpression,
                     GetAssociativityReloaded(ExtractIDNode(this.Left), ExtractIDNode(this.Right)),
                    resultGraph,
@@ -604,7 +564,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
                         if (this.Left is BinaryExpressionDefinition)
                         {
-                            return ((BinaryExpressionDefinition)this.Left).Calculon(myGraphDB, mySecurityToken, myTransactionToken, resultGraph.GetNewInstance(myGraphDB, mySecurityToken, myTransactionToken), aggregateAllowed);
+                            return ((BinaryExpressionDefinition)this.Left).Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, resultGraph.GetNewInstance(myGraphDB, mySecurityToken, myTransactionToken), aggregateAllowed);
                         }
                         else
                         {
@@ -619,7 +579,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
                         if (this.Right is BinaryExpressionDefinition)
                         {
-                            return ((BinaryExpressionDefinition)this.Right).Calculon(myGraphDB, mySecurityToken, myTransactionToken, resultGraph.GetNewInstance(myGraphDB, mySecurityToken, myTransactionToken), aggregateAllowed);
+                            return ((BinaryExpressionDefinition)this.Right).Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, resultGraph.GetNewInstance(myGraphDB, mySecurityToken, myTransactionToken), aggregateAllowed);
                         }
                         else
                         {
@@ -643,8 +603,8 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
                         }
 
 
-                        var left = ((BinaryExpressionDefinition)this.Left).Calculon(myGraphDB, mySecurityToken, myTransactionToken, resultGraph.GetNewInstance(myGraphDB, mySecurityToken, myTransactionToken), aggregateAllowed);
-                        var right = ((BinaryExpressionDefinition)this.Right).Calculon(myGraphDB, mySecurityToken, myTransactionToken, resultGraph.GetNewInstance(myGraphDB, mySecurityToken, myTransactionToken), aggregateAllowed);
+                        var left = ((BinaryExpressionDefinition)this.Left).Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, resultGraph.GetNewInstance(myGraphDB, mySecurityToken, myTransactionToken), aggregateAllowed);
+                        var right = ((BinaryExpressionDefinition)this.Right).Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, resultGraph.GetNewInstance(myGraphDB, mySecurityToken, myTransactionToken), aggregateAllowed);
 
                         return (this.Operator as ABinaryLogicalOperator).TypeOperation(
                             left,
@@ -762,10 +722,10 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
                     return false;
                 }
 
-                var resultValue = Operator.SimpleOperation(leftValue, ((ValueDefinition)_Right), TypeOfBinaryExpression);
 
-
-                return (Boolean)((resultValue as ValueDefinition).Value);
+                throw new NotImplementedQLException("TODO");
+                //var resultValue = Operator.SimpleOperation(leftValue, ((ValueDefinition)_Right), TypeOfBinaryExpression);
+                //return (Boolean)((resultValue as ValueDefinition).Value);
 
             }
 
@@ -779,10 +739,9 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
                     return false;
                 }
 
-                var resultValue = Operator.SimpleOperation(((ValueDefinition)_Left), rightValue, TypeOfBinaryExpression);
-
-
-                return (Boolean)((resultValue as ValueDefinition).Value);
+                throw new NotImplementedQLException("TODO");
+                //var resultValue = Operator.SimpleOperation(((ValueDefinition)_Left), rightValue, TypeOfBinaryExpression);
+                //return (Boolean)((resultValue as ValueDefinition).Value);
 
             }
 

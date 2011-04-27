@@ -7,23 +7,17 @@ using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
 using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.GraphQL.GQL.Manager.Plugin;
 
 namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 {
     public abstract class ABinaryLogicalOperator : ABinaryBaseOperator
     {
-
-        public override AOperationDefinition SimpleOperation(AOperationDefinition left, AOperationDefinition right, TypesOfBinaryExpression typeOfBinExpr)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override IExpressionGraph TypeOperation(AExpressionDefinition myLeftValueObject, AExpressionDefinition myRightValueObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph result, bool aggregateAllowed = true)
-        {
-            throw new NotImplementedException();
-        }
-
         public abstract IExpressionGraph TypeOperation(IExpressionGraph myLeftValueObject, IExpressionGraph myRightValueObject, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph result, bool aggregateAllowed = true);
 
+        public override IExpressionGraph TypeOperation(AExpressionDefinition myLeftValueObject, AExpressionDefinition myRightValueObject, GQLPluginManager myPluginManager, IGraphDB myIGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, TypesOfBinaryExpression typeOfBinExpr, TypesOfAssociativity associativity, IExpressionGraph result, bool aggregateAllowed = true)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

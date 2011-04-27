@@ -237,7 +237,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
                     aUniqueExpr.Validate(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken , validationType);
 
-                    var _graphResult = aUniqueExpr.Calculon(myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken));
+                    var _graphResult = aUniqueExpr.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken));
 
                     foreach (var aDBO in _graphResult.Select(new LevelKey(validationType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true))
                     {
@@ -266,7 +266,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
                                 ValidateBinaryExpression(tempNode, validationType, myPluginManager, myGraphDB, mySecurityToken, myTransactionToken);
 
-                                var tempGraphResult = tempNode.Calculon(myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken));
+                                var tempGraphResult = tempNode.Calculon(myPluginManager, myGraphDB, mySecurityToken, myTransactionToken, new CommonUsageGraph(myGraphDB, mySecurityToken, myTransactionToken));
 
                                 foreach (var aDBO in tempGraphResult.Select(new LevelKey(validationType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true))
                                 {

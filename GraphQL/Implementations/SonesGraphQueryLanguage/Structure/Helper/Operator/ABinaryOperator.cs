@@ -8,6 +8,7 @@ using sones.GraphQL.GQL.Structure.Helper.ExpressionGraph;
 using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.GraphQL.GQL.Manager.Plugin;
 
 namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 {
@@ -29,11 +30,10 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
         #region (public) Methods
 
-        public abstract AOperationDefinition SimpleOperation(AOperationDefinition left, AOperationDefinition right, TypesOfBinaryExpression typeOfBinExpr);
-
         public abstract IExpressionGraph TypeOperation(
             AExpressionDefinition myLeftValueObject, 
             AExpressionDefinition myRightValueObject, 
+            GQLPluginManager myPluginManager,
             IGraphDB myIGraphDB,
             SecurityToken mySecurityToken,
             TransactionToken myTransactionToken,
