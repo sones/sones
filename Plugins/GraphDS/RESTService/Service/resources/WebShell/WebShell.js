@@ -4,41 +4,41 @@
 
         if (queryResult != undefined) {
 
-            var out = "";
-            out += "<div class=\"resultItem\">";
-            out += "<span class=\"AttrTag\">&lt;sones <span class=\"AttrParamName\">version</span>=<span class=\"AttrParamValue\">\"1.0\"</span>&gt;</span>\n";
-            out += "<div class=\"inner\"><span class=\"AttrTag\">&lt;graphdb <span class=\"AttrParamName\">version</span>=<span class=\"AttrParamValue\">\"1.0\"</span>&gt;</span>\n";
-            out += "<div class=\"inner\"><span class=\"AttrTag\">&lt;queryresult <span class=\"AttrParamName\">version</span>=<span class=\"AttrParamValue\">\"1.0\"</span>&gt;</span>\n";
+           var out = "";
+//            out += "<div class=\"resultItem\">";
+//            out += "<span class=\"AttrTag\">&lt;sones <span class=\"AttrParamName\">version</span>=<span class=\"AttrParamValue\">\"1.0\"</span>&gt;</span>\n";
+//            out += "<div class=\"inner\"><span class=\"AttrTag\">&lt;graphdb <span class=\"AttrParamName\">version</span>=<span class=\"AttrParamValue\">\"1.0\"</span>&gt;</span>\n";
+//            out += "<div class=\"inner\"><span class=\"AttrTag\">&lt;queryresult <span class=\"AttrParamName\">version</span>=<span class=\"AttrParamValue\">\"1.0\"</span>&gt;</span>\n";
 
-            // query string
-            var query = escapeArrowBrackets($(queryResult.getElementsByTagName("query")[0]).text());
-            out += "<div class=\"inner\"><span class=\"AttrTag\">&lt;query&gt;</span>" + query + "<span class=\"AttrTag\">&lt;/query&gt;</span></div>\n";
+//            // query string
+//            var query = escapeArrowBrackets($(queryResult.getElementsByTagName("Query")[0]).attr("Value"));
+//            out += "<div class=\"inner\"><span class=\"AttrTag\">&lt;query&gt;</span>" + query + "<span class=\"AttrTag\">&lt;/query&gt;</span></div>\n";
 
-            // query result
-            var result = escapeArrowBrackets($(queryResult.getElementsByTagName("result")[0]).text());
-            out += "<div class=\"inner\"><span class=\"AttrTag\">&lt;result&gt;</span>" + result + "<span class=\"AttrTag\">&lt;/result&gt;</span></div>\n";
+//            // query result
+//            var result = escapeArrowBrackets($(queryResult.getElementsByTagName("result")[0]).text());
+//            out += "<div class=\"inner\"><span class=\"AttrTag\">&lt;result&gt;</span>" + result + "<span class=\"AttrTag\">&lt;/result&gt;</span></div>\n";
 
-            // duration
-            var resolution = escapeArrowBrackets($(queryResult.getElementsByTagName("duration")[0]).attr("resolution"));
-            var duration = escapeArrowBrackets($(queryResult.getElementsByTagName("duration")[0]).text());
-            out += "<div class=\"inner\"><span class=\"AttrTag\">&lt;duration <span class=\"AttrParamName\">resolution</span>=<span class=\"AttrParamValue\">\"" + resolution + "\"</span>&gt;</span>" + duration + "<span class=\"AttrTag\">&lt;/duration&gt;</span></div>\n";
+//            // duration
+//            var resolution = escapeArrowBrackets($(queryResult.getElementsByTagName("duration")[0]).attr("resolution"));
+//            var duration = escapeArrowBrackets($(queryResult.getElementsByTagName("duration")[0]).text());
+//            out += "<div class=\"inner\"><span class=\"AttrTag\">&lt;duration <span class=\"AttrParamName\">resolution</span>=<span class=\"AttrParamValue\">\"" + resolution + "\"</span>&gt;</span>" + duration + "<span class=\"AttrTag\">&lt;/duration&gt;</span></div>\n";
 
-            // warnings
-            out += ErrorsOrWarnings2XML(queryResult, "warnings");
+//            // warnings
+//            out += ErrorsOrWarnings2XML(queryResult, "warnings");
 
-            // errors
-            out += ErrorsOrWarnings2XML(queryResult, "errors");
+//            // errors
+//            out += ErrorsOrWarnings2XML(queryResult, "errors");
 
-            // results        
-            out += results2XML(queryResult.getElementsByTagName("results")[0], false);
+//            // results        
+//            out += results2XML(queryResult.getElementsByTagName("results")[0], false);
 
-            out += "<span class=\"AttrTag\">&lt;/queryresult&gt;</div></span>\n";
-            out += "<span class=\"AttrTag\">&lt;/graphdb&gt;</div></span>\n";
-            out += "<span class=\"AttrTag\">&lt;/sones&gt;</span>\n";
-            out += "</div>\n";
+//            out += "<span class=\"AttrTag\">&lt;/queryresult&gt;</div></span>\n";
+//            out += "<span class=\"AttrTag\">&lt;/graphdb&gt;</div></span>\n";
+//            out += "<span class=\"AttrTag\">&lt;/sones&gt;</span>\n";
+//            out += "</div>\n";
 
             // unformated xml
-            //out += "<pre>" + escapeArrowBrackets((new XMLSerializer()).serializeToString(queryResult)) + "</pre>";//.replace(/(\r\n|[\r\n])/g, "<br />");
+            out += "<pre>" + escapeArrowBrackets((new XMLSerializer()).serializeToString(queryResult)) + "</pre>";//.replace(/(\r\n|[\r\n])/g, "<br />");
 
             goosh.gui.out(out);
 

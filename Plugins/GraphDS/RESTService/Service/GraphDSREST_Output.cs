@@ -16,6 +16,10 @@ using sones.GraphQL.Result;
 using sones.Library.LanguageExtensions;
 using sones.Plugins.GraphDS.IOInterface.XML_IO;
 using sones.Library.DiscordianDate;
+#region DEBRIS
+using sones.Plugins.GraphDS.IOInterface.XML_IO.Result;
+#endregion
+
 
 
 #endregion
@@ -73,6 +77,23 @@ namespace sones.Plugins.GraphDS.RESTService
             #region application/xml
 
             if (_ContentType.MediaType == GraphDSREST_Constants._XML.MediaType)
+            {
+
+                var _XMLExport = new XML_IO();
+
+                var content = _XMLExport.GenerateOutputResult(myResult);
+
+                ExportContent(_ServerID, System.Text.Encoding.UTF8.GetBytes(content), _XMLExport.ContentType);
+
+                return;
+
+            }
+
+            #endregion
+
+            #region DEBRIS text/html
+
+            if (_ContentType.MediaType == GraphDSREST_Constants._HTML.MediaType)
             {
 
                 var _XMLExport = new XML_IO();
@@ -241,24 +262,36 @@ namespace sones.Plugins.GraphDS.RESTService
         public QueryResult ExecuteGQL(String myQuery)
         {
             QueryResult _QueryResult = null;
-            
-            try
-            {
-                var _StopWatch = new Stopwatch();
 
-                _StopWatch.Start();
-                _QueryResult = _GraphDS.Query(null, null, myQuery, "");
-                _StopWatch.Stop();
+            #region DEBRIS to be deleted
+            var _StopWatch = new Stopwatch();
+            _StopWatch.Start();
+            _QueryResult = GenerateQueryResult();
+            GenerateResultOutput(_QueryResult, _StopWatch);
+            #endregion
+
+            #region to be used
+            //
+            
+            //try
+            //{
+            //    var _StopWatch = new Stopwatch();
+
+            //    _StopWatch.Start();
+            //    _QueryResult = _GraphDS.Query(null, null, myQuery, "");
+            //    _StopWatch.Stop();
                 
-                GenerateResultOutput(_QueryResult, _StopWatch);
+            //    GenerateResultOutput(_QueryResult, _StopWatch);
 
-                return _QueryResult;
+            //    return _QueryResult;
             
-            }
-            catch (Exception ex)
-            {
-                _ErrorMsg.Error400_BadRequest(ex.Message + ex.StackTrace);
-            }
+            //}
+            //catch (Exception ex)
+            //{
+            //    _ErrorMsg.Error400_BadRequest(ex.Message + ex.StackTrace);
+            //}
+            #endregion
+            
 
             return _QueryResult;
         }
@@ -378,6 +411,66 @@ namespace sones.Plugins.GraphDS.RESTService
         }
 
         #endregion
+
+
+        #region DEBRIS test method to be deleted
+        private static QueryResult GenerateQueryResult()
+        {
+            var propertyLeelaList = new Dictionary<String, Object>();
+            var someBytes = new byte[12];
+            var random = new Random();
+            random.NextBytes(someBytes);
+
+            propertyLeelaList.Add("Name", "Leela");
+            propertyLeelaList.Add("Age", 27);
+            propertyLeelaList.Add("Picture", new MemoryStream(someBytes));
+            propertyLeelaList.Add("Address", "@home");
+            propertyLeelaList.Add("VertexID", 121121);
+
+            var friendsList = new Dictionary<String, IEdgeView>();
+
+            var vertexLeela = new VertexView(propertyLeelaList, friendsList);
+
+            var propertyFreyList = new Dictionary<String, Object>();
+
+            propertyFreyList.Add("Name", "Frey");
+            propertyFreyList.Add("Age", 26);
+            propertyFreyList.Add("Address", "blue planet");
+
+            var propertyBenderList = new Dictionary<String, Object>();
+
+            propertyBenderList.Add("Name", "Bender");
+            propertyBenderList.Add("Age", 23);
+            propertyBenderList.Add("Address", "red planet");
+
+            var vertexFrey = new VertexView(propertyFreyList, new Dictionary<string, IEdgeView>());
+            var vertexBender = new VertexView(propertyBenderList, new Dictionary<string, IEdgeView>());
+
+            var edgeProp = new Dictionary<String, Object>();
+            edgeProp.Add("Weight", 34);
+
+            var edgeViewFriends = new EdgeView(edgeProp, new List<IVertexView>() { vertexFrey, vertexBender });
+
+            var propertyListZoidBerg = new Dictionary<String, Object>();
+            propertyListZoidBerg.Add("Name", "Zoidberg");
+
+            var vertexZoidberg = new VertexView(propertyListZoidBerg, new Dictionary<string, IEdgeView>());
+            //var vertexNothing  = new VertexView(propertyListZoidBerg, new Dictionary<string, IEdgeView>());
+
+            var edgeViewEnemys = new EdgeView(new Dictionary<string, object>(), new List<IVertexView>() { vertexZoidberg });
+
+            friendsList.Add("Friends", edgeViewFriends);
+            friendsList.Add("Enemys", edgeViewEnemys);
+
+
+            var retVal = new QueryResult("From User select *", "GraphQL", 20,
+                                         new List<IVertexView>() { vertexBender, vertexFrey, vertexLeela });
+
+            return retVal;
+        }
+        #endregion
+        
+
     }
 
 }
