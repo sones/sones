@@ -8,6 +8,26 @@ using sones.Library.VersionedPluginManager;
 
 namespace sones.Plugins.GraphDS.IOInterface
 {
+    #region IOInterfaceCompatibility
+
+    /// <summary>
+    /// A static implementation of the compatible IOInterface plugin versions. 
+    /// Defines the min and max version for all IOInterface implementations which will be activated used this IOInterface.
+    /// </summary>
+    public static class IOInterfaceCompatibility
+    {
+        public static Version MinVersion
+        {
+            get { return new Version("2.0.0.0"); }
+        }
+
+        public static Version MaxVersion
+        {
+            get { return new Version("2.0.0.0"); }
+        }
+    }
+    #endregion
+
     /// <summary>
     /// This is the interface for all IO methods, which can be used in GraphDS to generate an output result.
     /// </summary>

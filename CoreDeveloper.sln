@@ -197,9 +197,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IDrainPipe", "Plugins\Graph
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DrainPipeLog", "Plugins\GraphDS\DrainPipeLog\Implementation\DrainPipeLog.csproj", "{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JSON_IO", "Plugins\GraphDS\IO\Implementation\JSON_IO\JSON_IO.csproj", "{A820291C-1D86-42B7-9D97-F8C9A142E8D9}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 57
+		SccNumberOfProjects = 58
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -427,6 +429,10 @@ Global
 		SccProjectTopLevelParentUniqueName56 = CoreDeveloper.sln
 		SccProjectName56 = Plugins/GraphDS/DrainPipeLog/Implementation
 		SccLocalPath56 = Plugins\\GraphDS\\DrainPipeLog\\Implementation
+		SccProjectUniqueName57 = Plugins\\GraphDS\\IO\\Implementation\\JSON_IO\\JSON_IO.csproj
+		SccProjectTopLevelParentUniqueName57 = CoreDeveloper.sln
+		SccProjectName57 = Plugins/GraphDS/IO/Implementation/JSON_IO
+		SccLocalPath57 = Plugins\\GraphDS\\IO\\Implementation\\JSON_IO
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1121,6 +1127,18 @@ Global
 		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Release|x64.ActiveCfg = Release|Any CPU
 		{0C46B3E2-E580-4E68-AA23-89ECC9D380A0}.Release|x86.ActiveCfg = Release|Any CPU
+		{A820291C-1D86-42B7-9D97-F8C9A142E8D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A820291C-1D86-42B7-9D97-F8C9A142E8D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A820291C-1D86-42B7-9D97-F8C9A142E8D9}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{A820291C-1D86-42B7-9D97-F8C9A142E8D9}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{A820291C-1D86-42B7-9D97-F8C9A142E8D9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A820291C-1D86-42B7-9D97-F8C9A142E8D9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A820291C-1D86-42B7-9D97-F8C9A142E8D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A820291C-1D86-42B7-9D97-F8C9A142E8D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A820291C-1D86-42B7-9D97-F8C9A142E8D9}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{A820291C-1D86-42B7-9D97-F8C9A142E8D9}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{A820291C-1D86-42B7-9D97-F8C9A142E8D9}.Release|x64.ActiveCfg = Release|Any CPU
+		{A820291C-1D86-42B7-9D97-F8C9A142E8D9}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1205,6 +1223,7 @@ Global
 		{991132D2-15E0-4BB7-8328-3A51646D4F01} = {337E92A1-8475-4A6C-8114-64B6629FB7E8}
 		{8E6C6894-AF41-4512-8393-760EEA190F1F} = {337E92A1-8475-4A6C-8114-64B6629FB7E8}
 		{D52A5921-EE93-499E-83C4-9E2DDAEC38D0} = {8E6C6894-AF41-4512-8393-760EEA190F1F}
+		{A820291C-1D86-42B7-9D97-F8C9A142E8D9} = {8E6C6894-AF41-4512-8393-760EEA190F1F}
 		{C414410B-9F2F-4305-8ECD-2D1B91CD4CCA} = {DB4A2B8D-3E66-47A9-B12C-C030AA7F8AE1}
 		{253F947A-05A1-4112-9F75-DE4FE5392A97} = {DB4A2B8D-3E66-47A9-B12C-C030AA7F8AE1}
 		{4F163953-226E-4974-B35F-C4607CC7CA20} = {C414410B-9F2F-4305-8ECD-2D1B91CD4CCA}
