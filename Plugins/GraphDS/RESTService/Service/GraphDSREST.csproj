@@ -84,7 +84,6 @@
     <Compile Include="GraphDSREST_Constants.cs" />
     <Compile Include="GraphDSREST_Errors.cs" />
     <Compile Include="GraphDSREST_Output.cs" />
-    <Compile Include="GraphDSREST_Client.cs" />
     <Compile Include="GraphDSREST_OutputFormat.cs" />
     <Compile Include="GraphDSREST_Service.cs" />
     <Compile Include="GraphDSREST_Settings.cs" />
