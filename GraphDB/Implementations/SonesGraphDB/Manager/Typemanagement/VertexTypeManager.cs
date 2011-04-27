@@ -978,7 +978,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                                 {
                                     {
                                         (long)AttributeDefinitions.UniquenessDefinitions, 
-                                        new HyperEdgeUpdateDefinition(myToBeUpdatedSingleEdges: myIndexDefinitions.Select(x=>IndexDefinitionToSingleEdgeUpdate(myTypeInfo.VertexInfo, x)))
+                                        new HyperEdgeUpdateDefinition((long)BaseTypes.Edge, myToBeUpdatedSingleEdges: myIndexDefinitions.Select(x=>IndexDefinitionToSingleEdgeUpdate(myTypeInfo.VertexInfo, x)))
                                     }
                                 }
                             )));

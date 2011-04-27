@@ -42,6 +42,8 @@ namespace sones.GraphDB.Manager.Index
         /// <returns></returns>
         IEnumerable<IIndex<IComparable, Int64>> GetIndices(IVertexType myVertexType, IPropertyDefinition myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
+        IEnumerable<IIndex<IComparable, Int64>> GetIndices(IVertexType myVertexType, IList<IPropertyDefinition> myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+
 
         /// <summary>
         /// Returns the name of the index type, that matches the requirements.

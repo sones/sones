@@ -107,6 +107,7 @@
     <Compile Include="TypeManagement\Base\AttributeDefinitions.cs" />
     <Compile Include="TypeManagement\Base\BasicTypes.cs" />
     <Compile Include="TypeManagement\Base\BinaryPropertyDefinition.cs" />
+    <Compile Include="TypeManagement\Base\BaseUniqueIndex.cs" />
     <Compile Include="TypeManagement\Base\UniqueDefinition.cs" />
     <Compile Include="TypeManagement\EdgeType.cs" />
     <Compile Include="Manager\TypeManagement\VertexTypeManager.cs" />

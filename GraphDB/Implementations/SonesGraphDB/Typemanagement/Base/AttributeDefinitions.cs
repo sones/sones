@@ -99,6 +99,7 @@ namespace sones.GraphDB.TypeManagement.Base
 
         Weight = Int64.MinValue + 110,
         DefaultValue,
+        Order,
 
         #endregion
     }

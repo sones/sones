@@ -147,7 +147,7 @@ namespace sones.GraphDB.Manager
 
         #region Basic types
 
-        public static readonly Dictionary<BasicTypes, VertexInformation> BasicTypesVertices = new Dictionary<BasicTypes, Library.Commons.VertexStore.Definitions.VertexInformation>
+        public static readonly Dictionary<BasicTypes, VertexInformation> BasicTypesVertices = new Dictionary<BasicTypes, VertexInformation>
         {
             { BasicTypes.Boolean , _BaseTypeBoolean },
             { BasicTypes.Byte    , _BaseTypeByte },
@@ -167,19 +167,19 @@ namespace sones.GraphDB.Manager
         };
 
         private static readonly VertexInformation _BaseTypeInt32    = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Int32);
-        private static readonly VertexInformation _BaseTypeString = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.String);
+        private static readonly VertexInformation _BaseTypeString   = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.String);
         private static readonly VertexInformation _BaseTypeDateTime = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.DateTime);
-        private static readonly VertexInformation _BaseTypeDouble = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Double);
-        private static readonly VertexInformation _BaseTypeBoolean = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Boolean);
-        private static readonly VertexInformation _BaseTypeInt64 = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Int64);
-        private static readonly VertexInformation _BaseTypeChar = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Char);
-        private static readonly VertexInformation _BaseTypeByte = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Byte);
-        private static readonly VertexInformation _BaseTypeSingle = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Single);
-        private static readonly VertexInformation _BaseTypeSByte = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.SByte);
-        private static readonly VertexInformation _BaseTypeInt16 = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Int16);
-        private static readonly VertexInformation _BaseTypeUInt32 = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.UInt32);
-        private static readonly VertexInformation _BaseTypeUInt64 = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.UInt64);
-        private static readonly VertexInformation _BaseTypeUInt16 = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.UInt16);
+        private static readonly VertexInformation _BaseTypeDouble   = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Double);
+        private static readonly VertexInformation _BaseTypeBoolean  = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Boolean);
+        private static readonly VertexInformation _BaseTypeInt64    = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Int64);
+        private static readonly VertexInformation _BaseTypeChar     = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Char);
+        private static readonly VertexInformation _BaseTypeByte     = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Byte);
+        private static readonly VertexInformation _BaseTypeSingle   = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Single);
+        private static readonly VertexInformation _BaseTypeSByte    = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.SByte);
+        private static readonly VertexInformation _BaseTypeInt16    = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.Int16);
+        private static readonly VertexInformation _BaseTypeUInt32   = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.UInt32);
+        private static readonly VertexInformation _BaseTypeUInt64   = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.UInt64);
+        private static readonly VertexInformation _BaseTypeUInt16   = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.UInt16);
         private static readonly VertexInformation _BaseTypeTimeSpan = new VertexInformation((long)BaseTypes.BaseType, (long)BasicTypes.TimeSpan);
 
         #endregion
@@ -188,6 +188,22 @@ namespace sones.GraphDB.Manager
 
         #region Indices
 
+        public static readonly Dictionary<BaseUniqueIndex, VertexInformation> BaseUniqueIndicesVertices = new Dictionary<BaseUniqueIndex, VertexInformation>
+        {
+            { BaseUniqueIndex.AttributeDotID, _BaseUniqueIndexAttributeDotID },
+            { BaseUniqueIndex.AttributeDotName, _BaseUniqueIndexAttributeDotName },
+            { BaseUniqueIndex.BaseTypeDotID, _BaseUniqueIndexBaseTypeDotID },
+            { BaseUniqueIndex.BaseTypeDotName, _BaseUniqueIndexBaseTypeDotName },
+            { BaseUniqueIndex.IndexDotID, _BaseUniqueIndexIndexDotID },
+            { BaseUniqueIndex.IndexDotName, _BaseUniqueIndexIndexDotName },
+        };
+
+        private static readonly VertexInformation _BaseUniqueIndexAttributeDotID   = new VertexInformation((long)BaseTypes.Index, (long)BaseUniqueIndex.AttributeDotID );
+        private static readonly VertexInformation _BaseUniqueIndexAttributeDotName = new VertexInformation((long)BaseTypes.Index, (long)BaseUniqueIndex.AttributeDotName );
+        private static readonly VertexInformation _BaseUniqueIndexBaseTypeDotID    = new VertexInformation((long)BaseTypes.Index, (long)BaseUniqueIndex.BaseTypeDotID );
+        private static readonly VertexInformation _BaseUniqueIndexBaseTypeDotName    = new VertexInformation((long)BaseTypes.Index, (long)BaseUniqueIndex.BaseTypeDotName );
+        private static readonly VertexInformation _BaseUniqueIndexIndexDotID          = new VertexInformation((long)BaseTypes.Index, (long)BaseUniqueIndex.IndexDotID);
+        private static readonly VertexInformation _BaseUniqueIndexIndexDotName          = new VertexInformation((long)BaseTypes.Index, (long)BaseUniqueIndex.IndexDotName);
 
         #endregion
 
@@ -253,30 +269,27 @@ namespace sones.GraphDB.Manager
 
         private void AddIndices(IVertexStore myStore, Int64 myCreationDate)
         {
-            AddUniqueIndexOnBaseTypeDotName(myStore, myCreationDate);
-            AddUniqueIndexOnIndexDotName(myStore, myCreationDate);
-            AddUniqueIndexOnBaseTypeDotID(myStore, myCreationDate);
-            AddUniqueIndexOnIndexDotID(myStore, myCreationDate);
-        }
+            #region Index
 
-        private static void AddUniqueIndexOnIndexDotID(IVertexStore myStore, Int64 myCreationDate)
-        {
-            throw new NotImplementedException();
-        }
+            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexIndexDotID, BaseTypes.Index, ResMgr.GetString("IndexDotIDIndexComment"), myCreationDate, null, true, false, false, _Index, _IndexDotID.SingleEnumerable().ToList(), _security, _transaction);
+            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexIndexDotName, BaseTypes.Index, ResMgr.GetString("IndexDotNameIndexComment"), myCreationDate, null, true, false, false, _Index, _IndexDotName.SingleEnumerable().ToList(), _security, _transaction);
 
-        private static void AddUniqueIndexOnBaseTypeDotID(IVertexStore myStore, Int64 myCreationDate)
-        {
-            throw new NotImplementedException();
-        }
+            #endregion
 
-        private static void AddUniqueIndexOnIndexDotName(IVertexStore myStore, Int64 myCreationDate)
-        {
-            throw new NotImplementedException();
-        }
+            #region Attribute
 
-        private static void AddUniqueIndexOnBaseTypeDotName(IVertexStore myStore, Int64 myCreationDate)
-        {
-            throw new NotImplementedException();
+            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexAttributeDotID, BaseTypes.Index, ResMgr.GetString("AttributeDotIDIndexComment"), myCreationDate, null, true, false, false, _Index, _AttributeDotID.SingleEnumerable().ToList(), _security, _transaction);
+            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexAttributeDotName, BaseTypes.Index, ResMgr.GetString("AttributeDotNameIndexComment"), myCreationDate, null, true, false, false, _Index, _AttributeDotName.SingleEnumerable().ToList(), _security, _transaction);
+
+            #endregion
+
+            #region BaseType
+
+            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexBaseTypeDotID, BaseTypes.Index, ResMgr.GetString("BaseTypeDotIDIndexComment"), myCreationDate, null, true, false, false, _Index, _BaseTypeDotID.SingleEnumerable().ToList(), _security, _transaction);
+            BaseGraphStorageManager.StoreIndex(myStore, _BaseUniqueIndexBaseTypeDotName, BaseTypes.Index, ResMgr.GetString("BaseTypeDotNameIndexComment"), myCreationDate, null, true, false, false, _Index, _BaseTypeDotName.SingleEnumerable().ToList(), _security, _transaction);
+
+            #endregion
+
         }
 
         #endregion

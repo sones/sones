@@ -37,7 +37,7 @@ namespace sones.GraphDB.TypeSystem
         /// <summary>
         /// The attributes that are indexed. Never <c>NULL</c>. 
         /// </summary>
-        IEnumerable<IPropertyDefinition> IndexedProperties { get; }
+        IList<IPropertyDefinition> IndexedProperties { get; }
 
         /// <summary>
         /// The defining vertex type.

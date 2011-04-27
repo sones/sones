@@ -15,7 +15,7 @@ namespace sones.GraphDB.Index
 
         public bool IsUserdefined { get; internal set; }
 
-        public IEnumerable<IPropertyDefinition> IndexedProperties { get; internal set; }
+        public IList<IPropertyDefinition> IndexedProperties { get; internal set; }
 
         public IVertexType VertexType { get; internal set; }
 

@@ -20,12 +20,12 @@ namespace sones.GraphDB.Request.CreateVertexTypes
         /// <summary>
         /// Stores the names of the properties, that will be indexed.
         /// </summary>
-        private HashSet<String> _properties = new HashSet<string>();
+        private List<String> _properties = new List<string>();
 
         /// <summary>
         /// The set of properties that will be indexed.
         /// </summary>
-        public ISet<String> Properties { get { return _properties; } }
+        public IList<String> Properties { get { return _properties.AsReadOnly(); } }
 
         /// <summary>
         /// The vertexTypeName that defines the index.

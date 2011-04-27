@@ -579,33 +579,37 @@ namespace sones.GraphDB.Manager.BaseGraph
             bool myIsRange,
             bool myIsVersioned,
             VertexInformation myDefiningVertexType,
-            IEnumerable<VertexInformation> myIndexedProperties,
+            IList<VertexInformation> myIndexedProperties,
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
+            var props = new Dictionary<long, IComparable>
+                {
+                    { (long) AttributeDefinitions.ID, (long) myType },
+                    { (long) AttributeDefinitions.Name, myType.ToString() },
+                    { (long) AttributeDefinitions.IsUserDefined, false },
+                    { (long) AttributeDefinitions.IsSingleValue, myIsSingleValue},
+                    { (long) AttributeDefinitions.IsRange, myIsRange },
+                    { (long) AttributeDefinitions.IsUserDefined, myIsVersioned },
+                };
+
+            if (myIndexClass == null)
+                props.Add((long) AttributeDefinitions.IndexClass, myIndexClass);
+
             Store(
                 myStore,
                 myVertex,
                 myComment,
                 myCreationDate,
-                new Dictionary<Tuple<long, long>, Library.Commons.VertexStore.Definitions.VertexInformation>
+                new Dictionary<Tuple<long, long>, VertexInformation>
                 {
                     { _EdgeIndexDotDefiningVertexType, myDefiningVertexType }
                 },
-                new Dictionary<Tuple<long, long>, IEnumerable<Library.Commons.VertexStore.Definitions.VertexInformation>>
+                new Dictionary<Tuple<long, long>, IEnumerable<VertexInformation>>
                 {
                     { _EdgeIndexDotIndexedProperties, myIndexedProperties }
                 },
-                new Dictionary<long, IComparable>
-                {
-                    { (long) AttributeDefinitions.ID, (long) myType },
-                    { (long) AttributeDefinitions.Name, myType.ToString() },
-                    { (long) AttributeDefinitions.IsUserDefined, false },
-                    { (long) AttributeDefinitions.IndexClass, myIndexClass },
-                    { (long) AttributeDefinitions.IsSingleValue, myIsSingleValue},
-                    { (long) AttributeDefinitions.IsRange, myIsRange },
-                    { (long) AttributeDefinitions.IsUserDefined, myIsVersioned },
-                },
+                props,
                 null,
                 mySecurity,
                 myTransaction);
@@ -858,15 +862,18 @@ namespace sones.GraphDB.Manager.BaseGraph
             return myIndexVertex.GetPropertyAsString((long)AttributeDefinitions.IndexClass);
         }
 
-        private static IEnumerable<IPropertyDefinition> GetIndexedProperties(IVertex myIndexVertex)
+        private static IList<IPropertyDefinition> GetIndexedProperties(IVertex myIndexVertex)
         {
             var edge = myIndexVertex.GetOutgoingHyperEdge((long)AttributeDefinitions.IndexedProperties);
             if (edge == null)
                 throw new UnknownDBException("An index has no vertex that represents its indexed properties.");
 
+            
             var vertices = edge.GetTargetVertices();
             if (vertices == null)
                 throw new UnknownDBException("An index has no vertex that represents its indexed properties.");
+
+            vertices = vertices.OrderBy(x => x.GetProperty<int>((long)AttributeDefinitions.Order));
 
             return vertices.Select(x=> CreatePropertyDefinition(x)).ToArray();
 
