@@ -18,11 +18,6 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         public readonly IEnumerable<SingelEdgeVector> ToBeDeletedSingleEdges;
         
         /// <summary>
-        /// The single edges that should be added to the hyperedge
-        /// </summary>
-        public readonly IEnumerable<SingleEdgeAddDefinition> ToBeAddedSingleEdges;
-        
-        /// <summary>
         /// The single edges that should be updated
         /// </summary>
         public readonly Dictionary<SingelEdgeVector, SingleEdgeUpdateDefinition> ToBeUpdatedSingleEdges;
@@ -38,19 +33,16 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// <param name="myUpdatedStructuredProperties">The structured properties</param>
         /// <param name="myUpdatedUnstructuredProperties">The unstructured properties</param>
         /// <param name="myToBeDeletedSingleEdges">The single edges that should be deleted from the hyperedge</param>
-        /// <param name="myToBeAddedSingleEdges">The single edges that should be added to the hyperedge</param>
         /// <param name="myToBeUpdatedSingleEdges">The single edges that should be updated</param>
         public HyperEdgeUpdateDefinition(
             String myCommentUpdate = null,
             StructuredPropertiesUpdate myUpdatedStructuredProperties = null,
             UnstructuredPropertiesUpdate myUpdatedUnstructuredProperties = null,
             IEnumerable<SingelEdgeVector> myToBeDeletedSingleEdges = null,
-            IEnumerable<SingleEdgeAddDefinition> myToBeAddedSingleEdges = null,
             Dictionary<SingelEdgeVector, SingleEdgeUpdateDefinition> myToBeUpdatedSingleEdges = null)
             : base(myCommentUpdate, myUpdatedStructuredProperties, myUpdatedUnstructuredProperties)
         {
             ToBeDeletedSingleEdges = myToBeDeletedSingleEdges;
-            ToBeAddedSingleEdges = myToBeAddedSingleEdges;
             ToBeUpdatedSingleEdges = myToBeUpdatedSingleEdges;
         }
 
