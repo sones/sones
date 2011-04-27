@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using sones.Library.Settings;
 
 namespace sones.Library.VersionedPluginManager
 {

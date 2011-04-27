@@ -68,13 +68,13 @@
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
       <Name>ErrorHandling</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
+      <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
+      <Name>IPluginable</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>
       <Name>PropertyHyperGraph</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Library\Internal\VersionedPluginManager\PluginManager.csproj">
-      <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
-      <Name>PluginManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Index\ISonesIndex\ISonesIndex.csproj">
       <Project>{823E8AF4-CF92-4E74-8ABD-38693279EB1E}</Project>
