@@ -14,6 +14,16 @@ namespace sones.GraphDB.TypeManagement
             this.vertex = vertex;
         }
 
+        #region IBaseType Members
+
+
+        bool IBaseType.IsUserDefined
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        #endregion
+
         #region IEdgeType Members
 
         bool IEdgeType.HasParentEdgeType

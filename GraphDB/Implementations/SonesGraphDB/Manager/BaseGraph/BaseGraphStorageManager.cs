@@ -9,6 +9,10 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.Commons.VertexStore;
 using sones.Library.PropertyHyperGraph;
+using sones.GraphDB.TypeManagement;
+using sones.GraphDB.ErrorHandling;
+using sones.Library.Commons.VertexStore.Definitions.Update;
+using sones.GraphDB.Index;
 
 namespace sones.GraphDB.Manager.BaseGraph
 {
@@ -69,15 +73,56 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         #endregion
 
-
-
         #region Store
+
+        public static bool GetIsUserDefined(IVertex myVertex)
+        {
+            return myVertex.GetProperty<bool>((long)AttributeDefinitions.IsUserDefined);
+        }
+
+        public static string GetComment(IVertex myVertex)
+        {
+            return myVertex.GetPropertyAsString((long)AttributeDefinitions.Comment);
+        }
+
+        public static long GetID(IVertex myVertex)
+        {
+            return myVertex.GetProperty<long>((long)AttributeDefinitions.ID);
+        }
+
+        public static String GetName(IVertex myVertex)
+        {
+            return myVertex.GetPropertyAsString((long)AttributeDefinitions.Name);
+        }
+
 
         #region Outgoing edge
 
-        public static IOutgoingEdgeDefinition GetOutgoingEdgeDefinition(IVertex myVertex)
+        /// <summary>
+        /// Transforms an IVertex in an outgoing edge definition.
+        /// </summary>
+        /// <param name="myVertex">A vertex that represents an outgoing edge definition.</param>
+        /// <returns>An outgoing edge definition.</returns>
+        public static IOutgoingEdgeDefinition CreateOutgoingEdgeDefinition(IVertex myOutgoingEdgeVertex, IVertexType myRelatedType = null)
         {
-            return null;
+            var attributeID = GetID(myOutgoingEdgeVertex);
+            var edgeType = GetEdgeType(myOutgoingEdgeVertex);
+            var name = GetName(myOutgoingEdgeVertex);
+            var target = GetTargetVertexType(myOutgoingEdgeVertex);
+            var multiplicity = GetEdgeMultiplicity(myOutgoingEdgeVertex);
+            var relatedType = myRelatedType ?? GetDefiningType(myOutgoingEdgeVertex);
+
+            return new OutgoingEdgeDefinition
+            {
+                AttributeID = attributeID,
+                EdgeType = edgeType,
+                Multiplicity = multiplicity,
+                Name = name,
+                SourceVertexType = myRelatedType,
+                TargetVertexType = target,
+                RelatedType = relatedType,
+                
+            };
         }
 
         public static void StoreOutgoingEdge(
@@ -140,6 +185,28 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         #region Incoming edge
 
+        /// <summary>
+        /// Transforms an IVertex in an incoming edge definition.
+        /// </summary>
+        /// <param name="myVertex">A vertex that represents an incoming edge definition.</param>
+        /// <returns>An incoming edge definition.</returns>
+        public static IIncomingEdgeDefinition CreateIncomingEdgeDefinition(IVertex myVertex, IVertexType myDefiningType = null)
+        {
+            var attributeID = GetID(myVertex);
+            var name = GetName(myVertex);
+            var related = GetRelatedOutgoingEdgeDefinition(myVertex);
+            var definingType = myDefiningType ?? GetDefiningType(myVertex);
+
+            return new IncomingEdgeDefinition
+            {
+                AttributeID = attributeID,
+                Name = name,
+                RelatedEdgeDefinition = related,
+                RelatedType = definingType,
+            };
+        }
+
+
         public static void StoreIncomingEdge(
             IVertexStore myStore,
             VertexInformation myVertex,
@@ -191,6 +258,34 @@ namespace sones.GraphDB.Manager.BaseGraph
         #endregion
 
         #region Property
+
+        /// <summary>
+        /// Transforms an IVertex in a property definition.
+        /// </summary>
+        /// <param name="myVertex">A vertex that represents a property definition.</param>
+        /// <returns>A property definition.</returns>
+        public static IPropertyDefinition CreatePropertyDefinition(IVertex myVertex, IBaseType myDefiningType = null)
+        {
+            var attributeID = GetID(myVertex);
+            var baseType = GetBaseType(myVertex);
+            var isMandatory = GetIsMandatory(myVertex);
+            var multiplicity = GetPropertyMultiplicity(myVertex);
+            var name = GetName(myVertex);
+            var defaultValue = GetDefaultValue(myVertex, baseType);
+            var definingType = myDefiningType ?? GetDefiningType(myVertex);
+
+            return new PropertyDefinition
+            {
+                AttributeID = attributeID,
+                BaseType = baseType,
+                IsMandatory = isMandatory,
+                Multiplicity = multiplicity,
+                Name = name,
+                RelatedType = definingType,
+                DefaultValue = defaultValue
+            };
+        }
+
 
         public static void StoreProperty(
             IVertexStore myStore,
@@ -257,6 +352,25 @@ namespace sones.GraphDB.Manager.BaseGraph
         #endregion
 
         #region Binary Property
+
+        /// <summary>
+        /// Transforms an IVertex in a binary property definition.
+        /// </summary>
+        /// <param name="myVertex">A vertex that represents a property definition.</param>
+        /// <returns>A property definition.</returns>
+        public static IBinaryPropertyDefinition CreateBinaryPropertyDefinition(IVertex myVertex, IVertexType myDefiningType = null)
+        {
+            var attributeID = GetID(myVertex);
+            var name = GetName(myVertex);
+            var definingType = myDefiningType ?? GetDefiningType(myVertex);
+
+            return new BinaryPropertyDefinition
+            {
+                AttributeID = attributeID,
+                Name = name,
+                RelatedType = definingType
+            };
+        }
 
         public static void StoreBinaryProperty(
             IVertexStore myStore,
@@ -433,6 +547,26 @@ namespace sones.GraphDB.Manager.BaseGraph
         #endregion
 
         #region Index
+        
+        public static IIndexDefinition CreateIndexDefinition(IVertex myIndexVertex, IVertexType myDefiningVertexType = null)
+        {
+            var id = GetID(myIndexVertex);
+            var props = GetIndexedProperties(myIndexVertex);
+            var typeName = GetIndexTypeName(myIndexVertex);
+            var isUserDefined = GetIsUserDefined(myIndexVertex);
+            var name = GetName(myIndexVertex);
+            myDefiningVertexType = myDefiningVertexType ?? GetDefiningVertexType(myIndexVertex);
+
+            return new IndexDefinition
+            {
+                ID = id,
+                IndexedProperties = props,
+                IndexTypeName = typeName,
+                IsUserdefined = isUserDefined,
+                Name = name,
+                VertexType = myDefiningVertexType,
+            };
+        }
 
         public static void StoreIndex(
             IVertexStore myStore,
@@ -579,6 +713,169 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         #endregion
 
+        /// <summary>
+        /// Gets the target vertex of an outgoing edge.
+        /// </summary>
+        /// <param name="myOutgoingEdge">A vertex that represents an outgoing edge.</param>
+        /// <returns>The target vertex type of the outgoing edge.</returns>
+        private static IVertexType GetTargetVertexType(IVertex myOutgoingEdge)
+        {
+            var vertex = myOutgoingEdge.GetOutgoingSingleEdge((long)AttributeDefinitions.Target).GetTargetVertex();
+
+            if (vertex == null)
+                throw new UnknownDBException("An outgoing edge has no vertex that represents its target vertex type.");
+
+            return new VertexType(vertex);
+        }
+
+        private static IBaseType GetDefiningType(IVertex myAttributeVertex)
+        {
+            var edge = myAttributeVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.DefiningType);
+
+            if (edge == null)
+                throw new UnknownDBException("An attribute has no vertex that represents its target vertex type.");
+
+            var vertex = edge.GetTargetVertex();
+
+            if (vertex == null)
+                throw new UnknownDBException("An attribute has no vertex that represents its target vertex type.");
+
+            return new VertexType(vertex);
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="myOutgoingEdge">A vertex that represents an outgoing edge.</param>
+        /// <returns>The edge type of the outgoing edge.</returns>
+        private static IEdgeType GetEdgeType(IVertex myOutgoingEdge)
+        {
+            var vertex = myOutgoingEdge.GetOutgoingSingleEdge((long)AttributeDefinitions.EdgeType).GetTargetVertex();
+
+            if (vertex == null)
+                throw new UnknownDBException("An outgoing edge has no vertex that represents its edge type.");
+
+            return new EdgeType(vertex);
+        }
+
+        
+        private static EdgeMultiplicity GetEdgeMultiplicity(IVertex myOutgoingEdgeVertex)
+        {
+            var multID = myOutgoingEdgeVertex.GetProperty<Byte>((long)AttributeDefinitions.Multiplicity);
+
+            if (!Enum.IsDefined(typeof(EdgeMultiplicity), multID))
+                throw new UnknownDBException("The value for the edge multiplicity is incorrect.");
+
+            return (EdgeMultiplicity)multID;
+
+        }
+
+        private static PropertyMultiplicity GetPropertyMultiplicity(IVertex myVertex)
+        {
+            var multID = myVertex.GetProperty<Byte>((long)AttributeDefinitions.Multiplicity);
+
+            if (!Enum.IsDefined(typeof(PropertyMultiplicity), multID))
+                throw new UnknownDBException("The value for the property multiplicity is incorrect.");
+
+            return (PropertyMultiplicity)multID;
+        }
+
+        private static bool GetIsMandatory(IVertex myVertex)
+        {
+            return myVertex.GetProperty<bool>((long)AttributeDefinitions.IsMandatory);
+        }
+
+        private static IComparable GetDefaultValue(IVertex myPropertyVertex, Type myPropertyType)
+        {
+            if (!myPropertyVertex.HasProperty((long)AttributeDefinitions.DefaultValue))
+                return null;
+
+            var val = myPropertyVertex.GetPropertyAsString((long)AttributeDefinitions.DefaultValue);
+
+            return (IComparable)Convert.ChangeType(val, myPropertyType);
+        }
+
+        private static Type GetBaseType(IVertex myVertex)
+        {
+            var typeID = myVertex.GetProperty<long>((long)AttributeDefinitions.Type);
+            if (!Enum.IsDefined(typeof(BasicTypes), typeID))
+                throw new NotImplementedException("User defined base types are not implemented yet.");
+
+            BasicTypes type = (BasicTypes)typeID;
+
+            switch (type)
+            {
+                case BasicTypes.Boolean: return typeof(Boolean);
+                case BasicTypes.Byte: return typeof(Byte);
+                case BasicTypes.Char: return typeof(Char);
+                case BasicTypes.DateTime: return typeof(DateTime);
+                case BasicTypes.Double: return typeof(Double);
+                case BasicTypes.Int16: return typeof(Int16);
+                case BasicTypes.Int32: return typeof(Int32);
+                case BasicTypes.Int64: return typeof(Int64);
+                case BasicTypes.SByte: return typeof(SByte);
+                case BasicTypes.Single: return typeof(Single);
+                case BasicTypes.String: return typeof(String);
+                case BasicTypes.TimeSpan: return typeof(TimeSpan);
+                case BasicTypes.UInt16: return typeof(UInt16);
+                case BasicTypes.UInt32: return typeof(UInt32);
+                case BasicTypes.UInt64: return typeof(UInt64);
+                default: throw new UnknownDBException("BasicTypes enumeration was modified, but this function was not adapted.");
+            }
+        }
+
+        /// <summary>
+        /// Creates an outgoing edge definition from a vertex that represents an incoming edge definition.
+        /// </summary>
+        /// <param name="myVertex">A vertex that represents an incoming edge definition.</param>
+        /// <returns>An outgoing edge definition.</returns>
+        private static IOutgoingEdgeDefinition GetRelatedOutgoingEdgeDefinition(IVertex myVertex)
+        {
+            var vertex = myVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.RelatedEgde).GetTargetVertex();
+
+            if (vertex == null)
+                throw new UnknownDBException("An incoming edge definition has no vertex that represents its related outgoing edge definition.");
+
+            return CreateOutgoingEdgeDefinition(vertex);
+        }
+
+        private static IVertexType GetDefiningVertexType(IVertex myIndexVertex)
+        {
+            var edge = myIndexVertex.GetOutgoingSingleEdge((long)AttributeDefinitions.DefiningVertexType);
+
+            if (edge == null)
+                throw new UnknownDBException("An index has no vertex that represents its defining vertex type.");
+
+            var vertex = edge.GetTargetVertex();
+
+            if (vertex == null)
+                throw new UnknownDBException("An index has no vertex that represents its defining vertex type.");
+
+            return new VertexType(vertex);
+        }
+
+        private static String GetIndexTypeName(IVertex myIndexVertex)
+        {
+            return myIndexVertex.GetPropertyAsString((long)AttributeDefinitions.IndexClass);
+        }
+
+        private static IEnumerable<IPropertyDefinition> GetIndexedProperties(IVertex myIndexVertex)
+        {
+            var edge = myIndexVertex.GetOutgoingHyperEdge((long)AttributeDefinitions.IndexedProperties);
+            if (edge == null)
+                throw new UnknownDBException("An index has no vertex that represents its indexed properties.");
+
+            var vertices = edge.GetTargetVertices();
+            if (vertices == null)
+                throw new UnknownDBException("An index has no vertex that represents its indexed properties.");
+
+            return vertices.Select(x=> CreatePropertyDefinition(x)).ToArray();
+
+        }
+
+
+
+
         #endregion
+
     }
 }

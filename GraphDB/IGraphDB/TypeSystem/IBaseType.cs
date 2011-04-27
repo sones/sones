@@ -42,6 +42,11 @@ namespace sones.GraphDB.TypeSystem
         /// </value>
         Boolean IsAbstract { get; }
 
+        /// <summary>
+        /// Defines whether this type was not created by the system itself.
+        /// </summary>
+        Boolean IsUserDefined { get; }
+
         #region Inheritance 
         
         /// <summary>
