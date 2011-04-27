@@ -209,9 +209,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GraphAlgorithms", "GraphAlg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShortestPathAlgorithms", "Plugins\GraphQL\SonesGQL\Functions\GraphAlgorithms\ShortestPathAlgorithms\ShortestPathAlgorithms.csproj", "{9E2BBF58-75A7-4C03-959C-A557F04927BA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestJSONIO", "Tests\TestJSONIO\TestJSONIO.csproj", "{51343C2E-819C-4617-8955-5823EBB6ABBC}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 62
+		SccNumberOfProjects = 63
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -459,6 +461,10 @@ Global
 		SccProjectTopLevelParentUniqueName61 = CoreDeveloper.sln
 		SccProjectName61 = Plugins/GraphQL/SonesGQL/Functions/GraphAlgorithms/ShortestPathAlgorithms
 		SccLocalPath61 = Plugins\\GraphQL\\SonesGQL\\Functions\\GraphAlgorithms\\ShortestPathAlgorithms
+		SccProjectUniqueName62 = Tests\\TestJSONIO\\TestJSONIO.csproj
+		SccProjectTopLevelParentUniqueName62 = CoreDeveloper.sln
+		SccProjectName62 = Tests/TestJSONIO
+		SccLocalPath62 = Tests\\TestJSONIO
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1213,6 +1219,18 @@ Global
 		{9E2BBF58-75A7-4C03-959C-A557F04927BA}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{9E2BBF58-75A7-4C03-959C-A557F04927BA}.Release|x64.ActiveCfg = Release|Any CPU
 		{9E2BBF58-75A7-4C03-959C-A557F04927BA}.Release|x86.ActiveCfg = Release|Any CPU
+		{51343C2E-819C-4617-8955-5823EBB6ABBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51343C2E-819C-4617-8955-5823EBB6ABBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51343C2E-819C-4617-8955-5823EBB6ABBC}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{51343C2E-819C-4617-8955-5823EBB6ABBC}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{51343C2E-819C-4617-8955-5823EBB6ABBC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{51343C2E-819C-4617-8955-5823EBB6ABBC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{51343C2E-819C-4617-8955-5823EBB6ABBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51343C2E-819C-4617-8955-5823EBB6ABBC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51343C2E-819C-4617-8955-5823EBB6ABBC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{51343C2E-819C-4617-8955-5823EBB6ABBC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{51343C2E-819C-4617-8955-5823EBB6ABBC}.Release|x64.ActiveCfg = Release|Any CPU
+		{51343C2E-819C-4617-8955-5823EBB6ABBC}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1291,6 +1309,7 @@ Global
 		{10D884F3-79B1-476C-9146-36BFA0AFB5F0} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 		{D951A6BC-28B4-49B2-BE95-B5D774D96D31} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 		{D2D485CC-01F8-4908-BEDD-650CA5355CC5} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
+		{51343C2E-819C-4617-8955-5823EBB6ABBC} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 		{6628A55D-BEEF-4499-B07B-26606289B6F4} = {8D65A058-04E7-4C4A-A533-678F43914D68}
 		{7E58D30B-4108-4941-BF85-A5C309F87536} = {500C1B9C-E9CD-4008-9EE4-5229A6CE93DC}
 		{CDAE254B-77D9-4E59-9C07-C18F0085F570} = {500C1B9C-E9CD-4008-9EE4-5229A6CE93DC}
