@@ -8,5 +8,20 @@ namespace sones.Library.Commons.Security
     [Serializable]
     public sealed class SecurityToken
     {
+        #region data
+
+        private readonly Guid _id;
+
+        #endregion
+
+        #region constructor
+
+        public SecurityToken()
+        {
+            _id = Guid.NewGuid();
+        }
+
+        #endregion
+
     }
 }

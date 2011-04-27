@@ -330,7 +330,7 @@ namespace sones.Plugins.GraphDS.RESTService
             friendsList.Add("Enemys", edgeViewEnemys);
 
 
-            var retVal = new QueryResult("", "GraphQL",20,ResultType.Successful,
+            var retVal = new QueryResult("From User select *", "GraphQL", 20, ResultType.Successful,
                                          new List<IVertexView>() { vertexBender, vertexFrey, vertexLeela });
 
             return retVal;

@@ -19,6 +19,13 @@ namespace sones.GraphDSServer
 {
     internal class PasswordValidator : UserNamePasswordValidator
     {
+        private readonly IUserAuthentication _dbauth;
+
+        public PasswordValidator(IUserAuthentication dbAuthentcator)
+        {
+            _dbauth = dbAuthentcator;
+        }
+
         public override void Validate(string userName, string password)
         {
             if (!(userName == "test" && password == "test"))
@@ -65,7 +72,7 @@ namespace sones.GraphDSServer
         /// The GraphDS server constructor.
         /// </summary>
         /// <param name="myGraphDB">The graph db instance.</param>
-        public GraphDSServer(IGraphDB myGraphDB)
+        public GraphDSServer(IGraphDB myGraphDB, ushort myPort, IPAddress myIPAddress)
         {
             _iGraphDB = myGraphDB;
             _pluginManager = new GraphDSPluginManager();
@@ -73,12 +80,38 @@ namespace sones.GraphDSServer
             _queryLanguages = new Dictionary<string, IGraphQL>();
 
             var qlPluginNames = _pluginManager.GetPluginsForType<IGraphQL>();
+
             var languageParameters = new Dictionary<String, Object>();
             languageParameters.Add("GraphDB", myGraphDB);
 
             foreach (var item in qlPluginNames)
             {
                 _queryLanguages.Add(item, _pluginManager.GetAndInitializePlugin<IGraphQL>(item, languageParameters));
+            }
+
+            try
+            {
+                var security = new HTTPSecurity()
+                {
+                    CredentialType = HttpClientCredentialType.Basic,
+                    UserNamePasswordValidator = new PasswordValidator(_iGraphDB)
+                };
+
+                var restService = new GraphDSREST_Service();
+                restService.Initialize(this, myPort, myIPAddress);
+
+                _httpServer = new HTTPServer<GraphDSREST_Service>(
+                                    myIPAddress,
+                                    myPort,
+                                    restService,
+                                    myAutoStart: true)
+                {
+                    HTTPSecurity = security,
+                };
+            }
+            catch (Exception e)
+            {
+                throw new RESTServiceCouldNotStartetException(e.Message);
             }
         }
 
@@ -88,30 +121,7 @@ namespace sones.GraphDSServer
 
         public void StartRESTService(string myServiceID, ushort myPort, IPAddress myIPAddress)
         {
-            try
-            {
-                    var security = new HTTPSecurity()                     
-                    {
-                        CredentialType = HttpClientCredentialType.Basic,
-                        UserNamePasswordValidator = Validator
-                    };
-                
-                    var restService = new GraphDSREST_Service();
-                    restService.Initialize(this, myPort, myIPAddress);
-
-                    _httpServer = new HTTPServer<GraphDSREST_Service>(
-                                        myIPAddress,
-                                        myPort,
-                                        restService,
-                                        myAutoStart: true)
-                    {
-                        HTTPSecurity = security,
-                    };
-            }
-            catch (Exception e)
-            {
-                throw new RESTServiceCouldNotStartetException(e.Message);
-            }
+            
         }
 
         public bool StopRESTService(string myServiceID)
@@ -126,11 +136,6 @@ namespace sones.GraphDSServer
             }
             
             return true;
-        }
-
-        public UserNamePasswordValidator Validator
-        {
-            get { return new PasswordValidator(); }
         }
 
         #endregion
