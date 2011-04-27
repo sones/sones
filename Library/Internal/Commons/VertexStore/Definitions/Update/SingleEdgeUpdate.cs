@@ -29,16 +29,13 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// <summary>
         /// Creates a new single edge update
         /// </summary>
-        /// <param name="myAdded">The single edges that should be added</param>
         /// <param name="myUpdated">The single edges that should be updated</param>
         /// <param name="myDeleted">The single edge property-ids that should be deleted</param>
         public SingleEdgeUpdate(
-            Dictionary<Int64, SingleEdgeAddDefinition> myAdded = null,
             Dictionary<Int64, SingleEdgeUpdateDefinition> myUpdated = null,
             IEnumerable<Int64> myDeleted = null)
         {
             Updated = myUpdated;
-            Added = myAdded;
             Deleted = myDeleted;
         }
 
