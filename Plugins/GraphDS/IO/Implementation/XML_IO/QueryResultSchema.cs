@@ -306,6 +306,8 @@ namespace SchemaToClassesGenerator {
         
         private string valueField;
         
+        private string resultTypeField;
+        
         private int verticesCountField;
         
         private bool verticesCountFieldSpecified;
@@ -339,6 +341,17 @@ namespace SchemaToClassesGenerator {
             }
             set {
                 this.valueField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string ResultType {
+            get {
+                return this.resultTypeField;
+            }
+            set {
+                this.resultTypeField = value;
             }
         }
         

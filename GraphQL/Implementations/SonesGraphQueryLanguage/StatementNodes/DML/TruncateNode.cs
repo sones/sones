@@ -50,7 +50,7 @@ namespace sones.GraphQL.StatementNodes.DML
             {
                 var stat = myGraphDB.Truncate(mySecurityToken, myTransactionToken, new RequestTruncate(_TypeName), (stats) => stats);
 
-                qresult = new QueryResult(myQuery, "GQL", Convert.ToUInt64(stat.ExecutionTime.Milliseconds));
+                qresult = new QueryResult(myQuery, "GQL", Convert.ToUInt64(stat.ExecutionTime.Milliseconds),ResultType.Successful);
             }
             catch(ASonesException e)
             {

@@ -43,7 +43,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
             result.Version = IOInterfaceCompatibility.MaxVersion.ToString();
 
-            result.Query = new Query() {Language = myQueryResult.NameOfQuerylanguage, Value = myQueryResult.Query, Duration = myQueryResult.Duration, VerticesCount = myQueryResult.Vertices.Count(), Error = myQueryResult.Error == null ? String.Empty : myQueryResult.Error.Message };
+            result.Query = new Query() {Language = myQueryResult.NameOfQuerylanguage, Value = myQueryResult.Query, Duration = myQueryResult.Duration,ResultType = Enum.GetName(typeof(ResultType),myQueryResult.TypeOfResult), VerticesCount = myQueryResult.Vertices.Count(), Error = myQueryResult.Error == null ? String.Empty : myQueryResult.Error.Message };
           
             List<SchemaVertexView> vertices = new List<SchemaVertexView>();
 
@@ -197,6 +197,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             String query = String.Empty;
             String language = String.Empty;
             String error = String.Empty;
+            ResultType result = ResultType.Failed;
             UInt64 duration = 0;
             Int64  nrOfVertices = 0;
             List<VertexView> vertices = null;
@@ -224,6 +225,15 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                         case "Error":
                             error = nextNode.Attributes[i].Value;
                             break;
+                        case "ResultType":
+                            ResultType resType = ResultType.Failed;
+
+                            if (Enum.TryParse(nextNode.Attributes[i].Value, true, out resType))
+                            {
+                                result = resType;
+                            }
+                            break;
+
                     }
                 }
 
@@ -235,7 +245,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                 nextNode = nextNode.NextSibling;
             }
 
-            return new QueryResult(query, language, duration, vertices);
+            return new QueryResult(query, language, duration,ResultType.Successful, vertices);
         }
 
         public ContentType ContentType

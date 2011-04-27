@@ -39,6 +39,11 @@ namespace sones.GraphQL.Result
         public readonly UInt64 Duration;
 
         /// <summary>
+        /// The ReasultType of the executed query
+        /// </summary>
+        public readonly ResultType TypeOfResult;
+
+        /// <summary>
         /// The number of affected vertices
         /// </summary>
         public UInt64 NumberOfAffectedVertices
@@ -66,8 +71,9 @@ namespace sones.GraphQL.Result
         /// <param name="myQLName">The name of the query language that has been executed</param>
         /// <param name="myDuration">The time that was spent on executing the query</param>
         /// <param name="myVertices">The vertices that should be available within the query result</param>
-        public QueryResult(String myQuery, String myQLName, UInt64 myDuration, IEnumerable<IVertexView> myVertices = null)
+        public QueryResult(String myQuery, String myQLName, UInt64 myDuration, ResultType myResultType, IEnumerable<IVertexView> myVertices = null)
         {
+            TypeOfResult = myResultType;
             Vertices = myVertices ?? new List<IVertexView>();
             Query = myQuery;
             NameOfQuerylanguage = myQLName;

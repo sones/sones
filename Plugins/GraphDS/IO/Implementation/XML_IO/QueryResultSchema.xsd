@@ -11,6 +11,7 @@
     <xs:complexType>
       <xs:attribute name = "Language"      type ="xs:string"/>
       <xs:attribute name = "Value"         type ="xs:string" />
+      <xs:attribute name = "ResultType"    type ="xs:string" />
       <xs:attribute name = "VerticesCount" type ="xs:int" />
       <xs:attribute name = "Error"         type ="xs:string" default="" />
       <xs:attribute name = "Duration"      type ="xs:unsignedLong" />
