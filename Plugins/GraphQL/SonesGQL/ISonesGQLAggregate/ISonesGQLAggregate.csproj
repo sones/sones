@@ -54,10 +54,6 @@
       <Project>{5A691EE2-96EE-4F5F-858E-6A17088CE7A1}</Project>
       <Name>IGraphDB</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
-      <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
-      <Name>IGraphQL</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Library\Internal\Commons\Commons.csproj">
       <Project>{581F49A5-9768-4CB3-AF92-3A3FC2B1F63B}</Project>
       <Name>Commons</Name>

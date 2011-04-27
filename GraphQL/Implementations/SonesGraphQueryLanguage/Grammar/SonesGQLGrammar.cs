@@ -18,10 +18,14 @@ using sones.GraphQL.Structure.Nodes.Expressions;
 using sones.GraphQL.Structure.Nodes.Misc;
 using sones.Library.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
+using sones.GraphDB.Interfaces;
+using sones.Plugins.SonesGQL.Aggregates;
+using sones.Plugins.SonesGQL.Functions;
+using sones.Plugins.Index.Interfaces;
 
 namespace sones.GraphQL
 {
-    public sealed class SonesGQLGrammar : Grammar //, IDumpable, IExtendableGrammar
+    public sealed class SonesGQLGrammar : Grammar, IExtendableGrammar //, IDumpable, 
     {
         #region Data
 
@@ -288,10 +292,10 @@ namespace sones.GraphQL
             #region Comments
 
             //Terminals
-            var comment             = new CommentTerminal("comment", "/*", "*/");
+            var comment = new CommentTerminal("comment", "/*", "*/");
             var lineComment = new CommentTerminal("line_comment", "--", "\n", "\r\n");
             //TODO: remove block comment, added for testing LUA-style comments
-            var blockComment        = new CommentTerminal("block_comment", "--[[", "]]");
+            var blockComment = new CommentTerminal("block_comment", "--[[", "]]");
             NonGrammarTerminals.Add(comment);
             NonGrammarTerminals.Add(lineComment);
             NonGrammarTerminals.Add(blockComment);
@@ -300,12 +304,12 @@ namespace sones.GraphQL
 
             #region Available value defs: Number, String, Name
 
-            var number              = new NumberLiteral("number", NumberOptions.AllowSign | NumberOptions.DisableQuickParse);
+            var number = new NumberLiteral("number", NumberOptions.AllowSign | NumberOptions.DisableQuickParse);
             number.DefaultIntTypes = new TypeCode[] { TypeCode.UInt64, TypeCode.Int64, NumberLiteral.TypeCodeBigInt };
-            var string_literal      = new StringLiteral("string", "'", StringOptions.AllowsDoubledQuote | StringOptions.AllowsLineBreak);
-            var location_literal    = new StringLiteral("file", "'", StringOptions.AllowsDoubledQuote | StringOptions.AllowsLineBreak | StringOptions.NoEscapes);
+            var string_literal = new StringLiteral("string", "'", StringOptions.AllowsDoubledQuote | StringOptions.AllowsLineBreak);
+            var location_literal = new StringLiteral("file", "'", StringOptions.AllowsDoubledQuote | StringOptions.AllowsLineBreak | StringOptions.NoEscapes);
 
-            var name                = new IdentifierTerminal("name", "ÄÖÜäöüß0123456789_", "ÄÖÜäöü0123456789$_");
+            var name = new IdentifierTerminal("name", "ÄÖÜäöüß0123456789_", "ÄÖÜäöü0123456789$_");
 
 
             #endregion
@@ -457,101 +461,101 @@ namespace sones.GraphQL
 
             #region ID related
 
-            var Id                              = new NonTerminal("Id", CreateIDNode);
-            var Id_simple                       = new NonTerminal("id_simple", typeof(AstNode));
-            var id_typeAndAttribute             = new NonTerminal("id_typeAndAttribute");
-            var idlist                          = new NonTerminal("idlist");
-            var id_simpleList                   = new NonTerminal("id_simpleList");
-            var id_simpleDotList                = new NonTerminal("id_simpleDotList");
-            var IdOrFunc                        = new NonTerminal("IdOrFunc");
-            var IdOrFuncList                    = new NonTerminal("IdOrFuncList", CreateIDNode);
-            var IDOrFuncDelimiter               = new NonTerminal("IDOrFuncDelimiter");
-            var dotWrapper                      = new NonTerminal("dotWrapper", CreateDotDelimiter);
-            var edgeAccessorWrapper             = new NonTerminal("edgeAccessorWrapper", CreateEdgeAccessorDelimiter);
-            var EdgeInformation                 = new NonTerminal("EdgeInformation", CreateEdgeInformation);
-            var EdgeTraversalWithFunctions      = new NonTerminal("EdgeTraversalWithFunctions", CreateEdgeTraversal);
-            var EdgeTraversalWithOutFunctions   = new NonTerminal("EdgeTraversalWithOutFunctions", CreateEdgeTraversal);
+            var Id = new NonTerminal("Id", CreateIDNode);
+            var Id_simple = new NonTerminal("id_simple", typeof(AstNode));
+            var id_typeAndAttribute = new NonTerminal("id_typeAndAttribute");
+            var idlist = new NonTerminal("idlist");
+            var id_simpleList = new NonTerminal("id_simpleList");
+            var id_simpleDotList = new NonTerminal("id_simpleDotList");
+            var IdOrFunc = new NonTerminal("IdOrFunc");
+            var IdOrFuncList = new NonTerminal("IdOrFuncList", CreateIDNode);
+            var IDOrFuncDelimiter = new NonTerminal("IDOrFuncDelimiter");
+            var dotWrapper = new NonTerminal("dotWrapper", CreateDotDelimiter);
+            var edgeAccessorWrapper = new NonTerminal("edgeAccessorWrapper", CreateEdgeAccessorDelimiter);
+            var EdgeInformation = new NonTerminal("EdgeInformation", CreateEdgeInformation);
+            var EdgeTraversalWithFunctions = new NonTerminal("EdgeTraversalWithFunctions", CreateEdgeTraversal);
+            var EdgeTraversalWithOutFunctions = new NonTerminal("EdgeTraversalWithOutFunctions", CreateEdgeTraversal);
 
             #endregion
 
             #region AStatements
 
-            var singlestmt                  = new NonTerminal("singlestmt");
+            var singlestmt = new NonTerminal("singlestmt");
             //            var stmt = new NonTerminal("stmt", typeof(StatementNode)); 
-            var createTableStmt             = new NonTerminal("createTableStmt");
-            var createIndexStmt             = new NonTerminal("createIndexStmt", CreateCreateIndexStatementNode);
-            var alterStmt                   = new NonTerminal("alterStmt", CreateAlterStmNode);
-            var dropTypeStmt                = new NonTerminal("dropTypeStmt", CreateDropTypeStmNode);
-            var dropIndexStmt               = new NonTerminal("dropIndexStmt", CreateDropIndexStmNode);
-            var InsertStmt                  = new NonTerminal("InsertStmt", CreateInsertStatementNode);
-            var updateStmt                  = new NonTerminal("updateStmt", CreateUpdateStatementNode);
-            var deleteStmt                  = new NonTerminal("deleteStmt", CreateDeleteStatementNode);
-            var SelectStmtGraph             = new NonTerminal("SelectStmtGraph", CreateSelectStatementNode);
-            var parSelectStmt               = new NonTerminal("parSelectStmt", CreatePartialSelectStmtNode);
-            var createTypesStmt             = new NonTerminal("createTypesStmt", CreateCreateTypesStatementNode);
-            var insertorupdateStmt          = new NonTerminal("insertorupdateStmt", CreateInsertOrUpdateStatementNode);
-            var insertorreplaceStmt         = new NonTerminal("insertorreplaceStmt", CreateInsertOrReplaceStatementNode);
-            var replaceStmt                 = new NonTerminal("replaceStmt", CreateReplaceStatementNode);
-            var transactStmt                = new NonTerminal("transactStmt", CreateTransActionStatementNode);
-            var commitRollBackTransactStmt  = new NonTerminal("commitRollBackTransactStmt", CreateCommitRollbackTransActionNode);
-            var linkStmt                    = new NonTerminal("linkStmt", CreateLinkStmtNode);
-            var unlinkStmt                  = new NonTerminal("unlinkStmt", CreateUnlinkStmt);
+            var createTableStmt = new NonTerminal("createTableStmt");
+            var createIndexStmt = new NonTerminal("createIndexStmt", CreateCreateIndexStatementNode);
+            var alterStmt = new NonTerminal("alterStmt", CreateAlterStmNode);
+            var dropTypeStmt = new NonTerminal("dropTypeStmt", CreateDropTypeStmNode);
+            var dropIndexStmt = new NonTerminal("dropIndexStmt", CreateDropIndexStmNode);
+            var InsertStmt = new NonTerminal("InsertStmt", CreateInsertStatementNode);
+            var updateStmt = new NonTerminal("updateStmt", CreateUpdateStatementNode);
+            var deleteStmt = new NonTerminal("deleteStmt", CreateDeleteStatementNode);
+            var SelectStmtGraph = new NonTerminal("SelectStmtGraph", CreateSelectStatementNode);
+            var parSelectStmt = new NonTerminal("parSelectStmt", CreatePartialSelectStmtNode);
+            var createTypesStmt = new NonTerminal("createTypesStmt", CreateCreateTypesStatementNode);
+            var insertorupdateStmt = new NonTerminal("insertorupdateStmt", CreateInsertOrUpdateStatementNode);
+            var insertorreplaceStmt = new NonTerminal("insertorreplaceStmt", CreateInsertOrReplaceStatementNode);
+            var replaceStmt = new NonTerminal("replaceStmt", CreateReplaceStatementNode);
+            var transactStmt = new NonTerminal("transactStmt", CreateTransActionStatementNode);
+            var commitRollBackTransactStmt = new NonTerminal("commitRollBackTransactStmt", CreateCommitRollbackTransActionNode);
+            var linkStmt = new NonTerminal("linkStmt", CreateLinkStmtNode);
+            var unlinkStmt = new NonTerminal("unlinkStmt", CreateUnlinkStmt);
 
             #endregion
 
-            var deleteStmtMember            = new NonTerminal("deleteStmtMember");
-            var uniqueOpt                   = new NonTerminal("uniqueOpt", typeof(UniqueOptNode));
-            var IndexAttributeList          = new NonTerminal("IndexAttributeList", typeof(IndexAttributeListNode));
-            var IndexAttributeMember        = new NonTerminal("IndexAttributeMember", typeof(IndexAttributeNode));
-            var IndexAttributeType          = new NonTerminal("IndexAttributeType");
-            var orderByAttributeList        = new NonTerminal("orderByAttributeList");
-            var orderByAttributeListMember  = new NonTerminal("orderByAttributeListMember");
-            var AttributeOrderDirectionOpt  = new NonTerminal("AttributeOrderDirectionOpt");
+            var deleteStmtMember = new NonTerminal("deleteStmtMember");
+            var uniqueOpt = new NonTerminal("uniqueOpt", typeof(UniqueOptNode));
+            var IndexAttributeList = new NonTerminal("IndexAttributeList", typeof(IndexAttributeListNode));
+            var IndexAttributeMember = new NonTerminal("IndexAttributeMember", typeof(IndexAttributeNode));
+            var IndexAttributeType = new NonTerminal("IndexAttributeType");
+            var orderByAttributeList = new NonTerminal("orderByAttributeList");
+            var orderByAttributeListMember = new NonTerminal("orderByAttributeListMember");
+            var AttributeOrderDirectionOpt = new NonTerminal("AttributeOrderDirectionOpt");
             BNF_IndexTypeOpt = new NonTerminal("indexTypeOpt", typeof(IndexTypeOptNode));
-            var indexNameOpt                = new NonTerminal("indextNameOpt", typeof(IndexNameOptNode));
-            var editionOpt                  = new NonTerminal("editionOpt", typeof(EditionOptNode));
-            var alterCmd                    = new NonTerminal("alterCmd", typeof(AlterCommandNode));
-            var alterCmdList                = new NonTerminal("alterCmdList");
-            var insertData                  = new NonTerminal("insertData");
-            var intoOpt                     = new NonTerminal("intoOpt");
-            var assignList                  = new NonTerminal("assignList");
-            var whereClauseOpt              = new NonTerminal("whereClauseOpt", CreateWhereExpressionNode);
-            var extendsOpt                  = new NonTerminal("extendsOpt");
-            var abstractOpt                 = new NonTerminal("abstractOpt");
-            var commentOpt                  = new NonTerminal("CommentOpt");
-            var bulkTypeList                = new NonTerminal("bulkTypeList");
-            var attributesOpt               = new NonTerminal("attributesOpt");
-            var insertValuesOpt             = new NonTerminal("insertValuesOpt");
-            var optionalShards              = new NonTerminal("optionalShards", typeof(ShardsNode));
+            var indexNameOpt = new NonTerminal("indextNameOpt", typeof(IndexNameOptNode));
+            var editionOpt = new NonTerminal("editionOpt", typeof(EditionOptNode));
+            var alterCmd = new NonTerminal("alterCmd", typeof(AlterCommandNode));
+            var alterCmdList = new NonTerminal("alterCmdList");
+            var insertData = new NonTerminal("insertData");
+            var intoOpt = new NonTerminal("intoOpt");
+            var assignList = new NonTerminal("assignList");
+            var whereClauseOpt = new NonTerminal("whereClauseOpt", CreateWhereExpressionNode);
+            var extendsOpt = new NonTerminal("extendsOpt");
+            var abstractOpt = new NonTerminal("abstractOpt");
+            var commentOpt = new NonTerminal("CommentOpt");
+            var bulkTypeList = new NonTerminal("bulkTypeList");
+            var attributesOpt = new NonTerminal("attributesOpt");
+            var insertValuesOpt = new NonTerminal("insertValuesOpt");
+            var optionalShards = new NonTerminal("optionalShards", typeof(ShardsNode));
 
             #region Expression
 
-            var BNF_Expression              = new NonTerminal("expression", typeof(ExpressionNode));
-            var expressionOfAList           = new NonTerminal("expressionOfAList", typeof(ExpressionOfAListNode));
-            var BNF_ExprList                = new NonTerminal("exprList");
-            var exprListOfAList             = new NonTerminal("exprListOfAList");
-            var unExpr                      = new NonTerminal("unExpr", CreateUnExpressionNode);
-            var unOp                        = new NonTerminal("unOp");
-            var binExpr                     = new NonTerminal("binExpr", CreateBinaryExpressionNode);
-            var binOp                       = new NonTerminal("binOp");
-            var inExpr                      = new NonTerminal("inExpr");
+            var BNF_Expression = new NonTerminal("expression", typeof(ExpressionNode));
+            var expressionOfAList = new NonTerminal("expressionOfAList", typeof(ExpressionOfAListNode));
+            var BNF_ExprList = new NonTerminal("exprList");
+            var exprListOfAList = new NonTerminal("exprListOfAList");
+            var unExpr = new NonTerminal("unExpr", CreateUnExpressionNode);
+            var unOp = new NonTerminal("unOp");
+            var binExpr = new NonTerminal("binExpr", CreateBinaryExpressionNode);
+            var binOp = new NonTerminal("binOp");
+            var inExpr = new NonTerminal("inExpr");
 
             #endregion
 
             #region Select
 
-            var selList                     = new NonTerminal("selList");
-            var fromClauseOpt               = new NonTerminal("fromClauseOpt");
-            var groupClauseOpt              = new NonTerminal("groupClauseOpt");
-            var havingClauseOpt             = new NonTerminal("havingClauseOpt", typeof(HavingExpressionNode));
-            var orderClauseOpt              = new NonTerminal("orderClauseOpt", typeof(OrderByNode));
-            var selectionList               = new NonTerminal("selectionList");
-            var selectionListElement        = new NonTerminal("selectionListElement", typeof(SelectionListElementNode));
+            var selList = new NonTerminal("selList");
+            var fromClauseOpt = new NonTerminal("fromClauseOpt");
+            var groupClauseOpt = new NonTerminal("groupClauseOpt");
+            var havingClauseOpt = new NonTerminal("havingClauseOpt", typeof(HavingExpressionNode));
+            var orderClauseOpt = new NonTerminal("orderClauseOpt", typeof(OrderByNode));
+            var selectionList = new NonTerminal("selectionList");
+            var selectionListElement = new NonTerminal("selectionListElement", typeof(SelectionListElementNode));
             selectionSource = new NonTerminal("selectionSource");
-            var selByType                   = new NonTerminal("selByType", CreateSelByTypeNode);
-            var aliasOpt                    = new NonTerminal("aliasOpt");
-            var aliasOptName                = new NonTerminal("aliasOptName");
-            var selectOutputOpt             = new NonTerminal("selectOutputOpt", typeof(SelectOutputOptNode));
+            var selByType = new NonTerminal("selByType", CreateSelByTypeNode);
+            var aliasOpt = new NonTerminal("aliasOpt");
+            var aliasOptName = new NonTerminal("aliasOptName");
+            var selectOutputOpt = new NonTerminal("selectOutputOpt", typeof(SelectOutputOptNode));
 
             #endregion
 
@@ -559,8 +563,8 @@ namespace sones.GraphQL
 
             BNF_Aggregate = new NonTerminal("aggregate", CreateAggregateNode);
             BNF_AggregateArg = new NonTerminal("aggregateArg");
-            var function                    = new NonTerminal("function", CreateFunctionCallNode);
-            var functionName                = new NonTerminal("functionName");
+            var function = new NonTerminal("function", CreateFunctionCallNode);
+            var functionName = new NonTerminal("functionName");
             BNF_FunArgs = new NonTerminal("funArgs");
             BNF_FuncCall = new NonTerminal("funCall", CreateFunctionCallNode);
 
@@ -568,150 +572,150 @@ namespace sones.GraphQL
 
             #region Tuple
 
-            var tuple                       = new NonTerminal("tuple", typeof(TupleNode));
-            var bracketLeft                 = new NonTerminal(SonesGQLConstants.BracketLeft);
-            var bracketRight                = new NonTerminal(SonesGQLConstants.BracketRight);
+            var tuple = new NonTerminal("tuple", typeof(TupleNode));
+            var bracketLeft = new NonTerminal(SonesGQLConstants.BracketLeft);
+            var bracketRight = new NonTerminal(SonesGQLConstants.BracketRight);
 
 
             #endregion
 
-            var term                        = new NonTerminal("term");
-            var notOpt                      = new NonTerminal("notOpt");
+            var term = new NonTerminal("term");
+            var notOpt = new NonTerminal("notOpt");
 
-            var vertexType                  = new NonTerminal("vertexType");
-            BNF_VertexTypes             = new NonTerminal("vertexTypes");
+            var vertexType = new NonTerminal("vertexType");
+            BNF_VertexTypes = new NonTerminal("vertexTypes");
 
-            var GraphDBType                 = new NonTerminal(SonesGQLConstants.GraphDBType, CreateGraphDBTypeNode);
-            var AttributeList               = new NonTerminal("AttributeList");
-            var AttrDefinition              = new NonTerminal("AttrDefinition", CreateAttributeDefinitionNode);
-            var ResultObject                = new NonTerminal("ResultObject");
-            var ResultList                  = new NonTerminal("ResultList");
-            var MatchingClause              = new NonTerminal("MatchingClause");
-            var Matching                    = new NonTerminal("MatchingClause");
-            var PrefixOperation             = new NonTerminal("PrefixOperation");
-            var ParameterList               = new NonTerminal("ParameterList");
-            var TypeList                    = new NonTerminal("TypeList", CreateTypeListNode);
-            var AType                       = new NonTerminal("AType", CreateATypeNode);
-            var TypeWrapper                 = new NonTerminal("TypeWrapper");
+            var GraphDBType = new NonTerminal(SonesGQLConstants.GraphDBType, CreateGraphDBTypeNode);
+            var AttributeList = new NonTerminal("AttributeList");
+            var AttrDefinition = new NonTerminal("AttrDefinition", CreateAttributeDefinitionNode);
+            var ResultObject = new NonTerminal("ResultObject");
+            var ResultList = new NonTerminal("ResultList");
+            var MatchingClause = new NonTerminal("MatchingClause");
+            var Matching = new NonTerminal("MatchingClause");
+            var PrefixOperation = new NonTerminal("PrefixOperation");
+            var ParameterList = new NonTerminal("ParameterList");
+            var TypeList = new NonTerminal("TypeList", CreateTypeListNode);
+            var AType = new NonTerminal("AType", CreateATypeNode);
+            var TypeWrapper = new NonTerminal("TypeWrapper");
 
             #region Attribute changes
 
-            var AttrAssignList              = new NonTerminal("AttrAssignList", CreateAttrAssignListNode);
-            var AttrUpdateList              = new NonTerminal("AttrUpdateList", typeof(AttrUpdateOrAssignListNode));
-            var AttrAssign                  = new NonTerminal("AttrAssign", typeof(AttributeAssignNode));
-            var AttrRemove                  = new NonTerminal("AttrRemove", typeof(AttrRemoveNode));
-            var ListAttrUpdate              = new NonTerminal("AttrUpdate");
-            var AddToListAttrUpdate         = new NonTerminal("AddToListAttrUpdate", typeof(AddToListAttrUpdateNode));
-            var AddToListAttrUpdateAddTo    = new NonTerminal("AddToListAttrUpdateAddTo", CreateAddToListAttrUpdateAddToNode);
+            var AttrAssignList = new NonTerminal("AttrAssignList", CreateAttrAssignListNode);
+            var AttrUpdateList = new NonTerminal("AttrUpdateList", typeof(AttrUpdateOrAssignListNode));
+            var AttrAssign = new NonTerminal("AttrAssign", typeof(AttributeAssignNode));
+            var AttrRemove = new NonTerminal("AttrRemove", typeof(AttrRemoveNode));
+            var ListAttrUpdate = new NonTerminal("AttrUpdate");
+            var AddToListAttrUpdate = new NonTerminal("AddToListAttrUpdate", typeof(AddToListAttrUpdateNode));
+            var AddToListAttrUpdateAddTo = new NonTerminal("AddToListAttrUpdateAddTo", CreateAddToListAttrUpdateAddToNode);
             var AddToListAttrUpdateOperator = new NonTerminal("AddToListAttrUpdateOperator", CreateAddToListAttrUpdateOperatorNode);
-            var RemoveFromListAttrUpdate    = new NonTerminal("RemoveFromListAttrUpdate", typeof(RemoveFromListAttrUpdateNode));
+            var RemoveFromListAttrUpdate = new NonTerminal("RemoveFromListAttrUpdate", typeof(RemoveFromListAttrUpdateNode));
             var RemoveFromListAttrUpdateAddToRemoveFrom = new NonTerminal("RemoveFromListAttrUpdateAddToRemoveFrom", CreateRemoveFromListAttrUpdateAddToRemoveFromNode);
-            var RemoveFromListAttrUpdateAddToOperator   = new NonTerminal("RemoveFromListAttrUpdateAddToOperator", CreateRemoveFromListAttrUpdateAddToOperatorNode);
-            var RemoveFromListAttrUpdateScope   = new NonTerminal("RemoveFromListAttrUpdateScope", CreateRemoveFromListAttrUpdateScope);
-            var AttrUpdateOrAssign              = new NonTerminal("AttrUpdateOrAssign");
-            var CollectionOfDBObjects           = new NonTerminal("ListOfDBObjects", typeof(CollectionOfDBObjectsNode));
-            var CollectionTuple                 = new NonTerminal("CollectionTuple", typeof(TupleNode));
-            var ExtendedExpressionList          = new NonTerminal("ExtendedExpressionList");
-            var ExtendedExpression              = new NonTerminal("ExtendedExpression", typeof(ExpressionOfAListNode));
+            var RemoveFromListAttrUpdateAddToOperator = new NonTerminal("RemoveFromListAttrUpdateAddToOperator", CreateRemoveFromListAttrUpdateAddToOperatorNode);
+            var RemoveFromListAttrUpdateScope = new NonTerminal("RemoveFromListAttrUpdateScope", CreateRemoveFromListAttrUpdateScope);
+            var AttrUpdateOrAssign = new NonTerminal("AttrUpdateOrAssign");
+            var CollectionOfDBObjects = new NonTerminal("ListOfDBObjects", typeof(CollectionOfDBObjectsNode));
+            var CollectionTuple = new NonTerminal("CollectionTuple", typeof(TupleNode));
+            var ExtendedExpressionList = new NonTerminal("ExtendedExpressionList");
+            var ExtendedExpression = new NonTerminal("ExtendedExpression", typeof(ExpressionOfAListNode));
 
             #endregion
 
-            var Reference                   = new NonTerminal("REFERENCE", typeof(SetRefNode));
-            var offsetOpt                   = new NonTerminal("offsetOpt", typeof(OffsetNode));
-            var resolutionDepthOpt          = new NonTerminal("resolutionDepthOpt");
-            var limitOpt                    = new NonTerminal("limitOpt", typeof(LimitNode));
-            var SimpleIdList                = new NonTerminal("SimpleIdList");
-            var bulkTypeListMember          = new NonTerminal("bulkTypeListMember", CreateBulkTypeListMemberNode);
-            var bulkType                    = new NonTerminal("bulkType", CreateBulkTypeNode);
-            var truncateStmt                = new NonTerminal("truncateStmt", CreateTruncateStmNode);
-            var uniquenessOpt               = new NonTerminal("UniquenessOpt", typeof(UniqueAttributesOptNode));
-            var mandatoryOpt                = new NonTerminal("MandatoryOpt", typeof(MandatoryOptNode));
+            var Reference = new NonTerminal("REFERENCE", typeof(SetRefNode));
+            var offsetOpt = new NonTerminal("offsetOpt", typeof(OffsetNode));
+            var resolutionDepthOpt = new NonTerminal("resolutionDepthOpt");
+            var limitOpt = new NonTerminal("limitOpt", typeof(LimitNode));
+            var SimpleIdList = new NonTerminal("SimpleIdList");
+            var bulkTypeListMember = new NonTerminal("bulkTypeListMember", CreateBulkTypeListMemberNode);
+            var bulkType = new NonTerminal("bulkType", CreateBulkTypeNode);
+            var truncateStmt = new NonTerminal("truncateStmt", CreateTruncateStmNode);
+            var uniquenessOpt = new NonTerminal("UniquenessOpt", typeof(UniqueAttributesOptNode));
+            var mandatoryOpt = new NonTerminal("MandatoryOpt", typeof(MandatoryOptNode));
 
             #region Transactions
 
-            var TransactOptions             = new NonTerminal("TransactOptions");
-            var TransactAttributes          = new NonTerminal("TransactAttributes");
-            var TransactIsolation           = new NonTerminal("TransactIsolation");
-            var TransactName                = new NonTerminal("TransactName");
-            var TransactTimestamp           = new NonTerminal("TransactTimestamp");
-            var TransactCommitRollbackOpt   = new NonTerminal("TransactCommitRollbackOpt");
-            var TransactCommitRollbackType  = new NonTerminal("TransactCommitRollbackType");
+            var TransactOptions = new NonTerminal("TransactOptions");
+            var TransactAttributes = new NonTerminal("TransactAttributes");
+            var TransactIsolation = new NonTerminal("TransactIsolation");
+            var TransactName = new NonTerminal("TransactName");
+            var TransactTimestamp = new NonTerminal("TransactTimestamp");
+            var TransactCommitRollbackOpt = new NonTerminal("TransactCommitRollbackOpt");
+            var TransactCommitRollbackType = new NonTerminal("TransactCommitRollbackType");
 
             #endregion
 
-            var Value                       = new NonTerminal("Value");
-            var ValueList                   = new NonTerminal("ValueList");
-            var BooleanVal                  = new NonTerminal("BooleanVal");
+            var Value = new NonTerminal("Value");
+            var ValueList = new NonTerminal("ValueList");
+            var BooleanVal = new NonTerminal("BooleanVal");
 
-            var ListType                    = new NonTerminal("ListType");
+            var ListType = new NonTerminal("ListType");
             var ListParametersForExpression = new NonTerminal("ListParametersForExpression", typeof(ParametersNode));
-            var LinkCondition               = new NonTerminal("LinkCondition");
+            var LinkCondition = new NonTerminal("LinkCondition");
 
             #region EdgeType
 
-            var EdgeTypeDef                 = new NonTerminal("EdgeTypeDef", CreateEdgeTypeDefNode);
-            var SingleEdgeTypeDef           = new NonTerminal("EdgeTypeDef", CreateSingleEdgeTypeDefNode);
-            var DefaultValueDef             = new NonTerminal("DefaultValueDef", typeof(DefaultValueDefNode));
-            var EdgeTypeParams              = new NonTerminal("EdgeTypeParams", typeof(EdgeTypeParamsNode));
-            var EdgeTypeParam               = new NonTerminal("EdgeTypeParamNode", typeof(EdgeTypeParamNode));
-            var EdgeType_Sorted             = new NonTerminal("ListPropertyAssign_Sorted", typeof(EdgeType_SortedNode));
-            var EdgeType_SortedMember       = new NonTerminal("ListPropertyAssign_SortedMember");
-            var AttrDefaultOpValue          = new NonTerminal("AttrDefaultOpValue", CreateAttrDefaultValueNode);
+            var EdgeTypeDef = new NonTerminal("EdgeTypeDef", CreateEdgeTypeDefNode);
+            var SingleEdgeTypeDef = new NonTerminal("EdgeTypeDef", CreateSingleEdgeTypeDefNode);
+            var DefaultValueDef = new NonTerminal("DefaultValueDef", typeof(DefaultValueDefNode));
+            var EdgeTypeParams = new NonTerminal("EdgeTypeParams", typeof(EdgeTypeParamsNode));
+            var EdgeTypeParam = new NonTerminal("EdgeTypeParamNode", typeof(EdgeTypeParamNode));
+            var EdgeType_Sorted = new NonTerminal("ListPropertyAssign_Sorted", typeof(EdgeType_SortedNode));
+            var EdgeType_SortedMember = new NonTerminal("ListPropertyAssign_SortedMember");
+            var AttrDefaultOpValue = new NonTerminal("AttrDefaultOpValue", CreateAttrDefaultValueNode);
 
             #endregion
 
             #region BackwardEdges
 
-            var backwardEdgesOpt            = new NonTerminal("BackwardEdges", CreateBackwardEdgesNode);
-            var BackwardEdgesSingleDef      = new NonTerminal("BackwardEdgesSingleDef", CreateBackwardEdgeNode);
-            var BackwardEdgesList           = new NonTerminal("BackwardEdgesList");
+            var backwardEdgesOpt = new NonTerminal("BackwardEdges", CreateBackwardEdgesNode);
+            var BackwardEdgesSingleDef = new NonTerminal("BackwardEdgesSingleDef", CreateBackwardEdgeNode);
+            var BackwardEdgesList = new NonTerminal("BackwardEdgesList");
 
             #endregion
 
             #region Index
 
-            var indexOptOnCreateType            = new NonTerminal("IndexOptOnCreateType");
-            var indexOnCreateType               = new NonTerminal("indexOnCreateType", CreateIndexOnCreateType);
-            var IndexOptOnCreateTypeMember      = new NonTerminal("IndexOptOnCreateTypeMember", CreateIndexOptOnCreateTypeMemberNode);
-            var IndexOptOnCreateTypeMemberList  = new NonTerminal("IndexOptOnCreateTypeMemberList");
-            var IndexDropOnAlterType            = new NonTerminal("IndexDropOnAlterType", CreateDropIndicesNode);
-            var IndexDropOnAlterTypeMember      = new NonTerminal("IndexDropOnAlterTypeMember");
-            var IndexDropOnAlterTypeMemberList  = new NonTerminal("IndexDropOnAlterTypeMemberList");
+            var indexOptOnCreateType = new NonTerminal("IndexOptOnCreateType");
+            var indexOnCreateType = new NonTerminal("indexOnCreateType", CreateIndexOnCreateType);
+            var IndexOptOnCreateTypeMember = new NonTerminal("IndexOptOnCreateTypeMember", CreateIndexOptOnCreateTypeMemberNode);
+            var IndexOptOnCreateTypeMemberList = new NonTerminal("IndexOptOnCreateTypeMemberList");
+            var IndexDropOnAlterType = new NonTerminal("IndexDropOnAlterType", CreateDropIndicesNode);
+            var IndexDropOnAlterTypeMember = new NonTerminal("IndexDropOnAlterTypeMember");
+            var IndexDropOnAlterTypeMemberList = new NonTerminal("IndexDropOnAlterTypeMemberList");
 
             #endregion
 
             #region Dump/Export
 
-            var dumpStmt                        = new NonTerminal("Dump", CreateDumpNode);
-            var dumpType                        = new NonTerminal("dumpType", CreateDumpTypeNode);
-            var dumpFormat                      = new NonTerminal("dumpFormat", CreateDumpFormatNode);
-            var typeOptionalList                = new NonTerminal("typeOptionalList");
-            var dumpDestination                 = new NonTerminal("dumpDestination");
+            var dumpStmt = new NonTerminal("Dump", CreateDumpNode);
+            var dumpType = new NonTerminal("dumpType", CreateDumpTypeNode);
+            var dumpFormat = new NonTerminal("dumpFormat", CreateDumpFormatNode);
+            var typeOptionalList = new NonTerminal("typeOptionalList");
+            var dumpDestination = new NonTerminal("dumpDestination");
 
             #endregion
 
             #region Describe
 
-            var DescrInfoStmt               = new NonTerminal("DescrInfoStmt", CreateDescribeNode);
-            var DescrArgument               = new NonTerminal("DescrArgument");
-            var DescrFuncStmt               = new NonTerminal("DescrFuncStmt", CreateDescrFunc);
-            var DescrFunctionsStmt          = new NonTerminal("DescrFunctionsStmt", CreateDescrFunctions);
-            var DescrAggrStmt               = new NonTerminal("DescrAggrStmt", CreateDescrAggr);
-            var DescrAggrsStmt              = new NonTerminal("DescrAggrsStmt", CreateDescrAggrs);
-            var DescrTypeStmt               = new NonTerminal("DescrTypeStmt", CreateDescrType);
-            var DescrTypesStmt              = new NonTerminal("DescrTypesStmt", CreateDescrTypes);
-            var DescrIdxStmt                = new NonTerminal("DescrIdxStmt", CreateDescrIdx);
-            var DescrIdxsStmt               = new NonTerminal("DescrIdxsStmt", CreateDescrIdxs);
-            var DescrIdxEdtStmt             = new NonTerminal("DescrIdxEdtStmt");
-            var DescrEdgeStmt               = new NonTerminal("DescrEdgeStmt", CreateDescrEdge);
-            var DescrEdgesStmt              = new NonTerminal("DescrEdgesStmt", CreateDescrEdges);
+            var DescrInfoStmt = new NonTerminal("DescrInfoStmt", CreateDescribeNode);
+            var DescrArgument = new NonTerminal("DescrArgument");
+            var DescrFuncStmt = new NonTerminal("DescrFuncStmt", CreateDescrFunc);
+            var DescrFunctionsStmt = new NonTerminal("DescrFunctionsStmt", CreateDescrFunctions);
+            var DescrAggrStmt = new NonTerminal("DescrAggrStmt", CreateDescrAggr);
+            var DescrAggrsStmt = new NonTerminal("DescrAggrsStmt", CreateDescrAggrs);
+            var DescrTypeStmt = new NonTerminal("DescrTypeStmt", CreateDescrType);
+            var DescrTypesStmt = new NonTerminal("DescrTypesStmt", CreateDescrTypes);
+            var DescrIdxStmt = new NonTerminal("DescrIdxStmt", CreateDescrIdx);
+            var DescrIdxsStmt = new NonTerminal("DescrIdxsStmt", CreateDescrIdxs);
+            var DescrIdxEdtStmt = new NonTerminal("DescrIdxEdtStmt");
+            var DescrEdgeStmt = new NonTerminal("DescrEdgeStmt", CreateDescrEdge);
+            var DescrEdgesStmt = new NonTerminal("DescrEdgesStmt", CreateDescrEdges);
 
             #endregion
 
             #region REBUILD INDICES
 
-            var rebuildIndicesStmt          = new NonTerminal("rebuildIndicesStmt", CreateRebuildIndicesNode);
-            var rebuildIndicesTypes         = new NonTerminal("rebuildIndiceTypes");
+            var rebuildIndicesStmt = new NonTerminal("rebuildIndicesStmt", CreateRebuildIndicesNode);
+            var rebuildIndicesTypes = new NonTerminal("rebuildIndiceTypes");
 
             #endregion
 
@@ -719,10 +723,10 @@ namespace sones.GraphQL
 
             BNF_ImportFormat = new NonTerminal("importFormat");
             BNF_ImportStmt = new NonTerminal("import", CreateImportNode);
-            var paramParallelTasks  = new NonTerminal("parallelTasks", CreateParallelTaskNode);
-            var paramComments       = new NonTerminal("comments", CreateCommentsNode);
-            var verbosity           = new NonTerminal("verbosity", CreateVerbosityNode);
-            var verbosityTypes      = new NonTerminal("verbosityTypes");
+            var paramParallelTasks = new NonTerminal("parallelTasks", CreateParallelTaskNode);
+            var paramComments = new NonTerminal("comments", CreateCommentsNode);
+            var verbosity = new NonTerminal("verbosity", CreateVerbosityNode);
+            var verbosityTypes = new NonTerminal("verbosityTypes");
 
             #endregion
 
@@ -1729,7 +1733,6 @@ namespace sones.GraphQL
 
         }
 
-
         private void CreateWhereExpressionNode(ParsingContext context, ParseTreeNode parseNode)
         {
             WhereExpressionNode aWhereNode = new WhereExpressionNode();
@@ -1985,7 +1988,6 @@ namespace sones.GraphQL
 
             parseNode.AstNode = removeFromListAttrUpdateAddToOperatorNode;
         }
-
 
         private void CreateAttrDefaultValueNode(ParsingContext context, ParseTreeNode parseNode)
         {
@@ -2336,7 +2338,7 @@ namespace sones.GraphQL
         private String CreateGraphDDLOfIndices(IEnumerable<IIndexDefinition> myIndexDefinitions, IVertexType myVertexType)
         {
             var _StringBuilder = new StringBuilder();
-            var _Delimiter     = ", ";
+            var _Delimiter = ", ";
 
             foreach (var _AttributeIndex in myIndexDefinitions)
             {
@@ -2477,7 +2479,7 @@ namespace sones.GraphQL
 
             foreach (var _Attribute in myPropertyDefinitions)
             {
-                stringBuilder.Append(String.Concat(_Attribute.BaseType.Name.ToUpper() , " ", _Attribute.Name));
+                stringBuilder.Append(String.Concat(_Attribute.BaseType.Name.ToUpper(), " ", _Attribute.Name));
 
                 stringBuilder.Append(delimiter);
             }
@@ -2685,7 +2687,7 @@ namespace sones.GraphQL
 
                 stringBuilder.Append(delimiter);
             }
-           
+
             return stringBuilder.ToString();
         }
 
@@ -2705,142 +2707,136 @@ namespace sones.GraphQL
 
         #region IExtendableGrammar Members
 
-        //public void SetAggregates(IEnumerable<ABaseAggregate> aggregates)
-        //{
+        public void SetAggregates(IEnumerable<IGQLAggregate> aggregates)
+        {
+            #region Add all plugins to the grammar
 
-        //    #region Add all plugins to the grammar
+            if (aggregates == null || aggregates.Count() == 0)
+            {
+                /// empty is not the best solution, Maybe: remove complete rule if no importer exist
+                BNF_Aggregate.Rule = Empty;
+            }
+            else
+            {
+                foreach (var aggr in aggregates)
+                {
+                    //BNF_AggregateName + S_BRACKET_LEFT + aggregateArg + S_BRACKET_RIGHT;
 
-        //    if (aggregates.IsNullOrEmpty())
-        //    {
-        //        /// empty is not the best solution, Maybe: remove complete rule if no importer exist
-        //        BNF_Aggregate.Rule = Empty;
-        //    }
-        //    else
-        //    {
-        //        foreach (var aggr in aggregates)
-        //        {
-        //            //BNF_AggregateName + S_BRACKET_LEFT + aggregateArg + S_BRACKET_RIGHT;
+                    var aggrRule = new NonTerminal("aggr_" + aggr.PluginName, CreateAggregateNode);
+                    aggrRule.Rule = aggr.PluginName + S_BRACKET_LEFT + BNF_AggregateArg + S_BRACKET_RIGHT;
 
-        //            var aggrRule = new NonTerminal("aggr_" + aggr.FunctionName, CreateAggregateNode);
-        //            aggrRule.Rule = aggr.FunctionName + S_BRACKET_LEFT + BNF_AggregateArg + S_BRACKET_RIGHT;
+                    if (BNF_Aggregate.Rule == null)
+                    {
+                        BNF_Aggregate.Rule = aggrRule;
+                    }
+                    else
+                    {
+                        BNF_Aggregate.Rule |= aggrRule;
+                    }
+                }
+            }
 
-        //            if (BNF_Aggregate.Rule == null)
-        //            {
-        //                BNF_Aggregate.Rule = aggrRule;
-        //            }
-        //            else
-        //            {
-        //                BNF_Aggregate.Rule |= aggrRule;
-        //            }
-        //        }
-        //    }
+            #endregion
+        }
 
-        //    #endregion
+        public void SetFunctions(IEnumerable<ABaseFunction> functions)
+        {
+            #region Add all plugins to the grammar
 
-        //}
+            if (functions == null || functions.Count() == 0)
+            {
+                /// empty is not the best solution, Maybe: remove complete rule if no importer exist
+                BNF_FuncCall.Rule = Empty;
+            }
+            else
+            {
+                foreach (var func in functions)
+                {
 
-        //public void SetFunctions(IEnumerable<ABaseFunction> functions)
-        //{
+                    #region Create funcNonTerminal
 
-        //    #region Add all plugins to the grammar
+                    var funcNonTerminal = new NonTerminal("func" + func.PluginName, CreateFunctionCallNode);
 
-        //    if (functions.IsNullOrEmpty())
-        //    {
-        //        /// empty is not the best solution, Maybe: remove complete rule if no importer exist
-        //        BNF_FuncCall.Rule = Empty;
-        //    }
-        //    else
-        //    {
-        //        foreach (var func in functions)
-        //        {
+                    var funcParams = func.GetParameters();
+                    if (funcParams == null || funcParams.Count() == 0)
+                    {
+                        funcNonTerminal.Rule = func.PluginName + S_BRACKET_LEFT + S_BRACKET_RIGHT;
 
-        //            #region Create funcNonTerminal
+                    }
+                    else
+                    {
 
-        //            var funcNonTerminal = new NonTerminal("func" + func.FunctionName, CreateFunctionCallNode);
+                        #region Do not add the arguments to the grammar - currently there is an mystic NT1 child for INSERT func
 
-        //            var funcParams = func.GetParameters();
-        //            if (funcParams.IsNullOrEmpty())
-        //            {
-        //                funcNonTerminal.Rule = func.FunctionName + S_BRACKET_LEFT + S_BRACKET_RIGHT;
+                        /* Do not add the arguments to the grammar - currently there is an mystic NT1 child for INSERT func
+                        var funcArgsNonTerminal = new NonTerminal("funcArgs" + func.PluginName);
+                        funcArgsNonTerminal.Rule = BNF_ExprList;
+                        foreach (var param in funcParams.SkipULong(1))
+                        {
+                            if (param.VariableNumOfParams)
+                            {
+                                funcArgsNonTerminal.Rule = BNF_ExprList;
+                            }
+                            else
+                            {
+                                funcArgsNonTerminal.Rule += S_comma + BNF_Expression;
+                            }
+                        }
+                        funcArgsNonTerminal.SetOption(TermOptions.IsTransient);
+                        */
 
-        //            }
-        //            else
-        //            {
+                        #endregion
 
-        //                #region Do not add the arguments to the grammar - currently there is an mystic NT1 child for INSERT func
+                        funcNonTerminal.Rule = func.PluginName + S_BRACKET_LEFT + BNF_FunArgs + S_BRACKET_RIGHT;
+                    }
 
-        //                /* Do not add the arguments to the grammar - currently there is an mystic NT1 child for INSERT func
-        //                var funcArgsNonTerminal = new NonTerminal("funcArgs" + func.FunctionName);
-        //                funcArgsNonTerminal.Rule = BNF_ExprList;
-        //                foreach (var param in funcParams.SkipULong(1))
-        //                {
-        //                    if (param.VariableNumOfParams)
-        //                    {
-        //                        funcArgsNonTerminal.Rule = BNF_ExprList;
-        //                    }
-        //                    else
-        //                    {
-        //                        funcArgsNonTerminal.Rule += S_comma + BNF_Expression;
-        //                    }
-        //                }
-        //                funcArgsNonTerminal.SetOption(TermOptions.IsTransient);
-        //                */
+                    #endregion
 
-        //                #endregion
+                    #region Add funcNonTerminal to the BNF_FuncCall
 
-        //                funcNonTerminal.Rule = func.FunctionName + S_BRACKET_LEFT + BNF_FunArgs + S_BRACKET_RIGHT;
-        //            }
+                    if (BNF_FuncCall.Rule == null)
+                    {
+                        BNF_FuncCall.Rule = funcNonTerminal;
+                    }
+                    else
+                    {
+                        BNF_FuncCall.Rule |= funcNonTerminal;
+                    }
 
-        //            #endregion
+                    #endregion
 
-        //            #region Add funcNonTerminal to the BNF_FuncCall
+                }
+            }
 
-        //            if (BNF_FuncCall.Rule == null)
-        //            {
-        //                BNF_FuncCall.Rule = funcNonTerminal;
-        //            }
-        //            else
-        //            {
-        //                BNF_FuncCall.Rule |= funcNonTerminal;
-        //            }
+            #endregion
+        }
 
-        //            #endregion
+        public void SetIndices(IEnumerable<IIndex<IComparable, Int64>> indices)
+        {
+            #region Add all plugins to the grammar
 
-        //        }
-        //    }
+            if (indices == null || indices.Count() == 0)
+            {
+                /// empty is not the best solution, Maybe: remove complete import rule if no importer exist
+                BNF_IndexTypeOpt.Rule = Empty;
+            }
+            else
+            {
+                foreach (var idx in indices)
+                {
+                    if (BNF_IndexTypeOpt.Rule == null)
+                    {
+                        BNF_IndexTypeOpt.Rule = S_INDEXTYPE + ToTerm(idx.Name);
+                    }
+                    else
+                    {
+                        BNF_IndexTypeOpt.Rule |= S_INDEXTYPE + ToTerm(idx.Name);
+                    }
+                }
+            }
 
-        //    #endregion
-
-        //}
-
-        //public void SetIndices(IEnumerable<AAttributeIndex> indices)
-        //{
-
-        //    #region Add all plugins to the grammar
-
-        //    if (indices.IsNullOrEmpty())
-        //    {
-        //        /// empty is not the best solution, Maybe: remove complete import rule if no importer exist
-        //        BNF_IndexTypeOpt.Rule = Empty;
-        //    }
-        //    else
-        //    {
-        //        foreach (var idx in indices)
-        //        {
-        //            if (BNF_IndexTypeOpt.Rule == null)
-        //            {
-        //                BNF_IndexTypeOpt.Rule = S_INDEXTYPE + ToTerm(idx.IndexType);
-        //            }
-        //            else
-        //            {
-        //                BNF_IndexTypeOpt.Rule |= S_INDEXTYPE + ToTerm(idx.IndexType);
-        //            }
-        //        }
-        //    }
-
-        //    #endregion
-
-        //}
+            #endregion
+        }
 
         //public void SetGraphDBImporter(IEnumerable<AGraphDBImport> graphDBImporter)
         //{

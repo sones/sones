@@ -1,7 +1,9 @@
 ﻿#region Usings
-
-
-
+using System;
+using System.Collections.Generic;
+using sones.Plugins.SonesGQL.Aggregates;
+using sones.Plugins.SonesGQL.Functions;
+using sones.Plugins.Index.Interfaces;
 #endregion
 
 namespace sones.GraphDB.Interfaces
@@ -14,41 +16,23 @@ namespace sones.GraphDB.Interfaces
     public interface IExtendableGrammar
     {
 
-        ///// <summary>
-        ///// Add aggregate plugins to the grammar
-        ///// </summary>
-        ///// <param name="aggregates">Enumerable of aggregates</param>
-        //void SetAggregates(IEnumerable<ABaseAggregate> aggregates);
+        /// <summary>
+        /// Add aggregate plugins to the grammar
+        /// </summary>
+        /// <param name="aggregates">Enumerable of aggregates</param>
+        void SetAggregates(IEnumerable<IGQLAggregate> aggregates);
 
-        ///// <summary>
-        ///// Add function plugins to the grammar
-        ///// </summary>
-        ///// <param name="functions">Enumerable of functions</param>
-        //void SetFunctions(IEnumerable<ABaseFunction> functions);
+        /// <summary>
+        /// Add function plugins to the grammar
+        /// </summary>
+        /// <param name="functions">Enumerable of functions</param>
+        void SetFunctions(IEnumerable<ABaseFunction> functions);
 
-        ///// <summary>
-        ///// Add operator plugins to the grammar
-        ///// </summary>
-        ///// <param name="operators">Enumerable of operators</param>
-        //void SetOperators(IEnumerable<ABinaryOperator> operators);
-
-        ///// <summary>
-        ///// Add setting plugins to the grammar
-        ///// </summary>
-        ///// <param name="settings">Enumerable of settings</param>
-        //void SetSettings(IEnumerable<ADBSettingsBase> settings);
-
-        ///// <summary>
-        ///// Add IncomingEdge plugins to the grammar
-        ///// </summary>
-        ///// <param name="edges">Enumerable of edges</param>
-        //void SetEdges(IEnumerable<IEdgeType> edges);
-
-        ///// <summary>
-        ///// Add indices plugins to the grammar
-        ///// </summary>
-        ///// <param name="indices">Enumerable of IVersionedIndexObject</param>
-        //void SetIndices(IEnumerable<AAttributeIndex> indices);
+        /// <summary>
+        /// Add indices plugins to the grammar
+        /// </summary>
+        /// <param name="indices">Enumerable of IVersionedIndexObject</param>
+        void SetIndices(IEnumerable<IIndex<IComparable, Int64>> indices);
 
         ///// <summary>
         ///// Add importer plugins to the grammar

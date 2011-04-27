@@ -45,9 +45,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorHandling\ExpressionGraphInternalException.cs" />
+    <Compile Include="ErrorHandling\GQLParsingException.cs" />
     <Compile Include="ErrorHandling\GqlSyntaxException.cs" />
     <Compile Include="ErrorHandling\InvalidBinaryExpressionException.cs" />
     <Compile Include="ErrorHandling\InvalidLevelKeyOperationException.cs" />
+    <Compile Include="ErrorHandling\IronyInitializeGrammarException.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Grammar\SonesGQLGrammar.cs" />
     <Compile Include="Manager\Plugin\GQLPluginManager.cs" />
