@@ -128,6 +128,7 @@ namespace sones.GraphDB.Manager.Vertex
                 CheckAddBinaryProperties(myInsertDefinition, vertexType);
 
             
+            
 
         }
 

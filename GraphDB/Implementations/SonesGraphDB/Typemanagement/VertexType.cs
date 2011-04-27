@@ -8,6 +8,7 @@ using sones.Library.PropertyHyperGraph;
 using sones.Library.LanguageExtensions;
 using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.Manager.BaseGraph;
+using sones.GraphDB.Index;
 
 namespace sones.GraphDB.TypeManagement
 {
@@ -702,7 +703,8 @@ namespace sones.GraphDB.TypeManagement
             {
                 var edge = GetVertex().GetOutgoingHyperEdge((long)AttributeDefinitions.UniquenessDefinitions);
                 var vertices = edge.GetTargetVertices();
-                var indices = vertices.Select(x => BaseGraphStorageManager.CreateIndexDefinition(x, this)).ToArray();
+                var indices = vertices.Select(x => BaseGraphStorageManager.CreateIndexDefinition(x, this));
+                return indices.Select(IIndexDefinitionToIUniqueDefinition).ToArray();
             }
             return null;
         }
@@ -718,6 +720,15 @@ namespace sones.GraphDB.TypeManagement
             return null;
         }
 
+        private IUniqueDefinition IIndexDefinitionToIUniqueDefinition(IIndexDefinition myIndexDefinition)
+        {
+            return new UniqueDefinition
+            {
+                DefiningVertexType = this,
+                ID = myIndexDefinition.ID,
+                UniquePropertyDefinitions = myIndexDefinition.IndexedProperties,
+            };
+        }
 
         #endregion
 
