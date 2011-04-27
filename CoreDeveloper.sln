@@ -203,9 +203,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RESTServicePluginManager", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IPluginable", "Library\Internal\IPluginable\IPluginable.csproj", "{C6DDFD34-176E-48AC-998F-854F98CD28BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestFuncPagedFS", "Tests\TestFuncPagedFS\TestFuncPagedFS.csproj", "{D2D485CC-01F8-4908-BEDD-650CA5355CC5}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 60
+		SccNumberOfProjects = 61
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -445,6 +447,10 @@ Global
 		SccProjectTopLevelParentUniqueName59 = CoreDeveloper.sln
 		SccProjectName59 = Library/Internal/IPluginable
 		SccLocalPath59 = Library\\Internal\\IPluginable
+		SccProjectUniqueName60 = Tests\\TestFuncPagedFS\\TestFuncPagedFS.csproj
+		SccProjectTopLevelParentUniqueName60 = CoreDeveloper.sln
+		SccProjectName60 = Tests/TestFuncPagedFS
+		SccLocalPath60 = Tests\\TestFuncPagedFS
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1175,6 +1181,18 @@ Global
 		{C6DDFD34-176E-48AC-998F-854F98CD28BB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{C6DDFD34-176E-48AC-998F-854F98CD28BB}.Release|x64.ActiveCfg = Release|Any CPU
 		{C6DDFD34-176E-48AC-998F-854F98CD28BB}.Release|x86.ActiveCfg = Release|Any CPU
+		{D2D485CC-01F8-4908-BEDD-650CA5355CC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2D485CC-01F8-4908-BEDD-650CA5355CC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2D485CC-01F8-4908-BEDD-650CA5355CC5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D2D485CC-01F8-4908-BEDD-650CA5355CC5}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D2D485CC-01F8-4908-BEDD-650CA5355CC5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D2D485CC-01F8-4908-BEDD-650CA5355CC5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D2D485CC-01F8-4908-BEDD-650CA5355CC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2D485CC-01F8-4908-BEDD-650CA5355CC5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2D485CC-01F8-4908-BEDD-650CA5355CC5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D2D485CC-01F8-4908-BEDD-650CA5355CC5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D2D485CC-01F8-4908-BEDD-650CA5355CC5}.Release|x64.ActiveCfg = Release|Any CPU
+		{D2D485CC-01F8-4908-BEDD-650CA5355CC5}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1252,6 +1270,7 @@ Global
 		{528F13FB-BA06-4188-B344-666EF735EB47} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 		{10D884F3-79B1-476C-9146-36BFA0AFB5F0} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 		{D951A6BC-28B4-49B2-BE95-B5D774D96D31} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
+		{D2D485CC-01F8-4908-BEDD-650CA5355CC5} = {94E9B2F2-AF4F-4981-AF9C-681544679444}
 		{6628A55D-BEEF-4499-B07B-26606289B6F4} = {8D65A058-04E7-4C4A-A533-678F43914D68}
 		{7E58D30B-4108-4941-BF85-A5C309F87536} = {500C1B9C-E9CD-4008-9EE4-5229A6CE93DC}
 		{CDAE254B-77D9-4E59-9C07-C18F0085F570} = {500C1B9C-E9CD-4008-9EE4-5229A6CE93DC}
