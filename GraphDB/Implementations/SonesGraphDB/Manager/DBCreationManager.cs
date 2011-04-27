@@ -145,6 +145,13 @@ namespace sones.GraphDB.Manager
 
         #endregion
 
+        #region OrderableEdge
+
+        private readonly VertexInformation _OrderableEdge = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.OrderableEdge);
+        private readonly VertexInformation _OrderableEdgeDotOrder = new VertexInformation((long)BaseTypes.Property, (long)AttributeDefinitions.Order);
+
+        #endregion
+
         #region Basic types
 
         public static readonly Dictionary<BasicTypes, VertexInformation> BasicTypesVertices = new Dictionary<BasicTypes, VertexInformation>
@@ -300,13 +307,29 @@ namespace sones.GraphDB.Manager
         {
             AddEdge(myStore, myCreationDate);
             AddWeightedEdge(myStore, myCreationDate);
+            AddOrderableEdge(myStore, myCreationDate);
+        }
+
+        private void AddOrderableEdge(IVertexStore myStore, long myCreationDate)
+        {
+            #region WeightedEdge vertex
+
+            BaseGraphStorageManager.StoreEdgeType(myStore, _OrderableEdge, BaseTypes.OrderableEdge, ResMgr.GetString("OrderableEdgeEdgeComment"), myCreationDate, false, true, _OrderableEdge, _security, _transaction);
+
+            #endregion
+
+            #region Property vertices
+
+            BaseGraphStorageManager.StoreProperty(myStore, _OrderableEdgeDotOrder, AttributeDefinitions.Order, ResMgr.GetString("OrderComment"), myCreationDate, true, PropertyMultiplicity.Single, null, _OrderableEdge, _BaseTypeUInt64, _security, _transaction);
+
+            #endregion
         }
 
         private void AddWeightedEdge(IVertexStore myStore, Int64 myCreationDate)
         {
             #region WeightedEdge vertex
 
-            BaseGraphStorageManager.StoreEdgeType(myStore, _WeightedEdge, BaseTypes.WeightedEdge, ResMgr.GetString("WeightedEdgeComment"), myCreationDate, false, true, _Edge, _security, _transaction);
+            BaseGraphStorageManager.StoreEdgeType(myStore, _WeightedEdge, BaseTypes.WeightedEdge, ResMgr.GetString("WeightedEdgeComment"), myCreationDate, false, true, _WeightedEdge, _security, _transaction);
 
             #endregion
 
@@ -375,7 +398,7 @@ namespace sones.GraphDB.Manager
 
             #region Property vertices
 
-            BaseGraphStorageManager.StoreOutgoingEdge(myStore, _IndexDotIndexedProperties, AttributeDefinitions.IndexedProperties, ResMgr.GetString("IndexedPropertiesComment"), myCreationDate, EdgeMultiplicity.HyperEdge, _Index, _Edge, _Property, _security, _transaction);
+            BaseGraphStorageManager.StoreOutgoingEdge(myStore, _IndexDotIndexedProperties, AttributeDefinitions.IndexedProperties, ResMgr.GetString("IndexedPropertiesComment"), myCreationDate, EdgeMultiplicity.HyperEdge, _Index, _OrderableEdge, _Property, _security, _transaction);
             BaseGraphStorageManager.StoreOutgoingEdge(myStore, _IndexDotDefiningVertexType, AttributeDefinitions.DefiningVertexType, ResMgr.GetString("DefiningVertexTypeComment"), myCreationDate, EdgeMultiplicity.SingleEdge, _Index, _Edge, _VertexType, _security, _transaction);
             BaseGraphStorageManager.StoreProperty(myStore, _IndexDotID, AttributeDefinitions.ID, ResMgr.GetString("IDComment"), myCreationDate, true, PropertyMultiplicity.Single, null, _Index, _BaseTypeInt64, _security, _transaction);
             BaseGraphStorageManager.StoreProperty(myStore, _IndexDotName, AttributeDefinitions.Name, ResMgr.GetString("NameComment"), myCreationDate, true, PropertyMultiplicity.Single, null, _Index, _BaseTypeString, _security, _transaction);

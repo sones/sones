@@ -663,7 +663,33 @@ namespace sones.GraphDB.Manager.BaseGraph
             VertexInformation mySource,
             long myCreationDate)
         {
-            throw new NotImplementedException();
+            if (mySingleEdges == null)
+                return null;
+
+            List<SingleEdgeAddDefinition> result = new List<SingleEdgeAddDefinition>(mySingleEdges.Count);
+            long edgeID;
+            long edgeTypeID;
+            foreach (var edge in mySingleEdges)
+            {
+                edgeID = edge.Key.Item1;
+                edgeTypeID = edge.Key.Item2;
+
+                result.Add(
+                    new SingleEdgeAddDefinition(
+                        edgeID,
+                        edgeTypeID,
+                        mySource,
+                        edge.Value,
+                        null,
+                        myCreationDate,
+                        myCreationDate,
+                        null,
+                        null));
+            }
+
+            return result;
+                    
+                
         }
 
         /// <summary>
@@ -689,20 +715,26 @@ namespace sones.GraphDB.Manager.BaseGraph
             {
                 edgeID = edge.Key.Item1;
                 edgeTypeID = edge.Key.Item2;
+                
                 result.Add(
                     new HyperEdgeAddDefinition(
                         edgeID,
                         edgeTypeID,
                         mySource,
-                        edge.Value.Select(x => new SingleEdgeAddDefinition(
+                        edge.Value.Select((vertexInfo, pos) => new SingleEdgeAddDefinition(
                             edgeID,
                             edgeTypeID,
                             mySource,
-                            x,
+                            vertexInfo,
                             null,
                             myCreationDate,
                             myCreationDate,
-                            null,
+                            (edge.Value is IList<VertexInformation>)
+                                ? new Dictionary<long, IComparable> 
+                                    {
+                                        { (long)AttributeDefinitions.Order, pos },
+                                    }
+                                : null,
                             null)),
                         null,
                         myCreationDate,

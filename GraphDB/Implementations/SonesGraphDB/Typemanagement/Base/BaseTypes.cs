@@ -15,6 +15,8 @@ namespace sones.GraphDB.TypeManagement.Base
         Vertex         = Int64.MinValue + 8,
         Edge           = Int64.MinValue + 9,
         WeightedEdge   = Int64.MinValue + 10,
-        BinaryProperty = Int64.MinValue + 10
+        BinaryProperty = Int64.MinValue + 11,
+        OrderableEdge  = Int64.MinValue + 12,
+
     }
 }
