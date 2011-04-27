@@ -12,7 +12,6 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
         /// Please look at the class documentation for detailed description how this algorithm works.
         /// </summary>
         /// <param name="myTypeAttribute">The Attribute representing the edge to follow (p.e. "Friends")</param>
-        /// <param name="myDBContext">The DBContext holds the TypeManager and the ObjectCache</param>
         /// <param name="myStart">The start node</param>
         /// <param name="myEnd">The end node</param>
         /// <param name="shortestOnly">true, if only shortest path shall be found</param>
@@ -124,64 +123,8 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
                 if (((queueLeft.Count > 0) && (queueRight.Count > 0)) && ((depthLeft <= maxDepthLeft) && (depthRight <= maxDepthRight)))
                 {
                     #region check if there is a dummyNode at the beginning of a queue
-                    //first of both queues are dummies
-                    if ((queueLeft.First<IVertex>() == null) && (queueRight.First<IVertex>() == null))
-                    {
-                        //if maxDepth of a side is reached and there is a dummy, one level is totaly searched
-                        if (depthLeft == maxDepthLeft && depthRight == maxDepthRight)
-                        {
-                            depthLeft++;
-                            depthRight++;
-
-                            continue;
-                        }
-                        else if (depthLeft == maxDepthLeft)
-                        {
-                            depthLeft++;
-
-                            continue;
-                        }
-                        else if (depthRight == maxDepthRight)
-                        {
-                            depthRight++;
-
-                            continue;
-                        }
-
-                        //dequeue dummies
-                        queueLeft.Dequeue();
-                        queueRight.Dequeue();
-
-                        //increase depth's
-                        depthLeft++;
-                        depthRight++;
-
-                        //if both queues are empty -> break loop
-                        if (queueLeft.Count == 0 && queueRight.Count == 0)
-                        {
-                            break;
-                        }
-                        //if left queue is empty enqueue right dummy and continue
-                        else if (queueLeft.Count == 0)
-                        {
-                            queueRight.Enqueue(dummyRight);
-                            continue;
-                        }
-                        //if right queue is empty enqueue left dummy and continue
-                        else if (queueRight.Count == 0)
-                        {
-                            queueLeft.Enqueue(dummyLeft);
-                            continue;
-                        }
-                        //enqueue both dummies
-                        else
-                        {
-                            queueLeft.Enqueue(dummyLeft);
-                            queueRight.Enqueue(dummyRight);
-                        }
-                    }
                     //first of left queue is a dummy
-                    else if (queueLeft.First<IVertex>() == null)
+                    if (queueLeft.First<IVertex>() == null)
                     {
                         //if maxDepth of a side is reached and there is a dummy, one level is totaly searched
                         if (depthLeft == maxDepthLeft)
@@ -208,8 +151,9 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
                             queueLeft.Enqueue(dummyLeft);
                         }
                     }
+                    
                     //first of right queue is a dummy
-                    else if (queueRight.First<IVertex>() == null)
+                    if (queueRight.First<IVertex>() == null)
                     {
                         //if maxDepth of a side is reached and there is a dummy, one level is totaly searched
                         if (depthRight == maxDepthRight)
@@ -1253,6 +1197,7 @@ namespace ShortestPathAlgorithms.BreathFirstSearch
                 #endregion abort loop
             }
 
+            //get result paths
             #region start TargetAnalyzer
             if (shortestOnly && findAll)
             {
