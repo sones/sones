@@ -44,6 +44,7 @@ namespace sones.GraphDB.Manager.Index
 
         IEnumerable<IIndex<IComparable, Int64>> GetIndices(IVertexType myVertexType, IList<IPropertyDefinition> myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
+        IIndex<IComparable, Int64> GetIndex(long myIndexID, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
         /// <summary>
         /// Returns the name of the index type, that matches the requirements.
@@ -53,5 +54,6 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="myIsVersioned">If true, the index type must support versioning otherwise not.</param>
         /// <returns></returns>
         String GetBestMatchingIndexName(bool myIsSingleValue, bool myIsRange, bool myIsVersioned);
+
     }
 }

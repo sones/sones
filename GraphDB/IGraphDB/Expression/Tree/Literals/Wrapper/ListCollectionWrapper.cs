@@ -5,13 +5,14 @@ using System.Text;
 using sones.GraphDB.ErrorHandling.Expression;
 using System.Collections;
 
+
 namespace sones.GraphDB.Expression.Tree.Literals
 {
     /// <summary>
     /// A wrapper that wraps lists
     /// This data structure is needed, because generic lists do not implement IComparable
     /// </summary>
-    public sealed class ListCollectionWrapper : ICollectionWrapper
+    public sealed class ListCollectionWrapper : ICollectionWrapper, IComparable<ListCollectionWrapper>, IComparable<IComparable>
     {
         #region data
 
@@ -39,42 +40,14 @@ namespace sones.GraphDB.Expression.Tree.Literals
 
         public int CompareTo(object obj)
         {
-            ListCollectionWrapper counterPart = obj as ListCollectionWrapper;
-
-            if (counterPart != null)
+            if (obj is ListCollectionWrapper)
             {
-                #region count of objects
-
-                //A list of comparables is greater than another one, if their count is also greater
-
-                var countCompare = this.Value.Count.CompareTo(counterPart.Value.Count);
-
-                if (countCompare != 0)
-                {
-                    return countCompare;
-                }
-
-                #endregion
-
-                #region inner comparables
-
-                //every member within the list is compared
-
-                int memberCompare = 0;
-
-                for (int i = 0; i < Value.Count; i++)
-                {
-                    memberCompare = this.Value[i].CompareTo(counterPart.Value[i]);
-                }
-
-                if (memberCompare != 0)
-                {
-                    return memberCompare;
-                }
-
-                #endregion
-
-                return 0;
+                return CompareTo(obj as ListCollectionWrapper);
+            }
+            
+            if (obj is IComparable)
+            {
+                return CompareTo(obj as IComparable);
             }
 
             throw new InvalidCollectionComparismException(String.Format("It is not allowed to compare a {0} to a List", obj.GetType().Name));
@@ -96,6 +69,59 @@ namespace sones.GraphDB.Expression.Tree.Literals
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
             return ((IEnumerable)Value).GetEnumerator();
+        }
+
+        #endregion
+
+        #region IComparable<ListCollectionWrapper> Members
+
+        public int CompareTo(ListCollectionWrapper myOther)
+        {
+            #region count of objects
+
+            //A list of comparables is greater than another one, if their count is also greater
+
+            var countCompare = this.Value.Count.CompareTo(myOther.Value.Count);
+
+            if (countCompare != 0)
+            {
+                return countCompare;
+            }
+
+            #endregion
+
+            #region inner comparables
+
+            //every member within the list is compared
+
+            int memberCompare = 0;
+
+            for (int i = 0; i < Value.Count; i++)
+            {
+                memberCompare = this.Value[i].CompareTo(myOther.Value[i]);
+            }
+
+            if (memberCompare != 0)
+            {
+                return memberCompare;
+            }
+
+            #endregion
+
+            return 0;
+        }
+
+        #endregion
+
+        #region IComparable<IComparable> Members
+
+        public int CompareTo(IComparable myOther)
+        {
+            //A single IComparable is treated as a list with one element.
+            if (this.Value.Count != 1)
+                return this.Value.Count.CompareTo(1);
+
+            return this.Value[0].CompareTo(myOther);
         }
 
         #endregion

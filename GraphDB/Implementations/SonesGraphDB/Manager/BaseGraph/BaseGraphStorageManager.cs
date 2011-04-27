@@ -75,6 +75,15 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         #region Store
 
+        public static Type GetBaseType(String myTypeName)
+        {
+            BasicTypes type;
+            if (!Enum.TryParse(myTypeName, out type))
+                throw new NotImplementedException("User defined base types are not implemented yet.");
+
+            return GetBaseType(type);
+        }
+
         public static bool GetIsUserDefined(IVertex myVertex)
         {
             return myVertex.GetProperty<bool>((long)AttributeDefinitions.IsUserDefined);
@@ -830,14 +839,8 @@ namespace sones.GraphDB.Manager.BaseGraph
             return (IComparable)Convert.ChangeType(val, myPropertyType);
         }
 
-        private static Type GetBaseType(IVertex myVertex)
+        private static Type GetBaseType(BasicTypes type)
         {
-            var typeID = myVertex.GetProperty<long>((long)AttributeDefinitions.Type);
-            if (!Enum.IsDefined(typeof(BasicTypes), typeID))
-                throw new NotImplementedException("User defined base types are not implemented yet.");
-
-            BasicTypes type = (BasicTypes)typeID;
-
             switch (type)
             {
                 case BasicTypes.Boolean: return typeof(Boolean);
@@ -857,6 +860,16 @@ namespace sones.GraphDB.Manager.BaseGraph
                 case BasicTypes.UInt64: return typeof(UInt64);
                 default: throw new UnknownDBException("BasicTypes enumeration was modified, but this function was not adapted.");
             }
+        }
+
+        private static Type GetBaseType(IVertex myVertex)
+        {
+            var typeID = myVertex.GetProperty<long>((long)AttributeDefinitions.Type);
+            if (!Enum.IsDefined(typeof(BasicTypes), typeID))
+                throw new NotImplementedException("User defined base types are not implemented yet.");
+
+            BasicTypes type = (BasicTypes)typeID;
+            return GetBaseType(type);
         }
 
         /// <summary>

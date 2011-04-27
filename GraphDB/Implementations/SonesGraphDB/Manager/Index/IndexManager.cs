@@ -79,6 +79,11 @@ namespace sones.GraphDB.Manager.Index
             throw new NotImplementedException();
         }
 
+        public IIndex<IComparable, Int64> GetIndex(long myIndexID, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        {
+            throw new NotImplementedException();
+        }
+
         public string GetBestMatchingIndexName(bool myIsSingleValue, bool myIsRange, bool myIsVersioned)
         {
             throw new NotImplementedException();

@@ -15,6 +15,7 @@ using sones.Library.Commons.VertexStore.Definitions;
 using sones.GraphDB.Request;
 using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.TypeSystem;
+using sones.Plugins.Index.Interfaces;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -201,6 +202,21 @@ namespace sones.GraphDB.Manager.Vertex
         }
 
         public IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            IVertexType vertexType = GetVertexType(myInsertDefinition.VertexTypeName, myTransactionToken, mySecurityToken);
+
+            foreach (var unique in vertexType.GetUniqueDefinitions(true))
+            {
+                var key = CreateIndexEntry(unique, myInsertDefinition.StructuredProperties);
+                var index = _indexManager.GetIndex(unique.ID, mySecurityToken, myTransactionToken) as ISingleValueIndex<IComparable, Int64>;
+            }
+                
+                
+
+            throw new NotImplementedException();
+        }
+
+        private IComparable CreateIndexEntry(IUniqueDefinition unique, IEnumerable<KeyValuePair<string, IComparable>> iEnumerable)
         {
             throw new NotImplementedException();
         }
