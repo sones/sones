@@ -22,6 +22,11 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// </summary>
         public VertexInformation TargetVertex { get; private set; }
 
+        /// <summary>
+        /// The edge type id.
+        /// </summary>
+        public  long EdgeTypeID { get; set; }
+
         #endregion
 
         #region constructor
@@ -36,6 +41,7 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         public SingleEdgeUpdateDefinition(
             VertexInformation mySourceVertex,
             VertexInformation myTargetVertex,
+            long myEdgeTypeID,
             String myCommentUpdate = null,
             StructuredPropertiesUpdate myUpdatedStructuredProperties = null,
             UnstructuredPropertiesUpdate myUpdatedUnstructuredProperties = null)
@@ -43,8 +49,10 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         {
             SourceVertex = mySourceVertex;
             TargetVertex = myTargetVertex;
+            EdgeTypeID = myEdgeTypeID;
         }
 
         #endregion
+    
     }
 }

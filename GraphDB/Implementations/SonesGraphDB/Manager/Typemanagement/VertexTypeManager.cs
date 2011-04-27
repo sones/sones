@@ -986,7 +986,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private static SingleEdgeUpdateDefinition IndexDefinitionToSingleEdgeUpdate(VertexInformation mySourceVertex, IIndexDefinition myDefinition)
         {
-            return new SingleEdgeUpdateDefinition(mySourceVertex, new VertexInformation((long)BaseTypes.Index, myDefinition.ID));
+            return new SingleEdgeUpdateDefinition(mySourceVertex, new VertexInformation((long)BaseTypes.Index, myDefinition.ID), (long)BaseTypes.Edge);
         }
 
         private VertexInformation GetOutgoingEdgeVertexInformation(string myVertexType, string myEdgeName, TransactionToken myTransaction, SecurityToken mySecurity)

@@ -75,7 +75,11 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         #region Outgoing edge
 
-        
+        public static IOutgoingEdgeDefinition GetOutgoingEdgeDefinition(IVertex myVertex)
+        {
+            return null;
+        }
+
         public static void StoreOutgoingEdge(
             IVertexStore myStore,
             VertexInformation myVertex,
