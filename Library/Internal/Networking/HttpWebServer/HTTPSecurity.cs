@@ -32,7 +32,12 @@ namespace sones.Networking.HTTP
         public X509Certificate2 ServerCertificate { get; set; }
         public RemoteCertificateValidationCallback RemoteCertificateValidationCallback { get; set; }
         public LocalCertificateSelectionCallback LocalCertificateSelectionCallback { get; set; }
-        public EncryptionPolicy EncryptionPolicy { get; set; }
+        
+        // TODO: this is not compatible to mono:
+        #if (__MonoCS__==false)
+            public EncryptionPolicy EncryptionPolicy { get; set; }
+        #endif
+
 
         private Boolean _UseClientCertificate = false;
         public Boolean UseClientCertificate 

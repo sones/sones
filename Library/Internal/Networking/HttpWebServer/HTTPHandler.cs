@@ -221,8 +221,13 @@ namespace sones.Networking.HTTP
             {
                 if (HTTPSecurity.ServerCertificate != null)
                 {
+                    #if __MonoCS__
+                    var sslStream = new SslStream(myTcpClient.GetStream(), false, HTTPSecurity.RemoteCertificateValidationCallback, HTTPSecurity.LocalCertificateSelectionCallback);
+                    #else
                     var sslStream = new SslStream(myTcpClient.GetStream(), false, HTTPSecurity.RemoteCertificateValidationCallback, HTTPSecurity.LocalCertificateSelectionCallback, HTTPSecurity.EncryptionPolicy);
-                    sslStream.AuthenticateAsServer(HTTPSecurity.ServerCertificate, HTTPSecurity.UseClientCertificate, SslProtocols.Default, false);
+                    #endif
+
+                     sslStream.AuthenticateAsServer(HTTPSecurity.ServerCertificate, HTTPSecurity.UseClientCertificate, SslProtocols.Default, false);
 
                     return sslStream;
                 }
