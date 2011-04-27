@@ -22,6 +22,11 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// </summary>
         public readonly IEnumerable<SingleEdgeUpdateDefinition> ToBeUpdatedSingleEdges;
 
+        /// <summary>
+        /// The edge type id.
+        /// </summary>
+        public long EdgeTypeID { get; set; }
+
         #endregion
 
         #region constructor
@@ -35,6 +40,7 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         /// <param name="myToBeDeletedSingleEdges">The single edges that should be deleted from the hyperedge</param>
         /// <param name="myToBeUpdatedSingleEdges">The single edges that should be updated</param>
         public HyperEdgeUpdateDefinition(
+            long myEdgeTypeID,
             String myCommentUpdate = null,
             StructuredPropertiesUpdate myUpdatedStructuredProperties = null,
             UnstructuredPropertiesUpdate myUpdatedUnstructuredProperties = null,
@@ -42,6 +48,7 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
             IEnumerable<SingleEdgeUpdateDefinition> myToBeUpdatedSingleEdges = null)
             : base(myCommentUpdate, myUpdatedStructuredProperties, myUpdatedUnstructuredProperties)
         {
+            EdgeTypeID = myEdgeTypeID;
             ToBeDeletedSingleEdges = myToBeDeletedSingleEdges;
             ToBeUpdatedSingleEdges = myToBeUpdatedSingleEdges;
         }
