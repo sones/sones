@@ -549,6 +549,7 @@ namespace sones.GraphDB.TypeManagement
             var isMandatory = GetIsMandatory(myVertex);
             var multiplicity = GetPropertyMultiplicity(myVertex);
             var name = GetName(myVertex);
+            var defaultValue = GetDefaultValue(myVertex, baseType);
 
             return new PropertyDefinition
             {
@@ -557,7 +558,8 @@ namespace sones.GraphDB.TypeManagement
                 IsMandatory = isMandatory,
                 Multiplicity = multiplicity,
                 Name = name,
-                RelatedType = this
+                RelatedType = this,
+                DefaultValue = defaultValue
             };
         }
 
@@ -876,6 +878,17 @@ namespace sones.GraphDB.TypeManagement
                 default: throw new UnknownDBException("BasicTypes enumeration was modified, but this function was not adapted.");
             }
         }
+
+        private static IComparable GetDefaultValue(IVertex myPropertyVertex, Type myPropertyType)
+        {
+            if (!myPropertyVertex.HasProperty((long)AttributeDefinitions.DefaultValue))
+                return null;
+
+            var val = myPropertyVertex.GetPropertyAsString((long)AttributeDefinitions.DefaultValue);
+            
+            return (IComparable) Convert.ChangeType(val, myPropertyType);
+        }
+
 
         private static long GetAttributeID(IVertex myVertex)
         {

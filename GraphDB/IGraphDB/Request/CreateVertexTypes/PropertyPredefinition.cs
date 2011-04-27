@@ -35,8 +35,19 @@ namespace sones.GraphDB.Request
         /// </summary>
         public readonly String TypeName;
 
+        /// <summary>
+        /// The comment for this property.
+        /// </summary>
         public string Comment { get; private set; }
 
+        /// <summary>
+        /// The default value for this property.
+        /// </summary>
+        public IComparable DefaultValue { get; private set; }
+
+        /// <summary>
+        /// The multiplicity of this property.
+        /// </summary>
         public PropertyMultiplicity Multiplicity { get; private set; }
 
         #endregion

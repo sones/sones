@@ -98,7 +98,6 @@
     <Compile Include="ErrorHandling\SelectErrors\SelectTimeOutException.cs" />
     <Compile Include="ErrorHandling\SelectErrors\SelectValueAssignmentDataTypeDoesNotMatchException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\AmbiguousVertexAttributeException.cs" />
-    <Compile Include="ErrorHandling\VertexTypeAttributeErrors\MandatoryConstraintViolationException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\InvalidUndefinedVertexAttributeNameException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\RemoveVertexTypeAttributeException.cs" />
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\UpdateVertexAttributeValueException.cs" />

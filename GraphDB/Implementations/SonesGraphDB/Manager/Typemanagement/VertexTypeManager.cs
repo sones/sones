@@ -10,7 +10,6 @@ using sones.GraphDB.TypeSystem;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.LanguageExtensions;
-using sones.GraphDB.ErrorHandling.VertexTypeErrors;
 using System.Collections;
 using sones.GraphDB.Manager.Vertex;
 using sones.GraphDB.Manager.Index;
@@ -314,7 +313,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #region Checks with IVertexManager 
             //Here we know that the VertexTypePredefinitions are syntactical correct.
-
+            
+            //Perf: We comment the FS checks out, to have a better performance
             //CanAddCheckWithFS(defsTopologically, defsByVertexName, myTransaction, mySecurity);
 
             #endregion
@@ -631,7 +631,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             if (string.IsNullOrWhiteSpace(myVertexTypeDefinition.VertexTypeName))
             {
-                throw new EmptyVertexTypeNameException(myVertexTypeDefinition);
+                throw new EmptyVertexTypeNameException();
             }
         }
 
@@ -805,6 +805,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                         creationDate,
                         prop.IsMandatory,
                         prop.Multiplicity,
+                        (String)Convert.ChangeType(prop.DefaultValue, typeof(String)),
                         typeInfos[current.Value.VertexTypeName].VertexInfo,
                         ConvertBasicType(prop.TypeName),
                         mySecurity,

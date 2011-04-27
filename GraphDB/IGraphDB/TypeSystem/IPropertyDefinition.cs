@@ -24,9 +24,14 @@ namespace sones.GraphDB.TypeSystem
         Type BaseType { get; }
 
         /// <summary>
-        /// The multiplicity of this property
+        /// The multiplicity of this property.
         /// </summary>
         PropertyMultiplicity Multiplicity { get; }
+
+        /// <summary>
+        /// The default value for this property.
+        /// </summary>
+        IComparable DefaultValue { get; }
 
         /// <summary>
         /// Extracts the this property from a given vertex...

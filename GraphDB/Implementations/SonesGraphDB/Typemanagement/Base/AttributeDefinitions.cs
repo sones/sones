@@ -3,25 +3,25 @@ using sones.GraphDB.TypeSystem;
 
 namespace sones.GraphDB.TypeManagement.Base
 {
-    internal enum AttributeDefinitions: long
+    internal enum AttributeDefinitions : long
     {
         #region Vertex
 
-        UUID             = Int64.MinValue,
-        CreationDate     = Int64.MinValue + 1,
+        UUID = Int64.MinValue,
+        CreationDate = Int64.MinValue + 1,
         ModificationDate = Int64.MinValue + 2,
-        Revision         = Int64.MinValue + 3,
-        Edition          = Int64.MinValue + 4,
-        Comment          = Int64.MinValue + 5,
-        TypeID           = Int64.MinValue + 6,
-        TypeName         = Int64.MinValue + 7,
+        Revision = Int64.MinValue + 3,
+        Edition = Int64.MinValue + 4,
+        Comment = Int64.MinValue + 5,
+        TypeID = Int64.MinValue + 6,
+        TypeName = Int64.MinValue + 7,
 
         #endregion
 
         #region BaseType, Attribute, Index
 
-        ID            = Int64.MinValue + 10,
-        Name          = Int64.MinValue + 11,
+        ID = Int64.MinValue + 10,
+        Name = Int64.MinValue + 11,
         IsUserDefined = Int64.MinValue + 12,
 
         #endregion
@@ -29,15 +29,15 @@ namespace sones.GraphDB.TypeManagement.Base
         #region BaseType
 
         IsAbstract = Int64.MinValue + 20,
-        IsSealed   = Int64.MinValue + 21,
+        IsSealed = Int64.MinValue + 21,
         Attributes = Int64.MinValue + 22,
-        Behaviour  = Int64.MinValue + 23,
+        Behaviour = Int64.MinValue + 23,
 
         #endregion
 
         #region VertexType, EdgeType
 
-        Parent   = Int64.MinValue + 30,
+        Parent = Int64.MinValue + 30,
         Children = Int64.MinValue + 31,
 
         #endregion
@@ -45,13 +45,13 @@ namespace sones.GraphDB.TypeManagement.Base
         #region VertexType
 
         UniquenessDefinitions = Int64.MinValue + 40,
-        Indices               = Int64.MinValue + 41,
+        Indices = Int64.MinValue + 41,
 
         #endregion
 
         #region Attribute
 
-        Type         = Int64.MinValue + 50,
+        Type = Int64.MinValue + 50,
         DefiningType = Int64.MinValue + 51,
 
         #endregion
@@ -64,9 +64,9 @@ namespace sones.GraphDB.TypeManagement.Base
 
         #region OutgoingEdge
 
-        EdgeType             = Int64.MinValue + 70,
-        Source               = Int64.MinValue + 71,
-        Target               = Int64.MinValue + 72,
+        EdgeType = Int64.MinValue + 70,
+        Source = Int64.MinValue + 71,
+        Target = Int64.MinValue + 72,
         RelatedIncomingEdges = Int64.MinValue + 73,
 
         #endregion
@@ -80,24 +80,25 @@ namespace sones.GraphDB.TypeManagement.Base
         #region Property
 
         IsMandatory = Int64.MinValue + 90,
-        InIndices   = Int64.MinValue + 91,
+        InIndices = Int64.MinValue + 91,
 
         #endregion
 
         #region Index
 
-        IndexedProperties  = Int64.MinValue + 100,
+        IndexedProperties = Int64.MinValue + 100,
         DefiningVertexType = Int64.MinValue + 101,
-        IndexClass         = Int64.MinValue + 102,
-        IsSingleValue      = Int64.MinValue + 103,
-        IsRange            = Int64.MinValue + 104,
-        IsVersioned        = Int64.MinValue + 105,
+        IndexClass = Int64.MinValue + 102,
+        IsSingleValue = Int64.MinValue + 103,
+        IsRange = Int64.MinValue + 104,
+        IsVersioned = Int64.MinValue + 105,
 
         #endregion
 
         #region WeightedEdge
 
         Weight = Int64.MinValue + 110,
+        DefaultValue,
 
         #endregion
     }

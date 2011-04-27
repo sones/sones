@@ -1,11 +1,11 @@
 ﻿using System;
 
-namespace sones.GraphQL.ErrorHandling
+namespace sones.GraphDB.ErrorHandling
 {
     /// <summary>
     /// The mandatory constraint of a vertex attribute was violated
     /// </summary>
-    public sealed class MandatoryConstraintViolationException : AGraphQLVertexAttributeException
+    public sealed class MandatoryConstraintViolationException : AGraphDBAttributeException
     {
         public String MandatoryConstraint { get; private set; }
 

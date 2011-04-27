@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using sones.Library.Commons.VertexStore;
 using sones.GraphDB.Manager.Index;
 using sones.GraphDB.Manager.TypeManagement;
@@ -102,17 +103,57 @@ namespace sones.GraphDB.Manager.Vertex
 
         public void CanAddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            IVertexType vertexType;
-            try
+            IVertexType vertexType = GetVertexType(myInsertDefinition.VertexTypeName, myTransaction, mySecurity);
+
+            var mandatoryProps = vertexType.GetPropertyDefinitions(true).Where(IsMandatoryProperty).ToArray();
+
+
+            if (myInsertDefinition.StructuredProperties != null)
             {
-                //check if the vertex type exists.
-                vertexType = _vertexTypeManager.GetVertexType(myInsertDefinition.VertexTypeName, myTransaction, mySecurity);
+                CheckAddStructuredProperties(myInsertDefinition, vertexType);
+                CheckMandatoryConstraint(myInsertDefinition, mandatoryProps);
             }
-            catch (KeyNotFoundException ex)
+            else
             {
-                throw new VertexTypeDoesNotExistException(myInsertDefinition.VertexTypeName);
+                if (mandatoryProps.Length > 0)
+                {
+                    throw new MandatoryConstraintViolationException(String.Join(",", mandatoryProps.Select(x => x.Name)));
+                }
             }
-            
+
+            if (myInsertDefinition.BinaryProperties != null)
+                CheckAddBinaryProperties(myInsertDefinition, vertexType);
+
+        }
+
+        private void CheckMandatoryConstraint(RequestInsertVertex myInsertDefinition, IEnumerable<IPropertyDefinition> myMandatoryProperties)
+        {
+            foreach (var mand in myMandatoryProperties)
+            {
+                if (!myInsertDefinition.StructuredProperties.Any(x => mand.Name.Equals(x)))
+                {
+                    throw new MandatoryConstraintViolationException(mand.Name);
+                }
+            }
+        }
+
+        private static bool IsMandatoryProperty(IPropertyDefinition myPropertyDefinition)
+        {
+            return myPropertyDefinition.IsMandatory;
+        }
+
+        private static void CheckAddBinaryProperties(RequestInsertVertex myInsertDefinition, IVertexType vertexType)
+        {
+            foreach (var prop in myInsertDefinition.BinaryProperties)
+            {
+                var propertyDef = vertexType.GetBinaryPropertyDefinition(prop.Key);
+                if (propertyDef == null)
+                    throw new AttributeDoesNotExistException(prop.Key, myInsertDefinition.VertexTypeName);
+            }
+        }
+
+        private static void CheckAddStructuredProperties(RequestInsertVertex myInsertDefinition, IVertexType vertexType)
+        {
             foreach (var prop in myInsertDefinition.StructuredProperties)
             {
                 var propertyDef = vertexType.GetPropertyDefinition(prop.Key);
@@ -122,9 +163,24 @@ namespace sones.GraphDB.Manager.Vertex
                 //Assign safty should be suffice.
                 if (propertyDef.BaseType.IsAssignableFrom(prop.Value.GetType()))
                     throw new PropertyHasWrongTypeException(myInsertDefinition.VertexTypeName, prop.Key, propertyDef.BaseType.Name, prop.Value.GetType().Name);
-
             }
+        }
 
+        private IVertexType GetVertexType(String myVertexTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            try
+            {
+                //check if the vertex type exists.
+                return _vertexTypeManager.GetVertexType(myVertexTypeName, myTransaction, mySecurity);
+            }
+            catch (KeyNotFoundException)
+            {
+                throw new VertexTypeDoesNotExistException(myVertexTypeName);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                throw new EmptyVertexTypeNameException();
+            }
         }
 
         public IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransactionToken, SecurityToken mySecurityToken)

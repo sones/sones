@@ -26,6 +26,8 @@ namespace sones.GraphDB.TypeManagement
 
         public PropertyMultiplicity Multiplicity { get; internal set; }
 
+        public IComparable DefaultValue { get; internal set; }
+
         #endregion
 
         #region IAttributeDefinition Members
@@ -39,5 +41,6 @@ namespace sones.GraphDB.TypeManagement
         public IBaseType RelatedType { get; internal set; }
 
         #endregion
+
     }
 }

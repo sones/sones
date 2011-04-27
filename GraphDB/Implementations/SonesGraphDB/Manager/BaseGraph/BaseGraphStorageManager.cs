@@ -196,12 +196,13 @@ namespace sones.GraphDB.Manager.BaseGraph
             Int64 myCreationDate,
             bool myIsMandatory,
             PropertyMultiplicity myMultiplicity,
+            String myDefaultValue,
             VertexInformation myDefiningType,
             VertexInformation myBasicType,
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
-            StoreProperty(myStore, myVertex, (long)myAttribute, myAttribute.ToString(), myComment, myCreationDate, myIsMandatory, myMultiplicity, myDefiningType, myBasicType, mySecurity, myTransaction);
+            StoreProperty(myStore, myVertex, (long)myAttribute, myAttribute.ToString(), myComment, myCreationDate, myIsMandatory, myMultiplicity, myDefaultValue, myDefiningType, myBasicType, mySecurity, myTransaction);
         }
 
         public static void StoreProperty(
@@ -213,11 +214,24 @@ namespace sones.GraphDB.Manager.BaseGraph
             Int64 myCreationDate,
             bool myIsMandatory,
             PropertyMultiplicity myMultiplicity,
+            String myDefaultValue,
             VertexInformation myDefiningType,
             VertexInformation myBasicType,
             SecurityToken mySecurity,
             TransactionToken myTransaction)
         {
+            var props = new Dictionary<long, IComparable>
+                {
+                    { (long) AttributeDefinitions.ID, myID},
+                    { (long) AttributeDefinitions.Name, myName },
+                    { (long) AttributeDefinitions.IsUserDefined, false },
+                    { (long) AttributeDefinitions.IsMandatory, myIsMandatory },
+                    { (long) AttributeDefinitions.Multiplicity, (byte) myMultiplicity },
+                };
+
+            if (myDefaultValue != null)
+                props.Add((long) AttributeDefinitions.DefaultValue, myDefaultValue);
+
             Store(
                 myStore,
                 myVertex,
@@ -229,14 +243,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                     { _EdgePropertyDotType, myBasicType },
                 },
                 null,
-                new Dictionary<long, IComparable>
-                {
-                    { (long) AttributeDefinitions.ID, myID},
-                    { (long) AttributeDefinitions.Name, myName },
-                    { (long) AttributeDefinitions.IsUserDefined, false },
-                    { (long) AttributeDefinitions.IsMandatory, myIsMandatory },
-                    { (long) AttributeDefinitions.Multiplicity, (byte) myMultiplicity },
-                },
+                props,
                 null,
                 mySecurity,
                 myTransaction);

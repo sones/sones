@@ -60,9 +60,10 @@
     <Compile Include="ErrorHandling\IndexErrors\IndexAlreadyExistException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\IndexTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\IndexErrors\AGraphDBIndexException.cs" />
-    <Compile Include="ErrorHandling\Property\AGraphDBAttributeException.cs" />
-    <Compile Include="ErrorHandling\Property\AttributeDoesNotExistException.cs" />
-    <Compile Include="ErrorHandling\Property\PropertyHasWrongTypeException.cs" />
+    <Compile Include="ErrorHandling\Attribute\AGraphDBAttributeException.cs" />
+    <Compile Include="ErrorHandling\Attribute\AttributeDoesNotExistException.cs" />
+    <Compile Include="ErrorHandling\Attribute\MandatoryConstraintViolationException.cs" />
+    <Compile Include="ErrorHandling\Attribute\PropertyHasWrongTypeException.cs" />
     <Compile Include="ErrorHandling\QueryPlan\InvalidExpressionException.cs" />
     <Compile Include="ErrorHandling\Type\AGraphDBTypeException.cs" />
     <Compile Include="ErrorHandling\Type\InvalidTypeException.cs" />
@@ -133,7 +134,6 @@
     <Compile Include="Expression\Tree\UnaryExpression.cs" />
     <Compile Include="Request\Insert\EdgeDefinition.cs" />
     <Compile Include="Request\Insert\RequestInsertVertex.cs" />
-    <Compile Include="Request\Insert\VertexInsert.cs" />
     <Compile Include="Request\IRequestStatistics.cs" />
     <Compile Include="Request\RequestStatistics.cs" />
     <Compile Include="IGraphDB.cs" />
