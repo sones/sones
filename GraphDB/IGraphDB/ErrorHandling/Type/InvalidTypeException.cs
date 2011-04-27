@@ -10,11 +10,11 @@ namespace sones.GraphDB.ErrorHandling.Type
         private string p;
         private string p_2;
 
-        public InvalidTypeException(string myExpectedType, string myUnexpectedType)
+        public InvalidTypeException(string myUnexpectedType, string myExpectedType)
         {
             // TODO: Complete member initialization
-            this.p = myExpectedType;
-            this.p_2 = myUnexpectedType;
+            this.p = myUnexpectedType;
+            this.p_2 = myExpectedType;
         }
     }
 }
