@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ErrorHandling\XmlValidationException.cs" />
+    <Compile Include="ErrorHandling\XmlVersionException.cs" />
     <Compile Include="QueryResultSchema.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

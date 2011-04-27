@@ -435,6 +435,8 @@ namespace SchemaToClassesGenerator {
         
         private SchemaVertexView[] vertexViewListField;
         
+        private string versionField;
+        
         /// <remarks/>
         public Query Query {
             get {
@@ -453,6 +455,17 @@ namespace SchemaToClassesGenerator {
             }
             set {
                 this.vertexViewListField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Version {
+            get {
+                return this.versionField;
+            }
+            set {
+                this.versionField = value;
             }
         }
     }

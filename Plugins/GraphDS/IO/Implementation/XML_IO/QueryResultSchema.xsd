@@ -90,12 +90,13 @@
     </xs:sequence>
   </xs:complexType>
 
-  <xs:element name="Result">
-    <xs:complexType>
-      <xs:sequence>
+  <xs:element name="Result">    
+    <xs:complexType>      
+      <xs:sequence>        
         <xs:element ref ="Query" />
         <xs:element ref ="VertexViewList" />
       </xs:sequence>
+      <xs:attribute name="Version" type ="xs:string"/>
     </xs:complexType>
   </xs:element>  
   

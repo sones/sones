@@ -4,14 +4,13 @@ using System.Linq;
 using System.Net.Mime;
 using System.IO;
 using System.Xml.Schema;
+using System.Xml;
 using sones.GraphQL.Result;
 using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
 using SchemaToClassesGenerator;
-using System.Xml;
 using sones.Plugins.GraphDS.IOInterface.XML_IO.Result;
 using sones.Plugins.GraphDS.IOInterface.XML_IO.ErrorHandling;
-using System.Reflection;
 
 
 namespace sones.Plugins.GraphDS.IOInterface.XML_IO
@@ -39,6 +38,8 @@ namespace sones.Plugins.GraphDS.IOInterface.XML_IO
         public string GenerateOutputResult(QueryResult myQueryResult)
         {
             var result = new SchemaToClassesGenerator.Result();
+
+            result.Version = IOInterfaceCompatibility.MaxVersion.ToString();
 
             result.Query = new Query() {Language = myQueryResult.NameOfQuerylanguage, Value = myQueryResult.Query, Duration = myQueryResult.Duration, VerticesCount = myQueryResult.Vertices.Count(), Error = myQueryResult.Error == null ? String.Empty : myQueryResult.Error.Message };
           
@@ -170,8 +171,26 @@ namespace sones.Plugins.GraphDS.IOInterface.XML_IO
 
             xmlDocument.Validate(evHandler);
            
-            
             var rootNode = xmlDocument.FirstChild.NextSibling;
+
+            String version = String.Empty;
+
+            if (rootNode.Attributes.Count > 0)
+            {
+                for (int i = 0; i < rootNode.Attributes.Count; i++)
+                {
+                    if (rootNode.Attributes[i].Name == "Version")
+                    {
+                        version = rootNode.Attributes[i].Value;
+                        break;
+                    }
+                }
+
+                if (version != IOInterfaceCompatibility.MaxVersion.ToString())
+                {
+                    throw new XmlVersionException(String.Format("The xml version is not compatible with the version {0}.", IOInterfaceCompatibility.MaxVersion.ToString()));
+                }
+            }
 
             String query = String.Empty;
             String language = String.Empty;
@@ -204,8 +223,6 @@ namespace sones.Plugins.GraphDS.IOInterface.XML_IO
                             error = nextNode.Attributes[i].Value;
                             break;
                     }
-                    
-                    
                 }
 
                 if (nextNode.Name == "VertexViewList")
@@ -226,6 +243,8 @@ namespace sones.Plugins.GraphDS.IOInterface.XML_IO
 
         #endregion
 
+        #region private helpers
+        
         private void ValidationEventHandler(object sender, ValidationEventArgs eventArgs)
         {
             if (eventArgs.Severity == XmlSeverityType.Error)
@@ -475,8 +494,10 @@ namespace sones.Plugins.GraphDS.IOInterface.XML_IO
             return result;
         }
 
+        #endregion
+
         #region IPluginable
-        
+
         public string PluginName
         {
             get { return "XML_IO"; }
