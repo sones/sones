@@ -18,11 +18,6 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
         public Dictionary<Int64, SingleEdgeUpdateDefinition> Updated;
         
         /// <summary>
-        /// The single edges that should be added
-        /// </summary>
-        public Dictionary<Int64, SingleEdgeAddDefinition> Added;
-        
-        /// <summary>
         /// The single edge property-ids that should be deleted
         /// </summary>
         public IEnumerable<Int64> Deleted;
