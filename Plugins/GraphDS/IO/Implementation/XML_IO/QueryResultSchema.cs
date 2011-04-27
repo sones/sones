@@ -308,19 +308,11 @@ namespace SchemaToClassesGenerator {
         
         private string resultTypeField;
         
-        private int verticesCountField;
-        
-        private bool verticesCountFieldSpecified;
-        
         private string errorField;
         
         private ulong durationField;
         
-        private bool durationFieldSpecified;
-        
-        public Query() {
-            this.errorField = "";
-        }
+        private long verticesCountField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -357,29 +349,6 @@ namespace SchemaToClassesGenerator {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public int VerticesCount {
-            get {
-                return this.verticesCountField;
-            }
-            set {
-                this.verticesCountField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool VerticesCountSpecified {
-            get {
-                return this.verticesCountFieldSpecified;
-            }
-            set {
-                this.verticesCountFieldSpecified = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute("")]
         public string Error {
             get {
                 return this.errorField;
@@ -401,13 +370,13 @@ namespace SchemaToClassesGenerator {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool DurationSpecified {
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public long VerticesCount {
             get {
-                return this.durationFieldSpecified;
+                return this.verticesCountField;
             }
             set {
-                this.durationFieldSpecified = value;
+                this.verticesCountField = value;
             }
         }
     }

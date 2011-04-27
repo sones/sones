@@ -30,9 +30,9 @@ namespace sones.Plugins.GraphDS.RESTService
     {
         #region Data
 
-        private GraphDSREST_Errors  _ErrorMsg;
-        private IGraphDS            _GraphDS;
-        private String              _ServerID;
+        private GraphDSREST_Errors              _ErrorMsg;
+        private IGraphDS                        _GraphDS;
+        private String                          _ServerID;
         private Dictionary<String, IOInterface> _Plugins;
         #endregion
 
@@ -54,27 +54,27 @@ namespace sones.Plugins.GraphDS.RESTService
         {
             var _Header = HTTPServer.HTTPContext.ResponseHeader;
 
-            _Header.HttpStatusCode  = HTTPStatusCodes.OK;
-            _Header.CacheControl    = "no-cache";
-            _Header.ServerName      = myServerID;
-            _Header.ContentLength   = myContent.ULongLength();
-            _Header.ContentType     = myContentType;
+            _Header.HttpStatusCode = HTTPStatusCodes.OK;
+            _Header.CacheControl = "no-cache";
+            _Header.ServerName = myServerID;
+            _Header.ContentLength = myContent.ULongLength();
+            _Header.ContentType = myContentType;
 
-            var _HeaderBytes        = _Header.ToBytes();
+            var _HeaderBytes = _Header.ToBytes();
 
             HTTPServer.HTTPContext.WriteToResponseStream(_HeaderBytes, 0, _HeaderBytes.Length);
             HTTPServer.HTTPContext.WriteToResponseStream(myContent);
-        }        
+        }
 
         #endregion
 
         #region GenerateResultOutput(myResult, myQuery, myStopWatch)
-        
+
         public void GenerateResultOutput(QueryResult myResult, Stopwatch myStopWatch)
-        {   
+        {
 
             var _ContentType = HTTPServer.HTTPContext.RequestHeader.GetBestMatchingAcceptHeader(GraphDSREST_Constants._HTML, GraphDSREST_Constants._JSON, GraphDSREST_Constants._XML, GraphDSREST_Constants._GEXF, GraphDSREST_Constants._TEXT);
-           
+
             IOInterface plugin = null;
 
 
@@ -87,11 +87,10 @@ namespace sones.Plugins.GraphDS.RESTService
             {
                 _ErrorMsg.Error406_NotAcceptable(String.Format("The server does not support the requested content type {0} ", _ContentType.ToString()));
             }
-       
+
         }
 
         #endregion
-
 
         #region GetGQL()
 
@@ -113,119 +112,7 @@ namespace sones.Plugins.GraphDS.RESTService
             var _GQLQuery = HttpUtility.UrlDecode(_QueryString);
 
             return _GQLQuery;
-        }        
-
-        #endregion
-
-        #region ExecuteGQLQuery(myGQLQuery)
-
-        /// <summary>
-        /// Invoke a gql query to the underlying database.
-        /// </summary>
-        /// <example>/gql?FROM+Website+w+SELECT+*+WHERE+w.Name+%3d+%27xkcd%27"</example>
-        /// <returns>The result of the GQL query</returns>
-        /*public QueryResult ExecuteGQL(String myGQLQuery)
-        {
-            QueryResult _QueryResult = null;
-            
-            try
-            {
-                #region Check settings
-                
-                if (1 > 1)
-                { }
-
-                #endregion
-
-                else
-                {
-                    var _StopWatch = new Stopwatch();
-
-                    /// this is a workaround to implement EXECDBSCRIPT into the webshell
-                    /// if anything entered as a GQL command starts with "EXECDBSCRIPT" we'll take it from here.
-                    if (myGQLQuery.ToUpper().StartsWith("EXECDBSCRIPT "))
-                    {
-
-                        #region EXECDBSCRIP HACK
-
-                        // get the script from the path...
-                        if (!File.Exists(".\\scripts\\" + myGQLQuery.Remove(0, 13)))
-                        {
-                            _StopWatch.Start();
-                            // output error 
-
-                            _QueryResult = new QueryResult(new Error_FileNotFound(".\\scripts\\" + myGQLQuery.Remove(0, 13)));
-                            _QueryResult.Query = myGQLQuery;
-                            _StopWatch.Stop();
-                        }
-
-                        else
-                        {
-
-                            _StopWatch.Start();
-
-                            var QueryResults = new List<QueryResult>();
-
-                            using (var streamReader = new StreamReader(".\\scripts\\" + myGQLQuery.Remove(0, 13)))
-                            {
-                                String line;
-                                while ((line = streamReader.ReadLine()) != null)
-                                {
-                                    ConsoleOutputLogger.WriteLine(line);
-                                    QueryResult newResult = _GraphDS.Query(line);
-                                    QueryResults.Add(newResult);
-                                    String Logging2 = _ErrorMsg.PrintErrorToString(newResult.ResultType, newResult.Errors);
-                                    ConsoleOutputLogger.WriteLine_NotIntoLogfile(Logging2);
-                                }
-
-                            }
-
-                            // cummulate results
-                            var Errors = new List<IError>();
-                            var Warnings = new List<IWarning>();
-                            ulong ResultLine = 0;
-
-                            foreach (var qr in QueryResults)
-                            {
-                                ResultLine++;
-
-                                if (qr.ResultType != ResultType.Successful)
-                                {
-
-                                    if (!qr.Errors.IsNullOrEmpty())
-                                        Errors.AddRange(qr.Errors);
-                                    if (!qr.Warnings.IsNullOrEmpty())
-                                        Warnings.AddRange(qr.Warnings);
-                                }
-
-                            }
-                            _QueryResult = new QueryResult(Errors, Warnings);
-
-                            _StopWatch.Stop();
-                        }
-
-                        #endregion
-
-                        _QueryResult.PushIWarning(new Warning_ObsoleteGQL("EXECDBSCRIPT", "IMPORT FROM '<file or http ressource>' FORMAT GQL"));
-
-                    }
-                    else
-                    {   
-                    _QueryResult = _GraphDS.Query(null, null, myGQLQuery, "");
-                    }
-
-                    GenerateResultOutput(_QueryResult, new Stopwatch());
-
-                    return _QueryResult;
-                }
-            }
-            catch (Exception ex)
-            {
-                _ErrorMsg.Error400_BadRequest(ex.Message + ex.StackTrace);
-            }
-
-            return _QueryResult;
-        }*/
+        }
 
         #endregion
 
@@ -253,7 +140,7 @@ namespace sones.Plugins.GraphDS.RESTService
 
             #region to be used
             //
-            
+
             //try
             //{
             //    var _StopWatch = new Stopwatch();
@@ -261,18 +148,18 @@ namespace sones.Plugins.GraphDS.RESTService
             //    _StopWatch.Start();
             //    _QueryResult = _GraphDS.Query(null, null, myQuery, "");
             //    _StopWatch.Stop();
-                
+
             //    GenerateResultOutput(_QueryResult, _StopWatch);
 
             //    return _QueryResult;
-            
+
             //}
             //catch (Exception ex)
             //{
             //    _ErrorMsg.Error400_BadRequest(ex.Message + ex.StackTrace);
             //}
             #endregion
-            
+
 
             return _QueryResult;
         }
@@ -291,8 +178,8 @@ namespace sones.Plugins.GraphDS.RESTService
 
             #region Data
 
-            var _Assembly   = Assembly.GetExecutingAssembly();
-            var _Resources  = _Assembly.GetManifestResourceNames();
+            var _Assembly = Assembly.GetExecutingAssembly();
+            var _Resources = _Assembly.GetManifestResourceNames();
             Stream _Content = null;
 
             if (myResource.Contains("/"))
@@ -393,7 +280,6 @@ namespace sones.Plugins.GraphDS.RESTService
 
         #endregion
 
-
         #region DEBRIS test method to be deleted
         private static QueryResult GenerateQueryResult()
         {
@@ -444,13 +330,12 @@ namespace sones.Plugins.GraphDS.RESTService
             friendsList.Add("Enemys", edgeViewEnemys);
 
 
-            var retVal = new QueryResult("From User select *", "GraphQL", 20, ResultType.Successful,
+            var retVal = new QueryResult("", "GraphQL",20,ResultType.Successful,
                                          new List<IVertexView>() { vertexBender, vertexFrey, vertexLeela });
 
             return retVal;
         }
         #endregion
-        
 
     }
 

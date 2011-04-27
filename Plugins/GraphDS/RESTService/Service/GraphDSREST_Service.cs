@@ -255,7 +255,8 @@ namespace sones.Plugins.GraphDS.RESTService
 
         public void GetHTMLLandingPage()
         {
-            throw new NotImplementedException();
+            //as long as there is no landing page, redirect to the webshell
+            _RESTOutput.GetResources("WebShell/WebShell.html");
         }
 
         #endregion

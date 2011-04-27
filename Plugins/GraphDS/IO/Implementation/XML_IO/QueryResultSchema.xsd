@@ -9,12 +9,12 @@
   
   <xs:element name="Query">
     <xs:complexType>
-      <xs:attribute name = "Language"      type ="xs:string"/>
-      <xs:attribute name = "Value"         type ="xs:string" />
-      <xs:attribute name = "ResultType"    type ="xs:string" />
-      <xs:attribute name = "VerticesCount" type ="xs:int" />
-      <xs:attribute name = "Error"         type ="xs:string" default="" />
-      <xs:attribute name = "Duration"      type ="xs:unsignedLong" />
+      <xs:attribute name = "Language"      type ="xs:string" use="required"/>
+      <xs:attribute name = "Value"         type ="xs:string" use="required"/>
+      <xs:attribute name = "ResultType"    type ="xs:string" use="required"/>
+      <xs:attribute name = "Error"         type ="xs:string" use="optional"/>
+      <xs:attribute name = "Duration"      type ="xs:unsignedLong" use="required"/>
+      <xs:attribute name = "VerticesCount" type ="xs:long" use="required"/>
     </xs:complexType>
   </xs:element>
 
