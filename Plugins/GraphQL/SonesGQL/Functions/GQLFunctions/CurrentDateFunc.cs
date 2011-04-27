@@ -12,11 +12,13 @@ namespace sones.Plugins.SonesGQL.Functions
 {
     public sealed class CurrentDateFunc : ABaseFunction
     {
+        #region constructor
+
         public CurrentDateFunc()
-        {
-
-        }
-
+        { }
+        
+        #endregion
+        
         public override string GetDescribeOutput()
         {
             return "Returns the current date and time.";

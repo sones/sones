@@ -28,19 +28,25 @@ namespace sones.Plugins.SonesGQL.Functions
             return "This function inserts one or more strings at the given position.";
         }
 
-        public override bool ValidateWorkingBase(Type myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Library.Commons.Transaction.TransactionToken myTransactionToken)
+        public override bool ValidateWorkingBase(Type myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             if (myWorkingBase != null)
             {
-                if ((myWorkingBase is IAttributeDefinition) && 
-                    (myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property && 
-                    ((myWorkingBase as IPropertyDefinition).IsUserDefinedType))
+                if ((myWorkingBase is IAttributeDefinition) &&
+                        (myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property &&
+                        ((myWorkingBase as IPropertyDefinition).IsUserDefinedType))
                 {
                     return false;
                 }
-                else
+                else if ((myWorkingBase is IAttributeDefinition) &&
+                        (myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property &&
+                        ((myWorkingBase as IPropertyDefinition).BaseType.Name.Equals("String")))
                 {
                     return true;
+                }
+                else
+                {
+                    return false;
                 }
             }
             else
@@ -51,7 +57,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override FuncParameter ExecFunc(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
         {
-            if (!(CallingObject.GetType() == typeof(String)))
+            if (!(CallingObject.GetType().Name.Equals("String")))
             {
                 throw new InvalidVertexTypeException(CallingObject.GetType().ToString(), "String");
             }

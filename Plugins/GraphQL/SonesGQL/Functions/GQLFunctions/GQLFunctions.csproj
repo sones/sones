@@ -50,7 +50,13 @@
     <Compile Include="Exists.cs" />
     <Compile Include="FromUNIXDate.cs" />
     <Compile Include="InsertFunc.cs" />
+    <Compile Include="MaxWeightFunc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SubstringFunc.cs" />
+    <Compile Include="ToLowerFunc.cs" />
+    <Compile Include="TopFunc.cs" />
+    <Compile Include="ToUNIXDate.cs" />
+    <Compile Include="ToUpperFunc.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\GraphDB\IGraphDB\IGraphDB.csproj">

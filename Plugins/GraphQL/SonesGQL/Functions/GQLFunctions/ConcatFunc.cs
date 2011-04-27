@@ -25,7 +25,7 @@ namespace sones.Plugins.SonesGQL.Functions
         public override bool ValidateWorkingBase(Type myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             if (myWorkingBase == typeof(String) || 
-                ((myWorkingBase is IAttributeDefinition) && (myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property && (myWorkingBase as IPropertyDefinition).BaseType == typeof(String)))
+                ((myWorkingBase is IAttributeDefinition) && (myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property && (myWorkingBase as IPropertyDefinition).BaseType.Name.Equals("String")))
             {
                 return true; // valid for string
             }
@@ -45,7 +45,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
             if (CallingObject != null)
             {
-                if (CallingObject.GetType() == typeof(String))
+                if (CallingObject.GetType().Name.Equals("String"))
                 {
                     resString.Append(CallingObject as String);
                 }
@@ -55,7 +55,6 @@ namespace sones.Plugins.SonesGQL.Functions
             {
                 resString.Append(fp.Value);
             }
-
 
             return new FuncParameter(resString.ToString());
         }

@@ -2,41 +2,49 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using sones.GraphDB.TypeSystem;
 using ISonesGQLFunction.Structure;
+using sones.GraphDB.TypeSystem;
 using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.Library.LanguageExtensions;
-using sones.GraphDB.ErrorHandling;
-using sones.GraphDB.ErrorHandling.Type;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class FromUNIXDate : ABaseFunction
+    public sealed class SubstringFunc : ABaseFunction
     {
         #region constructor
 
-        public FromUNIXDate()
-        { }
+        public SubstringFunc()
+        {
+            Parameters.Add(new ParameterValue("StartPosition", new Int32()));
+            Parameters.Add(new ParameterValue("Length", new Int32()));
+        }
 
         #endregion
 
         public override string GetDescribeOutput()
         {
-            return "Convert from unix datime format to DBDateTime format.";
+            return "Retrieves a substring from the attribute value. The substring starts at a specified character position and has a specified length.";
         }
 
         public override bool ValidateWorkingBase(Type myWorkingBase, GraphDB.IGraphDB myGraphDB, Library.Commons.Security.SecurityToken mySecurityToken, Library.Commons.Transaction.TransactionToken myTransactionToken)
         {
-            if (myWorkingBase == typeof(Int64))
+            if (myWorkingBase != null)
             {
-                return true;
-            }
-            else if ((myWorkingBase is IAttributeDefinition) && (myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property && (myWorkingBase as IPropertyDefinition).BaseType.Name.Equals(("Int64")))
-                                                                
-            {
-                return true;
+                if ((myWorkingBase is IAttributeDefinition) && 
+                    (myWorkingBase as IAttributeDefinition).Kind == AttributeType.Property && 
+                    (myWorkingBase as IPropertyDefinition).IsUserDefinedType)
+                {
+                    return false;
+                }
+                else if (myWorkingBase.Name.Equals("String"))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
             else
             {
@@ -46,16 +54,11 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override FuncParameter ExecFunc(IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken, params FuncParameter[] myParams)
         {
-            if (CallingObject != null)
+            if (CallingObject is IBaseType)
             {
-                if (CallingObject.GetType().Name.Equals("Int64"))
-                {
-                    return new FuncParameter(UNIXTimeConversionExtension.FromUnixTimeStamp(Convert.ToInt64(DateTime.Now)));
-                }
-                else
-                {
-                    throw new InvalidTypeException(CallingObject.GetType().Name, "Int64");
-                }
+                var substring = (CallingObject as IBaseType).ToString().Substring((Int32)myParams[0].Value, (Int32)myParams[1].Value);
+                
+                return new FuncParameter(substring);
             }
             else
             {
@@ -65,7 +68,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override string PluginName
         {
-            get { return "FromUNIXDate"; }
+            get { return "SUBSTRING"; }
         }
 
         public override Dictionary<string, Type> SetableParameters
@@ -75,7 +78,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override Library.VersionedPluginManager.IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
-            return new FromUNIXDate();
+            return new SubstringFunc();
         }
     }
 }
