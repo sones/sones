@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using sones.GraphDB.ErrorHandling;
 
-namespace sones.Plugins.GraphDS.IOInterface.XML_IO.ErrorHandling
+namespace sones.Plugins.GraphDS.IO.XML_IO.ErrorHandling
 {
     public class XmlValidationException : AGraphDSException
     {

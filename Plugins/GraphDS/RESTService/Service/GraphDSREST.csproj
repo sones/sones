@@ -144,6 +144,10 @@
       <Project>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</Project>
       <Name>PluginManager</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Library\Internal\Networking\Networking.csproj">
+      <Project>{DDC48D4C-6885-462C-B57A-216658EB94AE}</Project>
+      <Name>Networking %28Library\Internal\Networking\Networking%29</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\IO\Implementation\XML_IO\XML_IO.csproj">
       <Project>{D52A5921-EE93-499E-83C4-9E2DDAEC38D0}</Project>
       <Name>XML_IO</Name>
@@ -152,13 +156,13 @@
       <Project>{991132D2-15E0-4BB7-8328-3A51646D4F01}</Project>
       <Name>IOInterface</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Library\Internal\Networking\Networking.csproj">
-      <Project>{DDC48D4C-6885-462C-B57A-216658EB94AE}</Project>
-      <Name>Networking %28Library\Internal\Networking\Networking%29</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ISonesRESTService\ISonesRESTService.csproj">
       <Project>{0D7A14D7-9851-4624-9260-858741603F98}</Project>
       <Name>ISonesRESTService</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RESTServicePluginManager\RESTServicePluginManager.csproj">
+      <Project>{163B4039-C9E8-4433-BA35-8007E3AD0F45}</Project>
+      <Name>RESTServicePluginManager</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -14,10 +14,10 @@ using System.ServiceModel.Web;
 using sones.GraphDS;
 using sones.GraphQL.Result;
 using sones.Library.LanguageExtensions;
-using sones.Plugins.GraphDS.IOInterface.XML_IO;
+using sones.Plugins.GraphDS.IO;
 using sones.Library.DiscordianDate;
 #region DEBRIS
-using sones.Plugins.GraphDS.IOInterface.XML_IO.Result;
+using sones.Plugins.GraphDS.IO.XML_IO.Result;
 #endregion
 
 
@@ -33,13 +33,14 @@ namespace sones.Plugins.GraphDS.RESTService
         private GraphDSREST_Errors  _ErrorMsg;
         private IGraphDS            _GraphDS;
         private String              _ServerID;
-
+        private Dictionary<String, IOInterface> _Plugins;
         #endregion
 
         #region Constructors
 
-        public GraphDSREST_Output(IGraphDS myGraphDS, String myServerID)
+        public GraphDSREST_Output(IGraphDS myGraphDS, String myServerID, Dictionary<String, IOInterface> myPlugins)
         {
+            _Plugins = myPlugins;
             _ServerID = myServerID;
             _ErrorMsg = new GraphDSREST_Errors(_ServerID);
             _GraphDS = myGraphDS;
@@ -73,40 +74,20 @@ namespace sones.Plugins.GraphDS.RESTService
         {   
 
             var _ContentType = HTTPServer.HTTPContext.RequestHeader.GetBestMatchingAcceptHeader(GraphDSREST_Constants._HTML, GraphDSREST_Constants._JSON, GraphDSREST_Constants._XML, GraphDSREST_Constants._GEXF, GraphDSREST_Constants._TEXT);
-            
-            #region application/xml
+           
+            IOInterface plugin = null;
 
-            if (_ContentType.MediaType == GraphDSREST_Constants._XML.MediaType)
+
+            if (_Plugins.TryGetValue(_ContentType.MediaType, out plugin))
             {
-
-                var _XMLExport = new XML_IO();
-
-                var content = _XMLExport.GenerateOutputResult(myResult);
-
-                ExportContent(_ServerID, System.Text.Encoding.UTF8.GetBytes(content), _XMLExport.ContentType);
-
-                return;
-
+                var content = plugin.GenerateOutputResult(myResult);
+                ExportContent(_ServerID, System.Text.Encoding.UTF8.GetBytes(content), plugin.ContentType);
             }
-
-            #endregion
-
-            #region DEBRIS text/html
-
-            if (_ContentType.MediaType == GraphDSREST_Constants._HTML.MediaType)
+            else
             {
-
-                var _XMLExport = new XML_IO();
-
-                var content = _XMLExport.GenerateOutputResult(myResult);
-
-                ExportContent(_ServerID, System.Text.Encoding.UTF8.GetBytes(content), _XMLExport.ContentType);
-
-                return;
-
+                _ErrorMsg.Error406_NotAcceptable(String.Format("The server does not support the requested content type {0} ", _ContentType.ToString()));
             }
-
-            #endregion
+       
         }
 
         #endregion

@@ -8,7 +8,7 @@
     <ProjectGuid>{991132D2-15E0-4BB7-8328-3A51646D4F01}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IOInterface</RootNamespace>
+    <RootNamespace>sones.Plugins.GraphDS.IO</RootNamespace>
     <AssemblyName>IOInterface</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

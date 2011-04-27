@@ -6,7 +6,7 @@ using System.Net.Mime;
 using sones.GraphQL.Result;
 using sones.Library.VersionedPluginManager;
 
-namespace sones.Plugins.GraphDS.IOInterface
+namespace sones.Plugins.GraphDS.IO
 {
     #region IOInterfaceCompatibility
 

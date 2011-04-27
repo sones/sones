@@ -9,11 +9,13 @@ using sones.GraphQL.Result;
 using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
 using SchemaToClassesGenerator;
-using sones.Plugins.GraphDS.IOInterface.XML_IO.Result;
-using sones.Plugins.GraphDS.IOInterface.XML_IO.ErrorHandling;
+using System.Xml;
+using sones.Plugins.GraphDS.IO.XML_IO.Result;
+using sones.Plugins.GraphDS.IO.XML_IO.ErrorHandling;
+using System.Reflection;
 
 
-namespace sones.Plugins.GraphDS.IOInterface.XML_IO
+namespace sones.Plugins.GraphDS.IO.XML_IO
 {
     public sealed class XML_IO : IOInterface
     {
@@ -507,15 +509,11 @@ namespace sones.Plugins.GraphDS.IOInterface.XML_IO
         {
             get { return new Dictionary<string, Type>(); }
         }
-
-        public IPluginable InitializePlugin(Dictionary<string, object> myParameters, GraphApplicationSettings myApplicationSetting)
-        {
-            return InitializePlugin();
-        }
-
+               
         public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
-            object result = Activator.CreateInstance(typeof(XML_IO));
+            
+            object result = typeof(XML_IO).GetConstructor(new Type[] { }).Invoke(new object[] { });            
 
             return (IPluginable)result;
         }

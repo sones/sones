@@ -6,7 +6,7 @@ using System.IO;
 using sones.GraphQL.Result;
 
 
-namespace sones.Plugins.GraphDS.IOInterface.XML_IO.Result
+namespace sones.Plugins.GraphDS.IO.XML_IO.Result
 {
     /// <summary>
     /// This class creates an vertex view.

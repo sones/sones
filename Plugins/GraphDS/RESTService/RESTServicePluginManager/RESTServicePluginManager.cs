@@ -4,18 +4,18 @@ using System.Linq;
 using System.Text;
 using sones.Library.VersionedPluginManager;
 using sones.Plugins.GraphDS;
-using sones.Plugins.GraphDS.IOInterface;
+using sones.Plugins.GraphDS.IO;
 
-namespace sones.GraphDS.PluginManager.GraphDSPluginManager
+namespace sones.GraphDS.PluginManager.RESTServicePluginManager
 {
-    public sealed class GraphDSPluginManager : AComponentPluginManager
+    public sealed class RESTServicePluginManager : AComponentPluginManager
     {
         #region Constructor
 
         /// <summary>
         /// A plugin manager for the GraphDS
         /// </summary>
-        public GraphDSPluginManager()
+        public RESTServicePluginManager()
         {
             #region Register & Discover
 

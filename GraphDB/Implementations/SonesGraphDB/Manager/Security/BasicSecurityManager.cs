@@ -63,12 +63,12 @@ namespace sones.GraphDB.Manager.Security
 
         public SecurityToken LogOn(IUserCredentials toBeAuthenticatedCredentials)
         {
-            throw new NotImplementedException();
+            return new SecurityToken();
         }
 
         public void LogOff(SecurityToken toBeLoggedOfToken)
         {
-            throw new NotImplementedException();
+            //do nothing
         }
 
         #endregion

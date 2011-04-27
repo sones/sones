@@ -110,6 +110,26 @@ namespace sones.Plugins.GraphDS.RESTService
 
         #endregion
 
+        #region Error406_NotAcceptable(myStream)
+
+        public void Error406_NotAcceptable(String myCustom406Error)
+        {
+
+            var _Header = HTTPServer.HTTPContext.ResponseHeader;
+            var _Content = Encoding.UTF8.GetBytes("Error 406 - Not Acceptable : " + myCustom406Error);
+
+            _Header.HttpStatusCode = HTTPStatusCodes.NotAcceptable;
+            _Header.CacheControl = "no-cache";
+            _Header.ServerName = _ServerID;
+            _Header.ContentLength = _Content.ULongLength();
+            _Header.ContentType = GraphDSREST_Constants._TEXT_UTF8;
+
+            HTTPServer.HTTPContext.WriteToResponseStream(_Header.ToBytes());
+            HTTPServer.HTTPContext.WriteToResponseStream(_Content);
+        }
+
+        #endregion
+
         #region checkAuthentication(mySettings)
 
         public Boolean checkAuthentication(GraphDSREST_Settings mySettings)

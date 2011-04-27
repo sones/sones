@@ -12,9 +12,9 @@ using System.Diagnostics;
 using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Collections.Generic;
-
+using sones.Plugins.GraphDS.IO;
 using sones.GraphDB;
-
+using sones.GraphDS.PluginManager.RESTServicePluginManager;
 using sones.Networking;
 using sones.Networking.HTTP;
 using sones.GraphDS;
@@ -39,8 +39,9 @@ namespace sones.Plugins.GraphDS.RESTService
 
         private        IGraphDS                     _IGraphDS;
         private        GraphDSREST_Errors           _ErrorMsg;
-        private        GraphDSREST_Output           _RESTOutput;    
-
+        private        GraphDSREST_Output           _RESTOutput;
+        private        RESTServicePluginManager     _RestPluginManager;
+        private Dictionary<String, IOInterface> _IOPlugins; 
         #endregion
 
         #region Constructor
@@ -49,6 +50,14 @@ namespace sones.Plugins.GraphDS.RESTService
 
         public GraphDSREST_Service()
         {
+            _RestPluginManager = new RESTServicePluginManager();
+            _IOPlugins = new Dictionary<String, IOInterface>();
+
+            foreach (var item in _RestPluginManager.GetPluginsForType<IOInterface>())
+            {
+                var plugin =  _RestPluginManager.GetAndInitializePlugin<IOInterface>(item);
+                _IOPlugins.Add(plugin.ContentType.MediaType,plugin);
+            }
         }
 
         #endregion
@@ -348,7 +357,7 @@ namespace sones.Plugins.GraphDS.RESTService
         {
             _IGraphDS = myGraphDS;
             _ErrorMsg = new GraphDSREST_Errors(_ServerID);
-            _RESTOutput = new GraphDSREST_Output(myGraphDS, _ServerID);        
+            _RESTOutput = new GraphDSREST_Output(myGraphDS, _ServerID, _IOPlugins);        
         }
     }
 

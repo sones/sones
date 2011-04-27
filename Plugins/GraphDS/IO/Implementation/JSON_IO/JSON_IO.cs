@@ -11,7 +11,7 @@ using System.Xml;
 using System.Reflection;
 
 
-namespace sones.Plugins.GraphDS.IOInterface.JSON_IO
+namespace sones.Plugins.GraphDS.IO.JSON_IO
 {
     public sealed class XML_IO : IOInterface
     {
