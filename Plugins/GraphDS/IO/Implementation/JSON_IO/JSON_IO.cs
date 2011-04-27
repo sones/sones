@@ -13,7 +13,7 @@ using System.Reflection;
 
 namespace sones.Plugins.GraphDS.IO.JSON_IO
 {
-    public sealed class XML_IO : IOInterface
+    public sealed class JSON_IO : IOInterface
     {
 
         #region Data
@@ -24,7 +24,7 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
 
         #region Constructors
 
-        public XML_IO()
+        public JSON_IO()
         {
             _contentType = new ContentType("application/json") { CharSet = "UTF-8" };
         }
@@ -70,7 +70,7 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
 
         public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
-            object result = Activator.CreateInstance(typeof(XML_IO));
+            object result = Activator.CreateInstance(typeof(JSON_IO));
 
             return (IPluginable)result;
         }
