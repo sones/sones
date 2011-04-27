@@ -40,5 +40,15 @@ namespace sones.GraphQL
         public const String GraphDBType                         = "GraphDBType";
 
         #endregion
+
+        #region select
+
+        public static String ASTERISKSYMBOL                     = "*";
+        public static String MINUSSYMBOL                        = "-";
+        public static String RHOMBSYMBOL                        = "#";
+        public const String Comperator_Smaller                  = "<";
+        public const String Comperator_Greater                  = ">";
+
+        #endregion
     }
 }

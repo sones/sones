@@ -11,14 +11,14 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
         #region Data
 
         AExpressionDefinition _Value = null;
-        public List<IComparable> Parameters { get; set; }
+        public List<Object> Parameters { get; set; }
 
         #endregion
 
         public TupleElement(AExpressionDefinition Value)
         {
             _Value = Value;
-            Parameters = new List<IComparable>();
+            Parameters = new List<Object>();
         }
 
         public AExpressionDefinition Value { get { return _Value; } }

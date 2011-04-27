@@ -2,23 +2,62 @@
 using Irony.Ast;
 using Irony.Parsing;
 using sones.GraphQL.Structure.Helper.Enums;
+using sones.GraphQL.ErrorHandling;
 
 namespace sones.GraphQL.Structure.Nodes.DML
 {
     public sealed class SelectionDelimiterNode : AStructureNode, IAstNodeInit
     {
-        #region IAstNodeInit Members
+        #region Data
 
-        public void Init(ParsingContext context, ParseTreeNode parseNode)
+        private KindOfDelimiter _KindOfDelimiter;
+
+        #endregion
+
+        #region constructor
+
+        public SelectionDelimiterNode()
         {
-            throw new NotImplementedException();
+
         }
 
         #endregion
 
-        internal void SetDelimiter(KindOfDelimiter kindOfDelimiter)
+        #region IAstNodeInit Members
+
+        public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            throw new NotImplementedException();
         }
+
+        #endregion
+
+        #region public methods
+
+        internal void SetDelimiter(KindOfDelimiter myKindOfDelimiter)
+        {
+            _KindOfDelimiter = myKindOfDelimiter;
+        }
+
+        public KindOfDelimiter GetKindOfDelimiter()
+        {
+            return _KindOfDelimiter;
+        }
+
+        public String GetDelimiterString()
+        {
+            switch (_KindOfDelimiter)
+            {
+                case KindOfDelimiter.Dot:
+                    return SonesGQLConstants.EdgeTraversalDelimiterSymbol;
+
+                case KindOfDelimiter.EdgeInformationDelimiter:
+                    return SonesGQLConstants.EdgeInformationDelimiterSymbol;
+
+                default:
+                    throw new NotImplementedQLException("");
+            }
+        }
+
+        #endregion
     }
 }

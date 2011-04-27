@@ -222,7 +222,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
         /// <summary>
         /// returns a list of guids which match the tupleNode of the ListOfDBObjects object.
         /// </summary>
-        public IEnumerable<Tuple<IVertex, IComparable[]>> GetCorrespondigDBObjectUUIDAsList(IVertexType myType, IVertexType validationType, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public IEnumerable<Tuple<IVertex, Object[]>> GetCorrespondigDBObjectUUIDAsList(IVertexType myType, IVertexType validationType, GQLPluginManager myPluginManager, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             #region Evaluate tuple
 
@@ -241,7 +241,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
                     foreach (var aDBO in _graphResult.Select(new LevelKey(validationType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true))
                     {
-                        yield return new Tuple<IVertex, IComparable[]>(aDBO, aTupleElement.Parameters.ToArray());
+                        yield return new Tuple<IVertex, Object[]>(aDBO, aTupleElement.Parameters.ToArray());
                     }
 
                     #endregion
@@ -270,7 +270,7 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Expressions
 
                                 foreach (var aDBO in tempGraphResult.Select(new LevelKey(validationType.ID, myGraphDB, mySecurityToken, myTransactionToken), null, true))
                                 {
-                                    yield return new Tuple<IVertex, IComparable[]>(aDBO, aTupleElement.Parameters.ToArray());
+                                    yield return new Tuple<IVertex, Object[]>(aDBO, aTupleElement.Parameters.ToArray());
                                 }
                             }
 

@@ -52,6 +52,7 @@
     <Compile Include="Grammar\SonesGQLGrammar.cs" />
     <Compile Include="Manager\Plugin\GQLPluginManager.cs" />
     <Compile Include="Manager\Select\SelectManager.cs" />
+    <Compile Include="Manager\Select\SelectResultManager.cs" />
     <Compile Include="Result\EdgeView.cs" />
     <Compile Include="Result\GraphElementView.cs" />
     <Compile Include="Result\HyperEdgeView.cs" />
@@ -84,6 +85,7 @@
     <Compile Include="StatementNodes\Transactions\BeginTransactionNode.cs" />
     <Compile Include="StatementNodes\Transactions\CommitRollbackTransactionNode.cs" />
     <Compile Include="Structure\Helper\Enums\KindOfTuple.cs" />
+    <Compile Include="Structure\Helper\Enums\SelectOutputTypes.cs" />
     <Compile Include="Structure\Helper\Enums\SortDirection.cs" />
     <Compile Include="Structure\Helper\Enums\VerbosityTypes.cs" />
     <Compile Include="Structure\Helper\Enums\KindOfDelimiter.cs" />
