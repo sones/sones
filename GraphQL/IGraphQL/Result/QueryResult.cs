@@ -50,7 +50,6 @@ namespace sones.GraphQL.Result
         {
             get
             {
-
                 var numberOfAffectedVertices = 0UL;
 
                 if (Vertices != null)
@@ -71,27 +70,14 @@ namespace sones.GraphQL.Result
         /// <param name="myQLName">The name of the query language that has been executed</param>
         /// <param name="myDuration">The time that was spent on executing the query</param>
         /// <param name="myVertices">The vertices that should be available within the query result</param>
-        public QueryResult(String myQuery, String myQLName, UInt64 myDuration, ResultType myResultType, IEnumerable<IVertexView> myVertices = null)
+        /// <param name="myError">The error which occured during execution</param>
+        public QueryResult(String myQuery, String myQLName, UInt64 myDuration, ResultType myResultType, IEnumerable<IVertexView> myVertices = null, ASonesException myError = null)
         {
             TypeOfResult = myResultType;
             Vertices = myVertices ?? new List<IVertexView>();
             Query = myQuery;
             NameOfQuerylanguage = myQLName;
             Duration = myDuration;
-        }
-
-        /// <summary>
-        /// Creates a new empty QueryResult just with an Error
-        /// </summary>
-        /// <param name="myError">The Error occured during an query</param>
-        public QueryResult(ASonesException myError)
-        {
-            TypeOfResult = new ResultType();
-            Vertices = new List<IVertexView>();
-            Query = "";
-            NameOfQuerylanguage = "";
-            Duration = 0L;
-
             Error = myError;
         }
 
