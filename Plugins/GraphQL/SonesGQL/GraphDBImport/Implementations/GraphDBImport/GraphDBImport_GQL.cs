@@ -11,10 +11,11 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.ErrorHandling;
 using sones.Plugins.SonesGQL.DBImport.ErrorHandling;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.Plugins.SonesGQL.DBImport
 {
-    public sealed class GraphDBImport_GQL : IGraphDBImport
+    public sealed class GraphDBImport_GQL : IGraphDBImport, IPluginable
     {
 
         public GraphDBImport_GQL()

@@ -112,7 +112,6 @@
     <Compile Include="ErrorHandling\VertexTypeAttributeErrors\AGraphQLVertexAttributeException.cs" />
     <Compile Include="ErrorHandling\UnknownQLException.cs" />
     <Compile Include="IDumpable.cs" />
-    <Compile Include="IExtendableGrammar.cs" />
     <Compile Include="IGraphQL.cs" />
     <Compile Include="IQueryableLanguage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

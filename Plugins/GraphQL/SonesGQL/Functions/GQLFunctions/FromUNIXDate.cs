@@ -10,10 +10,11 @@ using sones.Library.Commons.Transaction;
 using sones.Library.LanguageExtensions;
 using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.ErrorHandling.Type;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class FromUNIXDate : ABaseFunction
+    public sealed class FromUNIXDate : ABaseFunction, IPluginable
     {
         #region constructor
 
@@ -76,6 +77,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override Library.VersionedPluginManager.IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
             return new FromUNIXDate();
+        }
+
+        public override string FunctionName
+        {
+            get { return "fromunixdate"; }
         }
     }
 }

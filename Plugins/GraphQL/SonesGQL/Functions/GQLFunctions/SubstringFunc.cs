@@ -7,10 +7,11 @@ using sones.GraphDB.TypeSystem;
 using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class SubstringFunc : ABaseFunction
+    public sealed class SubstringFunc : ABaseFunction, IPluginable
     {
         #region constructor
 
@@ -79,6 +80,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override Library.VersionedPluginManager.IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
             return new SubstringFunc();
+        }
+
+        public override string FunctionName
+        {
+            get { return "substring"; }
         }
     }
 }

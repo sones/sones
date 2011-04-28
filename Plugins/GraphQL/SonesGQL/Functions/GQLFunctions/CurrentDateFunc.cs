@@ -10,7 +10,7 @@ using ISonesGQLFunction.Structure;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class CurrentDateFunc : ABaseFunction
+    public sealed class CurrentDateFunc : ABaseFunction, IPluginable
     {
         #region constructor
 
@@ -54,6 +54,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
             return new CurrentDateFunc();
+        }
+
+        public override string FunctionName
+        {
+            get { return "currentdate"; }
         }
     }
 }

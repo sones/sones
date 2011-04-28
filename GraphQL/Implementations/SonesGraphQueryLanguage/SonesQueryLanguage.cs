@@ -256,10 +256,10 @@ namespace sones.GraphQL
             }
             myGQLGrammar.SetAggregates(aggregates);
 
-            List<ABaseFunction> functions = new List<ABaseFunction>();
+            List<IGQLFunction> functions = new List<IGQLFunction>();
             foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGQLFunction>())
             {
-                functions.Add(_GQLPluginManager.GetAndInitializePlugin<IGQLFunction>(plugin) as ABaseFunction);
+                functions.Add(_GQLPluginManager.GetAndInitializePlugin<IGQLFunction>(plugin) as IGQLFunction);
             }
 
             if (functions.Count == 0)

@@ -12,7 +12,7 @@ using sones.Library.VersionedPluginManager;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class CountFunc : ABaseFunction
+    public sealed class CountFunc : ABaseFunction, IPluginable
     {
         #region constructor
 
@@ -104,5 +104,10 @@ namespace sones.Plugins.SonesGQL.Functions
         }
 
         #endregion
+
+        public override string FunctionName
+        {
+            get { return "count"; }
+        }
     }
 }

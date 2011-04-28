@@ -184,7 +184,7 @@ namespace sones.GraphQL.GQL.Structure.Helper.Operator
                 }
                 else
                 {
-                    throw new AggregateNotAllowedException(((AggregateDefinition)myComplexValue).ChainPartAggregateDefinition.Aggregate.PluginName);
+                    throw new AggregateNotAllowedException(((AggregateDefinition)myComplexValue).ChainPartAggregateDefinition.Aggregate.AggregateName);
                 }
                 #endregion
             }

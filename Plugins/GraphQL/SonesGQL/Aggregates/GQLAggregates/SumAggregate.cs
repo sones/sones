@@ -15,7 +15,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
     /// <summary>
     /// The aggregate Sum
     /// </summary>
-    public sealed class SumAggregate : IGQLAggregate
+    public sealed class SumAggregate : IGQLAggregate, IPluginable
     {
         #region constructor
 
@@ -71,6 +71,16 @@ namespace sones.Plugins.SonesGQL.Aggregates
         public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
             return new SumAggregate();
+        }
+
+        #endregion
+
+        #region IGQLAggregate Members
+
+
+        public string AggregateName
+        {
+            get { return "sum"; }
         }
 
         #endregion

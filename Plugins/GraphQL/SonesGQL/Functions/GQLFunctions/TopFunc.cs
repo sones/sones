@@ -13,7 +13,7 @@ using sones.Library.VersionedPluginManager;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class TopFunc : ABaseFunction
+    public sealed class TopFunc : ABaseFunction, IPluginable
     {
         #region constructor
 
@@ -75,6 +75,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
             return new TopFunc();
+        }
+
+        public override string FunctionName
+        {
+            get { return "top"; }
         }
     }
 }

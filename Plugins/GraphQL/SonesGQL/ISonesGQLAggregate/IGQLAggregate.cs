@@ -36,7 +36,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
     /// <summary>
     /// The interface for all GQL aggregates
     /// </summary>
-    public interface IGQLAggregate : IPluginable
+    public interface IGQLAggregate
     {
         /// <summary>
         /// Abstract aggregate function
@@ -44,5 +44,10 @@ namespace sones.Plugins.SonesGQL.Aggregates
         /// <returns>The result of the aggregation</returns>
         FuncParameter Aggregate(IEnumerable<IComparable> myValues,
                                 IPropertyDefinition myPropertyDefinition);
+
+        /// <summary>
+        /// The name of the aggregate
+        /// </summary>
+        String AggregateName { get; }
     }
 }

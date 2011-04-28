@@ -158,5 +158,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public abstract IPluginable InitializePlugin(Dictionary<string, object> myParameters = null);
 
         #endregion
+
+        #region IGQLFunction Members
+
+        public abstract string FunctionName { get; }
+
+        #endregion
     }
 }

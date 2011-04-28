@@ -16,7 +16,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
     /// <summary>
     /// The aggregate Min
     /// </summary>
-    public sealed class MinAggregate : IGQLAggregate
+    public sealed class MinAggregate : IGQLAggregate, IPluginable
     {
         #region constructor
 
@@ -71,6 +71,16 @@ namespace sones.Plugins.SonesGQL.Aggregates
         public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
             return new MinAggregate();
+        }
+
+        #endregion
+
+        #region IGQLAggregate Members
+
+
+        public string AggregateName
+        {
+            get { return "min"; }
         }
 
         #endregion

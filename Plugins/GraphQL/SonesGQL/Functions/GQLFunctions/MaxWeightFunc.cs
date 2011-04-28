@@ -12,7 +12,7 @@ using sones.GraphDB.ErrorHandling.Type;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class MaxWeightFunc : ABaseFunction
+    public sealed class MaxWeightFunc : ABaseFunction, IPluginable
     {
         #region constructor
 
@@ -77,6 +77,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
             return new MaxWeightFunc();
+        }
+
+        public override string FunctionName
+        {
+            get { return "maxweight"; }
         }
     }
 }

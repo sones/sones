@@ -20,7 +20,8 @@ namespace sones.Plugins.Index
     /// </summary>
     /// <typeparam name="TKey">The type of the index key.</typeparam>
     /// <typeparam name="TValue">The type of the index value.</typeparam>
-    public class SingleValueIndex<TKey, TValue> : ISingleValueIndex<TKey, TValue> where TKey : IComparable
+    public class SingleValueIndex<TKey, TValue> : ISingleValueIndex<TKey, TValue>, IPluginable
+        where TKey : IComparable
     {
         #region Data
 
@@ -239,6 +240,15 @@ namespace sones.Plugins.Index
             object result = typeof(SingleValueIndex<TKey, TValue>).GetConstructor(Type.EmptyTypes).Invoke(new object[0]);
 
             return (IPluginable)result;
+        }
+
+        #endregion
+
+        #region ISonesIndex Members
+
+        public string IndexName
+        {
+            get { return "singlevalueindex"; }
         }
 
         #endregion

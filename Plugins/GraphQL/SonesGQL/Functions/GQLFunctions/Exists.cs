@@ -10,7 +10,7 @@ using sones.Library.Commons.Transaction;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class Exists : ABaseFunction
+    public sealed class Exists : ABaseFunction, IPluginable
     {
         #region constructors
 
@@ -61,6 +61,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
             return new Exists();
+        }
+
+        public override string FunctionName
+        {
+            get { return "exists"; }
         }
     }
 }

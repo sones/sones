@@ -34,7 +34,7 @@ namespace sones.Plugins.SonesGQL.DBImport
     /// <summary>
     /// The interface for all GQL functions
     /// </summary>
-    public interface IGraphDBImport : IPluginable
+    public interface IGraphDBImport
     {
         string ImportFormat { get; }
 

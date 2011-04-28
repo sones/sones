@@ -5,7 +5,6 @@ using System.Text;
 using Irony.Ast;
 using Irony.Parsing;
 using sones.GraphDB;
-using sones.GraphDB.Interfaces;
 using sones.GraphDB.TypeSystem;
 using sones.GraphQL.StatementNodes.DDL;
 using sones.GraphQL.StatementNodes.DML;
@@ -27,7 +26,7 @@ using sones.GraphQL.GQL.Structure.Nodes.Expressions;
 
 namespace sones.GraphQL
 {
-    public sealed class SonesGQLGrammar : Grammar, IExtendableGrammar //, IDumpable, 
+    public sealed class SonesGQLGrammar : Grammar //, IDumpable, 
     {
         #region Data
 
@@ -2738,8 +2737,8 @@ namespace sones.GraphQL
                 {
                     //BNF_AggregateName + S_BRACKET_LEFT + aggregateArg + S_BRACKET_RIGHT;
 
-                    var aggrRule = new NonTerminal("aggr_" + aggr.PluginName, CreateAggregateNode);
-                    aggrRule.Rule = aggr.PluginName + S_BRACKET_LEFT + BNF_AggregateArg + S_BRACKET_RIGHT;
+                    var aggrRule = new NonTerminal("aggr_" + aggr.AggregateName, CreateAggregateNode);
+                    aggrRule.Rule = aggr.AggregateName + S_BRACKET_LEFT + BNF_AggregateArg + S_BRACKET_RIGHT;
 
                     if (BNF_Aggregate.Rule == null)
                     {
@@ -2755,7 +2754,7 @@ namespace sones.GraphQL
             #endregion
         }
 
-        public void SetFunctions(IEnumerable<ABaseFunction> functions)
+        public void SetFunctions(IEnumerable<IGQLFunction> functions)
         {
             #region Add all plugins to the grammar
 
@@ -2771,12 +2770,12 @@ namespace sones.GraphQL
 
                     #region Create funcNonTerminal
 
-                    var funcNonTerminal = new NonTerminal("func" + func.PluginName, CreateFunctionCallNode);
+                    var funcNonTerminal = new NonTerminal("func" + func.FunctionName, CreateFunctionCallNode);
 
                     var funcParams = func.GetParameters();
                     if (funcParams == null || funcParams.Count() == 0)
                     {
-                        funcNonTerminal.Rule = func.PluginName + S_BRACKET_LEFT + S_BRACKET_RIGHT;
+                        funcNonTerminal.Rule = func.FunctionName + S_BRACKET_LEFT + S_BRACKET_RIGHT;
 
                     }
                     else
@@ -2803,7 +2802,7 @@ namespace sones.GraphQL
 
                         #endregion
 
-                        funcNonTerminal.Rule = func.PluginName + S_BRACKET_LEFT + BNF_FunArgs + S_BRACKET_RIGHT;
+                        funcNonTerminal.Rule = func.FunctionName + S_BRACKET_LEFT + BNF_FunArgs + S_BRACKET_RIGHT;
                     }
 
                     #endregion
@@ -2842,11 +2841,11 @@ namespace sones.GraphQL
                 {
                     if (BNF_IndexTypeOpt.Rule == null)
                     {
-                        BNF_IndexTypeOpt.Rule = S_INDEXTYPE + ToTerm(idx.Name);
+                        BNF_IndexTypeOpt.Rule = S_INDEXTYPE + ToTerm(idx.IndexName);
                     }
                     else
                     {
-                        BNF_IndexTypeOpt.Rule |= S_INDEXTYPE + ToTerm(idx.Name);
+                        BNF_IndexTypeOpt.Rule |= S_INDEXTYPE + ToTerm(idx.IndexName);
                     }
                 }
             }

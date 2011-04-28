@@ -10,7 +10,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
     /// <summary>
     /// The Aggregate Count
     /// </summary>
-    public sealed class CountAggregate :IGQLAggregate
+    public sealed class CountAggregate :IGQLAggregate, IPluginable
     {
         #region constructor
 
@@ -51,6 +51,16 @@ namespace sones.Plugins.SonesGQL.Aggregates
         public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
             return new CountAggregate();
+        }
+
+        #endregion
+
+        #region IGQLAggregate Members
+
+
+        public string AggregateName
+        {
+            get { return "count"; }
         }
 
         #endregion

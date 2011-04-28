@@ -10,13 +10,14 @@ using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.Library.PropertyHyperGraph;
 using sones.Library.Arithmetics;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.Plugins.SonesGQL.Aggregates
 {
     /// <summary>
     /// The aggregate Avg
     /// </summary>
-    public sealed class AvgAggregate : IGQLAggregate
+    public sealed class AvgAggregate : IGQLAggregate, IPluginable
     {
         #region constructor
 
@@ -74,9 +75,18 @@ namespace sones.Plugins.SonesGQL.Aggregates
             get { return new Dictionary<string,Type>(); }
         }
 
-        public Library.VersionedPluginManager.IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
+        public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
             return new AvgAggregate();
+        }
+
+        #endregion
+
+        #region IGQLAggregate Members
+
+        public string AggregateName
+        {
+            get { return "avg"; }
         }
 
         #endregion

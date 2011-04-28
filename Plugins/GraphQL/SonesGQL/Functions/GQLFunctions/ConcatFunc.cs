@@ -7,10 +7,11 @@ using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB.TypeSystem;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.Plugins.SonesGQL.Functions
 {
-    public sealed class ConcatFunc : ABaseFunction
+    public sealed class ConcatFunc : ABaseFunction, IPluginable
     {
         public ConcatFunc()
         {
@@ -78,6 +79,11 @@ namespace sones.Plugins.SonesGQL.Functions
         public override Library.VersionedPluginManager.IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
             return new ConcatFunc();
+        }
+
+        public override string FunctionName
+        {
+            get { return "concat"; }
         }
     }
 }

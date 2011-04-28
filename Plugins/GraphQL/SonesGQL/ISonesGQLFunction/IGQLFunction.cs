@@ -33,7 +33,7 @@ namespace sones.Plugins.SonesGQL.Functions
     /// <summary>
     /// The interface for all GQL functions
     /// </summary>
-    public interface IGQLFunction : IPluginable
+    public interface IGQLFunction
     {
         ParameterValue GetParameter(Int32 elementAt);
 
@@ -44,5 +44,7 @@ namespace sones.Plugins.SonesGQL.Functions
         bool ValidateWorkingBase(Type myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
 
         Type GetReturnType(IAttributeDefinition myWorkingBase, IGraphDB myGraphDB, SecurityToken mySecurityToken, TransactionToken myTransactionToken);
+
+        String FunctionName { get; }
     }
 }

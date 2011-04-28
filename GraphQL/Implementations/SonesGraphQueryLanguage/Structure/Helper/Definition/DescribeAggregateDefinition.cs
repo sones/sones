@@ -10,6 +10,7 @@ using sones.GraphQL.Result;
 using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.Library.VersionedPluginManager;
 using System.Diagnostics;
 
 namespace sones.GraphQL.GQL.Structure.Helper.Definition
@@ -130,10 +131,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
             var _Aggregate = new Dictionary<String, Object>();
 
-            _Aggregate.Add("Aggregate", myAggregate.PluginName);
+            _Aggregate.Add("Aggregate", myAggregate.AggregateName);
             _Aggregate.Add("Type", myAggrName);
 
-            foreach (var parameter in myAggregate.SetableParameters)
+            foreach (var parameter in ((IPluginable)myAggregate).SetableParameters)
             {
                 _Aggregate.Add("SetableParameter Key ", parameter.Key);
                 _Aggregate.Add("SetableParameter Value ", parameter.Value);

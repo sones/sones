@@ -15,7 +15,7 @@ using ShortestPathAlgorithms.BreathFirstSearch;
 
 namespace ShortestPathAlgorithms
 {
-    public sealed class PathFunc : ABaseFunction
+    public sealed class PathFunc : ABaseFunction, IPluginable
     {
         #region constructor
 
@@ -145,6 +145,11 @@ namespace ShortestPathAlgorithms
         public override IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
             return new PathFunc();
+        }
+
+        public override string FunctionName
+        {
+            get { return "path"; }
         }
     }
 }

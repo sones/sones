@@ -27,7 +27,11 @@ namespace sones.Plugins.Index
 
     #endregion
 
-    public interface ISonesIndex : IPluginable
+    public interface ISonesIndex
     {
+        /// <summary>
+        /// The name of the index
+        /// </summary>
+        String IndexName { get; }
     }
 }

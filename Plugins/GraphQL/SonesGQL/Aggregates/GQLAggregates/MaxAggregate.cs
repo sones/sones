@@ -15,7 +15,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
     /// <summary>
     /// The aggregate Max
     /// </summary>
-    public sealed class MaxAggregate : IGQLAggregate
+    public sealed class MaxAggregate : IGQLAggregate, IPluginable
     {
         #region constructor
 
@@ -70,6 +70,16 @@ namespace sones.Plugins.SonesGQL.Aggregates
         public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
         {
             return new MaxAggregate();
+        }
+
+        #endregion
+
+        #region IGQLAggregate Members
+
+
+        public string AggregateName
+        {
+            get { return "max"; }
         }
 
         #endregion

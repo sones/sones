@@ -12,6 +12,7 @@ using sones.Plugins.SonesGQL.Functions;
 using sones.GraphQL.GQL.ErrorHandling;
 using sones.Library.ErrorHandling;
 using System.Diagnostics;
+using sones.Library.VersionedPluginManager;
 
 namespace sones.GraphQL.GQL.Structure.Helper.Definition
 {
@@ -125,10 +126,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         {
             var _Function = new Dictionary<String, Object>();
 
-            _Function.Add("Aggregate", myFunc.PluginName);
+            _Function.Add("Function", myFunc.FunctionName);
             _Function.Add("Type", myFuncName);
 
-            foreach (var parameter in myFunc.SetableParameters)
+            foreach (var parameter in ((IPluginable)myFunc).SetableParameters)
             {
                 _Function.Add("SetableParameter Key ", parameter.Key);
                 _Function.Add("SetableParameter Value ", parameter.Value);

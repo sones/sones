@@ -117,11 +117,11 @@ namespace sones.GraphQL.GQL.Structure.Nodes.Misc
 
             if (this.Function.GetParameters().Count != Parameters.Count && (!containsVariableNumOfParams))
             {
-                throw new FunctionParameterCountMismatchException(this.Function.PluginName, this.Function.GetParameters().Count, Parameters.Count);
+                throw new FunctionParameterCountMismatchException(this.Function.FunctionName, this.Function.GetParameters().Count, Parameters.Count);
             }
             else if (containsVariableNumOfParams && Parameters.Count == 0)
             {
-                throw new FunctionParameterCountMismatchException(this.Function.PluginName, 1, Parameters.Count);
+                throw new FunctionParameterCountMismatchException(this.Function.FunctionName, 1, Parameters.Count);
             }
 
             #endregion

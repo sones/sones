@@ -20,7 +20,8 @@ namespace sones.Plugins.Index
     /// </summary>
     /// <typeparam name="TKey">The type of the index key.</typeparam>
     /// <typeparam name="TValue">The type of the index values.</typeparam>
-    public class MultipleValueIndex<TKey, TValue> : IMultipleValueIndex<TKey, TValue> where TKey : IComparable
+    public class MultipleValueIndex<TKey, TValue> : IMultipleValueIndex<TKey, TValue> , IPluginable
+        where TKey : IComparable
     {
 
         #region Data
@@ -284,6 +285,15 @@ namespace sones.Plugins.Index
             object result = typeof(MultipleValueIndex<TKey, TValue>).GetConstructor(Type.EmptyTypes).Invoke(new object[0]);
 
             return (IPluginable)result;
+        }
+
+        #endregion
+
+        #region ISonesIndex Members
+
+        public string IndexName
+        {
+            get { return "multiplevalueindex"; }
         }
 
         #endregion
