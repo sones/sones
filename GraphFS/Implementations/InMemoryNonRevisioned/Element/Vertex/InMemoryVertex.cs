@@ -22,7 +22,7 @@ namespace sones.GraphFS.Element.Vertex
         /// <summary>
         /// The binary properties of this vertex
         /// </summary>
-        private readonly Dictionary<Int64, Stream> _binaryProperties;
+        private readonly IDictionary<Int64, Stream> _binaryProperties;
 
         /// <summary>
         /// The edition of the vertex
@@ -33,12 +33,12 @@ namespace sones.GraphFS.Element.Vertex
         /// The incoming edges of the vertex
         /// (VertexTypeID of the vertex type that points to this vertex, PropertyID of the edge that points to this vertex, Incoming vertices)
         /// </summary>
-        public Dictionary<Int64, Dictionary<Int64, IncomingEdgeCollection>> IncomingEdges;
+        public IDictionary<Int64, Dictionary<Int64, IncomingEdgeCollection>> IncomingEdges;
 
         /// <summary>
         /// The outgoing edges of the vertex
         /// </summary>
-        private readonly Dictionary<Int64, IEdge> _outgoingEdges;
+        private readonly IDictionary<Int64, IEdge> _outgoingEdges;
 
         /// <summary>
         /// The id of the vertex
@@ -78,13 +78,13 @@ namespace sones.GraphFS.Element.Vertex
             Int64 myVertexTypeID,
             Int64 myVertexRevisionID,
             String myEdition,
-            Dictionary<long, Stream> myBinaryProperties,
-            Dictionary<long, IEdge> myOutgoingEdges,
+            IDictionary<long, Stream> myBinaryProperties,
+            IDictionary<long, IEdge> myOutgoingEdges,
             String myComment,
             long myCreationDate,
             long myModificationDate,
-            Dictionary<Int64, IComparable> myStructuredProperties,
-            Dictionary<String, Object> myUnstructuredProperties)
+            IDictionary<Int64, IComparable> myStructuredProperties,
+            IDictionary<String, Object> myUnstructuredProperties)
             :base(myComment, myCreationDate, myModificationDate, myStructuredProperties, myUnstructuredProperties)
         {
             _vertexID = myVertexID;

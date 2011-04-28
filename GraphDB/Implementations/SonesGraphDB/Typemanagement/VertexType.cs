@@ -198,8 +198,11 @@ namespace sones.GraphDB.TypeManagement
             get { return _parent.Value; }
         }
 
-        IEnumerable<IVertexType> IVertexType.GetChildVertexTypes(bool myRecursive = true)
+        IEnumerable<IVertexType> IVertexType.GetChildVertexTypes(bool myRecursive = true, bool myIncludeSelf = false)
         {
+            if (myIncludeSelf)
+                yield return this;
+
             foreach (var aChildVertexType in _childs.Value)
             {
                 yield return aChildVertexType;
@@ -725,8 +728,8 @@ namespace sones.GraphDB.TypeManagement
             return new UniqueDefinition
             {
                 DefiningVertexType = this,
-                ID = myIndexDefinition.ID,
                 UniquePropertyDefinitions = myIndexDefinition.IndexedProperties,
+                CorrespondingIndex = myIndexDefinition,
             };
         }
 

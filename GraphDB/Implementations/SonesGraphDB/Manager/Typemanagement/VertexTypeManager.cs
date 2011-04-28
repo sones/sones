@@ -905,6 +905,8 @@ namespace sones.GraphDB.Manager.TypeManagement
 
             #endregion
 
+            #region Add Indices
+
             var uniqueIdx = _indexManager.GetBestMatchingIndexName(true, false, false);
             var indexIdx =  _indexManager.GetBestMatchingIndexName(false, false, false);
 
@@ -961,6 +963,8 @@ namespace sones.GraphDB.Manager.TypeManagement
                 #endregion
 
             }
+
+            #endregion
 
             return result;
         }

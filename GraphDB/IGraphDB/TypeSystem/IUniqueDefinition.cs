@@ -14,13 +14,13 @@ namespace sones.GraphDB.TypeSystem
         IEnumerable<IPropertyDefinition> UniquePropertyDefinitions { get; }
 
         /// <summary>
-        /// The ID of the index that guides the constraint.
-        /// </summary>
-        long ID { get; }
-
-        /// <summary>
         /// The vertex type that defines the uniqueness.
         /// </summary>
         IVertexType DefiningVertexType { get; }
+
+        /// <summary>
+        /// The index definition, that forces the unique constraint.
+        /// </summary>
+        IIndexDefinition CorrespondingIndex { get; }
     }
 }

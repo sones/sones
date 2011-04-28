@@ -24,8 +24,9 @@ namespace sones.GraphDB.TypeSystem
         /// Get all child vertex types
         /// </summary>
         /// <param name="myRecursive">get child vertex types recursive?</param>
+        /// <param name="myIncludeSelf">If true, this vertex type will be included to the result list.</param>
         /// <returns>An enumerable of child vertex types, never <c>NULL</c>.</returns>
-        IEnumerable<IVertexType> GetChildVertexTypes(bool myRecursive = true);
+        IEnumerable<IVertexType> GetChildVertexTypes(bool myRecursive = true, bool myIncludeSelf = false);
 
         #endregion
 

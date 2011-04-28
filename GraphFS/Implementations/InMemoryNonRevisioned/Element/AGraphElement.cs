@@ -29,12 +29,12 @@ namespace sones.GraphFS.Element
         /// <summary>
         /// The structured properties
         /// </summary>
-        protected readonly Dictionary<Int64, IComparable> _structuredProperties;
+        protected readonly IDictionary<Int64, IComparable> _structuredProperties;
 
         /// <summary>
         /// The unstructured properties
         /// </summary>
-        protected readonly Dictionary<String, Object> _unstructuredProperties;
+        protected readonly IDictionary<String, Object> _unstructuredProperties;
 
         #endregion
 
@@ -52,8 +52,8 @@ namespace sones.GraphFS.Element
             String myComment,
             long myCreationDate,
             long myModificationDate,
-            Dictionary<Int64, IComparable> myStructuredProperties,
-            Dictionary<String, Object> myUnstructuredProperties)
+            IDictionary<Int64, IComparable> myStructuredProperties,
+            IDictionary<String, Object> myUnstructuredProperties)
         {
             _comment = myComment;
             _creationDate = myCreationDate;

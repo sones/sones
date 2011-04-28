@@ -16,6 +16,8 @@ using sones.GraphDB.Request;
 using sones.GraphDB.ErrorHandling;
 using sones.GraphDB.TypeSystem;
 using sones.Plugins.Index.Interfaces;
+using sones.Library.LanguageExtensions;
+using sones.GraphDB.Expression.Tree.Literals;
 
 namespace sones.GraphDB.Manager.Vertex
 {
@@ -127,10 +129,6 @@ namespace sones.GraphDB.Manager.Vertex
 
             if (myInsertDefinition.BinaryProperties != null)
                 CheckAddBinaryProperties(myInsertDefinition, vertexType);
-
-            
-            
-
         }
 
         private void CheckMandatoryConstraint(RequestInsertVertex myInsertDefinition, IEnumerable<IPropertyDefinition> myMandatoryProperties)
@@ -205,20 +203,75 @@ namespace sones.GraphDB.Manager.Vertex
         {
             IVertexType vertexType = GetVertexType(myInsertDefinition.VertexTypeName, myTransactionToken, mySecurityToken);
 
+            //we check unique constraints here 
             foreach (var unique in vertexType.GetUniqueDefinitions(true))
             {
-                var key = CreateIndexEntry(unique, myInsertDefinition.StructuredProperties);
-                var index = _indexManager.GetIndex(unique.ID, mySecurityToken, myTransactionToken) as ISingleValueIndex<IComparable, Int64>;
+                var key = CreateIndexEntry(unique.CorrespondingIndex.IndexedProperties, myInsertDefinition.StructuredProperties);
+                
+                var definingVertexType = unique.DefiningVertexType;
+
+                foreach (var vtype in definingVertexType.GetChildVertexTypes(true, true))
+                {
+                    var index = _indexManager.GetIndex(vtype, unique.CorrespondingIndex.IndexedProperties, mySecurityToken, myTransactionToken);
+
+                    if (index.ContainsKey(key))
+                        throw new IndexUniqueConstrainViolationException(myInsertDefinition.VertexTypeName, unique.CorrespondingIndex.Name);
+                }
             }
-                
-                
+
+            var result = _vertexStore.AddVertex(mySecurityToken, myTransactionToken, RequestInsertVertexToVertexAddDefinition(myInsertDefinition, vertexType));
+
+
+            foreach (var indexDef in vertexType.GetIndexDefinitions(false))
+            {
+                var key = CreateIndexEntry(indexDef.IndexedProperties, myInsertDefinition.StructuredProperties);
+                var index = _indexManager.GetIndex(vertexType, indexDef.IndexedProperties, mySecurityToken, myTransactionToken);
+
+                if (index is ISingleValueIndex<IComparable, Int64>)
+                {
+                    (index as ISingleValueIndex<IComparable, Int64>).Add(key, result.VertexID);
+                } 
+                else if (index is IMultipleValueIndex<IComparable, Int64>)
+                {
+                    //Perf: We do not need to add a set of values. Initializing a HashSet is to expensive for this operation. 
+                    //TODO: Refactor IIndex structure
+                    (index as IMultipleValueIndex<IComparable, Int64>).Add(key, new HashSet<Int64>{ result.VertexID });
+                } 
+                else
+                {
+                    throw new NotImplementedException("Indices other than single or multiple value indices are not supported yet.");
+                }
+            }
+
 
             throw new NotImplementedException();
         }
 
-        private IComparable CreateIndexEntry(IUniqueDefinition unique, IEnumerable<KeyValuePair<string, IComparable>> iEnumerable)
+        private VertexAddDefinition RequestInsertVertexToVertexAddDefinition(RequestInsertVertex myInsertDefinition, IVertexType myVertexType)
         {
-            throw new NotImplementedException();
+            long date = DateTime.UtcNow.ToBinary();
+            return new VertexAddDefinition(0L, myVertexType.ID, myInsertDefinition.Edition, null, null, null, myInsertDefinition.Comment, date, date, null, null);
+        }
+
+        private IComparable CreateIndexEntry(IList<IPropertyDefinition> myIndexProps, IDictionary<string, IComparable> myProperties)
+        {
+
+            if (myIndexProps.Count > 1)
+            {
+                List<IComparable> values = new List<IComparable>(myIndexProps.Count);
+                for (int i = 0; i < myIndexProps.Count; i++)
+                {
+                    values[i] = myProperties[myIndexProps[i].Name];
+                }
+                
+                //using ListCollectionWrapper from Expressions, maybe this class should go to Lib
+                return new ListCollectionWrapper(values);
+            }
+            else if (myIndexProps.Count == 1)
+            {
+                return myProperties[myIndexProps[0].Name];
+            }
+            throw new ArgumentException("A unique definition must contain at least one element.");
         }
 
         public IVertex GetSingleVertex(IExpression myExpression, TransactionToken myTransactionToken, SecurityToken mySecurityToken)

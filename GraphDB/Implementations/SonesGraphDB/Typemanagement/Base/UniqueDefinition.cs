@@ -12,9 +12,9 @@ namespace sones.GraphDB.TypeManagement
 
         public IEnumerable<IPropertyDefinition> UniquePropertyDefinitions { get; internal set; }
 
-        public long ID { get; internal set; }
-
         public IVertexType DefiningVertexType { get; internal set; }
+
+        public IIndexDefinition CorrespondingIndex { get; internal set; }
 
         #endregion
     }

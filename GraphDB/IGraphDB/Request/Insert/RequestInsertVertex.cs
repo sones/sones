@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 
+
 namespace sones.GraphDB.Request
 {
     /// <summary>
@@ -17,21 +18,32 @@ namespace sones.GraphDB.Request
         public readonly String VertexTypeName;
 
         /// <summary>
+        /// The comment for the new vertex.
+        /// </summary>
+        public string Comment { get; private set; }
+
+        /// <summary>
+        /// The edition of this vertex.
+        /// </summary>
+        public string Edition { get; private set; }
+
+        //TODO: make dictionaries readonly
+        /// <summary>
         /// The well defined properties of a vertex.
         /// </summary>
-        public IEnumerable<KeyValuePair<String, IComparable>> StructuredProperties { get { return _structured; } }
+        public IDictionary<String, IComparable> StructuredProperties { get { return _structured; } }
         private Dictionary<string, IComparable> _structured;
 
         /// <summary>
         /// The unstructured part of a vertex.
         /// </summary>
-        public IEnumerable<KeyValuePair<String, Object>> UnstructuredProperties { get { return _unstructured; } }
+        public IDictionary<String, Object> UnstructuredProperties { get { return _unstructured; } }
         private Dictionary<string, object> _unstructured;
 
         /// <summary>
         /// The binaries of a vertex.
         /// </summary>
-        public IEnumerable<KeyValuePair<String, Stream>> BinaryProperties { get { return _binaries; } }
+        public IDictionary<String, Stream> BinaryProperties { get { return _binaries; } }
         private Dictionary<string, Stream> _binaries;
 
         /// <summary>
@@ -43,6 +55,30 @@ namespace sones.GraphDB.Request
         #endregion
 
         #region Fluent interface
+
+        /// <summary>
+        /// Sets the comment for this vertex.
+        /// </summary>
+        /// <param name="myComment">The comment for this vertex.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestInsertVertex SetComment(String myComment)
+        {
+            Comment = myComment;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the edition for this vertex.
+        /// </summary>
+        /// <param name="myEdition">The edtion for this vertex.</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public RequestInsertVertex SetEdition(String myEdition)
+        {
+            Edition = myEdition;
+
+            return this;
+        }
 
         /// <summary>
         /// Adds a new structured property
@@ -137,6 +173,5 @@ namespace sones.GraphDB.Request
         }
 
         #endregion
-
     }
 }

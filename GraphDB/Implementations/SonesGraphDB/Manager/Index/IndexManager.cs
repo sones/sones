@@ -57,9 +57,10 @@ namespace sones.GraphDB.Manager.Index
 
         #endregion
 
+
         #region IIndexManager Members
 
-        public IIndexDefinition CreateIndex(IndexPredefinition myIndexDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myIsUserDefined)
+        public IIndexDefinition CreateIndex(IndexPredefinition myIndexDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myIsUserDefined = true)
         {
             throw new NotImplementedException();
         }
@@ -74,12 +75,7 @@ namespace sones.GraphDB.Manager.Index
             throw new NotImplementedException();
         }
 
-        public IEnumerable<IIndex<IComparable, long>> GetIndices(IVertexType myVertexType, IList<IPropertyDefinition> myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IIndex<IComparable, Int64> GetIndex(long myIndexID, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public IIndex<IComparable, long> GetIndex(IVertexType myVertexType, IList<IPropertyDefinition> myPropertyDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }
