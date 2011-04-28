@@ -533,7 +533,20 @@ namespace sones.GraphDB.Manager.TypeManagement
                     if (unknown.Multiplicity != null)
                         throw new Exception("A multiplicity is not allowed on an binary property.");
 
-                    myVertexTypeDefinition.AddAttribute(new BinaryPropertyPredefinition(unknown.AttributeName).SetComment(unknown.Comment));
+                    var prop = new BinaryPropertyPredefinition(unknown.AttributeName)
+                                   .SetComment(unknown.Comment);
+
+                    myVertexTypeDefinition.AddBinaryProperty(prop);
+                }
+                else if (IsBaseType(unknown.AttributeType))
+                {
+
+
+                    myVertexTypeDefinition.AddAttribute(
+                        new PropertyPredefinition(unknown.AttributeName)
+                        .SetDefaultValue(unknown.DefaultValue)
+                        .SetAttributeType(unknown.AttributeType)
+                        .SetComment(unknown.Comment));
                 }
             }
             myVertexTypeDefinition.ResetUnknown();
@@ -602,7 +615,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 throw new EmptyPropertyTypeException(myVertexTypeDefinition, myProperty.AttributeName);
             }
 
-            if (!IsBaseType(myProperty))
+            if (!IsBaseType(myProperty.AttributeType))
             {
                 //it is not one of the base types
                 //TODO: check if it is a user defined data type
@@ -615,10 +628,10 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         /// <param name="myProperty">The property to be checked.</param>
         /// <returns>True, if the property has a type that is in the list of supported c# types, otherwise false.</returns>
-        private static bool IsBaseType(PropertyPredefinition myProperty)
+        private static bool IsBaseType(String myType)
         {
             BasicTypes result;
-            return Enum.TryParse(myProperty.AttributeType, false, out result);
+            return Enum.TryParse(myType, false, out result);
         }
 
         /// <summary>

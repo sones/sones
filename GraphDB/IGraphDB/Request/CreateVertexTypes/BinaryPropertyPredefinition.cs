@@ -8,6 +8,8 @@ namespace sones.GraphDB.Request
     /// </summary>
     public sealed class BinaryPropertyPredefinition: AttributePredefinition
     {
+        public const string TypeName = "Stream";
+
         #region Constructor
 
         /// <summary>
@@ -16,17 +18,16 @@ namespace sones.GraphDB.Request
         public BinaryPropertyPredefinition(String myPropertyName)
             : base(myPropertyName)
         {
-            base.SetAttributeType("Stream");
-        }
-
-        /// <remarks>This method will be ignored.</remarks>
-        public override AttributePredefinition SetAttributeType(string myAttributeType)
-        {
-            return this;
+            AttributeType = TypeName;
         }
 
         #endregion
 
+        public BinaryPropertyPredefinition SetComment(String myComment)
+        {
+            Comment = myComment;
 
+            return this;
+        }
     }
 }

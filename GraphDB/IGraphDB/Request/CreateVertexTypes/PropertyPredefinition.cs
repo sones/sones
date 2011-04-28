@@ -89,5 +89,27 @@ namespace sones.GraphDB.Request
             return this;
         }
 
+
+        public PropertyPredefinition SetDefaultValue(string myDefaultValue)
+        {
+            DefaultValue = myDefaultValue;
+            return this;
+        }
+
+        public PropertyPredefinition SetComment(String myComment)
+        {
+            Comment = myComment;
+
+            return this;
+        }
+
+        public PropertyPredefinition SetAttributeType(String myTypeName)
+        {
+            AttributeType = myTypeName;
+
+            return this;
+        }
+
+
     }
 }

@@ -110,10 +110,25 @@ namespace sones.GraphDB.Request
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public OutgoingEdgePredefinition SetAttributeType(VertexTypePredefinition myTargetVertexType)
         {
-            base.SetAttributeType(myTargetVertexType.VertexTypeName);
+            AttributeType = myTargetVertexType.VertexTypeName;
 
             return this;
         }
+
+        public OutgoingEdgePredefinition SetComment(String myComment)
+        {
+            Comment = myComment;
+
+            return this;
+        }
+
+        public OutgoingEdgePredefinition SetAttributeType(String myTypeName)
+        {
+            AttributeType = myTypeName;
+
+            return this;
+        }
+
 
         #endregion
 

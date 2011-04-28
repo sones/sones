@@ -10,7 +10,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// 
         /// </summary>
-        public String AttributeType { get; private set; }
+        public String AttributeType { get; protected set; }
 
         /// <summary>
         /// 
@@ -20,7 +20,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// 
         /// </summary>
-        public String Comment { get; private set; }
+        public String Comment { get; protected set; }
 
         /// <summary>
         /// 
@@ -30,20 +30,5 @@ namespace sones.GraphDB.Request
         {
             AttributeName = myAttributeName;
         }
-
-        public virtual AttributePredefinition SetAttributeType(String myAttributeType)
-        {
-            AttributeType = myAttributeType;
-
-            return this;
-        }
-
-        public AttributePredefinition SetComment(String myComment)
-        {
-            Comment = myComment;
-
-            return this;
-        }
-
     }
 }
