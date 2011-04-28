@@ -32,28 +32,12 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
         private Int32 MaximumAsyncBufferSize = 1024*1024*10;    // 10 MB
         private WriteThread WriteThreadInstance = null;        
 
-        #region IPluginable
-        public string PluginName
+        public DrainPipeLog()
         {
-            get { return "sones.drainpipelog"; }
+
         }
 
-        public Dictionary<string, Type> SetableParameters
-        {
-            get
-            {
-                return new Dictionary<string, Type> 
-                { 
-                    { "AsynchronousMode", typeof(Boolean) },
-                    { "MaximumAsyncBufferSize", typeof(Int32) },
-                    { "AppendLogPathAndName", typeof(String) },
-                    { "CreateNew", typeof(Boolean) },
-                    { "FlushOnWrite", typeof(Boolean) },                    
-                };
-            }
-        }
-
-        public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
+        public DrainPipeLog(Dictionary<string, object> myParameters = null)
         {
             #region handle parameters
             String AppendLogPathAndName = "";
@@ -109,18 +93,44 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
 
             #endregion
 
-            _AppendLog = new AppendLog(AppendLogPathAndName,CreateNew,FlushOnWrite);
+            _AppendLog = new AppendLog(AppendLogPathAndName, CreateNew, FlushOnWrite);
             WriteThreadInstance = new WriteThread(_AppendLog);
 
-            #region Handle Asynchronous Mode            
+            #region Handle Asynchronous Mode
             if (AsynchronousMode)
-            {                
+            {
                 Async_WriteThread = new Thread(new ThreadStart(WriteThreadInstance.Run));
                 Async_WriteThread.Start();
             }
             #endregion
+        }
+        
+        #region IPluginable
+        public string PluginName
+        {
+            get { return "sones.drainpipelog"; }
+        }
 
-            return new DrainPipeLog();
+        public Dictionary<string, Type> SetableParameters
+        {
+            get
+            {
+                return new Dictionary<string, Type> 
+                { 
+                    { "AsynchronousMode", typeof(Boolean) },
+                    { "MaximumAsyncBufferSize", typeof(Int32) },
+                    { "AppendLogPathAndName", typeof(String) },
+                    { "CreateNew", typeof(Boolean) },
+                    { "FlushOnWrite", typeof(Boolean) },                    
+                };
+            }
+        }
+
+        public IPluginable InitializePlugin(Dictionary<string, object> myParameters = null)
+        {
+            object result = typeof(DrainPipeLog).
+                GetConstructor(new Type[] { typeof(Dictionary<string, object>) }).Invoke(new object[] { myParameters });
+            return (IPluginable)result;
         }
         #endregion
         
@@ -155,13 +165,27 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
             System.Runtime.Serialization.Formatters.Binary.BinaryFormatter Formatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 
             #region Generate byte represenation of query
-            Formatter.Serialize(stream, mySecurityToken);
+            if (mySecurityToken != null)
+                Formatter.Serialize(stream, mySecurityToken);
+            else
+                Formatter.Serialize(stream, new SecurityToken());
+
             Part1 = stream.ToArray();
-            Formatter.Serialize(stream, myTransactionToken);
+            if (myTransactionToken != null)
+                Formatter.Serialize(stream, myTransactionToken);
+            else
+                Formatter.Serialize(stream, new TransactionToken(long.MaxValue));
+
             Part2 = stream.ToArray();
-            Formatter.Serialize(stream, myQueryString);
+            if (myQueryString != null)
+                Formatter.Serialize(stream, myQueryString);
+            else
+                Formatter.Serialize(stream, "");
             Part3 = stream.ToArray();
-            Formatter.Serialize(stream, myQueryLanguageName);
+            if (myQueryLanguageName != null)
+                Formatter.Serialize(stream, myQueryLanguageName);
+            else
+                Formatter.Serialize(stream, "");
             Part4 = stream.ToArray();
             #endregion
 

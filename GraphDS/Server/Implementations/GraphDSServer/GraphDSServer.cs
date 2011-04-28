@@ -70,7 +70,7 @@ namespace sones.GraphDSServer
         /// </summary>
         private readonly Dictionary<String, IGraphQL>   _QueryLanguages;
         private readonly Dictionary<String, ISonesRESTService> _sonesRESTServices;
-        private readonly Dictionary<String, IDrainPipe> _DrainPipes;
+        private readonly List<KeyValuePair<String,IDrainPipe>> _DrainPipes;
 
         #endregion
 
@@ -90,7 +90,7 @@ namespace sones.GraphDSServer
             _ID = new Guid();
             _QueryLanguages = new Dictionary<string, IGraphQL>();
             _sonesRESTServices = new Dictionary<string, ISonesRESTService>();
-            _DrainPipes = new Dictionary<string, IDrainPipe>();
+            _DrainPipes = new List<KeyValuePair<String, IDrainPipe>>();
 
             #region Load Configured Plugins
             GraphDSPlugins _plugins = Plugins;
@@ -168,7 +168,7 @@ namespace sones.GraphDSServer
                     // add!
                     if (loaded != null)
                     {
-                        _DrainPipes.Add(_pd.NameOfPlugin, loaded);
+                        _DrainPipes.Add(new KeyValuePair<string,IDrainPipe>(_pd.NameOfPlugin, loaded));
                     }
                     //                    else
                     //                        System.Diagnostics.Debug.WriteLine("Could not load plugin " + _pd.NameOfPlugin);
@@ -272,9 +272,9 @@ namespace sones.GraphDSServer
             if (_QueryLanguages.TryGetValue(myQueryLanguageName, out queryLanguage))
             {
                 // drain every query
-                foreach (IDrainPipe _drainpipe in _DrainPipes.Values)
+                foreach (KeyValuePair<String,IDrainPipe> _drainpipe in _DrainPipes)
                 {
-                    _drainpipe.Query(mySecurityToken, myTransactionToken, myQueryLanguageName, myQueryLanguageName);
+                    _drainpipe.Value.Query(mySecurityToken, myTransactionToken, myQueryLanguageName, myQueryLanguageName);
                 }
 
                 return queryLanguage.Query(mySecurityToken, myTransactionToken, myQueryString);
