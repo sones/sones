@@ -75,8 +75,7 @@ namespace sones.Plugins.GraphDS.RESTService
 
             var _ContentType = HTTPServer.HTTPContext.RequestHeader.GetBestMatchingAcceptHeader(GraphDSREST_Constants._HTML, GraphDSREST_Constants._JSON, GraphDSREST_Constants._XML, GraphDSREST_Constants._GEXF, GraphDSREST_Constants._TEXT);
             
-            //DEBRIS
-            _ContentType.MediaType = "application/xml";
+           
             IOInterface plugin = null;
 
 
@@ -133,36 +132,24 @@ namespace sones.Plugins.GraphDS.RESTService
         public QueryResult ExecuteGQL(String myQuery)
         {
             QueryResult _QueryResult = null;
+            try
+            {
+                var _StopWatch = new Stopwatch();
 
-            #region DEBRIS to be deleted
-            var _StopWatch = new Stopwatch();
-            _StopWatch.Start();
-            _QueryResult = GenerateQueryResult();
-            GenerateResultOutput(_QueryResult, _StopWatch);
-            #endregion
+                _StopWatch.Start();
+                _QueryResult = _GraphDS.Query(null, null, myQuery, "");
+                _StopWatch.Stop();
 
-            #region to be used
-            //
+                GenerateResultOutput(_QueryResult, _StopWatch);
 
-            //try
-            //{
-            //    var _StopWatch = new Stopwatch();
+                return _QueryResult;
 
-            //    _StopWatch.Start();
-            //    _QueryResult = _GraphDS.Query(null, null, myQuery, "");
-            //    _StopWatch.Stop();
-
-            //    GenerateResultOutput(_QueryResult, _StopWatch);
-
-            //    return _QueryResult;
-
-            //}
-            //catch (Exception ex)
-            //{
-            //    _ErrorMsg.Error400_BadRequest(ex.Message + ex.StackTrace);
-            //}
-            #endregion
-
+            }
+            catch (Exception ex)
+            {
+                _ErrorMsg.Error400_BadRequest(ex.Message + ex.StackTrace);
+            }
+           
 
             return _QueryResult;
         }
@@ -282,64 +269,7 @@ namespace sones.Plugins.GraphDS.RESTService
         }
 
         #endregion
-
-        #region DEBRIS test method to be deleted
-        private static QueryResult GenerateQueryResult()
-        {
-            var propertyLeelaList = new Dictionary<String, Object>();
-            var someBytes = new byte[12];
-            var random = new Random();
-            random.NextBytes(someBytes);
-
-            propertyLeelaList.Add("Name", "Leela");
-            propertyLeelaList.Add("Age", 27);
-            propertyLeelaList.Add("Picture", new MemoryStream(someBytes));
-            propertyLeelaList.Add("Address", "@home");
-            propertyLeelaList.Add("VertexID", 121121);
-
-            var friendsList = new Dictionary<String, IEdgeView>();
-
-            var vertexLeela = new VertexView(propertyLeelaList, friendsList);
-
-            var propertyFreyList = new Dictionary<String, Object>();
-
-            propertyFreyList.Add("Name", "Frey");
-            propertyFreyList.Add("Age", 26);
-            propertyFreyList.Add("Address", "blue planet");
-
-            var propertyBenderList = new Dictionary<String, Object>();
-
-            propertyBenderList.Add("Name", "Bender");
-            propertyBenderList.Add("Age", 23);
-            propertyBenderList.Add("Address", "red planet");
-
-            var vertexFrey = new VertexView(propertyFreyList, new Dictionary<string, IEdgeView>());
-            var vertexBender = new VertexView(propertyBenderList, new Dictionary<string, IEdgeView>());
-
-            var edgeProp = new Dictionary<String, Object>();
-            edgeProp.Add("Weight", 34);
-
-            var edgeViewFriends = new EdgeView(edgeProp, new List<IVertexView>() { vertexFrey, vertexBender });
-
-            var propertyListZoidBerg = new Dictionary<String, Object>();
-            propertyListZoidBerg.Add("Name", "Zoidberg");
-
-            var vertexZoidberg = new VertexView(propertyListZoidBerg, new Dictionary<string, IEdgeView>());
-            //var vertexNothing  = new VertexView(propertyListZoidBerg, new Dictionary<string, IEdgeView>());
-
-            var edgeViewEnemys = new EdgeView(new Dictionary<string, object>(), new List<IVertexView>() { vertexZoidberg });
-
-            friendsList.Add("Friends", edgeViewFriends);
-            friendsList.Add("Enemys", edgeViewEnemys);
-
-
-            var retVal = new QueryResult("From User select *", "GraphQL", 20, ResultType.Successful,
-                                         new List<IVertexView>() { vertexBender, vertexFrey, vertexLeela });
-
-            return retVal;
-        }
-        #endregion
-
+                
     }
 
 }
