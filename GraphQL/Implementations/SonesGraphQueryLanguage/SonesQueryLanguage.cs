@@ -248,6 +248,11 @@ namespace sones.GraphQL
             {
                 aggregates.Add(_GQLPluginManager.GetAndInitializePlugin<IGQLAggregate>(plugin));
             }
+
+            if (aggregates.Count == 0)
+            {
+                throw new GQLGrammarSetExtandableMemberException(typeof(IGQLAggregate), "There is no plugin found to set in GQL grammar.");
+            }
             myGQLGrammar.SetAggregates(aggregates);
 
             List<ABaseFunction> functions = new List<ABaseFunction>();
@@ -255,12 +260,38 @@ namespace sones.GraphQL
             {
                 functions.Add(_GQLPluginManager.GetAndInitializePlugin<IGQLFunction>(plugin) as ABaseFunction);
             }
+
+            if (functions.Count == 0)
+            {
+                throw new GQLGrammarSetExtandableMemberException(typeof(IGQLFunction), "There is no plugin found to set in GQL grammar.");
+            }
             myGQLGrammar.SetFunctions(functions);
 
+            bool foundAtLeastOneValidIndex = false;
+
             List<IIndex<IComparable, Int64>> indices = new List<IIndex<IComparable, Int64>>();
-            foreach (var plugin in _GQLPluginManager.GetPluginsForType<IIndex<IComparable, Int64>>())
+            foreach(var plugin in _GQLPluginManager.GetPluginsForType<ISingleValueIndex<IComparable, Int64>>())
             {
-                indices.Add(_GQLPluginManager.GetAndInitializePlugin<IIndex<IComparable, Int64>>(plugin));
+                indices.Add((IIndex<IComparable, Int64>)_GQLPluginManager.GetAndInitializePlugin<ISingleValueIndex<IComparable, Int64>>(plugin));
+
+                foundAtLeastOneValidIndex = true;
+            }
+
+            foreach(var plugin in _GQLPluginManager.GetPluginsForType<IMultipleValueIndex<IComparable, Int64>>())
+            {
+                indices.Add((IIndex<IComparable, Int64>)_GQLPluginManager.GetAndInitializePlugin<IMultipleValueIndex<IComparable, Int64>>(plugin));
+
+                foundAtLeastOneValidIndex = true;
+            }
+
+            foreach (var plugin in _GQLPluginManager.GetPluginsForType<IVersionedIndex<IComparable, Int64, Int64>>())
+            {
+                indices.Add((IIndex<IComparable, Int64>)_GQLPluginManager.GetAndInitializePlugin<IVersionedIndex<IComparable, Int64, Int64>>(plugin));
+            }
+
+            if (!foundAtLeastOneValidIndex)
+            {
+                throw new GQLGrammarSetExtandableMemberException(typeof(IIndex<IComparable, Int64>), "There is no valid index plugin found to set in GQL grammar. Expected at least SingleValueIndex or MultiValueIndex");
             }
             myGQLGrammar.SetIndices(indices);
 
@@ -268,6 +299,11 @@ namespace sones.GraphQL
             foreach (var plugin in _GQLPluginManager.GetPluginsForType<IGraphDBImport>())
             {
                 importer.Add(_GQLPluginManager.GetAndInitializePlugin<IGraphDBImport>(plugin));
+            }
+
+            if (importer.Count == 0)
+            {
+                throw new GQLGrammarSetExtandableMemberException(typeof(IGraphDBImport), "There is no plugin found to set in GQL grammar.");
             }
             myGQLGrammar.SetGraphDBImporter(importer);
         }
