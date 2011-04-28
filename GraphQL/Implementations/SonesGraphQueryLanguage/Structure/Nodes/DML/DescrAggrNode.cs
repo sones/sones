@@ -8,6 +8,9 @@ using sones.GraphQL.Result;
 
 namespace sones.GraphQL.Structure.Nodes.DML
 {
+    /// <summary>
+    /// Node to get aggregate description
+    /// </summary>
     public sealed class DescrAggrNode : ADescrNode, IAstNodeInit
     {
         public DescrAggrNode()

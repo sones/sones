@@ -6,6 +6,9 @@ using sones.GraphQL.GQL.Structure.Helper.Definition;
 
 namespace sones.GraphQL.Structure.Nodes.DML
 {
+    /// <summary>
+    /// Node to get edge description
+    /// </summary>
     public sealed class DescribeEdgeNode : ADescrNode, IAstNodeInit
     {
         #region IAstNodeInit Members

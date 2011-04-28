@@ -6,6 +6,9 @@ using sones.GraphQL.GQL.Structure.Helper.Definition;
 
 namespace sones.GraphQL.Structure.Nodes.DML
 {
+    /// <summary>
+    /// Node to get vertex type description
+    /// </summary>
     public sealed class DescribeTypeNode : ADescrNode, IAstNodeInit
     {
         #region ADescrNode

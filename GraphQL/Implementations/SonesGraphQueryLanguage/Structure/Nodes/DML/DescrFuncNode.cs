@@ -6,6 +6,9 @@ using sones.GraphQL.GQL.Structure.Nodes.DML;
 
 namespace sones.GraphQL.Structure.Nodes.DML
 {
+    /// <summary>
+    /// Node to get functoin description
+    /// </summary>
     public sealed class DescrFuncNode : ADescrNode, IAstNodeInit
     {
         #region ADescrNode

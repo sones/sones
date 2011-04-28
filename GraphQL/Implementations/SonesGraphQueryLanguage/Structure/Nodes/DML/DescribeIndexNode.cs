@@ -6,6 +6,9 @@ using sones.GraphQL.GQL.Structure.Nodes.DML;
 
 namespace sones.GraphQL.Structure.Nodes.DML
 {
+    /// <summary>
+    /// Node to get index description of a given type
+    /// </summary>
     public sealed class DescribeIndexNode : ADescrNode, IAstNodeInit
     {
         #region ADescrNode
