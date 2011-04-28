@@ -22,7 +22,7 @@ namespace sones.Plugins.SonesGQL.DBImport
 
         #region IGraphDBImport Members
 
-        string IGraphDBImport.ImportFormat
+        public string ImportFormat
         {
             get { return "GQL"; }
         }
@@ -49,7 +49,7 @@ namespace sones.Plugins.SonesGQL.DBImport
                 else
                 {
                     error = new InvalidImportLocationException(location, @"file:\\", "http://");
-                    result = new QueryResult("", "GQL", 0L, ResultType.Failed, null, error);
+                    result = new QueryResult("", ImportFormat, 0L, ResultType.Failed, null, error);
                     return result;
                 }
 
@@ -62,7 +62,7 @@ namespace sones.Plugins.SonesGQL.DBImport
             catch (Exception ex)
             {
                 error = new ImportFailedException(ex);
-                result = new QueryResult("", "GQL", 0L, ResultType.Failed, null, error);
+                result = new QueryResult("", ImportFormat, 0L, ResultType.Failed, null, error);
                 return result;
             }
             finally
@@ -187,7 +187,7 @@ namespace sones.Plugins.SonesGQL.DBImport
         private QueryResult ExecuteAsSingleThread(IEnumerable<String> myLines, IGraphQL myIGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, IEnumerable<String> comments = null)
         {
 
-            QueryResult queryResult = new QueryResult("", "GQL", 0L, ResultType.Failed);
+            QueryResult queryResult = new QueryResult("", ImportFormat, 0L, ResultType.Failed);
             ASonesException error;
             Int64 numberOfLine = 0;
             var query = String.Empty;

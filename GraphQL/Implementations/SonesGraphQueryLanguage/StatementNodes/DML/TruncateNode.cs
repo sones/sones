@@ -7,6 +7,7 @@ using sones.Library.ErrorHandling;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using System.Linq;
+using sones.GraphQL.GQL.Manager.Plugin;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -42,7 +43,7 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.ReadWrite; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             QueryResult qresult = null;
             

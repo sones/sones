@@ -15,6 +15,7 @@ using sones.GraphQL.Structure.Nodes.Expressions;
 using sones.GraphQL.GQL.Structure.Helper.Enums;
 using sones.GraphQL.GQL.Manager.Select;
 using sones.GraphQL.ErrorHandling;
+using sones.GraphQL.GQL.Manager.Plugin;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -237,7 +238,7 @@ namespace sones.GraphQL.StatementNodes.DML
             get { return TypesOfStatements.Readonly; }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }

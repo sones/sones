@@ -5,6 +5,7 @@ using sones.GraphQL.Result;
 using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using sones.GraphQL.GQL.Manager.Plugin;
 
 namespace sones.GraphQL.StatementNodes.DDL
 {
@@ -31,7 +32,7 @@ namespace sones.GraphQL.StatementNodes.DDL
             get { throw new NotImplementedException(); }
         }
 
-        public override QueryResult Execute(IGraphDB myGraphDB, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
+        public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             throw new NotImplementedException();
         }

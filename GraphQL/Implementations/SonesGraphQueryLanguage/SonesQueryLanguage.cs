@@ -103,10 +103,11 @@ namespace sones.GraphQL
         public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken,
                                  string myQueryString)
         {
-            ParseTree aTree;       //tree-like representation of the query-string
-            AStatement statement;   //executeable statement
-            //TODO: implement
-            QueryResult queryResult = new QueryResult(myQueryString, "GQL", 0L, new ResultType());
+            //tree-like representation of the query-string
+            ParseTree aTree;
+            //executeable statement
+            AStatement statement;   
+            QueryResult queryResult = new QueryResult(myQueryString, "GQL", 0L, ResultType.Failed);
 
             #region Input exceptions - null or empty query
 
@@ -166,7 +167,7 @@ namespace sones.GraphQL
 
             try
             {
-                queryResult = statement.Execute(_IGraphDBInstance, myQueryString, mySecurityToken, myTransactionToken);
+                queryResult = statement.Execute(_IGraphDBInstance, this, _GQLPluginManager,  myQueryString, mySecurityToken, myTransactionToken);
             }
             //TODO: implement
             //catch (GraphDBWarningException we)
