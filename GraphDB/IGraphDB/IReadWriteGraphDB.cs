@@ -5,6 +5,7 @@ using System.Text;
 using sones.GraphDB.Request;
 using sones.Library.Commons.Transaction;
 using sones.Library.Commons.Security;
+using sones.GraphDB.Request.Delete;
 
 namespace sones.GraphDB
 {
@@ -43,7 +44,10 @@ namespace sones.GraphDB
                                RequestClear myRequestClear,
                                Converter.ClearResultConverter<TResult> myOutputconverter);
 
-
+        TResult Delete<TResult>(SecurityToken mySecurityToken,
+                               TransactionToken myTransactionToken,
+                               RequestDelete myRequestClear,
+                               Converter.DeleteResultConverter<TResult> myOutputconverter);
 
         /// <summary>
         /// Inserts a new vertex

@@ -14,6 +14,7 @@ using sones.GraphDB.Request.GetEdgeType;
 using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.Request.GetIndex;
 using sones.GraphDB.Request.DecribeIndex;
+using sones.GraphDB.Request.Delete;
 
 namespace sones.GraphDB
 {
@@ -170,6 +171,19 @@ namespace sones.GraphDB
         }
 
         #endregion
+
+        public TResult Delete<TResult>(
+            SecurityToken mySecurity,
+            TransactionToken myTransactionToken,
+            RequestDelete myRequestDelete,
+            Converter.DeleteResultConverter<TResult> myOutputconverter)
+        {
+            var id =
+                _requestManager.RegisterRequest(new PipelineableDeleteRequest(myRequestDelete, mySecurity,
+                                                                             myTransactionToken));
+
+            return ((PipelineableDeleteRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+        }
 
         #region Insert
 

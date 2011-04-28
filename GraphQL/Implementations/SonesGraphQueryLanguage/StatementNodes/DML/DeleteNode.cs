@@ -1,16 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using Irony.Ast;
 using Irony.Parsing;
-using sones.GraphQL.Result;
 using sones.GraphDB;
-using sones.Library.Commons.Security;
-using sones.Library.Commons.Transaction;
 using sones.GraphQL.GQL.Manager.Plugin;
 using sones.GraphQL.GQL.Structure.Nodes.Expressions;
 using sones.GraphQL.GQL.Structure.Nodes.Misc;
-using System.Collections.Generic;
-using sones.GraphQL.Structure.Nodes.Misc;
+using sones.GraphQL.Result;
 using sones.GraphQL.Structure.Nodes.Expressions;
+using sones.GraphQL.Structure.Nodes.Misc;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
+using sones.Library.ErrorHandling;
+using sones.GraphDB.Request.Delete;
 
 namespace sones.GraphQL.StatementNodes.DML
 {
@@ -84,10 +86,20 @@ namespace sones.GraphQL.StatementNodes.DML
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            //var qresult = myGraphDB.Delete(_TypeReferenceDefinitions, _IDChainDefinitions, _WhereExpression);
-            //return qresult;
+            QueryResult qresult = null;
 
-            return null;
+            try
+            {
+                var stat = myGraphDB.Delete(mySecurityToken, myTransactionToken, new RequestDelete(), (stats) => stats);
+
+                qresult = new QueryResult(myQuery, "sones.gql", Convert.ToUInt64(stat.ExecutionTime.Milliseconds), ResultType.Successful);
+            }
+            catch (ASonesException e)
+            {
+                qresult.Error = e;
+            }
+
+            return qresult;
         }
 
         #endregion

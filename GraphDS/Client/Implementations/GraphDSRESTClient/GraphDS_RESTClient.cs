@@ -12,6 +12,7 @@ using sones.Plugins.GraphDS.IO.XML_IO;
 using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.Request.GetEdgeType;
 using sones.GraphDB.Request.GetIndex;
+using sones.GraphDB.Request.Delete;
 
 namespace sones.GraphDS.GraphDSRESTClient
 {
@@ -98,6 +99,11 @@ namespace sones.GraphDS.GraphDSRESTClient
         }
 
         public TResult Clear<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestClear myRequestClear, Converter.ClearResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult Delete<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDelete myRequestDelete, Converter.DeleteResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }

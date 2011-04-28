@@ -13,6 +13,7 @@ using System.Threading;
 using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.Request.GetEdgeType;
 using sones.GraphDB.Request.GetIndex;
+using sones.GraphDB.Request.Delete;
 
 namespace sones.Plugins.GraphDS.DrainPipeLog
 {
@@ -255,6 +256,11 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
         }
 
         public TResult Clear<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestClear myRequestClear, Converter.ClearResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult Delete<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDelete myRequestDelete, Converter.DeleteResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }

@@ -20,6 +20,7 @@ using sones.GraphDB.Request.GetIndex;
 using sones.Plugins.GraphDS;
 using sones.Library.VersionedPluginManager;
 using sones.GraphDS.PluginManager;
+using sones.GraphDB.Request.Delete;
 
 namespace sones.GraphDSServer
 {
@@ -297,6 +298,11 @@ namespace sones.GraphDSServer
         public TResult Clear<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestClear myRequestClear, Converter.ClearResultConverter<TResult> myOutputconverter)
         {
             return _iGraphDB.Clear<TResult>(mySecurityToken, myTransactionToken, myRequestClear, myOutputconverter);
+        }
+
+        public TResult Delete<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDelete myRequestDelete, Converter.DeleteResultConverter<TResult> myOutputconverter)
+        {
+            return _iGraphDB.Delete<TResult>(mySecurityToken, myTransactionToken, myRequestDelete, myOutputconverter);
         }
 
         public TResult Insert<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestInsertVertex myRequestInsert, Converter.InsertResultConverter<TResult> myOutputconverter)
