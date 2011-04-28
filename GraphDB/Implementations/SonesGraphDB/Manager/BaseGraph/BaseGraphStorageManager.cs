@@ -730,6 +730,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                         edgeID,
                         edgeTypeID,
                         mySource,
+                        (edge.Value == null) ? null : 
                         edge.Value.Select((vertexInfo, pos) => new SingleEdgeAddDefinition(
                             edgeID,
                             edgeTypeID,
