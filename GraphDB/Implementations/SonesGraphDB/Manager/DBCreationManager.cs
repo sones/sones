@@ -219,9 +219,9 @@ namespace sones.GraphDB.Manager
         /// <summary>
         /// Creates a new instance of DBCreationManager.
         /// </summary>
-        /// <param name="mySecurityToken">The root security token</param>
+        /// <param name="mySecurityToken">The root security token... can be left out</param>
         /// <param name="myTransactionToken">The root transaction token... can be left out</param>
-        public DBCreationManager(SecurityToken mySecurityToken, TransactionToken myTransactionToken = null)
+        public DBCreationManager(SecurityToken mySecurityToken = null, TransactionToken myTransactionToken = null)
         {
             _security = mySecurityToken;
             _transaction = myTransactionToken;

@@ -68,8 +68,10 @@ namespace sones.GraphDB
         /// Creates a new sones graphdb instance
         /// </summary>
         /// <param name="myPlugins">The plugins that are valid for the sones GraphDB component</param>
+        /// <param name="myCreate">Should the sones graphdb created?</param>
         public SonesGraphDB(
-            GraphDBPlugins myPlugins = null)
+            GraphDBPlugins myPlugins = null,
+            Boolean myCreate = true)
         {
             _id = Guid.NewGuid();
 
@@ -97,6 +99,9 @@ namespace sones.GraphDB
             _iGraphFS = LoadGraphFsPlugin(myPlugins.IGraphFSDefinition);
 
             #endregion
+
+            DBCreationManager creationManager = new DBCreationManager();
+            creationManager.CreateBaseGraph(_iGraphFS);
 
             #region transaction
 
