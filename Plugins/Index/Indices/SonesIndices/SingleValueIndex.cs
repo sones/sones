@@ -139,7 +139,7 @@ namespace sones.Plugins.Index
 
         public string Name
         {
-            get { return "SingleValueIndex"; }
+            get { return "sones.singlevalueindex"; }
         }
 
         public long KeyCount()
@@ -220,7 +220,7 @@ namespace sones.Plugins.Index
 
         public String PluginName
         {
-            get { return "SingleValueIndex"; }
+            get { return "sones.singlevalueindex"; }
         }
 
         public Dictionary<String, Type> SetableParameters

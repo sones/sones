@@ -173,7 +173,7 @@ namespace sones.Plugins.Index
 
         public string Name
         {
-            get { return "MultipleValueIndex"; }
+            get { return "sones.multiplevalueindex"; }
         }
 
         public long KeyCount()
@@ -265,7 +265,7 @@ namespace sones.Plugins.Index
 
         public String PluginName
         {
-            get { return "MultipleValueIndex"; }
+            get { return "sones.multiplevalueindex"; }
         }
 
         public Dictionary<String, Type> SetableParameters
