@@ -109,7 +109,7 @@ namespace sones.GraphDB.Request
 
         #region IRequest Members
 
-        public GraphDBAccessMode AccessMode
+        GraphDBAccessMode IRequest.AccessMode
         {
             get { return GraphDBAccessMode.ReadOnly; }
         }

@@ -72,11 +72,16 @@ namespace sones.GraphDB.Manager.Vertex
 
             return queryPlan.Execute();
         }
-        
-        public IEnumerable<IVertex> GetVertices(String myVertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+
+        public IEnumerable<IVertex> GetVertices(String myVertexType, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var vertextype = _vertexTypeManager.GetVertexType(myVertexType, myTransactionToken, mySecurityToken);
-            return _vertexStore.GetVerticesByTypeID(mySecurityToken, myTransactionToken, vertextype.ID);
+            var vertextype = _vertexTypeManager.GetVertexType(myVertexType, myTransaction, mySecurity);
+            return _vertexStore.GetVerticesByTypeID(mySecurity, myTransaction, vertextype.ID);
+        }
+
+        public IEnumerable<IVertex> GetVertices(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity)
+        {
+            return _vertexStore.GetVerticesByTypeID(mySecurity, myTransaction, myTypeID);
         }
 
         public void CanGetVertices(IExpression iExpression, bool myIsLongRunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken)

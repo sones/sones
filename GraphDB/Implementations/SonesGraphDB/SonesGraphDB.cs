@@ -62,6 +62,10 @@ namespace sones.GraphDB
         /// </summary>
         private readonly CancellationTokenSource _cts;
 
+        private readonly SecurityToken _security;
+
+        private readonly TransactionToken _transaction;
+
         #endregion
 
         #region constructor
@@ -102,7 +106,7 @@ namespace sones.GraphDB
 
             #endregion
 
-            DBCreationManager creationManager = new DBCreationManager();
+            DBCreationManager creationManager = new DBCreationManager(_security, _transaction);
             creationManager.CreateBaseGraph(_iGraphFS);
 
             #region transaction
@@ -404,7 +408,7 @@ namespace sones.GraphDB
         /// <returns>A meta manager</returns>
         private IMetaManager CreateMetamanager(GraphDBPlugins myPlugins)
         {
-            return new MetaManager(_securityManager, myPlugins, _graphDBPluginManager, _applicationSettings);
+            return new MetaManager(_securityManager, myPlugins, _graphDBPluginManager, _applicationSettings, _transaction, _security);
         }
         
         /// <summary>

@@ -6,6 +6,8 @@ using sones.GraphDB.Manager.TypeManagement;
 using sones.GraphDB.Manager.Vertex;
 using sones.Library.Commons.VertexStore;
 using sones.Library.Settings;
+using sones.Library.Commons.Transaction;
+using sones.Library.Commons.Security;
 
 namespace sones.GraphDB.Manager
 {
@@ -47,6 +49,16 @@ namespace sones.GraphDB.Manager
         /// </summary>
         private readonly IEdgeTypeManager _edgeTypeManager;
 
+        /// <summary>
+        /// The system security token.
+        /// </summary>
+        private SecurityToken _security;
+
+        /// <summary>
+        /// The system transaction token.
+        /// </summary>
+        private TransactionToken _transaction;
+
         #endregion
 
         #region Constructor
@@ -58,8 +70,11 @@ namespace sones.GraphDB.Manager
         /// <param name="myPlugins">The plugin definitions</param>
         /// <param name="myPluginManager">Used to load pluginable manager</param>
         /// <param name="myApplicationSettings">The current application settings</param>
-        public MetaManager(IVertexStore myVertexStore, GraphDBPlugins myPlugins, GraphDBPluginManager myPluginManager, GraphApplicationSettings myApplicationSettings)
+        public MetaManager(IVertexStore myVertexStore, GraphDBPlugins myPlugins, GraphDBPluginManager myPluginManager, GraphApplicationSettings myApplicationSettings, TransactionToken myTransaction, SecurityToken mySecurity)
         {
+            _transaction = myTransaction;
+            _security = mySecurity;
+
             _vertexStore = myVertexStore;
 
             #region IndexManager
@@ -73,8 +88,7 @@ namespace sones.GraphDB.Manager
             var vertexTypeManager = new VertexTypeManager();
             var vertexManager = new VertexManager();
 
-            vertexTypeManager.SetIndexManager(_indexManager);
-            vertexTypeManager.SetVertexManager(vertexManager);
+            vertexTypeManager.Initialize(_indexManager, vertexManager, _transaction, _security);
 
             vertexManager.SetVertexStore(myVertexStore);
             vertexManager.SetIndexManager(_indexManager);
@@ -125,6 +139,16 @@ namespace sones.GraphDB.Manager
         public IQueryPlanManager QueryPlanManager
         {
             get { return _queryPlanManager; }
+        }
+
+        public SecurityToken SystemSecurityToken
+        {
+            get { return _security; }
+        }
+
+        public TransactionToken SystemTransactionToken
+        {
+            get { return _transaction; }
         }
 
         #endregion

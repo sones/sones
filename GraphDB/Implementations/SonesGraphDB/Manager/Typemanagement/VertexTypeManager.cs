@@ -99,7 +99,6 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         public VertexTypeManager()
         {
-            //TODO read max typeID and attrID
         }
 
         #endregion
@@ -1135,22 +1134,29 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #region public methods
 
-        /// <summary>
-        /// Sets the index manager
-        /// </summary>
-        /// <param name="myIndexManager">The index manager that should be used within the vertex type manager</param>
-        public void SetIndexManager(IIndexManager myIndexManager)
+        private long GetMaxID(long myTypeID, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            _indexManager = myIndexManager;
+            var vertices = _vertexManager.GetVertices(myTypeID, myTransaction, mySecurity);
+            if (vertices == null)
+                //TODO better exception here
+                throw new Exception("The base vertex types are not available.");
+
+            return vertices.Max(x => x.VertexID);
         }
 
         /// <summary>
-        /// Sets the vertex manager
+        /// Initializes this manager.
         /// </summary>
+        /// <param name="myIndexManager">The index manager that should be used within the vertex type manager</param>
         /// <param name="myVertexManager">The vertex manager that should be used within the vertex type manager</param>
-        public void SetVertexManager(IVertexManager myVertexManager)
+        public void Initialize(IIndexManager myIndexManager, IVertexManager myVertexManager, TransactionToken myTransaction, SecurityToken mySecurity)
         {
+            _indexManager = myIndexManager;
             _vertexManager = myVertexManager;
+
+            _LastTypeID = GetMaxID((long)BaseTypes.VertexType, myTransaction, mySecurity);
+            _LastAttrID = GetMaxID((long)BaseTypes.Attribute, myTransaction, mySecurity);
+
         }
 
         #endregion

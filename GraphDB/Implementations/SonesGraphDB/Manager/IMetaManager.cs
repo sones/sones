@@ -7,6 +7,8 @@ using sones.GraphDB.Manager.TypeManagement;
 using sones.GraphDB.Manager.Vertex;
 using sones.Library.Commons.VertexStore;
 using sones.GraphDB.Manager.QueryPlan;
+using sones.Library.Commons.Security;
+using sones.Library.Commons.Transaction;
 
 namespace sones.GraphDB.Manager
 {
@@ -44,5 +46,15 @@ namespace sones.GraphDB.Manager
         /// The interface to the edge types
         /// </summary>
         IEdgeTypeManager EdgeTypeManager { get; }
+
+        /// <summary>
+        /// The security token for graph db intern usage.
+        /// </summary>
+        SecurityToken SystemSecurityToken { get; }
+
+        /// <summary>
+        /// The transaction token for graph db intern usage.
+        /// </summary>
+        TransactionToken SystemTransactionToken { get; }
     }
 }

@@ -216,7 +216,7 @@ namespace sones.GraphDB.Manager
         /// </summary>
         /// <param name="mySecurityToken">The root security token... can be left out</param>
         /// <param name="myTransactionToken">The root transaction token... can be left out</param>
-        public DBCreationManager(SecurityToken mySecurityToken = null, TransactionToken myTransactionToken = null)
+        public DBCreationManager(SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
             _security = mySecurityToken;
             _transaction = myTransactionToken;

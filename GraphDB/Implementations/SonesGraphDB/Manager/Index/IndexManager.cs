@@ -57,7 +57,6 @@ namespace sones.GraphDB.Manager.Index
 
         #endregion
 
-
         #region IIndexManager Members
 
         public IIndexDefinition CreateIndex(IndexPredefinition myIndexDefinition, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myIsUserDefined = true)
