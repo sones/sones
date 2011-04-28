@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1F652BC0-ECEE-409B-8EFB-51276C41EAD1}</ProjectGuid>
+    <ProjectGuid>{CE9BF2C2-C785-4661-8F4F-64266C697343}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>sones.Library.VersionedPluginManager</RootNamespace>
-    <AssemblyName>VersionedPluginManager</AssemblyName>
+    <AssemblyName>PluginDefinition</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -34,9 +34,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,39 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AComponentPluginManager.cs" />
-    <Compile Include="AssemblyVersionCompatibilityAttribute.cs" />
-    <Compile Include="ErrorHandling\APluginManagerException.cs" />
-    <Compile Include="ErrorHandling\UnknownPluginException.cs" />
-    <Compile Include="ErrorHandling\CouldNotLoadAssemblyException.cs" />
-    <Compile Include="ErrorHandling\DuplicatePluginException.cs" />
-    <Compile Include="ErrorHandling\IncompatiblePluginVersionException.cs" />
-    <Compile Include="Events\PluginFoundEvent.cs" />
-    <Compile Include="Events\PluginIncompatibleVersionEvent.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="PluginManager.cs" />
+    <Compile Include="PluginDefinition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ErrorHandling\ErrorHandling.csproj">
-      <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
-      <Name>ErrorHandling</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\IPluginable\IPluginable.csproj">
-      <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
-      <Name>IPluginable</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\PluginDefinition\PluginDefinition.csproj">
-      <Project>{CE9BF2C2-C785-4661-8F4F-64266C697343}</Project>
-      <Name>PluginDefinition</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Settings\Settings.csproj">
-      <Project>{A233FDB4-70A9-4284-827A-1704950E0EF3}</Project>
-      <Name>Settings</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

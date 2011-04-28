@@ -25,7 +25,7 @@ namespace sones.GraphDS.PluginManager.GraphDSPluginManager
             // So, if any plugin in the GraphDS changes you need to change the AssemblyVersion of the GraphDS AND modify the compatibility version of the other plugins.
             _pluginManager
                 .Register<IGraphQL>(IGraphQLVersionCompatibility.MinVersion, IGraphQLVersionCompatibility.MaxVersion)
-                .Register<ISonesRESTService>(ISonesRESTServiceCompatibility.MinVersion, ISonesRESTServiceCompatibility.MaxVersion)
+                .Register<ISonesRESTService>(ISonesRESTServiceCompatibility.MinVersion, ISonesRESTServiceCompatibility.MaxVersion)  // not yet used
                 .Register<IDrainPipe>(IDrainPipeCompatibility.MinVersion, IDrainPipeCompatibility.MaxVersion);
 
             _pluginManager.Discover();
@@ -37,7 +37,7 @@ namespace sones.GraphDS.PluginManager.GraphDSPluginManager
             var componentName = this.GetType().Assembly.GetName().Name;
 
             FillLookup<IGraphQL>(componentName);
-            FillLookup<ISonesRESTService>(componentName);
+            FillLookup<ISonesRESTService>(componentName);   // not yet used
             FillLookup<IDrainPipe>(componentName);
 
             #endregion   

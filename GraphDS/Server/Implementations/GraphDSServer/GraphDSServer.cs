@@ -16,6 +16,9 @@ using sones.GraphDS.PluginManager.GraphDSPluginManager;
 using sones.GraphQL;
 using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.Request.GetEdgeType;
+using sones.Plugins.GraphDS;
+using sones.Library.VersionedPluginManager;
+using sones.GraphDS.PluginManager;
 
 namespace sones.GraphDSServer
 {
@@ -62,9 +65,11 @@ namespace sones.GraphDSServer
         private readonly GraphDSPluginManager           _pluginManager;
 
         /// <summary>
-        /// The list of supported graph ql types.
+        /// The list of supported graph ql type instances
         /// </summary>
-        private readonly Dictionary<String, IGraphQL>   _queryLanguages;
+        private readonly Dictionary<String, IGraphQL>   _QueryLanguages;
+        private readonly Dictionary<String, ISonesRESTService> _sonesRESTServices;
+        private readonly Dictionary<String, IDrainPipe> _DrainPipes;
 
         #endregion
 
@@ -74,22 +79,104 @@ namespace sones.GraphDSServer
         /// The GraphDS server constructor.
         /// </summary>
         /// <param name="myGraphDB">The graph db instance.</param>
-        public GraphDSServer(IGraphDB myGraphDB, ushort myPort, IPAddress myIPAddress)
+        /// <param name="myIPAddress">the IP adress this GraphDS Server should bind itself to</param>
+        /// <param name="myPort">the port this GraphDS Server should listen on</param>
+        /// <param name="PluginDefinitions">the plugins that shall be loaded and their according parameters</param>
+        public GraphDSServer(IGraphDB myGraphDB, ushort myPort, IPAddress myIPAddress,GraphDSPlugins Plugins = null)
         {
             _iGraphDB = myGraphDB;
             _pluginManager = new GraphDSPluginManager();
             _ID = new Guid();
-            _queryLanguages = new Dictionary<string, IGraphQL>();
+            _QueryLanguages = new Dictionary<string, IGraphQL>();
+            _sonesRESTServices = new Dictionary<string, ISonesRESTService>();
+            _DrainPipes = new Dictionary<string, IDrainPipe>();
 
-            var qlPluginNames = _pluginManager.GetPluginsForType<IGraphQL>();
+            #region Load Configured Plugins
+            GraphDSPlugins _plugins = Plugins;
 
-            var languageParameters = new Dictionary<String, Object>();
-            languageParameters.Add("GraphDB", myGraphDB);
-
-            foreach (var item in qlPluginNames)
+            if (_plugins == null)
             {
-                _queryLanguages.Add(item, _pluginManager.GetAndInitializePlugin<IGraphQL>(item, languageParameters));
+                #region set the defaults
+                // which are: 
+                //  GQL with GraphDB Parameter
+                #region GQL
+                List<PluginDefinition> QueryLanguages = new List<PluginDefinition>();
+                Dictionary<string, object> GQL_Parameters = new Dictionary<string, object>();
+                GQL_Parameters.Add("GraphDB", myGraphDB);
+
+                QueryLanguages.Add(new PluginDefinition("GQL", GQL_Parameters));
+                #endregion
+
+                #region REST Service Plugins
+                List<PluginDefinition> SonesRESTServices = new List<PluginDefinition>();
+                #endregion
+
+                _plugins = new GraphDSPlugins(SonesRESTServices, QueryLanguages, null);
+                #endregion
             }
+
+            // now at least the default plugins or a user setup is stored in the _plugins structure
+            // iterate through and instantiate if found
+            #region IGraphQL Plugins
+            if (_plugins.IGraphQLPlugins != null)
+            {
+                // we got QL
+                foreach (PluginDefinition _pd in _plugins.IGraphQLPlugins)
+                {
+                    // load!
+                    IGraphQL loaded = LoadIGraphQLPlugins(_pd);
+                    
+                    // add!
+                    if (loaded != null)
+                    {
+                        _QueryLanguages.Add(_pd.NameOfPlugin, loaded);
+                    }
+                    //                    else
+                    //                        System.Diagnostics.Debug.WriteLine("Could not load plugin " + _pd.NameOfPlugin);
+                }
+            }
+            #endregion
+
+            #region ISonesRESTService Plugins
+            if (_plugins.ISonesRESTServicePlugins != null)
+            {
+                // we got ISonesRESTServicePlugins
+                foreach (PluginDefinition _pd in _plugins.ISonesRESTServicePlugins)
+                {
+                    // load!
+                    ISonesRESTService loaded = LoadISonesRESTServicePlugins(_pd);
+                    // add!
+                    if (loaded != null)
+                    {
+                        _sonesRESTServices.Add(_pd.NameOfPlugin, loaded);
+                    }
+                    //                    else
+                    //                        System.Diagnostics.Debug.WriteLine("Could not load plugin " + _pd.NameOfPlugin);
+                }
+            }
+            #endregion
+
+            #region IDrainPipe Plugins
+            if (_plugins.IDrainPipePlugins != null)
+            {
+                // we got IDrainPipePlugins
+                foreach (PluginDefinition _pd in _plugins.IDrainPipePlugins)
+                {
+                    // load!
+                    IDrainPipe loaded = LoadIDrainPipes(_pd);
+                    // add!
+                    if (loaded != null)
+                    {
+                        _DrainPipes.Add(_pd.NameOfPlugin, loaded);
+                    }
+                    //                    else
+                    //                        System.Diagnostics.Debug.WriteLine("Could not load plugin " + _pd.NameOfPlugin);
+
+                }
+            }
+            #endregion
+
+            #endregion
 
             try
             {
@@ -115,6 +202,33 @@ namespace sones.GraphDSServer
             {
                 throw new RESTServiceCouldNotStartetException(e.Message);
             }
+        }
+
+        #endregion
+
+        #region Plugin Loading Helpers
+        /// <summary>
+        /// Load the IDrainPipes plugins
+        /// </summary>
+        private IDrainPipe LoadIDrainPipes(PluginDefinition myIDrainPipesPlugin)
+        {
+            return _pluginManager.GetAndInitializePlugin<IDrainPipe>(myIDrainPipesPlugin.NameOfPlugin, myIDrainPipesPlugin.PluginParameter);
+        }
+
+        /// <summary>
+        /// Load the IGraphQL plugins
+        /// </summary>
+        private IGraphQL LoadIGraphQLPlugins(PluginDefinition myIGraphQLPlugin)
+        {
+            return _pluginManager.GetAndInitializePlugin<IGraphQL>(myIGraphQLPlugin.NameOfPlugin, myIGraphQLPlugin.PluginParameter);
+        }
+
+        /// <summary>
+        /// Load the ISonesRESTService plugins
+        /// </summary>
+        private ISonesRESTService LoadISonesRESTServicePlugins(PluginDefinition myISonesRESTServicePlugin)
+        {
+            return _pluginManager.GetAndInitializePlugin<ISonesRESTService>(myISonesRESTServicePlugin.NameOfPlugin, myISonesRESTServicePlugin.PluginParameter);
         }
 
         #endregion
@@ -154,8 +268,14 @@ namespace sones.GraphDSServer
         {
             IGraphQL queryLanguage;
 
-            if (_queryLanguages.TryGetValue(myQueryLanguageName, out queryLanguage))
+            if (_QueryLanguages.TryGetValue(myQueryLanguageName, out queryLanguage))
             {
+                // drain every query
+                foreach (IDrainPipe _drainpipe in _DrainPipes.Values)
+                {
+                    _drainpipe.Query(mySecurityToken, myTransactionToken, myQueryLanguageName, myQueryLanguageName);
+                }
+
                 return queryLanguage.Query(mySecurityToken, myTransactionToken, myQueryString);
             }
             else

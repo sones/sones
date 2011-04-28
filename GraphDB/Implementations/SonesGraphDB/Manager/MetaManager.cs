@@ -88,7 +88,6 @@ namespace sones.GraphDB.Manager
             var vertexTypeManager = new VertexTypeManager();
             var vertexManager = new VertexManager();
 
-            vertexTypeManager.Initialize(_indexManager, vertexManager, _transaction, _security);
 
             vertexManager.SetVertexStore(myVertexStore);
             vertexManager.SetIndexManager(_indexManager);
@@ -98,6 +97,7 @@ namespace sones.GraphDB.Manager
             _vertexTypeManager = vertexTypeManager;
             _vertexManager = vertexManager;
 
+            vertexTypeManager.Initialize(_indexManager, vertexManager, _transaction, _security);
             #endregion
 
             #region queryPlanManager

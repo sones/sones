@@ -16,7 +16,7 @@ namespace sones.GraphDB.Manager.Plugin
         public readonly PluginDefinition RequestSchedulerPlugin;
         public readonly PluginDefinition LogicExpressionOptimizerPlugin;
         public readonly PluginDefinition RequestManagerPlugin;
-        public readonly HashSet<PluginDefinition> IndexPlugins;
+        public readonly List<PluginDefinition> IndexPlugins;
 
         #endregion
 
@@ -38,7 +38,7 @@ namespace sones.GraphDB.Manager.Plugin
             PluginDefinition myRequestSchedulerPlugin = null,
             PluginDefinition myLogicExpressionOptimizerPlugin = null,
             PluginDefinition myRequestManagerPlugin = null,
-            HashSet<PluginDefinition> myIndexPlugins = null)
+            List<PluginDefinition> myIndexPlugins = null)
         {
             IGraphFSDefinition = myIGraphFSDefinition;
             TransactionManagerPlugin = myTransactionManagerPlugin;

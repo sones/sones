@@ -44,7 +44,7 @@ namespace sones.GraphDB.Manager.Index
         /// <param name="myVertexStore">The vertex store of the graphDB</param>
         /// <param name="myPluginManager">The sones graphDB plugin manager</param>
         /// <param name="myPluginDefinitions">The parameters for plugin-indices</param>
-        public IndexManager(IVertexStore myVertexStore, GraphDBPluginManager myPluginManager, HashSet<PluginDefinition> myPluginDefinitions = null)
+        public IndexManager(IVertexStore myVertexStore, GraphDBPluginManager myPluginManager, List<PluginDefinition> myPluginDefinitions = null)
         {
             _vertexStore = myVertexStore;
 
