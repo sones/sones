@@ -218,7 +218,7 @@ namespace sones.GraphDB.Request
             return this;
         }
 
-        private VertexTypePredefinition AddIncomingEdge(IncomingEdgePredefinition myIncomingEdgePredefinition)
+        public VertexTypePredefinition AddIncomingEdge(IncomingEdgePredefinition myIncomingEdgePredefinition)
         {
             if (myIncomingEdgePredefinition != null)
             {
@@ -226,16 +226,6 @@ namespace sones.GraphDB.Request
                 _attributes.Add(myIncomingEdgePredefinition);
                 _incoming++;
             }
-
-            return this;
-        }
-
-        public VertexTypePredefinition AddAttribute(AttributePredefinition myAttributePredefinition)
-        {
-            AddBinaryProperty(myAttributePredefinition as BinaryPropertyPredefinition);
-            AddProperty(myAttributePredefinition as PropertyPredefinition);
-            AddOutgoingEdge(myAttributePredefinition as OutgoingEdgePredefinition);
-            AddIncomingEdge(myAttributePredefinition as IncomingEdgePredefinition);
 
             return this;
         }

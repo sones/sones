@@ -4,6 +4,7 @@ namespace sones.GraphDB.Request
 {
     public class IncomingEdgePredefinition: AttributePredefinition
     {
+        public const char TypeSeparator = '.';
 
         /// <summary>
         /// Creates a definition for an incoming edge.
@@ -59,16 +60,9 @@ namespace sones.GraphDB.Request
             return this;
         }
 
-        public IncomingEdgePredefinition SetAttributeType(String myTypeName)
-        {
-            AttributeType = myTypeName;
-
-            return this;
-        }
-
         private string Combine(string myTargetType, string myTargetEdgeName)
         {
-            return String.Join(".", myTargetType, myTargetEdgeName);
+            return String.Join(TypeSeparator.ToString(), myTargetType, myTargetEdgeName);
         }
 
 

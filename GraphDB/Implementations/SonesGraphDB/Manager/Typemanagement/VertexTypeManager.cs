@@ -525,13 +525,13 @@ namespace sones.GraphDB.Manager.TypeManagement
                 if (StreamVertexType.Equals(unknown.AttributeType))
                 {
                     if (unknown.DefaultValue != null)
-                        throw new Exception("A default value is not allowed on an binary property.");
+                        throw new Exception("A default value is not allowed on a binary property.");
 
                     if (unknown.EdgeType != null)
-                        throw new Exception("An edge type is not allowed on an binary property.");
+                        throw new Exception("An edge type is not allowed on a binary property.");
 
                     if (unknown.Multiplicity != null)
-                        throw new Exception("A multiplicity is not allowed on an binary property.");
+                        throw new Exception("A multiplicity is not allowed on a binary property.");
 
                     var prop = new BinaryPropertyPredefinition(unknown.AttributeName)
                                    .SetComment(unknown.Comment);
@@ -540,13 +540,67 @@ namespace sones.GraphDB.Manager.TypeManagement
                 }
                 else if (IsBaseType(unknown.AttributeType))
                 {
+                    if (unknown.EdgeType != null)
+                        throw new Exception("An edge type is not allowed on a property.");
+
+                    var prop = new PropertyPredefinition(unknown.AttributeName)
+                                   .SetDefaultValue(unknown.DefaultValue)
+                                   .SetAttributeType(unknown.AttributeType)
+                                   .SetComment(unknown.Comment);
+
+                    switch (unknown.Multiplicity)
+                    {
+                        case UnknownAttributePredefinition.ListMultiplicity:
+                            prop.SetMultiplicityToList();
+                            break;
+                        case UnknownAttributePredefinition.SetMultiplicity:
+                            prop.SetMultiplicityToSet();
+                            break;
+                        default:
+                            throw new Exception("Unknown multiplicity for properties.");
+                    }
+
+                    myVertexTypeDefinition.AddProperty(prop);
+                }
+                else if (unknown.AttributeType.Contains(IncomingEdgePredefinition.TypeSeparator))
+                {
+                    if (unknown.DefaultValue != null)
+                        throw new Exception("A default value is not allowed on an incoming edge.");
+
+                    if (unknown.EdgeType != null)
+                        throw new Exception("An edge type is not allowed on an incoming edge.");
+
+                    if (unknown.Multiplicity != null)
+                        throw new Exception("A multiplicity is not allowed on an incoming edge.");
+
+                    var prop = new IncomingEdgePredefinition(unknown.AttributeType)
+                                   .SetComment(unknown.Comment)
+                                   .SetOutgoingEdge(GetTargetVertexTypeFromAttributeType(unknown.AttributeType), GetTargetEdgeNameFromAttributeType(unknown.AttributeType));
+                    myVertexTypeDefinition.AddIncomingEdge(prop);
 
 
-                    myVertexTypeDefinition.AddAttribute(
-                        new PropertyPredefinition(unknown.AttributeName)
-                        .SetDefaultValue(unknown.DefaultValue)
+                }
+                else
+                {
+
+                    if (unknown.DefaultValue != null)
+                        throw new Exception("A default value is not allowed on a binary property.");
+
+                    var prop = new OutgoingEdgePredefinition(unknown.AttributeName)
                         .SetAttributeType(unknown.AttributeType)
-                        .SetComment(unknown.Comment));
+                        .SetEdgeType(unknown.EdgeType)
+                        .SetComment(unknown.Comment);
+
+                    switch (unknown.Multiplicity)
+                    {
+                        case UnknownAttributePredefinition.SetMultiplicity:
+                            prop.SetAsHyperEdge();
+                            break;
+                        default:
+                            throw new Exception("Unknown multiplicity for edges.");
+                    }
+
+                    myVertexTypeDefinition.AddOutgoingEdge(prop);
                 }
             }
             myVertexTypeDefinition.ResetUnknown();
@@ -1028,12 +1082,12 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         private static string GetTargetEdgeNameFromAttributeType(string myAttributeType)
         {
-            return myAttributeType.Split(InomingEdgeSeparator)[1];
+            return myAttributeType.Split(IncomingEdgePredefinition.TypeSeparator)[1];
         }
 
-        private string GetTargetVertexTypeFromAttributeType(string myAttributeType)
+        private static string GetTargetVertexTypeFromAttributeType(string myAttributeType)
         {
-            return myAttributeType.Split(InomingEdgeSeparator)[0];
+            return myAttributeType.Split(IncomingEdgePredefinition.TypeSeparator)[0];
         }
 
         private void ConnectVertexToUniqueIndex(TypeInfo myTypeInfo, IIndexDefinition[] myIndexDefinitions, SecurityToken mySecurity, TransactionToken myTransaction)
