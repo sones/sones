@@ -134,7 +134,7 @@ namespace ShortestPathAlgorithms
 
         public override string PluginName
         {
-            get { return "PATH"; }
+            get { return "sones.path"; }
         }
 
         public override Dictionary<string, Type> SetableParameters

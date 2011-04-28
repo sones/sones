@@ -43,7 +43,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override string PluginName
         {
-            get { return "CURRENTDATE"; }
+            get { return "sones.currentdate"; }
         }
 
         public override Dictionary<string, Type> SetableParameters

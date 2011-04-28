@@ -63,7 +63,7 @@ namespace sones.Plugins.SonesGQL.Functions
         {
             get
             {
-                return "CONCAT";
+                return "sones.concat";
             }
         }
 

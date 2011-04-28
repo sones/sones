@@ -65,7 +65,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override string PluginName
         {
-            get { return "FromUNIXDate"; }
+            get { return "sones.fromunixdate"; }
         }
 
         public override Dictionary<string, Type> SetableParameters

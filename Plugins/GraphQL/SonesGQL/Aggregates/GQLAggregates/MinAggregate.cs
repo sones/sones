@@ -60,7 +60,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         public string PluginName
         {
-            get { return "MIN"; }
+            get { return "sones.min"; }
         }
 
         public Dictionary<string, Type> SetableParameters

@@ -59,7 +59,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         public string PluginName
         {
-            get { return "MAX"; }
+            get { return "sones.max"; }
         }
 
         public Dictionary<string, Type> SetableParameters

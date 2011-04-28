@@ -66,7 +66,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override string PluginName
         {
-            get { return "MAXWEIGHT"; }
+            get { return"sones.maxweight"; }
         }
 
         public override Dictionary<string, Type> SetableParameters

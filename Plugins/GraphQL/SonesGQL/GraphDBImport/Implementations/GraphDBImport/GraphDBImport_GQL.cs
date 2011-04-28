@@ -329,7 +329,7 @@ namespace sones.Plugins.SonesGQL.DBImport
 
         public string PluginName
         {
-            get { return "GQLIMPORT"; }
+            get { return "sones.gqlimport"; }
         }
 
         public Dictionary<string, Type> SetableParameters

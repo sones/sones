@@ -68,7 +68,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override string PluginName
         {
-            get { return "SUBSTRING"; }
+            get { return"sones.substring"; }
         }
 
         public override Dictionary<string, Type> SetableParameters

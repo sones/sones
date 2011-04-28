@@ -78,7 +78,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override string PluginName
         {
-            get { return "INSERT"; }
+            get { return"sones.insert"; }
         }
 
         public override Dictionary<string, Type> SetableParameters

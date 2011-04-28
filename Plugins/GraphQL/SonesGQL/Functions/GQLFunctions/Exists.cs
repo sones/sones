@@ -50,7 +50,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override string PluginName
         {
-            get { return "EXISTS"; }
+            get { return "sones.exists"; }
         }
 
         public override Dictionary<string, Type> SetableParameters

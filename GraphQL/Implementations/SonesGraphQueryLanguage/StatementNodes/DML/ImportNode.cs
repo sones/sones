@@ -60,7 +60,7 @@ namespace sones.GraphQL.StatementNodes.DML
         {
             if(ImportFormat.Equals("GQL"))
             {
-                var plugin = myPluginManager.GetAndInitializePlugin<IGraphDBImport>("GQLImport");
+                var plugin = myPluginManager.GetAndInitializePlugin<IGraphDBImport>("sones.gqlimport");
 
                 if (plugin != null)
                 {

@@ -86,7 +86,7 @@ namespace sones.Plugins.SonesGQL.Functions
         {
             get
             {
-                return "COUNT";
+                return "sones.count";
             }
         }
 

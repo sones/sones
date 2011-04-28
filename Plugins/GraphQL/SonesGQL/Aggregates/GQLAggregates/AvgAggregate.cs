@@ -66,7 +66,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         public string PluginName
         {
-            get { return "AVG"; }
+            get { return "sones.avg"; }
         }
 
         public Dictionary<string, Type> SetableParameters

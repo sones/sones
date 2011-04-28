@@ -40,7 +40,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         public string PluginName
         {
-            get { return "COUNT"; }
+            get { return "sones.count"; }
         }
 
         public Dictionary<string, Type> SetableParameters

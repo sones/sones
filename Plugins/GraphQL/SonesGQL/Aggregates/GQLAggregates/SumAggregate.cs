@@ -60,7 +60,7 @@ namespace sones.Plugins.SonesGQL.Aggregates
 
         public string PluginName
         {
-            get { return "SUM"; }
+            get { return "sones.sum"; }
         }
 
         public Dictionary<string, Type> SetableParameters

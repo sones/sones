@@ -69,7 +69,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override string PluginName
         {
-            get { return "TOUPPER"; }
+            get { return "sones.toupper"; }
         }
 
         public override Dictionary<string, Type> SetableParameters

@@ -64,7 +64,7 @@ namespace sones.Plugins.SonesGQL.Functions
 
         public override string PluginName
         {
-            get { return "TOP"; }
+            get { return"sones.top"; }
         }
 
         public override Dictionary<string, Type> SetableParameters
