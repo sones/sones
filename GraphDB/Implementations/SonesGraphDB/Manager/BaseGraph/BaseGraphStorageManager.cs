@@ -492,10 +492,12 @@ namespace sones.GraphDB.Manager.BaseGraph
                     {
                         { _EdgeVertexTypeDotParent, myParent.Value },
                     },
-                new Dictionary<Tuple<long, long>, IEnumerable<Library.Commons.VertexStore.Definitions.VertexInformation>>
-                {
-                    {_EdgeVertexTypeDotUniqueDefinitions, myUniques }
-                },
+                myUniques == (null)
+                    ? null
+                    : new Dictionary<Tuple<long, long>, IEnumerable<Library.Commons.VertexStore.Definitions.VertexInformation>>
+                    {
+                        {_EdgeVertexTypeDotUniqueDefinitions, myUniques }
+                    },
                 new Dictionary<long, IComparable>
                 {
                     { (long) AttributeDefinitions.ID, myVertex.VertexID },
