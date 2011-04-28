@@ -91,7 +91,12 @@ namespace sones.GraphDB.Manager.BaseGraph
 
         public static string GetComment(IVertex myVertex)
         {
-            return myVertex.GetPropertyAsString((long)AttributeDefinitions.Comment);
+            if (myVertex.HasProperty((long)AttributeDefinitions.Comment))
+            {
+                return myVertex.GetPropertyAsString((long)AttributeDefinitions.Comment);                
+            }
+
+            return null;
         }
 
         public static long GetID(IVertex myVertex)

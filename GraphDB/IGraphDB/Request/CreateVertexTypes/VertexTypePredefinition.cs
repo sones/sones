@@ -173,6 +173,23 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
+        /// Adds an unknown property to the vertex type definition
+        /// </summary>
+        /// <param name="myUnknownPredefinition">The unknwown property definition that is going to be added</param>
+        /// <returns>The reference of the current object. (fluent interface).</returns>
+        public VertexTypePredefinition AddUnknownAttribute(UnknownAttributePredefinition myUnknownPredefinition)
+        {
+            if (myUnknownPredefinition != null)
+            {
+                _attributes = (_attributes) ?? new List<AttributePredefinition>();
+                _attributes.Add(myUnknownPredefinition);
+                _unknown++;
+            }
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a property to the vertex type definition
         /// </summary>
         /// <param name="myPropertyDefinition">The property definition that is going to be added</param>

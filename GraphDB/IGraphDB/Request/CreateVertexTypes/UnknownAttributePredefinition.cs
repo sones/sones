@@ -26,7 +26,7 @@ namespace sones.GraphDB.Request.CreateVertexTypes
         public UnknownAttributePredefinition(String myAttributeName)
             : base(myAttributeName)
         {
-            
+
         }
 
         public UnknownAttributePredefinition SetMultiplicityAsList()
@@ -50,9 +50,16 @@ namespace sones.GraphDB.Request.CreateVertexTypes
             return this;
         }
 
-        public UnknownAttributePredefinition SetDefaultEdgeType(String myEdgeType)
+        public UnknownAttributePredefinition SetEdgeType(String myEdgeType)
         {
             EdgeType = myEdgeType;
+
+            return this;
+        }
+
+        public UnknownAttributePredefinition SetAttributeType(String myAttributeType)
+        {
+            AttributeType = myAttributeType;
 
             return this;
         }

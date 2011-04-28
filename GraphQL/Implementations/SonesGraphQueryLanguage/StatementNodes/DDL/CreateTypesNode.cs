@@ -12,6 +12,7 @@ using sones.GraphQL.Structure.Nodes.DDL;
 using sones.GraphDB.TypeSystem;
 using sones.GraphDB.Request;
 using sones.Library.ErrorHandling;
+using sones.GraphDB.Request.CreateVertexTypes;
 
 namespace sones.GraphQL.StatementNodes.DDL
 {
@@ -227,6 +228,7 @@ namespace sones.GraphQL.StatementNodes.DDL
             {
                 foreach (var aAttribute in aDefinition.Attributes)
                 {
+                    result.AddUnknownAttribute(GenerateUnknownAttribute(aAttribute));
                 }
             }
 
@@ -255,6 +257,41 @@ namespace sones.GraphQL.StatementNodes.DDL
             }
 
             #endregion
+
+            return result;
+        }
+
+        private UnknownAttributePredefinition GenerateUnknownAttribute(KeyValuePair<AttributeDefinition, string> aAttribute)
+        {
+            UnknownAttributePredefinition result = new UnknownAttributePredefinition(aAttribute.Key.AttributeName);
+
+            result.SetAttributeType(aAttribute.Value);
+
+            if (aAttribute.Key.AttributeType.EdgeType != null)
+            {
+                result.SetEdgeType(aAttribute.Key.AttributeType.EdgeType);
+            }
+
+            if (aAttribute.Key.DefaultValue != null)
+            {
+                result.SetDefaultValue(aAttribute.Key.DefaultValue.ToString());
+            }
+
+            switch (aAttribute.Key.AttributeType.Type)
+            {
+                case SonesGQLGrammar.TERMINAL_SET:
+
+                    result.SetMultiplicityAsSet();
+
+                    break;
+
+                case SonesGQLGrammar.TERMINAL_LIST:
+
+                    result.SetMultiplicityAsList();
+
+                    break;
+            }
+
 
             return result;
         }
