@@ -49,8 +49,8 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The outgoing edges of a vertex.
         /// </summary>
-        public IEnumerable<EdgeDefinition> OutgoingEdges { get { return _edges; } }
-        private HashSet<EdgeDefinition> _edges;
+        public IEnumerable<EdgePredefinition> OutgoingEdges { get { return _edges; } }
+        private HashSet<EdgePredefinition> _edges;
 
         #endregion
 
@@ -128,9 +128,9 @@ namespace sones.GraphDB.Request
         /// <param name="myEdgeName">The name of the edge to be inserted</param>
         /// <param name="myEdgeDefinition">The definition of the edge</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestInsertVertex AddEdge(EdgeDefinition myEdgeDefinition)
+        public RequestInsertVertex AddEdge(EdgePredefinition myEdgeDefinition)
         {
-            _edges = _edges ?? new HashSet<EdgeDefinition>();
+            _edges = _edges ?? new HashSet<EdgePredefinition>();
             _edges.Add(myEdgeDefinition);
 
             return this;
@@ -142,9 +142,9 @@ namespace sones.GraphDB.Request
         /// <param name="myEdgeName">The name of the edge to be inserted.</param>
         /// <param name="myEdgeDefinitions">The definitions of the edge.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public RequestInsertVertex AddEdges(String myEdgeName, IEnumerable<EdgeDefinition> myEdgeDefinitions)
+        public RequestInsertVertex AddEdges(String myEdgeName, IEnumerable<EdgePredefinition> myEdgeDefinitions)
         {
-            _edges = _edges ?? new HashSet<EdgeDefinition>();
+            _edges = _edges ?? new HashSet<EdgePredefinition>();
             _edges.UnionWith(myEdgeDefinitions);
 
             return this;

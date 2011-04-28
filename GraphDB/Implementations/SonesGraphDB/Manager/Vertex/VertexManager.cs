@@ -199,9 +199,9 @@ namespace sones.GraphDB.Manager.Vertex
             }
         }
 
-        public IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        public IVertex AddVertex(RequestInsertVertex myInsertDefinition, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            IVertexType vertexType = GetVertexType(myInsertDefinition.VertexTypeName, myTransactionToken, mySecurityToken);
+            IVertexType vertexType = GetVertexType(myInsertDefinition.VertexTypeName, myTransaction, mySecurity);
 
             //we check unique constraints here 
             foreach (var unique in vertexType.GetUniqueDefinitions(true))
@@ -212,20 +212,20 @@ namespace sones.GraphDB.Manager.Vertex
 
                 foreach (var vtype in definingVertexType.GetChildVertexTypes(true, true))
                 {
-                    var index = _indexManager.GetIndex(vtype, unique.CorrespondingIndex.IndexedProperties, mySecurityToken, myTransactionToken);
+                    var index = _indexManager.GetIndex(vtype, unique.CorrespondingIndex.IndexedProperties, mySecurity, myTransaction);
 
                     if (index.ContainsKey(key))
                         throw new IndexUniqueConstrainViolationException(myInsertDefinition.VertexTypeName, unique.CorrespondingIndex.Name);
                 }
             }
 
-            var result = _vertexStore.AddVertex(mySecurityToken, myTransactionToken, RequestInsertVertexToVertexAddDefinition(myInsertDefinition, vertexType));
+            var result = _vertexStore.AddVertex(mySecurity, myTransaction, RequestInsertVertexToVertexAddDefinition(myInsertDefinition, vertexType, myTransaction, mySecurity));
 
 
             foreach (var indexDef in vertexType.GetIndexDefinitions(false))
             {
                 var key = CreateIndexEntry(indexDef.IndexedProperties, myInsertDefinition.StructuredProperties);
-                var index = _indexManager.GetIndex(vertexType, indexDef.IndexedProperties, mySecurityToken, myTransactionToken);
+                var index = _indexManager.GetIndex(vertexType, indexDef.IndexedProperties, mySecurity, myTransaction);
 
                 if (index is ISingleValueIndex<IComparable, Int64>)
                 {
@@ -242,15 +242,90 @@ namespace sones.GraphDB.Manager.Vertex
                     throw new NotImplementedException("Indices other than single or multiple value indices are not supported yet.");
                 }
             }
-
-
-            throw new NotImplementedException();
+            return result;
         }
 
-        private VertexAddDefinition RequestInsertVertexToVertexAddDefinition(RequestInsertVertex myInsertDefinition, IVertexType myVertexType)
+        private VertexAddDefinition RequestInsertVertexToVertexAddDefinition(RequestInsertVertex myInsertDefinition, IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity)
         {
+            long vertexID = _vertexTypeManager.GetUniqueVertexID(myVertexType.ID);
+            var source = new VertexInformation(myVertexType.ID, vertexID);
             long date = DateTime.UtcNow.ToBinary();
-            return new VertexAddDefinition(0L, myVertexType.ID, myInsertDefinition.Edition, null, null, null, myInsertDefinition.Comment, date, date, null, null);
+
+            var singleEdges = new Dictionary<String, SingleEdgeAddDefinition>();
+
+            foreach (var edgeDef in myInsertDefinition.OutgoingEdges)
+            {
+                var attrDef = myVertexType.GetOutgoingEdgeDefinition(edgeDef.EdgeName);
+
+                var vertexIDs = GetResultingVertexIDs(myTransaction, mySecurity, edgeDef, attrDef);
+                CheckTargetVertices(attrDef, vertexIDs);
+
+                switch (attrDef.Multiplicity)
+                {
+                    case EdgeMultiplicity.SingleEdge:
+                        {
+                            if (vertexIDs.Count > 1)
+                                //TODO: better exception here
+                                throw new Exception("More than one target vertices for a single edge is not allowed.");
+
+                            if (vertexIDs.Count == 1)
+                                //TODO: better exception here
+                                throw new Exception("A single edge needs at least one target.");
+
+                            var edge = CreateSingleEdgeAddDefinition(date, edgeDef, attrDef, source, vertexIDs.First());
+                            singleEdges.Add(attrDef.Name, edge);
+                        }
+                        break;
+                    case EdgeMultiplicity.HyperEdge:
+                        {
+                            var edge = new HyperEdgeAddDefinition();
+                        }
+                        break;
+                }
+
+
+                
+                
+                
+
+
+            }
+            
+            return new VertexAddDefinition(0L, myVertexType.ID, myInsertDefinition.Edition, null, null, null, myInsertDefinition.Comment, date, date, null, myInsertDefinition.UnstructuredProperties);
+        }
+
+        private static SingleEdgeAddDefinition CreateSingleEdgeAddDefinition(long date, EdgePredefinition edgeDef, IOutgoingEdgeDefinition attrDef, VertexInformation source, VertexInformation target)
+        {
+            //TODO set structured properties on edge
+            return new SingleEdgeAddDefinition(attrDef.AttributeID, attrDef.EdgeType.ID, source, target, edgeDef.Comment, date, date, null, null);
+        }
+
+        private static void CheckTargetVertices(IOutgoingEdgeDefinition attrDef, IEnumerable<VertexInformation> vertexIDs)
+        {
+            var distinctTypeIDS = new HashSet<Int64>(vertexIDs.Select(x => x.VertexTypeID));
+            var allowedTypeIDs = new HashSet<Int64>(attrDef.TargetVertexType.GetChildVertexTypes(true, true).Select(x => x.ID));
+            distinctTypeIDS.ExceptWith(allowedTypeIDs);
+            if (distinctTypeIDS.Count > 0)
+                throw new Exception("A target vertex has a type, that is not assignable to the target vertex type of the edge.");
+        }
+
+        private ISet<VertexInformation> GetResultingVertexIDs(TransactionToken myTransaction, SecurityToken mySecurity, EdgePredefinition myEdgeDef, IOutgoingEdgeDefinition myAttributeDef)
+        {
+            HashSet<VertexInformation> result = new HashSet<VertexInformation>();
+            if (myEdgeDef.VertexIDs != null)
+            {
+                result.UnionWith(myEdgeDef.VertexIDs.Select(x=>new VertexInformation(myAttributeDef.TargetVertexType.ID, x)));
+            }
+            if (myEdgeDef.Expressions != null)
+            {
+                foreach (var expr in myEdgeDef.Expressions)
+                {
+                    var vertices = GetVertices(expr, false, myTransaction, mySecurity);
+                    result.UnionWith(vertices.Select(x => new VertexInformation(x.VertexTypeID, x.VertexID)));
+                }
+            }
+
+            return result;
         }
 
         private IComparable CreateIndexEntry(IList<IPropertyDefinition> myIndexProps, IDictionary<string, IComparable> myProperties)

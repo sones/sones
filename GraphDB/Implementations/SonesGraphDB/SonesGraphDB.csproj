@@ -84,6 +84,7 @@
     <Compile Include="Manager\Transaction\BasicTransactionManager.cs" />
     <Compile Include="Manager\TypeManagement\IVertexTypeManager.cs" />
     <Compile Include="Manager\TypeManagement\IEdgeTypeManager.cs" />
+    <Compile Include="Manager\TypeManagement\UniqueID.cs" />
     <Compile Include="Manager\Vertex\IVertexManager.cs" />
     <Compile Include="Manager\Vertex\VertexManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">

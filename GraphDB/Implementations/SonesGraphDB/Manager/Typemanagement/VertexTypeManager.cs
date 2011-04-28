@@ -84,6 +84,12 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// </summary>
         private long _LastAttrID;
 
+
+        /// <summary>
+        /// The unique ids for vertices indexed by their type id.
+        /// </summary>
+        private Dictionary<long, UniqueID> _vertexIDs = new Dictionary<long, UniqueID>();
+
         #endregion
 
         #region C'tor
@@ -781,6 +787,9 @@ namespace sones.GraphDB.Manager.TypeManagement
                     null, //TODO uniques
                     mySecurity,
                     myTransaction));
+
+                _vertexIDs.Add(result[resultPos].ID, new UniqueID());
+
             }
 
             #region Store Attributes
@@ -1136,6 +1145,22 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         #endregion
 
+
+        #region IVertexTypeManager Members
+
+
+        public long GetUniqueVertexID(IVertexType myVertexType)
+        {
+            myVertexType.CheckNull("myVertexType");
+            return _vertexIDs[myVertexType.ID].GetNextID();
+        }
+
+        public long GetUniqueVertexID(long myVertexTypeID)
+        {
+            return _vertexIDs[myVertexTypeID].GetNextID();
+        }
+
+        #endregion
     }
 
 }

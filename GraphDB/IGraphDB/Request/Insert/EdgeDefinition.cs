@@ -8,7 +8,7 @@ namespace sones.GraphDB.Request
     /// <summary>
     /// The definition of an edge.
     /// </summary>
-    public sealed class EdgeDefinition
+    public sealed class EdgePredefinition
     {
         #region data
 
@@ -17,9 +17,14 @@ namespace sones.GraphDB.Request
         public String EdgeName { get; private set; }
 
         /// <summary>
+        /// The comment for this edge definition.
+        /// </summary>
+        public string Comment { get; private set; }
+
+        /// <summary>
         /// The expressions, that defines the vertices where to connect to.
         /// </summary>
-        public IEnumerable<IExpression> Expression { get { return _expressions; } }
+        public IEnumerable<IExpression> Expressions { get { return _expressions; } }
         private HashSet<IExpression> _expressions;
 
         /// <summary>
@@ -55,7 +60,7 @@ namespace sones.GraphDB.Request
         /// Creates a new instance of EdgeDefinition.
         /// </summary>
         /// <param name="myEdgeName">The name of the edge.</param>
-        public EdgeDefinition(String myEdgeName)
+        public EdgePredefinition(String myEdgeName)
         {
             EdgeName = myEdgeName;
         }
@@ -70,7 +75,7 @@ namespace sones.GraphDB.Request
         /// <param name="myPropertyName">The name of the property</param>
         /// <param name="myProperty">The value of the property</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeDefinition AddStructuredProperty(String myPropertyName, IComparable myProperty)
+        public EdgePredefinition AddStructuredProperty(String myPropertyName, IComparable myProperty)
         {
             _structured = _structured ?? new Dictionary<String, IComparable>();
             _structured.Add(myPropertyName, myProperty);
@@ -84,7 +89,7 @@ namespace sones.GraphDB.Request
         /// <param name="myPropertyName">The name of the property</param>
         /// <param name="myProperty">The value of the property</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeDefinition AddUnstructuredProperty(String myPropertyName, Object myProperty)
+        public EdgePredefinition AddUnstructuredProperty(String myPropertyName, Object myProperty)
         {
             _unstructured = _unstructured ?? new Dictionary<String, Object>();
             _unstructured.Add(myPropertyName, myProperty);
@@ -98,7 +103,7 @@ namespace sones.GraphDB.Request
         /// <param name="myPropertyName">The name of the property</param>
         /// <param name="myStream">The value of the property</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeDefinition AddBinaryProperty(String myPropertyName, Stream myStream)
+        public EdgePredefinition AddBinaryProperty(String myPropertyName, Stream myStream)
         {
             _binaries = _binaries ?? new Dictionary<String, Stream>();
             _binaries.Add(myPropertyName, myStream);
@@ -111,7 +116,7 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myExpression">The expression, that will be evaluated to get the vertices, where to connect to.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeDefinition AddExpression(IExpression myExpression)
+        public EdgePredefinition AddExpression(IExpression myExpression)
         {
             var expressions = _expressions ?? new HashSet<IExpression>();
             expressions.Add(myExpression);
@@ -124,7 +129,7 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myExpressions">The expressions, that will be evaluated to get the vertices, where to connect to.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeDefinition AddExpression(IEnumerable<IExpression> myExpressions)
+        public EdgePredefinition AddExpression(IEnumerable<IExpression> myExpressions)
         {
             var expressions = _expressions ?? new HashSet<IExpression>();
             expressions.UnionWith(myExpressions);
@@ -137,7 +142,7 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myVertexID">The vertex ID where to connect to.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeDefinition AddVertexID(long myVertexID)
+        public EdgePredefinition AddVertexID(long myVertexID)
         {
             var ids = _ids ?? new HashSet<long>();
             ids.Add(myVertexID);
@@ -150,7 +155,7 @@ namespace sones.GraphDB.Request
         /// </summary>
         /// <param name="myVertexIDs">The vertex IDs where to connect to.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public EdgeDefinition AddVertexID(IEnumerable<long> myVertexID)
+        public EdgePredefinition AddVertexID(IEnumerable<long> myVertexID)
         {
             var ids = _ids ?? new HashSet<long>();
             ids.UnionWith(myVertexID);
@@ -159,6 +164,7 @@ namespace sones.GraphDB.Request
         }
 
         #endregion
+
     }
     
 }
