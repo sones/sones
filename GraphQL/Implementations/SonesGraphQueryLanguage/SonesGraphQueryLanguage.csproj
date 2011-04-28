@@ -56,11 +56,6 @@
     <Compile Include="Manager\Plugin\GQLPluginManager.cs" />
     <Compile Include="Manager\Select\SelectManager.cs" />
     <Compile Include="Manager\Select\SelectResultManager.cs" />
-    <Compile Include="Result\EdgeView.cs" />
-    <Compile Include="Result\GraphElementView.cs" />
-    <Compile Include="Result\HyperEdgeView.cs" />
-    <Compile Include="Result\SingleEdgeView.cs" />
-    <Compile Include="Result\VertexView.cs" />
     <Compile Include="SonesGQLConstants.cs" />
     <Compile Include="SonesQueryLanguage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -287,6 +282,10 @@
     <ProjectReference Include="..\..\IGraphQL\IGraphQL.csproj">
       <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
       <Name>IGraphQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QueryResult\QueryResult.csproj">
+      <Project>{BE2A2669-CCDE-40A8-AEAB-673260D7260A}</Project>
+      <Name>QueryResult</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -219,9 +219,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISonesGraphDBImport", "Plug
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SonesGraphDBImport", "Plugins\GraphQL\SonesGQL\GraphDBImport\Implementations\GraphDBImport\SonesGraphDBImport.csproj", "{51C8E5F7-F888-4500-B1EE-D20337FA451F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QueryResult", "GraphQL\QueryResult\QueryResult.csproj", "{BE2A2669-CCDE-40A8-AEAB-673260D7260A}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 65
+		SccNumberOfProjects = 66
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = http://tfs2010.sones:8080/tfs/sones
 		SccLocalPath0 = .
@@ -481,6 +483,10 @@ Global
 		SccProjectTopLevelParentUniqueName64 = CoreDeveloper.sln
 		SccProjectName64 = Plugins/GraphQL/SonesGQL/GraphDBImport/Implementations/GraphDBImport
 		SccLocalPath64 = Plugins\\GraphQL\\SonesGQL\\GraphDBImport\\Implementations\\GraphDBImport
+		SccProjectUniqueName65 = GraphQL\\QueryResult\\QueryResult.csproj
+		SccProjectTopLevelParentUniqueName65 = CoreDeveloper.sln
+		SccProjectName65 = GraphQL/QueryResult
+		SccLocalPath65 = GraphQL\\QueryResult
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1271,6 +1277,18 @@ Global
 		{51C8E5F7-F888-4500-B1EE-D20337FA451F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{51C8E5F7-F888-4500-B1EE-D20337FA451F}.Release|x64.ActiveCfg = Release|Any CPU
 		{51C8E5F7-F888-4500-B1EE-D20337FA451F}.Release|x86.ActiveCfg = Release|Any CPU
+		{BE2A2669-CCDE-40A8-AEAB-673260D7260A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE2A2669-CCDE-40A8-AEAB-673260D7260A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE2A2669-CCDE-40A8-AEAB-673260D7260A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{BE2A2669-CCDE-40A8-AEAB-673260D7260A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{BE2A2669-CCDE-40A8-AEAB-673260D7260A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BE2A2669-CCDE-40A8-AEAB-673260D7260A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BE2A2669-CCDE-40A8-AEAB-673260D7260A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE2A2669-CCDE-40A8-AEAB-673260D7260A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE2A2669-CCDE-40A8-AEAB-673260D7260A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{BE2A2669-CCDE-40A8-AEAB-673260D7260A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{BE2A2669-CCDE-40A8-AEAB-673260D7260A}.Release|x64.ActiveCfg = Release|Any CPU
+		{BE2A2669-CCDE-40A8-AEAB-673260D7260A}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1324,6 +1342,7 @@ Global
 		{982A8FC0-D760-4B81-B537-06EDBEA80A6C} = {FACE26D6-DCE4-49EC-AEFD-96B580BB022B}
 		{22437279-5F02-40BE-847C-D7A425D468BE} = {52780B9F-52B2-4659-A41C-0F1526DCAA49}
 		{F751657F-0E6C-46C5-A59C-02D7A924A051} = {52780B9F-52B2-4659-A41C-0F1526DCAA49}
+		{BE2A2669-CCDE-40A8-AEAB-673260D7260A} = {52780B9F-52B2-4659-A41C-0F1526DCAA49}
 		{26BFEE62-82B9-4EFA-9F91-08FD947551A8} = {22437279-5F02-40BE-847C-D7A425D468BE}
 		{75F38D02-8EDB-4955-8D24-C1FF17732F9D} = {D92AF9AE-48D1-4B1B-9B70-250F1CEEFABE}
 		{1E30E203-20DE-4DA3-854A-18FEFADA6D7A} = {D92AF9AE-48D1-4B1B-9B70-250F1CEEFABE}

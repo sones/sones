@@ -57,11 +57,6 @@
       <DependentUpon>QueryResultSchema.xsd</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
-    <Compile Include="Result\EdgeView.cs" />
-    <Compile Include="Result\GraphElementView.cs" />
-    <Compile Include="Result\HyperEdgeView.cs" />
-    <Compile Include="Result\SingleEdgeView.cs" />
-    <Compile Include="Result\VertexView.cs" />
     <Compile Include="XML_IO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -77,6 +72,10 @@
     <ProjectReference Include="..\..\..\..\..\GraphQL\IGraphQL\IGraphQL.csproj">
       <Project>{F751657F-0E6C-46C5-A59C-02D7A924A051}</Project>
       <Name>IGraphQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\GraphQL\QueryResult\QueryResult.csproj">
+      <Project>{BE2A2669-CCDE-40A8-AEAB-673260D7260A}</Project>
+      <Name>QueryResult</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Library\Internal\ErrorHandling\ErrorHandling.csproj">
       <Project>{EA1F7F6C-C8C9-4529-998D-B86701FFA1DE}</Project>
@@ -108,6 +107,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
