@@ -12,7 +12,12 @@ namespace sones.GraphDB.Request
         #region data
 
         /// <summary>
-        /// The interesting vertex type id
+        /// The interesting vertex type 
+        /// </summary>
+        public readonly String VertexType;
+
+        /// <summary>
+        /// The interesting vertex type 
         /// </summary>
         public readonly Int64 VertexTypeID;
 
@@ -47,16 +52,25 @@ namespace sones.GraphDB.Request
             IsLongrunning = myIsLongrunning;
         }
 
-        /// <summary>
+        public RequestGetVertices(Int64 myVertexTypeID, IEnumerable<Int64> myVertexIDs, Boolean myIsLongrunning = false)
+        {
+            VertexTypeID = myVertexTypeID;
+            VertexIDs = myVertexIDs;
+
+            Expression = null;
+            IsLongrunning = myIsLongrunning;
+        }
+
+            /// <summary>
         /// Creates a new request that gets vertices from the Graphdb
         /// ...uses direct access to vertices via their ids and a vertex type id
         /// </summary>
         /// <param name="myVertexTypeID">The interesting vertex type id</param>
         /// <param name="myVertexIDs">The interersting vertex ids</param>
         /// <param name="myIsLongrunning">Determines whether it is anticipated that the request could take longer</param>
-        public RequestGetVertices(Int64 myVertexTypeID, IEnumerable<Int64> myVertexIDs, Boolean myIsLongrunning = false)
+        public RequestGetVertices(String myVertexType, IEnumerable<Int64> myVertexIDs, Boolean myIsLongrunning = false)
         {
-            VertexTypeID = myVertexTypeID;
+            VertexType = myVertexType;
             VertexIDs = myVertexIDs;
 
             Expression = null;
@@ -67,11 +81,25 @@ namespace sones.GraphDB.Request
         /// Creates a new request that gets vertices from the Graphdb
         /// ...uses direct access to vertices via a vertex type id, so every vertex to a given type id is loaded
         /// </summary>
-        /// <param name="myVertexTypeID">The interesting vertex type id</param>
+        /// <param name="myVertexType">The interesting vertex type.</param>
+        public RequestGetVertices(String myVertexType)
+        {
+            VertexType = myVertexType;
+            
+            VertexIDs = null;
+            Expression = null;
+            IsLongrunning = true;
+        }
+
+        /// <summary>
+        /// Creates a new request that gets vertices from the Graphdb
+        /// ...uses direct access to vertices via a vertex type id, so every vertex to a given type id is loaded
+        /// </summary>
+        /// <param name="myVertexType">The interesting vertex type id.</param>
         public RequestGetVertices(Int64 myVertexTypeID)
         {
             VertexTypeID = myVertexTypeID;
-            
+
             VertexIDs = null;
             Expression = null;
             IsLongrunning = true;

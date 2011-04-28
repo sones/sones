@@ -33,6 +33,17 @@ namespace sones.GraphDB.Manager.Vertex
         IEnumerable<IVertex> GetVertices(IExpression myExpression, Boolean myIsLongrunning, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
 
         /// <summary>
+        /// Gets all vertices for one vertex type.
+        /// </summary>
+        /// <param name="myVertexType">The interesting vertex type.</param>
+        /// <param name="myTransactionToken">A transaction token for this operation.</param>
+        /// <param name="mySecurityToken">A security token for this operation.</param>
+        /// <returns>
+        /// All vertices of the interestin vertex type.
+        /// </returns>
+        IEnumerable<IVertex> GetVertices(String myVertexType, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+
+        /// <summary>
         /// Checks. whether it is possible to get the specified vertices 
         /// </summary>
         /// <param name="myExpression">An logical expression tree. Migth be unoptimized.</param>
