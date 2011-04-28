@@ -397,7 +397,7 @@ namespace sones.GraphDB.Manager.TypeManagement
 
                     foreach (var edge in group)
                     {
-                        if (!target.OutgoingEdges.Any(outgoing => GetTargetEdgeNameFromAttributeType(edge.AttributeName).Equals(outgoing.EdgeName)))
+                        if (!target.OutgoingEdges.Any(outgoing => GetTargetEdgeNameFromAttributeType(edge.AttributeName).Equals(outgoing.AttributeName)))
                             throw new OutgoingEdgeNotFoundException(myVertexTypePredefinition, edge);
                     }
                     
@@ -414,14 +414,14 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="mySecurity">A security token for this operation.</param>
         private void CanAddCheckOutgoingEdgeTargets(VertexTypePredefinition myVertexTypePredefinition, IDictionary<string, VertexTypePredefinition> myDefsByName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
-            var grouped = myVertexTypePredefinition.OutgoingEdges.GroupBy(x => x.TargetVertexType);
+            var grouped = myVertexTypePredefinition.OutgoingEdges.GroupBy(x => x.AttributeType);
             foreach (var group in grouped)
             {
                 if (!myDefsByName.ContainsKey(group.Key))
                 {
                     var vertex = Get(group.Key, myTransaction, mySecurity);
                     if (vertex == null)
-                        throw new TargetVertexTypeNotFoundException(myVertexTypePredefinition, group.Key, group.Select(x => x.EdgeName));
+                        throw new TargetVertexTypeNotFoundException(myVertexTypePredefinition, group.Key, group.Select(x => x.AttributeName));
 
                 }
             }
@@ -559,8 +559,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             foreach (var prop in vertexTypeDefinition.Properties)
             {
                 prop.CheckNull("Property in vertex type predefinition " + vertexTypeDefinition.VertexTypeName);
-                if (myUniqueNameSet.Add(prop.PropertyName))
-                    throw new DuplicatedAttributeNameException(vertexTypeDefinition, prop.PropertyName);
+                if (myUniqueNameSet.Add(prop.AttributeName))
+                    throw new DuplicatedAttributeNameException(vertexTypeDefinition, prop.AttributeName);
 
                 CheckPropertyType(vertexTypeDefinition, prop);
             }
@@ -573,16 +573,16 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// <param name="myProperty">The property to be checked.</param>
         private static void CheckPropertyType(VertexTypePredefinition myVertexTypeDefinition, PropertyPredefinition myProperty)
         {
-            if (String.IsNullOrWhiteSpace(myProperty.TypeName))
+            if (String.IsNullOrWhiteSpace(myProperty.AttributeType))
             {
-                throw new EmptyPropertyTypeException(myVertexTypeDefinition, myProperty.PropertyName);
+                throw new EmptyPropertyTypeException(myVertexTypeDefinition, myProperty.AttributeName);
             }
 
             if (!IsBaseType(myProperty))
             {
                 //it is not one of the base types
                 //TODO: check if it is a user defined data type
-                throw new UnknownPropertyTypeException(myVertexTypeDefinition, myProperty.TypeName);
+                throw new UnknownPropertyTypeException(myVertexTypeDefinition, myProperty.AttributeType);
             }
         }
 
@@ -594,7 +594,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         private static bool IsBaseType(PropertyPredefinition myProperty)
         {
             BasicTypes result;
-            return Enum.TryParse(myProperty.TypeName, false, out result);
+            return Enum.TryParse(myProperty.AttributeType, false, out result);
         }
 
         /// <summary>
@@ -607,8 +607,8 @@ namespace sones.GraphDB.Manager.TypeManagement
             foreach (var edge in vertexTypeDefinition.OutgoingEdges)
             {
                 edge.CheckNull("Outgoing myEdge in vertex type predefinition " + vertexTypeDefinition.VertexTypeName);
-                if (myUniqueNameSet.Add(edge.EdgeName))
-                    throw new DuplicatedAttributeNameException(vertexTypeDefinition, edge.EdgeName);
+                if (myUniqueNameSet.Add(edge.AttributeName))
+                    throw new DuplicatedAttributeNameException(vertexTypeDefinition, edge.AttributeName);
 
                 CheckEdgeType(vertexTypeDefinition, edge);
             }
@@ -623,7 +623,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             if (string.IsNullOrWhiteSpace(myEdge.EdgeType))
             {
-                throw new EmptyEdgeTypeException(myVertexTypeDefinition, myEdge.EdgeName);
+                throw new EmptyEdgeTypeException(myVertexTypeDefinition, myEdge.AttributeName);
             }
         }
 
@@ -822,14 +822,14 @@ namespace sones.GraphDB.Manager.TypeManagement
                         _vertexManager.VertexStore,
                         new VertexInformation((long)BaseTypes.Property, firstAttrID++ ),
                         currentExternID++,
-                        prop.PropertyName,
+                        prop.AttributeName,
                         prop.Comment,
                         creationDate,
                         prop.IsMandatory,
                         prop.Multiplicity,
                         prop.DefaultValue,
                         typeInfos[current.Value.VertexTypeName].VertexInfo,
-                        ConvertBasicType(prop.TypeName),
+                        ConvertBasicType(prop.AttributeType),
                         mySecurity,
                         myTransaction);
                 }
@@ -852,7 +852,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                         _vertexManager.VertexStore,
                         new VertexInformation((long)BaseTypes.BinaryProperty, firstAttrID++),
                         currentExternID++,
-                        prop.PropertyName,
+                        prop.AttributeName,
                         prop.Comment,
                         creationDate,
                         typeInfos[current.Value.VertexTypeName].VertexInfo,
@@ -879,13 +879,13 @@ namespace sones.GraphDB.Manager.TypeManagement
                         _vertexManager.VertexStore,
                         new VertexInformation((long)BaseTypes.OutgoingEdge, firstAttrID++),
                         currentExternID++,
-                        edge.EdgeName,
+                        edge.AttributeName,
                         edge.Comment,
                         creationDate,
                         edge.Multiplicity,
                         typeInfos[current.Value.VertexTypeName].VertexInfo,
                         new VertexInformation((long)BaseTypes.EdgeType, _edgeManager.GetEdgeType(edge.EdgeType, myTransaction, mySecurity).ID),
-                        typeInfos[edge.TargetVertexType].VertexInfo,
+                        typeInfos[edge.AttributeType].VertexInfo,
                         mySecurity,
                         myTransaction);
                 }
@@ -1066,7 +1066,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 neededVertexTypes.Add(def.Value.SuperVertexTypeName);
                 foreach (var edge in def.Value.OutgoingEdges)
                 {
-                    neededVertexTypes.Add(edge.TargetVertexType);
+                    neededVertexTypes.Add(edge.AttributeType);
                 }
             }
 

@@ -6,39 +6,24 @@ namespace sones.GraphDB.Request
     /// <summary>
     /// The definition for vertex properties
     /// </summary>
-    public sealed class PropertyPredefinition
+    public sealed class PropertyPredefinition: AttributePredefinition
     {
         #region Data
 
         /// <summary>
         /// Should there be an index on the property?
         /// </summary>
-        public readonly Boolean IsIndexed;
+        public Boolean IsIndexed { get; private set; }
 
         /// <summary>
         /// Should this property be mandatory?
         /// </summary>
-        public readonly Boolean IsMandatory;
+        public Boolean IsMandatory { get; private set; }
 
         /// <summary>
         /// Should this property be unique?
         /// </summary>
-        public readonly Boolean IsUnique;
-
-        /// <summary>
-        /// The name of the property
-        /// </summary>
-        public readonly String PropertyName;
-
-        /// <summary>
-        /// The name of the type (AssemblyQualifiedName)
-        /// </summary>
-        public readonly String TypeName;
-
-        /// <summary>
-        /// The comment for this property.
-        /// </summary>
-        public string Comment { get; private set; }
+        public Boolean IsUnique { get; private set; }
 
         /// <summary>
         /// The default value for this property.
@@ -55,25 +40,54 @@ namespace sones.GraphDB.Request
         #region Constructor
 
         /// <summary>
-        /// Creates a new PropertyPredefinition
+        /// Creates a new PropertyPredefinition.
         /// </summary>
         /// <param name="myPropertyName">The name of the property</param>
-        /// <param name="myPropertyType">The type of the property</param>
-        /// <param name="myIsIndexed">Should there be an index on the property?</param>
-        /// <param name="myIsUnique">Should this property be unique?</param>
-        /// <param name="myIsMandatory">Should this property be mandatory?</param>
-        public PropertyPredefinition(String myPropertyName, Type myPropertyType, Boolean myIsIndexed = false,
-                                  Boolean myIsUnique = false, Boolean myIsMandatory = false)
+        public PropertyPredefinition(String myPropertyName)
+            : base(myPropertyName)
         {
-            TypeName = myPropertyType.AssemblyQualifiedName;
-            PropertyName = myPropertyName;
-            IsIndexed = myIsIndexed;
-            IsUnique = myIsUnique;
-            IsMandatory = myIsMandatory;
+            IsIndexed = false;
+            IsMandatory = false;
+            IsUnique = false;
+            Multiplicity = PropertyMultiplicity.Single;
         }
 
         #endregion
 
+        public PropertyPredefinition SetAsIndexed()
+        {
+            IsIndexed = true;
+
+            return this;
+        }
+
+        public PropertyPredefinition SetAsMandatory()
+        {
+            IsMandatory = true;
+
+            return this;
+        }
+
+        public PropertyPredefinition SetAsUnique()
+        {
+            IsUnique = true;
+
+            return this;
+        }
+
+        public PropertyPredefinition SetMultiplicityToList()
+        {
+            Multiplicity = PropertyMultiplicity.List;
+
+            return this;
+        }
+
+        public PropertyPredefinition SetMultiplicityToSet()
+        {
+            Multiplicity = PropertyMultiplicity.Set;
+
+            return this;
+        }
 
     }
 }

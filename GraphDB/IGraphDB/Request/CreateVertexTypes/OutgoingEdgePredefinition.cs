@@ -4,76 +4,64 @@ using sones.GraphDB.TypeSystem;
 namespace sones.GraphDB.Request
 {
     /// <summary>
-    /// The definition for an outgoing IncomingEdge.
+    /// The definition for an outgoing edge.
     /// </summary>
-    public sealed class OutgoingEdgePredefinition
+    public sealed class OutgoingEdgePredefinition: AttributePredefinition
     {
 
         #region Constant
 
         /// <summary>
-        /// The name of the predefined IncomingEdge type that represents a single IncomingEdge with no attributes.
+        /// The name of the predefined edge type that represents a normal edge.
         /// </summary>
-        public const string SingleEdge = "Edge";
+        public const string Edge = "Edge";
 
         /// <summary>
-        /// The name of the predefined IncomingEdge type that represents multiple edges with no attributes.
-        /// </summary>
-        public const string HyperEdge = "Set";
-
-        /// <summary>
-        /// The name of the predefined IncomingEdge type that represents a multiple edges with an attribute Weight of type double.
+        /// The name of the predefined edge type that represents a edges with an attribute Weight of type double.
         /// </summary>
         public const string WeightedEdge = "Weighted";
-        
+
+        /// <summary>
+        /// The name of the predefined edge type that represents a edges with an attribute Order.
+        /// </summary>
+        public const string OrderedEdge = "Ordered";
+
         #endregion
 
         #region Data
 
         /// <summary>
-        /// The name of the IncomingEdge
-        /// </summary>
-        public String EdgeName { get; private set; }
-
-        /// <summary>
-        /// The IncomingEdge type of this IncomingEdge definition
+        /// The edge type of this edge definition
         /// </summary>
         public String EdgeType { get; private set; }
 
-        /// <summary>
-        /// The vertex type the IncomingEdge will direct to.
-        /// </summary>
-        public String TargetVertexType { get; private set; }
 
         /// <summary>
         /// The multiplicity of the edge.
         /// </summary>
         public EdgeMultiplicity Multiplicity { get; private set; }
 
-        /// <summary>
-        /// The comment for the outgoing edge.
-        /// </summary>
-        public string Comment { get; private set; }
 
         #endregion
 
         #region Constructor
 
         /// <summary>
-        /// Creates a definition for an outgoing IncomingEdge
+        /// Creates a definition for an outgoing edge.
         /// </summary>
-        /// <param name="myEdgeName">The name of the IncomingEdge</param>
+        /// <param name="myEdgeName">The name of the edge</param>
         public OutgoingEdgePredefinition(String myEdgeName)
+            : base(myEdgeName)
         {
-            EdgeName = myEdgeName;
-            EdgeType = SingleEdge;
+            EdgeType = Edge;
+            Multiplicity = EdgeMultiplicity.SingleEdge;
         }
 
         /// <summary>
-        /// Sets the IncomingEdge type of this IncomingEdge definition.
+        /// Sets the edge type of this edge definition.
         /// </summary>
         /// <param name="myEdgeType">
-        /// The name of the IncomingEdge type. 
+        /// The name of the edge type. 
         /// </param>
         /// <seealso cref="SetAsSingleEdge"/>
         /// <seealso cref="SetAsHyperEdge"/>
@@ -86,27 +74,17 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Sets the IncomingEdge type of this IncomingEdge definition to 'Edge'.
-        /// </summary>
-        /// <returns>The reference of the current object. (fluent interface).</returns>
-        public OutgoingEdgePredefinition SetAsSingleEdge()
-        {
-            EdgeType = SingleEdge;
-            return this;
-        }
-
-        /// <summary>
-        /// Sets the IncomingEdge type of this IncomingEdge definition to 'Set'.
+        /// Sets the edge type of this edge definition to 'Set'.
         /// </summary>
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public OutgoingEdgePredefinition SetAsHyperEdge()
         {
-            EdgeType = HyperEdge;
+            Multiplicity = EdgeMultiplicity.HyperEdge;
             return this;
         }
 
         /// <summary>
-        /// Sets the IncomingEdge type of this IncomingEdge definition to 'Weighted'.
+        /// Sets the edge type of this edge definition to 'Weighted'.
         /// </summary>
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public OutgoingEdgePredefinition SetAsWeightedEdge()
@@ -116,27 +94,26 @@ namespace sones.GraphDB.Request
         }
 
         /// <summary>
-        /// Sets the target vertex type.
+        /// Sets the edge type of this edge definition to 'Ordered'.
         /// </summary>
-        /// <param name="myTargetVertexTypeName">The name of the vertex type, this IncomingEdge type will point to.</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public OutgoingEdgePredefinition SetTargetVertexType(String myTargetVertexTypeName)
+        public OutgoingEdgePredefinition SetAsOrderedEdge()
         {
-            TargetVertexType = myTargetVertexTypeName;
+            EdgeType = OrderedEdge;
             return this;
         }
 
         /// <summary>
-        /// 
+        /// Sets the type of this outgoing edge with a VertexTypePredefinition.
         /// </summary>
-        /// <param name="myTargetVertexType"></param>
+        /// <param name="myTargetVertexType">The target vertex type predefinition</param>
         /// <returns>The reference of the current object. (fluent interface).</returns>
-        public OutgoingEdgePredefinition SetTargetVertexType(VertexTypePredefinition myTargetVertexType)
+        public OutgoingEdgePredefinition SetAttributeType(VertexTypePredefinition myTargetVertexType)
         {
-            TargetVertexType = myTargetVertexType.VertexTypeName;
+            base.SetAttributeType(myTargetVertexType.VertexTypeName);
+
             return this;
         }
-
 
         #endregion
 

@@ -21,7 +21,7 @@ namespace sones.GraphDB.Request
         /// <returns>The reference of the current object. (fluent interface).</returns>
         public IncomingEdgePredefinition SetOutgoingEdge(VertexTypePredefinition myVertexType, OutgoingEdgePredefinition myOutgoingEdge)
         {
-            base.SetAttributeType(Combine(myVertexType.VertexTypeName, myOutgoingEdge.EdgeName));
+            base.SetAttributeType(Combine(myVertexType.VertexTypeName, myOutgoingEdge.AttributeName));
 
             return this;
         }
