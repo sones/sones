@@ -16,6 +16,11 @@ namespace sones.GraphQL
         /// </summary>
         public static String BaseVertexTypeName = "Vertex";
 
+        /// <summary>
+        /// The name of the sones query language
+        /// </summary>
+        public static String GQL = "GQL";
+
         #endregion
 
         #region grammar

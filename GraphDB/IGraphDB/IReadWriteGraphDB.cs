@@ -27,7 +27,7 @@ namespace sones.GraphDB
         TResult CreateVertexType<TResult>(SecurityToken mySecurityToken,
                                           TransactionToken myTransactionToken,
                                           RequestCreateVertexTypes myRequestCreateVertexType,
-                                          Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter);
+                                          Converter.CreateVertexTypesResultConverter<TResult> myOutputconverter);
 
         /// <summary>
         /// Clears the graphdb entirely

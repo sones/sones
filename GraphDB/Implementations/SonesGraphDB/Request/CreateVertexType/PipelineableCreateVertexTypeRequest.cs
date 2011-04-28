@@ -69,7 +69,7 @@ namespace sones.GraphDB.Request
         /// <typeparam name="TResult">The type of the myResult</typeparam>
         /// <param name="myOutputconverter">The output converter that is used to create the TResult</param>
         /// <returns>A TResult</returns>
-        internal TResult GenerateRequestResult<TResult>(Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
+        internal TResult GenerateRequestResult<TResult>(Converter.CreateVertexTypesResultConverter<TResult> myOutputconverter)
         {
             return myOutputconverter(Statistics, _createdVertexType);
         }

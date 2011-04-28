@@ -134,7 +134,7 @@ namespace sones.GraphDB
             SecurityToken mySecurity, 
             TransactionToken myTransactionToken,
             RequestCreateVertexTypes myRequestCreateVertexType,
-            Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
+            Converter.CreateVertexTypesResultConverter<TResult> myOutputconverter)
         {
             var id =
                 _requestManager.RegisterRequest(new PipelineableCreateVertexTypeRequest(myRequestCreateVertexType,
