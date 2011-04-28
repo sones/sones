@@ -79,8 +79,9 @@ namespace sones.GraphDB.TypeManagement.Base
 
         #region Property
 
-        IsMandatory = Int64.MinValue + 90,
-        InIndices = Int64.MinValue + 91,
+        IsMandatory  = Int64.MinValue + 90,
+        InIndices    = Int64.MinValue + 91,
+        DefaultValue = Int64.MinValue + 92,
 
         #endregion
 
@@ -98,8 +99,7 @@ namespace sones.GraphDB.TypeManagement.Base
         #region WeightedEdge
 
         Weight = Int64.MinValue + 110,
-        DefaultValue,
-        Order,
+        Order = Int64.MinValue + 111,
 
         #endregion
     }

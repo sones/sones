@@ -601,7 +601,7 @@ namespace sones.GraphDB.Manager.BaseGraph
                     { (long) AttributeDefinitions.IsUserDefined, false },
                     { (long) AttributeDefinitions.IsSingleValue, myIsSingleValue},
                     { (long) AttributeDefinitions.IsRange, myIsRange },
-                    { (long) AttributeDefinitions.IsUserDefined, myIsVersioned },
+                    { (long) AttributeDefinitions.IsVersioned, myIsVersioned },
                 };
 
             if (myIndexClass == null)

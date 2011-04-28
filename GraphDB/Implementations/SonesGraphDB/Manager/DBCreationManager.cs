@@ -29,143 +29,121 @@ namespace sones.GraphDB.Manager
 
         #region Attribute
 
-        private static readonly byte AttributeOffset = 0;
+        private static readonly long Offset = 200;
 
         private readonly VertexInformation _Attribute                 = new VertexInformation((long)BaseTypes.VertexType  , (long)BaseTypes.Attribute);
-        private readonly VertexInformation _AttributeDotID            = new VertexInformation((long)BaseTypes.Property    , AttributeOffset + (long)AttributeDefinitions.ID);
-        private readonly VertexInformation _AttributeDotIsUserDefined = new VertexInformation((long)BaseTypes.Property    , AttributeOffset + (long)AttributeDefinitions.IsUserDefined);
-        private readonly VertexInformation _AttributeDotName          = new VertexInformation((long)BaseTypes.Property    , AttributeOffset + (long)AttributeDefinitions.Name);
-        private readonly VertexInformation _AttributeDotDefiningType  = new VertexInformation((long)BaseTypes.OutgoingEdge, AttributeOffset + (long)AttributeDefinitions.DefiningType);
+        private readonly VertexInformation _AttributeDotID            = new VertexInformation((long)BaseTypes.Property    , Offset + (long)AttributeDefinitions.ID);
+        private readonly VertexInformation _AttributeDotIsUserDefined = new VertexInformation((long)BaseTypes.Property    , Offset + (long)AttributeDefinitions.IsUserDefined);
+        private readonly VertexInformation _AttributeDotName          = new VertexInformation((long)BaseTypes.Property    , Offset + (long)AttributeDefinitions.Name);
+        private readonly VertexInformation _AttributeDotDefiningType  = new VertexInformation((long)BaseTypes.OutgoingEdge, Offset + (long)AttributeDefinitions.DefiningType);
 
         #endregion
 
         #region BaseType
 
-        private static readonly long BaseTypeOffset = AttributeOffset + 4;
-
         private readonly VertexInformation _BaseType                 = new VertexInformation((long)BaseTypes.VertexType  , (long)BaseTypes.BaseType);
-        private readonly VertexInformation _BaseTypeDotID            = new VertexInformation((long)BaseTypes.Property    , BaseTypeOffset + (long)AttributeDefinitions.ID);
-        private readonly VertexInformation _BaseTypeDotName          = new VertexInformation((long)BaseTypes.Property    , BaseTypeOffset + (long)AttributeDefinitions.Name);
-        private readonly VertexInformation _BaseTypeDotIsUserDefined = new VertexInformation((long)BaseTypes.Property    , BaseTypeOffset + (long)AttributeDefinitions.IsUserDefined);
-        private readonly VertexInformation _BaseTypeDotIsAbstract    = new VertexInformation((long)BaseTypes.Property    , BaseTypeOffset + (long)AttributeDefinitions.IsAbstract);
-        private readonly VertexInformation _BaseTypeDotIsSealed      = new VertexInformation((long)BaseTypes.Property    , BaseTypeOffset + (long)AttributeDefinitions.IsSealed);
-        private readonly VertexInformation _BaseTypeDotBehaviour     = new VertexInformation((long)BaseTypes.Property    , BaseTypeOffset + (long)AttributeDefinitions.Behaviour);
-        private readonly VertexInformation _BaseTypeDotAttributes    = new VertexInformation((long)BaseTypes.IncomingEdge, BaseTypeOffset + (long)AttributeDefinitions.Attributes);
+        private readonly VertexInformation _BaseTypeDotID            = new VertexInformation((long)BaseTypes.Property    , 2 * Offset + (long)AttributeDefinitions.ID);
+        private readonly VertexInformation _BaseTypeDotName          = new VertexInformation((long)BaseTypes.Property    , 2 * Offset + (long)AttributeDefinitions.Name);
+        private readonly VertexInformation _BaseTypeDotIsUserDefined = new VertexInformation((long)BaseTypes.Property    , 2 * Offset + (long)AttributeDefinitions.IsUserDefined);
+        private readonly VertexInformation _BaseTypeDotIsAbstract    = new VertexInformation((long)BaseTypes.Property    , 2 * Offset + (long)AttributeDefinitions.IsAbstract);
+        private readonly VertexInformation _BaseTypeDotIsSealed      = new VertexInformation((long)BaseTypes.Property    , 2 * Offset + (long)AttributeDefinitions.IsSealed);
+        private readonly VertexInformation _BaseTypeDotBehaviour     = new VertexInformation((long)BaseTypes.Property    , 2 * Offset + (long)AttributeDefinitions.Behaviour);
+        private readonly VertexInformation _BaseTypeDotAttributes    = new VertexInformation((long)BaseTypes.IncomingEdge, 2 * Offset + (long)AttributeDefinitions.Attributes);
 
         #endregion
 
         #region Edge
 
-        private static readonly long EdgeOffset = BaseTypeOffset + 7;
-
-        private readonly VertexInformation _Edge = new VertexInformation((long)BaseTypes.VertexType, EdgeOffset + (long)BaseTypes.Edge);
+        private readonly VertexInformation _Edge = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.Edge);
 
         #endregion
 
         #region EdgeType
 
-        private static readonly long EdgeTypeOffset = EdgeOffset;
-
         private readonly VertexInformation _EdgeType            = new VertexInformation((long)BaseTypes.VertexType  , (long)BaseTypes.EdgeType);
-        private readonly VertexInformation _EdgeTypeDotParent   = new VertexInformation((long)BaseTypes.OutgoingEdge, EdgeTypeOffset + (long)AttributeDefinitions.Parent);
-        private readonly VertexInformation _EdgeTypeDotChildren = new VertexInformation((long)BaseTypes.IncomingEdge, EdgeTypeOffset + (long)AttributeDefinitions.Children);
+        private readonly VertexInformation _EdgeTypeDotParent   = new VertexInformation((long)BaseTypes.OutgoingEdge, 4 * Offset + (long)AttributeDefinitions.Parent);
+        private readonly VertexInformation _EdgeTypeDotChildren = new VertexInformation((long)BaseTypes.IncomingEdge, 4 * Offset + (long)AttributeDefinitions.Children);
 
         #endregion
 
         #region IncomingEdge
 
-        private static readonly long IncomingEdgeOffset = EdgeTypeOffset + 2;
-
         private readonly VertexInformation _IncomingEdge               = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.IncomingEdge);
-        private readonly VertexInformation _IncomingEdgeDotRelatedEdge = new VertexInformation((long)BaseTypes.OutgoingEdge, IncomingEdgeOffset +(long)AttributeDefinitions.RelatedEgde);
+        private readonly VertexInformation _IncomingEdgeDotRelatedEdge = new VertexInformation((long)BaseTypes.OutgoingEdge, 5 * Offset + (long)AttributeDefinitions.RelatedEgde);
 
         #endregion
 
         #region Index
 
-        private static readonly long IndexOffset = IncomingEdgeOffset + 1;
-
         private readonly VertexInformation _Index                      = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.Index);
-        private readonly VertexInformation _IndexDotIndexedProperties  = new VertexInformation((long)BaseTypes.Property  , IndexOffset + (long)AttributeDefinitions.IndexedProperties);
-        private readonly VertexInformation _IndexDotDefiningVertexType = new VertexInformation((long)BaseTypes.Property  , IndexOffset + (long)AttributeDefinitions.DefiningVertexType);
-        private readonly VertexInformation _IndexDotID                 = new VertexInformation((long)BaseTypes.Property  , IndexOffset + (long)AttributeDefinitions.ID);
-        private readonly VertexInformation _IndexDotName               = new VertexInformation((long)BaseTypes.Property  , IndexOffset + (long)AttributeDefinitions.Name);
-        private readonly VertexInformation _IndexDotIsUserDefined      = new VertexInformation((long)BaseTypes.Property  , IndexOffset + (long)AttributeDefinitions.IsUserDefined);
-        private readonly VertexInformation _IndexDotIndexClass         = new VertexInformation((long)BaseTypes.Property  , IndexOffset + (long)AttributeDefinitions.IndexClass);
-        private readonly VertexInformation _IndexDotIsSingleValue      = new VertexInformation((long)BaseTypes.Property  , IndexOffset + (long)AttributeDefinitions.IsSingleValue);
-        private readonly VertexInformation _IndexDotIsRange            = new VertexInformation((long)BaseTypes.Property  , IndexOffset + (long)AttributeDefinitions.IsRange);
-        private readonly VertexInformation _IndexDotIsVersioned        = new VertexInformation((long)BaseTypes.Property  , IndexOffset + (long)AttributeDefinitions.IsVersioned);
+        private readonly VertexInformation _IndexDotIndexedProperties  = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.IndexedProperties);
+        private readonly VertexInformation _IndexDotDefiningVertexType = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.DefiningVertexType);
+        private readonly VertexInformation _IndexDotID                 = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.ID);
+        private readonly VertexInformation _IndexDotName               = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.Name);
+        private readonly VertexInformation _IndexDotIsUserDefined      = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.IsUserDefined);
+        private readonly VertexInformation _IndexDotIndexClass         = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.IndexClass);
+        private readonly VertexInformation _IndexDotIsSingleValue      = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.IsSingleValue);
+        private readonly VertexInformation _IndexDotIsRange            = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.IsRange);
+        private readonly VertexInformation _IndexDotIsVersioned        = new VertexInformation((long)BaseTypes.Property  , 6 * Offset + (long)AttributeDefinitions.IsVersioned);
 
         #endregion
 
         #region OutgoingEdge
 
-        private static readonly long OutgoingEdgeOffset = IndexOffset + 9;
-
         private readonly VertexInformation _OutgoingEdge                        = new VertexInformation((long)BaseTypes.VertexType  , (long)BaseTypes.OutgoingEdge);
-        private readonly VertexInformation _OutgoingEdgeDotRelatedIncomingEdges = new VertexInformation((long)BaseTypes.IncomingEdge, OutgoingEdgeOffset + (long)AttributeDefinitions.RelatedIncomingEdges);
-        private readonly VertexInformation _OutgoingEdgeDotEdgeType             = new VertexInformation((long)BaseTypes.OutgoingEdge, OutgoingEdgeOffset + (long)AttributeDefinitions.EdgeType);
-        private readonly VertexInformation _OutgoingEdgeDotSource               = new VertexInformation((long)BaseTypes.OutgoingEdge, OutgoingEdgeOffset + (long)AttributeDefinitions.Source);
-        private readonly VertexInformation _OutgoingEdgeDotTarget               = new VertexInformation((long)BaseTypes.OutgoingEdge, OutgoingEdgeOffset + (long)AttributeDefinitions.Target);
-        private readonly VertexInformation _OutgoingEdgeDotMultiplicity         = new VertexInformation((long)BaseTypes.Property    , OutgoingEdgeOffset + (long)AttributeDefinitions.Multiplicity);
+        private readonly VertexInformation _OutgoingEdgeDotRelatedIncomingEdges = new VertexInformation((long)BaseTypes.IncomingEdge, 7 * Offset + (long)AttributeDefinitions.RelatedIncomingEdges);
+        private readonly VertexInformation _OutgoingEdgeDotEdgeType             = new VertexInformation((long)BaseTypes.OutgoingEdge, 7 * Offset + (long)AttributeDefinitions.EdgeType);
+        private readonly VertexInformation _OutgoingEdgeDotSource               = new VertexInformation((long)BaseTypes.OutgoingEdge, 7 * Offset + (long)AttributeDefinitions.Source);
+        private readonly VertexInformation _OutgoingEdgeDotTarget               = new VertexInformation((long)BaseTypes.OutgoingEdge, 7 * Offset + (long)AttributeDefinitions.Target);
+        private readonly VertexInformation _OutgoingEdgeDotMultiplicity         = new VertexInformation((long)BaseTypes.Property    , 7 * Offset + (long)AttributeDefinitions.Multiplicity);
 
         #endregion
 
         #region Property
 
-        private static readonly long PropertyOffset = OutgoingEdgeOffset + 5;
-
         private readonly VertexInformation _Property                = new VertexInformation((long)BaseTypes.VertexType  , (long)BaseTypes.Property);
-        private readonly VertexInformation _PropertyDotType         = new VertexInformation((long)BaseTypes.OutgoingEdge, PropertyOffset + (long)AttributeDefinitions.Type);
-        private readonly VertexInformation _PropertyDotIsMandatory  = new VertexInformation((long)BaseTypes.Property    , PropertyOffset + (long)AttributeDefinitions.IsMandatory);
-        private readonly VertexInformation _PropertyDotInIndices    = new VertexInformation((long)BaseTypes.IncomingEdge, PropertyOffset + (long)AttributeDefinitions.InIndices);
-        private readonly VertexInformation _PropertyDotMultiplicity = new VertexInformation((long)BaseTypes.Property    , PropertyOffset + (long)AttributeDefinitions.Multiplicity );
+        private readonly VertexInformation _PropertyDotType         = new VertexInformation((long)BaseTypes.OutgoingEdge, 8 * Offset + (long)AttributeDefinitions.Type);
+        private readonly VertexInformation _PropertyDotIsMandatory  = new VertexInformation((long)BaseTypes.Property    , 8 * Offset + (long)AttributeDefinitions.IsMandatory);
+        private readonly VertexInformation _PropertyDotInIndices    = new VertexInformation((long)BaseTypes.IncomingEdge, 8 * Offset + (long)AttributeDefinitions.InIndices);
+        private readonly VertexInformation _PropertyDotMultiplicity = new VertexInformation((long)BaseTypes.Property    , 8 * Offset + (long)AttributeDefinitions.Multiplicity );
 
         #endregion
 
         #region Vertex
 
-        private static readonly long VertexOffset = PropertyOffset + 4;
-
         private readonly VertexInformation _Vertex                    = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.Vertex);
-        private readonly VertexInformation _VertexDotUUID             = new VertexInformation((long)BaseTypes.Property  , VertexOffset + (long)AttributeDefinitions.UUID);
-        private readonly VertexInformation _VertexDotCreationDate     = new VertexInformation((long)BaseTypes.Property  , VertexOffset + (long)AttributeDefinitions.CreationDate);
-        private readonly VertexInformation _VertexDotModificationDate = new VertexInformation((long)BaseTypes.Property  , VertexOffset + (long)AttributeDefinitions.ModificationDate);
-        private readonly VertexInformation _VertexDotRevision         = new VertexInformation((long)BaseTypes.Property  , VertexOffset + (long)AttributeDefinitions.Revision);
-        private readonly VertexInformation _VertexDotEdition          = new VertexInformation((long)BaseTypes.Property  , VertexOffset + (long)AttributeDefinitions.Edition);
-        private readonly VertexInformation _VertexDotComment          = new VertexInformation((long)BaseTypes.Property  , VertexOffset + (long)AttributeDefinitions.Comment);
-        private readonly VertexInformation _VertexDotTypeID           = new VertexInformation((long)BaseTypes.Property  , VertexOffset + (long)AttributeDefinitions.TypeID);
-        private readonly VertexInformation _VertexDotTypeName         = new VertexInformation((long)BaseTypes.Property  , VertexOffset + (long)AttributeDefinitions.TypeName);
+        private readonly VertexInformation _VertexDotUUID             = new VertexInformation((long)BaseTypes.Property  , 9 * Offset + (long)AttributeDefinitions.UUID);
+        private readonly VertexInformation _VertexDotCreationDate     = new VertexInformation((long)BaseTypes.Property  , 9 * Offset + (long)AttributeDefinitions.CreationDate);
+        private readonly VertexInformation _VertexDotModificationDate = new VertexInformation((long)BaseTypes.Property  , 9 * Offset + (long)AttributeDefinitions.ModificationDate);
+        private readonly VertexInformation _VertexDotRevision         = new VertexInformation((long)BaseTypes.Property  , 9 * Offset + (long)AttributeDefinitions.Revision);
+        private readonly VertexInformation _VertexDotEdition          = new VertexInformation((long)BaseTypes.Property  , 9 * Offset + (long)AttributeDefinitions.Edition);
+        private readonly VertexInformation _VertexDotComment          = new VertexInformation((long)BaseTypes.Property  , 9 * Offset + (long)AttributeDefinitions.Comment);
+        private readonly VertexInformation _VertexDotTypeID           = new VertexInformation((long)BaseTypes.Property  , 9 * Offset + (long)AttributeDefinitions.TypeID);
+        private readonly VertexInformation _VertexDotTypeName         = new VertexInformation((long)BaseTypes.Property  , 9 * Offset + (long)AttributeDefinitions.TypeName);
 
         #endregion
 
         #region VertexType
 
-        private static readonly long VertexTypeOffset = VertexOffset + 8;
-
         private readonly VertexInformation _VertexType                     = new VertexInformation((long)BaseTypes.VertexType  , (long)BaseTypes.VertexType);
-        private readonly VertexInformation _VertexTypeDotParent            = new VertexInformation((long)BaseTypes.OutgoingEdge, VertexTypeOffset + (long)AttributeDefinitions.Parent);
-        private readonly VertexInformation _VertexTypeDotChildren          = new VertexInformation((long)BaseTypes.IncomingEdge, VertexTypeOffset + (long)AttributeDefinitions.Children);
-        private readonly VertexInformation _VertexTypeDotUniqueDefinitions = new VertexInformation((long)BaseTypes.OutgoingEdge, VertexTypeOffset + (long)AttributeDefinitions.UniquenessDefinitions);
-        private readonly VertexInformation _VertexTypeDotIndices           = new VertexInformation((long)BaseTypes.IncomingEdge, VertexTypeOffset + (long)AttributeDefinitions.Indices);
+        private readonly VertexInformation _VertexTypeDotParent            = new VertexInformation((long)BaseTypes.OutgoingEdge, 10 * Offset + (long)AttributeDefinitions.Parent);
+        private readonly VertexInformation _VertexTypeDotChildren          = new VertexInformation((long)BaseTypes.IncomingEdge, 10 * Offset + (long)AttributeDefinitions.Children);
+        private readonly VertexInformation _VertexTypeDotUniqueDefinitions = new VertexInformation((long)BaseTypes.OutgoingEdge, 10 * Offset + (long)AttributeDefinitions.UniquenessDefinitions);
+        private readonly VertexInformation _VertexTypeDotIndices           = new VertexInformation((long)BaseTypes.IncomingEdge, 10 * Offset + (long)AttributeDefinitions.Indices);
 
         #endregion
 
         #region WeightedEdge
 
-        private static readonly long WeightedEdgeOffset = VertexTypeOffset + 4;
-
         private readonly VertexInformation _WeightedEdge          = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.WeightedEdge);
-        private readonly VertexInformation _WeightedEdgeDotWeight = new VertexInformation((long)BaseTypes.Property  , WeightedEdgeOffset + (long)AttributeDefinitions.Weight);
+        private readonly VertexInformation _WeightedEdgeDotWeight = new VertexInformation((long)BaseTypes.Property  , 11 * Offset + (long)AttributeDefinitions.Weight);
 
         #endregion
 
         #region OrderableEdge
 
-        private static readonly long OrderableEdgeOffset = WeightedEdgeOffset + 1;
-
         private readonly VertexInformation _OrderableEdge         = new VertexInformation((long)BaseTypes.VertexType, (long)BaseTypes.OrderableEdge);
-        private readonly VertexInformation _OrderableEdgeDotOrder = new VertexInformation((long)BaseTypes.Property, OrderableEdgeOffset + (long)AttributeDefinitions.Order);
+        private readonly VertexInformation _OrderableEdgeDotOrder = new VertexInformation((long)BaseTypes.Property, 12 * Offset + (long)AttributeDefinitions.Order);
 
         #endregion
 

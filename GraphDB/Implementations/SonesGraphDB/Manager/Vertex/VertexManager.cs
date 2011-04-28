@@ -242,8 +242,11 @@ namespace sones.GraphDB.Manager.Vertex
                     throw new NotImplementedException("Indices other than single or multiple value indices are not supported yet.");
                 }
             }
+
             return result;
         }
+
+        
 
         private VertexAddDefinition RequestInsertVertexToVertexAddDefinition(RequestInsertVertex myInsertDefinition, IVertexType myVertexType, TransactionToken myTransaction, SecurityToken mySecurity)
         {
@@ -251,8 +254,29 @@ namespace sones.GraphDB.Manager.Vertex
             var source = new VertexInformation(myVertexType.ID, vertexID);
             long date = DateTime.UtcNow.ToBinary();
 
-            var singleEdges = new Dictionary<String, SingleEdgeAddDefinition>();
+            IEnumerable<SingleEdgeAddDefinition> singleEdges;
+            IEnumerable<HyperEdgeAddDefinition> hyperEdges;
 
+            CreateEdgeAddDefinitions(myInsertDefinition, myVertexType, myTransaction, mySecurity, source, date, out singleEdges, out hyperEdges);
+
+            var binaries = myInsertDefinition.BinaryProperties.Select(x => new StreamAddDefinition(myVertexType.GetAttributeDefinition(x.Key).AttributeID, x.Value));
+            var structured = myInsertDefinition.StructuredProperties.ToDictionary(x => myVertexType.GetAttributeDefinition(x.Key).AttributeID, x=>x.Value);
+            
+            return new VertexAddDefinition(0L, myVertexType.ID, myInsertDefinition.Edition, hyperEdges, singleEdges, binaries, myInsertDefinition.Comment, date, date, structured, myInsertDefinition.UnstructuredProperties);
+        }
+
+        private void CreateEdgeAddDefinitions(
+            RequestInsertVertex myInsertDefinition, 
+            IVertexType myVertexType, 
+            TransactionToken myTransaction, 
+            SecurityToken mySecurity, 
+            VertexInformation source, 
+            long date, 
+            out IEnumerable<SingleEdgeAddDefinition> outSingleEdges, 
+            out IEnumerable<HyperEdgeAddDefinition> outHyperEdges)
+        {
+            var singleEdges = new Dictionary<String, SingleEdgeAddDefinition>();
+            var hyperEdges = new Dictionary<String, HyperEdgeAddDefinition>();
             foreach (var edgeDef in myInsertDefinition.OutgoingEdges)
             {
                 var attrDef = myVertexType.GetOutgoingEdgeDefinition(edgeDef.EdgeName);
@@ -272,26 +296,30 @@ namespace sones.GraphDB.Manager.Vertex
                                 //TODO: better exception here
                                 throw new Exception("A single edge needs at least one target.");
 
+
                             var edge = CreateSingleEdgeAddDefinition(date, edgeDef, attrDef, source, vertexIDs.First());
                             singleEdges.Add(attrDef.Name, edge);
                         }
                         break;
                     case EdgeMultiplicity.HyperEdge:
                         {
-                            var edge = new HyperEdgeAddDefinition();
+                            var edge = CreateHyperEdgeAddDefinition(source, date, edgeDef, attrDef, vertexIDs);
+                            hyperEdges.Add(attrDef.Name, edge);
                         }
                         break;
+                    default:
+                        throw new UnknownDBException("The EdgeMultiplicy enumeration was updated, but not this switch statement.");
                 }
-
-
-                
-                
-                
-
-
             }
-            
-            return new VertexAddDefinition(0L, myVertexType.ID, myInsertDefinition.Edition, null, null, null, myInsertDefinition.Comment, date, date, null, myInsertDefinition.UnstructuredProperties);
+
+            outSingleEdges = singleEdges.Select(x => x.Value);
+            outHyperEdges = hyperEdges.Select(x => x.Value);
+        }
+
+        private static HyperEdgeAddDefinition CreateHyperEdgeAddDefinition(VertexInformation source, long date, EdgePredefinition edgeDef, IOutgoingEdgeDefinition attrDef, ISet<VertexInformation> vertexIDs)
+        {
+            //TODO properties
+            return new HyperEdgeAddDefinition(attrDef.AttributeID, attrDef.EdgeType.ID, source, vertexIDs.Select(x => CreateSingleEdgeAddDefinition(date, edgeDef, attrDef, source, x)), edgeDef.Comment, date, date, null, null);
         }
 
         private static SingleEdgeAddDefinition CreateSingleEdgeAddDefinition(long date, EdgePredefinition edgeDef, IOutgoingEdgeDefinition attrDef, VertexInformation source, VertexInformation target)
