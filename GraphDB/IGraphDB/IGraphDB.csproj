@@ -116,6 +116,7 @@
     <Compile Include="Request\Clear\RequestClear.cs" />
     <Compile Include="Request\Converter.cs" />
     <Compile Include="Request\CreateEdgeType\EdgeTypeDefinition.cs" />
+    <Compile Include="Request\CreateVertexTypes\AttributePredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\BinaryPropertyPredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\IncomingEdgePredefinition.cs" />
     <Compile Include="Request\CreateVertexTypes\IndexPredefinition.cs" />

@@ -6,34 +6,23 @@ namespace sones.GraphDB.Request
     /// <summary>
     /// The definition for binary properties.
     /// </summary>
-    public sealed class BinaryPropertyPredefinition
+    public sealed class BinaryPropertyPredefinition: AttributePredefinition
     {
-        #region Data
-
-        /// <summary>
-        /// The name of the property
-        /// </summary>
-        public readonly String PropertyName;
-
-
-        /// <summary>
-        /// The comment for this binary property.
-        /// </summary>
-        public string Comment { get; private set; }
-
-        #endregion
-
         #region Constructor
 
         /// <summary>
-        /// Creates a new PropertyPredefinition
+        /// Creates a new BinaryPropertyPredefinition
         /// </summary>
-        /// <param name="myPropertyName">The name of the property</param>
-        /// <param name="myComment">The comment for this binary property.</param>
-        public BinaryPropertyPredefinition(String myPropertyName, String myComment)
+        public BinaryPropertyPredefinition(String myPropertyName)
+            : base(myPropertyName)
         {
-            PropertyName = myPropertyName;
-            Comment = myComment;
+            base.SetAttributeType("Stream");
+        }
+
+        /// <remarks>This method will be ignored.</remarks>
+        public override AttributePredefinition SetAttributeType(string myAttributeType)
+        {
+            return this;
         }
 
         #endregion

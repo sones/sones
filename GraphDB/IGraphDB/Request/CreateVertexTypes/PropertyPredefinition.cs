@@ -43,7 +43,7 @@ namespace sones.GraphDB.Request
         /// <summary>
         /// The default value for this property.
         /// </summary>
-        public IComparable DefaultValue { get; private set; }
+        public String DefaultValue { get; private set; }
 
         /// <summary>
         /// The multiplicity of this property.
