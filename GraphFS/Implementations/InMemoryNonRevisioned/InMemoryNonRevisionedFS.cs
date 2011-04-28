@@ -438,10 +438,11 @@ namespace sones.GraphFS
                 throw new VertexDoesNotExistException(myCorrespondingVertexTypeID, myToBeUpdatedVertexID);
             }
             
-            _vertexStore[myCorrespondingVertexTypeID][myToBeUpdatedVertexID] =
-                UpdateVertex_private(toBeUpdatedVertex, myVertexUpdate);
+            var updatedVertex = UpdateVertex_private(toBeUpdatedVertex, myVertexUpdate);
 
-            return null;
+            _vertexStore[myCorrespondingVertexTypeID][myToBeUpdatedVertexID] = updatedVertex;
+
+            return updatedVertex;
         }
 
         #endregion
