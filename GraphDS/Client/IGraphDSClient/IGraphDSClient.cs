@@ -1,6 +1,6 @@
 ﻿using sones.GraphDS;
 
-namespace sones.GraphDSClient
+namespace sones.GraphDS.GraphDSRESTClient
 {
     /// <summary>
     /// The interface for all GraphDS clients

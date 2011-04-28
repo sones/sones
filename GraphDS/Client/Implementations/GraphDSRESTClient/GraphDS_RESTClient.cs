@@ -4,14 +4,70 @@ using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
 using sones.GraphDB;
+using System.Net;
+using System.Web;
+using System.IO;
+using System.Text;
+using sones.Plugins.GraphDS.IO.XML_IO;
 
-namespace sones.GraphDSClient
+namespace sones.GraphDS.GraphDSRESTClient
 {
     /// <summary>
     /// A GraphDS client that communicates via REST
     /// </summary>
-    public sealed class GraphDSRESTClient : IGraphDSClient
+    public sealed class GraphDS_RESTClient : IGraphDSClient
     {
+        #region Data
+        private readonly String _Username;
+
+        private readonly String _Password;
+
+        private readonly NetworkCredential _Credentials;
+
+        private String _Host;
+        
+        private String getHost() 
+        {
+         return this._Host; 
+        }
+         
+        private void setHost(String myHost){
+            if (!myHost.Contains("http://"))
+            {
+                _Host = "http://" + myHost;
+            }
+            else
+            {
+                _Host = myHost;
+            }
+        }
+        
+        private readonly uint   _Port;
+
+        private readonly String _GQLPATTERN = "/gql";
+
+        private readonly String _GQLUri;
+
+        private XML_IO _Parser;
+
+        #endregion
+
+        #region Constructors
+
+        public GraphDS_RESTClient(String myHost, String myUsername, String myPassword, uint myPort = 9975)
+        {
+            setHost(myHost);
+            _Username = myUsername;
+            _Password = myPassword;
+            _Port = myPort;
+            _Credentials = new NetworkCredential(myUsername, myPassword);
+            
+            _GQLUri = getHost() + ":" + _Port.ToString() + _GQLPATTERN;
+
+            _Parser = new XML_IO();
+         }
+        #endregion
+
         #region IGraphDS Members
 
         public void Shutdown(SecurityToken mySecurityToken)
@@ -21,12 +77,17 @@ namespace sones.GraphDSClient
 
         public QueryResult Query(SecurityToken mySecurityToken, TransactionToken myTransactionToken, string myQueryString, string myQueryLanguageName)
         {
-            throw new NotImplementedException();
+            QueryResult result = null;
+            String resonseXML = FetchGraphDBOutput(myQueryString);
+            result = _Parser.GenerateQueryResult(resonseXML);
+            return result;
         }
+
+        
 
         #endregion
 
-        #region IGraphDB Members
+        #region IGraphDB Members / Not Implemented
 
         public TResult CreateVertexType<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestCreateVertexTypes myRequestCreateVertexType, Converter.CreateVertexTypeResultConverter<TResult> myOutputconverter)
         {
@@ -80,7 +141,7 @@ namespace sones.GraphDSClient
 
         #endregion
 
-        #region ITransactionable Members
+        #region ITransactionable Members / Not Implemented
 
         public TransactionToken BeginTransaction(SecurityToken mySecurityToken, bool myLongrunning = false, IsolationLevel myIsolationLevel = IsolationLevel.Serializable)
         {
@@ -99,7 +160,7 @@ namespace sones.GraphDSClient
 
         #endregion
 
-        #region IUserAuthentication Members
+        #region IUserAuthentication Members / Not Implemented
 
         public SecurityToken LogOn(IUserCredentials toBeAuthenticatedCredentials)
         {
@@ -109,6 +170,44 @@ namespace sones.GraphDSClient
         public void LogOff(SecurityToken toBeLoggedOfToken)
         {
             throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region Utilities
+
+        private String FetchGraphDBOutput(String myQueryString)
+        {
+            String fullRESTUri = _GQLUri + "?" + HttpUtility.HtmlEncode(myQueryString);
+            try
+            {
+
+                HttpWebRequest request = WebRequest.Create(fullRESTUri) as HttpWebRequest;
+
+                request.Credentials = _Credentials;
+                request.ContentType = "application/xml";
+                request.UserAgent = "GraphDSRESTClient";
+                request.KeepAlive = false;
+                StreamReader reader;
+                StringBuilder resonseXML = null;
+
+                HttpWebResponse response = request.GetResponse() as HttpWebResponse;
+
+
+
+                if (request.HaveResponse == true && response != null)
+                {
+                    reader = new StreamReader(response.GetResponseStream());
+                    resonseXML = new StringBuilder(reader.ReadToEnd());
+                }
+                return resonseXML.ToString();
+
+            }
+            catch (WebException ex)
+            {
+                throw ex;
+            }
+
         }
 
         #endregion

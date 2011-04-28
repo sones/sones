@@ -74,7 +74,9 @@ namespace sones.Plugins.GraphDS.RESTService
         {
 
             var _ContentType = HTTPServer.HTTPContext.RequestHeader.GetBestMatchingAcceptHeader(GraphDSREST_Constants._HTML, GraphDSREST_Constants._JSON, GraphDSREST_Constants._XML, GraphDSREST_Constants._GEXF, GraphDSREST_Constants._TEXT);
-
+            
+            //DEBRIS
+            _ContentType.MediaType = "application/xml";
             IOInterface plugin = null;
 
 
@@ -86,6 +88,7 @@ namespace sones.Plugins.GraphDS.RESTService
             else
             {
                 _ErrorMsg.Error406_NotAcceptable(String.Format("The server does not support the requested content type {0} ", _ContentType.ToString()));
+
             }
 
         }
