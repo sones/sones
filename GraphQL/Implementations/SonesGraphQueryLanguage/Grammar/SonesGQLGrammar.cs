@@ -2845,7 +2845,6 @@ namespace sones.GraphQL
 
         public void SetGraphDBImporter(IEnumerable<IGraphDBImport> graphDBImporter)
         {
-
             #region Add all plugins to the grammar
 
             if (graphDBImporter == null || graphDBImporter.Count() == 0)
@@ -2870,7 +2869,6 @@ namespace sones.GraphQL
             }
 
             #endregion
-
         }
 
         #endregion
