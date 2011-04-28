@@ -43,6 +43,8 @@ namespace sones.GraphDB
                                RequestClear myRequestClear,
                                Converter.ClearResultConverter<TResult> myOutputconverter);
 
+
+
         /// <summary>
         /// Inserts a new vertex
         /// </summary>
