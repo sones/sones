@@ -106,5 +106,8 @@ namespace sones.GraphDB.Request
         /// <param name="myVertex">The vertex that has been truncated</param>
         /// <returns>A TResult</returns>
         public delegate TResult TruncateResultConverter<out TResult>(IRequestStatistics myRequestStatistics);
+
+        public delegate TResult DescribeIndexResultConverter<out TResult>(IRequestStatistics myRequestStatistics, IEnumerable<IIndexDefinition> myIndexDefinitons);
+
     }
 }

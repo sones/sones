@@ -12,6 +12,8 @@ using sones.Library.Commons.Transaction;
 using sones.Library.VersionedPluginManager;
 using sones.GraphDB.Request.GetEdgeType;
 using sones.GraphDB.Request.GetVertexType;
+using sones.GraphDB.Request.GetIndex;
+using sones.GraphDB.Request.DecribeIndex;
 
 namespace sones.GraphDB
 {
@@ -278,6 +280,18 @@ namespace sones.GraphDB
                 _requestManager.RegisterRequest(new PipelineableTruncateRequest(myRequestTruncate, mySecurityToken, myTransactionToken));
 
             return ((PipelineableTruncateRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
+        }
+
+        #endregion
+
+        #region Describe Index
+
+        public TResult DescribeIndex<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDescribeIndex myRequestDescribeIndex, Converter.DescribeIndexResultConverter<TResult> myOutputconverter)
+        {
+            var id =
+                _requestManager.RegisterRequest(new PipelineableDescribeIndexRequest(myRequestDescribeIndex, mySecurityToken, myTransactionToken));
+
+            return ((PipelineableDescribeIndexRequest)_requestManager.GetResult(id)).GenerateRequestResult(myOutputconverter);
         }
 
         #endregion

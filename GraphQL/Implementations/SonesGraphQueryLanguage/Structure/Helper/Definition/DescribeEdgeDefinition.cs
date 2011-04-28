@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using sones.GraphQL.Result;
 using Irony.Parsing;
-using sones.GraphQL.GQL.Manager.Plugin;
 using sones.GraphDB;
+using sones.GraphDB.Request;
+using sones.GraphDB.Request.GetEdgeType;
+using sones.GraphDB.TypeSystem;
+using sones.GraphQL.GQL.ErrorHandling;
+using sones.GraphQL.GQL.Manager.Plugin;
+using sones.GraphQL.Result;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
-using sones.GraphDB.TypeSystem;
-using sones.GraphDB.Request;
-using sones.GraphQL.GQL.ErrorHandling;
-using sones.GraphDB.Request.GetEdgeType;
+using System.Diagnostics;
+using sones.Library.ErrorHandling;
 
 namespace sones.GraphQL.GQL.Structure.Helper.Definition
 {
@@ -35,12 +35,20 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
         #endregion
 
-        public override IEnumerable<IVertexView> GetResult(ParsingContext myContext,
-                                                            GQLPluginManager myPluginManager,
-                                                            IGraphDB myGraphDB,
-                                                            SecurityToken mySecurityToken,
-                                                            TransactionToken myTransactionToken)
+        public override QueryResult GetResult(ParsingContext myContext,
+                                                GQLPluginManager myPluginManager,
+                                                IGraphDB myGraphDB,
+                                                SecurityToken mySecurityToken,
+                                                TransactionToken myTransactionToken)
         {
+            var sw = new Stopwatch();
+
+            sw.Reset();
+            sw.Start();
+
+            var resultingVertices = new List<IVertexView>();
+            ASonesException error = null;
+
             if (!String.IsNullOrEmpty(_EdgeName))
             {
 
@@ -51,11 +59,11 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                 if (edge != null)
                 {
-                    return new List<IVertexView>() { GenerateOutput(edge, _EdgeName) };
+                    resultingVertices = new List<IVertexView>() { GenerateOutput(edge, _EdgeName) };
                 }
                 else
                 {
-                    throw new EdgeTypeDoesNotExistException(_EdgeName, "");
+                    error = new EdgeTypeDoesNotExistException(_EdgeName, "");
                 }
 
                 #endregion
@@ -66,19 +74,22 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                 #region All edges
 
-                var resultingReadouts = new List<VertexView>();
+                var resultingReadouts = new List<IVertexView>();
 
                 var request = new RequestGetAllEdgeTypes();
                 foreach (var edge in myGraphDB.GetAllEdgeTypes<IEnumerable<IEdgeType>>(mySecurityToken, myTransactionToken, request, (stats, edgeTypes) => edgeTypes))
                 {
-                    //resultingReadouts.Add(GenerateOutput(edge.Value, edge.Key));
+                    resultingReadouts.Add(GenerateOutput(edge, edge.Name));
                 }
 
 
-                return resultingReadouts;
                 #endregion
 
             }
+
+            sw.Stop();
+
+            return new QueryResult("", "GQL", (ulong)sw.ElapsedMilliseconds, ResultType.Successful, resultingVertices, error);
         }
 
         #region Output

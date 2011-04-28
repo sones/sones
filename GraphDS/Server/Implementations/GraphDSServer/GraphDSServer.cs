@@ -16,6 +16,7 @@ using sones.GraphDS.PluginManager.GraphDSPluginManager;
 using sones.GraphQL;
 using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.Request.GetEdgeType;
+using sones.GraphDB.Request.GetIndex;
 using sones.Plugins.GraphDS;
 using sones.Library.VersionedPluginManager;
 using sones.GraphDS.PluginManager;
@@ -344,6 +345,11 @@ namespace sones.GraphDSServer
         public TResult Truncate<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestTruncate myRequestTruncate, Converter.TruncateResultConverter<TResult> myOutputconverter)
         {
             return _iGraphDB.Truncate<TResult>(mySecurityToken, myTransactionToken, myRequestTruncate, myOutputconverter);
+        }
+
+        public TResult DescribeIndex<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDescribeIndex myRequestDescribeIndex, Converter.DescribeIndexResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
         }
 
         public Guid ID

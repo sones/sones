@@ -7,6 +7,7 @@ using sones.Library.Commons.Transaction;
 using sones.GraphDB.Request;
 using sones.GraphDB.Request.GetEdgeType;
 using sones.GraphDB.Request.GetVertexType;
+using sones.GraphDB.Request.GetIndex;
 
 namespace sones.GraphDB
 {
@@ -133,6 +134,11 @@ namespace sones.GraphDB
                                             RequestGetAllEdgeTypes myRequestGetAllEdgeTypes,
                                             Converter.GetAllEdgeTypesResultConverter<TResult> myOutputconverter);
 
+        TResult DescribeIndex<TResult>(SecurityToken mySecurityToken,
+                                            TransactionToken myTransactionToken,
+                                            RequestDescribeIndex myRequestGetAllEdgeTypes,
+                                            Converter.DescribeIndexResultConverter<TResult> myOutputconverter);
+        
         #endregion
 
         #endregion

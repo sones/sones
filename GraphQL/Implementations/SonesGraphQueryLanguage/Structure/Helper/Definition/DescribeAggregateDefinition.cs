@@ -10,6 +10,7 @@ using sones.GraphQL.Result;
 using sones.GraphDB;
 using sones.Library.Commons.Security;
 using sones.Library.Commons.Transaction;
+using System.Diagnostics;
 
 namespace sones.GraphQL.GQL.Structure.Helper.Definition
 {
@@ -39,12 +40,20 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// <summary>
         /// <seealso cref=" ADescribeDefinition"/>
         /// </summary>
-        public override IEnumerable<IVertexView> GetResult(ParsingContext myContext,
-                                                            GQLPluginManager myPluginManager,
-                                                            IGraphDB myGraphDB,
-                                                            SecurityToken mySecurityToken,
-                                                            TransactionToken myTransactionToken)
+        public override QueryResult GetResult(ParsingContext myContext,
+                                                GQLPluginManager myPluginManager,
+                                                IGraphDB myGraphDB,
+                                                SecurityToken mySecurityToken,
+                                                TransactionToken myTransactionToken)
         {
+            var sw = new Stopwatch();
+
+            sw.Reset();
+            sw.Start();
+
+            var resultingVertices = new List<IVertexView>();
+            ASonesException error = null;
+
             if (!String.IsNullOrEmpty(_AggregateName))
             {
 
@@ -56,16 +65,16 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
 
                     if (aggregate != null)
                     {
-                        return new List<IVertexView>() { GenerateOutput(aggregate, _AggregateName) };
+                        resultingVertices = new List<IVertexView>() { GenerateOutput(aggregate, _AggregateName) };
                     }
                     else
                     {
-                        throw new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "");
+                        error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "");
                     }
                 }
                 catch (ASonesException e)
                 {
-                    throw new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "", e);
+                    error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "", e);
                 }
 
                 #endregion
@@ -76,8 +85,6 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             {
 
                 #region All aggregates
-
-                var resultingVertices = new List<IVertexView>();
 
                 myPluginManager.GetPluginsForType<IGQLAggregate>();
                 foreach (var aggregateName in myPluginManager.GetPluginsForType<IGQLAggregate>())
@@ -92,20 +99,22 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
                         }
                         else
                         {
-                            throw new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "");
+                            error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "");
                         }
                     }
                     catch (ASonesException e)
                     {
-                        throw new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "", e);
+                        error = new AggregateOrFunctionDoesNotExistException(typeof(IGQLAggregate), _AggregateName, "", e);
                     }
                 }
-
-                return resultingVertices;
 
                 #endregion
 
             }
+
+            sw.Stop();
+
+            return new QueryResult("", "GQL", (ulong)sw.ElapsedMilliseconds, ResultType.Successful, resultingVertices, error);
         }
 
         #region GenerateOutput

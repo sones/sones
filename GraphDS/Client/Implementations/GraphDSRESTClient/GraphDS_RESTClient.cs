@@ -11,6 +11,7 @@ using System.Text;
 using sones.Plugins.GraphDS.IO.XML_IO;
 using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.Request.GetEdgeType;
+using sones.GraphDB.Request.GetIndex;
 
 namespace sones.GraphDS.GraphDSRESTClient
 {
@@ -142,6 +143,11 @@ namespace sones.GraphDS.GraphDSRESTClient
         }
 
         public TResult Truncate<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestTruncate myRequestTruncate, Converter.TruncateResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult DescribeIndex<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDescribeIndex myRequestDescribeIndex, Converter.DescribeIndexResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }

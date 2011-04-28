@@ -127,6 +127,7 @@
     <Compile Include="Request\CreateVertexTypes\VertexTypePredefinition.cs" />
     <Compile Include="Request\GetEdgeType\RequestGetAllEdgeTypes.cs" />
     <Compile Include="Request\GetEdgeType\RequestGetEdgeType.cs" />
+    <Compile Include="Request\DescribeIndex\RequestDescribeIndex.cs" />
     <Compile Include="Request\GetVertexType\RequestGetAllVertexTypes.cs" />
     <Compile Include="Request\GetVertexType\RequestGetVertexType.cs" />
     <Compile Include="Request\GetVertex\RequestGetVertex.cs" />

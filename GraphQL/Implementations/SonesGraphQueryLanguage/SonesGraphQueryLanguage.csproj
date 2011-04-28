@@ -50,9 +50,11 @@
     <Compile Include="ErrorHandling\GQLGrammarSetExtandableMemberException.cs" />
     <Compile Include="ErrorHandling\GQLParsingException.cs" />
     <Compile Include="ErrorHandling\GqlSyntaxException.cs" />
+    <Compile Include="ErrorHandling\IndexTypeDoesNotExistException.cs" />
     <Compile Include="ErrorHandling\InvalidBinaryExpressionException.cs" />
     <Compile Include="ErrorHandling\InvalidLevelKeyOperationException.cs" />
     <Compile Include="ErrorHandling\IronyInitializeGrammarException.cs" />
+    <Compile Include="ErrorHandling\VertexTypeDoesNotExistException.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Grammar\SonesGQLGrammar.cs" />
     <Compile Include="Manager\Plugin\GQLPluginManager.cs" />
@@ -90,6 +92,9 @@
     <Compile Include="Structure\Helper\Definition\DBTypeOfAttributeDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\DescribeAggregateDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\DescribeEdgeDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\DescribeFuncDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\DescribeIndexDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\DescribeTypeDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\EdgeTypeParamDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\GraphDBTypeDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\IndexAttributeDefinition.cs" />

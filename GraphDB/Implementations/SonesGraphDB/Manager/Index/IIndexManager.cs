@@ -60,5 +60,7 @@ namespace sones.GraphDB.Manager.Index
         /// <returns></returns>
         String GetBestMatchingIndexName(bool myIsSingleValue, bool myIsRange, bool myIsVersioned);
 
+        IEnumerable<IIndexDefinition> DescribeIndex(String myTypeName, String myIndexName, String myEdition, TransactionToken myTransactionToken, SecurityToken mySecurityToken);
+
     }
 }

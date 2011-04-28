@@ -84,6 +84,13 @@ namespace sones.GraphDB.Manager.Index
             throw new NotImplementedException();
         }
 
+        public IEnumerable<IIndexDefinition> DescribeIndex(String myTypeName, String myIndexName, String myEdition, TransactionToken myTransactionToken, SecurityToken mySecurityToken)
+        {
+            //Remember is IndexName is empty return all indices on Type else return index with indexName on type
+
+            throw new NotImplementedException();
+        }
+
         #endregion
     }
 }

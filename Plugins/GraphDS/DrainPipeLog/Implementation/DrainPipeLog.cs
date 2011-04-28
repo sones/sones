@@ -12,6 +12,7 @@ using sones.Plugins.GraphDS.DrainPipeLog.Storage;
 using System.Threading;
 using sones.GraphDB.Request.GetVertexType;
 using sones.GraphDB.Request.GetEdgeType;
+using sones.GraphDB.Request.GetIndex;
 
 namespace sones.Plugins.GraphDS.DrainPipeLog
 {
@@ -275,6 +276,11 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
         }
 
         public TResult Truncate<TResult>(sones.Library.Commons.Security.SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestTruncate myRequestTruncate, Converter.TruncateResultConverter<TResult> myOutputconverter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public TResult DescribeIndex<TResult>(SecurityToken mySecurityToken, TransactionToken myTransactionToken, RequestDescribeIndex myRequestGetAllEdgeTypes, Converter.DescribeIndexResultConverter<TResult> myOutputconverter)
         {
             throw new NotImplementedException();
         }

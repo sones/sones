@@ -22,10 +22,10 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
         /// </summary>
         /// <param name="myDBContext">The db context</param>
         /// <returns>An exceptional that contains an enumerable of vertices</returns>
-        public abstract IEnumerable<IVertexView> GetResult(ParsingContext myContext, 
-                                                            GQLPluginManager myPluginManager, 
-                                                            IGraphDB myGraphDB, 
-                                                            SecurityToken mySecurityToken,  
-                                                            TransactionToken myTransactionToken);
+        public abstract QueryResult GetResult(ParsingContext myContext,
+                                                GQLPluginManager myPluginManager,
+                                                IGraphDB myGraphDB,
+                                                SecurityToken mySecurityToken,
+                                                TransactionToken myTransactionToken);
     }
 }
