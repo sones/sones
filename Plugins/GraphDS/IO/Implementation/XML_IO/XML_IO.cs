@@ -6,13 +6,10 @@ using System.IO;
 using System.Xml.Schema;
 using System.Xml;
 using sones.GraphQL.Result;
-using sones.Library.Settings;
 using sones.Library.VersionedPluginManager;
 using SchemaToClassesGenerator;
-using System.Xml;
 using sones.Plugins.GraphDS.IO.XML_IO.Result;
 using sones.Plugins.GraphDS.IO.XML_IO.ErrorHandling;
-using System.Reflection;
 
 
 namespace sones.Plugins.GraphDS.IO.XML_IO
@@ -246,7 +243,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
                 nextNode = nextNode.NextSibling;
             }
 
-            return new QueryResult(query, language, duration,ResultType.Successful, vertices);
+            return new QueryResult(query, language, duration, ResultType.Successful, vertices, error != String.Empty ? new QueryException(error) : null);
         }
 
         public ContentType ContentType

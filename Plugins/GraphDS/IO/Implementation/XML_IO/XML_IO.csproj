@@ -48,6 +48,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ErrorHandling\QueryException.cs" />
     <Compile Include="ErrorHandling\XmlValidationException.cs" />
     <Compile Include="ErrorHandling\XmlVersionException.cs" />
     <Compile Include="QueryResultSchema.cs">

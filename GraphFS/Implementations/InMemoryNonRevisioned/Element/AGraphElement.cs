@@ -14,7 +14,7 @@ namespace sones.GraphFS.Element
         /// <summary>
         /// A comment for the vertex
         /// </summary>
-        protected readonly string _comment;
+        protected string _comment;
 
         /// <summary>
         /// The creation date of the vertex

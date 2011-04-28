@@ -637,7 +637,15 @@ namespace sones.GraphFS
         private InMemoryVertex UpdateVertex_private(InMemoryVertex toBeUpdatedVertex,
                                                     VertexUpdateDefinition myVertexUpdate)
         {
-            throw new NotImplementedException();
+            if (toBeUpdatedVertex.Comment != null)
+            {
+                toBeUpdatedVertex.UpdateComment(myVertexUpdate.CommentUpdate);
+            }
+            toBeUpdatedVertex.UpdateBinaryProperties(myVertexUpdate.UpdatedBinaryProperties.Updated, myVertexUpdate.UpdateHyperEdges.Deleted);
+            
+            //myVertexUpdate.UpdatedSingleEdges 
+
+            return toBeUpdatedVertex;
         }
 
         /// <summary>

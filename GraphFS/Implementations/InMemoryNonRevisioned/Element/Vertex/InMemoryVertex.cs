@@ -5,6 +5,8 @@ using sones.GraphFS.Element.Edge;
 using sones.GraphFS.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
 using System.Collections;
+using sones.Library.Commons.VertexStore.Definitions;
+using sones.Library.Commons.VertexStore.Definitions.Update;
 
 namespace sones.GraphFS.Element.Vertex
 {
@@ -445,6 +447,53 @@ namespace sones.GraphFS.Element.Vertex
             Int64 myVertexTypeID)
         {
             return new InMemoryVertex(myVertexID, myVertexTypeID);
+        }
+
+        #endregion
+
+        #region update methods
+
+        public void UpdateComment(String myComment)
+        {
+            lock (_comment)
+            {
+                _comment = myComment;
+            }
+        }
+
+        public void UpdateBinaryProperties(Dictionary<Int64, StreamAddDefinition> myBinaryUpdatedProperties, IEnumerable<Int64> myDeletedBinaryProperties)
+        {
+            lock (_binaryProperties)
+            {
+                foreach (var item in myDeletedBinaryProperties)
+                {
+                    _binaryProperties.Remove(item);
+                }
+
+                foreach (var item in myBinaryUpdatedProperties)
+                {
+                    if (_binaryProperties.ContainsKey(item.Value.PropertyID))
+                    {
+                        _binaryProperties[item.Value.PropertyID] = item.Value.Stream;
+                    }
+                }
+            }
+        }
+
+        public void UpdateSingleEdges(SingleEdgeUpdate mySingleEdgeUpdate)
+        {
+            lock (_outgoingEdges)
+            {
+                foreach (var item in mySingleEdgeUpdate.Deleted)
+                {
+                    _outgoingEdges.Remove(item);
+                }
+
+                foreach (var item in mySingleEdgeUpdate.Updated)
+                {
+                    //_outgoingEdges[item.Key].Comment
+                }
+            }
         }
 
         #endregion
