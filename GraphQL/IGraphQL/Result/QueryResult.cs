@@ -80,6 +80,21 @@ namespace sones.GraphQL.Result
             Duration = myDuration;
         }
 
+        /// <summary>
+        /// Creates a new empty QueryResult just with an Error
+        /// </summary>
+        /// <param name="myError">The Error occured during an query</param>
+        public QueryResult(ASonesException myError)
+        {
+            TypeOfResult = new ResultType();
+            Vertices = new List<IVertexView>();
+            Query = "";
+            NameOfQuerylanguage = "";
+            Duration = 0L;
+
+            Error = myError;
+        }
+
         #endregion
 
         #region IEnumerable<Vertex> Members
