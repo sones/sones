@@ -116,7 +116,8 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             retVal.Add("TYPE", myType.GetType());
             retVal.Add("Name", myType.Name);
 
-            if (myType.Comment != null || myType.Comment.Equals(""))
+            if (!string.IsNullOrWhiteSpace(myType.Comment))
+                
             {
                 retVal.Add("Comment", myType.Comment);
             }
