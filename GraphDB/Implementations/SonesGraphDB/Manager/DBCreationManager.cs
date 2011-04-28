@@ -147,6 +147,12 @@ namespace sones.GraphDB.Manager
 
         #endregion
 
+        #region BinaryProperty
+
+        private readonly VertexInformation _BinaryProperty = new VertexInformation((long)BaseTypes.VertexType  , (long)BaseTypes.BinaryProperty);
+
+        #endregion
+
         #region Basic types
 
         public static readonly Dictionary<BasicTypes, VertexInformation> BasicTypesVertices = new Dictionary<BasicTypes, VertexInformation>
@@ -359,6 +365,7 @@ namespace sones.GraphDB.Manager
             AddOutgoingEdge(myStore, myCreationDate);
             AddIncomingEdge(myStore, myCreationDate);
             AddProperty(myStore, myCreationDate);
+            AddBinaryProperty(myStore, myCreationDate);
             AddIndex(myStore, myCreationDate);
         }
 
@@ -405,6 +412,16 @@ namespace sones.GraphDB.Manager
             BaseGraphStorageManager.StoreProperty(myStore, _IndexDotIsVersioned, AttributeDefinitions.IsVersioned, "IsVersionedComment", myCreationDate, true, PropertyMultiplicity.Single, null, _Index, _BaseTypeBoolean, _security, _transaction);
 
             #endregion
+        }
+
+        private void AddBinaryProperty(IVertexStore myStore, long myCreationDate)
+        {
+            #region Property vertex
+
+            BaseGraphStorageManager.StoreVertexType(myStore, _BinaryProperty, BaseTypes.BinaryProperty, "BinaryPropertyComment", myCreationDate, false, true, _Attribute, null, _security, _transaction); //TODO uniques
+
+            #endregion
+
         }
 
         private void AddProperty(IVertexStore myStore, Int64 myCreationDate)

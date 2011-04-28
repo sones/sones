@@ -1295,7 +1295,7 @@ namespace sones.GraphDB.Manager.TypeManagement
                 mySecurity, 
                 BaseTypes.Attribute, 
                 BaseTypes.BaseType, 
-                //BaseTypes.BinaryProperty, 
+                BaseTypes.BinaryProperty, 
                 BaseTypes.EdgeType, 
                 BaseTypes.IncomingEdge, 
                 BaseTypes.Index,
