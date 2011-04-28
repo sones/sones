@@ -115,7 +115,11 @@ namespace sones.GraphQL.GQL.Structure.Helper.Definition
             retVal.Add("UUID", myType.ID);
             retVal.Add("TYPE", myType.GetType());
             retVal.Add("Name", myType.Name);
-            retVal.Add("Comment", myType.Comment);
+
+            if (myType.Comment != null || myType.Comment.Equals(""))
+            {
+                retVal.Add("Comment", myType.Comment);
+            }
 
             if (myDepth > 0)
             {
