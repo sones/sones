@@ -421,7 +421,7 @@ namespace sones.GraphDB.Manager
 
         public String PluginName
         {
-            get { return "RequestManager"; }
+            get { return "sones.requestmanager"; }
         }
 
         public Dictionary<String, Type> SetableParameters

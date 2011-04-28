@@ -17,7 +17,7 @@ namespace sones.GraphDB.Settings
 
         public string DefaultSettingValue
         {
-            get { return "RequestManager"; }
+            get { return "sones.requestmanager"; }
         }
 
         public Type SettingType

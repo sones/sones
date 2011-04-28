@@ -58,7 +58,7 @@ namespace sones.GraphQL.StatementNodes.DML
 
         public override QueryResult Execute(IGraphDB myGraphDB, IGraphQL myGraphQL, GQLPluginManager myPluginManager, String myQuery, SecurityToken mySecurityToken, TransactionToken myTransactionToken)
         {
-            if(ImportFormat.Equals("GQL"))
+            if(ImportFormat.Equals("sones.gql"))
             {
                 var plugin = myPluginManager.GetAndInitializePlugin<IGraphDBImport>("sones.gqlimport");
 

@@ -166,7 +166,7 @@ namespace sones.GraphDB.Manager.Transaction
 
         public String PluginName
         {
-            get { return "BasicTransactionManager"; }
+            get { return "sones.basictransactionmanager"; }
         }
 
         public Dictionary<String, Type> SetableParameters

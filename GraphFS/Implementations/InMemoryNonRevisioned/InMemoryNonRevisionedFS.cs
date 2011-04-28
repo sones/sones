@@ -531,7 +531,7 @@ namespace sones.GraphFS
 
         public String PluginName
         {
-            get { return "InMemoryNonRevisionedFS"; }
+            get { return "sones.inmemorynonrevisionedfs"; }
         }
 
         public Dictionary<String, Type> SetableParameters

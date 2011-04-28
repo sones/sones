@@ -19,7 +19,7 @@ namespace sones.GraphQL
         /// <summary>
         /// The name of the sones query language
         /// </summary>
-        public static String GQL = "GQL";
+        public static String GQL = "sones.gql";
 
         /// <summary>
         /// The list of references that are stored within irony

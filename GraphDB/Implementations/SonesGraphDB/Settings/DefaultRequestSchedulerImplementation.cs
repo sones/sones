@@ -17,7 +17,7 @@ namespace sones.GraphDB.Settings
 
         public string DefaultSettingValue
         {
-            get { return "BasicRequestScheduler"; }
+            get { return "sones.basicrequestscheduler"; }
         }
 
         public Type SettingType

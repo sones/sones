@@ -40,7 +40,7 @@ namespace sones.GraphDB.Manager
 
         public String PluginName
         {
-            get { return "BasicRequestScheduler"; }
+            get { return "sones.basicrequestscheduler"; }
         }
 
         public Dictionary<String, Type> SetableParameters

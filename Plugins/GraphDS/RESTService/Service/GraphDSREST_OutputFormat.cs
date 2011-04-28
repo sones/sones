@@ -8,7 +8,7 @@ namespace sones.Plugins.GraphDS.RESTService
     public enum GraphDSREST_OutputFormat
     {
         JSON,
-        XML,
-        TEXT
+        XML
+        //,TEXT
     }
 }

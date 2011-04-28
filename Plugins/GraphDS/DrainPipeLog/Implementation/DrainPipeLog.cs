@@ -34,7 +34,7 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
         #region IPluginable
         public string PluginName
         {
-            get { return "DrainPipeLog"; }
+            get { return "sones.drainpipelog"; }
         }
 
         public Dictionary<string, Type> SetableParameters
@@ -88,7 +88,7 @@ namespace sones.Plugins.GraphDS.DrainPipeLog
             }
             else
             {
-                AppendLogPathAndName = "DrainPipeLog";
+                AppendLogPathAndName = "sones.drainpipelog";
             }
             #endregion
 

@@ -107,7 +107,7 @@ namespace sones.GraphQL
             ParseTree aTree;
             //executeable statement
             AStatement statement;   
-            QueryResult queryResult = new QueryResult(myQueryString, "GQL", 0L, ResultType.Failed);
+            QueryResult queryResult = new QueryResult(myQueryString, "sones.gql", 0L, ResultType.Failed);
 
             #region Input exceptions - null or empty query
 
@@ -206,7 +206,7 @@ namespace sones.GraphQL
 
         public string PluginName
         {
-            get { return "GQL"; }
+            get { return "sones.gql"; }
         }
 
         public Dictionary<string, Type> SetableParameters

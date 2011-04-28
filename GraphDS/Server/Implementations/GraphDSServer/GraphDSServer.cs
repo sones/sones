@@ -104,7 +104,7 @@ namespace sones.GraphDSServer
                 Dictionary<string, object> GQL_Parameters = new Dictionary<string, object>();
                 GQL_Parameters.Add("GraphDB", myGraphDB);
 
-                QueryLanguages.Add(new PluginDefinition("GQL", GQL_Parameters));
+                QueryLanguages.Add(new PluginDefinition("sones.gql", GQL_Parameters));
                 #endregion
 
                 #region REST Service Plugins

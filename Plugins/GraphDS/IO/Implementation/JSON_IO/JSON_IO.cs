@@ -31,13 +31,11 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
 
         #endregion
 
-        
-        
         #region IPluginable
 
         public string PluginName
         {
-            get { return "JSON_IO"; }
+            get { return "sones.json_io"; }
         }
 
         public Dictionary<string, Type> SetableParameters

@@ -17,7 +17,7 @@ namespace sones.GraphDB.Settings
 
         public string DefaultSettingValue
         {
-            get { return "InMemoryNonRevisionedFS"; }
+            get { return "sones.inmemorynonrevisionedfs"; }
         }
 
         public Type SettingType

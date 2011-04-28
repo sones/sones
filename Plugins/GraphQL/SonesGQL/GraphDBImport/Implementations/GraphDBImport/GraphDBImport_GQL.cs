@@ -24,7 +24,7 @@ namespace sones.Plugins.SonesGQL.DBImport
 
         public string ImportFormat
         {
-            get { return "GQL"; }
+            get { return "sones.gql"; }
         }
 
         public QueryResult Import(String location, IGraphDB myGraphDB, IGraphQL myGraphQL, SecurityToken mySecurityToken, TransactionToken myTransactionToken, bool myBreakOnError = false, UInt32 parallelTasks = 1, IEnumerable<string> comments = null, UInt64? offset = null, UInt64? limit = null)

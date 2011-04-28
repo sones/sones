@@ -508,7 +508,7 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
 
         public string PluginName
         {
-            get { return "XML_IO"; }
+            get { return "sones.xml_io"; }
         }
 
         public Dictionary<string, Type> SetableParameters
