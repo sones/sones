@@ -124,6 +124,11 @@ namespace sones.GraphDB.Manager.TypeManagement
         /// A property expression on OutgoingEdge.Name
         /// </summary>
         private readonly IExpression _attributeNameExpression = new PropertyExpression(BaseTypes.OutgoingEdge.ToString(), AttributeDefinitions.Name.ToString());
+        
+        /// <summary>
+        /// stores the base vertex types indexed by name.
+        /// </summary>
+        private Dictionary<string, IVertexType> _baseTypes = new Dictionary<String, IVertexType>();
 
         #endregion
 
@@ -133,6 +138,16 @@ namespace sones.GraphDB.Manager.TypeManagement
 
         public IVertexType GetVertexType(long myTypeId, TransactionToken myTransaction, SecurityToken mySecurity)
         {
+            #region get static types
+
+            if (Enum.IsDefined(typeof(BaseTypes), myTypeId) && _baseTypes.ContainsKey(((BaseTypes)myTypeId).ToString()))
+            {
+                return _baseTypes[((BaseTypes)myTypeId).ToString()];
+            }
+
+            #endregion
+
+
             #region get from fs
 
             var vertex = Get(myTypeId, myTransaction, mySecurity);
@@ -145,13 +160,19 @@ namespace sones.GraphDB.Manager.TypeManagement
             #endregion
         }
 
-        private const char InomingEdgeSeparator = '.';
-        private const string StreamVertexType = "Stream";
-
         public IVertexType GetVertexType(string myTypeName, TransactionToken myTransaction, SecurityToken mySecurity)
         {
             if (String.IsNullOrWhiteSpace(myTypeName))
                 throw new ArgumentOutOfRangeException("myTypeName", "The type name must contain at least one character.");
+
+            #region get static types
+
+            if (_baseTypes.ContainsKey(myTypeName))
+            {
+                return _baseTypes[myTypeName];
+            }
+
+            #endregion
 
             #region get from fs
 
@@ -522,7 +543,7 @@ namespace sones.GraphDB.Manager.TypeManagement
         {
             foreach (var unknown in myVertexTypeDefinition.UnknownAttributes)
             {
-                if (StreamVertexType.Equals(unknown.AttributeType))
+                if (BinaryPropertyPredefinition.TypeName.Equals(unknown.AttributeType))
                 {
                     if (unknown.DefaultValue != null)
                         throw new Exception("A default value is not allowed on a binary property.");
@@ -1269,6 +1290,31 @@ namespace sones.GraphDB.Manager.TypeManagement
                                     GetMaxID((long)BaseTypes.BinaryProperty, myTransaction, mySecurity))));
 
 
+            LoadBaseType(
+                myTransaction, 
+                mySecurity, 
+                BaseTypes.Attribute, 
+                BaseTypes.BaseType, 
+                BaseTypes.BinaryProperty, 
+                BaseTypes.EdgeType, 
+                BaseTypes.IncomingEdge, 
+                BaseTypes.Index,
+                BaseTypes.OutgoingEdge,
+                BaseTypes.Property,
+                BaseTypes.VertexType);
+        }
+
+        private void LoadBaseType(TransactionToken myTransaction, SecurityToken mySecurity, params BaseTypes[] myBaseTypes)
+        {
+            foreach (var baseType in myBaseTypes)
+            {
+                var vertex = _vertexManager.VertexStore.GetVertex(mySecurity, myTransaction, (long)baseType, (long)BaseTypes.VertexType, String.Empty);
+                if (vertex == null)
+                    //TODO: better exception
+                    throw new Exception("Could not load base type.");
+                _baseTypes.Add(baseType.ToString(), new VertexType(vertex));
+
+            }
         }
 
         #endregion
