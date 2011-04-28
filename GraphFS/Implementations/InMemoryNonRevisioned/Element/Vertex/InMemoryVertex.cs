@@ -4,7 +4,6 @@ using System.IO;
 using sones.GraphFS.Element.Edge;
 using sones.GraphFS.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
-using System.Collections;
 using sones.Library.Commons.VertexStore.Definitions;
 using sones.Library.Commons.VertexStore.Definitions.Update;
 
@@ -38,7 +37,7 @@ namespace sones.GraphFS.Element.Vertex
         /// <summary>
         /// The outgoing edges of the vertex
         /// </summary>
-        private readonly IDictionary<Int64, IEdge> _outgoingEdges;
+        public Dictionary<Int64, IEdge> OutgoingEdges;
 
         /// <summary>
         /// The id of the vertex
@@ -56,6 +55,7 @@ namespace sones.GraphFS.Element.Vertex
         private readonly Int64 _vertexRevisionID;
        
         #endregion
+        
 
         #region constructor
 
@@ -92,7 +92,7 @@ namespace sones.GraphFS.Element.Vertex
             _vertexRevisionID = myVertexRevisionID;
             _edition = myEdition;
             _binaryProperties = myBinaryProperties;
-            _outgoingEdges = myOutgoingEdges;
+            OutgoingEdges = (Dictionary<long, IEdge>)myOutgoingEdges;
             
             IsBulkVertex = false;
         }
@@ -159,15 +159,15 @@ namespace sones.GraphFS.Element.Vertex
 
         public bool HasOutgoingEdge(long myEdgePropertyID)
         {
-            return _outgoingEdges != null &&
-                   _outgoingEdges.ContainsKey(myEdgePropertyID);
+            return OutgoingEdges != null &&
+                   OutgoingEdges.ContainsKey(myEdgePropertyID);
         }
 
         public IEnumerable<Tuple<long, IEdge>> GetAllOutgoingEdges(PropertyHyperGraphFilter.OutgoingEdgeFilter myFilter = null)
         {
-            if (_outgoingEdges != null)
+            if (OutgoingEdges != null)
             {
-                foreach (var aEdge in _outgoingEdges)
+                foreach (var aEdge in OutgoingEdges)
                 {
                     if (myFilter != null)
                     {
@@ -189,9 +189,9 @@ namespace sones.GraphFS.Element.Vertex
         public IEnumerable<Tuple<long, IHyperEdge>> GetAllOutgoingHyperEdges(
             PropertyHyperGraphFilter.OutgoingHyperEdgeFilter myFilter = null)
         {
-            if (_outgoingEdges != null)
+            if (OutgoingEdges != null)
             {
-                foreach (var aEdge in _outgoingEdges)
+                foreach (var aEdge in OutgoingEdges)
                 {
                     var interestingEdge = aEdge.Value as IHyperEdge;
 
@@ -217,9 +217,9 @@ namespace sones.GraphFS.Element.Vertex
         public IEnumerable<Tuple<long, ISingleEdge>> GetAllOutgoingSingleEdges(
             PropertyHyperGraphFilter.OutgoingSingleEdgeFilter myFilter = null)
         {
-            if (_outgoingEdges != null)
+            if (OutgoingEdges != null)
             {
-                foreach (var aEdge in _outgoingEdges)
+                foreach (var aEdge in OutgoingEdges)
                 {
                     var interestingEdge = aEdge.Value as ISingleEdge;
 
@@ -244,7 +244,7 @@ namespace sones.GraphFS.Element.Vertex
 
         public IEdge GetOutgoingEdge(long myEdgePropertyID)
         {
-            return HasOutgoingEdge(myEdgePropertyID) ? _outgoingEdges[myEdgePropertyID] : null;
+            return HasOutgoingEdge(myEdgePropertyID) ? OutgoingEdges[myEdgePropertyID] : null;
         }
 
         public IHyperEdge GetOutgoingHyperEdge(long myEdgePropertyID)
@@ -451,13 +451,16 @@ namespace sones.GraphFS.Element.Vertex
 
         #endregion
 
-        #region update methods
+        #region public update methods
 
         public void UpdateComment(String myComment)
         {
             lock (_comment)
             {
-                _comment = myComment;
+                if (myComment != null)
+                { 
+                    _comment = myComment;
+                }
             }
         }
 
@@ -465,33 +468,85 @@ namespace sones.GraphFS.Element.Vertex
         {
             lock (_binaryProperties)
             {
-                foreach (var item in myDeletedBinaryProperties)
+                if (myDeletedBinaryProperties != null)
                 {
-                    _binaryProperties.Remove(item);
+                    foreach (var item in myDeletedBinaryProperties)
+                    {
+                        _binaryProperties.Remove(item);
+                    }
                 }
 
-                foreach (var item in myBinaryUpdatedProperties)
+                if (myBinaryUpdatedProperties != null)
                 {
-                    if (_binaryProperties.ContainsKey(item.Value.PropertyID))
+                    foreach (var item in myBinaryUpdatedProperties)
                     {
-                        _binaryProperties[item.Value.PropertyID] = item.Value.Stream;
+                        if (_binaryProperties.ContainsKey(item.Value.PropertyID))
+                        {
+                            _binaryProperties[item.Value.PropertyID] = item.Value.Stream;
+                        }
+                        else
+                        {
+                            _binaryProperties.Add(item.Value.PropertyID, item.Value.Stream);
+                        }
                     }
                 }
             }
         }
 
-        public void UpdateSingleEdges(SingleEdgeUpdate mySingleEdgeUpdate)
+        public void UpdateStructuredProperties(StructuredPropertiesUpdate myStructuredUpdates)
         {
-            lock (_outgoingEdges)
+            lock (_structuredProperties)
             {
-                foreach (var item in mySingleEdgeUpdate.Deleted)
+                if (myStructuredUpdates.Deleted != null)
                 {
-                    _outgoingEdges.Remove(item);
+                    foreach (var item in myStructuredUpdates.Deleted)
+                    {
+                        _structuredProperties.Remove(item);
+                    }
                 }
 
-                foreach (var item in mySingleEdgeUpdate.Updated)
+                if (myStructuredUpdates.Updated != null)
                 {
-                    //_outgoingEdges[item.Key].Comment
+                    foreach (var item in myStructuredUpdates.Updated)
+                    {
+                        if (_structuredProperties.ContainsKey(item.Key))
+                        {
+                            _structuredProperties[item.Key] = item.Value;
+                        }
+                        else
+                        {
+                            _structuredProperties.Add(item.Key, item.Value);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void UpdateUnstructuredProperties(UnstructuredPropertiesUpdate myUnstructuredUpdates)
+        {
+            lock (_unstructuredProperties)
+            {
+                if (myUnstructuredUpdates.Deleted != null)
+                {
+                    foreach (var item in myUnstructuredUpdates.Deleted)
+                    {
+                        _unstructuredProperties.Remove(item);
+                    }
+                }
+
+                if (myUnstructuredUpdates.Updated != null)
+                {
+                    foreach (var item in myUnstructuredUpdates.Updated)
+                    {
+                        if (_unstructuredProperties.ContainsKey(item.Key))
+                        {
+                            _unstructuredProperties[item.Key] = item.Value;
+                        }
+                        else
+                        {
+                            _unstructuredProperties.Add(item.Key, item.Value);
+                        }
+                    }
                 }
             }
         }

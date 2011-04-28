@@ -5,6 +5,7 @@ using sones.GraphFS.Element.Vertex;
 using sones.GraphFS.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
 
+
 namespace sones.GraphFS.Element.Edge
 {
     /// <summary>
@@ -17,12 +18,12 @@ namespace sones.GraphFS.Element.Edge
         /// <summary>
         /// The edge type id
         /// </summary>
-        private readonly Int64 _edgeTypeID;
+        private Int64 _edgeTypeID;
 
         /// <summary>
         /// The single edges that are contained within this hyper edge
         /// </summary>
-        private readonly List<SingleEdge> _containedSingleEdges;
+        public List<SingleEdge> ContainedSingleEdges;
 
         /// <summary>
         /// The source vertex
@@ -59,8 +60,87 @@ namespace sones.GraphFS.Element.Edge
 
             _sourceVertex = mySourceVertex;
             
-            _containedSingleEdges = myContainedSingleEdges;
+            ContainedSingleEdges = myContainedSingleEdges;
         }
+
+        #endregion
+
+        #region public update methods
+
+        public void UpdateEdgeType(Int64 myEdgeType)
+        {
+            _edgeTypeID = myEdgeType;
+        }
+
+        public void UpdateComment(String myComment)
+        {
+            lock (_comment)
+            {
+                if (myComment != null)
+                {
+                    _comment = myComment;
+                }
+            }
+        }
+
+        public void UpdateStructuredProperties(Dictionary<long, IComparable> myUpdatedProperties, IEnumerable<long> myDeletedProperties)
+        {
+            lock (_structuredProperties)
+            {
+                if (myDeletedProperties != null)
+                {
+                    foreach (var item in myDeletedProperties)
+                    {
+                        _structuredProperties.Remove(item);
+                    }
+                }
+
+                if (myUpdatedProperties != null)
+                {
+                    foreach (var item in _structuredProperties)
+                    {
+                        if (_structuredProperties.ContainsKey(item.Key))
+                        {
+                            _structuredProperties[item.Key] = item.Value;
+                        }
+                        else
+                        {
+                            _structuredProperties.Add(item.Key, item.Value);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void UpdateUnStructuredProperties(Dictionary<String, Object> myUpdatedProperties, IEnumerable<String> myDeletedProperties)
+        {
+            lock (_unstructuredProperties)
+            {
+                if (myDeletedProperties != null)
+                {
+                    foreach (var item in myDeletedProperties)
+                    {
+                        _unstructuredProperties.Remove(item);
+                    }
+                }
+
+                if (myUpdatedProperties != null)
+                {
+                    foreach (var item in myUpdatedProperties)
+                    {
+                        if (_unstructuredProperties.ContainsKey(item.Key))
+                        {
+                            _unstructuredProperties[item.Key] = item.Value;
+                        }
+                        else
+                        {
+                            _unstructuredProperties.Add(item.Key, item.Value);
+                        }
+                    }
+                }
+            }
+        }
+        
 
         #endregion
 
@@ -70,7 +150,7 @@ namespace sones.GraphFS.Element.Edge
         {
             if (myFilter != null)
             {
-                foreach (var aSingleEdge in _containedSingleEdges)
+                foreach (var aSingleEdge in ContainedSingleEdges)
                 {
                     if (myFilter(aSingleEdge))
                     {
@@ -80,7 +160,7 @@ namespace sones.GraphFS.Element.Edge
             }
             else
             {
-                foreach (var aSingleEdge in _containedSingleEdges)
+                foreach (var aSingleEdge in ContainedSingleEdges)
                 {
                     yield return aSingleEdge;
                 }
@@ -91,7 +171,7 @@ namespace sones.GraphFS.Element.Edge
 
         public TResult InvokeHyperEdgeFunc<TResult>(Func<IEnumerable<ISingleEdge>, TResult> myHyperEdgeFunction)
         {
-            return myHyperEdgeFunction(_containedSingleEdges);
+            return myHyperEdgeFunction(ContainedSingleEdges);
         }
 
         public IVertex GetSourceVertex()
@@ -102,7 +182,7 @@ namespace sones.GraphFS.Element.Edge
         public IEnumerable<IVertex> GetTargetVertices(PropertyHyperGraphFilter.TargetVertexFilter myFilter = null)
         {
             foreach (var targetVertex in
-                _containedSingleEdges.Select(aSingleEdge =>
+                ContainedSingleEdges.Select(aSingleEdge =>
                                              aSingleEdge.GetTargetVertex()))
             {
                 if (myFilter != null)

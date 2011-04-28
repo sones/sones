@@ -4,6 +4,7 @@ using sones.GraphFS.Element.Vertex;
 using sones.GraphFS.ErrorHandling;
 using sones.Library.PropertyHyperGraph;
 
+
 namespace sones.GraphFS.Element.Edge
 {
     /// <summary>
@@ -16,17 +17,17 @@ namespace sones.GraphFS.Element.Edge
         /// <summary>
         /// The edge type id
         /// </summary>
-        private readonly Int64 _edgeTypeID;
+        private Int64 _edgeTypeID;
 
         /// <summary>
         /// The source vertex
         /// </summary>
-        private readonly InMemoryVertex _sourceVertex;
+        public InMemoryVertex SourceVertex;
 
         /// <summary>
         /// The target vertex
         /// </summary>
-        private readonly InMemoryVertex _targetVertex;
+        public InMemoryVertex TargetVertex;
 
         #endregion
 
@@ -56,9 +57,9 @@ namespace sones.GraphFS.Element.Edge
         {
             _edgeTypeID = myEdgeTypeID;
 
-            _sourceVertex = mySourceVertex;
+            SourceVertex = mySourceVertex;
 
-            _targetVertex = myTargetVertex;
+            TargetVertex = myTargetVertex;
         }
 
         #endregion
@@ -67,12 +68,12 @@ namespace sones.GraphFS.Element.Edge
 
         public IVertex GetTargetVertex()
         {
-            return _targetVertex;
+            return TargetVertex;
         }
 
         public IVertex GetSourceVertex()
         {
-            return _sourceVertex;
+            return SourceVertex;
         }
 
         public IEnumerable<IVertex> GetTargetVertices(PropertyHyperGraphFilter.TargetVertexFilter myFilter = null)
@@ -207,6 +208,83 @@ namespace sones.GraphFS.Element.Edge
 
         #endregion
 
+        #region Public Update Methods
+        
+
+        public void UpdateComment(String myComment)
+        {
+            lock (_comment)
+            {
+                _comment = myComment;
+            }
+        }
+
+        public void UpdateEdgeType(Int64 myEdgeType)
+        {
+            _edgeTypeID = myEdgeType;
+        }
+
+        public void UpdateStructuredProperties(Dictionary<long, IComparable> myUpdatedProperties, IEnumerable<long> myDeletedProperties)
+        {
+            lock (_structuredProperties)
+            {
+                if (myDeletedProperties != null)
+                {
+                    foreach (var item in myDeletedProperties)
+                    {
+                        _structuredProperties.Remove(item);
+                    }
+                }
+
+                if (myUpdatedProperties != null)
+                {
+                    foreach (var item in _structuredProperties)
+                    {
+                        if (_structuredProperties.ContainsKey(item.Key))
+                        {
+                            _structuredProperties[item.Key] = item.Value;
+                        }
+                        else
+                        {
+                            _structuredProperties.Add(item.Key, item.Value);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void UpdateUnStructuredProperties(Dictionary<String, Object> myUpdatedProperties, IEnumerable<String> myDeletedProperties)
+        {
+            lock (_unstructuredProperties)
+            {
+                if (myDeletedProperties != null)
+                {
+                    foreach (var item in myDeletedProperties)
+                    {
+                        _unstructuredProperties.Remove(item);
+                    }
+                }
+
+                if (myUpdatedProperties != null)
+                {
+                    foreach (var item in myUpdatedProperties)
+                    {
+                        if (_unstructuredProperties.ContainsKey(item.Key))
+                        {
+                            _unstructuredProperties[item.Key] = item.Value;
+                        }
+                        else
+                        {
+                            _unstructuredProperties.Add(item.Key, item.Value);
+                        }
+                    }
+                }
+            }
+        }
+        
+
+        #endregion
+
         #region Equals Overrides
 
         public override Boolean Equals(Object obj)
@@ -231,8 +309,8 @@ namespace sones.GraphFS.Element.Edge
                 return false;
             }
 
-            return Equals(_sourceVertex, p._sourceVertex)
-                && Equals(_targetVertex, p._targetVertex) 
+            return Equals(SourceVertex, p.SourceVertex)
+                && Equals(TargetVertex, p.TargetVertex) 
                 && (_edgeTypeID == p._edgeTypeID);
         }
 
@@ -261,7 +339,7 @@ namespace sones.GraphFS.Element.Edge
 
         public override int GetHashCode()
         {
-            return _sourceVertex.GetHashCode() ^ _targetVertex.GetHashCode();
+            return SourceVertex.GetHashCode() ^ TargetVertex.GetHashCode();
         }
 
         #endregion

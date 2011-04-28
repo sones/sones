@@ -338,6 +338,7 @@ namespace sones.GraphFS
 
             return false;
         }
+        
 
         public IVertex AddVertex(
             SecurityToken mySecurityToken, TransactionToken myTransactionToken, 
@@ -397,89 +398,7 @@ namespace sones.GraphFS
 
             if (addEdges)
             {
-
-                SingleEdge singleEdge;
-                InMemoryVertex targetVertex;
-
-                #region single edges
-
-                //create the single edges
-
-                if (myVertexDefinition.OutgoingSingleEdges != null)
-                {
-                    foreach (var aSingleEdgeDefinition in myVertexDefinition.OutgoingSingleEdges)
-                    {
-                        targetVertex =
-                            GetOrCreateTargetVertex(aSingleEdgeDefinition.TargetVertexInformation.VertexTypeID,
-                                                    aSingleEdgeDefinition.TargetVertexInformation.VertexID);
-
-                        //create the new Edge
-                        singleEdge = new SingleEdge(aSingleEdgeDefinition.PropertyID, toBeAddedVertex, targetVertex,
-                                                    aSingleEdgeDefinition.Comment, aSingleEdgeDefinition.CreationDate,
-                                                    aSingleEdgeDefinition.ModificationDate,
-                                                    aSingleEdgeDefinition.StructuredProperties,
-                                                    aSingleEdgeDefinition.UnstructuredProperties);
-
-                        CreateOrUpdateIncomingEdgesOnVertex(
-                            targetVertex,
-                            myVertexDefinition.VertexTypeID,
-                            aSingleEdgeDefinition.PropertyID,
-                            toBeAddedVertex);
-
-                        edges.Add(aSingleEdgeDefinition.PropertyID, singleEdge);
-                    }
-                }
-
-                #endregion
-
-                #region hyper edges
-
-                if (myVertexDefinition.OutgoingHyperEdges != null)
-                {
-                    foreach (var aHyperEdgeDefinition in myVertexDefinition.OutgoingHyperEdges)
-                    {
-                        List<SingleEdge> containedSingleEdges = new List<SingleEdge>();
-
-                        foreach (var aSingleEdgeDefinition in aHyperEdgeDefinition.ContainedSingleEdges)
-                        {
-                            targetVertex =
-                                GetOrCreateTargetVertex(aSingleEdgeDefinition.TargetVertexInformation.VertexTypeID,
-                                                        aSingleEdgeDefinition.TargetVertexInformation.VertexID);
-
-                            singleEdge = new SingleEdge(aSingleEdgeDefinition.PropertyID, toBeAddedVertex, targetVertex,
-                                                        aSingleEdgeDefinition.Comment,
-                                                        aSingleEdgeDefinition.CreationDate,
-                                                        aSingleEdgeDefinition.ModificationDate,
-                                                        aSingleEdgeDefinition.StructuredProperties,
-                                                        aSingleEdgeDefinition.UnstructuredProperties);
-
-                            CreateOrUpdateIncomingEdgesOnVertex(
-                                targetVertex,
-                                myVertexDefinition.VertexTypeID,
-                                aSingleEdgeDefinition.PropertyID,
-                                toBeAddedVertex);
-
-                            containedSingleEdges.Add(singleEdge);
-                        }
-
-                        //create the new edge
-                        edges.Add(
-                            aHyperEdgeDefinition.PropertyID,
-                            new HyperEdge(
-                                containedSingleEdges,
-                                aHyperEdgeDefinition.EdgeTypeID,
-                                toBeAddedVertex,
-                                aHyperEdgeDefinition.Comment,
-                                aHyperEdgeDefinition.CreationDate,
-                                aHyperEdgeDefinition.ModificationDate,
-                                aHyperEdgeDefinition.StructuredProperties,
-                                aHyperEdgeDefinition.UnstructuredProperties));
-
-                    }
-                }
-
-                #endregion
-
+                AddEdgesToVertex(myVertexDefinition, toBeAddedVertex, edges);
             }
 
             #endregion
@@ -547,6 +466,92 @@ namespace sones.GraphFS
         #endregion
 
         #region private helper
+
+        private void AddEdgesToVertex(VertexAddDefinition myVertexDefinition, InMemoryVertex myVertex, Dictionary<Int64, IEdge> myEdges)
+        {
+            SingleEdge singleEdge;
+            InMemoryVertex targetVertex;
+
+            #region single edges
+
+            //create the single edges
+
+            if (myVertexDefinition.OutgoingSingleEdges != null)
+            {
+                foreach (var aSingleEdgeDefinition in myVertexDefinition.OutgoingSingleEdges)
+                {
+                    targetVertex =
+                        GetOrCreateTargetVertex(aSingleEdgeDefinition.TargetVertexInformation.VertexTypeID,
+                                                aSingleEdgeDefinition.TargetVertexInformation.VertexID);
+
+                    //create the new Edge
+                    singleEdge = new SingleEdge(aSingleEdgeDefinition.PropertyID, myVertex, targetVertex,
+                                                aSingleEdgeDefinition.Comment, aSingleEdgeDefinition.CreationDate,
+                                                aSingleEdgeDefinition.ModificationDate,
+                                                aSingleEdgeDefinition.StructuredProperties,
+                                                aSingleEdgeDefinition.UnstructuredProperties);
+
+                    CreateOrUpdateIncomingEdgesOnVertex(
+                        targetVertex,
+                        myVertexDefinition.VertexTypeID,
+                        aSingleEdgeDefinition.PropertyID,
+                        myVertex);
+
+                    myEdges.Add(aSingleEdgeDefinition.PropertyID, singleEdge);
+                }
+            }
+
+            #endregion
+
+            #region hyper edges
+
+            if (myVertexDefinition.OutgoingHyperEdges != null)
+            {
+                foreach (var aHyperEdgeDefinition in myVertexDefinition.OutgoingHyperEdges)
+                {
+                    List<SingleEdge> containedSingleEdges = new List<SingleEdge>();
+
+                    foreach (var aSingleEdgeDefinition in aHyperEdgeDefinition.ContainedSingleEdges)
+                    {
+                        targetVertex =
+                            GetOrCreateTargetVertex(aSingleEdgeDefinition.TargetVertexInformation.VertexTypeID,
+                                                    aSingleEdgeDefinition.TargetVertexInformation.VertexID);
+
+                        singleEdge = new SingleEdge(aSingleEdgeDefinition.PropertyID, myVertex, targetVertex,
+                                                    aSingleEdgeDefinition.Comment,
+                                                    aSingleEdgeDefinition.CreationDate,
+                                                    aSingleEdgeDefinition.ModificationDate,
+                                                    aSingleEdgeDefinition.StructuredProperties,
+                                                    aSingleEdgeDefinition.UnstructuredProperties);
+
+                        CreateOrUpdateIncomingEdgesOnVertex(
+                            targetVertex,
+                            myVertexDefinition.VertexTypeID,
+                            aSingleEdgeDefinition.PropertyID,
+                            myVertex);
+
+                        containedSingleEdges.Add(singleEdge);
+                    }
+
+                    //create the new edge
+                    myEdges.Add(
+                        aHyperEdgeDefinition.PropertyID,
+                        new HyperEdge(
+                            containedSingleEdges,
+                            aHyperEdgeDefinition.EdgeTypeID,
+                            myVertex,
+                            aHyperEdgeDefinition.Comment,
+                            aHyperEdgeDefinition.CreationDate,
+                            aHyperEdgeDefinition.ModificationDate,
+                            aHyperEdgeDefinition.StructuredProperties,
+                            aHyperEdgeDefinition.UnstructuredProperties));
+
+                }
+            }
+
+            #endregion
+
+        }
 
         /// <summary>
         /// Gets or creates the target vertex of an edge
@@ -637,13 +642,333 @@ namespace sones.GraphFS
         private InMemoryVertex UpdateVertex_private(InMemoryVertex toBeUpdatedVertex,
                                                     VertexUpdateDefinition myVertexUpdate)
         {
-            if (toBeUpdatedVertex.Comment != null)
-            {
-                toBeUpdatedVertex.UpdateComment(myVertexUpdate.CommentUpdate);
-            }
-            toBeUpdatedVertex.UpdateBinaryProperties(myVertexUpdate.UpdatedBinaryProperties.Updated, myVertexUpdate.UpdateHyperEdges.Deleted);
+            #region udpate comment
             
-            //myVertexUpdate.UpdatedSingleEdges 
+            toBeUpdatedVertex.UpdateComment(myVertexUpdate.CommentUpdate);
+
+            #endregion
+
+            #region update binary properties
+            
+            if (myVertexUpdate.UpdatedBinaryProperties != null)
+            {
+                toBeUpdatedVertex.UpdateBinaryProperties(myVertexUpdate.UpdatedBinaryProperties.Updated,
+                                                         myVertexUpdate.UpdateHyperEdges.Deleted);
+            }
+
+            #endregion
+
+            #region udpate single edges
+            
+            if (myVertexUpdate.UpdatedSingleEdges != null)
+            {
+                lock (toBeUpdatedVertex.OutgoingEdges)
+                {
+                    if (myVertexUpdate.UpdatedSingleEdges.Deleted != null)
+                    {
+                        foreach (var item in myVertexUpdate.UpdatedSingleEdges.Deleted)
+                        {
+                            IEdge edge = null;
+
+                            if (toBeUpdatedVertex.OutgoingEdges.TryGetValue(item, out edge))
+                            {
+                                if (edge is SingleEdge)
+                                {
+                                    toBeUpdatedVertex.OutgoingEdges.Remove(item);
+                                }
+                            }
+                        }
+                    }
+
+                    if (myVertexUpdate.UpdatedSingleEdges.Updated != null)
+                    {
+                        foreach (var item in myVertexUpdate.UpdatedSingleEdges.Updated)
+                        {
+                            IEdge edge = null;
+                            var targetVertex = GetOrCreateTargetVertex(item.Value.TargetVertex.VertexTypeID, item.Value.TargetVertex.VertexID);
+
+                            if (toBeUpdatedVertex.OutgoingEdges.TryGetValue(item.Key, out edge))
+                            {
+                                if (edge is SingleEdge)
+                                {
+                                    var singleEdge = (SingleEdge) edge;
+
+                                    if (edge.Comment != null)
+                                    {
+                                        singleEdge.UpdateComment(item.Value.CommentUpdate);
+                                    }
+
+                                    singleEdge.UpdateEdgeType(item.Value.EdgeTypeID);
+                                    singleEdge.UpdateStructuredProperties(
+                                        item.Value.UpdatedStructuredProperties.Updated,
+                                        item.Value.UpdatedStructuredProperties.Deleted);
+                                    singleEdge.UpdateUnStructuredProperties(
+                                        item.Value.UpdatedUnstructuredProperties.Updated,
+                                        item.Value.UpdatedUnstructuredProperties.Deleted);
+
+                                    if (item.Value.SourceVertex != null)
+                                    {
+                                        lock (singleEdge)
+                                        {
+                                            singleEdge.SourceVertex = toBeUpdatedVertex;
+                                        }
+                                    }
+
+                                    if (singleEdge.TargetVertex != null)
+                                    {
+                                        lock (singleEdge.TargetVertex)
+                                        {
+                                            singleEdge.TargetVertex = targetVertex;
+
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                edge = new SingleEdge(item.Value.EdgeTypeID,
+                                                      toBeUpdatedVertex,
+                                                      targetVertex,
+                                                      item.Value.CommentUpdate, 0, 0,
+                                                      item.Value.
+                                                          UpdatedStructuredProperties.
+                                                          Updated,
+                                                      item.Value.
+                                                          UpdatedUnstructuredProperties.
+                                                          Updated);
+
+                                toBeUpdatedVertex.OutgoingEdges.Add(item.Key, edge);
+                            }
+
+                            CreateOrUpdateIncomingEdgesOnVertex(targetVertex, item.Key, toBeUpdatedVertex.VertexTypeID, toBeUpdatedVertex);
+                        }
+                    }
+                }
+            }
+
+            #endregion
+
+            #region update hyper edges
+            
+            if (myVertexUpdate.UpdateHyperEdges != null)
+            {
+                lock (toBeUpdatedVertex.OutgoingEdges)
+                {
+                    if (myVertexUpdate.UpdateHyperEdges.Deleted != null)
+                    {
+                        foreach (var item in myVertexUpdate.UpdateHyperEdges.Deleted)
+                        {
+                            IEdge edge = null;
+
+                            if (toBeUpdatedVertex.OutgoingEdges.TryGetValue(item, out edge))
+                            {
+                                if (edge is HyperEdge)
+                                {
+                                    toBeUpdatedVertex.OutgoingEdges.Remove(item);
+                                }
+                            }
+                        }
+                    }
+
+                    if (myVertexUpdate.UpdateHyperEdges.Updated != null)
+                    {
+                        foreach (var item in myVertexUpdate.UpdateHyperEdges.Updated)
+                        {
+                            IEdge edge = null;
+
+                            if (toBeUpdatedVertex.OutgoingEdges.TryGetValue(item.Key, out edge))
+                            {
+                                if (edge is HyperEdge)
+                                {
+                                    var hyperEdge = (HyperEdge) edge;
+
+                                    if (edge.Comment != null)
+                                    {
+                                        hyperEdge.UpdateComment(item.Value.CommentUpdate);
+                                    }
+
+                                    hyperEdge.UpdateEdgeType(item.Value.EdgeTypeID);
+                                    hyperEdge.UpdateUnStructuredProperties(
+                                        item.Value.UpdatedUnstructuredProperties.Updated,
+                                        item.Value.UpdatedUnstructuredProperties.Deleted);
+                                    hyperEdge.UpdateStructuredProperties(
+                                        item.Value.UpdatedStructuredProperties.Updated,
+                                        item.Value.UpdatedStructuredProperties.Deleted);
+
+                                    #region update the containing single edges
+
+                                    lock (hyperEdge.ContainedSingleEdges)
+                                    {
+                                        var newEdges = new List<SingleEdge>();
+
+                                        foreach (var contEdge in item.Value.ToBeUpdatedSingleEdges)
+                                        {
+                                            var targetVertex =
+                                                GetOrCreateTargetVertex(contEdge.TargetVertex.VertexTypeID,
+                                                                        contEdge.TargetVertex.VertexID);
+
+                                            foreach (var singleEdgeItem in hyperEdge.ContainedSingleEdges)
+                                            {
+                                                var correspondTarget =
+                                                    GetOrCreateTargetVertex(contEdge.TargetVertex.VertexTypeID,
+                                                                            contEdge.TargetVertex.VertexID);
+
+                                                var correspondSource =
+                                                    GetOrCreateTargetVertex(contEdge.SourceVertex.VertexTypeID,
+                                                                            contEdge.SourceVertex.VertexID);
+
+                                                if (correspondTarget == singleEdgeItem.TargetVertex &&
+                                                    singleEdgeItem.SourceVertex == correspondSource)
+                                                {
+                                                    if (contEdge.CommentUpdate != null)
+                                                    {
+                                                        singleEdgeItem.UpdateComment(contEdge.CommentUpdate);
+                                                    }
+
+                                                    if (contEdge.EdgeTypeID != null)
+                                                    {
+                                                        singleEdgeItem.UpdateEdgeType(contEdge.EdgeTypeID);
+                                                    }
+
+                                                    if (contEdge.UpdatedStructuredProperties != null)
+                                                    {
+                                                        singleEdgeItem.UpdateStructuredProperties(
+                                                            contEdge.UpdatedStructuredProperties.Updated,
+                                                            contEdge.UpdatedStructuredProperties.Deleted);
+                                                    }
+
+                                                    if (contEdge.UpdatedUnstructuredProperties != null)
+                                                    {
+                                                        singleEdgeItem.UpdateUnStructuredProperties(
+                                                            contEdge.UpdatedUnstructuredProperties.Updated,
+                                                            contEdge.UpdatedUnstructuredProperties.Deleted);
+                                                    }
+
+                                                    if (contEdge.TargetVertex != null)
+                                                    {
+                                                        lock (singleEdgeItem.TargetVertex)
+                                                        {
+                                                            singleEdgeItem.TargetVertex = targetVertex;
+                                                        }
+                                                    }
+
+                                                    if (contEdge.SourceVertex != null)
+                                                    {
+                                                        lock (singleEdgeItem.SourceVertex)
+                                                        {
+                                                            singleEdgeItem.SourceVertex =
+                                                                GetOrCreateTargetVertex(
+                                                                    contEdge.SourceVertex.VertexTypeID,
+                                                                    contEdge.SourceVertex.VertexID);
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    newEdges.Add(new SingleEdge(contEdge.EdgeTypeID, toBeUpdatedVertex,
+                                                                                GetOrCreateTargetVertex(
+                                                                                    contEdge.TargetVertex.VertexTypeID,
+                                                                                    contEdge.TargetVertex.VertexID),
+                                                                                contEdge.CommentUpdate, 0, 0,
+                                                                                contEdge.UpdatedStructuredProperties ==
+                                                                                null
+                                                                                    ? null
+                                                                                    : contEdge.
+                                                                                          UpdatedStructuredProperties.
+                                                                                          Updated,
+                                                                                contEdge.UpdatedUnstructuredProperties ==
+                                                                                null
+                                                                                    ? null
+                                                                                    : contEdge.
+                                                                                          UpdatedUnstructuredProperties.
+                                                                                          Updated));
+                                                }
+                                            }
+
+                                            CreateOrUpdateIncomingEdgesOnVertex(targetVertex, item.Key, toBeUpdatedVertex.VertexTypeID, toBeUpdatedVertex);
+                                            hyperEdge.ContainedSingleEdges.AddRange(newEdges);
+                                            newEdges.Clear();
+                                        }
+                                    }
+
+                                    #endregion
+                                }
+                            }
+                            else
+                            {
+
+                                var singleEdges = new List<SingleEdge>();
+
+                                if (item.Value.ToBeUpdatedSingleEdges != null)
+                                {
+                                    foreach (var singleItem in item.Value.ToBeUpdatedSingleEdges)
+                                    {
+                                        var targetVertex = GetOrCreateTargetVertex(singleItem.TargetVertex.VertexTypeID, singleItem.TargetVertex.VertexID);
+
+                                        singleEdges.Add(new SingleEdge(singleItem.EdgeTypeID, toBeUpdatedVertex, targetVertex,
+                                                                       singleItem.CommentUpdate == null ? null : singleItem.CommentUpdate, 0, 0,
+                                                                       singleItem.UpdatedStructuredProperties == null
+                                                                           ? null
+                                                                           : singleItem.UpdatedStructuredProperties.
+                                                                                 Updated,
+                                                                       singleItem.UpdatedUnstructuredProperties == null
+                                                                           ? null
+                                                                           : singleItem.UpdatedUnstructuredProperties.
+                                                                                 Updated));
+
+                                        CreateOrUpdateIncomingEdgesOnVertex(targetVertex, item.Key, toBeUpdatedVertex.VertexTypeID, toBeUpdatedVertex);
+                                    }
+
+                                    toBeUpdatedVertex.OutgoingEdges.Add(item.Key,
+                                                                        new HyperEdge(singleEdges,
+                                                                                      item.Value.EdgeTypeID,
+                                                                                      toBeUpdatedVertex,
+                                                                                      item.Value.CommentUpdate == null ? null : item.Value.CommentUpdate,
+                                                                                      0, 0,
+                                                                                      item.Value.
+                                                                                          UpdatedStructuredProperties
+                                                                                          .Updated == null ? null : item.Value.
+                                                                                          UpdatedStructuredProperties
+                                                                                          .Updated,
+                                                                                      item.Value.
+                                                                                          UpdatedUnstructuredProperties.
+                                                                                          Updated == null ? null : item.Value.
+                                                                                          UpdatedUnstructuredProperties.
+                                                                                          Updated));
+                                    
+                                }
+                            }
+                            
+                        }
+                    }
+                }
+            }
+
+            #endregion
+
+            #region update unstructured properties
+            
+            if (myVertexUpdate.UpdatedUnstructuredProperties != null)
+            {
+                toBeUpdatedVertex.UpdateStructuredProperties(myVertexUpdate.UpdatedStructuredProperties);
+            }
+
+            #endregion
+
+            #region update structured properties
+            
+            if (myVertexUpdate.UpdatedStructuredProperties != null)
+            {
+                toBeUpdatedVertex.UpdateUnstructuredProperties(myVertexUpdate.UpdatedUnstructuredProperties);
+            }
+
+            #endregion
+
+            #region update the incomming edges
+
+            
+
+            #endregion
 
             return toBeUpdatedVertex;
         }

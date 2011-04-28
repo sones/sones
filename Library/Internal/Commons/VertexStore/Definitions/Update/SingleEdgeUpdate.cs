@@ -14,6 +14,7 @@ namespace sones.Library.Commons.VertexStore.Definitions.Update
 
         /// <summary>
         /// The single edges that should be updated
+        /// property id + single edge update definition
         /// </summary>
         public Dictionary<Int64, SingleEdgeUpdateDefinition> Updated;
         
