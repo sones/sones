@@ -4,7 +4,6 @@
     public enum ResultType
     {
         Failed,
-        PartialSuccessful,
         Successful,
     }
 

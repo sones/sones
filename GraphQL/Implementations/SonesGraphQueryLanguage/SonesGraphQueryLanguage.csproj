@@ -86,7 +86,12 @@
     <Compile Include="StatementNodes\Settings\SettingNode.cs" />
     <Compile Include="StatementNodes\Transactions\BeginTransactionNode.cs" />
     <Compile Include="StatementNodes\Transactions\CommitRollbackTransactionNode.cs" />
+    <Compile Include="Structure\Helper\Definition\DBTypeOfAttributeDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\EdgeTypeParamDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\IndexAttributeDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\TypeCharacteristics.cs" />
     <Compile Include="Structure\Helper\Enums\KindOfTuple.cs" />
+    <Compile Include="Structure\Helper\Enums\ParamType.cs" />
     <Compile Include="Structure\Helper\Enums\SelectOutputTypes.cs" />
     <Compile Include="Structure\Helper\Enums\SortDirection.cs" />
     <Compile Include="Structure\Helper\Enums\VerbosityTypes.cs" />
@@ -241,6 +246,10 @@
     <ProjectReference Include="..\..\..\Library\Internal\IPluginable\IPluginable.csproj">
       <Project>{C6DDFD34-176E-48AC-998F-854F98CD28BB}</Project>
       <Name>IPluginable</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Library\Internal\LanguageExtensions\LanguageExtensions.csproj">
+      <Project>{21C726D5-DCCA-4C15-BA54-1000E80B1C6E}</Project>
+      <Name>LanguageExtensions</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Library\Internal\PropertyHyperGraph\PropertyHyperGraph.csproj">
       <Project>{A1BD782F-F3C4-4820-8B00-FDBDAADAE37D}</Project>

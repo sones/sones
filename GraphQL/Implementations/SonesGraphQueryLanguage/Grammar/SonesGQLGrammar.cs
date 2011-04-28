@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +21,7 @@ using sones.GraphDB.Interfaces;
 using sones.Plugins.SonesGQL.Aggregates;
 using sones.Plugins.SonesGQL.Functions;
 using sones.Plugins.Index.Interfaces;
+using System;
 
 namespace sones.GraphQL
 {
@@ -199,8 +199,8 @@ namespace sones.GraphQL
         public KeyTerm S_ATTRIBUTE { get; private set; }
         public KeyTerm S_DEFAULT { get; private set; }
 
-        public KeyTerm S_BACKWARDEDGES { get; private set; }
-        public KeyTerm S_BACKWARDEDGE { get; private set; }
+        public KeyTerm S_INCOMINGEDGES { get; private set; }
+        public KeyTerm S_INCOMINGEDGE { get; private set; }
         public KeyTerm S_FUNCTION { get; private set; }
         public KeyTerm S_AGGREGATE { get; private set; }
         public KeyTerm S_AGGREGATES { get; private set; }
@@ -403,8 +403,8 @@ namespace sones.GraphQL
             S_GET = ToTerm("GET");
             S_ATTRIBUTE = ToTerm("ATTRIBUTE");
             S_DEFAULT = ToTerm("DEFAULT");
-            S_BACKWARDEDGE = ToTerm("BACKWARDEDGE");
-            S_BACKWARDEDGES = ToTerm("BACKWARDEDGES");
+            S_INCOMINGEDGE = ToTerm(SonesGQLConstants.INCOMINGEDGE);
+            S_INCOMINGEDGES = ToTerm(SonesGQLConstants.INCOMINGEDGES);
             S_DESCRIBE = ToTerm("DESCRIBE");
             S_FUNCTION = ToTerm("FUNCTION");
             S_FUNCTIONS = ToTerm("FUNCTIONS");
@@ -875,10 +875,17 @@ namespace sones.GraphQL
 
             #region GraphType
 
-            //                 SET<                   WEIGHTED  (Double, DEFAULT=2, SORTED=DESC)<   [idsimple]  >>
-            EdgeTypeDef.Rule = S_SET + S_ListTypePrefix + Id_simple + S_BRACKET_LEFT + EdgeTypeParams + S_BRACKET_RIGHT + S_ListTypePrefix + Id_simple + S_ListTypePostfix + S_ListTypePostfix;
-            //                       COUNTED        (Integer, DEFAULT=2)                   <   [idsimple]  >
-            SingleEdgeTypeDef.Rule = Id_simple + S_BRACKET_LEFT + EdgeTypeParams + S_BRACKET_RIGHT + S_ListTypePrefix + Id_simple + S_ListTypePostfix;
+            ////                 SET<                   WEIGHTED  (Double, DEFAULT=2, SORTED=DESC)<   [idsimple]  >>
+            //EdgeTypeDef.Rule = S_SET + S_ListTypePrefix + Id_simple + S_BRACKET_LEFT + EdgeTypeParams + S_BRACKET_RIGHT + S_ListTypePrefix + Id_simple + S_ListTypePostfix + S_ListTypePostfix;
+            //                 SET     <                  USER        (                WEIGHTED    )                 >
+            EdgeTypeDef.Rule = S_SET + S_ListTypePrefix + Id_simple + S_BRACKET_LEFT + Id_simple + S_BRACKET_RIGHT + S_ListTypePostfix;
+
+            
+            ////                       COUNTED        (Integer, DEFAULT=2)                   <   [idsimple]  >
+            //SingleEdgeTypeDef.Rule = Id_simple + S_BRACKET_LEFT + EdgeTypeParams + S_BRACKET_RIGHT + S_ListTypePrefix + Id_simple + S_ListTypePostfix;
+
+            //                       USER        (                COUNTED     )   
+            SingleEdgeTypeDef.Rule = Id_simple + S_BRACKET_LEFT + Id_simple + S_BRACKET_RIGHT;
 
             EdgeTypeParams.Rule = MakeStarRule(EdgeTypeParams, S_comma, EdgeTypeParam);
             EdgeTypeParam.Rule = Id_simple
@@ -890,8 +897,7 @@ namespace sones.GraphQL
 
             DefaultValueDef.Rule = S_DEFAULT + "=" + Value;
 
-            GraphDBType.Rule = Id_simple
-                // LIST<[idsimple]>
+            GraphDBType.Rule =       Id_simple
                                    | S_LIST + S_ListTypePrefix + Id_simple + S_ListTypePostfix
                                    | S_SET + S_ListTypePrefix + Id_simple + S_ListTypePostfix
                                    | EdgeTypeDef
@@ -1096,7 +1102,7 @@ namespace sones.GraphQL
                                     | S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT;
 
             backwardEdgesOpt.Rule = Empty
-                                    | S_BACKWARDEDGES + S_BRACKET_LEFT + BackwardEdgesList + S_BRACKET_RIGHT;
+                                    | S_INCOMINGEDGES + S_BRACKET_LEFT + BackwardEdgesList + S_BRACKET_RIGHT;
 
             uniquenessOpt.Rule = Empty
                                     | S_UNIQUE + S_BRACKET_LEFT + id_simpleList + S_BRACKET_RIGHT;
@@ -1132,12 +1138,12 @@ namespace sones.GraphQL
             alterCmd.Rule = Empty
                             | S_ADD + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
                             | S_DROP + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
-                            | S_ADD + S_BACKWARDEDGES + S_BRACKET_LEFT + BackwardEdgesList + S_BRACKET_RIGHT
-                            | S_DROP + S_BACKWARDEDGES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
+                            | S_ADD + S_INCOMINGEDGES + S_BRACKET_LEFT + BackwardEdgesList + S_BRACKET_RIGHT
+                            | S_DROP + S_INCOMINGEDGES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
                             | S_ADD + indexOnCreateType
                             | S_DROP + IndexDropOnAlterType
                             | S_RENAME + S_ATTRIBUTE + Id_simple + S_TO + Id_simple
-                            | S_RENAME + S_BACKWARDEDGE + Id_simple + S_TO + Id_simple
+                            | S_RENAME + S_INCOMINGEDGE + Id_simple + S_TO + Id_simple
                             | S_RENAME + S_TO + Id_simple
                             | S_DEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + AttributeList + S_BRACKET_RIGHT
                             | S_UNDEFINE + S_ATTRIBUTES + S_BRACKET_LEFT + SimpleIdList + S_BRACKET_RIGHT
@@ -2296,7 +2302,7 @@ namespace sones.GraphQL
 
                 if (myVertexType.GetAttributeDefinitions(false).Any(aAttribute => aAttribute.Kind == AttributeType.IncomingEdge))
                 {
-                    stringBuilder.Append(S_BACKWARDEDGES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfIncomingEdges(myVertexType.GetIncomingEdgeDefinitions(false)) + S_BRACKET_RIGHT.ToUpperString() + " ");
+                    stringBuilder.Append(S_INCOMINGEDGES.ToUpperString() + S_BRACKET_LEFT.ToUpperString() + CreateGraphDDLOfIncomingEdges(myVertexType.GetIncomingEdgeDefinitions(false)) + S_BRACKET_RIGHT.ToUpperString() + " ");
                 }
 
                 #endregion

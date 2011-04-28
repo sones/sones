@@ -25,6 +25,7 @@ namespace sones.GraphQL
         public const String SETOF                               = "SETOF";
         public const String LISTOF                              = "LISTOF";
         public const String SETOFUUIDS                          = "SETOFUUIDS";
+        public const String SingleType                          = "SingleType";
 
         public const String TRANSACTION_DISTRIBUTED             = "DISTRIBUTED";
         public const String TRANSACTION_LONGRUNNING             = "LONG-RUNNING";
@@ -38,6 +39,11 @@ namespace sones.GraphQL
         public const String BracketLeft                         = "bracketLeft";
         public const String BracketRight                        = "bracketRight";
         public const String GraphDBType                         = "GraphDBType";
+
+
+        public const String INCOMINGEDGE                         = "INCOMINGEDGE";
+        public const String INCOMINGEDGES                        = "INCOMINGEDGES";
+
 
         #endregion
 
