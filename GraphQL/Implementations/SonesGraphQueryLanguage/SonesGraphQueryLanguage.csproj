@@ -87,9 +87,12 @@
     <Compile Include="StatementNodes\Settings\SettingNode.cs" />
     <Compile Include="StatementNodes\Transactions\BeginTransactionNode.cs" />
     <Compile Include="StatementNodes\Transactions\CommitRollbackTransactionNode.cs" />
+    <Compile Include="Structure\Helper\Definition\AttributeDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\BackwardEdgeDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\DBTypeOfAttributeDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\EdgeTypeParamDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\IndexAttributeDefinition.cs" />
+    <Compile Include="Structure\Helper\Definition\IndexDefinition.cs" />
     <Compile Include="Structure\Helper\Definition\TypeCharacteristics.cs" />
     <Compile Include="Structure\Helper\Enums\KindOfTuple.cs" />
     <Compile Include="Structure\Helper\Enums\ParamType.cs" />

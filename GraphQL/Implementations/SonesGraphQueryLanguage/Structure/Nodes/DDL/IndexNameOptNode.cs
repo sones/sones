@@ -6,11 +6,18 @@ namespace sones.GraphQL.Structure.Nodes.DDL
 {
     public sealed class IndexNameOptNode : AStructureNode, IAstNodeInit
     {
+        private String _IndexName;
+        public String IndexName
+        {
+            get { return _IndexName; }
+        }
+
         #region IAstNodeInit Members
 
         public void Init(ParsingContext context, ParseTreeNode parseNode)
         {
-            throw new NotImplementedException();
+            if (HasChildNodes(parseNode))
+                _IndexName = parseNode.ChildNodes[0].Token.ValueString;
         }
 
         #endregion
