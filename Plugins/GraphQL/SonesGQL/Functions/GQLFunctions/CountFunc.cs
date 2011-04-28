@@ -61,7 +61,7 @@ namespace sones.Plugins.SonesGQL.Functions
         {
             if (CallingObject is IHyperEdge)
             {
-                return new FuncParameter((UInt64)((IHyperEdge)CallingObject).GetEdges().Count());
+                return new FuncParameter((UInt64)((IHyperEdge)CallingObject).GetAllEdges().Count());
             }
             else if (CallingObject is ISingleEdge)
             {

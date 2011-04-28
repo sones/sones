@@ -44,7 +44,7 @@ namespace sones.Plugins.SonesGQL.Functions
         {
             if (CallingObject is IHyperEdge)
             {
-                foreach (var edge in (CallingObject as IHyperEdge).GetEdges())
+                foreach (var edge in (CallingObject as IHyperEdge).GetAllEdges())
                 {
                     //if (!edge.)
                     //{

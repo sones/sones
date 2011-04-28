@@ -11,16 +11,13 @@ namespace sones.GraphQL.Result
     public class GraphElementView : IGraphElementView
     {
         #region Data
-
         /// <summary>
         /// The list of graph element view.
         /// </summary>
         private readonly IDictionary<String, Object> _propertyList;
-
         #endregion
 
         #region Constructor
-
         /// <summary>
         /// The class constructor.
         /// </summary>
@@ -29,49 +26,64 @@ namespace sones.GraphQL.Result
         {
             _propertyList = myPropertyList;
         }
-
         #endregion
 
         public T GetProperty<T>(string myPropertyName)
         {
-            Object outValue;
-
-            if (_propertyList.TryGetValue(myPropertyName, out outValue))
-            {
-                return (T) outValue;
-            }
-            else
-            {
+            if (_propertyList == null)
                 return default(T);
+            {
+                Object outValue;
+                if (_propertyList.TryGetValue(myPropertyName, out outValue))
+                {
+                    return (T)outValue;
+                }
+                else
+                {
+                    return default(T);
+                }
             }
         }
 
         public bool HasProperty(string myPropertyName)
         {
-            return _propertyList.ContainsKey(myPropertyName);
+            if (_propertyList == null)
+                return false;
+            else
+                return _propertyList.ContainsKey(myPropertyName);
         }
 
         public int GetCountOfProperties()
         {
-            return _propertyList.Count;
+            if (_propertyList == null)
+                return 0;
+            else
+                return _propertyList.Count;
         }
 
         public IEnumerable<Tuple<string, object>> GetAllProperties()
         {
-            return _propertyList.Select(item => new Tuple<String, Object>(item.Key, item.Value));
+            if (_propertyList == null)
+                return new List<Tuple<string, object>>();
+            else
+                return _propertyList.Select(item => new Tuple<String, Object>(item.Key, item.Value));
         }
 
         public string GetPropertyAsString(string myPropertyName)
         {
-            Object outValue;
-
-            if (_propertyList.TryGetValue(myPropertyName, out outValue))
-            {
-                return outValue.ToString();
-            }
+            if (_propertyList == null)
+                return String.Empty;
             else
             {
-                return String.Empty;
+                Object outValue;
+                if (_propertyList.TryGetValue(myPropertyName, out outValue))
+                {
+                    return outValue.ToString();
+                }
+                else
+                {
+                    return String.Empty;
+                }
             }
         }
     }

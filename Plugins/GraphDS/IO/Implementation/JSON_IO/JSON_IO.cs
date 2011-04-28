@@ -92,9 +92,12 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             // results ------------------------------
             JArray _resultsArray = new JArray();
             // fill the results array
-            foreach (IVertexView _vertex in myQueryResult.Vertices)
+            if (myQueryResult.Vertices != null)
             {
-                _resultsArray.Add(GenererateVertexViewJSON(_vertex));
+                foreach (IVertexView _vertex in myQueryResult.Vertices)
+                {
+                    _resultsArray.Add(GenererateVertexViewJSON(_vertex));
+                }
             }
             // add the results to the query....
             _Query.Add(new JProperty("results", _resultsArray));
@@ -112,14 +115,13 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             JObject _properties = new JObject();
             foreach (var _property in aVertex.GetAllProperties())
             {
-                JProperty _newProperty = null;
-
-                if (_property.Item2 is Stream)
-                {
-                    _properties.Add(new JProperty(_property.Item1, "BinaryProperty"));
-                }
+                if (_property.Item2 == null)
+                    _properties.Add(new JProperty(_property.Item1, ""));
                 else
-                    _properties.Add(new JProperty(_property.Item1, _property.Item2.ToString()));
+                    if (_property.Item2 is Stream)
+                        _properties.Add(new JProperty(_property.Item1, "BinaryProperty"));
+                    else
+                        _properties.Add(new JProperty(_property.Item1, _property.Item2.ToString()));
             }
             // add to the results...
             _results.Add(new JObject(new JProperty("properties", new JObject(_properties))));
@@ -129,8 +131,15 @@ namespace sones.Plugins.GraphDS.IO.JSON_IO
             JArray _edges = new JArray();
             foreach (var _edge in aVertex.GetAllEdges())
             {
-                JArray _newEdge = GenerateEdgeViewJSON(_edge.Item2);
-                _edges.Add(new JObject(new JProperty(_edge.Item1,_newEdge)));
+                if (_edge.Item2 == null)
+                {
+                    _edges.Add(new JObject(new JProperty(_edge.Item1, "")));             
+                }
+                else
+                {
+                    JArray _newEdge = GenerateEdgeViewJSON(_edge.Item2);
+                    _edges.Add(new JObject(new JProperty(_edge.Item1, _newEdge)));
+                }
             }
             // add to the results...
             _results.Add(new JObject(new JProperty("edges", _edges)));

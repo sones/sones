@@ -13,7 +13,7 @@ namespace sones.Library.PropertyHyperGraph
         /// </summary>
         /// <param name="myFilter">A function to filter those edges</param>
         /// <returns>An IEnumerable of edges</returns>
-        IEnumerable<ISingleEdge> GetEdges(PropertyHyperGraphFilter.SingleEdgeFilter myFilter = null);
+        IEnumerable<ISingleEdge> GetAllEdges(PropertyHyperGraphFilter.SingleEdgeFilter myFilter = null);
 
         /// <summary>
         /// Invokes a function on a hyper edge

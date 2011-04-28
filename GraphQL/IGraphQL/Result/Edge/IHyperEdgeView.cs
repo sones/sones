@@ -11,6 +11,6 @@ namespace sones.GraphQL.Result
         /// Gets all contained edges
         /// </summary>
         /// <returns>An IEnumerable of edges</returns>
-        IEnumerable<ISingleEdgeView> GetEdges();
+        IEnumerable<ISingleEdgeView> GetAllEdges();
     }
 }

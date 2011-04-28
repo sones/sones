@@ -11,17 +11,17 @@ namespace sones.Plugins.GraphDS.IO.XML_IO.Result
     /// </summary>
     public class SingleEdgeView : ISingleEdgeView
     {
-         #region Data
+        #region Data
 
         /// <summary>
         /// The list of properties of the edge.
         /// </summary>
-        private readonly IDictionary<String, Object>        _propertyList;
+        private readonly IDictionary<String, Object> _propertyList;
 
         /// <summary>
         /// The list of target vertex of the edge.
         /// </summary>
-        private readonly IVertexView                        _targetVertex;
+        private readonly IVertexView _targetVertex;
 
         #endregion
 
@@ -34,14 +34,14 @@ namespace sones.Plugins.GraphDS.IO.XML_IO.Result
         /// <param name="myTargetVertex">The target vertex of the edge.</param>
         public SingleEdgeView(IDictionary<String, Object> myProperties, IVertexView myTargetVertex)
         {
-            _propertyList       = myProperties;
-            _targetVertex       = myTargetVertex;
+            _propertyList = myProperties;
+            _targetVertex = myTargetVertex;
         }
 
         #endregion
 
         #region ISingleEdgeView
-        
+
         public IVertexView GetTargetVertex()
         {
             return _targetVertex;
@@ -49,52 +49,72 @@ namespace sones.Plugins.GraphDS.IO.XML_IO.Result
 
         public IEnumerable<IVertexView> GetTargetVertices()
         {
-            throw new NotImplementedException();
+            if (_targetVertex == null)
+                return new List<IVertexView>();
+            else
+                return new List<IVertexView>() { _targetVertex };
         }
 
         public T GetProperty<T>(string myPropertyName)
         {
-            Object outValue;
-
-            if (_propertyList.TryGetValue(myPropertyName, out outValue))
-            {
-                return (T)outValue;
-            }
+            if (_propertyList == null)
+                return default(T);
             else
             {
-                return default(T);
+                Object outValue;
+                if (_propertyList.TryGetValue(myPropertyName, out outValue))
+                {
+                    return (T)outValue;
+                }
+                else
+                {
+                    return default(T);
+                }
             }
         }
 
         public bool HasProperty(string myPropertyName)
         {
-            return _propertyList.ContainsKey(myPropertyName);
+            if (_propertyList == null)
+                return false;
+            else
+                return _propertyList.ContainsKey(myPropertyName);
         }
 
         public int GetCountOfProperties()
         {
-            return _propertyList.Count;
+            if (_propertyList == null)
+                return 0;
+            else
+                return _propertyList.Count;
         }
 
         public IEnumerable<Tuple<string, object>> GetAllProperties()
         {
-            return _propertyList.Select(item => new Tuple<String, Object>(item.Key, item.Value));
+            if (_propertyList == null)
+                return new List<Tuple<string, object>>();
+            else
+                return _propertyList.Select(item => new Tuple<String, Object>(item.Key, item.Value));
         }
 
         public string GetPropertyAsString(string myPropertyName)
         {
-            Object outValue;
-
-            if (_propertyList.TryGetValue(myPropertyName, out outValue))
-            {
-                return outValue.ToString();
-            }
+            if (_propertyList == null)
+                return String.Empty;
             else
             {
-                return String.Empty;
+                Object outValue;
+                if (_propertyList.TryGetValue(myPropertyName, out outValue))
+                {
+                    return outValue.ToString();
+                }
+                else
+                {
+                    return String.Empty;
+                }
             }
         }
-
         #endregion
+
     }
 }

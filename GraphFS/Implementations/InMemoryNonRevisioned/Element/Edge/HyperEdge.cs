@@ -66,7 +66,7 @@ namespace sones.GraphFS.Element.Edge
 
         #region IHyperEdge Members
 
-        public IEnumerable<ISingleEdge> GetEdges(PropertyHyperGraphFilter.SingleEdgeFilter myFilter = null)
+        public IEnumerable<ISingleEdge> GetAllEdges(PropertyHyperGraphFilter.SingleEdgeFilter myFilter = null)
         {
             if (myFilter != null)
             {

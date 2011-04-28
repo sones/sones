@@ -41,7 +41,6 @@ namespace sones.Plugins.GraphDS.IO.XML_IO
             result.Version = IOInterfaceCompatibility.MaxVersion.ToString();
 
             result.Query = new Query() { Duration = myQueryResult.Duration, ResultType = Enum.GetName(typeof(ResultType), myQueryResult.TypeOfResult), Language = myQueryResult.NameOfQuerylanguage, Value = myQueryResult.Query, VerticesCount = myQueryResult.Vertices.LongCount(), Error = myQueryResult.Error == null ? null : myQueryResult.Error.Message };
-            
           
             List<SchemaVertexView> vertices = new List<SchemaVertexView>();
 
