@@ -233,13 +233,7 @@ namespace sones.Plugins.SonesGQL.DBImport
                         break;
                     }
                 }
-                else if (tempResult.TypeOfResult == ResultType.PartialSuccessful)
-                {
-                    //TODO: implement Warning
-                    //queryResult1.PushIWarning(new Warning_ImportWarning(query, numberOfLine));
-                    //queryResult1.PushIWarnings(qresult.Warnings);
-                }
-
+                
                 #endregion
 
                 query = String.Empty;
